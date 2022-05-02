@@ -31,6 +31,7 @@ DEBUG_CONF_PATH = Path('conf.json')
 class CollectionReason(Enum):
     MARKETPLACE_VERSION_BY_VALUE = 'value of the test `marketplace` field'
     MARKETPLACE_VERSION_SECTION = 'listed under conf.json marketplace-specific section'
+    PACK_MATCHES_INTEGRATION = 'pack added as the integration is used in a playbook'
 
 
 class DictBased:
@@ -113,18 +114,15 @@ class TestConf(DictFileBased):
     def __init__(self):
         super().__init__(DEBUG_CONF_PATH)  # todo not use debug
         self.tests = tuple(TestConfItem(value) for value in self['tests'])  # todo is used?
-        self.tests_to_integrations = {test['playbookID']: to_tuple(test.get('integrations')) for test in self.tests}
+        self.tests_to_integrations = {test.playbook_id: test.integrations for test in self.tests if test.integrations}
 
         # Attributes
-        self.skipped_tests: dict = self['skipped_tests']
-        self.skipped_integrations: dict[str, str] = self['skipped_integrations']
-        self.unmockable_integrations: dict[str, str] = self['unmockable_integrations']
+        self.skipped_tests_dict: dict = self['skipped_tests']
+        self.skipped_integrations_dict: dict[str, str] = self['skipped_integrations']
+        self.unmockable_integrations_dict: dict[str, str] = self['unmockable_integrations']
         self.nightly_integrations: list[str] = self['nightly_integrations']
         self.parallel_integrations: list[str] = self['parallel_integrations']
         self.private_tests: list[str] = self['private_tests']
-
-    def get_skipped_integrations(self):  # todo delete
-        return tuple(self.get('skipped_integrations', {}).keys())
 
     def get_skipped_tests(self):
         return tuple(self.get('skipped_tests', {}).keys())
@@ -143,9 +141,9 @@ class IdSetItem(DictBased):
     def __init__(self, id_: str, dict_: dict):
         super().__init__(dict_)
         self.id_ = id_
-        self.name = self.content['name']
+        self.name: str = self.content['name']
         self.file_path = self.content['file_path']
-        self.pack = self.content.get('pack')
+        self.pack: Optional[str] = self.content.get('pack')
         if 'pack' not in self.content:
             logging.debug(f'content item with id={id_} and name={self.name} has no pack value')  # todo debug? info?
 
@@ -169,6 +167,7 @@ class IdSetItem(DictBased):
         return to_tuple(self.content.get('integrations'))
 
 
+@dataclass
 class CollectedTests:
     tests: set[str] = field(default_factory=set)
     packs: set[str] = field(default_factory=set)
@@ -201,7 +200,9 @@ class CollectedTests:
             add_pack: bool = True,
             add_test: bool = True,
     ):
-        logging.info(f'collecting {pack_id=} {test_name=}, {reason.value=} {reason_description}')
+        logging.info(f'collecting {pack_id=} {test_name=}, {reason.value=} {reason_description} '
+                     f'({add_pack=}, {add_test=})')
+
         if add_test:
             if not test_name:
                 raise ValueError('cannot add a test without a name')
@@ -212,10 +213,32 @@ class CollectedTests:
                 raise ValueError('cannot add a pack without an id')
             self.packs.add(pack_id)
 
+    def add_id_set_item(self,
+                        item: IdSetItem,
+                        reason: CollectionReason,
+                        reason_description: str = '',
+                        add_pack: bool = True,
+                        add_test: bool = True,
+                        ):
+        self.add(item.name, item.pack, reason, reason_description, add_pack, add_test)
+
+    def add_id_set_iterable(self,
+                            items: Iterable[IdSetItem],
+                            reason: CollectionReason,
+                            reason_description: str = '',
+                            add_pack: bool = True,
+                            add_test: bool = True):
+
+        self.add_iterable(tuple(item.name for item in items),
+                          tuple(item.pack for item in items),
+                          reason,
+                          reason_description,
+                          add_pack, add_test)
+
     def add_iterable(
             self,
             tests: Optional[tuple[str]],
-            pack_ids: Optional[tuple[str]],
+            pack_ids: Optional[tuple[Optional[str]]],
             reason: CollectionReason,
             reason_description: str = '',
             add_pack: bool = True,
@@ -243,9 +266,8 @@ class IdSet(DictFileBased):
         self.id_to_integration = self._parse_items(self['integrations'])
         self.id_to_test_playbook = self._parse_items(self['TestPlaybooks'])
 
-        # one place to access all IdSetItem objets
-        # todo reconsider, perhaps getter that searches in each and returns instead of another dict?
-        self.id_to_item = self.id_to_script | self.id_to_integration | self.id_to_test_playbook  # todo
+        self.integration_to_pack = {integration.name: integration.pack for integration in self.integrations}
+        self.scripts_to_pack = {script.name: script.pack for script in self.scripts}
 
     @property
     def integrations(self) -> Iterable[IdSetItem]:
@@ -260,12 +282,10 @@ class IdSet(DictFileBased):
         return self.id_to_script.values()
 
     def get_marketplace_v2_tests(self):
-        collected = CollectedTests()
-        collected.add_iterable(self['test_parketplacev2'],
-                               None,
-                               CollectionReason.MARKETPLACE_VERSION_SECTION,
-                               self.marketplace.value)
-        return collected
+        result = CollectedTests()
+        result.add_iterable(self['test_marketplacev2'], None, CollectionReason.MARKETPLACE_VERSION_SECTION,
+                            self.marketplace.value)
+        return result
 
     def _parse_items(self, dictionaries: list[dict[str, dict]]) -> dict[str, IdSetItem]:
         result = {}
@@ -317,7 +337,7 @@ class TestConfItem(DictBased):
 
     @property
     def integrations(self) -> tuple[str]:
-        return to_tuple(self['integrations'])
+        return to_tuple(self.get('integrations'))
 
     @property
     def playbook_id(self) -> tuple[str]:
@@ -359,15 +379,23 @@ class TestCollector(ABC):
 
     def collect(self, run_nightly: bool, run_master: bool):
         collected = self._collect()
+        collected.machines = Machine.get_suitable_machines(self.version_range, run_nightly, run_master)
 
-        collected.machines = Machine.get_suitable_machines(  # todo
-            run_nightly,
-            run_master,
-        )
-
-        if collected.machines is None and not collected.not_empty:
+        if collected.machines is None and not collected.not_empty:  # todo reconsider
             raise EmptyMachineListException()
 
+        collected |= self._add_packs_from_tested_integrations(collected.tests)
+        return collected
+
+    def _add_packs_from_tested_integrations(self, tests: set[str]):  # only called in TestCollector.collect()
+        logging.info(f'Searching {len(tests)} tests for integrations in test conf, '
+                     f'to make sure their packs are installed.')
+
+        collected = CollectedTests()
+        for test in tests:
+            for integration in self.conf.tests_to_integrations.get(test, ()):
+                if pack := self.id_set.integration_to_pack.get(integration, None):
+                    collected.add(None, pack, CollectionReason.PACK_MATCHES_INTEGRATION)
         return collected
 
 
@@ -404,22 +432,25 @@ class BranchTestCollector(TestCollector):
 
 class NightlyTestCollector(TestCollector):
     def _collect(self) -> CollectedTests:
-        by_marketplace_value = self.tests_matching_marketplace_value()
-        by_marketplace_section = self.id_set.get_test_playbooks_by_marketplace_section()  # todo does this belong here or in id_set?
+        collected: list[CollectedTests] = [
+            self.tests_matching_marketplace_value(),
+        ]
 
-        return CollectedTests.union((by_marketplace_value, by_marketplace_section))
+        if self.marketplace == MarketplaceVersions.MarketplaceV2:
+            collected.append(self.id_set.get_marketplace_v2_tests())
+
+        return CollectedTests.union(*collected)
 
     def tests_matching_marketplace_value(self) -> CollectedTests:
+        result = CollectedTests()
         marketplace_string = self.marketplace.value  # todo is necessary?
         logging.info(f'collecting test playbooks by their marketplace field, searching for {marketplace_string}')
-        collected = CollectedTests()
 
         for playbook in self.id_set.test_playbooks:
             if marketplace_string in playbook.marketplaces:
-                collected.add(playbook.name, playbook.pack,
-                              CollectionReason.MARKETPLACE_VERSION_BY_VALUE, marketplace_string)
+                result.add_id_set_item(playbook, CollectionReason.MARKETPLACE_VERSION_BY_VALUE, marketplace_string)
 
-        return collected
+        return result
 
 
 class UploadCollector(TestCollector):
