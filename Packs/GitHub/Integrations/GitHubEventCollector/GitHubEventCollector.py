@@ -6,8 +6,6 @@ import demistomock as demisto
 from pydantic import BaseModel, AnyUrl, Json, validator
 import dateparser
 
-urllib3.disable_warnings()
-
 
 def get_github_timestamp_format(value):
     """Converting int(epoch), str(3 days) or datetime to github's api time"""
@@ -90,9 +88,9 @@ class GetEvents:
     def __init__(self, client: Client) -> None:
         self.client = client
 
-    def _iter_events(self) -> None:
+    def _iter_events(self) -> List:
         """
-        Function that responsible for the iteration over the events returned from the Okta api
+        Function that responsible for the iteration over the events returned from github api
         """
         response = self.client.call()
         events: list = response.json()
@@ -104,7 +102,7 @@ class GetEvents:
             last = events.pop()
             self.client.set_next_run_filter(last['@timestamp'])
             response = self.client.call()
-            events: list = response.json()
+            events = response.json()
             try:
                 events.pop(0)
                 assert events
@@ -129,7 +127,8 @@ class GetEvents:
         Get the info from the last run, it returns the time to query from and a list of ids to prevent duplications
         """
 
-        last_time = events[-1].get('@timestamp') / 1000
+        last_timestamp = events[-1]['@timestamp']
+        last_time = last_timestamp / 1000
         next_fetch_time = datetime.fromtimestamp(last_time) + timedelta(
             seconds=1
         )
@@ -158,28 +157,32 @@ def main():
     get_events = GetEvents(client)
 
     command = demisto.command()
+    try:
+        urllib3.disable_warnings()
 
-    if command == 'test-module':
-        get_events.aggregated_results(limit=1)
-        demisto.results('ok')
-    elif command == 'github-get-events' or command == 'fetch-events':
-        events = get_events.aggregated_results(limit=int(demisto_params.get('limit')))
+        if command == 'test-module':
+            get_events.aggregated_results(limit=1)
+            return_results('ok')
+        elif command == 'github-get-events' or command == 'fetch-events':
+            events = get_events.aggregated_results(limit=int(demisto_params.get('limit')))
 
-        if command == 'fetch-events':
-            if events:
-                demisto.setLastRun(GetEvents.get_last_run(events))
-            while len(events) > 0:
-                send_events_to_xsiam(events[:events_to_add_per_request], 'github-audit', 'github-audit')
-                events = events[events_to_add_per_request:]
-        elif command == 'github-get-events':
-            command_results = CommandResults(
-                readable_output=tableToMarkdown('Github Logs', events, headerTransform=pascalToSpace),
-                outputs_prefix='Github.Logs',
-                outputs_key_field='@timestamp',
-                outputs=events,
-                raw_response=events,
-            )
-            return_results(command_results)
+            if command == 'fetch-events':
+                if events:
+                    demisto.setLastRun(GetEvents.get_last_run(events))
+                while len(events) > 0:
+                    send_events_to_xsiam(events[:events_to_add_per_request], 'github-audit', 'github-audit')
+                    events = events[events_to_add_per_request:]
+            elif command == 'github-get-events':
+                command_results = CommandResults(
+                    readable_output=tableToMarkdown('Github Logs', events, headerTransform=pascalToSpace),
+                    outputs_prefix='Github.Logs',
+                    outputs_key_field='@timestamp',
+                    outputs=events,
+                    raw_response=events,
+                )
+                return_results(command_results)
+    except Exception as e:
+        return_error(str(e))
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
