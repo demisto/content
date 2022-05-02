@@ -126,7 +126,7 @@ install-packs-in-server-master:
     INSTANCE_ROLE: "Server Master"
 
 
-.install-mpv2-pack-on-mpv2-instances:
+.install-mpv2-packs-on-xsiam-instances:
   tags:
     - gke
   needs: ["prepare-testing-bucket-mpv2-upload-flow"]
@@ -181,7 +181,7 @@ install-packs-in-server-master:
 
 
 install-packs-in-xsiam-master:
-  extends: .install-mpv2-pack-on-mpv2-instances
+  extends: .install-mpv2-packs-on-xsiam-instances
   variables:
     INSTANCE_ROLE: "XSIAM Master"
     GCS_QUEUE_FILE: "queue-master"

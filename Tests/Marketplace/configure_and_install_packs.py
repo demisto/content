@@ -1,5 +1,6 @@
 import argparse
 import sys
+import traceback
 
 from demisto_sdk.commands.common.tools import get_json, str2bool
 from Tests.configure_and_test_integration_instances import MARKET_PLACE_CONFIGURATION, \
@@ -42,23 +43,13 @@ def install_packs_from_content_packs_to_install_path(servers, pack_ids_to_instal
         hostname:
         pack_ids_to_install_path: "$ARTIFACTS_FOLDER/content_packs_to_install.txt" path
         servers: XSIAM or XSOAR Servers to install packs on it.
-
-    Returns:
-        installed_content_packs_successfully: Whether packs installed successfully
     """
     pack_ids = Build.fetch_pack_ids_to_install(pack_ids_to_install_path)
-    installed_content_packs_successfully = True
     for server in servers:
-        try:
-            logging.info(f'Starting to install all content packs in {hostname if hostname else server.internal_ip}')
-            _, flag = search_and_install_packs_and_their_dependencies(pack_ids, server.client, hostname)
-            if not flag:
-                raise Exception('Failed to search and install packs.')
-        except Exception:
-            logging.exception('Failed to search and install packs')
-            installed_content_packs_successfully = False
-
-    return installed_content_packs_successfully
+        logging.info(f'Starting to install all content packs in {hostname if hostname else server.internal_ip}')
+        _, success = search_and_install_packs_and_their_dependencies(pack_ids, server.client, hostname)
+        if not success:
+            raise Exception('Failed to search and install packs and their dependencies.')
 
 
 def xsoar_configure_and_install_all_packs(options, branch_name: str, build_number: str):
@@ -126,12 +117,8 @@ def xsoar_configure_and_install_flow(options, branch_name: str, build_number: st
         XSOARBuild.set_marketplace_url(servers=[server], branch_name=branch_name, ci_build_number=build_number)
         servers.append(server)
 
-    success_flag = install_packs_from_content_packs_to_install_path(servers, options.pack_ids_to_install)
-    if success_flag:
-        logging.success(f'Finished installing all content packs in {[server.internal_ip for server in servers]}')
-    else:
-        logging.error('Failed to install all packs.')
-        sys.exit(1)
+    install_packs_from_content_packs_to_install_path(servers, options.pack_ids_to_install)
+    logging.success(f'Finished installing all content packs in {[server.internal_ip for server in servers]}')
 
 
 def xsiam_configure_and_install_flow(options, branch_name: str, build_number: str):
@@ -151,26 +138,28 @@ def xsiam_configure_and_install_flow(options, branch_name: str, build_number: st
     XSIAMBuild.set_marketplace_url(servers=[server], branch_name=branch_name, ci_build_number=build_number)
 
     # Acquire the server's host and install new uploaded content packs
-    success_flag = install_packs_from_content_packs_to_install_path([server], options.pack_ids_to_install, server.name)
-    if success_flag:
-        logging.success(f'Finished installing all content packs in {xsiam_machine}')
-    else:
-        logging.error('Failed to install all packs.')
-        sys.exit(1)
+    install_packs_from_content_packs_to_install_path([server], options.pack_ids_to_install, server.name)
+    logging.success(f'Finished installing all content packs in {xsiam_machine}')
 
 
 def main():
-    install_logging('Install_Packs.log', logger=logging)
-    options = options_handler()
-    branch_name: str = options.branch
-    build_number: str = options.build_number
+    try:
+        install_logging('Install_Packs.log', logger=logging)
+        options = options_handler()
+        branch_name: str = options.branch
+        build_number: str = options.build_number
 
-    if options.ami_env in ["XSIAM Master"]:
-        xsiam_configure_and_install_flow(options, branch_name, build_number)
-    elif options.override_all_packs:
-        xsoar_configure_and_install_all_packs(options, branch_name, build_number)
-    else:
-        xsoar_configure_and_install_flow(options, branch_name, build_number)
+        if options.ami_env in ["XSIAM Master"]:
+            xsiam_configure_and_install_flow(options, branch_name, build_number)
+        elif options.override_all_packs:
+            xsoar_configure_and_install_all_packs(options, branch_name, build_number)
+        else:
+            xsoar_configure_and_install_flow(options, branch_name, build_number)
+
+    except Exception as e:
+        logging.error(f'Failed to configure and install packs: {e}')
+        logging.error(traceback.format_exc())
+        sys.exit(1)
 
 
 if __name__ == '__main__':
