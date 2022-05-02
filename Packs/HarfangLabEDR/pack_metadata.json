@@ -2,7 +2,7 @@
     "name": "HarfangLab EDR",
     "description": "This connector allows to fetch security events from a HarfangLab EDR Manager and manage the incident response.",
     "support": "community",
-    "currentVersion": "2.9.0",
+    "currentVersion": "1.0.0",
     "author": "Pierre-HarfangLab",
     "url": "",
     "email": "",
