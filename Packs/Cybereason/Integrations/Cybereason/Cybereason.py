@@ -874,7 +874,7 @@ def kill_process_command():
     target_id = demisto.getArg('targetId')
     user_name = demisto.getArg('userName')
     timeout_second = demisto.getArg('timeout')
-    comment = demisto.getArg('comment') if demisto.getArg('comment') else ''
+    comment = demisto.getArg('comment') if demisto.getArg('comment') else 'Kill Process Remediation Action Succeeded'
     remediation_action = 'KILL_PROCESS'
     is_machine_conntected = is_probe_connected_command(is_remediation_commmand=True)
     if is_machine_conntected == True:
@@ -894,7 +894,7 @@ def quarantine_file_command():
     target_id = demisto.getArg('targetId')
     user_name = demisto.getArg('userName')
     timeout_second = demisto.getArg('timeout')
-    comment = demisto.getArg('comment') if demisto.getArg('comment') else ''
+    comment = demisto.getArg('comment') if demisto.getArg('comment') else 'Quarantine File Remediation Action Succeeded'
     remediation_action = 'QUARANTINE_FILE'
     is_machine_conntected = is_probe_connected_command(is_remediation_commmand=True)
     if is_machine_conntected == True:
@@ -914,7 +914,7 @@ def unquarantine_file_command():
     target_id = demisto.getArg('targetId')
     user_name = demisto.getArg('userName')
     timeout_second = demisto.getArg('timeout')
-    comment = demisto.getArg('comment') if demisto.getArg('comment') else ''
+    comment = demisto.getArg('comment') if demisto.getArg('comment') else 'Unquarantine File Remediation Action Succeded'
     remediation_action = 'UNQUARANTINE_FILE'
     is_machine_conntected = is_probe_connected_command(is_remediation_commmand=True)
     if is_machine_conntected == True:
@@ -934,7 +934,7 @@ def block_file_command():
     target_id = demisto.getArg('targetId')
     user_name = demisto.getArg('userName')
     timeout_second = demisto.getArg('timeout')
-    comment = demisto.getArg('comment') if demisto.getArg('comment') else ''
+    comment = demisto.getArg('comment') if demisto.getArg('comment') else 'Block File Remediation Action Succeeded'
     remediation_action = 'BLOCK_FILE'
     is_machine_conntected = is_probe_connected_command(is_remediation_commmand=True)
     if is_machine_conntected == True:
@@ -954,7 +954,7 @@ def delete_registry_key_command():
     target_id = demisto.getArg('targetId')
     user_name = demisto.getArg('userName')
     timeout_second = demisto.getArg('timeout')
-    comment = demisto.getArg('comment') if demisto.getArg('comment') else ''
+    comment = demisto.getArg('comment') if demisto.getArg('comment') else 'Delete Registry Key Remediation Action Succeeded'
     remediation_action = 'DELETE_REGISTRY_KEY'
     is_machine_conntected = is_probe_connected_command(is_remediation_commmand=True)
     if is_machine_conntected == True:
@@ -974,7 +974,7 @@ def kill_prevent_unsuspend_command():
     target_id = demisto.getArg('targetId')
     user_name = demisto.getArg('userName')
     timeout_second = demisto.getArg('timeout')
-    comment = demisto.getArg('comment') if demisto.getArg('comment') else ''
+    comment = demisto.getArg('comment') if demisto.getArg('comment') else 'Kill Prevent Unsuspend Remediation Action Succeeded'
     remediation_action = 'KILL_PREVENT_UNSUSPEND'
     is_machine_conntected = is_probe_connected_command(is_remediation_commmand=True)
     if is_machine_conntected == True:
@@ -994,7 +994,7 @@ def unsuspend_process_command():
     target_id = demisto.getArg('targetId')
     user_name = demisto.getArg('userName')
     timeout_second = demisto.getArg('timeout')
-    comment = demisto.getArg('comment') if demisto.getArg('comment') else ''
+    comment = demisto.getArg('comment') if demisto.getArg('comment') else 'Unsuspend Process Remediation Action Succeeded'
     remediation_action = 'UNSUSPEND_PROCESS'
     is_machine_conntected = is_probe_connected_command(is_remediation_commmand=True)
     if is_machine_conntected == True:
@@ -1029,7 +1029,7 @@ def get_remediation_action_status(user_name, malop_guid, response, timeout_secon
     remediation_id = dict_safe_get(response, ['remediationId'])
     progress_api_response = get_remediation_action_progress(user_name, malop_guid, remediation_id, timeout_second)
     status = dict_safe_get(progress_api_response, ['Remediation status'])
-    if status == 'SUCCESS' and bool(comment) == True:
+    if status == 'SUCCESS':
         add_comment(malop_guid, comment.encode('utf-8'))
     return progress_api_response
 
