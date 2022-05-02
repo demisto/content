@@ -77,7 +77,7 @@ def test_pan_os_get_version_command(patched_requests_mocker):
     assert response.outputs == {
         'sw-version': '9.0.6', 'multi-vsys': 'off', 'model': 'Panorama', 'serial': 'FAKESERIALNUMBER'
     }
-    assert 'PAN-OS version information' in response.readable_output
+    assert 'PAN-OS Version Information' in response.readable_output
 
 
 def test_panorama_get_os_version(patched_requests_mocker):
