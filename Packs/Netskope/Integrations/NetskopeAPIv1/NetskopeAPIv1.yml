@@ -95,7 +95,9 @@ script:
   commands:
     - arguments:
         - default: false
-          description: Free query to filter the events. For example, "app eq Dropbox".
+          description:
+            'Free query to filter the events. For example, "app eq Dropbox".
+            For more information, please visit Netskope documentation: https://docs.netskope.com/en/get-events-data.html'
           isArray: false
           name: query
           required: false
@@ -250,8 +252,8 @@ script:
     - arguments:
         - default: false
           description:
-            Free query to filter the alerts. For example, "alert_name like
-            'test'".
+            'Free query to filter the alerts. For example, "alert_name like
+            test". For more information, please visit Netskope documentation: https://docs.netskope.com/en/get-alerts-data.html'
           isArray: false
           name: query
           required: false
@@ -550,7 +552,7 @@ script:
           name: urls
           required: true
           secret: false
-      description: Update the URL List with the values provided.
+      description: Update the URL List with the values provided. The command will override the whole list content, rather than appending the new values.
       name: netskope-url-list-update
       outputs:
         - contextPath: Netskope.URLList.name
@@ -574,7 +576,7 @@ script:
           name: hash
           required: true
           secret: false
-      description: Update file hash list with the values provided.
+      description: Update file hash list with the values provided. The command will override the whole list content, rather than appending the new values.
       name: netskope-file-hash-list-update
       outputs:
         - contextPath: FileHashList.name
@@ -586,8 +588,8 @@ script:
     - arguments:
         - default: false
           description:
-            Free query on the clients, based on the client fields. For example,
-            "host_info.hostname eq 'xxx'".
+            'Free query on the clients, based on the client fields. For example, "host_info.hostname eq xxx".
+            For more information, please visit Netskope documentation: https://docs.netskope.com/en/get-client-data.html'.
           isArray: false
           name: query
           required: false
