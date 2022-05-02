@@ -7,7 +7,7 @@
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_extermalseverity",
+    "id": "incident_externalseverity",
     "isReadOnly": false,
     "locked": false,
     "name": "External Severity",
