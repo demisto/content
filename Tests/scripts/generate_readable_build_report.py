@@ -49,10 +49,9 @@ def build_summary_report(validate_summary, unit_tests_summary, create_instances_
         'server 6.2': server_6_2_summary,
         'server master': server_master_summary,
     }
-
+    test_cases = []
     for file, failing_validations in validate_summary.items():
         # test_case = TestCase('Test1', 'some.class.name', 123.345, 'I am stdout!', 'I am stderr!')
-        test_cases = []
         for failing_validation in failing_validations:
             test_cases.append(TestCase('Validate', f'validate.{file}', stdout='I am stdout!', stderr=failing_validation))
     ts = TestSuite("Validate", test_cases)
