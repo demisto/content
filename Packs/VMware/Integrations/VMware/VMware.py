@@ -19,7 +19,8 @@ def parse_params(params):
     port = str(url_arr[1])
     user_name = params.get('credentials').get('identifier')
     password = params.get('credentials').get('password')
-    return full_url, url, port, user_name, password
+    test = 'test'
+    return full_url, url, port, user_name, password, test
 
 
 def get_limit(args):
