@@ -253,7 +253,11 @@ script:
         for the instance is used.
     - name: restore_user
       default: false
-      description: "If true the command will enable the user with his restored options"
+      auto: PREDEFINED
+      predefined:
+       - 'true'
+       - 'false'
+      description: "If true, the command will enable the user with his restored options"
     description: Enables a previously disabled Active Directory account.
   - name: ad-unlock-account
     arguments:
