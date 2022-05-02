@@ -74,11 +74,11 @@ def main():
     content_repo = gh.get_repo(f'{organization}/{repo}')
 
     master_sha = get_master_commit_sha(content_repo)
-    contrib_base_branches = get_branch_names_with_contrib(content_repo)
     if ref_branch:
         update_branch(content_repo, ref_branch, master_sha)
         return
 
+    contrib_base_branches = get_branch_names_with_contrib(content_repo)
     print(f'updating {contrib_base_branches=}')
     for branch_name in contrib_base_branches:
         update_branch(content_repo, branch_name, master_sha)
