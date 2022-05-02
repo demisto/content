@@ -47,6 +47,14 @@ def get_incident_extra_data_by_status(incident_id, alerts_limit):
 ''' TESTS FUNCTIONS '''
 
 
+@pytest.mark.parametrize(argnames='time_to_convert, expected_value',
+                         argvalues=[('1322683200', 1322683200),
+                                    ('2018-11-06T08:56:41', 1541487401)])
+def test_convert_time_to_epoch(time_to_convert, expected_value):
+    from CortexXDRIR import convert_time_to_epoch
+    assert convert_time_to_epoch(time_to_convert) == expected_value
+
+
 def test_get_incident_list(requests_mock):
     from CortexXDRIR import get_incidents_command, Client
 

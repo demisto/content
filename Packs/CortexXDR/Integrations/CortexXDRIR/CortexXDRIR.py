@@ -249,6 +249,23 @@ def convert_datetime_to_epoch(the_time=0):
         return 0
 
 
+def convert_time_to_epoch(time_to_convert: str) -> int:
+    """
+    Converts time in epoch UNIX timestamp format or date in '%Y-%m-%dT%H:%M:%S' format to timestamp format.
+    :param time_to_convert:
+    :return: converted_timestamp
+    """
+    try:
+        timestamp = int(time_to_convert)
+        return timestamp
+    except Exception:
+        try:
+            return date_to_timestamp(time_to_convert) // 1000
+        except Exception:
+            raise DemistoException('the time_frame format is invalid. Valid formats: %Y-%m-%dT%H:%M:%S or '
+                                   'epoch UNIX timestamp (example: 1651505482)')
+
+
 def convert_datetime_to_epoch_millis(the_time=0):
     return convert_epoch_to_milli(convert_datetime_to_epoch(the_time=the_time))
 
@@ -303,8 +320,8 @@ def create_filter_from_args(args: dict) -> dict:
                 if 'start_time' not in args or 'end_time' not in args:
                     raise DemistoException(
                         'Please provide start_time and end_time arguments when using time_frame as custom.')
-                start_time = int(date_to_timestamp(args.get('start_time')))
-                end_time = int(date_to_timestamp(args.get('start_time')))
+                start_time = convert_time_to_epoch(args.get('start_time'))
+                end_time = convert_time_to_epoch(args.get('start_time'))
                 search_type = 'RANGE'
                 search_value: Union[dict, int] = {
                     'from': start_time,
@@ -313,9 +330,8 @@ def create_filter_from_args(args: dict) -> dict:
 
             # relative time frame
             else:
-                date_time = dateparser.parse(arg_value, settings={'TIMEZONE': 'UTC'})
                 search_type = 'RELATIVE_TIMESTAMP'
-                search_value = int(round(date_time.timestamp()))
+                search_value = convert_time_to_epoch(arg_value)
 
             and_operator_list.append({
                 'SEARCH_FIELD': arg_properties.search_field,
