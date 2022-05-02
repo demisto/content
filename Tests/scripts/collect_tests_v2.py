@@ -32,6 +32,7 @@ class CollectionReason(Enum):
     MARKETPLACE_VERSION_BY_VALUE = 'value of the test `marketplace` field'
     MARKETPLACE_VERSION_SECTION = 'listed under conf.json marketplace-specific section'
     PACK_MATCHES_INTEGRATION = 'pack added as the integration is used in a playbook'
+    PACK_MATCHES_TEST_PLAYBOOK = 'pack added as the test playbook was collected earlier'
 
 
 class DictBased:
@@ -268,6 +269,7 @@ class IdSet(DictFileBased):
 
         self.integration_to_pack = {integration.name: integration.pack for integration in self.integrations}
         self.scripts_to_pack = {script.name: script.pack for script in self.scripts}
+        self.test_playbooks_to_pack = {test.name: test.pack for test in self.test_playbooks}
 
     @property
     def integrations(self) -> Iterable[IdSetItem]:
@@ -384,18 +386,29 @@ class TestCollector(ABC):
         if collected.machines is None and not collected.not_empty:  # todo reconsider
             raise EmptyMachineListException()
 
-        collected |= self._add_packs_from_tested_integrations(collected.tests)
+        collected |= self._add_packs_used(collected.tests)
         return collected
 
-    def _add_packs_from_tested_integrations(self, tests: set[str]):  # only called in TestCollector.collect()
-        logging.info(f'Searching {len(tests)} tests for integrations in test conf, '
-                     f'to make sure their packs are installed.')
+    def _add_packs_used(self, tests: set[str]):
+        return self._add_packs_from_tested_integrations(tests) | self._add_packs_from_test_playbooks(tests)
+
+    def _add_packs_from_tested_integrations(self, tests: set[str]):  # only called in _add_packs_used
+        logging.info(f'searching for integrations used in test playbooks, '
+                     f'to make sure the integration packs are installed')
 
         collected = CollectedTests()
         for test in tests:
             for integration in self.conf.tests_to_integrations.get(test, ()):
                 if pack := self.id_set.integration_to_pack.get(integration, None):
-                    collected.add(None, pack, CollectionReason.PACK_MATCHES_INTEGRATION)
+                    collected.add(None, pack, CollectionReason.PACK_MATCHES_INTEGRATION, add_test=False)
+        return collected
+
+    def _add_packs_from_test_playbooks(self, tests: set[str]):# only called in _add_packs_used
+        logging.info(f'searching for packs under which test playbooks are saved, to make sure they are installed')
+        collected = CollectedTests()
+        for test in tests:
+            if pack := self.id_set.test_playbooks_to_pack[test]:  # todo is okay to fail when tpb is not in id-set?
+                collected.add(None, pack, CollectionReason.PACK_MATCHES_TEST_PLAYBOOK, add_test=False)
         return collected
 
 
@@ -403,7 +416,7 @@ def get_changed_files(branch_name: str):
     repo = Repo()
     repo.git.checkout(branch_name)
 
-    git_util = GitUtil(repo)  # todo provide path
+    git_util = GitUtil(repo)  # todo provide path or use the one above
     prev_ver = MASTER
     if str(git_util.repo.active_branch == MASTER):
         # 2 instead of 1, as gitlab creates an extra commit when merging
