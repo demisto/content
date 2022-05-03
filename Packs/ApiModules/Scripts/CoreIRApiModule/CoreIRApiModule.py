@@ -2227,7 +2227,7 @@ def get_distribution_url_command(client, args):
     return (
         f'[Distribution URL]({url})',
         {
-            f'{args.get("integration_context_brand", "CoreApiModule")}Distribution(val.id == obj.id)': {
+            f'{args.get("integration_context_brand", "CoreApiModule")}.Distribution(val.id == obj.id)': {
                 'id': distribution_id,
                 'url': url
             }
