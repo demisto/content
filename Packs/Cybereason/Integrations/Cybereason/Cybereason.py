@@ -881,9 +881,9 @@ def kill_process_command():
         response = get_remediation_action(malop_guid, machine_name, target_id, remediation_action)
         action_status = get_remediation_action_status(user_name, malop_guid, response, timeout_second, comment)
         if dict_safe_get(action_status, ['Remediation status']) == 'SUCCESS':
-            demisto.results("Kill process remediation action status is: {}".format(dict_safe_get(action_status, ['Remediation status'])))
+            demisto.results("Kill process remediation action status is: {}".format(dict_safe_get(action_status, ['Remediation status'])) + "\n" + "Remediation ID: {}".format(dict_safe_get(action_status, ['Remediation ID'])))
         elif dict_safe_get(action_status, ['Remediation status']) == 'FAILURE':
-            demisto.results("Kill process remediation action status is: {}".format(dict_safe_get(action_status, ['Remediation status'])) + "\n" + "Reason: {}".format(dict_safe_get(action_status, ['Reason'])))
+            demisto.results("Kill process remediation action status is: {}".format(dict_safe_get(action_status, ['Remediation status'])) + "\n" + "Reason: {}".format(dict_safe_get(action_status, ['Reason'])) + "\n" + "Remediation ID: {}".format(dict_safe_get(action_status, ['Remediation ID'])))
     else:
         demisto.results('Machine must be connected to Cybereason in order to perform this action.')
 
@@ -901,9 +901,9 @@ def quarantine_file_command():
         response = get_remediation_action(malop_guid, machine_name, target_id, remediation_action)
         action_status = get_remediation_action_status(user_name, malop_guid, response, timeout_second, comment)
         if dict_safe_get(action_status, ['Remediation status']) == 'SUCCESS':
-            demisto.results("Quarantine file remediation action status is: {}".format(dict_safe_get(action_status, ['Remediation status'])))
+            demisto.results("Quarantine file remediation action status is: {}".format(dict_safe_get(action_status, ['Remediation status'])) + "\n" + "Remediation ID: {}".format(dict_safe_get(action_status, ['Remediation ID'])))
         elif dict_safe_get(action_status, ['Remediation status']) == 'FAILURE':
-            demisto.results("Quarantine file remediation action status is: {}".format(dict_safe_get(action_status, ['Remediation status'])) + "\n" + "Reason: {}".format(dict_safe_get(action_status, ['Reason'])))
+            demisto.results("Quarantine file remediation action status is: {}".format(dict_safe_get(action_status, ['Remediation status'])) + "\n" + "Reason: {}".format(dict_safe_get(action_status, ['Reason'])) + "\n" + "Remediation ID: {}".format(dict_safe_get(action_status, ['Remediation ID'])))
     else:
         demisto.results('Machine must be connected to Cybereason in order to perform this action.')
 
@@ -921,9 +921,9 @@ def unquarantine_file_command():
         response = get_remediation_action(malop_guid, machine_name, target_id, remediation_action)
         action_status = get_remediation_action_status(user_name, malop_guid, response, timeout_second, comment)
         if dict_safe_get(action_status, ['Remediation status']) == 'SUCCESS':
-            demisto.results("Unquarantine file remediation action status is: {}".format(dict_safe_get(action_status, ['Remediation status'])))
+            demisto.results("Unquarantine file remediation action status is: {}".format(dict_safe_get(action_status, ['Remediation status'])) + "\n" + "Remediation ID: {}".format(dict_safe_get(action_status, ['Remediation ID'])))
         elif dict_safe_get(action_status, ['Remediation status']) == 'FAILURE':
-            demisto.results("Unquarantine file remediation action status is: {}".format(dict_safe_get(action_status, ['Remediation status'])) + "\n" + "Reason: {}".format(dict_safe_get(action_status, ['Reason'])))
+            demisto.results("Unquarantine file remediation action status is: {}".format(dict_safe_get(action_status, ['Remediation status'])) + "\n" + "Reason: {}".format(dict_safe_get(action_status, ['Reason'])) + "\n" + "Remediation ID: {}".format(dict_safe_get(action_status, ['Remediation ID'])))
     else:
         demisto.results('Machine must be connected to Cybereason in order to perform this action.')
 
@@ -941,9 +941,9 @@ def block_file_command():
         response = get_remediation_action(malop_guid, machine_name, target_id, remediation_action)
         action_status = get_remediation_action_status(user_name, malop_guid, response, timeout_second, comment)
         if dict_safe_get(action_status, ['Remediation status']) == 'SUCCESS':
-            demisto.results("Block file remediation action status is: {}".format(dict_safe_get(action_status, ['Remediation status'])))
+            demisto.results("Block file remediation action status is: {}".format(dict_safe_get(action_status, ['Remediation status'])) + "\n" + "Remediation ID: {}".format(dict_safe_get(action_status, ['Remediation ID'])))
         elif dict_safe_get(action_status, ['Remediation status']) == 'FAILURE':
-            demisto.results("Block file remediation action status is: {}".format(dict_safe_get(action_status, ['Remediation status'])) + "\n" + "Reason: {}".format(dict_safe_get(action_status, ['Reason'])))
+            demisto.results("Block file remediation action status is: {}".format(dict_safe_get(action_status, ['Remediation status'])) + "\n" + "Reason: {}".format(dict_safe_get(action_status, ['Reason'])) + "\n" + "Remediation ID: {}".format(dict_safe_get(action_status, ['Remediation ID'])))
     else:
         demisto.results('Machine must be connected to Cybereason in order to perform this action.')
 
@@ -961,9 +961,9 @@ def delete_registry_key_command():
         response = get_remediation_action(malop_guid, machine_name, target_id, remediation_action)
         action_status = get_remediation_action_status(user_name, malop_guid, response, timeout_second, comment)
         if dict_safe_get(action_status, ['Remediation status']) == 'SUCCESS':
-            demisto.results("Delete registry key remediation action status is: {}".format(dict_safe_get(action_status, ['Remediation status'])))
+            demisto.results("Delete registry key remediation action status is: {}".format(dict_safe_get(action_status, ['Remediation status'])) + "\n" + "Remediation ID: {}".format(dict_safe_get(action_status, ['Remediation ID'])))
         elif dict_safe_get(action_status, ['Remediation status']) == 'FAILURE':
-            demisto.results("Delete registry key remediation action status is: {}".format(dict_safe_get(action_status, ['Remediation status'])) + "\n" + "Reason: {}".format(dict_safe_get(action_status, ['Reason'])))
+            demisto.results("Delete registry key remediation action status is: {}".format(dict_safe_get(action_status, ['Remediation status'])) + "\n" + "Reason: {}".format(dict_safe_get(action_status, ['Reason'])) + "\n" + "Remediation ID: {}".format(dict_safe_get(action_status, ['Remediation ID'])))
     else:
         demisto.results('Machine must be connected to Cybereason in order to perform this action.')
 
@@ -981,9 +981,9 @@ def kill_prevent_unsuspend_command():
         response = get_remediation_action(malop_guid, machine_name, target_id, remediation_action)
         action_status = get_remediation_action_status(user_name, malop_guid, response, timeout_second, comment)
         if dict_safe_get(action_status, ['Remediation status']) == 'SUCCESS':
-            demisto.results("Kill prevent unsuspend remediation action status is: {}".format(dict_safe_get(action_status, ['Remediation status'])))
+            demisto.results("Kill prevent unsuspend remediation action status is: {}".format(dict_safe_get(action_status, ['Remediation status'])) + "\n" + "Remediation ID: {}".format(dict_safe_get(action_status, ['Remediation ID'])))
         elif dict_safe_get(action_status, ['Remediation status']) == 'FAILURE':
-            demisto.results("Kill prevent unsuspend remediation action status is: {}".format(dict_safe_get(action_status, ['Remediation status'])) + "\n" + "Reason: {}".format(dict_safe_get(action_status, ['Reason'])))
+            demisto.results("Kill prevent unsuspend remediation action status is: {}".format(dict_safe_get(action_status, ['Remediation status'])) + "\n" + "Reason: {}".format(dict_safe_get(action_status, ['Reason'])) + "\n" + "Remediation ID: {}".format(dict_safe_get(action_status, ['Remediation ID'])))
     else:
         demisto.results('Machine must be connected to Cybereason in order to perform this action.')
 
@@ -1001,9 +1001,9 @@ def unsuspend_process_command():
         response = get_remediation_action(malop_guid, machine_name, target_id, remediation_action)
         action_status = get_remediation_action_status(user_name, malop_guid, response, timeout_second, comment)
         if dict_safe_get(action_status, ['Remediation status']) == 'SUCCESS':
-            demisto.results("Unsuspend process remediation action status is: {}".format(dict_safe_get(action_status, ['Remediation status'])))
+            demisto.results("Unsuspend process remediation action status is: {}".format(dict_safe_get(action_status, ['Remediation status'])) + "\n" + "Remediation ID: {}".format(dict_safe_get(action_status, ['Remediation ID'])))
         elif dict_safe_get(action_status, ['Remediation status']) == 'FAILURE':
-            demisto.results("Unsuspend process remediation action status is: {}".format(dict_safe_get(action_status, ['Remediation status'])) + "\n" + "Reason: {}".format(dict_safe_get(action_status, ['Reason'])))
+            demisto.results("Unsuspend process remediation action status is: {}".format(dict_safe_get(action_status, ['Remediation status'])) + "\n" + "Reason: {}".format(dict_safe_get(action_status, ['Reason'])) + "\n" + "Remediation ID: {}".format(dict_safe_get(action_status, ['Remediation ID'])))
     else:
         demisto.results('Machine must be connected to Cybereason in order to perform this action.')
 
@@ -1031,6 +1031,7 @@ def get_remediation_action_status(user_name, malop_guid, response, timeout_secon
     status = dict_safe_get(progress_api_response, ['Remediation status'])
     if status == 'SUCCESS':
         add_comment(malop_guid, comment.encode('utf-8'))
+    progress_api_response["Remediation ID"] = remediation_id
     return progress_api_response
 
 
