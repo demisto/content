@@ -7,25 +7,28 @@ from typing import Any, Dict, Callable, Tuple
 class Client(BaseClient):
     """Client class to interact with CloudFlare WAF API."""
 
-    def __init__(self, credentials: str, account_id: str, proxy: bool , insecure: bool , zone_id: str = None):
+    def __init__(self, credentials: str, account_id: str, proxy: bool, insecure: bool, zone_id: str = None):
         self.account_id = account_id
         self.zone_id = zone_id
         self.base_url = 'https://api.cloudflare.com/client/v4/'
         headers = {'Authorization': f'Bearer {credentials}', 'Content-Type': 'application/json'}
         super().__init__(base_url=self.base_url, headers=headers, proxy=proxy, verify=insecure)
 
-    def cloudflare_waf_firewall_rule_create_request(self, action: str, zone_id: str, description: str = None, products: list = None,
-                                                    paused: bool = None, priority: int = None, ref: str = None,
-                                                    filter_id: int = None, filter_expression: str = None) -> Dict[str, Any]:
+    def cloudflare_waf_firewall_rule_create_request(self, action: str, zone_id: str, description: str = None,
+                                                    products: list = None, paused: bool = None, priority: int = None,
+                                                    ref: str = None, filter_id: int = None,
+                                                    filter_expression: str = None) -> Dict[str, Any]:
         """ Create a new Firewall rule in Cloudflare.
 
         Args:
             description (str, optional): A description of the rule to help identify it. Defaults to None.
-            products (list, optional): List of products to bypass for a request when the bypass action is used. Defaults to None.
+            products (list, optional): List of products to bypass for a request when the bypass action is used.
+                Defaults to None.
             action (str, optional): The rule action. Defaults to None.
             paused (bool, optional): Whether this firewall rule is currently paused. Defaults to None.
             priority (int, optional): The priority of the rule to allow control of processing order. A lower number indicates
-                high priority. If not provided, any rules with a priority will be sequenced before those without. Defaults to None.
+                high priority. If not provided, any rules with a priority will be sequenced before those without.
+                Defaults to None.
             ref (str, optional): Short reference tag to quickly select related rules. Defaults to None.
             filter_id (int, optional): Filter ID (if using existing filter). Required if filter_expression is unspecified.
                 Defaults to None.
@@ -49,9 +52,9 @@ class Client(BaseClient):
             url_suffix=f'zones/{zone_id}/firewall/rules',
             json_data=[params])
 
-    def cloudflare_waf_firewall_rule_update_request(self, rule_id: str, filter_id: str, zone_id: str, action: str, description: str = None,
-                                                    products: list = None, paused: bool = None, priority: int = None,
-                                                    ref: str = None) -> Dict[str, Any]:
+    def cloudflare_waf_firewall_rule_update_request(self, rule_id: str, filter_id: str, zone_id: str, action: str,
+                                                    description: str = None, products: list = None, paused: bool = None,
+                                                    priority: int = None, ref: str = None) -> Dict[str, Any]:
         """ Sets the Firewall rule for the specified rule id.
 
         Args:
@@ -61,7 +64,8 @@ class Client(BaseClient):
             action (str, optional): The rule action. Defaults to None.
             paused (bool, optional): Whether this firewall rule is currently paused. Defaults to None.
             priority (int, optional): The priority of the rule to allow control of processing order. A lower number indicates
-                high priority. If not provided, any rules with a priority will be sequenced before those without. Defaults to None.
+                high priority. If not provided, any rules with a priority will be sequenced before those without.
+                Defaults to None.
             ref (str, optional): Short reference tag to quickly select related rules. Defaults to None.
             filter_id (int, optional): Filter ID (for adding an existing filter). Defaults to None.
 
@@ -159,7 +163,8 @@ class Client(BaseClient):
             url_suffix='zones',
             params=params)
 
-    def cloudflare_waf_filter_create_request(self, expression: str, zone_id: str, ref: str = None, paused: bool = None, description: str = None) -> Dict[str, Any]:
+    def cloudflare_waf_filter_create_request(self, expression: str, zone_id: str, ref: str = None, paused: bool = None,
+                                             description: str = None) -> Dict[str, Any]:
         """ Create a new Filter in Cloudflare.
         Args:
             expression (str, optional): The filter expression to be used. Defaults to None.
@@ -183,8 +188,8 @@ class Client(BaseClient):
             url_suffix=f'zones/{zone_id}/filters',
             json_data=[params])
 
-    def cloudflare_waf_filter_update_request(self, filter_id: str, expression: str, zone_id: str, ref: str = None, paused: bool = None,
-                                             description: str = None) -> Dict[str, Any]:
+    def cloudflare_waf_filter_update_request(self, filter_id: str, expression: str, zone_id: str, ref: str = None,
+                                             paused: bool = None, description: str = None) -> Dict[str, Any]:
         """ Sets the Filter for the specified id.
 
         Args:
@@ -257,7 +262,8 @@ class Client(BaseClient):
             url_suffix=f'zones/{zone_id}/filters',
             params=params)
 
-    def cloudflare_waf_ip_lists_list_request(self, list_id: str = None, page: int = None, page_size: int = None) -> Dict[str, Any]:
+    def cloudflare_waf_ip_lists_list_request(self, list_id: str = None, page: int = None,
+                                             page_size: int = None) -> Dict[str, Any]:
         """ List ip-lists or details of individual list by ID.
 
         Args:
@@ -393,7 +399,7 @@ class Client(BaseClient):
             url_suffix=f'accounts/{self.account_id}/rules/lists/bulk_operations/{operation_id}')
 
 
-def validate_pagination_arguments(page: int = None, page_size: int= None, limit: int= None):
+def validate_pagination_arguments(page: int = None, page_size: int = None, limit: int = None):
     """ Validate pagination arguments according to their default.
 
     Args:
@@ -431,7 +437,7 @@ def pagination(request_command: Callable, args: Dict[str, Any], pagination_args:
 
     page = pagination_args.get('page')
     page_size = pagination_args.get('page_size')
-    limit = pagination_args.get('limit',50)
+    limit = pagination_args.get('limit', 50)
     output = []
     response = []
 
@@ -456,7 +462,7 @@ def pagination(request_command: Callable, args: Dict[str, Any], pagination_args:
     return response, output, pagination_message
 
 
-def ip_list_pagination(response: dict, page: int = None, page_size: int= None, limit: int= None) -> Tuple:
+def ip_list_pagination(response: dict, page: int = None, page_size: int = None, limit: int = None) -> Tuple:
     """ Executing Manual Pagination (using the page and page size arguments)
         or Automatic Pagination (display a number of total results) for the ip-list commands.
 
