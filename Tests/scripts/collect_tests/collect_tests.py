@@ -14,7 +14,8 @@ from packaging.version import Version
 
 from Tests.scripts.collect_tests.constants import MASTER, CONTENT_PATH, DEBUG_ID_SET_PATH, DEBUG_CONF_PATH, \
     IGNORED_FILES, SKIPPED_PACKS
-from Tests.scripts.collect_tests.exceptions import InvalidPackNameException, IgnoredPackException, SkippedPackException
+from Tests.scripts.collect_tests.exceptions import InvalidPackNameException, IgnoredPackException, SkippedPackException, \
+    DeprecatedPackException
 from Tests.scripts.utils import logging_wrapper as logging
 
 git_util = GitUtil()
@@ -25,6 +26,9 @@ class CollectionReason(Enum):
     MARKETPLACE_VERSION_SECTION = 'listed under conf.json marketplace-specific section'
     PACK_MATCHES_INTEGRATION = 'pack added as the integration is used in a playbook'
     PACK_MATCHES_TEST_PLAYBOOK = 'pack added as the test playbook was collected earlier'
+    NIGHTLY_ALL_TESTS__ID_SET = 'collecting all id_set test playbooks for nightly'
+    NIGHTLY_ALL_TESTS__TEST_CONF = 'collecting all test_conf tests for nightly'
+    ALL_ID_SET_PACKS = 'collecting all id_set packs'
 
 
 class DictBased:
@@ -134,7 +138,7 @@ class IdSetItem(DictBased):
     def __init__(self, id_: str, dict_: dict):
         super().__init__(dict_)
         assert (id_field := self['id']) == id_, f'{id_field} does not match key {id_=}'  # todo
-        self.id_ = id_
+        self.id_: str = id_
         self.name: str = self.content['name']
         self.file_path = self.content['file_path']
         self.deprecated = self.get('deprecated') or self.get('hidden')  # hidden for packs, deprecated for content items
@@ -159,104 +163,6 @@ class IdSetItem(DictBased):
     @property
     def tests(self):
         return self.get('tests', ())
-
-
-@dataclass
-class CollectedTests:
-    tests: set[str] = field(default_factory=set)
-    packs: set[str] = field(default_factory=set)
-    machines: Optional[tuple[Machine]] = None  # todo optional?
-
-    @property
-    def not_empty(self):
-        return any((self.tests, self.packs))
-
-    def __or__(self, other: 'CollectedTests') -> 'CollectedTests':
-        self.tests.update(other.tests)
-        self.packs.update(other.packs)
-        if self.machines or other.machines:
-            self.machines = set().union((self.machines or (), other.machines or ())) or None
-        return self  # todo test
-
-    @classmethod
-    def union(cls, collected_tests: tuple['CollectedTests']):
-        result = CollectedTests()
-        for other in collected_tests:
-            result |= other
-        return result
-
-    def add(
-            self,
-            test_name: Optional[str],
-            pack_id: Optional[str],
-            reason: CollectionReason,
-            reason_description: str = '',
-            add_pack: bool = True,
-            add_test: bool = True,
-    ):
-        logging.info(f'collecting {pack_id=} {test_name=}, {reason.value=} {reason_description} '
-                     f'({add_pack=}, {add_test=})')
-
-        if add_test:
-            if not test_name:
-                raise ValueError('cannot add a test without a name')
-            self.tests.add(test_name)
-
-        if add_pack:
-            if not pack_id:
-                raise ValueError('cannot add a pack without an id')
-            self.packs.add(pack_id)
-
-    def add_id_set_item(self,
-                        item: IdSetItem,
-                        reason: CollectionReason,
-                        reason_description: str = '',
-                        add_pack: bool = True,
-                        add_test: bool = True,
-                        ):
-        self.add(item.name, item.pack, reason, reason_description, add_pack, add_test)
-
-    def add_id_set_iterable(self,
-                            items: Iterable[IdSetItem],
-                            reason: CollectionReason,
-                            reason_description: str = '',
-                            add_pack: bool = True,
-                            add_test: bool = True):
-
-        self.add_iterable(tuple(item.name for item in items),
-                          tuple(item.pack for item in items),
-                          reason,
-                          reason_description,
-                          add_pack, add_test)
-
-    def add_iterable(
-            self,
-            tests: Optional[tuple[str]],
-            pack_ids: Optional[tuple[Optional[str]]],
-            reason: CollectionReason,
-            reason_description: str = '',
-            add_pack: bool = True,
-            add_test: bool = True,
-    ):
-        if tests and pack_ids and len(tests) != len(pack_ids):
-            raise ValueError(f'if both have values, {len(tests)=} must be equal to {len(pack_ids)=}')
-        elif tests:
-            pack_ids = (None,) * len(pack_ids)  # so accessors get a None
-        elif pack_ids:
-            tests = (None,) * len(pack_ids)  # so accessors get a None
-
-        for i in range(len(tests)):
-            self.add(tests[i], pack_ids[i], reason, reason_description, add_pack, add_test)
-
-    @staticmethod
-    def validate_pack(pack_name: str):
-        if not pack_name:
-            raise InvalidPackNameException(pack_name)
-        if pack_name in IGNORED_FILES:
-            raise IgnoredPackException(pack_name)
-        if pack_name in SKIPPED_PACKS:
-            raise SkippedPackException(pack_name)
-        # todo
 
 
 class IdSet(DictFileBased):
@@ -315,7 +221,7 @@ class IdSet(DictFileBased):
         return self.id_to_packs.values()
 
     def get_marketplace_v2_tests(self):
-        result = CollectedTests()
+        result = CollectedTests(id_set=self)
         result.add_iterable(self['test_marketplacev2'], None, CollectionReason.MARKETPLACE_VERSION_SECTION,
                             self.marketplace.value)
         return result
@@ -344,6 +250,106 @@ class IdSet(DictFileBased):
                         raise ValueError(f'{id_=} already parsed')
                     result[id_] = item
         return result
+
+
+class CollectedTests:
+    def __init__(self, id_set: IdSet):
+        self.tests: set[str] = set()
+        self.packs: set[str] = set()
+        self.machines: Optional[tuple[Machine]] = None  # todo optional?
+
+        self._id_set = id_set  # used for validations
+
+    @property
+    def not_empty(self):
+        return any((self.tests, self.packs))
+
+    def __or__(self, other: 'CollectedTests') -> 'CollectedTests':
+        self.tests.update(other.tests)
+        self.packs.update(other.packs)
+        if self.machines or other.machines:
+            self.machines = set().union((self.machines or (), other.machines or ())) or None
+        return self  # todo test
+
+    @classmethod
+    def union(cls, collected_tests: tuple['CollectedTests'], id_set: IdSet):
+        result = CollectedTests(id_set)
+        for other in collected_tests:
+            result |= other
+        return result
+
+    def add(
+            self,
+            test_name: Optional[str],
+            pack_id: Optional[str],
+            reason: CollectionReason,
+            reason_description: str = '',
+            add_pack: bool = True,
+            add_test: bool = True,
+    ):
+        logging.info(f'collecting {pack_id=} {test_name=}, {reason.value=} {reason_description} '
+                     f'({add_pack=}, {add_test=})')
+
+        if add_test:
+            if not test_name:
+                raise ValueError('cannot add a test without a name')
+            self.tests.add(test_name)
+
+        if add_pack:
+            self._validate_pack(pack_id)
+            self.packs.add(pack_id)
+
+    def add_id_set_item(self,
+                        item: IdSetItem,
+                        reason: CollectionReason,
+                        reason_description: str = '',
+                        add_pack: bool = True,
+                        add_test: bool = True,
+                        ):
+        self.add(item.name, item.pack, reason, reason_description, add_pack, add_test)
+
+    def add_id_set_iterable(self,
+                            items: Iterable[IdSetItem],
+                            reason: CollectionReason,
+                            reason_description: str = '',
+                            add_pack: bool = True,
+                            add_test: bool = True):
+
+        self.add_iterable(tuple(item.name for item in items),
+                          tuple(item.pack for item in items),
+                          reason,
+                          reason_description,
+                          add_pack, add_test)
+
+    def add_iterable(
+            self,
+            tests: Optional[tuple[str]],
+            pack_ids: Optional[tuple[Optional[str]]],
+            reason: CollectionReason,
+            reason_description: str = '',
+            add_pack: bool = True,
+            add_test: bool = True,
+    ):
+        if tests and pack_ids and len(tests) != len(pack_ids):
+            raise ValueError(f'if both have values, {len(tests)=} must be equal to {len(pack_ids)=}')
+        elif tests:
+            pack_ids = (None,) * len(pack_ids)  # so accessors get a None
+        elif pack_ids:
+            tests = (None,) * len(pack_ids)  # so accessors get a None
+
+        for i in range(len(tests)):
+            self.add(tests[i], pack_ids[i], reason, reason_description, add_pack, add_test)
+
+    def _validate_pack(self, pack: str) -> None:
+        """ raises InvalidPackException if the pack name is not valid."""
+        if not pack:
+            raise InvalidPackNameException(pack)
+        if pack in IGNORED_FILES:
+            raise IgnoredPackException(pack)
+        if pack in SKIPPED_PACKS:
+            raise SkippedPackException(pack)
+        if self._id_set.id_to_packs[pack].deprecated:  # todo safer access?
+            raise DeprecatedPackException(pack)
 
 
 def to_tuple(value: Optional[str | list]) -> Optional[tuple]:
@@ -426,7 +432,7 @@ class TestCollector(ABC):
     def _add_packs_from_tested_integrations(self, tests: set[str]):  # only called in _add_packs_used
         logging.info(f'searching for integrations used in test playbooks, '
                      f'to make sure the integration packs are installed')
-        collected = CollectedTests()
+        collected = CollectedTests(self.id_set)
         for test in tests:
             for integration in self.conf.tests_to_integrations.get(test, ()):
                 if pack := self.id_set.integration_to_pack.get(integration, None):
@@ -435,7 +441,7 @@ class TestCollector(ABC):
 
     def _add_packs_from_test_playbooks(self, tests: set[str]):  # only called in _add_packs_used
         logging.info(f'searching for packs under which test playbooks are saved, to make sure they are installed')
-        collected = CollectedTests()
+        collected = CollectedTests(self.id_set)
         for test in tests:
             if pack := self.id_set.test_playbooks_to_pack[test]:  # todo is okay to fail when tpb is not in id-set?
                 collected.add(None, pack, CollectionReason.PACK_MATCHES_TEST_PLAYBOOK, add_test=False)
@@ -475,18 +481,22 @@ class BranchTestCollector(TestCollector):
 
 class NightlyTestCollector(TestCollector):
     def _collect(self) -> CollectedTests:
+        tests_by_marketplace = self._tests_matching_marketplace_value()
+        packs_by_marketplace = self._packs_matching_marketplace_value()
+
         collected: list[CollectedTests] = [
-            self.tests_matching_marketplace_value(),
-            self.packs_matching_marketplace_value()
+            tests_by_marketplace,
+            packs_by_marketplace,
         ]
 
         if self.marketplace == MarketplaceVersions.MarketplaceV2:
             collected.append(self.id_set.get_marketplace_v2_tests())
+        # todo is there a similar list for the marketplacev1?
 
         return CollectedTests.union(*collected)
 
-    def tests_matching_marketplace_value(self) -> CollectedTests:
-        result = CollectedTests()
+    def _tests_matching_marketplace_value(self) -> CollectedTests:
+        result = CollectedTests(self.id_set)
         marketplace_string = self.marketplace.value  # todo is necessary?
         logging.info(f'collecting test playbooks by their marketplace field, searching for {marketplace_string}')
 
@@ -496,9 +506,11 @@ class NightlyTestCollector(TestCollector):
 
         return result
 
-    def packs_matching_marketplace_value(self) -> CollectedTests:
-        collected = CollectedTests()
+    def _packs_matching_marketplace_value(self) -> CollectedTests:
+        # todo make sure we have a validation, that pack_metadata.marketplaces includes
+        collected = CollectedTests(self.id_set)
         marketplace_string = self.marketplace.value
+
         packs: tuple[str] = tuple(
             pack.id_ for pack in self.id_set.packs if marketplace_string in (pack.marketplaces or ())
         )
