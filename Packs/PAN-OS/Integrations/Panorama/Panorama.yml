@@ -8003,6 +8003,134 @@ script:
     - contextPath: PANOS.ConfigurationHygiene.Result.name
       description: The affected object name
       type: String
+  - arguments:
+    - default: false
+      description: Dictionary of Hygiene issue, from a hygiene check command. Can
+        be a list.
+      isArray: true
+      name: issue
+      required: true
+      secret: false
+    deprecated: false
+    description: null
+    name: pan-os-hygiene-fix-log-forwarding
+    outputs:
+    - contextPath: PANOS.ConfigurationHygieneFix.hostid
+      type: String
+    - contextPath: PANOS.ConfigurationHygieneFix.container_name
+      description: What parent container (DG, Template, VSYS) this object belongs
+        to.
+      type: String
+    - contextPath: PANOS.ConfigurationHygieneFix.issue_code
+      description: The shorthand code for the issue
+      type: String
+    - contextPath: PANOS.ConfigurationHygieneFix.description
+      description: Human readable description of issue
+      type: String
+    - contextPath: PANOS.ConfigurationHygieneFix.name
+      description: The affected object name
+      type: String
+  - arguments:
+    - default: false
+      description: Dictionary of Hygiene issue, from a hygiene check command. Can
+        be a list.
+      isArray: true
+      name: issue
+      required: true
+      secret: false
+    - default: false
+      description: Name of log forwarding profile to set.
+      isArray: false
+      name: log_forwarding_profile_name
+      required: true
+      secret: false
+    deprecated: false
+    description: Fixes security zones that are configured without a valid log forwarding
+      profile.
+    name: pan-os-hygiene-fix-security-zone-log-settings
+    outputs:
+    - contextPath: PANOS.ConfigurationHygieneFix.hostid
+      type: String
+    - contextPath: PANOS.ConfigurationHygieneFix.container_name
+      description: What parent container (DG, Template, VSYS) this object belongs
+        to.
+      type: String
+    - contextPath: PANOS.ConfigurationHygieneFix.issue_code
+      description: The shorthand code for the issue
+      type: String
+    - contextPath: PANOS.ConfigurationHygieneFix.description
+      description: Human readable description of issue
+      type: String
+    - contextPath: PANOS.ConfigurationHygieneFix.name
+      description: The affected object name
+      type: String
+  - arguments:
+    - default: false
+      description: Dictionary of Hygiene issue, from a hygiene check command. Can
+        be list.
+      isArray: true
+      name: issue
+      required: true
+      secret: false
+    - default: false
+      description: Name of log forwarding profile to use as log setting.
+      isArray: false
+      name: log_forwarding_profile_name
+      required: true
+      secret: false
+    deprecated: false
+    description: Fixed security rules that have incorrect log settings by adding a
+      log forwarding profile and setting
+    name: pan-os-hygiene-fix-security-rule-log-settings
+    outputs:
+    - contextPath: PANOS.ConfigurationHygieneFix.hostid
+      type: String
+    - contextPath: PANOS.ConfigurationHygieneFix.container_name
+      description: What parent container (DG, Template, VSYS) this object belongs
+        to.
+      type: String
+    - contextPath: PANOS.ConfigurationHygieneFix.issue_code
+      description: The shorthand code for the issue
+      type: String
+    - contextPath: PANOS.ConfigurationHygieneFix.description
+      description: Human readable description of issue
+      type: String
+    - contextPath: PANOS.ConfigurationHygieneFix.name
+      description: The affected object name
+      type: String
+  - arguments:
+    - default: false
+      description: Dictionary of Hygiene issue, from a hygiene check command
+      isArray: true
+      name: issue
+      required: true
+      secret: false
+    - default: false
+      description: Name of Security profile group to use as log setting.
+      isArray: false
+      name: security_profile_group_name
+      required: true
+      secret: false
+    deprecated: false
+    description: Fixed security rules that have incorrect log settings by adding a
+      log forwarding profile and setting
+    name: pan-os-hygiene-fix-security-rule-profile-settings
+    outputs:
+    - contextPath: PANOS.ConfigurationHygieneFix.hostid
+      type: String
+    - contextPath: PANOS.ConfigurationHygieneFix.container_name
+      description: What parent container (DG, Template, VSYS) this object belongs
+        to.
+      type: String
+    - contextPath: PANOS.ConfigurationHygieneFix.issue_code
+      description: The shorthand code for the issue
+      type: String
+    - contextPath: PANOS.ConfigurationHygieneFix.description
+      description: Human readable description of issue
+      type: String
+    - contextPath: PANOS.ConfigurationHygieneFix.name
+      description: The affected object name
+      type: String
   dockerimage: demisto/pan-os-python:1.0.0.29113
   feed: false
   isfetch: false
