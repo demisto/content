@@ -620,12 +620,13 @@ def list_members_command(client, args):
 def convert_members_date_type(members):
     new_ls = []
     for member in members:
-        if isinstance(updated_at:=member['UpdatedAt'], datetime):
-            member['UpdatedAt'] = updated_at.strftime('%Y-%m-%d %H:%M:%S')
+        if isinstance(updated_at:=member.get('UpdatedAt'), datetime):
+            member['UpdatedAt'] = updated_at.isoformat()
         if isinstance(invited_at:=member['InvitedAt'], datetime):
-            member['InvitedAt'] = invited_at.strftime('%Y-%m-%d %H:%M:%S')
+            member['InvitedAt'] = invited_at.isoformat()
         new_ls.append(member)
     return new_ls
+
 
 def update_findings_command(client, args):
     kwargs = {
