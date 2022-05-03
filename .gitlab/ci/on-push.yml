@@ -257,7 +257,14 @@ generate-report:
   extends:
     - .default-job-settings
   script:
-    - python3 ./Tests/scripts/generate_readable_build_report.py
+    - python3 ./Tests/scripts/generate_readable_build_report.py report.xml
+  artifacts:
+    when: always
+    paths:
+      - report.xml
+    reports:
+      junit: report.xml
+
 
 
 slack-notify-nightly-build:

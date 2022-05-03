@@ -1,6 +1,7 @@
+import argparse
 import json
 import os
-from junit_xml import TestSuite, TestCase
+from junit_xml import TestSuite, TestCase, to_xml_report_file
 from demisto_sdk.commands.test_content.execute_test_content import _add_pr_comment
 from demisto_sdk.commands.test_content.execute_test_content import ParallelLoggingManager
 
@@ -40,7 +41,8 @@ def create_pr_comment(validate_pr_comment, unit_tests_pr_comment) -> str:
 
 def build_summary_report(validate_summary, unit_tests_summary, create_instances_summary,server_6_1_summary,
                          server_6_2_summary,
-                         server_master_summary):
+                         server_master_summary,
+                         output_file):
     json_summary = {
         'Validate': validate_summary,
         'Unit tests': unit_tests_summary,
@@ -55,8 +57,8 @@ def build_summary_report(validate_summary, unit_tests_summary, create_instances_
         for failing_validation in failing_validations:
             test_cases.append(TestCase('Validate', f'validate.{file}', stdout='I am stdout!', stderr=failing_validation))
     ts = TestSuite("Validate", test_cases)
-    with open('output.xml', 'a') as f:
-        TestSuite.to_file(f, [ts], prettyprint=False)
+    with open(output_file, 'a') as f:
+        to_xml_report_file(f, [ts], prettyprint=False)
 
 
 def test_get_failing_ut():
@@ -97,7 +99,14 @@ def test_get_failing_create_instances():
     return 'pr_message', create_instances_summary
 
 
-def generate_build_report(logging_manager):
+def options_handler():
+    parser = argparse.ArgumentParser(description='Parser for slack_notifier args')
+    parser.add_argument('-o', '--output', help='The gitlab server url')
+    options = parser.parse_args()
+
+    return options
+
+def generate_build_report(logging_manager, output_file):
     validate_pr_comment, validate_summary = test_get_failing_validations()
     unit_tests_pr_comment, unit_tests_summary = test_get_failing_ut()
     pr_comment = create_pr_comment(validate_pr_comment, unit_tests_pr_comment)
@@ -107,12 +116,14 @@ def generate_build_report(logging_manager):
                          create_instances_summary = {},
                          server_6_1_summary = {},
                          server_6_2_summary = {},
-                         server_master_summary = {})
+                         server_master_summary = {}, output_file=output_file)
 
 
 def main():
+    options = options_handler()
+    output_file = options.output
     logging_manager = ParallelLoggingManager('generate_build_report.log')
-    generate_build_report(logging_manager)
+    generate_build_report(logging_manager, output_file)
 
 
 if __name__ == "__main__":
