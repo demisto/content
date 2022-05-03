@@ -1296,6 +1296,51 @@ def mock_bad_vulnerability_profile():
     return vulnerability_profile
 
 
+def mock_good_spyware_profile():
+    from Panorama import AntiSpywareProfile, AntiSpywareProfileRule
+    antispyware_profile = AntiSpywareProfile()
+    antispyware_profile.children = [
+        AntiSpywareProfileRule(
+            severity=["critical"],
+            is_reset_both=True
+        ),
+        AntiSpywareProfileRule(
+            severity=["high"],
+            is_reset_both=True
+        ),
+        AntiSpywareProfileRule(
+            severity=["medium"],
+            is_alert=True
+        ),
+        AntiSpywareProfileRule(
+            severity=["low"],
+            is_alert=True
+        ),
+    ]
+
+    return antispyware_profile
+
+
+def mock_bad_spyware_profile():
+    from Panorama import AntiSpywareProfile, AntiSpywareProfileRule
+    antispyware_profile = AntiSpywareProfile()
+    antispyware_profile.children = [
+        AntiSpywareProfileRule(
+            severity=["critical"],
+            is_reset_both=True
+        ),
+        AntiSpywareProfileRule(
+            severity=["high"],
+            is_reset_both=True
+        ),
+        AntiSpywareProfileRule(
+            severity=["medium"],
+            is_alert=True
+        )
+    ]
+
+    return antispyware_profile
+
 @pytest.fixture
 def mock_topology(mock_panorama, mock_firewall):
     from Panorama import Topology
@@ -1847,3 +1892,19 @@ class TestHygieneFunctions:
         result = HygieneLookups.check_vulnerability_profiles(mock_topology)
         # Should return one issue, as no Vulnerability profile matches.
         assert len(result.result_data) == 1
+
+    @patch("Panorama.Template.refreshall", return_value=[])
+    @patch("Panorama.Vsys.refreshall", return_value=[])
+    @patch("Panorama.DeviceGroup.refreshall", return_value=mock_device_groups())
+    def test_check_spyware_profiles(self, _, __, ___, mock_topology):
+        """
+        Test the Hygiene Configuration lookups can validate the Spyware profiles
+        """
+        from Panorama import HygieneLookups, AntiSpywareProfile, BestPractices
+        AntiSpywareProfile.refreshall = MagicMock(
+            return_value=[mock_good_spyware_profile(), mock_bad_spyware_profile()]
+        )
+
+        # Check when a good profile exists - should return no results
+        result = HygieneLookups.check_spyware_profiles(mock_topology)
+        assert not result.result_data

@@ -7344,7 +7344,7 @@ class OpCommandError(Exception):
 
 # Best practices
 class BestPractices:
-    SPYWARE_ALERT_THRESHOLD = ["medium, low"]
+    SPYWARE_ALERT_THRESHOLD = ["medium", "low"]
     SPYWARE_BLOCK_SEVERITIES = ["critical", "high"]
     VULNERABILITY_ALERT_THRESHOLD = ["medium", "low"]
     VULNERABILITY_BLOCK_SEVERITIES = ["critical", "high"]
@@ -9088,7 +9088,6 @@ class HygieneLookups:
                 is_blocked = any(block_actions)
                 is_alert = any(alert_actions)
                 for rule_severity in rule.severity:
-
                     # If the block severities are blocked
                     if is_blocked and rule_severity in block_severities:
                         block_severities.remove(rule_severity)
