@@ -610,12 +610,20 @@ def list_members_command(client, args):
     elif args.get('raw_json') is not None and kwargs:
         return_error("Please remove other arguments before using 'raw-json'.")
     response = client.list_members(**kwargs)
+    response['Members'] = convert_members_date_type(response.get('Members', []))
     outputs = {'AWS-SecurityHub': response}
     del response['ResponseMetadata']
-    table_header = 'AWS SecurityHub ListMembers'
+    table_header = 'AWS SecurityHub ListMembers' 
     human_readable = tableToMarkdown(table_header, response.get('Members', []))
     return human_readable, outputs, response
 
+def convert_members_date_type(members):
+    new_ls = []
+    for member in members:
+        member['UpdatedAt'] = member['UpdatedAt'].strftime('%Y-%m-%d %H:%M:%S')
+        member['InvitedAt'] = member['InvitedAt'].strftime('%Y-%m-%d %H:%M:%S')
+        new_ls.append(member)
+    return new_ls
 
 def update_findings_command(client, args):
     kwargs = {
