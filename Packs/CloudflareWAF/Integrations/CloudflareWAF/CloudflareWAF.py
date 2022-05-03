@@ -7,7 +7,7 @@ from typing import Any, Dict, Callable, Tuple
 class Client(BaseClient):
     """Client class to interact with CloudFlare WAF API."""
 
-    def __init__(self, credentials: str, account_id: str, proxy: bool, insecure: bool, zone_id: str = None):
+    def __init__(self, credentials: str, account_id: str, proxy: bool , insecure: bool , zone_id: str = None):
         self.account_id = account_id
         self.zone_id = zone_id
         self.base_url = 'https://api.cloudflare.com/client/v4/'
@@ -126,7 +126,7 @@ class Client(BaseClient):
             url_suffix=f'zones/{zone_id}/firewall/rules',
             params=params)
 
-    def cloudflare_waf_zone_list_request(self, args: dict, page: int = None, page_size: int = None) -> Dict[str, Any]:
+    def cloudflare_waf_zone_list_request(self, args: dict = {}, page: int = None, page_size: int = None) -> Dict[str, Any]:
         """ List account's zones or details of individual zone by ID.
 
         Args:
@@ -393,7 +393,7 @@ class Client(BaseClient):
             url_suffix=f'accounts/{self.account_id}/rules/lists/bulk_operations/{operation_id}')
 
 
-def validate_pagination_arguments(page: int, page_size: int, limit: int):
+def validate_pagination_arguments(page: int = None, page_size: int= None, limit: int= None):
     """ Validate pagination arguments according to their default.
 
     Args:
@@ -417,8 +417,7 @@ def validate_pagination_arguments(page: int, page_size: int, limit: int):
             raise ValueError('limit argument must be greater than 5.')
 
 
-@logger
-def pagination(request_command: Callable, args: list, pagination_args: dict) -> dict:
+def pagination(request_command: Callable, args: Dict[str, Any], pagination_args: Dict[str, Any]) -> Tuple:
     """ Executing Manual Pagination (using the page and page size arguments)
         or Automatic Pagination (display a number of total results).
     Args:
@@ -432,7 +431,7 @@ def pagination(request_command: Callable, args: list, pagination_args: dict) -> 
 
     page = pagination_args.get('page')
     page_size = pagination_args.get('page_size')
-    limit = pagination_args.get('limit')
+    limit = pagination_args.get('limit',50)
     output = []
     response = []
 
@@ -457,7 +456,7 @@ def pagination(request_command: Callable, args: list, pagination_args: dict) -> 
     return response, output, pagination_message
 
 
-def ip_list_pagination(response: dict, page: int, page_size: int, limit: int) -> dict:
+def ip_list_pagination(response: dict, page: int = None, page_size: int= None, limit: int= None) -> Tuple:
     """ Executing Manual Pagination (using the page and page size arguments)
         or Automatic Pagination (display a number of total results) for the ip-list commands.
 
@@ -513,6 +512,7 @@ def cloudflare_waf_firewall_rule_create_command(client: Client, args: Dict[str, 
         filter_id=filter_id, filter_expression=filter_expression)
 
     output = response['result']
+    print(response)
     firewall_rule_output = output[0]
 
     firewall_rule = [{'id': dict_safe_get(firewall_rule_output, ['id']),
@@ -1088,7 +1088,7 @@ def cloudflare_waf_get_operation_command(client: Client, operation_id) -> Comman
     )
 
 
-def test_module(client: Client) -> None:
+def test_module(client: Client):
     try:
         client.cloudflare_waf_zone_list_request()
     except DemistoException as e:
@@ -1099,14 +1099,14 @@ def test_module(client: Client) -> None:
     return 'ok'
 
 
-def scheduled_commands(operation_id: str, interval: int, timeout: int, cmd: Callable, args: Dict[str, Any]) -> ScheduledCommand:
+def scheduled_commands(operation_id: str, interval: int, timeout: int, cmd: str, args: Dict[str, Any]) -> ScheduledCommand:
     """ Build scheduled command if operation status is not completed.
 
     Args:
         operation_id (str): The command operation ID.
         interval (int): _description_
         timeout (int): _description_
-        cmd (Callable): The command to execute.
+        cmd (Callable): The command name to execute.
         args (Dict[str, Any]): Command arguments from XSOAR.
 
     Returns:
@@ -1139,8 +1139,8 @@ def run_polling_command(client: Client, cmd: str, command_function: Callable, ar
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
     ScheduledCommand.raise_error_if_not_supported()
-    interval = arg_to_number(args.get('interval'), 10)
-    timeout = arg_to_number(args.get('timeout'), 60)
+    interval = arg_to_number(args.get('interval', 10))
+    timeout = arg_to_number(args.get('timeout', 60))
 
     if 'operation_id' not in args:
         command_results = command_function(client, args)
@@ -1170,8 +1170,8 @@ def main() -> None:
     credentials = params.get('credentials', {}).get('identifier')
     account_id = params.get('account_id', {}).get('identifier')
     zone_id = params.get('zone_id', {}).get('identifier')
-    proxy = params.get('proxy')
-    insecure = params.get('insecure')
+    proxy = argToBoolean(params.get('proxy', False))
+    insecure = argToBoolean(params.get('insecure', True))
 
     polling = args.get('polling')
 
