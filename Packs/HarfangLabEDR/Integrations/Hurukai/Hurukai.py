@@ -1651,7 +1651,6 @@ def hunt_search_hash(client, args):
     else:
         data = client.data_hash_search(filehash=filehash)
         prefetchs = []
-        contextData = []
         curr_running = False
         prev_runned = False
 
@@ -1664,17 +1663,16 @@ def hunt_search_hash(client, args):
             })
 
             outputs = {
-                    'hash': filehash,
-                    'curr_running': 0,
-                    'prev_runned': 0
-                    }
+                'hash': filehash,
+                'curr_running': 0,
+                'prev_runned': 0
+            }
             results.append(CommandResults(
-                outputs_prefix = 'Harfanglab.Hash',
-                outputs_key_field = 'hash',
-                outputs = outputs,
-                readable_output = tableToMarkdown(f'Hash search results',outputs) 
-                ))
-
+                outputs_prefix='Harfanglab.Hash',
+                outputs_key_field='hash',
+                outputs=outputs,
+                readable_output=tableToMarkdown('Hash search results', outputs)
+            ))
 
         for x in data['data']:
             if x['processCount'] > 0:
@@ -1689,16 +1687,16 @@ def hunt_search_hash(client, args):
             })
 
             outputs = {
-                    'hash': x['title'],
-                    'curr_running': x['processCount'],
-                    'prev_runned': x['telemetryProcessCount']
-                    }
+                'hash': x['title'],
+                'curr_running': x['processCount'],
+                'prev_runned': x['telemetryProcessCount']
+            }
             results.append(CommandResults(
-                outputs_prefix = 'Harfanglab.Hash',
-                outputs_key_field = 'hash',
-                outputs = outputs,
-                readable_output = tableToMarkdown(f'Hash search results',outputs) 
-                ))
+                outputs_prefix='Harfanglab.Hash',
+                outputs_key_field='hash',
+                outputs=outputs,
+                readable_output=tableToMarkdown('Hash search results', outputs)
+            ))
 
         return_results(results)
 
