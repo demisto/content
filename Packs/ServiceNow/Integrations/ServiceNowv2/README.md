@@ -2063,6 +2063,254 @@ Get remote data from a remote incident. This method does not update the current 
 
 There is no context output for this command.
 
+### servicenow-get-tasks-for-co
+***
+gets the tasks associated to change request
+
+
+#### Base Command
+
+`servicenow-get-tasks-for-co`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | ID of the change request. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| ServiceNow.Tasks.ID | String | Task ID | 
+| ServiceNow.Tasks.Description | Unknown | Description of task | 
+| ServiceNow.Tasks.Name | Unknown | Name of task | 
+| ServiceNow.Tasks.State | Unknown | state of task | 
+
+#### Command example
+```!servicenow-get-tasks-for-co id="1234"```
+#### Context Example
+```json
+{
+    "ServiceNow": {
+        "Tasks": {
+            "ServiceNow.Tasks(val.ID===obj.ID)": [
+                {
+                    "Description": "test",
+                    "ID": "1234",
+                    "Name": "CTASK0010007",
+                    "State": "1 - New"
+                }
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### ServiceNow Catalog Items
+>|ID|Name|State|Description|
+>|---|---|---|---|
+>| 1234 | CTASK0010007 | 1 - New | test |
+
+### servicenow-create-co-from-template
+***
+Create a change request from a template.
+
+
+#### Base Command
+
+`servicenow-create-co-from-template`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| template | Template for creating a standard change request. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| ServiceNow.Ticket.ID | Unknown | ServiceNow ticket ID. | 
+| ServiceNow.Ticket.OpenedBy | Unknown | ServiceNow ticket opener ID. | 
+| ServiceNow.Ticket.CreatedOn | Unknown | ServiceNow ticket creation date. | 
+| ServiceNow.Ticket.Assignee | Unknown | ServiceNow ticket assignee ID. | 
+| ServiceNow.Ticket.State | Unknown | ServiceNow ticket state. | 
+| ServiceNow.Ticket.Summary | Unknown | ServiceNow ticket short summary. | 
+| ServiceNow.Ticket.Number | Unknown | ServiceNow ticket number. | 
+| ServiceNow.Ticket.Active | Unknown | ServiceNow ticket active. | 
+| ServiceNow.Ticket.AdditionalComments | Unknown | ServiceNow ticket comments. | 
+| ServiceNow.Ticket.Priority | Unknown | ServiceNow ticket priority. | 
+| ServiceNow.Ticket.OpenedAt | Unknown | ServiceNow ticket opening time. | 
+| ServiceNow.Ticket.ResolvedBy | Unknown | ServiceNow ticket resolver ID. | 
+| ServiceNow.Ticket.CloseCode | Unknown | ServiceNow ticket close code. | 
+
+#### Command example
+```!servicenow-create-co-from-template template=1234```
+#### Context Example
+```json
+{
+    "ServiceNow": {
+        "Ticket": {
+            "ServiceNow.Ticket(val.ID===obj.ID)": {
+                "Active": {
+                    "display_value": "true",
+                    "value": true
+                },
+                "AdditionalComments": {
+                    "display_value": "",
+                    "value": ""
+                },
+                "CloseCode": {
+                    "display_value": "",
+                    "value": ""
+                },
+                "CreatedOn": {
+                    "display_value": "03/05/2022 08:17:00",
+                    "display_value_internal": "2022-05-03 08:17:00",
+                    "value": "2022-05-03 15:17:00"
+                },
+                "Creator": "1234",
+                "ID": {
+                    "display_value": "1234",
+                    "value": "1234"
+                },
+                "Number": {
+                    "display_value": "CHG001234",
+                    "value": "CHG001234"
+                },
+                "OpenedAt": {
+                    "display_value": "03/05/2022 08:17:00",
+                    "display_value_internal": "2022-05-03 08:17:00",
+                    "value": "2022-05-03 15:17:00"
+                },
+                "OpenedBy": "1234",
+                "Priority": [
+                    "4 - Low"
+                ],
+                "State": {
+                    "display_value": "New",
+                    "value": -5
+                },
+                "Summary": {
+                    "display_value": "Add network switch to cabinet",
+                    "value": "Add network switch to cabinet"
+                }
+            },
+            "Ticket(val.ID===obj.ID)": {
+                "Active": {
+                    "display_value": "true",
+                    "value": true
+                },
+                "AdditionalComments": {
+                    "display_value": "",
+                    "value": ""
+                },
+                "CloseCode": {
+                    "display_value": "",
+                    "value": ""
+                },
+                "CreatedOn": {
+                    "display_value": "03/05/2022 08:17:00",
+                    "display_value_internal": "2022-05-03 08:17:00",
+                    "value": "2022-05-03 15:17:00"
+                },
+                "Creator": "1234",
+                "ID": {
+                    "display_value": "1234",
+                    "value": "1234"
+                },
+                "Number": {
+                    "display_value": "CHG001234",
+                    "value": "CHG001234"
+                },
+                "OpenedAt": {
+                    "display_value": "03/05/2022 08:17:00",
+                    "display_value_internal": "2022-05-03 08:17:00",
+                    "value": "2022-05-03 15:17:00"
+                },
+                "OpenedBy": "6b0e49021b158150042611b4bd4bcb5e",
+                "Priority": [
+                    "4 - Low"
+                ],
+                "State": {
+                    "display_value": "New",
+                    "value": -5
+                },
+                "Summary": {
+                    "display_value": "Add network switch to cabinet",
+                    "value": "Add network switch to cabinet"
+                }
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### ServiceNow ticket was created successfully.
+>|System ID|Number|Impact|Urgency|Priority|State|Created On|Created By|Active|Description|Opened At|Short Description|
+>|---|---|---|---|---|---|---|---|---|---|---|---|
+>| 1234 | CHG001234 | 3 - Ministry | 3 - Low | 4 - Low | -5 - New | 2022-05-03 15:17:00 | admin_cnt_test_Jan2022-01 | true | This standard change template describes adding a new network switch to a datacenter cabinet | 2022-05-03 15:17:00 | Add network switch to cabinet |
+
+### servicenow-generic-api-call
+***
+Generic call to ServiceNow api
+
+
+#### Base Command
+
+`servicenow-generic-api-call`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| method | action to be performed on path. Possible values are: GET, POST, PATCH, DELETE. Default is 0. | Required | 
+| path | the API path starting with forward slash (/). | Required | 
+| body | json to send in body. | Optional | 
+| headers | json of headers to add. | Optional | 
+| sc_api | Service Catalog Call. Possible values are: true, false. Default is false. | Optional | 
+| cr_api | Change Request Call. Possible values are: true, false. Default is false. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| ServiceNow.Generic.Response | string | Generic response to servicenow api | 
+
+#### Command example
+```!servicenow-generic-api-call method=GET path="/table/sn_cmdb_workspace_cmdb_ci_demo"```
+#### Context Example
+```json
+{
+    "ServiceNow": {
+        "Generic": {
+            "Response": {
+                "result": [
+                    {
+                        "sys_created_by": "admin_test_Nov2020-01",
+                        "sys_created_on": "2021-02-13 13:36:55",
+                        "sys_id": "1234",
+                        "sys_mod_count": "0",
+                        "sys_tags": "",
+                        "sys_updated_by": "admin_test_Nov2020-01",
+                        "sys_updated_on": "2021-02-13 13:36:55"
+                    }
+                ]
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>Request for GET method is successful
+
 
 ### Troubleshooting
 
