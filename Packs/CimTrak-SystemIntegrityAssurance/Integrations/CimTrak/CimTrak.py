@@ -1,23 +1,5 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-"""Cimtrak Integration for Cortex XSOAR (aka Demisto)
-
-
- Cimcor, Inc ("COMPANY")
- Copyright (c) 2022, Cimcor, Inc., All Rights Reserved.
-
- NOTICE: All information contained herein is, and remains the property of COMPANY.
- The intellectual and technical concepts contained herein are proprietary to COMPANY
- and may be covered by U.S. and Foreign Patents, patents in process, and are protected
- by trade secret or copyright law. ANY REPRODUCTION, MODIFICATION, DISTRIBUTION,
- PUBLIC PERFORMANCE, OR PUBLIC DISPLAY OF OR THROUGH USE OF THIS SOURCE CODE WITHOUT
- THE EXPRESS WRITTEN CONSENT OF COMPANY IS STRICTLY PROHIBITED, AND IN VIOLATION OF
- APPLICABLE LAWS AND INTERNATIONAL TREATIES. THE RECEIPT OR POSSESSION OF THIS SOURCE
- CODE AND/OR RELATED INFORMATION DOES NOT CONVEY OR IMPLY ANY RIGHTS TO REPRODUCE,
- DISCLOSE OR DISTRIBUTE ITS CONTENTS, OR TO MANUFACTURE, USE, OR SELL ANYTHING THAT
- IT MAY DESCRIBE, IN WHOLE OR IN PART.
-
-"""
 import urllib3
 import dateparser
 import traceback
