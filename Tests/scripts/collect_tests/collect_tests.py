@@ -1,9 +1,8 @@
-import os
 import sys
 from abc import ABC, abstractmethod
 from dataclasses import field, dataclass
 from enum import Enum
-from itertools import chain, islice
+from itertools import islice
 from pathlib import Path
 from typing import Any, Optional, Iterable
 
@@ -13,19 +12,12 @@ from demisto_sdk.commands.common.tools import get_file
 from git import Repo
 from packaging.version import Version
 
+from Tests.scripts.collect_tests.constants import MASTER, CONTENT_PATH, DEBUG_ID_SET_PATH, DEBUG_CONF_PATH, \
+    IGNORED_FILES, SKIPPED_PACKS
+from Tests.scripts.collect_tests.exceptions import InvalidPackNameException, IgnoredPackException, SkippedPackException
 from Tests.scripts.utils import logging_wrapper as logging
 
 git_util = GitUtil()
-
-MASTER = 'master'
-CONTENT_PATH = Path(__file__).absolute().parent.parent
-
-ARTIFACTS_PATH = Path(os.getenv('ARTIFACTS_FOLDER', './artifacts'))
-ARTIFACTS_ID_SET_PATH = ARTIFACTS_PATH / 'id_set.json'
-ARTIFACTS_CONF_PATH = ARTIFACTS_PATH / 'conf.json'
-
-DEBUG_ID_SET_PATH = Path('id_set.json')
-DEBUG_CONF_PATH = Path('conf.json')
 
 
 class CollectionReason(Enum):
@@ -141,31 +133,32 @@ class TestConf(DictFileBased):
 class IdSetItem(DictBased):
     def __init__(self, id_: str, dict_: dict):
         super().__init__(dict_)
+        assert (id_field := self['id']) == id_, f'{id_field} does not match key {id_=}'  # todo
         self.id_ = id_
         self.name: str = self.content['name']
         self.file_path = self.content['file_path']
+        self.deprecated = self.get('deprecated') or self.get('hidden')  # hidden for packs, deprecated for content items
         self.pack: Optional[str] = self.content.get('pack')
         if 'pack' not in self.content:
             logging.debug(f'content item with id={id_} and name={self.name} has no pack value')  # todo debug? info?
 
-    @property
-    def marketplaces(self):
-        if values := self.content.get('marketplaces'):
-            return tuple(MarketplaceVersions(v) for v in values)
-
-    @property
-    def from_version(self):
-        if value := self.content.get('fromversion'):
-            return Version(value)
-
-    @property
-    def to_version(self):
-        if value := self.content.get('toversion'):
-            return Version(value)
+        self.from_version = Version(value) \
+            if (value := self.content.get('fromversion')) \
+            else None  # todo None or NegativeInfinity
+        self.to_version = Version(value) \
+            if (value := self.content.get('toversion')) \
+            else None  # todo None or Infinity
+        self.marketplaces = tuple(MarketplaceVersions(v) for v in values) \
+            if (values := self.content.get('marketplaces')) \
+            else None
 
     @property
     def integrations(self):
         return to_tuple(self.content.get('integrations'))
+
+    @property
+    def tests(self):
+        return self.get('tests', ())
 
 
 @dataclass
@@ -255,6 +248,16 @@ class CollectedTests:
         for i in range(len(tests)):
             self.add(tests[i], pack_ids[i], reason, reason_description, add_pack, add_test)
 
+    @staticmethod
+    def validate_pack(pack_name: str):
+        if not pack_name:
+            raise InvalidPackNameException(pack_name)
+        if pack_name in IGNORED_FILES:
+            raise IgnoredPackException(pack_name)
+        if pack_name in SKIPPED_PACKS:
+            raise SkippedPackException(pack_name)
+        # todo
+
 
 class IdSet(DictFileBased):
     def __init__(self, version_range: VersionRange, marketplace: MarketplaceVersions):
@@ -266,10 +269,34 @@ class IdSet(DictFileBased):
         self.id_to_script = self._parse_items(self['scripts'])
         self.id_to_integration = self._parse_items(self['integrations'])
         self.id_to_test_playbook = self._parse_items(self['TestPlaybooks'])
+        self.id_to_packs = self._parse_items(self['Packs'])
+
+        # todo are all the following necessary?
+        # self.id_to_classifier = self._parse_items(self['Classifiers'])
+        # self.id_to_incident_field = self._parse_items(self['IncidentFields'])
+        # self.id_to_incident_type = self._parse_items(self['IncidentType'])
+        # self.id_to_indicator_field = self._parse_items(self['IndicatorFields'])
+        # self.id_to_indicator_type = self._parse_items(self['IndicatorTypes'])
+        # self.id_to_layout =  self._parse_items(self['Layouts'])
+        # self.id_to_list = self._parse_items(self['Lists'])
+        # self.id_to_job = self._parse_items(self['Jobs'])
+        # self.id_to_mapper = self._parse_items(self['Mappers'])
+        # self.id_to_generic_type = self._parse_items(self['GenericTypes'])
+        # self.id_to_generic_field = self._parse_items(self['GenericFields'])
+        # self.id_to_generic_module = self._parse_items(self['GenericModules'])
+        # self.id_to_generic_definitions = self._parse_items(self['GenericDefinitions'])
+        # self.id_to_report = self._parse_items(self['Reports'])
+        # self.id_to_widget = self._parse_items(self['Widgets'])
+        # self.id_to_dashboard = self._parse_items(self['Dashboards'])
 
         self.integration_to_pack = {integration.name: integration.pack for integration in self.integrations}
         self.scripts_to_pack = {script.name: script.pack for script in self.scripts}
         self.test_playbooks_to_pack = {test.name: test.pack for test in self.test_playbooks}
+
+    @property
+    def artifact_iterator(self):
+        """ returns an iterator for all content items"""
+        return (value for value in self.content if isinstance(value, list))
 
     @property
     def integrations(self) -> Iterable[IdSetItem]:
@@ -282,6 +309,10 @@ class IdSet(DictFileBased):
     @property
     def scripts(self) -> Iterable[IdSetItem]:
         return self.id_to_script.values()
+
+    @property
+    def packs(self) -> Iterable[IdSetItem]:
+        return self.id_to_packs.values()
 
     def get_marketplace_v2_tests(self):
         result = CollectedTests()
@@ -395,7 +426,6 @@ class TestCollector(ABC):
     def _add_packs_from_tested_integrations(self, tests: set[str]):  # only called in _add_packs_used
         logging.info(f'searching for integrations used in test playbooks, '
                      f'to make sure the integration packs are installed')
-
         collected = CollectedTests()
         for test in tests:
             for integration in self.conf.tests_to_integrations.get(test, ()):
@@ -403,7 +433,7 @@ class TestCollector(ABC):
                     collected.add(None, pack, CollectionReason.PACK_MATCHES_INTEGRATION, add_test=False)
         return collected
 
-    def _add_packs_from_test_playbooks(self, tests: set[str]):# only called in _add_packs_used
+    def _add_packs_from_test_playbooks(self, tests: set[str]):  # only called in _add_packs_used
         logging.info(f'searching for packs under which test playbooks are saved, to make sure they are installed')
         collected = CollectedTests()
         for test in tests:
@@ -433,8 +463,8 @@ def get_changed_files(branch_name: str):
 
 
 class BranchTestCollector(TestCollector):
-    def __init__(self, branch_name: str, marketplace: MarketplaceVersions):
-        super().__init__(marketplace, self.min_version, self.max_version)
+    def __init__(self, version_range: VersionRange, branch_name: str, marketplace: MarketplaceVersions):
+        super().__init__(version_range, marketplace)
         self.branch_name = branch_name
 
     def _collect(self) -> CollectedTests:
@@ -447,6 +477,7 @@ class NightlyTestCollector(TestCollector):
     def _collect(self) -> CollectedTests:
         collected: list[CollectedTests] = [
             self.tests_matching_marketplace_value(),
+            self.packs_matching_marketplace_value()
         ]
 
         if self.marketplace == MarketplaceVersions.MarketplaceV2:
@@ -465,6 +496,16 @@ class NightlyTestCollector(TestCollector):
 
         return result
 
+    def packs_matching_marketplace_value(self) -> CollectedTests:
+        collected = CollectedTests()
+        marketplace_string = self.marketplace.value
+        packs: tuple[str] = tuple(
+            pack.id_ for pack in self.id_set.packs if marketplace_string in (pack.marketplaces or ())
+        )
+        # todo what's the default behavior for a missing marketplace value?
+        collected.add_iterable(None, packs, CollectionReason.MARKETPLACE_VERSION_BY_VALUE, add_test=False)
+        return collected
+
 
 class UploadCollector(TestCollector):
     # todo today we collect packs, not tests
@@ -480,9 +521,8 @@ class NoTestsException(Exception):
 
 if __name__ == '__main__':
     sys.path.append(str(CONTENT_PATH))
-    collector = NightlyTestCollector(
+    collector = NightlyTestCollector(  # todo replace with real usage
         marketplace=MarketplaceVersions.XSOAR,
-        version_range=VersionRange(Machine.V6_2.value,
-                                   Machine.V6_6.value)
+        version_range=VersionRange(Machine.V6_2.value, Machine.V6_6.value)
     )
     collector.collect(True, True)
