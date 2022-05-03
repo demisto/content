@@ -51,10 +51,10 @@ def determine_reviewer(potential_reviewers: List[str], repo: Repository) -> str:
         for reviewer in potential_reviewers:
             if reviewer in combined_list:
                 assigned_prs_per_potential_reviewer[reviewer] = assigned_prs_per_potential_reviewer.get(reviewer, 0) + 1
-    print(f"{assigned_prs_per_potential_reviewer=}")
+    print(f'{assigned_prs_per_potential_reviewer=}')
     selected_reviewer = sorted(assigned_prs_per_potential_reviewer,
                                key=assigned_prs_per_potential_reviewer.get)[0]  # type: ignore
-    print(f"{selected_reviewer=}")
+    print(f'{selected_reviewer=}')
     return selected_reviewer
 
 
