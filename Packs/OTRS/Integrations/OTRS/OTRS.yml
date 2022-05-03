@@ -54,7 +54,7 @@ configuration:
   name: look_back
   required: false
   type: 0
-- additionalinfo: if True, use sessions compatibility for OTRS < V8
+- additionalinfo: If true, use sessions compatibility for OTRS versions lower than V8.
   display: Use legacy sessions
   hidden: false
   name: use_legacy_sessions
