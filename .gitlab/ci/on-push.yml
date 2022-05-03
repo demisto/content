@@ -260,7 +260,7 @@ generate-report:
   artifacts:
     when: always
     reports:
-      junit: report.xml
+      junit: reports/report.xml
 
 
 
