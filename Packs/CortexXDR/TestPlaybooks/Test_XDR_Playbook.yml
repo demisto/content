@@ -2044,7 +2044,7 @@ tasks:
           - - operator: isEqualString
               left:
                 value:
-                  simple: PaloAltoNetworksXDR.Endpoint.agent_status
+                  simple: PaloAltoNetworksXDR.Endpoint.endpoint_status
                 iscontext: true
               right:
                 value:
@@ -2052,7 +2052,7 @@ tasks:
           - - operator: isEqualString
               left:
                 value:
-                  simple: PaloAltoNetworksXDR.Endpoint.agent_type
+                  simple: PaloAltoNetworksXDR.Endpoint.endpoint_type
                 iscontext: true
               right:
                 value:
