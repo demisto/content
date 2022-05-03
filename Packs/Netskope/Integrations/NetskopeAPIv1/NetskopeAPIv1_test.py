@@ -51,7 +51,7 @@ def test_list_events(requests_mock):
     assert result.outputs_prefix == 'Netskope.Event'
 
     assert result.outputs[0]['event_id'] == 'f0e9b2cadd17402b59b3938b'
-    assert result.outputs[0]['timestamp'] == 1642535887
+    assert result.outputs[0]['timestamp'] == '2022-01-18T19:58:07.000Z'
     assert result.outputs[0]['type'] == 'connection'
     assert result.outputs[0]['access_method'] == 'Client'
 
@@ -81,7 +81,7 @@ def test_list_alerts(requests_mock):
     assert result.outputs_prefix == 'Netskope.Alert'
 
     assert result.outputs[0]['alert_id'] == 'a82283486949e2118d0ab197'
-    assert result.outputs[0]['timestamp'] == 1647812709
+    assert result.outputs[0]['timestamp'] == '2022-03-20T21:45:09.000Z'
     assert result.outputs[0]['action'] == 'alert'
     assert result.outputs[0]['alert_name'] == 'Gdrive - Alert on PII'
 
