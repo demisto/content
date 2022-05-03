@@ -53,7 +53,7 @@ For more details about the authentication used in this integration, see [Microso
     | Private Key | Used for certificate authentication. The private key of the registered certificate. | eea810f5-a6f6 |
     | Fetch Incidents | Whether to fetch the incidents. | N/A |
     | Incident Type | The type of incident to select. | Phishing |
-    | Status to filter out alerts for fetching as incidents| The property values are, "New", "InProgress" or "Resolved". Comma-separated lists are supported, e.g., New,Resolved.. | New,In Progress,Resolved |
+    | Status to filter out alerts for fetching as incidents| The property values are, "New", "InProgress" or "Resolved". Comma-separated lists are supported, e.g., New,Resolved. | New,In Progress,Resolved |
     | Severity to filter out alerts for fetching as incidents | The property values are, "Informational", "Low", "Medium" and "High". Comma-separated lists are supported, e.g., Medium,High. | Medium,High |
     | Trust any Certificate (Not Secure) | When selected, certificates are not checked. | N/A |
     | Use system proxy settings | Runs the integration instance using the proxy server (HTTP or HTTPS) that you defined in the server configuration. | https://proxyserver.com |
@@ -323,7 +323,7 @@ Machine.Isolate
 
 ### 3. microsoft-atp-get-machines
 ***
-Retrieves a collection of machines that have communicated with WDATP cloud in the last 30 days. Note, only one of ip and hostname can be a comma-separeted list. If both given as lists, an error will appear.
+Retrieves a collection of machines that have communicated with WDATP cloud in the last 30 days. Note, only ip or hostname can be a comma-separated list. If both are given as lists, an error will appear.
 
 
 #### Base Command
@@ -869,7 +869,7 @@ Alert.ReadWrite.All
 | severity | Alert severity. Possible values are: High, Medium, Low, Informational. | Optional |
 | status | Alert status. Possible values are: New, InProgress, Resolved. | Optional |
 | category | Alert category; only one can be added. | Optional |
-| limit | The limit of files to display. Default is 50. | Optional |
+| limit | The maximum number of files to display. Default is 50. | Optional |
 | creation_time | The creation timestamp from which to get alerts (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days). | Optional |
 
 
@@ -1010,7 +1010,7 @@ Alert.ReadWrite.All
 | status | The alert status to update. Possible values: "New", "InProgress", and "Resolved". | Optional | 
 | assigned_to | The owner of the alert. | Optional | 
 | classification | The specification of the alert. Possible values: "Unknown", "FalsePositive", "TruePositive". | Optional | 
-| determination | The determination of the alert. Possible values: "NotAvailable", "Apt", "Malware", "SecurityPersonnel", "SecurityTesting", Unwan"tedSoftware, and "Other". | Optional | 
+| determination | The determination of the alert. Possible values: "NotAvailable", "Apt", "Malware", "SecurityPersonnel", "SecurityTesting", "UnwantedSoftware", and "Other". | Optional | 
 | comment | The comment to be added to the alert. | Optional | 
 
 
@@ -2417,7 +2417,7 @@ Ip.Read.All
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | MicrosoftATP.IPStatistics.Statistics.IPAddress | String | The IP address. | 
-| MicrosoftATP.IPStatistics.Statistics.OrgPrevalence | String | The prevalence of the IP address on the organization. | 
+| MicrosoftATP.IPStatistics.Statistics.OrgPrevalence | String | The prevalence of the IP address in the organization. | 
 | MicrosoftATP.IPStatistics.Statistics.OrgFirstSeen | Date | The first date and time the IP address was seen in the organization. | 
 | MicrosoftATP.IPStatistics.Statistics.OrgLastSeen | Date | The last date and time the IP address was seen in the organization. | 
 
@@ -2903,7 +2903,7 @@ Deprecated. Use the microsoft-atp-sc-indicator-list command instead. Lists all i
 | --- | --- | --- |
 | MicrosoftATP.Indicators.id | String | Created by the system when the indicator is ingested. Generated GUID/unique identifier. | 
 | MicrosoftATP.Indicators.action | String | The action to apply if the indicator is matched from within the targetProduct security tool. Possible values are: unknown, allow, block, alert. | 
-| MicrosoftATP.Indicators.additionalInformation | String | A catchall area into which extra data from the indicator not covered by the other tiIndicator properties may be placed. Data placed into additionalInformation is typically not be used by the targetProduct security tool. | 
+| MicrosoftATP.Indicators.additionalInformation | String | A catchall area into which extra data from the indicator not covered by the other indicator properties may be placed. Data placed into additionalInformation is typically not be used by the targetProduct security tool. | 
 | MicrosoftATP.Indicators.azureTenantId | String | Stamped by the system when the indicator is ingested. The Azure Active Directory tenant ID of submitting client. | 
 | MicrosoftATP.Indicators.confidence | Number | An integer representing the confidence with which the data within the indicator accurately identifies malicious behavior. Possible values are 0 – 100, with 100 being the highest. | 
 | MicrosoftATP.Indicators.description | String | Brief description \(100 characters or less\) of the threat represented by the indicator. | 
@@ -3014,7 +3014,7 @@ Deprecated. Use the microsoft-atp-sc-indicator-get-by-id command instead. Gets a
 | --- | --- | --- |
 | MicrosoftATP.Indicators.id | String | Created by the system when the indicator is ingested. Generated GUID/unique identifier. | 
 | MicrosoftATP.Indicators.action | String | The action to apply if the indicator is matched from within the targetProduct security tool. Possible values are: unknown, allow, block, alert. | 
-| MicrosoftATP.Indicators.additionalInformation | String | A catchall area into which extra data from the indicator not covered by the other tiIndicator properties may be placed. Data placed into additionalInformation will typically not be used by the targetProduct security tool. | 
+| MicrosoftATP.Indicators.additionalInformation | String | A catchall area into which extra data from the indicator not covered by the other indicator properties may be placed. Data placed into additionalInformation will typically not be used by the targetProduct security tool. | 
 | MicrosoftATP.Indicators.azureTenantId | String | Timestamp when the indicator was ingested into the system. | 
 | MicrosoftATP.Indicators.confidence | Number | An integer representing the confidence with which the data within the indicator accurately identifies malicious behavior. Possible values are 0 – 100, with 100 being the highest. | 
 | MicrosoftATP.Indicators.description | String | Brief description \(100 characters or less\) of the threat represented by the indicator. | 
@@ -3150,7 +3150,7 @@ Deprecated. Use the microsoft-atp-sc-indicator-create command instead. Creates a
 | --- | --- | --- |
 | MicrosoftATP.Indicators.id | String | Created by the system when the indicator is ingested. Generated GUID/unique identifier. | 
 | MicrosoftATP.Indicators.action | String | The action to apply if the indicator is matched from within the targetProduct security tool. Possible values are: unknown, allow, block, alert. | 
-| MicrosoftATP.Indicators.additionalInformation | String | A catchall area into which extra data from the indicator not covered by the other tiIndicator properties may be placed. Data placed into additionalInformation will typically not be used by the targetProduct security tool. | 
+| MicrosoftATP.Indicators.additionalInformation | String | A catchall area into which extra data from the indicator not covered by the other indicator properties may be placed. Data placed into additionalInformation will typically not be used by the targetProduct security tool. | 
 | MicrosoftATP.Indicators.azureTenantId | String | Timestamp when the indicator was ingested into the system. | 
 | MicrosoftATP.Indicators.confidence | Number | An integer representing the confidence with which the data within the indicator accurately identifies malicious behavior. Possible values are 0 – 100, with 100 being the highest. | 
 | MicrosoftATP.Indicators.description | String | Brief description \(100 characters or less\) of the threat represented by the indicator. | 
@@ -3277,7 +3277,7 @@ Deprecated. Use the microsoft-atp-sc-indicator-create command instead. Creates a
 | --- | --- | --- |
 | MicrosoftATP.Indicators.id | String | Created by the system when the indicator is ingested. Generated GUID/unique identifier. | 
 | MicrosoftATP.Indicators.action | String | The action to apply if the indicator is matched from within the targetProduct security tool. Possible values are: unknown, allow, block, alert. | 
-| MicrosoftATP.Indicators.additionalInformation | String | A catchall area into which extra data from the indicator not covered by the other tiIndicator properties may be placed. Data placed into additionalInformation will typically not be used by the targetProduct security tool. | 
+| MicrosoftATP.Indicators.additionalInformation | String | A catchall area into which extra data from the indicator not covered by the other indicator properties may be placed. Data placed into additionalInformation will typically not be used by the targetProduct security tool. | 
 | MicrosoftATP.Indicators.azureTenantId | String | Timestamp when the indicator was ingested into the system. | 
 | MicrosoftATP.Indicators.confidence | Number | An integer representing the confidence with which the data within the indicator accurately identifies malicious behavior. Possible values are 0 – 100, with 100 being the highest. | 
 | MicrosoftATP.Indicators.description | String | Brief description \(100 characters or less\) of the threat represented by the indicator. | 
@@ -3391,7 +3391,7 @@ Deprecated. Use the microsoft-atp-sc-indicator-update command instead. Updates t
 | --- | --- | --- |
 | MicrosoftATP.Indicators.id | String | Created by the system when the indicator is ingested. Generated GUID/unique identifier. | 
 | MicrosoftATP.Indicators.action | String | The action to apply if the indicator is matched from within the targetProduct security tool. Possible values are: unknown, allow, block, alert. | 
-| MicrosoftATP.Indicators.additionalInformation | String | A catchall area into which extra data from the indicator not covered by the other tiIndicator properties may be placed. Data placed into additionalInformation will typically not be used by the targetProduct security tool. | 
+| MicrosoftATP.Indicators.additionalInformation | String | A catchall area into which extra data from the indicator not covered by the other indicator properties may be placed. Data placed into additionalInformation will typically not be used by the targetProduct security tool. | 
 | MicrosoftATP.Indicators.azureTenantId | String | Timestamp when the indicator was ingested into the system. | 
 | MicrosoftATP.Indicators.confidence | Number | An integer representing the confidence with which the data within the indicator accurately identifies malicious behavior. Possible values are 0 – 100, with 100 being the highest. | 
 | MicrosoftATP.Indicators.description | String | Brief description \(100 characters or less\) of the threat represented by the indicator. | 
@@ -5729,7 +5729,7 @@ User.Read.All
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| machine_id | A machine ID used for getting logged on users | Required | 
+| machine_id | A machine ID used for getting logged on users. | Required | 
 
 
 #### Context Output
@@ -5780,7 +5780,7 @@ User.Read.All
 
 ### microsoft-atp-get-machine-alerts
 ---
-Retrieves all Alerts related to a specific device.
+Retrieves all alerts related to a specific device.
 
 ##### Required Permissions
 Alert.ReadWrite.All
