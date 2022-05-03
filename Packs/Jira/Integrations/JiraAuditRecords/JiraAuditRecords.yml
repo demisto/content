@@ -1,6 +1,6 @@
 category: Analytics & SIEM
 commonfields:
-  id: JiraAuditRecords
+  id: Jira Event Collector
   version: -1
 configuration:
 - display: Incident type
@@ -49,8 +49,8 @@ configuration:
   type: 0
 description: '[Enter a comprehensive, yet concise, description of what the integration
   does, what use cases it is designed for, etc.]'
-display: Jira Audit Records
-name: JiraAuditRecords
+display: Jira Event Collector
+name: Jira Event Collector
 script:
   commands:
   - deprecated: false

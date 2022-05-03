@@ -196,7 +196,7 @@ def main():
         get_events.run(max_fetch=1)
         demisto.results('ok')
 
-    elif command in ('fetch-events', 'JiraAuditRecords-get-events'):
+    elif command in ('fetch-events', 'JiraEventCollector-get-events'):
         events = get_events.run(int(demisto_params.get('max_fetch', 100)))
 
         if events:
