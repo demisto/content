@@ -314,7 +314,7 @@ def test_get_distribution_url(requests_mock):
     readable_output, outputs, _ = get_distribution_url_command(client, args)
     expected_url = get_distribution_url_response.get('reply').get('distribution_url')
     assert outputs == {
-        'Core.Distribution(val.id == obj.id)': {
+        'CoreApiModule.Distribution(val.id == obj.id)': {
             'id': '1111',
             'url': expected_url
         }
