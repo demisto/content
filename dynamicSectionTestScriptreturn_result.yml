@@ -1,0 +1,72 @@
+commonfields:
+  id: 0c64bf8b-9dee-4039-8f16-b7f4721bd62b
+  version: 31
+vcShouldKeepItemLegacyProdMachine: false
+name: dynamicSectionTestScriptreturn_result
+script: |+
+  # demisto.info(f'\n\nThis is the automation section {demisto.args()}\n\n' \
+  #             f'Context {demisto.context()}\n\n')
+
+  # import json
+  # # execute_command(FileCreateAndUpload, {'filename': 'context.txt', 'data' : json.dumps(demisto.context(), indent=4)})
+
+  # demisto.results(fileResult('context.txt',json.dumps(demisto.context(), indent=4)))
+  def to_dict(file_id, file_name, file_path, process_id, sha, command_line, parent_file):
+      return {'ID': file_id,
+              'File Name': file_name,
+              'File Path': file_path,
+              'Process ID': process_id,
+              'SHA256': sha,
+              'Command Line': command_line,
+              'Parent File': parent_file
+              }
+
+  markdown_entrys = []
+
+  if 'PaloAltoNetworksXDR' in demisto.context():
+      alerts = demisto.context().get('PaloAltoNetworksXDR',{}).get('Incident', {}).get('alerts', [])
+      for alert in alerts:
+          file_id = alert.get('alert_id')
+          file_name = alert.get('actor_process_image_name')
+          file_path = alert.get('actor_process_image_path')
+          process_id = alert.get('actor_process_os_pid')
+          sha = alert.get('actor_process_image_sha256')
+          command_line = alert.get('actor_process_command_line')
+          parent_file = alert.get('causality_actor_process_image_name')
+          markdown_entrys.append(to_dict(file_id, file_name, file_path, process_id, sha,command_line, parent_file))
+
+  if 'MicrosoftATP' in demisto.context():
+      Alerts = demisto.context().get('MicrosoftATP', {}).get('Alert', [])
+      for alert in Alerts:
+          evidences = alert.get('Evidence', {})
+          if not evidences:
+              continue
+          for evidence in evidences:
+              if not evidence and evidence.get('entityType')!='Process':
+                  continue
+              file_id = None
+              file_name = evidence.get('fileName')
+              file_path = evidence.get('filePath')
+              process_id = evidence.get('processId')
+              sha = evidence.get('sha256')
+              command_line = evidence.get('processCommandLine')
+              parent_file = evidence.get('parentProcessFileName')
+              markdown_entrys.append(to_dict(file_id, file_name, file_path, process_id, sha,command_line, parent_file))
+
+
+  markdown = tableToMarkdown('Alerts Table', markdown_entrys)
+  return_results({'ContentsFormat': formats['markdown'], 'Type': entryTypes['note'], 'Contents': markdown})
+
+type: python
+tags:
+- dynamic-section
+comment: 'This is a test dynamic section '
+enabled: true
+scripttarget: 0
+subtype: python3
+pswd: ""
+runonce: false
+dockerimage: demisto/python3:3.9.7.24076
+runas: DBotWeakRole
+engineinfo: {}
+mainengineinfo: {}
