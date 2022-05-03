@@ -260,7 +260,7 @@ def convert_time_to_epoch(time_to_convert: str) -> int:
         return timestamp
     except Exception:
         try:
-            return date_to_timestamp(time_to_convert) // 1000
+            return date_to_timestamp(time_to_convert)
         except Exception:
             raise DemistoException('the time_frame format is invalid. Valid formats: %Y-%m-%dT%H:%M:%S or '
                                    'epoch UNIX timestamp (example: 1651505482)')
@@ -304,7 +304,10 @@ def create_filter_from_args(args: dict) -> dict:
     """
     valid_args = init_filter_args_options()
     and_operator_list = []
-    if ('start_time' or 'end_time' in args) and ('time_frame' not in args):
+    start_time = args.pop('start_time', None)
+    end_time = args.pop('end_time', None)
+
+    if (start_time or end_time) and ('time_frame' not in args):
         raise DemistoException('Please choose "custom" under time_frame argument when using start_time and end_time '
                                'arguments')
 
@@ -317,11 +320,11 @@ def create_filter_from_args(args: dict) -> dict:
         if arg_name == 'time_frame':
             # custom time frame
             if arg_value == 'custom':
-                if 'start_time' not in args or 'end_time' not in args:
+                if not start_time or not end_time:
                     raise DemistoException(
                         'Please provide start_time and end_time arguments when using time_frame as custom.')
-                start_time = convert_time_to_epoch(args.get('start_time'))
-                end_time = convert_time_to_epoch(args.get('start_time'))
+                start_time = convert_time_to_epoch(start_time)
+                end_time = convert_time_to_epoch(end_time)
                 search_type = 'RANGE'
                 search_value: Union[dict, int] = {
                     'from': start_time,
