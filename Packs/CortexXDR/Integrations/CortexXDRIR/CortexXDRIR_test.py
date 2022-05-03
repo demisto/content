@@ -48,8 +48,8 @@ def get_incident_extra_data_by_status(incident_id, alerts_limit):
 
 
 @pytest.mark.parametrize(argnames='time_to_convert, expected_value',
-                         argvalues=[('1322683200', 1322683200),
-                                    ('2018-11-06T08:56:41', 1541487401)])
+                         argvalues=[('1322683200000', 1322683200000),
+                                    ('2018-11-06T08:56:41', 1541487401000)])
 def test_convert_time_to_epoch(time_to_convert, expected_value):
     from CortexXDRIR import convert_time_to_epoch
     assert convert_time_to_epoch(time_to_convert) == expected_value
@@ -2641,7 +2641,6 @@ def test_get_alert_by_filter_command_multiple_args(requests_mock, mocker):
            "'SEARCH_VALUE': 'first'}, {'SEARCH_FIELD': 'alert_source', 'SEARCH_TYPE': 'CONTAINS', 'SEARCH_VALUE': " \
            "'second'}]}, {'OR': [{'SEARCH_FIELD': 'actor_effective_username', 'SEARCH_TYPE': 'CONTAINS', " \
            "'SEARCH_VALUE': 'N/A'}]}]}" in request_data_log.call_args[0][0]
-
 
 
 def test_run_script_execute_commands_command(requests_mock):
