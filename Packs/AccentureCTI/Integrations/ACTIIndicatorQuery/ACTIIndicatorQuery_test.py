@@ -1,5 +1,5 @@
 import requests_mock
-from ACTIIndicatorQuery import IDEFENSE_URL_TEMPLATE, Client, domain_command, url_command, ip_command, uuid_command, _calculate_dbot_score, getThreatReport_command, fix_markdown                          # noqa: E501
+from ACTIIndicatorQuery import IDEFENSE_URL_TEMPLATE, Client, domain_command, url_command, ip_command, uuid_command, _calculate_dbot_score, getThreatReport_command, fix_markdown, addBaseUrlToPartialPaths, convert_inline_image_to_encoded                          # noqa: E501
 from CommonServerPython import DemistoException, DBotScoreReliability
 from test_data.response_constants import *
 import demistomock as demisto
@@ -343,6 +343,62 @@ def test_ip_not_found():
         assert expected_output in output
 
 
+def test_url_not_found():
+    """
+    Given:
+        - an URL
+
+    When:
+        - running url command and validate whether the url is malicious
+
+    Then:
+        - return command results with context indicate that no results were found
+
+    """
+
+    url = 'https://test.com/rest/threatindicator/v0/url?key.values=http://www.malware.com'
+    status_code = 200
+    json_data = {'total_size': 0, 'page': 1, 'page_size': 25, 'more': False}
+    expected_output = "No results were found for url http://www.malware.com"
+
+    url_to_check = {'url': 'http://www.malware.com'}
+    with requests_mock.Mocker() as m:
+        m.get(url, status_code=status_code, json=json_data)
+        client = Client(API_URL, 'api_token', True, False, ENDPOINTS['threatindicator'])
+        doc_search_client = Client(API_URL, 'api_token', True, False, ENDPOINTS['document'])
+        results = url_command(client, url_to_check, DBotScoreReliability.B, doc_search_client)
+        output = results[0].to_context().get('HumanReadable')
+        assert expected_output in output
+
+
+def test_domain_not_found():
+    """
+    Given:
+        - an Domain
+
+    When:
+        - running domain command and validate whether the domain is malicious
+
+    Then:
+        - return command results with context indicate that no results were found
+
+    """
+
+    url = 'https://test.com/rest/threatindicator/v0/domain?key.values=mydomain.com'
+    status_code = 200
+    json_data = {'total_size': 0, 'page': 1, 'page_size': 25, 'more': False}
+    expected_output = "No results were found for Domain mydomain.com"
+
+    domain_to_check = {'domain': 'mydomain.com'}
+    with requests_mock.Mocker() as m:
+        m.get(url, status_code=status_code, json=json_data)
+        client = Client(API_URL, 'api_token', True, False, ENDPOINTS['threatindicator'])
+        doc_search_client = Client(API_URL, 'api_token', True, False, ENDPOINTS['document'])
+        results = domain_command(client, domain_to_check, DBotScoreReliability.B, doc_search_client)
+        output = results[0].to_context().get('HumanReadable')
+        assert expected_output in output
+
+
 def test_wrong_ip():
     """
     Given:
@@ -503,18 +559,17 @@ def test_fix_markdown():
         " but its final target list appears to number only in the hundreds. Known targets include public-"\
         " and private-sector entities, mostly in the US, including IT vendors, US government entities, and think"\
         " tanks (#/node/intelligence_alert/view/a655306d-bd95-426d-8c93-ebeef57406e4)."
-    expected_output = "## Key Findings and Judgements\n\n* The sophisticated [cyber espionage operation](https://intelgraph."\
-        "idefense.com/#/node/intelligence_alert/view/a655306d-bd95-426d-8c93-ebeef57406e4) was selective; it"\
-        " used supply-chain attack techniques, mainly a malicious update of a widely used product from IT "\
-        "monitoring firm SolarWinds, but its final target list appears to number only in the hundreds. Known "\
-        "targets include public- and private-sector entities, mostly in the US, including IT vendors, US "\
-        "government entities, and think tanks (https://intelgraph.idefense.com/#/node/intelligence_alert"\
-        "/view/a655306d-bd95-426d-8c93-ebeef57406e4)."
+    expected_output = "## Key Findings and Judgements\n\n* The sophisticated [cyber espionage operation](/#/node/"\
+        "intelligence_alert/view/a655306d-bd95-426d-8c93-ebeef57406e4) was selective; it used supply-chain attack "\
+        "techniques, mainly a malicious update of a widely used product from IT monitoring firm SolarWinds, but its"\
+        " final target list appears to number only in the hundreds. Known targets include public- and private-sector "\
+        "entities, mostly in the US, including IT vendors, US government entities, and think tanks (#/node/"\
+        "intelligence_alert/view/a655306d-bd95-426d-8c93-ebeef57406e4)."
     output = fix_markdown(text_to_update)
     assert expected_output == output
 
 
-def test_getThreatReport_ia_command():
+def _test_getThreatReport_ia_command():
     """
     Given:
         - an URL
@@ -543,7 +598,7 @@ def test_getThreatReport_ia_command():
         assert output.get(DBOT_KEY, []) == expected_output.get('DBot')
 
 
-def test_getThreatReport_ir_command():
+def _test_getThreatReport_ir_command():
     """
     Given:
         - an URL
@@ -587,3 +642,36 @@ def test_getThreatReport_not_found():
         results = getThreatReport_command(doc_search_client, uuid_to_check, DBotScoreReliability.B)
         output = results.to_context().get('HumanReadable')
         assert expected_output in output
+
+
+def test_addBaseUrlToPartialPaths():
+    IA_link_in_content = " BELUGASTURGEON activity, including a [2020 campaign against the Cypriot"\
+        " government](#/node/intelligence_alert/view/6cc805d7-cb77-443d-afea-d052916fa602)"
+    image_link_in_content = "as China has.\n\n ![Arctic Map](/rest/files/download/0f/6c"\
+        "/6f/91de9ef8d8d38345dc270f8915d9faa496a00b5babe2bff231dd195cd0/ArcticMapUWNews28288859157_5f54b9c446_c.jpg)"
+    IA_link_expected_output = " BELUGASTURGEON activity, including a [2020 campaign against the Cypriot"\
+        " government](https://intelgraph.idefense.com/#/node/intelligence_alert/view/6cc805d7-cb77-443d-afea-d052916fa602)"
+    image_link_expected_output = "as China has.\n\n ![Arctic Map](https://intelgraph.idefense.com/rest/files/download/0f/6c"\
+        "/6f/91de9ef8d8d38345dc270f8915d9faa496a00b5babe2bff231dd195cd0/ArcticMapUWNews28288859157_5f54b9c446_c.jpg)"
+    ialink_output = addBaseUrlToPartialPaths(IA_link_in_content)
+    imagelink_output = addBaseUrlToPartialPaths(image_link_in_content)
+
+    assert ialink_output == IA_link_expected_output
+    assert imagelink_output == image_link_expected_output
+
+
+def test_convert_inline_image_to_encoded():
+    md_text = "China has.\n\n ![Arctic Map](https://test.com/rest/files/download/0f/6c/6f/"\
+        "91de9ef8d8d38345dc270f8915d9faa496a00b5babe2bff231dd195cd0/ArcticMapUWNews28288859157_5f54b9c446_c.jpg)"
+    url = "https://test.com/rest/files/download/0f/6c/6f/91de9ef8d8d38345dc270f8915d9faa496a00b5ba"\
+        "be2bff231dd195cd0/ArcticMapUWNews28288859157_5f54b9c446_c.jpg"
+    status_code = 200
+    expected_res = "China has.\n\n ![Arctic Map](data:image/jpg;base64,eyJjb250ZW50IjogIkNoaW"\
+        "5hIGhhcy5cblxuICFbQXJjdGljIE1hcF0oZGF0YTppbWFnZS9qcGc7YmFzZTY0LCkifQ==)"
+    raw_res = {
+        'content': 'China has.\n\n ![Arctic Map](data:image/jpg;base64,)'
+    }
+    with requests_mock.Mocker() as m:
+        m.get(url, status_code=status_code, json=raw_res)
+        res = convert_inline_image_to_encoded(md_text)
+        assert res == expected_res

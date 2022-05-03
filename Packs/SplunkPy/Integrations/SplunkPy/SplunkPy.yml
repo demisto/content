@@ -51,7 +51,7 @@ configuration:
   name: parseNotableEventsRaw
   required: false
   type: 8
-- defaultvalue: false
+- defaultvalue: 'false'
   display: Replace with Underscore in Incident Fields
   name: replaceKeys
   required: false
@@ -194,7 +194,7 @@ configuration:
   additionalinfo: Use this parameter to specify a list of comma separated fields, which
     together are a unique identifier for the events you wish to fetch.
 - display: Enable user mapping
-  defaultvalue: true
+  defaultvalue: 'false'
   name: userMapping
   required: false
   type: 8
@@ -841,6 +841,13 @@ script:
     description: Returns the Splunk's username matching the given Xsoar's username.
     execution: false
     name: splunk-get-username-by-xsoar-user
+    outputs:
+    - contextPath: Splunk.UserMapping.XsoarUser
+      description: xsoar user mapping.
+      type: String
+    - contextPath: Splunk.UserMapping.SplunkUser
+      description: splunk user mapping.
+      type: String
   dockerimage: demisto/splunksdk:1.0.0.24033
   feed: false
   isfetch: true
