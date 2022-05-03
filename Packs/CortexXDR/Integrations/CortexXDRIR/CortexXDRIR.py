@@ -881,7 +881,7 @@ def main():  # pragma: no cover
                                                               "PENDING_ABORT"]))
 
         elif command == 'xdr-get-quarantine-status':
-            return_outputs(*get_quarantine_status_command(client, args))
+            return_results(get_quarantine_status_command(client, args))
 
         elif command == 'xdr-restore-file':
             return_results(restore_file_command(client, args))
@@ -914,7 +914,7 @@ def main():  # pragma: no cover
                                                               "PENDING_ABORT"]))
 
         elif command == 'xdr-endpoint-scan-abort':
-            return_outputs(*endpoint_scan_abort_command(client, args))
+            return_results(endpoint_scan_abort_command(client, args))
 
         elif command == 'get-mapping-fields':
             return_results(get_mapping_fields_command())
