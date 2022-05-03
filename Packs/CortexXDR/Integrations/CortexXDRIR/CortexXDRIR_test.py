@@ -46,6 +46,7 @@ def get_incident_extra_data_by_status(incident_id, alerts_limit):
 
 ''' TESTS FUNCTIONS '''
 
+
 # Note this test will fail when run locally (in pycharm/vscode) as it assumes the machine (docker image) has UTC timezone set
 
 @pytest.mark.parametrize(argnames='time_to_convert, expected_value',
@@ -2582,6 +2583,7 @@ def test_get_original_alerts_command(requests_mock):
     assert event.get('_time') == 'DATE'  # assert general filter is correct
     assert event.get('cloud_provider') == 'AWS'  # assert general filter is correct
     assert event.get('raw_log', {}).get('userIdentity', {}).get('accountId') == 'ID'  # assert vendor filter is correct
+
 
 @freeze_time("2022-05-03 11:00:00 GMT")
 def test_get_alert_by_filter(requests_mock, mocker):
