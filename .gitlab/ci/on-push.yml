@@ -254,10 +254,9 @@ generate-report:
   rules:
     - if: '$NIGHTLY != "true"'
       when: always
-  extends:
-    - .default-job-settings
   script:
-    - python3 ./Tests/scripts/generate_readable_build_report.py report.xml
+    - pip3 install junit
+    - python3 ./Tests/scripts/generate_readable_build_report.py --out report.xml
   artifacts:
     when: always
     paths:
