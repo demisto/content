@@ -6,10 +6,10 @@ starttaskid: '0'
 tasks:
   '0':
     id: '0'
-    taskid: b137d492-29ee-488c-8e1b-4760af2f9ae3
+    taskid: 33ad667d-db98-487b-85d8-a84c11912a9d
     type: start
     task:
-      id: b137d492-29ee-488c-8e1b-4760af2f9ae3
+      id: 33ad667d-db98-487b-85d8-a84c11912a9d
       version: -1
       name: ''
       iscommand: false
@@ -35,10 +35,10 @@ tasks:
     isautoswitchedtoquietmode: false
   '5':
     id: '5'
-    taskid: 4c84b558-cb5f-4455-85c0-bfb7cc75b53f
+    taskid: ef2128f6-23c6-4b88-8613-19daf7ad94b9
     type: regular
     task:
-      id: 4c84b558-cb5f-4455-85c0-bfb7cc75b53f
+      id: ef2128f6-23c6-4b88-8613-19daf7ad94b9
       version: -1
       name: 'Set incident isolated flag '
       description: commands.local.cmd.set.incident
@@ -69,16 +69,16 @@ tasks:
     isautoswitchedtoquietmode: false
   '8':
     id: '8'
-    taskid: 7b61a19c-ead4-4a51-8a30-afb0eb7a0163
+    taskid: 52588ed1-0025-4fe6-81f6-c3b83521c38e
     type: title
     task:
-      id: 7b61a19c-ead4-4a51-8a30-afb0eb7a0163
+      id: 52588ed1-0025-4fe6-81f6-c3b83521c38e
       version: -1
       name: Done
+      description: Done
       type: title
       iscommand: false
       brand: ''
-      description: Done
     separatecontext: false
     view: |-
       {
@@ -96,10 +96,10 @@ tasks:
     isautoswitchedtoquietmode: false
   '10':
     id: '10'
-    taskid: b7b1e707-3972-4bde-802a-c853e5591b92
+    taskid: 58123af8-afb5-4191-8370-9cc057c150b7
     type: condition
     task:
-      id: b7b1e707-3972-4bde-802a-c853e5591b92
+      id: 58123af8-afb5-4191-8370-9cc057c150b7
       version: -1
       name: Can the agent be isolated ?
       description: Check if the agent's policy allows isolation
@@ -175,10 +175,10 @@ tasks:
     isautoswitchedtoquietmode: false
   '11':
     id: '11'
-    taskid: fddef7d9-5a3a-4f4b-8138-0774062540a5
+    taskid: fc5227a5-14af-4489-84ec-b3cd366b97ba
     type: regular
     task:
-      id: fddef7d9-5a3a-4f4b-8138-0774062540a5
+      id: fc5227a5-14af-4489-84ec-b3cd366b97ba
       version: -1
       name: Manually isolate endpoint
       description: Asks an analyst to manually isolate the endpoint
@@ -212,10 +212,10 @@ tasks:
     isautoswitchedtoquietmode: false
   '12':
     id: '12'
-    taskid: 94a91131-3bcc-400a-82aa-e77a62233ac5
+    taskid: 7a806e0e-cc3b-472e-8489-0f027c2755ff
     type: title
     task:
-      id: 94a91131-3bcc-400a-82aa-e77a62233ac5
+      id: 7a806e0e-cc3b-472e-8489-0f027c2755ff
       version: -1
       name: Agent isolation
       type: title
@@ -242,10 +242,10 @@ tasks:
     isautoswitchedtoquietmode: false
   '13':
     id: '13'
-    taskid: 62b119d5-b535-4276-8924-9d2836956ddc
+    taskid: ce749f3a-0929-458c-8262-2171a91a15c9
     type: title
     task:
-      id: 62b119d5-b535-4276-8924-9d2836956ddc
+      id: ce749f3a-0929-458c-8262-2171a91a15c9
       version: -1
       name: Forensics data collection
       type: title
@@ -284,10 +284,10 @@ tasks:
     isautoswitchedtoquietmode: false
   '14':
     id: '14'
-    taskid: b985f429-becb-4b36-83d5-de65d8fa5e6e
+    taskid: 79fffbc1-3f55-4af3-8a43-86933340d4c8
     type: title
     task:
-      id: b985f429-becb-4b36-83d5-de65d8fa5e6e
+      id: 79fffbc1-3f55-4af3-8a43-86933340d4c8
       version: -1
       name: Agent reconnection
       type: title
@@ -314,10 +314,10 @@ tasks:
     isautoswitchedtoquietmode: false
   '17':
     id: '17'
-    taskid: 777486ef-cc13-421d-8dd8-9861dab5df8b
+    taskid: 48274823-501d-4e4e-86cc-649c529aff8c
     type: regular
     task:
-      id: 777486ef-cc13-421d-8dd8-9861dab5df8b
+      id: 48274823-501d-4e4e-86cc-649c529aff8c
       version: -1
       name: Get endpoint information (OS, policy...)
       description: Get endpoint information from agent_id
@@ -348,10 +348,10 @@ tasks:
     isautoswitchedtoquietmode: false
   '18':
     id: '18'
-    taskid: 1b77ea64-fcff-43e5-8d4e-b181e47d6462
+    taskid: 4bff18de-d36f-46a3-89b9-acd556b06cbe
     type: regular
     task:
-      id: 1b77ea64-fcff-43e5-8d4e-b181e47d6462
+      id: 4bff18de-d36f-46a3-89b9-acd556b06cbe
       version: -1
       name: harfanglab-isolate-endpoint
       description: Command used to isolate an endpoint from the network while remaining connected to the EDR manager
@@ -382,10 +382,10 @@ tasks:
     isautoswitchedtoquietmode: false
   '19':
     id: '19'
-    taskid: eaabe572-7b34-42cc-8583-dd4438c57cf4
+    taskid: c25ce2dc-b026-470a-8c19-0d23421da0fc
     type: regular
     task:
-      id: eaabe572-7b34-42cc-8583-dd4438c57cf4
+      id: c25ce2dc-b026-470a-8c19-0d23421da0fc
       version: -1
       name: harfanglab-deisolate-endpoint
       description: Command used to deisolate an endpoint and reconnect it to the network
@@ -416,10 +416,10 @@ tasks:
     isautoswitchedtoquietmode: false
   '23':
     id: '23'
-    taskid: a76f0b12-226e-47fd-8d49-841b57f8e2a5
+    taskid: b19c5f0c-6b12-4d96-81e4-062cb08a02a8
     type: condition
     task:
-      id: a76f0b12-226e-47fd-8d49-841b57f8e2a5
+      id: b19c5f0c-6b12-4d96-81e4-062cb08a02a8
       version: -1
       name: Should the alert be investigated (type, severity) ?
       description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
@@ -428,7 +428,7 @@ tasks:
       brand: ''
     nexttasks:
       '#default#':
-      - '65'
+      - '67'
       Critical severity and yara / sigma / ransomware / hlai type:
       - '60'
     separatecontext: false
@@ -491,10 +491,10 @@ tasks:
     isautoswitchedtoquietmode: false
   '35':
     id: '35'
-    taskid: 47897fc3-04de-4333-803b-713fa782eaed
+    taskid: c9c11fe4-425f-4ff7-85eb-d5eb2ef6f1af
     type: playbook
     task:
-      id: 47897fc3-04de-4333-803b-713fa782eaed
+      id: c9c11fe4-425f-4ff7-85eb-d5eb2ef6f1af
       version: -1
       name: Hurukai - Get Driver List
       playbookName: Hurukai - Get Driver List
@@ -530,10 +530,10 @@ tasks:
     isautoswitchedtoquietmode: false
   '36':
     id: '36'
-    taskid: 39f14438-d7e2-4737-810c-3f9bbf34dc0c
+    taskid: b0eaa122-cbc5-4fa0-8e74-6cfce78f7886
     type: playbook
     task:
-      id: 39f14438-d7e2-4737-810c-3f9bbf34dc0c
+      id: b0eaa122-cbc5-4fa0-8e74-6cfce78f7886
       version: -1
       name: Hurukai - Get Process List
       playbookName: Hurukai - Get Process List
@@ -571,10 +571,10 @@ tasks:
     isautoswitchedtoquietmode: false
   '37':
     id: '37'
-    taskid: e2837669-0318-43c7-83df-2d237017a26f
+    taskid: a3c44137-645a-4c1a-8e12-9f4447ccbca4
     type: title
     task:
-      id: e2837669-0318-43c7-83df-2d237017a26f
+      id: a3c44137-645a-4c1a-8e12-9f4447ccbca4
       version: -1
       name: Advanced Forensics
       type: title
@@ -601,10 +601,10 @@ tasks:
     isautoswitchedtoquietmode: false
   '38':
     id: '38'
-    taskid: 65a8941b-a432-4cbb-84fc-556a3ee2d25a
+    taskid: f555696d-167c-43f0-8bc1-8f5651e351b1
     type: condition
     task:
-      id: 65a8941b-a432-4cbb-84fc-556a3ee2d25a
+      id: f555696d-167c-43f0-8bc1-8f5651e351b1
       version: -1
       name: Should we perform advanced forensics ?
       description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
@@ -651,10 +651,10 @@ tasks:
     isautoswitchedtoquietmode: false
   '40':
     id: '40'
-    taskid: 303b3e4a-7d4c-43fa-8846-5e7e64050ed3
+    taskid: b67d05ad-f6f1-48ec-81c2-7a147a111232
     type: regular
     task:
-      id: 303b3e4a-7d4c-43fa-8846-5e7e64050ed3
+      id: b67d05ad-f6f1-48ec-81c2-7a147a111232
       version: -1
       name: Investigate the incident
       description: Asks an analyst to investigation the incident
@@ -681,10 +681,10 @@ tasks:
     isautoswitchedtoquietmode: false
   '41':
     id: '41'
-    taskid: 4bade8f8-1239-45e7-8f89-072c496cf44a
+    taskid: 8fcdc86a-a063-4895-85c7-fcf4f8639183
     type: playbook
     task:
-      id: 4bade8f8-1239-45e7-8f89-072c496cf44a
+      id: 8fcdc86a-a063-4895-85c7-fcf4f8639183
       version: -1
       name: Hurukai - Get Pipe List
       playbookName: Hurukai - Get Pipe List
@@ -720,10 +720,10 @@ tasks:
     isautoswitchedtoquietmode: false
   '42':
     id: '42'
-    taskid: 57df125c-9df5-4a6e-8387-c4916ece115a
+    taskid: 5c0fdec3-e609-4326-805e-70424d79a646
     type: playbook
     task:
-      id: 57df125c-9df5-4a6e-8387-c4916ece115a
+      id: 5c0fdec3-e609-4326-805e-70424d79a646
       version: -1
       name: Hurukai - Get Prefetch List
       playbookName: Hurukai - Get Prefetch List
@@ -759,10 +759,10 @@ tasks:
     isautoswitchedtoquietmode: false
   '43':
     id: '43'
-    taskid: 8afa818f-ed7c-4518-89fc-0d5bd5b921a2
+    taskid: 2fff5517-1fca-4072-8c7b-6ae3ce759f5c
     type: playbook
     task:
-      id: 8afa818f-ed7c-4518-89fc-0d5bd5b921a2
+      id: 2fff5517-1fca-4072-8c7b-6ae3ce759f5c
       version: -1
       name: Hurukai - Get Runkey List
       playbookName: Hurukai - Get Runkey List
@@ -798,10 +798,10 @@ tasks:
     isautoswitchedtoquietmode: false
   '44':
     id: '44'
-    taskid: 753b88ce-3b3b-4adc-8fde-14f863a00508
+    taskid: d13e7763-1d3b-477a-8b0a-9eef00a98dde
     type: playbook
     task:
-      id: 753b88ce-3b3b-4adc-8fde-14f863a00508
+      id: d13e7763-1d3b-477a-8b0a-9eef00a98dde
       version: -1
       name: Hurukai - Get Scheduled Task List
       playbookName: Hurukai - Get Scheduled Task List
@@ -837,10 +837,10 @@ tasks:
     isautoswitchedtoquietmode: false
   '45':
     id: '45'
-    taskid: 44cbbe83-aa0a-443b-8a57-4818a7d8da20
+    taskid: bdfc789c-4276-4aa3-8801-3c0e0f67f356
     type: playbook
     task:
-      id: 44cbbe83-aa0a-443b-8a57-4818a7d8da20
+      id: bdfc789c-4276-4aa3-8801-3c0e0f67f356
       version: -1
       name: Hurukai - Get Service List
       playbookName: Hurukai - Get Service List
@@ -876,10 +876,10 @@ tasks:
     isautoswitchedtoquietmode: false
   '50':
     id: '50'
-    taskid: 68116565-37dc-41ef-8b61-dae76631b0e0
+    taskid: e8a1f474-106a-42be-8aba-10351304c176
     type: playbook
     task:
-      id: 68116565-37dc-41ef-8b61-dae76631b0e0
+      id: e8a1f474-106a-42be-8aba-10351304c176
       version: -1
       name: Hurukai - Get Artifact RAM Dump
       playbookName: Hurukai - Get Artifact RAM Dump
@@ -915,10 +915,10 @@ tasks:
     isautoswitchedtoquietmode: false
   '51':
     id: '51'
-    taskid: ebac4e53-6ae1-456f-815a-81496ea8c522
+    taskid: 8e271aff-fbca-444a-8278-4f2a6b578138
     type: playbook
     task:
-      id: ebac4e53-6ae1-456f-815a-81496ea8c522
+      id: 8e271aff-fbca-444a-8278-4f2a6b578138
       version: -1
       name: Hurukai - Get Startup List
       playbookName: Hurukai - Get Startup List
@@ -954,10 +954,10 @@ tasks:
     isautoswitchedtoquietmode: false
   '52':
     id: '52'
-    taskid: 47a21355-28c5-407d-8cb9-9d84cb0da79b
+    taskid: e90f04b8-d803-408f-8e20-56e5ed3de9c8
     type: playbook
     task:
-      id: 47a21355-28c5-407d-8cb9-9d84cb0da79b
+      id: e90f04b8-d803-408f-8e20-56e5ed3de9c8
       version: -1
       name: Hurukai - Get WMI List
       playbookName: Hurukai - Get WMI List
@@ -993,10 +993,10 @@ tasks:
     isautoswitchedtoquietmode: false
   '53':
     id: '53'
-    taskid: 44fdd86b-5dae-4a0d-8126-96f01b1063a0
+    taskid: e44d5a19-52bd-4ace-8f08-6e531449f344
     type: playbook
     task:
-      id: 44fdd86b-5dae-4a0d-8126-96f01b1063a0
+      id: e44d5a19-52bd-4ace-8f08-6e531449f344
       version: -1
       name: Hurukai - Get Persistence List
       playbookName: Hurukai - Get Persistence List
@@ -1032,10 +1032,10 @@ tasks:
     isautoswitchedtoquietmode: false
   '54':
     id: '54'
-    taskid: d82ec366-4f89-4305-8e2e-cae1cd8bd692
+    taskid: 1f7aa51d-f929-45ba-8649-57e4d542a918
     type: playbook
     task:
-      id: d82ec366-4f89-4305-8e2e-cae1cd8bd692
+      id: 1f7aa51d-f929-45ba-8649-57e4d542a918
       version: -1
       name: Hurukai - Get All Artifacts
       playbookName: Hurukai - Get All Artifacts
@@ -1071,10 +1071,10 @@ tasks:
     isautoswitchedtoquietmode: false
   '55':
     id: '55'
-    taskid: 33e39938-313c-4fa4-8115-6a2ec9f334df
+    taskid: 92ffa7d3-e83b-46dc-89e6-861558c746fc
     type: playbook
     task:
-      id: 33e39938-313c-4fa4-8115-6a2ec9f334df
+      id: 92ffa7d3-e83b-46dc-89e6-861558c746fc
       version: -1
       name: Hurukai - Get Network Share List
       playbookName: Hurukai - Get Network Share List
@@ -1110,10 +1110,10 @@ tasks:
     isautoswitchedtoquietmode: false
   '56':
     id: '56'
-    taskid: 280d4f9f-ca35-4ffb-866c-4681a66fb84f
+    taskid: 1d9d98a8-069a-45cd-8664-7c49113f7917
     type: playbook
     task:
-      id: 280d4f9f-ca35-4ffb-866c-4681a66fb84f
+      id: 1d9d98a8-069a-45cd-8664-7c49113f7917
       version: -1
       name: Hurukai - Get Session List
       playbookName: Hurukai - Get Session List
@@ -1149,10 +1149,10 @@ tasks:
     isautoswitchedtoquietmode: false
   '57':
     id: '57'
-    taskid: 3bde48e6-5c18-41c0-8c1a-860b0a6e961b
+    taskid: 179b8b63-b7e8-4535-8afb-1382dd23d6e4
     type: playbook
     task:
-      id: 3bde48e6-5c18-41c0-8c1a-860b0a6e961b
+      id: 179b8b63-b7e8-4535-8afb-1382dd23d6e4
       version: -1
       name: Hurukai - Get Network Connection List
       playbookName: Hurukai - Get Network Connection List
@@ -1188,10 +1188,10 @@ tasks:
     isautoswitchedtoquietmode: false
   '58':
     id: '58'
-    taskid: 9a4757a1-815f-4919-8b38-8dd3090c4a8b
+    taskid: a74e46c5-ae6e-4fa7-83cd-d64af63cf0e1
     type: title
     task:
-      id: 9a4757a1-815f-4919-8b38-8dd3090c4a8b
+      id: a74e46c5-ae6e-4fa7-83cd-d64af63cf0e1
       version: -1
       name: Done
       type: title
@@ -1202,8 +1202,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 820,
-          "y": 0
+          "x": 1250,
+          "y": 190
         }
       }
     note: false
@@ -1215,10 +1215,10 @@ tasks:
     isautoswitchedtoquietmode: false
   '59':
     id: '59'
-    taskid: 2bb0c365-3a8b-4a0e-8ee5-1daf82536043
+    taskid: b1f50ca1-6c4d-4162-89d7-e717fe2a8563
     type: regular
     task:
-      id: 2bb0c365-3a8b-4a0e-8ee5-1daf82536043
+      id: b1f50ca1-6c4d-4162-89d7-e717fe2a8563
       version: -1
       name: 'Set incident isolated flag '
       description: commands.local.cmd.set.incident
@@ -1249,10 +1249,10 @@ tasks:
     isautoswitchedtoquietmode: false
   '60':
     id: '60'
-    taskid: 42c94967-4ac2-4572-8db4-0c1c2d46eda5
+    taskid: 9f8b758c-67fe-4efc-879d-247f7aa8e820
     type: regular
     task:
-      id: 42c94967-4ac2-4572-8db4-0c1c2d46eda5
+      id: 9f8b758c-67fe-4efc-879d-247f7aa8e820
       version: -1
       name: Set incident status to 'Investigating' in Harfanglab Manager
       description: Command used to change the status of a security event
@@ -1285,10 +1285,10 @@ tasks:
     isautoswitchedtoquietmode: false
   '61':
     id: '61'
-    taskid: 4a5247c9-5e0f-465a-8e31-b6a0a7e982cf
+    taskid: d54997ce-59dc-4ce4-8b9f-81001579e63e
     type: regular
     task:
-      id: 4a5247c9-5e0f-465a-8e31-b6a0a7e982cf
+      id: d54997ce-59dc-4ce4-8b9f-81001579e63e
       version: -1
       name: Set incident status to 'Closed' in Harfanglab Manager
       description: Command used to change the status of a security event
@@ -1321,10 +1321,10 @@ tasks:
     isautoswitchedtoquietmode: false
   '62':
     id: '62'
-    taskid: ca33c160-3399-449a-8586-88500d8cd358
+    taskid: 0f40ada0-8111-43e8-824e-016d2e4925c5
     type: condition
     task:
-      id: ca33c160-3399-449a-8586-88500d8cd358
+      id: 0f40ada0-8111-43e8-824e-016d2e4925c5
       version: -1
       name: Was it a false positive ?
       description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
@@ -1371,10 +1371,10 @@ tasks:
     isautoswitchedtoquietmode: false
   '63':
     id: '63'
-    taskid: 6a10ef08-a434-43c2-8541-a2a9515a95c1
+    taskid: 788787f3-3256-4fda-8671-0dc8f90101b7
     type: regular
     task:
-      id: 6a10ef08-a434-43c2-8541-a2a9515a95c1
+      id: 788787f3-3256-4fda-8671-0dc8f90101b7
       version: -1
       name: Set incident status to 'False Positive' in Harfanglab Manager
       description: Command used to change the status of a security event
@@ -1407,10 +1407,10 @@ tasks:
     isautoswitchedtoquietmode: false
   '64':
     id: '64'
-    taskid: fa4f10bf-844f-4cbd-8c66-e92860ad8c1a
+    taskid: 3f16f0b5-1148-4515-8cb7-c7fb541cdc15
     type: condition
     task:
-      id: fa4f10bf-844f-4cbd-8c66-e92860ad8c1a
+      id: 3f16f0b5-1148-4515-8cb7-c7fb541cdc15
       version: -1
       name: Should I isolate the endpoint before starting investigation ?
       description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
@@ -1457,10 +1457,10 @@ tasks:
     isautoswitchedtoquietmode: false
   '65':
     id: '65'
-    taskid: ae6d052c-25ac-4b96-8122-5edac17821f2
+    taskid: fc3d7c4a-9dc5-466d-8e7e-90e837b9dd75
     type: regular
     task:
-      id: ae6d052c-25ac-4b96-8122-5edac17821f2
+      id: fc3d7c4a-9dc5-466d-8e7e-90e837b9dd75
       version: -1
       name: Close XSOAR incident
       description: Close the current incident
@@ -1475,8 +1475,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 820,
-          "y": -185
+          "x": 1250,
+          "y": -15
         }
       }
     note: false
@@ -1488,10 +1488,10 @@ tasks:
     isautoswitchedtoquietmode: false
   '66':
     id: '66'
-    taskid: 38e85675-d08e-4971-8b18-f1e2d0e14735
+    taskid: aa6d0e55-febe-49a2-82f6-cea9a4411ae4
     type: regular
     task:
-      id: 38e85675-d08e-4971-8b18-f1e2d0e14735
+      id: aa6d0e55-febe-49a2-82f6-cea9a4411ae4
       version: -1
       name: Close XSOAR incident
       description: Close the current incident
@@ -1517,6 +1517,42 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  '67':
+    id: '67'
+    taskid: 65074e6f-26a1-4ec0-889f-f1518e7bc5a6
+    type: regular
+    task:
+      id: 65074e6f-26a1-4ec0-889f-f1518e7bc5a6
+      version: -1
+      name: Set incident status to 'Closed' in Harfanglab Manager
+      description: Command used to change the status of a security event
+      script: Hurukai|||harfanglab-change-security-event-status
+      type: regular
+      iscommand: true
+      brand: Hurukai
+    nexttasks:
+      '#none#':
+      - '65'
+    scriptarguments:
+      security_event_id:
+        simple: ${incident.alertid}
+      status:
+        simple: Closed
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1250,
+          "y": -175
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -1527,7 +1563,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 4265,
-        "width": 2120,
+        "width": 2240,
         "x": -610,
         "y": -570
       }

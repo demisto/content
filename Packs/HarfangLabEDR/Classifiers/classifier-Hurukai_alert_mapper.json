@@ -88,13 +88,8 @@
                 "OS": {
                     "simple": "agent.osproducttype"
                 },
-                "HarfangLab EDR OS Type": {
-                    "complex": {
-                        "accessor": "ostype",
-                        "filters": [],
-                        "root": "agent",
-                        "transformers": []
-                    }
+                "OS Type": {
+                    "simple": "agent.ostype"
                 },
                 "OS Version": {
                     "simple": "agent.osversion"
