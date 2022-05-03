@@ -367,13 +367,11 @@ def start_freeze_time(timestamp):
     return datetime.now()
 
 
-# @freeze_time('2022-05-01 12:52:29')
 class TestFetchIncidentsWithLookBack:
     LAST_RUN = {}
 
     API_TIME_FORMAT = '%Y-%m-%d %H:%M:%S'
     FREEZE_TIMESTAMP = '2022-05-01 12:52:29'
-    # NOW = datetime.now()
 
     def set_last_run(self, new_last_run):
         self.LAST_RUN = new_last_run

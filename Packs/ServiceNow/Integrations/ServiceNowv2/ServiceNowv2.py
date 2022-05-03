@@ -2039,7 +2039,6 @@ def fetch_incidents(client: Client) -> list:
     start_snow_time, end_snow_time = get_fetch_run_time_range(
         last_run=last_run, first_fetch=client.fetch_time, look_back=client.look_back, date_format=date_format
     )
-    demisto.info(f'start-time {start_snow_time}')
     snow_time_as_date = datetime.strptime(start_snow_time, date_format)
 
     fetch_limit = last_run.get('limit') or client.sys_param_limit
@@ -2056,8 +2055,6 @@ def fetch_incidents(client: Client) -> list:
 
     demisto.info(f'Fetching ServiceNow incidents. with the query params: {str(query_params)}')
     tickets_response = client.send_request(f'table/{client.ticket_type}', 'GET', params=query_params).get('result', [])
-
-    demisto.info(f'----tickets number {len(tickets_response)}----')
 
     count = 0
 
@@ -2093,15 +2090,10 @@ def fetch_incidents(client: Client) -> list:
         })
         count += 1
 
-    incidents_names = [incident.get('name') for incident in incidents]
-    demisto.info(f'----before filtering {incidents_names}----')
-
     # remove duplicate incidents which were already fetched
     incidents = filter_incidents_by_duplicates_and_limit(
         incidents_res=incidents, last_run=last_run, fetch_limit=client.sys_param_limit, id_field='name'
     )
-    incidents_names = [incident.get('name') for incident in incidents]
-    demisto.info(f'----after filtering {incidents_names}----')
 
     last_run = update_last_run_object(
         last_run=last_run,
@@ -2120,7 +2112,6 @@ def fetch_incidents(client: Client) -> list:
         # the occurred time requires to be in ISO format.
         ticket['occurred'] = f"{datetime.strptime(ticket.get('occurred'), date_format).isoformat()}Z"
 
-    demisto.info(f'final incidents {incidents}')
     demisto.setLastRun(last_run)
     return incidents
 
