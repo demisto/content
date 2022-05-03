@@ -8748,8 +8748,12 @@ class HygieneRemediation:
 
     @staticmethod
     def fix_log_forwarding_profile_enhanced_logging(topology: Topology,
-                                                    issues: list[ConfigurationHygieneIssue]) -> list[
-        ConfigurationHygieneFix]:
+                                                    issues: list[ConfigurationHygieneIssue]) -> list[ConfigurationHygieneFix]:
+        """
+        Given a list of hygiene issues, sourced by `pan-os-hygiene-check-log-forwarding`, enables enhanced application logging to
+        fix that issue.
+        :param issues: List of log forwarding issues due to no enhanced application logging.
+        """
         result = []
         for issue in issues:
             for device, container in topology.get_all_object_containers(
@@ -8778,6 +8782,12 @@ class HygieneRemediation:
             issues: list[ConfigurationHygieneIssue],
             log_forwarding_profile: str
     ) -> list[ConfigurationHygieneFix]:
+        """
+        Given a list of Configuration Hygiene Issues, referencing security zones that do not have any log forwarding settings,
+        sets the provided log forwarding profile, thus fixing them.
+        :param issues: List of security zone issues due to no log forwarding setting
+        :param log_forwarding_profile: The log forwarding profile to set.
+        """
         result = []
         for issue in issues:
 
@@ -8803,8 +8813,13 @@ class HygieneRemediation:
     @staticmethod
     def fix_secuity_rule_log_settings(topology: Topology,
                                       issues: list[ConfigurationHygieneIssue],
-                                      log_forwarding_profile_name: str,
-                                      ) -> list[ConfigurationHygieneFix]:
+                                      log_forwarding_profile_name: str) -> list[ConfigurationHygieneFix]:
+        """
+        Given a list of Configuration Hygiene Issues, referencing security rules that have no log settings, sets the provided
+        log forwarding profile.
+        :param issues: List of security zone issues due to no log forwarding setting
+        :param log_forwarding_profile_name: The log forwarding profile to set.
+        """
         result = []
         for issue in issues:
             for device, container in topology.get_all_object_containers(
@@ -8841,6 +8856,12 @@ class HygieneRemediation:
                                                  issues: list[ConfigurationHygieneIssue],
                                                  security_profile_group_name: str,
                                                  ) -> list[ConfigurationHygieneFix]:
+        """
+        Given a list of Configuration Hygiene Issues, referencing security rules that have no threat settings, sets the provided
+        security profile group.
+        :param issues: List of security rule issues that have no threat settings.
+        :param security_profile_group_name: The security porfile group to set.
+        """
         result = []
         for issue in issues:
             for device, container in topology.get_all_object_containers(
@@ -8870,6 +8891,7 @@ class HygieneRemediation:
                         ))
 
         return result
+
 
 class HygieneCheckRegister:
     """Stores all the hygiene checks this integration is capable of and their associated details."""
@@ -9225,7 +9247,14 @@ class HygieneLookups:
             minimum_alert_severities: list[str],
             device_filter_str: str = None,
     ) -> list[PanosObjectReference]:
+        """
+        Searches the configuration for all spyware profiles that conform to best practices using the given minimum severities.
 
+        :param topology: `Topology` Instance
+        :param device_filter_str: Filter checks to a specific device or devices
+        :param minimum_alert_severities: A string list of severities that MUST be in a alert mode
+        :param minimum_block_severities: A string list of severities that MUST be in block mode
+        """
         result = []
         for device, container in topology.get_all_object_containers(device_filter_str):
             spyware_profiles: list[AntiSpywareProfile] = AntiSpywareProfile.refreshall(container)
@@ -9252,7 +9281,15 @@ class HygieneLookups:
             minimum_alert_severities: list[str],
             device_filter_str: str = None,
     ) -> list[PanosObjectReference]:
+        """
+        Searches the configuration for all vulnerability profiles that conform to PAN best practices using the given minimum
+        severities.
 
+        :param topology: `Topology` Instance
+        :param device_filter_str: Filter checks to a specific device or devices
+        :param minimum_alert_severities: A string list of severities that MUST be in a alert mode
+        :param minimum_block_severities: A string list of severities that MUST be in block mode
+        """
         result = []
         for device, container in topology.get_all_object_containers(device_filter_str):
             spyware_profiles: list[VulnerabilityProfile] = VulnerabilityProfile.refreshall(container)
@@ -9274,6 +9311,13 @@ class HygieneLookups:
 
     @staticmethod
     def check_url_filtering_profiles(topology: Topology, device_filter_str: str = None):
+        """
+        Checks the configured URL filtering profiles to make sure at least one is configured according to PAN best practices
+        for visibility.
+
+        :param topology: `Topology` Instance
+        :param device_filter_str: Filter checks to a specific device or devices
+        """
         issues: list[ConfigurationHygieneIssue] = []
         conforming_profiles: list[URLFilteringProfile] = []
         check_register = HygieneCheckRegister.get_hygiene_check_register([
@@ -9303,8 +9347,11 @@ class HygieneLookups:
         )
 
     @staticmethod
-    def check_security_zones(topology: Topology, device_filter_str: str = None) \
-            -> ConfigurationHygieneCheckResult:
+    def check_security_zones(topology: Topology, device_filter_str: str = None) -> ConfigurationHygieneCheckResult:
+        """
+        Check all security zones are configured with Log Forwarding profiles.
+        :param device_filter_str: Filter checks to a specific device or devices
+        """
         issues = []
         check_register = HygieneCheckRegister.get_hygiene_check_register([
             "BP-V-7"
@@ -9335,8 +9382,11 @@ class HygieneLookups:
         )
 
     @staticmethod
-    def check_security_rules(topology: Topology, device_filter_str: str = None) \
-            -> ConfigurationHygieneCheckResult:
+    def check_security_rules(topology: Topology, device_filter_str: str = None) -> ConfigurationHygieneCheckResult:
+        """
+        Check all security rules, in all rulebases, are configured with Log Forwarding and threat profiles.
+        :param device_filter_str: Filter checks to a specific device or devices
+        """
         issues = []
 
         check_register = HygieneCheckRegister.get_hygiene_check_register([
@@ -9407,6 +9457,7 @@ class HygieneLookups:
             summary_data=[item for item in check_register.values()],
             result_data=issues
         )
+
 
 class PanoramaCommand:
     """Commands that can only be run, or are relevant only on Panorama."""
@@ -10312,6 +10363,7 @@ def check_vulnerability_profiles(
         minimum_alert_severities=argToList(minimum_alert_severities)
     )
 
+
 def check_spyware_profiles(
         topology: Topology,
         device_filter_string: str = None,
@@ -10431,8 +10483,14 @@ def check_security_rules(topology: Topology, device_filter_string: str = None) -
 
 
 def hygiene_issue_dict_to_object(issue_dicts: Union[list[dict], dict]) -> list[ConfigurationHygieneIssue]:
+    """
+    Converts the given list of hygiene issues, which is a list of dictionaries, into the dataclass objects.
+    This simplifies the handling of the issues within the fix functions.
+
+    :param issue_dicts: List of dictionaries which represent instances of `ConfigurationHygieneIssue`
+    """
     if type(issue_dicts) is not list:
-        issue_dicts = [issue_dicts]  # type: ignore
+        issue_dicts = [issue_dicts]
 
     issues: list[ConfigurationHygieneIssue] = []
     for issue_dict in issue_dicts:
@@ -10455,10 +10513,7 @@ def fix_log_forwarding(
     :param issue: Dictionary of Hygiene issue, from a hygiene check command. Can be a list.
     """
     issue_objects = hygiene_issue_dict_to_object(issue)
-    result: list[ConfigurationHygieneFix] = \
-        HygieneRemediation.fix_log_forwarding_profile_enhanced_logging(topology, issues=issue_objects)
-
-    return result
+    return HygieneRemediation.fix_log_forwarding_profile_enhanced_logging(topology, issues=issue_objects)
 
 
 def fix_security_zone_log_setting(
@@ -10473,13 +10528,11 @@ def fix_security_zone_log_setting(
     :param log_forwarding_profile_name: Name of log forwarding profile to set.
     """
     issue_objects = hygiene_issue_dict_to_object(issue)
-    result: list[ConfigurationHygieneFix] = HygieneRemediation.fix_security_zone_no_log_setting(
+    return HygieneRemediation.fix_security_zone_no_log_setting(
         topology,
         log_forwarding_profile=log_forwarding_profile_name,
         issues=issue_objects
     )
-
-    return result
 
 
 def fix_security_rule_log_setting(
@@ -10495,13 +10548,11 @@ def fix_security_rule_log_setting(
     :param log_forwarding_profile_name: Name of log forwarding profile to use as log setting.
     """
     issue_objects = hygiene_issue_dict_to_object(issue)
-    result: list[ConfigurationHygieneFix] = HygieneRemediation.fix_secuity_rule_log_settings(
+    return HygieneRemediation.fix_secuity_rule_log_settings(
         topology,
         log_forwarding_profile_name=log_forwarding_profile_name,
         issues=issue_objects
     )
-
-    return result
 
 
 def fix_security_rule_security_profile_group(
@@ -10517,13 +10568,11 @@ def fix_security_rule_security_profile_group(
     :param security_profile_group_name: Name of Security profile group to use as log setting.
     """
     issue_objects = hygiene_issue_dict_to_object(issue)
-    result: list[ConfigurationHygieneFix] = HygieneRemediation.fix_security_rule_security_profile_group(
+    return HygieneRemediation.fix_security_rule_security_profile_group(
         topology,
         security_profile_group_name=security_profile_group_name,
         issues=issue_objects
     )
-
-    return result
 
 
 def get_topology() -> Topology:
@@ -11120,6 +11169,14 @@ def main():
                 dataclasses_to_command_results(
                     check_vulnerability_profiles(topology, **demisto.args()),
                     empty_result_message="At least one vulnerability profile is configured according to best practices."
+                )
+            )
+        elif command == 'pan-os-hygiene-conforming-vulnerability-profiles':
+            topology = get_topology()
+            return_results(
+                dataclasses_to_command_results(
+                    get_conforming_vulnerability_profiles(topology, **demisto.args()),
+                    empty_result_message="No Conforming Vulnerability Profiles."
                 )
             )
         elif command == 'pan-os-hygiene-check-spyware-profiles':
