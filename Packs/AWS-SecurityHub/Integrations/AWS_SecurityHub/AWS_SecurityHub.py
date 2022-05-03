@@ -620,8 +620,10 @@ def list_members_command(client, args):
 def convert_members_date_type(members):
     new_ls = []
     for member in members:
-        member['UpdatedAt'] = member['UpdatedAt'].strftime('%Y-%m-%d %H:%M:%S')
-        member['InvitedAt'] = member['InvitedAt'].strftime('%Y-%m-%d %H:%M:%S')
+        if isinstance(updated_at:=member['UpdatedAt'], datetime):
+            member['UpdatedAt'] = updated_at.strftime('%Y-%m-%d %H:%M:%S')
+        if isinstance(invited_at:=member['InvitedAt'], datetime):
+            member['InvitedAt'] = invited_at.strftime('%Y-%m-%d %H:%M:%S')
         new_ls.append(member)
     return new_ls
 
