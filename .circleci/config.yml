@@ -75,9 +75,6 @@ parameters:
   gcs_market_bucket:
     type: string
     default: "marketplace-dist"
-  cache_key:
-    type: string
-    default: virtualenv-venv-{{ checksum "dev-requirements-py2.txt" }}-{{ checksum "dev-requirements-py3.txt" }}-{{ checksum ".circleci/build-requirements.txt" }}-{{ checksum "package-lock.json" }}
 
 references:
   environment: &environment
@@ -94,6 +91,9 @@ references:
       NIGHTLY_PARAMETER: << pipeline.parameters.nightly >>
       GCS_MARKET_BUCKET: << pipeline.parameters.gcs_market_bucket >>
 
+  cache_key: &cache_key
+      demisto-content-{{ checksum "dev-requirements-py2.txt" }}-{{ checksum "dev-requirements-py3.txt" }}-{{ checksum ".circleci/build-requirements.txt" }}-{{ checksum "package-lock.json" }}
+
 
   container_config: &container_config
     docker:
@@ -101,6 +101,7 @@ references:
         auth:
           username: $DOCKERHUB_USER
           password: $DOCKERHUB_PASSWORD
+
 
   workspace_root: &workspace_root
     /home/circleci/

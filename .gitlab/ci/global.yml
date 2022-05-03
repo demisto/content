@@ -3,7 +3,6 @@
     key:
       files:
         - "dev-requirements-py3.txt"
-        - "dev-requirements-py2.txt"
         - "package-lock.json"
       prefix: demisto-content
     paths:
