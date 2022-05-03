@@ -1642,6 +1642,8 @@ def hunt_search_hash(client, args):
     filehash = args.get('hash', None)
     common_result()
 
+    results = []
+
     if isinstance(filehash, list):
         for i in filehash:
             args['hash'] = i
@@ -1652,41 +1654,54 @@ def hunt_search_hash(client, args):
         contextData = []
         curr_running = False
         prev_runned = False
+
+        if len(data['data']) == 0:
+            currently_running = str(curr_running) + " (0 are running)"
+            previously_executed = str(prev_runned) + " (0 were previously executed)"
+            prefetchs.append({
+                'process associated to hash currently running': currently_running,
+                'process associated to hash was previously executed': previously_executed
+            })
+
+            outputs = {
+                    'hash': filehash,
+                    'curr_running': 0,
+                    'prev_runned': 0
+                    }
+            results.append(CommandResults(
+                outputs_prefix = 'Harfanglab.Hash',
+                outputs_key_field = 'hash',
+                outputs = outputs,
+                readable_output = tableToMarkdown(f'Hash search results',outputs) 
+                ))
+
+
         for x in data['data']:
             if x['processCount'] > 0:
                 curr_running = True
             if x['telemetryProcessCount'] > 0:
                 prev_runned = True
-            currently_running = str(curr_running) + " " + str(x['processCount']) + " are running"
-            previously_executed = str(prev_runned) + " " + str(x['telemetryProcessCount']) + " were previously executed"
+            currently_running = str(curr_running) + " (" + str(x['processCount']) + " are running)"
+            previously_executed = str(prev_runned) + " (" + str(x['telemetryProcessCount']) + " were previously executed)"
             prefetchs.append({
                 'process associated to hash currently running': currently_running,
                 'process associated to hash was previously executed': previously_executed
             })
-            contextData.append({
-                'hash': x['title'],
-                'curr_running': x['processCount'],
-                'prev_runned': x['telemetryProcessCount']
-            })
 
-        readable_output = tableToMarkdown('War room overview', prefetchs, headers=[
-                                          'process associated to hash currently running',
-                                          'process associated to hash was previously executed'])
+            outputs = {
+                    'hash': x['title'],
+                    'curr_running': x['processCount'],
+                    'prev_runned': x['telemetryProcessCount']
+                    }
+            results.append(CommandResults(
+                outputs_prefix = 'Harfanglab.Hash',
+                outputs_key_field = 'hash',
+                outputs = outputs,
+                readable_output = tableToMarkdown(f'Hash search results',outputs) 
+                ))
 
-        ec = {
-            'Harfanglab.HuntHashSearch(val.hash && val.hash === obj.hash)': {
-                'data': contextData,
-            }
-        }
+        return_results(results)
 
-        demisto.results({
-            'Type': entryTypes['note'],
-            'Contents': prefetchs,
-            'ContentsFormat': formats['json'],
-            'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': readable_output,
-            'EntryContext': ec
-        })
         return data
 
 
@@ -1697,7 +1712,7 @@ def hunt_search_running_process_hash(client, args):
     if isinstance(filehash, list):
         for i in filehash:
             args['hash'] = i
-            hunt_search_hash(client, args)
+            hunt_search_running_process_hash(client, args)
     else:
         data = client.invest_running_process(filehash=filehash)
         prefetchs = []
@@ -1758,7 +1773,7 @@ def hunt_search_runned_process_hash(client, args):
     if isinstance(filehash, list):
         for i in filehash:
             args['hash'] = i
-            hunt_search_hash(client, args)
+            hunt_search_runned_process_hash(client, args)
     else:
         data = client.invest_runned_process(filehash=filehash)
         prefetchs = []

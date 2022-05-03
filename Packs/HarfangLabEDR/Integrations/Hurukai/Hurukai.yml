@@ -538,7 +538,7 @@ script:
     - contextPath: Harfanglab.NetworkShare.data
       description: Provides a list of network shares
   - arguments:
-    - name: pob_id
+    - name: job_id
       description: Job id as returned by the job submission commands
       required: true
     description: Get a hostname's sessions from job results
@@ -655,7 +655,7 @@ script:
       description: filehash to search (md5, sha1, sha256)
       required: true
     outputs:
-    - contextPath: Harfanglab.HuntHashSearch.data
+    - contextPath: Harfanglab.Hash
       description: Provides statistics associated to currently running processes and previously executed processes associated to hash
     description: Command used to search a hash IOC in database
     name: harfanglab-hunt-search-hash
