@@ -255,7 +255,7 @@ generate-report:
     - if: '$NIGHTLY != "true"'
       when: always
   script:
-    - pip3 install junit
+    - pip3 install junit_xml
     - python3 ./Tests/scripts/generate_readable_build_report.py --out report.xml
   artifacts:
     when: always
