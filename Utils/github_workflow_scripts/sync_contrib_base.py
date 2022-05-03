@@ -80,9 +80,8 @@ def main():
     else:
         # Case we are running scheduled job - detect all contrib/ base branches.
         contrib_base_branches = get_branch_names_with_contrib(content_repo)
-    
+
     print(f'Updating {contrib_base_branches=}')
-    
     for branch_name in contrib_base_branches:
         update_branch(content_repo, branch_name, master_sha)
 
