@@ -39,18 +39,18 @@ def create_pr_comment(validate_pr_comment, unit_tests_pr_comment) -> str:
     return comment
 
 
-def build_summary_report(validate_summary, unit_tests_summary, create_instances_summary,server_6_1_summary,
+def build_summary_report(validate_summary, unit_tests_summary, create_instances_summary, server_6_1_summary,
                          server_6_2_summary,
                          server_master_summary,
                          output_file):
-    json_summary = {
-        'Validate': validate_summary,
-        'Unit tests': unit_tests_summary,
-        'Create instances': create_instances_summary,
-        'server 6.1': server_6_1_summary,
-        'server 6.2': server_6_2_summary,
-        'server master': server_master_summary,
-    }
+    # json_summary = {
+    #     'Validate': validate_summary,
+    #     'Unit tests': unit_tests_summary,
+    #     'Create instances': create_instances_summary,
+    #     'server 6.1': server_6_1_summary,
+    #     'server 6.2': server_6_2_summary,
+    #     'server master': server_master_summary,
+    # }
     test_cases = []
     for file, failing_validations in validate_summary.items():
         # test_case = TestCase('Test1', 'some.class.name', 123.345, 'I am stdout!', 'I am stderr!')
@@ -91,7 +91,7 @@ def test_get_failing_validations():
 
 
 def test_get_failing_create_instances():
-    failed_create_instances = get_file_data(os.path.join(ARTIFACTS_FOLDER, 'packs_results.json'))
+    get_file_data(os.path.join(ARTIFACTS_FOLDER, 'packs_results.json'))
     # file = open('validate_outputs.json', 'r')
     # failed_validations = json.load(file)
     create_instances_summary = {}
@@ -106,6 +106,7 @@ def options_handler():
 
     return options
 
+
 def generate_build_report(logging_manager, output_file):
     validate_pr_comment, validate_summary = test_get_failing_validations()
     unit_tests_pr_comment, unit_tests_summary = test_get_failing_ut()
@@ -113,10 +114,10 @@ def generate_build_report(logging_manager, output_file):
     _add_pr_comment(pr_comment, logging_manager, 'here is a link to the full report')
     build_summary_report(validate_summary,
                          unit_tests_summary,
-                         create_instances_summary = {},
-                         server_6_1_summary = {},
-                         server_6_2_summary = {},
-                         server_master_summary = {}, output_file=output_file)
+                         create_instances_summary={},
+                         server_6_1_summary={},
+                         server_6_2_summary={},
+                         server_master_summary={}, output_file=output_file)
 
 
 def main():
