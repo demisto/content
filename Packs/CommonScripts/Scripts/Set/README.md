@@ -135,11 +135,11 @@ There are no outputs for this script.
 
 ## Known Limitations
 The script has some limitations with appending to the context in different cases and formats:
-- When *append* is set to `false` - the script will not support [dt](https://xsoar.pan.dev/docs/integrations/dt)operations given as part of the *key* argument.
+- When *append* is set to `false` - the script will not support [dt](https://xsoar.pan.dev/docs/integrations/dt) operations given as part of the *key* argument.
 - When **Set** is called from within another script - if *append* is set tot `true` it is necessary to manually
 return the results given by the `demisto.executeCommand`, for the context update to take place.
 For example:
     ```python
-    res = demisto.executeCommand('Set', {'append': 'true', 'key': 'MyKey', 'value': 'MyValue'})
+      res = execute_command('Set', {'append': 'true', 'key': 'MyKey', 'value': 'MyValue'})
     return_results(res)
     ```
