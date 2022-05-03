@@ -1,17 +1,15 @@
 from enum import Enum
-
-import requests
-import urllib3
 from CommonServerPython import *
 import demistomock as demisto
-from pydantic import BaseModel, AnyUrl, Json, validator
-import dateparser
+from pydantic import BaseModel, AnyUrl, Json
 from collections.abc import Generator
+
+DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
 
 
 class Method(str, Enum):
     """
-    A list that represent the types of http request available
+        A list that represent the types of http request available
     """
     GET = 'GET'
     POST = 'POST'
@@ -21,17 +19,18 @@ class Method(str, Enum):
     DELETE = 'DELETE'
 
 
-class ReqParams(BaseModel):
+class ReqHeaders(BaseModel):
     """
-    A class that stores the request query params
+        A class that stores the request payload
     """
-    include: str
-    order: str = 'asc'
-    after: str
-    per_page: int = 100  # Maximum is 100
-    # _normalize_after = validator('after', pre=True, allow_reuse=True)(
-    #     get_github_timestamp_format
-    # )
+    Authorization: str
+
+
+class ReqBody(BaseModel):
+    """
+        A class that stores the request payload
+    """
+    Script: str
 
 
 class Request(BaseModel):
@@ -40,10 +39,9 @@ class Request(BaseModel):
     """
     method: Method
     url: AnyUrl
-    headers: Optional[Union[Json[dict], dict]]
-    params: Optional[ReqParams]
-    verify = True
-    data: Optional[str] = None
+    headers: Optional[ReqHeaders]
+    data: Optional[ReqBody]
+    verify: bool = True
 
 
 class Client:
@@ -53,8 +51,7 @@ class Client:
 
     def __init__(self, request: Request):
         self.request = request
-        self.session = self.get_session()
-
+        self.token = self.get_access_token()
 
     def call(self, requests=requests) -> requests.Response:
         try:
@@ -65,21 +62,6 @@ class Client:
             msg = f'something went wrong with the http call {exc}'
             LOG(msg)
             raise DemistoException(msg) from exc
-
-    @staticmethod
-    def get_session():
-        url = "https://aam4730.my.idaptive.app/Security/StartAuthentication"
-        payload = {
-            "TenantId": "AAM4730",
-            "Version": "1.0",
-            "User": "a55668899A"
-        }
-        headers = {
-            "Accept": "*/*",
-            "Content-Type": "application/json"
-        }
-        response = requests.get(url, json=payload, headers=headers, verify=False)
-        return response.json().get('Result').get('SessionId'), response.json().get('Result').get('Challenges')[0].get('Mechanisms')[0].get('MechanismId')
 
     # def set_next_run_filter(self, after: str):
     #     self.request.params.after = get_github_timestamp_format(after)
@@ -131,12 +113,26 @@ class GetEvents:
         Get the info from the last run, it returns the time to query from and a list of ids to prevent duplications
         """
 
-        last_timestamp = events[-1]['@timestamp']
-        last_time = last_timestamp / 1000
-        next_fetch_time = datetime.fromtimestamp(last_time) + timedelta(
-            seconds=1
-        )
-        return {'after': next_fetch_time.isoformat()}
+
+def get_access_token(**kwargs):
+    user_name = kwargs.get('credentials', {}).get('identifier')
+    password = kwargs.get('credentials', {}).get('password')
+    url = f'{kwargs.get("url")}/oauth2/token/{kwargs.get("app_id")}'
+    headers = {'Authorization': f"Basic {base64.b64encode(f'{user_name}:{password}'.encode()).decode()}"}
+    data = {'grant_type': 'client_credentials', 'scope': 'siem'}
+
+    response = requests.post(url, headers=headers, data=data, verify=not kwargs.get('insecure'))
+    json_response = response.json()
+    access_token = json_response.get('access_token')
+
+    return {'Authorization': f'Bearer {access_token}'}
+
+
+def prepare_request_body(fetch_from: str) -> dict:
+    _from = dateparser.parse(fetch_from, settings={'TIMEZONE': 'UTC'}).strftime(DATE_FORMAT)
+    to = datetime.now().strftime(DATE_FORMAT)
+
+    return {'Script': f'Select * from Event where WhenOccurred >= {_from} and WhenOccurred <= {to}'}
 
 
 def main():
@@ -145,12 +141,28 @@ def main():
     command = demisto.command()
     demisto.debug(f'Command {command} was called!!!')
 
+    demisto_params['headers'] = ReqHeaders(**get_access_token(**demisto_params))
+    demisto_params['data'] = ReqBody(**prepare_request_body(demisto_params.get('first_fetch', '3 days')))
+
+    request = Request(**demisto_params)
+    client = Client(request)
+    get_events = GetEvents(client)
+
     try:
         if command == 'test-module':
-            request = Request(**demisto_params)
-            client = Client(request)
-            get_events = GetEvents(client)
+            get_events.aggregated_results(1)
+            demisto.results('ok')
+        elif command in ('fetch-events', 'CyberArkIdentity-fetch-events'):
+            events = get_events.aggregated_results(demisto_params.get('max_fetch'))
+            if events:
+                if command == 'fetch-events':
+                    send_events_to_xsiam(events, 'CyberArkIdentity', 'Redrock records')
+                if command == 'CyberArkIdentity-fetch-events':
+                    CommandResults(
 
+                    )
+                    demisto.results(CommandResults)
+                # Set next run
     except Exception as e:
         return_error(str(e))
 
