@@ -445,17 +445,18 @@ def pagination(request_command: Callable, args: Dict[str, Any], pagination_args:
         response = request_command(
             args, page=page, page_size=page_size)
 
-        output = response['result'] # type: ignore
+        output = response['result']  # type: ignore
         total_num_item = dict_safe_get(response, ['result_info', 'count'])
         page_num = dict_safe_get(response, ['result_info', 'page'])
         total_pages = dict_safe_get(response, ['result_info', 'total_pages'])
-        pagination_message = f'Showing page {page_num} out of {total_pages}. \n Current page size: {total_num_item}' # type: ignore
+        # type: ignore
+        pagination_message = f'Showing page {page_num} out of {total_pages}. \n Current page size: {total_num_item}'
     else:
         while limit > 0:
             page_size = 100 if limit > 100 else limit
             response = request_command(args, page_size=page_size)
             total_count = dict_safe_get(response, ['result_info', 'total_count'])
-            output.extend(response['result']) # type: ignore
+            output.extend(response['result'])  # type: ignore
             limit = limit - 100
         pagination_message = f'Showing {len(output)} rows out of {total_count}.'
 
@@ -570,7 +571,7 @@ def cloudflare_waf_firewall_rule_update_command(client: Client, args: Dict[str, 
     ref = args.get('ref')
 
     response = client.cloudflare_waf_firewall_rule_update_request(
-        rule_id, filter_id, zone_id, action, description=description, # type: ignore
+        rule_id, filter_id, zone_id, action, description=description,  # type: ignore
         products=products, paused=paused, priority=priority, ref=ref)
 
     output = response['result']
@@ -767,7 +768,7 @@ def cloudflare_waf_filter_update_command(client: Client, args: Dict[str, Any]) -
     paused = argToBoolean(paused) if paused else None
 
     response = client.cloudflare_waf_filter_update_request(
-        filter_id, expression, zone_id, description=description, # type: ignore
+        filter_id, expression, zone_id, description=description,  # type: ignore
         paused=paused, ref=ref)
 
     output = response['result']
@@ -878,7 +879,7 @@ def cloudflare_waf_ip_lists_list_command(client: Client, args: Dict[str, Any]) -
     response = response['result']
 
     if isinstance(response, dict):
-        response = [response] # type: ignore
+        response = [response]  # type: ignore
 
     output, pagination_message = ip_list_pagination(response, page, page_size, limit)
 
@@ -1105,7 +1106,8 @@ def test_module(client: Client):
     return 'ok'
 
 
-def scheduled_commands(operation_id: str, interval: Optional[int], timeout: Optional[int], cmd: str, args: Dict[str, Any]) -> ScheduledCommand:
+def scheduled_commands(operation_id: str, interval: Optional[int], timeout: Optional[int], cmd: str,
+                       args: Dict[str, Any]) -> ScheduledCommand:
     """ Build scheduled command if operation status is not completed.
 
     Args:
@@ -1127,7 +1129,7 @@ def scheduled_commands(operation_id: str, interval: Optional[int], timeout: Opti
     }
     scheduled_command = ScheduledCommand(
         command=cmd,
-        next_run_in_seconds=interval, # type: ignore
+        next_run_in_seconds=interval,  # type: ignore
         args=polling_args,
         timeout_in_seconds=timeout)
     return scheduled_command
