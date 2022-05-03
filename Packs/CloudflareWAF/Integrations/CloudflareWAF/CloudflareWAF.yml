@@ -15,13 +15,12 @@ configuration:
   type: 9
   additionalinfo: Account identifier.
   hiddenusername: true
-- displaypassword: zone_id
+- name: zone_id
+  displaypassword: zone_id
   display: Default Zone ID
   required: false
   type: 9
-  additionalinfo: The domain identifier. Zone ID can be override when executing
-    commands.The domain identifier. Zone ID can be override when executing
-    commands.
+  additionalinfo: The domain identifier. Zone ID can be override when executing commands.The domain identifier. Zone ID can be override when executing commands.
   hiddenusername: true
 - name: proxy
   display: Use system proxy settings
@@ -213,10 +212,7 @@ script:
     description: Delete firewall rule by the specified rule ID.
     execution: false
     name: cloudflare-waf-firewall-rule-delete
-    outputs:
-    - contextPath: CloudflareWAF.FirewallRule.id
-      description: Firewall rule ID.
-      type: String
+    outputs: []
   - arguments:
     - description: 'Firewall Rule identifier. '
       isArray: false
