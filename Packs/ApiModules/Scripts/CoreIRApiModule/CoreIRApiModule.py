@@ -1605,8 +1605,8 @@ def action_status_get_command(client: CoreClient, args) -> CommandResults:
 
     return CommandResults(
         readable_output=tableToMarkdown(name='Get Action Status', t=result, removeNull=True),
-        outputs={f'{args.get("integration_context_brand", "CoreApiModule")}.GetActionStatus(val.action_id == obj.action_id)'
-                 : result},
+        outputs={
+            f'{args.get("integration_context_brand", "CoreApiModule")}.GetActionStatus(val.action_id == obj.action_id)': result},
         raw_response=result
     )
 

@@ -327,8 +327,6 @@ def get_incident_extra_data_command(client, args):
     )
 
 
-
-
 def create_parsed_alert(product, vendor, local_ip, local_port, remote_ip, remote_port, event_timestamp, severity,
                         alert_name, alert_description):
     alert = {
@@ -417,56 +415,6 @@ def insert_cef_alerts_command(client, args):
         None,
         None
     )
-
-
-def restore_file_command(client, args):
-    file_hash = args.get('file_hash')
-    endpoint_id = args.get('endpoint_id')
-    incident_id = arg_to_number(args.get('incident_id'))
-
-    reply = client.restore_file(
-        file_hash=file_hash,
-        endpoint_id=endpoint_id,
-        incident_id=incident_id
-    )
-    action_id = reply.get("action_id")
-
-    return (
-        tableToMarkdown('Restore files', {'Action Id': action_id}, ['Action Id']),
-        {
-            f'{INTEGRATION_CONTEXT_BRAND}.restoredFiles.actionId(val.actionId == obj.actionId)': action_id
-        },
-        action_id
-    )
-
-
-def validate_args_scan_commands(args):
-    endpoint_id_list = argToList(args.get('endpoint_id_list'))
-    dist_name = argToList(args.get('dist_name'))
-    gte_first_seen = args.get('gte_first_seen')
-    gte_last_seen = args.get('gte_last_seen')
-    lte_first_seen = args.get('lte_first_seen')
-    lte_last_seen = args.get('lte_last_seen')
-    ip_list = argToList(args.get('ip_list'))
-    group_name = argToList(args.get('group_name'))
-    platform = argToList(args.get('platform'))
-    alias = argToList(args.get('alias'))
-    hostname = argToList(args.get('hostname'))
-    all_ = argToBoolean(args.get('all', 'false'))
-
-    # to prevent the case where an empty filtered command will trigger by default a scan on all the endpoints.
-    err_msg = 'To scan/abort scan all the endpoints run this command with the \'all\' argument as True ' \
-              'and without any other filters. This may cause performance issues.\n' \
-              'To scan/abort scan some of the endpoints, please use the filter arguments.'
-    if all_:
-        if endpoint_id_list or dist_name or gte_first_seen or gte_last_seen or lte_first_seen or lte_last_seen \
-                or ip_list or group_name or platform or alias or hostname:
-            raise Exception(err_msg)
-    else:
-        if not endpoint_id_list and not dist_name and not gte_first_seen and not gte_last_seen \
-                and not lte_first_seen and not lte_last_seen and not ip_list and not group_name and not platform \
-                and not alias and not hostname:
-            raise Exception(err_msg)
 
 
 def sort_all_list_incident_fields(incident_data):
@@ -743,27 +691,6 @@ def fetch_incidents(client, first_fetch_time, integration_instance, last_run: di
     next_run['time'] = last_fetch + 1
 
     return next_run, incidents
-
-
-def run_script_kill_process_command(client: Client, args: Dict) -> List[CommandResults]:
-    endpoint_ids = argToList(args.get('endpoint_ids'))
-    incident_id = arg_to_number(args.get('incident_id'))
-    timeout = arg_to_number(args.get('timeout', 600)) or 600
-    processes_names = argToList(args.get('process_name'))
-    all_processes_response = []
-    for process_name in processes_names:
-        parameters = {'process_name': process_name}
-        response = client.run_script('fd0a544a99a9421222b4f57a11839481', endpoint_ids, parameters, timeout, incident_id)
-        reply = response.get('reply')
-        all_processes_response.append(CommandResults(
-            readable_output=tableToMarkdown(f'Run Script Kill Process on {process_name}', reply),
-            outputs_prefix=f'{INTEGRATION_CONTEXT_BRAND}.ScriptRun',
-            outputs_key_field='action_id',
-            outputs=reply,
-            raw_response=response,
-        ))
-
-    return all_processes_response
 
 
 def get_endpoints_by_status_command(client: Client, args: Dict) -> CommandResults:
@@ -1119,7 +1046,7 @@ def main():  # pragma: no cover
                                                               "PENDING_ABORT"]))
 
         elif command == 'xdr-run-script-kill-process':
-            return_results(run_script_kill_process_command(client, args))
+            return_results((client, args))
 
         elif command == 'xdr-kill-process-script-execute':
             return_results(run_polling_command(client=client,
