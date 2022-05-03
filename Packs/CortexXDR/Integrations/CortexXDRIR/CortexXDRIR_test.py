@@ -46,11 +46,11 @@ def get_incident_extra_data_by_status(incident_id, alerts_limit):
 
 ''' TESTS FUNCTIONS '''
 
+# Note this test will fail when run locally (in pycharm/vscode) as it assumes the machine (docker image) has UTC timezone set
 
 @pytest.mark.parametrize(argnames='time_to_convert, expected_value',
                          argvalues=[('1322683200000', 1322683200000),
-                                    ('2018-11-06T08:56:41', 1541487401000)])
-@freeze_time("2022-05-03 11:00:00 GMT")
+                                    ('2018-11-06T08:56:41', 1541494601000)])
 def test_convert_time_to_epoch(time_to_convert, expected_value):
     from CortexXDRIR import convert_time_to_epoch
     assert convert_time_to_epoch(time_to_convert) == expected_value
@@ -2594,15 +2594,15 @@ def test_get_alert_by_filter(requests_mock, mocker):
     )
     args = {
         'time_frame': "custom",
-        'start_time': '2022-04-09T18:54:12',
-        'end_time': '2022-04-12T11:34:06',
+        'start_time': '2018-11-06T08:56:41',
+        'end_time': '2018-11-06T08:56:41',
         "limit": '2',
     }
     response = get_alerts_by_filter_command(client, args)
     assert response.outputs[0].get('internal_id', {}) == 33333
     assert "{'filter_data': {'sort': [{'FIELD': 'source_insert_ts', 'ORDER': 'DESC'}], 'paging': {'from': 0, " \
            "'to': 2}, 'filter': {'AND': [{'SEARCH_FIELD': 'source_insert_ts', 'SEARCH_TYPE': 'RANGE', 'SEARCH_VALUE': " \
-           "{'from': 1649519652000, 'to': 1649752446000}}]}}}" in request_data_log.call_args[0][0]
+           "{'from': 1541494601000, 'to': 1541494601000}}]}}}" in request_data_log.call_args[0][0]
 
 
 def test_get_alert_by_filter_command_multiple_values_in_same_arg(requests_mock, mocker):
