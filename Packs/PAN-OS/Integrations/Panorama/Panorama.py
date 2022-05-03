@@ -10504,10 +10504,7 @@ def hygiene_issue_dict_to_object(issue_dicts: Union[list[dict], dict]) -> list[C
     return issues
 
 
-def fix_log_forwarding(
-        topology: Topology,
-        issue: list,
-) -> list[ConfigurationHygieneFix]:
+def fix_log_forwarding(topology: Topology, issue: list) -> list[ConfigurationHygieneFix]:
     """
     :param topology: `Topology` instance !no-auto-argument
     :param issue: Dictionary of Hygiene issue, from a hygiene check command. Can be a list.
