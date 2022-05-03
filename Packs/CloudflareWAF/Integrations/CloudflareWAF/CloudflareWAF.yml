@@ -15,8 +15,7 @@ configuration:
   type: 9
   additionalinfo: Account identifier.
   hiddenusername: true
-- name: zone_id
-  displaypassword: Default Zone ID
+- displaypassword: zone_id
   display: Default Zone ID
   required: false
   type: 9
@@ -27,13 +26,13 @@ configuration:
 - name: proxy
   display: Use system proxy settings
   required: false
-  defaultvalue: false
+  defaultvalue: ''
   type: 8
   additionalinfo:
 - name: insecure
   display: Trust any certificate (not secure)
   required: false
-  defaultvalue: true
+  defaultvalue: ''
   type: 8
   additionalinfo: ''
 description: Cloudflare WAF integration allows customers to manage firewall rules, filters, and IP-lists. It also allows to retrieve zones list for each account.
@@ -214,7 +213,10 @@ script:
     description: Delete firewall rule by the specified rule ID.
     execution: false
     name: cloudflare-waf-firewall-rule-delete
-    outputs: []
+    outputs:
+    - contextPath: CloudflareWAF.FirewallRule.id
+      description: Firewall rule ID.
+      type: String
   - arguments:
     - description: 'Firewall Rule identifier. '
       isArray: false
