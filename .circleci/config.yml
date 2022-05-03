@@ -75,6 +75,9 @@ parameters:
   gcs_market_bucket:
     type: string
     default: "marketplace-dist"
+  cache_key:
+    type: string
+    default: virtualenv-venv-{{ checksum "dev-requirements-py2.txt" }}-{{ checksum "dev-requirements-py3.txt" }}-{{ checksum ".circleci/build-requirements.txt" }}-{{ checksum "package-lock.json" }}
 
 references:
   environment: &environment
@@ -170,7 +173,7 @@ references:
 
   restore_cache: &restore_cache
     restore_cache:
-      key: virtualenv-venv-{{ checksum "dev-requirements-py2.txt" }}-{{ checksum "dev-requirements-py3.txt" }}-{{ checksum ".circleci/build-requirements.txt" }}-{{ checksum "package-lock.json" }}
+      key: *cache_key
 
   remote_docker: &remote_docker
     setup_remote_docker:
@@ -327,7 +330,7 @@ jobs:
           paths:
             - venv
             - node_modules
-          key: virtualenv-venv-{{ checksum "dev-requirements-py2.txt" }}-{{ checksum "dev-requirements-py3.txt" }}-{{ checksum ".circleci/build-requirements.txt" }}-{{ checksum "package-lock.json" }}
+          key: *cache_key
       - *get_contribution_pack
       - *add_ssh_keys
       - *persist_to_workspace

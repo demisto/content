@@ -3,8 +3,9 @@
     key:
       files:
         - "dev-requirements-py3.txt"
+        - "dev-requirements-py2.txt"
         - "package-lock.json"
-      prefix: $CI_COMMIT_REF_SLUG
+      prefix: demisto-content
     paths:
       - $PIP_CACHE_DIR
       - venv/
