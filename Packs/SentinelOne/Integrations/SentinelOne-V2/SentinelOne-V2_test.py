@@ -160,7 +160,6 @@ def test_download_fetched_file(mocker, requests_mock, capfd):
     mocker.patch.object(sentinelone_v2, "return_results")
     main()
 
-
     call = sentinelone_v2.return_results.call_args_list
     command_results, file_result = call[0].args[0]
 
@@ -176,8 +175,8 @@ def test_get_blocklist(mocker, requests_mock):
     """
     raw_blockist_response = util_load_json('test_data/get_blocklist.json')
     blocklist_results = util_load_json('test_data/get_blocklist_results.json')
-    requests_mock.get("https://usea1.sentinelone.net/web/api/v2.1/restrictions?tenant=True&groupIds=group_id&siteIds=site_id"\
-                           "&accountIds=account_id&skip=0&limit=1&sortBy=updatedAt&sortOrder=desc",
+    requests_mock.get("https://usea1.sentinelone.net/web/api/v2.1/restrictions?tenant=True&groupIds=group_id&siteIds=site_id"
+                      "&accountIds=account_id&skip=0&limit=1&sortBy=updatedAt&sortOrder=desc",
                       json=raw_blockist_response)
 
     mocker.patch.object(demisto, 'params', return_value={'token': 'token',
@@ -211,8 +210,8 @@ def test_remove_hash_from_blocklist(mocker, requests_mock):
         Status that it has been removed from the blocklist
     """
     raw_blockist_response = util_load_json('test_data/remove_hash_from_blocklist.json')
-    requests_mock.get("https://usea1.sentinelone.net/web/api/v2.1/restrictions?tenant=True&skip=0&limit=4&sortBy=updatedAt&" \
-                           "sortOrder=asc&value__contains=f2ca1bb6c7e907d06dafe4687e579fce76b37e4e93b7605022da52e6ccc26fd2",
+    requests_mock.get("https://usea1.sentinelone.net/web/api/v2.1/restrictions?tenant=True&skip=0&limit=4&sortBy=updatedAt&"
+                      "sortOrder=asc&value__contains=f2ca1bb6c7e907d06dafe4687e579fce76b37e4e93b7605022da52e6ccc26fd2",
                       json=raw_blockist_response)
     requests_mock.delete("https://usea1.sentinelone.net/web/api/v2.1/restrictions", json={"data": []})
 
