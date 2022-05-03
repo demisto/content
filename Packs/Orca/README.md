@@ -8,6 +8,3 @@ Use this technology Content Pack to prioritize critical vulnerabilities that exi
 - Provides real time threat detection; alerts from Orca are pushed in real time.
 
 _For more information, visit [Orca Security](https://orca.security/)_
-
-[![Orca Security Overview](
-https://img.youtube.com/vi/dM1VU-akFGI/0.jpg)](https://www.youtube.com/watch?v=dM1VU-akFGI "Orca Security Overview")
