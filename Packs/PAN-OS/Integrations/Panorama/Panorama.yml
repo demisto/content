@@ -7720,6 +7720,289 @@ script:
       - contextPath: PANOS.InstallStatus.Summary.started
         description: Whether the download process has started.
         type: String
+  - arguments:
+    - default: false
+      defaultValue: null
+      description: String to filter to only check given devices
+      isArray: false
+      name: device_filter_string
+      required: false
+      secret: false
+    - default: false
+      defaultValue: critical,high
+      description: csv list of severities that must be in drop/reset/block-ip mode.
+      isArray: false
+      name: minimum_block_severities
+      required: false
+      secret: false
+    - default: false
+      defaultValue: medium,low
+      description: csv list of severities that must be in alert/default or higher
+        mode.
+      isArray: false
+      name: minimum_alert_severities
+      required: false
+      secret: false
+    deprecated: false
+    description: Checks the configured Anti-spyware profiles to ensure at least one
+      meets best practices.
+    name: pan-os-hygiene-check-spyware-profiles
+    outputs:
+    - contextPath: PANOS.ConfigurationHygiene.Summary.description
+      description: The description of the check
+      type: String
+    - contextPath: PANOS.ConfigurationHygiene.Summary.issue_code
+      description: The shorthand code for this hygiene check
+      type: String
+    - contextPath: PANOS.ConfigurationHygiene.Summary.result
+      description: Whether the check passed or failed
+      type: String
+    - contextPath: PANOS.ConfigurationHygiene.Summary.issue_count
+      description: Total number of matching issues
+      type: String
+    - contextPath: PANOS.ConfigurationHygiene.Result.hostid
+      type: String
+      description: Host ID.
+    - contextPath: PANOS.ConfigurationHygiene.Result.container_name
+      description: What parent container (DG, Template, VSYS) this object belongs
+        to.
+      type: String
+    - contextPath: PANOS.ConfigurationHygiene.Result.issue_code
+      description: The shorthand code for the issue
+      type: String
+    - contextPath: PANOS.ConfigurationHygiene.Result.description
+      description: Human readable description of issue
+      type: String
+    - contextPath: PANOS.ConfigurationHygiene.Result.name
+      description: The affected object name
+      type: String
+  - arguments:
+    - default: false
+      defaultValue: null
+      description: String to filter to only check given device
+      isArray: false
+      name: device_filter_string
+      required: false
+      secret: false
+    deprecated: false
+    description: Checks the configured URL Filtering profiles to ensure at least one
+      meets best practices.
+    name: pan-os-hygiene-check-url-filtering-profiles
+    outputs:
+    - contextPath: PANOS.ConfigurationHygiene.Summary.description
+      description: The description of the check
+      type: String
+    - contextPath: PANOS.ConfigurationHygiene.Summary.issue_code
+      description: The shorthand code for this hygiene check
+      type: String
+    - contextPath: PANOS.ConfigurationHygiene.Summary.result
+      description: Whether the check passed or failed
+      type: String
+    - contextPath: PANOS.ConfigurationHygiene.Summary.issue_count
+      description: Total number of matching issues
+      type: String
+    - contextPath: PANOS.ConfigurationHygiene.Result.hostid
+      type: String
+      description: Host ID.
+    - contextPath: PANOS.ConfigurationHygiene.Result.container_name
+      description: What parent container (DG, Template, VSYS) this object belongs
+        to.
+      type: String
+    - contextPath: PANOS.ConfigurationHygiene.Result.issue_code
+      description: The shorthand code for the issue
+      type: String
+    - contextPath: PANOS.ConfigurationHygiene.Result.description
+      description: Human readable description of issue
+      type: String
+    - contextPath: PANOS.ConfigurationHygiene.Result.name
+      description: The affected object name
+      type: String
+  - arguments:
+    - default: false
+      defaultValue: null
+      description: String to filter to only check given device
+      isArray: false
+      name: device_filter_string
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns a list of existing PANOS URL filtering objects that conform
+      to best practices.
+    name: pan-os-hygiene-conforming-url-filtering-profiles
+    outputs:
+    - contextPath: PANOS.PanosObject.hostid
+      type: String
+      description: Host ID.
+    - contextPath: PANOS.PanosObject.container_name
+      description: What parent container (DG, Template, VSYS) this object belongs
+        to.
+      type: String
+    - contextPath: PANOS.PanosObject.name
+      description: The PAN-OS object name
+      type: String
+    - contextPath: PANOS.PanosObject.object_type
+      description: The PAN-OS-Python object type
+      type: String
+  - arguments:
+    - default: false
+      defaultValue: null
+      description: String to filter to only check given device
+      isArray: false
+      name: device_filter_string
+      required: false
+      secret: false
+    - default: false
+      defaultValue: critical,high
+      description: csv list of severities that must be in drop/reset/block-ip mode.
+      isArray: false
+      name: minimum_block_severities
+      required: false
+      secret: false
+    - default: false
+      defaultValue: medium,low
+      description: csv list of severities that must be in alert/default or higher
+        mode.
+      isArray: false
+      name: minimum_alert_severities
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns all Anti-spyware profiles that conform to best practices.
+    name: pan-os-hygiene-conforming-spyware-profiles
+    outputs:
+    - contextPath: PANOS.PanosObject.hostid
+      type: String
+      description: Host ID.
+    - contextPath: PANOS.PanosObject.container_name
+      description: What parent container (DG, Template, VSYS) this object belongs
+        to.
+      type: String
+    - contextPath: PANOS.PanosObject.name
+      description: The PAN-OS object name
+      type: String
+    - contextPath: PANOS.PanosObject.object_type
+      description: The PAN-OS-Python object type
+      type: String
+  - arguments:
+    - default: false
+      defaultValue: null
+      description: String to filter to only check given device
+      isArray: false
+      name: device_filter_string
+      required: false
+      secret: false
+    - default: false
+      defaultValue: critical,high
+      description: csv list of severities that must be in drop/reset/block-ip mode.
+      isArray: false
+      name: minimum_block_severities
+      required: false
+      secret: false
+    - default: false
+      defaultValue: medium,low
+      description: csv list of severities that must be in alert/default or higher
+        mode.
+      isArray: false
+      name: minimum_alert_severities
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns all Vulnerability profiles that conform to best practices.
+    name: pan-os-hygiene-conforming-vulnerability-profiles
+    outputs:
+    - contextPath: PANOS.PanosObject.hostid
+      type: String
+      description: Host ID.
+    - contextPath: PANOS.PanosObject.container_name
+      description: What parent container (DG, Template, VSYS) this object belongs
+        to.
+      type: String
+    - contextPath: PANOS.PanosObject.name
+      description: The PAN-OS object name
+      type: String
+    - contextPath: PANOS.PanosObject.object_type
+      description: The PAN-OS-Python object type
+      type: String
+  - arguments:
+    - default: false
+      defaultValue: null
+      description: String to filter to only check given device
+      isArray: false
+      name: device_filter_string
+      required: false
+      secret: false
+    deprecated: false
+    description: Check configured security zones have correct settings.
+    name: pan-os-hygiene-check-security-zones
+    outputs:
+    - contextPath: PANOS.ConfigurationHygiene.Summary.description
+      description: The description of the check
+      type: String
+    - contextPath: PANOS.ConfigurationHygiene.Summary.issue_code
+      description: The shorthand code for this hygiene check
+      type: String
+    - contextPath: PANOS.ConfigurationHygiene.Summary.result
+      description: Whether the check passed or failed
+      type: String
+    - contextPath: PANOS.ConfigurationHygiene.Summary.issue_count
+      description: Total number of matching issues
+      type: String
+    - contextPath: PANOS.ConfigurationHygiene.Result.hostid
+      type: String
+      description: Host ID.
+    - contextPath: PANOS.ConfigurationHygiene.Result.container_name
+      description: What parent container (DG, Template, VSYS) this object belongs
+        to.
+      type: String
+    - contextPath: PANOS.ConfigurationHygiene.Result.issue_code
+      description: The shorthand code for the issue
+      type: String
+    - contextPath: PANOS.ConfigurationHygiene.Result.description
+      description: Human readable description of issue
+      type: String
+    - contextPath: PANOS.ConfigurationHygiene.Result.name
+      description: The affected object name
+      type: String
+  - arguments:
+    - default: false
+      defaultValue: null
+      description: String to filter to only check given device
+      isArray: false
+      name: device_filter_string
+      required: false
+      secret: false
+    deprecated: false
+    description: Check security rules are configured correctly.
+    name: pan-os-hygiene-check-security-rules
+    outputs:
+    - contextPath: PANOS.ConfigurationHygiene.Summary.description
+      description: The description of the check
+      type: String
+    - contextPath: PANOS.ConfigurationHygiene.Summary.issue_code
+      description: The shorthand code for this hygiene check
+      type: String
+    - contextPath: PANOS.ConfigurationHygiene.Summary.result
+      description: Whether the check passed or failed
+      type: String
+    - contextPath: PANOS.ConfigurationHygiene.Summary.issue_count
+      description: Total number of matching issues
+      type: String
+    - contextPath: PANOS.ConfigurationHygiene.Result.hostid
+      type: String
+      description: Host ID.
+    - contextPath: PANOS.ConfigurationHygiene.Result.container_name
+      description: What parent container (DG, Template, VSYS) this object belongs
+        to.
+      type: String
+    - contextPath: PANOS.ConfigurationHygiene.Result.issue_code
+      description: The shorthand code for the issue
+      type: String
+    - contextPath: PANOS.ConfigurationHygiene.Result.description
+      description: Human readable description of issue
+      type: String
+    - contextPath: PANOS.ConfigurationHygiene.Result.name
+      description: The affected object name
+      type: String
   dockerimage: demisto/pan-os-python:1.0.0.29113
   feed: false
   isfetch: false
