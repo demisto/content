@@ -13,109 +13,10 @@ configuration:
   name: credentials_json
   required: true
   type: 4
-- display: Types of Events to Ingest as Incidents
-  hidden: false
-  name: event_type
-  options:
-  - ACCESS_GRANTED
-  - ACCESS_REVOKED
-  - ADD_DEVICE_ASSOCIATION
-  - ADD_LOGIN_ACTIVITY_DEVICE
-  - ADMIN_LOGIN
-  - APPLICATION_CREATED
-  - APPLICATION_PUBLIC_KEY_ADDED
-  - APPLICATION_PUBLIC_KEY_DELETED
-  - CHANGE_ADMIN_ROLE
-  - CHANGE_FOLDER_PERMISSION
-  - COLLABORATION_ACCEPT
-  - COLLABORATION_EXPIRATION
-  - COLLABORATION_INVITE
-  - COLLABORATION_REMOVE
-  - COLLABORATION_ROLE_CHANGE
-  - COMMENT_CREATE
-  - COMMENT_DELETE
-  - CONTENT_ACCESS
-  - CONTENT_WORKFLOW_ABNORMAL_DOWNLOAD_ACTIVITY
-  - CONTENT_WORKFLOW_AUTOMATION_ADD
-  - CONTENT_WORKFLOW_AUTOMATION_DELETE
-  - CONTENT_WORKFLOW_POLICY_ADD
-  - CONTENT_WORKFLOW_SHARING_POLICY_VIOLATION
-  - CONTENT_WORKFLOW_UPLOAD_POLICY_VIOLATION
-  - COPY
-  - DATA_RETENTION_CREATE_RETENTION
-  - DATA_RETENTION_REMOVE_RETENTION
-  - DELETE
-  - DELETE_USER
-  - DEVICE_TRUST_CHECK_FAILED
-  - DOWNLOAD
-  - EDIT
-  - EDIT_USER
-  - EMAIL_ALIAS_CONFIRM
-  - EMAIL_ALIAS_REMOVE
-  - ENTERPRISE_APP_AUTHORIZATION_UPDATE
-  - EXTERNAL_COLLAB_SECURITY_SETTINGS
-  - FAILED_LOGIN
-  - FILE_MARKED_MALICIOUS
-  - FILE_WATERMARKED_DOWNLOAD
-  - GROUP_ADD_ITEM
-  - GROUP_ADD_USER
-  - GROUP_CREATION
-  - GROUP_DELETION
-  - GROUP_EDITED
-  - GROUP_REMOVE_ITEM
-  - GROUP_REMOVE_USER
-  - ITEM_MODIFY
-  - ITEM_OPEN
-  - ITEM_SHARED_UPDATE
-  - ITEM_SYNC
-  - ITEM_UNSYNC
-  - LEGAL_HOLD_ASSIGNMENT_CREATE
-  - LEGAL_HOLD_ASSIGNMENT_DELETE
-  - LEGAL_HOLD_POLICY_CREATE
-  - LEGAL_HOLD_POLICY_DELETE
-  - LEGAL_HOLD_POLICY_UPDATE
-  - LOCK
-  - LOGIN
-  - METADATA_INSTANCE_CREATE
-  - METADATA_INSTANCE_DELETE
-  - METADATA_INSTANCE_UPDATE
-  - METADATA_TEMPLATE_CREATE
-  - METADATA_TEMPLATE_UPDATE
-  - METADATA_TEMPLATE_DELETE
-  - MOVE
-  - NEW_USER
-  - OAUTH2_ACCESS_TOKEN_REVOKE
-  - PREVIEW
-  - REMOVE_DEVICE_ASSOCIATION
-  - REMOVE_LOGIN_ACTIVITY_DEVICE
-  - RENAME
-  - RETENTION_POLICY_ASSIGNMENT_ADD
-  - SHARE
-  - SHARE_EXPIRATION
-  - SHIELD_ALERT
-  - STORAGE_EXPIRATION
-  - TASK_ASSIGNMENT_UPDATE
-  - TASK_ASSIGNMENT_CREATE
-  - TASK_ASSIGNMENT_DELETE
-  - TASK_CREATE
-  - TASK_UPDATE
-  - TERMS_OF_SERVICE_ACCEPT
-  - TERMS_OF_SERVICE_REJECT
-  - UNDELETE
-  - UNLOCK
-  - UNSHARE
-  - UPDATE_COLLABORATION_EXPIRATION
-  - UPDATE_SHARE_EXPIRATION
-  - UPLOAD
-  - USER_AUTHENTICATE_OAUTH2_ACCESS_TOKEN_CREATE
-  - WATERMARK_LABEL_CREATE
-  - WATERMARK_LABEL_DELETE
-  required: false
-  type: 16
 - display: Fetch Events
-  name: isfetchevents
-  required: false
+  name: isFetchEvents
   type: 8
+  required: false
 - defaultvalue: 7 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: created_after
@@ -133,34 +34,16 @@ script:
   commands:
   - arguments:
     - default: false
-      description: The ID of the user who currently owns the folder.
+      description: Maximum events to fetch
       isArray: false
-      name: from_user_id
+      name: limit
+      defaultvalue: 10
       required: true
-      secret: false
-    - default: false
-      description: The ID of the user who will receive the folders.
-      isArray: false
-      name: to_user_id
-      required: true
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: 'true'
-      description: Determines if users should receive email notification for the action
-        performed.
-      isArray: false
-      name: notify
-      predefined:
-      - 'true'
-      - 'false'
-      required: false
       secret: false
     deprecated: false
-    description: Move all of the items (files, folders and workflows) owned by a user
-      into another user's account.
+    description: Get events.
     execution: false
-    name: box-move-folder
+    name: get-events
     outputs:
     - contextPath: Box.Folder.id
       description: The ID of the folder created.
@@ -338,6 +221,7 @@ script:
   script: '-'
   subtype: python3
   type: python
+  isfetchevents: true
 tests:
 - NoTest
 fromversion: 5.0.0
