@@ -50,6 +50,7 @@ def get_incident_extra_data_by_status(incident_id, alerts_limit):
 @pytest.mark.parametrize(argnames='time_to_convert, expected_value',
                          argvalues=[('1322683200000', 1322683200000),
                                     ('2018-11-06T08:56:41', 1541487401000)])
+@freeze_time("2022-05-03 11:00:00 GMT")
 def test_convert_time_to_epoch(time_to_convert, expected_value):
     from CortexXDRIR import convert_time_to_epoch
     assert convert_time_to_epoch(time_to_convert) == expected_value
@@ -2582,7 +2583,7 @@ def test_get_original_alerts_command(requests_mock):
     assert event.get('cloud_provider') == 'AWS'  # assert general filter is correct
     assert event.get('raw_log', {}).get('userIdentity', {}).get('accountId') == 'ID'  # assert vendor filter is correct
 
-
+@freeze_time("2022-05-03 11:00:00 GMT")
 def test_get_alert_by_filter(requests_mock, mocker):
     from CortexXDRIR import get_alerts_by_filter_command, Client
     api_response = load_test_data('./test_data/get_alerts_by_filter_results.json')
