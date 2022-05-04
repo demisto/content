@@ -83,6 +83,17 @@ class Client(BaseClient):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
+    def _http_request(self, *args, **kwargs):
+
+        if kwargs.get('method', None) == 'GET' and len(kwargs.get('params', {})) > 0:
+            params = kwargs.pop('params')
+            suffix = kwargs.pop('url_suffix')
+            suffix += '?{}'.format('&'.join(['{}={}'.format(k, v) for (k, v) in params.items()]))
+            kwargs['url_suffix'] = suffix
+
+        return super()._http_request(*args, **kwargs)
+
+
     def test_api(self):
         return self._http_request(
             method='GET',
