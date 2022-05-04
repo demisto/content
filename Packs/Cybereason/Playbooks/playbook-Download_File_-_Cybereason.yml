@@ -2,6 +2,7 @@ id: ae2f13c5-b039-42cf-878f-fe30fb85903b
 version: 8
 vcShouldKeepItemLegacyProdMachine: false
 name: Download_File
+description: This playbook starts the file download operation and finally give an option to download the file if possible based on the Malop ID and username provided.
 starttaskid: "0"
 tasks:
   "0":
@@ -12,6 +13,7 @@ tasks:
       id: 268efc89-42f3-4e3e-8da8-8038f27272a4
       version: -1
       name: ""
+      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -147,3 +149,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 6.5.0
