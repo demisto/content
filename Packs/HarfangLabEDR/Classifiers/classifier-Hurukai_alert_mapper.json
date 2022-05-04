@@ -57,27 +57,7 @@
                     "simple": "eventlog.type"
                 },
                 "Incident Link": {
-                    "complex": {
-                        "filters": [],
-                        "root": "id",
-                        "transformers": [
-                            {
-                                "args": {
-                                    "regex": {
-                                        "value": {
-                                            "simple": "(.*)"
-                                        }
-                                    },
-                                    "replaceWith": {
-                                        "value": {
-                                            "simple": "https://hurukai:8443/security-event/$1/summary"
-                                        }
-                                    }
-                                },
-                                "operator": "replaceMatch"
-                            }
-                        ]
-                    }
+                    "simple": "incident_link"
                 },
                 "Log Source": {
                     "simple": "eventlog.source_name"

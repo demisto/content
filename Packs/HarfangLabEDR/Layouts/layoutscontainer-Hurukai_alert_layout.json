@@ -152,6 +152,15 @@
                                 "index": 14,
                                 "sectionItemType": "field",
                                 "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "incidentlink",
+                                "height": 22,
+                                "id": "20b23801-b529-11ec-b202-11c19e9dfb2c",
+                                "index": 15,
+                                "sectionItemType": "field",
+                                "startCol": 0
                             }
                         ],
                         "maxH": null,

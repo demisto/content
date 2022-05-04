@@ -83,14 +83,6 @@ class Client(BaseClient):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-    def _http_request(self, *args, **kwargs):
-        if kwargs.get('method', None) == 'GET' and len(kwargs.get('params', {})) > 0:
-            params = kwargs.pop('params')
-            suffix = kwargs.pop('url_suffix')
-            suffix += '?{}'.format('&'.join(['{}={}'.format(k, v) for (k, v) in params.items()]))
-            kwargs['url_suffix'] = suffix
-        return super()._http_request(*args, **kwargs)
-
     def test_api(self):
         return self._http_request(
             method='GET',
@@ -98,8 +90,7 @@ class Client(BaseClient):
         )
 
     def get_api_token(self):
-        data = {}
-        data['is_expirable'] = True
+        data = assign_params(is_expirable=True)
 
         return self._http_request(
             method='POST',
@@ -115,12 +106,8 @@ class Client(BaseClient):
             )
 
     def endpoint_search(self, hostname=None, offset=0):
-        data = {}
 
-        if hostname:
-            data['hostname'] = hostname
-        if offset:
-            data['offset'] = offset
+        data = assign_params(hostname=hostname, offset=offset)
 
         return self._http_request(
             method='GET',
@@ -402,7 +389,7 @@ def fetch_incidents(client, args):
     alert_status = args.get('alert_status', None)
     alert_type = args.get('alert_type', None)
     min_severity = args.get('min_severity', SEVERITIES[0])
-    max_results = args.get('max_results', None)
+    max_results = args.get('max_fetch', None)
 
     severity = ','.join(SEVERITIES[SEVERITIES.index(min_severity):]).lower()
 
@@ -482,6 +469,8 @@ def fetch_incidents(client, args):
                         elif content[0] == 't':
                             technique_id.append(content)
 
+                alert_id = alert.get('id', None)
+                alert['incident_link'] = f'{client._base_url}/security-event/{alert_id}/summary'
                 incident = {
                     'name': alert.get('rule_name', None),
                     'occurred': alert.get('alert_time', None),
@@ -489,7 +478,6 @@ def fetch_incidents(client, args):
                     'rawJSON': json.dumps(alert)
                 }
 
-                alert_id = alert.get('id', None)
                 if alert_id not in already_fetched_previous:
                     incidents.append(incident)
                     already_fetched_current.append(alert_id)
@@ -518,7 +506,7 @@ def get_endpoint_info(client, args):
 
     agent = client.get_endpoint_info(agent_id)
 
-    readable_output = tableToMarkdown(f'Endpoint information for agent_id : {agent_id}', agent)
+    readable_output = tableToMarkdown(f'Endpoint information for agent_id : {agent_id}', agent, removeNull=True)
 
     outputs = {
         'Harfanglab.Agent(val.agentid == obj.agentid)': agent
@@ -537,7 +525,7 @@ def endpoint_search(client, args):
 
     data = client.endpoint_search(hostname)
 
-    readable_output = tableToMarkdown(f'Endpoint information for Hostname : {hostname}', data['results'])
+    readable_output = tableToMarkdown(f'Endpoint information for Hostname : {hostname}', data['results'], removeNull=True)
 
     outputs = {
         'Harfanglab.Agent(val.agentid == obj.agentid)': data['results']
@@ -564,7 +552,6 @@ def job_create(client, args, parameters=None, can_use_previous_job=True):
             return True, previous_job_id
 
     data = client.job_create(agent_id, action, parameters)
-    time.sleep(2)
 
     job_id = data[0]['id']
     return True, job_id
@@ -617,7 +604,7 @@ def job_info(client, args):
     ec = {
         'Harfanglab.Job.Info(val.ID && val.ID == obj.ID)': context,
     }
-    readable_output = tableToMarkdown('Jobs Info', context, headers=['ID', 'Status', 'Creation date'])
+    readable_output = tableToMarkdown('Jobs Info', context, headers=['ID', 'Status', 'Creation date'], removeNull=True)
 
     entry = {
         'Type': entryTypes['note'],
@@ -692,7 +679,7 @@ def result_pipelist(client, args):
 
     data = client.job_data(job_id, 'pipe', ordering='name')
     pipes = [x['name'] for x in data['results']]
-    readable_output = tableToMarkdown('Pipe List', pipes, headers=['name'])
+    readable_output = tableToMarkdown('Pipe List', pipes, headers=['name'], removeNull=True)
 
     ec = {
         'Harfanglab.Pipe(val.agent_id && val.agent_id === obj.agent_id)': {
@@ -737,7 +724,7 @@ def result_prefetchlist(client, args):
             'last executed': last_executed
         })
 
-    readable_output = tableToMarkdown('Prefetch List', prefetchs, headers=['executable name', 'last executed'])
+    readable_output = tableToMarkdown('Prefetch List', prefetchs, headers=['executable name', 'last executed'], removeNull=True)
 
     ec = {
         'Harfanglab.Prefetch(val.agent_id && val.agent_id === obj.agent_id)': {
@@ -780,7 +767,7 @@ def result_runkeylist(client, args):
             'md5': x.get('binaryinfo', {}).get('binaryinfo', {}).get('md5', ''),
         })
 
-    readable_output = tableToMarkdown('RunKey List', output, headers=['name', 'fullpath', 'signed', 'md5'])
+    readable_output = tableToMarkdown('RunKey List', output, headers=['name', 'fullpath', 'signed', 'md5'], removeNull=True)
 
     ec = {
         'Harfanglab.RunKey(val.agent_id && val.agent_id === obj.agent_id)': {
@@ -823,7 +810,7 @@ def result_scheduledtasklist(client, args):
             'md5': x.get('binaryinfo', {}).get('binaryinfo', {}).get('md5'),
         })
 
-    readable_output = tableToMarkdown('Scheduled Task List', output, headers=['name', 'fullpath', 'signed', 'md5'])
+    readable_output = tableToMarkdown('Scheduled Task List', output, headers=['name', 'fullpath', 'signed', 'md5'], removeNull=True)
 
     ec = {
         'Harfanglab.ScheduledTask(val.agent_id && val.agent_id === obj.agent_id)': {
@@ -865,7 +852,7 @@ def result_linux_persistence_list(client, args):
             'fullpath': x.get('binaryinfo', {}).get('fullpath', None),
         })
 
-    readable_output = tableToMarkdown('Linux persistence list', output, headers=['type', 'filename', 'fullpath'])
+    readable_output = tableToMarkdown('Linux persistence list', output, headers=['type', 'filename', 'fullpath'], removeNull=True)
 
     ec = {
         'Harfanglab.Persistence(val.agent_id && val.agent_id === obj.agent_id)': {
@@ -907,7 +894,7 @@ def result_driverlist(client, args):
             'md5': x.get('binaryinfo', {}).get('binaryinfo', {}).get('md5'),
         })
 
-    readable_output = tableToMarkdown('Driver List', output, headers=['fullpath', 'signed', 'md5'])
+    readable_output = tableToMarkdown('Driver List', output, headers=['fullpath', 'signed', 'md5'], removeNull=True)
 
     ec = {
         'Harfanglab.Driver(val.agent_id && val.agent_id === obj.agent_id)': {
@@ -951,7 +938,7 @@ def result_servicelist(client, args):
             'md5': x.get('binaryinfo', {}).get('binaryinfo', {}).get('md5'),
         })
 
-    readable_output = tableToMarkdown('Scheduled Task List', output, headers=['name', 'image_path', 'fullpath', 'signed', 'md5'])
+    readable_output = tableToMarkdown('Scheduled Task List', output, headers=['name', 'image_path', 'fullpath', 'signed', 'md5'], removeNull=True)
 
     ec = {
         'Harfanglab.Service(val.agent_id && val.agent_id === obj.agent_id)': {
@@ -996,7 +983,11 @@ def result_startuplist(client, args):
         })
 
     readable_output = tableToMarkdown('Startup List', output, headers=[
-                                      'startup_name', 'startup_fullpath', 'fullpath', 'signed', 'md5'])
+                                      'startup_name', 
+                                      'startup_fullpath', 
+                                      'fullpath', 
+                                      'signed', 
+                                      'md5'], removeNull=True)
 
     ec = {
         'Harfanglab.Startup(val.agent_id && val.agent_id === obj.agent_id)': {
@@ -1045,7 +1036,7 @@ def result_wmilist(client, args):
                                       'event filter name',
                                       'event consumer name',
                                       'event filter',
-                                      'consumer data'])
+                                      'consumer data'], removeNull=True)
 
     ec = {
         'Harfanglab.Wmi(val.agent_id && val.agent_id === obj.agent_id)': {
@@ -1104,7 +1095,7 @@ def result_processlist(client, args):
                                       'cmdline',
                                       'fullpath',
                                       'signed',
-                                      'md5'])
+                                      'md5'], removeNull=True)
 
     ec = {
         'Harfanglab.Process(val.agent_id && val.agent_id === obj.agent_id)': {
@@ -1160,7 +1151,8 @@ def result_networkconnectionlist(client, args):
                 })
 
     readable_output = tableToMarkdown('Network Connection List', output, headers=[
-        'state', 'protocol', 'version', 'src_addr', 'src_port', 'dst_addr', 'dst_port', 'fullpath', 'signed', 'md5']
+        'state', 'protocol', 'version', 'src_addr', 'src_port', 'dst_addr', 'dst_port', 'fullpath', 'signed', 'md5'],
+        removeNull=True
     )
 
     ec = {
@@ -1209,7 +1201,7 @@ def result_networksharelist(client, args):
         })
 
     readable_output = tableToMarkdown('Network Share List', output, headers=[
-        'Name', 'Caption', 'Description', 'Path', 'Status', 'Share type val', 'Share type', 'Hostname']
+        'Name', 'Caption', 'Description', 'Path', 'Status', 'Share type val', 'Share type', 'Hostname'], removeNull=True
     )
 
     ec = {
@@ -1256,7 +1248,7 @@ def result_sessionlist(client, args):
         })
 
     readable_output = tableToMarkdown('Session List', output, headers=[
-        'Logon Id', 'Authentication package', 'Logon type', 'Logon type str', 'Session start time', 'Hostname']
+        'Logon Id', 'Authentication package', 'Logon type', 'Logon type str', 'Session start time', 'Hostname'], removeNull=True
     )
 
     ec = {
@@ -1373,7 +1365,7 @@ def result_ioc(client, args):
         })
 
     readable_output = tableToMarkdown('IOC Found List', output, headers=[
-        'type', 'search_value', 'fullpath', 'signed', 'md5', 'registry_path', 'registry_key', 'registry_value'],
+        'type', 'search_value', 'fullpath', 'signed', 'md5', 'registry_path', 'registry_key', 'registry_value'], removeNull=True
     )
 
     ec = {
@@ -1452,7 +1444,7 @@ def global_result_artifact(client, args, artifact_type):
         })
 
     readable_output = tableToMarkdown(f'{artifact_type} download list', output, headers=[
-                                      'hostname', 'msg', 'size', 'download link'])
+                                      'hostname', 'msg', 'size', 'download link'], removeNull=True)
 
     ec = {
         'Harfanglab.Artifact(val.agent_id && val.agent_id === obj.agent_id)': {
@@ -1566,7 +1558,7 @@ def result_artifact_downloadfile(client, args):
             'download link': link
         })
 
-    readable_output = tableToMarkdown('file download list', output, headers=['hostname', 'msg', 'size', 'download link'])
+    readable_output = tableToMarkdown('file download list', output, headers=['hostname', 'msg', 'size', 'download link'], removeNull=True)
 
     ec = {
         'Harfanglab.DownloadFile(val.agent_id && val.agent_id === obj.agent_id)': {
@@ -1619,7 +1611,8 @@ def result_artifact_ramdump(client, args):
             'download link': link
         })
 
-    readable_output = tableToMarkdown('Ramdump list', output, headers=['hostname', 'msg', 'size', 'download link'])
+    readable_output = tableToMarkdown('Ramdump list', output, headers=['hostname', 'msg', 'size', 'download link'], 
+            removeNull=True)
 
     ec = {
         'Harfanglab.Ramdump(val.agent_id && val.agent_id === obj.agent_id)': {
@@ -1671,7 +1664,7 @@ def hunt_search_hash(client, args):
                 outputs_prefix='Harfanglab.Hash',
                 outputs_key_field='hash',
                 outputs=outputs,
-                readable_output=tableToMarkdown('Hash search results', outputs)
+                readable_output=tableToMarkdown('Hash search results', outputs, removeNull=True)
             ))
 
         for x in data['data']:
@@ -1695,7 +1688,7 @@ def hunt_search_hash(client, args):
                 outputs_prefix='Harfanglab.Hash',
                 outputs_key_field='hash',
                 outputs=outputs,
-                readable_output=tableToMarkdown('Hash search results', outputs)
+                readable_output=tableToMarkdown('Hash search results', outputs, removeNull=True)
             ))
 
         return_results(results)
@@ -1745,7 +1738,7 @@ def hunt_search_running_process_hash(client, args):
                                           "OS",
                                           "Binary Path",
                                           "Create timestamp",
-                                          "Is maybe hollow"])
+                                          "Is maybe hollow"], removeNull=True)
 
         ec = {
             'Harfanglab.HuntRunningProcessSearch(val.hash && val.hash === obj.hash)': {
@@ -1798,7 +1791,8 @@ def hunt_search_runned_process_hash(client, args):
             })
 
         readable_output = tableToMarkdown('War room overview', prefetchs, headers=[
-                                          "Hostname", "Domain", "Username", "OS", "Binary Path", "Create timestamp"])
+                                          "Hostname", "Domain", "Username", "OS", "Binary Path", "Create timestamp"], 
+                                          removeNull=True)
 
         ec = {
             'Harfanglab.HuntRunnedProcessSearch(val.hash && val.hash === obj.hash)': {
@@ -1985,7 +1979,7 @@ class Telemetry:
 
         # Determines headers for readable output
         headers = [label for label in output[0].keys()] if len(output) > 0 else []
-        readable_output = tableToMarkdown(self.title, output, headers=headers)
+        readable_output = tableToMarkdown(self.title, output, headers=headers, removeNull=True)
 
         ec = {
             f'Harfanglab.Telemetry{self.telemetry_type}(val.agent_id && val.agent_id === obj.agent_id)': {
@@ -2271,7 +2265,7 @@ def main():
             args['alert_status'] = demisto.params().get('alert_status', None)
             args['alert_type'] = demisto.params().get('alert_type', None)
             args['min_severity'] = demisto.params().get('min_severity', SEVERITIES[0])
-            args['max_results'] = demisto.params().get('max_results', None)
+            args['max_fetch'] = demisto.params().get('max_fetch', None)
         target_function(client, args)
 
     # Log exceptions
