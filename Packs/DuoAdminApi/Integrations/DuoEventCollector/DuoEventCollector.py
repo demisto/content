@@ -65,7 +65,7 @@ def override_make_request(self, method, uri, body, headers):
     response = conn.getresponse()
     data = response.read()
     self._disconnect(conn)
-    return (response, data)
+    return response, data
 
 
 # Utility Methods
@@ -186,9 +186,9 @@ def get_user_id(username):
 def test_instance():
     try:
         # aa = admin_api.get_users()
-        aa= admin_api.get_authentication_log(api_version=2)
-        aa= admin_api.get_administrator_log()
-        aa= admin_api.get_telephony_log()
+        aa = admin_api.get_authentication_log(api_version=2, mintime=1651352400000)
+        # aa = admin_api.get_administrator_log()
+        # aa = admin_api.get_telephony_log()
         demisto.results('ok')
         # aa = json.dumps(aa)
         print(aa)
