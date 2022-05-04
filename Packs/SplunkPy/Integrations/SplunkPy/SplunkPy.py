@@ -7,7 +7,7 @@ import splunklib.client as client
 import splunklib.results as results
 import json
 from datetime import timedelta, datetime
-import pytz
+import pytz  # type: ignore[import]
 import dateparser  # type: ignore
 import urllib2
 import hashlib
@@ -153,14 +153,14 @@ class UserMappingObject:
         for user in xsoar_users:
             splunk_user = self.get_splunk_user_by_xsoar(user, map_missing=map_missing) if user else None
             outputs.append(
-                {'Xsoar User': user,
-                 'Splunk User': splunk_user if splunk_user else 'Could not map splunk user, Check logs for more info.'})
+                {'XsoarUser': user,
+                 'SplunkUser': splunk_user if splunk_user else 'Could not map splunk user, Check logs for more info.'})
 
         return CommandResults(
             outputs=outputs,
             outputs_prefix='Splunk.UserMapping',
             readable_output=tableToMarkdown('Xsoar-Splunk Username Mapping', outputs,
-                                            headers=['Xsoar User', 'Splunk User'])
+                                            headers=['XsoarUser', 'SplunkUser'])
         )
 
 
@@ -547,9 +547,8 @@ class Notable:
             incident["severity"] = severity_to_level(notable_data['urgency'])
         if demisto.get(notable_data, 'rule_description'):
             incident["details"] = notable_data["rule_description"]
-        if demisto.get(notable_data, "owner"):
-            owner = mapper.get_xsoar_user_by_splunk(
-                notable_data["owner"]) if mapper.should_map else notable_data["owner"]
+        if demisto.get(notable_data, "owner") and mapper.should_map:
+            owner = mapper.get_xsoar_user_by_splunk(notable_data["owner"])
             if owner:
                 incident["owner"] = owner
         incident["occurred"] = occurred
@@ -993,7 +992,7 @@ def asset_enrichment(service, notable_data, num_enrichment_events):
     return job
 
 
-def handle_submitted_notables(service, incidents, cache_object):
+def handle_submitted_notables(service, incidents, cache_object, mapper):
     """ Handles submitted notables. For each submitted notable, tries to retrieve its results, if results aren't ready,
      it moves to the next submitted notable.
 
@@ -1012,7 +1011,7 @@ def handle_submitted_notables(service, incidents, cache_object):
     for notable in notables[:MAX_HANDLE_NOTABLES]:
         task_status = handle_submitted_notable(service, notable, enrichment_timeout)
         if task_status:
-            incidents.append(notable.to_incident())
+            incidents.append(notable.to_incident(mapper))
             handled_notables.append(notable)
 
     cache_object.submitted_notables = [n for n in notables if n not in handled_notables]
@@ -1065,7 +1064,7 @@ def handle_submitted_notable(service, notable, enrichment_timeout):
     return task_status
 
 
-def submit_notables(service, incidents, cache_object):
+def submit_notables(service, incidents, cache_object, mapper):
     """ Submits fetched notables to Splunk for an enrichment.
 
     Args:
@@ -1088,7 +1087,7 @@ def submit_notables(service, incidents, cache_object):
             submitted_notables.append(notable)
             demisto.debug('Submitted enrichment request to Splunk for notable {}'.format(notable.id))
         else:
-            incidents.append(notable.to_incident())
+            incidents.append(notable.to_incident(mapper))
             failed_notables.append(notable)
             demisto.debug('Created incident from notable {} as each enrichment submission failed'.format(notable.id))
 
@@ -1148,10 +1147,10 @@ def run_enrichment_mechanism(service, integration_context, mapper):
     cache_object = Cache.load_from_integration_context(integration_context)
 
     try:
-        handle_submitted_notables(service, incidents, cache_object)
+        handle_submitted_notables(service, incidents, cache_object, mapper)
         if cache_object.done_submitting() and cache_object.done_handling():
             fetch_notables(service=service, cache_object=cache_object, enrich_notables=True, mapper=mapper)
-        submit_notables(service, incidents, cache_object)
+        submit_notables(service, incidents, cache_object, mapper)
 
     except Exception as e:
         err = 'Caught an exception while executing the enriching fetch mechanism. Additional Info: {}'.format(str(e))
@@ -1162,7 +1161,7 @@ def run_enrichment_mechanism(service, integration_context, mapper):
         store_incidents_for_mapping(incidents, integration_context)
         handled_but_not_created_incidents = cache_object.organize()
         cache_object.dump_to_integration_context(integration_context)
-        incidents += [notable.to_incident() for notable in handled_but_not_created_incidents]
+        incidents += [notable.to_incident(mapper) for notable in handled_but_not_created_incidents]
         demisto.incidents(incidents)
 
 

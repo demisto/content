@@ -1,9 +1,10 @@
 from datetime import datetime
-from typing import Dict, Tuple, Optional, List, Callable, Any
+from typing import Any, Callable, Dict, List, Optional, Tuple
 
+import demistomock as demisto  # noqa: F401
 import urllib3
+from CommonServerPython import *  # noqa: F401
 
-from CommonServerPython import *
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -193,7 +194,6 @@ class Client(BaseClient):
             'username': self._username,
             'password': self._password,
             'validity': "1",
-            'tenant': self._tenant,
         }
         token = self.http_request('GET', '/token/generate', headers=headers, response_type='text')
         return token
