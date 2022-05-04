@@ -987,4 +987,4 @@ script:
   dockerimage: demisto/python3:3.10.4.28442
 tests:
 - Cybereason Test
-fromversion: 6.5.0
+fromversion: 5.0.0
