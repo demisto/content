@@ -1,0 +1,1990 @@
+id: playbook-ForescoutEyeInspect_Test
+version: -1
+name: playbook-ForescoutEyeInspect_Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 0db77028-06b5-4a11-87ee-69b2d1bd1c03
+    type: start
+    task:
+      id: 0db77028-06b5-4a11-87ee-69b2d1bd1c03
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      "#none#":
+        - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 6847a236-9911-4972-8406-8e816d6cdf6e
+    type: regular
+    task:
+      id: 6847a236-9911-4972-8406-8e816d6cdf6e
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+        - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: ccdc736e-8b4a-4e15-8a9a-b4dd2c09596d
+    type: regular
+    task:
+      id: ccdc736e-8b4a-4e15-8a9a-b4dd2c09596d
+      version: -1
+      name: forescout-ei-host-list
+      script: ForescoutEyeInspect|||forescout-ei-host-list
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+        - "3"
+    scriptarguments:
+      limit:
+        simple: "1"
+      page:
+        simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: a727f522-97d5-437f-87e2-c59a68e948c4
+    type: condition
+    task:
+      id: a727f522-97d5-437f-87e2-c59a68e948c4
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+        - "4"
+    separatecontext: false
+    conditions:
+      - label: "yes"
+        condition:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.Host.id
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.Host.ip_reuse_domain_id
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.Host.ip
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.Host.first_seen
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.Host.last_seen
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: ForescoutEyeInspect.Host.nested_address
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.Host.mac_addresses
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: ForescoutEyeInspect.Host.vlan
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.Host.sensor_ids
+                iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: a7ae465e-cd79-42ca-8660-a71f54b85171
+    type: regular
+    task:
+      id: a7ae465e-cd79-42ca-8660-a71f54b85171
+      version: -1
+      name: forescout-ei-link-list
+      script: ForescoutEyeInspect|||forescout-ei-link-list
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+        - "5"
+    scriptarguments:
+      limit:
+        simple: "1"
+      page:
+        simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: e532b6d8-b0b7-4258-8f78-de4c3280b119
+    type: condition
+    task:
+      id: e532b6d8-b0b7-4258-8f78-de4c3280b119
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+        - "8"
+    separatecontext: false
+    conditions:
+      - label: "yes"
+        condition:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.Link.id
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.Link.src_host_id
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.Link.dst_host_id
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.Link.first_seen
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.Link.last_seen
+                iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 4cb3f2b1-2d66-4707-8e77-d4a79b0a05b0
+    type: regular
+    task:
+      id: 4cb3f2b1-2d66-4707-8e77-d4a79b0a05b0
+      version: -1
+      name: forescout-ei-alert-list
+      script: ForescoutEyeInspect|||forescout-ei-alert-list
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+        - "9"
+    scriptarguments:
+      limit:
+        simple: "1"
+      page:
+        simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 02406012-1f05-4c2c-8e05-966371c957f7
+    type: condition
+    task:
+      id: 02406012-1f05-4c2c-8e05-966371c957f7
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+        - "10"
+    separatecontext: false
+    conditions:
+      - label: "yes"
+        condition:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.Alert.alert_id
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.Alert.timestamp
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.Alert.event_type_ids
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.Alert.event_type_names
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.Alert.description
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.Alert.sensor_id
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.Alert.sensor_name
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.Alert.engine
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.Alert.profile_module_name
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.Alert.profile_id
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.Alert.l2_proto
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.Alert.l3_proto
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.Alert.l4_proto
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.Alert.severity
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.Alert.status
+                iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 4c0cba58-2b79-4615-80de-a4d466622a21
+    type: regular
+    task:
+      id: 4c0cba58-2b79-4615-80de-a4d466622a21
+      version: -1
+      name: forescout-ei-alert-pcap-get
+      script: ForescoutEyeInspect|||forescout-ei-alert-pcap-get
+      type: regular
+      iscommand: true
+      brand: ForescoutEyeInspect
+    nexttasks:
+      "#none#":
+        - "11"
+    scriptarguments:
+      alert_id:
+        simple: ${ForescoutEyeInspect.Alert.alert_id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: c6842fb5-1941-4727-86e4-5faf7e1a6434
+    type: condition
+    task:
+      id: c6842fb5-1941-4727-86e4-5faf7e1a6434
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+        - "12"
+    separatecontext: false
+    conditions:
+      - label: "yes"
+        condition:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: InfoFile.Size
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: InfoFile.Name
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: InfoFile.EntryID
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: InfoFile.Info
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: InfoFile.Type
+                iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 14556ca5-6f1f-4eb6-8ea8-6ae143981653
+    type: regular
+    task:
+      id: 14556ca5-6f1f-4eb6-8ea8-6ae143981653
+      version: -1
+      name: forescout-ei-sensor-list
+      script: ForescoutEyeInspect|||forescout-ei-sensor-list
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+        - "13"
+    scriptarguments:
+      limit:
+        simple: "1"
+      page:
+        simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: 4f62390c-c05d-4c71-89b4-0076dd3e3857
+    type: condition
+    task:
+      id: 4f62390c-c05d-4c71-89b4-0076dd3e3857
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+        - "14"
+    separatecontext: false
+    conditions:
+      - label: "yes"
+        condition:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.Sensor.id
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.Sensor.name
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.Sensor.address
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.Sensor.port
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.Sensor.type
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.Sensor.sensor_version
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.Sensor.state
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.Sensor.health_status
+                iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 408b0376-70aa-4294-8644-44edb07288ed
+    type: regular
+    task:
+      id: 408b0376-70aa-4294-8644-44edb07288ed
+      version: -1
+      name: forescout-ei-sensor-module-list
+      script: ForescoutEyeInspect|||forescout-ei-sensor-module-list
+      type: regular
+      iscommand: true
+      brand: ForescoutEyeInspect
+    nexttasks:
+      "#none#":
+        - "15"
+    scriptarguments:
+      limit:
+        simple: "1"
+      page:
+        simple: "1"
+      sensor_id:
+        simple: ${ForescoutEyeInspect.Sensor.id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: d0ca28b5-6827-4eff-8ae2-be643912830a
+    type: condition
+    task:
+      id: d0ca28b5-6827-4eff-8ae2-be643912830a
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+        - "16"
+    separatecontext: false
+    conditions:
+      - label: "yes"
+        condition:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.SensorModule.id
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.SensorModule.sensor_id
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.SensorModule.engine
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: ForescoutEyeInspect.SensorModule.singleton
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.SensorModule.name
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: ForescoutEyeInspect.SensorModule.started
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.SensorModule.date_last_update
+                iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: b9902961-94f7-4380-8bde-966f314a1bb9
+    type: regular
+    task:
+      id: b9902961-94f7-4380-8bde-966f314a1bb9
+      version: -1
+      name: forescout-ei-sensor-module-update
+      script: ForescoutEyeInspect|||forescout-ei-sensor-module-update
+      type: regular
+      iscommand: true
+      brand: ForescoutEyeInspect
+    nexttasks:
+      "#none#":
+        - "17"
+    scriptarguments:
+      description: {}
+      module_id:
+        simple: ${ForescoutEyeInspect.SensorModule.id}
+      name: {}
+      operational_mode: {}
+      sensor_id:
+        simple: ${ForescoutEyeInspect.SensorModule.sensor_id}
+      started:
+        simple: ${ForescoutEyeInspect.SensorModule.started}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: 76ab7bde-8a1f-4242-8634-beaec8c3adce
+    type: condition
+    task:
+      id: 76ab7bde-8a1f-4242-8634-beaec8c3adce
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+        - "19"
+    separatecontext: false
+    conditions:
+      - label: "yes"
+        condition:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.SensorModule.id
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.SensorModule.sensor_id
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.SensorModule.engine
+                iscontext: true
+          - - operator: isExists
+              left:
+                value:
+                  simple: ForescoutEyeInspect.SensorModule.singleton
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.SensorModule.name
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.SensorModule.started
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.SensorModule.date_last_update
+                iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: 5ad05925-d38e-46c2-82d5-ace65c569a0a
+    type: regular
+    task:
+      id: 5ad05925-d38e-46c2-82d5-ace65c569a0a
+      version: -1
+      name: forescout-ei-ip-blacklist-get
+      script: ForescoutEyeInspect|||forescout-ei-ip-blacklist-get
+      type: regular
+      iscommand: true
+      brand: ForescoutEyeInspect
+    nexttasks:
+      "#none#":
+        - "20"
+    scriptarguments:
+      limit:
+        simple: "1"
+      page:
+        simple: "1"
+      sensor_id:
+        simple: ${ForescoutEyeInspect.Sensor.id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: 53eabe12-0e80-4094-8f5d-2fb58821ca8c
+    type: condition
+    task:
+      id: 53eabe12-0e80-4094-8f5d-2fb58821ca8c
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+        - "21"
+    separatecontext: false
+    conditions:
+      - label: "yes"
+        condition:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.IPBlacklist.address
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.IPBlacklist.comment
+                iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
+    taskid: 92330d55-1066-4b56-86af-f091487682e4
+    type: regular
+    task:
+      id: 92330d55-1066-4b56-86af-f091487682e4
+      version: -1
+      name: forescout-ei-ip-blacklist-add
+      script: ForescoutEyeInspect|||forescout-ei-ip-blacklist-add
+      type: regular
+      iscommand: true
+      brand: ForescoutEyeInspect
+    nexttasks:
+      "#none#":
+        - "23"
+    scriptarguments:
+      address:
+        simple: 3.4.5.6
+      comment:
+        simple: XSOAR Test Playbook IP
+      sensor_id:
+        simple: ${ForescoutEyeInspect.Sensor.id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "23":
+    id: "23"
+    taskid: 99302dfe-a225-4b16-8055-553adf5b54e9
+    type: regular
+    task:
+      id: 99302dfe-a225-4b16-8055-553adf5b54e9
+      version: -1
+      name: forescout-ei-domain-blacklist-get
+      script: ForescoutEyeInspect|||forescout-ei-domain-blacklist-get
+      type: regular
+      iscommand: true
+      brand: ForescoutEyeInspect
+    nexttasks:
+      "#none#":
+        - "24"
+    scriptarguments:
+      limit:
+        simple: "1"
+      page:
+        simple: "1"
+      sensor_id:
+        simple: ${ForescoutEyeInspect.Sensor.id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "24":
+    id: "24"
+    taskid: a0e40be2-71c9-4a03-834f-dc7c2ba58f9d
+    type: condition
+    task:
+      id: a0e40be2-71c9-4a03-834f-dc7c2ba58f9d
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+        - "25"
+    separatecontext: false
+    conditions:
+      - label: "yes"
+        condition:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.DomainBlacklist.domain_name
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.DomainBlacklist.comment
+                iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "25":
+    id: "25"
+    taskid: 0854f780-53dc-463a-8261-9fbdbe5df316
+    type: regular
+    task:
+      id: 0854f780-53dc-463a-8261-9fbdbe5df316
+      version: -1
+      name: forescout-ei-domain-blacklist-add
+      script: ForescoutEyeInspect|||forescout-ei-domain-blacklist-add
+      type: regular
+      iscommand: true
+      brand: ForescoutEyeInspect
+    nexttasks:
+      "#none#":
+        - "27"
+    scriptarguments:
+      comment:
+        simple: XSOAR Test Playbook Domain
+      domain_name:
+        simple: xsoar.xyz
+      sensor_id:
+        simple: ${ForescoutEyeInspect.Sensor.id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "27":
+    id: "27"
+    taskid: 05585c27-b520-4a93-8a67-a1ade15e095b
+    type: regular
+    task:
+      id: 05585c27-b520-4a93-8a67-a1ade15e095b
+      version: -1
+      name: forescout-ei-ssl-client-blacklist-get
+      script: ForescoutEyeInspect|||forescout-ei-ssl-client-blacklist-get
+      type: regular
+      iscommand: true
+      brand: ForescoutEyeInspect
+    nexttasks:
+      "#none#":
+        - "28"
+    scriptarguments:
+      limit:
+        simple: "1"
+      page:
+        simple: "1"
+      sensor_id:
+        simple: ${ForescoutEyeInspect.Sensor.id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "28":
+    id: "28"
+    taskid: 8245fff8-f93d-4d7b-892d-80be360f8964
+    type: condition
+    task:
+      id: 8245fff8-f93d-4d7b-892d-80be360f8964
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+        - "29"
+    separatecontext: false
+    conditions:
+      - label: "yes"
+        condition:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.SSLClientBlacklist.sensor_id
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.SSLClientBlacklist.application_name
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.SSLClientBlacklist.ja3_hash
+                iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "29":
+    id: "29"
+    taskid: 1acb639d-7127-4db4-8252-f9b0bc7e4c32
+    type: regular
+    task:
+      id: 1acb639d-7127-4db4-8252-f9b0bc7e4c32
+      version: -1
+      name: forescout-ei-ssl-client-blacklist-add
+      script: ForescoutEyeInspect|||forescout-ei-ssl-client-blacklist-add
+      type: regular
+      iscommand: true
+      brand: ForescoutEyeInspect
+    nexttasks:
+      "#none#":
+        - "31"
+    scriptarguments:
+      application_name:
+        simple: Shodan
+      comment:
+        simple: XSOAR Test Playbook Application
+      ja3_hash:
+        simple: 0ad94fcb7d3a2c56679fbd004f6b12cd
+      sensor_id:
+        simple: ${ForescoutEyeInspect.Sensor.id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "31":
+    id: "31"
+    taskid: a8187bdf-67dd-4a0c-80e9-172e015e6746
+    type: regular
+    task:
+      id: a8187bdf-67dd-4a0c-80e9-172e015e6746
+      version: -1
+      name: forescout-ei-file-operation-blacklist-get
+      script: ForescoutEyeInspect|||forescout-ei-file-operation-blacklist-get
+      type: regular
+      iscommand: true
+      brand: ForescoutEyeInspect
+    nexttasks:
+      "#none#":
+        - "32"
+    scriptarguments:
+      limit:
+        simple: "1"
+      page:
+        simple: "1"
+      sensor_id:
+        simple: ${ForescoutEyeInspect.Sensor.id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "32":
+    id: "32"
+    taskid: 20e54cee-7321-4215-894f-e45a7b31ea20
+    type: condition
+    task:
+      id: 20e54cee-7321-4215-894f-e45a7b31ea20
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+        - "33"
+    separatecontext: false
+    conditions:
+      - label: "yes"
+        condition:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.FileOperationBlacklist.matching_type
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.FileOperationBlacklist.file_or_folder
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.FileOperationBlacklist.operation
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.FileOperationBlacklist.comment
+                iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "33":
+    id: "33"
+    taskid: cf2dd158-483c-4727-8fb7-49c825a17164
+    type: regular
+    task:
+      id: cf2dd158-483c-4727-8fb7-49c825a17164
+      version: -1
+      name: forescout-ei-file-operation-blacklist-add
+      script: ForescoutEyeInspect|||forescout-ei-file-operation-blacklist-add
+      type: regular
+      iscommand: true
+      brand: ForescoutEyeInspect
+    nexttasks:
+      "#none#":
+        - "35"
+    scriptarguments:
+      comment:
+        simple: XSOAR Test Playbook File Operation
+      file_or_folder:
+        simple: \\.mal$
+      matching_type:
+        simple: REGEX
+      operation:
+        simple: WRITE
+      sensor_id:
+        simple: ${ForescoutEyeInspect.Sensor.id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "35":
+    id: "35"
+    taskid: d03fb3e8-1226-4034-8568-f01f1d9dec4d
+    type: regular
+    task:
+      id: d03fb3e8-1226-4034-8568-f01f1d9dec4d
+      version: -1
+      name: forescout-ei-diagnostics-information-get
+      script: ForescoutEyeInspect|||forescout-ei-diagnostics-information-get
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+        - "36"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "36":
+    id: "36"
+    taskid: 1b3ed358-f52f-447e-8f02-bd60b362e0cb
+    type: condition
+    task:
+      id: 1b3ed358-f52f-447e-8f02-bd60b362e0cb
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+        - "37"
+    separatecontext: false
+    conditions:
+      - label: "yes"
+        condition:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.CCInfo.ip_address
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.CCInfo.hostname
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.CCInfo.open_ports
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.CCInfo.cc_version
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.CCInfo.health_status
+                iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "37":
+    id: "37"
+    taskid: e1e36553-055b-4208-808d-708e66d17509
+    type: regular
+    task:
+      id: e1e36553-055b-4208-808d-708e66d17509
+      version: -1
+      name: forescout-ei-diagnostic-logs-get
+      script: ForescoutEyeInspect|||forescout-ei-diagnostic-logs-get
+      type: regular
+      iscommand: true
+      brand: ForescoutEyeInspect
+    nexttasks:
+      "#none#":
+        - "38"
+    scriptarguments:
+      cc_info: {}
+      sensor_id:
+        simple: ${ForescoutEyeInspect.Sensor.id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "38":
+    id: "38"
+    taskid: 3e74f59d-04c7-402b-8352-ca63a10d3e2f
+    type: condition
+    task:
+      id: 3e74f59d-04c7-402b-8352-ca63a10d3e2f
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+        - "41"
+    separatecontext: false
+    conditions:
+      - label: "yes"
+        condition:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: InfoFile.Size
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: InfoFile.Name
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: InfoFile.EntryID
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: InfoFile.Info
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: InfoFile.Type
+                iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "39":
+    id: "39"
+    taskid: 5e5a27c3-eaab-4434-895a-bdf9a72961f2
+    type: regular
+    task:
+      id: 5e5a27c3-eaab-4434-895a-bdf9a72961f2
+      version: -1
+      name: forescout-ei-group-policy-list
+      script: ForescoutEyeInspect|||forescout-ei-group-policy-list
+      type: regular
+      iscommand: true
+      brand: ForescoutEyeInspect
+    nexttasks:
+      "#none#":
+        - "40"
+    scriptarguments:
+      limit:
+        simple: "1"
+      page:
+        simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 9200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "40":
+    id: "40"
+    taskid: 80595dd4-31f5-4f3a-882a-a550fe5aee31
+    type: condition
+    task:
+      id: 80595dd4-31f5-4f3a-882a-a550fe5aee31
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+        - "48"
+    separatecontext: false
+    conditions:
+      - label: "yes"
+        condition:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.GroupPolicy.id
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.GroupPolicy.name
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.GroupPolicy.description
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.GroupPolicy.constraints
+                iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 9400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "41":
+    id: "41"
+    taskid: 81f56380-1f09-495d-8397-99d689b84f97
+    type: regular
+    task:
+      id: 81f56380-1f09-495d-8397-99d689b84f97
+      version: -1
+      name: forescout-ei-group-policy-create
+      script: ForescoutEyeInspect|||forescout-ei-group-policy-create
+      type: regular
+      iscommand: true
+      brand: ForescoutEyeInspect
+    nexttasks:
+      "#none#":
+        - "42"
+    scriptarguments:
+      constraints:
+        simple:
+          '[{"type": "os_version", "operator": "equals", "os_version": "Windows
+          10"}]'
+      description:
+        simple: "XSOAR Test Playbook Group Policy "
+      name:
+        simple: XSOAR Test Playbook
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7775
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "42":
+    id: "42"
+    taskid: 7dde9300-57da-4af1-8dad-e8041e2c95ca
+    type: condition
+    task:
+      id: 7dde9300-57da-4af1-8dad-e8041e2c95ca
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+        - "43"
+    separatecontext: false
+    conditions:
+      - label: "yes"
+        condition:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.GroupPolicy.id
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.GroupPolicy.name
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.GroupPolicy.description
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.GroupPolicy.constraints
+                iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "43":
+    id: "43"
+    taskid: efb41e21-3a5a-438c-861b-5c7512ebbe70
+    type: regular
+    task:
+      id: efb41e21-3a5a-438c-861b-5c7512ebbe70
+      version: -1
+      name: forescout-ei-group-policy-update
+      script: ForescoutEyeInspect|||forescout-ei-group-policy-update
+      type: regular
+      iscommand: true
+      brand: ForescoutEyeInspect
+    nexttasks:
+      "#none#":
+        - "44"
+    scriptarguments:
+      constraints:
+        simple: ${ForescoutEyeInspect.GroupPolicy.constraints}
+      description:
+        simple: Update Test
+      name:
+        simple: ${ForescoutEyeInspect.GroupPolicy.name}
+      policy_id:
+        simple: ${ForescoutEyeInspect.GroupPolicy.id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "44":
+    id: "44"
+    taskid: cc0c3fa7-d9ae-4473-86e5-3c5de854df51
+    type: condition
+    task:
+      id: cc0c3fa7-d9ae-4473-86e5-3c5de854df51
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+        - "46"
+    separatecontext: false
+    conditions:
+      - label: "yes"
+        condition:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.GroupPolicy.id
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.GroupPolicy.name
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.GroupPolicy.description
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.GroupPolicy.constraints
+                iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "45":
+    id: "45"
+    taskid: 9740d574-672d-490c-89fc-b3d509e46663
+    type: regular
+    task:
+      id: 9740d574-672d-490c-89fc-b3d509e46663
+      version: -1
+      name: forescout-ei-group-policy-delete
+      script: ForescoutEyeInspect|||forescout-ei-group-policy-delete
+      type: regular
+      iscommand: true
+      brand: ForescoutEyeInspect
+    nexttasks:
+      "#none#":
+        - "39"
+    scriptarguments:
+      policy_id:
+        simple: ${ForescoutEyeInspect.GroupPolicy.id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 9000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "46":
+    id: "46"
+    taskid: 455501da-a188-4a5d-8ab2-70c7e2b44a2c
+    type: regular
+    task:
+      id: 455501da-a188-4a5d-8ab2-70c7e2b44a2c
+      version: -1
+      name: forescout-ei-group-policy-hosts-assign
+      script: ForescoutEyeInspect|||forescout-ei-group-policy-hosts-assign
+      type: regular
+      iscommand: true
+      brand: ForescoutEyeInspect
+    nexttasks:
+      "#none#":
+        - "47"
+    scriptarguments:
+      filter_type:
+        simple: address
+      filter_value:
+        simple: 3.4.5.6
+      policy_id:
+        simple: ${ForescoutEyeInspect.GroupPolicy.id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 8610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "47":
+    id: "47"
+    taskid: 93ae0d58-3fb7-4e93-8247-ad91359f8d3e
+    type: regular
+    task:
+      id: 93ae0d58-3fb7-4e93-8247-ad91359f8d3e
+      version: -1
+      name: forescout-ei-group-policy-hosts-unassign
+      script: ForescoutEyeInspect|||forescout-ei-group-policy-hosts-unassign
+      type: regular
+      iscommand: true
+      brand: ForescoutEyeInspect
+    nexttasks:
+      "#none#":
+        - "45"
+    scriptarguments:
+      filter_type:
+        simple: address
+      filter_value:
+        simple: 3.4.5.6
+      policy_id:
+        simple: ${ForescoutEyeInspect.GroupPolicy.id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 8800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "48":
+    id: "48"
+    taskid: 9ed01b0b-1e8d-4346-8633-7c3e6e5e243c
+    type: regular
+    task:
+      id: 9ed01b0b-1e8d-4346-8633-7c3e6e5e243c
+      version: -1
+      name: forescout-ei-ip-reuse-domain-list
+      script: ForescoutEyeInspect|||forescout-ei-ip-reuse-domain-list
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+        - "49"
+    scriptarguments:
+      limit:
+        simple: "1"
+      page:
+        simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 9600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "49":
+    id: "49"
+    taskid: bc21ca93-b8c2-46c7-89db-e4e6b6232af4
+    type: condition
+    task:
+      id: bc21ca93-b8c2-46c7-89db-e4e6b6232af4
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+        - "50"
+    separatecontext: false
+    conditions:
+      - label: "yes"
+        condition:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.IPReuseDomain.id
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.IPReuseDomain.name
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.IPReuseDomain.address
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.IPReuseDomain.mask
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.IPReuseDomain.vlan_ids
+                iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "50":
+    id: "50"
+    taskid: 04fd8a57-8b25-41fb-882a-cb7845d15ddc
+    type: regular
+    task:
+      id: 04fd8a57-8b25-41fb-882a-cb7845d15ddc
+      version: -1
+      name: forescout-ei-hosts-changelog-list
+      script: ForescoutEyeInspect|||forescout-ei-hosts-changelog-list
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+        - "51"
+    scriptarguments:
+      limit:
+        simple: "1"
+      page:
+        simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 10000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "51":
+    id: "51"
+    taskid: e5d95517-c15e-4c86-86c4-82cea122e611
+    type: condition
+    task:
+      id: e5d95517-c15e-4c86-86c4-82cea122e611
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+        - "52"
+    separatecontext: false
+    conditions:
+      - label: "yes"
+        condition:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.HostChangeLog.id
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.HostChangeLog.timestamp
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.HostChangeLog.event_type_id
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ForescoutEyeInspect.HostChangeLog.host_id
+                iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 10200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "52":
+    id: "52"
+    taskid: d43ecddf-82aa-46b3-89ba-bb4059327cf9
+    type: title
+    task:
+      id: d43ecddf-82aa-46b3-89ba-bb4059327cf9
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 10400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 10415,
+        "width": 390,
+        "x": 40,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.1.0
+description: Test playbook for Forescout EyeInspect integration
