@@ -2056,7 +2056,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: Workstation
+                  simple: AGENT_TYPE_WORKSTATION
           accessor: endpoint_id
       windows_file_paths:
         simple: C:\Users\demisto\Desktop\demisto.txt
