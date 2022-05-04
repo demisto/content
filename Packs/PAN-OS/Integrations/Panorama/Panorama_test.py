@@ -1341,6 +1341,21 @@ def mock_bad_spyware_profile():
 
     return antispyware_profile
 
+
+def mock_good_url_filtering_profile():
+    from Panorama import URLFilteringProfile, BestPractices
+    url_filtering_profile = URLFilteringProfile()
+    url_filtering_profile.block = BestPractices.URL_BLOCK_CATEGORIES
+    return url_filtering_profile
+
+
+def mock_bad_url_filtering_profile():
+    from Panorama import URLFilteringProfile, BestPractices
+    url_filtering_profile = URLFilteringProfile()
+    url_filtering_profile.block = ["hacking"]
+    return url_filtering_profile
+
+
 @pytest.fixture
 def mock_topology(mock_panorama, mock_firewall):
     from Panorama import Topology
@@ -1898,13 +1913,42 @@ class TestHygieneFunctions:
     @patch("Panorama.DeviceGroup.refreshall", return_value=mock_device_groups())
     def test_check_spyware_profiles(self, _, __, ___, mock_topology):
         """
-        Test the Hygiene Configuration lookups can validate the Spyware profiles
+        Test the Hygiene Configuration lookups can validate the Spyware profiles given combinations of good and bad profile
+        objects.
         """
-        from Panorama import HygieneLookups, AntiSpywareProfile, BestPractices
+        from Panorama import HygieneLookups, AntiSpywareProfile
         AntiSpywareProfile.refreshall = MagicMock(
             return_value=[mock_good_spyware_profile(), mock_bad_spyware_profile()]
         )
 
-        # Check when a good profile exists - should return no results
+        # Check when at least one good profile exists - should return no results
         result = HygieneLookups.check_spyware_profiles(mock_topology)
         assert not result.result_data
+
+
+
+    @patch("Panorama.Template.refreshall", return_value=[])
+    @patch("Panorama.Vsys.refreshall", return_value=[])
+    @patch("Panorama.DeviceGroup.refreshall", return_value=mock_device_groups())
+    def test_check_url_filtering_profiles(self, _, __, ___, mock_topology):
+        """
+        Test the Hygiene Configuration lookups can validate the URL filtering profiles given combinations of good and bad
+        profiles.
+        """
+        from Panorama import HygieneLookups, URLFilteringProfile
+        URLFilteringProfile.refreshall = MagicMock(
+            return_value=[mock_good_url_filtering_profile()]
+        )
+
+        # Check when a good profile exists - should return no results
+        result = HygieneLookups.check_url_filtering_profiles(mock_topology)
+        assert not result.result_data
+
+        # When there's only bad, should return a result
+        URLFilteringProfile.refreshall = MagicMock(
+            return_value=[mock_bad_url_filtering_profile()]
+        )
+
+        # Check when a good profile exists - should return no results
+        result = HygieneLookups.check_url_filtering_profiles(mock_topology)
+        assert result.result_data
