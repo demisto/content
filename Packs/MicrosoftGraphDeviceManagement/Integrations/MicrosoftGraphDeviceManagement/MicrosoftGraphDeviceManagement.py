@@ -1125,5 +1125,3 @@ register_module_line('MicrosoftApiModule', 'end', __line__(), wrapper=1)
 
 if __name__ in ['__main__', 'builtins']:
     main()
-
-register_module_line('Microsoft Graph Device Management', 'end', __line__())
