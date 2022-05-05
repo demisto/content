@@ -200,7 +200,7 @@ script:
       description: The display text of the Malware Family, for example, 'Artemis'
       type: String
     - contextPath: ACTI_MalwareFamily.threat_types
-      description: The threat type of the Malware Family, for example, '- Hacktivism- Cyber Espionage- Cyber Crime- Vulnerability'. It's formatted in such a way that it gets displayed better.
+      description: The threat type of the Malware Family.
       type: String
     - contextPath: ACTI_MalwareFamily.type
       description: The type of fundamental i.e. an Malware Family , for example, 'malware_family'
@@ -227,7 +227,7 @@ script:
       description: The display text of the Threat Group, for example, 'Black Shadow'
       type: String
     - contextPath: ACTI_ThreatGroup.threat_types
-      description: The threat type of the Threat Group, for example, '- Hacktivism- Cyber Espionage- Cyber Crime- Vulnerability'. It's formatted in such a way that it gets displayed better.
+      description: The threat type of the Threat Group.
       type: String
     - contextPath: ACTI_ThreatGroup.type
       description: The type of fundamental i.e. an Threat Group, for example, 'threat_group'
@@ -254,7 +254,7 @@ script:
       description: The display text of the Threat Actor, for example, 'RastaFarEye'
       type: String
     - contextPath: ACTI_ThreatActor.threat_types
-      description: The threat type of the Threat Actor, for example, '- Hacktivism- Cyber Espionage- Cyber Crime- Vulnerability'. It's formatted in such a way that it gets displayed better.
+      description: The threat type of the Threat Actor.
       type: String
     - contextPath: ACTI_ThreatActor.type
       description: The type of fundamental i.e. an Threat Actor, for example, 'threat_actor'
@@ -281,7 +281,7 @@ script:
       description: The display text of the Threat Campaign, for example, 'FBI Flash CU-000141-MW'
       type: String
     - contextPath: ACTI_ThreatCampaign.threat_types
-      description: The threat type of the Threat Campaign, for example, '- Hacktivism- Cyber Espionage- Cyber Crime- Vulnerability'. It's formatted in such a way that it gets displayed better.
+      description: The threat type of the Threat Campaign.
       type: String
     - contextPath: ACTI_ThreatCampaign.type
       description: The type of fundamental i.e. an Threat Campaign , for example, 'threat_campaign'

@@ -305,7 +305,7 @@ Fetches intelligence alerts and reports from ACTI IntelGraph to XSOAR platform.
         "Reliability": "B - Usually reliable",
         "Score": 2,
         "Type": "ACTI Intelligence Alert",
-        "Vendor": "ACTI Threat Intelligence Report"
+        "Vendor": "ACTI Indicator Query"
     },
     "IAIR": {
         "abstract": "The worldwide COVID-19 outbreak, which the World Health Organization (WHO) declared a pandemic......",
@@ -335,3 +335,102 @@ Fetches intelligence alerts and reports from ACTI IntelGraph to XSOAR platform.
 >Report has been fetched!
 ><br>UUID: 8b8b48f1-92a0-411a-a073-3241f6819f8b
 ><br>Link to view report: https://intelgraph.idefense.com/#/node/intelligence_alert/view/8b8b48f1-92a0-411a-a073-3241f6819f8b
+
+
+### acti-get-fundamentals-by-uuid
+***
+Checks reputation of a specific Malware Family/ Threat Campaign/ Threat Group/ Threat Actor.
+
+
+#### Base Command
+
+`acti-get-fundamentals-by-uuid`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| uuid | Unique ID of the specific Malware Family/ Threat Campaign/ Threat Group/ Threat Actor. | Yes |
+
+
+### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| ACTI_MalwareFamily.display_text | String | The display text of the Malware Family, for example, 'Artemis'. |
+| ACTI_MalwareFamily.threat_types | String | The threat type of the Malware Family. |
+| ACTI_MalwareFamily.type | String | The type of fundamental i.e. an Malware Family , for example, 'malware_family'. |
+| ACTI_MalwareFamily.last_published | String | The last published date of the Malware Family, for example, '2022-02-11T17:24:03.604Z'. |
+| ACTI_MalwareFamily.last_modified | String | The last modified date of the Malware Family, for example, '2022-02-11T17:24:03.604Z'. |
+| ACTI_MalwareFamily.index_timestamp | String | The index timestamp of the Malware Family, for example, '2022-02-11T17:24:03.604Z'. |
+| ACTI_MalwareFamily.created_on | String | The creation timestamp of the Malware Family, for example, '2020-03-12T22:22:25.000Z'. |
+| ACTI_MalwareFamily.description | String | The description of the Malware Family. |
+| ACTI_MalwareFamily.analysis | String | The analysis of the Malware Family. |
+| ACTI_ThreatGroup.display_text | String | The display text of the Threat Group, for example, 'Black Shadow'. |
+| ACTI_ThreatGroup.threat_types | String | The threat type of the Threat Group. |
+| ACTI_ThreatGroup.type | String | The type of fundamental i.e. an Threat Group, for example, 'threat_group'. |
+| ACTI_ThreatGroup.last_published | String | The last published date of the Threat Group, for example, '2022-02-11T17:24:03.604Z'. |
+| ACTI_ThreatGroup.last_modified | String | The last modified date of the Threat Group, for example, '2022-02-11T17:24:03.604Z'. |
+| ACTI_ThreatGroup.index_timestamp | String | The index timestamp of the Threat Group, for example, '2022-02-11T17:24:03.604Z'. |
+| ACTI_ThreatGroup.created_on | String | The creation timestamp of the Threat Group, for example, '2020-03-12T22:22:25.000Z'. |
+| ACTI_ThreatGroup.description | String | The description of the Threat Group. |
+| ACTI_ThreatGroup.analysis | String | The analysis of the Threat Group. |
+| ACTI_ThreatActor.display_text | String | The display text of the Threat Actor, for example, 'RastaFarEye'. |
+| ACTI_ThreatActor.threat_types | String | The threat type of the Threat Actor. |
+| ACTI_ThreatActor.type | String | The type of fundamental i.e. an Threat Actor, for example, 'threat_actor'. |
+| ACTI_ThreatActor.last_published | String | The last published date of the Threat Actor, for example, '2022-02-11T17:24:03.604Z'. |
+| ACTI_ThreatActor.last_modified | String | The last modified date of the Threat Actor, for example, '2022-02-11T17:24:03.604Z'. |
+| ACTI_ThreatActor.index_timestamp | String |  The index timestamp of the Threat Actor, for example, '2022-02-11T17:24:03.604Z'. |
+| ACTI_ThreatActor.created_on | String | The creation timestamp of the Threat Actor, for example, '2020-03-12T22:22:25.000Z'. |
+| ACTI_ThreatActor.description | String | The description of the Threat Actor. |
+| ACTI_ThreatActor.analysis | String | The analysis of the Threat Actor. |
+| ACTI_ThreatCampaign.display_text | String | The display text of the Threat Campaign, for example, 'FBI Flash CU-000141-MW' |
+| ACTI_ThreatCampaign.threat_types | String | The threat type of the Threat Campaign. |
+| ACTI_ThreatCampaign.type | String | The type of fundamental i.e. an Threat Campaign , for example, 'threat_campaign'. |
+| ACTI_ThreatCampaign.last_published | String | The last published date of the Threat Campaign, for example, '2022-02-11T17:24:03.604Z'. |
+| ACTI_ThreatCampaign.last_modified | String | The last modified date of the Threat Campaign, for example, '2022-02-11T17:24:03.604Z'. |
+| ACTI_ThreatCampaign.index_timestamp | String | The index timestamp of the Threat Campaign, for example, '2022-02-11T17:24:03.604Z'. |
+| ACTI_ThreatCampaign.created_on | String | The creation timestamp of the Threat Campaign, for example, '2020-03-12T22:22:25.000Z'. |
+| ACTI_ThreatCampaign.description | String | The description of the Threat Campaign. |
+| ACTI_ThreatCampaign.analysis | String | The analysis of the Threat Campaign. |
+| DBotScore.Indicator | String | The indicator that was tested. |
+| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. |
+| DBotScore.Type | String | The indicator type. |
+| DBotScore.Vendor | String | The vendor used to calculate the score. |
+| DBotScore.Score | Number | The actual score. |
+
+
+#### Command Example
+```!acti-get-fundamentals-by-uuid uuid=7q2b129s-6421-4e22-a276-22be5f76cba8```
+
+#### Context Example
+```json
+{
+    "DBotScore": {
+        "Indicator": "7q2b129s-6421-4e22-a276-22be5f76cba8",
+        "Reliability": "B - Usually reliable",
+        "Score": 2,
+        "Type": "ACTI Malware Family",
+        "Vendor": "ACTI Indicator Query"
+    },
+    "ACTI_MalwareFamily": {
+        "Name": "Danabot",
+        "DbotReputation": 2,
+        "ThreatTypes": "Cyber Crime",
+        "Type": "malware_family",
+        "LastPublished": "2021-04-02T04:40:19.000Z",
+        "LastModified": "2021-04-02T04:40:19.000Z",
+        "IndexTimestamp": "2021-04-02T04:40:19.000Z",
+        "Severity": 3,
+        "CreatedOn": "2021-04-02T04:40:19.000Z"
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Danabot
+>For more insight click: https://intelgraph.idefense.com/#/node/malware_family/view/7q2b129s-6421-4e22-a276-22be5f76cba8
+>
+>| CreatedOn | DBotReputation | IndexTimestamp | LastModified | LastPublished | Name | Severity | ThreatTypes | Type |
+>|---|---|---|---|---|---|---|---|---|
+>| 2021-04-02 04:40:19 | 2 | 2021-04-02 04:40:19 | 2021-04-02 04:40:19 | 2021-04-02 04:40:19 | Danabot | 3 | Cyber Crime | malware_family |

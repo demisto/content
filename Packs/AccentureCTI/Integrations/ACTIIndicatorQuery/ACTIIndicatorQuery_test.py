@@ -449,7 +449,8 @@ def test_url_not_found():
         m.get(url, status_code=status_code, json=json_data)
         client = Client(API_URL, 'api_token', True, False, ENDPOINTS['threatindicator'])
         doc_search_client = Client(API_URL, 'api_token', True, False, ENDPOINTS['document'])
-        results = url_command(client, url_to_check, DBotScoreReliability.B, doc_search_client)
+        fundamental_client = Client(API_URL, 'api_token', True, False, ENDPOINTS['fundamental'])
+        results = url_command(client, url_to_check, DBotScoreReliability.B, doc_search_client, fundamental_client)
         output = results[0].to_context().get('HumanReadable')
         assert expected_output in output
 
@@ -477,7 +478,8 @@ def test_domain_not_found():
         m.get(url, status_code=status_code, json=json_data)
         client = Client(API_URL, 'api_token', True, False, ENDPOINTS['threatindicator'])
         doc_search_client = Client(API_URL, 'api_token', True, False, ENDPOINTS['document'])
-        results = domain_command(client, domain_to_check, DBotScoreReliability.B, doc_search_client)
+        fundamental_client = Client(API_URL, 'api_token', True, False, ENDPOINTS['fundamental'])
+        results = domain_command(client, domain_to_check, DBotScoreReliability.B, doc_search_client, fundamental_client)
         output = results[0].to_context().get('HumanReadable')
         assert expected_output in output
 
