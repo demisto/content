@@ -378,68 +378,6 @@ def test_url_not_found():
     """
 
     url = 'https://test.com/rest/threatindicator/v0/url?key.values=http://www.malware.com'
-    fund_url = 'https://test.com/rest/fundamental/v0/malware_family?key.values=Sakula'
-    status_code = 200
-    json_data = {'total_size': 0, 'page': 1, 'page_size': 25, 'more': False}
-    expected_output = "No results were found for url http://www.malware.com"
-
-    url_to_check = {'url': 'http://www.malware.com'}
-    with requests_mock.Mocker() as m:
-        m.get(url, status_code=status_code, json=json_data)
-        m.get(fund_url, status_code=status_code, json=json_data)
-        client = Client(API_URL, 'api_token', True, False, ENDPOINTS['threatindicator'])
-        doc_search_client = Client(API_URL, 'api_token', True, False, ENDPOINTS['document'])
-        fundamental_client = Client(API_URL, 'api_token', True, False, ENDPOINTS['fundamental'])
-        results = url_command(client, url_to_check, DBotScoreReliability.B, doc_search_client, fundamental_client)
-        output = results[0].to_context().get('HumanReadable')
-        assert expected_output in output
-
-
-def test_domain_not_found():
-    """
-    Given:
-        - an Domain
-
-    When:
-        - running domain command and validate whether the domain is malicious
-
-    Then:
-        - return command results with context indicate that no results were found
-
-    """
-
-    url = 'https://test.com/rest/threatindicator/v0/domain?key.values=mydomain.com'
-    fund_url = 'https://test.com/rest/fundamental/v0/malware_family?key.values=Sakula'
-    status_code = 200
-    json_data = {'total_size': 0, 'page': 1, 'page_size': 25, 'more': False}
-    expected_output = "No results were found for Domain mydomain.com"
-
-    domain_to_check = {'domain': 'mydomain.com'}
-    with requests_mock.Mocker() as m:
-        m.get(url, status_code=status_code, json=json_data)
-        m.get(fund_url, status_code=status_code, json=json_data)
-        client = Client(API_URL, 'api_token', True, False, ENDPOINTS['threatindicator'])
-        doc_search_client = Client(API_URL, 'api_token', True, False, ENDPOINTS['document'])
-        fundamental_client = Client(API_URL, 'api_token', True, False, ENDPOINTS['fundamental'])
-        results = domain_command(client, domain_to_check, DBotScoreReliability.B, doc_search_client, fundamental_client)
-        output = results[0].to_context().get('HumanReadable')
-        assert expected_output in output
-
-
-def test_url_not_found():
-    """
-    Given:
-        - an URL
-
-    When:
-        - running url command and validate whether the url is malicious
-
-    Then:
-        - return command results with context indicate that no results were found
-
-    """
-
-    url = 'https://test.com/rest/threatindicator/v0/url?key.values=http://www.malware.com'
     status_code = 200
     json_data = {'total_size': 0, 'page': 1, 'page_size': 25, 'more': False}
     expected_output = "No results were found for url http://www.malware.com"
