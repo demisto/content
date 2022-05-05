@@ -1342,6 +1342,58 @@ def mock_bad_spyware_profile():
     return antispyware_profile
 
 
+def mock_good_security_zones():
+    from Panorama import Zone
+    zone = Zone()
+    zone.log_setting = "example-log-setting"
+    return [
+        Zone(log_setting="example"),
+        Zone(log_setting="second_example")
+    ]
+
+
+def mock_bad_security_zones():
+    from Panorama import Zone
+    zone = Zone()
+    zone.log_setting = "example-log-setting"
+    return [
+        Zone(),
+        Zone(log_setting="second_example")
+    ]
+
+
+def mock_good_security_rules():
+    from Panorama import SecurityRule
+    return [
+        SecurityRule(
+            group="spg",
+            log_setting="example",
+            log_end=True
+        )
+    ]
+
+
+def mock_bad_security_rules():
+    from Panorama import SecurityRule
+    return [
+        # Missing SPG
+        SecurityRule(
+            log_setting="example",
+            log_end=True
+        ),
+        # Missing log profile
+        SecurityRule(
+            group="spg",
+            log_end=True
+        ),
+        # Missing log at session end
+        SecurityRule(
+            group="spg",
+            log_setting="example",
+        )
+    ]
+
+
 def mock_good_url_filtering_profile():
     from Panorama import URLFilteringProfile, BestPractices
     url_filtering_profile = URLFilteringProfile()
@@ -1926,7 +1978,6 @@ class TestHygieneFunctions:
         assert not result.result_data
 
 
-
     @patch("Panorama.Template.refreshall", return_value=[])
     @patch("Panorama.Vsys.refreshall", return_value=[])
     @patch("Panorama.DeviceGroup.refreshall", return_value=mock_device_groups())
@@ -1952,3 +2003,56 @@ class TestHygieneFunctions:
         # Check when a good profile exists - should return no results
         result = HygieneLookups.check_url_filtering_profiles(mock_topology)
         assert result.result_data
+
+    @patch("Panorama.Template.refreshall", return_value=mock_templates())
+    @patch("Panorama.Vsys.refreshall", return_value=[])
+    @patch("Panorama.DeviceGroup.refreshall", return_value=[])
+    def test_check_security_zones(self, _, __, ___, mock_topology):
+        """
+        Test the Hygiene Configuration lookups can validate security zones given a comination of good and bad zones.
+        """
+        from Panorama import HygieneLookups, Zone
+        Zone.refreshall = MagicMock(
+            return_value=mock_good_security_zones()
+        )
+
+        result = HygieneLookups.check_security_zones(mock_topology)
+        # Result data should be empty as there are only good zones
+        assert not result.result_data
+
+        Zone.refreshall = MagicMock(
+            return_value=mock_bad_security_zones()
+        )
+
+        result = HygieneLookups.check_security_zones(mock_topology)
+        # Result data should have one issue as there is a misconfigured security zone
+        assert result.result_data
+        assert "BP-V-7" in [x.issue_code for x in result.result_data]
+
+
+    @patch("Panorama.Template.refreshall", return_value=[])
+    @patch("Panorama.Vsys.refreshall", return_value=[])
+    @patch("Panorama.DeviceGroup.refreshall", return_value=mock_device_groups())
+    def test_check_security_rules(self, _, __, ___, mock_topology):
+        """
+        Test the Hygiene Configuration lookups can validate security zones given a comination of good and bad zones.
+        """
+        from Panorama import HygieneLookups, SecurityRule
+        SecurityRule.refreshall = MagicMock(
+            return_value=mock_good_security_rules()
+        )
+
+        result = HygieneLookups.check_security_rules(mock_topology)
+        # Should not raise any issues
+        assert not result.result_data
+
+        SecurityRule.refreshall = MagicMock(
+            return_value=mock_bad_security_rules()
+        )
+
+        result = HygieneLookups.check_security_rules(mock_topology)
+        # Should raise issues for each issue type
+        assert result.result_data
+        assert "BP-V-8" in [x.issue_code for x in result.result_data]
+        assert "BP-V-9" in [x.issue_code for x in result.result_data]
+        assert "BP-V-10" in [x.issue_code for x in result.result_data]
