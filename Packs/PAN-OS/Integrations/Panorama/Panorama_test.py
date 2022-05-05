@@ -1239,6 +1239,13 @@ def mock_good_log_fowarding_profile():
     return [good_log_forwarding_profile]
 
 
+def mock_bad_log_fowarding_profile():
+    bad_Log_forwarding_profile = LogForwardingProfile()
+    bad_Log_forwarding_profile.enhanced_logging = False
+    bad_Log_forwarding_profile.name = "test-bad"
+    return [bad_Log_forwarding_profile]
+
+
 def mock_good_log_forwarding_profile_match_list():
     return [
         LogForwardingProfileMatchList(
@@ -1402,10 +1409,20 @@ def mock_good_url_filtering_profile():
 
 
 def mock_bad_url_filtering_profile():
-    from Panorama import URLFilteringProfile, BestPractices
+    from Panorama import URLFilteringProfile
     url_filtering_profile = URLFilteringProfile()
     url_filtering_profile.block = ["hacking"]
     return url_filtering_profile
+
+
+def mock_enhanced_log_forwarding_issue_dict():
+    return {
+        "containername": "test-dg",
+        "issuecode": "BP-V-1",
+        "description": "Log forwarding profile is missing enhanced application logging",
+        "name": "test-bad",
+        "hostid": MOCK_FIREWALL_1_SERIAL
+    }
 
 
 @pytest.fixture
@@ -2029,7 +2046,6 @@ class TestHygieneFunctions:
         assert result.result_data
         assert "BP-V-7" in [x.issue_code for x in result.result_data]
 
-
     @patch("Panorama.Template.refreshall", return_value=[])
     @patch("Panorama.Vsys.refreshall", return_value=[])
     @patch("Panorama.DeviceGroup.refreshall", return_value=mock_device_groups())
@@ -2056,3 +2072,35 @@ class TestHygieneFunctions:
         assert "BP-V-8" in [x.issue_code for x in result.result_data]
         assert "BP-V-9" in [x.issue_code for x in result.result_data]
         assert "BP-V-10" in [x.issue_code for x in result.result_data]
+
+    def test_hygiene_issue_dict_to_object(self):
+        """
+        Tests the function can convert a given dictionary of an issue, returned by a hygiene lookup, back into the relevent
+        object. This is to allow the check commands to pass their results directly into the fix commands via XSOAR.
+        """
+        from Panorama import hygiene_issue_dict_to_object, ConfigurationHygieneIssue
+        result = hygiene_issue_dict_to_object(mock_enhanced_log_forwarding_issue_dict())
+        assert isinstance(result[0], ConfigurationHygieneIssue)
+        assert len(result) == 1
+        for value in result[0].__dict__.values():
+            assert value
+
+    @patch("Panorama.Template.refreshall", return_value=[])
+    @patch("Panorama.Vsys.refreshall", return_value=[])
+    @patch("Panorama.DeviceGroup.refreshall", return_value=mock_device_groups())
+    def test_fix_log_forwarding_profile_enhanced_logging(self, _, __, ___, mock_topology):
+        """
+        Tests wthe fix function for enabling enhanced application logging on log forwarding profiles, given an issue referring
+        to a bad log forwarding profile.
+        """
+        from Panorama import hygiene_issue_dict_to_object, LogForwardingProfile, HygieneRemediation
+        issues = hygiene_issue_dict_to_object(mock_enhanced_log_forwarding_issue_dict())
+
+        LogForwardingProfile.refreshall = MagicMock(return_value=mock_bad_log_fowarding_profile())
+        LogForwardingProfile.apply = MagicMock()
+
+        result = HygieneRemediation.fix_log_forwarding_profile_enhanced_logging(mock_topology, issues)
+        # Should be at least one result
+        assert result
+        for value in result[0].__dict__.values():
+            assert value
