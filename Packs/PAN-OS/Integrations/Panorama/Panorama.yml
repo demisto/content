@@ -3657,11 +3657,26 @@ script:
       predefined:
       - 'true'
       - 'false'
+    - auto: PREDEFINED
+      description: Whether to use polling.
+      defaultValue: 'false'
+      name: polling
+      predefined:
+      - 'true'
+      - 'false'
+    - description: Job ID to use in polling commands.
+      name: job_id
+      deprecated: true
+    - description: The timeout (in seconds) when polling.
+      name: timeout
+    - description: The interval (in seconds) of how often to check results when using polling.
+      name: interval_in_seconds
     description: Commits a configuration to the Palo Alto firewall or Panorama, but
       does not validate if the commit was successful. Committing to Panorama does
       not push the configuration to the firewalls. To push the configuration, run
       the panorama-push-to-device-group command.
     name: pan-os-commit
+    polling: true
     outputs:
     - contextPath: Panorama.Commit.JobID
       description: Job ID to commit.
@@ -5646,6 +5661,20 @@ script:
       description: Maximum number of logs to retrieve. If empty, the default is 100.
         The maximum is 5,000.
       name: number_of_logs
+    - auto: PREDEFINED
+      description: Whether to use polling.
+      defaultValue: 'false'
+      name: polling
+      predefined:
+      - 'true'
+      - 'false'
+    - description: Job ID to use in polling commands.
+      name: job_id
+      deprecated: true
+    - description: The timeout (in seconds) when polling.
+      name: timeout
+    - description: The interval (in seconds) of how often to check results when using polling.
+      name: interval_in_seconds
     description: Query logs in Panorama.
     name: pan-os-query-logs
     outputs:
@@ -5658,6 +5687,7 @@ script:
     - contextPath: Panorama.Monitor.Message
       description: Message of the logs query.
       type: String
+    polling: true
   - arguments:
     - description: Job ID of the query.
       isArray: true
@@ -6138,6 +6168,20 @@ script:
   - arguments:
     - description: The device to which to download the content update.
       name: target
+    - auto: PREDEFINED
+      description: Whether to use polling.
+      defaultValue: 'false'
+      name: polling
+      predefined:
+      - 'true'
+      - 'false'
+    - description: Job ID to use in polling commands.
+      name: job_id
+      deprecated: true
+    - description: The timeout (in seconds) when polling.
+      name: timeout
+    - description: The interval (in seconds) of how often to check results when using polling.
+      name: interval_in_seconds
     description: Downloads the latest content update.
     name: pan-os-download-latest-content-update
     outputs:
@@ -6147,6 +6191,7 @@ script:
     - contextPath: Panorama.Content.Download.Status
       description: Content download status.
       type: String
+    polling: true
   - arguments:
     - description: The device to which the content update is downloading.
       name: target
@@ -6168,6 +6213,21 @@ script:
   - arguments:
     - description: The device on which to install the content update.
       name: target
+    - auto: PREDEFINED
+      description: Whether to use polling.
+      defaultValue: 'false'
+      name: polling
+      predefined:
+      - 'true'
+      - 'false'
+    - description: Job ID to use in polling commands.
+      name: job_id
+      deprecated: true
+    - description: The timeout (in seconds) when polling.
+      name: timeout
+    - description: The interval (in seconds) of how often to check results when using polling.
+      name: interval_in_seconds
+      polling: true
     description: Installs the latest content update.
     name: pan-os-install-latest-content-update
     outputs:
@@ -6177,6 +6237,7 @@ script:
     - contextPath: Content.Install.Status
       description: Installation status.
       type: String
+    polling: true
   - arguments:
     - description: The device on which to check the installation status of the content
         update.
@@ -6207,6 +6268,20 @@ script:
     - description: The target version number to install.
       name: target_version
       required: true
+    - auto: PREDEFINED
+      description: Whether to use polling.
+      defaultValue: 'false'
+      name: polling
+      predefined:
+      - 'true'
+      - 'false'
+    - description: Job ID to use in polling commands.
+      name: job_id
+      deprecated: true
+    - description: The timeout (in seconds) when polling.
+      name: timeout
+    - description: The interval (in seconds) of how often to check results when using polling.
+      name: interval_in_seconds
     description: Downloads the target PAN-OS software version to install on the target
       device.
     name: pan-os-download-panos-version
@@ -6217,6 +6292,7 @@ script:
     - contextPath: Panorama.PANOS.Download.Status
       description: Status of the PAN-OS download.
       type: String
+    polling: true
   - arguments:
     - description: The target device from which to get the download status.
       name: target
@@ -6242,6 +6318,20 @@ script:
     - description: Target PAN-OS version to install.
       name: target_version
       required: true
+    - auto: PREDEFINED
+      description: Whether to use polling.
+      defaultValue: 'false'
+      name: polling
+      predefined:
+      - 'true'
+      - 'false'
+    - description: Job ID to use in polling commands.
+      name: job_id
+      deprecated: true
+    - description: The timeout (in seconds) when polling.
+      name: timeout
+    - description: The interval (in seconds) of how often to check results when using polling.
+      name: interval_in_seconds
     description: Installs the target PAN-OS version on the specified target device.
     name: pan-os-install-panos-version
     outputs:
@@ -6251,6 +6341,7 @@ script:
     - contextPath: Panorama.PANOS.Install.Status
       description: Status of the PAN-OS installation.
       type: String
+    polling: true
   - arguments:
     - description: The target device from which to get the installation status.
       name: target
@@ -7730,6 +7821,7 @@ script:
   subtype: python3
   type: python
 fromversion: 5.0.0
+polling: True
 tests:
 - palo_alto_firewall_test_pb
 - palo_alto_panorama_test_pb
