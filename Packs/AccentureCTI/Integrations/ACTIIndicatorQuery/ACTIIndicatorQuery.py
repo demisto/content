@@ -220,7 +220,7 @@ def test_module(client: Client) -> str:
 
 def iair_to_context(analysis_info: dict):
     ia, ir, mf, ta, tg, tc = [], [], [], [], [], []
-    
+
     alerts = analysis_info.get('Intelligence Alerts', [])
     reports = analysis_info.get('Intelligence Reports', [])
     malware_families = analysis_info.get('MalwareFamily', [])
@@ -238,7 +238,7 @@ def iair_to_context(analysis_info: dict):
     if malware_families:
         for malware_family in malware_families:
             mf.append(malware_family.split("/")[-1])
-            
+
     if threat_actors:
         for threat_actor in threat_actors:
             ta.append(threat_actor.split("/")[-1])

@@ -1,5 +1,5 @@
 import requests_mock
-from ACTIIndicatorQuery import IDEFENSE_URL_TEMPLATE, Client, domain_command, url_command, ip_command, uuid_command, _calculate_dbot_score, getThreatReport_command, fix_markdown, addBaseUrlToPartialPaths, markdown_postprocessing, fundamental_uuid_command                          # noqa: E501
+from ACTIIndicatorQuery import IDEFENSE_URL_TEMPLATE, Client, domain_command, url_command, ip_command, uuid_command, _calculate_dbot_score, getThreatReport_command, fix_markdown, addBaseUrlToPartialPaths, convert_inline_image_to_encoded, fundamental_uuid_command                          # noqa: E501
 from CommonServerPython import DemistoException, DBotScoreReliability
 from test_data.response_constants import *
 import demistomock as demisto
@@ -301,7 +301,7 @@ def test_uuid_command_when_api_key_not_authorized_for_document_search():
     url = 'https://test.com/rest/threatindicator/v0/461b5ba2-d4fe-4b5c-ac68-35b6636c6edf'
     doc_url = 'https://test.com/rest/document/v0?links.display_text.values=mydomain.com&type.values=intelligence_alert&type.values=intelligence_report&links.display_text.match_all=true'                                                                                                  # noqa: E501
     fund_url = 'https://test.com/rest/fundamental/v0/malware_family?key.values=Sakula'
-    
+
     status_code = 200
     error_status_code = 403
     json_data = UUID_RES_JSON
@@ -693,16 +693,21 @@ def test_addBaseUrlToPartialPaths():
     assert imagelink_output == image_link_expected_output
 
 
-def test_markdown_postprocessing():
-    md_text = " BELUGASTURGEON activity, including a [2020 campaign against the Cypriot"\
-        " government](#/node/intelligence_alert/view/6cc805d7-cb77-443d-afea-d052916fa602)"\
-        " as China has.\n\n ![Arctic Map](/rest/files/download/0f/6c"\
-        "/6f/91de9ef8d8d38345dc270f8915d9faa496a00b5babe2bff231dd195cd0/ArcticMapUWNews28288859157_5f54b9c446_c.jpg)"
-    expexted_output = " BELUGASTURGEON activity, including a [2020 campaign against the Cypriot government]"\
-        "(https://intelgraph.idefense.com/#/node/intelligence_alert/view/6cc805d7-cb77-443d-afea-d052916fa602)"\
-        " as China has.\n\n ![Arctic Map](data:image/jpg;base64,)"
-    output = markdown_postprocessing(md_text)
-    assert output == expexted_output
+def test_convert_inline_image_to_encoded():
+    md_text = "China has.\n\n ![Arctic Map](https://test.com/rest/files/download/0f/6c/6f/"\
+        "91de9ef8d8d38345dc270f8915d9faa496a00b5babe2bff231dd195cd0/ArcticMapUWNews28288859157_5f54b9c446_c.jpg)"
+    url = "https://test.com/rest/files/download/0f/6c/6f/91de9ef8d8d38345dc270f8915d9faa496a00b5ba"\
+        "be2bff231dd195cd0/ArcticMapUWNews28288859157_5f54b9c446_c.jpg"
+    status_code = 200
+    expected_res = "China has.\n\n ![Arctic Map](data:image/jpg;base64,eyJjb250ZW50IjogIkNoaW"\
+        "5hIGhhcy5cblxuICFbQXJjdGljIE1hcF0oZGF0YTppbWFnZS9qcGc7YmFzZTY0LCkifQ==)"
+    raw_res = {
+        'content': 'China has.\n\n ![Arctic Map](data:image/jpg;base64,)'
+    }
+    with requests_mock.Mocker() as m:
+        m.get(url, status_code=status_code, json=raw_res)
+        res = convert_inline_image_to_encoded(md_text)
+        assert res == expected_res
 
 
 def test_fundamental_uuid_command():

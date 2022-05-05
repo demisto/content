@@ -34,14 +34,14 @@ This feed integration was integrated and tested with version v2.93.0 of ACTI.
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
-### idefense-get-indicators
+### acti-get-indicators
 ***
 Gets the feed indicators.
 
 
 #### Base Command
 
-`idefense-get-indicators`
+`acti-get-indicators`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -54,7 +54,7 @@ Gets the feed indicators.
 There is no context output for this command.
 
 #### Command Example
-```!idefense-get-indicators limit=10```
+```!acti-get-indicators limit=10```
 
 #### Context Example
 There is no context output for this command.
