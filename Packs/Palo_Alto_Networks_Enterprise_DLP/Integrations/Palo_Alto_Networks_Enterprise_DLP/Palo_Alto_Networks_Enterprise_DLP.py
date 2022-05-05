@@ -9,6 +9,8 @@ from enum import Enum
 from string import Template
 import bz2
 import base64
+import math
+
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -16,6 +18,7 @@ urllib3.disable_warnings()
 ''' GLOBALS/PARAMS '''
 MAX_ATTEMPTS = 3
 BASE_URL = 'https://api.dlp.paloaltonetworks.com/v1/'
+PAN_AUTH_URL = 'https://auth.apps.paloaltonetworks.com/auth/v1/oauth2/access_token'
 REPORT_URL = 'public/report/{}'
 INCIDENTS_URL = 'public/incident-notifications'
 REFRESH_TOKEN_URL = 'public/oauth/refreshToken'
@@ -39,10 +42,14 @@ class FeedbackStatus(Enum):
 
 class Client(BaseClient):
 
-    def __init__(self, url, refresh_token, access_token, insecure, proxy):
+    def __init__(self, url, refresh_token, access_token, insecure, proxy, using_client_credentials,
+                 client_id, client_secret):
         super().__init__(base_url=url, headers=None, verify=not insecure, proxy=proxy)
         self.refresh_token = refresh_token
         self.access_token = access_token
+        self.using_client_credentials = using_client_credentials
+        self.client_id = client_id
+        self.client_secret = client_secret
 
     def _refresh_token(self):
         """Refreshes Access Token"""
@@ -65,6 +72,26 @@ class Client(BaseClient):
         if new_token:
             self.access_token = new_token
 
+    def _refresh_token_with_client_credentials(self):
+         credentials = f'{self.client_id}:{self.client_secret}'
+         auth_header = f'Basic {b64_encode(credentials)}'
+         headers = {
+             'Authorization': auth_header,
+             'Content-Type': 'application/x-www-form-urlencoded'
+         }
+
+         payload = 'grant_type=client_credentials'
+         r = self._http_request(
+             full_url=PAN_AUTH_URL,
+             method='POST',
+             headers=headers,
+             data=payload,
+             ok_codes=[200, 201, 204]
+         )
+         new_token = r.get('access_token')
+         if new_token:
+             self.access_token = new_token
+
     def _handle_403_errors(self, res):
         """
         Handles 403 exception on get-dlp-report and tries to refresh token
@@ -75,7 +102,12 @@ class Client(BaseClient):
             return
         try:
             print_debug_msg("Got 403, attempting to refresh access token")
-            self._refresh_token()
+            if self.using_client_credentials:
+                print_debug_msg("Requesting access token with client id/client secret")
+                self._refresh_token_with_client_credentials()
+            else:
+                print_debug_msg("Requesting new access token with old access token/refresh token")
+                self._refresh_token()
         except Exception:
             pass
 
@@ -417,12 +449,16 @@ def long_running_execution_command(params: Dict):
         params (Dict): Demisto params.
 
     """
+    demisto.setIntegrationContext({ACCESS_TOKEN: ''})
     regions = demisto.get(params, 'dlp_regions', '')
     refresh_token = params.get('refresh_token')
     url = get_base_url()
+    overriden_sleep_time = None
+    last_time_sleep_interval_queries = math.floor(datetime.now().timestamp())
     while True:
         try:
             integration_context = demisto.getIntegrationContext()
+            current_time = math.floor(datetime.now().timestamp())
             access_token = integration_context.get(ACCESS_TOKEN)
             access_token = params.get('access_token') if not access_token else access_token
             client = Client(url, refresh_token, access_token, params.get('insecure'), params.get('proxy'))
@@ -516,10 +552,28 @@ def main():
     try:
         demisto.info('Command is %s' % (demisto.command(),))
         params = demisto.params()
-        access_token = params.get('access_token')
-        refresh_token = params.get('refresh_token')
+        print_debug_msg('Received parameters')
+        print_debug_msg(params)
+        credentials = params.get('credentials')
+        credential_name = demisto.get(credentials, 'credential')
+        using_client_credentials = False
+        access_token = ''
+        refresh_token = None
+        client_id = None
+        client_secret = None
+
+        if credential_name:
+            using_client_credentials = True
+            client_id = demisto.get(credentials, 'identifier')
+            client_secret = demisto.get(credentials, 'password')
+            print_debug_msg(f'User chose to authenticate with client id/secret {client_id}:{client_secret}')
+        else:
+            access_token = demisto.get(credentials, 'identifier')
+            refresh_token = demisto.get(credentials, 'password')
+            print_debug_msg(f'User chose to authenticate with access token/refresh token {access_token} {refresh_token}')
+
         url = get_base_url()
-        client = Client(url, refresh_token, access_token, params.get('insecure'), params.get('proxy'))
+        client = Client(url, refresh_token, access_token, params.get('insecure'), params.get('proxy'), using_client_credentials, client_id, client_secret)
         args = demisto.args()
         if demisto.command() == 'pan-dlp-get-report':
             report_id = args.get('report_id')
