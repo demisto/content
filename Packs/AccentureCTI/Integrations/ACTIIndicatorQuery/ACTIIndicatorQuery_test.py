@@ -1,5 +1,5 @@
 import requests_mock
-from ACTIIndicatorQuery import IDEFENSE_URL_TEMPLATE, Client, domain_command, url_command, ip_command, uuid_command, _calculate_dbot_score, getThreatReport_command, fix_markdown, addBaseUrlToPartialPaths, convert_inline_image_to_encoded, fundamental_uuid_command, _get_malware_family                          # noqa: E501
+from ACTIIndicatorQuery import IDEFENSE_URL_TEMPLATE, Client, domain_command, url_command, ip_command, uuid_command, _calculate_dbot_score, getThreatReport_command, fix_markdown, addBaseUrlToPartialPaths, convert_inline_image_to_encoded, fundamental_uuid_command                         # noqa: E501
 from CommonServerPython import DemistoException, DBotScoreReliability
 from test_data.response_constants import *
 import demistomock as demisto
@@ -83,7 +83,7 @@ def test_ip_command_when_api_key_not_authorised_for_document_search():
 
     url = 'https://test.com/rest/threatindicator/v0/ip?key.values=0.0.0.0'
     doc_url = 'https://test.com/rest/document/v0?links.display_text.values=0.0.0.0&type.values=intelligence_alert&type.values=intelligence_report&links.display_text.match_all=true'                                                        # noqa: E501
-    fund_url = 'https://test.com/rest/fundamental/v0/malware_family?key.values=Hive' 
+    fund_url = 'https://test.com/rest/fundamental/v0/malware_family?key.values=Hive'
     status_code = 200
     error_status_code = 403
     json_data = IP_RES_JSON
@@ -252,10 +252,11 @@ def test_uuid_command():
 
     url = 'https://test.com/rest/threatindicator/v0/461b5ba2-d4fe-4b5c-ac68-35b6636c6edf'
     doc_url = 'https://test.com/rest/document/v0?links.display_text.values=mydomain.com&type.values=intelligence_alert&type.values=intelligence_report&links.display_text.match_all=true'                                                           # noqa: E501
-
+    malware_family_url = 'https://test.com/rest/fundamental/v0/malware_family?key.values=Hive'
     status_code = 200
     json_data = UUID_RES_JSON
     intel_json_data = DOMAIN_INTEL_JSON
+    malware_json_data = RAW_MALWARE_FAMILY_RES_JSON
     expected_output = {
         'domain': [{'Name': 'mydomain.com'}],
         'DBOTSCORE': [{'Indicator': 'mydomain.com', 'Type': 'domain', 'Vendor': 'iDefense', 'Score': 2, 'Reliability': 'B - Usually reliable'}]                                                                  # noqa: E501
@@ -265,6 +266,7 @@ def test_uuid_command():
     with requests_mock.Mocker() as m:
         m.get(url, status_code=status_code, json=json_data)
         m.get(doc_url, status_code=status_code, json=intel_json_data)
+        m.get(malware_family_url, status_code=status_code, json=malware_json_data)
         client = Client(API_URL, 'api_token', True, False, ENDPOINTS['threatindicator'])
         doc_search_client = Client(API_URL, 'api_token', True, False, ENDPOINTS['document'])
         fundamental_client = Client(API_URL, 'api_token', True, False, ENDPOINTS['fundamental'])
@@ -294,10 +296,11 @@ def test_uuid_command_when_api_key_not_authorized_for_document_search():
 
     url = 'https://test.com/rest/threatindicator/v0/461b5ba2-d4fe-4b5c-ac68-35b6636c6edf'
     doc_url = 'https://test.com/rest/document/v0?links.display_text.values=mydomain.com&type.values=intelligence_alert&type.values=intelligence_report&links.display_text.match_all=true'                                                                                                  # noqa: E501
-
+    malware_family_url = 'https://test.com/rest/fundamental/v0/malware_family?key.values=Hive'
     status_code = 200
     error_status_code = 403
     json_data = UUID_RES_JSON
+    malware_json_data = RAW_MALWARE_FAMILY_RES_JSON
     doc_search_exception_response = {'timestamp': '2021-11-12T09:09:27.983Z', 'status': 403,
                                      'error': 'Forbidden', 'message': 'Forbidden', 'path': '/rest/document/v0'}
 
@@ -310,6 +313,7 @@ def test_uuid_command_when_api_key_not_authorized_for_document_search():
     with requests_mock.Mocker() as m:
         m.get(url, status_code=status_code, json=json_data)
         m.get(doc_url, status_code=error_status_code, json=doc_search_exception_response)
+        m.get(malware_family_url, status_code=status_code, json=malware_json_data)
         client = Client(API_URL, 'api_token', True, False, ENDPOINTS['threatindicator'])
         doc_search_client = Client(API_URL, 'api_token', True, False, ENDPOINTS['document'])
         fundamental_client = Client(API_URL, 'api_token', True, False, ENDPOINTS['fundamental'])
@@ -709,17 +713,3 @@ def test_fundamental_uuid_command():
 
         assert output.get('ACTI_MalwareFamily(val.value && val.value == obj.value)', []) == expected_output.get('malware_family')
         assert output.get(DBOT_KEY, []) == expected_output.get('dbot')
-
-
-def _test_get_malware_family():
-    malware_family = 'Hive'
-    status_code = 200
-    raw_json = RAW_MALWARE_FAMILY_RES_JSON
-    url = 'https://test.com/rest/fundamental/v0/malware_family?key.values=Hive'
-    expected_result = 'Hive: https://intelgraph.idefense.com/#/node/malware_family/view/c1b3216e-8b2e-4a9f-b0a9-2e184b7182f7'
-
-    with requests_mock.Mocker() as m:
-        m.get(url, status_code=status_code, json=raw_json)
-        fundamental_client = Client(API_URL, 'api_token', True, False, ENDPOINTS['fundamental'])
-        res = _get_malware_family(malware_family, fundamental_client)
-        assert res[0] == expected_result

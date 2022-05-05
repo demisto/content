@@ -195,7 +195,10 @@ UUID_RES_JSON={
             'last_seen_as': [
                 'MALWARE_C2'
             ],
-            'malware_family': [],
+            'malware_family': ['Hive'],
+            'threat_campaigns': [{'display_text': 'FBI Flash CU-000141-MW','uuid':'7q2b129s-6421-4e22-a276-22be5f76cba8'}],
+            'threat_actors': [{'display_text': 'RastaFarEye','uuid': '7q2b129s-6421-4e22-a276-22be5f76cba8'}],
+            'threat_groups': [{'display_text': 'Black Shadow','uuid': '7q2b129s-6421-4e22-a276-22be5f76cba8'}],
             'severity': 3,
             'threat_types': [
                 'Cyber Espionage',
