@@ -1,5 +1,5 @@
 import requests_mock
-from ACTIIndicatorQuery import IDEFENSE_URL_TEMPLATE, Client, domain_command, url_command, ip_command, uuid_command, _calculate_dbot_score, getThreatReport_command, fix_markdown, addBaseUrlToPartialPaths, convert_inline_image_to_encoded, fundamental_uuid_command                          # noqa: E501
+from ACTIIndicatorQuery import IDEFENSE_URL_TEMPLATE, Client, domain_command, url_command, ip_command, uuid_command, _calculate_dbot_score, getThreatReport_command, fix_markdown, addBaseUrlToPartialPaths, convert_inline_image_to_encoded, fundamental_uuid_command, _get_malware_family                          # noqa: E501
 from CommonServerPython import DemistoException, DBotScoreReliability
 from test_data.response_constants import *
 import demistomock as demisto
@@ -723,3 +723,17 @@ def test_fundamental_uuid_command():
 
         assert output.get('ACTI_MalwareFamily(val.value && val.value == obj.value)', []) == expected_output.get('malware_family')
         assert output.get(DBOT_KEY, []) == expected_output.get('dbot')
+
+
+def test_get_malware_family():
+    malware_family = 'Hive'
+    status_code = 200
+    raw_json = RAW_MALWARE_FAMILY_RES_JSON
+    url = 'https://test.com/rest/fundamental/v0/malware_family?key.values=Hive'
+    expected_result = 'Hive: https://intelgraph.idefense.com/#/node/malware_family/view/c1b3216e-8b2e-4a9f-b0a9-2e184b7182f7'
+
+    with requests_mock.Mocker() as m:
+        m.get(url, status_code=status_code, json=raw_json)
+        fundamental_client = Client(API_URL, 'api_token', True, False, ENDPOINTS['fundamental'])
+        res = _get_malware_family(malware_family, fundamental_client)
+        assert res[0] == expected_result
