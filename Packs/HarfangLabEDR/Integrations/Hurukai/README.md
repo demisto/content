@@ -1,6 +1,6 @@
 HarfangLab EDR Connector,
 Compatible version 2.13.7+
-This integration was integrated and tested with version xx of Hurukai
+This integration was integrated and tested with version 2.13.7+ of Hurukai
 
 ## Configure HarfangLab EDR on Cortex XSOAR
 
