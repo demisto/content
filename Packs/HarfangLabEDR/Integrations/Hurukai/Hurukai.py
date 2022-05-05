@@ -93,7 +93,6 @@ class Client(BaseClient):
 
         return super()._http_request(*args, **kwargs)
 
-
     def test_api(self):
         return self._http_request(
             method='GET',
@@ -821,7 +820,8 @@ def result_scheduledtasklist(client, args):
             'md5': x.get('binaryinfo', {}).get('binaryinfo', {}).get('md5'),
         })
 
-    readable_output = tableToMarkdown('Scheduled Task List', output, headers=['name', 'fullpath', 'signed', 'md5'], removeNull=True)
+    readable_output = tableToMarkdown('Scheduled Task List', output, headers=[
+                                      'name', 'fullpath', 'signed', 'md5'], removeNull=True)
 
     ec = {
         'Harfanglab.ScheduledTask(val.agent_id && val.agent_id === obj.agent_id)': {
@@ -949,7 +949,8 @@ def result_servicelist(client, args):
             'md5': x.get('binaryinfo', {}).get('binaryinfo', {}).get('md5'),
         })
 
-    readable_output = tableToMarkdown('Scheduled Task List', output, headers=['name', 'image_path', 'fullpath', 'signed', 'md5'], removeNull=True)
+    readable_output = tableToMarkdown('Scheduled Task List', output, headers=[
+                                      'name', 'image_path', 'fullpath', 'signed', 'md5'], removeNull=True)
 
     ec = {
         'Harfanglab.Service(val.agent_id && val.agent_id === obj.agent_id)': {
@@ -994,10 +995,10 @@ def result_startuplist(client, args):
         })
 
     readable_output = tableToMarkdown('Startup List', output, headers=[
-                                      'startup_name', 
-                                      'startup_fullpath', 
-                                      'fullpath', 
-                                      'signed', 
+                                      'startup_name',
+                                      'startup_fullpath',
+                                      'fullpath',
+                                      'signed',
                                       'md5'], removeNull=True)
 
     ec = {
@@ -1569,7 +1570,8 @@ def result_artifact_downloadfile(client, args):
             'download link': link
         })
 
-    readable_output = tableToMarkdown('file download list', output, headers=['hostname', 'msg', 'size', 'download link'], removeNull=True)
+    readable_output = tableToMarkdown('file download list', output, headers=[
+                                      'hostname', 'msg', 'size', 'download link'], removeNull=True)
 
     ec = {
         'Harfanglab.DownloadFile(val.agent_id && val.agent_id === obj.agent_id)': {
@@ -1622,8 +1624,8 @@ def result_artifact_ramdump(client, args):
             'download link': link
         })
 
-    readable_output = tableToMarkdown('Ramdump list', output, headers=['hostname', 'msg', 'size', 'download link'], 
-            removeNull=True)
+    readable_output = tableToMarkdown('Ramdump list', output, headers=['hostname', 'msg', 'size', 'download link'],
+                                      removeNull=True)
 
     ec = {
         'Harfanglab.Ramdump(val.agent_id && val.agent_id === obj.agent_id)': {
@@ -1802,7 +1804,7 @@ def hunt_search_runned_process_hash(client, args):
             })
 
         readable_output = tableToMarkdown('War room overview', prefetchs, headers=[
-                                          "Hostname", "Domain", "Username", "OS", "Binary Path", "Create timestamp"], 
+                                          "Hostname", "Domain", "Username", "OS", "Binary Path", "Create timestamp"],
                                           removeNull=True)
 
         ec = {
