@@ -1,17 +1,18 @@
 # -*- coding: utf-8 -*-
+import dateparser
+import gzip
 import demistomock as demisto
 import copy
 import json
 import re
 import os
 import sys
-import time
 import requests
 from pytest import raises, mark
 import pytest
 import warnings
 
-from CommonServerPython import set_to_integration_context_with_retries, xml2json, json2xml, entryTypes, formats, tableToMarkdown, underscoreToCamelCase, \
+from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToMarkdown, underscoreToCamelCase, \
     flattenCell, date_to_timestamp, datetime, timedelta, camelize, pascalToSpace, argToList, \
     remove_nulls_from_dictionary, is_error, get_error, hash_djb2, fileResult, is_ip_valid, get_demisto_version, \
     IntegrationLogger, parse_date_string, IS_PY3, PY_VER_MINOR, DebugLogger, b64_encode, parse_date_range, return_outputs, \
@@ -19,7 +20,7 @@ from CommonServerPython import set_to_integration_context_with_retries, xml2json
     encode_string_results, safe_load_json, remove_empty_elements, aws_table_to_markdown, is_demisto_version_ge, \
     appendContext, auto_detect_indicator_type, handle_proxy, get_demisto_version_as_str, get_x_content_info_headers, \
     url_to_clickable_markdown, WarningsHandler, DemistoException, SmartGetDict, JsonTransformer, \
-    remove_duplicates_from_list_arg, DBotScoreType, DBotScoreReliability, Common
+    remove_duplicates_from_list_arg, DBotScoreType, DBotScoreReliability, Common, send_events_to_xsiam
 import CommonServerPython
 
 try:
@@ -1045,6 +1046,7 @@ def test_argToList():
     test5 = 1
     test6 = '1'
     test7 = True
+    test8 = [1, 2, 3]
 
     results = [argToList(test1), argToList(test2), argToList(test2, ','), argToList(test3), argToList(test4, ';')]
 
@@ -1052,8 +1054,10 @@ def test_argToList():
         assert expected == result, 'argToList test failed, {} is not equal to {}'.format(str(result), str(expected))
 
     assert argToList(test5) == [1]
+    assert argToList(test5, transform=str) == ['1']
     assert argToList(test6) == ['1']
     assert argToList(test7) == [True]
+    assert argToList(test8, transform=str) == ['1', '2', '3']
 
 
 @pytest.mark.parametrize('args, field, expected_output', [
@@ -6661,41 +6665,41 @@ class TestFetchWithLookBack:
     INCIDENTS = [
         {
             'incident_id': 1,
-            'created': (datetime.utcnow() - timedelta(hours=3)).strftime('%Y-%m-%dT%H:%M:%S')
+            'created': '2022-04-01T08:00:00'
         },
         {
             'incident_id': 2,
-            'created': (datetime.utcnow() - timedelta(hours=1)).strftime('%Y-%m-%dT%H:%M:%S')
+            'created': '2022-04-01T10:00:00'
         },
         {
             'incident_id': 3,
-            'created': (datetime.utcnow() - timedelta(minutes=29)).strftime('%Y-%m-%dT%H:%M:%S')
+            'created': '2022-04-01T10:31:00'
         },
         {
             'incident_id': 4,
-            'created': (datetime.utcnow() - timedelta(minutes=19)).strftime('%Y-%m-%dT%H:%M:%S')
+            'created': '2022-04-01T10:41:00'
         },
         {
             'incident_id': 5,
-            'created': (datetime.utcnow() - timedelta(minutes=9)).strftime('%Y-%m-%dT%H:%M:%S')
+            'created': '2022-04-01T10:51:00'
         }
     ]
 
     NEW_INCIDENTS = [
         {
             'incident_id': 6,
-            'created': (datetime.utcnow() - timedelta(minutes=49)).strftime('%Y-%m-%dT%H:%M:%S')
+            'created': '2022-04-01T10:11:00'
         },
         {
             'incident_id': 7,
-            'created': (datetime.utcnow() - timedelta(minutes=25)).strftime('%Y-%m-%dT%H:%M:%S')
+            'created': '2022-04-01T10:35:00'
         },
         {
             'incident_id': 8,
-            'created': (datetime.utcnow() - timedelta(minutes=23)).strftime('%Y-%m-%dT%H:%M:%S')
+            'created': '2022-04-01T10:37:00'
         }
     ]
-    
+
     def example_fetch_incidents(self):
         """
         An example fetch for testing
@@ -6773,6 +6777,7 @@ class TestFetchWithLookBack:
 
         self.LAST_RUN = {}
 
+        mocker.patch.object(dateparser, 'parse', side_effect=self.mock_dateparser)
         mocker.patch.object(demisto, 'params', return_value=params)
         mocker.patch.object(demisto, 'getLastRun', return_value=self.LAST_RUN)
         mocker.patch.object(demisto, 'setLastRun', side_effect=self.set_last_run)
@@ -6788,6 +6793,13 @@ class TestFetchWithLookBack:
         incidents_phase2 = self.example_fetch_incidents()
 
         assert incidents_phase2 == result_phase2
+
+    def mock_dateparser(self, date_string, settings):
+        date_arr = date_string.split(' ')
+        if len(date_arr) > 1 and date_arr[0].isdigit():
+            return datetime(2022, 4, 1, 11, 0, 0) - timedelta(minutes=int(date_arr[0])) if date_arr[1] == 'minutes' \
+                else datetime(2022, 4, 1, 11, 0, 0) - timedelta(hours=int(date_arr[0]))
+        return datetime(2022, 4, 1, 11, 0, 0) - (datetime(2022, 4, 1, 11, 0, 0) - datetime.strptime(date_string, '%Y-%m-%dT%H:%M:%S'))
 
     @pytest.mark.parametrize('params, result_phase1, result_phase2, result_phase3, expected_last_run_phase1, expected_last_run_phase2, new_incidents, index', [
         (
@@ -6831,6 +6843,8 @@ class TestFetchWithLookBack:
         self.LAST_RUN = {}
         incidents = self.INCIDENTS[:]
 
+        mocker.patch.object(CommonServerPython, 'get_current_time', return_value=datetime(2022, 4, 1, 11, 0, 0))
+        mocker.patch.object(dateparser, 'parse', side_effect=self.mock_dateparser)
         mocker.patch.object(demisto, 'params', return_value=params)
         mocker.patch.object(demisto, 'getLastRun', return_value=self.LAST_RUN)
         mocker.patch.object(demisto, 'setLastRun', side_effect=self.set_last_run)
@@ -7143,3 +7157,79 @@ def test_create_indicator_result_with_dbotscore_unknown(mocker, args, expected):
         assert expected['integration_name'] in results.readable_output
     else:
         assert 'Results:' in results.readable_output
+
+
+@pytest.mark.parametrize('content_format,outputs,expected_type', ((None, {}, 'json'),
+                                                                  (None, 'foo', 'text'),
+                                                                  (None, 1, 'text'),
+                                                                  ('html', '', 'html'),
+                                                                  ('html', {}, 'html')))
+def test_content_type(content_format, outputs, expected_type):
+    from CommonServerPython import CommandResults, EntryFormat
+    command_results = CommandResults(
+        outputs=outputs,
+        readable_output='human_readable',
+        outputs_prefix='prefix',
+        content_format=content_format,
+    )
+    assert command_results.to_context()['ContentsFormat'] == expected_type
+
+
+class TestSendEventsToXSIAMTest:
+    from test_data.send_events_to_xsiam_data import events_dict
+    test_data = events_dict
+
+    @staticmethod
+    def get_license_custom_field_mock(arg):
+        if 'token' in arg:
+            return "TOKEN"
+        elif 'url' in arg:
+            return "url"
+
+    @pytest.mark.parametrize('events_use_case', [
+        'json_events', 'text_list_events', 'text_events', 'cef_events'
+    ])
+    def test_send_events_to_xsiam_positive(self, mocker, events_use_case):
+        """
+        Test for the fetch fetch events function
+        Given:
+            Case a: a list containing dicts representing events.
+            Case b: a list containing strings representing events.
+            Case c: a string representing events (separated by a new line).
+            Case d: a string representing events (separated by a new line).
+
+        When:
+            Case a: Calling the send_events_to_xsiam function with no explicit data format specified.
+            Case b: Calling the send_events_to_xsiam function with no explicit data format specified.
+            Case c: Calling the send_events_to_xsiam function with no explicit data format specified.
+            Case d: Calling the send_events_to_xsiam function with a cef data format specification.
+
+        Then:
+            Case a: Ensure the events data was compressed correctly and that the data format was automatically identified
+            as json.
+            Case b: Ensure the events data was compressed correctly and that the data format was automatically identified
+            as text.
+            Case c: Ensure the events data was compressed correctly and that the data format was automatically identified
+            as text.
+            Case c: Ensure the events data was compressed correctly and that the data format remined as cef.
+        """
+        if not IS_PY3:
+            return
+
+        from CommonServerPython import BaseClient
+        mocker.patch.object(demisto, 'getLicenseCustomField', side_effect=self.get_license_custom_field_mock)
+        _http_request_mock = mocker.patch.object(BaseClient, '_http_request', return_value={'error': 'false'})
+
+        events = self.test_data[events_use_case]['events']
+        data_format = self.test_data[events_use_case].get('format')
+
+        send_events_to_xsiam(events=events, vendor='some vendor', product='some product', data_format=data_format)
+
+        expected_format = self.test_data[events_use_case]['expected_format']
+        expected_data = self.test_data[events_use_case]['expected_data']
+
+        arguments_called = _http_request_mock.call_args[1]
+        decompressed_data = gzip.decompress(arguments_called['data']).decode("utf-8")
+
+        assert arguments_called['headers']['format'] == expected_format
+        assert decompressed_data == expected_data

@@ -201,7 +201,7 @@ def execute_action(action, logo_name, logo_content, associated_domains, model):
 def main():
     try:
         msg_list = []
-        logo_image_id = demisto.args().get('logoimageId', '')
+        logo_image_id = demisto.args().get('logoImageId', '')
         logo_name = demisto.args().get('logoName', '')
         associated_domains = demisto.args().get('associatedDomains', '').split(',')
         action = demisto.args().get('action', None)
