@@ -536,25 +536,25 @@ def fundamental_uuid_command(client: Client, args: dict, reliability: DBotScoreR
         if indicator_type.lower() == 'malware_family':
             dbot = Common.DBotScore(indicator_value, DBotScoreType.CUSTOM, 'ACTI Indicator Query', dbot_score, desc, reliability)
             indicator = Common.CustomIndicator('ACTI Malware Family', indicator_value, dbot, analysis_info, 'ACTI_MalwareFamily')
-            result_link: str = MALWARE_FAMILY_URL + res.get('uuid', '')
+            result_link = MALWARE_FAMILY_URL + res.get('uuid', '')
         elif indicator_type.lower() == 'threat_group':
             dbot = Common.DBotScore(indicator_value, DBotScoreType.CUSTOM, 'ACTI Indicator Query', dbot_score, desc, reliability)
             indicator = Common.CustomIndicator('ACTI Threat Group', indicator_value, dbot, analysis_info, 'ACTI_ThreatGroup')
-            result_link: str = THREAT_GROUP_URL + res.get('uuid', '')
+            result_link = THREAT_GROUP_URL + res.get('uuid', '')
         elif indicator_type.lower() == 'threat_actor':
             dbot = Common.DBotScore(indicator_value, DBotScoreType.CUSTOM, 'ACTI Indicator Query', dbot_score, desc, reliability)
             indicator = Common.CustomIndicator('ACTI Threat Actor', indicator_value, dbot, analysis_info, 'ACTI_ThreatActor')
-            result_link: str = THREAT_ACTOR_URL + res.get('uuid', '')
+            result_link = THREAT_ACTOR_URL + res.get('uuid', '')
         elif indicator_type.lower() == 'threat_campaign':
             dbot = Common.DBotScore(indicator_value, DBotScoreType.CUSTOM, 'ACTI Indicator Query', dbot_score, desc, reliability)
             indicator = Common.CustomIndicator('ACTI Threat Campaign', indicator_value, dbot, analysis_info,
                                                'ACTI_ThreatCampaign')
-            result_link: str = THREAT_CAMPAIGN_URL + res.get('uuid', '')
+            result_link = THREAT_CAMPAIGN_URL + res.get('uuid', '')
 
-        return CommandResults(indicator=indicator,
-                              raw_response=res,
-                              readable_output=tableToMarkdown(f'{display_name}', readableOutput,
-                                                              metadata=f'For more insight click: {result_link}'))
+    return CommandResults(indicator=indicator,
+                          raw_response=res,
+                          readable_output=tableToMarkdown(f'{display_name}', readableOutput,
+                                                          metadata=f'For more insight click: {result_link}'))
 
 
 def _enrich_analysis_result_with_intelligence(analysis_info, doc_search_client, indicatorTypeHash: bool = False):
