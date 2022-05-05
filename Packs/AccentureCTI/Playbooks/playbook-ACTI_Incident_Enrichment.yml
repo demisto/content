@@ -44,7 +44,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: Enrich Indicator using ACTI integrations.
+      description: 'Enrich Indicator using ACTI integrations'
     nexttasks:
       '#none#':
       - "9"
@@ -136,7 +136,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
-      description: ACTI Indicator Enrichment is a sub-playbook used to enrich indicators using ACTI Indicator Query integration.
+      description: 'ACTI Indicator Enrichment is a sub-playbook used to enrich indicators using ACTI Indicator Query integration'
     nexttasks:
       '#none#':
       - "10"
