@@ -19,6 +19,9 @@
 /Utils/trigger_test_upload_flow.sh @Noy-Maimon
 /Utils/trigger_upload_packs_to_production.sh @Noy-Maimon
 
+# Test Collection
+/Tests/scripts/collect_tests_and_content_packs.py @dorschw
+
 # PANW Products
 /Packs/PaloAltoNetworksIoT/Integrations/* @bakatzir
 /Packs/PaloAltoNetworksIoT3rdParty/Integrations/* @bakatzir
@@ -53,6 +56,7 @@
 .gitlab/ci/* @esharf
 .gitlab/* @esharf
 .gitlab-ci.yml @esharf
+/Tests/scripts/wait_in_line_for_xsiam_env.sh @daryakoval
 
 # SDK Related
 .gitlab/ci/sdk-nightly.yml @dorschw

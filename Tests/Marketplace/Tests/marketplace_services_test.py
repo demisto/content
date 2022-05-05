@@ -484,8 +484,8 @@ class TestHelperFunctions:
                                   'Playbook', False, False),
 
                                  # Check is_siem for integration
-                                 ({'id': 'some-id', 'isFetchEvents': True}, 'Integration', False, True),
-                                 ({'id': 'some-id', 'isFetchEvents': False}, 'Integration', False, False),
+                                 ({'id': 'some-id', 'isfetchevents': True}, 'Integration', False, True),
+                                 ({'id': 'some-id', 'isfetchevents': False}, 'Integration', False, False),
 
                                  # Check is_siem for rules
                                  ({'id': 'some-id', 'rules': ''}, 'ParsingRule', False, True),

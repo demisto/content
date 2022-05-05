@@ -208,7 +208,13 @@ expected_alert_output = [{'name': 'Your organization was potentially targeted by
                                            'cybersixgillstatus': 'In Treatment',
                                            'cybersixgillsite': 'rw_everest',
                                            'cybersixgillactor': None,
-                                           'cybersixgilltriggeredassets': ['Walmart']},
+                                           'cybersixgilltriggeredassets': ['Walmart'],
+                                           'cybersixgillcvss31': -1,
+                                           'cybersixgillcvss20': -1,
+                                           'cybersixgilldvescore': -1,
+                                           'cve': None,
+                                           'cybersixgillattributes': None
+                                           },
                           'status': 1,
                           'details': 'A ransomware group posted on its leak site, rw_everest, focusing on "Walmart" '
                                      '\n\n\n\n',
@@ -238,7 +244,7 @@ class MockedResponse(object):
 
 
 def get_incidents_list():
-    return copy.deepcopy(incidents_list)
+    return copy.deepcopy(incidents_list[:1])
 
 
 def get_info_item():

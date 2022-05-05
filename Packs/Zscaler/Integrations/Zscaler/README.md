@@ -853,3 +853,22 @@ There is no context output for this command.
 #### Human Readable Output
 
 >Changes have been activated successfully.
+
+### zscaler-url-quota
+***
+Gets information on the number of unique URLs that are currently provisioned for your organization as well as how many URLs you can add before reaching that number.
+
+
+#### Base Command
+
+`zscaler-url-quota`
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Zscaler.remainingUrlsQuota | Number | The number of URLs you can add before reaching the quota. | 
+| Zscaler.uniqueUrlsProvisioned | Number | The number of unique URLs that are currently provisioned for your organization. | 
