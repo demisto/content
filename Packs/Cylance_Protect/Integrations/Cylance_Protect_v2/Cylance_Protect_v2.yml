@@ -36,12 +36,12 @@ configuration:
   name: incidentType
   required: false
   type: 13
-- defaultvalue: "-59"
+- defaultvalue: '-59'
   display: File Threshold
   name: file_threshold
   required: false
   type: 0
-- defaultvalue: "1"
+- defaultvalue: '1'
   display: Incidents Fetch Interval
   name: incidentFetchInterval
   required: false
@@ -51,6 +51,92 @@ display: Cylance Protect v2
 name: Cylance Protect v2
 script:
   commands:
+  - arguments:
+    - description: InstaQuery name
+      name: name
+      required: true
+    - description: InstaQuery description
+      name: description
+      required: true
+    - auto: PREDEFINED
+      description: InstaQuery artifact, select from the list
+      name: artifact
+      predefined:
+      - File
+      - Process
+      - NetworkConnection
+      - RegistryKey
+      required: true
+    - auto: PREDEFINED
+      description: InstaQuery value type to match, select from the list
+      name: match_value_type
+      predefined:
+      - File.Path
+      - File.Md5
+      - File.Sha2
+      - File.Owner
+      - File.CreationDateTime
+      - Process.Name
+      - Process.Commandline
+      - Process.PrimaryImagePath
+      - Process.PrimaryImageMd5
+      - Process.StartDateTime
+      - NetworkConnection.DestAddr
+      - NetworkConnection.DestPort
+      - RegistryKey.ProcessName
+      - RegistryKey.ProcessPrimaryImagePath
+      - RegistryKey.ValueName
+      - RegistryKey.FilePath
+      - RegistryKey.FileMd5
+      - RegistryKey.IsPersistencePoint
+      required: true
+    - description: Value to search in InstaQuery
+      name: match_values
+      required: true
+    - description: Zone of the object
+      name: zone
+      required: true
+    - auto: PREDEFINED
+      description: Match type fuzzy or exact
+      name: match_type
+      predefined:
+      - Fuzzy
+      - Exact
+      required: true
+    description: Create a cylance InstaQuery
+    name: cylance-optics-create-instaquery
+    outputs:
+    - contextPath: InstaQuery.New.id
+      description: The unique identifier of the created InstaQuery.
+      type: string
+    - contextPath: InstaQuery.New.created_at
+      description: The Date and Time that the InstaQuery was created.
+      type: date
+    - contextPath: InstaQuery.New.progress
+      description: The progress of the InstaQuery.
+      type: string
+  - arguments:
+    - description: InstaQuery ID
+      name: query_id
+      required: true
+    description: Get a cylance InstaQuery search result
+    name: cylance-optics-get-instaquery-result
+    outputs:
+    - contextPath: InstaQuery.Results.result
+      description: The InstaQuery results.
+      type: string
+  - arguments:
+    - description: number of page to collect
+      name: page
+    - description: number of items per page to collect
+      name: page_size
+      required: true
+    description: Get a list of InstaQuery
+    name: cylance-optics-list-instaquery
+    outputs:
+    - contextPath: InstaQuery.List
+      description: The list of InstaQuery
+      type: string
   - arguments:
     - description: The page number parameter is optional. When the value is not specified,
         the default is 1.
@@ -738,12 +824,12 @@ script:
     - description: File threshold to determine the file reputation.
       name: threshold
     - auto: PREDEFINED
-      defaultValue: "no"
+      defaultValue: no
       description: If "yes" the file is unzipped and returned to the War Room.
       name: unzip
       predefined:
-      - "yes"
-      - "no"
+      - yes
+      - no
     description: Downloads the threat (file) attached to a specific SHA256 hash.
     name: cylance-protect-download-threat
     outputs:
@@ -877,7 +963,7 @@ script:
       isArray: true
       name: deviceIds
       required: true
-    - defaultValue: "20"
+    - defaultValue: '20'
       description: The number of devices to delete per batch. The default is 20, which
         is also the maximum number of devices that can be deleted per request.
       name: batch_size
@@ -900,6 +986,6 @@ script:
   script: ''
   subtype: python2
   type: python
+fromversion: 5.0.0
 tests:
 - Cylance Protect v2 Test
-fromversion: 5.0.0
