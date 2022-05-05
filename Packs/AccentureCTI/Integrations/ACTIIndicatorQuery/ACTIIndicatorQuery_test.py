@@ -39,10 +39,11 @@ def test_ip_command():
 
     url = 'https://test.com/rest/threatindicator/v0/ip?key.values=0.0.0.0'
     doc_url = 'https://test.com/rest/document/v0?links.display_text.values=0.0.0.0&type.values=intelligence_alert&type.values=intelligence_report&links.display_text.match_all=true'                     # noqa: E501
-    fund_url = 'https://test.com/rest/fundamental/v0/malware_family?key.values=Sakula'
+    fund_url = 'https://test.com/rest/fundamental/v0/malware_family?key.values=Hive'
     status_code = 200
     json_data = IP_RES_JSON
     intel_json_data = IP_INTEL_JSON
+    malware_json_data = RAW_MALWARE_FAMILY_RES_JSON
 
     expected_output = {
         'IP': [{'Address': '0.0.0.0'}],
@@ -53,14 +54,13 @@ def test_ip_command():
     with requests_mock.Mocker() as m:
         m.get(url, status_code=status_code, json=json_data)
         m.get(doc_url, status_code=status_code, json=intel_json_data)
-        m.get(fund_url, status_code=status_code, json=intel_json_data)
+        m.get(fund_url, status_code=status_code, json=malware_json_data)
         client = Client(API_URL, 'api_token', True, False, ENDPOINTS['threatindicator'])
         doc_search_client = Client(API_URL, 'api_token', True, False, ENDPOINTS['document'])
         fundamental_client = Client(API_URL, 'api_token', True, False, ENDPOINTS['fundamental'])
         results = ip_command(client, ip_to_check, DBotScoreReliability.B, doc_search_client, fundamental_client)
 
         context_result = results[0].to_context()
-
         output = results[0].to_context().get('EntryContext', {})
 
         assert output.get('IP(val.Address && val.Address == obj.Address)', []) == expected_output.get('IP')
@@ -83,11 +83,11 @@ def test_ip_command_when_api_key_not_authorised_for_document_search():
 
     url = 'https://test.com/rest/threatindicator/v0/ip?key.values=0.0.0.0'
     doc_url = 'https://test.com/rest/document/v0?links.display_text.values=0.0.0.0&type.values=intelligence_alert&type.values=intelligence_report&links.display_text.match_all=true'                                                        # noqa: E501
-    fund_url = 'https://test.com/rest/fundamental/v0/malware_family?key.values=Sakula'
-
+    fund_url = 'https://test.com/rest/fundamental/v0/malware_family?key.values=Hive' 
     status_code = 200
     error_status_code = 403
     json_data = IP_RES_JSON
+    malware_family_data = RAW_MALWARE_FAMILY_RES_JSON
     doc_search_exception_response = {'timestamp': '2021-11-12T09:09:27.983Z', 'status': 403,
                                      'error': 'Forbidden', 'message': 'Forbidden', 'path': '/rest/document/v0'}
 
@@ -100,7 +100,7 @@ def test_ip_command_when_api_key_not_authorised_for_document_search():
     with requests_mock.Mocker() as m:
         m.get(url, status_code=status_code, json=json_data)
         m.get(doc_url, status_code=error_status_code, json=doc_search_exception_response)
-        m.get(fund_url, status_code=status_code, json=doc_search_exception_response)
+        m.get(fund_url, status_code=status_code, json=malware_family_data)
         client = Client(API_URL, 'api_token', True, False, ENDPOINTS['threatindicator'])
         doc_search_client = Client(API_URL, 'api_token', True, False, ENDPOINTS['document'])
         fundamental_client = Client(API_URL, 'api_token', True, False, ENDPOINTS['fundamental'])
@@ -131,7 +131,6 @@ def test_domain_command():
 
     url = 'https://test.com/rest/threatindicator/v0/domain?key.values=mydomain.com'
     doc_url = 'https://test.com/rest/document/v0?links.display_text.values=mydomain.com&type.values=intelligence_alert&type.values=intelligence_report&links.display_text.match_all=true'                                            # noqa: E501
-    fund_url = 'https://test.com/rest/fundamental/v0/malware_family?key.values=Sakula'
 
     status_code = 200
     json_data = DOMAIN_RES_JSON
@@ -145,7 +144,6 @@ def test_domain_command():
     with requests_mock.Mocker() as m:
         m.get(url, status_code=status_code, json=json_data)
         m.get(doc_url, status_code=status_code, json=intel_json_data)
-        m.get(fund_url, status_code=status_code, json=intel_json_data)
         client = Client(API_URL, 'api_token', True, False, ENDPOINTS['threatindicator'])
         doc_search_client = Client(API_URL, 'api_token', True, False, ENDPOINTS['document'])
         fundamental_client = Client(API_URL, 'api_token', True, False, ENDPOINTS['fundamental'])
@@ -175,7 +173,6 @@ def test_domain_command_when_api_key_not_authorized_for_document_search():
 
     url = 'https://test.com/rest/threatindicator/v0/domain?key.values=mydomain.com'
     doc_url = 'https://test.com/rest/document/v0?links.display_text.values=mydomain.com&type.values=intelligence_alert&type.values=intelligence_report&links.display_text.match_all=true'                                                                                # noqa: E501
-    fund_url = 'https://test.com/rest/fundamental/v0/malware_family?key.values=Sakula'
 
     status_code = 200
     error_status_code = 403
@@ -192,7 +189,6 @@ def test_domain_command_when_api_key_not_authorized_for_document_search():
     with requests_mock.Mocker() as m:
         m.get(url, status_code=status_code, json=json_data)
         m.get(doc_url, status_code=error_status_code, json=doc_search_exception_response)
-        m.get(fund_url, status_code=error_status_code, json=doc_search_exception_response)
         client = Client(API_URL, 'api_token', True, False, ENDPOINTS['threatindicator'])
         doc_search_client = Client(API_URL, 'api_token', True, False, ENDPOINTS['document'])
         fundamental_client = Client(API_URL, 'api_token', True, False, ENDPOINTS['fundamental'])
@@ -256,7 +252,6 @@ def test_uuid_command():
 
     url = 'https://test.com/rest/threatindicator/v0/461b5ba2-d4fe-4b5c-ac68-35b6636c6edf'
     doc_url = 'https://test.com/rest/document/v0?links.display_text.values=mydomain.com&type.values=intelligence_alert&type.values=intelligence_report&links.display_text.match_all=true'                                                           # noqa: E501
-    fund_url = 'https://test.com/rest/fundamental/v0/malware_family?key.values=Sakula'
 
     status_code = 200
     json_data = UUID_RES_JSON
@@ -270,7 +265,6 @@ def test_uuid_command():
     with requests_mock.Mocker() as m:
         m.get(url, status_code=status_code, json=json_data)
         m.get(doc_url, status_code=status_code, json=intel_json_data)
-        m.get(fund_url, status_code=status_code, json=intel_json_data)
         client = Client(API_URL, 'api_token', True, False, ENDPOINTS['threatindicator'])
         doc_search_client = Client(API_URL, 'api_token', True, False, ENDPOINTS['document'])
         fundamental_client = Client(API_URL, 'api_token', True, False, ENDPOINTS['fundamental'])
@@ -300,7 +294,6 @@ def test_uuid_command_when_api_key_not_authorized_for_document_search():
 
     url = 'https://test.com/rest/threatindicator/v0/461b5ba2-d4fe-4b5c-ac68-35b6636c6edf'
     doc_url = 'https://test.com/rest/document/v0?links.display_text.values=mydomain.com&type.values=intelligence_alert&type.values=intelligence_report&links.display_text.match_all=true'                                                                                                  # noqa: E501
-    fund_url = 'https://test.com/rest/fundamental/v0/malware_family?key.values=Sakula'
 
     status_code = 200
     error_status_code = 403
@@ -317,7 +310,6 @@ def test_uuid_command_when_api_key_not_authorized_for_document_search():
     with requests_mock.Mocker() as m:
         m.get(url, status_code=status_code, json=json_data)
         m.get(doc_url, status_code=error_status_code, json=doc_search_exception_response)
-        m.get(fund_url, status_code=error_status_code, json=doc_search_exception_response)
         client = Client(API_URL, 'api_token', True, False, ENDPOINTS['threatindicator'])
         doc_search_client = Client(API_URL, 'api_token', True, False, ENDPOINTS['document'])
         fundamental_client = Client(API_URL, 'api_token', True, False, ENDPOINTS['fundamental'])
@@ -347,7 +339,6 @@ def test_ip_not_found():
     """
 
     url = 'https://test.com/rest/threatindicator/v0/ip?key.values=1.1.1.1'
-    fund_url = 'https://test.com/rest/fundamental/v0/malware_family?key.values=Sakula'
     status_code = 200
     json_data = {'total_size': 0, 'page': 1, 'page_size': 25, 'more': False}
     expected_output = "No results were found for ip 1.1.1.1"
@@ -355,7 +346,6 @@ def test_ip_not_found():
     ip_to_check = {'ip': '1.1.1.1'}
     with requests_mock.Mocker() as m:
         m.get(url, status_code=status_code, json=json_data)
-        m.get(fund_url, status_code=status_code, json=json_data)
         client = Client(API_URL, 'api_token', True, False, ENDPOINTS['threatindicator'])
         doc_search_client = Client(API_URL, 'api_token', True, False, ENDPOINTS['document'])
         fundamental_client = Client(API_URL, 'api_token', True, False, ENDPOINTS['fundamental'])
@@ -484,7 +474,6 @@ def test_url_command():
 
     url = 'https://test.com/rest/threatindicator/v0/url?key.values=http://www.malware.com'
     doc_url = 'https://test.com/rest/document/v0?links.display_text.values=http://www.malware.com&type.values=intelligence_alert&type.values=intelligence_report&links.display_text.match_all=true'                                                             # noqa: E501
-    fund_url = 'https://test.com/rest/fundamental/v0/malware_family?key.values=Sakula'
     status_code = 200
     json_data = URL_RES_JSON
     intel_json_data = URL_INTEL_JSON
@@ -498,7 +487,6 @@ def test_url_command():
     with requests_mock.Mocker() as m:
         m.get(url, status_code=status_code, json=json_data)
         m.get(doc_url, status_code=status_code, json=intel_json_data)
-        m.get(fund_url, status_code=status_code, json=intel_json_data)
         client = Client(API_URL, 'api_token', True, False, ENDPOINTS['threatindicator'])
         doc_search_client = Client(API_URL, 'api_token', True, False, ENDPOINTS['document'])
         fundamental_client = Client(API_URL, 'api_token', True, False, ENDPOINTS['fundamental'])
@@ -527,7 +515,6 @@ def test_url_command_when_api_key_not_authorized_for_document_search():
 
     url = 'https://test.com/rest/threatindicator/v0/url?key.values=http://www.malware.com'
     doc_url = 'https://test.com/rest/document/v0?links.display_text.values=http://www.malware.com&type.values=intelligence_alert&type.values=intelligence_report&links.display_text.match_all=true'                                                                                             # noqa: E501
-    fund_url = 'https://test.com/rest/fundamental/v0/malware_family?key.values=Sakula'
     status_code = 200
     error_status_code = 403
     json_data = URL_RES_JSON
@@ -543,7 +530,6 @@ def test_url_command_when_api_key_not_authorized_for_document_search():
     with requests_mock.Mocker() as m:
         m.get(url, status_code=status_code, json=json_data)
         m.get(doc_url, status_code=error_status_code, json=doc_search_exception_response)
-        m.get(fund_url, status_code=error_status_code, json=doc_search_exception_response)
         client = Client(API_URL, 'api_token', True, False, ENDPOINTS['threatindicator'])
         doc_search_client = Client(API_URL, 'api_token', True, False, ENDPOINTS['document'])
         fundamental_client = Client(API_URL, 'api_token', True, False, ENDPOINTS['fundamental'])
@@ -725,7 +711,7 @@ def test_fundamental_uuid_command():
         assert output.get(DBOT_KEY, []) == expected_output.get('dbot')
 
 
-def test_get_malware_family():
+def _test_get_malware_family():
     malware_family = 'Hive'
     status_code = 200
     raw_json = RAW_MALWARE_FAMILY_RES_JSON
