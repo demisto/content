@@ -1,0 +1,17 @@
+{
+    "name": "ExtractIndicatorsFromWordFile_custom_with_context",
+    "description": "such OOB script should transfert the context from extractindicator to context\nI have added an ugly way to do it as I was unbale to do it using the demisto.results",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "xthourou",
+    "url": "",
+    "email": "",
+    "created": "2022-05-06T10:18:10Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "xthourou"
+    ]
+}
