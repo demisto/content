@@ -7495,7 +7495,6 @@ script:
         required: true
         secret: false
       - default: false
-        defaultValue: null
         description: String by which to filter the results to only install to specific devices or serial
           numbers
         isArray: false
@@ -7691,8 +7690,7 @@ script:
         required: true
         secret: false
       - default: false
-        defaultValue: null
-        description: String by which to filter to only install to specific devices or 
+        description: String by which to filter to only install to specific devices or
           serial numbers
         isArray: false
         name: device_filter_string
@@ -7722,7 +7720,6 @@ script:
         type: String
   - arguments:
     - default: false
-      defaultValue: null
       description: String to filter to only check given devices
       isArray: false
       name: device_filter_string
@@ -7778,7 +7775,6 @@ script:
       type: String
   - arguments:
     - default: false
-      defaultValue: null
       description: String to filter to only check given device
       isArray: false
       name: device_filter_string
@@ -7819,7 +7815,6 @@ script:
       type: String
   - arguments:
     - default: false
-      defaultValue: null
       description: String to filter to only check given device
       isArray: false
       name: device_filter_string
@@ -7845,7 +7840,6 @@ script:
       type: String
   - arguments:
     - default: false
-      defaultValue: null
       description: String to filter to only check given device
       isArray: false
       name: device_filter_string
@@ -7885,7 +7879,6 @@ script:
       type: String
   - arguments:
     - default: false
-      defaultValue: null
       description: String to filter to only check given device
       isArray: false
       name: device_filter_string
@@ -7925,7 +7918,6 @@ script:
       type: String
   - arguments:
     - default: false
-      defaultValue: null
       description: String to filter to only check given device
       isArray: false
       name: device_filter_string
@@ -7965,7 +7957,6 @@ script:
       type: String
   - arguments:
     - default: false
-      defaultValue: null
       description: String to filter to only check given device
       isArray: false
       name: device_filter_string
@@ -8012,7 +8003,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: null
+    description: Fix log forwarding issues identified by pan-os-hygiene-check-log-forwarding.
     name: pan-os-hygiene-fix-log-forwarding
     outputs:
     - contextPath: PANOS.ConfigurationHygieneFix.hostid
