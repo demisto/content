@@ -7,7 +7,7 @@ args:
 commonfields:
   id: GLPIGetUsername
   version: -1
-dockerimage: demisto/python3:3.10.4.28442
+dockerimage: demisto/python3:3.10.4.29342
 enabled: true
 name: GLPIGetUsername
 runas: DBotWeakRole

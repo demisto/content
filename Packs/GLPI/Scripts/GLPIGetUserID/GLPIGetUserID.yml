@@ -6,7 +6,7 @@ comment: Convert GLPI Username into GLPI ID
 commonfields:
   id: GLPIGetUserID
   version: -1
-dockerimage: demisto/python3:3.10.4.28442
+dockerimage: demisto/python3:3.10.4.29342
 enabled: true
 name: GLPIGetUserID
 runas: DBotWeakRole
