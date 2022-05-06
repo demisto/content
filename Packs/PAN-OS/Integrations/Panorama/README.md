@@ -6754,6 +6754,8 @@ Check security rules are configured correctly.
 >| Fails when a security rule is not configured to log at session end. | BP-V-8 | 1 | ❌ |
 >| Fails when a security rule has no log forwarding profile configured. | BP-V-9 | 1 | ❌ |
 >| Fails when a security rule has no configured profiles or profile groups. | BP-V-10 | 1 | ❌ |
+
+
 ### pan-os-hygiene-fix-log-forwarding
 ***
 Fix log forwarding issues identified by pan-os-hygiene-check-log-forwarding.
@@ -6778,6 +6780,25 @@ Fix log forwarding issues identified by pan-os-hygiene-check-log-forwarding.
 | PANOS.ConfigurationHygieneFix.issue_code | String | The shorthand code for the issue | 
 | PANOS.ConfigurationHygieneFix.description | String | Human readable description of issue | 
 | PANOS.ConfigurationHygieneFix.name | String | The affected object name | 
+
+#### Command example
+```!pan-os-hygiene-fix-log-forwarding issue=${PANOS.ConfigurationHygiene.Result}```
+#### Context Example
+```json
+{
+  "PANOS": {
+    "ConfigurationHygieneFix": [
+      {
+        "container_name": "LAB",
+        "description": "Enabled Enhanced Application Logging.",
+        "hostid": "192.168.1.145",
+        "issue_code": "BP-V-2",
+        "name": "test_fwd_profile-1"
+      }
+    ]
+  }
+}
+```
 
 ### pan-os-hygiene-fix-security-zone-log-settings
 ***
@@ -6805,6 +6826,25 @@ Fixes security zones that are configured without a valid log forwarding profile.
 | PANOS.ConfigurationHygieneFix.description | String | Human readable description of issue | 
 | PANOS.ConfigurationHygieneFix.name | String | The affected object name | 
 
+#### Command example
+```!pan-os-hygiene-fix-security-zone-log-settings issue=${PANOS.ConfigurationHygiene.Result} log_forwarding_profile_name="test-fwd-profile"```
+#### Context Example
+```json
+{
+  "PANOS": {
+    "ConfigurationHygieneFix": [
+      {
+        "container_name": "LAB",
+        "description": "Set log forwarding profile test-fwd-profile",
+        "hostid": "192.168.1.145",
+        "issue_code": "BP-V-7",
+        "name": "TEST_ZONE"
+      }
+    ]
+  }
+}
+```
+
 ### pan-os-hygiene-fix-security-rule-log-settings
 ***
 Fixed security rules that have incorrect log settings by adding a log forwarding profile and setting
@@ -6831,6 +6871,25 @@ Fixed security rules that have incorrect log settings by adding a log forwarding
 | PANOS.ConfigurationHygieneFix.description | String | Human readable description of issue | 
 | PANOS.ConfigurationHygieneFix.name | String | The affected object name | 
 
+#### Command example
+```!pan-os-hygiene-fix-security-rule-log-settings issue=${PANOS.ConfigurationHygiene.Result.[0]} log_forwarding_profile_name="test-fwd-profile""```
+#### Context Example
+```json
+{
+  "PANOS": {
+    "ConfigurationHygieneFix": [
+      {
+        "container_name": "shared",
+        "description": "Set log forwarding profile to test-fwd-profile-3 andenabled log at session end.",
+        "hostid": "192.168.1.145",
+        "issue_code": "BP-V-8",
+        "name": "Test-webapp-rule"
+      }
+    ]
+  }
+}
+```
+
 ### pan-os-hygiene-fix-security-rule-profile-settings
 ***
 Fixed security rules that have incorrect log settings by adding a log forwarding profile and setting
@@ -6856,3 +6915,22 @@ Fixed security rules that have incorrect log settings by adding a log forwarding
 | PANOS.ConfigurationHygieneFix.issue_code | String | The shorthand code for the issue | 
 | PANOS.ConfigurationHygieneFix.description | String | Human readable description of issue | 
 | PANOS.ConfigurationHygieneFix.name | String | The affected object name | 
+
+#### Command example
+```!pan-os-hygiene-fix-security-rule-log-settings issue=${PANOS.ConfigurationHygiene.Result.[0]} log_forwarding_profile_name="test-fwd-profile""```
+#### Context Example
+```json
+{
+  "PANOS": {
+    "ConfigurationHygieneFix": [
+      {
+        "container_name": "shared",
+        "description": "Set security profile group Alert-Only",
+        "hostid": "192.168.1.145",
+        "issue_code": "BP-V-10",
+        "name": "Test-webapp-rule"
+      }
+    ]
+  }    
+}
+```
