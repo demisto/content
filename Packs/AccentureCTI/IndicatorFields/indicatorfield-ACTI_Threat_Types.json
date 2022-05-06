@@ -5,7 +5,7 @@
     "name": "ACTI Threat Types",
     "ownerOnly": false,
     "cliName": "actithreattypes",
-    "type": "markdown",
+    "type": "multiSelect",
     "closeForm": false,
     "editForm": true,
     "required": false,
