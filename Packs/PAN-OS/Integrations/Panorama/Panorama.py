@@ -10509,10 +10509,16 @@ def hygiene_issue_dict_to_object(issue_dicts: Union[list[dict], dict]) -> list[C
 
     issues: list[ConfigurationHygieneIssue] = []
     for issue_dict in issue_dicts:
-        issue_dict["container_name"] = issue_dict["containername"]
-        issue_dict["issue_code"] = issue_dict["issuecode"]
-        del (issue_dict["containername"])
-        del (issue_dict["issuecode"])
+        container_name = issue_dict.get("containername") or issue_dict.get("container_name")
+        issue_code = issue_dict.get("issuecode") or issue_dict.get("issue_code")
+        issue_dict["container_name"] = container_name
+        issue_dict["issue_code"] = issue_code
+        if issue_dict.get("containername"):
+            del (issue_dict["containername"])
+
+        if issue_dict.get("issuecode"):
+            del (issue_dict["issuecode"])
+
         issues.append(
             ConfigurationHygieneIssue(**issue_dict)
         )

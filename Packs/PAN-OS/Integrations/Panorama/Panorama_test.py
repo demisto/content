@@ -1418,6 +1418,16 @@ def mock_bad_url_filtering_profile():
     return url_filtering_profile
 
 
+def mock_issue_with_underscores():
+    return {
+        "container_name": "test-dg",
+        "issue_code": "BP-V-1",
+        "description": "Log forwarding profile is missing enhanced application logging",
+        "name": "test-bad",
+        "hostid": MOCK_FIREWALL_1_SERIAL
+    }
+
+
 def mock_enhanced_log_forwarding_issue_dict():
     return {
         "containername": "test-dg",
@@ -2112,6 +2122,13 @@ class TestHygieneFunctions:
         """
         from Panorama import hygiene_issue_dict_to_object, ConfigurationHygieneIssue
         result = hygiene_issue_dict_to_object(mock_enhanced_log_forwarding_issue_dict())
+        assert isinstance(result[0], ConfigurationHygieneIssue)
+        assert len(result) == 1
+        for value in result[0].__dict__.values():
+            assert value
+
+        # If the issue is passed directly from the other command make sure this function works also
+        result = hygiene_issue_dict_to_object(mock_issue_with_underscores())
         assert isinstance(result[0], ConfigurationHygieneIssue)
         assert len(result) == 1
         for value in result[0].__dict__.values():
