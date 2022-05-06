@@ -9182,7 +9182,7 @@ class HygieneLookups:
         if not minimum_alert_severities:
             minimum_alert_severities = BestPractices.SPYWARE_ALERT_THRESHOLD
 
-        conforming_profiles: Union[list[VulnerabilityProfile], list[AntiSpywareProfile]] = []
+        conforming_profiles: Union[List[VulnerabilityProfile], List[AntiSpywareProfile]] = []
         issues = []
         check_register = HygieneCheckRegister.get_hygiene_check_register([
             "BP-V-5"
@@ -10497,7 +10497,7 @@ def check_security_rules(topology: Topology, device_filter_string: str = None) -
     return HygieneLookups.check_security_rules(topology, device_filter_str=device_filter_string)
 
 
-def hygiene_issue_dict_to_object(issue_dicts: Union[list[dict], dict]) -> List[ConfigurationHygieneIssue]:
+def hygiene_issue_dict_to_object(issue_dicts: Union[List[dict], dict]) -> List[ConfigurationHygieneIssue]:
     """
     Converts the given list of hygiene issues, which is a list of dictionaries, into the dataclass objects.
     This simplifies the handling of the issues within the fix functions.
