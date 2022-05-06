@@ -1467,6 +1467,7 @@ def mock_security_rule_security_profile_group_issue_dict():
         "hostid": MOCK_FIREWALL_1_SERIAL
     }
 
+
 @pytest.fixture
 def mock_topology(mock_panorama, mock_firewall):
     from Panorama import Topology
@@ -2035,7 +2036,6 @@ class TestHygieneFunctions:
         # Check when at least one good profile exists - should return no results
         result = HygieneLookups.check_spyware_profiles(mock_topology)
         assert not result.result_data
-
 
     @patch("Panorama.Template.refreshall", return_value=[])
     @patch("Panorama.Vsys.refreshall", return_value=[])
