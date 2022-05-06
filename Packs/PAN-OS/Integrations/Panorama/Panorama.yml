@@ -8042,6 +8042,7 @@ script:
     outputs:
     - contextPath: PANOS.ConfigurationHygieneFix.hostid
       type: String
+      description: Host ID
     - contextPath: PANOS.ConfigurationHygieneFix.container_name
       description: What parent container (DG, Template, VSYS) this object belongs
         to.
@@ -8076,6 +8077,7 @@ script:
     outputs:
     - contextPath: PANOS.ConfigurationHygieneFix.hostid
       type: String
+      description: Host ID
     - contextPath: PANOS.ConfigurationHygieneFix.container_name
       description: What parent container (DG, Template, VSYS) this object belongs
         to.
@@ -8109,6 +8111,7 @@ script:
     outputs:
     - contextPath: PANOS.ConfigurationHygieneFix.hostid
       type: String
+      description: Host ID
     - contextPath: PANOS.ConfigurationHygieneFix.container_name
       description: What parent container (DG, Template, VSYS) this object belongs
         to.
