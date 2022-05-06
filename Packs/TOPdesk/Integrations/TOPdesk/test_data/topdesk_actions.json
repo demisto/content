@@ -1,0 +1,17 @@
+[
+    {
+      "id": "some-id",
+      "memoText": "action memo text",
+      "flag": 0,
+      "invisibleForCaller": true,
+      "entryDate": "2022-04-26T08:21:48.520Z",
+      "operator": {
+        "id": "some-operator-id",
+        "name": "Xsoar - Operator"
+      },
+      "person": {
+        "id": "some-person-id",
+        "name": "Client Contact Name"
+      }
+    }
+  ]

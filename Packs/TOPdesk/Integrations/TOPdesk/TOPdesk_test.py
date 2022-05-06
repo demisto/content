@@ -7,9 +7,8 @@ from TOPdesk import Client, INTEGRATION_NAME, MAX_API_PAGE_SIZE, \
     list_persons_command, list_operators_command, branches_command, get_incidents_list_command, \
     get_incidents_with_pagination, incident_do_command, incident_touch_command, attachment_upload_command, \
     escalation_reasons_command, deescalation_reasons_command, archiving_reasons_command, capitalize_for_outputs, \
-    list_attachments_command, get_mapping_fields_command
-
-# TODO: add tests for get_remote_data_command, update_remote_system_command, get_modified_remote_data_command
+    list_attachments_command, list_actions_command, get_mapping_fields_command, get_remote_data_command, \
+    get_modified_remote_data_command, update_remote_system_command
 
 
 def util_load_json(path):
@@ -359,15 +358,15 @@ def test_incident_do_commands(client,
 
 
 @pytest.mark.parametrize('command_args, command_api_url, command_api_body', [
-    ({"id": "incident_id", "file": "some_entry_id", "invisivle_for_caller": "false"},
+    ({"id": "incident_id", "file": "some_entry_id", "invisible_for_caller": "false"},
      'https://test.com/api/incidents/id/incident_id/attachments',
-     {"invisivle_for_caller": "false"}),
+     {"invisible_for_caller": "false"}),
     ({"id": "incident_id", "file": "some_entry_id", "description": "some description"},
      'https://test.com/api/incidents/id/incident_id/attachments',
      {"description": "some description"}),
-    ({"id": "incident_id", "file": "some_entry_id", "description": "some description", "invisivle_for_caller": "false"},
+    ({"id": "incident_id", "file": "some_entry_id", "description": "some description", "invisible_for_caller": "false"},
      'https://test.com/api/incidents/id/incident_id/attachments',
-     {"description": "some description", "invisivle_for_caller": "false"}),
+     {"description": "some description", "invisible_for_caller": "false"}),
     ({"id": "incident_id", "file": "some_entry_id"},
      'https://test.com/api/incidents/id/incident_id/attachments',
      {})
@@ -380,7 +379,7 @@ def test_attachment_upload_command(client,
                                    command_api_body):
     """Unit test
     Given
-        - command args: id, file, description, invisivle_for_caller
+        - command args: id, file, description, invisible_for_caller
     When
         - running attachment_upload_command with the command args
     Then
@@ -434,7 +433,7 @@ def test_attachment_list_command(client,
                                  response_override):
     """Unit test
     Given
-        - command args: id, file, description, invisivle_for_caller
+        - command args: id, file, description, invisible_for_caller
     When
         - running attachment_upload_command with the command args
     Then
@@ -991,3 +990,73 @@ def test_get_mapping_fields(client):
         }
     }
     assert expected_mapping == res.extract_mapping()
+
+
+@pytest.mark.parametrize('command_args', [
+    ({"incident_id": "some-id", "incident_number": None}),
+    ({"incident_id": None, "incident_number": "some-number"})
+])
+def test_incident_actions_list(client, requests_mock, command_args):
+    """
+    Given:
+        - TOPdesk client
+        - Arguments (incident_id, incident_number, limit)
+    When
+        - running list_actions_command
+    Then
+        - The result fits the expected mapping
+    """
+
+    mock_incident_actions = util_load_json('test_data/topdesk_actions.json')
+    if command_args['incident_id']:
+        requests_mock.get(
+            'https://test.com/api/incidents/id/some-id/actions',
+            json=mock_incident_actions)
+    elif command_args['incident_number']:
+        requests_mock.get(
+            'https://test.com/api/incidents/number/some-number/actions',
+            json=mock_incident_actions)
+
+    list_actions_command(client, command_args)
+    assert requests_mock.called
+
+
+@pytest.mark.parametrize('args', [
+    ({"id": "some-id", "lastUpdate": "2022-04-26T08:21:48.520Z"})
+])
+def test_get_remote_data_command(client, requests_mock, args):
+    """
+    Given:
+        - TOPdesk client
+        - Arguments (incident_id, last_update)
+    When
+        - running get_remote_command
+    Then
+        - The result fits the expected mapping
+    """
+    mock_incident = util_load_json('test_data/topdesk_incident.json')
+    mock_actions = util_load_json('test_data/topdesk_actions.json')
+    requests_mock.get(
+        'https://test.com/api/incidents/id/some-id',
+        json=mock_incident)
+    requests_mock.get(
+        'https://test.com/api/incidents/id/some-id/actions',
+        json=mock_actions)
+
+    get_remote_data_command(client, args, None)
+
+
+@pytest.mark.parametrize('args,params', [
+    ({"lastUpdate": "2022-04-26T08:21:48.520Z"}, {"max_fetch": 10}),
+    ({"lastUpdate": "2022-04-26T08:21:48.520Z"}, {"max_fetch": 1})
+])
+def test_get_modified_remote_data_command(client, requests_mock, args, params):
+    client.rest_api_new_query = True
+    get_modified_remote_data_command(client, args, params)
+
+
+@pytest.mark.parametrize('args,params', [
+    ({"remote_incident_id": "some-id"}, {"close_ticket": False})
+])
+def test_update_remote_system_command(client, args, params):
+    update_remote_system_command(client, args, params)
