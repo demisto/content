@@ -8790,7 +8790,6 @@ class HygieneRemediation:
         """
         result = []
         for issue in issues:
-
             for device, container in topology.get_all_object_containers(
                     issue.hostid,
                     container_name=issue.container_name,
@@ -9169,7 +9168,15 @@ class HygieneLookups:
             minimum_block_severities: list[str] = None,
             minimum_alert_severities: list[str] = None
     ) -> ConfigurationHygieneCheckResult:
+        """
+        Checks the environment to ensure at least one Spyware profile is configured according to visibility best practices.
+        The minimum severities can be tweaked to customize what "best practices" is.
 
+        :param topology: `Topology` instance
+        :param device_filter_str: Filter checks to a specific device or devices
+        :param minimum_alert_severities: A string list of severities that MUST be in a alert mode
+        :param minimum_block_severities: A string list of severities that MUST be in block mode
+        """
         if not minimum_block_severities:
             minimum_block_severities = BestPractices.SPYWARE_BLOCK_SEVERITIES
         if not minimum_alert_severities:
@@ -9207,8 +9214,11 @@ class HygieneLookups:
         )
 
     @staticmethod
-    def get_conforming_url_filtering_profiles(profiles: list[URLFilteringProfile]) \
-            -> list[URLFilteringProfile]:
+    def get_conforming_url_filtering_profiles(profiles: list[URLFilteringProfile]) -> list[URLFilteringProfile]:
+        """
+        Returns the url filtering profiles, if any, that meet current recommended best practices for Visibility.
+        :param profiles: List of `URLFilteringProfile` objects.
+        """
         conforming_profiles = []
         for profile in profiles:
             if profile.block:
@@ -9219,9 +9229,13 @@ class HygieneLookups:
         return conforming_profiles
 
     @staticmethod
-    def get_all_conforming_url_filtering_profiles(topology: Topology, device_filter_str: str = None) -> \
-            list[PanosObjectReference]:
-
+    def get_all_conforming_url_filtering_profiles(
+            topology: Topology, device_filter_str: str = None) -> list[PanosObjectReference]:
+        """
+        Retrieves all the conforming URL filtering profiles from the topology, if any.
+        :param topology: `Topology` instance
+        :param device_filter_str: Filter checks to a specific device or devices
+        """
         result = []
         for device, container in topology.get_all_object_containers(device_filter_str):
             url_filtering_profiles: list[URLFilteringProfile] = URLFilteringProfile.refreshall(container)
@@ -9394,6 +9408,7 @@ class HygieneLookups:
             "BP-V-10",
         ])
         for device, container in topology.get_all_object_containers(device_filter_str):
+            # Because we check all the rulebases, we need to refresh the rules from all rulebases.
             firewall_rulebase = Rulebase()
             pre_rulebase = PreRulebase()
             post_rulebase = PostRulebase()
@@ -9405,6 +9420,7 @@ class HygieneLookups:
             post_security_rules: list[SecurityRule] = SecurityRule.refreshall(post_rulebase)
             security_rules = security_rules + pre_security_rules + post_security_rules
             for security_rule in security_rules:
+                # Check for "log at session end" enabled
                 if not security_rule.log_end:
                     issues.append(ConfigurationHygieneIssue(
                         hostid=resolve_host_id(device),
@@ -9416,7 +9432,7 @@ class HygieneLookups:
                     check = check_register.get("BP-V-8")
                     check.result = UNICODE_FAIL
                     check.issue_count += 1
-
+                # Check a log forwarding profile is set
                 if not security_rule.log_setting:
                     issues.append(ConfigurationHygieneIssue(
                         hostid=resolve_host_id(device),
@@ -9429,7 +9445,7 @@ class HygieneLookups:
                     check.result = UNICODE_FAIL
                     check.issue_count += 1
 
-                # BP-V-10 - Check either a group or profile is configured
+                # BP-V-10 - Check either a group or profile is configured. If a specific profile is set, we assume it's OK.
                 if not any([
                     security_rule.group,
                     all(
@@ -10488,7 +10504,7 @@ def hygiene_issue_dict_to_object(issue_dicts: Union[list[dict], dict]) -> list[C
 
     :param issue_dicts: List of dictionaries which represent instances of `ConfigurationHygieneIssue`
     """
-    if type(issue_dicts) is not list:
+    if isinstance(issue_dicts, dict):
         issue_dicts = [issue_dicts]
 
     issues: list[ConfigurationHygieneIssue] = []
