@@ -1364,7 +1364,7 @@ def mock_bad_security_zones():
     zone = Zone()
     zone.log_setting = "example-log-setting"
     return [
-        Zone(),
+        Zone(name="test-bad"),
         Zone(log_setting="second_example")
     ]
 
@@ -1385,16 +1385,19 @@ def mock_bad_security_rules():
     return [
         # Missing SPG
         SecurityRule(
+            name="test-bad",
             log_setting="example",
             log_end=True
         ),
         # Missing log profile
         SecurityRule(
+            name="test-bad-no-lfp",
             group="spg",
             log_end=True
         ),
         # Missing log at session end
         SecurityRule(
+            name="test-bad-no-spg",
             group="spg",
             log_setting="example",
         )
@@ -1424,6 +1427,35 @@ def mock_enhanced_log_forwarding_issue_dict():
         "hostid": MOCK_FIREWALL_1_SERIAL
     }
 
+
+def mock_security_zone_no_log_setting_issue_dict():
+    return {
+        "containername": "test-dg",
+        "issuecode": "BP-V-7",
+        "description": "Security zone has no log forwarding setting",
+        "name": "test-bad",
+        "hostid": MOCK_FIREWALL_1_SERIAL
+    }
+
+
+def mock_security_rule_log_settings_issue_dict():
+    return {
+        "containername": "test-dg",
+        "issuecode": "BP-V-8",
+        "description": "Security rule has no log setting",
+        "name": "test-bad-no-lfp",
+        "hostid": MOCK_FIREWALL_1_SERIAL
+    }
+
+
+def mock_security_rule_security_profile_group_issue_dict():
+    return {
+        "containername": "test-dg",
+        "issuecode": "BP-V-10",
+        "description": "Security rule has no security profile group",
+        "name": "test-bad-no-spg",
+        "hostid": MOCK_FIREWALL_1_SERIAL
+    }
 
 @pytest.fixture
 def mock_topology(mock_panorama, mock_firewall):
@@ -2101,6 +2133,63 @@ class TestHygieneFunctions:
 
         result = HygieneRemediation.fix_log_forwarding_profile_enhanced_logging(mock_topology, issues)
         # Should be at least one result
+        assert result
+        for value in result[0].__dict__.values():
+            assert value
+
+    @patch("Panorama.Template.refreshall", return_value=[])
+    @patch("Panorama.Vsys.refreshall", return_value=[])
+    @patch("Panorama.DeviceGroup.refreshall", return_value=mock_device_groups())
+    def test_fix_security_zone_no_log_setting(self, _, __, ___, mock_topology):
+        """
+        Tests wthe fix function for setting a log forwarding profile on security zones when none is currently set
+        """
+        from Panorama import hygiene_issue_dict_to_object, Zone, HygieneRemediation
+        issues = hygiene_issue_dict_to_object(mock_security_zone_no_log_setting_issue_dict())
+
+        Zone.refreshall = MagicMock(return_value=mock_bad_security_zones())
+        Zone.apply = MagicMock()
+
+        result = HygieneRemediation.fix_security_zone_no_log_setting(mock_topology, issues, "test")
+        # Should be at least one result, as we provided an issue.
+        assert result
+        for value in result[0].__dict__.values():
+            assert value
+
+    @patch("Panorama.Template.refreshall", return_value=[])
+    @patch("Panorama.Vsys.refreshall", return_value=[])
+    @patch("Panorama.DeviceGroup.refreshall", return_value=mock_device_groups())
+    def test_fix_security_rule_log_settings(self, _, __, ___, mock_topology):
+        """
+        Tests the function that adds a log forwarding profile to a security rule when one isn't present.
+        """
+        from Panorama import hygiene_issue_dict_to_object, SecurityRule, HygieneRemediation
+        issues = hygiene_issue_dict_to_object(mock_security_rule_log_settings_issue_dict())
+
+        SecurityRule.refreshall = MagicMock(return_value=mock_bad_security_rules())
+        SecurityRule.apply = MagicMock()
+
+        result = HygieneRemediation.fix_secuity_rule_log_settings(mock_topology, issues, "test")
+        # Should be at least one result, as we provided an issue.
+        assert result
+        for value in result[0].__dict__.values():
+            assert value
+
+    @patch("Panorama.Template.refreshall", return_value=[])
+    @patch("Panorama.Vsys.refreshall", return_value=[])
+    @patch("Panorama.DeviceGroup.refreshall", return_value=mock_device_groups())
+    def test_fix_security_rule_profile_settings(self, _, __, ___, mock_topology):
+        """
+        Tests the function that adds sets the security profile group when no SPG is currently provided
+        """
+        from Panorama import hygiene_issue_dict_to_object, SecurityRule, HygieneRemediation
+        issues = hygiene_issue_dict_to_object(mock_security_rule_log_settings_issue_dict())
+
+        SecurityRule.refreshall = MagicMock(return_value=mock_bad_security_rules())
+        SecurityRule.apply = MagicMock()
+
+        result = HygieneRemediation.fix_security_rule_security_profile_group(mock_topology, issues, "test")
+        # Should be at least one result, as we provided an issue.
         assert result
         for value in result[0].__dict__.values():
             assert value
