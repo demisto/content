@@ -1,5 +1,12 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
+"""GLPIIncidentStatus Script for Cortex XSOAR (aka Demisto)"""
+
+import demistomock as demisto
+from CommonServerPython import *
+from CommonServerUserPython import *
+
+# from typing import Dict, Any
+import traceback
+
 
 COLORS = {
     '1 - New': '#00CD33',  # (success green)
@@ -19,21 +26,55 @@ TEXT = {
     '6 - Closed': 'Closed'
 }
 
-incident = demisto.incidents()
-glpi_state = (incident[0].get('CustomFields', {}).get('glpistatus'))
 
-try:
-    text_color = COLORS[glpi_state]
-    text_content = TEXT[glpi_state]
-except Exception as e:
-    demisto.debug(f'GLPIIncidentStatus debug - state is: {glpi_state}\n{e}')
-    text_color = '#000000'
-    text_content = 'Pending Update'
+''' STANDALONE FUNCTION '''
 
 
-html = f"<div style='color:{text_color};text-align:center;'><h2>{text_content}</h2></div>"
-demisto.results({
-    'ContentsFormat': formats['html'],
-    'Type': entryTypes['note'],
-    'Contents': html
-})
+def glpi_incident_status():
+    """glpi_incident_status function"""
+    incident = demisto.incidents()
+    glpi_state = (incident[0].get('CustomFields', {}).get('glpistatus'))
+
+    try:
+        text_color = COLORS[glpi_state]
+        text_content = TEXT[glpi_state]
+    except Exception as e:
+        demisto.debug(f'GLPIIncidentStatus debug - state is: {glpi_state}\n{e}')
+        text_color = '#000000'
+        text_content = 'Pending Update'
+
+    return text_color, text_content
+
+
+''' COMMAND FUNCTION '''
+
+
+def glpi_incident_status_command():
+    """GLPIIncidentStatus command"""
+
+    color, text = glpi_incident_status()
+    html = f"<div style='color:{color};text-align:center;'><h2>{text}</h2></div>"
+
+    return demisto.results({
+        'ContentsFormat': formats['html'],
+        'Type': entryTypes['note'],
+        'Contents': html
+    })
+
+
+''' MAIN FUNCTION '''
+
+
+def main():
+    try:
+        return_results(glpi_incident_status_command())
+    except Exception as ex:
+        demisto.error(traceback.format_exc())  # print the traceback
+        return_error(f'Failed to execute GLPIIncidentStatus. Error: {str(ex)}')
+
+
+''' ENTRY POINT '''
+
+
+if __name__ in ('__main__', '__builtin__', 'builtins'):
+    main()
