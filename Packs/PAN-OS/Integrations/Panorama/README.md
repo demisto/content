@@ -6754,3 +6754,105 @@ Check security rules are configured correctly.
 >| Fails when a security rule is not configured to log at session end. | BP-V-8 | 1 | ❌ |
 >| Fails when a security rule has no log forwarding profile configured. | BP-V-9 | 1 | ❌ |
 >| Fails when a security rule has no configured profiles or profile groups. | BP-V-10 | 1 | ❌ |
+### pan-os-hygiene-fix-log-forwarding
+***
+Fix log forwarding issues identified by pan-os-hygiene-check-log-forwarding.
+
+
+#### Base Command
+
+`pan-os-hygiene-fix-log-forwarding`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| issue | Dictionary of Hygiene issue, from a hygiene check command. Can be a list. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PANOS.ConfigurationHygieneFix.hostid | String | Host ID | 
+| PANOS.ConfigurationHygieneFix.container_name | String | What parent container \(DG, Template, VSYS\) this object belongs to. | 
+| PANOS.ConfigurationHygieneFix.issue_code | String | The shorthand code for the issue | 
+| PANOS.ConfigurationHygieneFix.description | String | Human readable description of issue | 
+| PANOS.ConfigurationHygieneFix.name | String | The affected object name | 
+
+### pan-os-hygiene-fix-security-zone-log-settings
+***
+Fixes security zones that are configured without a valid log forwarding profile.
+
+
+#### Base Command
+
+`pan-os-hygiene-fix-security-zone-log-settings`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| issue | Dictionary of Hygiene issue, from a hygiene check command. Can be a list. | Required | 
+| log_forwarding_profile_name | Name of log forwarding profile to set. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PANOS.ConfigurationHygieneFix.hostid | String | Host ID | 
+| PANOS.ConfigurationHygieneFix.container_name | String | What parent container \(DG, Template, VSYS\) this object belongs to. | 
+| PANOS.ConfigurationHygieneFix.issue_code | String | The shorthand code for the issue | 
+| PANOS.ConfigurationHygieneFix.description | String | Human readable description of issue | 
+| PANOS.ConfigurationHygieneFix.name | String | The affected object name | 
+
+### pan-os-hygiene-fix-security-rule-log-settings
+***
+Fixed security rules that have incorrect log settings by adding a log forwarding profile and setting
+
+
+#### Base Command
+
+`pan-os-hygiene-fix-security-rule-log-settings`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| issue | Dictionary of Hygiene issue, from a hygiene check command. Can be list. | Required | 
+| log_forwarding_profile_name | Name of log forwarding profile to use as log setting. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PANOS.ConfigurationHygieneFix.hostid | String | Host ID | 
+| PANOS.ConfigurationHygieneFix.container_name | String | What parent container \(DG, Template, VSYS\) this object belongs to. | 
+| PANOS.ConfigurationHygieneFix.issue_code | String | The shorthand code for the issue | 
+| PANOS.ConfigurationHygieneFix.description | String | Human readable description of issue | 
+| PANOS.ConfigurationHygieneFix.name | String | The affected object name | 
+
+### pan-os-hygiene-fix-security-rule-profile-settings
+***
+Fixed security rules that have incorrect log settings by adding a log forwarding profile and setting
+
+
+#### Base Command
+
+`pan-os-hygiene-fix-security-rule-profile-settings`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| issue | Dictionary of Hygiene issue, from a hygiene check command. | Required | 
+| security_profile_group_name | Name of Security profile group to use as log setting. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PANOS.ConfigurationHygieneFix.hostid | String | Host ID | 
+| PANOS.ConfigurationHygieneFix.container_name | String | What parent container \(DG, Template, VSYS\) this object belongs to. | 
+| PANOS.ConfigurationHygieneFix.issue_code | String | The shorthand code for the issue | 
+| PANOS.ConfigurationHygieneFix.description | String | Human readable description of issue | 
+| PANOS.ConfigurationHygieneFix.name | String | The affected object name | 
