@@ -5827,7 +5827,7 @@ script:
     deprecated: false
     arguments: []
     outputs: []
-  dockerimage: demisto/python3:3.10.4.28442
+  dockerimage: demisto/python3:3.10.4.29342
   isfetch: true
   runonce: false
   script: ''
