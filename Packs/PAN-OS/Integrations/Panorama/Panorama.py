@@ -8715,8 +8715,8 @@ class ConfigurationHygieneCheck:
 
 @dataclass
 class ConfigurationHygieneCheckResult:
-    summary_data: list[ConfigurationHygieneCheck]
-    result_data: list[ConfigurationHygieneIssue]
+    summary_data: List[ConfigurationHygieneCheck]
+    result_data: List[ConfigurationHygieneIssue]
 
     _output_prefix = OUTPUT_PREFIX + "ConfigurationHygiene"
     _title = "PAN-OS Configuration Hygiene Check"
@@ -8748,7 +8748,7 @@ class HygieneRemediation:
 
     @staticmethod
     def fix_log_forwarding_profile_enhanced_logging(topology: Topology,
-                                                    issues: list[ConfigurationHygieneIssue]) -> list[ConfigurationHygieneFix]:
+                                                    issues: List[ConfigurationHygieneIssue]) -> List[ConfigurationHygieneFix]:
         """
         Given a list of hygiene issues, sourced by `pan-os-hygiene-check-log-forwarding`, enables enhanced application logging to
         fix that issue.
@@ -8760,7 +8760,7 @@ class HygieneRemediation:
                     issue.hostid,
                     container_name=issue.container_name
             ):
-                log_forwarding_profiles: list[LogForwardingProfile] = LogForwardingProfile.refreshall(
+                log_forwarding_profiles: List[LogForwardingProfile] = LogForwardingProfile.refreshall(
                     container)
                 for log_forwarding_profile in log_forwarding_profiles:
                     if log_forwarding_profile.name == issue.name:
@@ -8779,9 +8779,9 @@ class HygieneRemediation:
     @staticmethod
     def fix_security_zone_no_log_setting(
             topology: Topology,
-            issues: list[ConfigurationHygieneIssue],
+            issues: List[ConfigurationHygieneIssue],
             log_forwarding_profile: str
-    ) -> list[ConfigurationHygieneFix]:
+    ) -> List[ConfigurationHygieneFix]:
         """
         Given a list of Configuration Hygiene Issues, referencing security zones that do not have any log forwarding settings,
         sets the provided log forwarding profile, thus fixing them.
@@ -8794,7 +8794,7 @@ class HygieneRemediation:
                     issue.hostid,
                     container_name=issue.container_name,
             ):
-                security_zones: list[Zone] = Zone.refreshall(container)
+                security_zones: List[Zone] = Zone.refreshall(container)
                 for security_zone in security_zones:
                     if security_zone.name == issue.name:
                         security_zone.log_setting = log_forwarding_profile
@@ -8811,8 +8811,8 @@ class HygieneRemediation:
 
     @staticmethod
     def fix_secuity_rule_log_settings(topology: Topology,
-                                      issues: list[ConfigurationHygieneIssue],
-                                      log_forwarding_profile_name: str) -> list[ConfigurationHygieneFix]:
+                                      issues: List[ConfigurationHygieneIssue],
+                                      log_forwarding_profile_name: str) -> List[ConfigurationHygieneFix]:
         """
         Given a list of Configuration Hygiene Issues, referencing security rules that have no log settings, sets the provided
         log forwarding profile.
@@ -8831,9 +8831,9 @@ class HygieneRemediation:
                 container.add(pre_rulebase)
                 container.add(post_rulebase)
                 container.add(firewall_rulebase)
-                security_rules: list[SecurityRule] = SecurityRule.refreshall(firewall_rulebase)
-                pre_security_rules: list[SecurityRule] = SecurityRule.refreshall(pre_rulebase)
-                post_security_rules: list[SecurityRule] = SecurityRule.refreshall(post_rulebase)
+                security_rules: List[SecurityRule] = SecurityRule.refreshall(firewall_rulebase)
+                pre_security_rules: List[SecurityRule] = SecurityRule.refreshall(pre_rulebase)
+                post_security_rules: List[SecurityRule] = SecurityRule.refreshall(post_rulebase)
                 security_rules = security_rules + pre_security_rules + post_security_rules
                 for security_rule in security_rules:
                     if security_rule.name == issue.name:
@@ -8852,9 +8852,9 @@ class HygieneRemediation:
 
     @staticmethod
     def fix_security_rule_security_profile_group(topology: Topology,
-                                                 issues: list[ConfigurationHygieneIssue],
+                                                 issues: List[ConfigurationHygieneIssue],
                                                  security_profile_group_name: str,
-                                                 ) -> list[ConfigurationHygieneFix]:
+                                                 ) -> List[ConfigurationHygieneFix]:
         """
         Given a list of Configuration Hygiene Issues, referencing security rules that have no threat settings, sets the provided
         security profile group.
@@ -8873,9 +8873,9 @@ class HygieneRemediation:
                 container.add(pre_rulebase)
                 container.add(post_rulebase)
                 container.add(firewall_rulebase)
-                security_rules: list[SecurityRule] = SecurityRule.refreshall(firewall_rulebase)
-                pre_security_rules: list[SecurityRule] = SecurityRule.refreshall(pre_rulebase)
-                post_security_rules: list[SecurityRule] = SecurityRule.refreshall(post_rulebase)
+                security_rules: List[SecurityRule] = SecurityRule.refreshall(firewall_rulebase)
+                pre_security_rules: List[SecurityRule] = SecurityRule.refreshall(pre_rulebase)
+                post_security_rules: List[SecurityRule] = SecurityRule.refreshall(post_rulebase)
                 security_rules = security_rules + pre_security_rules + post_security_rules
                 for security_rule in security_rules:
                     if security_rule.name == issue.name:
@@ -8991,14 +8991,14 @@ class HygieneLookups:
         :param device_filter_str: Filter checks to a specific device or devices
         """
         issues = []
-        lf_profile_list: list[LogForwardingProfile] = []
+        lf_profile_list: List[LogForwardingProfile] = []
         check_register = HygieneCheckRegister.get_hygiene_check_register([
             "BP-V-1",
             "BP-V-2",
             "BP-V-3"
         ])
         for device, container in topology.get_all_object_containers(device_filter_str):
-            log_forwarding_profiles: list[LogForwardingProfile] = LogForwardingProfile.refreshall(container)
+            log_forwarding_profiles: List[LogForwardingProfile] = LogForwardingProfile.refreshall(container)
             lf_profile_list = lf_profile_list + log_forwarding_profiles
             for log_forwarding_profile in log_forwarding_profiles:
                 # Enhanced app logging - BP-V-2
@@ -9137,7 +9137,7 @@ class HygieneLookups:
 
         # BP-V-4 - Check at least one vulnerability profile exists with the correct settings.
         for device, container in topology.get_all_object_containers(device_filter_str):
-            vulnerability_profiles: list[VulnerabilityProfile] = VulnerabilityProfile.refreshall(container)
+            vulnerability_profiles: List[VulnerabilityProfile] = VulnerabilityProfile.refreshall(container)
             conforming_profiles = conforming_profiles + HygieneLookups.get_conforming_threat_profiles(
                 vulnerability_profiles,
                 minimum_block_severities=minimum_block_severities,
@@ -9165,8 +9165,8 @@ class HygieneLookups:
     def check_spyware_profiles(
             topology: Topology,
             device_filter_str: str = None,
-            minimum_block_severities: list[str] = None,
-            minimum_alert_severities: list[str] = None
+            minimum_block_severities: List[str] = None,
+            minimum_alert_severities: List[str] = None
     ) -> ConfigurationHygieneCheckResult:
         """
         Checks the environment to ensure at least one Spyware profile is configured according to visibility best practices.
@@ -9189,7 +9189,7 @@ class HygieneLookups:
         ])
         # BP-V-5 - Check at least one AS profile exists with the correct settings.
         for device, container in topology.get_all_object_containers(device_filter_str):
-            spyware_profiles: list[AntiSpywareProfile] = AntiSpywareProfile.refreshall(container)
+            spyware_profiles: List[AntiSpywareProfile] = AntiSpywareProfile.refreshall(container)
             conforming_profiles = conforming_profiles + HygieneLookups.get_conforming_threat_profiles(
                 spyware_profiles,
                 minimum_block_severities=minimum_block_severities,
@@ -9214,7 +9214,7 @@ class HygieneLookups:
         )
 
     @staticmethod
-    def get_conforming_url_filtering_profiles(profiles: list[URLFilteringProfile]) -> list[URLFilteringProfile]:
+    def get_conforming_url_filtering_profiles(profiles: List[URLFilteringProfile]) -> List[URLFilteringProfile]:
         """
         Returns the url filtering profiles, if any, that meet current recommended best practices for Visibility.
         :param profiles: List of `URLFilteringProfile` objects.
@@ -9230,7 +9230,7 @@ class HygieneLookups:
 
     @staticmethod
     def get_all_conforming_url_filtering_profiles(
-            topology: Topology, device_filter_str: str = None) -> list[PanosObjectReference]:
+            topology: Topology, device_filter_str: str = None) -> List[PanosObjectReference]:
         """
         Retrieves all the conforming URL filtering profiles from the topology, if any.
         :param topology: `Topology` instance
@@ -9238,7 +9238,7 @@ class HygieneLookups:
         """
         result = []
         for device, container in topology.get_all_object_containers(device_filter_str):
-            url_filtering_profiles: list[URLFilteringProfile] = URLFilteringProfile.refreshall(container)
+            url_filtering_profiles: List[URLFilteringProfile] = URLFilteringProfile.refreshall(container)
 
             conforming_profiles = HygieneLookups.get_conforming_url_filtering_profiles(
                 url_filtering_profiles)
@@ -9256,10 +9256,10 @@ class HygieneLookups:
     @staticmethod
     def get_all_conforming_spyware_profiles(
             topology: Topology,
-            minimum_block_severities: list[str],
-            minimum_alert_severities: list[str],
+            minimum_block_severities: List[str],
+            minimum_alert_severities: List[str],
             device_filter_str: str = None,
-    ) -> list[PanosObjectReference]:
+    ) -> List[PanosObjectReference]:
         """
         Searches the configuration for all spyware profiles that conform to best practices using the given minimum severities.
 
@@ -9270,7 +9270,7 @@ class HygieneLookups:
         """
         result = []
         for device, container in topology.get_all_object_containers(device_filter_str):
-            spyware_profiles: list[AntiSpywareProfile] = AntiSpywareProfile.refreshall(container)
+            spyware_profiles: List[AntiSpywareProfile] = AntiSpywareProfile.refreshall(container)
             conforming_profiles = HygieneLookups.get_conforming_threat_profiles(
                 spyware_profiles,
                 minimum_block_severities=minimum_block_severities,
@@ -9290,10 +9290,10 @@ class HygieneLookups:
     @staticmethod
     def get_all_conforming_vulnerability_profiles(
             topology: Topology,
-            minimum_block_severities: list[str],
-            minimum_alert_severities: list[str],
+            minimum_block_severities: List[str],
+            minimum_alert_severities: List[str],
             device_filter_str: str = None,
-    ) -> list[PanosObjectReference]:
+    ) -> List[PanosObjectReference]:
         """
         Searches the configuration for all vulnerability profiles that conform to PAN best practices using the given minimum
         severities.
@@ -9305,7 +9305,7 @@ class HygieneLookups:
         """
         result = []
         for device, container in topology.get_all_object_containers(device_filter_str):
-            spyware_profiles: list[VulnerabilityProfile] = VulnerabilityProfile.refreshall(container)
+            spyware_profiles: List[VulnerabilityProfile] = VulnerabilityProfile.refreshall(container)
             conforming_profiles = HygieneLookups.get_conforming_threat_profiles(
                 spyware_profiles,
                 minimum_block_severities=minimum_block_severities,
@@ -9331,14 +9331,14 @@ class HygieneLookups:
         :param topology: `Topology` Instance
         :param device_filter_str: Filter checks to a specific device or devices
         """
-        issues: list[ConfigurationHygieneIssue] = []
-        conforming_profiles: list[URLFilteringProfile] = []
+        issues: List[ConfigurationHygieneIssue] = []
+        conforming_profiles: List[URLFilteringProfile] = []
         check_register = HygieneCheckRegister.get_hygiene_check_register([
             "BP-V-6"
         ])
         # BP-V-6 - Check at least one URL Filtering profile exists with the correct settings.
         for device, container in topology.get_all_object_containers(device_filter_str):
-            url_filtering_profiles: list[URLFilteringProfile] = URLFilteringProfile.refreshall(container)
+            url_filtering_profiles: List[URLFilteringProfile] = URLFilteringProfile.refreshall(container)
             conforming_profiles = conforming_profiles + HygieneLookups.get_conforming_url_filtering_profiles(
                 url_filtering_profiles)
 
@@ -9375,7 +9375,7 @@ class HygieneLookups:
                 device_filter_str,
                 top_level_devices_only=True
         ):
-            security_zones: list[Zone] = Zone.refreshall(container)
+            security_zones: List[Zone] = Zone.refreshall(container)
             for security_zone in security_zones:
                 if not security_zone.log_setting:
                     issues.append(ConfigurationHygieneIssue(
@@ -9415,9 +9415,9 @@ class HygieneLookups:
             container.add(pre_rulebase)
             container.add(post_rulebase)
             container.add(firewall_rulebase)
-            security_rules: list[SecurityRule] = SecurityRule.refreshall(firewall_rulebase)
-            pre_security_rules: list[SecurityRule] = SecurityRule.refreshall(pre_rulebase)
-            post_security_rules: list[SecurityRule] = SecurityRule.refreshall(post_rulebase)
+            security_rules: List[SecurityRule] = SecurityRule.refreshall(firewall_rulebase)
+            pre_security_rules: List[SecurityRule] = SecurityRule.refreshall(pre_rulebase)
+            post_security_rules: List[SecurityRule] = SecurityRule.refreshall(post_rulebase)
             security_rules = security_rules + pre_security_rules + post_security_rules
             for security_rule in security_rules:
                 # Check for "log at session end" enabled
@@ -10420,7 +10420,7 @@ def check_url_filtering_profiles(
 def get_conforming_url_filtering_profiles(
         topology: Topology,
         device_filter_string: str = None
-) -> list[PanosObjectReference]:
+) -> List[PanosObjectReference]:
     """
     Returns a list of existing PANOS URL filtering objects that conform to best practices.
 
@@ -10438,7 +10438,7 @@ def get_conforming_spyware_profiles(
         device_filter_string: str = None,
         minimum_block_severities: str = "critical,high",
         minimum_alert_severities: str = "medium,low"
-) -> list[PanosObjectReference]:
+) -> List[PanosObjectReference]:
     """
     Returns all Anti-spyware profiles that conform to best practices.
 
@@ -10460,7 +10460,7 @@ def get_conforming_vulnerability_profiles(
         device_filter_string: str = None,
         minimum_block_severities: str = "critical,high",
         minimum_alert_severities: str = "medium,low"
-) -> list[PanosObjectReference]:
+) -> List[PanosObjectReference]:
     """
     Returns all Vulnerability profiles that conform to best practices.
 
@@ -10497,7 +10497,7 @@ def check_security_rules(topology: Topology, device_filter_string: str = None) -
     return HygieneLookups.check_security_rules(topology, device_filter_str=device_filter_string)
 
 
-def hygiene_issue_dict_to_object(issue_dicts: Union[list[dict], dict]) -> list[ConfigurationHygieneIssue]:
+def hygiene_issue_dict_to_object(issue_dicts: Union[list[dict], dict]) -> List[ConfigurationHygieneIssue]:
     """
     Converts the given list of hygiene issues, which is a list of dictionaries, into the dataclass objects.
     This simplifies the handling of the issues within the fix functions.
@@ -10507,7 +10507,7 @@ def hygiene_issue_dict_to_object(issue_dicts: Union[list[dict], dict]) -> list[C
     if isinstance(issue_dicts, dict):
         issue_dicts = [issue_dicts]
 
-    issues: list[ConfigurationHygieneIssue] = []
+    issues: List[ConfigurationHygieneIssue] = []
     for issue_dict in issue_dicts:
         container_name = issue_dict.get("containername") or issue_dict.get("container_name")
         issue_code = issue_dict.get("issuecode") or issue_dict.get("issue_code")
@@ -10525,7 +10525,7 @@ def hygiene_issue_dict_to_object(issue_dicts: Union[list[dict], dict]) -> list[C
     return issues
 
 
-def fix_log_forwarding(topology: Topology, issue: list) -> list[ConfigurationHygieneFix]:
+def fix_log_forwarding(topology: Topology, issue: List) -> List[ConfigurationHygieneFix]:
     """
     :param topology: `Topology` instance !no-auto-argument
     :param issue: Dictionary of Hygiene issue, from a hygiene check command. Can be a list.
@@ -10536,9 +10536,9 @@ def fix_log_forwarding(topology: Topology, issue: list) -> list[ConfigurationHyg
 
 def fix_security_zone_log_setting(
         topology: Topology,
-        issue: list,
+        issue: List,
         log_forwarding_profile_name: str
-) -> list[ConfigurationHygieneFix]:
+) -> List[ConfigurationHygieneFix]:
     """
     Fixes security zones that are configured without a valid log forwarding profile.
     :param topology: `Topology` instance !no-auto-argument
@@ -10555,9 +10555,9 @@ def fix_security_zone_log_setting(
 
 def fix_security_rule_log_setting(
         topology: Topology,
-        issue: list,
+        issue: List,
         log_forwarding_profile_name: str
-) -> list[ConfigurationHygieneFix]:
+) -> List[ConfigurationHygieneFix]:
     """
     Fixed security rules that have incorrect log settings by adding a log forwarding profile and setting
     log at session end.
@@ -10575,9 +10575,9 @@ def fix_security_rule_log_setting(
 
 def fix_security_rule_security_profile_group(
         topology: Topology,
-        issue: list,
+        issue: List,
         security_profile_group_name: str
-) -> list[ConfigurationHygieneFix]:
+) -> List[ConfigurationHygieneFix]:
     """
     Fixed security rules that have no configured SPG by setting one.
 
