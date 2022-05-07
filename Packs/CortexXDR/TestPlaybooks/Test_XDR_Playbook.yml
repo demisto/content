@@ -2572,7 +2572,7 @@ tasks:
         or allow list
       description: Adds requested files to block list if they are not already added to the block list
         or allow list.
-      script: '|||xdr-blacklist-files'
+      script: '|||xdr-blocklist-files'
       type: regular
       iscommand: true
       brand: ""
