@@ -2214,7 +2214,7 @@ tasks:
           - - operator: isEqualString
               left:
                 value:
-                  simple: PaloAltoNetworksXDR.Endpoint.host_name
+                  simple: PaloAltoNetworksXDR.Endpoint.endpoint_name
                 iscontext: true
               right:
                 value:
@@ -2439,7 +2439,7 @@ tasks:
           - - operator: isEqualString
               left:
                 value:
-                  simple: PaloAltoNetworksXDR.Endpoint.host_name
+                  simple: PaloAltoNetworksXDR.Endpoint.endpoint_name
                 iscontext: true
               right:
                 value:
@@ -2488,7 +2488,7 @@ tasks:
           - - operator: isEqualString
               left:
                 value:
-                  simple: PaloAltoNetworksXDR.Endpoint.host_name
+                  simple: PaloAltoNetworksXDR.Endpoint.endpoint_name
                 iscontext: true
               right:
                 value:
@@ -2536,7 +2536,7 @@ tasks:
           - - operator: isEqualString
               left:
                 value:
-                  simple: PaloAltoNetworksXDR.Endpoint.host_name
+                  simple: PaloAltoNetworksXDR.Endpoint.endpoint_name
                 iscontext: true
               right:
                 value:
