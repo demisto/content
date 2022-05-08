@@ -1,6 +1,6 @@
 id: Hurukai alert management
 version: -1
-name: Hurukai alert management
+name: Hurukai - Alert management
 description: Manager security events from HarfangLab EDR
 starttaskid: '0'
 tasks:
