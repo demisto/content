@@ -39,7 +39,8 @@ def create_pr_comment(validate_pr_comment, unit_tests_pr_comment) -> str:
     return comment
 
 
-def build_summary_report(validate_summary, unit_tests_summary, create_instances_summary, server_6_1_summary,
+def build_summary_report(logging_manager,
+                         validate_summary, unit_tests_summary, create_instances_summary, server_6_1_summary,
                          server_6_2_summary,
                          server_master_summary,
                          output_file):
@@ -55,9 +56,12 @@ def build_summary_report(validate_summary, unit_tests_summary, create_instances_
     for file, failing_validations in validate_summary.items():
         # test_case = TestCase('Test1', 'some.class.name', 123.345, 'I am stdout!', 'I am stderr!')
         for failing_validation in failing_validations:
-            test_cases.append(TestCase('Validate', f'validate.{file}', stdout='I am stdout!', stderr=failing_validation))
+            test_cases.append(
+                TestCase('Validate', f'validate.{file}', stdout='I am stdout!', stderr=failing_validation))
+            logging_manager.info(f"creating test case for {failing_validation}")
     ts = TestSuite("Validate", test_cases)
     with open(output_file, 'a') as f:
+        logging_manager.info("opened file")
         to_xml_report_file(f, [ts], prettyprint=False)
 
 
@@ -112,7 +116,8 @@ def generate_build_report(logging_manager, output_file):
     unit_tests_pr_comment, unit_tests_summary = test_get_failing_ut()
     pr_comment = create_pr_comment(validate_pr_comment, unit_tests_pr_comment)
     _add_pr_comment(pr_comment, logging_manager, 'here is a link to the full report')
-    build_summary_report(validate_summary,
+    build_summary_report(logging_manager,
+                         validate_summary,
                          unit_tests_summary,
                          create_instances_summary={},
                          server_6_1_summary={},
