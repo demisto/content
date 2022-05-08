@@ -1132,6 +1132,7 @@ def main():
         detect_changes = True
         # upload the images if the pack doesn't exist in the index, and it isn't deprecated
         if not os.path.exists(os.path.join(index_folder_path, pack.name, Pack.METADATA)) and not pack.hidden:
+
             logging.info(f'Uploading images of pack {pack.name} which did not exist in this marketplace before')
             detect_changes = False
 
