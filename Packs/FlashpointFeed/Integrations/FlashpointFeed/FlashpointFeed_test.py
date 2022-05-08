@@ -1,3 +1,4 @@
+"""Flashpoint Feed Test File."""
 import json
 import io
 import pytest
@@ -26,23 +27,26 @@ def util_load_json(path: str) -> dict:
 
 @pytest.fixture()
 def client():
+    """Client Fixture."""
     client_obj = Client(base_url=BASE_URL)
     return client_obj
 
 
 class MockResponse:
+    """Creates mock response."""
+
     def __init__(self, status_code):
+        """Initialize class object."""
         self.status_code = status_code
 
     def raise_for_status(self):
+        """Raise status code error."""
         if self.status_code != 200:
             raise HTTPError('test')
 
 
 def test_test_module_success(requests_mock, client):
-    """
-    Tests test_module.
-    """
+    """Tests test_module."""
     from FlashpointFeed import test_module
 
     requests_mock.get(BASE_URL + URL_SUFFIX, json={"message": "dummy"}, status_code=200)
@@ -54,9 +58,7 @@ def test_test_module_success(requests_mock, client):
     400, 401, 403, 404, 500
 ])
 def test_http_request_when_error_is_returned(requests_mock, client, status_code):
-    """
-    Tests http_request method of Client class.
-    """
+    """Tests http_request method of Client class."""
     requests_mock.get(BASE_URL + URL_SUFFIX, status_code=status_code)
     with pytest.raises(DemistoException) as e:
         client.http_request(method='GET', url_suffix=URL_SUFFIX)
@@ -64,6 +66,7 @@ def test_http_request_when_error_is_returned(requests_mock, client, status_code)
 
 
 def test_http_request_when_raise_for_status(client):
+    """Tests http_request when error raised for status."""
     resp = MockResponse(status_code=503)
 
     with pytest.raises(HTTPError):
@@ -71,9 +74,7 @@ def test_http_request_when_raise_for_status(client):
 
 
 def test_create_indicators_from_response(client):
-    """
-    Test case scenario when valid response is provided to create_indicators_from_response
-    """
+    """Tests scenario when valid response is provided to create_indicators_from_response."""
     response = util_load_json('test_data/fetch_indicators_response.json')
     indicators = util_load_json('test_data/fetch_indicators.json')
 
@@ -82,9 +83,7 @@ def test_create_indicators_from_response(client):
 
 
 def test_validate_fetch_indicators_params_when_valid_params_are_provided():
-    """
-    Test case scenario when the parameters provided are valid.
-    """
+    """Test case scenario when the parameters provided are valid."""
     from FlashpointFeed import validate_fetch_indicators_params
 
     params = {
@@ -103,9 +102,7 @@ def test_validate_fetch_indicators_params_when_valid_params_are_provided():
 
 @pytest.mark.parametrize("params, err_msg", input_data.fetch_indicator_params)
 def test_validate_fetch_indicators_params_when_invalid_params_are_provided(params, err_msg):
-    """
-    Test case scenario when the parameters provided are not valid.
-    """
+    """Test case scenario when the parameters provided are not valid."""
     from FlashpointFeed import validate_fetch_indicators_params
 
     with pytest.raises(ValueError) as err:
@@ -115,9 +112,7 @@ def test_validate_fetch_indicators_params_when_invalid_params_are_provided(param
 
 @patch(MOCKER_HTTP_METHOD)
 def test_fetch_indicators_command_when_valid_response_is_returned(mocker_http_request, client):
-    """
-    Test case scenario for successful execution of fetch_indicators_command.
-    """
+    """Test case scenario for successful execution of fetch_indicators_command."""
     from FlashpointFeed import fetch_indicators_command
 
     response = util_load_json('test_data/fetch_indicators_response.json')
@@ -130,9 +125,7 @@ def test_fetch_indicators_command_when_valid_response_is_returned(mocker_http_re
 
 
 def test_validate_get_indicators_params_when_valid_params_are_provided():
-    """
-    Test case scenario when the parameters provided are valid.
-    """
+    """Test case scenario when the parameters provided are valid."""
     from FlashpointFeed import validate_get_indicators_args
 
     params = {
@@ -152,9 +145,7 @@ def test_validate_get_indicators_params_when_valid_params_are_provided():
 
 @pytest.mark.parametrize("params, err_msg", input_data.get_indicator_params)
 def test_validate_get_indicators_params_when_invalid_params_are_provided(params, err_msg):
-    """
-    Test case scenario when the parameters provided are not valid.
-    """
+    """Test case scenario when the parameters provided are not valid."""
     from FlashpointFeed import validate_get_indicators_args
 
     with pytest.raises(ValueError) as err:
@@ -164,9 +155,7 @@ def test_validate_get_indicators_params_when_invalid_params_are_provided(params,
 
 @patch(MOCKER_HTTP_METHOD)
 def test_get_indicators_command_when_valid_response_is_returned(mocker_http_request, client):
-    """
-    Test case scenario for successful execution of get_indicators_command.
-    """
+    """Test case scenario for successful execution of get_indicators_command."""
     from FlashpointFeed import get_indicators_command
 
     mock_response = util_load_json('test_data/fetch_indicators_response.json')
@@ -186,9 +175,7 @@ def test_get_indicators_command_when_valid_response_is_returned(mocker_http_requ
 
 @patch(MOCKER_HTTP_METHOD)
 def test_get_indicators_command_when_empty_response_is_returned(mocker_http_request, client):
-    """
-    Test case scenario for successful execution of get_indicators_command with an empty response.
-    """
+    """Test case scenario for successful execution of get_indicators_command with an empty response."""
     from FlashpointFeed import get_indicators_command
 
     mocker_http_request.return_value = {}
