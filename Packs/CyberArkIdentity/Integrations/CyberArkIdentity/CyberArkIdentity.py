@@ -1,7 +1,7 @@
 from enum import Enum
 from CommonServerPython import *
 import demistomock as demisto
-from pydantic import BaseModel, AnyUrl, Json
+from pydantic import BaseModel, AnyUrl, Json, Field
 from collections.abc import Generator
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
@@ -24,6 +24,8 @@ class ReqHeaders(BaseModel):
         A class that stores the request payload
     """
     Authorization: str
+    Accept: str = '*/*'
+    content_type: str = Field('application/json', alias='Content-Type')
 
 
 class ReqBody(BaseModel):
@@ -40,8 +42,9 @@ class Request(BaseModel):
     method: Method
     url: AnyUrl
     headers: Optional[ReqHeaders]
-    data: Optional[ReqBody]
-    verify: bool = True
+    # data: Optional[ReqBody]
+    data: str
+    verify: bool = False
 
 
 class Client:
@@ -51,11 +54,10 @@ class Client:
 
     def __init__(self, request: Request):
         self.request = request
-        self.token = self.get_access_token()
 
-    def call(self, requests=requests) -> requests.Response:
+    def call(self) -> requests.Response:
         try:
-            response = requests.request(**self.request.dict())
+            response = requests.request(**self.request.dict(by_alias=True))
             response.raise_for_status()
             return response
         except Exception as exc:
@@ -63,42 +65,33 @@ class Client:
             LOG(msg)
             raise DemistoException(msg) from exc
 
-    # def set_next_run_filter(self, after: str):
-    #     self.request.params.after = get_github_timestamp_format(after)
+    def prepare_next_run(self, after: str):
+        self.request.data.Script = ''
 
 
 class GetEvents:
     """
-    A class to handle the flow of the integration
+        A class to handle the flow of the integration
     """
     def __init__(self, client: Client) -> None:
         self.client = client
 
-    def _iter_events(self) -> Generator:
-        """
-        Function that responsible for the iteration over the events returned from github api
-        """
+    def call(self) -> list:
         response = self.client.call()
-        events: list = response.json()
+        return response.json().get('Result', {}).get('Results', [])
 
-        if len(events) == 0:
-            return []
-        while True:
+    def _iter_events(self):
+        events = self.call()
+
+        while events:
             yield events
-            last = events.pop()
-            self.client.set_next_run_filter(last['@timestamp'])
-            response = self.client.call()
-            events = response.json()
-            try:
-                events.pop(0)
-                assert events
-            except (IndexError, AssertionError):
-                LOG('empty list, breaking')
-                break
 
-    def aggregated_results(self, limit=2000) -> List[dict]:
+            self.client.prepare_next_run()
+            events = self.call()
+
+    def run(self, limit=1000) -> List[dict]:
         """
-        Function to group the events returned from the api
+            Function to group the events returned from the api
         """
         stored_events = []
         for events in self._iter_events():
@@ -113,6 +106,20 @@ class GetEvents:
         Get the info from the last run, it returns the time to query from and a list of ids to prevent duplications
         """
 
+    @staticmethod
+    def events_to_incidents(events: list):
+        incidents = []
+
+        for event in events:
+            incident = {
+                'name': f"RedRock records - {event.get('Row', '').get('ID', '')}",
+                'occurred': event.get('Row', '').get('WhenOccurred', ''),
+                'rawJSON': json.dumps(event['Row'])
+            }
+            incidents.append(incident)
+
+        demisto.incidents(incidents)
+
 
 def get_access_token(**kwargs):
     user_name = kwargs.get('credentials', {}).get('identifier')
@@ -125,14 +132,18 @@ def get_access_token(**kwargs):
     json_response = response.json()
     access_token = json_response.get('access_token')
 
-    return {'Authorization': f'Bearer {access_token}'}
+    return {
+        'Authorization': f'Bearer {access_token}',
+        'Accept': '*/*',
+        'Content-Type': 'application/json'
+    }
 
 
 def prepare_request_body(fetch_from: str) -> dict:
     _from = dateparser.parse(fetch_from, settings={'TIMEZONE': 'UTC'}).strftime(DATE_FORMAT)
     to = datetime.now().strftime(DATE_FORMAT)
 
-    return {'Script': f'Select * from Event where WhenOccurred >= {_from} and WhenOccurred <= {to}'}
+    return {"Script": f"Select * from Event where WhenOccurred >= '{_from}' and WhenOccurred <= '{to}'"}
 
 
 def main():
@@ -142,7 +153,9 @@ def main():
     demisto.debug(f'Command {command} was called!!!')
 
     demisto_params['headers'] = ReqHeaders(**get_access_token(**demisto_params))
-    demisto_params['data'] = ReqBody(**prepare_request_body(demisto_params.get('first_fetch', '3 days')))
+    # demisto_params['data'] = ReqBody(**prepare_request_body(demisto_params.get('from', '3 days')))
+    demisto_params['data'] = json.dumps(prepare_request_body(demisto_params.get('from', '3 days')))
+    demisto_params['url'] = demisto.params().get('url', '') + 'RedRock/Query'
 
     request = Request(**demisto_params)
     client = Client(request)
@@ -150,19 +163,24 @@ def main():
 
     try:
         if command == 'test-module':
-            get_events.aggregated_results(1)
+            get_events.run(1)
             demisto.results('ok')
         elif command in ('fetch-events', 'CyberArkIdentity-fetch-events'):
-            events = get_events.aggregated_results(demisto_params.get('max_fetch'))
+            events = get_events.run(demisto_params.get('max_fetch'))
             if events:
                 if command == 'fetch-events':
-                    send_events_to_xsiam(events, 'CyberArkIdentity', 'Redrock records')
+                    send_events_to_xsiam(events, 'CyberArkIdentity', 'RedRock records')
                 if command == 'CyberArkIdentity-fetch-events':
+                    get_events.events_to_incidents(events)
                     CommandResults(
-
+                        readable_output=tableToMarkdown('CyberArkIdentity RedRock records', events, removeNull=True, headerTransform=pascalToSpace),
+                        outputs_prefix='JiraAudit.Records',
+                        outputs_key_field='id',
+                        outputs=events,
+                        raw_response=events,
                     )
                     demisto.results(CommandResults)
-                # Set next run
+                demisto.setLastRun({'from': events[-1].get('')})
     except Exception as e:
         return_error(str(e))
 
