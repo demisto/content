@@ -31,8 +31,7 @@ configuration:
   name: max_fetch
   required: true
   type: 0
-description: '[Enter a comprehensive, yet concise, description of what the integration
-  does, what use cases it is designed for, etc.]'
+description: 'Jira logs event collector integration for XSIAM.'
 display: Jira Events Collector
 name: Jira Events Collector
 script:
