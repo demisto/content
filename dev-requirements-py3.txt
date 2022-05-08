@@ -22,3 +22,4 @@ blessings==1.7
 slack_sdk==3.11.2
 google.cloud.bigquery~=3.0.1
 google-cloud-storage~=2.3.0
+mock_open==1.4.0
