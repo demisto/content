@@ -2740,7 +2740,7 @@ def get_machine_investigation_package_command(client: MsClient, args: dict):
     entry_context = {
         'MicrosoftATP.MachineAction(val.ID === obj.ID)': action_data
     }
-    return human_readable, entry_context, machine_action_response
+    return CommandResults(readable_output=human_readable, outputs=entry_context, raw_response=machine_action_response)
 
 
 def get_investigation_package_sas_uri_command(client: MsClient, args: dict):
@@ -4734,7 +4734,7 @@ def main():  # pragma: no cover
             return_outputs(*get_machine_action_by_id_command(client, args))
 
         elif command == 'microsoft-atp-collect-investigation-package':
-            return_outputs(*get_machine_investigation_package_command(client, args))
+            return_results(get_machine_investigation_package_command(client, args))
 
         elif command == 'microsoft-atp-get-investigation-package-sas-uri':
             return_outputs(*get_investigation_package_sas_uri_command(client, args))
