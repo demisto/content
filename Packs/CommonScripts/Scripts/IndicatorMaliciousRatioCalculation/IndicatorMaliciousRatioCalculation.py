@@ -6,7 +6,7 @@ import traceback
 import hashlib
 import json
 
-from dateutil import parser
+from dateutil import parser  # type: ignore[import]
 
 
 def get_incident_labels_map(labels):
