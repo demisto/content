@@ -10,7 +10,7 @@ configuration:
   defaultvalue: Bad
   type: 18
   additionalinfo: Indicators from this integration instance will be marked with this
-    reputation
+    reputation.
   options:
   - None
   - Good
@@ -31,7 +31,7 @@ configuration:
   defaultvalue: WHITE
   type: 15
   additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators
-    fetched from the feed
+    fetched from the feed.
   options:
   - RED
   - AMBER
@@ -78,7 +78,7 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-  additionalinfo: Reliability of the source providing the intelligence data
+  additionalinfo: Reliability of the source providing the intelligence data.
 - name: feedExpirationInterval
   display: ''
   type: 1
@@ -87,7 +87,7 @@ configuration:
   display: Feed Fetch Interval
   type: 19
   required: false
-description: Fetch url idicators for URLhaus
+description: Fetch url indicators for URLhaus
 display: URLhaus Feed
 name: URLhaus Feed
 script:
