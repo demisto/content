@@ -3510,9 +3510,9 @@ class Common(object):
         """
 
         def __init__(self, dns_record_type=None, dns_ttl=None, dns_record_data=None):
-            self.DNS_record_type = dns_record_type
-            self.DNS_TTL = dns_ttl
-            self.DNS_record_data = dns_record_data
+            self.dns_record_type = dns_record_type
+            self.dns_ttl = dns_ttl
+            self.dns_record_data = dns_record_data
 
         def to_context(self):
             return {
