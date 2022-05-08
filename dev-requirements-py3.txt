@@ -32,7 +32,7 @@ packaging==21.0
 protobuf==3.20.1
 PyGithub==1.55
 PyYAML==6.0
-requests==2.26.0
+requests==2.27.1
 ruamel.base==1.0.0
 sendgrid==6.6.0
 setuptools==62.1.0
