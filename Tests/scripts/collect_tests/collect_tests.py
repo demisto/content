@@ -46,6 +46,9 @@ class CollectionReason(Enum):
 class DictBased:
     def __init__(self, dict_: dict):
         self.content = dict_
+        self.from_version = self._calculate_from_version()
+        self.to_version = self._calculate_to_version()
+        self.version_range = VersionRange(self.from_version, self.to_version)
 
     def get(self, key: str, default: Any = None, warn_if_missing: bool = True):
         if key not in self.content and warn_if_missing:
@@ -54,6 +57,24 @@ class DictBased:
 
     def __getitem__(self, key):
         return self.content[key]
+
+    def _calculate_from_version(self) -> Version:
+        if value := (
+                self.get('fromversion', warn_if_missing=False)
+                or self.get('fromVersion', warn_if_missing=False)
+                or self.get('fromServerVersion', warn_if_missing=False)
+        ):
+            return Version(value)
+        return version.NegativeInfinity
+
+    def _calculate_to_version(self) -> Version:
+        if value := (
+                self.get('toversion', warn_if_missing=False)
+                or self.get('toVersion', warn_if_missing=False)
+                or self.get('toServerVersion', warn_if_missing=False)
+        ):
+            return Version(value)
+        return version.Infinity
 
 
 @dataclass
@@ -79,9 +100,6 @@ class ContentItem(DictFileBased):
         super().__init__(path)
         self.file_type: FileType = find_type_by_path(path)
         self.pack = find_pack(path)  # todo if not used elsewhere, create inside pack_tuple
-        self.from_version = self._calculate_from_version()
-        self.to_version = self._calculate_to_version()
-        self.version_range = VersionRange(self.from_version, self.to_version)
 
     @property
     def pack_tuple(self) -> tuple[str]:
@@ -103,28 +121,6 @@ class ContentItem(DictFileBased):
         if len(tests) == 1 and tests[0].lower() == 'no tests':
             raise NoTestsConfiguredException(self.id_)
         return tests
-
-    def _calculate_from_version(self) -> Version:
-        if value := (
-                self.get('fromversion', warn_if_missing=False)
-                or self.get('fromVersion', warn_if_missing=False)
-                or self.get('fromServerVersion', warn_if_missing=False)
-        ):
-            return Version(value)
-        return version.NegativeInfinity
-
-    def _calculate_to_version(self) -> Version:
-        if value := (
-                self.get('toversion', warn_if_missing=False)
-                or self.get('toVersion', warn_if_missing=False)
-                or self.get('toServerVersion', warn_if_missing=False)
-        ):
-            return Version(value)
-        return version.Infinity
-
-
-def pack_path(pack_name: str) -> Path:  # todo move to utils?
-    return CONTENT_PATH / 'Packs' / pack_name
 
 
 class Machine(Enum):
@@ -290,8 +286,8 @@ class IdSet(DictFileBased):
 
     def get_marketplace_v2_tests(self) -> 'CollectedTests':
         return CollectedTests(tests=self['test_marketplacev2'], packs=None,
-                              reason=CollectionReason.MARKETPLACE_VERSION_SECTION, id_set=self, version_range=,
-                              reason_description=f'({self.marketplace.value})')
+                              reason=CollectionReason.MARKETPLACE_VERSION_SECTION, id_set=self,
+                              version_range=None, reason_description=f'({self.marketplace.value})')
 
     def _parse_items(self, dictionaries: list[dict[str, dict]]) -> dict[str, IdSetItem]:
         result = {}
@@ -333,7 +329,7 @@ class CollectedTests:
             packs: Optional[tuple[str] | list[str]],
             reason: CollectionReason,
             id_set: IdSet,
-            version_range: VersionRange,
+            version_range: Optional[VersionRange],
             reason_description: Optional[str] = None
     ):
         self._id_set = id_set  # used for validations
