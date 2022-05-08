@@ -45,20 +45,23 @@ def test_fetch_incidents_few_incidents(mocker):
 
     mocker.patch.object(demisto, 'params', return_value=DEMISTO_PARAMS)
     mocker.patch.object(demisto, 'args', return_value={})
+    mocker.patch.object(demisto, 'command', return_value='jira-fetch-events')
     last_run = mocker.patch.object(demisto, 'getLastRun', return_value={})
-    incidents = mocker.patch.object(demisto, 'incidents')
+    results = mocker.patch.object(demisto, 'results')
 
     with requests_mock.Mocker() as m:
         m.get(f'{URL}?{FIRST_REQUESTS_PARAMS}', json=util_load_json('test_data/events.json'))
         m.get(f'{URL}?{SECOND_REQUESTS_PARAMS}', json={})
+        m.post('https://api-http_connector.url/logs/v1/xsiam', json={'error': 'false'})
 
-        from JiraAuditRecords import main
+        from JiraEventsCollector import main
         main()
 
-        assert last_run.return_value.get('from') == calculate_next_run(incidents.call_args[0][0][0].get('occurred')[:-1])
-        assert not last_run.return_value.get('next_time')
-        assert last_run.return_value.get('offset') == 0
-        assert len(incidents.call_args[0][0]) == 3
+    events = results.call_args[0][0]['Contents']
+    assert last_run.return_value.get('from') == calculate_next_run(events[0]['created'])
+    assert not last_run.return_value.get('next_time')
+    assert last_run.return_value.get('offset') == 0
+    assert len(events) == 3
 
 
 @freeze_time('2022-04-14T00:00:00Z')
@@ -81,7 +84,7 @@ def test_fetch_events_no_incidents(mocker):
     with requests_mock.Mocker() as m:
         m.get(f'{URL}?{FIRST_REQUESTS_PARAMS}', json={})
 
-        from JiraAuditRecords import main
+        from JiraEventsCollector import main
         main()
 
         assert not last_run.return_value.get('from')
@@ -106,17 +109,20 @@ def test_fetch_events_max_fetch_set_to_one(mocker):
 
     mocker.patch.object(demisto, 'params', return_value=params)
     mocker.patch.object(demisto, 'args', return_value={})
+    mocker.patch.object(demisto, 'command', return_value='jira-fetch-events')
     last_run = mocker.patch.object(demisto, 'getLastRun', return_value={})
-    incidents = mocker.patch.object(demisto, 'incidents')
+    results = mocker.patch.object(demisto, 'results')
 
     with requests_mock.Mocker() as m:
         m.get(f'{URL}?{FIRST_REQUESTS_PARAMS}', json=util_load_json('test_data/events.json'))
         m.get(f'{URL}?{SECOND_REQUESTS_PARAMS}', json={})
+        m.post('https://api-http_connector.url/logs/v1/xsiam', json={'error': 'false'})
 
-        from JiraAuditRecords import main
+        from JiraEventsCollector import main
         main()
 
-        assert not last_run.return_value.get('from')
-        assert last_run.return_value.get('next_time') == '2022-04-12T18:45:42.968'
-        assert last_run.return_value.get('offset') == 1
-        assert len(incidents.call_args[0][0]) == 1
+    events = results.call_args[0][0]['Contents']
+    assert not last_run.return_value.get('from')
+    assert last_run.return_value.get('next_time') == calculate_next_run(events[0]['created'])
+    assert last_run.return_value.get('offset') == 1
+    assert len(events) == 1
