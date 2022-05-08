@@ -45,7 +45,7 @@ class ReqParams(BaseModel):
 
 
 class Request(BaseModel):
-    method: Method
+    method: Method = 'GET'
     url: AnyUrl
     headers: Union[Json, dict] = {}
     params: ReqParams
@@ -134,20 +134,6 @@ class GetEvents:
         return stored
 
     @staticmethod
-    def events_to_incidents(events: list):
-        incidents = []
-
-        for event in events:
-            incident = {
-                'name': f"Jira Audit Records - {event['summary']} - {event['id']}",
-                'occurred': event.get('created', '').removesuffix('+0000') + 'Z',
-                'rawJSON': json.dumps(event)
-            }
-            incidents.append(incident)
-
-        demisto.incidents(incidents)
-
-    @staticmethod
     def set_next_run(log: dict) -> dict:
         """
             Handles and saves the values required for next fetch.
@@ -204,12 +190,8 @@ def main():
             if command == 'fetch-events':
                 send_events_to_xsiam(events, 'Jira', 'Audit Records')
             else:
-                get_events.events_to_incidents(events)
                 command_results = CommandResults(
                     readable_output=tableToMarkdown('Jira Audit Records', events, removeNull=True, headerTransform=pascalToSpace),
-                    outputs_prefix='JiraAudit.Records',
-                    outputs_key_field='id',
-                    outputs=events,
                     raw_response=events,
                 )
 
