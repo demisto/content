@@ -11,12 +11,14 @@ from demisto_sdk.commands.common.git_util import GitUtil
 from demisto_sdk.commands.common.tools import get_file, find_type_by_path
 from git import Repo
 from packaging.version import Version
+from packaging import version
 
 from Tests.scripts.collect_tests.constants import MASTER, CONTENT_PATH, DEBUG_ID_SET_PATH, DEBUG_CONF_PATH, \
     IGNORED_FILES, SKIPPED_PACKS
 from Tests.scripts.collect_tests.exceptions import InvalidPackNameException, IgnoredPackException, SkippedPackException, \
     DeprecatedPackException
 from Tests.scripts.utils import logging_wrapper as logging
+from collections import defaultdict
 
 INTEGRATION_SCRIPT_COLLECTED_FILE_TYPES = {'.py', '.yml', 'js', 'ps1'}
 
@@ -32,11 +34,13 @@ class CollectionReason(Enum):
     NIGHTLY_ALL_TESTS__ID_SET = 'collecting all id_set test playbooks for nightly'
     NIGHTLY_ALL_TESTS__TEST_CONF = 'collecting all test_conf tests for nightly'
     ALL_ID_SET_PACKS = 'collecting all id_set packs'
-    NON_CODE_SCRIPT_INTEGRATION_FILE_CHANGE = 'non-code pack file changed'
+    NON_CODE_FILE_CHANGED = 'non-code pack file changed'
     INTEGRATION_CHANGED = 'integration changed, collecting all conf.json tests using it'
     SCRIPT_CHANGED_NO_TESTS = 'script changed, but has `No Tests` configured, taking tests from id_set'
     SCRIPT_CHANGED = 'script changed, taking tests from `tests` section in script yml'
     TEST_PLAYBOOK_CHANGED = 'test playbook changed'
+    MAPPER_CHANGED = 'mapper file changed, configured as incoming_mapper_id in test conf'
+    CLASSIFIER_CHANGED = 'classifier file changed, configured as classifier_id in test conf'
 
 
 class DictBased:
@@ -52,6 +56,18 @@ class DictBased:
         return self.content[key]
 
 
+@dataclass
+class VersionRange:
+    min_version: Version
+    max_version: Version
+
+    def __contains__(self, item):
+        return self.min_version <= item <= self.max_version
+
+    def __repr__(self):
+        return f'{self.min_version} -> {self.max_version}'
+
+
 class DictFileBased(DictBased):
     def __init__(self, path: Path):
         self.path = path
@@ -61,6 +77,15 @@ class DictFileBased(DictBased):
 class ContentItem(DictFileBased):
     def __init__(self, path: Path):
         super().__init__(path)
+        self.file_type: FileType = find_type_by_path(path)
+        self.pack = find_pack(path)  # todo if not used elsewhere, create inside pack_tuple
+        self.from_version = self._calculate_from_version()
+        self.to_version = self._calculate_to_version()
+        self.version_range = VersionRange(self.from_version, self.to_version)
+
+    @property
+    def pack_tuple(self) -> tuple[str]:
+        return self.pack.name,
 
     @property
     def id_(self):
@@ -79,29 +104,27 @@ class ContentItem(DictFileBased):
             raise NoTestsConfiguredException(self.id_)
         return tests
 
+    def _calculate_from_version(self) -> Version:
+        if value := (
+                self.get('fromversion', warn_if_missing=False)
+                or self.get('fromVersion', warn_if_missing=False)
+                or self.get('fromServerVersion', warn_if_missing=False)
+        ):
+            return Version(value)
+        return version.NegativeInfinity
+
+    def _calculate_to_version(self) -> Version:
+        if value := (
+                self.get('toversion', warn_if_missing=False)
+                or self.get('toVersion', warn_if_missing=False)
+                or self.get('toServerVersion', warn_if_missing=False)
+        ):
+            return Version(value)
+        return version.Infinity
+
 
 def pack_path(pack_name: str) -> Path:  # todo move to utils?
     return CONTENT_PATH / 'Packs' / pack_name
-
-
-class ContentItemFile:
-    def __init__(self, path: Path | str):
-        self.path = Path(path)
-        self.file_type: FileType = find_type_by_path(path)
-        self.pack = find_type_by_path(path)
-        self.pack_name = self.pack.name
-
-
-@dataclass
-class VersionRange:
-    min_version: Version
-    max_version: Version
-
-    def __contains__(self, item):
-        return self.min_version <= item <= self.max_version
-
-    def __repr__(self):
-        return f'{self.min_version} -> {self.max_version}'
 
 
 class Machine(Enum):
@@ -133,28 +156,30 @@ class TestConf(DictFileBased):
 
     def __init__(self):
         super().__init__(DEBUG_CONF_PATH)  # todo not use debug
-        self.tests = tuple(TestConfItem(value) for value in self['tests'])  # todo is used?
+        self.tests = tuple(TestConfItem(value) for value in self['tests'])
         self.test_ids = {test.playbook_id for test in self.tests}
 
         self.tests_to_integrations = {test.playbook_id: test.integrations for test in self.tests if test.integrations}
         self.integrations_to_tests = self._calculate_integration_to_tests()
 
         # Attributes
-        self.skipped_tests_dict: dict = self['skipped_tests']
-        self.skipped_integrations_dict: dict[str, str] = self['skipped_integrations']
-        self.unmockable_integrations_dict: dict[str, str] = self['unmockable_integrations']
-        self.nightly_integrations: list[str] = self['nightly_integrations']
-        self.parallel_integrations: list[str] = self['parallel_integrations']
-        self.private_tests: list[str] = self['private_tests']
+        self.skipped_tests_dict: dict = self['skipped_tests']  # todo is used?
+        self.skipped_integrations_dict: dict[str, str] = self['skipped_integrations']  # todo is used?
+        self.unmockable_integrations_dict: dict[str, str] = self['unmockable_integrations']  # todo is used?
+        self.nightly_integrations: list[str] = self['nightly_integrations']  # todo is used?
+        self.parallel_integrations: list[str] = self['parallel_integrations']  # todo is used?
+        self.private_tests: list[str] = self['private_tests']  # todo is used?
+
+        self.classifier_to_test = {test.classifier: test.playbook_id
+                                   for test in self.tests if test.classifier}
+        self.incoming_mapper_to_test = {test.incoming_mapper: test.playbook_id
+                                        for test in self.tests if test.incoming_mapper}
 
     def _calculate_integration_to_tests(self) -> dict[str, list[str]]:
-        result = {}
+        result = defaultdict(list)
         for test, integrations in self.tests_to_integrations.items():
             for integration in integrations:
-                if integration in result:
-                    result[integration].append(test)
-                else:
-                    result[integration] = [test]
+                result[integration].append(test)
         return result
 
     def get_skipped_tests(self):
@@ -208,7 +233,7 @@ class IdSetItem(DictBased):
 
 class IdSet(DictFileBased):
     def __init__(self, version_range: VersionRange, marketplace: MarketplaceVersions):
-        super().__init__(DEBUG_ID_SET_PATH)
+        super().__init__(DEBUG_ID_SET_PATH)  # todo use real path
         self.version_range = version_range
         self.marketplace = marketplace
 
@@ -265,7 +290,7 @@ class IdSet(DictFileBased):
 
     def get_marketplace_v2_tests(self) -> 'CollectedTests':
         return CollectedTests(tests=self['test_marketplacev2'], packs=None,
-                              reason=CollectionReason.MARKETPLACE_VERSION_SECTION, id_set=self,
+                              reason=CollectionReason.MARKETPLACE_VERSION_SECTION, id_set=self, version_range=,
                               reason_description=f'({self.marketplace.value})')
 
     def _parse_items(self, dictionaries: list[dict[str, dict]]) -> dict[str, IdSetItem]:
@@ -294,37 +319,31 @@ class IdSet(DictFileBased):
         return result
 
     def _calculate_script_to_tests(self):
-        result = {}
+        result = defaultdict(list)
         for test in self.test_playbooks:
             for script in test.implementing_scripts:
-                if script in result:
-                    result[script].append(test)
-                else:
-                    result[script] = [test]
+                result[script].append(test)
         return result
 
 
 class CollectedTests:
-    def __init__(self, tests: Optional[tuple[str] | list[str]], packs: Optional[tuple[str] | list[str]],
-                 reason: CollectionReason, id_set: IdSet, machines: Optional[tuple[Machine]] = None,
-                 reason_description: Optional[str] = None):
-        self._id_set = id_set  # used for validations
-
-        self.tests = set()  # only updated on init
-        self.packs = set()  # only updated on init
-        self.machines = machines  # todo optional?
-
-        self._add_multiple(tests, packs, reason, reason_description)
-
-    def _add_multiple(
+    def __init__(
             self,
             tests: Optional[tuple[str] | list[str]],
             packs: Optional[tuple[str] | list[str]],
             reason: CollectionReason,
-            reason_description: Optional[str]
+            id_set: IdSet,
+            version_range: VersionRange,
+            reason_description: Optional[str] = None
     ):
+        self._id_set = id_set  # used for validations
+
+        self.tests = set()  # only updated on init
+        self.packs = set()  # only updated on init
+        self.version_range = version_range
+
         if tests and packs and len(tests) != len(packs):
-            raise ValueError(f'if both are not empty, {len(tests)=} must be equal to {len(packs)=}')
+            raise ValueError(f'when both are not empty, {len(tests)=} must be equal to {len(packs)=}')
         elif tests:
             packs = (None,) * len(packs)  # so accessors get a None
         elif packs:
@@ -340,8 +359,8 @@ class CollectedTests:
     def __or__(self, other: 'CollectedTests') -> 'CollectedTests':
         self.tests.update(other.tests)
         self.packs.update(other.packs)
-        if self.machines or other.machines:
-            self.machines = set().union((self.machines or (), other.machines or ())) or None
+        # if self.machines or other.machines: # todo
+        #     self.machines = set().union((self.machines or (), other.machines or ())) or None
         return self  # todo test
 
     @classmethod
@@ -382,15 +401,17 @@ class CollectedTests:
         """ raises InvalidPackException if the pack name is not valid."""
         if not pack:
             raise InvalidPackNameException(pack)
-        if pack in IGNORED_FILES:
+        if pack in IGNORED_FILES:  # todo is necessary?
             raise IgnoredPackException(pack)
-        if pack in SKIPPED_PACKS:
+        if pack in SKIPPED_PACKS:  # todo is necessary?
             raise SkippedPackException(pack)
         if self._id_set.id_to_packs[pack].deprecated:  # todo safer access?
             raise DeprecatedPackException(pack)
+        if not (CONTENT_PATH / 'Packs' / pack).exists():  # todo consider using listdir at beginning and checking there
+            raise InvalidPackNameException(pack)
 
     def __repr__(self):
-        return f'{len(self.packs)} packs, {len(self.tests)} tests, machines: {self.machines or ""}'
+        return f'{len(self.packs)} packs, {len(self.tests)} tests, version range: {self.version_range}'
 
 
 def to_tuple(value: Optional[str | list]) -> Optional[tuple]:
@@ -418,21 +439,29 @@ class TestConfItem(DictBased):
 
     @property
     def integrations(self) -> tuple[str]:
-        return to_tuple(self.get('integrations'))
+        return to_tuple(self.get('integrations'))  # todo may warn a lot, consider default value
 
     @property
     def from_version(self) -> Optional[Version]:
-        if value := self.content.get('fromversion'):
+        if value := self.get('fromversion', warn_if_missing=False):
             return Version(value)
 
     @property
     def to_version(self) -> Optional[Version]:
-        if value := self.content.get('toversion'):
+        if value := self.get('toversion', warn_if_missing=False):
             return Version(value)
 
     @property
     def is_mockable(self):
-        return self.content.get('is_mockable')
+        return self.get('is_mockable')
+
+    @property
+    def classifier(self):
+        return self.get('instance_configuration', {}, warn_if_missing=False).get('classifier_id')
+
+    @property
+    def incoming_mapper(self):
+        return self.content.get('instance_configuration', {}).get('incoming_mapper_id')
 
 
 class TestCollector(ABC):
@@ -467,19 +496,23 @@ class TestCollector(ABC):
     def _add_packs_used(self, tests: set[str]):
         return self._add_packs_from_tested_integrations(tests) | self._add_packs_from_test_playbooks(tests)
 
-    def _add_packs_from_tested_integrations(self, tests: set[str]):  # only called in _add_packs_used
+    def _add_packs_from_tested_integrations(self, tests: set[str]) -> CollectedTests:  # only called in _add_packs_used
         # todo is it used in the new version?
         logging.info(f'searching for integrations used in test playbooks, '
                      f'to make sure the integration packs are installed')
-        packs = []
+        collected = []
 
         for test in tests:
             for integration in self.conf.tests_to_integrations.get(test, ()):
-                if pack := self.id_set.integration_to_pack.get(integration, None):
-                    packs.append(pack)
+                if pack := self.id_set.integration_to_pack.get(integration):  # todo what if not?
+                    collected.append(self._collect_pack(pack, CollectionReason.PACK_MATCHES_INTEGRATION))
 
-        return CollectedTests(tests=None, packs=packs, reason=CollectionReason.PACK_MATCHES_INTEGRATION,
-                              id_set=self.id_set, reason_description=None)
+        return CollectedTests.union(*collected)
+
+    def _collect_pack(self, name: str, reason: CollectionReason, reason_description: str) -> CollectedTests:
+        pack = ContentItem(CONTENT_PATH / 'Packs' / name / 'pack_metadata.json')
+        return CollectedTests(tests=None, packs=(name,), reason=reason, reason_description=reason_description,
+                              id_set=self.id_set, version_range=pack.version_range)
 
     def _add_packs_from_test_playbooks(self, tests: set[str]):  # only called in _add_packs_used
         logging.info(f'searching for packs under which test playbooks are saved, to make sure they are installed')
@@ -487,8 +520,9 @@ class TestCollector(ABC):
 
         for test in tests:
             if pack := self.id_set.test_playbooks_to_pack[test]:  # todo is okay to fail when tpb is not in id-set?
-                collected.append(CollectedTests(tests=None, packs=(pack,), reason=CollectionReason.PACK_MATCHES_TEST,
-                                                id_set=self.id_set, reason_description=f'({test=})'))
+                collected.append(
+                    self._collect_pack(pack, reason=CollectionReason.PACK_MATCHES_TEST, reason_description='')
+                )
         return CollectedTests.union(*collected)
 
 
@@ -550,14 +584,14 @@ class BranchTestCollector(TestCollector):
             except NoTestsToCollect as e:
                 logging.warning(e.message)
         collected = CollectedTests.union(*collected)  # todo
-        # todo if not collected - return sanity tests
-        pass
+        if not collected:
+            raise NotImplementedError()  # todo return sanity tests
+        return collected
 
     def _collect_single(self, path) -> CollectedTests:
         file_type = find_type_by_path(path)
         try:
-            pack = find_pack(path)  # todo if not used elsewhere, create inside pack_tuple
-            pack_tuple = (pack.name,)
+            content_item = ContentItem(path)
 
         except NoPackException as e:
             # files that are supposed to not be in a pack, and are ignored.
@@ -573,11 +607,11 @@ class BranchTestCollector(TestCollector):
                 if path.suffix not in INTEGRATION_SCRIPT_COLLECTED_FILE_TYPES:
                     raise ValueError(f'unexpected file extension ({path.suffix}) for integration')
 
-                integration_id = DictFileBased(path)['id']
+                integration_id = content_item.id_
 
-                return CollectedTests(tests=self.conf.integrations_to_tests[integration_id], packs=pack_tuple,
-                                      reason=CollectionReason.INTEGRATION_CHANGED, id_set=self.id_set,
-                                      reason_description=f'{integration_id=}')
+                return CollectedTests(tests=self.conf.integrations_to_tests[integration_id],
+                                      packs=content_item.pack_tuple, reason=CollectionReason.INTEGRATION_CHANGED,
+                                      id_set=self.id_set, version_range=, reason_description=f'{integration_id=}')
 
             case FileType.SCRIPT | FileType.PLAYBOOK:
                 if file_type == FileType.SCRIPT and path.suffix not in INTEGRATION_SCRIPT_COLLECTED_FILE_TYPES \
@@ -585,41 +619,52 @@ class BranchTestCollector(TestCollector):
                     raise ValueError(f'unexpected file extension ({path.suffix}) for {file_type=}')
 
                 try:
-                    tests = ContentItem(path).tests
+                    tests = content_item.tests
                     reason = CollectionReason.SCRIPT_CHANGED
 
                 except NoTestsConfiguredException:
-                    tests = self.id_set.test_playbooks_to_pack.get(ContentItem(path).id_)
+                    tests = self.id_set.test_playbooks_to_pack.get(content_item.id_)
                     reason = CollectionReason.SCRIPT_CHANGED_NO_TESTS
                     if not tests:
                         # todo is this necessary?
                         logging.debug(f'{file_type.value} {str(path)} has `No Tests` configured,'
                                       f' and no tests in id_set')
 
-                return CollectedTests(tests=tests, packs=pack_tuple, reason=reason, id_set=self.id_set, machines=None,
-                                      reason_description=None)
+                return CollectedTests(tests=tests, packs=content_item.pack_tuple, reason=reason, id_set=self.id_set,
+                                      version_range=, reason_description=None)
 
             case FileType.IMAGE | FileType.DESCRIPTION:  # todo readme shows twice
-                return CollectedTests(tests=None, packs=pack_tuple,
-                                      reason=CollectionReason.NON_CODE_SCRIPT_INTEGRATION_FILE_CHANGE,
-                                      id_set=self.id_set, machines=None, reason_description=f'{FileType=}')
+                return CollectedTests(tests=None, packs=content_item.pack_tuple,
+                                      reason=CollectionReason.NON_CODE_FILE_CHANGED, id_set=self.id_set, version_range=,
+                                      reason_description=f'{FileType=}')
 
             case FileType.TEST_PLAYBOOK:  # todo what to do with playbook readme?
                 if not path.suffix != '.yml':  # todo is this necessary?
                     raise ValueError(f'unexpected file extension ({path.suffix}) for playbook')
 
-                if (test_id := ContentItem(path).id_) in self.conf.test_ids:
-                    return CollectedTests(tests=(test_id,), packs=pack_tuple,
+                if (test_id := content_item.id_) in self.conf.test_ids:
+                    return CollectedTests(tests=(test_id,), packs=content_item.pack_tuple,
                                           reason=CollectionReason.TEST_PLAYBOOK_CHANGED, id_set=self.id_set,
-                                          machines=None)  # todo machines
+                                          version_range=)  # todo machines
 
             case FileType.REPUTATION:  # todo reputationjson
                 pass  # todo
 
-            case FileType.MAPPER | FileType.CLASSIFIER:  # todo what about old_classifier?
-                pass  # todo
+            case FileType.MAPPER:
+                if tests := (self.conf.incoming_mapper_to_test.get(content_item.id_)):
+                    return CollectedTests(tests=tests, packs=content_item.pack_tuple,
+                                          reason=CollectionReason.MAPPER_CHANGED, id_set=self.id_set, version_range=,
+                                          reason_description=content_item.name)
+                    )
+                    # todo machines
 
-            case FileType.PRE_PROCESS_RULES | FileType.JOB | FileType.CONNECTION:
+                    return CollectedTests(tests=tests, packs=content_item.pack_tuple,
+                                          reason=CollectionReason.NON_CODE_FILE_CHANGED, id_set=self.id_set,
+                                          version_range=,
+                                          reason_description=f'no specific tests for {content_item.name} were found')  # todo machines
+
+                case
+                FileType.CLASSIFIER:  # todo what about old_classifier?
                 pass  # todo
 
             case FileType.README | FileType.METADATA | FileType.RELEASE_NOTES | FileType.RELEASE_NOTES_CONFIG | \
@@ -627,10 +672,10 @@ class BranchTestCollector(TestCollector):
                  FileType.INDICATOR_FIELD | FileType.LAYOUT | FileType.WIDGET | FileType.DASHBOARD | FileType.REPORT | \
                  FileType.PARSING_RULE | FileType.MODELING_RULE | FileType.CORRELATION_RULE | \
                  FileType.XSIAM_DASHBOARD | FileType.XSIAM_REPORT | FileType.REPORT | FileType.GENERIC_TYPE | \
-                 FileType.GENERIC_FIELD | FileType.GENERIC_MODULE | FileType.GENERIC_DEFINITION:
-                return CollectedTests(tests=None, packs=pack_tuple,
-                                      reason=CollectionReason.NON_CODE_SCRIPT_INTEGRATION_FILE_CHANGE,
-                                      id_set=self.id_set, reason_description=str(path))
+                 FileType.GENERIC_FIELD | FileType.GENERIC_MODULE | FileType.GENERIC_DEFINITION | \
+                 FileType.PRE_PROCESS_RULES | FileType.JOB | FileType.CONNECTION:
+                return CollectedTests(tests=None, packs=pack_tuple, reason=CollectionReason.NON_CODE_FILE_CHANGED,
+                                      id_set=self.id_set, version_range=, reason_description=str(path))
                 # todo rn_config?
                 # todo layout container, xsiam config?
 
@@ -641,7 +686,7 @@ class BranchTestCollector(TestCollector):
                 raise NotImplementedError(f'Unexpected filetype {file_type}')
 
         # todo usage before assignment?
-        return CollectedTests(tests=tests, packs=packs, reason=reason, id_set=self.id_set, machines=machines,
+        return CollectedTests(tests=tests, packs=packs, reason=reason, id_set=self.id_set, version_range=,
                               reason_description=reason_description)
 
 
@@ -671,7 +716,7 @@ class NightlyTestCollector(TestCollector):
                 tests.extend(playbook.tests)
 
         return CollectedTests(tests=tests, packs=None, reason=CollectionReason.MARKETPLACE_VERSION_BY_VALUE,
-                              id_set=self.id_set, machines=None, reason_description=f'({marketplace_string})')
+                              id_set=self.id_set, version_range=, reason_description=f'({marketplace_string})')
 
     def _packs_matching_marketplace_value(self) -> CollectedTests:
         # todo make sure we have a validation, that pack_metadata.marketplaces includes
@@ -684,7 +729,7 @@ class NightlyTestCollector(TestCollector):
         # todo what's the default behavior for a missing marketplace value?
 
         return CollectedTests(tests=None, packs=packs, reason=CollectionReason.MARKETPLACE_VERSION_BY_VALUE,
-                              id_set=self.id_set, reason_description=f'({marketplace_string})')
+                              id_set=self.id_set, version_range=, reason_description=f'({marketplace_string})')
 
 
 class UploadCollector(TestCollector):
