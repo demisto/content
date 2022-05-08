@@ -1,0 +1,59 @@
+commonfields:
+  id: okta event collector
+  version: -1
+name: okta event collector
+display: Okta event collector
+category: Analytics & SIEM
+description: Okta logs event collector integration for XSIAM.
+configuration:
+- display: Server Host
+  name: host
+  type: 0
+  required: true
+- display: First fetch from api time
+  name: after
+  type: 15
+  required: true
+  defaultvalue: 1 day
+  options:
+  - 1 minute
+  - 1 hour
+  - 1 day
+  - 3 day
+  - 5 day
+  - 1 week
+  - 1 month
+  - 1 year
+- display: Integration key
+  name: integration_key
+  defaultvalue: '{"Accept": "application/json","Content-Type": "application/json"}'
+  type: 0
+  required: true
+- display: Secrete key
+  name: secret_key
+  type: 4
+  required: true
+- display: XSIAM update limit per request
+  name: events_to_add_per_request
+  type: 0
+  defaultvalue: 1000
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+script:
+  script: ""
+  type: python
+  commands:
+  - description: Integration command for testing.
+    name: test-module
+  - description: Command that is activated by the engine to fetch event.
+    name: fetch-events
+  - description: Manual command to fetch events and display them.
+    name: duo-get-events
+  dockerimage: demisto/fastapi:1.0.0.28667
+  runonce: false
+  subtype: python3
+fromversion: 5.5.0
+tests:
