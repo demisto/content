@@ -35,7 +35,7 @@ PyYAML==6.0
 requests==2.26.0
 ruamel.base==1.0.0
 sendgrid==6.6.0
-setuptools==60.10.0
+setuptools==62.1.0
 slack_sdk==3.11.2
 ujson==5.2.0
 urllib3==1.26.9
