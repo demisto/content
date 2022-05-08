@@ -73,9 +73,9 @@ def test_get_failing_ut():
 
 
 def test_get_failing_validations():
-    # failed_validations = get_file_data(os.path.join(ARTIFACTS_FOLDER, 'validate_outputs.json'))
-    file = open('validate_outputs.json', 'r')
-    failed_validations = json.load(file)
+    failed_validations = get_file_data(os.path.join(ARTIFACTS_FOLDER, 'validate_outputs.json'))
+    # file = open('validate_outputs.json', 'r')
+    # failed_validations = json.load(file)
     validate_summary = {}
     if failed_validations:
         pr_message = f'You have {len(failed_validations)} failing validations in this push.\n'
