@@ -211,8 +211,7 @@ def main():
     # Args is always stronger. Get last run even stronger
     demisto_params = demisto.params() | demisto.args() | demisto.getLastRun()
 
-    demisto_params['last_id'] = ''
-    demisto_params['after'] = '2000-05-03T11:00:00Z'
+    demisto_params['client_id'] = demisto_params['auth_credendtials']['password']
 
     events_to_add_per_request = demisto_params.get('events_to_add_per_request', 1000)
     try:

@@ -24,10 +24,12 @@ configuration:
   - PATCH
   - HEAD
   hidden: true
-- display: Client ID
-  name: client_id
-  type: 4
+- display: ""
+  displaypassword: Client ID
+  name: auth_credendtials
+  type: 9
   required: true
+  hiddenusername: true
 - display: Client secret
   name: client_secret
   type: 4
