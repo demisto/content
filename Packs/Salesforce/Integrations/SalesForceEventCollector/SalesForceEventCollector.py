@@ -3,6 +3,7 @@ import urllib3
 from CommonServerPython import *
 import demistomock as demisto
 from pydantic import BaseModel, AnyUrl, Json
+from collections.abc import Generator
 import tempfile
 import requests
 import csv
@@ -91,7 +92,7 @@ class GetEvents:
             while done_status is False:
                 query = json.loads(r.text)['nextRecordsUrl']
                 try:
-                    r = requests.get(f'{self.instance_url}{query}', headers=headers)
+                    r = requests.get(f'{self.instance_url}{query}', headers=self.headers)
                 except Exception as err:
                     demisto.error(f'File list getting failed: {err}')
                 if r.status_code == 200:
@@ -148,7 +149,7 @@ class GetEvents:
         field_names = [name.lower() for name in list(csv.reader(open(file_in_tmp_path)))[0]]
         field_names = [x if x != 'type' else 'type_' for x in field_names]
         reader = csv.DictReader(open(file_in_tmp_path), fieldnames=field_names)
-        chunk = []
+        chunk: list = []
         next(reader)
         for index, line in enumerate(reader):
             if index % chunksize == 0 and index > 0:
@@ -157,7 +158,7 @@ class GetEvents:
             chunk.append(line)
         yield chunk
 
-    def _iter_events(self) -> List:
+    def _iter_events(self) -> Generator:
         temp_dir = tempfile.TemporaryDirectory()
 
         for line in self.pull_log_files():
@@ -189,6 +190,8 @@ class GetEvents:
         last_file = files[-1]
         last_timestamp = last_file['LogDate']
         timestamp = dateparser.parse(last_timestamp)
+        if timestamp is None:
+            raise TypeError('Failed to parse LogDate')
         return {'after': timestamp.strftime("%Y-%m-%dT%H:%M:%SZ"),
                 'last_id': last_file['Id']}
 
