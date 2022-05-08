@@ -4831,7 +4831,7 @@ class Common(object):
         :type community_notes: ``CommunityNotes``
         :param community_notes:  A list of community notes for the AP.
 
-        :type external_references: ``ExternalReferences``
+        :type external_references: ``ExternalReference``
         :param external_references:  A list of id's and description of the AP via external refs.
 
         :return: None
