@@ -1,0 +1,758 @@
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ""
+    fromServerVersion: 5.5.0
+    itemVersion: ""
+    packID: 10997cb4-8940-4f81-8bd1-feff680237ca
+    packName: bfsdlkfhsfkjh
+    propagationLabels:
+    - all
+    toServerVersion: ""
+description: "This playbook identifies duplicate incidents using one of the supported
+  methods.\nSelect one of the following methods to identify duplicate incidents in
+  Cortex XSOAR.\n- ml: Machine learning model, which is trained mostly on phishing
+  incidents.\n-rules: Rules help identify duplicate incidents when the logic is well
+  defined, for example, the same label or custom fields.\n-text: Statistics algorithm
+  that compares text, which is generally useful for phishing incidents.\nFor each
+  method, the playbook will search for the oldest similar incident. when there is
+  a match for a similar incident the playbook will close the current incident and
+  will link it to the older incident. "
+id: 96294936-88d6-4343-88ff-5c0c00278bdb
+inputs:
+- description: "Select a method for identifying duplicate incidents. Can be \"ml\",
+    \"rules\", or \"text\". \n'rules' - define specific rules, such as similar incident
+    fields & labels. This method works best if you know the exact logic to find similar
+    incidents. \n'text' - text similarity, based on TF-IDF - unique word frequency
+    in the incidents (based on similar incident fields) \n'ml' - machine learning
+    model, which was trained on similar phishing incidents. Considers similar labels,
+    incident fields, and indicators."
+  key: DuplicateMethod
+  playbookInputQuery: null
+  required: true
+  value: {}
+- description: |-
+    Use only with ML Method.
+    The start date by which to search for duplicated existing incidents. The date format is the same as in the incidents query page. For example, "3 days ago", "2019-01-01T00:00:00 +0200"
+  key: exsitingIncidentsLookback
+  playbookInputQuery: null
+  required: false
+  value:
+    simple: 7 days ago
+- description: "Use only with ML Method.\nWhether to compare the new incident to past
+    closed or non-closed incidents only.   \n\"All\" - Default. Compares to all incidents.\n\"ClosedOnly\"
+    - Compares to closed incidents.\n\"NonClosedOnly\" - Compare to open incidents."
+  key: statusScope
+  playbookInputQuery: null
+  required: false
+  value: {}
+- description: "Use only with ML Method.\nWhether to take into account the email from
+    field for deduplication.\n\n\"TextOnly\" - incidents will be considered duplicated
+    based on test similarity only, ignoring the sender's address. \n\n\"Exact\" -
+    incidents will be considered duplicated if their text is similar, and their sender
+    is the same. \n\n\"Domain\" -  Default. Incidents will be considered duplicated
+    if their text is similar, and their senders' address has the same domain."
+  key: fromPolicy
+  playbookInputQuery: null
+  required: false
+  value: {}
+- description: The similarity threshold by which to consider an incident as a duplicate
+    (0-1), where "1" is a duplicate and "0" is not a duplicate. Use this argument
+    in the ML or text methods.
+  key: DuplicateThreshold
+  playbookInputQuery: null
+  required: true
+  value:
+    simple: "0.7"
+- description: The time frame (in hours) in which to check for duplicate incident
+    candidates.
+  key: TimeFrameHours
+  playbookInputQuery: null
+  required: false
+  value:
+    simple: "72"
+- description: Whether to ignore closed incidents. Can be "yes" or "no".
+  key: IgnoreClosedIncidents
+  playbookInputQuery: null
+  required: false
+  value:
+    simple: "yes"
+- description: The maximum number of candidates to check for duplication.
+  key: MaxNumberOfCandidates
+  playbookInputQuery: null
+  required: false
+  value:
+    simple: "1000"
+- description: Whether to close incidents identified as duplicates. Can be "true"
+    or "false".
+  key: CloseAsDuplicate
+  playbookInputQuery: null
+  required: false
+  value:
+    simple: "true"
+- description: 'The Time field by which to query for past incidents to check for duplicate
+    incident candidates. Values: created, occurred, modified'
+  key: TimeField
+  playbookInputQuery: null
+  required: false
+  value:
+    simple: created
+- description: 'A comma-separated list of similar label keys. Comma separated value.
+    Also supports allowing X different words between labels, within the following
+    way: label_name:X, where X is the number of words. X can also be ''*'' for contains.
+    For example: the value "Email/subject:*" will consider email subject similar,
+    if one is substring of the other. Relevant for ''Rules'' method.'
+  key: similarLabelsKeys
+  playbookInputQuery: null
+  required: false
+  value: {}
+- description: Fields to compare. Can be label name, incident fields, or custom fields.
+    Comma-separated value. Relevant for 'Text' and 'Rules' methods.
+  key: similarIncidentFields
+  playbookInputQuery: null
+  required: false
+  value:
+    simple: name,type,details
+name: Dedup - Generic v3_copy
+outputs:
+- contextPath: isSimilarIncidentFound
+  description: Whether a similar incident was found? Can be "true" or "false".
+  type: boolean
+- contextPath: similarIncident
+  description: The similar incident.
+  type: unknown
+sourceplaybookid: Dedup - Generic v3
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 4bb4cba3-1da4-4356-831e-87ca6523087a
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 4bb4cba3-1da4-4356-831e-87ca6523087a
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": -50
+        }
+      }
+  "1":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.DuplicateMethod
+                transformers:
+                - operator: toLowerCase
+          operator: isEqualString
+          right:
+            value:
+              simple: ml
+      label: ml
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.DuplicateMethod
+                transformers:
+                - operator: toLowerCase
+          operator: isEqualString
+          right:
+            value:
+              simple: rules
+      label: rules
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.DuplicateMethod
+                transformers:
+                - operator: toLowerCase
+          operator: isEqualString
+          right:
+            value:
+              simple: text
+      label: text
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "17"
+      ml:
+      - "11"
+      rules:
+      - "12"
+      text:
+      - "10"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Select one of the following methods to identify duplicate incidents in Cortex XSOAR.
+        - ml: Machine learning model that is trained mostly on phishing incidents.
+        - rules: Rules help identify duplicate incidents when the logic is well defined, for example, same label or custom fields.
+        - text: Statistics algorithm that compares text, which is generally useful for phishing incidents.
+      id: 48f0cedf-fad2-47db-81fd-348b062f41fe
+      iscommand: false
+      name: Select method to identify duplicates
+      type: condition
+      version: -1
+    taskid: 48f0cedf-fad2-47db-81fd-348b062f41fe
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 80
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      ignoreClosedIncidents:
+        simple: ${inputs.IgnoreClosedIncidents}
+      maximumNumberOfIncidents:
+        complex:
+          root: inputs.MaxNumberOfCandidates
+      textFields:
+        complex:
+          root: inputs.similarIncidentFields
+      threshold:
+        complex:
+          root: inputs.DuplicateThreshold
+      timeField:
+        simple: ${inputs.TimeField}
+      timeFrameHours:
+        complex:
+          root: inputs.TimeFrameHours
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |
+        Finds similar incidents using a statistics algorithm that compares text, which is generally useful for phishing incidents.
+      id: d7fd40a2-f80c-400d-8881-75dec9e72802
+      iscommand: false
+      name: Identify duplicates by text
+      scriptName: FindSimilarIncidentsByText
+      type: regular
+      version: -1
+    taskid: d7fd40a2-f80c-400d-8881-75dec9e72802
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 10,
+          "y": 485
+        }
+      }
+  "5":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: isSimilarIncidentFound
+          operator: isTrue
+      label: "yes"
+    id: "5"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "13"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Checks if any duplicate incidents were found.
+      id: b6bd2e9d-c6ca-401c-87f5-7dd2b6355bb3
+      iscommand: false
+      name: Check if duplicates were found
+      type: condition
+      version: -1
+    taskid: b6bd2e9d-c6ca-401c-87f5-7dd2b6355bb3
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 660
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      hoursBack:
+        complex:
+          root: inputs.TimeFrameHours
+      ignoreClosedIncidents:
+        simple: ${inputs.IgnoreClosedIncidents}
+      maxNumberOfIncidents:
+        complex:
+          root: inputs.MaxNumberOfCandidates
+      similarIncidentFields:
+        complex:
+          root: inputs.similarIncidentFields
+      similarLabelsKeys:
+        complex:
+          root: inputs.similarLabelsKeys
+      timeField:
+        simple: ${inputs.TimeField}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Finds similar incidents by common incident keys, labels, custom fields or context keys.
+        It's highly recommended to use incident keys if possible (e.g., "type" for the same incident type).
+        For best performance, it's recommended to avoid using context keys if possible (for example, if the value also appears in a label key, use the label).
+      id: 7a6a34f4-470d-4d25-8e2e-2d45a620b427
+      iscommand: false
+      name: Identify similar incidents using rules blabbla
+      scriptName: FindSimilarIncidents
+      type: regular
+      version: -1
+    taskid: 7a6a34f4-470d-4d25-8e2e-2d45a620b427
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 485
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      duplicateId:
+        complex:
+          accessor: rawId
+          root: similarIncident
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Closes the investigation as a duplicate to one of the incidents.
+        identified.
+      id: 821fea71-8442-4647-8281-52c916a04b43
+      iscommand: false
+      name: Close investigation as duplicate
+      scriptName: CloseInvestigationAsDuplicate
+      type: regular
+      version: -1
+    taskid: 821fea71-8442-4647-8281-52c916a04b43
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1200,
+          "y": 1010
+        }
+      }
+  "9":
+    id: "9"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: c1f06a79-d539-4853-8140-f1f879a8f137
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: c1f06a79-d539-4853-8140-f1f879a8f137
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1430
+        }
+      }
+  "10":
+    id: "10"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 31571cc9-8aed-458c-8ea2-f1cb69acb262
+      iscommand: false
+      name: Text
+      type: title
+      version: -1
+    taskid: 31571cc9-8aed-458c-8ea2-f1cb69acb262
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 10,
+          "y": 350
+        }
+      }
+  "11":
+    id: "11"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "16"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: c63d7200-8ad2-4b79-8395-f5764c89bb5e
+      iscommand: false
+      name: Phishing ML
+      type: title
+      version: -1
+    taskid: c63d7200-8ad2-4b79-8395-f5764c89bb5e
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 950,
+          "y": 350
+        }
+      }
+  "12":
+    id: "12"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 58c2edb1-ada1-4220-844d-805f1da22ae9
+      iscommand: false
+      name: Rules
+      type: title
+      version: -1
+    taskid: 58c2edb1-ada1-4220-844d-805f1da22ae9
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 350
+        }
+      }
+  "13":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.CloseAsDuplicate
+                transformers:
+                - operator: toLowerCase
+          operator: isEqualString
+          right:
+            value:
+              simple: "true"
+      label: "yes"
+    id: "13"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "15"
+      "yes":
+      - "8"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 90b4231e-ab82-4f52-88a6-39bf028dacc6
+      iscommand: false
+      name: Close duplicates?
+      type: condition
+      version: -1
+    taskid: 90b4231e-ab82-4f52-88a6-39bf028dacc6
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 950,
+          "y": 830
+        }
+      }
+  "14":
+    id: "14"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      linkedIncidentIDs:
+        complex:
+          accessor: rawId
+          root: similarIncident
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Links similar incidents.
+      id: 2f6d5087-c0f1-47e3-8065-06cc25ced46a
+      iscommand: true
+      name: Link similar incidents
+      script: Builtin|||linkIncidents
+      type: regular
+      version: -1
+    taskid: 2f6d5087-c0f1-47e3-8065-06cc25ced46a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 740,
+          "y": 1260
+        }
+      }
+  "15":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: Demisto REST API
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+      label: "yes"
+    id: "15"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "14"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Checks whether the Demisto REST API integration is enabled.
+      id: 04d3848d-57da-47ab-827d-8950c9063c32
+      iscommand: false
+      name: Is Demisto REST API enabled?
+      type: condition
+      version: -1
+    taskid: 04d3848d-57da-47ab-827d-8950c9063c32
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 740,
+          "y": 1010
+        }
+      }
+  "16":
+    id: "16"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      exsitingIncidentsLookback:
+        complex:
+          root: inputs.exsitingIncidentsLookback
+      fromPolicy:
+        complex:
+          root: inputs.fromPolicy
+      limit:
+        complex:
+          root: inputs.MaxNumberOfCandidates
+      statusScope:
+        complex:
+          root: inputs.statusScope
+      threshold:
+        complex:
+          root: inputs.DuplicateThreshold
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Finds similar incidents using an out-of-the-box deduplication preprocessing
+        script that is based on a machine learning algorithm.
+      id: e69901e9-ee05-4b11-8b09-2db95aba308e
+      iscommand: false
+      name: Identify Phishing duplicates using ML
+      scriptName: PhishingDedupPreprocessingRule
+      type: regular
+      version: -1
+    taskid: e69901e9-ee05-4b11-8b09-2db95aba308e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 950,
+          "y": 485
+        }
+      }
+  "17":
+    id: "17"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: f78e97e5-f68e-4d27-8b5e-167ba143aa93
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: f78e97e5-f68e-4d27-8b5e-167ba143aa93
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": -510,
+          "y": 350
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "13_15_#default#": 0.55,
+      "13_8_yes": 0.56,
+      "15_14_yes": 0.58,
+      "15_9_#default#": 0.29,
+      "5_9_#default#": 0.21
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1545,
+        "width": 2090,
+        "x": -510,
+        "y": -50
+      }
+    }
+  }
