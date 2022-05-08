@@ -15,7 +15,6 @@ from dateutil.parser import parse as parsedate
 requests.packages.urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
-
 PARAMS = demisto.params()
 WEB_API_CREDENTIALS = PARAMS.get('web_api_credentials')
 WEB_API_CREDENTIALS = {} if not WEB_API_CREDENTIALS else WEB_API_CREDENTIALS
@@ -391,7 +390,7 @@ def create_web_api_headers() -> Dict:
     return headers
 
 
-def web_api_login():
+def web_api_login(base_url: str = BASE_URL):
     """
     Get a JWT (Javascript Web Token) for authorization in calls to Web API
     """
@@ -399,12 +398,24 @@ def web_api_login():
     global WEB_AUTH
     if not LAST_JWT_FETCH or datetime.now(timezone.utc) >= LAST_JWT_FETCH + JWT_VALIDITY_TIME:
         url_suffix = '/api/login'
+        full_url = base_url + url_suffix
         headers = {'Content-Type': 'application/x-www-form-urlencoded'}
         params = {'username': WEB_API_USERNAME, 'password': WEB_API_PASSWORD}
-        response = http_request('POST', url_suffix, headers=headers, params=params, resp_type='response')
+        response = http_request('POST', url_suffix, full_url=full_url, headers=headers, params=params,
+                                resp_type='response')
         fetch_time = parsedate(response.headers.get('Date', ''))
-        WEB_AUTH = response.text
         LAST_JWT_FETCH = fetch_time
+
+        WEB_AUTH = response.text
+        demisto.debug(f"web auth: The response text is {response.text}")
+        if 'chunked' in response.headers.get('Transfer-Encoding', ''):
+            response_lines = list(response.iter_lines())
+            demisto.debug(f"web auth: The response lines are {response_lines}")
+            str_response_lines = [str(response_line.decode("utf-8")) for response_line in response_lines]
+            WEB_AUTH = ''.join(str_response_lines[1::2])
+            demisto.debug(f"web auth: The resulted web auth is {WEB_AUTH}")
+
+        return WEB_AUTH
 
 
 def http_request(method: str, url_suffix: str, full_url: str = None, headers: Dict = None,
@@ -513,7 +524,8 @@ def http_request(method: str, url_suffix: str, full_url: str = None, headers: Di
 
         error_class = str(e.__class__)
         err_type = '<' + error_class[error_class.find('\'') + 1: error_class.rfind('\'')] + '>'
-        err_msg = f'\nERRTYPE: {err_type}\nERRNO: [{e.errno}]\nMESSAGE: {e.strerror}\n' \
+        err_msg = f'\nERRTYPE: {err_type}\nERRNO: [{e.errno if "errno" in dir(e) else None}]\n' \
+                  f'MESSAGE: {e.strerror if "strerror" in dir(e) else str(e)}\n' \
                   f'ADVICE: Check that the Server URL parameter is correct and that you' \
                   f' have access to the Server from your host.'
         return_error(err_msg)

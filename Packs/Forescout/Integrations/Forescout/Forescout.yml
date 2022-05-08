@@ -1,6 +1,6 @@
 category: Network Security
 commonfields:
-  id: Forescout
+  id: Forescout_test
   version: -1
 configuration:
 - display: |-
@@ -38,7 +38,7 @@ configuration:
   type: 8
 description: Unified device visibility and control platform for IT and OT Security.
 display: Forescout CounterACT
-name: Forescout
+name: Forescout_test
 script:
   commands:
   - arguments:

@@ -47,3 +47,22 @@ class TestDictToFormattedString(object):
         assert not example_dict_string.endswith('}')
         assert '\'' not in example_dict_string
         assert '"' not in example_dict_string
+
+
+class TestAuthHeaders:
+
+    def test_chunked_api_key_response(self, requests_mock):
+
+        requests_mock.post('https://some-url/api/login',
+                           headers={'Transfer-Encoding': 'chunked',
+                                    'Date': 'Sun, 01 May 2022 08:58:42 GMT'},
+                           text='7\r\n'
+                                'Mozilla\r\n'
+                                '9\r\n'
+                                'Developer\r\n'
+                                '7\r\n'
+                                'Network\r\n'
+                                '0\r\n\r\n')
+        from Forescout import web_api_login
+        web_auth = web_api_login(base_url='https://some-url')
+        assert web_auth == 'MozillaDeveloperNetwork'
