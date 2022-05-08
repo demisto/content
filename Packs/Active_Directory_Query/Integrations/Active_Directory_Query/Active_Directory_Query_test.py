@@ -543,7 +543,6 @@ def test_enable_user_with_restore_user_option(mocker):
     from Active_Directory_Query import enable_user
     disabled_account_with_properties = 546
     enabled_account_with_properties = 544
-    
     mocker.patch('Active_Directory_Query.restore_user', return_value=disabled_account_with_properties)
     mocker.patch('Active_Directory_Query.user_dn', return_value='test_dn')
     modify_data = mocker.patch('Active_Directory_Query.modify_object')
@@ -552,6 +551,3 @@ def test_enable_user_with_restore_user_option(mocker):
     enable_user('test_user', 0)
 
     assert modify_data.call_args.args[1].get('userAccountControl')[0][1] == enabled_account_with_properties
-
-
-
