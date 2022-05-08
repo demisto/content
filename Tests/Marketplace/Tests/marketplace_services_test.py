@@ -461,35 +461,44 @@ class TestHelperFunctions:
 
         assert result == expected_result
 
-    @pytest.mark.parametrize('yaml_context, yaml_type, is_actually_feed',
+    @pytest.mark.parametrize('yaml_context, yaml_type, is_actually_feed, is_actually_siem',
                              [
                                  # Check is_feed by Integration
                                  ({'category': 'TIM', 'configuration': [{'display': 'Services'}],
                                    'script': {'commands': [], 'dockerimage': 'bla', 'feed': True}},
-                                  'Integration', True),
+                                  'Integration', True, False),
                                  ({'category': 'TIM', 'configuration': [{'display': 'Services'}],
                                    'script': {'commands': [], 'dockerimage': 'bla', 'feed': False}},
-                                  'Integration', False),
+                                  'Integration', False, False),
                                  # Checks no feed parameter
                                  ({'category': 'NotTIM', 'configuration': [{'display': 'Services'}],
                                    'script': {'commands': [], 'dockerimage': 'bla'}},
-                                  'Integration', False),
+                                  'Integration', False, False),
 
                                  # Check is_feed by playbook
                                  ({'id': 'TIM - Example', 'version': -1, 'fromversion': '5.5.0',
                                    'name': 'TIM - Example', 'description': 'This is a playbook TIM example'},
-                                  'Playbook', True),
+                                  'Playbook', True, False),
                                  ({'id': 'NotTIM - Example', 'version': -1, 'fromversion': '5.5.0',
                                    'name': 'NotTIM - Example', 'description': 'This is a playbook which is not TIM'},
-                                  'Playbook', False)
+                                  'Playbook', False, False),
+
+                                 # Check is_siem for integration
+                                 ({'id': 'some-id', 'isfetchevents': True}, 'Integration', False, True),
+                                 ({'id': 'some-id', 'isfetchevents': False}, 'Integration', False, False),
+
+                                 # Check is_siem for rules
+                                 ({'id': 'some-id', 'rules': ''}, 'ParsingRule', False, True),
+                                 ({'id': 'some-id', 'rules': ''}, 'ModelingRule', False, True),
+                                 ({'id': 'some-id', 'rules': ''}, 'CorrelationRule', False, True),
                              ])
-    def test_is_feed(self, yaml_context, yaml_type, is_actually_feed):
-        """ Tests that is_feed for pack changes if it has a playbook that starts with "TIM " or an integration with
-            script.feed==true
+    def test_add_pack_type_tags(self, yaml_context, yaml_type, is_actually_feed, is_actually_siem):
+        """ Tests is_feed or is_seem is set to True for pack changes for tagging.
         """
         dummy_pack = Pack(pack_name="TestPack", pack_path="dummy_path")
-        dummy_pack.is_feed_pack(yaml_context, yaml_type)
+        dummy_pack.add_pack_type_tags(yaml_context, yaml_type)
         assert dummy_pack.is_feed == is_actually_feed
+        assert dummy_pack.is_siem == is_actually_siem
 
     def test_remove_unwanted_files(self):
         """

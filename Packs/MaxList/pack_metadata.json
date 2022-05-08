@@ -1,0 +1,21 @@
+{
+    "name": "MaxList",
+    "description": "Script proposition to add to Common Scripts collection",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "68zuhKQfKPk",
+    "url": "",
+    "email": "",
+    "created": "2022-04-06T11:23:15Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "68zuhKQfKPk"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
+}
