@@ -87,9 +87,9 @@ def test_fetch_events_no_incidents(mocker):
         from JiraEventsCollector import main
         main()
 
-        assert not last_run.return_value.get('from')
-        assert last_run.return_value.get('offset') == 0
-        assert not incidents.call_args
+    assert not last_run.return_value.get('from')
+    assert last_run.return_value.get('offset') == 0
+    assert not incidents.call_args
 
 
 @freeze_time('2022-04-14T00:00:00Z')

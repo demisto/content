@@ -45,7 +45,7 @@ class ReqParams(BaseModel):
 
 
 class Request(BaseModel):
-    method: Method = 'GET'
+    method: Method = Method.GET
     url: AnyUrl
     headers: Union[Json, dict] = {}
     params: ReqParams
@@ -189,6 +189,7 @@ def main():
             demisto.setLastRun(get_events.set_next_run(events[0]))
             if command == 'fetch-events':
                 send_events_to_xsiam(events, 'Jira', 'Audit Records')
+                demisto.updateModuleHealth({'eventsPulled': len(events)})
             else:
                 command_results = CommandResults(
                     readable_output=tableToMarkdown('Jira Audit Records', events, removeNull=True, headerTransform=pascalToSpace),
