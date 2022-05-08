@@ -37,6 +37,6 @@ ruamel.base==1.0.0
 sendgrid==6.6.0
 setuptools==60.10.0
 slack_sdk==3.11.2
-ujson==4.2.0
+ujson==5.2.0
 urllib3==1.26.7
 yamlordereddictloader==0.4.0
