@@ -1432,7 +1432,7 @@ def global_result_artifact(client, args, artifact_type):
         })
         return result
 
-    base_url = demisto.params().get('url').rstrip('/')
+    base_url = client._base_url
     data = client.job_data(job_id, 'artifact')
     api_token = None
     token = client.get_api_token()
@@ -1547,7 +1547,7 @@ def result_artifact_downloadfile(client, args):
     job_id = args.get('job_id', None)
     common_result()
 
-    base_url = demisto.params().get('url').rstrip('/')
+    base_url = client._base_url
     data = client.job_data(job_id, 'artifact', ordering='name')
 
     api_token = None
@@ -1605,7 +1605,7 @@ def result_artifact_ramdump(client, args):
     job_id = args.get('job_id', None)
     common_result()
 
-    base_url = demisto.params().get('url').rstrip('/')
+    base_url = client._base_url
     data = client.job_data(job_id, 'artifact', ordering='name')
 
     api_token = None
@@ -1979,7 +1979,7 @@ class Telemetry:
 
             self.params[f'hashes.{hash_type}'] = binary_hash
 
-    def _construct_output(self, results):
+    def _construct_output(self, results, client=None):
         # Global helper to construct output list
         return _construct_output(results, self.output_keys)
 
@@ -1988,7 +1988,7 @@ class Telemetry:
 
         # Execute request with params
         data = client.telemetry_data(self.telemetry_type, self.params)
-        output = self._construct_output(data['results'])
+        output = self._construct_output(data['results'], client)
 
         # Determines headers for readable output
         headers = [label for label in output[0].keys()] if len(output) > 0 else []
@@ -2002,13 +2002,13 @@ class Telemetry:
 
         demisto.results({
             'Type': entryTypes['note'],
-            'Contents': data,
+            'Contents': output,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': readable_output,
             'EntryContext': ec
         })
-        return data
+        return output
 
 
 class TelemetryProcesses(Telemetry):
@@ -2117,8 +2117,12 @@ class TelemetryBinary(Telemetry):
         self.title = 'Binary list'
         self.telemetry_type = 'binary'
 
-    def _construct_output(self, results):
-        base_url = demisto.params().get('url').rstrip('/')
+    def _construct_output(self, results, client):
+        """Download with an API token is not supported yet"""
+#        api_token = None
+#        token = client.get_api_token()
+#        if 'api_token' in token:
+#            api_token = token['api_token']
 
         output = []
         for x in results:
@@ -2131,7 +2135,8 @@ class TelemetryBinary(Telemetry):
 
                 link = None
                 if x['downloaded'] == 0:
-                    link = f'{base_url}/api/data/telemetry/Binary/download/{x["hashes"]["sha256"]}/'
+                    link = f'{client._base_url}/api/data/telemetry/Binary/download/{x["hashes"]["sha256"]}/'
+#                    link += f'?hl_expiring_key={api_token}'
 
                 output.append({
                     'name': name,
