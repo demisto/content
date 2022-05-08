@@ -83,7 +83,7 @@ script:
         description: 'How many log files to fetch.'
         required: false
         isArray: false
-  dockerimage: demisto/fastapi:1.0.0.28667
+  dockerimage: demisto/fastapi:1.0.0.29406
   runonce: false
   subtype: python3
 fromversion: 5.5.0
