@@ -757,8 +757,8 @@ class TestHostDetectionOutputBuilder:
         - Ensure resultes are parsed as expected.
         """
         Qualysv2.inner_args_values['limit'] = 1
-        assert build_host_list_detection_outputs({'command_parse_and_output_data': COMMANDS_PARSE_AND_OUTPUT_DATA[
-            'qualys-host-list-detection'], 'handled_result': result}) == (expected_outputs, readable)
+        assert build_host_list_detection_outputs(handled_result=result, command_parse_and_output_data=COMMANDS_PARSE_AND_OUTPUT_DATA[
+            'qualys-host-list-detection']) == (expected_outputs, readable)
 
 
 class MockResponse:
