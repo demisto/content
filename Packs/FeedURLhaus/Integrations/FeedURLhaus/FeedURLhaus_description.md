@@ -6,18 +6,18 @@ URLhaus is a project from abuse.ch with the goal of sharing malicious URLs that 
 
 Fetch indicators from URLhaus feed. 
 
-* **Indicator Reputation** - Dropdown select for the reputation of the feed.
-* **Feed Source** - The kind of indicators you wish to receive based on the status of the urls.
+* **Indicator Reputation** - Dropdown list from which to select the reputation of the feed.
+* **Feed Source** - The type of indicators to receive based on the status of the URLs.
 * **Traffic Light Protocol Color** - The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed.
 * **Indicator Expiration Method** - The preferred expiration method.
 * **Tags** - Tags for data from the feed.
-* **Trust any certificate (not secure)** - Turn on/off secure http access, mark as true if you cannot access the api and you trust it.
-* **Indicator Verdict** -  The type of indicator that are returned by the feed.
+* **Trust any certificate (not secure)** - Turn on/off secure HTTP access. Mark as true if you cannot access the API and you trust it.
+* **Indicator Verdict** -  The type of indicator that is returned by the feed.
 * **Source Reliability** - Reliability of the source providing the intelligence data.
 * **Feed Fetch Interval** - The time to fetch indicators for the feed.
 
 ## Step by step configuration
-As an example, we'll be looking at the URLhaus feed by Abuse. This feed will ingest indicators of type URL. These are the feed isntance configuration parameters for our example.
+As an example, let's look at the URLhaus feed by Abuse. This feed will ingest indicators of type URL. These are the feed instance configuration parameters for our example.
 
 **Indicator Reputation** - Malicious
 **Feed Source** - Currently Active
