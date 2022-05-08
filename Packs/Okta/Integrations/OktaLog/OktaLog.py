@@ -23,7 +23,7 @@ class ReqParams(BaseModel):
     sortOrder: Optional[str] = 'ASCENDING'
     limit: str = '1000'
 
-    def set_since_value(self, since: 'dateTime as ISO string') -> None:
+    def set_since_value(self, since: str) -> None:
         self.since = since
 
 
@@ -87,8 +87,6 @@ class GetEvents:
         events: list = self.make_api_call()
         if last_object_ids:
             events = GetEvents.remove_duplicates(events, last_object_ids)
-        if len(events) == 0:
-            return []
         while True:
             yield events
             last = events[-1]
@@ -107,7 +105,7 @@ class GetEvents:
         stored_events = []
         for events in self._iter_events(last_object_ids):
             stored_events.extend(events)
-            if int(self.client.request.params.limit) == 0:
+            if int(self.client.request.params.limit) == 0 or len(events) == 0:
                 break
         return stored_events
 
