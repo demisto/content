@@ -70,10 +70,10 @@ class Client:
             'GET', f'v1.0/directoryRoles/{role_id}/members')['value'][:limit]
 
     def get_ip_named_location(self, ip_id: str) -> dict:
-        """Get an ip named location by id
+        """Get an IP named location by id
 
         Args:
-            ip_id: the id of the requested ip named location.
+            ip_id: the id of the requested IP named location.
 
         Returns:
             a dictionary with the object from the api
@@ -85,11 +85,11 @@ class Client:
             'GET', f'v1.0/identity/conditionalAccess/namedLocations/{ip_id}')
 
     def update_ip_named_location(self, ip_id: str, data: dict) -> dict:
-        """Update an ip named location by id
+        """Update an IP named location by id
 
         Args:
-            data: the request necessary to create the ip named location, json body.
-            ip_id: the id of the ip named location to update.
+            data: the request necessary to create the IP named location, json body.
+            ip_id: the id of the IP named location to update.
 
         Returns:
             None
@@ -101,10 +101,10 @@ class Client:
             'PUT', f'v1.0/identity/conditionalAccess/namedLocations/{ip_id}', return_empty_response=True, json_data=data)
 
     def delete_ip_named_location(self, ip_id: str) -> dict:
-        """Delete an ip named location by id
+        """Delete an IP named location by id
 
         Args:
-            ip_id: the id of the requested ip named location.
+            ip_id: the id of the requested IP named location.
 
         Returns:
             None
@@ -116,13 +116,13 @@ class Client:
             'DELETE', f'v1.0/identity/conditionalAccess/namedLocations/{ip_id}', return_empty_response=True)
 
     def create_ip_named_location(self, data: dict) -> dict:
-        """Create an ip named location
+        """Create an IP named location
 
         Args:
-            data: the request necessary to create the ip named location, json body.
+            data: the request necessary to create the IP named location, json body.
 
         Returns:
-            THe created ip named location
+            THe created IP named location
 
         Docs:
             https://docs.microsoft.com/en-us/graph/api/conditionalaccessroot-post-namedlocations?view=graph-rest-1.0&tabs=http # noqa
@@ -131,10 +131,10 @@ class Client:
             'POST', 'v1.0/identity/conditionalAccess/namedLocations', json_data=data)
 
     def list_ip_named_location(self, limit: int) -> list:
-        """Get a list of all ip named locations
+        """Get a list of all IP named locations
 
         Args:
-            limit: limit: Maximum ip named locations to get.
+            limit: limit: Maximum IP named locations to get.
 
         Returns:
             a list of dictionaries with the object from the api
@@ -150,7 +150,8 @@ class Client:
         Args:
             template_id: A template id to activate
 
-        Returns: directoryRole object.
+        Returns:
+            directoryRole object.
 
         Docs:
             https://docs.microsoft.com/en-us/graph/api/directoryrole-post-directoryroles?view=graph-rest-1.0&tabs=http
@@ -331,66 +332,64 @@ def remove_member_from_role(client: Client, args: dict) -> str:
 
 
 def ip_named_location_get(ms_client: Client, args: dict) -> CommandResults:
-    if ip_id := args.get('ip_id'):
-        if results := ms_client.get_ip_named_location(ip_id):
-            context = {
-                'id': ip_id,
-                'display_name': results.get('displayName'),
-                'time_created': results.get('createdDateTime'),
-                'time_modified': results.get('modifiedDateTime'),
-                'is_trusted': results.get('isTrusted'),
-                'ip_ranges': results.get('ipRanges')
-            }
-            return CommandResults(
-                'MSGraph.conditionalAccess.namedIpLocations',
-                'namedIpLocations',
-                outputs=context,
-                raw_response=results,
-                readable_output=tableToMarkdown(
-                    f'Ip named location \'{ip_id}\':',
-                    context
-                )
+    ip_id = args.get('ip_id')
+    if results := ms_client.get_ip_named_location(ip_id):
+        context = {
+            'id': ip_id,
+            'display_name': results.get('displayName'),
+            'time_created': results.get('createdDateTime'),
+            'time_modified': results.get('modifiedDateTime'),
+            'is_trusted': results.get('isTrusted'),
+            'ip_ranges': results.get('ipRanges')
+        }
+        return CommandResults(
+            'MSGraph.conditionalAccess.namedIpLocations',
+            'namedIpLocations',
+            outputs=context,
+            raw_response=results,
+            readable_output=tableToMarkdown(
+                f'IP named location \'{ip_id}\':',
+                context
             )
-    return CommandResults(readable_output=f"No ip location found for {ip_id}")
+        )
+    return CommandResults(readable_output=f"No IP location found for {ip_id}")
 
 
 def ip_named_location_update(ms_client: Client, args: dict) -> CommandResults:
-    if ip_id := args.get('ip_id'):
-        if results := ms_client.get_ip_named_location(ip_id):
-            data = {
-                '@odata.type': '#microsoft.graph.ipNamedLocation',
-                'displayName': results.get('displayName'),
-                'isTrusted': results.get('isTrusted'),
-                'ipRanges': results.get('ipRanges')
-            }
-            ips = args.get('ips')
-            is_trusted = args.get('is_trusted')
-            display_name = args.get('display_name')
-            if ips is not None:
-                ips = ms_ip_string_to_list(ips)
-                data['ipRanges'] = ips
-            if is_trusted is not None:
-                data['isTrusted'] = is_trusted
-            if display_name is not None:
-                data['displayName'] = display_name
-            ms_client.update_ip_named_location(ip_id, data)
-            return CommandResults(
-                'MSGraph.conditionalAccess.namedIpLocations',
-                'namedIpLocations',
-                outputs={},
-                raw_response={},
-                readable_output=tableToMarkdown(
-                    f'Trying to update ip named location \'{ip_id}\':', {'Success': 'True'})
-            )
-    return CommandResults(readable_output=tableToMarkdown(f'Trying to update ip named location \'{ip_id}\':',
-                                                          {'Success': 'True'}))
+    ip_id = args.get('ip_id')
+    if results := ms_client.get_ip_named_location(ip_id):
+        data = {
+            '@odata.type': '#microsoft.graph.ipNamedLocation',
+            'displayName': results.get('displayName'),
+            'isTrusted': results.get('isTrusted'),
+            'ipRanges': results.get('ipRanges')
+        }
+        ips = args.get('ips')
+        is_trusted = args.get('is_trusted')
+        display_name = args.get('display_name')
+        if ips is not None:
+            ips = ms_ip_string_to_list(ips)
+            data['ipRanges'] = ips
+        if is_trusted is not None:
+            data['isTrusted'] = is_trusted
+        if display_name is not None:
+            data['displayName'] = display_name
+        ms_client.update_ip_named_location(ip_id, data)
+        return CommandResults(
+            'MSGraph.conditionalAccess.namedIpLocations',
+            'namedIpLocations',
+            outputs={},
+            raw_response={},
+            readable_output=f'Successfully  updated IP named location \'{ip_id}\''
+        )
+    return CommandResults(readable_output=f'Could not update IP named location \'{ip_id}\'')
 
 
 def ip_named_location_create(ms_client: Client, args: dict) -> CommandResults:
     ips = args.get('ips')
     is_trusted = args.get('is_trusted')
     display_name = args.get('display_name')
-    if ips is not None and display_name is not None and is_trusted is not None:
+    if ips and display_name and is_trusted:
         ips_arr = []
         is_trusted = str(is_trusted).lower() == 'true'
         ips_arr = ms_ip_string_to_list(ips)
@@ -416,26 +415,24 @@ def ip_named_location_create(ms_client: Client, args: dict) -> CommandResults:
                 outputs=context,
                 raw_response=results,
                 readable_output=tableToMarkdown(
-                    f'created Ip named location \'{id}\':',
+                    f'created IP named location \'{id}\':',
                     context
                 )
             )
-    return CommandResults(readable_output="Could not create ip named location")
+    return CommandResults(readable_output="Could not create IP named location")
 
 
 def ip_named_location_delete(ms_client: Client, args: dict) -> CommandResults:
-    if ip_id := args.get('ip_id'):
-        if results := ms_client.delete_ip_named_location(ip_id): # noqa
-            return CommandResults(
-                'MSGraph.conditionalAccess.namedIpLocations',
-                'namedIpLocations',
-                outputs={},
-                raw_response={},
-                readable_output=tableToMarkdown(
-                    f'Trying to delete ip named location \'{ip_id}\':', {'Success': 'True'})
-            )
-    return CommandResults(readable_output=tableToMarkdown(
-        f'Trying to delete ip named location \'{ip_id}\':', {'Success': 'False'}))
+    ip_id = args.get('ip_id')
+    if results := ms_client.delete_ip_named_location(ip_id): # noqa
+        return CommandResults(
+            'MSGraph.conditionalAccess.namedIpLocations',
+            'namedIpLocations',
+            outputs={},
+            raw_response={},
+            readable_output=f'Successfully deleted IP named location \'{ip_id}\''
+        )
+    return CommandResults(readable_output=f'Could not delete IP named location \'{ip_id}\'')
 
 
 def ip_named_location_list(ms_client: Client, args: dict) -> CommandResults:
@@ -461,15 +458,15 @@ def ip_named_location_list(ms_client: Client, args: dict) -> CommandResults:
             outputs=context,
             raw_response=results,
             readable_output=tableToMarkdown(
-                'Ip named locations:',
+                'IP named locations:',
                 ip_named_locations,
             )
         )
     else:
-        return CommandResults(readable_output="could not list ip named locations")
+        return CommandResults(readable_output="could not list IP named locations")
 
 
-def ms_ip_string_to_list(ips):
+def ms_ip_string_to_list(ips: str) -> list:
     ips_arr = []
     ips = str(ips).split(',')
     for ip in ips:

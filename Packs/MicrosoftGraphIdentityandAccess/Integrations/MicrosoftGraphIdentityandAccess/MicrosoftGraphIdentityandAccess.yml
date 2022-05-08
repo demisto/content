@@ -185,7 +185,7 @@ script:
       default: false
       description: The id of the named ip location to get from the api.
       isArray: false
-      required: false
+      required: true
       secret: false
     outputs:
     - contextPath: MSGraph.conditionalAccess.namedIpLocations.time_created
@@ -230,7 +230,7 @@ script:
       default: false
       description: The id of the named ip location to get from the api.
       isArray: false
-      required: false
+      required: true
       secret: false
   - deprecated: false
     description: Create an ip named location.
@@ -239,7 +239,7 @@ script:
     arguments:
     - name: ips
       default: false
-      description: A list of ip addresses to ad to the named location, it should be a string with the addresses separated by the delimiter ','.
+      description: A list of IP addresses to add to the named location, should be a string with the addresses separated by the delimiter ','.
       isArray: false
       required: false
       secret: false
@@ -283,7 +283,7 @@ script:
       default: false
       description: The id of the named ip location to get from the api.
       isArray: false
-      required: false
+      required: true
       secret: false
     - name: ips
       default: false
