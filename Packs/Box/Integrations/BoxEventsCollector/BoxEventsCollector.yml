@@ -1,6 +1,6 @@
 category: IT Services
 commonfields:
-  id: BoxEvents
+  id: BoxEventsCollector
   version: -1
 configuration:
 - display: Verify SSL Certificate
@@ -28,8 +28,8 @@ configuration:
   required: false
   type: 0
 description: Manage Box users.
-display: BoxEvents
-name: BoxEvents
+display: BoxEventsCollector
+name: BoxEventsCollector
 script:
   commands:
   - arguments:
@@ -38,12 +38,19 @@ script:
       isArray: false
       name: limit
       defaultvalue: 10
-      required: true
+      required: false
+      secret: false
+    - default: false
+      description: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+      isArray: false
+      name: created_after
+      defaultvalue: 3 days
+      required: false
       secret: false
     deprecated: false
     description: Get events.
     execution: false
-    name: get-events
+    name: box-get-events
     outputs:
     - contextPath: Box.Folder.id
       description: The ID of the folder created.
