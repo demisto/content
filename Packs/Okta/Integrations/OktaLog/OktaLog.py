@@ -1,5 +1,5 @@
 from enum import Enum
-from pydantic import BaseModel, AnyUrl, Json # noqa
+from pydantic import BaseModel, AnyUrl, Json  # noqa: E0611
 from CommonServerPython import *
 
 
