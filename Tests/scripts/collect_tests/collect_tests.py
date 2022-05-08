@@ -515,13 +515,13 @@ class BranchTestCollector(TestCollector):
         for path in changed_files:
             file_type = find_type_by_path(path)
             match file_type:
-                case FileType.README, FileType.METADATA, FileType.RELEASE_NOTES, FileType.RELEASE_NOTES_CONFIG:
+                case FileType.README | FileType.METADATA | FileType.RELEASE_NOTES | FileType.RELEASE_NOTES_CONFIG:
                     # todo rn_config?
                     collected.append(CollectedTests(tests=None,
-                                                    packs=(find_pack_name(path),),
+                                                    packs=(find_pack(path).name,),
                                                     machines=None))  # todo machines
 
-                case FileType.PACK_IGNORE, FileType.SECRET_IGNORE, FileType.DOC_FILE, FileType.README:
+                case FileType.PACK_IGNORE | FileType.SECRET_IGNORE | FileType.DOC_FILE | FileType.README:
                     logging.info(f'skipping {path} - ignored type ({file_type}')
 
                 case FileType.INTEGRATION:
@@ -537,7 +537,7 @@ class BranchTestCollector(TestCollector):
                     else:
                         raise ValueError(f'unexpected file extension ({path.suffix}) for script')
 
-                case FileType.IMAGE, FileType.DESCRIPTION:  # todo readme shows twice
+                case FileType.IMAGE | FileType.DESCRIPTION:  # todo readme shows twice
                     pass  # todo
 
                 case FileType.PLAYBOOK:  # todo what to do with playbook readme?
@@ -554,31 +554,31 @@ class BranchTestCollector(TestCollector):
                         raise ValueError(f'unexpected file extension ({path.suffix}) for playbook')
                     pass  # todo
 
-                case FileType.INCIDENT_TYPE, FileType.INCIDENT_FIELD, FileType.INDICATOR_FIELD:
+                case FileType.INCIDENT_TYPE | FileType.INCIDENT_FIELD | FileType.INDICATOR_FIELD:
                     pass  # todo
 
                 case FileType.REPUTATION:  # todo reputationjson
                     pass  # todo
 
-                case FileType.MAPPER, FileType.CLASSIFIER:  # todo what about old_classifier?
+                case FileType.MAPPER | FileType.CLASSIFIER:  # todo what about old_classifier?
                     pass  # todo
 
-                case FileType.PRE_PROCESS_RULES, FileType.JOB, FileType.CONNECTION:
+                case FileType.PRE_PROCESS_RULES | FileType.JOB | FileType.CONNECTION:
                     pass  # todo
 
-                case (FileType.LAYOUT,
-                      FileType.WIDGET,
-                      FileType.DASHBOARD,
-                      FileType.REPORT,
-                      FileType.PARSING_RULE,
-                      FileType.MODELING_RULE,
-                      FileType.CORRELATION_RULE,
-                      FileType.XSIAM_DASHBOARD,
-                      FileType.XSIAM_REPORT,
-                      FileType.REPORT,
-                      FileType.GENERIC_TYPE,
-                      FileType.GENERIC_FIELD,
-                      FileType.GENERIC_MODULE,
+                case (FileType.LAYOUT |
+                      FileType.WIDGET |
+                      FileType.DASHBOARD |
+                      FileType.REPORT |
+                      FileType.PARSING_RULE |
+                      FileType.MODELING_RULE |
+                      FileType.CORRELATION_RULE |
+                      FileType.XSIAM_DASHBOARD |
+                      FileType.XSIAM_REPORT |
+                      FileType.REPORT |
+                      FileType.GENERIC_TYPE |
+                      FileType.GENERIC_FIELD |
+                      FileType.GENERIC_MODULE |
                       FileType.GENERIC_DEFINITION):
                     pass  # todo
                 # todo layout container, xsiam config?
