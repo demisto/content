@@ -2,7 +2,7 @@ from enum import Enum
 import urllib3
 from CommonServerPython import *
 import demistomock as demisto
-from pydantic import BaseModel, AnyUrl, Json, validator
+from pydantic import BaseModel, AnyUrl, Json
 import tempfile
 import requests
 import csv
@@ -54,14 +54,15 @@ class GetEvents:
     """
     A class to handle the flow of the integration
     """
-    def __init__(self, client: Client, query: str, after: str, last_id: str) -> None:
-        self.client = client
-        self.headers = {}
-        self.instance_url = ''
-        self.query = query
-        self.limit = 0
-        self.after = after
-        self.last_id = last_id
+    def __init__(self, client: Client, insecure: bool, query: str, after: str, last_id: str) -> None:
+        self.client: Client = client
+        self.insecure: bool = insecure
+        self.headers: dict = {}
+        self.instance_url: str = ''
+        self.query: str = query
+        self.limit: int = 0
+        self.after: str = after
+        self.last_id: str = last_id
         self.get_token()
 
     def get_token(self):
@@ -77,11 +78,11 @@ class GetEvents:
 
         url = f'https://um6.salesforce.com/services/data/v44.0/query?q={query}'
 
-        r = requests.get(url, headers=self.headers, verify=False)
+        r = requests.get(url, headers=self.headers, verify=self.insecure)
 
         if r.status_code == 401:
             self.get_token()
-            r = requests.get(url, headers=self.headers, verify=False)
+            r = requests.get(url, headers=self.headers, verify=self.insecure)
 
         if r.status_code == 200:
             res = json.loads(r.text)
@@ -137,11 +138,11 @@ class GetEvents:
                     if chunk:  # filter out keep-alive new chunks
                         f.write(chunk)
             if r.status_code == 200:
-                demisto.info('File successfully downloaded from url {} '.format(url))
+                demisto.info(f'File successfully downloaded from url {url}')
             else:
-                demisto.info('File downloading failed. {r.status_code} {r.text} {file_url}')
+                demisto.info(f'File downloading failed. {r.status_code} {r.text} {file_url}')
         except Exception as err:
-            demisto.error('File downloading failed. {err} {file_url}')
+            demisto.error(f'File downloading failed. {err} {file_url}')
 
     def gen_chunks_to_object(self, file_in_tmp_path, chunksize=100):
         field_names = [name.lower() for name in list(csv.reader(open(file_in_tmp_path)))[0]]
@@ -229,7 +230,8 @@ def main():
 
     after = get_timestamp_format(demisto_params.get('after'))
 
-    get_events = GetEvents(client, demisto_params.get('query'), after, demisto_params.get('last_id'))
+    get_events = GetEvents(client, demisto_params.get('verify'),
+                           demisto_params.get('query'), after, demisto_params.get('last_id'))
 
     command = demisto.command()
     try:
