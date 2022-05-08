@@ -73,6 +73,9 @@ class GetEvents:
         """
         Function that responsible for the iteration over the events returned from the Okta api
         """
+        # Limit to the api max otherwise the api will return an error
+        if self.client.request.params.limit > 1000:
+            self.client.request.params.limit = 1000
         response = self.client.call()
         events: list = response.json()
         if last_object_ids:
@@ -135,20 +138,19 @@ class GetEvents:
 
 def main():
     # Args is always stronger. Get last run even stronger
-    demisto_params = demisto.params() | demisto.args()
+    demisto_params = demisto.params() #| demisto.args()
     events_to_add_per_request = demisto_params.get('events_to_add_per_request', 2000)
     try:
         events_to_add_per_request = int(events_to_add_per_request)
     except ValueError:
         events_to_add_per_request = 2000
     after = demisto_params['after']
-    headers = json.loads(demisto_params['headers'])
-    encrypted_headers = json.loads(demisto_params['encrypted_headers'])
-    demisto_params['headers'] = dict(encrypted_headers.items() | headers.items())
-    del demisto_params['encrypted_headers']
+    api_key = demisto_params['api_key']
+    demisto_params['headers'] = {"Accept": "application/json", "Content-Type": "application/json",
+                                 "Authorization": f"SSWS {api_key}"}
     last_run = demisto.getLastRun()
     last_object_ids = last_run.get('ids')
-    # If we do not have an after in the last run than we calculate after according to now - after param from integration settings.
+    # If we do not have an after in the last run than we calculate after according to now - after param .
     if 'after' not in last_run:
         delta = datetime.today() - timedelta(days=after)
         last_run = delta.isoformat()

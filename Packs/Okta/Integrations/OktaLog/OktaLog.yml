@@ -22,13 +22,9 @@ configuration:
   - PUT
   - PATCH
   - HEAD
-- display: Headers
-  name: headers
-  defaultvalue: '{"Accept": "application/json","Content-Type": "application/json"}'
-  type: 0
-  required: true
-- display: Encrypted headers
-  name: encrypted_headers
+  hidden: true
+- display: API key
+  name: api_key
   type: 4
   required: true
 - display: Use system proxy settings
