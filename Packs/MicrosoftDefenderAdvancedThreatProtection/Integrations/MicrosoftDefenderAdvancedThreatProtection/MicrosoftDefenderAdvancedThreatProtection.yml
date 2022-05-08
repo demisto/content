@@ -1,6 +1,6 @@
 category: Endpoint
 commonfields:
-  id: Microsoft Defender Advanced Threat Protection
+  id: Microsoft Defender Advanced Threat Protection test
   version: -1
 configuration:
 - defaultvalue: https://api.securitycenter.windows.com
@@ -108,8 +108,8 @@ configuration:
 description: Microsoft Defender for Endpoint (previously Microsoft Defender Advanced
   Threat Protection (ATP)) is a unified platform for preventative protection, post-breach
   detection, automated investigation, and response.
-display: Microsoft Defender for Endpoint
-name: Microsoft Defender Advanced Threat Protection
+display: Microsoft Defender for Endpoint test
+name: Microsoft Defender Advanced Threat Protection test
 script:
   commands:
   - arguments:

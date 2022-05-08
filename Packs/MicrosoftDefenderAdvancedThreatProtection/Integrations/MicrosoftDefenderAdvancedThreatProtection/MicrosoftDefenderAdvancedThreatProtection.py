@@ -4370,8 +4370,10 @@ def run_polling_command(client: MsClient, args: dict, cmd: str, action_func: Cal
     is_first_run = 'machine_action_id' not in args
     demisto.debug(f'polling args: {args}')
     if is_first_run:
+        demisto.debug("in first run")
         command_results = action_func(client, args)
         outputs = command_results.outputs
+        demisto.debug("after getting outputs from first run")
         # schedule next poll
         polling_args = {
             'machine_action_id': outputs.get('action_id'),
@@ -4390,7 +4392,9 @@ def run_polling_command(client: MsClient, args: dict, cmd: str, action_func: Cal
     # not a first run
 
     command_result = results_function(client, args)
+    demisto.debug("getting status now")
     action_status = command_result.outputs.get("status")
+    demisto.debug("after getting status")
     command_status = command_result.outputs.get("commands", [{}])[0].get("commandStatus")
     if action_status in ['Failed', 'Cancelled'] or command_status == 'Failed':
         raise Exception(
