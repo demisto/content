@@ -4842,7 +4842,7 @@ def main():  # pragma: no cover
         elif command == 'microsoft-atp-advanced-hunting-cover-up':
             return_results(cover_up_command(client, args))
         elif command == 'microsoft-atp-request-and-download-investigation-package':
-            return_results(*request_download_investigation_package_command(client, args))
+            return_results(request_download_investigation_package_command(client, args))
     except Exception as err:
         return_error(str(err))
 

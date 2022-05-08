@@ -1489,7 +1489,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Collect an investigation package from a machine.
+    description: Collect and download an investigation package from a machine.
     execution: false
     name: microsoft-atp-request-and-download-investigation-package
     outputs:
