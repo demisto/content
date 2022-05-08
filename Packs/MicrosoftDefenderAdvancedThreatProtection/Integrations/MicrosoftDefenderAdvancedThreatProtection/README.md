@@ -143,6 +143,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 46. endpoint
 47. microsoft-atp-indicator-batch-update
 48. microsoft-atp-get-alert-by-id
+49. microsoft-atp-request-and-download-investigation-package
 
 ### 1. microsoft-atp-isolate-machine
 ---
