@@ -1728,7 +1728,7 @@ def build_multiple_values_parsed_output(**kwargs) -> Tuple[List[Any], str]:
 
 
 @logger
-def build_host_list_detection_outputs(kwargs) -> Tuple[List[Any], str]:
+def build_host_list_detection_outputs(**kwargs) -> Tuple[List[Any], str]:
     """
     Builds the outputs and readable output for host list detection.
     Args:
@@ -1745,8 +1745,8 @@ def build_host_list_detection_outputs(kwargs) -> Tuple[List[Any], str]:
         asset_collection = handled_result
     original_amount = None
     limit_msg = ''
-    parsed_output: List[Any] = generate_list_dicts(asset_collection)
-
+    parsed_output = generate_list_dicts(asset_collection)
+    parsed_output = parsed_output if isinstance(parsed_output, List) else [parsed_output]
     if 'limit' in inner_args_values and inner_args_values['limit'] and isinstance(parsed_output, list):
         original_amount = len(parsed_output)
         parsed_output = limit_result(parsed_output, inner_args_values['limit'])
