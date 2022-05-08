@@ -20,7 +20,7 @@ timeout-decorator==0.5.0
 sendgrid==6.6.0
 blessings==1.7
 slack_sdk==3.11.2
-google-cloud-bigquery~=3.0.1
+google-cloud-bigquery~=1.26.1
 google-cloud-storage~=2.3.0
 mock_open==1.4.0
 blessings==1.7
