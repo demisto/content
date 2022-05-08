@@ -2992,12 +2992,25 @@ class Common(object):
         :type relationships: ``list of EntityRelationship``
         :param relationships: List of relationships of the indicator.
 
+        :type blocked: ``boolean``
+        :param blocked: Is the indicator blocked.
+
+        :type description: ``str``
+        :param description: A general description of the indicator
+
+        :type stix_id: ``str``
+        :param stix_id: The STIX id representing the indicator
+
+        :type whois_records: ``WhoisRecord``
+        :param whois_records: List of whois records
+
         :type dbot_score: ``DBotScore``
         :param dbot_score: If IP has a score then create and set a DBotScore object.
 
         :return: None
         :rtype: ``None``
         """
+
         CONTEXT_PATH = 'IP(val.Address && val.Address == obj.Address)'
 
         def __init__(self, ip, dbot_score, asn=None, as_owner=None, region=None, port=None, internal=None,
@@ -3478,6 +3491,36 @@ class Common(object):
                 'date': self.whois_record_date
             }
 
+    class DNSRecord(object):
+        """
+        DNSRecord class
+        Class to represent a single instance of a record for an indicator type.
+
+        :type dns_record_type: ``str``
+        :param dns_record_type: The type of the DNS record.
+
+        :type dns_record_data: ``str``
+        :param dns_record_data: The value of the whois record.
+
+        :type dns_ttl: ``str``
+        :param dns_ttl: The record TTL
+
+        :return: None
+        :rtype: ``None``
+        """
+
+        def __init__(self, dns_record_type=None, dns_ttl=None, dns_record_data=None):
+            self.DNS_record_type = dns_record_type
+            self.DNS_TTL = dns_ttl
+            self.DNS_record_data = dns_record_data
+
+        def to_context(self):
+            return {
+                'type': self.dns_record_type,
+                'ttl': self.dns_ttl,
+                'data': self.dns_record_data
+            }
+
     class File(Indicator):
         """
         File indicator class - https://xsoar.pan.dev/docs/integrations/context-standards-mandatory#file
@@ -3576,6 +3619,18 @@ class Common(object):
 
         :type dbot_score: ``DBotScore``
         :param dbot_score: If file has a score then create and set a DBotScore object
+
+        :type creation_date: ``str``
+        :param creation_date: The date the file was created.
+
+        :type description: ``str``
+        :param description: File description.
+
+        :type hashes: ``Hash``
+        :param hashes: List of hashes associated with the file.
+
+        :type stix_id: ``str``
+        :param stix_id: File assigned STIX ID.
 
         :rtype: ``None``
         :return: None
@@ -3772,16 +3827,46 @@ class Common(object):
         CVE indicator class - https://xsoar.pan.dev/docs/integrations/context-standards-mandatory#cve
         :type id: ``str``
         :param id: The ID of the CVE, for example: "CVE-2015-1653".
+
         :type cvss: ``str``
         :param cvss: The CVSS of the CVE, for example: "10.0".
+
         :type published: ``str``
         :param published: The timestamp of when the CVE was published.
+
         :type modified: ``str``
         :param modified: The timestamp of when the CVE was last modified.
+
         :type description: ``str``
         :param description: A description of the CVE.
+
         :type relationships: ``list of EntityRelationship``
         :param relationships: List of relationships of the indicator.
+
+        :type stix_id: ``str``
+        :param stix_id: CVE sitx id.
+
+        :type cvss_version: ``str``
+        :param cvss_version: The CVE CVSS version used.
+
+        :type cvss_score: ``str``
+        :param cvss_score: The CVE CVSS Score.
+
+        :type cvss_vector: ``str``
+        :param cvss_vector: CVE full cvss vector.
+
+        :type cvss_table: ``str``
+        :param cvss_table: CVE CVSS Table used to fill the different parts of the vector.
+
+        :type community_notes: ``str``
+        :param community_notes: Community notes about the CVE.
+
+        :type tags: ``str``
+        :param tags: Tags attached to the CVE.
+
+        :type traffic_light_protocol: ``str``
+        :param traffic_light_protocol: The CVE tlp color.
+
         :return: None
         :rtype: ``None``
         """
@@ -3877,14 +3962,34 @@ class Common(object):
     class EMAIL(Indicator):
         """
         EMAIL indicator class
+
         :type address ``str``
         :param address: The email's address.
+
         :type domain: ``str``
         :param domain: The domain of the Email.
+
         :type blocked: ``bool``
         :param blocked: Whether the email address is blocked.
+
         :type relationships: ``list of EntityRelationship``
         :param relationships: List of relationships of the indicator.
+
+        :type description: ``str``
+        :param description: Description of the email address.
+
+        :type internal: ``bool``
+        :param internal: Is the email an internal address.
+
+        :type stix_id: ``str``
+        :param stix_id: The email assigned STIX ID.
+
+        :type tags: ``str``
+        :param tags: tags relevant to the email.
+
+        :type traffic_light_protocol: ``str``
+        :param traffic_light_protocol: The email address tlp color.
+
         :return: None
         :rtype: ``None``
         """
@@ -4012,6 +4117,18 @@ class Common(object):
 
         :type dbot_score: ``DBotScore``
         :param dbot_score: If URL has reputation then create DBotScore object
+
+        :type blocked: ``bool``
+        :param blocked: Is the URL blocked.
+
+        :type certificates: ``Certificates``
+        :param certificates: A list of certificates associated with the url.
+
+        :type description: ``str``
+        :param description: A description of the URL.
+
+        :type stix_id: ``str``
+        :param stix_id: The URL STIX ID.
 
         :return: None
         :rtype: ``None``
@@ -4147,6 +4264,21 @@ class Common(object):
     class Domain(Indicator):
         """ ignore docstring
         Domain indicator - https://xsoar.pan.dev/docs/integrations/context-standards-mandatory#domain
+
+        :type description: ``str``
+        :param description: A description of the Domain.
+
+        :type stix_id: ``str``
+        :param stix_id: The domain STIX ID.
+
+        :type blocked: ``bool``
+        :param blocked: Is the domain blocked.
+
+        :type certificates: ``Certificates``
+        :param certificates: The certificates belonging to the domain.
+
+        :type dns_records: ``DNSRecord``
+        :param dns_records: A list of DNS records for the domain.
         """
         CONTEXT_PATH = 'Domain(val.Name && val.Name == obj.Name)'
 
@@ -4378,6 +4510,21 @@ class Common(object):
             if self.dbot_score:
                 ret_value.update(self.dbot_score.to_context())
 
+            if self.dns_records:
+                domain_context['DNSRecords'] = self.create_context_table(self.dns_records)
+
+            if self.stix_id:
+                domain_context['STIXID'] = self.stix_id
+
+            if self.description:
+                domain_context['Description'] = self.description
+
+            if self.stix_id:
+                domain_context['Blocked'] = self.blocked
+
+            if self.certificates:
+                domain_context['Certificates'] = self.create_context_table(self.certificates)
+
             return ret_value
 
     class Endpoint(Indicator):
@@ -4481,6 +4628,24 @@ class Common(object):
         :type dbot_score: ``DBotScore``
         :param dbot_score: If account has reputation then create DBotScore object
 
+        :type creation_date: ``str``
+        :param creation_date: The date the account was created
+
+        :type description: ``str``
+        :param description: Description of the account
+
+        :type stix_id: ``str``
+        :param stix_id: STIX ID for the account
+
+        :type tags: ``str``
+        :param tags: List of tags related to the account.
+
+        :type traffic_light_protocol: ``str``
+        :param traffic_light_protocol: The account indicator tlp color
+
+        :type user_id: ``str``
+        :param user_id: The account associated user id.
+
         :return: None
         :rtype: ``None``
         """
@@ -4533,6 +4698,24 @@ class Common(object):
 
             if self.blocked:
                 account_context['Blocked'] = self.blocked
+
+            if self.creation_date:
+                account_context['CreationDate'] = self.creation_date
+
+            if self.description:
+                account_context['Description'] = self.description
+
+            if self.stix_id:
+                account_context['STIX_ID'] = self.stix_id
+
+            if self.tags:
+                account_context['Tags'] = self.tags
+
+            if self.traffic_light_protocol:
+                account_context['TrafficLightProtocol'] = self.traffic_light_protocol
+
+            if self.user_id:
+                account_context['UserID'] = self.user_id
 
             irrelevent = ['CONTEXT_PATH', 'to_context', 'dbot_score', 'Id', 'create_context_table']
             details = [detail for detail in dir(self) if not detail.startswith('__') and detail not in irrelevent]
@@ -4617,24 +4800,40 @@ class Common(object):
     class AttackPattern(Indicator):
         """
         Attack Pattern indicator
+
         :type stix_id: ``str``
         :param stix_id: The Attack Pattern STIX ID
+
         :type kill_chain_phases: ``str``
         :param kill_chain_phases: The Attack Pattern kill chain phases.
+
         :type first_seen_by_source: ``str``
         :param first_seen_by_source: The Attack Pattern first seen by source
+
         :type description: ``str``
         :param description: The Attack Pattern description
+
         :type operating_system_refs: ``str``
         :param operating_system_refs: The operating system refs of the Attack Pattern.
+
         :type publications: ``str``
         :param publications: The Attack Pattern publications
+
         :type mitre_id: ``str``
         :param mitre_id: The Attack Pattern kill mitre id.
+
         :type tags: ``str``
         :param tags: The Attack Pattern kill tags.
+
         :type dbot_score: ``DBotScore``
         :param dbot_score:  If the address has reputation then create DBotScore object.
+
+        :type community_notes: ``CommunityNotes``
+        :param community_notes:  A list of community notes for the AP.
+
+        :type external_references: ``ExternalReferences``
+        :param external_references:  A list of id's and description of the AP via external refs.
+
         :return: None
         :rtype: ``None``
         """
