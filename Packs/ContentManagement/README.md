@@ -12,4 +12,3 @@ As part of this pack, you will also get out-of-the-box incident type, fields and
 For more information, visit our [Cortex XSOAR Developer Docs](https://xsoar.pan.dev/docs/reference/packs/content-management)
 
 ![playbook.png](https://raw.githubusercontent.com/demisto/content/master/Packs/ContentManagement/docs-files/playbook.png)
-

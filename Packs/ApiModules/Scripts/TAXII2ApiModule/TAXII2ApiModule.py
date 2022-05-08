@@ -348,6 +348,8 @@ class Taxii2FeedClient:
         return ioc_type
 
     def update_last_modified_indicator_date(self, indicator_modified_str: str):
+        if not indicator_modified_str:
+            return
         if self.last_fetched_indicator__modified is None:
             self.last_fetched_indicator__modified = indicator_modified_str  # type: ignore[assignment]
         else:

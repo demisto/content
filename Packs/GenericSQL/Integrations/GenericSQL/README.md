@@ -84,6 +84,7 @@ There is no context output for this command.
     "GenericSQL": {
         "GenericSQL": {
             "Query": "select * from TestTable", 
+            "Headers": ["LastName", "ID", "FirstName"],
             "InstanceName": "MySQL_new_schema", 
             "Result": [
                 {
@@ -174,6 +175,7 @@ There is no context output for this command.
     "GenericSQL": {
         "GenericSQL": {
             "Query": "select * from TestTable", 
+            "Headers": ["LastName", "ID", "FirstName"],
             "InstanceName": "MySQL_new_schema", 
             "Result": [
                 {

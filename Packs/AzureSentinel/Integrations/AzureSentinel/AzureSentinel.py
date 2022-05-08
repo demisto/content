@@ -48,8 +48,8 @@ THREAT_INDICATORS_HEADERS = ['Name', 'DisplayName', 'Values', 'Types', 'Source',
 class AzureSentinelClient:
     def __init__(self, server_url: str, tenant_id: str, client_id: str,
                  client_secret: str, subscription_id: str,
-                 resource_group_name: str, workspace_name: str,
-                 verify: bool = True, proxy: bool = False):
+                 resource_group_name: str, workspace_name: str, certificate_thumbprint: Optional[str],
+                 private_key: Optional[str], verify: bool = True, proxy: bool = False):
         """
         AzureSentinelClient class that make use client credentials for authorization with Azure.
 
@@ -74,6 +74,12 @@ class AzureSentinelClient:
         :type workspace_name: ``str``
         :param workspace_name: The workspace name.
 
+        :type certificate_thumbprint: ``str``
+        :param certificate_thumbprint: The certificate thumbprint as appears in the AWS GUI.
+
+        :type private_key: ``str``
+        :param private_key: The certificate private key.
+
         :type verify: ``bool``
         :param verify: Whether the request should verify the SSL certificate.
 
@@ -93,7 +99,9 @@ class AzureSentinelClient:
             scope=Scopes.management_azure,
             ok_codes=(200, 201, 202, 204),
             verify=verify,
-            proxy=proxy
+            proxy=proxy,
+            certificate_thumbprint=certificate_thumbprint,
+            private_key=private_key,
         )
 
     def http_request(self, method, url_suffix=None, full_url=None, params=None, data=None):
@@ -457,7 +465,15 @@ def test_module(client):
     return 'ok'
 
 
-def list_incidents_command(client, args, is_fetch_incidents=False):
+def list_incidents_command(client: AzureSentinelClient, args, is_fetch_incidents=False):
+    """ Retrieves incidents from Sentinel.
+    Args:
+        client: An AzureSentinelClient client.
+        args: Demisto args.
+        is_fetch_incidents: Is it part of a fetch incidents command.
+    Returns:
+        A CommandResult object with the array of incidents as output.
+    """
     filter_expression = args.get('filter')
     limit = None if is_fetch_incidents else min(200, int(args.get('limit')))
     next_link = args.get('next_link', '')
@@ -470,7 +486,7 @@ def list_incidents_command(client, args, is_fetch_incidents=False):
         params = {
             '$top': limit,
             '$filter': filter_expression,
-            '$orderby': 'properties/createdTimeUtc asc'
+            '$orderby': args.get('orderby', 'properties/createdTimeUtc asc')
         }
         remove_nulls_from_dictionary(params)
 
@@ -864,49 +880,106 @@ def update_next_link_in_context(result: dict, outputs: dict):
         outputs[f'AzureSentinel.NextLink(val.Description == "{NEXTLINK_DESCRIPTION}")'] = next_link_item
 
 
-def fetch_incidents(client, last_run, first_fetch_time, min_severity):
+def fetch_incidents(client: AzureSentinelClient, last_run: dict, first_fetch_time: str, min_severity: int):
+    """Fetching incidents.
+    Args:
+        first_fetch_time: The first fetch time.
+        client: An AzureSentinelClient client.
+        last_run: An dictionary of the last run.
+        min_severity: A minimum severity of incidents to fetch.
+
+    Returns:
+        (tuple): 1. The LastRun object updated with the last run details.
+        2. An array of incidents.
+
+    """
     # Get the last fetch details, if exist
     last_fetch_time = last_run.get('last_fetch_time')
     last_fetch_ids = last_run.get('last_fetch_ids', [])
+    last_incident_number = last_run.get('last_incident_number')
+    demisto.debug(f"{last_fetch_time=}, {last_fetch_ids=}, {last_incident_number=}")
 
-    # Handle first time fetch
-    if last_fetch_time is None:
-        last_fetch_time_str, _ = parse_date_range(first_fetch_time, DATE_FORMAT)
-        last_fetch_time = dateparser.parse(last_fetch_time_str)
+    if last_fetch_time is None or last_incident_number is None:
+        demisto.debug("handle via timestamp")
+        if last_fetch_time is None:
+            last_fetch_time_str, _ = parse_date_range(first_fetch_time, DATE_FORMAT)
+            latest_created_time = dateparser.parse(last_fetch_time_str)
+        else:
+            latest_created_time = dateparser.parse(last_fetch_time)
+        assert latest_created_time, f'Got empty latest_created_time. {last_fetch_time_str=} {last_fetch_time=}'
+        latest_created_time_str = latest_created_time.strftime(DATE_FORMAT)
+        command_args = {
+            'filter': f'properties/createdTimeUtc ge {latest_created_time_str}',
+            'orderby': 'properties/createdTimeUtc asc',
+        }
+        raw_incidents = list_incidents_command(client, command_args, is_fetch_incidents=True).outputs
+
     else:
-        last_fetch_time = dateparser.parse(last_fetch_time)
+        demisto.debug("handle via id")
+        latest_created_time = dateparser.parse(last_fetch_time)
+        assert latest_created_time is not None, f"dateparser.parse(last_fetch_time):" \
+                                                f" {dateparser.parse(last_fetch_time)} couldnt be parsed"
+        command_args = {
+            'filter': f'properties/incidentNumber gt {last_incident_number}',
+            'orderby': 'properties/incidentNumber asc',
+        }
+        raw_incidents = list_incidents_command(client, command_args, is_fetch_incidents=True).outputs
 
-    latest_created_time = last_fetch_time
-    latest_created_time_str = latest_created_time.strftime(DATE_FORMAT)
-    command_args = {'filter': f'properties/createdTimeUtc ge {latest_created_time_str}'}
-    command_result = list_incidents_command(client, command_args, is_fetch_incidents=True)
-    items = command_result.outputs
+    return process_incidents(raw_incidents, last_fetch_ids, min_severity,
+                             latest_created_time, last_incident_number)  # type: ignore[attr-defined]
+
+
+def process_incidents(raw_incidents: list, last_fetch_ids: list, min_severity: int, latest_created_time: datetime,
+                      last_incident_number):
+    """Processing the raw incidents
+    Args:
+        raw_incidents: The incidents that were fetched from the API.
+        last_fetch_ids: The last fetch ids from the last run.
+        last_incident_number: The last incident number that was fetched.
+        latest_created_time: The latest created time.
+        min_severity: The minimum severity.
+
+    Returns:
+        A next_run dictionary, and an array of incidents.
+    """
+
     incidents = []
     current_fetch_ids = []
+    if not last_incident_number:
+        last_incident_number = 0
 
-    for incident in items:
+    for incident in raw_incidents:
         incident_severity = severity_to_level(incident.get('Severity'))
+        demisto.debug(f"{incident.get('ID')=}, {incident_severity=}, {incident.get('IncidentNumber')=}")
 
-        # fetch only incidents that weren't fetched in the last run and their severity is at least min_severity
-        if incident.get('ID') not in last_fetch_ids and incident_severity >= min_severity:
+        # create incident only for incidents that weren't fetched in the last run and their severity is at least min_severity
+        if incident.get('ID') not in last_fetch_ids:
             incident_created_time = dateparser.parse(incident.get('CreatedTimeUTC'))
-            xsoar_incident = {
-                'name': '[Azure Sentinel] ' + incident.get('Title'),
-                'occurred': incident.get('CreatedTimeUTC'),
-                'severity': incident_severity,
-                'rawJSON': json.dumps(incident)
-            }
-
-            incidents.append(xsoar_incident)
             current_fetch_ids.append(incident.get('ID'))
+            if incident_severity >= min_severity:
+                xsoar_incident = {
+                    'name': '[Azure Sentinel] ' + incident.get('Title'),
+                    'occurred': incident.get('CreatedTimeUTC'),
+                    'severity': incident_severity,
+                    'rawJSON': json.dumps(incident)
+                }
+                incidents.append(xsoar_incident)
+            else:
+                demisto.debug(f"drop creation of {incident.get('IncidentNumber')=} "
+                              "due to the {incident_severity=} is lower then {min_severity=}")
 
             # Update last run to the latest fetch time
+            assert incident_created_time is not None, f"incident.get('CreatedTimeUTC') : " \
+                                                      f"{incident.get('CreatedTimeUTC')} couldnt be parsed"
             if incident_created_time > latest_created_time:
                 latest_created_time = incident_created_time
+            if incident.get('IncidentNumber') > last_incident_number:
+                last_incident_number = incident.get('IncidentNumber')
 
     next_run = {
         'last_fetch_time': latest_created_time.strftime(DATE_FORMAT),
-        'last_fetch_ids': current_fetch_ids
+        'last_fetch_ids': current_fetch_ids,
+        'last_incident_number': last_incident_number,
     }
     return next_run, incidents
 
@@ -1000,7 +1073,6 @@ def build_threat_indicator_data(args):
     value = args.get('value')
 
     data = {
-        'patternType': value,
         'displayName': args.get('display_name'),
         'description': args.get('description'),
         'revoked': args.get('revoked', ''),
@@ -1016,20 +1088,20 @@ def build_threat_indicator_data(args):
 
     indicator_type = args.get('indicator_type')
     if indicator_type == 'ipv4':
-        indicator_type = 'ipv4-address'
+        indicator_type = 'ipv4-addr'
     elif indicator_type == 'ipv6':
-        indicator_type = 'ipv6-address'
+        indicator_type = 'ipv6-addr'
     elif indicator_type == 'domain':
         indicator_type = 'domain-name'
 
-    data['patternTypes'] = indicator_type
+    data['patternType'] = indicator_type
 
     if indicator_type == 'file':
         hash_type = args.get('hash_type')
         data['hashType'] = hash_type
-        data['pattern'] = f"[file:hashes.'{hash_type}' = {value}]"
+        data['pattern'] = f"[file:hashes.'{hash_type}' = '{value}']"
     else:
-        data['pattern'] = f'[{indicator_type}:value = {value}]'
+        data['pattern'] = f"[{indicator_type}:value = '{value}']"
 
     data['killChainPhases'] = []
 
@@ -1283,16 +1355,24 @@ def main():
     params = demisto.params()
     LOG(f'Command being called is {demisto.command()}')
     try:
+        client_secret = params.get('credentials', {}).get('password')
+        certificate_thumbprint = params.get('certificate_thumbprint')
+        private_key = params.get('private_key')
+        if not client_secret and not (certificate_thumbprint and private_key):
+            raise DemistoException('Key or Certificate Thumbprint and Private Key must be provided.')
+
         client = AzureSentinelClient(
             server_url=params.get('server_url') or DEFAULT_AZURE_SERVER_URL,
             tenant_id=params.get('tenant_id', ''),
             client_id=params.get('credentials', {}).get('identifier'),
-            client_secret=params.get('credentials', {}).get('password'),
+            client_secret=client_secret,
             subscription_id=params.get('subscriptionID', ''),
             resource_group_name=params.get('resourceGroupName', ''),
             workspace_name=params.get('workspaceName', ''),
             verify=not params.get('insecure', False),
-            proxy=params.get('proxy', False)
+            proxy=params.get('proxy', False),
+            certificate_thumbprint=certificate_thumbprint,
+            private_key=private_key
         )
 
         commands = {

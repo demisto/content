@@ -2,7 +2,7 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
-from cStringIO import StringIO
+from io import StringIO
 import logging
 import warnings
 import traceback
@@ -59,7 +59,7 @@ from exchangelib.version import EXCHANGE_2007, EXCHANGE_2010, EXCHANGE_2010_SP2,
     EXCHANGE_2016  # noqa: E402
 from exchangelib import HTMLBody, Message, FileAttachment, Account, IMPERSONATION, Credentials, Configuration, NTLM, \
     BASIC, DIGEST, Version, DELEGATE  # noqa: E402
-from exchangelib.errors import ErrorItemNotFound     # noqa: E402
+from exchangelib.errors import ErrorItemNotFound, UnauthorizedError  # noqa: E402
 
 IS_TEST_MODULE = False
 
@@ -108,9 +108,17 @@ def exchangelib_cleanup():
 
 
 def get_account(account_email):
-    return Account(
-        primary_smtp_address=account_email, autodiscover=False, config=config, access_type=ACCESS_TYPE,
-    )
+    for i in range(1, 4):
+        response = Account(
+            primary_smtp_address=account_email, autodiscover=False, config=config, access_type=ACCESS_TYPE,
+        )
+        try:
+            response.root  # Check if you have access to root directory
+            return response
+        except UnauthorizedError:
+            demisto.debug("Got unauthorized error, This is attempt number {}".format(i))
+            continue
+    return response
 
 
 def send_email_to_mailbox(account, to, subject, body, bcc=None, cc=None, reply_to=None,
@@ -204,7 +212,7 @@ def send_email(to, subject, body="", bcc=None, cc=None, replyTo=None, htmlBody=N
     result_object = {
         'from': account.primary_smtp_address,
         'to': to,
-        'subject': subject.encode('utf-8'),
+        'subject': subject,
         'attachments': attachments_names
     }
 
@@ -279,7 +287,7 @@ def reply_email(to, inReplyTo, body="", subject="", bcc=None, cc=None, htmlBody=
     result_object = {
         'from': account.primary_smtp_address,
         'to': to,
-        'subject': subject.encode('utf-8'),
+        'subject': subject,
         'attachments': attachments_names
     }
 
@@ -403,5 +411,5 @@ def main():
 
 
 # python2 uses __builtin__ python3 uses builtins
-if __name__ == "__builtin__" or __name__ == "builtins":
+if __name__ == "__builtin__" or __name__ == "builtins" or __name__ == "__main__":
     main()

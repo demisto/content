@@ -1,9 +1,10 @@
 from datetime import datetime
-from typing import Dict, Tuple, Optional, List, Callable, Any
+from typing import Any, Callable, Dict, List, Optional, Tuple
 
+import demistomock as demisto  # noqa: F401
 import urllib3
+from CommonServerPython import *  # noqa: F401
 
-from CommonServerPython import *
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -126,11 +127,10 @@ class Client(BaseClient):
 
     def __init__(self, tenant: str, server_url: str, username: str, password: str, verify: bool,
                  proxy: bool):
-        super().__init__(base_url=server_url, verify=verify)
+        super().__init__(base_url=server_url, verify=verify, proxy=proxy)
         self._username = username
         self._password = password
         self._tenant = tenant
-        self._proxies = handle_proxy() if proxy else None
         self._token = self._generate_token()
 
     def http_request(self, method, url_suffix, headers=None, params=None, response_type: str = 'json'):
@@ -145,7 +145,6 @@ class Client(BaseClient):
                 params=params,
                 headers=headers,
                 verify=self._verify,
-                proxies=self._proxies
             )
             if not result.ok:
                 raise ValueError(f'Error in API call to Securonix {result.status_code}. Reason: {result.text}')
@@ -195,7 +194,6 @@ class Client(BaseClient):
             'username': self._username,
             'password': self._password,
             'validity': "1",
-            'tenant': self._tenant,
         }
         token = self.http_request('GET', '/token/generate', headers=headers, response_type='text')
         return token

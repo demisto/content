@@ -70,8 +70,10 @@ class Client:
                     api_key: Optional[str] = self.date_params.get(key, {}).get('api_key')
                     # Parsing date argument of ISO format or free language into datetime object,
                     # replacing TZ with UTC, taking its timestamp format and rounding it up.
+                    parsed_date = parse(args[key])
+                    assert parsed_date is not None
                     filter_query += f"{api_key}:" \
-                                    f"{operator}{int(parse(args[key]).replace(tzinfo=timezone.utc).timestamp())}+"
+                                    f"{operator}{int(parsed_date.replace(tzinfo=timezone.utc).timestamp())}+"
 
         if filter_query.endswith('+'):
             filter_query = filter_query[:-1]
@@ -244,9 +246,9 @@ def build_indicator(indicator_value: str, indicator_type: str, title: str, clien
             ))
 
     else:
-        results.append(CommandResults(
-            readable_output=f'No indicator found for {indicator_value}.'
-        ))
+        results.append(create_indicator_result_with_dbotscore_unknown(indicator=indicator_value,
+                                                                      indicator_type=DBotScoreType.FILE
+                                                                      if indicator_type == 'hash' else indicator_type))
 
     return results
 
