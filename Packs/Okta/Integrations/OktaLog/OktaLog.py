@@ -69,27 +69,32 @@ class GetEvents:
     def __init__(self, client: Client) -> None:
         self.client = client
 
+    def make_api_call(self):
+        limit_tmp = int(self.client.request.params.limit)
+        if limit_tmp > 1000:
+            self.client.request.params.limit = '1000'
+        response = self.client.call()
+        events: list = response.json()
+        self.client.request.params.limit = str(limit_tmp - len(events))
+        return events
+
+
     def _iter_events(self, last_object_ids: list) -> None:
         """
         Function that responsible for the iteration over the events returned from the Okta api
         """
-        # Limit to the api max otherwise the api will return an error
-        if self.client.request.params.limit > 1000:
-            self.client.request.params.limit = 1000
-        response = self.client.call()
-        events: list = response.json()
+
+        events: list = self.make_api_call()
         if last_object_ids:
             events = GetEvents.remove_duplicates(events, last_object_ids)
         if len(events) == 0:
             return []
         while True:
             yield events
-            last = events.pop()
+            last = events[-1]
             self.client.set_next_run_filter(last['published'])
-            response = self.client.call()
-            events: list = response.json()
+            events: list = self.make_api_call()
             try:
-                events.pop(0)
                 assert events
             except (IndexError, AssertionError):
                 LOG('empty list, breaking')
@@ -102,6 +107,8 @@ class GetEvents:
         stored_events = []
         for events in self._iter_events(last_object_ids):
             stored_events.extend(events)
+            if int(self.client.request.params.limit) == 0:
+                break
         return stored_events
 
     @staticmethod
