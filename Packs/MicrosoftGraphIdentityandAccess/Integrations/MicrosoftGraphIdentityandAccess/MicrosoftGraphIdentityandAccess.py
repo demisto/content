@@ -332,7 +332,7 @@ def remove_member_from_role(client: Client, args: dict) -> str:
 
 
 def ip_named_location_get(ms_client: Client, args: dict) -> CommandResults:
-    ip_id: str = args.get('ip_id')
+    ip_id = args.get('ip_id')
     if results := ms_client.get_ip_named_location(ip_id):
         context = {
             'id': ip_id,
@@ -356,7 +356,7 @@ def ip_named_location_get(ms_client: Client, args: dict) -> CommandResults:
 
 
 def ip_named_location_update(ms_client: Client, args: dict) -> CommandResults:
-    ip_id: str = args.get('ip_id')
+    ip_id = args.get('ip_id')
     if results := ms_client.get_ip_named_location(ip_id):
         data = {
             '@odata.type': '#microsoft.graph.ipNamedLocation',
@@ -423,7 +423,7 @@ def ip_named_location_create(ms_client: Client, args: dict) -> CommandResults:
 
 
 def ip_named_location_delete(ms_client: Client, args: dict) -> CommandResults:
-    ip_id: str = args.get('ip_id')
+    ip_id = args.get('ip_id')
     if results := ms_client.delete_ip_named_location(ip_id): # noqa
         return CommandResults(
             'MSGraph.conditionalAccess.namedIpLocations',
