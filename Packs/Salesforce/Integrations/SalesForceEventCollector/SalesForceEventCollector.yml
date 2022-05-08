@@ -1,0 +1,85 @@
+commonfields:
+  id: Salesforce Event Collector
+  version: -1
+name: Salesforce Event Collector
+display: Salesforce Event Collector
+category: Analytics & SIEM
+description: Salesforce logs event collector integration for XSIAM.
+configuration:
+- display: Server URL
+  name: url
+  defaultvalue: 'https://um6.salesforce.com'
+  type: 0
+  required: true
+- display: HTTP Method
+  name: method
+  type: 15
+  required: true
+  defaultvalue: POST
+  options:
+  - GET
+  - POST
+  - DELETE
+  - PUT
+  - PATCH
+  - HEAD
+  hidden: true
+- display: Client ID
+  name: client_id
+  type: 4
+  required: true
+- display: Client secret
+  name: client_secret
+  type: 4
+  required: true
+- display: Username
+  name: username
+  type: 0
+  required: true
+- display: Password
+  name: password
+  type: 4
+  required: true
+- display: Query to get Hourly Event Log Files
+  name: query
+  defaultvalue: "SELECT+Id+,+EventType+,+Interval+,+LogDate+,+LogFile+,+LogFileLength+FROM+EventLogFile+WHERE+Interval+=+'Hourly'"
+  type: 12
+  required: true
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+- display: Use Secured Connection
+  name: verify
+  defaultvalue: "true"
+  type: 8
+  required: false
+- display: How many log files to fetch
+  name: limit
+  type: 0
+  defaultvalue: 1000
+  required: false
+- display: XSIAM update limit per request
+  name: events_to_add_per_request
+  type: 0
+  defaultvalue: 1000
+  required: false
+- display: First fetch time interval
+  name: after
+  type: 0
+  defaultvalue: 3 days
+  required: false
+script:
+  script: ""
+  type: python
+  commands:
+  - description: Command that is activated by the engine to fetch event.
+    name: fetch-events
+  - description: Manual command to fetch events and display them.
+    name: salesforce-get-events
+  dockerimage: demisto/fastapi:1.0.0.28667
+  runonce: false
+  subtype: python3
+fromversion: 5.5.0
+tests:
+  - Github Event Collector-test
