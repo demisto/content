@@ -1,6 +1,6 @@
 category: Email Gateway
 commonfields:
-  id: Proofpoint TAP v2
+  id: Proofpoint TAP v2 test
   version: -1
 configuration:
 - additionalinfo: e.g., https://tap-api-v2.proofpoint.com
@@ -86,7 +86,7 @@ description: Use the Proofpoint Targeted Attack Protection (TAP) integration to 
   against and provide additional visibility into phishing and other malicious email
   attacks.
 display: Proofpoint TAP v2
-name: Proofpoint TAP v2
+name: Proofpoint TAP v2 test
 script:
   commands:
   - arguments:
