@@ -2259,7 +2259,7 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
     file_entries = client.get_ticket_attachment_entries(ticket_id, datetime.fromtimestamp(last_update))  # type: ignore
     if file_entries:
         for file in file_entries:
-            if '_mirrored_from_xsoar' not in file.get('InfoFile'):
+            if '_mirrored_from_xsoar' not in file.get('File'):
                 entries.append(file)
 
     sys_param_limit = args.get('limit', client.sys_param_limit)
@@ -2351,7 +2351,7 @@ def update_remote_system_command(client: Client, args: Dict[str, Any], params: D
         for entry in entries:
             demisto.debug(f'Sending entry {entry.get("id")}, type: {entry.get("type")}')
             # Mirroring files as entries
-            if entry.get('type') == 3:
+            if entry.get('type') in [3,7]:
                 # path_res = demisto.getInfoFilePath(entry.get('id'))  # todo: getInfoFilePath function not supported yet in platform
                 path_res = demisto.getFilePath(entry.get('id'))  # todo: this is the problem!
                 full_file_name = path_res.get('name')
