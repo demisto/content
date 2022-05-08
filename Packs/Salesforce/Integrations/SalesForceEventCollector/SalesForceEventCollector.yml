@@ -88,4 +88,4 @@ script:
   subtype: python3
 fromversion: 5.5.0
 tests:
-  - Github Event Collector-test
+  - Salesforce Event Collector-test
