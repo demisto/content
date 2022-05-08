@@ -26,7 +26,6 @@ mock_open==1.4.0
 blessings==1.7
 click==7.1.2
 dateparser==1.1.1
-docker_py==1.10.6
 python-gitlab==3.4.0
 packaging==21.0
 protobuf==3.20.1
