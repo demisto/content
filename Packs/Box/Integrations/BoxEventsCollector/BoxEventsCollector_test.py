@@ -21,7 +21,6 @@ class TestBoxCollectEvents:
             "enterpriseID": "000000000"
         }),
         'created_after': '30 days',
-        'credentials_type': 'enterprise',
         'verify': False,
     }
 
