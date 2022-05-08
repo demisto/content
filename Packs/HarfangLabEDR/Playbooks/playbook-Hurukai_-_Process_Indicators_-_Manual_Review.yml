@@ -17,7 +17,6 @@ tasks:
       version: -1
       name: ''
       iscommand: false
-      description: "Initial task that triggers the playbook"
       brand: ''
       description: ''
     nexttasks:
