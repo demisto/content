@@ -25,6 +25,10 @@ configuration:
   name: isFetch
   required: false
   type: 8
+- display: Fetch query
+  name: fetch_query
+  required: False
+  type: 8
 script:
   script: ''
   type: python
@@ -91,5 +95,6 @@ script:
     description: Performs a query on BigQuery.
   dockerimage: demisto/bigquery:1.0.0.26052
   subtype: python3
+  isfetch: true
   runonce: false
 fromversion: 5.0.0
