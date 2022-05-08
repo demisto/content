@@ -75,7 +75,6 @@ tasks:
       id: 5a197971-6b89-4036-8e2e-ae531450e943
       version: -1
       name: Done
-      description: "End of playbook"
       type: title
       iscommand: false
       brand: ''

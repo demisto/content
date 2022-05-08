@@ -85,7 +85,6 @@ tasks:
       id: 248ee366-c269-479e-8679-5fc5131fce23
       version: -1
       name: Done
-      description: "End of playbook"
       type: title
       iscommand: false
       brand: ''
@@ -232,7 +231,6 @@ tasks:
       type: playbook
       iscommand: false
       brand: ''
-      description: ''
     nexttasks:
       '#none#':
       - '7'
