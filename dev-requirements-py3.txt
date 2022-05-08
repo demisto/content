@@ -31,7 +31,6 @@ python-gitlab==3.4.0
 packaging==21.0
 protobuf==3.20.1
 PyGithub==1.55
-pytest==6.2.5
 PyYAML==6.0
 requests==2.26.0
 ruamel.base==1.0.0
