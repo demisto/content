@@ -1526,7 +1526,7 @@ def warninglist_command(demisto_args: dict) -> CommandResults:
     Check values against MISP warninglists.
     """
     res = []
-    values = demisto_args["value"].split(",")
+    values = argToList(demisto_args["value"])
     response = PYMISP.values_in_warninglist(values)
     if 'errors' in response:
         raise DemistoException(f'Unable to validate against MISPwarninglist!\nError message: {response}')
