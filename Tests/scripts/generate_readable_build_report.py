@@ -56,8 +56,10 @@ def build_summary_report(logging_manager,
     for file, failing_validations in validate_summary.items():
         # test_case = TestCase('Test1', 'some.class.name', 123.345, 'I am stdout!', 'I am stderr!')
         for failing_validation in failing_validations:
-            test_cases.append(
-                TestCase('Validate', f'validate.{file}', stdout='I am stdout!', stderr=failing_validation))
+            test_case = TestCase('Validate', f'validate.{file}', stdout='I am stdout!', stderr=failing_validation)
+            test_case.add_error_info(message=failing_validation)
+            test_cases.append(test_case)
+
             logging_manager.info(f"creating test case for {failing_validation}")
     ts = TestSuite("Validate", test_cases)
     with open(output_file, 'a') as f:
