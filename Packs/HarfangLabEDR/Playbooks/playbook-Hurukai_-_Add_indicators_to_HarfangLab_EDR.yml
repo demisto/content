@@ -1,31 +1,26 @@
 id: Hurukai - Add indicators to HarfangLab EDR
-version: 7
+version: -1
 contentitemexportablefields:
-  contentitemfields:
-    packID: ""
-    itemVersion: 1.1.0
-    fromServerVersion: 5.5.0
-    toServerVersion: ""
-    definitionid: ""
-vcShouldKeepItemLegacyProdMachine: false
+  contentitemfields: {}
 name: Hurukai - Add indicators to HarfangLab EDR
-description: This playbook add indicators to a HarfangLab EDR IOC source list for
-  detection and/or blocking.
-starttaskid: "0"
+description: This playbook add indicators to a HarfangLab EDR IOC source list for detection and/or blocking.
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     taskid: eb42f4ee-dd78-4c62-853d-6a45f75e21a7
     type: start
     task:
       id: eb42f4ee-dd78-4c62-853d-6a45f75e21a7
       version: -1
-      name: ""
+      name: ''
+      description: "Initial task"
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "5"
+      - '5'
     separatecontext: false
     view: |-
       {
@@ -41,17 +36,19 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "2":
-    id: "2"
+  '2':
+    id: '2'
     taskid: 00e7d9f8-86af-4053-830a-3cc848c887bc
     type: title
     task:
       id: 00e7d9f8-86af-4053-830a-3cc848c887bc
       version: -1
       name: Done
+      description: "End of playbook"
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -67,25 +64,26 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "5":
-    id: "5"
+  '5':
+    id: '5'
     taskid: 53c2a0a7-6de0-4bbf-85a3-af95d6cdd7ca
     type: condition
     task:
       id: 53c2a0a7-6de0-4bbf-85a3-af95d6cdd7ca
       version: -1
       name: Are there bad Hash results?
+      description: "Check whether there are bad hash results"
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "2"
-      "yes":
-      - "6"
+      - '2'
+      yes:
+      - '6'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isNotEmpty
           left:
@@ -129,8 +127,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "6":
-    id: "6"
+  '6':
+    id: '6'
     taskid: bfa9ac41-563e-432b-8aae-73a7b4924f05
     type: regular
     task:
@@ -144,7 +142,7 @@ tasks:
       brand: Hurukai
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
     scriptarguments:
       ioc_status:
         simple: stable
@@ -182,27 +180,28 @@ view: |-
     }
   }
 inputs:
-- key: ""
+- key: ''
   value: {}
   required: false
-  description: ""
+  description: ''
   playbookInputQuery:
-    query: type:file -tags:pending_review and (tags:to_edr_blocklist or tags:approved_white
-      or tags:approved_watchlist) and expirationStatus:active
+    query: type:file -tags:pending_review and (tags:to_edr_blocklist or tags:approved_white or tags:approved_watchlist) and expirationStatus:active
     queryEntity: indicators
-    results: null
+    results:
     daterange:
       fromdate: 0001-01-01T00:00:00Z
       todate: 0001-01-01T00:00:00Z
       period:
-        by: ""
-        byto: ""
-        byfrom: ""
-        tovalue: null
-        fromvalue: null
-        field: ""
+        by: ''
+        byto: ''
+        byfrom: ''
+        tovalue:
+        fromvalue:
+        field: ''
       fromdatelicenseval: 0001-01-01T00:00:00Z
     runFromLastJobTime: false
 outputs: []
-sourceplaybookid: TIM - Add All Indicator Types To SIEM
 quiet: true
+tests:
+- No tests (auto formatted)
+fromversion: 6.2.0
