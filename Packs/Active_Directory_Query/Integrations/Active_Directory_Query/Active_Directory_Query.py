@@ -1293,8 +1293,15 @@ def set_user_password(default_base_dn, port):
     demisto.results(demisto_entry)
 
 
-def restore_user(default_base_dn, page_size):
-
+def restore_user(default_base_dn: str, page_size: int):
+    """
+         Restore the user UserAccountControl flags.
+         Args:
+             default_base_dn (str): The default base dn.
+             page_size (int): The page size to query.
+         Returns:
+             flags (int): The UserAccountControl flags.
+     """
     args = demisto.args()
 
     # default query - list all users
@@ -1317,8 +1324,8 @@ def restore_user(default_base_dn, page_size):
         size_limit=0,
         page_size=page_size
     )
-    if entries['flat']:
-        return entries['flat'][0].get('userAccountControl')[0]
+    if entries.get('flat'):
+        return entries.get('flat')[0].get('userAccountControl')[0]
     return 0
 
 
