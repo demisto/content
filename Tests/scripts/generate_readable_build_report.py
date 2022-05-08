@@ -57,14 +57,20 @@ def build_summary_report(logging_manager,
         # test_case = TestCase('Test1', 'some.class.name', 123.345, 'I am stdout!', 'I am stderr!')
         for failing_validation in failing_validations:
             test_case = TestCase('Validate', f'validate.{file}', stdout='I am stdout!', stderr=failing_validation)
-            test_case.add_error_info(message=failing_validation)
+            test_case.add_failure_info(message=failing_validation)
             test_cases.append(test_case)
 
             logging_manager.info(f"creating test case for {failing_validation}")
-    ts = TestSuite("Validate", test_cases)
+    validate_ts = TestSuite("Validate", test_cases)
+
+    create_test_cases = []
+    for failing_pack in create_instances_summary:
+        test_case = TestCase('create_instances', f'create_instances.{failing_pack}')
+        test_case.add_failure_info(message=failing_pack.get('errors'))
+        create_test_cases.append(test_case)
     with open(output_file, 'a') as f:
         logging_manager.info("opened file")
-        to_xml_report_file(f, [ts], prettyprint=False)
+        to_xml_report_file(f, [validate_ts, create_test_cases], prettyprint=False)
 
 
 def test_get_failing_ut():
@@ -97,10 +103,10 @@ def test_get_failing_validations():
 
 
 def test_get_failing_create_instances():
-    get_file_data(os.path.join(ARTIFACTS_FOLDER, 'packs_results.json'))
+    failing_create = get_file_data(os.path.join(ARTIFACTS_FOLDER, 'packs_results.json'))
     # file = open('validate_outputs.json', 'r')
     # failed_validations = json.load(file)
-    create_instances_summary = {}
+    create_instances_summary = failing_create.get('prepare_content_for_testing', {}).get('failed_packs', {})
 
     return 'pr_message', create_instances_summary
 
@@ -116,12 +122,13 @@ def options_handler():
 def generate_build_report(logging_manager, output_file):
     validate_pr_comment, validate_summary = test_get_failing_validations()
     unit_tests_pr_comment, unit_tests_summary = test_get_failing_ut()
+    create_instances_pr_comment, create_instances_summary = test_get_failing_create_instances()
     pr_comment = create_pr_comment(validate_pr_comment, unit_tests_pr_comment)
     _add_pr_comment(pr_comment, logging_manager, 'here is a link to the full report')
     build_summary_report(logging_manager,
                          validate_summary,
                          unit_tests_summary,
-                         create_instances_summary={},
+                         create_instances_summary={prepare_content_for_testing},
                          server_6_1_summary={},
                          server_6_2_summary={},
                          server_master_summary={}, output_file=output_file)
