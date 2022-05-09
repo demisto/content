@@ -44,7 +44,6 @@
 /Packs/VirusTotal/Integrations/integration-VirusTotal_5.5.yml @demisto/content-leaders
 /Packs/VirusTotal/* @jochman
 /Packs/ContentManagement/* @ChanochShayner
-/Packs/MISP/* @abaumgarten
 
 # Important Scripts
 /Packs/CommonScripts/Scripts/SetGridField/* @yaakovi @David-BMS

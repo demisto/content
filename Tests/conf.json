@@ -5144,6 +5144,13 @@
             ],
             "playbookID": "playbook-ForescoutEyeInspect_Test",
             "fromversion": "6.1.0"
+        },
+        {
+            "integrations": [
+                "Github Event Collector"
+            ],
+            "playbookID": "Github Event Collector-test",
+            "fromversion": "6.6.0"
         }
     ],
     "skipped_tests": {
@@ -5396,7 +5403,8 @@
         "Lastline v2": "Temporary skipping, due to quota issues, in order to merge a PR",
         "AttackIQFireDrill": "License issues #29774",
         "SentinelOne V2": "License expired issue #24933",
-        "LogRhythm": "The integration is deprecated"
+        "LogRhythm": "The integration is deprecated",
+        "Github Event Collector" : "XSIAM integration"
     },
     "nightly_integrations": [
         "Laline v2",
