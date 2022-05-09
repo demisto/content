@@ -1,6 +1,6 @@
 {
     "name": "XSOAR CI/CD",
-    "description": "This pack enables you to orchestrate your XSOAR system configuration.",
+    "description": "This pack enables you to orchestrate your XSOAR system configuration. CHANGE",
     "support": "xsoar",
     "currentVersion": "1.0.14",
     "author": "Cortex XSOAR",
