@@ -38,12 +38,12 @@ mocked_gdetect_get = {
                         "av": "SignatureUmbrella",
                         "result": "TR/Redcap.ltkcp",
                         "score": 1000
-                },
+                        },
                 {
                         "av": "SignatureSophos",
                         "result": "Mal/Behav-010",
                         "score": 1000
-                }
+                        }
             ],
             "size": 219648,
             "is_malware": True
@@ -190,6 +190,7 @@ def test_gdetect_get_all_command_no_errors(mocker):
     assert 'token' in results.outputs
     assert 'entryID' not in results.outputs
 
+
 def test_gdetect_get_all_command_errors(mocker):
     mocker.patch('GLIMPSDetect.gClient.get', return_value=mocked_gdetect_get_errors_files_no_av_results_no_threats)
     client = GLIMPSDetect.Client('url', 'token', False, False)
@@ -198,6 +199,7 @@ def test_gdetect_get_all_command_errors(mocker):
     assert results.outputs.get('uuid') == 'fa78fb4e-a501-4964-a068-33f73a1167f5'
     assert 'errors' in results.outputs
     assert 'entryID' not in results.outputs
+
 
 def test_gdetect_get_threats_command_no_errors(mocker):
     mocker.patch('GLIMPSDetect.gClient.get', return_value=mocked_gdetect_get)
@@ -208,6 +210,7 @@ def test_gdetect_get_threats_command_no_errors(mocker):
     assert 'result' not in results.outputs
     assert 'entryID' not in results.outputs
     assert 'files' not in results.outputs
+
 
 def test_gdetect_get_threats_command_errors(mocker):
     mocker.patch('GLIMPSDetect.gClient.get', return_value=mocked_gdetect_get_errors_files_no_av_results_no_threats)
