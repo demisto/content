@@ -3275,6 +3275,9 @@ def panorama_list_pcaps_command(args: dict):
         return_results(f'PAN-OS has no Pcaps of type: {pcap_type}.')
     else:
         pcaps = dir_listing['file']
+        if isinstance(pcaps, str):
+            # means we have only 1 pcap in the firewall, the api returns string if only 1 pcap is available
+            pcaps = [pcaps]
         pcap_list = [pcap[1:] for pcap in pcaps]
         return_results({
             'Type': entryTypes['note'],
