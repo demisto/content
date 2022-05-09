@@ -123,6 +123,16 @@ def get_account(account_email):
 
 def send_email_to_mailbox(account, to, subject, body, bcc=None, cc=None, reply_to=None,
                           html_body=None, attachments=[], raw_message=None, from_address=None):
+    """
+    Send an email to a mailbox.
+
+    Args:
+        account (Account): account from which to send an email.
+        to (list[str]): a list of emails to send an email.
+        subject (str): subject of the mail.
+        body (str): body of the email.
+        reply_to (list[str]): list of emails of which to reply to from the sent email.
+    """
     message_body = HTMLBody(html_body) if html_body else body
     m = Message(
         account=account,
