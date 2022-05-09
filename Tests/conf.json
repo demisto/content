@@ -7,10 +7,6 @@
             "playbookID": "RSANetWitnessv115-Test"
         },
         {
-            "integrations": "URLhaus Feed",
-            "playbookID": "URLhausFeed_test"
-        },
-        {
             "integrations": [
                 "FeedMandiant",
                 "Demisto REST API"
