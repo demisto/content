@@ -9,7 +9,7 @@ configuration:
   required: false
   defaultvalue: Bad
   type: 18
-  additionalinfo: Indicators from this integration instance will be marked with this
+  additionalinfo: Indicators from this integration instance are marked with this
     reputation.
   options:
   - None
@@ -93,7 +93,7 @@ name: URLhaus Feed
 script:
   commands:
   - name: urlhaus-get-indicators
-    description: Retrieves a limited number of the indicators.
+    description: Retrieves a limited number of indicators.
     deprecated: false
     arguments: []
     outputs: []
