@@ -1807,7 +1807,7 @@ Allows a caller to request a specific device resource belonging to a Tenant by h
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 1.2.1418 | false | 2017-12-29T04:07:56 | 2020-02-07T02:25:34.151 | Unknown | WIN-5HMOGIEG6M5 | b4eceeb0-8699-4d42-b853-155513042d6e | 127.0.0.1 | true | 02-76-91-6B-0A-BB | WIN-5HMOGIEG6M5 | 6.3.0 | Microsoft Windows Server 2012 R2 Standard | Default | {u'status': u'Offline', u'version': u'1.2.1418', u'name': u'protect'} | Offline | false |
 
-<h3 id="h_2255369916021541937938188">11. Create a new Instaqueryt</h3>
+<h3 id="h_2255369916021541937938188">21. Create a new Instaquery</h3>
 ### cylance-optics-create-instaquery
 ***
 Create a cylance InstaQuery
@@ -1859,6 +1859,8 @@ Create a cylance InstaQuery
 | results_available | false                            |
 | zones             | 6608CA0E88C64647B276271CC5EA4295 |
 
+
+<h3 id="h_2255369916021541937938189">22. Get Instaquery result</h3>
 ### cylance-optics-get-instaquery-result
 ***
 Get a cylance InstaQuery search result
@@ -1894,6 +1896,8 @@ Get a cylance InstaQuery search result
 | result | false                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | status | {u'@timestamp': 1651729959.177779, u'HostName': u'windows-server-', u'DeviceId': u' 65DB26864E364409B50DDC23291A3511 ', u'@version': u'1', u'CorrelationId': u' 9E2CCDA5A93918C588E6865ED6FEEA70 ', u'Result': u'{"FirstObservedTime": "1970-01-01T00:00:00.000Z", "LastObservedTime": "1970-01-01T00:00:00.000Z", "Uid": "dHrtLYQzbt9oJPxO8HaeyA==", "Type": "File", "Properties": {"Path": "c:\\program files\\cylance\\optics\\ cyoptics.exe ", "CreationDateTime": "2021-03-29T22:34:14.000Z", "Md5": " A081D3268531485BF95DC1A15A5BC6B0 ", "Sha256": " 256809AABD3AB57949003B9AFCB556A9973222CDE81929982DAE7D306648E462 ", "Owner": "NT AUTHORITY\\SYSTEM", "SuspectedFileType": "Executable/PE", "FileSignature": "", "Size": "594104", "OwnerUid": "P3p6fdq3FlMsld6Rz95EOA=="}}'} |
 
+
+<h3 id="h_2255369916021541937938189">23. List current Instaqueries</h3>
 ### cylance-optics-list-instaquery
 ***
 Get a list of InstaQuery
