@@ -146,7 +146,7 @@ class GetEvents:
 
 
 def main():
-    demisto_params = demisto.params() #| demisto.args()
+    demisto_params = demisto.params() | demisto.args()
     events_limit = demisto_params.get('limit', 2000)
     events_limit = int(events_limit)
     after = OPTIONS_TO_TIME[demisto_params['after']]
