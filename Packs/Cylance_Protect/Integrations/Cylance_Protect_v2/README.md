@@ -90,6 +90,9 @@
 <li><a href="#h_5039804193441541937926117">Delete a hash from a list: cylance-protect-delete-hash-from-lists</a></li>
 <li><a href="#h_1587684564731541937931567">Get details of a policy: cylance-protect-get-policy-details</a></li>
 <li><a href="#h_2255369916021541937938187">Delete devices: cylance-protect-delete-devices</a></li>
+<li><a href="#h_2255369916021541937938188">Create a new Instaquery: cylance-optics-create-instaquery</a></li>
+<li><a href="#h_2255369916021541937938189">Get Instaquery result: cylance-optics-get-instaquery-result</a></li>
+<li><a href="#h_2255369916021541937938190">List current Instaquery: cylance-optics-list-instaquery</a></li>   
 </ol>
 <h3 id="h_2673377171530178254852">1. List console device resources for a tenant</h3>
 <hr>
@@ -1804,7 +1807,7 @@ Allows a caller to request a specific device resource belonging to a Tenant by h
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 1.2.1418 | false | 2017-12-29T04:07:56 | 2020-02-07T02:25:34.151 | Unknown | WIN-5HMOGIEG6M5 | b4eceeb0-8699-4d42-b853-155513042d6e | 127.0.0.1 | true | 02-76-91-6B-0A-BB | WIN-5HMOGIEG6M5 | 6.3.0 | Microsoft Windows Server 2012 R2 Standard | Default | {u'status': u'Offline', u'version': u'1.2.1418', u'name': u'protect'} | Offline | false |
 
-
+<h3 id="h_2255369916021541937938188">11. Create a new Instaqueryt</h3>
 ### cylance-optics-create-instaquery
 ***
 Create a cylance InstaQuery
