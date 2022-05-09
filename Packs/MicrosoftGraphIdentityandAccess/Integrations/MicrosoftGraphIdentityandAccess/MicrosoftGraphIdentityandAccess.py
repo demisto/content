@@ -380,7 +380,7 @@ def ip_named_location_update(ms_client: Client, args: dict) -> CommandResults:
             'namedIpLocations',
             outputs={},
             raw_response={},
-            readable_output=f'Successfully  updated IP named location \'{ip_id}\''
+            readable_output=f'Successfully updated IP named location \'{ip_id}\''
         )
     return CommandResults(readable_output=f'Could not update IP named location \'{ip_id}\'')
 
