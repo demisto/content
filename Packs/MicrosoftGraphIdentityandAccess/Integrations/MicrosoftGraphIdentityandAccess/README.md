@@ -1,4 +1,4 @@
-Use the Azure Active Directory Identity And Access integration to manage roles and members.
+Use the Azure Active Directory Identity and Access integration to manage roles and members.
 ## Configure Azure Active Directory Identity and Access on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -24,7 +24,7 @@ Run this command to start the authorization process and follow the instructions 
 ### msgraph-identity-auth-complete
 ***
 Run this command to complete the authorization process.
-Should be used after running the msgraph-identity-auth-start command.
+Use this after running the msgraph-identity-auth-start command.
 
 ### msgraph-identity-auth-reset
 ***
@@ -32,7 +32,7 @@ Run this command if for some reason you need to rerun the authentication process
 
 ### msgraph-identity-auth-test
 ***
-Tests connectivity to Microsoft.
+Test connectivity to Microsoft.
 
 
 
@@ -142,7 +142,7 @@ Activates a role by its template ID.
 
 ### msgraph-identity-directory-role-members-list
 ***
-Gets all members in a role ID.
+Return all members in a role ID.
 
 
 #### Base Command
@@ -192,7 +192,7 @@ Gets all members in a role ID.
 
 ### msgraph-identity-directory-role-member-add
 ***
-Adds a user to a role.
+Add a user to a role.
 
 
 #### Base Command
@@ -219,7 +219,7 @@ There is no context output for this command.
 
 ### msgraph-identity-directory-role-member-remove
 ***
-Removes a user from a role.
+Remove a user from a role.
 
 
 #### Base Command
@@ -246,7 +246,7 @@ There is no context output for this command.
 
 ### msgraph-identity-ip-named-locations-create
 ***
-Creates an ip named location.
+Create an IP named location.
 
 
 #### Base Command
@@ -256,21 +256,21 @@ Creates an ip named location.
 
 | **Argument Name** | **Description**                                        | **Required** |
 |-------------------|--------------------------------------------------------| --- |
-| display_name      | The display name for the ip named location.            | Required |
-| is_trusted        | A boolean to show if the ip named location is trusted. | Required |
-| ips               | The ip ranges for the ip named location.               | Required |
+| display_name      | The display name for the IP named location.            | Required |
+| is_trusted        | A boolean to show if the IP named location is trusted. | Required |
+| ips               | The ip ranges for the IP named location.               | Required |
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | -- | --- | --- |
-| MSGraph.conditionalAccess.namedIpLocations.time_created | Date | The time of the ip named location creation. |
-| MSGraph.conditionalAccess.namedIpLocations.time_modified | Date | The time the ip named location was last modified. |
-| MSGraph.conditionalAccess.namedIpLocations.display_name | String | The ip named location display name. |
-| MSGraph.conditionalAccess.namedIpLocations.id | String | The unique identifier of the ip named location. |
-| MSGraph.conditionalAccess.namedIpLocations.is_trusted | String | The ip named location trust status. |
-| MSGraph.conditionalAccess.namedIpLocations.ip_ranges | Array | The ip named location ip ranges. |
+| MSGraph.conditionalAccess.namedIpLocations.time_created | Date | The time the IP named location was created. |
+| MSGraph.conditionalAccess.namedIpLocations.time_modified | Date | The time the IP named location was last modified. |
+| MSGraph.conditionalAccess.namedIpLocations.display_name | String | The IP named location display name. |
+| MSGraph.conditionalAccess.namedIpLocations.id | String | The unique identifier of the IP named location. |
+| MSGraph.conditionalAccess.namedIpLocations.is_trusted | String | The IP named location trust status. |
+| MSGraph.conditionalAccess.namedIpLocations.ip_ranges | Array | The IP named location IP address ranges. |
 
 
 #### Command Example
@@ -282,7 +282,7 @@ Creates an ip named location.
 
 ### msgraph-identity-ip-named-locations-get
 ***
-Gets an ip named location.
+Get an IP named location.
 
 
 #### Base Command
@@ -292,19 +292,19 @@ Gets an ip named location.
 
 | **Argument Name** | **Description**                         | **Required** |
 |-------------------|-----------------------------------------| --- |
-| ip_id             | The id of the ip named location to get. | Required |
+| ip_id             | The ID of the IP named location to get. | Required |
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | -- | --- | --- |
-| MSGraph.conditionalAccess.namedIpLocations.time_created | Date | The time of the ip named location creation. |
-| MSGraph.conditionalAccess.namedIpLocations.time_modified | Date | The time the ip named location was last modified. |
-| MSGraph.conditionalAccess.namedIpLocations.display_name | String | The ip named location display name. |
-| MSGraph.conditionalAccess.namedIpLocations.id | String | The unique identifier of the ip named location. |
-| MSGraph.conditionalAccess.namedIpLocations.is_trusted | String | The ip named location trust status. |
-| MSGraph.conditionalAccess.namedIpLocations.ip_ranges | Array | The ip named location ip ranges. |
+| MSGraph.conditionalAccess.namedIpLocations.time_created | Date | The time the IP named location was created. |
+| MSGraph.conditionalAccess.namedIpLocations.time_modified | Date | The time the IP named location was last modified. |
+| MSGraph.conditionalAccess.namedIpLocations.display_name | String | The IP named location display name. |
+| MSGraph.conditionalAccess.namedIpLocations.id | String | The unique identifier of the IP named location. |
+| MSGraph.conditionalAccess.namedIpLocations.is_trusted | String | The IP named location trust status. |
+| MSGraph.conditionalAccess.namedIpLocations.ip_ranges | Array | The IP named location IP address ranges. |
 
 
 #### Command Example
@@ -317,7 +317,7 @@ Gets an ip named location.
 
 ### msgraph-identity-ip-named-locations-delete
 ***
-Deletes an ip named location.
+Delete an IP named location.
 
 
 #### Base Command
@@ -327,7 +327,7 @@ Deletes an ip named location.
 
 | **Argument Name** | **Description**                            | **Required** |
 |-------------------|--------------------------------------------| --- |
-| ip_id             | The id of the ip named location to delete. | Required |
+| ip_id             | The ID of the IP named location to delete. | Required |
 
 
 #### Context Output
@@ -345,7 +345,7 @@ No context output
 
 ### msgraph-identity-ip-named-locations-update
 ***
-Updates an ip named location.
+Update an IP named location.
 
 
 #### Base Command
@@ -355,10 +355,10 @@ Updates an ip named location.
 
 | **Argument Name** | **Description**                                        | **Required** |
 |-------------------|--------------------------------------------------------| --- |
-| ip_id             | The id of the ip named location to delete.             | Required |
-| display_name      | The display name for the ip named location.            | Required |
-| is_trusted        | A boolean to show if the ip named location is trusted. | Required |
-| ips               | The ip ranges for the ip named location.               | Required |
+| ip_id             | The ID of the IP named location to delete.             | Required |
+| display_name      | The display name for the IP named location.            | Required |
+| is_trusted        | A boolean that indicates if the IP named location is trusted. | Required |
+| ips               | The IP address ranges for the IP named location.               | Required |
 
 
 #### Context Output
@@ -376,7 +376,7 @@ No context output
 
 ## msgraph-identity-ip-named-locations-list
 ***
-Lists an ip named locations.
+List IP named locations.
 
 
 #### Base Command
@@ -393,7 +393,7 @@ Lists an ip named locations.
 
 | **Path** | **Type** | **Description** |
 | -- | --- | --- |
-| MSGraph.conditionalAccess.namedIpLocations.ip_named_locations | Array | List of ip named locations. |
+| MSGraph.conditionalAccess.namedIpLocations.ip_named_locations | Array | List of IP named locations. |
 
 
 #### Command Example
