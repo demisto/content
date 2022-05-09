@@ -72,7 +72,6 @@ class GetEvents:
         self.instance_url = res.get('instance_url')
 
     def pull_log_files(self):
-
         query = f'{self.query}+and+CreatedDate+>+{self.after} limit {self.limit}'
 
         demisto.info('Searching files last modified from {}'.format(self.after))
@@ -87,44 +86,50 @@ class GetEvents:
 
         if r.status_code == 200:
             res = json.loads(r.text)
-            files = res['records']
-            done_status = res['done']
-            while done_status is False:
-                query = json.loads(r.text)['nextRecordsUrl']
-                try:
-                    r = requests.get(f'{self.instance_url}{query}', headers=self.headers)
-                except Exception as err:
-                    demisto.error(f'File list getting failed: {err}')
-                if r.status_code == 200:
-                    res = json.loads(r.text)
-                    done_status = res['done']
-                    for file in res['records']:
-                        files.append(file)
-                else:
-                    done_status = True
-            demisto.info('Total number of files is {}.'.format(len(files)))
-
-            files.sort(key=lambda k: dateparser.parse(k.get('LogDate')))
-
-            if not self.last_id:
-                return files
-
-            # filter only the files we already feched to avoid duplicates
-            last_id_found = False
-            new_files = []
-            for file in files:
-                if last_id_found:
-                    new_files.append(file)
-
-                if file['Id'] == self.last_id:
-                    last_id_found = True
-
-            if new_files:
-                demisto.setLastRun(self.get_last_run(new_files))
-            return new_files
-
+            return self.get_files_from_res(res)
         else:
             demisto.error(f'File list getting failed: {r.status_code} {r.text}')
+
+    def get_files_from_res(self, query_res):
+        r = None
+        files = query_res['records']
+        done_status = query_res['done']
+
+        while done_status is False:
+            query = query_res['nextRecordsUrl']
+            try:
+                r = requests.get(f'{self.instance_url}{query}', headers=self.headers)
+            except Exception as err:
+                demisto.error(f'File list getting failed: {err}')
+            if r.status_code == 200:
+                res = json.loads(r.text)
+                done_status = res['done']
+                for file in res['records']:
+                    files.append(file)
+            else:
+                done_status = True
+
+        demisto.info('Total number of files is {}.'.format(len(files)))
+
+        # sort all files by date
+        files.sort(key=lambda k: dateparser.parse(k.get('LogDate')))
+
+        if not self.last_id:
+            return files
+
+        # filter only the files we already fetched to avoid duplicates
+        last_id_found = False
+        new_files = []
+        for file in files:
+            if last_id_found:
+                new_files.append(file)
+
+            if file['Id'] == self.last_id:
+                last_id_found = True
+
+        if new_files:
+            demisto.setLastRun(self.get_last_run(new_files))
+        return new_files
 
     def get_file_raw_lines(self, file_url, file_in_tmp_path):
         url = f'{self.instance_url}{file_url}'
