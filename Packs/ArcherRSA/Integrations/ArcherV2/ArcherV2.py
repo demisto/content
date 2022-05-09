@@ -50,7 +50,7 @@ def parser(date_str, date_formats=None, languages=None, locales=None, region=Non
 
 def get_token_soap_request(user, password, instance, domain=None):
 
-    if domain is not None:
+    if domain:
         return_xml = '<?xml version="1.0" encoding="utf-8"?>' + \
             '<soap:Envelope xmlns:xsi="http://www.w3.orecord_to_incidentrg/2001/XMLSchema-instance" ' \
             '  xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' + \
