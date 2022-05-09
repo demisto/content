@@ -1,14 +1,24 @@
+from pytest_mock import mocker
+
 from OktaLog import ReqParams, Client, Request, GetEvents, Method
 import pytest
 
-req_params = ReqParams(since='', sortOrder='ASCENDING', limit='100')
-request = Request(method=Method.GET, url='https://testurl.com', headers={})
+req_params = ReqParams(since='', sortOrder='ASCENDING', limit='5')
+request = Request(method=Method.GET, url='https://testurl.com', headers={}, params=req_params)
 client = Client(request)
 get_events = GetEvents(client)
 id1 = {'uuid': 'a5b57ec5febb'}
 id2 = {'uuid': 'a5b57ec5fecc'}
 id3 = {'uuid': 'a12f3c5d77f3'}
 id4 = {'uuid': 'a12f3c5dxxxx'}
+
+
+class MockResponse:
+    def __init__(self, data):
+        self.data = data
+
+    def json(self):
+        return self.data
 
 
 @pytest.mark.parametrize("events,ids,result", [
@@ -46,3 +56,11 @@ def test_get_last_run(events, result):
 def test_set_since_value(time):
     req_params.set_since_value(time)
     assert req_params.since == time
+
+
+def test_make_api_call(mocker):
+    mock_res = MockResponse([{1}, {1}, {1}, {1}, {1}])
+    mocker.patch.object(client, 'call', return_value=mock_res)
+    assert get_events.make_api_call() == [{1}, {1}, {1}, {1}, {1}]
+    mock_res.data = [{1}, {1}, {1}, {1}, {1}, {1}, {1}, {1}, {1}, {1}]
+    assert get_events.make_api_call() == [{1}, {1}, {1}, {1}, {1}, {1}, {1}, {1}, {1}, {1}]
