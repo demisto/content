@@ -66,7 +66,7 @@ def build_summary_report(logging_manager,
     create_test_cases = []
     for failing_pack in create_instances_summary:
         test_case = TestCase('create_instances', f'create_instances.{failing_pack}')
-        test_case.add_failure_info(message=failing_pack.get('errors'))
+        test_case.add_failure_info(message=failing_pack.get('errors')[0])
         create_test_cases.append(test_case)
     with open(output_file, 'a') as f:
         logging_manager.info("opened file")
