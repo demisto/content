@@ -40,10 +40,10 @@ def create_pr_comment(validate_pr_comment, unit_tests_pr_comment) -> str:
 
 
 def build_summary_report(logging_manager,
-                              validate_summary, unit_tests_summary, create_instances_summary, server_6_1_summary,
-                              server_6_2_summary,
-                              server_master_summary,
-                              output_file):
+                         validate_summary, unit_tests_summary, create_instances_summary, server_6_1_summary,
+                         server_6_2_summary,
+                         server_master_summary,
+                         output_file):
     # json_summary = {
     #     'Validate': validate_summary,
     #     'Unit tests': unit_tests_summary,
