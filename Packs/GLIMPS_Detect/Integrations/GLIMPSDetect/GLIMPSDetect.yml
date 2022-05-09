@@ -1,56 +1,261 @@
-category: Forensics & Malware Analysis
 commonfields:
   id: GLIMPS_Detect
   version: -1
+category: Forensics & Malware Analysis
+name: GLIMPS_Detect
+display: GLIMPS Detect
+fromversion: 6.0.0
+tests:
+- Run all tests
+description: Use the GLIMPS Detect Integration to send files to GLIMPS Malware and get results from it
 configuration:
-- defaultvalue: https://example.com/
-  display: Your server URL
-  name: url
-  required: true
+- display: API Token
+  name: api_token
   type: 0
-- displaypassword: API Key
-  additionalinfo: The API Key to use for connection
-  name: credentials
   required: true
-  hiddenusername: true
-  type: 9
+- display: URL
+  name: url
+  type: 0
+  required: true
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
+  defaultvalue: false
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
+  defaultvalue: false
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- display: Fetch incidents
+  name: isFetch
   required: false
   type: 8
-description: '[Enter a comprehensive, yet concise, description of what the integration
-  does, what use cases it is designed for, etc.]'
-display: GLIMPS_Detect
-name: GLIMPS_Detect
+- additionalinfo: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)
+  defaultvalue: 7 days
+  display: First Fetch Time
+  name: first_fetch
+  required: false
+  type: 0
+- additionalinfo: Maximum number of alerts per fetch. Default and recommended is 50
+  defaultvalue: '50'
+  display: Fetch Limit
+  name: max_fetch
+  required: false
+  type: 0
 script:
-  commands:
-  - arguments:
-    - default: false
-      description: '[Enter a description of the argument, including any important
-        information users need to know, for example, default values.]'
-      isArray: false
-      name: dummy
-      required: true
-      secret: false
-    deprecated: false
-    description: '[Enter a description of the command, including any important information
-      users need to know, for example required permissions.]'
-    execution: false
-    name: baseintegration-dummy
-    outputs:
-    - contextPath: BaseIntegration.Output
-      description: '[Enter a description of the data returned in this output.]'
-      type: String
-  isfetch: false
+  feed: false
+  isfetch: true
+  longRunning: false
+  longRunningPort: false
   runonce: false
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.1.26972
-fromversion: 5.5.0
-tests:
-- No tests (auto formatted)
+  dockerimage: gdetect:latest
+  commands:
+  - name: gdetect-send
+    arguments:
+    - name: entryID
+      required: true
+      isArray: false
+      secret: false
+      description: EntryID of the file to send
+    outputs:
+    - contextPath: GLIMPS.Gdetect.Send.UUID
+      description: GLIMPS Detect Binary UUID.
+      type: string
+    - contextPath: GLIMPS.Gdetect.Send.entryID
+      description: XSOAR file entryID.
+      type: string
+    description: send file to gDetect API.
+  - name: gdetect-get-all
+    arguments:
+    - name: uuid
+      required: true
+      isArray: false
+      secret: false
+      description: GLIMPS Detect Binary UUID.
+    outputs:
+    - contextPath: GLIMPS.GDetect.All.uuid
+      description: 'Unique analysis identifier'
+      type: String
+    - contextPath: GLIMPS.GDetect.All.sha256
+      description: 'string hex encoded input file SHA256'
+      type: String
+    - contextPath: GLIMPS.GDetect.All.sha1
+      description: 'string hex encoded input file SHA1'
+      type: String
+    - contextPath: GLIMPS.GDetect.All.md5
+      description: 'string hex encoded input file MD5'
+      type: String
+    - contextPath: GLIMPS.GDetect.All.ssdeep
+      description: 'string input file SSDeep'
+      type: String
+    - contextPath: GLIMPS.GDetect.All.is_malware
+      description: 'analysis result, is a malware or not'
+      type: Boolean
+    - contextPath: GLIMPS.GDetect.All.score
+      description: 'highest score given by probes'
+      type: Number
+    - contextPath: GLIMPS.GDetect.All.done
+      description: 'is the analysis finished'
+      type: Boolean
+    - contextPath: GLIMPS.GDetect.All.timestamp
+      description: 'timestamp of the start of analysis in milliseconds'
+      type: Number
+    - contextPath: GLIMPS.GDetect.All.filetype
+      description: 'input file type'
+      type: String
+    - contextPath: GLIMPS.GDetect.All.size
+      description: 'input file size (in bytes)'
+      type: Number
+    - contextPath: GLIMPS.GDetect.All.filenames
+      description: 'list of analysed filename'
+      type: String
+    - contextPath: GLIMPS.GDetect.All.malwares
+      description: 'list of malware names found in analysis'
+      type: String
+    - contextPath: GLIMPS.GDetect.All.files
+      description: 'array of submission files (input file and extracted sub-files)'
+      type: String
+    - contextPath: GLIMPS.GDetect.All.files.sha256
+      description: 'string hex encoded input file SHA256'
+      type: String
+    - contextPath: GLIMPS.GDetect.All.files.sha1
+      description: 'string hex encoded input file SHA1'
+      type: String
+    - contextPath: GLIMPS.GDetect.All.files.md5
+      description: 'string hex encoded input file MD5'
+      type: String
+    - contextPath: GLIMPS.GDetect.All.files.ssdeep
+      description: 'string hex encoded input file MD5'
+      type: String
+    - contextPath: GLIMPS.GDetect.All.files.magic
+      description: 'file magic - file type'
+      type: String
+    - contextPath: GLIMPS.GDetect.All.files.size
+      description: 'input file size (in bytes)'
+      type: Number
+    - contextPath: GLIMPS.GDetect.All.files.is_malware
+      description: 'analysis result, is a malware or not'
+      type: Boolean
+    - contextPath: GLIMPS.GDetect.All.files.av_results.av
+      description: 'probe name'
+      type: String
+    - contextPath: GLIMPS.GDetect.All.files.av_results.result
+      description: 'malware name indicated by probe'
+      type: String
+    - contextPath: GLIMPS.GDetect.All.files.av_results.score
+      description: 'amount of point added by the probe'
+      type: Number
+    - contextPath: GLIMPS.GDetect.All.link
+      description: 'a link to the analysis in the GLIMPS Malware Expert interface'
+      type: String
+    - contextPath: GLIMPS.GDetect.All.file_count
+      description: 'amount of file in the submission (input + extracted)'
+      type: Number
+    - contextPath: GLIMPS.GDetect.All.duration
+      description: 'duration of the analysis in milliseconds'
+      type: Number
+    - contextPath: GLIMPS.GDetect.All.token
+      description: 'Authentication token for the lite api'
+      type: String
+    - contextPath: GLIMPS.GDetect.All.threats.filenames
+      description: 'list of analysed filename'
+      type: String
+    - contextPath: GLIMPS.GDetect.All.threats
+      description: 'Summary of threats found in submission. Each submission file reaching threshold score will add an entry. Entry keys are the SHA256 of files'
+      type: String
+    - contextPath: GLIMPS.GDetect.All.threats.tags
+      description: 'Summary of threats found in submission. Each submission file reaching threshold score will add an entry. Entry keys are the SHA256 of files'
+      type: String
+    - contextPath: GLIMPS.GDetect.All.threats.tags.name
+      description: 'tag name'
+      type: String
+    - contextPath: GLIMPS.GDetect.All.threats.tags.value
+      description: 'tag value'
+      type: String
+    - contextPath: GLIMPS.GDetect.All.threats.score
+      description: 'highest score given by probes'
+      type: Number
+    - contextPath: GLIMPS.GDetect.All.threats.magic
+      description: 'file magic - file type'
+      type: String
+    - contextPath: GLIMPS.GDetect.All.threats.sha256
+      description: 'string hex encoded input file SHA256'
+      type: String
+    - contextPath: GLIMPS.GDetect.All.threats.sha1
+      description: 'string hex encoded input file SHA1'
+      type: String
+    - contextPath: GLIMPS.GDetect.All.threats.md5
+      description: 'string hex encoded input file MD5'
+      type: String
+    - contextPath: GLIMPS.GDetect.All.threats.ssdeep
+      description: 'string input file SSDeep'
+      type: String
+    - contextPath: GLIMPS.GDetect.All.threats.file_size
+      description: 'input file size (in bytes)'
+      type: Number
+    - contextPath: GLIMPS.GDetect.All.threats.mime
+      description: 'file mime type'
+      type: String
+    - contextPath: GLIMPS.GDetect.All.status
+      description: 'true => no error to report, false => an error occurred'
+      type: Boolean
+    description: get all file analysis from gDetect API.
+  - name: gdetect-get-threats
+    arguments:
+    - name: uuid
+      required: true
+      isArray: false
+      secret: false
+      description: GLIMPS Detect Binary UUID.
+    outputs:
+    - contextPath: GLIMPS.GDetect.Threats.filenames
+      description: 'list of analysed filename'
+      type: String
+    - contextPath: GLIMPS.GDetect.Threats.link
+      description: 'a link to the analysis in the GLIMPS Malware Expert interface'
+      type: String
+    - contextPath: GLIMPS.GDetect.Threats
+      description: 'Summary of threats found in submission. Each submission file reaching threshold score will add an entry. Entry keys are the SHA256 of files'
+      type: String
+    - contextPath: GLIMPS.GDetect.Threats.tags
+      description: 'Summary of threats found in submission. Each submission file reaching threshold score will add an entry. Entry keys are the SHA256 of files'
+      type: String
+    - contextPath: GLIMPS.GDetect.Threats.tags.name
+      description: 'tag name'
+      type: String
+    - contextPath: GLIMPS.GDetect.Threats.tags.value
+      description: 'tag value'
+      type: String
+    - contextPath: GLIMPS.GDetect.Threats.score
+      description: 'highest score given by probes'
+      type: Number
+    - contextPath: GLIMPS.GDetect.Threats.magic
+      description: 'file magic - file type'
+      type: String
+    - contextPath: GLIMPS.GDetect.Threats.sha256
+      description: 'string hex encoded input file SHA256'
+      type: String
+    - contextPath: GLIMPS.GDetect.Threats.sha1
+      description: 'string hex encoded input file SHA1'
+      type: String
+    - contextPath: GLIMPS.GDetect.Threats.md5
+      description: 'string hex encoded input file MD5'
+      type: String
+    - contextPath: GLIMPS.GDetect.Threats.ssdeep
+      description: 'string input file SSDeep'
+      type: String
+    - contextPath: GLIMPS.GDetect.Threats.file_size
+      description: 'input file size (in bytes)'
+      type: Number
+    - contextPath: GLIMPS.GDetect.Threats.mime
+      description: 'file mime type'
+      type: String
+    description: get threats results for file analysis from gDetect API.

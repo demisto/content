@@ -2,17 +2,15 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-from gdetect import Client
+from gdetect import Client as gClient
+from gdetect.exceptions import GDetectError
 ''' IMPORTS '''
 
-import json
-import requests
-import tempfile
+from copy import copy
+from urllib3 import disable_warnings
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
-
-# Class Client TO TEST
+disable_warnings()
 
 
 class Client(BaseClient):
@@ -21,10 +19,10 @@ class Client(BaseClient):
     Should do requests and return data
     """
 
-    def __init__(self, url: str, api_token: str, insecure: bool):
-        super().__init__()
-        self.url = url
-        self.client = Client(url=self.url, token=api_token, insecure=insecure)
+    def __init__(self, base_url: str, api_token: str, verify: bool, proxy: bool):
+        super().__init__(base_url=base_url, verify=verify, proxy=proxy)
+        self.__client = gClient(url=self._base_url, token=api_token)
+        self.__client.verify = not self._verify
 
     def gdetect_send(self, filepath: str) -> str:
         """Sends file to GLIMPS Detect API.
@@ -36,7 +34,7 @@ class Client(BaseClient):
         :rtype: ``str``
         """
 
-        return self.client.push(filepath)
+        return self.__client.push(filepath)
 
     def gdetect_get(self, uuid: str) -> Dict[str, Any]:
         """Gets GLIMPS Detect result for given uuid.
@@ -48,9 +46,7 @@ class Client(BaseClient):
         :rtype: ``Dict[str, Any]``
         """
 
-        return self.client.get(uuid)
-
-# test_module TODO Checking errors
+        return self.__client.get(uuid)
 
 
 def test_module(client):
@@ -58,19 +54,21 @@ def test_module(client):
     Returning 'ok' indicates that the integration works like it suppose to. Connection to the service is successful.
 
     Args:
-        client: HelloWorld client
+        client: GLIMPSDetect client
 
     Returns:
         'ok' if test passed, anything else will fail the test
     """
-    with tempfile.NamedTemporaryFile() as tmp:
-        result = client.gdetect_send(tmp.name)
-        if 'Hello DBot' == result:  # Check errors
+    try:
+        resp = client.gdetect_get('00000000-0000-0000-0000-000000000000')
+    except GDetectError as err:
+        return err
+    else:
+        error = resp.get('error')
+        if error == 'file not found':
             return 'ok'
         else:
-            return 'Test failed because ......'
-
-# Commands TODO
+            return error
 
 
 def gdetect_send_command(client, args):  # TO TEST
@@ -91,23 +89,18 @@ def gdetect_send_command(client, args):  # TO TEST
                       raw-response=true
     """
     entry_id = args.get('entryID')
-    req = requests.get(f'/entry/download/{entry_id}')
-    with tempfile.NamedTemporaryFile() as tmp:
-        tmp.write(req.content)
-        uuid = client.gdetect_send(tmp.name)
-
-    # readable output will be in markdown format - https://www.markdownguide.org/basic-syntax/
-    readable_output = f'## {uuid}'
+    filepath = demisto.getFilePath(entry_id).get('path')
+    uuid = client.gdetect_send(filepath)
+    readable_output = f'## GLIMPS.GDetect.UUID: {uuid}'
     outputs = {
         'entryID': entry_id,
-        'GLIMPSDetect UUID': uuid
+        'uuid': uuid
     }
 
     results = CommandResults(
-        outputs_prefix='GLIMPSDetect.Result',
-        outputs_key_field='name',
+        outputs_prefix='GLIMPS.GDetect.Send',
+        outputs_key_field='entryID',
         outputs=outputs,
-
         readable_output=readable_output,
         raw_response=uuid
     )
@@ -115,7 +108,80 @@ def gdetect_send_command(client, args):  # TO TEST
     return results
 
 
-def gdetect_get_command(client, args):  # TO TEST
+def gdetect_get_all_command(client, args):  # TO TEST
+    """
+    Returns GLIMPS Detect analysis results
+
+    Args:
+        client: GLIMPSDetect client
+        args: all command arguments
+
+    Returns:
+        GLIMPS GLIMPS Detect analysis results
+
+        readable_output: This will be presented in Warroom - should be in markdown syntax - human readable
+        outputs: Dictionary/JSON - saved in incident context in order to be used as input for other tasks in the
+                 playbook
+        raw_response: Used for debugging/troubleshooting purposes - will be shown only if the command executed with
+                      raw-response=true
+    """
+
+    uuid = args.get('uuid')
+    response = client.gdetect_get(uuid)
+    url = client._base_url.strip('/')
+    if 'token' in response:
+        response.pop('sid')
+        response['link'] = f"{url}/expert/en/analysis-redirect/{response.get('token')}"
+    elif 'sid' in response:
+        sid = response.pop('sid')
+        response['link'] = f'{url}/expert/en/analysis/advanced/{sid}'
+    else:
+        response['link'] = f"{url}/lite/analysis/response/{response.get('uuid')}"
+
+    raw_response = copy(response)
+    readable_output = ''
+    readable_buffer = ''
+
+    if 'errors' in response:
+        errors = response.get('errors')
+        readable_buffer += tableToMarkdown('Errors', errors, errors.keys())
+
+    if 'files' in response:
+        files = response.get('files')
+        for file in files:
+            av_results_buffer = ''
+            if file.get('av_results'):
+                av_results = file.get('av_results')
+                av_results_buffer = tableToMarkdown(f"AV Result for {file.get('sha256')}", av_results, ['av', 'result', 'score'])
+            readable_buffer += tableToMarkdown('File', file, ['sha256', 'sha1', 'md5', 'ssdeep', 'magic', 'size', 'is_malware'])
+            readable_buffer += av_results_buffer
+
+    if 'threats' in response:
+        threats = response.get('threats')
+        for sha256, threat in threats.items():
+            tags = threat.get('tags')
+            readable_buffer += tableToMarkdown(f'Threat {sha256}', threat,
+                                               ['filenames', 'score', 'magic', 'sha256', 'sha1', 'md5', 'ssdeep', 'file_size',
+                                                'mime'])
+            readable_buffer += tableToMarkdown(f'Tags of threat {sha256}', tags, ['name', 'value'])
+
+    readable_output = tableToMarkdown('Results', response, ['done', 'duration',
+                                                            'file_count', 'filenames', 'filetype', 'is_malware', 'link',
+                                                            'malwares', 'md5', 'score', 'sha1', 'sha256', 'size', 'ssdeep',
+                                                            'status', 'timestamp', 'token', 'uuid', 'error'], removeNull=True)
+    readable_output += readable_buffer
+    results = CommandResults(
+        outputs_prefix='GLIMPS.GDetect.All',
+        outputs_key_field='uuid',
+        outputs=raw_response,
+        raw_response=raw_response,
+        readable_output=readable_output,
+    )
+
+    return results
+
+
+def gdetect_get_threats_command(client, args):  # TO TEST
     """
     Returns GLIMPS Detect analysis results
 
@@ -133,62 +199,52 @@ def gdetect_get_command(client, args):  # TO TEST
                       raw-response=true
     """
     uuid = args.get('uuid')
-    results = client.gdetect_get(uuid)
-    sid = results.pop('sid')
-    results['link'] = f'{client.url}/expert/en/analysis/advanced/{sid}'
-    outputs = results
-    readable_output = '''
-    ## GLIMPSDetect
-    | PATH | VALUE |
-    | ---  | --- |
-    | GLIMPS.GDetect.UUID  | {uuid} |
-    | GLIMPS.GDetect.SHA256  | {sha256} |
-    | GLIMPS.GDetect.SHA1  | {sha1} |
-    | GLIMPS.GDetect.MD5  | {md5} |
-    | GLIMPS.GDetect.SSDeep  | {ssdeep} |
-    | GLIMPS.GDetect.IsMalware  | {is_malware} |
-    | GLIMPS.GDetect.Score  | {score} |
-    | GLIMPS.GDetect.Done  | {done} |
-    | GLIMPS.GDetect.Timestamp  | {timestamp} |
-    | GLIMPS.GDetect.Filetype  | {filetype} |
-    | GLIMPS.GDetect.Size  | {size} |
-    | GLIMPS.GDetect.Filenames  | {filenames} |
-    | GLIMPS.GDetect.Malwares  | {malwares} |
-    '''.format(**results)
-    for file in results.get('files'):
-        readable_output += '''
-        | GLIMPS.GDetect.File.SHA256  | {sha256} |
-        | GLIMPS.GDetect.File.SHA1  | {sha1} |
-        | GLIMPS.GDetect.File.MD5  | {md5} |
-        | GLIMPS.GDetect.File.SSDeep  | {ssdeep} |
-        | GLIMPS.GDetect.File.Magic  | {magic} |
-        '''
-        if file.get('is_malware'):
-            for av_result in file.get('av_results'):
-                readable_output += '''
-                | GLIMPS.GDetect.File.AVResults.AV  | {av} |
-                | GLIMPS.GDetect.File.AVResults.Result  | {result} |
-                | GLIMPS.GDetect.File.AVResults.Score  | {score} |
-                '''.format(**av_result)
-        readable_output += '''
-        | GLIMPS.GDetect.File.Size  | {size} |
-        | GLIMPS.GDetect.File.IsMalware  | {is_malware} |
-        '''
-    readable_output += '''
-    | GLIMPS.GDetect.FileCount  | {file_count} |
-    | GLIMPS.GDetect.Duration  | {duration} |
-    | GLIMPS.GDetect.Token  | {token} |
-    | GLIMPS.GDetect.Status  | {status} |
-    | GLIMPS.GDetect.Link  | {link} |
-    '''.format(**results)
+    response = client.gdetect_get(uuid)
+    url = client._base_url.strip('/')
+    link = ''
+    if 'token' in response:
+        if 'sid' in response:
+            response.pop('sid')
+        link = f"{url}/expert/en/analysis-redirect/{response.get('token')}"
+    elif 'sid' in response:
+        sid = response.pop('sid')
+        link = f'{url}/expert/en/analysis/advanced/{sid}'
+    else:
+        link = f"{url}/lite/analysis/response/{response.get('uuid')}"
 
+    if 'threats' not in response:
+        raw_response = dict()
+        raw_response['link'] = link
+        raw_response['uuid'] = uuid
+        raw_response['result'] = 'None'
+        readable_output = '## No threats\n'
+        readable_output += f'Please use !gdetect-get-all or go to the [full result]({link}) for more'
+        results = CommandResults(
+            outputs_prefix='GLIMPS.GDetect.Threats',
+            outputs_key_field=uuid,
+            outputs=raw_response,
+            readable_output=readable_output,
+            raw_response=raw_response
+        )
+        return results
+
+    readable_output = ''
+    raw_response = response.get('threats')
+    for sha256, threat in response.get('threats').items():
+        tags = threat.get('tags')
+        readable_output += tableToMarkdown(f'Threat {sha256}', threat,
+                                           ['filenames', 'score', 'magic', 'sha256', 'sha1', 'md5', 'ssdeep', 'file_size',
+                                            'mime'])
+        readable_output += tableToMarkdown(f'Tags of threat {sha256}', tags, ['name', 'value'])
+    raw_response['link'] = link
+    raw_response['uuid'] = uuid
+    readable_output += f'[Link to the analysis in the GLIMPS Malware Expert interface]({link})'
     results = CommandResults(
-        outputs_prefix='GLIMPSDetect.Result',
-        outputs_key_field='name',
-        outputs=outputs,
-
+        outputs_prefix='GLIMPS.GDetect.Threats',
+        outputs_key_field='uuid',
+        outputs=raw_response,
         readable_output=readable_output,
-        raw_response=outputs
+        raw_response=raw_response
     )
 
     return results
@@ -204,17 +260,17 @@ def main():
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')
     try:
-        client = Client(params.get('url'), params.get('api_token'), params.get('insecure'))
+        client = Client(params.get('url'), params.get('api_token'), params.get('insecure'), params.get('proxy'))
         if command == 'test-module':
             # This is the call made when pressing the integration Test button.
             result = test_module(client)
             return_results(result)
-
         elif command == 'gdetect-send':
             return_results(gdetect_send_command(client, demisto.args()))
-
-        elif command == 'gdetect-get':
-            return_results(gdetect_get_command(client, demisto.args()))
+        elif command == 'gdetect-get-all':
+            return_results(gdetect_get_all_command(client, demisto.args()))
+        elif command == 'gdetect-get-threats':
+            return_results(gdetect_get_threats_command(client, demisto.args()))
 
     # Log exceptions
     except Exception as e:

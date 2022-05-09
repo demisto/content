@@ -1,7 +1,7 @@
-## BaseIntegration Help
+## GDetect Help
 
-Markdown file for integration configuration  help snippet. In this file add:
-- Brief information about how to retrieve the API key of your product
-- Other useful information on how to configure your integration in XSOAR
+Thanks to this integration, submit files to GLIMPS Malware and identify
+instantly malware and ransomware. Get detailed and contextualized threat
+information by switching to the GLIMPS Malware Expert interface easily
 
-Since this is a Markdown file, we encourage you to use MD formatting for sections, sub-sections, lists, etc.
+Please see [GDetect Python client](https://pypi.org/project/gdetect/) for more information.
