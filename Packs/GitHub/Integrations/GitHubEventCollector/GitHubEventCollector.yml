@@ -60,6 +60,7 @@ script:
     name: github-get-events
   dockerimage: demisto/fastapi:1.0.0.29406
   runonce: false
+  isfetchevents: true
   subtype: python3
 marketplaces:
 - marketplacev2
