@@ -2,7 +2,7 @@ commonfields:
   id: okta event collector
   version: -1
 name: okta event collector
-display: Okta event collector
+display: Okta Event Collector
 category: Analytics & SIEM
 description: Okta logs event collector integration for XSIAM.
 configuration:
