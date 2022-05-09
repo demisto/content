@@ -52,7 +52,7 @@ class Request(BaseModel):
     """
     A class that stores a request configuration
     """
-    method: Method
+    method: Method = 'GET'
     url: AnyUrl
     headers: Optional[Union[Json[dict], dict]]
     params: Optional[ReqParams]
@@ -96,8 +96,9 @@ class GetEvents:
         response = self.client.call()
         events: list = response.json()
 
-        if len(events) == 0:
+        if not events:
             return []
+
         while True:
             yield events
             last = events.pop()
@@ -145,10 +146,10 @@ def main():
     except ValueError:
         events_to_add_per_request = 1000
 
-    headers = json.loads(demisto_params['headers'])
-    token_header = {'Authorization': f"Bearer {demisto_params['auth_credendtials']['password']}"}
+    headers = {'Authorization': f"Bearer {demisto_params['auth_credendtials']['password']}",
+               'Accept': 'application/vnd.github.v3+json'}
 
-    demisto_params['headers'] = dict(token_header.items() | headers.items())
+    demisto_params['headers'] = headers
     demisto_params['params'] = ReqParams(**demisto_params)
 
     request = Request(**demisto_params)

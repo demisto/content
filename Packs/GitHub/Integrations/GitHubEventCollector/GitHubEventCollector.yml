@@ -11,42 +11,13 @@ configuration:
   defaultvalue: 'https://api.github.com/orgs/${ORGANIZATION}/audit-log'
   type: 0
   required: true
-- display: HTTP Method
-  name: method
-  type: 15
-  required: true
-  defaultvalue: GET
-  options:
-  - GET
-  - POST
-  - DELETE
-  - PUT
-  - PATCH
-  - HEAD
-  hidden: true
-- display: Headers
-  name: headers
-  defaultvalue: '{"Accept": "application/vnd.github.v3+json"}'
-  type: 0
-  required: true
-  additionalinfo: ''
-  hidden: true
 - display: ""
   displaypassword: API Key
   name: auth_credendtials
   type: 9
   required: true
   hiddenusername: true
-- display: Use system proxy settings
-  name: proxy
-  type: 8
-  required: false
-- display: Use Secured Connection
-  name: verify
-  defaultvalue: "true"
-  type: 8
-  required: false
-- display: How many logs to fetch
+- display: The maximum number of logs to fetch.
   name: limit
   type: 0
   defaultvalue: 1000
@@ -70,6 +41,15 @@ configuration:
   - all
   - web
   - git
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+- display: Use Secured Connection
+  name: verify
+  defaultvalue: "true"
+  type: 8
+  required: false
 script:
   script: ""
   type: python
@@ -81,6 +61,6 @@ script:
   dockerimage: demisto/fastapi:1.0.0.28667
   runonce: false
   subtype: python3
-fromversion: 5.5.0
+fromversion: 6.6.0
 tests:
   - Github Event Collector-test

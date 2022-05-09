@@ -5150,7 +5150,7 @@
                 "Github Event Collector"
             ],
             "playbookID": "Github Event Collector-test",
-            "fromversion": "5.5.0"
+            "fromversion": "6.6.0"
         }
     ],
     "skipped_tests": {
