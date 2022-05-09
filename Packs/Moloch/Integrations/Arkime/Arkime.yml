@@ -1,0 +1,957 @@
+commonfields:
+  id: Arkime
+  version: -1
+name: Arkime
+display: Arkime
+category: Utilities
+description: Generated description - REPLACE THIS
+configuration:
+- name: url
+  display: Server URL
+  defaultvalue: https://www.example.com
+  type: 0
+  required: true
+- name: proxy
+  display: Use system proxy
+  defaultvalue: ''
+  type: 8
+  required: false
+- name: insecure
+  display: Trust any certificate
+  defaultvalue: ''
+  type: 8
+  required: false
+- display: Username
+  name: credentials
+  defaultvalue: ""
+  type: 9
+  required: true
+script:
+  script: ''
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.10.4.29342
+  isfetch: false
+  commands:
+  - name: arkime-connection-list
+    description: ''
+    arguments:
+    - name: source_field
+      description: ''
+      required: false
+      isArray: false
+    - name: destination_field
+      description: ''
+      required: false
+      isArray: false
+    - name: date
+      description: ''
+      required: false
+      isArray: false
+    - name: expression
+      description: ''
+      required: false
+      isArray: false
+    - name: start_time
+      description: ''
+      required: false
+      isArray: false
+    - name: stop_time
+      description: ''
+      required: false
+      isArray: false
+    - name: view
+      description: ''
+      required: false
+      isArray: false
+    - name: order
+      description: ''
+      required: false
+      isArray: false
+    - name: fields
+      description: ''
+      required: false
+      isArray: true
+    - name: bounding
+      description: ''
+      required: false
+      isArray: false
+    - name: strictly
+      description: ''
+      required: false
+      isArray: false
+    - name: baseline_date
+      description: ''
+      required: false
+      isArray: false
+    - name: baseline_view
+      description: ''
+      required: false
+      isArray: false
+    - name: limit
+      description: ''
+      required: false
+      isArray: false
+    - name: offset
+      description: ''
+      required: false
+      isArray: false
+    - name: page_number
+      description: ''
+      required: false
+      isArray: false
+    - name: page_size
+      description: ''
+      required: false
+      isArray: false
+    outputs:
+    - type: Number
+      contextPath: Arkime.Connection
+      description: ''
+  - name: arkime-connections-csv
+    description: ''
+    arguments:
+    - name: srcfield
+      description: ''
+      required: false
+      isArray: false
+    - name: dstfield
+      description: ''
+      required: false
+      isArray: false
+    - name: starttime
+      description: ''
+      required: false
+      isArray: false
+    - name: stoptime
+      description: ''
+      required: false
+      isArray: false
+  - name: arkime-get-raw-session
+    description: ''
+  - name: arkime-sessions-pcap
+    description: ''
+    arguments:
+    - name: ids
+      description: ''
+      required: false
+      isArray: false
+    - name: starttime
+      description: ''
+      required: false
+      isArray: false
+    - name: segments
+      description: ''
+      required: false
+      isArray: false
+    - name: stoptime
+      description: ''
+      required: false
+      isArray: false
+  - name: arkime-sessions-csv
+    description: ''
+    arguments:
+    - name: stoptime
+      description: ''
+      required: false
+      isArray: false
+    - name: starttime
+      description: ''
+      required: false
+      isArray: false
+  - name: arkime-sessions-query
+    description: ''
+    arguments:
+    - name: stoptime
+      description: ''
+      required: false
+      isArray: false
+    - name: starttime
+      description: ''
+      required: false
+      isArray: false
+    - name: date
+      description: ''
+      required: false
+      isArray: false
+    outputs:
+    - type: Date
+      contextPath: Arkime.SessionsQuery.data.firstPacket
+      description: ''
+    - type: String
+      contextPath: Arkime.SessionsQuery.data.rootId
+      description: ''
+    - type: Number
+      contextPath: Arkime.SessionsQuery.data.totDataBytes
+      description: ''
+    - type: Number
+      contextPath: Arkime.SessionsQuery.data.ipProtocol
+      description: ''
+    - type: String
+      contextPath: Arkime.SessionsQuery.data.node
+      description: ''
+    - type: Date
+      contextPath: Arkime.SessionsQuery.data.lastPacket
+      description: ''
+    - type: Number
+      contextPath: Arkime.SessionsQuery.data.source.packets
+      description: ''
+    - type: Number
+      contextPath: Arkime.SessionsQuery.data.source.port
+      description: ''
+    - type: String
+      contextPath: Arkime.SessionsQuery.data.source.ip
+      description: ''
+    - type: Number
+      contextPath: Arkime.SessionsQuery.data.source.bytes
+      description: ''
+    - type: Number
+      contextPath: Arkime.SessionsQuery.data.destination.port
+      description: ''
+    - type: String
+      contextPath: Arkime.SessionsQuery.data.destination.ip
+      description: ''
+    - type: Number
+      contextPath: Arkime.SessionsQuery.data.destination.packets
+      description: ''
+    - type: Number
+      contextPath: Arkime.SessionsQuery.data.destination.bytes
+      description: ''
+    - type: Number
+      contextPath: Arkime.SessionsQuery.data.client.bytes
+      description: ''
+    - type: Number
+      contextPath: Arkime.SessionsQuery.data.server.bytes
+      description: ''
+    - type: Number
+      contextPath: Arkime.SessionsQuery.data.network.packets
+      description: ''
+    - type: Number
+      contextPath: Arkime.SessionsQuery.data.network.bytes
+      description: ''
+    - type: String
+      contextPath: Arkime.SessionsQuery.data.id
+      description: ''
+    - type: Date
+      contextPath: Arkime.SessionsQuery.graph.xmin
+      description: ''
+    - type: Date
+      contextPath: Arkime.SessionsQuery.graph.xmax
+      description: ''
+    - type: Number
+      contextPath: Arkime.SessionsQuery.graph.interval
+      description: ''
+    - type: Number
+      contextPath: Arkime.SessionsQuery.graph.sessionsTotal
+      description: ''
+    - type: Number
+      contextPath: Arkime.SessionsQuery.graph.network.packetsTotal
+      description: ''
+    - type: Number
+      contextPath: Arkime.SessionsQuery.graph.network.bytesTotal
+      description: ''
+    - type: Number
+      contextPath: Arkime.SessionsQuery.graph.totDataBytesTotal
+      description: ''
+    - type: Number
+      contextPath: Arkime.SessionsQuery.recordsTotal
+      description: ''
+    - type: Number
+      contextPath: Arkime.SessionsQuery.recordsFiltered
+      description: ''
+  - name: arkime-unique-field
+    description: ''
+    arguments:
+    - name: counts
+      description: ''
+      required: false
+      isArray: false
+    - name: exp
+      description: ''
+      required: false
+      isArray: false
+    - name: date
+      description: ''
+      required: false
+      isArray: false
+    - name: expression
+      description: ''
+      required: false
+      isArray: false
+    - name: start
+      description: ''
+      required: false
+      isArray: false
+    - name: length
+      description: ''
+      required: false
+      isArray: false
+    - name: stoptime
+      description: ''
+      required: false
+      isArray: false
+    - name: starttime
+      description: ''
+      required: false
+      isArray: false
+    - name: view
+      description: ''
+      required: false
+      isArray: false
+    - name: order
+      description: ''
+      required: false
+      isArray: false
+    - name: bounding
+      description: ''
+      required: false
+      isArray: false
+    - name: fields
+      description: ''
+      required: false
+      isArray: false
+    - name: strictly
+      description: ''
+      required: false
+      isArray: false
+  - name: arkime-unique-field-multi
+    description: ''
+    arguments:
+    - name: counts
+      description: ''
+      required: false
+      isArray: false
+    - name: exp
+      description: ''
+      required: false
+      isArray: false
+    - name: field
+      description: ''
+      required: false
+      isArray: false
+    - name: date
+      description: ''
+      required: false
+      isArray: false
+    - name: expression
+      description: ''
+      required: false
+      isArray: false
+    - name: start
+      description: ''
+      required: false
+      isArray: false
+    - name: length
+      description: ''
+      required: false
+      isArray: false
+    - name: stoptime
+      description: ''
+      required: false
+      isArray: false
+    - name: starttime
+      description: ''
+      required: false
+      isArray: false
+    - name: view
+      description: ''
+      required: false
+      isArray: false
+    - name: order
+      description: ''
+      required: false
+      isArray: false
+    - name: bounding
+      description: ''
+      required: false
+      isArray: false
+    - name: fields
+      description: ''
+      required: false
+      isArray: false
+    - name: strictly
+      description: ''
+      required: false
+      isArray: false
+  - name: arkime-get-fields
+    description: ''
+    arguments:
+    - name: array
+      description: ''
+      required: false
+      isArray: false
+  - name: arkime-spi-data
+    description: ''
+    arguments:
+    - name: nodename
+      description: ''
+      required: false
+      isArray: false
+    - name: filenum
+      description: ''
+      required: false
+      isArray: false
+    - name: date
+      description: ''
+      required: false
+      isArray: false
+    - name: expression
+      description: ''
+      required: false
+      isArray: false
+    - name: start
+      description: ''
+      required: false
+      isArray: false
+    - name: length
+      description: ''
+      required: false
+      isArray: false
+    - name: stoptime
+      description: ''
+      required: false
+      isArray: false
+    - name: starttime
+      description: ''
+      required: false
+      isArray: false
+    - name: view
+      description: ''
+      required: false
+      isArray: false
+    - name: order
+      description: ''
+      required: false
+      isArray: false
+    - name: bounding
+      description: ''
+      required: false
+      isArray: false
+    - name: fields
+      description: ''
+      required: false
+      isArray: false
+    - name: strictly
+      description: ''
+      required: false
+      isArray: false
+  - name: arkime-spi-graph
+    description: ''
+    arguments:
+    - name: field
+      description: ''
+      required: false
+      isArray: false
+    - name: starttime
+      description: ''
+      required: false
+      isArray: false
+    - name: stoptime
+      description: ''
+      required: false
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: Arkime.SpiGraph.items.name
+      description: ''
+    - type: Number
+      contextPath: Arkime.SpiGraph.items.count
+      description: ''
+    - type: Date
+      contextPath: Arkime.SpiGraph.items.graph.xmin
+      description: ''
+    - type: Date
+      contextPath: Arkime.SpiGraph.items.graph.xmax
+      description: ''
+    - type: Number
+      contextPath: Arkime.SpiGraph.items.graph.interval
+      description: ''
+    - type: Number
+      contextPath: Arkime.SpiGraph.items.graph.sessionsHisto
+      description: ''
+    - type: Number
+      contextPath: Arkime.SpiGraph.items.graph.sessionsTotal
+      description: ''
+    - type: Number
+      contextPath: Arkime.SpiGraph.items.graph.source.packetsHisto
+      description: ''
+    - type: Number
+      contextPath: Arkime.SpiGraph.items.graph.destination.packetsHisto
+      description: ''
+    - type: Number
+      contextPath: Arkime.SpiGraph.items.graph.network.packetsTotal
+      description: ''
+    - type: Number
+      contextPath: Arkime.SpiGraph.items.graph.source.bytesHisto
+      description: ''
+    - type: Number
+      contextPath: Arkime.SpiGraph.items.graph.destination.bytesHisto
+      description: ''
+    - type: Date
+      contextPath: Arkime.SpiGraph.items.graph.network.bytesTotal
+      description: ''
+    - type: Number
+      contextPath: Arkime.SpiGraph.items.graph.client.bytesHisto
+      description: ''
+    - type: Number
+      contextPath: Arkime.SpiGraph.items.graph.server.bytesHisto
+      description: ''
+    - type: Date
+      contextPath: Arkime.SpiGraph.items.graph.totDataBytesTotal
+      description: ''
+    - type: Number
+      contextPath: Arkime.SpiGraph.items.sessionsHisto
+      description: ''
+    - type: Number
+      contextPath: Arkime.SpiGraph.items.source.packetsHisto
+      description: ''
+    - type: Number
+      contextPath: Arkime.SpiGraph.items.destination.packetsHisto
+      description: ''
+    - type: Number
+      contextPath: Arkime.SpiGraph.items.source.bytesHisto
+      description: ''
+    - type: Date
+      contextPath: Arkime.SpiGraph.items.destination.bytesHisto
+      description: ''
+    - type: Number
+      contextPath: Arkime.SpiGraph.items.client.bytesHisto
+      description: ''
+    - type: Date
+      contextPath: Arkime.SpiGraph.items.server.bytesHisto
+      description: ''
+    - type: Number
+      contextPath: Arkime.SpiGraph.items.network.packetsHisto
+      description: ''
+    - type: Date
+      contextPath: Arkime.SpiGraph.items.totDataBytesHisto
+      description: ''
+    - type: Date
+      contextPath: Arkime.SpiGraph.items.network.bytesHisto
+      description: ''
+    - type: Date
+      contextPath: Arkime.SpiGraph.graph.xmin
+      description: ''
+    - type: Date
+      contextPath: Arkime.SpiGraph.graph.xmax
+      description: ''
+    - type: Number
+      contextPath: Arkime.SpiGraph.graph.interval
+      description: ''
+    - type: Number
+      contextPath: Arkime.SpiGraph.graph.sessionsHisto
+      description: ''
+    - type: Number
+      contextPath: Arkime.SpiGraph.graph.sessionsTotal
+      description: ''
+    - type: Number
+      contextPath: Arkime.SpiGraph.graph.source.packetsHisto
+      description: ''
+    - type: Number
+      contextPath: Arkime.SpiGraph.graph.destination.packetsHisto
+      description: ''
+    - type: Number
+      contextPath: Arkime.SpiGraph.graph.network.packetsTotal
+      description: ''
+    - type: Number
+      contextPath: Arkime.SpiGraph.graph.source.bytesHisto
+      description: ''
+    - type: Number
+      contextPath: Arkime.SpiGraph.graph.destination.bytesHisto
+      description: ''
+    - type: Date
+      contextPath: Arkime.SpiGraph.graph.network.bytesTotal
+      description: ''
+    - type: Number
+      contextPath: Arkime.SpiGraph.graph.client.bytesHisto
+      description: ''
+    - type: Number
+      contextPath: Arkime.SpiGraph.graph.server.bytesHisto
+      description: ''
+    - type: Date
+      contextPath: Arkime.SpiGraph.graph.totDataBytesTotal
+      description: ''
+    - type: Number
+      contextPath: Arkime.SpiGraph.recordsTotal
+      description: ''
+    - type: Number
+      contextPath: Arkime.SpiGraph.recordsFiltered
+      description: ''
+  - name: arkime-spi-view
+    description: ''
+    arguments:
+    - name: spi
+      description: ''
+      required: false
+      isArray: false
+    - name: date
+      description: ''
+      required: false
+      isArray: false
+    - name: expression
+      description: ''
+      required: false
+      isArray: false
+    - name: start
+      description: ''
+      required: false
+      isArray: false
+    - name: length
+      description: ''
+      required: false
+      isArray: false
+    - name: stoptime
+      description: ''
+      required: false
+      isArray: false
+    - name: starttime
+      description: ''
+      required: false
+      isArray: false
+    - name: view
+      description: ''
+      required: false
+      isArray: false
+    - name: order
+      description: ''
+      required: false
+      isArray: false
+    - name: bounding
+      description: ''
+      required: false
+      isArray: false
+    - name: fields
+      description: ''
+      required: false
+      isArray: false
+    - name: strictly
+      description: ''
+      required: false
+      isArray: false
+    outputs:
+    - type: Number
+      contextPath: Arkime.SpiView.spi.destination.ip.doc_count_error_upper_bound
+      description: ''
+    - type: Number
+      contextPath: Arkime.SpiView.spi.destination.ip.sum_other_doc_count
+      description: ''
+    - type: String
+      contextPath: Arkime.SpiView.spi.destination.ip.buckets.key
+      description: ''
+    - type: Number
+      contextPath: Arkime.SpiView.spi.destination.ip.buckets.doc_count
+      description: ''
+    - type: Unknown
+      contextPath: Arkime.SpiView.error
+      description: ''
+    - type: Number
+      contextPath: Arkime.SpiView.recordsTotal
+      description: ''
+    - type: Number
+      contextPath: Arkime.SpiView.recordsFiltered
+      description: ''
+  - name: arkime-new-request
+    description: ''
+  - name: arkime-get-file-size
+    description: ''
+    arguments:
+    - name: nodename
+      description: ''
+      required: false
+      isArray: false
+    - name: filenum
+      description: ''
+      required: false
+      isArray: false
+  - name: arkime-default-command
+    description: ''
+    arguments:
+    - name: nodename
+      description: ''
+      required: false
+      isArray: false
+    - name: filenum
+      description: ''
+      required: false
+      isArray: false
+    - name: date
+      description: ''
+      required: false
+      isArray: false
+    - name: expression
+      description: ''
+      required: false
+      isArray: false
+    - name: start
+      description: ''
+      required: false
+      isArray: false
+    - name: length
+      description: ''
+      required: false
+      isArray: false
+    - name: stoptime
+      description: ''
+      required: false
+      isArray: false
+    - name: starttime
+      description: ''
+      required: false
+      isArray: false
+    - name: view
+      description: ''
+      required: false
+      isArray: false
+    - name: order
+      description: ''
+      required: false
+      isArray: false
+    - name: bounding
+      description: ''
+      required: false
+      isArray: false
+    - name: fields
+      description: ''
+      required: false
+      isArray: false
+    - name: strictly
+      description: ''
+      required: false
+      isArray: false
+  - name: arkime-reverse-dns
+    description: ''
+    arguments:
+    - name: ip
+      description: ''
+      required: false
+      isArray: false
+  - name: arkime-add-session-tags
+    description: ''
+    arguments:
+    - name: tags
+      description: ''
+      required: false
+      isArray: false
+    - name: ids
+      description: ''
+      required: false
+      isArray: false
+    - name: segments
+      description: ''
+      required: false
+      isArray: false
+    - name: date
+      description: ''
+      required: false
+      isArray: false
+    - name: expression
+      description: ''
+      required: false
+      isArray: false
+    - name: start
+      description: ''
+      required: false
+      isArray: false
+    - name: length
+      description: ''
+      required: false
+      isArray: false
+    - name: stoptime
+      description: ''
+      required: false
+      isArray: false
+    - name: starttime
+      description: ''
+      required: false
+      isArray: false
+    - name: view
+      description: ''
+      required: false
+      isArray: false
+    - name: order
+      description: ''
+      required: false
+      isArray: false
+    - name: bounding
+      description: ''
+      required: false
+      isArray: false
+    - name: fields
+      description: ''
+      required: false
+      isArray: false
+    - name: strictly
+      description: ''
+      required: false
+      isArray: false
+  - name: arkime-get-files
+    description: ''
+    arguments:
+    - name: length
+      description: ''
+      required: false
+      isArray: false
+    - name: start
+      description: ''
+      required: false
+      isArray: false
+    outputs:
+    - type: Number
+      contextPath: Arkime.GetFiles.recordsTotal
+      description: ''
+    - type: Number
+      contextPath: Arkime.GetFiles.recordsFiltered
+      description: ''
+    - type: String
+      contextPath: Arkime.GetFiles.data.node
+      description: ''
+    - type: String
+      contextPath: Arkime.GetFiles.data.packetPosEncoding
+      description: ''
+    - type: Number
+      contextPath: Arkime.GetFiles.data.num
+      description: ''
+    - type: String
+      contextPath: Arkime.GetFiles.data.name
+      description: ''
+    - type: Number
+      contextPath: Arkime.GetFiles.data.locked
+      description: ''
+    - type: Number
+      contextPath: Arkime.GetFiles.data.first
+      description: ''
+    - type: Number
+      contextPath: Arkime.GetFiles.data.compression
+      description: ''
+    - type: Number
+      contextPath: Arkime.GetFiles.data.packetsSize
+      description: ''
+    - type: Number
+      contextPath: Arkime.GetFiles.data.filesize
+      description: ''
+    - type: Number
+      contextPath: Arkime.GetFiles.data.packets
+      description: ''
+  - name: arkime-histories-get
+    description: ''
+    outputs:
+    - type: Number
+      contextPath: Arkime.HistoriesGet.data.timestamp
+      description: ''
+    - type: String
+      contextPath: Arkime.HistoriesGet.data.method
+      description: ''
+    - type: String
+      contextPath: Arkime.HistoriesGet.data.userId
+      description: ''
+    - type: String
+      contextPath: Arkime.HistoriesGet.data.api
+      description: ''
+    - type: String
+      contextPath: Arkime.HistoriesGet.data.query
+      description: ''
+    - type: String
+      contextPath: Arkime.HistoriesGet.data.uiPage
+      description: ''
+    - type: Number
+      contextPath: Arkime.HistoriesGet.data.range
+      description: ''
+    - type: Number
+      contextPath: Arkime.HistoriesGet.data.body.flatten
+      description: ''
+    - type: Number
+      contextPath: Arkime.HistoriesGet.data.body.length
+      description: ''
+    - type: Number
+      contextPath: Arkime.HistoriesGet.data.body.facets
+      description: ''
+    - type: String
+      contextPath: Arkime.HistoriesGet.data.body.bounding
+      description: ''
+    - type: String
+      contextPath: Arkime.HistoriesGet.data.body.interval
+      description: ''
+    - type: Date
+      contextPath: Arkime.HistoriesGet.data.body.startTime
+      description: ''
+    - type: Date
+      contextPath: Arkime.HistoriesGet.data.body.stopTime
+      description: ''
+    - type: String
+      contextPath: Arkime.HistoriesGet.data.body.order
+      description: ''
+    - type: String
+      contextPath: Arkime.HistoriesGet.data.body.fields
+      description: ''
+    - type: Number
+      contextPath: Arkime.HistoriesGet.data.recordsTotal
+      description: ''
+    - type: Number
+      contextPath: Arkime.HistoriesGet.data.recordsReturned
+      description: ''
+    - type: Number
+      contextPath: Arkime.HistoriesGet.data.recordsFiltered
+      description: ''
+    - type: Number
+      contextPath: Arkime.HistoriesGet.data.queryTime
+      description: ''
+    - type: String
+      contextPath: Arkime.HistoriesGet.data.esQuery
+      description: ''
+    - type: String
+      contextPath: Arkime.HistoriesGet.data.esQueryIndices
+      description: ''
+    - type: String
+      contextPath: Arkime.HistoriesGet.data.id
+      description: ''
+    - type: String
+      contextPath: Arkime.HistoriesGet.data.index
+      description: ''
+    - type: String
+      contextPath: Arkime.HistoriesGet.data.body.sortField
+      description: ''
+    - type: String
+      contextPath: Arkime.HistoriesGet.data.body.date
+      description: ''
+    - type: String
+      contextPath: Arkime.HistoriesGet.data.body.srcField
+      description: ''
+    - type: String
+      contextPath: Arkime.HistoriesGet.data.body.dstField
+      description: ''
+    - type: Number
+      contextPath: Arkime.HistoriesGet.data.body.minConn
+      description: ''
+    - type: String
+      contextPath: Arkime.HistoriesGet.data.body.baselineDate
+      description: ''
+    - type: String
+      contextPath: Arkime.HistoriesGet.data.body.baselineVis
+      description: ''
+    - type: Number
+      contextPath: Arkime.HistoriesGet.data.body.nodeDist
+      description: ''
+    - type: String
+      contextPath: Arkime.HistoriesGet.data.body.sort
+      description: ''
+    - type: String
+      contextPath: Arkime.HistoriesGet.data.body.exp
+      description: ''
+    - type: Number
+      contextPath: Arkime.HistoriesGet.data.body.size
+      description: ''
+    - type: Number
+      contextPath: Arkime.HistoriesGet.data.body.msgNum
+      description: ''
+    - type: Number
+      contextPath: Arkime.HistoriesGet.data.body.start
+      description: ''
+    - type: String
+      contextPath: Arkime.HistoriesGet.data.body.visibleHeaders
+      description: ''
+    - type: Number
+      contextPath: Arkime.HistoriesGet.recordsTotal
+      description: ''
+    - type: Number
+      contextPath: Arkime.HistoriesGet.recordsFiltered
+      description: ''
