@@ -7,7 +7,7 @@
       prefix: $CI_COMMIT_REF_SLUG
     paths:
       - $PIP_CACHE_DIR
-      - venv/
+      - venv/lib/
       - node_modules/
       - .npm/
     policy: pull
