@@ -20,7 +20,7 @@ from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToM
     encode_string_results, safe_load_json, remove_empty_elements, aws_table_to_markdown, is_demisto_version_ge, \
     appendContext, auto_detect_indicator_type, handle_proxy, get_demisto_version_as_str, get_x_content_info_headers, \
     url_to_clickable_markdown, WarningsHandler, DemistoException, SmartGetDict, JsonTransformer, \
-    remove_duplicates_from_list_arg, DBotScoreType, DBotScoreReliability, Common, send_events_to_xsiam, EntryFormat
+    remove_duplicates_from_list_arg, DBotScoreType, DBotScoreReliability, Common, send_events_to_xsiam
 import CommonServerPython
 
 try:
@@ -7164,8 +7164,8 @@ def test_create_indicator_result_with_dbotscore_unknown(mocker, args, expected):
                                                                   (None, 1, 'text'),
                                                                   ('html', '', 'html'),
                                                                   ('html', {}, 'html')))
-def test_content_format(content_format, outputs, expected_type):
-    from CommonServerPython import CommandResults
+def test_content_type(content_format, outputs, expected_type):
+    from CommonServerPython import CommandResults, EntryFormat
     command_results = CommandResults(
         outputs=outputs,
         readable_output='human_readable',
@@ -7233,17 +7233,3 @@ class TestSendEventsToXSIAMTest:
 
         assert arguments_called['headers']['format'] == expected_format
         assert decompressed_data == expected_data
-
-
-@pytest.mark.parametrize('readable_output_format,expected_type', (('html', EntryFormat.HTML),
-                                                                (None, EntryFormat.MARKDOWN))
-                         )
-def test_human_readable_format(readable_output_format, expected_type):
-    from CommonServerPython import CommandResults
-    command_results = CommandResults(
-        outputs='',
-        readable_output='human_readable',
-        outputs_prefix='prefix',
-        readable_output_format=readable_output_format
-    )
-    assert command_results.to_context()['ReadableContentsFormat'] == expected_type
