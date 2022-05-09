@@ -925,8 +925,8 @@ def main():
     add_cc = custom_fields.get('addcctoemail', '')
     add_bcc = custom_fields.get('addbcctoemail', '')
     service_mail = args.get('service_mail', '')
-    email_from = custom_fields.get('emailfrom')
-    email_to = custom_fields.get('emailto')
+    email_from = custom_fields.get('emailfrom', '')
+    email_to = custom_fields.get('emailto', '')
     email_latest_message = custom_fields.get('emaillatestmessage')
     email_code = custom_fields.get('emailgeneratedcode')  # single code field for 'Email Communication' types
     email_codes = custom_fields.get('emailgeneratedcodes')  # multi-code field for other incident types
