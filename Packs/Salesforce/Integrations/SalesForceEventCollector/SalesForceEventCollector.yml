@@ -87,7 +87,10 @@ script:
         isArray: false
   dockerimage: demisto/fastapi:1.0.0.29406
   runonce: false
+  isfetchevents: true
   subtype: python3
-fromversion: 5.5.0
+fromversion: 6.6.0
+marketplaces:
+- marketplacev2
 tests:
   - Salesforce Event Collector-test
