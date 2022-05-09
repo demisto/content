@@ -382,7 +382,7 @@ def rasterize_email_command():
     file_name = demisto.args().get('file_name', 'email')
     html_load = int(demisto.args().get('max_page_load_time', DEFAULT_PAGE_LOAD_TIME))
 
-    file_name = f'{file_name}.{"pdf" if r_type.lower() == "pdf" else "png"}'  # type: ignore
+    file_name = f'{file_name}.{"pdf" if r_type.lower() == "pdf" else "jpeg"}'  # type: ignore
     with open('htmlBody.html', 'w') as f:
         f.write(f'<html style="background:white";>{html_body}</html>')
     path = f'file://{os.path.realpath(f.name)}'
