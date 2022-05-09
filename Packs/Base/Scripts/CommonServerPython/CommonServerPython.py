@@ -4711,21 +4711,6 @@ class Common(object):
             if self.creation_date:
                 account_context['CreationDate'] = self.creation_date
 
-            if self.description:
-                account_context['Description'] = self.description
-
-            if self.stix_id:
-                account_context['STIX_ID'] = self.stix_id
-
-            if self.tags:
-                account_context['Tags'] = self.tags
-
-            if self.traffic_light_protocol:
-                account_context['TrafficLightProtocol'] = self.traffic_light_protocol
-
-            if self.user_id:
-                account_context['UserID'] = self.user_id
-
             irrelevent = ['CONTEXT_PATH', 'to_context', 'dbot_score', 'Id', 'create_context_table']
             details = [detail for detail in dir(self) if not detail.startswith('__') and detail not in irrelevent]
 

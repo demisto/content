@@ -5258,11 +5258,11 @@ class TestCommonTypes:
             tech_email='tech_email',
             billing='billing',
             whois_records=[Common.WhoisRecord('test_key', 'test_value', 'test_date')],
-            description='test',
-            stix_id='test',
-            blocked='test',
-            certificates='test',
-            dns_records='test'
+            description='test_description',
+            stix_id='test_stix_id',
+            blocked=True,
+            certificates=[Common.Certificates('test_issuedto', 'test_issuedby', 'test_validfrom', 'test_validto')],
+            dns_records=[Common.DNSRecord('test_type', 'test_ttl', 'test_data')]
         )
 
         results = CommandResults(
@@ -5280,112 +5280,58 @@ class TestCommonTypes:
             'EntryContext': {
                 'Domain(val.Name && val.Name == obj.Name)': [
                     {
-                        "Name": "somedomain.com",
-                        "DNS": "dns.somedomain",
-                        "DetectionEngines": 10,
-                        "PositiveDetections": 5,
-                        "Registrar": {
-                            "Name": "Mr Registrar",
-                            "AbuseEmail": "registrar@test.com",
-                            "AbusePhone": None
-                        },
-                        "Registrant": {
-                            "Name": "Mr Registrant",
-                            "Email": None,
-                            "Phone": None,
-                            "Country": None
-                        },
-                        "Admin": {
-                            "Name": None,
-                            "Email": "admin@test.com",
-                            "Phone": "18000000",
-                            "Country": None
-                        },
-                        "Organization": "Some Organization",
-                        "Subdomains": [
-                            "sub-domain1.somedomain.com",
-                            "sub-domain2.somedomain.com",
-                            "sub-domain3.somedomain.com"
-                        ],
-                        "DomainStatus": "ACTIVE",
-                        "CreationDate": "2019-01-01T00:00:00",
-                        "UpdatedDate": "2019-01-02T00:00:00",
-                        "NameServers": [
-                            "PNS31.CLOUDNS.NET",
-                            "PNS32.CLOUDNS.NET"
-                        ],
-                        "Tags": ["tag1", "tag2"],
-                        "FeedRelatedIndicators": [{"value": "8.8.8.8", "type": "IP", "description": "test"}],
+                        'Name': 'somedomain.com',
+                        'DNS': 'dns.somedomain',
+                        'DetectionEngines': 10,
+                        'PositiveDetections': 5,
+                        'Registrar': {'Name': 'Mr Registrar', 'AbuseEmail': 'registrar@test.com', 'AbusePhone': None},
+                        'Registrant': {'Name': 'Mr Registrant', 'Email': None, 'Phone': None, 'Country': None},
+                        'Admin': {'Name': None, 'Email': 'admin@test.com', 'Phone': '18000000', 'Country': None},
+                        'Organization': 'Some Organization',
+                        'Subdomains': ['sub-domain1.somedomain.com', 'sub-domain2.somedomain.com',
+                                       'sub-domain3.somedomain.com'], 'DomainStatus': 'ACTIVE',
+                        'CreationDate': '2019-01-01T00:00:00',
+                        'UpdatedDate': '2019-01-02T00:00:00',
+                        'NameServers': ['PNS31.CLOUDNS.NET', 'PNS32.CLOUDNS.NET'],
+                        'Tags': ['tag1', 'tag2'],
+                        'FeedRelatedIndicators': [{'value': '8.8.8.8', 'type': 'IP', 'description': 'test'}],
                         'WhoisRecords': [{'key': 'test_key', 'value': 'test_value', 'date': 'test_date'}],
-                        "MalwareFamily": ["malware_family1", "malware_family2"],
-                        "DomainIDNName": "domain_idn_name",
-                        "Port": "port",
-                        "Internal": "False",
-                        "Category": "category",
-                        "Campaign": "campaign",
-                        "TrafficLightProtocol": "traffic_light_protocol",
-                        "ThreatTypes": [{
-                            "threatcategory": "threat_category",
-                            "threatcategoryconfidence": "threat_category_confidence"
-                        }],
-                        "CommunityNotes": [{
-                            "note": "note",
-                            "timestamp": "2019-01-01T00:00:00"
-                        }],
-                        "Publications": [{
-                            "source": "source",
-                            "title": "title",
-                            "link": "link",
-                            "timestamp": "2019-01-01T00:00:00"
-                        }],
-                        "Geo": {
-                            "Location": "geo_location",
-                            "Country": "geo_country",
-                            "Description": "geo_description"
+                        'MalwareFamily': ['malware_family1', 'malware_family2'], 'DomainIDNName': 'domain_idn_name',
+                        'Port': 'port',
+                        'Internal': 'False',
+                        'Category': 'category',
+                        'Campaign': 'campaign',
+                        'TrafficLightProtocol': 'traffic_light_protocol',
+                        'ThreatTypes': [{'threatcategory': 'threat_category',
+                                         'threatcategoryconfidence': 'threat_category_confidence'}],
+                        'CommunityNotes': [{'note': 'note', 'timestamp': '2019-01-01T00:00:00'}],
+                        'Publications': [{'source': 'source', 'title': 'title', 'link': 'link',
+                                          'timestamp': '2019-01-01T00:00:00'}],
+                        'Geo': {'Location': 'geo_location', 'Country': 'geo_country', 'Description': 'geo_description'},
+                        'Tech': {'Country': 'tech_country', 'Name': 'tech_name', 'Organization': 'tech_organization',
+                                 'Email': 'tech_email'},
+                        'Billing': 'billing',
+                        'WHOIS': {
+                            'Registrar': {'Name': 'Mr Registrar', 'AbuseEmail': 'registrar@test.com',
+                                          'AbusePhone': None},
+                            'Registrant': {'Name': 'Mr Registrant', 'Email': None, 'Phone': None, 'Country': None},
+                            'Admin': {'Name': None, 'Email': 'admin@test.com', 'Phone': '18000000', 'Country': None},
+                            'DomainStatus': 'ACTIVE',
+                            'CreationDate': '2019-01-01T00:00:00',
+                            'UpdatedDate': '2019-01-02T00:00:00',
+                            'NameServers': ['PNS31.CLOUDNS.NET', 'PNS32.CLOUDNS.NET']
                         },
-                        "Tech": {
-                            "Country": "tech_country",
-                            "Name": "tech_name",
-                            "Organization": "tech_organization",
-                            "Email": "tech_email"
-                        },
-                        "Billing": "billing",
-                        "WHOIS": {
-                            "Registrar": {
-                                "Name": "Mr Registrar",
-                                "AbuseEmail": "registrar@test.com",
-                                "AbusePhone": None
-                            },
-                            "Registrant": {
-                                "Name": "Mr Registrant",
-                                "Email": None,
-                                "Phone": None,
-                                "Country": None
-                            },
-                            "Admin": {
-                                "Name": None,
-                                "Email": "admin@test.com",
-                                "Phone": "18000000",
-                                "Country": None
-                            },
-                            "DomainStatus": "ACTIVE",
-                            "CreationDate": "2019-01-01T00:00:00",
-                            "UpdatedDate": "2019-01-02T00:00:00",
-                            "NameServers": [
-                                "PNS31.CLOUDNS.NET",
-                                "PNS32.CLOUDNS.NET"
-                            ]
-                        }
+                        'DNSRecords': [{'type': 'test_type', 'ttl': 'test_ttl', 'data': 'test_data'}],
+                        'STIXID': 'test_stix_id',
+                        'Description': 'test_description',
+                        'Blocked': True,
+                        'Certificates': [{'issuedto': 'test_issuedto', 'issuedby': 'test_issuedby',
+                                          'validfrom': 'test_validfrom','validto': 'test_validto'}]
                     }
                 ],
-                'DBotScore(val.Indicator && val.Indicator == obj.Indicator && '
-                'val.Vendor == obj.Vendor && val.Type == obj.Type)': [
-                    {
-                        'Indicator': 'somedomain.com',
-                        'Type': 'domain',
-                        'Vendor': 'Test',
-                        'Score': 1
-                    }
+                'DBotScore(val.Indicator && val.Indicator == obj.Indicator &&'
+                ' val.Vendor == obj.Vendor && val.Type == obj.Type)': [
+                    {'Indicator': 'somedomain.com', 'Type': 'domain', 'Vendor': 'Test', 'Score': 1}
                 ]
             },
             'IndicatorTimeline': [],
@@ -5739,7 +5685,7 @@ class TestCommonTypes:
             relationships=None,
             blocked=True,
             community_notes=[Common.CommunityNotes(note='note', timestamp='2019-01-01T00:00:00')],
-            creation_date=None,
+            creation_date='test_creation_date',
             description='test_description',
             stix_id='test_stix_id',
             tags=['tag1', 'tag2'],
@@ -5764,6 +5710,7 @@ class TestCommonTypes:
                     {'Id': 'test_account_id',
                      'Type': 'test_account_type',
                      'Blocked': True,
+                     'CreationDate': 'test_creation_date',
                      'City': 'test_city',
                      'CommunityNotes': [{'note': 'note', 'timestamp': '2019-01-01T00:00:00'}],
                      'Country': 'test_country',
@@ -6368,6 +6315,30 @@ class TestCommonTypes:
             'key': 'test_whois_record_type',
             'value': 'test_whois_record_value',
             'date': 'test_whois_record_date'
+        }
+
+    def test_create_dns_record(self):
+        """
+            Given:
+                - A single DNSRecord object
+            When
+               - Running 'to_context' function
+           Then
+               - Verify that the context is as expected
+       """
+        from CommonServerPython import Common
+
+        dns_record = Common.DNSRecord(
+            dns_record_type='test_dns_record_type',
+            dns_ttl='test_dns_ttl',
+            dns_record_data='test_dns_record_data',
+
+        )
+
+        assert dns_record.to_context() == {
+            'type': 'test_dns_record_type',
+            'ttl': 'test_dns_ttl',
+            'data': 'test_dns_record_data'
         }
 
     def test_email_indicator_type(self, mocker):
