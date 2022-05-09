@@ -3,7 +3,7 @@ from enum import Enum
 import urllib3
 from CommonServerPython import *
 import demistomock as demisto
-from pydantic import BaseModel, AnyUrl, Json, validator
+from pydantic import BaseModel, AnyUrl, Json, validator  # pylint: disable=no-name-in-module
 import dateparser
 from collections.abc import Generator
 
@@ -52,7 +52,7 @@ class Request(BaseModel):
     """
     A class that stores a request configuration
     """
-    method: Method = 'GET'
+    method: Method = Method.GET
     url: AnyUrl
     headers: Optional[Union[Json[dict], dict]]
     params: Optional[ReqParams]
@@ -79,7 +79,9 @@ class Client:
             raise DemistoException(msg) from exc
 
     def set_next_run_filter(self, after: str):
-        self.request.params.after = get_github_timestamp_format(after)
+        next_run = get_github_timestamp_format(after)
+        if next_run:
+            self.request.params.after = next_run
 
 
 class GetEvents:
