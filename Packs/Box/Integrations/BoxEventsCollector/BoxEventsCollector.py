@@ -95,7 +95,7 @@ class BoxEventsClient(IntegrationEventsClient):
         super().__init__(request, options, session)
 
     def set_request_filter(self, after: Any):
-        self.request.params.stream_position = after  # type: ignore[attr-defined]
+        self.request.params.stream_position = after
 
     def authenticate(self):
         request = IntegrationHTTPRequest(
@@ -201,7 +201,7 @@ def main(command: str, demisto_params: dict):
     client = BoxEventsClient(request, options, box_credentials)
     get_events = BoxGetEvents(client, options)
     if command == 'test-module':
-        get_events.client.request.params.limit = 1  # type: ignore[attr-defined]
+        get_events.client.request.params.limit = 1
         get_events.run()
         demisto.results('ok')
         return
