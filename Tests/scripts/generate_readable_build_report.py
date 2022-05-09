@@ -39,11 +39,11 @@ def create_pr_comment(validate_pr_comment, unit_tests_pr_comment) -> str:
     return comment
 
 
-def build_summary_report(logging_manager,
-                         validate_summary, unit_tests_summary, create_instances_summary, server_6_1_summary,
-                         server_6_2_summary,
-                         server_master_summary,
-                         output_file):
+def test_build_summary_report(logging_manager,
+                              validate_summary, unit_tests_summary, create_instances_summary, server_6_1_summary,
+                              server_6_2_summary,
+                              server_master_summary,
+                              output_file):
     # json_summary = {
     #     'Validate': validate_summary,
     #     'Unit tests': unit_tests_summary,
@@ -53,6 +53,7 @@ def build_summary_report(logging_manager,
     #     'server master': server_master_summary,
     # }
     test_cases = []
+
     for file, failing_validations in validate_summary.items():
         # test_case = TestCase('Test1', 'some.class.name', 123.345, 'I am stdout!', 'I am stderr!')
         for failing_validation in failing_validations:
@@ -64,9 +65,9 @@ def build_summary_report(logging_manager,
     validate_ts = TestSuite("Validate", test_cases)
 
     create_test_cases = []
-    for failing_pack in create_instances_summary:
+    for failing_pack, failing_pack_data in create_instances_summary.items():
         test_case = TestCase('create_instances', f'create_instances.{failing_pack}')
-        test_case.add_failure_info(message=failing_pack.get('errors')[0])
+        test_case.add_failure_info(message=failing_pack_data.get('errors')[0])
         create_test_cases.append(test_case)
     create_ts = TestSuite("Create Instances", create_test_cases)
     with open(output_file, 'a') as f:
