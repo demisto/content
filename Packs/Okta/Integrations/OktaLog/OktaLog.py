@@ -1,7 +1,19 @@
 from enum import Enum
-from pydantic import BaseModel, AnyUrl, Json  # noqa: E0611
+from pydantic import BaseModel, AnyUrl, Json  # pylint: disable=no-name-in-module
 from CommonServerPython import *
 
+OPTIONS_TO_TIME = {
+
+    '1 minute': 60,
+    '1 hour': 3600,
+    '1 day': 86400,
+    '3 days': 259200,
+    '5 days': 432000,
+    '1 week': 604800,
+    '1 month': 2628288,
+    '1 year': 31536000
+
+}
 
 class Method(str, Enum):
     """
@@ -31,7 +43,7 @@ class Request(BaseModel):
     """
     A class that stores a request configuration
     """
-    method: Method
+    method: Method = Method.GET
     url: AnyUrl
     headers: Optional[Union[Json[dict], dict]]
     params: Optional[ReqParams]
@@ -118,9 +130,10 @@ class GetEvents:
         ids = []
         # gets the last event time
         last_time = events[-1].get('published')
-        for event in events:
-            if event.get('published') == last_time:
-                ids.append(event.get('uuid'))
+        for event in reversed(events):
+            if event.get('published') != last_time:
+                break
+            ids.append(event.get('uuid'))
         last_time = datetime.strptime(str(last_time).lower().replace('z', ''), '%Y-%m-%dt%H:%M:%S.%f')
         return {'after': last_time.isoformat(), 'ids': ids}
 
@@ -129,35 +142,24 @@ class GetEvents:
         """
         Remove object duplicates by the uuid of the object
         """
-
-        duplicates_indexes = []
-        for i in range(len(events)):
-            event_id = events[i]['uuid']
-            if event_id in ids:
-                duplicates_indexes.append(i)
-        if len(duplicates_indexes) > 0:
-            for i in duplicates_indexes:
-                del events[i]
-        return events
+        t =[event for event in events if event['uuid'] not in ids]
+        return [event for event in events if event['uuid'] not in ids]
 
 
 def main():
     # Args is always stronger. Get last run even stronger
     demisto_params = demisto.params() #| demisto.args()
-    events_to_add_per_request = demisto_params.get('events_to_add_per_request', 2000)
-    try:
-        events_to_add_per_request = int(events_to_add_per_request)
-    except ValueError:
-        events_to_add_per_request = 2000
-    after = demisto_params['after']
-    api_key = demisto_params['api_key']
+    events_limit = demisto_params.get('limit', 2000)
+    events_limit = int(events_limit)
+    after = OPTIONS_TO_TIME[demisto_params['after']]
+    api_key = demisto_params['api_key']['credentials']['password']
     demisto_params['headers'] = {"Accept": "application/json", "Content-Type": "application/json",
                                  "Authorization": f"SSWS {api_key}"}
     last_run = demisto.getLastRun()
     last_object_ids = last_run.get('ids')
     # If we do not have an after in the last run than we calculate after according to now - after param .
     if 'after' not in last_run:
-        delta = datetime.today() - timedelta(days=after)
+        delta = datetime.today() - timedelta(seconds=after)
         last_run = delta.isoformat()
     else:
         last_run = last_run['after']
@@ -174,18 +176,13 @@ def main():
         get_events.aggregated_results()
         demisto.results('ok')
     elif command == 'okta-get-events' or command == 'fetch-events':
-        try:
-            events = get_events.aggregated_results(last_object_ids=last_object_ids)
-        except Exception as e:
-            raise Exception(str(e))
-        events_number = len(events)
+        events = get_events.aggregated_results(last_object_ids=last_object_ids)
         if events:
             demisto.setLastRun(GetEvents.get_last_run(events))
             if command == 'fetch-events':
-                demisto.updateModuleHealth({'eventsPulled': len(events)})
-                while len(events) > 0:
-                    send_events_to_xsiam(events[:events_to_add_per_request], 'okta', 'okta')
-                    events = events[events_to_add_per_request:]
+                while events:
+                    send_events_to_xsiam(events[:events_limit], 'okta', 'okta')
+                    events = events[events_limit:]
 
             elif command == 'okta-get-events':
                 command_results = CommandResults(
@@ -196,7 +193,6 @@ def main():
                     raw_response=events,
                 )
                 return_results(command_results)
-        demisto.updateModuleHealth({'eventsPulled': events_number})
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
