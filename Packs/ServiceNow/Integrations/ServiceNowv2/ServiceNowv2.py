@@ -2281,7 +2281,8 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
             entries.append({
                 'Type': note.get('type'),
                 'Category': note.get('category'),
-                'Contents': f"Type: {note.get('element')}\n\n{note.get('value')}",
+                'Contents': f"Type: {note.get('element')}\nCreated By: {note.get('sys_created_by')}\n"
+                            f"Created on: {note.get('sys_created_on')}\n\n{note.get('value')}",
                 'ContentsFormat': note.get('format'),
                 'Tags': note.get('tags'),
                 'Note': True,
