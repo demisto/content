@@ -199,16 +199,17 @@ def send_email(to, subject, body="", bcc=None, cc=None, replyTo=None, htmlBody=N
                attachIDs="", attachCIDs="", attachNames="", from_mailbox=None, manualAttachObj=None,
                raw_message=None, from_address=None):
     account = get_account(from_mailbox or ACCOUNT_EMAIL)
-    bcc = bcc.split(",") if bcc else None
-    cc = cc.split(",") if cc else None
-    to = to.split(",") if to else None
+    bcc: Optional[list[str]] = argToList(bcc)
+    cc: Optional[list[str]] = argToList(cc)
+    to: Optional[list[str]] = argToList(to)
+    reply_to: Optional[list[str]] = argToList(replyTo)
     manualAttachObj = manualAttachObj if manualAttachObj is not None else []
     subject = subject[:252] + '...' if len(subject) > 255 else subject
 
     attachments, attachments_names = process_attachments(attachCIDs, attachIDs, attachNames, manualAttachObj)
 
     send_email_to_mailbox(
-        account=account, to=to, subject=subject, body=body, bcc=bcc, cc=cc, reply_to=replyTo,
+        account=account, to=to, subject=subject, body=body, bcc=bcc, cc=cc, reply_to=reply_to,
         html_body=htmlBody, attachments=attachments, raw_message=raw_message, from_address=from_address
     )
     result_object = {
