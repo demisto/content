@@ -367,12 +367,12 @@ def ip_named_location_update(ms_client: Client, args: dict) -> CommandResults:
         ips = args.get('ips')
         is_trusted = args.get('is_trusted')
         display_name = args.get('display_name')
-        if ips is not None:
+        if ips:
             ips = ms_ip_string_to_list(ips)
             data['ipRanges'] = ips
-        if is_trusted is not None:
+        if is_trusted:
             data['isTrusted'] = is_trusted
-        if display_name is not None:
+        if display_name:
             data['displayName'] = display_name
         ms_client.update_ip_named_location(ip_id, data)
         return CommandResults(
@@ -468,7 +468,7 @@ def ip_named_location_list(ms_client: Client, args: dict) -> CommandResults:
 
 def ms_ip_string_to_list(ips: str) -> list:
     ips_arr = []
-    ips = str(ips).split(',')
+    ips = ips.split(',')
     for ip in ips:
         temp = {'cidrAddress': ip}
         # ipv4 check
