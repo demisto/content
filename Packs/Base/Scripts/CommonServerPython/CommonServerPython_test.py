@@ -7204,7 +7204,7 @@ class TestSendEventsToXSIAMTest:
             Case b: Calling the send_events_to_xsiam function with no explicit data format specified.
             Case c: Calling the send_events_to_xsiam function with no explicit data format specified.
             Case d: Calling the send_events_to_xsiam function with a cef data format specification.
-            Case d: Calling the send_events_to_xsiam function with no explicit data format specified.
+            Case e: Calling the send_events_to_xsiam function with no explicit data format specified.
 
         Then ensure that:
             Case a:
@@ -7219,11 +7219,11 @@ class TestSendEventsToXSIAMTest:
                 - The events data was compressed correctly
                 - The data format was automatically identified as text.
                 - The number of events reported to the module health equals to number of events sent to XSIAM - 2
-            Case c:
+            Case d:
                 - The events data was compressed correctly
                 - The data format remained as cef.
                 - The number of events reported to the module health equals to number of events sent to XSIAM - 2
-            Case d:
+            Case e:
                 - No request to XSIAM API was made.
                 - The number of events reported to the module health - 0
         """
