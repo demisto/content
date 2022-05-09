@@ -1,5 +1,3 @@
-from pytest_mock import mocker
-
 from OktaLog import ReqParams, Client, Request, GetEvents, Method
 import pytest
 
