@@ -1293,7 +1293,7 @@ def set_user_password(default_base_dn, port):
     demisto.results(demisto_entry)
 
 
-def restore_user(default_base_dn: str, page_size: int):
+def restore_user(default_base_dn: str, page_size: int) -> int:
     """
          Restore the user UserAccountControl flags.
          Args:
@@ -1329,8 +1329,16 @@ def restore_user(default_base_dn: str, page_size: int):
     return 0
 
 
-def turn_enable_bit_on(num):
-    return num & ~(1 << (2 - 1))
+def turn_disable_flag_off(flags: int) -> int:
+    """
+        Turn off the ACCOUNTDISABLE flag in UserAccountControl flags.
+        https://docs.microsoft.com/en-US/troubleshoot/windows-server/identity/useraccountcontrol-manipulate-account-properties
+         Args:
+             flags (int): The UserAccountControl flags to update.
+         Returns:
+             flags (int): The UserAccountControl flags with the ACCOUNTDISABLE turned off.
+     """
+    return flags & ~(1 << (2 - 1))
 
 
 def enable_user(default_base_dn, default_page_size):
@@ -1346,7 +1354,7 @@ def enable_user(default_base_dn, default_page_size):
 
     # modify user
     modification = {
-        'userAccountControl': [('MODIFY_REPLACE', turn_enable_bit_on(account_options))]
+        'userAccountControl': [('MODIFY_REPLACE', turn_disable_flag_off(account_options))]
     }
     modify_object(dn, modification)
 
