@@ -150,7 +150,8 @@ class GetEvents:
         except Exception as err:
             demisto.error(f'File downloading failed. {err} {file_url}')
 
-    def gen_chunks_to_object(self, file_in_tmp_path, chunksize=100):
+    @staticmethod
+    def gen_chunks_to_object(file_in_tmp_path, chunksize=100):
         field_names = [name.lower() for name in list(csv.reader(open(file_in_tmp_path)))[0]]
         field_names = [x if x != 'type' else 'type_' for x in field_names]
         reader = csv.DictReader(open(file_in_tmp_path), fieldnames=field_names)
@@ -172,7 +173,7 @@ class GetEvents:
             file_in_tmp_path = "{}/{}".format(temp_dir.name, local_filename)
             self.get_file_raw_lines(line["LogFile"], file_in_tmp_path)
 
-            for chunk in self.gen_chunks_to_object(file_in_tmp_path, chunksize=2000):
+            for chunk in self.gen_chunks_to_object(file_in_tmp_path=file_in_tmp_path, chunksize=2000):
                 events_list.extend(chunk)
 
             yield events_list
