@@ -61,6 +61,8 @@ script:
   dockerimage: demisto/fastapi:1.0.0.29406
   runonce: false
   subtype: python3
+marketplaces:
+- marketplacev2
 fromversion: 6.6.0
 tests:
   - Github Event Collector-test
