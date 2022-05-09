@@ -97,7 +97,7 @@ class AADClient(MicrosoftClient):
             args["scope"] = ' '.join(REQUIRED_PERMISSIONS)
             args["token_retrieval_url"] = 'https://login.microsoftonline.com/organizations/oauth2/v2.0/token'
 
-        super().__init__(**args)
+        super().__init__(**args)  # type: ignore
 
         self.subscription_id = subscription_id
 
