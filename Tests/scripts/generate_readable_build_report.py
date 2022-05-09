@@ -68,9 +68,10 @@ def build_summary_report(logging_manager,
         test_case = TestCase('create_instances', f'create_instances.{failing_pack}')
         test_case.add_failure_info(message=failing_pack.get('errors')[0])
         create_test_cases.append(test_case)
+    create_ts = TestSuite("Create Instances", create_test_cases)
     with open(output_file, 'a') as f:
         logging_manager.info("opened file")
-        to_xml_report_file(f, [validate_ts, create_test_cases], prettyprint=False)
+        to_xml_report_file(f, [validate_ts, create_ts], prettyprint=False)
 
 
 def test_get_failing_ut():
