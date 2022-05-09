@@ -11,19 +11,6 @@ configuration:
   defaultvalue: 'https://um6.salesforce.com'
   type: 0
   required: true
-- display: HTTP Method
-  name: method
-  type: 15
-  required: true
-  defaultvalue: POST
-  options:
-  - GET
-  - POST
-  - DELETE
-  - PUT
-  - PATCH
-  - HEAD
-  hidden: true
 - display: ""
   displaypassword: Client ID
   name: auth_credendtials
@@ -47,16 +34,7 @@ configuration:
   defaultvalue: "SELECT+Id+,+EventType+,+Interval+,+LogDate+,+LogFile+,+LogFileLength+FROM+EventLogFile+WHERE+Interval+=+'Hourly'"
   type: 12
   required: true
-- display: Use system proxy settings
-  name: proxy
-  type: 8
-  required: false
-- display: Use Secured Connection
-  name: verify
-  defaultvalue: "true"
-  type: 8
-  required: false
-- display: How many log files to fetch
+- display: The maximum number of log files to fetch.
   name: limit
   type: 0
   defaultvalue: 1000
@@ -70,6 +48,15 @@ configuration:
   name: after
   type: 0
   defaultvalue: 3 days
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+- display: Use Secured Connection
+  name: verify
+  defaultvalue: "true"
+  type: 8
   required: false
 script:
   script: ""

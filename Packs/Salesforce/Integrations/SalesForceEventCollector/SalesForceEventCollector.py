@@ -2,7 +2,7 @@ from enum import Enum
 import urllib3
 from CommonServerPython import *
 import demistomock as demisto
-from pydantic import BaseModel, AnyUrl, Json
+from pydantic import BaseModel, AnyUrl, Json  # pylint: disable=no-name-in-module
 from collections.abc import Generator
 import tempfile
 import requests
@@ -25,7 +25,7 @@ class Request(BaseModel):
     """
     A class that stores a request configuration
     """
-    method: Method
+    method: Method = Method.POST
     url: AnyUrl
     headers: Optional[Union[Json[dict], dict]]
     verify = True
