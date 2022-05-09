@@ -2613,6 +2613,9 @@ class Pack(object):
         # Don't check if the image was modified if this is the first time it is uploaded to this marketplace, meaning it
         # doesn't exist in the index (and it isn't deprecated)
 
+        if "Wiz" in self.name:
+            logging.info(f'Found WIZ pack! detect_changes: {detect_changes}')
+
         if "CrowdStrikeFalcon" in self.name:
             logging.info(f'Crowd Strike Falcon detect_changes: {detect_changes}. Changing to True')
             detect_changes = True
