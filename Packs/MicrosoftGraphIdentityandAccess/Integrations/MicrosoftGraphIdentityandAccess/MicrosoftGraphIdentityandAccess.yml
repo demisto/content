@@ -29,7 +29,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Use the Azure Active Directory Identity And Access integration to manage
+description: Use the Azure Active Directory Identity and Access integration to manage
   roles and members.
 display: Azure Active Directory Identity And Access
 name: MicrosoftGraphIdentityandAccess
@@ -43,7 +43,7 @@ script:
   - deprecated: false
     description: |-
       Run this command to complete the authorization process.
-      Should be used after running the msgraph-identity-auth-start command.
+      It should be run after running the msgraph-identity-auth-start command.
     execution: false
     name: msgraph-identity-auth-complete
   - deprecated: false
@@ -52,11 +52,11 @@ script:
     execution: false
     name: msgraph-identity-auth-reset
   - deprecated: false
-    description: Tests connectivity to Microsoft.
+    description: Test connectivity to Microsoft.
     execution: false
     name: msgraph-identity-auth-test
   - deprecated: false
-    description: Lists the roles in the directory.
+    description: List the roles in the directory.
     execution: false
     name: msgraph-identity-directory-roles-list
     arguments:
@@ -113,13 +113,13 @@ script:
       description: The ID of the directory role template on which this role is based.
       type: String
   - deprecated: false
-    description: Gets all members in a role ID.
+    description: Return all members in a role ID.
     execution: false
     name: msgraph-identity-directory-role-members-list
     arguments:
     - name: role_id
       default: false
-      description: The ID of the application for which to get its role members list.
+      description: The ID of the application for which to return its role members list.
         Can be retrieved using the msgraph-identity-directory-roles-list command.
       isArray: false
       required: true
@@ -158,7 +158,7 @@ script:
       required: true
       secret: false
   - deprecated: false
-    description: Removes a user from a role.
+    description: Remove a user from a role.
     execution: false
     name: msgraph-identity-directory-role-member-remove
     arguments:
@@ -177,129 +177,129 @@ script:
       required: true
       secret: false
   - deprecated: false
-    description: Retrieve an ip named location by id.
+    description: Return an IP named location by ID.
     execution: false
     name: msgraph-identity-ip-named-locations-get
     arguments:
     - name: ip_id
       default: false
-      description: The id of the named ip location to get from the api.
+      description: The ID of the IP named location.
       isArray: false
       required: true
       secret: false
     outputs:
     - contextPath: MSGraph.conditionalAccess.namedIpLocations.time_created
-      description: The time when an ip named location was created.
+      description: The time when an IP named location was created.
       type: Date
     - contextPath: MSGraph.conditionalAccess.namedIpLocations.time_modified
-      description: The time when an ip named location was updated.
+      description: The time when an IP named location was updated.
       type: Date
     - contextPath: MSGraph.conditionalAccess.namedIpLocations.display_name
-      description: The display name of the ip named location.
+      description: The display name of the IP named location.
       type: String
     - contextPath: MSGraph.conditionalAccess.namedIpLocations.id
-      description: The unique identifier of the ip named location.
+      description: The unique identifier of the IP named location.
       type: String
     - contextPath: MSGraph.conditionalAccess.namedIpLocations.is_trusted
-      description: Abollean that taled if the ip named location is a trusted source.
+      description: Boolean that indicates if the IP named location is a trusted source.
       type: String
     - contextPath: MSGraph.conditionalAccess.namedIpLocations.ip_ranges
-      description: List of ip ranges for the ip named location
+      description: List of IP address ranges for the IP named location
       type: Array
   - deprecated: false
-    description: Retrieve all ip named locations.
+    description: Return all IP named locations.
     execution: false
     name: msgraph-identity-ip-named-locations-list
     arguments:
     - name: limit
       default: false
-      description: The limit for results we get from the api.
+      description: The limit of the number of results returned.
       isArray: false
       required: false
       secret: false
     outputs:
     - contextPath: MSGraph.conditionalAccess.namedIpLocations.ip_named_locations
-      description: List of ip named locations.
+      description: List of IP named locations.
       type: Array
   - deprecated: false
-    description: Delete an ip named location by id.
+    description: Delete an IP named location by ID.
     execution: false
     name: msgraph-identity-ip-named-locations-delete
     arguments:
     - name: ip_id
       default: false
-      description: The id of the named ip location to get from the api.
+      description: The ID of the IP named location.
       isArray: false
       required: true
       secret: false
   - deprecated: false
-    description: Create an ip named location.
+    description: Create an IP named location.
     execution: false
     name: msgraph-identity-ip-named-locations-create
     arguments:
     - name: ips
       default: false
-      description: A list of IP addresses to add to the named location, should be a string with the addresses separated by the delimiter ','.
+      description: A list of comma-separated IP addresses to add to the named location.
       isArray: false
       required: false
       secret: false
     - name: is_trusted
       default: false
-      description: Boolean that indicates if the ip can be trusted.
+      description: Boolean that indicates if the IP address can be trusted.
       isArray: false
       required: false
       secret: false
     - name: display_name
       default: false
-      description: The disply name for the named ip location.
+      description: The display name for the named IP location.
       isArray: false
       required: false
       secret: false
     outputs:
     - contextPath: MSGraph.conditionalAccess.namedIpLocations.time_created
-      description: The time when an ip named location was created.
+      description: The time when an IP named location was created.
       type: Date
     - contextPath: MSGraph.conditionalAccess.namedIpLocations.time_modified
-      description: The time when an ip named location was updated.
+      description: The time when an IP named location was updated.
       type: Date
     - contextPath: MSGraph.conditionalAccess.namedIpLocations.display_name
-      description: The display name of the ip named location.
+      description: The display name of the IP named location.
       type: String
     - contextPath: MSGraph.conditionalAccess.namedIpLocations.id
-      description: The unique identifier of the ip named location.
+      description: The unique identifier of the IP named location.
       type: String
     - contextPath: MSGraph.conditionalAccess.namedIpLocations.is_trusted
-      description: Abollean that taled if the ip named location is a trusted source.
+      description: Boolean that indicates if the IP named location is a trusted source.
       type: String
     - contextPath: MSGraph.conditionalAccess.namedIpLocations.ip_ranges
-      description: List of ip ranges for the ip named location
+      description: List of IP address ranges for the IP named location
       type: Array
   - deprecated: false
-    description: update an ip named location by id.
+    description: Update an IP named location by ID.
     execution: false
     name: msgraph-identity-ip-named-locations-update
     arguments:
     - name: ip_id
       default: false
-      description: The id of the named ip location to get from the api.
+      description: The ID of the IP named location.
       isArray: false
       required: true
       secret: false
     - name: ips
       default: false
-      description: A list of ip addresses to ad to the named location, it should be a string with the addresses separated by the delimiter ','.
+      description: A comma-separated list of IP addresses to add to the named location.
       isArray: false
       required: false
       secret: false
     - name: is_trusted
       default: false
-      description: Boolean that indicates if the ip can be trusted.
+      description: Boolean that indicates if the IP address can be trusted.
       isArray: false
       required: false
       secret: false
     - name: display_name
       default: false
-      description: The disply name for the named ip location.
+      description: The display name for the IP named location.
       isArray: false
       required: false
       secret: false
