@@ -9876,7 +9876,6 @@ def send_events_to_xsiam(events, vendor, product, data_format=None):
     data = events
     amount_of_events = 0
 
-
     if not events:
         demisto.debug('send_events_to_xsiam function received no events, skipping the API call to send events to XSIAM')
         demisto.updateModuleHealth({'eventsPulled': amount_of_events})
