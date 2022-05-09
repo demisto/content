@@ -15,6 +15,7 @@ OPTIONS_TO_TIME = {
 
 }
 
+
 class Method(str, Enum):
     """
     A list that represent the types of http request available
@@ -90,7 +91,6 @@ class GetEvents:
         self.client.request.params.limit = str(limit_tmp - len(events))  # type: ignore
         return events
 
-
     def _iter_events(self, last_object_ids: list) -> None:  # type: ignore
         """
         Function that responsible for the iteration over the events returned from the Okta api
@@ -142,13 +142,11 @@ class GetEvents:
         """
         Remove object duplicates by the uuid of the object
         """
-        t =[event for event in events if event['uuid'] not in ids]
         return [event for event in events if event['uuid'] not in ids]
 
 
 def main():
-    # Args is always stronger. Get last run even stronger
-    demisto_params = demisto.params() #| demisto.args()
+    demisto_params = demisto.params() | demisto.args()
     events_limit = demisto_params.get('limit', 2000)
     events_limit = int(events_limit)
     after = OPTIONS_TO_TIME[demisto_params['after']]
@@ -157,7 +155,6 @@ def main():
                                  "Authorization": f"SSWS {api_key}"}
     last_run = demisto.getLastRun()
     last_object_ids = last_run.get('ids')
-    # If we do not have an after in the last run than we calculate after according to now - after param .
     if 'after' not in last_run:
         delta = datetime.today() - timedelta(seconds=after)
         last_run = delta.isoformat()
