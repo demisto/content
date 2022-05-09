@@ -17,17 +17,21 @@ urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
 MAX_ATTEMPTS = 3
-BASE_URL = 'https://api.dlp.paloaltonetworks.com/v1/'
-PAN_AUTH_URL = 'https://auth.apps.paloaltonetworks.com/auth/v1/oauth2/access_token'
+BASE_URL = 'https://a972d9a03d0db414181c26da059eaf33-2040715922.us-west-2.elb.amazonaws.com/v1/'
+PAN_AUTH_URL = 'https://auth.qa.appsvc.paloaltonetworks.com/am/oauth2/access_token'
 REPORT_URL = 'public/report/{}'
 INCIDENTS_URL = 'public/incident-notifications'
 REFRESH_TOKEN_URL = 'public/oauth/refreshToken'
 UPDATE_INCIDENT_URL = 'public/incident-feedback'
+SLEEP_TIME_URL = 'public/seconds-between-incident-notifications-pull'
 FETCH_SLEEP = 5  # sleep between fetches (in seconds)
 LAST_FETCH_TIME = 'last_fetch_time'
 DEFAULT_FIRST_FETCH = '60 minutes'
 ACCESS_TOKEN = 'access_token'
 RESET_KEY = 'reset'
+CREDENTIAL = 'credential'
+IDENTIFIER = 'identifier'
+PASSWORD = 'password'
 
 
 class FeedbackStatus(Enum):
@@ -38,18 +42,20 @@ class FeedbackStatus(Enum):
     OPERATIONAL_ERROR = 'OPERATIONAL_ERROR'
     EXCEPTION_GRANTED = 'EXCEPTION_GRANTED'
     EXCEPTION_NOT_REQUESTED = 'EXCEPTION_NOT_REQUESTED'
+    SEND_NOTIFICATION_FAILURE = 'SEND_NOTIFICATION_FAILURE'
 
 
 class Client(BaseClient):
 
-    def __init__(self, url, refresh_token, access_token, insecure, proxy, using_client_credentials,
-                 client_id, client_secret):
+    def __init__(self, url, credentials, insecure, proxy):
         super().__init__(base_url=url, headers=None, verify=not insecure, proxy=proxy)
-        self.refresh_token = refresh_token
-        self.access_token = access_token
-        self.using_client_credentials = using_client_credentials
-        self.client_id = client_id
-        self.client_secret = client_secret
+        self.credentials = credentials
+        credential_name = credentials[CREDENTIAL]
+        if not credential_name:
+            self.access_token = credentials[IDENTIFIER]
+            self.refresh_token = credentials[PASSWORD]
+        else:
+            self.access_token = ''
 
     def _refresh_token(self):
         """Refreshes Access Token"""
@@ -61,36 +67,48 @@ class Client(BaseClient):
             "refresh_token": self.refresh_token
         }
         print_debug_msg(f'Calling endpoint {self._base_url}{REFRESH_TOKEN_URL}')
-        r = self._http_request(
-            method='POST',
-            headers=headers,
-            url_suffix=REFRESH_TOKEN_URL,
-            json_data=params,
-            ok_codes=[200, 201, 204]
-        )
-        new_token = r.get('access_token')
-        if new_token:
-            self.access_token = new_token
+        try:
+            r = self._http_request(
+                method='POST',
+                headers=headers,
+                url_suffix=REFRESH_TOKEN_URL,
+                json_data=params,
+                ok_codes=[200, 201, 204]
+            )
+            new_token = r.get('access_token')
+            if new_token:
+                self.access_token = new_token
+
+        except Exception as e:
+            print_debug_msg(str(e))
+            raise
 
     def _refresh_token_with_client_credentials(self):
-         credentials = f'{self.client_id}:{self.client_secret}'
-         auth_header = f'Basic {b64_encode(credentials)}'
-         headers = {
+        client_id = self.credentials[IDENTIFIER]
+        client_secret = self.credentials[PASSWORD]
+        credentials = f'{client_id}:{client_secret}'
+        auth_header = f'Basic {b64_encode(credentials)}'
+        headers = {
              'Authorization': auth_header,
              'Content-Type': 'application/x-www-form-urlencoded'
          }
 
-         payload = 'grant_type=client_credentials'
-         r = self._http_request(
-             full_url=PAN_AUTH_URL,
-             method='POST',
-             headers=headers,
-             data=payload,
-             ok_codes=[200, 201, 204]
-         )
-         new_token = r.get('access_token')
-         if new_token:
-             self.access_token = new_token
+        payload = 'grant_type=client_credentials'
+        try:
+            r = self._http_request(
+                 full_url=PAN_AUTH_URL,
+                 method='POST',
+                 headers=headers,
+                 data=payload,
+                 ok_codes=[200, 201, 204]
+            )
+            new_token = r.get('access_token')
+            if new_token:
+                self.access_token = new_token
+
+        except Exception as e:
+            print_debug_msg(str(e))
+            raise
 
     def _handle_403_errors(self, res):
         """
@@ -102,7 +120,7 @@ class Client(BaseClient):
             return
         try:
             print_debug_msg("Got 403, attempting to refresh access token")
-            if self.using_client_credentials:
+            if self.credentials[CREDENTIAL]:
                 print_debug_msg("Requesting access token with client id/client secret")
                 self._refresh_token_with_client_credentials()
             else:
@@ -169,6 +187,9 @@ class Client(BaseClient):
 
         return result_json, res.status_code
 
+    def set_access_token(self, access_token):
+        self.access_token = access_token
+
     def get_dlp_report(self, report_id: str, fetch_snippets=False):
         """
         Fetches DLP reports
@@ -199,7 +220,7 @@ class Client(BaseClient):
         return resp
 
     def update_dlp_incident(self, incident_id: str, feedback: FeedbackStatus, user_id: str, region: str,
-                            report_id: str, dlp_channel: str):
+                            report_id: str, dlp_channel: str, error_details: str = None):
         """
                 Update Incident with user provided feedback
                 Args:
@@ -217,8 +238,16 @@ class Client(BaseClient):
             'report_id': report_id,
             'service_name': dlp_channel
         }
+        if error_details:
+            payload['error_details'] = error_details
+
         url = f'{UPDATE_INCIDENT_URL}/{incident_id}?feedback_type={feedback.value}&region={region}'
         return self._post_dlp_api_call(url, payload)
+
+
+    def query_for_sleep_time(self):
+        resp, status = self._get_dlp_api_call(SLEEP_TIME_URL)
+        return resp
 
 
 def parse_data_pattern_rule(report_json, verdict_field, results_field):
@@ -345,8 +374,9 @@ def update_incident_command(client: Client, args: dict) -> CommandResults:
     region = args.get('region', '')
     report_id = args.get('report_id', '')
     dlp_channel = args.get('dlp_channel', '')
+    error_details = args.get('error_details')
     feedback_enum = FeedbackStatus[feedback.upper()]
-    result_json, status = client.update_dlp_incident(incident_id, feedback_enum, user_id, region, report_id, dlp_channel)
+    result_json, status = client.update_dlp_incident(incident_id, feedback_enum, user_id, region, report_id, dlp_channel, error_details)
 
     output = {
         'feedback': feedback_enum.value,
@@ -437,11 +467,7 @@ def is_reset_triggered():
     return False
 
 
-def get_base_url():
-    return BASE_URL
-
-
-def long_running_execution_command(params: Dict):
+def long_running_execution_command(client: Client, params: Dict):
     """
     Long running execution of fetching incidents from Palo Alto Networks Enterprise DLP.
     Will continue to fetch in an infinite loop.
@@ -451,17 +477,16 @@ def long_running_execution_command(params: Dict):
     """
     demisto.setIntegrationContext({ACCESS_TOKEN: ''})
     regions = demisto.get(params, 'dlp_regions', '')
-    refresh_token = params.get('refresh_token')
-    url = get_base_url()
-    overriden_sleep_time = None
+    sleep_time = FETCH_SLEEP
     last_time_sleep_interval_queries = math.floor(datetime.now().timestamp())
     while True:
         try:
             integration_context = demisto.getIntegrationContext()
             current_time = math.floor(datetime.now().timestamp())
             access_token = integration_context.get(ACCESS_TOKEN)
-            access_token = params.get('access_token') if not access_token else access_token
-            client = Client(url, refresh_token, access_token, params.get('insecure'), params.get('proxy'))
+            if access_token:
+                client.set_access_token(access_token)
+
             incidents = fetch_incidents(
                 client=client,
                 regions=regions
@@ -477,13 +502,20 @@ def long_running_execution_command(params: Dict):
             elif len(incidents) > 0:
                 print_debug_msg(f"Skipped {len(incidents)} incidents because of reset")
 
+            if current_time - last_time_sleep_interval_queries > 5 * 60:
+                overriden_sleep_time = client.query_for_sleep_time()
+                last_time_sleep_interval_queries = current_time
+                if overriden_sleep_time:
+                    print_debug_msg(f'Setting sleep time to value from backend: {overriden_sleep_time}')
+                    sleep_time = overriden_sleep_time
+
         except Exception:
             demisto.error('Error occurred during long running loop')
             demisto.error(traceback.format_exc())
 
         finally:
             print_debug_msg('Finished fetch loop')
-            time.sleep(FETCH_SLEEP)
+            time.sleep(sleep_time)
 
 
 def exemption_eligible_command(args: dict, params: dict) -> CommandResults:
@@ -555,25 +587,8 @@ def main():
         print_debug_msg('Received parameters')
         print_debug_msg(params)
         credentials = params.get('credentials')
-        credential_name = demisto.get(credentials, 'credential')
-        using_client_credentials = False
-        access_token = ''
-        refresh_token = None
-        client_id = None
-        client_secret = None
 
-        if credential_name:
-            using_client_credentials = True
-            client_id = demisto.get(credentials, 'identifier')
-            client_secret = demisto.get(credentials, 'password')
-            print_debug_msg(f'User chose to authenticate with client id/secret {client_id}:{client_secret}')
-        else:
-            access_token = demisto.get(credentials, 'identifier')
-            refresh_token = demisto.get(credentials, 'password')
-            print_debug_msg(f'User chose to authenticate with access token/refresh token {access_token} {refresh_token}')
-
-        url = get_base_url()
-        client = Client(url, refresh_token, access_token, params.get('insecure'), params.get('proxy'), using_client_credentials, client_id, client_secret)
+        client = Client(BASE_URL, credentials, params.get('insecure'), params.get('proxy'))
         args = demisto.args()
         if demisto.command() == 'pan-dlp-get-report':
             report_id = args.get('report_id')
@@ -583,7 +598,7 @@ def main():
         elif demisto.command() == 'fetch-incidents':
             demisto.incidents(fetch_incidents_command())
         elif demisto.command() == 'long-running-execution':
-            long_running_execution_command(params)
+            long_running_execution_command(client, params)
         elif demisto.command() == 'pan-dlp-update-incident':
             return_results(update_incident_command(client, args))
         elif demisto.command() == 'pan-dlp-exemption-eligible':

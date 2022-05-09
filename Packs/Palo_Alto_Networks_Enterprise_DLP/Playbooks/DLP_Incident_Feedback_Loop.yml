@@ -326,6 +326,7 @@ tasks:
     scriptarguments:
       user:
         simple: ${incident.sourceusername}
+    continueonerror: true
     separatecontext: false
     view: |-
       {
@@ -1187,8 +1188,8 @@ tasks:
     task:
       id: 60ecaf0e-e904-4cbb-86a8-a3f488b77559
       version: -1
-      name: 'Set feedback status to "Operational Error" '
-      description: Set feedback status to "Operational Error"
+      name: 'Set feedback status to "SEND_NOTIFICATION_FAILURE"'
+      description: Set feedback status to "SEND_NOTIFICATION_FAILURE"
       script: '|||pan-dlp-update-incident'
       type: regular
       iscommand: true
@@ -1198,13 +1199,15 @@ tasks:
       - "11"
     scriptarguments:
       feedback:
-        simple: OPERATIONAL_ERROR
+        simple: SEND_NOTIFICATION_FAILURE
       incident_id:
         simple: ${incident.pandlpincidentid}
       region:
         simple: ${incident.pandlpincidentregion}
       user_id:
         simple: ${incident.sourceusername}
+      error_details:
+        simple: User ${incident.sourceusername} not found on Slack
     continueonerror: true
     separatecontext: false
     view: |-
