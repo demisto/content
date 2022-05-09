@@ -9878,7 +9878,7 @@ def send_events_to_xsiam(events, vendor, product, data_format=None):
 
     # only in case we have events data to send to XSIAM we continue with this flow.
     if events:
-    # Correspond to case 1: List of strings or dicts where each string or dict represents an event.
+        # Correspond to case 1: List of strings or dicts where each string or dict represents an event.
         if isinstance(events, list):
             amount_of_events = len(events)
             # In case we have list of dicts we set the data_format to json and parse each dict to a stringify each dict.
