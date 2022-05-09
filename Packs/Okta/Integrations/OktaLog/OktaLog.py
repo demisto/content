@@ -82,7 +82,7 @@ class GetEvents:
         self.client = client
 
     def make_api_call(self):
-        limit_tmp = int(self.client.request.params.limit)
+        limit_tmp = int(self.client.request.params.limit)  # type: ignore
         if limit_tmp > 1000:
             self.client.request.params.limit = '1000'  # type: ignore
         response = self.client.call()
@@ -115,7 +115,7 @@ class GetEvents:
         Function to group the events returned from the api
         """
         stored_events = []
-        for events in self._iter_events(last_object_ids):
+        for events in self._iter_events(last_object_ids):  # type: ignore
             stored_events.extend(events)
             if int(self.client.request.params.limit) == 0 or len(events) == 0:  # type: ignore
                 break
