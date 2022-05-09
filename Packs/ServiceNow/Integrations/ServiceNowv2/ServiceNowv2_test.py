@@ -1059,7 +1059,7 @@ def test_get_remote_data(mocker):
     res = get_remote_data_command(client, args, params)
 
     assert res[1]['File'] == 'test.txt'
-    assert res[2]['Contents'] == 'Type: comments\n\nThis is a comment'
+    assert res[2]['Contents'] == 'Type: comments\nCreated By: admin\nCreated On: 2020-08-17 06:31:49\nThis is a comment'
 
 
 def test_assigned_to_field_no_user():
@@ -1163,7 +1163,7 @@ def test_get_remote_data_no_attachment(mocker):
     mocker.patch.object(client, 'get', return_value=RESPONSE_ASSIGNMENT_GROUP)
 
     res = get_remote_data_command(client, args, params)
-    assert res[1]['Contents'] == 'Type: comments\n\nThis is a comment'
+    assert res[1]['Contents'] == 'Type: comments\nCreated By: admin\nCreated on: 2020-08-17 06:31:49\nThis is a comment'
     assert len(res) == 2
 
 
