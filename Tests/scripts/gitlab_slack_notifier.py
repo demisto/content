@@ -131,9 +131,11 @@ def bucket_upload_results(bucket_artifact_folder):
         pack_results_path, BucketUploadFlow.UPLOAD_PACKS_TO_MARKETPLACE_STORAGE
     )
     if successful_packs:
+        successful_packs_msg = "Over 100 Successful Packs" if len({*successful_packs}) > 100 else None
         steps_fields += [{
             'title': f'Successful {marketplace_name} Packs:',
-            'value': '\n'.join(sorted([pack_name for pack_name in {*successful_packs}], key=lambda s: s.lower())),
+            'value': successful_packs_msg or '\n'.join(sorted([pack_name for pack_name in {*successful_packs}],
+                                                              key=lambda s: s.lower())),
             'short': False
         }]
 
