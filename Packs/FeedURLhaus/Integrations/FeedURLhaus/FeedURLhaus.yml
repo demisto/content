@@ -4,18 +4,16 @@ commonfields:
   version: -1
 deprecated: false
 configuration:
-- name: feedReputation
-  display: Indicator Reputation
-  required: false
-  defaultvalue: Bad
+- display: Indicator Reputation
   type: 18
-  additionalinfo: Indicators from this integration instance are marked with this
-    reputation.
+  required: false
   options:
-  - None
-  - Good
-  - Suspicious
-  - Bad
+    - None
+    - Good
+    - Suspicious
+    - Bad
+  additionalinfo: Indicators from this integration instance will be marked with this reputation
+  name: feedReputation
 - display: Feed Source
   hidden: false
   name: feed_source
@@ -46,10 +44,6 @@ configuration:
   - suddenDeath
   required: false
   type: 17
-- display: Trust any certificate (not secure)
-  name: insecure
-  type: 8
-  required: false
 - name: feedBypassExclusionList
   display: Bypass exclusion list
   type: 8
@@ -87,6 +81,14 @@ configuration:
   display: Feed Fetch Interval
   type: 19
   required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
 description: Fetch url indicators for URLhaus
 display: URLhaus Feed
 name: URLhaus Feed
@@ -97,7 +99,7 @@ script:
     deprecated: false
     arguments: []
     outputs: []
-  dockerimage: demisto/python3:3.10.4.28442
+  dockerimage: demisto/python3:3.10.4.29342
   feed: true
   isfetch: false
   longRunning: false
@@ -108,4 +110,4 @@ script:
   type: python
 fromversion: 5.5.0
 tests:
-- URLhaus_test_playbook
+- No tests

@@ -34,7 +34,7 @@ def main():
     params["indicator_type"] = FeedIndicatorType.URL
     params['ignore_regex'] = '#'
     params['url'] = chosen_urls
-    feed_main('URLhaus Feed', params, 'urlhaus-feed-')
+    feed_main('URLhaus Feed', params, 'urlhaus-')
 
 
 if __name__ in ('__builtin__', 'builtins', '__main__'):
