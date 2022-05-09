@@ -1128,17 +1128,8 @@ def main():
             pack.cleanup()
             continue
 
-        task_status = pack.upload_integration_images(storage_bucket, storage_base_path, diff_files_list, True)
-        if not task_status:
-            pack.status = PackStatus.FAILED_IMAGES_UPLOAD.name
-            pack.cleanup()
-            continue
-
-        task_status = pack.upload_author_image(storage_bucket, storage_base_path, diff_files_list, True)
-
-        if not task_status:
-            pack.status = PackStatus.FAILED_AUTHOR_IMAGE_UPLOAD.name
-            pack.cleanup()
+        # upload author and integration images
+        if not pack.upload_images(index_folder_path, storage_bucket, storage_base_path, diff_files_list):
             continue
 
         # detect if the pack is modified and return modified RN files
