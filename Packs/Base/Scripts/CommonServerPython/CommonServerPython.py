@@ -4265,6 +4265,9 @@ class Common(object):
         """ ignore docstring
         Domain indicator - https://xsoar.pan.dev/docs/integrations/context-standards-mandatory#domain
 
+        :type whois_records: ``WhoisRecord``
+        :param whois_records: List of whois records
+
         :type description: ``str``
         :param description: A description of the Domain.
 
@@ -4625,6 +4628,12 @@ class Common(object):
         """
         Account indicator - https://xsoar.pan.dev/docs/integrations/context-standards-recommended#account
 
+        :type blocked: ``boolean``
+        :param blocked: Is the indicator blocked.
+
+        :type community_notes: ``CommunityNotes``
+        :param community_notes: Notes on the Account that were given by the community.
+
         :type dbot_score: ``DBotScore``
         :param dbot_score: If account has reputation then create DBotScore object
 
@@ -4827,6 +4836,9 @@ class Common(object):
 
         :type dbot_score: ``DBotScore``
         :param dbot_score:  If the address has reputation then create DBotScore object.
+
+        :type traffic_light_protocol: ``str``
+        :param traffic_light_protocol: The Traffic Light Protocol (TLP) color that is suitable for the AP.
 
         :type community_notes: ``CommunityNotes``
         :param community_notes:  A list of community notes for the AP.
