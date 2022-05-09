@@ -136,6 +136,8 @@ class BoxEventsClient(IntegrationEventsClient):
 
 
 class BoxGetEvents(IntegrationGetEvents):
+    client: BoxEventsClient
+
     def get_last_run(self: Any) -> dict:  # type: ignore
         demisto.debug(f'setting {self.client.request.params.stream_position=}')
         return {'stream_position': self.client.request.params.stream_position}
