@@ -4,7 +4,7 @@ import io
 from datetime import datetime, timedelta
 from freezegun import freeze_time
 import ServiceNowv2
-from CommonServerPython import DemistoException
+from CommonServerPython import DemistoException, EntryType
 from ServiceNowv2 import get_server_url, get_ticket_context, get_ticket_human_readable, \
     generate_body, split_fields, Client, update_ticket_command, create_ticket_command, delete_ticket_command, \
     query_tickets_command, add_link_command, add_comment_command, upload_file_command, get_ticket_notes_command, \
@@ -1578,3 +1578,13 @@ def test_generic_api_call_command(command, args, response, mocker):
     mocker.patch.object(client, 'send_request', return_value=response)
     result = command(client, args)
     assert result.outputs == response
+
+
+@pytest.mark.parametrize('file_type , expected',
+                         [(EntryType.FILE, True),
+                          (3, True),
+                          (EntryType.IMAGE, True),
+                          (EntryType.NOTE, False),
+                          (15, False)])
+def test_is_entry_type_mirror_supported(file_type, expected):
+    assert ServiceNowv2.is_entry_type_mirror_supported(file_type) == expected
