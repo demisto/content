@@ -79,9 +79,8 @@ class Client:
             raise DemistoException(msg) from exc
 
     def set_next_run_filter(self, after: str):
-        next_run = get_github_timestamp_format(after)
-        if next_run:
-            self.request.params.after = next_run
+        if self.request.params:
+            self.request.params.after = get_github_timestamp_format(after)
 
 
 class GetEvents:
