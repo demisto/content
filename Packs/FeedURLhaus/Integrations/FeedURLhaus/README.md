@@ -1,7 +1,12 @@
 ## URLhaus
 ---
 
+<<<<<<< HEAD
 Fetch indicators from URLhaus api.
+=======
+
+Fetch indicators from the URLhaus API.
+>>>>>>> origin/feed-urlhaus
 
 
 1. Navigate to **Settings** > **Configurations** > **Automation & Feed Integrations**.
