@@ -70,7 +70,7 @@ class Client:
             raise DemistoException(msg) from exc
 
     def set_next_run_filter(self, after: str):
-        self.request.params.set_since_value(after)  # noqa
+        self.request.params.set_since_value(after)  # type: ignore
 
 
 class GetEvents:
@@ -84,26 +84,26 @@ class GetEvents:
     def make_api_call(self):
         limit_tmp = int(self.client.request.params.limit)
         if limit_tmp > 1000:
-            self.client.request.params.limit = '1000'  # noqa
+            self.client.request.params.limit = '1000'  # type: ignore
         response = self.client.call()
         events: list = response.json()
-        self.client.request.params.limit = str(limit_tmp - len(events))  # noqa
+        self.client.request.params.limit = str(limit_tmp - len(events))  # type: ignore
         return events
 
 
-    def _iter_events(self, last_object_ids: list) -> None:  # noqa
+    def _iter_events(self, last_object_ids: list) -> None:  # type: ignore
         """
         Function that responsible for the iteration over the events returned from the Okta api
         """
 
-        events: list = self.make_api_call()  # noqa
+        events: list = self.make_api_call()  # type: ignore
         if last_object_ids:
             events = GetEvents.remove_duplicates(events, last_object_ids)
         while True:
             yield events
             last = events[-1]
             self.client.set_next_run_filter(last['published'])
-            events: list = self.make_api_call()  # noqa
+            events: list = self.make_api_call()  # type: ignore
             try:
                 assert events
             except (IndexError, AssertionError):
@@ -117,7 +117,7 @@ class GetEvents:
         stored_events = []
         for events in self._iter_events(last_object_ids):
             stored_events.extend(events)
-            if int(self.client.request.params.limit) == 0 or len(events) == 0:  # noqa
+            if int(self.client.request.params.limit) == 0 or len(events) == 0:  # type: ignore
                 break
         return stored_events
 
