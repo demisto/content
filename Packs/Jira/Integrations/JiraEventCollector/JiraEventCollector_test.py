@@ -78,6 +78,7 @@ def test_fetch_events_no_incidents(mocker):
 
     mocker.patch.object(demisto, 'params', return_value=DEMISTO_PARAMS)
     mocker.patch.object(demisto, 'args', return_value={})
+    mocker.patch.object(demisto, 'command', return_value='jira-get-events')
     last_run = mocker.patch.object(demisto, 'getLastRun', return_value={})
     incidents = mocker.patch.object(demisto, 'incidents')
 
