@@ -2622,13 +2622,13 @@ class Pack(object):
 
         task_status = self.upload_integration_images(storage_bucket, storage_base_path, diff_files_list, detect_changes)
         if not task_status:
-            self.status = PackStatus.FAILED_IMAGES_UPLOAD.name
+            self._status = PackStatus.FAILED_IMAGES_UPLOAD.name
             self.cleanup()
             return False
 
         task_status = self.upload_author_image(storage_bucket, storage_base_path, diff_files_list, detect_changes)
         if not task_status:
-            self.status = PackStatus.FAILED_AUTHOR_IMAGE_UPLOAD.name
+            self._status = PackStatus.FAILED_AUTHOR_IMAGE_UPLOAD.name
             self.cleanup()
             return False
 
