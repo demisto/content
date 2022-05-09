@@ -128,7 +128,7 @@ def generate_build_report(logging_manager, output_file):
     build_summary_report(logging_manager,
                          validate_summary,
                          unit_tests_summary,
-                         create_instances_summary={prepare_content_for_testing},
+                         create_instances_summary,
                          server_6_1_summary={},
                          server_6_2_summary={},
                          server_master_summary={}, output_file=output_file)
