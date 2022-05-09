@@ -1,6 +1,6 @@
 import demistomock as demisto
 from CommonServerPython import Common
-from Cylance_Protect_v2 import create_dbot_score_entry, translate_score, FILE_THRESHOLD, \
+from Cylance_Protect_v2 import translate_score, FILE_THRESHOLD, \
     get_device, get_device_by_hostname, update_device, get_device_threats, get_policies, create_zone, get_zones, \
     get_zone, update_zone, get_threat, get_threats, get_threat_devices, get_list, get_list_entry_by_hash, \
     add_hash_to_list, delete_hash_from_lists, delete_devices, get_policy_details
@@ -231,22 +231,6 @@ EXPECTED_POLICY = {'Timestamp': '2020-04-13T10:32:44.507000+00:00',
                    'ID': u'980fad21-b119-4cc4-ac97-2b2c035b4666',
                    'Name': u'fff'
                    }
-
-
-def test_create_dbot_score_entry():
-    """
-    Given
-        - a threat and a dbot score
-    When
-        - calls the function create_dbot_score_entry
-    Then
-        - checks if dbot_score_entry is from type DBotScore
-    """
-
-    threat = THREAT_OUTPUT
-    dbot_score = translate_score(threat['cylance_score'], FILE_THRESHOLD)
-    dbot_score_entry = create_dbot_score_entry(THREAT_OUTPUT, dbot_score)
-    assert isinstance(dbot_score_entry, Common.DBotScore)
 
 
 def test_get_device(mocker):
