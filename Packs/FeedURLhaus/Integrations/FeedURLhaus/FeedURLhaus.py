@@ -5,6 +5,8 @@ from CSVFeedApiModule import *
 
 def main():
     params = {k: v for k, v in demisto.params().items() if v is not None}
+    args = demisto.args()
+    params = params | args
     sources_enum = {'Last 30 Days': 'csv_recent', 'Currently Active': 'csv_online'}
     base_url = 'https://urlhaus.abuse.ch/downloads/'
     chosen_urls = []
