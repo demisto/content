@@ -8809,6 +8809,26 @@ class HygieneRemediation:
         return result
 
     @staticmethod
+    def get_all_security_rules_in_container(container: Union[Panorama, Firewall, DeviceGroup, Template, Vsys]
+                                            ) -> List[SecurityRule]:
+        """
+        Gets all the security rule objects from the given VSYS or device group and return them.
+        :param container: The object to search for the rules in, as passed to pan-os-python
+        """
+        firewall_rulebase = Rulebase()
+        pre_rulebase = PreRulebase()
+        post_rulebase = PostRulebase()
+        container.add(pre_rulebase)
+        container.add(post_rulebase)
+        container.add(firewall_rulebase)
+        security_rules: List[SecurityRule] = SecurityRule.refreshall(firewall_rulebase)
+        pre_security_rules: List[SecurityRule] = SecurityRule.refreshall(pre_rulebase)
+        post_security_rules: List[SecurityRule] = SecurityRule.refreshall(post_rulebase)
+        security_rules = security_rules + pre_security_rules + post_security_rules
+
+        return security_rules
+
+    @staticmethod
     def fix_secuity_rule_log_settings(topology: Topology,
                                       issues: List[ConfigurationHygieneIssue],
                                       log_forwarding_profile_name: str) -> List[ConfigurationHygieneFix]:
@@ -8824,16 +8844,7 @@ class HygieneRemediation:
                     issue.hostid,
                     container_name=issue.container_name
             ):
-                firewall_rulebase = Rulebase()
-                pre_rulebase = PreRulebase()
-                post_rulebase = PostRulebase()
-                container.add(pre_rulebase)
-                container.add(post_rulebase)
-                container.add(firewall_rulebase)
-                security_rules: List[SecurityRule] = SecurityRule.refreshall(firewall_rulebase)
-                pre_security_rules: List[SecurityRule] = SecurityRule.refreshall(pre_rulebase)
-                post_security_rules: List[SecurityRule] = SecurityRule.refreshall(post_rulebase)
-                security_rules = security_rules + pre_security_rules + post_security_rules
+                security_rules = HygieneRemediation.get_all_security_rules_in_container(container)
                 for security_rule in security_rules:
                     if security_rule.name == issue.name:
                         security_rule.log_end = True
@@ -8866,16 +8877,7 @@ class HygieneRemediation:
                     issue.hostid,
                     container_name=issue.container_name
             ):
-                firewall_rulebase = Rulebase()
-                pre_rulebase = PreRulebase()
-                post_rulebase = PostRulebase()
-                container.add(pre_rulebase)
-                container.add(post_rulebase)
-                container.add(firewall_rulebase)
-                security_rules: List[SecurityRule] = SecurityRule.refreshall(firewall_rulebase)
-                pre_security_rules: List[SecurityRule] = SecurityRule.refreshall(pre_rulebase)
-                post_security_rules: List[SecurityRule] = SecurityRule.refreshall(post_rulebase)
-                security_rules = security_rules + pre_security_rules + post_security_rules
+                security_rules = HygieneRemediation.get_all_security_rules_in_container(container)
                 for security_rule in security_rules:
                     if security_rule.name == issue.name:
                         security_rule.group = security_profile_group_name
