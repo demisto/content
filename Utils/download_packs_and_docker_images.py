@@ -194,7 +194,7 @@ def main():
         else:
             print('Skipping dockers.zip creation')
     else:
-        print('Skpping docker images collection since no packs were found')
+        print('Skipping docker images collection since no packs were found')
 
 
 if __name__ == '__main__':
