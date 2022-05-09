@@ -1,6 +1,6 @@
 category: Analytics & SIEM
 commonfields:
-  id: SplunkPy
+  id: SplunkPy_debug
   version: -1
 configuration:
 - display: Host - IP (x.x.x.x)
@@ -217,8 +217,8 @@ configuration:
   required: false
   type: 0
 description: Runs queries on Splunk servers.
-display: SplunkPy
-name: SplunkPy
+display: SplunkPy_debug
+name: SplunkPy_debug
 script:
   commands:
   - arguments:
