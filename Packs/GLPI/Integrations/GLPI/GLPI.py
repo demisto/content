@@ -456,27 +456,6 @@ def upload_file_command(client, args):
     return result
 
 
-def get_profile_id_command(client, args):
-    profile_name = args.get('profile')
-    profile_id = None
-    if profile_name is not None:
-        profile_list = client.get_profile_list()
-        for profile in profile_list:
-            if profile['name'] == profile_name:
-                profile_id = profile['id']
-        if profile_id is None:
-            raise DemistoException('Profile does not exist')
-    return profile_id
-
-
-def get_itilcategory_name(client, args):
-    itilcategory_id = args.get('id')
-    res = client.get_item('ITILCategory', itilcategory_id)
-    if res:
-        itilcategory_name = res['name']
-        return itilcategory_name
-
-
 def get_user_id_command(client, args):
     user_id = get_user_id_helper(client, args)
     if user_id:
@@ -571,50 +550,6 @@ def disable_user_command(client, args):
     client.disable_user(user_id)
     result = 'User ' + str(username) + ' successfully disabled'
     return result
-
-
-def get_ticket_users_command(client, ticket_id):
-    requester = []
-    assigned = []
-    watcher = []
-    users = client.get_ticket_users(ticket_id)
-    for user in users:
-        if user['type'] == 1:
-            requester.append(user['users_id'])
-        elif user['type'] == 2:
-            assigned.append(user['users_id'])
-        elif user['type'] == 3:
-            watcher.append(user['users_id'])
-    return requester, assigned, watcher
-
-
-def get_ticket_groups_command(client, ticket_id):
-    requester = []
-    assigned = []
-    watcher = []
-    groups = client.get_ticket_groups(ticket_id)
-    for group in groups:
-        if group['type'] == 1:
-            requester.append(group['groups_id'])
-        elif group['type'] == 2:
-            assigned.append(group['groups_id'])
-        elif group['type'] == 3:
-            watcher.append(group['groups_id'])
-    return requester, assigned, watcher
-
-
-def get_ticket_docs_command(client, ticket_id):
-    docs = client.get_ticket_docs(ticket_id)
-    files = []
-    if docs:
-        for doc in docs:
-            doc_name = client.get_item('Document', doc['documents_id']).get('filename')
-            file = client.download_document(doc['documents_id'], filename=doc_name)
-            filepath, filename = os.path.split(file)
-            f = open(file, 'rb')
-            data = f.read()
-            files.append(fileResult(filename, data))
-    return files
 
 
 def add_comment_command(client, args):
