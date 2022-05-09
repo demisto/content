@@ -45,7 +45,7 @@ def test_fetch_incidents_few_incidents(mocker):
 
     mocker.patch.object(demisto, 'params', return_value=DEMISTO_PARAMS)
     mocker.patch.object(demisto, 'args', return_value={})
-    mocker.patch.object(demisto, 'command', return_value='jira-fetch-events')
+    mocker.patch.object(demisto, 'command', return_value='jira-get-events')
     last_run = mocker.patch.object(demisto, 'getLastRun', return_value={})
     results = mocker.patch.object(demisto, 'results')
 
@@ -54,7 +54,7 @@ def test_fetch_incidents_few_incidents(mocker):
         m.get(f'{URL}?{SECOND_REQUESTS_PARAMS}', json={})
         m.post('https://api-http_connector.url/logs/v1/xsiam', json={'error': 'false'})
 
-        from JiraEventsCollector import main
+        from JiraEventCollector import main
         main()
 
     events = results.call_args[0][0]['Contents']
@@ -84,7 +84,7 @@ def test_fetch_events_no_incidents(mocker):
     with requests_mock.Mocker() as m:
         m.get(f'{URL}?{FIRST_REQUESTS_PARAMS}', json={})
 
-        from JiraEventsCollector import main
+        from JiraEventCollector import main
         main()
 
     assert not last_run.return_value.get('from')
@@ -109,7 +109,7 @@ def test_fetch_events_max_fetch_set_to_one(mocker):
 
     mocker.patch.object(demisto, 'params', return_value=params)
     mocker.patch.object(demisto, 'args', return_value={})
-    mocker.patch.object(demisto, 'command', return_value='jira-fetch-events')
+    mocker.patch.object(demisto, 'command', return_value='jira-get-events')
     last_run = mocker.patch.object(demisto, 'getLastRun', return_value={})
     results = mocker.patch.object(demisto, 'results')
 
@@ -118,7 +118,7 @@ def test_fetch_events_max_fetch_set_to_one(mocker):
         m.get(f'{URL}?{SECOND_REQUESTS_PARAMS}', json={})
         m.post('https://api-http_connector.url/logs/v1/xsiam', json={'error': 'false'})
 
-        from JiraEventsCollector import main
+        from JiraEventCollector import main
         main()
 
     events = results.call_args[0][0]['Contents']

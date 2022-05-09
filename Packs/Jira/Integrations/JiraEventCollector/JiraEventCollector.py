@@ -182,14 +182,14 @@ def main():
         get_events.run(max_fetch=1)
         demisto.results('ok')
 
-    elif command in ('fetch-events', 'jira-fetch-events'):
+    elif command in ('fetch-events', 'jira-get-events'):
         events = get_events.run(int(demisto_params.get('max_fetch', 100)))
 
         if events:
             demisto.setLastRun(get_events.set_next_run(events[0]))
+            demisto.debug(f'Last run set to {demisto.getLastRun()}')
             if command == 'fetch-events':
                 send_events_to_xsiam(events, 'Jira', 'Audit Records')
-                demisto.updateModuleHealth({'eventsPulled': len(events)})
             else:
                 command_results = CommandResults(
                     readable_output=tableToMarkdown('Jira Audit Records', events, removeNull=True, headerTransform=pascalToSpace),

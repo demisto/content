@@ -1,9 +1,9 @@
-This integration was integrated and tested with version 3 of Jira Events Collector rest API
+This integration was integrated and tested with version 3 of Jira Event Collector rest API
 
-## Configure Jira Events Collector on Cortex XSOAR
+## Configure Jira Event Collector on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Jira Events Collector.
+2. Search for Jira Event Collector.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Description** | **Required** |
@@ -26,13 +26,13 @@ This integration was integrated and tested with version 3 of Jira Events Collect
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
-### jira-fetch-events
+### jira-get-events
 
 ***
 
 #### Base Command
 
-`jira-fetch-events`
+`jira-get-events`
 
 #### Input
 
@@ -43,7 +43,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 
 #### Command example
 
-```!jira-fetch-events max_fetch=2```
+```!jira-get-events max_fetch=2```
 
 #### Context Example
 
