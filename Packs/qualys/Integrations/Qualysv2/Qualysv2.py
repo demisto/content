@@ -1753,18 +1753,19 @@ def build_host_list_detection_outputs(**kwargs) -> Tuple[List[Any], str]:
 
     if original_amount and original_amount > int(inner_args_values['limit']):
         limit_msg = f"Currently displaying {inner_args_values['limit']} out of {original_amount} results."
-    readable_outputs = []
+    readable = ''
     for output in parsed_output:
+        headers = ['ID', 'IP', 'DNS_DATA']
         readable_output = {
             'ID': output.get('ID'),
             'IP': output.get('IP'),
-            'DNS_DATA': {k: v for k, v in output.get('DNS_DATA', {}).items() if v is not None}
+            'DNS_DATA': {k: v for k, v in output.get('DNS_DATA', {}).items() if v is not None},
         }
         if detections := output.get('DETECTION_LIST', {}).get('DETECTION', []):
-            readable_output['DETECTIONS'] = [{'QID': detection.get('QID'), 'RESULTS': detection.get('RESULTS')} for
-                                             detection in detections]
-        readable_outputs.append(readable_output)
-    readable = tableToMarkdown(f'Host Detection List\n{limit_msg}', readable_outputs, removeNull=True)
+            for detection in detections:
+                headers.append(detection.get('QID'))
+                readable_output[detection.get('QID')] = detection.get('RESULTS')
+        readable += tableToMarkdown(f'Host Detection List\n{limit_msg}', readable_output, removeNull=True, headers=headers)
     return parsed_output, readable
 
 
