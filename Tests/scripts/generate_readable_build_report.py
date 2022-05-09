@@ -104,7 +104,7 @@ def test_get_failing_validations():
 
 
 def test_get_failing_create_instances():
-    failing_create = get_file_data(os.path.join(ARTIFACTS_FOLDER, 'packs_results.json'))
+    failing_create = get_file_data(os.path.join(f'{ARTIFACTS_FOLDER}/xsoar', 'packs_results.json'))
     # file = open('validate_outputs.json', 'r')
     # failed_validations = json.load(file)
     create_instances_summary = failing_create.get('prepare_content_for_testing', {}).get('failed_packs', {})
