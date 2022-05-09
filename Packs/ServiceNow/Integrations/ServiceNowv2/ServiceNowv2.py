@@ -2386,9 +2386,10 @@ def update_remote_system_command(client: Client, args: Dict[str, Any], params: D
         for entry in entries:
             demisto.debug(f'Sending entry {entry.get("id")}, type: {entry.get("type")}')
             # Mirroring files as entries
-            if entry.get('type') in [3,7]:
-                # path_res = demisto.getInfoFilePath(entry.get('id'))  # todo: getInfoFilePath function not supported yet in platform
-                path_res = demisto.getFilePath(entry.get('id'))  # todo: this is the problem!
+            supported_mirror_entries = [EntryType.FILE, EntryType.ENTRY_INFO_FILE, EntryType.IMAGE,
+                                        EntryType.VIDEO_FILE, EntryType.STATIC_VIDEO_FILE]
+            if entry.get('type') in supported_mirror_entries:
+                path_res = demisto.getFilePath(entry.get('id'))
                 full_file_name = path_res.get('name')
                 file_name, file_extension = os.path.splitext(full_file_name)
                 if not file_extension:
