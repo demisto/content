@@ -577,7 +577,7 @@ class Notable:
     def to_incident(self, mapper):
         """ Gathers all data from all notable's enrichments and return an incident """
         self.incident_created = True
-        demisto.debug(f"\nSplunkPy-Debug-session  - to_incident {self.id}\n")
+        demisto.debug("\nSplunkPy-Debug-session  - to_incident {}\n".format(self.id))
         for e in self.enrichments:
             demisto.debug(e)
             demisto.debug("\n")
@@ -1011,7 +1011,7 @@ def handle_submitted_notables(service, incidents, cache_object, mapper):
     enrichment_timeout = arg_to_number(str(demisto.params().get('enrichment_timeout', '5')))
     notables = cache_object.submitted_notables
     total = len(notables)
-    demisto.debug(f"SplunkPy-Debug-session - handle_submitted_notables - timeout: {enrichment_timeout} - total: {total}\n")
+    demisto.debug("SplunkPy-Debug-session - handle_submitted_notables - timeout: {} - total: {}\n".format(enrichment_timeout, total))
     demisto.debug("Trying to handle {}/{} open enrichments".format(len(notables[:MAX_HANDLE_NOTABLES]), total))
 
     for notable in notables[:MAX_HANDLE_NOTABLES]:
@@ -1019,7 +1019,7 @@ def handle_submitted_notables(service, incidents, cache_object, mapper):
         demisto.debug(notable)
         demisto.debug("\nSplunkPy-Debug-session  - ###############################\n")
         task_status = handle_submitted_notable(service, notable, enrichment_timeout)
-        demisto.debug(f"SplunkPy-Debug-session - task_status {task_status}")
+        demisto.debug("SplunkPy-Debug-session - task_status {}".format(task_status))
         if task_status:
             incidents.append(notable.to_incident(mapper))
             handled_notables.append(notable)
@@ -1043,13 +1043,13 @@ def handle_submitted_notable(service, notable, enrichment_timeout):
 
     """
     task_status = False
-    demisto.debug(f"SplunkPy-Debug-session - handle_submitted_notables {notable.id}\n")
+    demisto.debug("SplunkPy-Debug-session - handle_submitted_notables {}\n".format(notable.id))
 
     if not notable.is_enrichment_process_exceeding_timeout(enrichment_timeout):
         demisto.debug("Trying to handle open enrichment {}".format(notable.id))
 
         for enrichment in notable.enrichments:
-            demisto.debug(f"SplunkPy-Debug-session - {enrichment.type} {enrichment.status}\n")
+            demisto.debug("SplunkPy-Debug-session - {} {}\n".format(enrichment.type,enrichment.status))
 
             if enrichment.status == Enrichment.IN_PROGRESS:
                 try:
@@ -1094,7 +1094,7 @@ def submit_notables(service, incidents, cache_object, mapper):
     failed_notables, submitted_notables = [], []
     num_enrichment_events = arg_to_number(str(demisto.params().get('num_enrichment_events', '20')))
     notables = cache_object.not_yet_submitted_notables
-    demisto.debug(f"SplunkPy-Debug-session - submit_notables")
+    demisto.debug("SplunkPy-Debug-session - submit_notables")
 
     total = len(notables)
     if notables:
@@ -1171,7 +1171,7 @@ def run_enrichment_mechanism(service, integration_context, mapper):
         if cache_object.done_submitting() and cache_object.done_handling():
             fetch_notables(service=service, cache_object=cache_object, enrich_notables=True, mapper=mapper)
         submit_notables(service, incidents, cache_object, mapper)
-        demisto.debug(f"SplunkPy-Debug-session - run_enrichment_mechanism success\n")
+        demisto.debug("SplunkPy-Debug-session - run_enrichment_mechanism success\n")
 
     except Exception as e:
         err = 'Caught an exception while executing the enriching fetch mechanism. Additional Info: {}'.format(str(e))
@@ -1179,7 +1179,7 @@ def run_enrichment_mechanism(service, integration_context, mapper):
         raise e
 
     finally:
-        demisto.debug(f"SplunkPy-Debug-session - run_enrichment_mechanism finally\n")
+        demisto.debug("SplunkPy-Debug-session - run_enrichment_mechanism finally\n")
 
         store_incidents_for_mapping(incidents, integration_context)
         handled_but_not_created_incidents = cache_object.organize()
