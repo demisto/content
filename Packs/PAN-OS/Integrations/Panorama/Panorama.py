@@ -9165,9 +9165,9 @@ class HygieneLookups:
     @staticmethod
     def check_spyware_profiles(
             topology: Topology,
-            device_filter_str: str = None,
-            minimum_block_severities: List[str] = None,
-            minimum_alert_severities: List[str] = None
+            device_filter_str: Optional[str] = None,
+            minimum_block_severities: Optional[List[str]] = None,
+            minimum_alert_severities: Optional[List[str]] = None
     ) -> ConfigurationHygieneCheckResult:
         """
         Checks the environment to ensure at least one Spyware profile is configured according to visibility best practices.
@@ -9231,7 +9231,7 @@ class HygieneLookups:
 
     @staticmethod
     def get_all_conforming_url_filtering_profiles(
-            topology: Topology, device_filter_str: str = None) -> List[PanosObjectReference]:
+            topology: Topology, device_filter_str: Optional[str] = None) -> List[PanosObjectReference]:
         """
         Retrieves all the conforming URL filtering profiles from the topology, if any.
         :param topology: `Topology` instance
@@ -9259,7 +9259,7 @@ class HygieneLookups:
             topology: Topology,
             minimum_block_severities: List[str],
             minimum_alert_severities: List[str],
-            device_filter_str: str = None,
+            device_filter_str: Optional[str] = None,
     ) -> List[PanosObjectReference]:
         """
         Searches the configuration for all spyware profiles that conform to best practices using the given minimum severities.
@@ -9293,7 +9293,7 @@ class HygieneLookups:
             topology: Topology,
             minimum_block_severities: List[str],
             minimum_alert_severities: List[str],
-            device_filter_str: str = None,
+            device_filter_str: Optional[str] = None,
     ) -> List[PanosObjectReference]:
         """
         Searches the configuration for all vulnerability profiles that conform to PAN best practices using the given minimum
@@ -9324,7 +9324,7 @@ class HygieneLookups:
         return result
 
     @staticmethod
-    def check_url_filtering_profiles(topology: Topology, device_filter_str: str = None):
+    def check_url_filtering_profiles(topology: Topology, device_filter_str: Optional[str] = None):
         """
         Checks the configured URL filtering profiles to make sure at least one is configured according to PAN best practices
         for visibility.
@@ -9361,7 +9361,7 @@ class HygieneLookups:
         )
 
     @staticmethod
-    def check_security_zones(topology: Topology, device_filter_str: str = None) -> ConfigurationHygieneCheckResult:
+    def check_security_zones(topology: Topology, device_filter_str: Optional[str] = None) -> ConfigurationHygieneCheckResult:
         """
         Check all security zones are configured with Log Forwarding profiles.
         :param device_filter_str: Filter checks to a specific device or devices
@@ -9396,7 +9396,7 @@ class HygieneLookups:
         )
 
     @staticmethod
-    def check_security_rules(topology: Topology, device_filter_str: str = None) -> ConfigurationHygieneCheckResult:
+    def check_security_rules(topology: Topology, device_filter_str: Optional[str] = None) -> ConfigurationHygieneCheckResult:
         """
         Check all security rules, in all rulebases, are configured with Log Forwarding and threat profiles.
         :param device_filter_str: Filter checks to a specific device or devices
@@ -10382,7 +10382,7 @@ def check_vulnerability_profiles(
 
 def check_spyware_profiles(
         topology: Topology,
-        device_filter_string: str = None,
+        device_filter_string: Optional[str] = None,
         minimum_block_severities: str = "critical,high",
         minimum_alert_severities: str = "medium,low"
 ) -> ConfigurationHygieneCheckResult:
@@ -10397,14 +10397,14 @@ def check_spyware_profiles(
     return HygieneLookups.check_spyware_profiles(
         topology,
         device_filter_str=device_filter_string,
-        minimum_block_severities=minimum_block_severities.split(","),
-        minimum_alert_severities=minimum_alert_severities.split(",")
+        minimum_block_severities=argToList(minimum_block_severities),
+        minimum_alert_severities=argToList(minimum_alert_severities)
     )
 
 
 def check_url_filtering_profiles(
         topology: Topology,
-        device_filter_string: str = None
+        device_filter_string: Optional[str] = None
 ) -> ConfigurationHygieneCheckResult:
     """
     Checks the configured URL Filtering profiles to ensure at least one meets best practices.
@@ -10420,7 +10420,7 @@ def check_url_filtering_profiles(
 
 def get_conforming_url_filtering_profiles(
         topology: Topology,
-        device_filter_string: str = None
+        device_filter_string: Optional[str] = None
 ) -> List[PanosObjectReference]:
     """
     Returns a list of existing PANOS URL filtering objects that conform to best practices.
@@ -10436,7 +10436,7 @@ def get_conforming_url_filtering_profiles(
 
 def get_conforming_spyware_profiles(
         topology: Topology,
-        device_filter_string: str = None,
+        device_filter_string: Optional[str] = None,
         minimum_block_severities: str = "critical,high",
         minimum_alert_severities: str = "medium,low"
 ) -> List[PanosObjectReference]:
@@ -10451,14 +10451,14 @@ def get_conforming_spyware_profiles(
     return HygieneLookups.get_all_conforming_spyware_profiles(
         topology,
         device_filter_str=device_filter_string,
-        minimum_block_severities=minimum_block_severities.split(","),
-        minimum_alert_severities=minimum_alert_severities.split(",")
+        minimum_block_severities=argToList(minimum_block_severities),
+        minimum_alert_severities=argToList(minimum_alert_severities)
     )
 
 
 def get_conforming_vulnerability_profiles(
         topology: Topology,
-        device_filter_string: str = None,
+        device_filter_string: Optional[str] = None,
         minimum_block_severities: str = "critical,high",
         minimum_alert_severities: str = "medium,low"
 ) -> List[PanosObjectReference]:
@@ -10473,12 +10473,12 @@ def get_conforming_vulnerability_profiles(
     return HygieneLookups.get_all_conforming_vulnerability_profiles(
         topology,
         device_filter_str=device_filter_string,
-        minimum_block_severities=minimum_block_severities.split(","),
-        minimum_alert_severities=minimum_alert_severities.split(",")
+        minimum_block_severities=argToList(minimum_block_severities),
+        minimum_alert_severities=argToList(minimum_alert_severities)
     )
 
 
-def check_security_zones(topology: Topology, device_filter_string: str = None) -> ConfigurationHygieneCheckResult:
+def check_security_zones(topology: Topology, device_filter_string: Optional[str] = None) -> ConfigurationHygieneCheckResult:
     """
     Check configured security zones have correct settings.
 
@@ -10488,7 +10488,7 @@ def check_security_zones(topology: Topology, device_filter_string: str = None) -
     return HygieneLookups.check_security_zones(topology, device_filter_str=device_filter_string)
 
 
-def check_security_rules(topology: Topology, device_filter_string: str = None) -> ConfigurationHygieneCheckResult:
+def check_security_rules(topology: Topology, device_filter_string: Optional[str] = None) -> ConfigurationHygieneCheckResult:
     """
     Check security rules are configured correctly.
 
@@ -10531,8 +10531,7 @@ def fix_log_forwarding(topology: Topology, issue: List) -> List[ConfigurationHyg
     :param topology: `Topology` instance !no-auto-argument
     :param issue: Dictionary of Hygiene issue, from a hygiene check command. Can be a list.
     """
-    issue_objects = hygiene_issue_dict_to_object(issue)
-    return HygieneRemediation.fix_log_forwarding_profile_enhanced_logging(topology, issues=issue_objects)
+    return HygieneRemediation.fix_log_forwarding_profile_enhanced_logging(topology, issues=hygiene_issue_dict_to_object(issue))
 
 
 def fix_security_zone_log_setting(
@@ -10546,11 +10545,10 @@ def fix_security_zone_log_setting(
     :param issue: Dictionary of Hygiene issue, from a hygiene check command. Can be a list.
     :param log_forwarding_profile_name: Name of log forwarding profile to set.
     """
-    issue_objects = hygiene_issue_dict_to_object(issue)
     return HygieneRemediation.fix_security_zone_no_log_setting(
         topology,
         log_forwarding_profile=log_forwarding_profile_name,
-        issues=issue_objects
+        issues=hygiene_issue_dict_to_object(issue)
     )
 
 
@@ -10566,11 +10564,10 @@ def fix_security_rule_log_setting(
     :param issue: Dictionary of Hygiene issue, from a hygiene check command. Can be list.
     :param log_forwarding_profile_name: Name of log forwarding profile to use as log setting.
     """
-    issue_objects = hygiene_issue_dict_to_object(issue)
     return HygieneRemediation.fix_secuity_rule_log_settings(
         topology,
         log_forwarding_profile_name=log_forwarding_profile_name,
-        issues=issue_objects
+        issues=hygiene_issue_dict_to_object(issue)
     )
 
 
@@ -10586,11 +10583,10 @@ def fix_security_rule_security_profile_group(
     :param issue: Dictionary of Hygiene issue, from a hygiene check command
     :param security_profile_group_name: Name of Security profile group to use as log setting.
     """
-    issue_objects = hygiene_issue_dict_to_object(issue)
     return HygieneRemediation.fix_security_rule_security_profile_group(
         topology,
         security_profile_group_name=security_profile_group_name,
-        issues=issue_objects
+        issues=hygiene_issue_dict_to_object(issue)
     )
 
 
