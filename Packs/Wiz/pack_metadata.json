@@ -31,9 +31,5 @@
             "name": "Generic Webhook"
         }
     },
-    "githubUser": "solalraveh",
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2"
-    ]
+    "githubUser": "solalraveh"
 }
