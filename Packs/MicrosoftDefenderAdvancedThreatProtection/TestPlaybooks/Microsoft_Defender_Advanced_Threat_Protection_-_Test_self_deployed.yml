@@ -1,21 +1,22 @@
 id: Microsoft Defender Advanced Threat Protection - Test self deployed
 version: -1
 name: Microsoft Defender Advanced Threat Protection - Test self deployed
-starttaskid: "0"
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     taskid: a3548983-3472-4a0a-b863-d598ab04178a
     type: start
     task:
       id: a3548983-3472-4a0a-b863-d598ab04178a
       version: -1
-      name: ""
+      name: ''
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "1"
+      - '1'
     separatecontext: false
     view: |-
       {
@@ -30,8 +31,8 @@ tasks:
     skipunavailable: false
     quietmode: 0
     isoversize: false
-  "1":
-    id: "1"
+  '1':
+    id: '1'
     taskid: f00b61e9-94ef-4954-bc17-f6c7bfc1d644
     type: regular
     task:
@@ -77,3 +78,4 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 5.0.0
+description: ''
