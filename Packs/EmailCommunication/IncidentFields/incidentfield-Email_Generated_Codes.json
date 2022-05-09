@@ -23,8 +23,8 @@
     "threshold": 72,
     "type": "longText",
     "unmapped": false,
-    "unsearchable": true,
+    "unsearchable": false,
     "useAsKpi": false,
     "version": -1,
-    "fromVersion": "5.5.0"
+    "fromVersion": "6.2.0"
 }
