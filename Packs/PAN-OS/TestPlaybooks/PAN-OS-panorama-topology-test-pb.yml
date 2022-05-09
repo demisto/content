@@ -1,6 +1,5 @@
 id: PAN-OS-panorama-topology-test-pb
-version: 7
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
 name: PAN-OS-panorama-topology-test-pb
 description: Test playbook for panorama toplogy commands
 starttaskid: "0"
@@ -15,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "2"
@@ -622,6 +622,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -2935,3 +2936,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 6.5.0

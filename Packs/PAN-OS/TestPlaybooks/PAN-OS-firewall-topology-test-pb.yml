@@ -1,6 +1,5 @@
 id: PAN-OS-firewall-topology-test-pb
-version: 12
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
 name: PAN-OS-firewall-topology-test-pb
 description: Test playbook for firewall toplogy commands
 starttaskid: "0"
@@ -15,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "2"
@@ -435,6 +435,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -2413,3 +2414,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 6.5.0
