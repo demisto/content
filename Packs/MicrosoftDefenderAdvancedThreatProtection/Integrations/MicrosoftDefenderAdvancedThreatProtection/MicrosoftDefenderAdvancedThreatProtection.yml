@@ -1491,6 +1491,7 @@ script:
     deprecated: false
     description: Collect and download an investigation package from a machine.
     execution: false
+    polling: true
     name: microsoft-atp-request-and-download-investigation-package
     outputs:
     - contextPath: MicrosoftATP.MachineAction.ID
