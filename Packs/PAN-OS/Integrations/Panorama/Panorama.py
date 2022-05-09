@@ -615,7 +615,7 @@ def panorama_commit_status(args: dict):
         'key': API_KEY
     }
 
-    if target := args.get('target', None):
+    if target := args.get('target'):
         params['target'] = target
 
     result = http_request(
@@ -2814,9 +2814,8 @@ def prettify_rules(rules: Union[List[dict], dict], target: Optional[str] = None)
         rules = [rules]
     pretty_rules_arr = []
     for rule in rules:
-        if target:
-            if not target_filter(rule, target):
-                continue
+        if target and not target_filter(rule, target):
+            continue
         pretty_rule = prettify_rule(rule)
         pretty_rules_arr.append(pretty_rule)
 
