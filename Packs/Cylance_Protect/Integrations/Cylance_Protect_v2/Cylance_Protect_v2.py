@@ -1,6 +1,5 @@
-register_module_line('Cylance Protect v2', 'start', __line__())
-
-
+import demistomock as demisto
+from CommonServerPython import *
 
 import jwt
 import uuid
@@ -1605,5 +1604,3 @@ def main():    # pragma: no cover
 
 if __name__ in ('__builtin__', 'builtins', '__main__'):
     main()
-
-register_module_line('Cylance Protect v2', 'end', __line__())
