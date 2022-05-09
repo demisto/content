@@ -89,7 +89,7 @@ class BoxEventsClient(IntegrationEventsClient):
         request: BoxEventsRequest,
         options: IntegrationOptions,
         box_credentials: BoxCredentials,
-        session=requests.Session()
+        session=requests.Session(),
     ) -> None:
         self.box_credentials = box_credentials
         super().__init__(request, options, session)
@@ -188,7 +188,7 @@ def _decrypt_private_key(app_auth: AppAuth):
 
 def main(command: str, demisto_params: dict):
     box_credentials = BoxCredentials.parse_raw(
-        demisto_params['credentials_json']
+        demisto_params['credentials_json']['password']
     )
     request = BoxEventsRequest(
         params=BoxEventsParams.parse_obj(demisto_params),
@@ -210,9 +210,7 @@ def main(command: str, demisto_params: dict):
     demisto.debug(f'got {len(events)=} from api')
     if command == 'box-get-events':
         demisto.debug('box-get-events, publishing events to incident')
-        return_results(CommandResults(
-            'BoxEvents', 'event_id', events
-        ))
+        return_results(CommandResults('BoxEvents', 'event_id', events))
     else:
         demisto.debug('in event collection')
         if events:

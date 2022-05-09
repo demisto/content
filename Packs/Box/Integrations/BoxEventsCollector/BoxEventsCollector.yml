@@ -9,10 +9,12 @@ configuration:
   required: false
   defaultvalue: true
   type: 8
-- display: Credentials JSON
+- display: ""
+  displaypassword: Credentials JSON
   name: credentials_json
+  type: 9
   required: true
-  type: 4
+  hiddenusername: true
 - display: Fetch Events
   name: isFetchEvents
   type: 8
@@ -27,8 +29,8 @@ configuration:
   name: limit
   required: false
   type: 0
-description: Manage Box users.
-display: BoxEventsCollector
+description: Collect events from Box's logs.
+display: Box Event Collector
 name: BoxEventsCollector
 script:
   commands:
@@ -37,188 +39,20 @@ script:
       description: Maximum events to fetch
       isArray: false
       name: limit
-      defaultvalue: 10
+      defaultValue: 10
       required: false
       secret: false
     - default: false
-      description: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+      description: Fetch events from this time (<number> <time unit>, e.g., 12 hours, 7 days)
       isArray: false
       name: created_after
-      defaultvalue: 3 days
+      defaultValue: 3 days
       required: false
       secret: false
     deprecated: false
     description: Get events.
     execution: false
     name: box-get-events
-    outputs:
-    - contextPath: Box.Folder.id
-      description: The ID of the folder created.
-      type: Number
-    - contextPath: Box.Folder.etag
-      description: The entry tag for the folder created.
-      type: Number
-    - contextPath: Box.Folder.type
-      description: The type of folder.
-      type: String
-    - contextPath: Box.Folder.sequence_id
-      description: The numeric identifier that represents the most recent user event
-        that has been applied to the folder.
-      type: Number
-    - contextPath: Box.Folder.name
-      description: The name of the folder.
-      type: String
-    - contextPath: Box.Folder.sha1
-      description: The SHA1 hash of the folder.
-      type: String
-    - contextPath: Box.Folder.file_version.id
-      description: The unique identifier that represents a file version.
-      type: Number
-    - contextPath: Box.Folder.file_version.type
-      description: Value is always file_version.
-      type: String
-    - contextPath: Box.Folder.file_version.sha1
-      description: The SHA1 hash of this version of the file.
-      type: String
-    - contextPath: Box.Folder.description
-      description: The description of the item.
-      type: String
-    - contextPath: Box.Folder.size
-      description: The folder size in bytes.
-      type: Number
-    - contextPath: Box.Folder.path_collection.total_count
-      description: The number of folders in the list.
-      type: Number
-    - contextPath: Box.Folder.path_collection.entries.id
-      description: The ID of the item found.
-      type: Number
-    - contextPath: Box.Folder.path_collection.entries.etag
-      description: The entry tag for the item found.
-      type: Number
-    - contextPath: Box.Folder.path_collection.entries.type
-      description: The type of the item found.
-      type: String
-    - contextPath: Box.Folder.path_collection.entries.sequence_id
-      description: The numeric identifier that represents the most recent user event
-        that has been applied to the item.
-      type: Number
-    - contextPath: Box.Folder.path_collection.entries.name
-      description: The name of the item.
-      type: String
-    - contextPath: Box.Folder.created_at
-      description: The date and time when the item was created on Box.
-      type: Date
-    - contextPath: Box.Folder.modified_at
-      description: The date and time when the item was last updated on Box.
-      type: Date
-    - contextPath: Box.Folder.trashed_at
-      description: The time at which the item was put in the trash.
-      type: Date
-    - contextPath: Box.Folder.purged_at
-      description: The time at which the item is expected to be purged from the trash.
-      type: Date
-    - contextPath: Box.Folder.content_created_at
-      description: The date and time at which the item was originally created, which
-        might be before it was uploaded to Box.
-      type: Date
-    - contextPath: Box.Folder.content_modified_at
-      description: The date and time at which the item was last updated, which might
-        be before it was uploaded to Box.
-      type: Date
-    - contextPath: Box.Folder.created_by.id
-      description: The unique identifier for the user who created the item.
-      type: Number
-    - contextPath: Box.Folder.created_by.type
-      description: Value is always user.
-      type: String
-    - contextPath: Box.Folder.created_by.name
-      description: The display name of the user who created the item.
-      type: String
-    - contextPath: Box.Folder.created_by.login
-      description: The primary email address of the user who created the item.
-      type: String
-    - contextPath: Box.Folder.modified_by.id
-      description: The unique identifier for the user who modified the item.
-      type: Number
-    - contextPath: Box.Folder.modified_by.type
-      description: Value is always user.
-      type: String
-    - contextPath: Box.Folder.modified_by.name
-      description: The display name of the user who modified the item.
-      type: String
-    - contextPath: Box.Folder.modified_by.login
-      description: The primary email address of the user who modified the item.
-      type: String
-    - contextPath: Box.Folder.owned_by.id
-      description: The unique identifier for the user who owns the item.
-      type: Number
-    - contextPath: Box.Folder.owned_by.type
-      description: Value is always user.
-      type: String
-    - contextPath: Box.Folder.owned_by.name
-      description: The display name of the user who owns the item.
-      type: String
-    - contextPath: Box.Folder.owned_by.login
-      description: The primary email address of the user who owns the item.
-      type: String
-    - contextPath: Box.Folder.shared_link.url
-      description: The URL that can be used to access the item on Box.
-      type: String
-    - contextPath: Box.Folder.shared_link.download_url
-      description: The URL that can be used to download the item from Box.
-      type: String
-    - contextPath: Box.Folder.shared_link.vanity_url
-      description: The "Custom URL" that can also be used to preview the item on Box.
-      type: String
-    - contextPath: Box.Folder.shared_link.vanity_name
-      description: The custom name of a shared link, as used in the vanity_url field.
-      type: String
-    - contextPath: Box.Folder.shared_link.access
-      description: The access level for the shared link.
-      type: String
-    - contextPath: Box.Folder.shared_link.effective_access
-      description: The effective access level for the shared link.
-      type: String
-    - contextPath: Box.Folder.shared_link.effective_permission
-      description: The effective permissions for this shared link.
-      type: String
-    - contextPath: Box.Folder.shared_link.unshared_at
-      description: The date and time when the link will be unshared.
-      type: Date
-    - contextPath: Box.Folder.shared_link.is_password_enabled
-      description: Defines if the shared link requires a password to access the item.
-      type: Boolean
-    - contextPath: Box.Folder.shared_link.permissions.can_download
-      description: Defines if the shared link allows for the item to be downloaded.
-      type: Boolean
-    - contextPath: Box.Folder.shared_link.permissions.can_preview
-      description: Defines if the shared link allows for the item to be previewed.
-      type: Boolean
-    - contextPath: Box.Folder.shared_link.download_count
-      description: The number of times the item has been downloaded.
-      type: Number
-    - contextPath: Box.Folder.shared_link.preview_count
-      description: The number of times the item has been previewed.
-      type: Number
-    - contextPath: Box.Folder.parent.id
-      description: The ID of the parent for the item found.
-      type: Number
-    - contextPath: Box.Folder.parent.etag
-      description: The entry tag for the parent of the item found.
-      type: Number
-    - contextPath: Box.Folder.parent.type
-      description: The type for the parent of the item found.
-      type: String
-    - contextPath: Box.Folder.parent.sequence_id
-      description: The numeric identifier that represents the most recent user event
-        that has been applied to the parent of the item.
-      type: Number
-    - contextPath: Box.Folder.parent.name
-      description: The name of the parent of the item.
-      type: String
-    - contextPath: Box.Folder.item_status
-      description: The status of the parent of the item.
-      type: String
   dockerimage: demisto/pydantic-jwt3:1.0.0.29203
   feed: false
   isfetch: false
@@ -228,7 +62,7 @@ script:
   script: '-'
   subtype: python3
   type: python
-  isfetchevents: true
+  isFetchEvents: true
 tests:
-- NoTest
-fromversion: 5.0.0
+- No tests
+fromversion: 6.6.0
