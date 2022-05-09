@@ -1587,4 +1587,12 @@ def test_generic_api_call_command(command, args, response, mocker):
                           (EntryType.NOTE, False),
                           (15, False)])
 def test_is_entry_type_mirror_supported(file_type, expected):
+    """
+    Given:
+        - an entry file type
+    When:
+        - running the update_remote_system_command checking if the entry supports mirroring
+    Then:
+        - return True if the file entry type supports mirroring else return False
+    """
     assert ServiceNowv2.is_entry_type_mirror_supported(file_type) == expected
