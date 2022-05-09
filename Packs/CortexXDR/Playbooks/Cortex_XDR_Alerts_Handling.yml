@@ -465,7 +465,7 @@ outputs:
 - contextPath: PaloAltoNetworksXDR.Incident.alerts.action_process_image_sha256
   description: Image SHA256
 - contextPath: PaloAltoNetworksXDR.Incident.alerts.is_whitelisted
-  description: Is whitelisted "Yes" "No"
+  description: Is on allow list "Yes" "No"
 - contextPath: PaloAltoNetworksXDR.Incident.network_artifacts.type
   description: Network artifact type "IP"
 - contextPath: PaloAltoNetworksXDR.Incident.network_artifacts.network_domain
