@@ -13,13 +13,11 @@ configuration:
   name: api_key
   required: true
   type: 4
-- defaultvalue: ''
-  display: Trust any certificate (not secure)
+- display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
-- defaultvalue: ''
-  display: Use system proxy settings
+- display: Use system proxy settings
   name: proxy
   required: false
   type: 8
