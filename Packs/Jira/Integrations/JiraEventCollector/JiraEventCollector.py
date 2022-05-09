@@ -189,7 +189,7 @@ def main():
             demisto.setLastRun(get_events.set_next_run(events[0]))
             demisto.debug(f'Last run set to {demisto.getLastRun()}')
             if command == 'fetch-events':
-                send_events_to_xsiam(events, 'Jira', 'Audit Records')
+                send_events_to_xsiam(events, 'Jira', 'jira')
             else:
                 command_results = CommandResults(
                     readable_output=tableToMarkdown('Jira Audit Records', events, removeNull=True, headerTransform=pascalToSpace),
