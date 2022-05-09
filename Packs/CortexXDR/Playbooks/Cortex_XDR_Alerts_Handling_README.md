@@ -49,7 +49,7 @@ This playbook does not use any scripts.
 | PaloAltoNetworksXDR.Incident.alerts.actor_process_signature_status | Signature status "Signed" "Invalid Signature" "Unsigned" "Revoked" "Signature Fail" "N/A" "Weak Hash" | unknown |
 | PaloAltoNetworksXDR.Incident.alerts.actor_process_signature_vendor | Singature vendor name | unknown |
 | PaloAltoNetworksXDR.Incident.alerts.action_process_image_sha256 | Image SHA256 | unknown |
-| PaloAltoNetworksXDR.Incident.alerts.is_whitelisted | Is whitelisted "Yes" "No" | unknown |
+| PaloAltoNetworksXDR.Incident.alerts.is_whitelisted | Is on allow list "Yes" "No" | unknown |
 | PaloAltoNetworksXDR.Incident.network_artifacts.type | Network artifact type "IP" | unknown |
 | PaloAltoNetworksXDR.Incident.network_artifacts.network_domain | The domain related to the artifact. | unknown |
 | PaloAltoNetworksXDR.Incident.network_artifacts.network_country | The country related to the artifact | unknown |
