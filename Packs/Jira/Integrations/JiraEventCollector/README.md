@@ -8,16 +8,13 @@ This integration was integrated and tested with version 3 of Jira Event Collecto
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Incident type |  | False |
-    | Your server URL |  | True |
-    | Method request |  | False |
+    | Server URL |  | True |
     | User name | The user name. For example, `admin@example.com` | True |
     | Password |  | True |
-    | Fetch incidents |  | False |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
     | First fetch time |(&lt;number&gt; &lt;time unit&gt;. For example, 12 hours, 1 day, 3 months). Default is 3 days. |  | True |
     | The maximum number of incidents per fetch. | Default is 100 maximum is 1000. |  | True |
+    | Trust any certificate (not secure) |  | False |
+    | Use system proxy settings |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
