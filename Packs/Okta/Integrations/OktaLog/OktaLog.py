@@ -2,19 +2,6 @@ from enum import Enum
 from pydantic import BaseModel, AnyUrl, Json  # pylint: disable=no-name-in-module
 from CommonServerPython import *
 
-OPTIONS_TO_TIME = {
-
-    '1 minute': 60,
-    '1 hour': 3600,
-    '1 day': 86400,
-    '3 days': 259200,
-    '5 days': 432000,
-    '1 week': 604800,
-    '1 month': 2628288,
-    '1 year': 31536000
-
-}
-
 
 class Method(str, Enum):
     """
@@ -146,51 +133,48 @@ class GetEvents:
 
 
 def main():
-    demisto_params = demisto.params() | demisto.args()
-    events_limit = demisto_params.get('limit', 2000)
-    events_limit = int(events_limit)
-    after = OPTIONS_TO_TIME[demisto_params['after']]
-    api_key = demisto_params['api_key']['credentials']['password']
-    demisto_params['headers'] = {"Accept": "application/json", "Content-Type": "application/json",
-                                 "Authorization": f"SSWS {api_key}"}
-    last_run = demisto.getLastRun()
-    last_object_ids = last_run.get('ids')
-    if 'after' not in last_run:
-        delta = datetime.today() - timedelta(seconds=after)
-        last_run = delta.isoformat()
-    else:
-        last_run = last_run['after']
-    demisto_params['params'] = ReqParams(**demisto_params, since=last_run)
-
-    request = Request(**demisto_params)
-
-    client = Client(request)
-
-    get_events = GetEvents(client)
-
-    command = demisto.command()
-    if command == 'test-module':
-        get_events.aggregated_results()
-        demisto.results('ok')
-    elif command == 'okta-get-events' or command == 'fetch-events':
-        events = get_events.aggregated_results(last_object_ids=last_object_ids)
-        if events:
-            demisto.setLastRun(GetEvents.get_last_run(events))
-            while events:
-                send_events_to_xsiam(events[:events_limit], 'okta', 'okta')
-                events = events[events_limit:]
-
-            if command == 'okta-get-events':
-                command_results = CommandResults(
-                    readable_output=tableToMarkdown('Okta Logs', events, headerTransform=pascalToSpace),
-                    outputs_prefix='Okta.Logs',
-                    outputs_key_field='published',
-                    outputs=events,
-                    raw_response=events,
-                )
-                return_results(command_results)
+    try:
+        demisto_params = demisto.params() #| demisto.args()
+        events_limit = int(demisto_params.get('limit', 2000))
+        after = arg_to_datetime(demisto_params['after'])
+        api_key = demisto_params['api_key']['credentials']['password']
+        demisto_params['headers'] = {"Accept": "application/json", "Content-Type": "application/json",
+                                     "Authorization": f"SSWS {api_key}"}
+        last_run = demisto.getLastRun()
+        last_object_ids = last_run.get('ids')
+        if 'after' not in last_run:
+            delta = datetime.today() - timedelta(seconds=after)
+            last_run = delta.isoformat()
         else:
-            send_events_to_xsiam([], 'okta', 'okta')
+            last_run = last_run['after']
+        demisto_params['params'] = ReqParams(**demisto_params, since=last_run)
+
+        request = Request(**demisto_params)
+
+        client = Client(request)
+
+        get_events = GetEvents(client)
+
+        command = demisto.command()
+        if command == 'test-module':
+            get_events.aggregated_results()
+            demisto.results('ok')
+        elif command == 'okta-get-events' or command == 'fetch-events':
+            events = get_events.aggregated_results(last_object_ids=last_object_ids)
+            if events:
+                demisto.setLastRun(GetEvents.get_last_run(events))
+                if command == 'okta-get-events':
+                    command_results = CommandResults(
+                        readable_output=tableToMarkdown('Okta Logs', events, headerTransform=pascalToSpace),
+                        outputs_prefix='Okta.Logs',
+                        outputs_key_field='published',
+                        outputs=events,
+                        raw_response=events,
+                    )
+                    return_results(command_results)
+            send_events_to_xsiam(events[:events_limit], 'okta', 'okta')
+    except Exception as e:
+        return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

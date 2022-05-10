@@ -1,7 +1,7 @@
 commonfields:
-  id: okta event collector
+  id: Okta Event Collector
   version: -1
-name: okta event collector
+name: Okta Event Collector
 display: Okta Event Collector
 category: Analytics & SIEM
 description: Okta logs event collector integration for XSIAM.
@@ -14,11 +14,6 @@ configuration:
   name: api_key
   type: 9
   required: true
-- display: Use Secured Connection
-  name: verify
-  defaultvalue: "true"
-  type: 8
-  required: false
 - display: Api request limit
   name: limit
   type: 0
@@ -38,6 +33,11 @@ configuration:
   - 1 week
   - 1 month
   - 1 year
+- display: Use Secured Connection
+  name: verify
+  defaultvalue: "true"
+  type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
@@ -48,10 +48,8 @@ script:
   commands:
   - description: Integration command for testing.
     name: test-module
-  - description: Command that is activated by the engine to fetch event.
-    name: fetch-events
-  - description: Manual command to fetch events and display them.
-    name: okta-get-events
+  - name: fetch-events
+  - name: okta-get-events
   dockerimage: demisto/fastapi:1.0.0.29406
   runonce: false
   isfetchevents: true
