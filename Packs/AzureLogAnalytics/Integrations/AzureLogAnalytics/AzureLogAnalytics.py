@@ -346,7 +346,7 @@ def main():
             proxy=params.get('proxy', False),
             certificate_thumbprint=certificate_thumbprint,
             private_key=private_key,
-            client_credentials=client_credentials
+            client_credentials=client_credentials,
         )
 
         commands = {
