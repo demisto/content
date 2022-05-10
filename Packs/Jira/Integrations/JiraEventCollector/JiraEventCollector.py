@@ -184,20 +184,18 @@ def main():
 
     elif command in ('fetch-events', 'jira-get-events'):
         events = get_events.run(int(demisto_params.get('max_fetch', 100)))
+        send_events_to_xsiam(events, 'Jira', 'jira')
 
         if events:
-            if command == 'fetch-events':
-                demisto.setLastRun(get_events.set_next_run(events[0]))
-                demisto.debug(f'Last run set to {demisto.getLastRun()}')
-            else:
+            demisto.setLastRun(get_events.set_next_run(events[0]))
+            demisto.debug(f'Last run set to {demisto.getLastRun()}')
+            if command == 'jira-get-events':
                 command_results = CommandResults(
                     readable_output=tableToMarkdown('Jira Audit Records', events, removeNull=True,
                                                     headerTransform=pascalToSpace),
                     raw_response=events,
                 )
                 return_results(command_results)
-
-        send_events_to_xsiam(events, 'Jira', 'jira')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

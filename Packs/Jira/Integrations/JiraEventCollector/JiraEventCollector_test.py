@@ -84,6 +84,7 @@ def test_fetch_events_no_incidents(mocker):
 
     with requests_mock.Mocker() as m:
         m.get(f'{URL}?{FIRST_REQUESTS_PARAMS}', json={})
+        m.post('https://api-http_connector.url/logs/v1/xsiam', json={'error': 'false'})
 
         from JiraEventCollector import main
         main()
