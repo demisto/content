@@ -156,7 +156,7 @@ class Metadata(object):
     CONTENT_COMMIT_HASH = 'contentCommitHash'
     PREVIEW_ONLY = 'previewOnly'
     MANDATORY = 'mandatory'
-
+    VIDEOS = 'videos'
     DISPLAYED_IMAGES = 'displayedImages'
     EMAIL = 'email'
     URL = 'url'

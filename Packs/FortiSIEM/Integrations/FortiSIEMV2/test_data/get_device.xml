@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<device>
+    <organization id="1" name="Super"/>
+    <accessIp>1.1.1.1</accessIp>
+    <applications/>
+    <approved>true</approved>
+    <components/>
+    <creationMethod>LOG</creationMethod>
+    <deviceType>
+        <category>Appliance</category>
+        <jobWeight>10</jobWeight>
+        <model>FortiSIEM</model>
+        <services>FortiSIEM FortiSIEM</services>
+        <vendor>Fortinet</vendor>
+        <version>ANY</version>
+    </deviceType>
+    <discoverMethod>LOG</discoverMethod>
+    <discoverTime>1637650745000</discoverTime>
+    <eventParserList/>
+    <interfaces/>
+    <ipToHostNames/>
+    <luns/>
+    <name>DEVICE_1</name>
+    <naturalId>DEVICE_1</naturalId>
+    <processors/>
+    <raidGroups/>
+    <sanControllerPorts/>
+    <softwarePatches/>
+    <softwareServices/>
+    <status>2</status>
+    <storageGroups/>
+    <storages/>
+    <unmanaged>false</unmanaged>
+    <updateMethod>LOG</updateMethod>
+</device>
