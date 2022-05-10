@@ -462,6 +462,7 @@ def test_parse_indicator():
         'val.CRC32 && val.CRC32 == obj.CRC32 || val.CTPH && val.CTPH == obj.CTPH || '
         'val.SSDeep && val.SSDeep == obj.SSDeep)': {
             'Name': 'submit_name', 'Size': 123, 'SHA256': 'sha256', 'Type': 'foo type', 'Company': 'CompanyName',
+            'Hashes': [{'type': 'SHA256', 'value': 'sha256'}],
             'ProductName': 'ProductName',
             'Signature': {'Authentihash': '', 'Copyright': 'LegalCopyright', 'Description': 'FileDescription',
                           'FileVersion': 'FileVersion', 'InternalName': 'InternalName',
