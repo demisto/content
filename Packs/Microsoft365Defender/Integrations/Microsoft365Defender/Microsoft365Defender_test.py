@@ -70,7 +70,7 @@ def test_microsoft_365_defender_incident_update_command(mocker):
 
 def test_microsoft_365_defender_incident_get_command(mocker):
     from Microsoft365Defender import microsoft_365_defender_incident_get_command
-    client = mock_client(mocker, 'update_incident', util_load_json('./test_data/incident_get_response.json'))
+    client = mock_client(mocker, 'get_incident', util_load_json('./test_data/incident_get_response.json'))
     args = {'id': '263'}
     results = microsoft_365_defender_incident_get_command(client, args)
     check_api_response(results, util_load_json('./test_data/incident_get_results.json'))
