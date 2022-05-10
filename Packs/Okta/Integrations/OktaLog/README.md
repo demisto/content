@@ -9,8 +9,8 @@ Log collecting from Okta
 | **Parameter**             | **Description** | **Required** |
 |---------------------------| --- |--------------|
 | url                       | Okta URL (https://yourdomain.okta.com) | True         |
-| events_to_add_per_request | XSIAM update limit per request | False        |
-| limit                     | Api request limit | True         |
+| events_to_add_per_request | Cortex XSIAM update limit per request | False        |
+| limit                     | API request limit | True         |
 | proxy                     | Use system proxy settings | False        |
 | method                    | HTTP Method | True         |
 | headers                   | Headers | True         |
