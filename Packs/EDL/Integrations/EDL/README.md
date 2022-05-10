@@ -99,6 +99,16 @@ Expected value is a string, supports newline characters (`\n`).
 
 When `PAN-OS: drop invalid URL entries` is enabled, any URL entry that is not compliant with PAN-OS URL format is dropped instead of rewritten.
 
+#### Exported Fields 
+For use with JSON and CSV formats - select specific Cortex XSOAR fields to export. If given the value 'all' - all Cortex XSOAR fields are exported. If empty - only value and type are exported.
+
+the optniol fields are:
+id - modified - sortValues - comments - indicator - value - source - sourceInstances - sourceBrands - investigationIDs - lastSeen - firstSeen - lastSeenEntryID - firstSeenEntryID - CustomFields - tags - expirationStatus - expirationSource - calculatedTime - lastReputationRun - modifiedTime - aggregatedReliability
+
+There are additional fields that do not appear here but are optional.
+And also your custom fields.
+You can try to do a search with 'all' in the 'Exported Fields' parameter and see which fields are returned. (not all fields there are optional for search)
+
 ### Access the Export Indicators Service by Instance Name (HTTPS)
 **Note**: By default, the route is open without security hardening and might expose you to network risks. Cortex XSOAR recommends that you use credentials to connect to the integration.
 
