@@ -1,5 +1,5 @@
 Endpoint detection and response to manage and query malops, connections and processes.
-This integration was integrated and tested with version xx of Cybereason
+This integration was integrated and tested with version 21.2 of Cybereason
 
 ## Configure Cybereason on Cortex XSOAR
 

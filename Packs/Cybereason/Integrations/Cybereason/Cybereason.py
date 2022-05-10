@@ -140,11 +140,11 @@ def http_request(
             raise ValueError('Failed to process the API response. {} {} - {}'.format(str(error_msg), str(error_content), str(e)))
 
 
-def translate_timestamp(timestamp: Any) -> str:
+def translate_timestamp(timestamp: str) -> str:
     return datetime.fromtimestamp(int(timestamp) / 1000).isoformat()
 
 
-def update_output(output: dict, simple_values: Any, element_values: Any, info_dict: list) -> Any:
+def update_output(output: dict, simple_values: dict, element_values: dict, info_dict: list) -> dict:
     for info in info_dict:
         info_type = info.get('type', '')
 
@@ -162,7 +162,7 @@ def update_output(output: dict, simple_values: Any, element_values: Any, info_di
     return output
 
 
-def get_pylum_id(machine: str) -> Any:
+def get_pylum_id(machine: str) -> str:
     query_fields = ['pylumId']
     path = [
         {
@@ -183,7 +183,7 @@ def get_pylum_id(machine: str) -> Any:
     return pylum_id
 
 
-def get_machine_guid(machine_name: str) -> Any:
+def get_machine_guid(machine_name: str) -> str:
     query_fields = ['elementDisplayName']
     path = [
         {
@@ -238,7 +238,7 @@ def is_probe_connected_command(is_remediation_commmand: bool = False) -> Any:
     })
 
 
-def is_probe_connected(machine: str) -> Any:
+def is_probe_connected(machine: str) -> dict:
     query_fields = ['elementDisplayName']
     path = [
         {
@@ -306,10 +306,10 @@ def query_processes_command():
     })
 
 
-def query_processes(machine: Any, process_name: Any, only_suspicious: str = None, has_incoming_connection: str = None,
+def query_processes(machine: str, process_name: bool, only_suspicious: str = None, has_incoming_connection: str = None,
                     has_outgoing_connection: str = None, has_external_connection: str = None,
                     unsigned_unknown_reputation: str = None, from_temporary_folder: str = None,
-                    privileges_escalation: str = None, maclicious_psexec: str = None) -> Any:
+                    privileges_escalation: str = None, maclicious_psexec: str = None) -> dict:
     machine_filters = []
     process_filters = []
 
@@ -406,7 +406,7 @@ def query_connections_command():
         })
 
 
-def query_connections(machine: str, ip: str, filter_input: Any) -> Any:
+def query_connections(machine: str, ip: str, filter_input: str) -> dict:
     if machine:
         path = [
             {
@@ -547,8 +547,8 @@ def query_malops_command():
 
 
 def query_malops(
-    total_result_limit: Any = None, per_group_limit: Any = None, template_context: str = None, filters: Any = None,
-        guid_list: Any = None) -> Any:
+    total_result_limit: int = None, per_group_limit: int = None, template_context: str = None, filters: list = None,
+        guid_list: str = None) -> Any:
     json_body = {
         'totalResultLimit': int(total_result_limit) if total_result_limit else 10000,
         'perGroupLimit': int(per_group_limit) if per_group_limit else 10000,
@@ -718,7 +718,7 @@ def malop_processes_command():
     })
 
 
-def malop_processes(malop_guids: list, filter_value: list) -> Any:
+def malop_processes(malop_guids: list, filter_value: list) -> dict:
     json_body = {
         'queryPath': [
             {
@@ -819,7 +819,7 @@ def prevent_file_command():
         raise Exception('Failed to prevent file')
 
 
-def prevent_file(file_hash: str) -> Any:
+def prevent_file(file_hash: str) -> dict:
     json_body = [{
         'keys': [file_hash],
         'maliciousType': 'blacklist',
@@ -853,7 +853,7 @@ def unprevent_file_command():
         raise Exception('Failed to unprevent file')
 
 
-def unprevent_file(file_hash: str) -> Any:
+def unprevent_file(file_hash: str) -> dict:
     json_body = [{
         'keys': [str(file_hash)],
         'remove': True,
@@ -1049,7 +1049,7 @@ def unsuspend_process_command():
         demisto.results('Machine must be connected to Cybereason in order to perform this action.')
 
 
-def get_remediation_action(malop_guid: str, machine_name: str, target_id: str, remediation_action: str) -> Any:
+def get_remediation_action(malop_guid: str, machine_name: str, target_id: str, remediation_action: str) -> dict:
     machine_guid = get_machine_guid(machine_name)
     json_body = {
         'malopId': malop_guid,
@@ -1066,7 +1066,7 @@ def get_remediation_action(malop_guid: str, machine_name: str, target_id: str, r
     return http_request('POST', '/rest/remediate', json_body=json_body)
 
 
-def get_remediation_action_status(user_name: str, malop_guid: str, response: Any, timeout_second: str, comment: str) -> dict:
+def get_remediation_action_status(user_name: str, malop_guid: str, response: dict, timeout_second: str, comment: str) -> dict:
     remediation_id = dict_safe_get(response, ['remediationId'])
     progress_api_response = get_remediation_action_progress(user_name, malop_guid, remediation_id, timeout_second)
     status = dict_safe_get(progress_api_response, ['Remediation status'])
@@ -1226,7 +1226,7 @@ def query_file_command():
             demisto.results('No results found.')
 
 
-def query_file(filters: list) -> Any:
+def query_file(filters: list) -> dict:
     query_fields = ['md5String', 'ownerMachine', 'avRemediationStatus', 'isSigned', 'signatureVerified',
                     'sha1String', 'maliciousClassificationType', 'createdTime', 'modifiedTime', 'size', 'correctedPath',
                     'productName', 'productVersion', 'companyName', 'internalName', 'elementDisplayName']
@@ -1245,7 +1245,7 @@ def query_file(filters: list) -> Any:
         raise Exception('Error occurred while trying to query the file.')
 
 
-def get_file_machine_details(file_guid: str) -> Any:
+def get_file_machine_details(file_guid: str) -> dict:
     query_fields = ["ownerMachine", "self", "elementDisplayName", "correctedPath", "canonizedPath", "mount",
                     "mountedAs", "createdTime", "modifiedTime", "md5String", "sha1String", "productType", "companyName",
                     "productName", "productVersion", "signerInternalOrExternal", "signedInternalOrExternal",
@@ -1331,7 +1331,7 @@ def query_domain_command():
             demisto.results('No results found.')
 
 
-def query_domain(filters: list) -> Any:
+def query_domain(filters: list) -> dict:
     query_fields = ['maliciousClassificationType', 'isInternalDomain',
                     'everResolvedDomain', 'everResolvedSecondLevelDomain', 'elementDisplayName']
     path = [
@@ -1401,7 +1401,7 @@ def query_user_command():
             demisto.results('No results found.')
 
 
-def query_user(filters: list) -> Any:
+def query_user(filters: list) -> dict:
     query_fields = ['domain', 'ownerMachine', 'ownerOrganization', 'isLocalSystem', 'elementDisplayName']
     path = [
         {
@@ -1734,15 +1734,15 @@ def start_fetchfile_command():
     user_name = demisto.getArg('userName')
     response = get_file_guids(malop_id)
     for filename, file_guid in list(response.items()):
-        resp = start_fetchfile(file_guid, user_name)
+        api_response = start_fetchfile(file_guid, user_name)
         try:
-            if resp['status'] == "SUCCESS":
+            if api_response['status'] == "SUCCESS":
                 demisto.results("Successfully started fetching file for the given malop")
         except Exception:
             raise Exception("Failed to start fetch file process")
 
 
-def start_fetchfile(element_id: str, user_name: str) -> Any:
+def start_fetchfile(element_id: str, user_name: str) -> dict:
     data = {
         'elementGuids': [element_id],
         'initiatorUserName': user_name
@@ -1827,9 +1827,9 @@ def download_fetchfile(batch_id: str) -> Any:
 
 def close_fetchfile_command():
     batch_id = demisto.getArg('batchID')
-    resp = close_fetchfile(batch_id)
+    response = close_fetchfile(batch_id)
     try:
-        if resp.json()['status'] == 'SUCCESS':
+        if response.json()['status'] == 'SUCCESS':
             demisto.results('Successfully aborts a file download operation that is in progress.')
     except Exception:
         raise Exception('The given Batch ID does not exist')
@@ -1854,7 +1854,7 @@ def malware_query_command():
         raise Exception("Limit cannot be zero or a negative number.")
 
 
-def malware_query_filter(needs_attention: str, malware_type: str, malware_status: str, time_stamp: str, limit_range: int) -> Any:
+def malware_query_filter(needs_attention: str, malware_type: str, malware_status: str, time_stamp: str, limit_range: int) -> dict:
     query = []
     if bool(needs_attention) is True:
         query.append({"fieldName": "needsAttention", "operator": "Is", "values": [bool(needs_attention)]})
@@ -1870,7 +1870,7 @@ def malware_query_filter(needs_attention: str, malware_type: str, malware_status
     return response
 
 
-def malware_query(action_values: list, limit: int) -> Any:
+def malware_query(action_values: list, limit: int) -> dict:
     json_body = {"filters": action_values, "sortingFieldName": "timestamp", "sortDirection": "DESC", "limit": limit, "offset": 0}
 
     return http_request('POST', '/rest/malware/query', json_body=json_body)
