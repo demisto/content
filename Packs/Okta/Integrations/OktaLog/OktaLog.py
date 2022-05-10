@@ -176,12 +176,11 @@ def main():
         events = get_events.aggregated_results(last_object_ids=last_object_ids)
         if events:
             demisto.setLastRun(GetEvents.get_last_run(events))
-            if command == 'fetch-events':
-                while events:
-                    send_events_to_xsiam(events[:events_limit], 'okta', 'okta')
-                    events = events[events_limit:]
+            while events:
+                send_events_to_xsiam(events[:events_limit], 'okta', 'okta')
+                events = events[events_limit:]
 
-            elif command == 'okta-get-events':
+            if command == 'okta-get-events':
                 command_results = CommandResults(
                     readable_output=tableToMarkdown('Okta Logs', events, headerTransform=pascalToSpace),
                     outputs_prefix='Okta.Logs',
@@ -190,6 +189,8 @@ def main():
                     raw_response=events,
                 )
                 return_results(command_results)
+        else:
+            send_events_to_xsiam([], 'okta', 'okta')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
