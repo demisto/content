@@ -134,7 +134,7 @@ class GetEvents:
 
 def main():
     try:
-        demisto_params = demisto.params() #| demisto.args()
+        demisto_params = demisto.params() | demisto.args()
         events_limit = int(demisto_params.get('limit', 2000))
         after = arg_to_datetime(demisto_params['after'])
         api_key = demisto_params['api_key']['credentials']['password']
