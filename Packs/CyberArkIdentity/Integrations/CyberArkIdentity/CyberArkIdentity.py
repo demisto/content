@@ -25,9 +25,114 @@ EVENT_FIELDS = [
 ]
 
 
+# -----------------------------------------  HELPER CLASSES  -----------------------------------------
+class CyberArkEventsParams(BaseModel):
+    event_type: Optional[str] = None
+    limit: int = Field(500, gt=0, le=500)
+    stream_position: Optional[str]
+    stream_type = 'admin_logs'
+    created_after: Optional[str]
+    # validators
+    _normalize_after = validator('created_after', pre=True, allow_reuse=True)(
+        get_box_events_timestamp_format
+    )
+
+    class Config:
+        validate_assignment = True
+
+
+class CyberArkEventsRequest(IntegrationHTTPRequest):
+    url = parse_obj_as(AnyUrl, 'https://api.box.com/2.0/events')
+    method = Method.GET
+    params: BoxEventsParams
+
+
+class CyberArkEventsClient(IntegrationEventsClient):
+    request: BoxEventsRequest
+    options: IntegrationOptions
+
+    def __init__(
+        self,
+        request: BoxEventsRequest,
+        options: IntegrationOptions,
+        box_credentials: BoxCredentials,
+        session=requests.Session(),
+    ) -> None:
+        self.box_credentials = box_credentials
+        super().__init__(request, options, session)
+
+    def set_request_filter(self, after: Any):
+        self.request.params.stream_position = after
+
+    def authenticate(self):
+        request = IntegrationHTTPRequest(
+            method=Method.POST,
+            url='https://api.box.com/oauth2/token',
+            data=self._create_authorization_body(),
+            verify=self.request.verify,
+        )
+
+        response = self.call(request)
+        self.access_token = response.json()['access_token']
+        self.request.headers = {'Authorization': f'Bearer {self.access_token}'}
+
+    def _create_authorization_body(self):
+        claims = Claims(
+            client_id=self.box_credentials.boxAppSettings.clientID,
+            id=self.box_credentials.enterpriseID,
+        )
+
+        decrypted_private_key = _decrypt_private_key(
+            self.box_credentials.boxAppSettings.appAuth
+        )
+        assertion = jwt.encode(
+            payload=claims.dict(),
+            key=decrypted_private_key,
+            algorithm='RS512',
+            headers={
+                'kid': self.box_credentials.boxAppSettings.appAuth.publicKeyID
+            },
+        )
+        body = {
+            'grant_type': 'urn:ietf:params:oauth:grant-type:jwt-bearer',
+            'assertion': assertion,
+            'client_id': self.box_credentials.boxAppSettings.clientID,
+            'client_secret': self.box_credentials.boxAppSettings.clientSecret,
+        }
+        return body
+
+
+class CyberArkGetEvents(IntegrationGetEvents):
+    client: BoxEventsClient
+
+    def get_last_run(self: Any) -> dict:  # type: ignore
+        demisto.debug(f'setting {self.client.request.params.stream_position=}')
+        return {'stream_position': self.client.request.params.stream_position}
+
+    def _iter_events(self):
+        self.client.authenticate()
+        demisto.debug('authenticated successfully')
+        # region First Call
+        events = self.client.call(self.client.request).json()
+        # endregion
+        # region Yield Response
+        while True:  # Run as long there are logs
+            self.client.set_request_filter(events['next_stream_position'])
+            demisto.debug(
+                f'setting then next request filter {events["next_stream_position"]=}'
+            )
+            if not events['entries']:
+                break
+            yield events['entries']
+            # endregion
+            # region Do next call
+            events = self.client.call(self.client.request).json()
+            # endregion
+
+
 # -----------------------------------------  HELPER FUNCTIONS  -----------------------------------------
 def get_access_token(**kwargs: dict) -> str:
-    credentials = Credentials(kwargs)
+    credentials = Credentials(**kwargs.get('credentials'))
     user_name = credentials.identifier
     password = credentials.password
     url = f'{kwargs.get("url")}/oauth2/token/{kwargs.get("app_id")}'
@@ -49,32 +154,38 @@ def get_headers(access_token: str) -> dict:
     }
 
 
-def get_body(fetch_from: str) -> dict:
+def get_data(fetch_from: str) -> dict:
     _from = dateparser.parse(fetch_from, settings={'TIMEZONE': 'UTC'}).strftime(DATE_FORMAT)
     to = datetime.now().strftime(DATE_FORMAT)
 
     return {"Script": f"Select {EVENT_FIELDS} from Event where WhenOccurred >= '{_from}' and WhenOccurred <= '{to}'"}
 
 
-def main():
-    # Args is always stronger. Get last run even stronger
-    demisto_params = demisto.params() | demisto.args() | demisto.getLastRun()
-    command = demisto.command()
-    demisto.debug(f'Command {command} was called!!!')
+def prepare_demisto_params(**kwargs: dict) -> dict:
+    params = {
+        'url': kwargs.get('url', '') + 'RedRock/Query',
+        'method': Method.GET,
+        'headers': get_headers(get_access_token(**kwargs)),
+        'data': json.dumps(get_data(kwargs.get('from', '3 days'))),
+        'verify': not kwargs.get('verify'),
 
-    demisto_params['headers'] = get_headers(get_access_token(**demisto_params))
-    demisto_params['data'] = json.dumps(get_body(demisto_params.get('from', '3 days')))
-    demisto_params['url'] = demisto.params().get('url', '') + 'RedRock/Query'
+    }
+    return params
 
-    request = Request(**demisto_params)
-    client = Client(request)
-    get_events = GetEvents(client)
+
+def main(command: str, demisto_params: dict):
+    demisto_params.update(prepare_demisto_params(**demisto_params))
+
+    request = IntegrationHTTPRequest(**demisto_params)
+    options = IntegrationOptions(**demisto_params)
+    client = IntegrationEventsClient(request, options)
+    get_events = IntegrationGetEvents(client, options)
 
     try:
         if command == 'test-module':
-            get_events.run(1)
+            get_events.run()
             demisto.results('ok')
-        elif command in ('fetch-events', 'CyberArkIdentity-fetch-events'):
+        elif command in ('fetch-events', 'CyberArk-get-events'):
             events = get_events.run(demisto_params.get('max_fetch'))
             if events:
                 if command == 'fetch-events':
@@ -95,4 +206,6 @@ def main():
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
-    main()
+    # Args is always stronger. Get getIntegrationContext even stronger
+    demisto_params_ = demisto.params() | demisto.args() | demisto.getLastRun()
+    main(demisto.command(), demisto_params_)
