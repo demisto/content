@@ -5146,7 +5146,7 @@
             "fromversion": "6.1.0"
         },
         {
-             "integrations": [
+            "integrations": [
                 "Github Event Collector"
             ],
             "playbookID": "Github Event Collector-test",
