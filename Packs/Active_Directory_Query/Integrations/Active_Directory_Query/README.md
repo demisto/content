@@ -418,11 +418,11 @@ Requires `Read userAccountControl` and `write userAccountControl` permissions.
 
 ##### Input
 
-| **Argument Name** | **Description**                                                                                  | **Required** |
-| --- |--------------------------------------------------------------------------------------------------|-------------|
-| username | The username of the account to enable (sAMAccountName).                                          | Required    |
-| base-dn | Root (e.g., DC=domain,DC=com). By default, the Base DN configured for the instance will be used. | Optional    |
-| restore_user | If true, the command will enable the user with his restored options.                             | Optional    |
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| username | The username of the account to enable (sAMAccountName). | Required |
+| base-dn | Root (e.g., DC=domain,DC=com). By default, the Base DN configured for the instance will be used. | Optional |
+| restore_user | If true, the command will enable the user with his restored options.| Optional |
 
 ##### Context Output
 
