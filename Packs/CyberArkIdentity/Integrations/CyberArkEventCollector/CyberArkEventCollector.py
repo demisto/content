@@ -1,4 +1,18 @@
-from SiemApiModule import *
+# pylint: disable=no-name-in-module
+# pylint: disable=no-self-argument
+
+import secrets
+
+import jwt
+import urllib3
+from cryptography import exceptions
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives.serialization import load_pem_private_key
+from pydantic import Field, parse_obj_as
+
+from SiemApiModule import *  # noqa: E402
+
+urllib3.disable_warnings()
 
 # -----------------------------------------  GLOBAL VARIABLES  -----------------------------------------
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
@@ -27,7 +41,6 @@ EVENT_FIELDS = [
 
 # -----------------------------------------  HELPER CLASSES  -----------------------------------------
 class CyberArkEventsParams(BaseModel):
-    event_type: Optional[str] = None
     limit: int = Field(500, gt=0, le=500)
     stream_position: Optional[str]
     stream_type = 'admin_logs'
