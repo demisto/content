@@ -741,7 +741,18 @@ class TestHostDetectionOutputBuilder:
                          '|---|---|---|---|\n'
                          '| ID123 | 1.1.1.1 | data: dns data | FOUND DETECTION |\n',
                          [{'ID': 'ID123', 'IP': '1.1.1.1', 'DNS_DATA': {'data': 'dns data'},
-                           'DETECTION_LIST': {'DETECTION': [{'QID': '123', 'RESULTS': 'FOUND DETECTION'}]}}])
+                           'DETECTION_LIST': {'DETECTION': [{'QID': '123', 'RESULTS': 'FOUND DETECTION'}]}}]),
+                        ({'HOST_LIST': {'HOST_ITEM': [{'ID': 'ID123', 'IP': '1.1.1.1', 'DNS_DATA': {'data': 'dns data'},
+                                                       'DETECTION_LIST': {
+                                                           'DETECTION':
+                                                               {'QID': '123', 'RESULTS': 'FOUND DETECTION'}}}]}},
+                         '### Host Detection List\n'
+                         '\n'
+                         '|ID|IP|DNS_DATA|123|\n'
+                         '|---|---|---|---|\n'
+                         '| ID123 | 1.1.1.1 | data: dns data | FOUND DETECTION |\n',
+                         [{'ID': 'ID123', 'IP': '1.1.1.1', 'DNS_DATA': {'data': 'dns data'},
+                           'DETECTION_LIST': {'DETECTION': {'QID': '123', 'RESULTS': 'FOUND DETECTION'}}}])
                         ]
 
     @pytest.mark.parametrize('result, readable, expected_outputs', DETECTION_INPUTS)

@@ -1762,6 +1762,7 @@ def build_host_list_detection_outputs(**kwargs) -> Tuple[List[Any], str]:
             'DNS_DATA': {k: v for k, v in output.get('DNS_DATA', {}).items() if v is not None},
         }
         if detections := output.get('DETECTION_LIST', {}).get('DETECTION', []):
+            detections = detections if isinstance(detections, List) else [detections]
             for detection in detections:
                 headers.append(detection.get('QID'))
                 readable_output[detection.get('QID')] = detection.get('RESULTS')
