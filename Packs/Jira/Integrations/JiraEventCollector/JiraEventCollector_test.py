@@ -48,11 +48,11 @@ def test_fetch_incidents_few_incidents(mocker):
     mocker.patch.object(demisto, 'command', return_value='jira-get-events')
     last_run = mocker.patch.object(demisto, 'getLastRun', return_value={})
     results = mocker.patch.object(demisto, 'results')
+    mocker.patch('JiraEventCollector.send_events_to_xsiam')
 
     with requests_mock.Mocker() as m:
         m.get(f'{URL}?{FIRST_REQUESTS_PARAMS}', json=util_load_json('test_data/events.json'))
         m.get(f'{URL}?{SECOND_REQUESTS_PARAMS}', json={})
-        m.post('https://api-http_connector.url/logs/v1/xsiam', json={'error': 'false'})
 
         from JiraEventCollector import main
         main()
@@ -81,10 +81,10 @@ def test_fetch_events_no_incidents(mocker):
     mocker.patch.object(demisto, 'command', return_value='jira-get-events')
     last_run = mocker.patch.object(demisto, 'getLastRun', return_value={})
     incidents = mocker.patch.object(demisto, 'incidents')
+    mocker.patch('JiraEventCollector.send_events_to_xsiam')
 
     with requests_mock.Mocker() as m:
         m.get(f'{URL}?{FIRST_REQUESTS_PARAMS}', json={})
-        m.post('https://api-http_connector.url/logs/v1/xsiam', json={'error': 'false'})
 
         from JiraEventCollector import main
         main()
@@ -114,11 +114,11 @@ def test_fetch_events_max_fetch_set_to_one(mocker):
     mocker.patch.object(demisto, 'command', return_value='jira-get-events')
     last_run = mocker.patch.object(demisto, 'getLastRun', return_value={})
     results = mocker.patch.object(demisto, 'results')
+    mocker.patch('JiraEventCollector.send_events_to_xsiam')
 
     with requests_mock.Mocker() as m:
         m.get(f'{URL}?{FIRST_REQUESTS_PARAMS}', json=util_load_json('test_data/events.json'))
         m.get(f'{URL}?{SECOND_REQUESTS_PARAMS}', json={})
-        m.post('https://api-http_connector.url/logs/v1/xsiam', json={'error': 'false'})
 
         from JiraEventCollector import main
         main()
