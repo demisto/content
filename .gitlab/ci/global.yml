@@ -132,8 +132,8 @@
 .default-before-script:
   before_script:
     - *setup-network-certs
-    - *check_build_files_are_up_to_date
     - *clone_and_export_variables
+    - *check_build_files_are_up_to_date
     - section_start "Creating new clean logs folder" --collapsed
     - rm -rf $ARTIFACTS_FOLDER/logs
     - mkdir -p $ARTIFACTS_FOLDER/logs
