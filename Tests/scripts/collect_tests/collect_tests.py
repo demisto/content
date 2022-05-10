@@ -21,6 +21,7 @@ from Tests.scripts.collect_tests.exceptions import InvalidPackNameException, Ign
 from Tests.scripts.utils import logging_wrapper as logging
 
 INTEGRATION_SCRIPT_COLLECTED_FILE_TYPES = {'.py', '.yml', 'js', 'ps1'}
+PACKS = {p.name for p in (CONTENT_PATH / 'Packs').glob('*') if p.isdir()}
 
 git_util = GitUtil()
 
@@ -87,6 +88,15 @@ class VersionRange:
 
     def __repr__(self):
         return f'{self.min_version} -> {self.max_version}'
+
+    def __or__(self, other: 'VersionRange') -> 'VersionRange':
+        if other is None:
+            return self
+
+        self.min_version = min(self.min_version, other.min_version)
+        self.max_version = max(self.max_version, other.max_version)
+
+        return self
 
 
 class DictFileBased(DictBased):
@@ -359,9 +369,8 @@ class CollectedTests:
     def __or__(self, other: 'CollectedTests') -> 'CollectedTests':
         self.tests.update(other.tests)
         self.packs.update(other.packs)
-        # if self.machines or other.machines: # todo
-        #     self.machines = set().union((self.machines or (), other.machines or ())) or None
-        return self  # todo test
+        self.version_range = self.version_range | other.version_range if self.version_range else other.version_range
+        return self
 
     @classmethod
     def union(cls, collected_tests: tuple['CollectedTests']):
@@ -401,14 +410,14 @@ class CollectedTests:
         """ raises InvalidPackException if the pack name is not valid."""
         if not pack:
             raise InvalidPackNameException(pack)
+        if not pack in PACKS:  # todo consider using listdir at beginning and checking there
+            raise InvalidPackNameException(pack)
         if pack in IGNORED_FILES:  # todo is necessary?
             raise IgnoredPackException(pack)
         if pack in SKIPPED_PACKS:  # todo is necessary?
             raise SkippedPackException(pack)
         if self._id_set.id_to_packs[pack].deprecated:  # todo safer access?
             raise DeprecatedPackException(pack)
-        if not (CONTENT_PATH / 'Packs' / pack).exists():  # todo consider using listdir at beginning and checking there
-            raise InvalidPackNameException(pack)
 
     def __repr__(self):
         return f'{len(self.packs)} packs, {len(self.tests)} tests, version range: {self.version_range}'
@@ -490,7 +499,7 @@ class TestCollector(ABC):
         if collected.machines is None and not collected.not_empty:  # todo reconsider
             raise EmptyMachineListException()
 
-        collected |= self._add_packs_used(collected.tests)
+        collected |= self._add_packs_used(collected.tests)  # todo should we use it?
         return collected
 
     def _add_packs_used(self, tests: set[str]):
