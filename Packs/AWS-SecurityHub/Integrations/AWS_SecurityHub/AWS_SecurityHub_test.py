@@ -1,5 +1,4 @@
 import pytest
-from tomlkit import datetime
 import demistomock as demisto
 import datetime
 
@@ -170,7 +169,7 @@ def test_fetch_incidents(mocker):
     assert demisto.setLastRun.call_args[0][0]['lastRun'] == '2020-03-22T13:22:13.934000+00:00'
 
 
-def test_list_members_command(mocker):
+def test_convert_members_date_type(mocker):
     """
     Given:
         - A finding to fetch as incident with created time 2020-03-22T13:22:13.933Z
@@ -181,6 +180,9 @@ def test_list_members_command(mocker):
     """
     client = MockClient()
     mock_response = {'InvitedAt': datetime.datetime.now()}
-    mocker.patch.object(client, 'mock_response', return_value=mock_response)
-    _, _, response = list_members_command()
+    mocker.patch.object(client, 'list_members', return_value=mock_response)
+    _, _, response = list_members_command(client, {})
+    convert_members_date_type
     assert response == {'InvitedAt': mock_response['InvitedAt'].isoformat()}
+    print(response)
+    assert False
