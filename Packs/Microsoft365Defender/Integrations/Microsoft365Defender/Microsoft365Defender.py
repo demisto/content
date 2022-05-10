@@ -138,6 +138,8 @@ class Client:
         GET request to get single incident.
         Args:
             incident_id (int): incident's id
+            timeout (int): waiting time for command execution
+
 
        Returns( Dict): request results as dict:
                     { '@odata.context',
@@ -400,7 +402,8 @@ def microsoft_365_defender_incident_get_command(client: Client, args: Dict) -> C
     Args:
         client(Client): Microsoft 365 Defender's client to preform the API calls.
         args(Dict): Demisto arguments:
-              - id (int) - incident's id (required)
+              - id (int)        - incident's id (required)
+              - timeout (int)   - waiting time for command execution
 
     Returns: CommandResults
     """
