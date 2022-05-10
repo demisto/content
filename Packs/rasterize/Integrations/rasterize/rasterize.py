@@ -5,6 +5,8 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from pyvirtualdisplay import Display
 from selenium.common.exceptions import NoSuchElementException, InvalidArgumentException, TimeoutException
 from PyPDF2 import PdfFileReader
 from pdf2image import convert_from_path
@@ -157,6 +159,33 @@ def quit_driver_and_reap_children(driver):
         demisto.error(f'Failed checking for zombie processes: {e}. Trace: {traceback.format_exc()}')
 
 
+def convert_file_to_bytes(file_path: str) -> bytes:
+    with open(file_path, 'rb') as f:
+        file_content = f.read()
+    return file_content
+
+
+def rasterize_test(url):
+    os.environ['DISPLAY'] = ':1'
+    display = Display(visible=0, size=(800, 600))
+    display.start()
+    chrome_options = Options()
+    chrome_options.add_argument('--no-sandbox')  # bypass OS security model
+    chrome_options.add_argument("disable-infobars")
+    chrome_options.add_experimental_option("excludeSwitches", ["enable - automation"])
+    chrome_options.add_experimental_option("useAutomationExtension", False)
+    driver = webdriver.Chrome(executable_path="/usr/bin/chromedriver", chrome_options=chrome_options)
+    time.sleep(3)
+    driver.get(url)
+    driver.maximize_window()
+    os.system("import -window root /tmp/screenshot.png")
+    driver.close()
+    output = convert_file_to_bytes("/tmp/screenshot.png")
+    res = fileResult(filename="url.png", data=output)
+    res['Type'] = entryTypes['image']
+    demisto.results(res)
+
+
 def rasterize(path: str, width: int, height: int, r_type: str = 'png', wait_time: int = 0,
               offline_mode: bool = False, max_page_load_time: int = 180):
     """
@@ -218,29 +247,6 @@ def get_image(driver, width: int, height: int, include_url: bool):
     :return: .png file of the loaded path
     """
     demisto.debug('Capturing screenshot')
-    # demisto.log(f"include url: {demisto.args().get('include_url')}")
-    # include_url = False
-    # if include_url:
-    #     demisto.log("in  include url")
-    #     # Get window size
-    #     size = driver.get_window_size()
-    #     # obtain browser height and width
-    #     w = driver.execute_script('return document.documentElement.scrollWidth')
-    #     h = driver.execute_script('return document.documentElement.scrollHeight')
-    #     demisto.log(f"after getting: h:{h}, w:{w}")
-    #     driver.set_window_size(w, h + 200)
-    #     image = driver.get_screenshot_as_png()
-    #     demisto.log(f"returned result: {image}")
-    #     # temp = Image.open(io.BytesIO(image))
-    #     # I1 = ImageDraw.Draw(temp)
-    #     #
-    #     # I1.text((28, h + 36), "testingggg", fill=(255, 0, 0))
-    #     # demisto.log("after getting screenshot")
-    #     # driver.set_window_size(size['width'], size['height'])
-    #     # image = temp.tobytes("hex", "rgb")
-    # else:
-
-    # Set windows size
 
     driver.set_window_size(width, height)
 
@@ -470,7 +476,7 @@ def main():  # pragma: no cover
             rasterize_html_command()
 
         elif demisto.command() == 'rasterize':
-            rasterize_command()
+            rasterize_test("https://stackoverflow.com/questions/60726972/take-a-screenshot-with-url-bar-using-python-selenium")
 
         else:
             return_error('Unrecognized command')
