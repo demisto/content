@@ -9,15 +9,14 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 3f6b8522-c653-4608-800d-f7da232392fb
+    taskid: 991383a0-d222-4520-86a9-acd1748aa7fd
     type: start
     task:
-      id: 3f6b8522-c653-4608-800d-f7da232392fb
+      id: 991383a0-d222-4520-86a9-acd1748aa7fd
       version: -1
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "16"
@@ -25,8 +24,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 281,
-          "y": 41
+          "x": 50,
+          "y": 50
         }
       }
     note: false
@@ -38,13 +37,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 9ce27446-fb4f-406f-8812-265792a2ba69
+    taskid: 17c87e7d-0e37-4aa7-85af-50547172380c
     type: condition
     task:
-      id: 9ce27446-fb4f-406f-8812-265792a2ba69
+      id: 17c87e7d-0e37-4aa7-85af-50547172380c
       version: -1
       name: Is there a File to enrich?
-      description: Checks whether the playbook's input contains at least one File name to enrich.
+      description: Checks whether the playbook's input contains at least one File to enrich.
       type: condition
       iscommand: false
       brand: ""
@@ -55,7 +54,7 @@ tasks:
       - "26"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isExists
           left:
@@ -65,8 +64,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 281,
-          "y": 171
+          "x": 50,
+          "y": 195
         }
       }
     note: false
@@ -78,22 +77,21 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: f6da103d-6baa-4afb-8b7d-65740714dcf2
+    taskid: 1abc13ac-8141-4e48-83ba-6bd144683f2a
     type: title
     task:
-      id: f6da103d-6baa-4afb-8b7d-65740714dcf2
+      id: 1abc13ac-8141-4e48-83ba-6bd144683f2a
       version: -1
       name: Done
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 281,
-          "y": 765
+          "x": 30,
+          "y": 1010
         }
       }
     note: false
@@ -105,58 +103,34 @@ tasks:
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: 99bd0bb3-ffa0-4952-8015-4f05f713fe2d
+    taskid: 9356078c-8f58-4a01-8aea-3d3cedb8fd96
     type: condition
     task:
-      id: 99bd0bb3-ffa0-4952-8015-4f05f713fe2d
+      id: 9356078c-8f58-4a01-8aea-3d3cedb8fd96
       version: -1
       name: Is RST Threat Feed API enabled?
-      description: Checks if there is an active instance of the RST Threat Feed API API integration enabled.
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
+      scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      '#default#':
+      "no":
       - "24"
       "yes":
-      - "28"
+      - "29"
+    scriptarguments:
+      brandname:
+        simple: RST Cloud - Threat Feed API
+    results:
+    - brandInstances
     separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: RST Cloud - Threat Feed API
-                    ignorecase: true
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
-                    ignorecase: true
-                accessor: brand
-            iscontext: true
-          right:
-            value: {}
     view: |-
       {
         "position": {
-          "x": 578.5,
-          "y": 365
+          "x": 250,
+          "y": 380
         }
       }
     note: false
@@ -168,10 +142,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: 7905202f-5003-4ecf-8e65-07b46192c2dc
+    taskid: 93cc6fd0-e989-4cef-8885-c406f32935bb
     type: regular
     task:
-      id: 7905202f-5003-4ecf-8e65-07b46192c2dc
+      id: 93cc6fd0-e989-4cef-8885-c406f32935bb
       version: -1
       name: Get RST Threat Feed report for hashes
       description: Returns File information and reputation.
@@ -186,17 +160,93 @@ tasks:
       file:
         complex:
           root: inputs.File
+          accessor: SHA256
           transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty:
+                value:
+                  simple: "true"
+              defaultValue:
+                value:
+                  simple: inputs.File.SHA1
+                iscontext: true
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty:
+                value:
+                  simple: "true"
+              defaultValue:
+                value:
+                  simple: inputs.File.MD5
+                iscontext: true
           - operator: uniq
       threshold:
-        simple: inputs.threshold
+        complex:
+          root: inputs.threshold
     reputationcalc: 1
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 578.5,
-          "y": 580
+          "x": 550,
+          "y": 740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 868973c5-9ea5-450e-87d4-00c714215b05
+    type: condition
+    task:
+      id: 868973c5-9ea5-450e-87d4-00c714215b05
+      version: -1
+      name: Check if input exists
+      description: Set a value in context under the key you entered.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "24"
+      "yes":
+      - "28"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.File
+                accessor: SHA256
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.File
+                accessor: SHA1
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.File
+                accessor: MD5
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 400,
+          "y": 560
         }
       }
     note: false
@@ -209,16 +259,14 @@ tasks:
 view: |-
   {
     "linkLabelsPosition": {
-      "16_24_#default#": 0.18,
-      "26_24_#default#": 0.55,
-      "26_28_yes": 0.61
+      "16_24_#default#": 0.18
     },
     "paper": {
       "dimensions": {
-        "height": 789,
-        "width": 677.5,
-        "x": 281,
-        "y": 41
+        "height": 1025,
+        "width": 900,
+        "x": 30,
+        "y": 50
       }
     }
   }
@@ -231,13 +279,13 @@ inputs:
       - operator: uniq
   required: false
   description: The Files to enrich.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: threshold
   value:
-    simple: inputs.threshold
+    simple: "10"
   required: false
   description: Defines the minimum score to set indicators as malicious
-  playbookInputQuery:
+  playbookInputQuery: null
 outputs:
 - contextPath: File
   description: The File objects.
@@ -245,6 +293,3 @@ outputs:
 - contextPath: DBotScore
   description: Indicator, Score, Type, and Vendor.
   type: unknown
-
-tests:
-- No tests (auto formatted)
