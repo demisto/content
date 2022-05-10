@@ -2044,7 +2044,7 @@ tasks:
           - - operator: isEqualString
               left:
                 value:
-                  simple: PaloAltoNetworksXDR.Endpoint.agent_status
+                  simple: PaloAltoNetworksXDR.Endpoint.endpoint_status
                 iscontext: true
               right:
                 value:
@@ -2052,11 +2052,11 @@ tasks:
           - - operator: isEqualString
               left:
                 value:
-                  simple: PaloAltoNetworksXDR.Endpoint.agent_type
+                  simple: PaloAltoNetworksXDR.Endpoint.endpoint_type
                 iscontext: true
               right:
                 value:
-                  simple: Workstation
+                  simple: AGENT_TYPE_WORKSTATION
           accessor: endpoint_id
       windows_file_paths:
         simple: C:\Users\demisto\Desktop\demisto.txt
@@ -2214,7 +2214,7 @@ tasks:
           - - operator: isEqualString
               left:
                 value:
-                  simple: PaloAltoNetworksXDR.Endpoint.host_name
+                  simple: PaloAltoNetworksXDR.Endpoint.endpoint_name
                 iscontext: true
               right:
                 value:
@@ -2439,7 +2439,7 @@ tasks:
           - - operator: isEqualString
               left:
                 value:
-                  simple: PaloAltoNetworksXDR.Endpoint.host_name
+                  simple: PaloAltoNetworksXDR.Endpoint.endpoint_name
                 iscontext: true
               right:
                 value:
@@ -2488,7 +2488,7 @@ tasks:
           - - operator: isEqualString
               left:
                 value:
-                  simple: PaloAltoNetworksXDR.Endpoint.host_name
+                  simple: PaloAltoNetworksXDR.Endpoint.endpoint_name
                 iscontext: true
               right:
                 value:
@@ -2536,7 +2536,7 @@ tasks:
           - - operator: isEqualString
               left:
                 value:
-                  simple: PaloAltoNetworksXDR.Endpoint.host_name
+                  simple: PaloAltoNetworksXDR.Endpoint.endpoint_name
                 iscontext: true
               right:
                 value:
@@ -2572,7 +2572,7 @@ tasks:
         or allow list
       description: Adds requested files to block list if they are not already added to the block list
         or allow list.
-      script: '|||xdr-blacklist-files'
+      script: '|||xdr-blocklist-files'
       type: regular
       iscommand: true
       brand: ""
@@ -2618,7 +2618,7 @@ tasks:
       - - operator: containsGeneral
           left:
             value:
-              simple: PaloAltoNetworksXDR.blackList.fileHash
+              simple: PaloAltoNetworksXDR.blocklist.added_hashes.fileHash
             iscontext: true
           right:
             value:
