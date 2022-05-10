@@ -1,13 +1,7 @@
-id: 0d00527a-af88-408d-8c8e-6950dc580493
-version: 5
+id: SentinelOne - Fetch File from Endpoint
+version: -1
 contentitemexportablefields:
-  contentitemfields:
-    packID: ""
-    itemVersion: 2.0.8
-    fromServerVersion: 5.0.0
-    toServerVersion: ""
-    definitionid: ""
-vcShouldKeepItemLegacyProdMachine: false
+  contentitemfields: {}
 name: SentinelOne - Fetch File from Endpoint
 description: |+
   # Collect endpoint information based on SentinelOne commands.
@@ -23,21 +17,22 @@ description: |+
 
   If a file does not exist on an endpoint, the fetch-files API will still return success, and a zip file of the upload will still be uploaded to SentinelOne. However, the zip contents will be empty, except for a metadata.json file
 
-starttaskid: "0"
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     taskid: 1c76049e-d779-45fb-81b9-dc2c090f2690
     type: start
     task:
       id: 1c76049e-d779-45fb-81b9-dc2c090f2690
       version: -1
-      name: ""
+      name: ''
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "16"
+      - '16'
     separatecontext: false
     view: |-
       {
@@ -53,8 +48,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "1":
-    id: "1"
+  '1':
+    id: '1'
     taskid: 0c5be938-c1ca-4bb8-89f4-ea022132d761
     type: regular
     task:
@@ -65,15 +60,15 @@ tasks:
       script: '|||sentinelone-list-agents'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
     scriptarguments:
       computer_name:
         simple: ${inputs.Hostname}
       limit:
-        simple: "1"
+        simple: '1'
     separatecontext: false
     view: |-
       {
@@ -89,8 +84,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "2":
-    id: "2"
+  '2':
+    id: '2'
     taskid: 1812a991-a18c-42b6-8714-75a30a6d2454
     type: condition
     task:
@@ -99,15 +94,16 @@ tasks:
       name: Did we get the Agent info & Agent is Online?
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
-      "no":
-      - "3"
-      "yes":
-      - "5"
+      '#default#':
+      - '3'
+      yes:
+      - '5'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isNotEmpty
           left:
@@ -135,8 +131,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "3":
-    id: "3"
+  '3':
+    id: '3'
     taskid: 62f93138-85b2-49e9-8952-43ee93d0f7ed
     type: regular
     task:
@@ -146,10 +142,11 @@ tasks:
       scriptName: Print
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "4"
+      - '4'
     scriptarguments:
       value:
         simple: No Agent was found or Agent is not online for ${inputs.Hostname}
@@ -168,8 +165,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "4":
-    id: "4"
+  '4':
+    id: '4'
     taskid: 76121753-126c-4542-898c-7b7d563a25b6
     type: title
     task:
@@ -178,7 +175,8 @@ tasks:
       name: Done
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -194,8 +192,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "5":
-    id: "5"
+  '5':
+    id: '5'
     taskid: 57dd867b-c857-41b3-88ff-c413c056a614
     type: title
     task:
@@ -204,10 +202,11 @@ tasks:
       name: Determine Start Timestamp for Querying Fetch Results
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "12"
+      - '12'
     separatecontext: false
     view: |-
       {
@@ -223,8 +222,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "7":
-    id: "7"
+  '7':
+    id: '7'
     taskid: 4c4f4297-bddd-41b2-8cd0-8ed69de9506a
     type: condition
     task:
@@ -235,12 +234,12 @@ tasks:
       scriptName: Exists
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "4"
-      "yes":
-      - "1"
+      - '4'
+      yes:
+      - '1'
     scriptarguments:
       value:
         simple: ${modules(val.brand.indexOf("SentinelOne V2")>=0)}
@@ -259,8 +258,8 @@ tasks:
     quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
-  "8":
-    id: "8"
+  '8':
+    id: '8'
     taskid: 04d1cdd3-2196-42d6-8d9b-2452c1f4f097
     type: regular
     task:
@@ -271,10 +270,10 @@ tasks:
       script: '|||sentinelone-fetch-file'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "21"
+      - '21'
     scriptarguments:
       agent_id:
         simple: ${SentinelOne.Agents.ID}
@@ -298,8 +297,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "10":
-    id: "10"
+  '10':
+    id: '10'
     taskid: f2885b08-e775-453f-89de-75bedd4f72a2
     type: title
     task:
@@ -308,10 +307,11 @@ tasks:
       name: Fetch File
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "17"
+      - '17'
     separatecontext: false
     view: |-
       {
@@ -327,8 +327,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "12":
-    id: "12"
+  '12':
+    id: '12'
     taskid: 77e7aa35-b7db-4456-8a71-8cbdadf4758b
     type: regular
     task:
@@ -339,13 +339,13 @@ tasks:
       script: '|||sentinelone-get-activities'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "13"
+      - '13'
     scriptarguments:
       limit:
-        simple: "1"
+        simple: '1'
       sort_by:
         simple: createdAt
       sort_order:
@@ -365,8 +365,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "13":
-    id: "13"
+  '13':
+    id: '13'
     taskid: 1ac5e348-ba95-46df-8de1-17dfce785262
     type: condition
     task:
@@ -375,15 +375,16 @@ tasks:
       name: Activity Found?
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#default#':
-      - "14"
-      "yes":
-      - "15"
+      - '14'
+      yes:
+      - '15'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isNotEmpty
           left:
@@ -404,8 +405,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "14":
-    id: "14"
+  '14':
+    id: '14'
     taskid: 05ce9faf-2497-4d27-864d-e1fd71c822f3
     type: regular
     task:
@@ -416,12 +417,10 @@ tasks:
       scriptName: PrintErrorEntry
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     scriptarguments:
       message:
-        simple: This Playbook assumes that there is at least one activity entry already
-          in SentinelOne.  Please perform an operation in your console to begin filling
-          the Activity feed and then restart this playbook.
+        simple: This Playbook assumes that there is at least one activity entry already in SentinelOne.  Please perform an operation in your console to begin filling the Activity feed and then restart this playbook.
     separatecontext: false
     view: |-
       {
@@ -437,8 +436,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "15":
-    id: "15"
+  '15':
+    id: '15'
     taskid: 8850c03f-85e5-4512-8b90-2bc055ce7c1f
     type: regular
     task:
@@ -449,10 +448,10 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "24"
+      - '24'
     scriptarguments:
       key:
         simple: StartTimestamp
@@ -473,8 +472,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "16":
-    id: "16"
+  '16':
+    id: '16'
     taskid: 93026461-32c4-48f8-86c7-ca7d55864648
     type: regular
     task:
@@ -490,13 +489,13 @@ tasks:
       scriptName: DeleteContext
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "7"
+      - '7'
     scriptarguments:
       all:
-        simple: "yes"
+        simple: yes
       subplaybook:
         simple: auto
     separatecontext: false
@@ -514,23 +513,22 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "17":
-    id: "17"
+  '17':
+    id: '17'
     taskid: 68a8f957-2565-4880-8190-349a003a8156
     type: regular
     task:
       id: 68a8f957-2565-4880-8190-349a003a8156
       version: -1
       name: Get Synchronization Lock
-      description: Get a lock. If the lock is already in use - will wait until it
-        is released or until timeout is reached
+      description: Get a lock. If the lock is already in use - will wait until it is released or until timeout is reached
       script: '|||demisto-lock-get'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "8"
+      - '8'
     scriptarguments:
       name:
         simple: SentinelOne-${inputs.Hostname}
@@ -549,8 +547,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "18":
-    id: "18"
+  '18':
+    id: '18'
     taskid: 119ecda6-cc2c-4ca0-8bc5-a5498510deeb
     type: regular
     task:
@@ -561,10 +559,10 @@ tasks:
       script: '|||demisto-lock-release'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "26"
+      - '26'
     scriptarguments:
       name:
         simple: SentinelOne-${inputs.Hostname}
@@ -583,26 +581,24 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "21":
-    id: "21"
+  '21':
+    id: '21'
     taskid: 7ddaf067-591e-4407-868f-9d742df632de
     type: condition
     task:
       id: 7ddaf067-591e-4407-868f-9d742df632de
       version: -1
       name: Error?
-      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
-        to check the previous task entries. If array is provided, will return yes
-        if one of the entries returned an error.
+      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries} to check the previous task entries. If array is provided, will return yes if one of the entries returned an error.
       scriptName: isError
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
-      "no":
-      - "25"
-      "yes":
-      - "18"
+      no:
+      - '25'
+      yes:
+      - '18'
     scriptarguments:
       entryId:
         simple: ${lastCompletedTaskEntries}
@@ -621,8 +617,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "24":
-    id: "24"
+  '24':
+    id: '24'
     taskid: 254b5ba7-26c8-441f-8e9c-6c3156e43e5b
     type: regular
     task:
@@ -638,10 +634,10 @@ tasks:
       scriptName: DeleteContext
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "10"
+      - '10'
     scriptarguments:
       key:
         simple: SentinelOne.Activity
@@ -662,8 +658,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "25":
-    id: "25"
+  '25':
+    id: '25'
     taskid: a184979c-04e7-425c-88bf-c164314c1524
     type: playbook
     task:
@@ -673,21 +669,22 @@ tasks:
       playbookName: SentinelOne - Check for New File Upload Activity
       type: playbook
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "18"
+      - '18'
     scriptarguments:
       StartTimestamp:
         simple: ${StartTimestamp}
       Timeout:
-        simple: "10"
+        simple: '10'
       AgentId:
         simple: ${SentinelOne.Agents.ID}
     separatecontext: true
     loop:
       iscommand: false
-      exitCondition: ""
+      exitCondition: ''
       wait: 1
       max: 100
     view: |-
@@ -704,8 +701,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "26":
-    id: "26"
+  '26':
+    id: '26'
     taskid: 8ee4218a-08fe-4232-89dd-de822e9380d4
     type: condition
     task:
@@ -714,15 +711,16 @@ tasks:
       name: Upload to SentinelOne Console Succeeded?
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#default#':
-      - "4"
-      "yes":
-      - "27"
+      - '4'
+      yes:
+      - '27'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isNotEmpty
           left:
@@ -743,25 +741,24 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "27":
-    id: "27"
+  '27':
+    id: '27'
     taskid: 09cf683a-1dcd-4fa9-8bc9-3b2b8fb8eb8e
     type: regular
     task:
       id: 09cf683a-1dcd-4fa9-8bc9-3b2b8fb8eb8e
       version: -1
       name: Download File from SentinelOne Console
-      description: Download a file fetched using sentinelone-fetch-file to submit
-        the request and sentinelone-get-activities to get the download path
+      description: Download a file fetched using sentinelone-fetch-file to submit the request and sentinelone-get-activities to get the download path
       tags:
       - sentinelone-file-download
       script: '|||sentinelone-download-fetched-file'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "4"
+      - '4'
     scriptarguments:
       activity_id:
         simple: ${SentinelOne.Activity.ID}
@@ -804,25 +801,26 @@ inputs:
     simple: ${Endpoint.Hostname}
   required: false
   description: The Hostname of the device to run on
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Path
   value: {}
   required: true
   description: Full path of file to upload from the agent
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Password
   value:
     simple: PossiblyInfected)(*&7890
   required: false
-  description: Password to use for protecting the resulting zip file. Modify this
-    if you also want to access the files from the SentinelOne web UI and have password
-    you use for that access
-  playbookInputQuery: null
+  description: Password to use for protecting the resulting zip file. Modify this if you also want to access the files from the SentinelOne web UI and have password you use for that access
+  playbookInputQuery:
 - key: Timeout
   value:
-    simple: "10"
+    simple: '10'
   required: false
   description: Timeout in minutes of max time spent waiting for file to upload
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs: []
-sourceplaybookid: Sentinel One - Endpoint data collection
+tests:
+- SentinelOne V2.1 - Test
+- SentinelOne V2.0 - Test
+fromversion: 6.5.0

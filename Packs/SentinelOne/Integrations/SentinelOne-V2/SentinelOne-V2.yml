@@ -912,7 +912,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Include internal activities hidden from display.'
+      description: Include internal activities hidden from display.
       isArray: false
       name: include_hidden
       predefined:
@@ -1455,7 +1455,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: 'A free-text search term, will match applicable attributes (sub-string match). Note: A device''s physical addresses will only be matched if they start with the search term  (not if they contain the search term).'
+      description: "A free-text search term, will match applicable attributes (sub-string match). Note: A device's physical addresses will only be matched if they start with the search term  (not if they contain the search term)."
       isArray: false
       name: query
       required: false
@@ -1482,7 +1482,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: 'A free-text search term, will match applicable attributes (sub-string match). Note: A device''s physical addresses will only be matched if they start with the search term  (not if they contain the search term).'
+      description: "A free-text search term, will match applicable attributes (sub-string match). Note: A device's physical addresses will only be matched if they start with the search term  (not if they contain the search term)."
       isArray: false
       name: query
       required: false
@@ -1523,9 +1523,7 @@ script:
     - defaultValue: '1000'
       description: Max number of records to return
       name: limit
-    description: Add a hash to the blocklist ("blacklist" in SentinelOne documentation).
-      If the `global` flag is `true`, then group_ids, site_ids, and account_ids are
-      ignored.
+    description: Add a hash to the blocklist ("blacklist" in SentinelOne documentation). If the `global` flag is `true`, then group_ids, site_ids, and account_ids are ignored.
     name: sentinelone-get-blocklist
   - arguments:
     - description: SHA1 Hash to Add to Global Blocklist
@@ -1590,8 +1588,7 @@ script:
     - description: Password used in sentinelone-fetch-file command
       name: password
       required: true
-    description: Download a file fetched using sentinelone-fetch-file to submit the
-      request and sentinelone-get-activities to get the download path
+    description: Download a file fetched using sentinelone-fetch-file to submit the request and sentinelone-get-activities to get the download path
     name: sentinelone-download-fetched-file
   dockerimage: demisto/python3:3.10.1.26972
   isfetch: true

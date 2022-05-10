@@ -1,12 +1,7 @@
 contentitemexportablefields:
   contentitemfields:
-    definitionid: ""
-    fromServerVersion: ""
-    itemVersion: ""
-    packID: 969774c0-e5d7-44d4-85b3-f557a8bd0147
     propagationLabels:
     - all
-    toServerVersion: ""
 description: |+
   Playbook to abstract out process of polling for  an Activity to appear in the SentinelOne Activity feed after a file upload has been requested.
 
@@ -14,45 +9,46 @@ description: |+
 
   SentinelOne returns *no* results when incompleted, then results when complete - the opposite of GenericPolling semantics. This seemed to be the cleanest way to implement this contract.
 
-id: 9d832d8d-5c79-406b-82cb-7b7c4b1f12c8
+id: SentinelOne - Check for New File Upload Activity
 inputs:
 - description: SentenelOne get-activities created_after field
   key: StartTimestamp
-  playbookInputQuery: null
+  playbookInputQuery:
   required: true
   value: {}
 - description: Agent ID to check
   key: AgentId
-  playbookInputQuery: null
+  playbookInputQuery:
   required: true
   value: {}
 - description: Timeout in minutes
   key: Timeout
-  playbookInputQuery: null
+  playbookInputQuery:
   required: true
   value: {}
 name: SentinelOne - Check for New File Upload Activity
 outputs: []
-starttaskid: "0"
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "3"
+      - '3'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: 116f6314-00ca-4993-802b-7be2e9a38f73
       iscommand: false
-      name: ""
+      name: ''
       version: -1
+      description: ''
     taskid: 116f6314-00ca-4993-802b-7be2e9a38f73
     timertriggers: []
     type: start
@@ -63,8 +59,8 @@ tasks:
           "y": 50
         }
       }
-  "1":
-    id: "1"
+  '1':
+    id: '1'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
@@ -87,13 +83,13 @@ tasks:
             value:
               simple: SentinelOne.Activity
           operator: isNotEmpty
-      exitCondition: ""
+      exitCondition: ''
       iscommand: false
       max: 60
       wait: 1
     nexttasks:
       '#none#':
-      - "6"
+      - '6'
     note: false
     quietmode: 0
     scriptarguments:
@@ -106,7 +102,7 @@ tasks:
           - args:
               by:
                 value:
-                  simple: "4"
+                  simple: '4'
             operator: multiply
       StartTimestamp:
         simple: ${inputs.StartTimestamp}
@@ -115,14 +111,12 @@ tasks:
     separatecontext: true
     skipunavailable: false
     task:
-      brand: ""
-      description: Playbook called inside a loop by  "SentinelOne - Check for New
-        File Upload Activity". Does the actual poll of the SentinelOne Activity feed,
-        then sleeps for 15 seconds if no result is found.
+      brand: ''
+      description: Playbook called inside a loop by  "SentinelOne - Check for New File Upload Activity". Does the actual poll of the SentinelOne Activity feed, then sleeps for 15 seconds if no result is found.
       id: 1c6620fc-7113-4167-8630-817585433078
       iscommand: false
       name: SentinelOne - Check for New File Upload Activity - Inner Loop
-      playbookId: 923b98f3-1dd3-471a-8a32-3397d16b9dd5
+      playbookId: SentinelOne - Check for New File Upload Activity - Inner Loop
       type: playbook
       version: -1
     taskid: 1c6620fc-7113-4167-8630-817585433078
@@ -135,25 +129,25 @@ tasks:
           "y": 530
         }
       }
-  "3":
-    id: "3"
+  '3':
+    id: '3'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "4"
+      - '4'
     note: false
     quietmode: 0
     scriptarguments:
       all:
-        simple: "yes"
+        simple: yes
       subplaybook:
-        simple: auto
+        simple: yes
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: |-
         Delete field from context.
 
@@ -176,26 +170,26 @@ tasks:
           "y": 195
         }
       }
-  "4":
-    id: "4"
+  '4':
+    id: '4'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "1"
-      - "7"
+      - '1'
+      - '7'
     note: false
     quietmode: 0
     scriptarguments:
       key:
         simple: Counter
       value:
-        simple: "0"
+        simple: '0'
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: Set a value in context under the key you entered.
       id: bc79fdf5-7d9a-41e8-8849-d29737f3a7ed
       iscommand: false
@@ -213,8 +207,8 @@ tasks:
           "y": 370
         }
       }
-  "6":
-    id: "6"
+  '6':
+    id: '6'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
@@ -223,12 +217,13 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: fe5517ff-1a65-44e0-8291-58856d462914
       iscommand: false
       name: Done
       type: title
       version: -1
+      description: ''
     taskid: fe5517ff-1a65-44e0-8291-58856d462914
     timertriggers: []
     type: title
@@ -239,8 +234,8 @@ tasks:
           "y": 710
         }
       }
-  "7":
-    id: "7"
+  '7':
+    id: '7'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
@@ -249,12 +244,13 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: d578d5c9-0e72-4622-8153-32de0137a133
       iscommand: false
       name: Sleeps are 15 seconds. So MaxCounter = Timeout* 4
       type: title
       version: -1
+      description: ''
     taskid: d578d5c9-0e72-4622-8153-32de0137a133
     timertriggers: []
     type: title
@@ -278,3 +274,7 @@ view: |-
       }
     }
   }
+tests:
+- SentinelOne V2.1 - Test
+- SentinelOne V2.0 - Test
+fromversion: 6.2.0

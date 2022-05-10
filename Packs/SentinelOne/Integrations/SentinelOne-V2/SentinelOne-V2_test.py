@@ -35,7 +35,6 @@ def demisto_mocker_2_0(mocker):
 
 
 def test_fetch_incidents__2_1(mocker, requests_mock, demisto_mocker_2_1):
-
     """
     When:
         fetch-incident and API version is 2.1
