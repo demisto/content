@@ -1538,6 +1538,7 @@ script:
       - linux
       - macos
       required: true
+      description: "Type of OS"
     - defaultValue: Blocked from XSOAR
       description: Note stored in SentinelOne about the block
       name: description
