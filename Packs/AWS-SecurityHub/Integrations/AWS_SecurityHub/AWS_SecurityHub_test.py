@@ -1,7 +1,9 @@
 import pytest
+from tomlkit import datetime
 import demistomock as demisto
+import datetime
 
-from AWS_SecurityHub import get_findings_command, fetch_incidents
+from AWS_SecurityHub import get_findings_command, fetch_incidents, list_members_command
 
 FILTER_FIELDS_TEST_CASES = [
     (
@@ -166,3 +168,19 @@ def test_fetch_incidents(mocker):
     client = MockClient()
     fetch_incidents(client, 'Low', False, None)
     assert demisto.setLastRun.call_args[0][0]['lastRun'] == '2020-03-22T13:22:13.934000+00:00'
+
+
+def test_list_members_command(mocker):
+    """
+    Given:
+        - A finding to fetch as incident with created time 2020-03-22T13:22:13.933Z
+    When:
+        - Fetching finding as incident
+    Then:
+        - Verify the last run is set as the created time + 1 millisecond, i.e. 2020-03-22T13:22:13.934Z
+    """
+    client = MockClient()
+    mock_response = {'InvitedAt': datetime.datetime.now()}
+    mocker.patch.object(client, 'mock_response', return_value=mock_response)
+    _, _, response = list_members_command()
+    assert response == {'InvitedAt': mock_response['InvitedAt'].isoformat()}
