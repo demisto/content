@@ -1,24 +1,24 @@
+from collections import defaultdict
+
 import sys
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from enum import Enum
-from itertools import islice, chain
-from pathlib import Path
-from typing import Any, Optional, Iterable
-
 from demisto_sdk.commands.common.constants import MarketplaceVersions, FileType
 from demisto_sdk.commands.common.git_util import GitUtil
 from demisto_sdk.commands.common.tools import get_file, find_type_by_path
+from enum import Enum
 from git import Repo
-from packaging.version import Version
+from itertools import islice
 from packaging import version
+from packaging.version import Version
+from pathlib import Path
+from typing import Any, Optional, Iterable
 
 from Tests.scripts.collect_tests.constants import MASTER, CONTENT_PATH, DEBUG_ID_SET_PATH, DEBUG_CONF_PATH, \
     IGNORED_FILES, SKIPPED_PACKS
 from Tests.scripts.collect_tests.exceptions import InvalidPackNameException, IgnoredPackException, SkippedPackException, \
     DeprecatedPackException
 from Tests.scripts.utils import logging_wrapper as logging
-from collections import defaultdict
 
 INTEGRATION_SCRIPT_COLLECTED_FILE_TYPES = {'.py', '.yml', 'js', 'ps1'}
 
@@ -36,8 +36,8 @@ class CollectionReason(Enum):
     ALL_ID_SET_PACKS = 'collecting all id_set packs'
     NON_CODE_FILE_CHANGED = 'non-code pack file changed'
     INTEGRATION_CHANGED = 'integration changed, collecting all conf.json tests using it'
-    SCRIPT_CHANGED_NO_TESTS = 'script changed, but has `No Tests` configured, taking tests from id_set'
-    SCRIPT_CHANGED = 'script changed, taking tests from `tests` section in script yml'
+    SCRIPT_PLAYBOOK_CHANGED = 'file changed, taking tests from `tests` section in script yml'
+    SCRIPT_PLAYBOOK_CHANGED_NO_TESTS = 'file changed, but has `No Tests` configured, taking tests from id_set'
     TEST_PLAYBOOK_CHANGED = 'test playbook changed'
     MAPPER_CHANGED = 'mapper file changed, configured as incoming_mapper_id in test conf'
     CLASSIFIER_CHANGED = 'classifier file changed, configured as classifier_id in test conf'
@@ -92,7 +92,7 @@ class VersionRange:
 class DictFileBased(DictBased):
     def __init__(self, path: Path):
         self.path = path
-        super().__init__(get_file(path, path.suffix[1:]))
+        super().__init__(get_file(path, path.suffix[1:]))  # returns an empty dictionary # todo handle?
 
 
 class ContentItem(DictFileBased):
@@ -118,7 +118,7 @@ class ContentItem(DictFileBased):
     @property
     def tests(self):
         tests = self.get('tests', [], warn_if_missing=False)
-        if len(tests) == 1 and tests[0].lower() == 'no tests':
+        if len(tests) == 1 and 'no tests' in tests[0].lower():
             raise NoTestsConfiguredException(self.id_)
         return tests
 
@@ -226,6 +226,10 @@ class IdSetItem(DictBased):
     def implementing_scripts(self):
         return self.get('implementing_scripts', (), warn_if_missing=False)
 
+    @property
+    def implementing_playbooks(self):
+        return self.get('implementing_playbooks', (), warn_if_missing=False)
+
 
 class IdSet(DictFileBased):
     def __init__(self, version_range: VersionRange, marketplace: MarketplaceVersions):
@@ -239,7 +243,14 @@ class IdSet(DictFileBased):
         self.id_to_test_playbook = self._parse_items(self['TestPlaybooks'])
         self.id_to_packs = self._parse_items(self['Packs'])
 
-        self.scripts_to_tests = self._calculate_script_to_tests()
+        self.implemented_scripts_to_tests = defaultdict(list)
+        self.implemented_playbooks_to_tests = defaultdict(list)
+
+        for test in self.test_playbooks:
+            for script in test.implementing_scripts:
+                self.implemented_scripts_to_tests[script].append(test)
+            for playbook in test.implementing_playbooks:
+                self.implemented_playbooks_to_tests[playbook].append(test)
 
         # todo are all the following necessary?
         # self.id_to_classifier = self._parse_items(self['Classifiers'])
@@ -312,13 +323,6 @@ class IdSet(DictFileBased):
                     if id_ in result:
                         raise ValueError(f'{id_=} already parsed')
                     result[id_] = item
-        return result
-
-    def _calculate_script_to_tests(self):
-        result = defaultdict(list)
-        for test in self.test_playbooks:
-            for script in test.implementing_scripts:
-                result[script].append(test)
         return result
 
 
@@ -584,6 +588,50 @@ class BranchTestCollector(TestCollector):
             raise NotImplementedError()  # todo return sanity tests
         return collected
 
+    def _collect_yml(
+            self,
+            content_item: ContentItem,
+            file_type: FileType,
+            path: Path
+    ) -> CollectedTests:
+        match content_item_folder := path.parents[1].name:
+
+            case 'Integrations':  # todo lower case?
+                tests = self.conf.integrations_to_tests[content_item.id_]
+                reason = CollectionReason.INTEGRATION_CHANGED
+
+            case 'Scripts' | 'Playbooks':
+                try:
+                    tests = content_item.tests  # raises if 'no tests' in the tests field
+                    reason = CollectionReason.SCRIPT_PLAYBOOK_CHANGED
+
+                except NoTestsConfiguredException:  # collecting all implementing
+                    reason = CollectionReason.SCRIPT_PLAYBOOK_CHANGED_NO_TESTS
+
+                    match content_item_folder:
+                        case 'Scripts':
+                            tests = self.id_set.implemented_scripts_to_tests.get(content_item.id_)
+                        case 'Playbooks':
+                            tests = self.id_set.implemented_playbooks_to_tests.get(content_item.id_)
+                        case _:
+                            raise RuntimeError('this can not really happen')
+
+                    if not tests:
+                        logging.warning(f'{file_type.value} {str(path)} has `No Tests` configured,'
+                                        f' and no tests in id_set')  # todo is this necessary?
+            case _:
+                raise RuntimeError(f'Unexpected content type path {content_item_folder}'
+                                   f' (expected `Integrations`, `Scripts`, etc)')
+
+        return CollectedTests(
+            tests=tests,
+            packs=content_item.pack_tuple,
+            reason=reason,
+            id_set=self.id_set,
+            version_range=content_item.version_range,
+            reason_description=f'{content_item.id_=}'
+        )
+
     def _collect_single(self, path) -> CollectedTests:
         file_type = find_type_by_path(path)
         try:
@@ -595,73 +643,48 @@ class BranchTestCollector(TestCollector):
                 raise NoTestsToCollect(path, e.message)
             raise  # files that are either supposed to be in a pack, or should not be ignored.
 
+        reason_description = ''
+        packs = content_item.pack_tuple
+
         match file_type:
+            case FileType.PYTHON_FILE | FileType.POWERSHELL_FILE | FileType.JAVASCRIPT_FILE:
+                yml = ContentItem(path.with_suffix('.yml'))
+                # todo handle foo.Tests.ps1
+                # todo should this yml be created inside _collect_yml?
+                # todo what if not exists?
+                return self._collect_yml(yml, yml.file_type, path)
+
             case FileType.PACK_IGNORE | FileType.SECRET_IGNORE | FileType.DOC_FILE | FileType.README:
                 raise NoTestsToCollect(path, f'ignored type ({file_type}')
 
-            case FileType.INTEGRATION:
-                if path.suffix not in INTEGRATION_SCRIPT_COLLECTED_FILE_TYPES:
-                    raise ValueError(f'unexpected file extension ({path.suffix}) for integration')
-
-                integration_id = content_item.id_
-
-                return CollectedTests(tests=self.conf.integrations_to_tests[integration_id],
-                                      packs=content_item.pack_tuple, reason=CollectionReason.INTEGRATION_CHANGED,
-                                      id_set=self.id_set, version_range=, reason_description=f'{integration_id=}')
-
-            case FileType.SCRIPT | FileType.PLAYBOOK:
-                if file_type == FileType.SCRIPT and path.suffix not in INTEGRATION_SCRIPT_COLLECTED_FILE_TYPES \
-                        or file_type == FileType.PLAYBOOK and path.suffix != '.yml':
-                    raise ValueError(f'unexpected file extension ({path.suffix}) for {file_type=}')
-
-                try:
-                    tests = content_item.tests
-                    reason = CollectionReason.SCRIPT_CHANGED
-
-                except NoTestsConfiguredException:
-                    tests = self.id_set.test_playbooks_to_pack.get(content_item.id_)
-                    reason = CollectionReason.SCRIPT_CHANGED_NO_TESTS
-                    if not tests:
-                        # todo is this necessary?
-                        logging.debug(f'{file_type.value} {str(path)} has `No Tests` configured,'
-                                      f' and no tests in id_set')
-
-                return CollectedTests(tests=tests, packs=content_item.pack_tuple, reason=reason, id_set=self.id_set,
-                                      version_range=, reason_description=None)
-
             case FileType.IMAGE | FileType.DESCRIPTION:  # todo readme shows twice
-                return CollectedTests(tests=None, packs=content_item.pack_tuple,
-                                      reason=CollectionReason.NON_CODE_FILE_CHANGED, id_set=self.id_set, version_range=,
-                                      reason_description=f'{FileType=}')
+                tests = None
+                reason = CollectionReason.NON_CODE_FILE_CHANGED
+                reason_description = f'{FileType=}'
 
-            case FileType.TEST_PLAYBOOK:  # todo what to do with playbook readme?
-                if not path.suffix != '.yml':  # todo is this necessary?
-                    raise ValueError(f'unexpected file extension ({path.suffix}) for playbook')
-
+            case FileType.TEST_PLAYBOOK:
                 if (test_id := content_item.id_) in self.conf.test_ids:
-                    return CollectedTests(tests=(test_id,), packs=content_item.pack_tuple,
-                                          reason=CollectionReason.TEST_PLAYBOOK_CHANGED, id_set=self.id_set,
-                                          version_range=)  # todo machines
+                    tests = test_id,
+                    reason = CollectionReason.TEST_PLAYBOOK_CHANGED
+                else:
+                    raise
 
             case FileType.REPUTATION:  # todo reputationjson
-                pass  # todo
+                raise NotImplementedError() # todo
 
             case FileType.MAPPER:
                 if tests := (self.conf.incoming_mapper_to_test.get(content_item.id_)):
-                    return CollectedTests(tests=tests, packs=content_item.pack_tuple,
-                                          reason=CollectionReason.MAPPER_CHANGED, id_set=self.id_set, version_range=,
-                                          reason_description=content_item.name)
-                    )
-                    # todo machines
+                    tests = tests
+                    reason = CollectionReason.MAPPER_CHANGED
+                    reason_description = content_item.name
 
-                    return CollectedTests(tests=tests, packs=content_item.pack_tuple,
-                                          reason=CollectionReason.NON_CODE_FILE_CHANGED, id_set=self.id_set,
-                                          version_range=,
-                                          reason_description=f'no specific tests for {content_item.name} were found')  # todo machines
+                else:
+                    tests = None
+                    reason = CollectionReason.NON_CODE_FILE_CHANGED
+                    reason_description = f'no specific tests for {content_item.name} were found'
 
-                case
-                FileType.CLASSIFIER:  # todo what about old_classifier?
-                pass  # todo
+            case FileType.CLASSIFIER:  # todo what about old_classifier?
+                raise NotImplementedError() # todo
 
             case FileType.README | FileType.METADATA | FileType.RELEASE_NOTES | FileType.RELEASE_NOTES_CONFIG | \
                  FileType.IMAGE | FileType.DESCRIPTION | FileType.INCIDENT_TYPE | FileType.INCIDENT_FIELD | \
@@ -670,8 +693,10 @@ class BranchTestCollector(TestCollector):
                  FileType.XSIAM_DASHBOARD | FileType.XSIAM_REPORT | FileType.REPORT | FileType.GENERIC_TYPE | \
                  FileType.GENERIC_FIELD | FileType.GENERIC_MODULE | FileType.GENERIC_DEFINITION | \
                  FileType.PRE_PROCESS_RULES | FileType.JOB | FileType.CONNECTION:
-                return CollectedTests(tests=None, packs=pack_tuple, reason=CollectionReason.NON_CODE_FILE_CHANGED,
-                                      id_set=self.id_set, version_range=, reason_description=str(path))
+
+                tests = None
+                reason = CollectionReason.NON_CODE_FILE_CHANGED
+                reason_description = str(path)
                 # todo rn_config?
                 # todo layout container, xsiam config?
 
@@ -679,11 +704,19 @@ class BranchTestCollector(TestCollector):
                 raise RuntimeError(f'could not find file_type for {path}')
 
             case _:
+                if path.suffix == '.yml':
+                    return self._collect_yml(content_item, file_type, path)
                 raise NotImplementedError(f'Unexpected filetype {file_type}')
 
         # todo usage before assignment?
-        return CollectedTests(tests=tests, packs=packs, reason=reason, id_set=self.id_set, version_range=,
-                              reason_description=reason_description)
+        return CollectedTests(
+            tests=tests,
+            packs=packs,
+            reason=reason,
+            id_set=self.id_set,
+            version_range=content_item.version_range,
+            reason_description=reason_description
+        )
 
 
 class NightlyTestCollector(TestCollector):
