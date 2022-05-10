@@ -9,10 +9,10 @@ This integration was integrated and tested with version 3 of Jira Event Collecto
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
     | Server URL |  | True |
-    | User name | The user name. For example, `admin@example.com` | True |
+    | User name | The user name \(admin@example.com\) and password | True |
     | Password |  | True |
-    | First fetch time |(&lt;number&gt; &lt;time unit&gt;. For example, 12 hours, 1 day, 3 months). Default is 3 days. |  | True |
-    | The maximum number of incidents per fetch. | Default is 100 maximum is 1000. |  | True |
+    | First fetch time (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 1 day, 3 months). default is 3 days. |  | True |
+    | The maximum number of incidents per fetch. Default is 100 maximum is 1000. |  | True |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
 
