@@ -44,20 +44,13 @@ def build_summary_report(logging_manager,
                          server_6_2_summary,
                          server_master_summary,
                          output_file):
-    # json_summary = {
-    #     'Validate': validate_summary,
-    #     'Unit tests': unit_tests_summary,
-    #     'Create instances': create_instances_summary,
-    #     'server 6.1': server_6_1_summary,
-    #     'server 6.2': server_6_2_summary,
-    #     'server master': server_master_summary,
-    # }
+
     test_cases = []
 
     for file, failing_validations in validate_summary.items():
         # test_case = TestCase('Test1', 'some.class.name', 123.345, 'I am stdout!', 'I am stderr!')
         for failing_validation in failing_validations:
-            test_case = TestCase('Validate', f'validate.{file}', stdout='I am stdout!', stderr=failing_validation)
+            test_case = TestCase(f'validate.{file}', 'Validate', stdout='I am stdout!', stderr=failing_validation)
             test_case.add_failure_info(message=failing_validation)
             test_cases.append(test_case)
 
@@ -66,7 +59,7 @@ def build_summary_report(logging_manager,
 
     create_test_cases = []
     for failing_pack, failing_pack_data in create_instances_summary.items():
-        test_case = TestCase('create_instances', f'create_instances.{failing_pack}')
+        test_case = TestCase(f'create_instances.{failing_pack}', 'Create Instances')
         test_case.add_failure_info(message=failing_pack_data.get('errors')[0])
         create_test_cases.append(test_case)
     create_ts = TestSuite("Create Instances", create_test_cases)
