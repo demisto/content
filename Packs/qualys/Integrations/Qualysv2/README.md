@@ -21278,14 +21278,14 @@ Get a list of hosts with the hosts latest vulnerability data. The list is based 
 
 >### Host Detection List
 >
->|ID|IP|DNS_DATA|DETECTIONS|38170|38173|38601|38628|38657|70000|90882|
->|---|---|---|---|---|---|---|---|---|---|---|
->| 35700896 | 172.31.11.47 | HOSTNAME: i-070b64d396f8037e7 |   | Certificate #0 CN=WIN-2IDQKTU63RC (WIN-2IDQKTU63RC) doesn&apos;t resolve | Certificate #0 CN=WIN-2IDQKTU63RC unable to get local issuer certificate | CIPHER	KEY-EXCHANGE	AUTHENTICATION	MAC	ENCRYPTION(KEY-STRENGTH)	GRADE<br/>TLSv1 WITH RC4 CIPHERS IS SUPPORTED	 	 	 	 	 <br/>RC4-MD5	RSA	RSA	MD5	RC4(128)	MEDIUM<br/>RC4-SHA	RSA	RSA	SHA1	RC4(128)	MEDIUM<br/>TLSv1.1 WITH RC4 CIPHERS IS SUPPORTED	 	 	 	 	 <br/>RC4-MD5	RSA	RSA	MD5	RC4(128)	MEDIUM<br/>RC4-SHA	RSA	RSA	SHA1	RC4(128)	MEDIUM<br/>TLSv1.2 WITH RC4 CIPHERS IS SUPPORTED	 	 	 	 	 <br/>RC4-MD5	RSA	RSA	MD5	RC4(128)	MEDIUM<br/>RC4-SHA	RSA	RSA	SHA1	RC4(128)	MEDIUM | TLSv1.0 is supported | CIPHER	KEY-EXCHANGE	AUTHENTICATION	MAC	ENCRYPTION(KEY-STRENGTH)	GRADE<br/>TLSv1 WITH 64-BIT CBC CIPHERS IS SUPPORTED	 	 	 	 	 <br/>DES-CBC3-SHA	RSA	RSA	SHA1	3DES(168)	MEDIUM<br/>TLSv1.1 WITH 64-BIT CBC CIPHERS IS SUPPORTED	 	 	 	 	 <br/>DES-CBC3-SHA	RSA	RSA	SHA1	3DES(168)	MEDIUM<br/>TLSv1.2 WITH 64-BIT CBC CIPHERS IS SUPPORTED	 	 	 	 	 <br/>DES-CBC3-SHA	RSA	RSA	SHA1	3DES(168)	MEDIUM | WIN-2IDQKTU63RC | RDP Supported Encryption methods:  RC4(40 bit),RC4(56 bit) |
+>|ID| IP       |DNS_DATA|DETECTIONS|38170|38173|38601|38628|38657|70000|90882|
+>|----------|---|---|---|---|---|---|---|---|---|---|
+>| 35700896 | test_ip1 | HOSTNAME: i-070b64d396f8037e7 |   | Certificate #0 CN=WIN-2IDQKTU63RC (WIN-2IDQKTU63RC) doesn&apos;t resolve | Certificate #0 CN=WIN-2IDQKTU63RC unable to get local issuer certificate | CIPHER	KEY-EXCHANGE	AUTHENTICATION	MAC	ENCRYPTION(KEY-STRENGTH)	GRADE<br/>TLSv1 WITH RC4 CIPHERS IS SUPPORTED	 	 	 	 	 <br/>RC4-MD5	RSA	RSA	MD5	RC4(128)	MEDIUM<br/>RC4-SHA	RSA	RSA	SHA1	RC4(128)	MEDIUM<br/>TLSv1.1 WITH RC4 CIPHERS IS SUPPORTED	 	 	 	 	 <br/>RC4-MD5	RSA	RSA	MD5	RC4(128)	MEDIUM<br/>RC4-SHA	RSA	RSA	SHA1	RC4(128)	MEDIUM<br/>TLSv1.2 WITH RC4 CIPHERS IS SUPPORTED	 	 	 	 	 <br/>RC4-MD5	RSA	RSA	MD5	RC4(128)	MEDIUM<br/>RC4-SHA	RSA	RSA	SHA1	RC4(128)	MEDIUM | TLSv1.0 is supported | CIPHER	KEY-EXCHANGE	AUTHENTICATION	MAC	ENCRYPTION(KEY-STRENGTH)	GRADE<br/>TLSv1 WITH 64-BIT CBC CIPHERS IS SUPPORTED	 	 	 	 	 <br/>DES-CBC3-SHA	RSA	RSA	SHA1	3DES(168)	MEDIUM<br/>TLSv1.1 WITH 64-BIT CBC CIPHERS IS SUPPORTED	 	 	 	 	 <br/>DES-CBC3-SHA	RSA	RSA	SHA1	3DES(168)	MEDIUM<br/>TLSv1.2 WITH 64-BIT CBC CIPHERS IS SUPPORTED	 	 	 	 	 <br/>DES-CBC3-SHA	RSA	RSA	SHA1	3DES(168)	MEDIUM | WIN-2IDQKTU63RC | RDP Supported Encryption methods:  RC4(40 bit),RC4(56 bit) |
 >### Host Detection List
 >
->|ID|IP|DNS_DATA|DETECTIONS|70000|70001|90882|90883|105500|105501|105632|
->|---|---|---|---|---|---|---|---|---|---|---|
->| 69291564 | 172.31.11.229 | HOSTNAME: i-055ef1b4734491575 |   | AMAZON-544DB96A | Device Name	Comment	Type<br/>IPC$	Remote IPC	-2147483645<br/>C$	Default share	-2147483648<br/>ADMIN$	Remote Admin	-2147483648 | RDP Supported Encryption methods:  RC4(40 bit),RC4(56 bit) | RDP Public key is 512 bits long. | QID: 105500 detected on port 3389 over TCP. | QID: 105501 detected on port 3389 over TCP. | EOL/Obsolete Operating System : Windows Server 2003 R2 Detected |
+>|ID| IP       |DNS_DATA|DETECTIONS|70000|70001|90882|90883|105500|105501|105632|
+>|----------|---|---|---|---|---|---|---|---|---|---|
+>| 69291564 | test_ip2 | HOSTNAME: i-055ef1b4734491575 |   | AMAZON-544DB96A | Device Name	Comment	Type<br/>IPC$	Remote IPC	-2147483645<br/>C$	Default share	-2147483648<br/>ADMIN$	Remote Admin	-2147483648 | RDP Supported Encryption methods:  RC4(40 bit),RC4(56 bit) | RDP Public key is 512 bits long. | QID: 105500 detected on port 3389 over TCP. | QID: 105501 detected on port 3389 over TCP. | EOL/Obsolete Operating System : Windows Server 2003 R2 Detected |
 
 
 
