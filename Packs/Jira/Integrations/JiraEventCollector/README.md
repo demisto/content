@@ -1,8 +1,8 @@
-This integration was integrated and tested with version 3 of Jira Event Collector rest API
+This integration was integrated and tested with version 3 of Jira Event Collector rest API.
 
-## Configure Jira Event Collector on Cortex XSOAR
+## Configure Jira Event Collector on Cortex XSIAM
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+1. Navigate to **Settings** > **Configurations** > **Data Collection** > **Automations & Feed Integrations**.
 2. Search for Jira Event Collector.
 3. Click **Add instance** to create and configure a new integration instance.
 
@@ -11,19 +11,19 @@ This integration was integrated and tested with version 3 of Jira Event Collecto
     | Incident type |  | False |
     | Your server URL |  | True |
     | Method request |  | False |
-    | User name | The user name \(admin@example.com\) and password | True |
+    | User name | The user name. For example, `admin@example.com` | True |
     | Password |  | True |
     | Fetch incidents |  | False |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
-    | First fetch time (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 1 day, 3 months). default is 3 days. |  | True |
-    | The maximum number of incidents per fetch. Default is 100 maximum is 1000. |  | True |
+    | First fetch time |(&lt;number&gt; &lt;time unit&gt;. For example, 12 hours, 1 day, 3 months). Default is 3 days. |  | True |
+    | The maximum number of incidents per fetch. | Default is 100 maximum is 1000. |  | True |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the War Room, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### jira-get-events
