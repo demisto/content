@@ -320,7 +320,7 @@ def main():
         self_deployed = params.get('self_deployed', False)
         client_credentials = params.get('client_credentials', False)
         auth_and_token_url = params.get('auth_id') or params.get('credentials', {}).get('identifier')  # client_id
-        enc_key = params.get('enc_key') or (params.get('credentials') or {}).get('password')  # client_secret
+        enc_key = params.get('enc_key') or params.get('credentials', {}).get('password')  # client_secret
         certificate_thumbprint = params.get('certificate_thumbprint')
         private_key = params.get('private_key')
         self_deployed = self_deployed or client_credentials
