@@ -9958,7 +9958,8 @@ def create_indicator_result_with_dbotscore_unknown(indicator, indicator_type, re
 
 def get_fetch_run_time_range(last_run, first_fetch, look_back=0, timezone=0, date_format='%Y-%m-%dT%H:%M:%S'):
     """
-    Calculates the time range for fetch depending the look_back argument and the previous fetch start time given from the last_run object.
+    Calculates the time range for fetch depending the look_back argument and the previous fetch start time
+    given from the last_run object.
 
     :type last_run: ``dict``
     :param last_run: The LastRun object
@@ -10132,7 +10133,8 @@ def get_found_incident_ids(last_run, incidents, look_back, id_field):
 def create_updated_last_run_object(last_run, incidents, fetch_limit, look_back, start_fetch_time, end_fetch_time,
                                    created_time_field, date_format='%Y-%m-%dT%H:%M:%S', increase_last_run_time=False):
     """
-    Calculates the next fetch time and limit depending the incidents result and creates an updated LastRun object with the new time and limit.
+    Calculates the next fetch time and limit depending the incidents result and creates an updated LastRun object
+    with the new time and limit.
 
     :type last_run: ``dict``
     :param last_run: The LastRun object
