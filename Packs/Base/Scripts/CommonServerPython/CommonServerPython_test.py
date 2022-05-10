@@ -7983,7 +7983,7 @@ class TestSendEventsToXSIAMTest:
             return "url"
 
     @pytest.mark.parametrize('events_use_case', [
-        'json_events', 'text_list_events', 'text_events', 'cef_events'
+        'json_events', 'text_list_events', 'text_events', 'cef_events', 'json_zero_events'
     ])
     def test_send_events_to_xsiam_positive(self, mocker, events_use_case):
         """
@@ -7993,39 +7993,60 @@ class TestSendEventsToXSIAMTest:
             Case b: a list containing strings representing events.
             Case c: a string representing events (separated by a new line).
             Case d: a string representing events (separated by a new line).
+            Case e: an empty list of events.
 
         When:
             Case a: Calling the send_events_to_xsiam function with no explicit data format specified.
             Case b: Calling the send_events_to_xsiam function with no explicit data format specified.
             Case c: Calling the send_events_to_xsiam function with no explicit data format specified.
             Case d: Calling the send_events_to_xsiam function with a cef data format specification.
+            Case e: Calling the send_events_to_xsiam function with no explicit data format specified.
 
-        Then:
-            Case a: Ensure the events data was compressed correctly and that the data format was automatically identified
-            as json.
-            Case b: Ensure the events data was compressed correctly and that the data format was automatically identified
-            as text.
-            Case c: Ensure the events data was compressed correctly and that the data format was automatically identified
-            as text.
-            Case c: Ensure the events data was compressed correctly and that the data format remined as cef.
+        Then ensure that:
+            Case a:
+                - The events data was compressed correctly
+                - The data format was automatically identified as json.
+                - The number of events reported to the module health equals to number of events sent to XSIAM - 2
+            Case b:
+                - The events data was compressed correctly
+                - The data format was automatically identified as text.
+                - The number of events reported to the module health equals to number of events sent to XSIAM - 2
+            Case c:
+                - The events data was compressed correctly
+                - The data format was automatically identified as text.
+                - The number of events reported to the module health equals to number of events sent to XSIAM - 2
+            Case d:
+                - The events data was compressed correctly
+                - The data format remained as cef.
+                - The number of events reported to the module health equals to number of events sent to XSIAM - 2
+            Case e:
+                - No request to XSIAM API was made.
+                - The number of events reported to the module health - 0
         """
         if not IS_PY3:
             return
 
         from CommonServerPython import BaseClient
         mocker.patch.object(demisto, 'getLicenseCustomField', side_effect=self.get_license_custom_field_mock)
+        mocker.patch.object(demisto, 'updateModuleHealth')
         _http_request_mock = mocker.patch.object(BaseClient, '_http_request', return_value={'error': 'false'})
 
         events = self.test_data[events_use_case]['events']
+        number_of_events = self.test_data[events_use_case]['number_of_events']
         data_format = self.test_data[events_use_case].get('format')
 
         send_events_to_xsiam(events=events, vendor='some vendor', product='some product', data_format=data_format)
 
-        expected_format = self.test_data[events_use_case]['expected_format']
-        expected_data = self.test_data[events_use_case]['expected_data']
+        if number_of_events:
+            expected_format = self.test_data[events_use_case]['expected_format']
+            expected_data = self.test_data[events_use_case]['expected_data']
+            arguments_called = _http_request_mock.call_args[1]
+            decompressed_data = gzip.decompress(arguments_called['data']).decode("utf-8")
 
-        arguments_called = _http_request_mock.call_args[1]
-        decompressed_data = gzip.decompress(arguments_called['data']).decode("utf-8")
+            assert arguments_called['headers']['format'] == expected_format
+            assert decompressed_data == expected_data
+        else:
+            assert _http_request_mock.call_count == 0
 
-        assert arguments_called['headers']['format'] == expected_format
-        assert decompressed_data == expected_data
+        demisto.updateModuleHealth.assert_called_with({'eventsPulled': number_of_events})
+
