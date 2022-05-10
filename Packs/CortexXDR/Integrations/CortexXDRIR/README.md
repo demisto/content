@@ -164,7 +164,7 @@ Returns a list of incidents, which you can filter by a list of incident IDs (max
 | page | Page number (for pagination). The default is 0 (the first page). | Optional | 
 | limit | Maximum number of incidents to return per page. The default and maximum is 100. | Optional | 
 | status | Filters only incidents in the specified status. The options are: new, under_investigation, resolved_known_issue, resolved_false_positive, resolved_true_positive, resolved_security_testing, resolved_other, resolved_auto | Optional |
-| starred | Whether incident is starred or not (Boolean value: true or false). | Optional |
+| starred | Whether the incident is starred or not (Boolean value: true or false). | Optional |
 
 ##### Context Output
 
