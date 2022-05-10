@@ -1,7 +1,8 @@
 import pytest
 import json
 
-from AzureCompute_v2 import MsGraphClient, screen_errors, assign_image_attributes, list_vms_command, create_vm_parameters
+from AzureCompute_v2 import MsGraphClient, screen_errors, assign_image_attributes, list_vms_command,\
+    create_vm_parameters, get_network_interface_command
 
 # test_create_vm_parameters data:
 CREATE_VM_PARAMS_ARGS = {"resource_group": "compute-integration",
@@ -70,13 +71,27 @@ VM_LIST_EC = {'Azure.Compute(val.Name && val.Name === obj.Name)': [
     {'Name': 'vm2_name', 'ID': 'vm2_id', 'Size': 32, 'OS': 'Linux', 'Location': 'westeurope',
      'ProvisioningState': 'Succeeded', 'ResourceGroup': 'resource_group'}]}
 
-INTERFACE_EC = {'Azure.NetworkInterfaces(val.ID && val.ID === obj.id)': [
-    {'Name': 'testnic', 'ID': 'nic_id', 'MACAddress': '00-22-48-1C-73-AF', 'NetworkSecurityGroup': 'security_group_id',
-     'IsPrimaryInterface': "true", 'Location': 'eastus', 'AttachedVirtualMachine': 'vm_id',
-     'ResourceGroup': 'resource_group', 'NICType': 'Standard', 'DNSSuffix': '', 'IPConfigurations': {
-        "provisioningState": "Succeeded",
-        "privateIPAddress": "10.0.0.4",
-    }}]}
+INTERFACE_EC = {
+    'Azure.NetworkInterfaces(val.ID === obj.ID)':
+        {
+            'Name': 'nic_name',
+            'ID': 'nic_id',
+            'MACAddress': '00-22-48-1C-73-AF',
+            'NetworkSecurityGroup': {'id': 'security_group_id'},
+            'IsPrimaryInterface': 'true',
+            'Location': 'eastus',
+            'AttachedVirtualMachine': 'vm_id',
+            'ResourceGroup': 'resource_group',
+            'NICType': 'Standard',
+            'DNSSuffix': None,
+            'IPConfigurations': [{
+                'ConfigName': 'ipconfig1',
+                'ConfigID': 'nic_id',
+                'PrivateIPAddress': '10.0.0.4',
+                'PublicIPAddressID': None
+            }]
+        }
+}
 
 
 client = MsGraphClient(
@@ -121,5 +136,5 @@ def test_list_vms_command(mocker):
 def test_get_network_interface_command(mocker):
     interface_data = load_test_data('./test_data/get_network_interface_command.json')
     mocker.patch.object(client, 'get_network_interface', return_value=interface_data)
-    _, ec, _ = list_vms_command(client, {'resource_group': 'resource_group', 'nic_name': 'nic_name'})
+    _, ec, _ = get_network_interface_command(client, {'resource_group': 'resource_group', 'nic_name': 'nic_name'})
     assert INTERFACE_EC == ec
