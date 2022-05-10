@@ -210,7 +210,7 @@
                 "XDR Starred": {
                     "complex": null,
                     "simple": "starred"
-				},
+                },
                 "XDR Status": {
                     "complex": null,
                     "simple": "status"
@@ -430,7 +430,7 @@
                 "XDR Starred": {
                     "complex": null,
                     "simple": "starred"
-				},
+                },
                 "XDR Status": {
                     "complex": null,
                     "simple": "status"
