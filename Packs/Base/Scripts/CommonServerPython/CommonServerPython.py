@@ -9692,7 +9692,7 @@ def update_last_run_object(last_run, incidents, fetch_limit, start_fetch_time, e
     :param start_fetch_time: The time the fetch started to fetch from
 
     :type end_fetch_time: ``str``
-    :param end_fetch_time: The time the fetch ended to fetch
+    :param end_fetch_time: The end time in which the fetch incidents ended
 
     :type look_back: ``int``
     :param look_back: The time to look back in fetch in minutes
