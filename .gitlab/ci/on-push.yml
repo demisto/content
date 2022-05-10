@@ -260,6 +260,8 @@ generate-report:
     - python3 ./Tests/scripts/generate_readable_build_report.py --out report.xml
   artifacts:
     when: always
+    paths:
+      - report.xml
     reports:
       junit: report.xml
 
