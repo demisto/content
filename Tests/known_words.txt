@@ -172,5 +172,4 @@ CIDR
 domainglob
 subdomain
 PDF
-README
 auth
