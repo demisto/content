@@ -29,13 +29,13 @@ def http_request(method, url_suffix, json=None):
             verify=False
         )
 
-        if r.status_code == 422:
+        if r.status_code == 401:
             return_error(message='Authentication parameters are invalid, '
                                  'Please check your URL address and your API token')
 
         if r.status_code not in (200, 204):
-            return_error(message='The following API call response status code is [%d] - %s '
-                                 % (r.status_code, r.reason))
+            result = r.json()
+            return_error(message='Error %s occurred with command. Error is: %s' % (r.status_code, str((result)["statusText"])))
         try:
             return r.json()
         except ValueError:
