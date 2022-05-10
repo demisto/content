@@ -254,7 +254,9 @@ class EntryType(object):
     IMAGE = 7
     PLAYGROUND_ERROR = 8
     ENTRY_INFO_FILE = 9
+    VIDEO_FILE = 10
     WARNING = 11
+    STATIC_VIDEO_FILE = 12
     MAP_ENTRY_TYPE = 15
     WIDGET = 17
 
@@ -10387,6 +10389,13 @@ def send_events_to_xsiam(events, vendor, product, data_format=None):
     """
     data = events
     amount_of_events = 0
+
+    if not events:
+        demisto.debug('send_events_to_xsiam function received no events, skipping the API call to send events to XSIAM')
+        demisto.updateModuleHealth({'eventsPulled': amount_of_events})
+        return
+
+    # only in case we have events data to send to XSIAM we continue with this flow.
     # Correspond to case 1: List of strings or dicts where each string or dict represents an event.
     if isinstance(events, list):
         amount_of_events = len(events)
@@ -10402,8 +10411,7 @@ def send_events_to_xsiam(events, vendor, product, data_format=None):
 
     else:
         raise DemistoException(('Unsupported type: {type_events} for the "events" parameter. Should be a string or '
-                                'dict.').format(type_events=type(events)))
-
+                                'list.').format(type_events=type(events)))
     if not data_format:
         data_format = 'text'
 
