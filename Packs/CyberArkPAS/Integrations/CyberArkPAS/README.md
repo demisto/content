@@ -1861,7 +1861,8 @@ Return all Privileged Threat Analytics (PTA) security events.
                 "additionalData": {
                     "reason": "ip",
                     "station": "1.1.1.1",
-                    "vault_user": "administrator"                },
+                    "vault_user": "administrator"                
+                },
                 "audits": [
                     {
                         "action": "Logon",
