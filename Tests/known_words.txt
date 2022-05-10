@@ -172,3 +172,4 @@ CIDR
 domainglob
 subdomain
 PDF
+auth
