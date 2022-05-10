@@ -136,14 +136,16 @@ def main():
     try:
         demisto_params = demisto.params() #| demisto.args()
         events_limit = int(demisto_params.get('limit', 2000))
-        after = arg_to_datetime(demisto_params['after'])
+        after = dateparser.parse(demisto_params['after'].strip())
         api_key = demisto_params['api_key']['credentials']['password']
         demisto_params['headers'] = {"Accept": "application/json", "Content-Type": "application/json",
                                      "Authorization": f"SSWS {api_key}"}
         last_run = demisto.getLastRun()
         last_object_ids = last_run.get('ids')
         if 'after' not in last_run:
-            delta = datetime.today() - timedelta(seconds=after)
+            delta = (datetime.today() - after)
+            delta = delta.total_seconds()
+            delta = datetime.today() - timedelta(seconds=delta)
             last_run = delta.isoformat()
         else:
             last_run = last_run['after']
