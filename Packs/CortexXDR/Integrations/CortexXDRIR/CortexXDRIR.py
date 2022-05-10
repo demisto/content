@@ -245,7 +245,7 @@ def filter_and_save_unseen_incident(incidents: List, limit: int, number_of_alrea
         fetched_starred_incidents[incident_id] = True
         filtered_incidents.append(incident)
         number_of_already_filtered_incidents += 1
-        if number_of_already_filtered_incidents == limit:
+        if number_of_already_filtered_incidents >= limit:
             break
 
     last_run_obj['fetched_starred_incidents'] = fetched_starred_incidents
@@ -3679,13 +3679,8 @@ def main():
     LOG(f'Command being called is {command}')
 
     # using two different credentials object as they both fields need to be encrypted
-    api_key = params.get('apikey', {}).get('password', '')
-    api_key_id = params.get('apikey_id', {}).get('password', '')
-    if not api_key:
-        raise DemistoException('Missing API Key. Fill in a valid key in the integration configuration.')
-    if not api_key_id:
-        raise DemistoException('Missing API Key ID. Fill in a valid key ID in the integration configuration.')
-
+    api_key = params.get('apikey') or params.get('apikey_creds').get('password', '')
+    api_key_id = params.get('apikey_id') or params.get('apikey_id_creds').get('password', '')
     first_fetch_time = params.get('fetch_time', '3 days')
     base_url = urljoin(params.get('url'), '/public_api/v1')
     proxy = params.get('proxy')

@@ -60,7 +60,7 @@ You need to collect several pieces of information in order to configure the inte
     * __API Key__
     * __Only fetch starred incidents__
     * __Maximum number of incidents per fetch__
-    * __tarred incidents fetch window (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days)__
+    * __Starred incidents fetch window (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days)__
     * __First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days)__
     * __HTTP Timeout__ (default is 120 seconds)
     * __Fetch incident alerts and artifacts__

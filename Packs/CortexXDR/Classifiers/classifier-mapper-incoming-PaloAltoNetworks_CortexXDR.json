@@ -207,7 +207,7 @@
                     "complex": null,
                     "simple": "resolve_comment"
                 },
-				"XDR Starred": {
+                "XDR Starred": {
                     "complex": null,
 					"simple": "starred"
 				},

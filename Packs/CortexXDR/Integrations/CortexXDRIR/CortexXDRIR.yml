@@ -1,4 +1,3 @@
-beta: false
 category: Endpoint
 commonfields:
   id: Cortex XDR - IR
@@ -28,15 +27,25 @@ configuration:
   required: true
   type: 0
 - displaypassword: API Key ID
-  name: apikey_id
+  name: apikey_id_creds
   type: 9
   required: true
   hiddenusername: true
 - displaypassword: API Key
-  name: apikey
+  name: apikey_creds
   type: 9
   required: true
   hiddenusername: true
+- display: API Key ID
+  name: apikey_id
+  required: false
+  type: 4
+  hidden: true
+- display: API Key
+  name: apikey
+  required: false
+  type: 4
+  hidden: true
 - additionalinfo: The timeout of the HTTP requests sent to Cortex XDR API (in seconds).
   defaultvalue: '120'
   display: HTTP Timeout
