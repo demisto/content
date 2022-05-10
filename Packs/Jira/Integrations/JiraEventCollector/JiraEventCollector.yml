@@ -37,7 +37,7 @@ name: Jira Event Collector
 script:
   commands:
   - deprecated: false
-    description: 'Returns a list of a list of audit records'
+    description: 'Returns a list of audit records'
     execution: false
     name: jira-get-events
     arguments:
