@@ -643,8 +643,7 @@ class BranchTestCollector(TestCollector):
                 raise NoTestsToCollect(path, e.message)
             raise  # files that are either supposed to be in a pack, or should not be ignored.
 
-        reason_description = ''
-        packs = content_item.pack_tuple
+        reason_description = content_item.name
 
         match file_type:
             case FileType.PYTHON_FILE | FileType.POWERSHELL_FILE | FileType.JAVASCRIPT_FILE:
@@ -670,21 +669,21 @@ class BranchTestCollector(TestCollector):
                     raise
 
             case FileType.REPUTATION:  # todo reputationjson
-                raise NotImplementedError() # todo
+                raise NotImplementedError()  # todo
 
             case FileType.MAPPER:
                 if tests := (self.conf.incoming_mapper_to_test.get(content_item.id_)):
-                    tests = tests
                     reason = CollectionReason.MAPPER_CHANGED
-                    reason_description = content_item.name
-
                 else:
-                    tests = None
                     reason = CollectionReason.NON_CODE_FILE_CHANGED
                     reason_description = f'no specific tests for {content_item.name} were found'
 
-            case FileType.CLASSIFIER:  # todo what about old_classifier?
-                raise NotImplementedError() # todo
+            case FileType.CLASSIFIER:
+                if tests := (self.conf.classifier_to_test.get(content_item.id_)):
+                    reason = CollectionReason.CLASSIFIER_CHANGED
+                else:
+                    reason = CollectionReason.NON_CODE_FILE_CHANGED
+                    reason_description = f'no specific tests for {content_item.name} were found'
 
             case FileType.README | FileType.METADATA | FileType.RELEASE_NOTES | FileType.RELEASE_NOTES_CONFIG | \
                  FileType.IMAGE | FileType.DESCRIPTION | FileType.INCIDENT_TYPE | FileType.INCIDENT_FIELD | \
@@ -692,13 +691,13 @@ class BranchTestCollector(TestCollector):
                  FileType.PARSING_RULE | FileType.MODELING_RULE | FileType.CORRELATION_RULE | \
                  FileType.XSIAM_DASHBOARD | FileType.XSIAM_REPORT | FileType.REPORT | FileType.GENERIC_TYPE | \
                  FileType.GENERIC_FIELD | FileType.GENERIC_MODULE | FileType.GENERIC_DEFINITION | \
-                 FileType.PRE_PROCESS_RULES | FileType.JOB | FileType.CONNECTION:
+                 FileType.PRE_PROCESS_RULES | FileType.JOB | FileType.CONNECTION | FileType.RELEASE_NOTES_CONFIG | \
+                 FileType.XSOAR_CONFIG:
 
                 tests = None
                 reason = CollectionReason.NON_CODE_FILE_CHANGED
                 reason_description = str(path)
-                # todo rn_config?
-                # todo layout container, xsiam config?
+                # todo layout container, XSIAM config?
 
             case None:
                 raise RuntimeError(f'could not find file_type for {path}')
@@ -706,12 +705,12 @@ class BranchTestCollector(TestCollector):
             case _:
                 if path.suffix == '.yml':
                     return self._collect_yml(content_item, file_type, path)
-                raise NotImplementedError(f'Unexpected filetype {file_type}')
+                raise RuntimeError(f'Unexpected filetype {file_type}')
 
         # todo usage before assignment?
         return CollectedTests(
             tests=tests,
-            packs=packs,
+            packs=content_item.pack_tuple,
             reason=reason,
             id_set=self.id_set,
             version_range=content_item.version_range,
