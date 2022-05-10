@@ -323,7 +323,7 @@ def main():
         enc_key = params.get('enc_key') or (params.get('credentials') or {}).get('password')  # client_secret
         certificate_thumbprint = params.get('certificate_thumbprint')
         private_key = params.get('private_key')
-        self_deployed = True if client_credentials else self_deployed
+        self_deployed = self_deployed or client_credentials
         if client_credentials and not enc_key:
             raise DemistoException("Client Secret must be provided for client credentials flow.")
         elif not self_deployed and not enc_key:
