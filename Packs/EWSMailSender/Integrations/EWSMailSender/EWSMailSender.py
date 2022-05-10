@@ -2,7 +2,7 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
-from cStringIO import StringIO
+from io import StringIO
 import logging
 import warnings
 import traceback
@@ -121,8 +121,38 @@ def get_account(account_email):
     return response
 
 
-def send_email_to_mailbox(account, to, subject, body, bcc=None, cc=None, reply_to=None,
-                          html_body=None, attachments=[], raw_message=None, from_address=None):
+def send_email_to_mailbox(
+    account: Account,
+    to: List[str],
+    subject: str,
+    body: str,
+    bcc: List[str],
+    cc: List[str],
+    reply_to: List[str],
+    html_body: Optional[str] = None,
+    attachments: Optional[List[str]] = None,
+    raw_message: Optional[str] = None,
+    from_address: Optional[str] = None
+):
+    """
+    Send an email to a mailbox.
+
+    Args:
+        account (Account): account from which to send an email.
+        to (list[str]): a list of emails to send an email.
+        subject (str): subject of the mail.
+        body (str): body of the email.
+        reply_to (list[str]): list of emails of which to reply to from the sent email.
+        bcc (list[str]): list of email addresses for the 'bcc' field.
+        cc (list[str]): list of email addresses for the 'cc' field.
+        html_body (str): HTML formatted content (body) of the email to be sent. This argument
+            overrides the "body" argument.
+        attachments (list[str]): list of names of attachments to send.
+        raw_message (str): Raw email message from MimeContent type.
+        from_address (str): the email address from which to reply.
+    """
+    if not attachments:
+        attachments = []
     message_body = HTMLBody(html_body) if html_body else body
     m = Message(
         account=account,
@@ -199,20 +229,23 @@ def send_email(to, subject, body="", bcc=None, cc=None, replyTo=None, htmlBody=N
                attachIDs="", attachCIDs="", attachNames="", from_mailbox=None, manualAttachObj=None,
                raw_message=None, from_address=None):
     account = get_account(from_mailbox or ACCOUNT_EMAIL)
-    bcc = bcc.split(",") if bcc else None
-    cc = cc.split(",") if cc else None
-    to = to.split(",") if to else None
+    bcc: List[str] = argToList(bcc)
+    cc: List[str] = argToList(cc)
+    to: List[str] = argToList(to)
+    reply_to: List[str] = argToList(replyTo)
     manualAttachObj = manualAttachObj if manualAttachObj is not None else []
     subject = subject[:252] + '...' if len(subject) > 255 else subject
 
     attachments, attachments_names = process_attachments(attachCIDs, attachIDs, attachNames, manualAttachObj)
 
-    send_email_to_mailbox(account, to, subject, body, bcc, cc, replyTo, htmlBody, attachments, raw_message,
-                          from_address)
+    send_email_to_mailbox(
+        account=account, to=to, subject=subject, body=body, bcc=bcc, cc=cc, reply_to=reply_to,
+        html_body=htmlBody, attachments=attachments, raw_message=raw_message, from_address=from_address
+    )
     result_object = {
         'from': account.primary_smtp_address,
         'to': to,
-        'subject': subject.encode('utf-8'),
+        'subject': subject,
         'attachments': attachments_names
     }
 
@@ -287,7 +320,7 @@ def reply_email(to, inReplyTo, body="", subject="", bcc=None, cc=None, htmlBody=
     result_object = {
         'from': account.primary_smtp_address,
         'to': to,
-        'subject': subject.encode('utf-8'),
+        'subject': subject,
         'attachments': attachments_names
     }
 
@@ -411,5 +444,5 @@ def main():
 
 
 # python2 uses __builtin__ python3 uses builtins
-if __name__ == "__builtin__" or __name__ == "builtins":
+if __name__ == "__builtin__" or __name__ == "builtins" or __name__ == "__main__":
     main()
