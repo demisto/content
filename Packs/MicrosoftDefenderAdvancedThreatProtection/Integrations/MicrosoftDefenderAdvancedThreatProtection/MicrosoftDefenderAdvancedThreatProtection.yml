@@ -1,6 +1,6 @@
 category: Endpoint
 commonfields:
-  id: Microsoft Defender Advanced Threat Protection test
+  id: Microsoft Defender Advanced Threat Protection
   version: -1
 configuration:
 - defaultvalue: https://api.securitycenter.windows.com
@@ -100,8 +100,8 @@ configuration:
   type: 4
   hidden: true
 description: Microsoft Defender for Endpoint (previously Microsoft Defender Advanced Threat Protection (ATP)) is a unified platform for preventative protection, post-breach detection, automated investigation, and response.
-display: Microsoft Defender for Endpoint test
-name: Microsoft Defender Advanced Threat Protection test
+display: Microsoft Defender for Endpoint
+name: Microsoft Defender Advanced Threat Protection
 script:
   commands:
   - arguments:
@@ -5697,6 +5697,20 @@ script:
       name: timeout_in_seconds
       required: false
       secret: false
+    - default: false
+      description: Action ID to retrieve status and data for.
+      isArray: false
+      name: machine_action_id
+      required: false
+      secret: false
+      deprecated: true
+    - default: false
+      description: Interval between polling. Default is 10 seconds. Must be 10 or higher.
+      isArray: false
+      name: interval_in_seconds
+      required: false
+      secret: false
+      deprecated: false
     deprecated: false
     description: Collect and download an investigation package from a machine.
     execution: false

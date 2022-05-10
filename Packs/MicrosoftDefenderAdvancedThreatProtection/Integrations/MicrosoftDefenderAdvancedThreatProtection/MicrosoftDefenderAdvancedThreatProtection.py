@@ -2701,12 +2701,13 @@ def get_machine_action_by_id_command(client: MsClient, args: dict):
 
 
 def request_download_investigation_package_command(client: MsClient, args: dict):
-    return run_polling_command(client, args, 'microsoft-atp-list-machine-actions-details',
+    return run_polling_command(client, args, 'microsoft-atp-request-and-download-investigation-package',
                                get_machine_investigation_package_command,
                                get_machine_action_command, download_file_after_successful_status)
 
 
 def download_file_after_successful_status(client, res):
+    demisto.debug("post polling - download file")
     machine_action_id = res['id']
 
     # get file uri from action:
@@ -4467,15 +4468,12 @@ def run_polling_command(client: MsClient, args: dict, cmd: str, action_func: Cal
 
     # distinguish between the initial run, which is the upload run, and the results run
     is_first_run = 'machine_action_id' not in args
-    demisto.debug(f'polling args: {args}')
     if is_first_run:
-        demisto.debug("in first run")
         command_results = action_func(client, args)
         outputs = command_results.outputs
-        demisto.debug("after getting outputs from first run")
         # schedule next poll
         polling_args = {
-            'machine_action_id': outputs.get('action_id'),
+            'machine_action_id': outputs.get('action_id') or command_results.raw_response.get("id"),
             'interval_in_seconds': interval_in_secs,
             'polling': True,
             **args,
@@ -4489,16 +4487,20 @@ def run_polling_command(client: MsClient, args: dict, cmd: str, action_func: Cal
         return command_results
 
     # not a first run
-
     command_result = results_function(client, args)
-    demisto.debug("getting status now")
     action_status = command_result.outputs.get("status")
-    demisto.debug("after getting status")
-    command_status = command_result.outputs.get("commands", [{}])[0].get("commandStatus")
+    demisto.debug(f"action status is: {action_status}")
+    if len(command_result.outputs.get("commands", [])) > 0:
+        command_status = command_result.outputs.get("commands", [{}])[0].get("commandStatus")
+    else:
+        command_status = 'Completed' if action_status == "Succeeded" else None
     if action_status in ['Failed', 'Cancelled'] or command_status == 'Failed':
-        raise Exception(
-            f'Command {action_status}. Additional info: {command_result.outputs.get("commands", [{}])[0].get("errors")}')
+        error_msg = f"Command {action_status}."
+        if len(command_result.outputs.get("commands", [])) > 0:
+            error_msg += f'{command_result.outputs.get("commands", [{}])[0].get("errors")}'
+        raise Exception(error_msg)
     elif command_status != 'Completed' or action_status == 'InProgress':
+        demisto.debug("action status is not completed")
         # schedule next poll
         polling_args = {
             'interval_in_seconds': interval_in_secs,
