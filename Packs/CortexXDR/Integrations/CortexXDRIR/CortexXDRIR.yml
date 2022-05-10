@@ -3186,7 +3186,7 @@ script:
     - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.ingestion_time
       description: Ingestion time.
       type: String
-  dockerimage: demisto/python3:3.10.4.28442
+  dockerimage: demisto/python3:3.10.4.29342
   feed: false
   isfetch: true
   ismappable: true

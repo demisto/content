@@ -282,7 +282,7 @@ def test_update_incident(requests_mock):
 
 class TestFetchStarredIncident:
 
-    def test_get_starred_incident_list(requests_mock):
+    def test_get_starred_incident_list(self, requests_mock):
         from CortexXDRIR import get_incidents_command, Client
 
         get_incidents_list_response = load_test_data('./test_data/get_starred_incidents_list.json')
@@ -300,7 +300,7 @@ class TestFetchStarredIncident:
 
         assert outputs['PaloAltoNetworksXDR.Incident(val.incident_id==obj.incident_id)'][0]['starred'] is True
 
-    def test_get_starred_incident_list_with_limit(mocker):
+    def test_get_starred_incident_list_with_limit(self, mocker):
         """
         Given:
             - List of two starred incidents to fetch
@@ -337,7 +337,7 @@ class TestFetchStarredIncident:
         res = outputs['PaloAltoNetworksXDR.Incident(val.incident_id==obj.incident_id)']
         assert len(res) == 1 and res[0]['incident_id'] == '4'
 
-    def test_fetch_only_starred_incidents(requests_mock, mocker):
+    def test_fetch_only_starred_incidents(self, mocker):
         """
         Given:
             - List of fetched incidents
