@@ -1,5 +1,5 @@
 import json
-
+import io
 import pytest
 
 import demistomock as demisto
@@ -9,6 +9,7 @@ from panos.device import Vsys
 from panos.panorama import Panorama, DeviceGroup, Template
 from panos.firewall import Firewall
 from CommonServerPython import DemistoException, CommandResults
+from panos.objects import LogForwardingProfile, LogForwardingProfileMatchList
 
 integration_params = {
     'port': '443',
@@ -21,6 +22,11 @@ mock_demisto_args = {
     'threat_id': "11111",
     'vulnerability_profile': "mock_vuln_profile"
 }
+
+
+def load_json(path):
+    with io.open(path, mode='r', encoding='utf-8') as f:
+        return json.loads(f.read())
 
 
 @pytest.fixture(autouse=True)
@@ -747,6 +753,44 @@ class TestPcap:
         assert results_mocker.call_args.args[0] == 'PAN-OS has no Pcaps of type: filter-pcap.'
 
     @staticmethod
+    @pytest.mark.parametrize(
+        'api_response, expected_context, expected_markdown_table', [
+            (
+                '<?xml version="1.0"?>\n<response status="success">\n  <result>\n    <dir-listing>\n      '
+                '<file>/pcap</file>\n      <file>/pcap_test</file>\n    </dir-listing>\n  </result>\n</response>\n',
+                ['pcap', 'pcap_test'],
+                '### List of Pcaps:\n|Pcap name|\n|---|\n| pcap |\n| pcap_test |\n'
+            ),
+            (
+                '<?xml version="1.0"?>\n<response status="success">\n  <result>\n    <dir-listing>\n      '
+                '<file>/pcap_test</file>\n    </dir-listing>\n  </result>\n</response>\n',
+                ['pcap_test'],
+                '### List of Pcaps:\n|Pcap name|\n|---|\n| pcap_test |\n'
+            )
+        ]
+    )
+    def test_list_pcaps_flow(mocker, api_response, expected_context, expected_markdown_table):
+        """
+        Given
+            - a response which indicates there are two pcaps in the firewall.
+            - a response which indicates there is only one pcap in the firewall.
+
+        When -
+            listing all the available pcap files.
+
+        Then -
+            make sure the response is parsed correctly.
+        """
+        from Panorama import panorama_list_pcaps_command
+        pcaps_response = MockedResponse(text=api_response, status_code=200)
+        mocker.patch('Panorama.http_request', return_value=pcaps_response)
+        results_mocker = mocker.patch.object(demisto, "results")
+        panorama_list_pcaps_command({'pcapType': 'filter-pcap'})
+        called_args = results_mocker.call_args[0][0]
+        assert list(*called_args['EntryContext'].values()) == expected_context
+        assert called_args['HumanReadable'] == expected_markdown_table
+
+    @staticmethod
     def test_get_specific_pcap_flow_which_does_not_exist(mocker):
         """
         Given -
@@ -791,6 +835,30 @@ class TestPcap:
         mocker.patch('Panorama.http_request', return_value=no_pcaps_response)
         with pytest.raises(Exception, match='cannot download filter-pcap without the from argument'):
             panorama_get_pcap_command({'pcapType': 'filter-pcap'})
+
+
+@pytest.mark.parametrize('panorama_version', [8, 9])
+def test_panorama_list_applications_command(mocker, panorama_version):
+    """
+    Given
+       - http response of the list of applications.
+       - panorama version 8 & 9.
+
+    When
+       - getting a list of all the applications in panorama 8/9.
+
+    Then
+       - a valid context output is returned.
+    """
+    from Panorama import panorama_list_applications_command
+    mocker.patch('Panorama.http_request', return_value=load_json('test_data/list_applications_response.json'))
+    mocker.patch('Panorama.get_pan_os_major_version', return_value=panorama_version)
+    res = mocker.patch('demistomock.results')
+    panorama_list_applications_command(predefined='false')
+    assert res.call_args.args[0]['Contents'] == {
+        '@name': 'test-playbook-app', '@loc': 'Lab-Devices', 'subcategory': 'infrastructure', 'category': 'networking',
+        'technology': 'client-server', 'description': 'test-playbook-application-do-not-delete', 'risk': '1'
+    }
 
 
 class TestPanoramaEditRuleCommand:
@@ -1190,6 +1258,9 @@ def mock_software_object():
         def download(self, *args, **kwargs):
             pass
 
+        def install(self, *args, **kwargs):
+            pass
+
     return MockSoftwareObject()
 
 
@@ -1227,6 +1298,69 @@ def mock_vsys():
     mock_vsys = MagicMock(spec=Vsys)
     mock_vsys.name = "vsys1"
     return [mock_vsys]
+
+
+def mock_good_log_fowarding_profile():
+    good_log_forwarding_profile = LogForwardingProfile()
+    good_log_forwarding_profile.enhanced_logging = True
+    return [good_log_forwarding_profile]
+
+
+def mock_good_log_forwarding_profile_match_list():
+    return [
+        LogForwardingProfileMatchList(
+            log_type="traffic"
+        ),
+        LogForwardingProfileMatchList(
+            log_type="threat"
+        ),
+    ]
+
+
+def mock_good_vulnerability_profile():
+    from Panorama import VulnerabilityProfile, VulnerabilityProfileRule
+    vulnerability_profile = VulnerabilityProfile()
+    vulnerability_profile.children = [
+        VulnerabilityProfileRule(
+            severity=["critical"],
+            is_reset_both=True
+        ),
+        VulnerabilityProfileRule(
+            severity=["high"],
+            is_reset_both=True
+        ),
+        VulnerabilityProfileRule(
+            severity=["medium"],
+            is_alert=True
+        ),
+        VulnerabilityProfileRule(
+            severity=["low"],
+            is_alert=True
+        ),
+    ]
+
+    return vulnerability_profile
+
+
+def mock_bad_vulnerability_profile():
+    from Panorama import VulnerabilityProfile, VulnerabilityProfileRule
+    vulnerability_profile = VulnerabilityProfile()
+    vulnerability_profile.children = [
+        VulnerabilityProfileRule(
+            severity=["critical"],
+            is_reset_both=True
+        ),
+        VulnerabilityProfileRule(
+            severity=["high"],
+            is_reset_both=True
+        ),
+        VulnerabilityProfileRule(
+            severity=["medium"],
+            is_alert=True
+        ),
+    ]
+
+    return vulnerability_profile
 
 
 @pytest.fixture
@@ -1509,6 +1643,53 @@ class TestUniversalCommand:
             for value in result_dataclass.__dict__.values():
                 assert value
 
+    def test_reboot(self, mock_topology):
+        """
+        Test the reboot function returns the corect data
+        The pan-os-python reboot method actually doesn't return any output itself unless it errors, so we just check our
+        dataclass is set correctly within the function and returned by this function.
+        """
+        from Panorama import UniversalCommand
+
+        result = UniversalCommand.reboot(mock_topology, MOCK_PANORAMA_SERIAL)
+        # Check all attributes of summary data have values
+        for result_dataclass in result.summary_data:
+            for value in result_dataclass.__dict__.values():
+                assert value
+
+        # We also want to check that if an empty string is passed, an error is returned
+        with pytest.raises(
+            DemistoException,
+            match="filter_str  is not the exact ID of a host in this topology; use a more specific filter string."
+        ):
+            UniversalCommand.reboot(mock_topology, "")
+
+        # Lets also check that if an invalid hostid is given, we also raise.
+        with pytest.raises(
+            DemistoException,
+            match="filter_str badserialnumber is not the exact ID of "
+                  "a host in this topology; use a more specific filter string."
+        ):
+            UniversalCommand.reboot(mock_topology, "badserialnumber")
+
+    @patch("Panorama.run_op_command")
+    def test_system_status(self, patched_run_op_command, mock_topology):
+        """
+        Given a topology object with a mixture of systems in it, assert that check_system_availability returns the correct status
+        based on whether devices are connected or not.
+        """
+        from Panorama import UniversalCommand
+
+        patched_run_op_command.return_value = load_xml_root_from_test_file(TestUniversalCommand.SHOW_SYSTEM_INFO_XML)
+        # Check a normal, up device
+        result = UniversalCommand.check_system_availability(mock_topology, MOCK_PANORAMA_SERIAL)
+        assert result.up
+
+        # Check a device that isn't in the topology
+        result = UniversalCommand.check_system_availability(mock_topology, "fake")
+        assert result
+        assert not result.up
+
 
 class TestFirewallCommand:
     """Test all the commands relevant only to Firewall instances"""
@@ -1619,6 +1800,18 @@ class TestFirewallCommand:
                 # Attribute may be int 0
                 assert value is not None
 
+    @patch("Panorama.run_op_command")
+    def test_update_ha_state(self, patched_run_op_command, mock_topology):
+        """
+        Test the HA Update command returns the correct data
+        """
+        from Panorama import FirewallCommand
+
+        result_dataclass = FirewallCommand.change_status(mock_topology, MOCK_FIREWALL_1_SERIAL, "operational")
+        # Check all attributes of summary data have values
+        for value in result_dataclass.__dict__.values():
+            assert value
+
 
 @pytest.mark.parametrize('args, expected_request_params, request_result, expected_demisto_result',
                          [pytest.param({'anti_spyware_profile_name': 'fake_profile_name',
@@ -1665,3 +1858,59 @@ def test_panorama_apply_dns_command(mocker, args, expected_request_params, reque
     called_request_params = request_mock.call_args.kwargs['params']  # The body part of the request
     assert called_request_params == expected_request_params
     assert command_result.readable_output == expected_demisto_result
+
+
+class TestHygieneFunctions:
+    @patch("Panorama.Template.refreshall", return_value=[])
+    @patch("Panorama.Vsys.refreshall", return_value=[])
+    @patch("Panorama.DeviceGroup.refreshall", return_value=mock_device_groups())
+    def test_check_log_forwarding(self, _, __, ___, mock_topology):
+        """
+        Test the Hygiene Configuration lookups can validate the log forwarding settings of a device
+        """
+        from Panorama import HygieneLookups, LogForwardingProfile, LogForwardingProfileMatchList
+        # First, test that a correctly configured LFP and match list don't return a failure
+        LogForwardingProfile.refreshall = MagicMock(return_value=mock_good_log_fowarding_profile())
+        LogForwardingProfileMatchList.refreshall = MagicMock(return_value=mock_good_log_forwarding_profile_match_list())
+        result = HygieneLookups.check_log_forwarding_profiles(mock_topology)
+        assert len(result.result_data) == 0
+
+        # Trim the "threat" log type and cause a missing log type error
+        LogForwardingProfileMatchList.refreshall = MagicMock(return_value=[mock_good_log_forwarding_profile_match_list()[0]])
+        result = HygieneLookups.check_log_forwarding_profiles(mock_topology)
+        # Note; because we mock the topology with multiple devices, it appears that the same LFP is missing in each Container.
+        # This is expected.
+        assert len(result.result_data) == 3
+        assert result.result_data[0].description == "Log forwarding profile missing log type 'threat'."
+
+    @patch("Panorama.Template.refreshall", return_value=[])
+    @patch("Panorama.Vsys.refreshall", return_value=[])
+    @patch("Panorama.DeviceGroup.refreshall", return_value=mock_device_groups())
+    def test_check_vulnerability_profiles(self, _, __, ___, mock_topology):
+        """
+        Test the Hygiene Configuration lookups can validate the vulnerability profiles
+        """
+        from Panorama import HygieneLookups, VulnerabilityProfile, BestPractices
+        # First, test that we can get the conforming threat profile, of which there should be one
+        result = HygieneLookups.get_conforming_threat_profiles(
+            [mock_good_vulnerability_profile(), mock_bad_vulnerability_profile()],
+            minimum_block_severities=BestPractices.VULNERABILITY_BLOCK_SEVERITIES,
+            minimum_alert_severities=BestPractices.VULNERABILITY_ALERT_THRESHOLD
+        )
+        assert len(result) == 1
+
+        VulnerabilityProfile.refreshall = MagicMock(
+            return_value=[mock_good_vulnerability_profile(), mock_bad_vulnerability_profile()]
+        )
+
+        result = HygieneLookups.check_vulnerability_profiles(mock_topology)
+        # Should return no results, as at least one vulnerability profile matches.
+        assert len(result.result_data) == 0
+
+        VulnerabilityProfile.refreshall = MagicMock(
+            return_value=[mock_bad_vulnerability_profile()]
+        )
+
+        result = HygieneLookups.check_vulnerability_profiles(mock_topology)
+        # Should return one issue, as no Vulnerability profile matches.
+        assert len(result.result_data) == 1
