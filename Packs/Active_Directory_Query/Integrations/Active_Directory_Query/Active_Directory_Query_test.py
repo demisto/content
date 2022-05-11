@@ -427,9 +427,9 @@ def test_search_group_members(mocker):
                         'HumanReadable': '### Active Directory - Get Group Members\n|'
                                          'dn|memberOf|name|\n|---|---|---|\n| dn | memberOf | name |\n',
                         'EntryContext': {'ActiveDirectory.Groups(obj.dn ==dn)': {'dn': 'dn', 'members': [
-                                        {'dn': 'dn', 'category': 'group'}]}, 'ActiveDirectory.Groups(obj.dn == val.dn)':
-                                            [{'dn': 'dn', 'memberOf': ['memberOf'], 'name': ['name']}], 'Group':
-                                            [{'Type': 'AD', 'ID': 'dn', 'Name': ['name'], 'Groups': ['memberOf']}]}}
+                            {'dn': 'dn', 'category': 'group'}]}, 'ActiveDirectory.Groups(obj.dn == val.dn)':
+                                             [{'dn': 'dn', 'memberOf': ['memberOf'], 'name': ['name']}], 'Group':
+                                             [{'Type': 'AD', 'ID': 'dn', 'Name': ['name'], 'Groups': ['memberOf']}]}}
 
     expected_results = f'demisto results: {json.dumps(expected_results, indent=4, sort_keys=True)}'
 
@@ -551,3 +551,41 @@ def test_enable_user_with_restore_user_option(mocker):
     enable_user('test_user', 0)
 
     assert modify_data.call_args.args[1].get('userAccountControl')[0][1] == enabled_account_with_properties
+
+
+def test_search_with_paging_bug(mocker):
+    """
+     Given:
+        page size larger than 1.
+    When:
+        running get-group-members command.
+    Then:
+        time_limit results returned.
+
+    """
+    import Active_Directory_Query
+
+    class EntryMocker:
+        def entry_to_json(self):
+            return '{"dn": "dn","attributes": {"memberOf": ["memberOf"], "name": ["name"]}}'
+
+    class ConnectionMocker:
+        entries = []
+        result = {'controls': {'1.2.840.113556.1.4.319': {'value': {'cookie': '<cookie>'}}}}
+
+        def search(self, *args, **kwargs):
+            page_size = kwargs.get('paged_size')
+            if page_size:
+                self.entries = [EntryMocker() for i in range(page_size)]
+                time.sleep(1)
+            return
+
+    mocker.patch.object(demisto, 'results')
+    mocker.patch.object(demisto, 'args',
+                        return_value={'member-type': 'group', 'group-dn': 'dn', 'time_limit': '3'})
+
+    Active_Directory_Query.conn = ConnectionMocker()
+
+    with patch('logging.Logger.info') as mock:
+        Active_Directory_Query.search_group_members('dc', 1)
+        assert len(demisto.results.call_args[0][0]['Contents']) == 3
