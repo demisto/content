@@ -50,7 +50,10 @@ class CyberArkGetEvents(IntegrationGetEvents):
     client: CyberArkEventsClient
 
     def get_last_run(self: Any, event) -> dict:  # type: ignore
-        last_run = event['Row']['WhenOccurred']
+        # The date is in timestamp format and looks like {'WhenOccurred': '/Date(1651483379362)/'}
+        last_date = int(dict(event).get('WhenOccurred', '').removesuffix(')/').removeprefix('/Date('))
+        last_run = datetime.utcfromtimestamp(last_date / 1000).strftime(DATETIME_FORMAT)
+
         demisto.debug(f"Getting the last run {last_run}")
         return {'from': last_run}
 
@@ -58,10 +61,10 @@ class CyberArkGetEvents(IntegrationGetEvents):
         self.client.authenticate()
         demisto.debug('authenticated successfully')
 
-        events = self.client.call(self.client.request).json()['Result']
+        result = self.client.call(self.client.request).json()['Result']
 
-        while events['Results']:
-            yield events['Results']
+        if events := result.get('Results'):
+            yield [event.get('Row') for event in events]
 
 
 def get_request_params(**kwargs: dict) -> dict:
