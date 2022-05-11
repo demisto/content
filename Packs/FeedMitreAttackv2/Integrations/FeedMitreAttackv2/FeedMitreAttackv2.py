@@ -455,6 +455,7 @@ def build_command_result(value, score, md, attack_obj):
     )
     attack_context = Common.AttackPattern(
         stix_id=attack_obj.get('stixid'),
+        value=value,
         kill_chain_phases=attack_obj.get('killchainphases'),
         first_seen_by_source=attack_obj.get('firstseenbysource'),
         description=attack_obj.get('description'),
