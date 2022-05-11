@@ -1,7 +1,7 @@
 id: Microsoft Defender For Endpoint - Isolate Endpoint
 version: -1
 name: Microsoft Defender For Endpoint - Isolate Endpoint
-description: This playbook will auto isolate endpoints through Microsoft Defender For Endpoint by using Hostname,IP, or Device ID associated with the asset you wish to block.
+description: This playbook auto isolates endpoints with Microsoft Defender For Endpoint using the host name, IP, or device ID associated with the asset you want to block.
 starttaskid: "0"
 tasks:
   "0":
@@ -41,7 +41,7 @@ tasks:
       id: f658a709-df9b-463e-8305-7c14c5b68512
       version: -1
       name: Is Microsoft Defender For Endpoint Integration Enabled?
-      description: Returns 'yes' if the integration brand is available. Otherwise returns 'no'.
+      description: Returns 'yes' if the integration is available.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -186,7 +186,7 @@ tasks:
       id: f4b67ca6-19e6-492d-84e9-3e93ef002e3e
       version: -1
       name: ' Check if Isolate Action Succeeded'
-      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries} to check the previous task entries. If array is provided, will return yes if one of the entries returned an error.
+      description: Checks whether given entry/entries returned an error. Use ${lastCompletedTaskEntries} to check the previous task entries. For an array of entries, returns 'yes' if one of the entries returned an error.
       scriptName: isError
       type: condition
       iscommand: false
@@ -222,7 +222,7 @@ tasks:
       id: 6ee8a70d-bd1a-4fe0-8e3f-2ff1a9ac9b89
       version: -1
       name: Print a warning to the war room - Device already isolated
-      description: Prints text to war room (Markdown supported)
+      description: Prints a device already isolated message to the War Room (Markdown supported).
       scriptName: Print
       type: regular
       iscommand: false
@@ -275,7 +275,7 @@ tasks:
       id: 913c4449-5898-4aaf-87d0-e4454d35c87b
       version: -1
       name: Print inactive device
-      description: Prints text to war room (Markdown supported)
+      description: Prints an inactive device message to the War Room (Markdown supported).
       scriptName: Print
       type: regular
       iscommand: false
@@ -421,7 +421,7 @@ tasks:
       id: ba1c6190-674a-44db-89cd-d8e982093c58
       version: -1
       name: Is there any inactive device?
-      description: Are there any unactive devices?
+      description: Are there any inactive devices?
       type: condition
       iscommand: false
       brand: ""
@@ -463,7 +463,7 @@ tasks:
       id: 30182da7-2783-468c-8d15-4305b8f01d5e
       version: -1
       name: Print incorrect Device ID
-      description: Prints text to war room (Markdown supported)
+      description: Prints an incorrect device ID message to the War Room (Markdown supported).
       scriptName: Print
       type: regular
       iscommand: false
@@ -497,7 +497,7 @@ tasks:
       id: 2816c649-e7c3-4f09-8730-e20eb9346ac2
       version: -1
       name: Check if there is any provided incorrect info
-      description: Check if there are any incorrect device IDs
+      description: Check if there are any incorrect device IDs.
       type: condition
       iscommand: false
       brand: ""
@@ -1004,28 +1004,28 @@ inputs:
   required: false
   description: |-
     The device ID to isolate.
-    For more information, you can use the following commands:
+    For more information about the device, you can use the following commands:
     !microsoft-atp-get-machine-details
     !microsoft-atp-get-machines
   playbookInputQuery:
 - key: Hostname
   value: {}
   required: false
-  description: The Device Hostname that you would like to Isolate
+  description: The host name you want to isolate.
   playbookInputQuery:
 - key: Device_IP
   value: {}
   required: false
-  description: The Device IP that you would like to Isolate
+  description: The device IP you want to isolate.
   playbookInputQuery:
 - key: Isolation_type
   value:
     simple: Full
   required: false
   description: |-
-    Optional Values: Full/Selective. Default: Full
+    Optional Values: Full/Selective. Default is Full.
 
-    For more Information - Check Microsoft Documentation:
+    For more information see Microsoft documentation:
       https://docs.microsoft.com/en-us/microsoft-365/security/defender-endpoint/respond-machine-alerts?view=o365-worldwide#isolate-devices-from-the-network
   playbookInputQuery:
 outputs:
@@ -1033,19 +1033,19 @@ outputs:
   description: The machine action ID.
   type: string
 - contextPath: MicrosoftATP.IsolateList
-  description: The Machine IDs which were Isolated
+  description: The machine IDs that were isolated.
   type: string
 - contextPath: MicrosoftATP.NonIsolateList
-  description: Machine ID's which will not be isolated
+  description: The machine IDs that will not be isolated.
   type: string
 - contextPath: MicrosoftATP.IncorrectIDs
-  description: Incorrect Device IDs entered
+  description: Incorrect device IDs entered.
   type: string
 - contextPath: MicrosoftATP.IncorrectHostnames
-  description: Incorrect Device Hostnames entered
+  description: Incorrect device host names entered.
   type: string
 - contextPath: MicrosoftATP.IncorrectIPs
-  description: Incorrect Device IPs entered
+  description: Incorrect device IPs entered.
   type: string
 tests:
 - No tests (auto formatted)
