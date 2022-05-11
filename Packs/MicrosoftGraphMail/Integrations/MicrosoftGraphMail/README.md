@@ -5,7 +5,7 @@ For more details about the authentication used in this integration, see [Microso
 
 ### Required Permissions
 * Mail.ReadWrite - Application
-* User.Read - Application
+* User.Read - Delegated
 * Mail.Send - Application
 
 ### OData Usage
