@@ -1,6 +1,6 @@
 # pylint: disable=no-name-in-module
 # pylint: disable=no-self-argument
-
+import json
 import secrets
 
 import jwt
@@ -39,181 +39,100 @@ EVENT_FIELDS = [
 ]
 
 
-# -----------------------------------------  HELPER CLASSES  -----------------------------------------
-class CyberArkEventsParams(BaseModel):
-    limit: int = Field(500, gt=0, le=500)
-    stream_position: Optional[str]
-    stream_type = 'admin_logs'
-    created_after: Optional[str]
-    # validators
-    _normalize_after = validator('created_after', pre=True, allow_reuse=True)(
-        get_box_events_timestamp_format
-    )
-
-    class Config:
-        validate_assignment = True
-
-
 class CyberArkEventsRequest(IntegrationHTTPRequest):
-    url = parse_obj_as(AnyUrl, 'https://api.box.com/2.0/events')
     method = Method.GET
-    params: BoxEventsParams
 
 
 class CyberArkEventsClient(IntegrationEventsClient):
-    request: BoxEventsRequest
+    request: IntegrationHTTPRequest
     options: IntegrationOptions
 
     def __init__(
         self,
-        request: BoxEventsRequest,
+        request: CyberArkEventsRequest,
         options: IntegrationOptions,
-        box_credentials: BoxCredentials,
+        credentials: Credentials,
         session=requests.Session(),
     ) -> None:
-        self.box_credentials = box_credentials
+        self.access_token = None
+        self.credentials = credentials
         super().__init__(request, options, session)
+        self.request.url += 'RedRock/Query'
+        self.request.headers = {'Accept': '*/*', 'Content-Type': 'application/json'}
+        self.request.data = json.dumps({"Script": f"Select ID from Event where WhenOccurred >= '{dateparser.parse('1 week', settings={'TIMEZONE': 'UTC'}).strftime(DATE_FORMAT)}' and WhenOccurred <= '{datetime.now().strftime(DATE_FORMAT)}'"})
+        self.request.verify = not self.request.verify
 
     def set_request_filter(self, after: Any):
-        self.request.params.stream_position = after
+        self.request.data = json.dumps({"Script": f"Select ID from Event where WhenOccurred >= '{dateparser.parse('1 week', settings={'TIMEZONE': 'UTC'}).strftime(DATE_FORMAT)}' and WhenOccurred <= '{datetime.now().strftime(DATE_FORMAT)}'"})
 
     def authenticate(self):
         request = IntegrationHTTPRequest(
-            method=Method.POST,
-            url='https://api.box.com/oauth2/token',
-            data=self._create_authorization_body(),
-            verify=self.request.verify,
+            method=self.request.method,
+            url=f"{self.request.url}/oauth2/token/{demisto.params().get('app_id')}",
+            headers={'Authorization': f"Basic {base64.b64encode(f'{self.credentials.identifier}:{self.credentials.password}'.encode()).decode()}"},
+            data={'grant_type': 'client_credentials', 'scope': 'siem'},
+            verify=not self.request.verify,
         )
 
         response = self.call(request)
         self.access_token = response.json()['access_token']
-        self.request.headers = {'Authorization': f'Bearer {self.access_token}'}
-
-    def _create_authorization_body(self):
-        claims = Claims(
-            client_id=self.box_credentials.boxAppSettings.clientID,
-            id=self.box_credentials.enterpriseID,
-        )
-
-        decrypted_private_key = _decrypt_private_key(
-            self.box_credentials.boxAppSettings.appAuth
-        )
-        assertion = jwt.encode(
-            payload=claims.dict(),
-            key=decrypted_private_key,
-            algorithm='RS512',
-            headers={
-                'kid': self.box_credentials.boxAppSettings.appAuth.publicKeyID
-            },
-        )
-        body = {
-            'grant_type': 'urn:ietf:params:oauth:grant-type:jwt-bearer',
-            'assertion': assertion,
-            'client_id': self.box_credentials.boxAppSettings.clientID,
-            'client_secret': self.box_credentials.boxAppSettings.clientSecret,
-        }
-        return body
+        self.request.headers['Authorization'] = f'Bearer {self.access_token}'
 
 
 class CyberArkGetEvents(IntegrationGetEvents):
-    client: BoxEventsClient
+    client: CyberArkEventsClient
 
-    def get_last_run(self: Any) -> dict:  # type: ignore
-        demisto.debug(f'setting {self.client.request.params.stream_position=}')
-        return {'stream_position': self.client.request.params.stream_position}
+    def get_last_run(self: Any, event) -> dict:  # type: ignore
+        last_run = event['Row']['WhenOccurred']
+        demisto.debug(f"Getting the last run {last_run}")
+        return {'WhenOccurred': last_run}
 
     def _iter_events(self):
         self.client.authenticate()
         demisto.debug('authenticated successfully')
-        # region First Call
-        events = self.client.call(self.client.request).json()
-        # endregion
-        # region Yield Response
-        while True:  # Run as long there are logs
-            self.client.set_request_filter(events['next_stream_position'])
-            demisto.debug(
-                f'setting then next request filter {events["next_stream_position"]=}'
-            )
-            if not events['entries']:
+
+        events = self.client.call(self.client.request).json()['Result']
+
+        while True:
+            if not events['Results']:
                 break
-            yield events['entries']
-            # endregion
-            # region Do next call
-            events = self.client.call(self.client.request).json()
-            # endregion
+            yield events['Results']
 
-
-# -----------------------------------------  HELPER FUNCTIONS  -----------------------------------------
-def get_access_token(**kwargs: dict) -> str:
-    credentials = Credentials(**kwargs.get('credentials'))
-    user_name = credentials.identifier
-    password = credentials.password
-    url = f'{kwargs.get("url")}/oauth2/token/{kwargs.get("app_id")}'
-    headers = {'Authorization': f"Basic {base64.b64encode(f'{user_name}:{password}'.encode()).decode()}"}
-    data = {'grant_type': 'client_credentials', 'scope': 'siem'}
-
-    response = requests.post(url, headers=headers, data=data, verify=not kwargs.get('insecure'))
-    json_response = response.json()
-    access_token = json_response.get('access_token')
-
-    return access_token
-
-
-def get_headers(access_token: str) -> dict:
-    return {
-        'Authorization': f'Bearer {access_token}',
-        'Accept': '*/*',
-        'Content-Type': 'application/json'
-    }
-
-
-def get_data(fetch_from: str) -> dict:
-    _from = dateparser.parse(fetch_from, settings={'TIMEZONE': 'UTC'}).strftime(DATE_FORMAT)
-    to = datetime.now().strftime(DATE_FORMAT)
-
-    return {"Script": f"Select {EVENT_FIELDS} from Event where WhenOccurred >= '{_from}' and WhenOccurred <= '{to}'"}
-
-
-def prepare_demisto_params(**kwargs: dict) -> dict:
-    params = {
-        'url': kwargs.get('url', '') + 'RedRock/Query',
-        'method': Method.GET,
-        'headers': get_headers(get_access_token(**kwargs)),
-        'data': json.dumps(get_data(kwargs.get('from', '3 days'))),
-        'verify': not kwargs.get('verify'),
-
-    }
-    return params
+            # self.client.set_request_filter(events['Results'][-1]['Row']['WhenOccurred'])
+            # demisto.debug(
+            #     f'Setting then next request filter {events["next_stream_position"]=}'
+            # )
+            # events = self.client.call(self.client.request).json()
 
 
 def main(command: str, demisto_params: dict):
-    demisto_params.update(prepare_demisto_params(**demisto_params))
-
-    request = IntegrationHTTPRequest(**demisto_params)
+    credentials = Credentials(**demisto_params.get('credentials'))
     options = IntegrationOptions(**demisto_params)
-    client = IntegrationEventsClient(request, options)
-    get_events = IntegrationGetEvents(client, options)
+    request = CyberArkEventsRequest(**demisto_params)
+    client = CyberArkEventsClient(request, options, credentials)
+    get_events = CyberArkGetEvents(client, options)
 
     try:
-        if command == 'test-module':
+        if command == '':
             get_events.run()
             demisto.results('ok')
-        elif command in ('fetch-events', 'CyberArk-get-events'):
-            events = get_events.run(demisto_params.get('max_fetch'))
+
+        if command in ('fetch-events', 'CyberArk-get-events'):
+            events = get_events.run()
+            send_events_to_xsiam(events, vendor='CyberArk', product='Idaptive')
+
             if events:
-                if command == 'fetch-events':
-                    send_events_to_xsiam(events, 'CyberArkIdentity', 'RedRock records')
-                if command == 'CyberArkIdentity-fetch-events':
-                    get_events.events_to_incidents(events)
+                last_run = get_events.get_last_run(events[-1])
+                demisto.setLastRun(last_run)
+                demisto.debug(f'Set last run to {last_run}')
+
+                if command == 'CyberArk-fetch-events':
                     CommandResults(
                         readable_output=tableToMarkdown('CyberArkIdentity RedRock records', events, removeNull=True, headerTransform=pascalToSpace),
-                        outputs_prefix='JiraAudit.Records',
-                        outputs_key_field='id',
-                        outputs=events,
                         raw_response=events,
                     )
                     demisto.results(CommandResults)
-                demisto.setLastRun({'from': events[-1].get('')})
+
     except Exception as e:
         return_error(str(e))
 
