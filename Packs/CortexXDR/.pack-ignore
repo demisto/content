@@ -44,3 +44,7 @@ ignore=BA113
 
 [file:README.md]
 ignore=RM108
+
+[known_words]
+XDR
+CoreIRApiModule
