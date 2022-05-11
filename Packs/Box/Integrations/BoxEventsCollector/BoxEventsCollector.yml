@@ -3,12 +3,6 @@ commonfields:
   id: BoxEventsCollector
   version: -1
 configuration:
-- display: Verify SSL Certificate
-  hidden: false
-  name: verify
-  required: false
-  defaultvalue: true
-  type: 8
 - display: ""
   displaypassword: Credentials JSON
   name: credentials_json
@@ -29,6 +23,17 @@ configuration:
   name: limit
   required: false
   type: 0
+- display: Verify SSL Certificate
+  hidden: false
+  name: verify
+  required: false
+  defaultvalue: true
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  defaultvalue: false
+  type: 8
 description: Collect events from Box's logs.
 display: Box Event Collector
 name: BoxEventsCollector

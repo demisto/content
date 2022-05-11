@@ -1,8 +1,8 @@
 # pylint: disable=no-name-in-module
 # pylint: disable=no-self-argument
 
+import dateparser
 import secrets
-
 import jwt
 import urllib3
 from cryptography import exceptions
@@ -17,9 +17,11 @@ urllib3.disable_warnings()
 
 class Claims(BaseModel):
     iss: str = Field(alias='client_id')
-    sub: str = Field(alias='id', decription='user id or enterprise id')
+    sub: str = Field(alias='id', description='user id or enterprise id')
     box_sub_type = 'enterprise'
-    aud: AnyUrl = parse_obj_as(AnyUrl, 'https://api.box.com/oauth2/token')
+    aud: AnyUrl
+
+     
     jti: str = secrets.token_hex(64)
     exp: int = round(time.time()) + 45
 
@@ -75,6 +77,7 @@ class BoxEventsParams(BaseModel):
 
 
 class BoxEventsRequest(IntegrationHTTPRequest):
+    # Endpoint: https://developer.box.com/reference/get-events/
     url = parse_obj_as(AnyUrl, 'https://api.box.com/2.0/events')
     method = Method.GET
     params: BoxEventsParams
@@ -83,24 +86,26 @@ class BoxEventsRequest(IntegrationHTTPRequest):
 class BoxEventsClient(IntegrationEventsClient):
     request: BoxEventsRequest
     options: IntegrationOptions
-
+    authorization_url = parse_obj_as(AnyUrl, 'https://api.box.com/oauth2/token')
     def __init__(
         self,
         request: BoxEventsRequest,
         options: IntegrationOptions,
         box_credentials: BoxCredentials,
-        session=requests.Session(),
+        session: Optional[requests.Session] = None,
     ) -> None:
+        if session is None:
+            session = requests.Session()
         self.box_credentials = box_credentials
         super().__init__(request, options, session)
 
-    def set_request_filter(self, after: Any):
+    def set_request_filter(self, after: str):
         self.request.params.stream_position = after
 
     def authenticate(self):
         request = IntegrationHTTPRequest(
             method=Method.POST,
-            url='https://api.box.com/oauth2/token',
+            url=self.authorization_url,
             data=self._create_authorization_body(),
             verify=self.request.verify,
         )
@@ -113,6 +118,7 @@ class BoxEventsClient(IntegrationEventsClient):
         claims = Claims(
             client_id=self.box_credentials.boxAppSettings.clientID,
             id=self.box_credentials.enterpriseID,
+            aud=self.authorization_url
         )
 
         decrypted_private_key = _decrypt_private_key(
@@ -139,7 +145,7 @@ class BoxGetEvents(IntegrationGetEvents):
     client: BoxEventsClient
 
     def get_last_run(self: Any) -> dict:  # type: ignore
-        demisto.debug(f'setting {self.client.request.params.stream_position=}')
+        demisto.debug(f'getting {self.client.request.params.stream_position=}')
         return {'stream_position': self.client.request.params.stream_position}
 
     def _iter_events(self):
@@ -151,8 +157,9 @@ class BoxGetEvents(IntegrationGetEvents):
         # region Yield Response
         while True:  # Run as long there are logs
             self.client.set_request_filter(events['next_stream_position'])
+            # The next stream position points to where new messages will arrive.
             demisto.debug(
-                f'setting then next request filter {events["next_stream_position"]=}'
+                f'setting the next request filter {events["next_stream_position"]=}'
             )
             if not events['entries']:
                 break
@@ -194,9 +201,6 @@ def main(command: str, demisto_params: dict):
         params=BoxEventsParams.parse_obj(demisto_params),
         **demisto_params,
     )
-
-    # If you're not using basic auth or Bearer __token_, you should implement your own
-    # set_authorization(request, demisto_params['auth_credendtials'])
     options = IntegrationOptions.parse_obj(demisto_params)
     client = BoxEventsClient(request, options, box_credentials)
     get_events = BoxGetEvents(client, options)
