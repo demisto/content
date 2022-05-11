@@ -2,7 +2,7 @@ import pytest
 import demistomock as demisto
 import datetime
 
-from AWS_SecurityHub import get_findings_command, fetch_incidents, list_members_command
+from AWS_SecurityHub import AWSClient, get_findings_command, fetch_incidents, list_members_command
 
 FILTER_FIELDS_TEST_CASES = [
     (
@@ -169,20 +169,22 @@ def test_fetch_incidents(mocker):
     assert demisto.setLastRun.call_args[0][0]['lastRun'] == '2020-03-22T13:22:13.934000+00:00'
 
 
-def test_convert_members_date_type(mocker):
+def test_list_members_command(mocker):
     """
     Given:
-        - A finding to fetch as incident with created time 2020-03-22T13:22:13.933Z
+        - mock aws_session
     When:
-        - Fetching finding as incident
+        - Running list_members_command
     Then:
-        - Verify the last run is set as the created time + 1 millisecond, i.e. 2020-03-22T13:22:13.934Z
+        - Ensure that the command was executed correctly. In particular, ensure that the datetime fields are convereted to str.
     """
-    client = MockClient()
-    mock_response = {'InvitedAt': datetime.datetime.now()}
+    aws_client = AWSClient("reg", "", "", 900, "p", "mock_aws_access_key_id", "mock_aws_secret_access_key", "", "", 3)
+    client = aws_client.aws_session(service='securityhub', region="reg", role_arn='roleArnroleArnroleArn',
+                                    role_session_name='roleSessionName')
+    now_time = datetime.datetime.now()
+    mock_response = {'ResponseMetadata': 'mock_ResponseMetadata', 'Members': [{'UpdatedAt': now_time, 'InvitedAt': now_time}]}
     mocker.patch.object(client, 'list_members', return_value=mock_response)
     _, _, response = list_members_command(client, {})
-    convert_members_date_type
-    assert response == {'InvitedAt': mock_response['InvitedAt'].isoformat()}
-    print(response)
-    assert False
+    now_time_iso_format = now_time.isoformat()
+    assert response == {'Members': [{'UpdatedAt': now_time_iso_format, 'InvitedAt': now_time_iso_format}]}
+    assert type(response['Members'][0]['UpdatedAt']) == str

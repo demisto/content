@@ -613,9 +613,10 @@ def list_members_command(client, args):
     response['Members'] = convert_members_date_type(response.get('Members', []))
     outputs = {'AWS-SecurityHub': response}
     del response['ResponseMetadata']
-    table_header = 'AWS SecurityHub ListMembers' 
+    table_header = 'AWS SecurityHub ListMembers'
     human_readable = tableToMarkdown(table_header, response.get('Members', []))
     return human_readable, outputs, response
+
 
 def convert_members_date_type(members):
     new_ls = []
