@@ -1,1 +1,1 @@
-Test README For The XSIAM Demo Pack
+Test README For The XSIAM Demo Pack - with customer widgets
