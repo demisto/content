@@ -1,0 +1,53 @@
+{
+    "count": 10000,
+    "next": "https://10.10.10.10/api/raw-alerts/?page=2&page_size=1&sort_by=-timestamp_detected",
+    "previous": null,
+    "results": [
+        {
+            "sha256": "f16d19ac9697d9892b0f910601a61d041d",
+            "id": "45e6ed3c-1082-4d33-9514-162748d7d41f",
+            "flow_id": 1544096072809159,
+            "severity": 1,
+            "src_ip": "192.168.0.2",
+            "dest_ip": "192.168.0.1",
+            "src_port": 80,
+            "dest_port": 35168,
+            "gcap": "test.domain.com",
+            "type": "malcore",
+            "proto": "TCP",
+            "host": "test.domain.com",
+            "app_proto": "http",
+            "alert_type": "malware",
+            "state": "Infected",
+            "timestamp_detected": "2022-03-21T11:34:47.000Z",
+            "timestamp_analyzed": "2022-03-21T13:58:42.742Z",
+            "dest_geoip": {},
+            "src_geoip": {},
+            "retrohunt": {},
+            "powershell": {},
+            "shellcode": {},
+            "malware": {
+                "analyzed_clean": 0,
+                "analyzed_infected": 3,
+                "analyzed_other": 13,
+                "analyzed_suspicious": 0,
+                "code": 1,
+                "scan_time": 763,
+                "threats_found": "Infected : Win32/Agent.NFN virus, Trojan",
+                "reporting_token": "No GBOX",
+                "engines_report": [
+                    {
+                        "sha256": "6",
+                        "threat_found": ""
+                    },
+                    {
+                        "sha256": "2",
+                        "threat_found": ""
+                    }
+                ],
+                "total_found": "3/16"
+            },
+            "sigflow": {}
+        }
+    ]
+}

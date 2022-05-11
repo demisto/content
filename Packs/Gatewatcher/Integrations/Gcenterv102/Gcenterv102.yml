@@ -1,0 +1,445 @@
+category: Network Security
+commonfields:
+  id: Gcenterv102
+  version: -1
+configuration:
+- display: GCenter IP address
+  name: ip
+  type: 0
+  required: true
+- display: GCenter API token
+  name: token
+  type: 0
+  required: false
+- display: GCenter username
+  displaypassword: GCenter password
+  name: credentials
+  type: 9
+  required: false
+- display: Check the TLS certificate
+  name: check_cert
+  type: 8
+  required: false
+description: This is the Gatewatcher integration for getting started.
+display: GCenter v2.5.3.102
+name: Gcenterv102
+script:
+  commands:
+  - name: gw-list-alerts
+    description: List all alerts
+  - name: gw-get-alert
+    description: Get an alert by it's uid
+    arguments:
+    - name: uid
+      required: true
+      description: Alert identifier
+  - name: gw-es-query
+    description: Get Elasticsearch data
+    arguments:
+    - name: index
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - suricata
+      - malware
+      - codebreaker
+      - netdata
+      - syslog
+      description: Index to be queried
+      defaultValue: suricata
+    - name: query
+      required: true
+      description: Elaticsearch query
+      defaultValue: '{}'
+  - name: gw-add-malcore-list-entry
+    description: Add malcore whitelist/blacklist entry
+    arguments:
+    - name: type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - white
+      - black
+      description: List type
+    - name: sha256
+      required: true
+      description: SHA256 to be added
+    - name: comment
+      required: false
+      description: Comment to be added
+    - name: threat
+      required: false
+      description: Comment to be added
+    outputs:
+    - contextPath: GCenter.Malcore.sha256
+      description: ''
+      type: String
+    - contextPath: GCenter.Malcore.created
+      description: ''
+      type: Date
+    - contextPath: GCenter.Malcore.comment
+      description: ''
+      type: String
+    - contextPath: GCenter.Malcore.threat
+      description: ''
+      type: String
+  - name: gw-del-malcore-list-entry
+    description: Delete malcore whitelist/blacklist entry
+    arguments:
+    - name: type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - white
+      - black
+      description: List type
+    - name: sha256
+      required: true
+      description: SHA256 to be deleted
+  - name: gw-add-dga-list-entry
+    description: Add dga whitelist/blacklist entry
+    arguments:
+    - name: type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - white
+      - black
+      description: List type
+    - name: domain
+      required: true
+      description: Domain name to be added
+    - name: comment
+      required: false
+      description: Comment to be added
+    outputs:
+    - contextPath: GCenter.Dga.domain_name
+      description: ''
+      type: String
+    - contextPath: GCenter.Dga.created
+      description: ''
+      type: Date
+    - contextPath: GCenter.Dga.comment
+      description: ''
+      type: String
+    - contextPath: GCenter.Dga.is_wildcard
+      description: ''
+      type: Boolean
+  - name: gw-del-dga-list-entry
+    description: Delete dga whitelist/blacklist entry
+    arguments:
+    - name: type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - white
+      - black
+      description: List type
+    - name: domain
+      required: true
+      description: Domain name to be deleted
+  - name: gw-add-ignore-asset-name
+    description: Ignore asset name
+    arguments:
+    - name: name
+      required: true
+      description: Name to be ignored
+    - name: start
+      required: true
+      description: Will be ignored if they start with this name
+      defaultValue: false
+    - name: end
+      required: true
+      description: Will be ignored if they end with this name
+      defaultValue: false
+    outputs:
+    - contextPath: GCenter.Ignore.AssetName.id
+      description: ''
+      type: String
+    - contextPath: GCenter.Ignore.AssetName.created_at
+      description: ''
+      type: Date
+    - contextPath: GCenter.Ignore.AssetName.created_by
+      description: ''
+      type: String
+    - contextPath: GCenter.Ignore.AssetName.name
+      description: ''
+      type: String
+    - contextPath: GCenter.Ignore.AssetName.is_startswith_pattern
+      description: ''
+      type: Boolean
+    - contextPath: GCenter.Ignore.AssetName.is_endswith_pattern
+      description: ''
+      type: Boolean
+  - name: gw-add-ignore-kuser-ip
+    description: Ignore kuser IP
+    arguments:
+    - name: ip
+      required: true
+      description: IP to be ignored
+    outputs:
+    - contextPath: GCenter.Ignore.KuserIP.id
+      description: ''
+      type: String
+    - contextPath: GCenter.Ignore.KuserIP.created_at
+      description: ''
+      type: Date
+    - contextPath: GCenter.Ignore.KuserIP.created_by
+      description: ''
+      type: String
+    - contextPath: GCenter.Ignore.KuserIP.ip
+      description: ''
+      type: String
+  - name: gw-add-ignore-kuser-name
+    description: Ignore kuser name
+    arguments:
+    - name: name
+      required: true
+      description: Name to be ignored
+    - name: start
+      required: true
+      description: Will be ignored if they start with this name
+      defaultValue: false
+    - name: end
+      required: true
+      description: Will be ignored if they end with this name
+      defaultValue: false
+    outputs:
+    - contextPath: GCenter.Ignore.KuserName.id
+      description: ''
+      type: String
+    - contextPath: GCenter.Ignore.KuserName.created_at
+      description: ''
+      type: Date
+    - contextPath: GCenter.Ignore.KuserName.created_by
+      description: ''
+      type: String
+    - contextPath: GCenter.Ignore.KuserName.name
+      description: ''
+      type: String
+    - contextPath: GCenter.Ignore.KuserName.is_startswith_pattern
+      description: ''
+      type: Boolean
+    - contextPath: GCenter.Ignore.KuserName.is_endswith_pattern
+      description: ''
+      type: Boolean
+  - name: gw-add-ignore-mac-address
+    description: Ignore mac address
+    arguments:
+    - name: mac
+      required: true
+      description: MAC address to be ignored
+    - name: start
+      required: true
+      description: Will be ignored if they start with this name
+      defaultValue: false
+    outputs:
+    - contextPath: GCenter.Ignore.MacAddress.id
+      description: ''
+      type: String
+    - contextPath: GCenter.Ignore.MacAddress.created_at
+      description: ''
+      type: Date
+    - contextPath: GCenter.Ignore.MacAddress.created_by
+      description: ''
+      type: String
+    - contextPath: GCenter.Ignore.MacAddress.address
+      description: ''
+      type: String
+    - contextPath: GCenter.Ignore.MacAddress.is_startswith_pattern
+      description: ''
+      type: Boolean
+  - name: gw-del-ignore-asset-name
+    description: Delete an ignore asset ID
+    arguments:
+    - name: ignore_id
+      required: true
+      description: Ignore asset ID
+  - name: gw-del-ignore-kuser-ip
+    description: Delete an ignore kuser IP ID
+    arguments:
+    - name: ignore_id
+      required: true
+      description: Ignore kuser IP ID
+  - name: gw-del-ignore-kuser-name
+    description: Delete an ignore kuser name ID
+    arguments:
+    - name: ignore_id
+      required: true
+      description: Ignore kuser name ID
+  - name: gw-del-ignore-mac-address
+    description: Delete an ignore mac address ID
+    arguments:
+    - name: ignore_id
+      required: true
+      description: Ignore mac address ID
+  - name: gw-send-malware
+    description: Send malware
+    arguments:
+    - name: name
+      required: true
+      description: Filename
+    - name: content
+      required: true
+      description: File content
+    outputs:
+    - contextPath: GCenter.Gscan.Malware.id
+      description: ''
+      type: String
+    - contextPath: GCenter.Gscan.Malware.created
+      description: ''
+      type: Date
+    - contextPath: GCenter.Gscan.Malware.username
+      description: ''
+      type: String
+    - contextPath: GCenter.Gscan.Malware.user_agent
+      description: ''
+      type: String
+    - contextPath: GCenter.Gscan.Malware.ip_address
+      description: ''
+      type: String
+    - contextPath: GCenter.Gscan.Malware.file_name
+      description: ''
+      type: String
+    - contextPath: GCenter.Gscan.Malware.sha256
+      description: ''
+      type: String
+    - contextPath: GCenter.Gscan.Malware.is_clean
+      description: ''
+      type: Unknown
+    - contextPath: GCenter.Gscan.Malware.is_analysis_successful
+      description: ''
+      type: Boolean
+    - contextPath: GCenter.Gscan.Malware.malcore_code_result
+      description: ''
+      type: String
+    - contextPath: GCenter.Gscan.Malware.threat_name
+      description: ''
+      type: String
+    - contextPath: GCenter.Gscan.Malware.nb_alerts
+      description: ''
+      type: Number
+    - contextPath: GCenter.Gscan.Malware.nb_engines
+      description: ''
+      type: Number
+    - contextPath: GCenter.Gscan.Malware.is_whiteblack_listed
+      description: ''
+      type: Boolean
+    - contextPath: GCenter.Gscan.Malware.malcore_code_result_name
+      description: ''
+      type: String
+    - contextPath: GCenter.Gscan.Malware.status
+      description: ''
+      type: String
+  - name: gw-send-powershell
+    description: Send powershell
+    arguments:
+    - name: name
+      required: true
+      description: Filename
+    - name: content
+      required: true
+      description: File content
+    outputs:
+    - contextPath: GCenter.Gscan.Powershell.id
+      description: ''
+      type: String
+    - contextPath: GCenter.Gscan.Powershell.created
+      description: ''
+      type: Date
+    - contextPath: GCenter.Gscan.Powershell.username
+      description: ''
+      type: String
+    - contextPath: GCenter.Gscan.Powershell.user_agent
+      description: ''
+      type: String
+    - contextPath: GCenter.Gscan.Powershell.ip_address
+      description: ''
+      type: String
+    - contextPath: GCenter.Gscan.Powershell.file_name
+      description: ''
+      type: String
+    - contextPath: GCenter.Gscan.Powershell.sha256
+      description: ''
+      type: String
+    - contextPath: GCenter.Gscan.Powershell.is_clean
+      description: ''
+      type: Boolean
+    - contextPath: GCenter.Gscan.Powershell.is_analysis_successful
+      description: ''
+      type: Boolean
+    - contextPath: GCenter.Gscan.Powershell.status
+      description: ''
+      type: String
+    - contextPath: GCenter.Gscan.Powershell.proba_obfuscated
+      description: ''
+      type: Number
+    - contextPath: GCenter.Gscan.Powershell.analysis_score
+      description: ''
+      type: Number
+    - contextPath: GCenter.Gscan.Powershell.is_whiteblack_listed
+      description: ''
+      type: Boolean
+  - name: gw-send-shellcode
+    description: Send shellcode
+    arguments:
+    - name: name
+      required: true
+      description: Filename
+    - name: content
+      required: true
+      description: File content
+    - name: deep
+      required: true
+      description: Deep scan
+      defaultValue: false
+    - name: timeout
+      required: true
+      description: Deep scan timeout
+      defaultValue: 120
+    outputs:
+    - contextPath: GCenter.Gscan.Shellcode.id
+      description: ''
+      type: String
+    - contextPath: GCenter.Gscan.Shellcode.created
+      description: ''
+      type: Date
+    - contextPath: GCenter.Gscan.Shellcode.username
+      description: ''
+      type: String
+    - contextPath: GCenter.Gscan.Shellcode.user_agent
+      description: ''
+      type: String
+    - contextPath: GCenter.Gscan.Shellcode.ip_address
+      description: ''
+      type: String
+    - contextPath: GCenter.Gscan.Shellcode.file_name
+      description: ''
+      type: String
+    - contextPath: GCenter.Gscan.Shellcode.sha256
+      description: ''
+      type: String
+    - contextPath: GCenter.Gscan.Shellcode.is_clean
+      description: ''
+      type: Boolean
+    - contextPath: GCenter.Gscan.Shellcode.is_analysis_successful
+      description: ''
+      type: Boolean
+    - contextPath: GCenter.Gscan.Shellcode.status
+      description: ''
+      type: String
+    - contextPath: GCenter.Gscan.Shellcode.architecture
+      description: ''
+      type: Unknown
+    - contextPath: GCenter.Gscan.Shellcode.is_whiteblack_listed
+      description: ''
+      type: Boolean
+  isfetch: false
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.10.4.29342
+fromversion: 5.5.0
+tests:
+- v2.5.3.102
