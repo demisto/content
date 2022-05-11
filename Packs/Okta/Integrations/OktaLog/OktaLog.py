@@ -143,10 +143,7 @@ def main():
         last_run = demisto.getLastRun()
         last_object_ids = last_run.get('ids')
         if 'after' not in last_run:
-            delta = (datetime.today() - after)
-            delta = delta.total_seconds()
-            delta = datetime.today() - timedelta(seconds=delta)
-            last_run = delta.isoformat()
+            last_run = after.isoformat()
         else:
             last_run = last_run['after']
         demisto_params['params'] = ReqParams(**demisto_params, since=last_run)
@@ -161,19 +158,16 @@ def main():
         if command == 'test-module':
             get_events.aggregated_results()
             demisto.results('ok')
-        elif command == 'okta-get-events' or command == 'fetch-events':
+        elif command in ('okta-get-events', 'fetch-events'):
             events = get_events.aggregated_results(last_object_ids=last_object_ids)
             if events:
                 demisto.setLastRun(GetEvents.get_last_run(events))
-                if command == 'okta-get-events':
-                    command_results = CommandResults(
-                        readable_output=tableToMarkdown('Okta Logs', events, headerTransform=pascalToSpace),
-                        outputs_prefix='Okta.Logs',
-                        outputs_key_field='published',
-                        outputs=events,
-                        raw_response=events,
-                    )
-                    return_results(command_results)
+            if command == 'okta-get-events':
+                command_results = CommandResults(
+                    readable_output=tableToMarkdown('Okta Logs', events, headerTransform=pascalToSpace),
+                    raw_response=events,
+                )
+                return_results(command_results)
             send_events_to_xsiam(events[:events_limit], 'okta', 'okta')
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
