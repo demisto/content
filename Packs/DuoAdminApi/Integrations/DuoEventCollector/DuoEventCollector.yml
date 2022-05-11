@@ -1,10 +1,10 @@
 commonfields:
-  id: okta event collector
+  id: Duo Event Collector
   version: -1
-name: okta event collector
-display: Okta event collector
+name: Duo Event Collector
+display: Duo Event Collector
 category: Analytics & SIEM
-description: Okta logs event collector integration for XSIAM.
+description: Duo logs event collector integration for XSIAM.
 configuration:
 - display: Server Host
   name: host
@@ -26,18 +26,23 @@ configuration:
   - 1 year
 - display: Integration key
   name: integration_key
-  defaultvalue: '{"Accept": "application/json","Content-Type": "application/json"}'
   type: 0
   required: true
 - display: Secrete key
   name: secret_key
   type: 4
   required: true
-- display: XSIAM update limit per request
-  name: events_to_add_per_request
+- display: XSIAM request limit
+  name: limit
   type: 0
   defaultvalue: 1000
+  required: true
+- display: Request retries
+  name: retries
+  type: 0
+  defaultvalue: 5
   required: false
+  hidden: true
 - display: Use system proxy settings
   name: proxy
   type: 8
@@ -52,8 +57,8 @@ script:
     name: fetch-events
   - description: Manual command to fetch events and display them.
     name: duo-get-events
-  dockerimage: demisto/fastapi:1.0.0.28667
+  dockerimage: devdemisto/duoadmin3:1.0.0.29577
   runonce: false
   subtype: python3
-fromversion: 5.5.0
+fromversion: 6.5.0
 tests:
