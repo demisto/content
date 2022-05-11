@@ -1,19 +1,33 @@
-category: Utilities
+category: Analytics & SIEM
 commonfields:
   id: CyberArkIdentity
   version: -1
 configuration:
 - defaultvalue: https://example.com/
-  display: Your server URL
+  display: Server URL
   name: url
   required: true
   type: 0
-- displaypassword: API Key
-  additionalinfo: The API Key to use for connection
+- defaultvalue: oauthsiem
+  display: app ID
+  name: app_id
+  required: true
+  type: 0
+- display: User name
+  additionalinfo: The user name (admin@example.com) and password
   name: credentials
   required: true
-  hiddenusername: true
   type: 9
+- defaultvalue: 3 days
+  display: First fetch time (<number> <time unit>, e.g., 12 hours, 1 day, 3 months). default is 3 days.
+  name: from
+  required: true
+  type: 0
+- defaultvalue: 100
+  display: The maximum number of events per fetch. Default is 100.
+  name: limit
+  required: true
+  type: 0
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -42,12 +56,12 @@ script:
     - contextPath: BaseIntegration.Output
       description: '[Enter a description of the data returned in this output.]'
       type: String
-  isfetch: false
+  isfetchevents: true
   runonce: false
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/fastapi:1.0.0.29406
 fromversion: 5.5.0
 tests:
 - No tests (auto formatted)
