@@ -107,7 +107,7 @@ def build_query(query_fields: list, path: list, template_context: str = 'SPECIFI
 
 
 def http_request(
-    method: str, url_suffix: str, data: Any = None, json_body: Any = None, headers: dict = HEADERS, return_json: bool = True,
+    method: str, url_suffix: str, data: dict = None, json_body: Any = None, headers: dict = HEADERS, return_json: bool = True,
         custom_response: bool = False) -> Any:
     LOG('running request with url=%s' % (SERVER + url_suffix))
     try:
@@ -306,7 +306,7 @@ def query_processes_command():
     })
 
 
-def query_processes(machine: str, process_name: bool, only_suspicious: str = None, has_incoming_connection: str = None,
+def query_processes(machine: str, process_name: Any, only_suspicious: str = None, has_incoming_connection: str = None,
                     has_outgoing_connection: str = None, has_external_connection: str = None,
                     unsigned_unknown_reputation: str = None, from_temporary_folder: str = None,
                     privileges_escalation: str = None, maclicious_psexec: str = None) -> dict:
@@ -1743,11 +1743,11 @@ def start_fetchfile_command():
 
 
 def start_fetchfile(element_id: str, user_name: str) -> dict:
-    data = {
+    json_body = {
         'elementGuids': [element_id],
         'initiatorUserName': user_name
     }
-    return http_request('POST', '/rest/fetchfile/start', data=json.dumps(data))
+    return http_request('POST', '/rest/fetchfile/start', json_body=json_body)
 
 
 def fetchfile_progress_command():
@@ -1881,12 +1881,13 @@ def start_host_scan_command():
     sensor_ids = sensor_id.split(",")
     argument = demisto.getArg('scanType')
     json_body = {
-        "sensorsIds":sensor_ids,
-        "argument":argument
+        "sensorsIds": sensor_ids,
+        "argument": argument
     }
-    response = http_request('POST', '/rest/sensors/action/schedulerScan', json_body=json_body, return_json=False, custom_response=True)
+    response = http_request(
+        'POST', '/rest/sensors/action/schedulerScan', json_body=json_body, return_json=False, custom_response=True)
     if response.status_code == 204:
-        demisto.results("The given Sensor ID/ID's: {sensor_ids} is/are not available for scanning.".format(sensor_ids=sensor_ids))
+        demisto.results("Given Sensor ID/ID's {sensor_ids} is/are not available for scanning.".format(sensor_ids=sensor_ids))
     elif response.status_code == 200:
         try:
             response_json = response.json()
@@ -1897,9 +1898,12 @@ def start_host_scan_command():
     else:
         try:
             json_response = response.json()
-            demisto.results("Could not scan the host. The received response is {json_response}".format(json_response=json_response))
-        except Exception as e:
-            raise Exception('Your request failed with the following error: ' + response.content + '. Response Status code: ' + str(response.status_code))
+            demisto.results(
+                "Could not scan the host. The received response is {json_response}".format(json_response=json_response))
+        except Exception:
+            raise Exception(
+                'Your request failed with the following error: ' + response.content + '. Response Status code: ' + str(
+                    response.status_code))
 
 
 def fetch_scan_status_command():
@@ -1928,7 +1932,8 @@ def get_sensor_id_command():
     if dict_safe_get(response, ['sensors']) == []:
         demisto.results("Could not found any Sensor ID for the machine '{}'".format(machine_name))
     else:
-        demisto.results("Sensor ID for the machine '{0}' is: {1}".format(machine_name, dict_safe_get(response, ['sensors', 0, 'sensorId'])))
+        demisto.results(
+            "Sensor ID for the machine '{0}' is: {1}".format(machine_name, dict_safe_get(response, ['sensors', 0, 'sensorId'])))
 
 
 def main():

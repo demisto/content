@@ -946,3 +946,136 @@ There is no context output for this command.
 >    "status": "SUCCESS"
 >}
 >```
+
+### cybereason-start-host-scan
+***
+Start or stop a full or quick scan for a host.
+
+
+#### Base Command
+
+`cybereason-start-host-scan`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| sensorID | Sensor ID of a sensor. (Comma separated values supported.). | Required | 
+| scanType | Select a method/type to scan a host. Possible values are: FULL, QUICK, STOP. | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!cybereason-start-host-scan sensorID=5e77883de4b0575ddcf824ef:PYLUMCLIENT_INTEGRATION_DESKTOP-VG9KE2U_0800273ADC2F scanType=FULL```
+#### Human Readable Output
+
+>Batch ID: -1112786456
+
+### cybereason-fetch-scan-status
+***
+Get the results for host scanning.
+
+
+#### Base Command
+
+`cybereason-fetch-scan-status`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| batchID | The batch ID obtained after initiating the scan. | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!cybereason-fetch-scan-status batchID=-1112786456```
+#### Human Readable Output
+
+>```
+>{
+>    "abortHttpStatusCode": null,
+>    "abortTime": 0,
+>    "abortTimeout": false,
+>    "aborterUser": null,
+>    "actionArguments": [
+>        "com.cybereason.configuration.models.ScheduleScanAction",
+>        "FULL"
+>    ],
+>    "actionType": "SchedulerScan",
+>    "batchId": -1112786456,
+>    "creatorUser": "prashant@metronlabs.com",
+>    "finalState": true,
+>    "globalStats": {
+>        "stats": {
+>            "AbortTimeout": 0,
+>            "Aborted": 0,
+>            "Aborting": 0,
+>            "AlreadyUpdated": 0,
+>            "BadArgument": 0,
+>            "ChunksRequired": 0,
+>            "Disconnected": 0,
+>            "EndedWithInvalidParam": 0,
+>            "EndedWithNoValidFolder": 0,
+>            "EndedWithSensorTimeout": 0,
+>            "EndedWithTooManyResults": 0,
+>            "EndedWithTooManySearches": 0,
+>            "EndedWithUnknownError": 0,
+>            "EndedWithUnsupportedFilter": 0,
+>            "EndedWithYaraCompileError": 0,
+>            "Failed": 0,
+>            "FailedSending": 0,
+>            "FailedSendingToServer": 0,
+>            "GettingChunks": 0,
+>            "InProgress": 0,
+>            "InvalidState": 0,
+>            "MsiFileCorrupted": 0,
+>            "MsiSendFail": 0,
+>            "NewerInstalled": 0,
+>            "None": 0,
+>            "NotSupported": 0,
+>            "Pending": 0,
+>            "Primed": 0,
+>            "ProbeRemoved": 0,
+>            "SendingMsi": 0,
+>            "SendingPlatform": 0,
+>            "Started": 0,
+>            "Succeeded": 1,
+>            "Timeout": 0,
+>            "TimeoutSending": 0,
+>            "UnauthorizedUser": 0,
+>            "UnknownProbe": 0,
+>            "partialResponse": 0
+>        }
+>    },
+>    "initiatorUser": "prashant@metronlabs.com",
+>    "startTime": 1652279731232,
+>    "totalNumberOfProbes": 1
+>}
+>```
+
+### cybereason-get-sensor-id
+***
+Get the Sensor ID of a machine.
+
+
+#### Base Command
+
+`cybereason-get-sensor-id`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| machineName | The hostname of the machine. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!cybereason-get-sensor-id machineName=desktop-vg9ke2u```
+#### Human Readable Output
+
+>Sensor ID for the machine 'desktop-vg9ke2u' is: 5e77883de4b0575ddcf824ef:PYLUMCLIENT_INTEGRATION_DESKTOP-VG9KE2U_0800273ADC2F
