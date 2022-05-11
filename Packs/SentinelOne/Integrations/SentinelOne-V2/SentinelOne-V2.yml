@@ -1591,7 +1591,7 @@ script:
       required: true
     description: Download a file fetched using sentinelone-fetch-file to submit the request and sentinelone-get-activities to get the download path
     name: sentinelone-download-fetched-file
-  dockerimage: demisto/python3:3.10.1.26972
+  dockerimage: demisto/python3:3.10.4.29342
   isfetch: true
   longRunning: false
   longRunningPort: false
