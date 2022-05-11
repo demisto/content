@@ -1714,6 +1714,26 @@ class TestUtilityFunctions:
         device_group = mock_device_groups()[0]
         assert resolve_container_name(device_group) == "test-dg"
 
+    def test_dataclass_to_command_results(self):
+        """Given a list of dataclasses, check that this function correctly converts it to a commandResults object."""
+        from Panorama import dataclasses_to_command_results, PanosObjectReference
+        test_dataclass = PanosObjectReference(
+            hostid=MOCK_FIREWALL_1_SERIAL,
+            container_name="test",
+            object_type="TestObject",
+            name="test_name"
+        )
+        results = dataclasses_to_command_results(test_dataclass)
+        # Check we get the right table headers when no additional arguments are given
+        assert "container_name|hostid|name|object_type" in results.readable_output
+        assert "### PAN-OS Object" in results.readable_output
+
+        results = dataclasses_to_command_results(
+            test_dataclass, override_table_name="Test Table", override_table_headers=["hostid", "name", "container_name"])
+        # When we provide overrides, check they are rendered correctly in the readable output
+        assert "hostid|name|container_name" in results.readable_output
+        assert "### Test Table" in results.readable_output
+
 
 class TestPanoramaCommand:
     """

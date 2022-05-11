@@ -10614,11 +10614,19 @@ def get_topology() -> Topology:
     )
 
 
-def dataclasses_to_command_results(result: Any, empty_result_message: str = "No results."):
+def dataclasses_to_command_results(
+        result: Any,
+        empty_result_message: str = "No results.",
+        override_table_name: Optional[str] = "",
+        override_table_headers: Optional[List[str]] = None
+):
     """
-    Given a dataclass or list of dataclasses,
-    convert it into a tabular format and finally return CommandResults to demisto.
-    :param empty_result_message: If the result data is non
+    Given a dataclass or list of dataclasses, convert it into a tabular format and finally return CommandResults to demisto.
+    :param result: Dataclass or list of dataclasses
+    :param empty_result_message: If the result data is none, return this message
+    :param override_table_name: If given, the name of the table is set to this value specifically instead of the name in the
+        dataclass.
+    :param override_table_headers: If given, the markdown table will show these headers instead in the order provided.
     """
     if not result:
         return CommandResults(
@@ -10660,7 +10668,12 @@ def dataclasses_to_command_results(result: Any, empty_result_message: str = "No 
     if hasattr(result, "_outputs_key_field"):
         extra_args["outputs_key_field"] = getattr(result, "_outputs_key_field")
 
-    readable_output = tableToMarkdown(title, summary_list, removeNull=True)
+    readable_output = tableToMarkdown(
+        override_table_name or title,
+        summary_list,
+        removeNull=True,
+        headers=override_table_headers
+    )
     command_result = CommandResults(
         outputs_prefix=output_prefix,
         outputs=outputs,
@@ -11194,7 +11207,9 @@ def main():
             return_results(
                 dataclasses_to_command_results(
                     get_conforming_vulnerability_profiles(topology, **demisto.args()),
-                    empty_result_message="No Conforming Vulnerability Profiles."
+                    empty_result_message="No Conforming Vulnerability Profiles.",
+                    override_table_headers=["hostid", "name", "object_type", "container_name"],
+                    override_table_name="Best Practices conforming Vulnerability profiles"
                 )
             )
         elif command == 'pan-os-hygiene-check-spyware-profiles':
@@ -11218,7 +11233,9 @@ def main():
             return_results(
                 dataclasses_to_command_results(
                     get_conforming_url_filtering_profiles(topology, **demisto.args()),
-                    empty_result_message="No conforming URL filtering profiles."
+                    empty_result_message="No conforming URL filtering profiles.",
+                    override_table_headers=["hostid", "name", "object_type", "container_name"],
+                    override_table_name="Best Practices conforming URL Filtering profiles"
                 )
             )
         elif command == 'pan-os-hygiene-conforming-spyware-profiles':
@@ -11226,7 +11243,9 @@ def main():
             return_results(
                 dataclasses_to_command_results(
                     get_conforming_spyware_profiles(topology, **demisto.args()),
-                    empty_result_message="No conforming Spyware profiles."
+                    empty_result_message="No conforming Spyware profiles.",
+                    override_table_headers=["hostid", "name", "object_type", "container_name"],
+                    override_table_name="Best Practices conforming Anti-spyware profiles"
                 )
             )
         elif command == 'pan-os-hygiene-check-security-zones':
