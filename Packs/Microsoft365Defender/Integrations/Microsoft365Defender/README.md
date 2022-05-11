@@ -57,7 +57,7 @@ Follow these steps for a self-deployed configuration:
     | Use Client Credentials Authorization Flow | Use a self-deployed Azure application and authenticate using the Client Credentials flow. | False |
     | Tenant ID (for Client Credentials mode) |  | False |
     | Password |  | False |
-    | Certificate Thumbprint | Used for certificate authentication. As appears in the "Certificates &amp;amp; secrets" page of the app. | False |
+    | Certificate Thumbprint | Used for certificate authentication. As appears in the "Certificates & secrets" page of the app. | False |
     | Private Key | Used for certificate authentication. The private key of the registered certificate. | False |
     | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
     | Fetch incidents timeout | The time limit in seconds for fetch incidents to run. Leave this empty to cancel the timeout limit. | False |
@@ -249,7 +249,7 @@ Update the incident with the given ID.
 | assigned_to | Owner of the incident. | Optional | 
 | id | Incident's ID. | Required | 
 | classification | The specification for the incident. Possible values are: Unknown, FalsePositive, TruePositive. | Optional | 
-| determination | Determination of the incident. Possible values are: NotAvailable, Apt, Malware, SecurityPersonnel, SecurityTesting, UnwantedSoftware, Other.. | Optional | 
+| determination | Determination of the incident. Possible values are: NotAvailable, Apt, Malware, SecurityPersonnel, SecurityTesting, UnwantedSoftware, Other. | Optional | 
 | tags | A comma-separated list of custom tags associated with an incident. For example: tag1,tag2,tag3. | Optional | 
 | timeout | The time limit in seconds for the http request to run. Default is 30. | Optional | 
 
