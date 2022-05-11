@@ -8950,7 +8950,7 @@ class HygieneCheckRegister:
             "BP-V-6": ConfigurationHygieneCheck(
                 issue_code="BP-V-6",
                 result=UNICODE_PASS,
-                description="Fails if no spyware profile is configured for url-filtering",
+                description="Fails if no URL Filtering profile is configured with recommended category settings.",
             ),
             "BP-V-7": ConfigurationHygieneCheck(
                 issue_code="BP-V-7",
