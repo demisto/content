@@ -127,9 +127,9 @@ def query(query_string, project_id, location, allow_large_results, default_datas
         return query_job
 
 
-def query_command():
+def get_query_results(query_to_run=None):
     args = demisto.args()
-    query_to_run = args['query']
+    query_to_run = query_to_run or args['query']
     project_id = args.get('project_id', None)
     location = args.get('location', None)
     allow_large_results = args.get('allow_large_results', None)
@@ -146,7 +146,13 @@ def query_command():
     query_results = query(query_to_run, project_id, location, allow_large_results, default_dataset,
                           destination_table, kms_key_name, dry_run, priority, use_query_cache, use_legacy_sql,
                           google_service_creds, job_id, write_disposition)
+    return query_results
 
+
+def query_command(query_to_run=None):
+    query_results = get_query_results(query_to_run)
+    args = demisto.args()
+    dry_run = args.get('dry_run', None)
     context = {}
     rows_contexts = []
     human_readable = 'No results found.'
@@ -203,7 +209,7 @@ def get_last_run_date():
     demisto.debug('[BigQuery Debug] last_date is: {}'.format(last_date))
 
     if last_date is None:
-        first_fetch_time = demisto.params().get('first_fetch_time', '7 days')
+        first_fetch_time = demisto.params().get('first_fetch_time', '1 days')
         first_fetch, _ = parse_date_range(first_fetch_time, date_format='%Y-%m-%d %H:%M:%S.%f')
         last_date = first_fetch
         demisto.debug('[BigQuery Debug] FIRST RUN - last_date is: {}'.format(last_date))
@@ -222,7 +228,8 @@ def build_fetch_query(last_date):
     else:
         fixed_query += " WHERE"
 
-    fetch_query = "{} `{}` > \"{}\"".format(fixed_query, demisto.params()["fetch_field"], last_date)
+    fetch_time_field = demisto.params().get['fetch_time_field']
+    fetch_query = "{} `{}` > \"{}\"".format(fixed_query, fetch_time_field, last_date)
     return fetch_query
 
 
@@ -233,7 +240,9 @@ def row_to_incident(row):
     incident = {}
     raw = {underscoreToCamelCase(k): convert_to_string_if_datetime(v) for k, v in row.items()}
     incident["rawJSON"] = json.dumps(raw)
-    incident["name"] = raw[demisto.params()["fetch_name"]]
+    incident_name_field = demisto.params().get("incident_name_field")
+    if incident_name_field and incident_name_field in raw:
+        incident["name"] = raw[incident_name_field]
     return incident
 
 
@@ -247,10 +256,10 @@ def get_row_date_string(row):
     Given a row, retrieve the date representing the time in which it was created.
     According to our testing, on some cases the creation time is spelled 'creation_time',
     and on other cases 'CreationTime'.
+    Moreover, it could be something else entirely, specified by the user.
     On each case, the format is different as well.
     """
-    # try creation_time (fetch_field param) and CreationTime. Can be either
-    row_date_field = demisto.params().get("fetch_field", "creation_time")
+    row_date_field = demisto.params().get("fetch_time_field", "creation_time")
     row_date = row.get(row_date_field)
     if row_date is None:
         demisto.debug("[BigQuery Debug] missing creation_time, trying CreationTime: {}".format(row))
@@ -294,13 +303,24 @@ def remove_outdated_incident_ids(found_incidents_ids, latest_incident_time_str):
     return new_found_ids
 
 
+def verify_params():
+    params = demisto.params()
+    if not params.get('first_fetch_time'):
+        return_error('Error: fetch start time must be supplied.')
+    if not params.get('fetch_query'):
+        return_error('Error: fetch query must be supplied.')
+    if not params.get('fetch_time_field'):
+        return_error('Error: the time field you want us to sort incidents by must be supplied.')
+
+
 def fetch_incidents():
+    verify_params()
     latest_incident_time_str = get_last_run_date()
     fetch_query = build_fetch_query(latest_incident_time_str)
     demisto.debug("[BigQuery Debug] fetch query with date is: {}".format(fetch_query))
     fetch_limit = arg_to_number(demisto.params().get('fetch_limit') or 50)
 
-    bigquery_rows = list(query_command(fetch_query))
+    bigquery_rows = list(get_query_results(fetch_query))
 
     demisto.debug("[BigQuery Debug] number of results is: {}".format(len(bigquery_rows)))
     if len(bigquery_rows) > 0:
@@ -367,7 +387,8 @@ try:
     if demisto.command() == 'test-module':
         test_module()
     elif demisto.command() == 'bigquery-query':
-        query_command()
+        query = demisto.args().get('query')
+        query_command(query)
     elif demisto.command() == 'fetch-incidents':
         fetch_incidents()
 

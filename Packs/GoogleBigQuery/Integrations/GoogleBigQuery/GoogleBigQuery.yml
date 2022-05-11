@@ -1,8 +1,8 @@
 commonfields:
-  id: Google BigQuery
+  id: Google BigQuery_copy
   version: -1
-name: Google BigQuery
-display: Google BigQuery
+name: Google BigQuery_copy
+display: Google BigQuery_copy
 category: Database
 description: Integration for Google BigQuery, a data warehouse for querying and analyzing large databases. In all commands, for any argument not specified, the BigQuery default value for that argument will be applied.
 configuration:
@@ -11,11 +11,11 @@ configuration:
   defaultvalue: ""
   type: 4
   required: true
-- display: First fetch timestamp in hours
+- display: First fetch timestamp (<number> <time unit>. For example, 12 hours, 7 days)
   name: first_fetch
-  defaultvalue: "1 day"
-  type: 4
-  required: true
+  defaultvalue: '1 days'
+  type: 0
+  required: false
 - defaultvalue: '50'
   display: Fetch Limit (Max.- 200, Recommended less than 50)
   name: fetch_limit
@@ -27,8 +27,13 @@ configuration:
   type: 8
 - display: Fetch query
   name: fetch_query
-  required: False
-  type: 8
+  required: false
+  type: 0
+- display: Fetch time field
+  additionalinfo: Will be used for determining the time of each row.
+  name: fetch_time_field
+  required: false
+  type: 0
 script:
   script: ''
   type: python
