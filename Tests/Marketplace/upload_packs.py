@@ -1208,7 +1208,7 @@ def main():
 
         pack.status = PackStatus.SUCCESS.name
 
-    logging.info(f"packs_with_missing_dependencies: {packs_with_missing_dependencies}")
+    logging.info(f"packs_with_missing_dependencies: {[pack.name for pack in packs_with_missing_dependencies]}")
 
     # Going over all packs that were marked as missing dependencies,
     # updating them with the new data for the new packs that were added to the index.zip
