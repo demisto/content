@@ -979,6 +979,38 @@ script:
       required: true
     description: Malware query with options and values to filter
     name: cybereason-malware-query
+  - arguments:
+    - description: Sensor ID of a sensor. (Comma separated values supported.)
+      name: sensorID
+      required: true
+    - description: Select a method/type to scan a host.
+      name: scanType
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "FULL"
+      - "QUICK"
+      - "STOP"
+    description: Start or stop a full or quick scan for a host.
+    name: cybereason-start-host-scan
+  - arguments:
+    - default: true
+      description: The batch ID obtained after initiating the scan.
+      name: batchID
+      required: true
+    description: Get the results for host scanning.
+    name: cybereason-fetch-scan-status
+  - arguments:
+    - default: false
+      description: The hostname of the machine.
+      isArray: false
+      name: machineName
+      required: false
+      secret: false
+    deprecated: false
+    description: Get the Sensor ID of a machine.
+    execution: false
+    name: cybereason-get-sensor-id
   isfetch: true
   runonce: false
   script: '-'
