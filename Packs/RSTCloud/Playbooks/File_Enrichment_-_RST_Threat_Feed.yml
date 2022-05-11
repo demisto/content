@@ -17,6 +17,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "16"
@@ -43,7 +44,8 @@ tasks:
       id: 17c87e7d-0e37-4aa7-85af-50547172380c
       version: -1
       name: Is there a File to enrich?
-      description: Checks whether the playbook's input contains at least one File to enrich.
+      description: Checks whether the playbook's input contains at least one File
+        to enrich.
       type: condition
       iscommand: false
       brand: ""
@@ -86,6 +88,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
