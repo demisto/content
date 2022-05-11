@@ -10117,7 +10117,7 @@ def get_found_incident_ids(last_run, incidents, look_back, id_field):
     :type id_field: ``str``
     :param id_field: The incident id field
 
-    :return: The new incident ids object after removing old incident IDs
+    :return: The new incident ids.
     :rtype: ``dict``
     """
 
