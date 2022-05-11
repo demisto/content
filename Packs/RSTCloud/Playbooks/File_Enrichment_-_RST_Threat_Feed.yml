@@ -282,13 +282,13 @@ inputs:
       - operator: uniq
   required: false
   description: The Files to enrich.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: threshold
   value:
     simple: "10"
   required: false
   description: Defines the minimum score to set indicators as malicious
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: File
   description: The File objects.
@@ -296,3 +296,5 @@ outputs:
 - contextPath: DBotScore
   description: Indicator, Score, Type, and Vendor.
   type: unknown
+tests:
+- No tests (auto formatted)
