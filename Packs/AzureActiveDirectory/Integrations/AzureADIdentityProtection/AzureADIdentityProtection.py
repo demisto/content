@@ -14,7 +14,6 @@ OUTPUTS_PREFIX = "AADIdentityProtection"
 BASE_URL = 'https://graph.microsoft.com/beta'
 REQUIRED_PERMISSIONS = (
     'offline_access',  # allows device-flow login
-    'https://graph.microsoft.com/.default',
     'IdentityRiskEvent.Read.All',
     'IdentityRiskyUser.ReadWrite.All'
 )
@@ -83,19 +82,22 @@ class AADClient(MicrosoftClient):
             set_integration_context(integration_context)
 
         self.client_credentials = client_credentials
-        super().__init__(azure_ad_endpoint=azure_ad_endpoint,
-                         self_deployed=True,
-                         auth_id=app_id,  # client id
-                         grant_type=CLIENT_CREDENTIALS if client_credentials else DEVICE_CODE,
-                         base_url=BASE_URL,
-                         token_retrieval_url='https://login.microsoftonline.com/organizations/oauth2/v2.0/token'  # type: ignore
-                         if not client_credentials else None,
-                         verify=verify,
-                         proxy=proxy,
-                         scope=' '.join(REQUIRED_PERMISSIONS),
-                         tenant_id=tenant_id,  # type: ignore
-                         enc_key=enc_key  # client secret
-                         )
+        args = {
+            "azure_ad_endpoint": azure_ad_endpoint,
+            "self_deployed": True,
+            "auth_id": app_id,
+            "grant_type": CLIENT_CREDENTIALS if client_credentials else DEVICE_CODE,
+            "base_url": BASE_URL,
+            "verify": verify,
+            "proxy": proxy,
+            "tenant_id": tenant_id,
+            "enc_key": enc_key
+        }
+        if not client_credentials:
+            args["scope"] = ' '.join(REQUIRED_PERMISSIONS)
+            args["token_retrieval_url"] = 'https://login.microsoftonline.com/organizations/oauth2/v2.0/token'
+
+        super().__init__(**args)  # type: ignore
 
         self.subscription_id = subscription_id
 

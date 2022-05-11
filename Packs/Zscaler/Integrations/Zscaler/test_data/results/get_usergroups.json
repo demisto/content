@@ -1,0 +1,22 @@
+{
+  "Type": 1,
+  "Contents": [
+    {
+      "comments": "test comment",
+      "id": 11,
+      "name": "test"
+    }
+  ],
+  "ContentsFormat": "json",
+  "ReadableContentsFormat": "markdown",
+  "HumanReadable": "### User groups (1)\n|comments|id|name|\n|---|---|---|\n| test comment | 11 | test |\n",
+  "EntryContext": {
+    "Zscaler.UserGroups": [
+      {
+        "comments": "test comment",
+        "id": 11,
+        "name": "test"
+      }
+    ]
+  }
+}
