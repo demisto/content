@@ -2,18 +2,18 @@ contentitemexportablefields:
   contentitemfields:
     propagationLabels:
     - all
-description: "This playbook unisolates endpoints according to the endpoint ID or hostname\
-  \ that is provided in the playbook.\nCurrently supports the following integrations:\n\
+description: "This playbook unisolates endpoints according to the endpoint ID or host name\
+  \ provided in the playbook.\nIt currently supports the following integrations:\n\
   - Carbon Black Response\n- Cortex XDR\n- Crowdstrike Falcon\n- FireEye HX \n- Cybereason\n- \
   Microsoft Defender For Endpoint"
 id: Unisolate Endpoint - Generic
 inputs:
-- description: The endpoint id/device id/sensor id/agent id that you want to unisolate.
+- description: The endpoint ID/device ID/sensor ID/agent ID that you want to unisolate.
   key: Endpoint_ID
   playbookInputQuery:
   required: false
   value: {}
-- description: The hostname of the endpoint to unisolate (using Cybereason or FireEyeHX).
+- description: The host name of the endpoint to unisolate (using Cybereason or FireEyeHX).
   key: Hostname
   playbookInputQuery:
   required: false
@@ -24,19 +24,19 @@ outputs:
   description: The machine action ID.
   type: string
 - contextPath: MicrosoftATP.NonUnisolateList
-  description: Those machine IDs that won't be released from isolation
+  description: The machine IDs that will not be released from isolation.
   type: string
 - contextPath: MicrosoftATP.UnisolateList
-  description: Machine IDs that were released from isolation.
+  description: The machine IDs that were released from isolation.
   type: string
 - contextPath: MicrosoftATP.IncorrectIDs
-  description: Incorrect Device IDs entered
+  description: Incorrect device IDs entered.
   type: string
 - contextPath: MicrosoftATP.IncorrectHostnames
-  description: Incorrect Device Hostnames entered
+  description: Incorrect device host names entered.
   type: string
 - contextPath: MicrosoftATP.IncorrectIPs
-  description: Incorrect Device IPs entered
+  description: Incorrect device IPs entered.
   type: string
 starttaskid: '0'
 tasks:
