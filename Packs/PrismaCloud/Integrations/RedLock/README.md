@@ -29,7 +29,8 @@ You can execute these commands from the Cortex XSOAR CLI, as part of an automati
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### redlock-search-alerts
 ***
-Search alerts on the Prisma Cloud (RedLock) platform
+Search alerts on the Prisma Cloud (RedLock) platform.
+If no time-range arguments are given, the search will filter only alerts from the last 7 days.
 
 
 #### Base Command

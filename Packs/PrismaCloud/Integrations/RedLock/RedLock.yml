@@ -328,7 +328,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Search alerts on the Prisma Cloud (RedLock) platform
+    description: Search alerts on the Prisma Cloud (RedLock) platform.
+                 If no time-range arguments are given, the search will filter only alerts from the last 7 days.
     execution: false
     name: redlock-search-alerts
     outputs:
