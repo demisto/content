@@ -208,18 +208,19 @@ Before you can create an instance of the Microsoft Teams integration in Cortex X
 1. Download the ZIP file located at the bottom of this article.
 2. Uncompress the ZIP file. You should see 3 files (`manifest.json`, `color.png` and `outline.png`).
 3. Open the `manifest.json` file that was extracted from the ZIP file.
-4. In the `bots` list, replace the value of the `botId` attribute with the value of the *Bot ID* from step 5 of the **Create the Demisto Bot in Microsoft Teams section**.
-5. In the `webApplicationInfo`, replace the value of `id` attribute with the value of the *Bot ID* from step 5 of the **Create the Demisto Bot in Microsoft Teams section**.
-6. Compress the 3 files (the modified `manifest.json` file, `color.png` and `outline.png`).
-7. Navigate to [Manage Apps in the Microsoft Teams admin center](https://admin.teams.microsoft.com/policies/manage-apps).
-8. Click the **+Upload** button.
-9. In the pop-up window, click the **Upload** button.
-10. Browse for the ZIP file you created in step 5, open it, and wait a few seconds until it loads.
-11. Search for **Demisto Bot**.
-12. In the line where `Demisto Bot` shows under **Name**, tick the V on the left.
-13. Click the **Add to team** button.
-14. In the search box, type the name of the team to which you want to add the bot.
-15. Click the **Add** button on the wanted team and then click the **Apply** button.
+4. In the `id`, replace the value of the attribute with the value of the *Bot ID* from step 5 of the **Create the Demisto Bot in Microsoft Teams section**.
+5. In the `bots` list, replace the value of the `botId` attribute with the value of the *Bot ID* from step 5 of the **Create the Demisto Bot in Microsoft Teams section**.
+6. In the `webApplicationInfo`, replace the value of `id` attribute with the value of the *Bot ID* from step 5 of the **Create the Demisto Bot in Microsoft Teams section**.
+7. Compress the 3 files (the modified `manifest.json` file, `color.png` and `outline.png`).
+8. Navigate to [Manage Apps in the Microsoft Teams admin center](https://admin.teams.microsoft.com/policies/manage-apps).
+9. Click the **+Upload** button.
+10. In the pop-up window, click the **Upload** button.
+11. Browse for the ZIP file you created in step 5, open it, and wait a few seconds until it loads.
+12. Search for **Demisto Bot**.
+13. In the line where `Demisto Bot` shows under **Name**, tick the V on the left.
+14. Click the **Add to team** button.
+15. In the search box, type the name of the team to which you want to add the bot.
+16. Click the **Add** button on the wanted team and then click the **Apply** button.
 
 #### Using the App Studio (Deprecated - Use `Developer Portal` instead.)
 1. In Microsoft Teams, access the Store.
