@@ -2,12 +2,12 @@ contentitemexportablefields:
   contentitemfields:
     propagationLabels:
     - all
-description: "This playbook isolates a given endpoint via various endpoint product\
-  \ integrations.\nMake sure to provide the valid playbook input for the integration\
+description: "This playbook isolates a given endpoint using various endpoint product\
+  \ integrations.\nMake sure to provide valid playbook inputs for the integration\
   \ you are using."
 id: Isolate Endpoint - Generic V2
 inputs:
-- description: The hostname of the endpoint to isolate.
+- description: The host name of the endpoint to isolate.
   key: Endpoint_hostname
   playbookInputQuery:
   required: false
@@ -30,10 +30,10 @@ inputs:
 name: Isolate Endpoint - Generic V2
 outputs:
 - contextPath: CbResponse.Sensors.CbSensorID
-  description: Carbon Black Response Sensors ids that has been isolated.
+  description: Carbon Black Response Sensor IDs that were isolated.
   type: string
 - contextPath: Endpoint
-  description: The isolated enpoint.
+  description: The isolated endpoint.
   type: string
 - contextPath: Traps.Isolate.EndpointID
   description: The ID of the endpoint.
@@ -42,11 +42,11 @@ outputs:
   description: The status of the isolation operation.
   type: string
 - contextPath: Cybereason.Machine
-  description: Cybereason machine name.
+  description: The Cybereason machine name.
 - contextPath: Cybereason.IsIsolated
   description: Whether the machine is isolated.
 - contextPath: Endpoint.Hostname
-  description: Hostname of the endpoint.
+  description: The hostname of the endpoint.
 - contextPath: PaloAltoNetworksXDR.Endpoint.endpoint_id
   description: The endpoint ID.
 - contextPath: PaloAltoNetworksXDR.Endpoint.endpoint_name
@@ -58,7 +58,7 @@ outputs:
 - contextPath: PaloAltoNetworksXDR.Endpoint.is_isolated
   description: Whether the endpoint is isolated.
 - contextPath: CbResponse.Sensors.Status
-  description: Sensor status.
+  description: The sensor status.
   type: unknown
 - contextPath: CbResponse.Sensors.Isolated
   description: Whether the sensor is isolated.
@@ -67,19 +67,19 @@ outputs:
   description: The machine action ID.
   type: string
 - contextPath: MicrosoftATP.IsolateList
-  description: The Machine IDs which were Isolated
+  description: The IDs of the machines that were isolated.
   type: string
 - contextPath: MicrosoftATP.NonIsolateList
-  description: Machine ID's which will not be isolated
+  description: The IDs of the machines that will not be isolated.
   type: string
 - contextPath: MicrosoftATP.IncorrectIDs
-  description: Incorrect Device IDs entered
+  description: Incorrect device IDs entered.
   type: string
 - contextPath: MicrosoftATP.IncorrectHostnames
-  description: Incorrect Device Hostnames entered
+  description: Incorrect device host names entered.
   type: string
 - contextPath: MicrosoftATP.IncorrectIPs
-  description: Incorrect Device IPs entered
+  description: Incorrect device IPs entered.
   type: string
 starttaskid: '0'
 tasks:
