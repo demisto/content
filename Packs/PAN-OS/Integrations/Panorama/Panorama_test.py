@@ -1,5 +1,5 @@
 import json
-
+import io
 import pytest
 
 import demistomock as demisto
@@ -22,6 +22,11 @@ mock_demisto_args = {
     'threat_id': "11111",
     'vulnerability_profile': "mock_vuln_profile"
 }
+
+
+def load_json(path):
+    with io.open(path, mode='r', encoding='utf-8') as f:
+        return json.loads(f.read())
 
 
 @pytest.fixture(autouse=True)
@@ -748,6 +753,44 @@ class TestPcap:
         assert results_mocker.call_args.args[0] == 'PAN-OS has no Pcaps of type: filter-pcap.'
 
     @staticmethod
+    @pytest.mark.parametrize(
+        'api_response, expected_context, expected_markdown_table', [
+            (
+                '<?xml version="1.0"?>\n<response status="success">\n  <result>\n    <dir-listing>\n      '
+                '<file>/pcap</file>\n      <file>/pcap_test</file>\n    </dir-listing>\n  </result>\n</response>\n',
+                ['pcap', 'pcap_test'],
+                '### List of Pcaps:\n|Pcap name|\n|---|\n| pcap |\n| pcap_test |\n'
+            ),
+            (
+                '<?xml version="1.0"?>\n<response status="success">\n  <result>\n    <dir-listing>\n      '
+                '<file>/pcap_test</file>\n    </dir-listing>\n  </result>\n</response>\n',
+                ['pcap_test'],
+                '### List of Pcaps:\n|Pcap name|\n|---|\n| pcap_test |\n'
+            )
+        ]
+    )
+    def test_list_pcaps_flow(mocker, api_response, expected_context, expected_markdown_table):
+        """
+        Given
+            - a response which indicates there are two pcaps in the firewall.
+            - a response which indicates there is only one pcap in the firewall.
+
+        When -
+            listing all the available pcap files.
+
+        Then -
+            make sure the response is parsed correctly.
+        """
+        from Panorama import panorama_list_pcaps_command
+        pcaps_response = MockedResponse(text=api_response, status_code=200)
+        mocker.patch('Panorama.http_request', return_value=pcaps_response)
+        results_mocker = mocker.patch.object(demisto, "results")
+        panorama_list_pcaps_command({'pcapType': 'filter-pcap'})
+        called_args = results_mocker.call_args[0][0]
+        assert list(*called_args['EntryContext'].values()) == expected_context
+        assert called_args['HumanReadable'] == expected_markdown_table
+
+    @staticmethod
     def test_get_specific_pcap_flow_which_does_not_exist(mocker):
         """
         Given -
@@ -792,6 +835,30 @@ class TestPcap:
         mocker.patch('Panorama.http_request', return_value=no_pcaps_response)
         with pytest.raises(Exception, match='cannot download filter-pcap without the from argument'):
             panorama_get_pcap_command({'pcapType': 'filter-pcap'})
+
+
+@pytest.mark.parametrize('panorama_version', [8, 9])
+def test_panorama_list_applications_command(mocker, panorama_version):
+    """
+    Given
+       - http response of the list of applications.
+       - panorama version 8 & 9.
+
+    When
+       - getting a list of all the applications in panorama 8/9.
+
+    Then
+       - a valid context output is returned.
+    """
+    from Panorama import panorama_list_applications_command
+    mocker.patch('Panorama.http_request', return_value=load_json('test_data/list_applications_response.json'))
+    mocker.patch('Panorama.get_pan_os_major_version', return_value=panorama_version)
+    res = mocker.patch('demistomock.results')
+    panorama_list_applications_command(predefined='false')
+    assert res.call_args.args[0]['Contents'] == {
+        '@name': 'test-playbook-app', '@loc': 'Lab-Devices', 'subcategory': 'infrastructure', 'category': 'networking',
+        'technology': 'client-server', 'description': 'test-playbook-application-do-not-delete', 'risk': '1'
+    }
 
 
 class TestPanoramaEditRuleCommand:
