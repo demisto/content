@@ -49,7 +49,7 @@ configuration:
   type: 0
 script:
   feed: false
-  isfetch: true
+  isfetch: false
   longRunning: false
   longRunningPort: false
   runonce: false
