@@ -46,7 +46,7 @@ outputs:
 - contextPath: Cybereason.IsIsolated
   description: Whether the machine is isolated.
 - contextPath: Endpoint.Hostname
-  description: The hostname of the endpoint.
+  description: The host name of the endpoint.
 - contextPath: PaloAltoNetworksXDR.Endpoint.endpoint_id
   description: The endpoint ID.
 - contextPath: PaloAltoNetworksXDR.Endpoint.endpoint_name
