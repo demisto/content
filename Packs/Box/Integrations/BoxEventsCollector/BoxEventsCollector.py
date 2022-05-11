@@ -222,6 +222,6 @@ def main(command: str, demisto_params: dict):
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
-    # Args is always stronger. Get getIntegrationContext even stronger
+    # Args is always stronger. Get getLastRun even stronger
     demisto_params_ = demisto.params() | demisto.args() | demisto.getLastRun()
     main(demisto.command(), demisto_params_)
