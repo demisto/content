@@ -9,8 +9,6 @@ import requests
 from CommonServerPython import *  # noqa: F401
 from dateutil.parser import parse
 
-# register_module_line('SentinelOne V2', 'start', __line__())
-
 ''' IMPORTS '''
 
 
@@ -1672,4 +1670,4 @@ def main():
 if __name__ in ['__main__', 'builtin', 'builtins']:
     main()
 
-# register_module_line('SentinelOne V2', 'end', __line__())
+
