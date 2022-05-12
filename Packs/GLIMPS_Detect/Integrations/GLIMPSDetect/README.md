@@ -1,5 +1,5 @@
 Use the GLIMPS Detect Integration to send files to GLIMPS Malware and get results from it
-This integration was integrated and tested with version xx of GLIMPS_Detect
+This integration was integrated and tested with version 0.2.0 of gdetect client.
 
 ## Configure GLIMPS Detect on Cortex XSOAR
 
