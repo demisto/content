@@ -1892,7 +1892,7 @@ def start_host_scan_command():
         try:
             response_json = response.json()
             batch_id = dict_safe_get(response_json, ['batchId'])
-            demisto.results("Batch ID: {}".format(batch_id))
+            demisto.results("Scanning initiation successful. Batch ID: {}".format(batch_id))
         except Exception as e:
             raise Exception("Exception occurred while processing response for scanning a host: " + str(e))
     else:
@@ -1919,21 +1919,25 @@ def fetch_scan_status_command():
 
 def get_sensor_id_command():
     machine_name = demisto.getArg('machineName')
-    json_body = {
-        "filters": [
-            {
-                "fieldName": "machineName",
-                "operator": "Equals",
-                "values": [machine_name]
-            }
-        ]
-    }
+    json_body = {}
+    if machine_name:
+        json_body = {
+            "filters": [
+                {
+                    "fieldName": "machineName",
+                    "operator": "Equals",
+                    "values": [machine_name]
+                }
+            ]
+        }
     response = http_request('POST', '/rest/sensors/query', json_body=json_body)
     if dict_safe_get(response, ['sensors']) == []:
         demisto.results("Could not found any Sensor ID for the machine '{}'".format(machine_name))
     else:
-        demisto.results(
-            "Sensor ID for the machine '{0}' is: {1}".format(machine_name, dict_safe_get(response, ['sensors', 0, 'sensorId'])))
+        output = {}
+        for single_sensor in response['sensors']:
+            output[single_sensor['machineName']] = single_sensor['sensorId']
+        demisto.results(f"Available Sensor IDs are {output}")
 
 
 def main():
