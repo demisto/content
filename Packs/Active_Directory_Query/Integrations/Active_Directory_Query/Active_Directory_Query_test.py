@@ -427,9 +427,9 @@ def test_search_group_members(mocker):
                         'HumanReadable': '### Active Directory - Get Group Members\n|'
                                          'dn|memberOf|name|\n|---|---|---|\n| dn | memberOf | name |\n',
                         'EntryContext': {'ActiveDirectory.Groups(obj.dn ==dn)': {'dn': 'dn', 'members': [
-                            {'dn': 'dn', 'category': 'group'}]}, 'ActiveDirectory.Groups(obj.dn == val.dn)':
-                                             [{'dn': 'dn', 'memberOf': ['memberOf'], 'name': ['name']}], 'Group':
-                                             [{'Type': 'AD', 'ID': 'dn', 'Name': ['name'], 'Groups': ['memberOf']}]}}
+                                        {'dn': 'dn', 'category': 'group'}]}, 'ActiveDirectory.Groups(obj.dn == val.dn)':
+                                            [{'dn': 'dn', 'memberOf': ['memberOf'], 'name': ['name']}], 'Group':
+                                            [{'Type': 'AD', 'ID': 'dn', 'Name': ['name'], 'Groups': ['memberOf']}]}}
 
     expected_results = f'demisto results: {json.dumps(expected_results, indent=4, sort_keys=True)}'
 
