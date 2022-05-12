@@ -1,4 +1,4 @@
-import logging
+import json
 
 import functools
 
@@ -13,7 +13,7 @@ from typing import Any, Iterable, Optional
 
 from demisto_sdk.commands.common.constants import FileType, MarketplaceVersions
 from demisto_sdk.commands.common.git_util import GitUtil
-from demisto_sdk.commands.common.tools import find_type_by_path, get_file, get_remote_file
+from demisto_sdk.commands.common.tools import find_type_by_path, get_file, get_remote_file, yaml, json
 from git import Repo
 from packaging import version
 from packaging.version import Version
@@ -116,8 +116,14 @@ class VersionRange:
 class DictFileBased(DictBased):
     def __init__(self, path: Path):
         self.path = path
-        logger.debug(f'opening file {path}')
-        super().__init__(get_remote_file(full_file_path=str(path), tag=COMMIT, git_content_config=None))
+        match path.suffix:
+            case '.json':
+                body = json.load(path.open())
+            case '.yml':
+                body = yaml.load(path.open())
+            case _:
+                raise RuntimeError(f'unexpected file type {path.suffix}')
+        super().__init__(body)
 
 
 class ContentItem(DictFileBased):
@@ -587,18 +593,20 @@ class BranchTestCollector(TestCollector):
         super().__init__(marketplace)
         self.branch_name = branch_name
         self.repo = Repo(CONTENT_PATH)
+        self.repo.git.checkout(self.branch_name)
 
     def _collect(self) -> CollectedTests:
         # None filter is for empty tests, returned by
         collected = []
         for path in self._get_changed_files():
             try:
-                collected.append(self._collect_single(path))
+                collected.append(self._collect_single(Path(path)))
             except NoTestsToCollect as e:
                 logger.warning(e.message)
-        collected = CollectedTests.union(*collected)  # todo
+        collected = CollectedTests.union(collected)
         if not collected:
-            raise NotImplementedError()  # todo return sanity tests
+            # todo return sanity tests
+            raise NotImplementedError()
         return collected
 
     def _collect_yml(
