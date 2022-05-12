@@ -949,6 +949,10 @@ Creates a draft message in the specified user's mailbox.
 ***
 Sends an email using Microsoft Graph.
 
+**NOTE:**
+
+Attachments size is limited to 3 MB.
+
 ##### Required Permissions
 **The following permissions are required for this command:**
 - Mail.Send (Application)

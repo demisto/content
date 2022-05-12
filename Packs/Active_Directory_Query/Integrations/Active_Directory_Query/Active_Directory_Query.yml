@@ -251,6 +251,13 @@ script:
     - name: base-dn
       description: Root. For example, DC=domain,DC=com). By default, the Base DN configured
         for the instance is used.
+    - name: restore_user
+      default: false
+      auto: PREDEFINED
+      predefined:
+       - 'true'
+       - 'false'
+      description: "If true, the command will enable the user with his restored options"
     description: Enables a previously disabled Active Directory account.
   - name: ad-unlock-account
     arguments:
@@ -777,7 +784,7 @@ script:
       name: basedn
     description: Updates attributes of an existing Active Directory group.
     name: ad-update-group
-  dockerimage: demisto/py3-tools:0.0.1.26536
+  dockerimage: demisto/py3-tools:0.0.1.29493
   runonce: false
   ismappable: true
   isremotesyncout: true
