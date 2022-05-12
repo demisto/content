@@ -115,7 +115,7 @@ def add_pack_to_landing_page(pack_name: str):
     landing_json['Featured'].append(pack_name)
     with landing_page.open('w') as f:
         json.dump(landing_json, f)
-    changed_packs.add(landing_page)
+    changed_packs.add(landing_page.parent)
 
 
 @add_changed_pack
