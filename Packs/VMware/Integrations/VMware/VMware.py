@@ -22,8 +22,6 @@ def parse_params(params):
     test = 'test'
 
     test1 = {}
-    test1["g"] = "o"
-    test1["g"] = "p"
     return full_url, url, port, user_name, password, test
 
 
