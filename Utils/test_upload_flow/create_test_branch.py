@@ -91,4 +91,4 @@ if __name__ == "__main__":
     finally:
       repo.git.checkout(original_branch)
       if branch:
-        branch.delete(repo)
+        repo.delete_head(branch)
