@@ -21535,7 +21535,7 @@ Get a list of hosts with the hosts latest vulnerability data. The list is based 
                     "HOSTNAME": "xxx"
                 },
                 "ID": "123",
-                "IP": "172.31.11.47",
+                "IP": "1.1.1.1",
                 "LAST_PC_SCANNED_DATE": "2018-07-08T22:03:23Z",
                 "LAST_SCAN_DATETIME": "2018-10-25T19:13:37Z",
                 "LAST_VM_SCANNED_DATE": "2018-10-25T19:13:11Z",
@@ -21632,3 +21632,55 @@ Get a list of hosts with the hosts latest vulnerability data. The list is based 
 >|---------|---------------|---|---|---|---|---|---|---|---|
 >| 1234 | 1.1.1.1 | HOSTNAME: xxx | AMAZON-544DB96A | Device Name	Comment	Type<br/>IPC$	Remote IPC	-2147483645<br/>C$	Default share	-2147483648<br/>ADMIN$	Remote Admin	-2147483648 | RDP Supported Encryption methods:  RC4(40 bit),RC4(56 bit) | RDP Public key is 512 bits long. | QID: 105500 detected on port 3389 over TCP. | QID: 105501 detected on port 3389 over TCP. | EOL/Obsolete Operating System : Windows Server 2003 R2 Detected |
 
+### qualys-host-update
+***
+Update host attributes using new update parameters.
+
+
+#### Base Command
+
+`qualys-host-update`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ids | A comma-separated list of host IDs/ranges to update. A host ID range is specified with a hyphen (for example, 190-400). Valid host IDs are required. Either the `ips` or `ids` parameter must be supplied. IDs or IPs can be retrieved via running the `qualys-host-list-detection` command, using the ID field or IPs field. | Optional | 
+| ips | A comma-separated list of host IP addresses/ranges to add to, remove from or replace in the restricted IPs list. An IP range is specified with a hyphen (for example, 10.10.30.1-10.10.30.50). Either the `ips` or `ids` parameter must be supplied. | Optional | 
+| network_id | (Valid only when the Network Support feature is enabled for the user’s account.) The network ID of the custom network for which to restrict the request. When unspecified, defaults to Global Default Network. | Optional | 
+| host_dns | The DNS hostname for the IP you want to update. A single IP must be specified in the same request and the IP will only be updated if it matches the hostname specified. | Optional | 
+| host_netbios | The NetBIOS hostname for the IP you want to update. A single IP must be specified in the same request and the IP will only be updated if it matches the hostname specified. | Optional | 
+| tracking_method | Show only IP addresses/ranges which have a certain tracking method. Possible values are: IP, DNS, NETBIOS. | Optional | 
+| new_tracking_method | The new tracking method. Note - You cannot change the tracking method to EC2 or AGENT. If an IP is already tracked by EC2 or AGENT, you cannot change the tracking method to something else. Possible values are: IP, DNS, NETBIOS. | Optional | 
+| new_owner | The new owner of the host asset(s). The owner must be a Manager. Another user (Unit Manager, Scanner, Reader) can be the owner if the IP address is in the user’s account. | Optional | 
+| new_comment | The user-defined comments. Specify new comments for the host asset(s). | Optional | 
+| new_ud1 | Change value for user-defined field 1. You can specify a maximum of 128 characters (ASCII) for each field value. | Optional | 
+| new_ud2 | Change value for user-defined field 2. You can specify a maximum of 128 characters (ASCII) for each field value. | Optional | 
+| new_ud3 | Change value for user-defined field 3. You can specify a maximum of 128 characters (ASCII) for each field value. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Qualys.Endpoint.Update.DATETIME | Date | Date the command was executed. | 
+| Qualys.Endpoint.Update.TEXT | String | Qualys response for the host update. | 
+
+#### Command example
+```!qualys-host-update ids=35700896 new_comment=comment```
+#### Context Example
+```json
+{
+    "Qualys": {
+        "Endpoint": {
+            "Update": {
+                "DATETIME": "2022-05-12T14:25:43Z",
+                "TEXT": "Assets successfully updated"
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>Assets successfully updated

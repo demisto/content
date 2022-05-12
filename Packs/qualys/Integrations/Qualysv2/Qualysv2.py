@@ -1769,8 +1769,6 @@ def build_host_list_detection_outputs(**kwargs) -> Tuple[List[Any], str]:
                 headers.append(qid)
                 readable_output[qid] = detection.get('RESULTS')
         readable += tableToMarkdown(f'Host Detection List - {ip}\n{limit_msg}', readable_output, removeNull=True, headers=headers)
-    if not readable:
-        readable = 'Host Detection List\n No detections were found'
     return parsed_output, readable
 
 
