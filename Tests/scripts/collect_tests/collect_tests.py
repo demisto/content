@@ -146,6 +146,8 @@ class ContentItem(DictFileBased):
 
     @property
     def id_(self):
+        if 'commonfields' in self.content:
+            return self['commonfields']['id']
         return self['id']
 
     @property
