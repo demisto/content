@@ -33,8 +33,7 @@ configuration:
     additionalinfo: Free text query to filter the fetched alerts.
       For more information, please visit Netskope documentation (https://docs.netskope.com/en/get-alerts-data.html).
     type: 0
-  - defaultvalue: false
-    display: Fetch Events
+  - display: Fetch Events
     additionalinfo: Fetch events as incidents, in addition to the alerts.
     hidden: false
     name: fetch_events
@@ -720,7 +719,7 @@ script:
         - contextPath: Netskope.Host.agent_status
           description: The status of the agent on the device.
           type: String
-  dockerimage: demisto/python3:3.10.4.28442
+  dockerimage: demisto/python3:3.10.4.29342
   feed: false
   isfetch: true
   longRunning: false
