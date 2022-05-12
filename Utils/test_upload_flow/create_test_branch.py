@@ -84,7 +84,6 @@ if __name__ == "__main__":
       repo.git.add(f"{content_path/'Packs'/'Armis'}/*")
       repo.git.commit(m=f"Added Test file")
       repo.git.push('--set-upstream', 'https://code.pan.run/xsoar/content.git', branch)
-      repo.git.checkout(original_branch)
 
     except GitCommandError as e:
       print(e)
