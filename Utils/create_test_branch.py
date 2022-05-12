@@ -1,6 +1,6 @@
 import argparse
-from git import Repo
-from pathlib import Path, Head
+from git import Repo, Head
+from pathlib import Path
 
 def create_new_branch(repo: Repo, new_branch_name:str) -> Head:      
     branch = repo.create_head(new_branch_name)
