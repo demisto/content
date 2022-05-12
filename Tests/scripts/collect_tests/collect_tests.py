@@ -1,9 +1,11 @@
+import functools
+
 import sys
 from abc import ABC, abstractmethod
 from collections import defaultdict
 from dataclasses import dataclass
 from enum import Enum
-from itertools import islice
+from itertools import islice, chain
 from pathlib import Path
 from typing import Any, Iterable, Optional
 
@@ -19,16 +21,16 @@ from Tests.scripts.collect_tests.constants import (CONTENT_PATH,
                                                    DEBUG_ID_SET_PATH,
                                                    IGNORED_FILES, MASTER,
                                                    PACKS_PATH, SKIPPED_PACKS)
-from Tests.scripts.collect_tests.exceptions import (DeprecatedPackException,
-                                                    IgnoredPackException,
-                                                    InexistentException,
+from Tests.scripts.collect_tests.exceptions import (IgnoredPackException,
                                                     InvalidPackNameException,
-                                                    SkippedPackException)
-from Tests.scripts.utils import logging_wrapper as logging
+                                                    SkippedPackException, InexistentPackException)
+import logging
+
+logging.basicConfig(level=logging.DEBUG)
 
 PACK_NAMES = {p.name for p in PACKS_PATH.glob('*') if p.is_dir()}
 
-git_util = GitUtil(CONTENT_PATH)
+# git_util = GitUtil(CONTENT_PATH) # todo delete
 
 
 class CollectionReason(Enum):
@@ -47,6 +49,7 @@ class CollectionReason(Enum):
     TEST_PLAYBOOK_CHANGED = 'test playbook changed'
     MAPPER_CHANGED = 'mapper file changed, configured as incoming_mapper_id in test conf'
     CLASSIFIER_CHANGED = 'classifier file changed, configured as classifier_id in test conf'
+    EMPTY_UNION = 'no tests to union'
 
 
 class DictBased:
@@ -129,10 +132,9 @@ class ContentItem(DictFileBased):
         return self['id']
 
     @property
-    def name(self):
+    def name(self) -> str:
         if self.content:
-            return self.content.get('name', '-')  # todo why '-'?
-        # else, returns None. todo was there justification for this (copied) behavior?
+            return self.get('name', default='')  # todo default?
 
     @property
     def tests(self):
@@ -244,9 +246,8 @@ class IdSetItem(DictBased):
 
 
 class IdSet(DictFileBased):
-    def __init__(self, version_range: VersionRange, marketplace: MarketplaceVersions):
+    def __init__(self, marketplace: MarketplaceVersions):
         super().__init__(DEBUG_ID_SET_PATH)  # todo use real path
-        self.version_range = version_range
         self.marketplace = marketplace
 
         # Content items mentioned in the file
@@ -308,35 +309,37 @@ class IdSet(DictFileBased):
     #     return self.id_to_packs.values()
 
     def get_marketplace_v2_tests(self) -> 'CollectedTests':
-        return CollectedTests(tests=self['test_marketplacev2'], packs=None,
-                              reason=CollectionReason.MARKETPLACE_VERSION_SECTION, id_set=self,
-                              version_range=None, reason_description=f'({self.marketplace.value})')
+        return CollectedTests(
+            tests=self['test_marketplacev2'],
+            packs=None,
+            reason=CollectionReason.MARKETPLACE_VERSION_SECTION,
+            id_set=self,
+            version_range=None,
+            reason_description=f'({self.marketplace.value})'
+        )
 
-    def _parse_items(self, dictionaries: list[dict[str, dict]]) -> dict[str, IdSetItem]:
+    @staticmethod
+    def _parse_items(dictionaries: list[dict[str, dict]]) -> dict[str, IdSetItem]:
         result = {}
         for dict_ in dictionaries:
             for id_, values in dict_.items():
                 if isinstance(values, dict):
                     values = (values,)
+
                 for value in values:  # multiple values possible, for different server versions
                     item = IdSetItem(id_, value)
-                    if item.pack in SKIPPED_PACKS:
+
+                    if item.pack in SKIPPED_PACKS:  # todo does this make sense here? raise exception instead?
                         logging.info(f'skipping {id_=} as the {item.pack} pack is skipped')
                         continue
 
-                    if item.from_version and item.from_version > self.version_range.max_version:
-                        logging.debug(f'skipping {id_=} as {item.from_version} not in {self.version_range=}')
-                        continue
-                    if item.to_version and item.to_version < self.version_range.min_version:
-                        logging.debug(f'skipping {id_=} as {item.to_version=} not in {self.version_range=}')
-                        continue
+                    if existing := result.get(id_):
+                        # Some content items have multiple copies, each supporting different versions. We use the newer.
+                        if item.to_version <= existing.to_version and item.from_version <= existing.from_version:
+                            logging.info(f'skipping duplicate of {item.name} as its version range {item.version_range}'
+                                         f'is older than of the existing one, {existing.version_range}')
+                            continue  # todo makes sense?
 
-                    """
-                    the next checks are applied here, after the `continue` checks (and not before) 
-                    as the preceding checks prevent false positives.
-                     """
-                    if id_ in result:
-                        raise ValueError(f'{id_=} already parsed')
                     result[id_] = item
         return result
 
@@ -378,14 +381,12 @@ class CollectedTests:
         return self
 
     @classmethod
-    def union(cls, collected_tests: tuple['CollectedTests']):
+    def union(cls, collected_tests: list['CollectedTests']) -> 'CollectedTests':
         if not collected_tests:
-            raise ValueError('Can not union an empty tuple of CollectedTests')
+            logging.warning('no tests to union')
+            return None  # todo
 
-        result = collected_tests[0]
-        for other in collected_tests[1:]:
-            result |= other
-        return result
+        return functools.reduce(lambda a, b: a | b, collected_tests)
 
     def _add_single(
             self,
@@ -403,20 +404,25 @@ class CollectedTests:
             self.tests.add(test)
 
         if pack:
-            self._validate_pack(pack)
-            logging.info(f'collecting {pack=}, {reason.value=} {reason_description}')
-            self.packs.add(pack)
+            try:
+                self._validate_pack(pack)
+                logging.info(f'collecting {pack=}, {reason.value=} {reason_description}')
+                self.packs.add(pack)
+            except (IgnoredPackException, SkippedPackException) as e:
+                logging.info(str(e))
 
     def add_id_set_item(self, item: IdSetItem, reason: CollectionReason, reason_description: str = '',
                         add_pack: bool = True, add_test: bool = True):
         self._add_single(item.name, item.pack, reason, reason_description)
 
-    def _validate_pack(self, pack: str) -> None:
+    @staticmethod
+    def _validate_pack(pack: str) -> None:
         """ raises InvalidPackException if the pack name is not valid."""
         if not pack:
             raise InvalidPackNameException(pack)
         if pack not in PACK_NAMES:
-            raise InexistentException(pack)
+            logging.error(f'inexistent pack {pack}')
+            raise InexistentPackException(pack)
         if pack in IGNORED_FILES:  # todo is necessary?
             raise IgnoredPackException(pack)
         if pack in SKIPPED_PACKS:  # todo is necessary?
@@ -426,7 +432,7 @@ class CollectedTests:
         #     raise DeprecatedPackException(pack)
 
     def __repr__(self):
-        return f'{len(self.packs)} pack_name_to_pack_metadata, {len(self.tests)} tests, version range: {self.version_range}'
+        return f'{len(self.packs)} pack_name_to_pack_metadata, {len(self.tests)} tests, {self.version_range=}'
 
 
 def to_tuple(value: Optional[str | list]) -> Optional[tuple]:
@@ -470,15 +476,12 @@ class TestConfItem(DictBased):
 
 
 class TestCollector(ABC):
-    def __init__(self, version_range: VersionRange, marketplace: MarketplaceVersions):
+    def __init__(self, marketplace: MarketplaceVersions):
         self.marketplace = marketplace  # todo is this used anywhere but in passing to id_set?
-        self.version_range = version_range
-
-        self.id_set = IdSet(self.version_range, marketplace)
+        self.id_set = IdSet(marketplace)
         self.conf = TestConf()
         self.pack_name_to_pack_metadata = {pack_name: ContentItem(PACKS_PATH / pack_name / 'pack_metadata.json')
                                            for pack_name in PACK_NAMES}
-
         # todo FAILED_
 
     @property
@@ -495,19 +498,20 @@ class TestCollector(ABC):
         pass
 
     def collect(self, run_nightly: bool, run_master: bool):
-        collected = self._collect()
+        collected: CollectedTests = self._collect()
         collected.machines = Machine.get_suitable_machines(self.version_range, run_nightly, run_master)
 
         if collected.machines is None and not collected.not_empty:  # todo reconsider
             raise EmptyMachineListException()
 
-        collected |= self._add_packs_used(collected.tests)  # todo should we use it?
+        # collected |= self._add_packs_used(collected.tests)  # todo should we use it?
         return collected
 
-    def _add_packs_used(self, tests: set[str]):
-        return self._add_packs_from_tested_integrations(tests) | self._add_packs_from_test_playbooks(tests)
+    def _add_packs_used(self, tests: set[str]) -> list[CollectedTests]:  # todo is used?
+        return self._add_packs_from_tested_integrations(tests) + self._add_packs_from_test_playbooks(tests)
 
-    def _add_packs_from_tested_integrations(self, tests: set[str]) -> CollectedTests:  # only called in _add_packs_used
+    def _add_packs_from_tested_integrations(self, tests: set[str]) -> list[CollectedTests]:
+        # only called in _add_packs_used
         # todo is it used in the new version?
         logging.info(f'searching for integrations used in test playbooks, '
                      f'to make sure the integration pack_name_to_pack_metadata are installed')
@@ -518,17 +522,22 @@ class TestCollector(ABC):
                 if pack := self.id_set.integration_to_pack.get(integration):  # todo what if not?
                     collected.append(
                         self._collect_pack(pack, CollectionReason.PACK_MATCHES_INTEGRATION, reason_description=''))
-
-        return CollectedTests.union(*collected)
+        return collected
 
     def _collect_pack(self, name: str, reason: CollectionReason, reason_description: str) -> CollectedTests:
         pack = ContentItem(PACKS_PATH / name / 'pack_metadata.json')
-        return CollectedTests(tests=None, packs=(name,), reason=reason, reason_description=reason_description,
-                              id_set=self.id_set, version_range=pack.version_range)
+        return CollectedTests(
+            tests=None,
+            packs=(name,),
+            reason=reason,
+            reason_description=reason_description,
+            id_set=self.id_set,
+            version_range=pack.version_range
+        )
 
-    def _add_packs_from_test_playbooks(self, tests: set[str]):  # only called in _add_packs_used
-        logging.info(
-            f'searching for pack_name_to_pack_metadata under which test playbooks are saved, to make sure they are installed')
+    def _add_packs_from_test_playbooks(self, tests: set[str]) -> list[CollectedTests]:  # only called in _add_packs_used
+        logging.info(f'searching for pack_name_to_pack_metadata under which test playbooks are saved,'
+                     f' to make sure they are installed')
         collected = []
 
         for test in tests:
@@ -536,11 +545,11 @@ class TestCollector(ABC):
                 collected.append(
                     self._collect_pack(pack, reason=CollectionReason.PACK_MATCHES_TEST, reason_description='')
                 )
-        return CollectedTests.union(*collected)
+        return collected
 
 
 def get_changed_files(branch_name: str):
-    repo = Repo()
+    repo = Repo(CONTENT_PATH)
     repo.git.checkout(branch_name)
 
     git_util = GitUtil(repo)  # todo provide path or use the one above
@@ -569,8 +578,12 @@ def find_pack(path: Path) -> Path:
     """
     >>> find_pack(Path('root/Packs/MyPack/Integrations/MyIntegration/MyIntegration.yml'))
     PosixPath('root/Packs/MyPack')
-    >>> find_pack(Path('Packs/MyPack/Scripts/MyScript/MyScript.py')).name
-    'MyPack'
+    >>> find_pack(Path('Packs/MyPack1/Scripts/MyScript/MyScript.py')).name
+    'MyPack1'
+    >>> find_pack(Path('Packs/MyPack2/Scripts/MyScript')).name
+    'MyPack2'
+    >>> find_pack(Path('Packs/MyPack3/Scripts')).name
+    'MyPack3'
     """
     if 'Packs' not in path.parts:
         raise NoPackException(path)
@@ -584,8 +597,8 @@ class NoTestsToCollect(Exception):
 
 
 class BranchTestCollector(TestCollector):
-    def __init__(self, version_range: VersionRange, branch_name: str, marketplace: MarketplaceVersions):
-        super().__init__(version_range, marketplace)
+    def __init__(self, branch_name: str, marketplace: MarketplaceVersions):
+        super().__init__(marketplace)
         self.branch_name = branch_name
 
     def _collect(self) -> CollectedTests:
@@ -609,7 +622,7 @@ class BranchTestCollector(TestCollector):
     ) -> CollectedTests:
         match content_item_folder := path.parents[1].name:
 
-            case 'Integrations':  # todo lower case?
+            case 'Integrations':
                 tests = self.conf.integrations_to_tests[content_item.id_]
                 reason = CollectionReason.INTEGRATION_CHANGED
 
@@ -733,19 +746,16 @@ class BranchTestCollector(TestCollector):
 
 class NightlyTestCollector(TestCollector):
     def _collect(self) -> CollectedTests:
-        tests_by_marketplace = self._tests_matching_marketplace_value()
-        packs_by_marketplace = self._packs_matching_marketplace_value()
-
-        collected: list[CollectedTests] = [
-            tests_by_marketplace,
-            packs_by_marketplace,
+        collected = [
+            self._tests_matching_marketplace_value(),
+            self._packs_matching_marketplace_value(),
         ]
 
         if self.marketplace == MarketplaceVersions.MarketplaceV2:
             collected.append(self.id_set.get_marketplace_v2_tests())
         # todo is there a similar list for the marketplacev1?
 
-        return CollectedTests.union(*collected)
+        return CollectedTests.union(collected)
 
     def _tests_matching_marketplace_value(self) -> CollectedTests:
         marketplace_string = self.marketplace.value  # todo is necessary?
@@ -756,18 +766,31 @@ class NightlyTestCollector(TestCollector):
             if marketplace_string in (playbook.marketplaces or ()) and playbook.tests:
                 tests.extend(playbook.tests)
 
-        return CollectedTests(tests=tests, packs=None, reason=CollectionReason.MARKETPLACE_VERSION_BY_VALUE,
-                              id_set=self.id_set, version_range=None, reason_description=f'({marketplace_string})')
+        return CollectedTests(
+            tests=tests,
+            packs=None,
+            reason=CollectionReason.MARKETPLACE_VERSION_BY_VALUE,
+            id_set=self.id_set,
+            version_range=None,
+            reason_description=f'({marketplace_string})'
+        )
 
     def _packs_matching_marketplace_value(self) -> CollectedTests:
         # todo make sure we have a validation, that pack_metadata.marketplaces includes
         marketplace_string = self.marketplace.value
-        logging.info(f'collecting pack_name_to_pack_metadata by their marketplace field, searching for {marketplace_string}')
+        logging.info(
+            f'collecting pack_name_to_pack_metadata by their marketplace field, searching for {marketplace_string}')
         packs = tuple(pack.name for pack in self.packs if marketplace_string in pack.get('marketplaces', ()))
         # todo what's the default behavior for a missing marketplace value?
 
-        return CollectedTests(tests=None, packs=packs, reason=CollectionReason.MARKETPLACE_VERSION_BY_VALUE,
-                              id_set=self.id_set, version_range=None, reason_description=f'({marketplace_string})')
+        return CollectedTests(
+            tests=None,
+            packs=packs,
+            reason=CollectionReason.MARKETPLACE_VERSION_BY_VALUE,
+            id_set=self.id_set,
+            version_range=None,
+            reason_description=f'({marketplace_string})'
+        )
 
 
 class UploadCollector(TestCollector):
@@ -786,8 +809,6 @@ class NoTestsConfiguredException(Exception):
 
 if __name__ == '__main__':
     sys.path.append(str(CONTENT_PATH))
-    collector = NightlyTestCollector(  # todo replace with real usage
-        marketplace=MarketplaceVersions.XSOAR,
-        version_range=VersionRange(Machine.V6_2.value, Machine.V6_6.value)
-    )
-    collector.collect(True, True)
+    # collector = NightlyTestCollector(marketplace=MarketplaceVersions.XSOAR)
+    collector = BranchTestCollector(marketplace=MarketplaceVersions.XSOAR, branch_name='master')
+    print(collector.collect(True, True))
