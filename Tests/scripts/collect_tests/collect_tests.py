@@ -1,21 +1,18 @@
-import json
-
 import functools
-
+import json
 import sys
 from abc import ABC, abstractmethod
 from collections import defaultdict
 from dataclasses import dataclass
 from enum import Enum
-from itertools import islice, chain
 from pathlib import Path
 from typing import Any, Iterable, Optional
 
 from demisto_sdk.commands.common.constants import FileType, MarketplaceVersions
 
-NON_CODE_META_FILE_TYPES = {FileType.README, FileType.RELEASE_NOTES, FileType.RELEASE_NOTES_CONFIG}
-from demisto_sdk.commands.common.git_util import GitUtil
-from demisto_sdk.commands.common.tools import find_type_by_path, get_file, get_remote_file, yaml, json
+from logging import DEBUG, getLogger
+
+from demisto_sdk.commands.common.tools import (find_type_by_path, json, yaml)
 from git import Repo
 from packaging import version
 from packaging.version import Version
@@ -23,18 +20,19 @@ from packaging.version import Version
 from Tests.scripts.collect_tests.constants import (CONTENT_PATH,
                                                    DEBUG_CONF_PATH,
                                                    DEBUG_ID_SET_PATH,
-                                                   IGNORED_FILES, MASTER,
-                                                   PACKS_PATH, SKIPPED_PACKS, CODE_FILE_TYPES)
+                                                   PACKS_PATH, SKIPPED_PACKS)
 from Tests.scripts.collect_tests.exceptions import (IgnoredPackException,
+                                                    InexistentPackException,
                                                     InvalidPackNameException,
-                                                    SkippedPackException, InexistentPackException)
-from logging import getLogger, DEBUG, WARNING, ERROR
+                                                    SkippedPackException, NonDictException, EmptyMachineListException,
+                                                    NoTestsConfiguredException)
 
 logger = getLogger()
 logger.level = DEBUG
+IS_GITLAB = False  # todo remove
 
 PACK_NAMES = {p.name for p in PACKS_PATH.glob('*') if p.is_dir()}
-COMMIT = 'ds-test-collection'
+COMMIT = 'ds-test-collection'  # todo use arg
 
 
 class CollectionReason(Enum):
@@ -113,12 +111,6 @@ class VersionRange:
     @property
     def is_default(self):
         return self.min_version == version.NegativeInfinity and self.max_version == version.Infinity
-
-
-class NonDictException(Exception):
-    def __init__(self, path: Path):
-        self.message = path
-        super().__init__(self.message)
 
 
 class DictFileBased(DictBased):
@@ -361,6 +353,7 @@ class CollectedTests:
         self.tests = set()  # only updated on init
         self.packs = set()  # only updated on init
         self.version_range = None if version_range and version_range.is_default else version_range
+        self.machines: Optional[Iterable[Machine]] = None
 
         if tests and packs and len(tests) != len(packs):
             raise ValueError(f'when both are not empty, {len(tests)=} must be equal to {len(packs)=}')
@@ -425,8 +418,6 @@ class CollectedTests:
         if pack not in PACK_NAMES:
             logger.error(f'inexistent pack {pack}')
             raise InexistentPackException(pack)
-        if pack in IGNORED_FILES:  # todo is necessary?
-            raise IgnoredPackException(pack)
         if pack in SKIPPED_PACKS:  # todo is necessary?
             raise SkippedPackException(pack)
         # if self._id_set.id_to_packs[pack].deprecated:  # todo safer access?
@@ -434,7 +425,8 @@ class CollectedTests:
         #     raise DeprecatedPackException(pack)
 
     def __repr__(self):
-        return f'{len(self.packs)} packs, {len(self.tests)} tests, {self.version_range=}'
+        machines = f' {self.machines}' if self.machines else ''
+        return f'{len(self.packs)} packs, {len(self.tests)} tests, {self.version_range=}{machines}'
 
 
 def to_tuple(value: Optional[str | list]) -> Optional[tuple]:
@@ -445,14 +437,6 @@ def to_tuple(value: Optional[str | list]) -> Optional[tuple]:
     if isinstance(value, str):
         return value,
     return tuple(value)
-
-
-class EmptyMachineListException(Exception):
-    pass
-
-
-class InvalidVersionException(Exception):
-    pass
 
 
 class TestConfItem(DictBased):
@@ -499,7 +483,7 @@ class TestCollector(ABC):
         """
         pass
 
-    def collect(self, run_nightly: bool, run_master: bool):
+    def collect(self, run_nightly: bool, run_master: bool) -> CollectedTests:
         collected: CollectedTests = self._collect()
         collected.machines = Machine.get_suitable_machines(collected.version_range, run_nightly, run_master)
 
@@ -548,9 +532,6 @@ class TestCollector(ABC):
                     self._collect_pack(pack, reason=CollectionReason.PACK_MATCHES_TEST, reason_description='')
                 )
         return collected
-
-
-IS_GITLAB = False  # todo remove
 
 
 class NoPackException(Exception):
@@ -631,8 +612,9 @@ class BranchTestCollector(TestCollector):
                             raise RuntimeError(f'unexpected content type folder {content_item_folder}')
 
                     if not tests:
-                        logger.warning(f'{original_file_type.value} {str(yml_content_item.path)} '
-                                       f'has `No Tests` configured, and no tests in id_set')  # todo necessary?
+                        logger.warning(
+                            f'{original_file_type.value} {str(yml_content_item.path.relative_to(PACKS_PATH))} '
+                            f'has `No Tests` configured, and no tests in id_set')  # todo necessary?
             case _:
                 raise RuntimeError(f'Unexpected content type original_file_path {content_item_folder} '
                                    f'(expected `Integrations`, `Scripts`, etc)')
@@ -643,7 +625,7 @@ class BranchTestCollector(TestCollector):
             reason=reason,
             id_set=self.id_set,
             version_range=yml_content_item.version_range,
-            reason_description=f'{yml_content_item.id_=} ({original_file_path})'
+            reason_description=f'{yml_content_item.id_=} ({original_file_path.relative_to(PACKS_PATH)})'
         )
 
     def _collect_single(self, path) -> CollectedTests:
@@ -800,14 +782,6 @@ class UploadCollector(TestCollector):
     # todo today we collect pack_name_to_pack_metadata, not tests
     def _collect(self) -> CollectedTests:
         pass
-
-
-class NoTestsConfiguredException(Exception):
-    """ used when an integration has no tests configured """
-
-    # todo log test collection reasons
-    def __init__(self, content_id: str):
-        self.id_ = content_id  # todo use or remove
 
 
 if __name__ == '__main__':
