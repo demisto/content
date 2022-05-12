@@ -2082,6 +2082,7 @@ class TestStoreInCircleCIArtifacts:
     """
     FAILED_PACK_DICT = {
         BucketUploadFlow.STATUS: PackStatus.FAILED_UPLOADING_PACK.name,
+        BucketUploadFlow.ERRORS: [],
         BucketUploadFlow.AGGREGATED: 'False'
     }
     SUCCESSFUL_PACK_DICT = {
