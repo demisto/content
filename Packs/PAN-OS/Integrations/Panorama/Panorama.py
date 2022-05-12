@@ -9413,16 +9413,7 @@ class HygieneLookups:
         ])
         for device, container in topology.get_all_object_containers(device_filter_str):
             # Because we check all the rulebases, we need to refresh the rules from all rulebases.
-            firewall_rulebase = Rulebase()
-            pre_rulebase = PreRulebase()
-            post_rulebase = PostRulebase()
-            container.add(pre_rulebase)
-            container.add(post_rulebase)
-            container.add(firewall_rulebase)
-            security_rules: List[SecurityRule] = SecurityRule.refreshall(firewall_rulebase)
-            pre_security_rules: List[SecurityRule] = SecurityRule.refreshall(pre_rulebase)
-            post_security_rules: List[SecurityRule] = SecurityRule.refreshall(post_rulebase)
-            security_rules = security_rules + pre_security_rules + post_security_rules
+            security_rules = HygieneRemediation.get_all_security_rules_in_container(container)
             for security_rule in security_rules:
                 # Check for "log at session end" enabled
                 if not security_rule.log_end:
