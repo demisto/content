@@ -1838,7 +1838,7 @@ script:
     - description: A comma-separated list of valid detection record QIDs. A range is specified with a dash (for example, 68518-68522).
       isArray: true
       name: qids
-    - description: A comma-separated list of severity levels. A range is specified with a dash (for example, 1-3).
+    - description: A comma-separated list of severity levels. A range is specified with a dash (for example, 1-5 where 1 is low and 5 is high)..
       isArray: true
       name: severities
     - name: use_tags

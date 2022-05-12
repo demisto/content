@@ -1756,19 +1756,21 @@ def build_host_list_detection_outputs(**kwargs) -> Tuple[List[Any], str]:
     readable = ''
     for output in parsed_output:
         headers = ['ID', 'IP', 'DNS_DATA']
+        ip = output.get('IP')
         readable_output = {
             'ID': output.get('ID'),
-            'IP': output.get('IP'),
-            'DNS_DATA': {k: v for k, v in output.get('DNS_DATA', {}).items() if v is not None},
+            'IP': ip,
+            'DNS_DATA': {k: v for k, v in output.get('DNS_DATA', {}).items() if v is not None}
         }
         if detections := output.get('DETECTION_LIST', {}).get('DETECTION', []):
             detections = detections if isinstance(detections, List) else [detections]
             for detection in detections:
-                headers.append(detection.get('QID'))
-                readable_output[detection.get('QID')] = detection.get('RESULTS')
-        readable += tableToMarkdown(f'Host Detection List\n{limit_msg}', readable_output, removeNull=True, headers=headers)
+                qid = 'QID: ' + detection.get('QID')
+                headers.append(qid)
+                readable_output[qid] = detection.get('RESULTS')
+        readable += tableToMarkdown(f'Host Detection List - {ip}\n{limit_msg}', readable_output, removeNull=True, headers=headers)
     if not readable:
-        readable += tableToMarkdown(f'Host Detection List\n{limit_msg}', [], removeNull=True)
+        readable = 'Host Detection List\n No detections were found'
     return parsed_output, readable
 
 

@@ -730,14 +730,14 @@ def test_handle_general_result_missing_output_builder():
 
 
 class TestHostDetectionOutputBuilder:
-    DETECTION_INPUTS = [({'HOST_LIST': {'HOST_ITEM': []}}, '### Host Detection List\n\n**No entries.**\n', []),
+    DETECTION_INPUTS = [({'HOST_LIST': {'HOST_ITEM': []}}, 'Host Detection List\n No detections were found', []),
                         ({'HOST_LIST': {'HOST_ITEM': [{'ID': 'ID123', 'IP': '1.1.1.1', 'DNS_DATA': {'data': 'dns data'},
                                                        'DETECTION_LIST': {
                                                            'DETECTION': [
                                                                {'QID': '123', 'RESULTS': 'FOUND DETECTION'}]}}]}},
-                         '### Host Detection List\n'
+                         '### Host Detection List - 1.1.1.1\n'
                          '\n'
-                         '|ID|IP|DNS_DATA|123|\n'
+                         '|ID|IP|DNS_DATA|QID: 123|\n'
                          '|---|---|---|---|\n'
                          '| ID123 | 1.1.1.1 | data: dns data | FOUND DETECTION |\n',
                          [{'ID': 'ID123', 'IP': '1.1.1.1', 'DNS_DATA': {'data': 'dns data'},
@@ -746,9 +746,9 @@ class TestHostDetectionOutputBuilder:
                                                        'DETECTION_LIST': {
                                                            'DETECTION':
                                                                {'QID': '123', 'RESULTS': 'FOUND DETECTION'}}}]}},
-                         '### Host Detection List\n'
+                         '### Host Detection List - 1.1.1.1\n'
                          '\n'
-                         '|ID|IP|DNS_DATA|123|\n'
+                         '|ID|IP|DNS_DATA|QID: 123|\n'
                          '|---|---|---|---|\n'
                          '| ID123 | 1.1.1.1 | data: dns data | FOUND DETECTION |\n',
                          [{'ID': 'ID123', 'IP': '1.1.1.1', 'DNS_DATA': {'data': 'dns data'},
