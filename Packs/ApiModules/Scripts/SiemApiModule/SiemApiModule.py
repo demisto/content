@@ -8,7 +8,7 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 from enum import Enum
-from pydantic import BaseConfig, BaseModel, AnyUrl, validator
+from pydantic import BaseConfig, BaseModel, AnyUrl, validator, Field
 from requests.auth import HTTPBasicAuth
 
 
@@ -75,7 +75,7 @@ class IntegrationOptions(BaseModel):
     """Add here any option you need to add to the logic"""
 
     proxy: bool = False
-    limit: Optional[int] = None
+    limit: Optional[int] = Field(None, ge=1)
 
 
 class IntegrationEventsClient(ABC):
@@ -140,9 +140,11 @@ class IntegrationGetEvents(ABC):
         stored = []
         for logs in self._iter_events():
             stored.extend(logs)
-            if self.options.limit is not None:
+            if self.options.limit:
                 demisto.debug(
-                    'limit reached. limit must be presented ONLY in commands and not in fetch-events.'
+                    f'{self.options.limit=} reached. \
+                    slicing from {len(logs)=}. \
+                    limit must be presented ONLY in commands and not in fetch-events.'
                 )
                 if len(stored) >= self.options.limit:
                     return stored[: self.options.limit]
