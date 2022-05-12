@@ -751,12 +751,10 @@ script:
       description: User organization
       type: string
   - arguments:
-    - default: true
-      description: Malop GUID for fetching a file from a sensor to download
+    - description: Malop GUID for fetching a file from a sensor to download
       name: malopGUID
       required: true
-    - default: true
-      description: The complete Cybereason user name string for the user performing the request
+    - description: The complete Cybereason user name string for the user performing the request
       name: userName
       required: true
     description: Start fetching the file to download
@@ -1018,7 +1016,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.4.28442
+  dockerimage: demisto/python3:3.10.4.29342
 tests:
 - Cybereason Test
 fromversion: 5.0.0
