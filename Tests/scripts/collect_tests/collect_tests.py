@@ -608,7 +608,7 @@ class BranchTestCollector(TestCollector):
         collected = []
         for path in self._get_changed_files():
             try:
-                collected.append(self._collect_single(Path(path)))
+                collected.append(self._collect_single(CONTENT_PATH / Path(path)))
             except NoTestsToCollect as e:
                 logger.warning(e.message)
         collected = CollectedTests.union(collected)
