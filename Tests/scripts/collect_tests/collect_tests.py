@@ -743,7 +743,7 @@ class BranchTestCollector(TestCollector):
             case _:
                 if path.suffix == '.yml':
                     return self._collect_yml(content_item, file_type, path)
-                raise RuntimeError(f'Unexpected filetype {file_type}')
+                raise RuntimeError(f'Unexpected filetype {file_type}, {path}')
 
         # todo usage before assignment?
         return CollectedTests(
