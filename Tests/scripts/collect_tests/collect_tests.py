@@ -667,8 +667,9 @@ class BranchTestCollector(TestCollector):
 
     def _collect_single(self, path) -> CollectedTests:
         file_type = find_type_by_path(path)
+        relative_path = path.relative_to(CONTENT_PATH)
         description_suffix = f'({file_type.value})' if file_type else ''
-        reason_description = f'{path.name} {description_suffix}'
+        reason_description = f'{relative_path} {description_suffix}'
 
         try:
             content_item = ContentItem(path)
@@ -718,19 +719,19 @@ class BranchTestCollector(TestCollector):
                     reason = CollectionReason.MAPPER_CHANGED
                 else:
                     reason = CollectionReason.NON_CODE_FILE_CHANGED
-                    reason_description = f'no specific tests for {content_item.name} were found'
+                    reason_description = f'no specific tests for {relative_path} were found'
 
             case FileType.CLASSIFIER:
                 if tests := (self.conf.classifier_to_test.get(content_item.id_)):
                     reason = CollectionReason.CLASSIFIER_CHANGED
                 else:
                     reason = CollectionReason.NON_CODE_FILE_CHANGED
-                    reason_description = f'no specific tests for {content_item.name} were found'
+                    reason_description = f'no specific tests for {relative_path} were found'
 
             case FileType.METADATA | \
                  FileType.RELEASE_NOTES_CONFIG | FileType.IMAGE | FileType.DESCRIPTION | FileType.INCIDENT_TYPE | \
-                 FileType.INCIDENT_FIELD | FileType.INDICATOR_FIELD | FileType.LAYOUT | FileType.WIDGET \
-                 | FileType.DASHBOARD | FileType.REPORT | FileType.PARSING_RULE | FileType.MODELING_RULE | \
+                 FileType.INCIDENT_FIELD | FileType.INDICATOR_FIELD | FileType.LAYOUT | FileType.WIDGET | \
+                 FileType.DASHBOARD | FileType.REPORT | FileType.PARSING_RULE | FileType.MODELING_RULE | \
                  FileType.CORRELATION_RULE | FileType.XSIAM_DASHBOARD | FileType.XSIAM_REPORT | FileType.REPORT | \
                  FileType.GENERIC_TYPE | FileType.GENERIC_FIELD | FileType.GENERIC_MODULE | \
                  FileType.GENERIC_DEFINITION | FileType.PRE_PROCESS_RULES | FileType.JOB | FileType.CONNECTION | \
@@ -738,13 +739,12 @@ class BranchTestCollector(TestCollector):
 
                 tests = None
                 reason = CollectionReason.NON_CODE_FILE_CHANGED
-                reason_description = str(path)
                 # todo layout container, XSIAM config?
 
             case _:
                 if path.suffix == '.yml':
                     return self._collect_yml(content_item, file_type, path)
-                raise RuntimeError(f'Unexpected filetype {file_type}, {path}')
+                raise RuntimeError(f'Unexpected filetype {file_type}, {relative_path}')
 
         # todo usage before assignment?
         return CollectedTests(
