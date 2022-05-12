@@ -12,7 +12,7 @@ from typing import Any, Dict, Union
 from requests.models import HTTPError
 
 '''CONSTANTS'''
-USER_AGENT = 'TMV1CortexXSOARApp/1.0.2'
+USER_AGENT = 'TMV1CortexXSOARApp/1.1'
 URL = 'url'
 POST = 'post'
 GET = 'get'
