@@ -27,6 +27,8 @@ def create_new_pack():
     content_path = Path(__file__).parent.parent.parent
     source_path = Path(__file__).parent / 'TestUploadFlow'
     dest_path = content_path / 'Packs' / 'TestUploadFlow'
+    if dest_path.exists():
+      shutil.rmtree(dest_path)
     shutil.copytree(source_path, dest_path)
     subprocess.call(['demisto-sdk', 'format', '-i', dest_path], stdout=subprocess.DEVNULL)
     return dest_path
