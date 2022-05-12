@@ -22,7 +22,7 @@ from Tests.scripts.collect_tests.constants import (CONTENT_PATH,
                                                    DEBUG_CONF_PATH,
                                                    DEBUG_ID_SET_PATH,
                                                    IGNORED_FILES, MASTER,
-                                                   PACKS_PATH, SKIPPED_PACKS)
+                                                   PACKS_PATH, SKIPPED_PACKS, CODE_FILE_TYPES)
 from Tests.scripts.collect_tests.exceptions import (IgnoredPackException,
                                                     InvalidPackNameException,
                                                     SkippedPackException, InexistentPackException)
@@ -668,21 +668,23 @@ class BranchTestCollector(TestCollector):
         try:
             content_item = ContentItem(path)
         except NonDictException:
-            pass  # Python, JS and PS files are handled below.
-
+            if file_type in CODE_FILE_TYPES:
+                yml = ContentItem(path.with_suffix('.yml'))
+                # todo handle foo.Tests.ps1
+                # todo should this yml be created inside _collect_yml?
+                # todo what if not exists?
+                return self._collect_yml(yml, yml.file_type, path)
+            raise
         except NoPackException as e:
             # files that are supposed to not be in a pack, and are ignored.
             if path in {}:  # todo handle non-content items, exclude list
                 raise NoTestsToCollect(path, e.message)
             raise  # files that are either supposed to be in a pack, or should not be ignored.
 
+        reason_description = f'{FileType=}'
         match file_type:
             case FileType.PYTHON_FILE | FileType.POWERSHELL_FILE | FileType.JAVASCRIPT_FILE:
-                yml = ContentItem(path.with_suffix('.yml'))
-                # todo handle foo.Tests.ps1
-                # todo should this yml be created inside _collect_yml?
-                # todo what if not exists?
-                return self._collect_yml(yml, yml.file_type, path)
+                raise RuntimeError('impossible, these files are handled before the switch case')
 
             case FileType.PACK_IGNORE | FileType.SECRET_IGNORE | FileType.DOC_FILE | FileType.README:
                 raise NoTestsToCollect(path, f'ignored type ({file_type}')
@@ -690,7 +692,6 @@ class BranchTestCollector(TestCollector):
             case FileType.IMAGE | FileType.DESCRIPTION:  # todo readme shows twice
                 tests = None
                 reason = CollectionReason.NON_CODE_FILE_CHANGED
-                reason_description = f'{FileType=}'
 
             case FileType.TEST_PLAYBOOK:
                 if (test_id := content_item.id_) in self.conf.test_ids:
