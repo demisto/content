@@ -33,7 +33,7 @@ def create_pr_comment(validate_pr_comment, unit_tests_pr_comment) -> str:
     comment = ''
     comment += validate_pr_comment
     comment += f'here is a link to the full report: ' \
-               f'https://code.pan.run/xsoar/content/-/pipelines/{JOB_ID}/test_report'
+               f'code.pan.run/xsoar/content/-/pipelines/{JOB_ID}/test_report'
     return comment
 
 
