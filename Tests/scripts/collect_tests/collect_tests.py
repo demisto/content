@@ -12,6 +12,8 @@ from pathlib import Path
 from typing import Any, Iterable, Optional
 
 from demisto_sdk.commands.common.constants import FileType, MarketplaceVersions
+
+NON_CODE_META_FILE_TYPES = {FileType.README, FileType.RELEASE_NOTES, FileType.RELEASE_NOTES_CONFIG}
 from demisto_sdk.commands.common.git_util import GitUtil
 from demisto_sdk.commands.common.tools import find_type_by_path, get_file, get_remote_file, yaml, json
 from git import Repo
@@ -665,23 +667,33 @@ class BranchTestCollector(TestCollector):
 
     def _collect_single(self, path) -> CollectedTests:
         file_type = find_type_by_path(path)
+        reason_description = f'{file_type=}'
+
         try:
             content_item = ContentItem(path)
         except NonDictException:
-            if file_type in CODE_FILE_TYPES:
-                yml = ContentItem(path.with_suffix('.yml'))
-                # todo handle foo.Tests.ps1
-                # todo should this yml be created inside _collect_yml?
-                # todo what if not exists?
-                return self._collect_yml(yml, yml.file_type, path)
-            raise
+            match file_type:
+                case FileType.PYTHON_FILE | FileType.POWERSHELL_FILE | FileType.JAVASCRIPT_FILE:
+                    # todo handle foo.Tests.ps1
+                    # todo should this yml be created inside _collect_yml?
+                    # todo what if not exists?
+                    yml = ContentItem(path.with_suffix('.yml'))
+                    return self._collect_yml(yml, yml.file_type, path)
+
+                case FileType.README | FileType.RELEASE_NOTES_CONFIG | FileType.RELEASE_NOTES:
+                    return self._collect_pack(
+                        name=find_pack(path).name,
+                        reason=CollectionReason.NON_CODE_FILE_CHANGED,
+                        reason_description=reason_description
+                    )
+                case _:
+                    raise
         except NoPackException as e:
             # files that are supposed to not be in a pack, and are ignored.
             if path in {}:  # todo handle non-content items, exclude list
                 raise NoTestsToCollect(path, e.message)
             raise  # files that are either supposed to be in a pack, or should not be ignored.
 
-        reason_description = f'{FileType=}'
         match file_type:
             case FileType.PYTHON_FILE | FileType.POWERSHELL_FILE | FileType.JAVASCRIPT_FILE:
                 raise RuntimeError('impossible, these files are handled before the switch case')
@@ -717,7 +729,7 @@ class BranchTestCollector(TestCollector):
                     reason = CollectionReason.NON_CODE_FILE_CHANGED
                     reason_description = f'no specific tests for {content_item.name} were found'
 
-            case FileType.README | FileType.METADATA | FileType.RELEASE_NOTES | \
+            case FileType.METADATA | \
                  FileType.RELEASE_NOTES_CONFIG | FileType.IMAGE | FileType.DESCRIPTION | FileType.INCIDENT_TYPE | \
                  FileType.INCIDENT_FIELD | FileType.INDICATOR_FIELD | FileType.LAYOUT | FileType.WIDGET \
                  | FileType.DASHBOARD | FileType.REPORT | FileType.PARSING_RULE | FileType.MODELING_RULE | \
