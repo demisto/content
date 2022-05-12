@@ -1,0 +1,23 @@
+category: Authentication
+commonfields:
+  id: test Dan
+  version: -1
+configuration: []
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ""
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 5c7d1977-9999-44ab-8837-10cd4bb8e9d1
+    packName: Dan test
+    propagationLabels:
+    - all
+    toServerVersion: ""
+display: test Dan
+name: test Dan
+script:
+  dockerimage: demisto/python3:3.9.7.24076
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
