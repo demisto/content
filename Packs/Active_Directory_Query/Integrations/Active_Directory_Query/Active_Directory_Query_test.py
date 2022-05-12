@@ -419,6 +419,7 @@ def test_search_group_members(mocker):
         result = {'controls': {'1.2.840.113556.1.4.319': {'value': {'cookie': '<cookie>'}}}}
 
         def search(self, *args, **kwargs):
+            time.sleep(1)
             return
 
     expected_results = {'ContentsFormat': 'json', 'Type': 1,
@@ -434,7 +435,7 @@ def test_search_group_members(mocker):
     expected_results = f'demisto results: {json.dumps(expected_results, indent=4, sort_keys=True)}'
 
     mocker.patch.object(demisto, 'args',
-                        return_value={'member-type': 'group', 'group-dn': 'dn'})
+                        return_value={'member-type': 'group', 'group-dn': 'dn', 'time_limit': '1'})
 
     Active_Directory_Query.conn = ConnectionMocker()
 
