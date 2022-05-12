@@ -796,8 +796,8 @@ class UploadCollector(TestCollector):
 
 def write_log(log: list[CollectionLog]):
     keys = ('test', 'pack', 'reason', 'description')
-    with Path('collected_tests.tsv', 'w', delimiter='\t') as file:
-        writer = DictWriter(file, keys)
+    with Path('collected_tests.tsv').open('w') as file:
+        writer = DictWriter(file, keys, delimiter='\t')
         writer.writeheader()
         for row in log:
             writer.writerow(row._asdict())
