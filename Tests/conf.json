@@ -4408,7 +4408,7 @@
         {
             "playbookID": "CrowdStrike_FalconX_Test",
             "fromversion": "6.1.0",
-            "memory_threshold": 80,
+            "memory_threshold": 90,
             "integrations": [
                 "CrowdStrike Falcon X"
             ]
@@ -5012,7 +5012,8 @@
         {
             "integrations": "MalwareBazaar",
             "playbookID": "MalwareBazaar_Test",
-            "fromversion": "6.0.0"
+            "fromversion": "6.0.0",
+            "memory_threshold": 90
         },
         {
             "integrations": "OpsGenieV3",
@@ -5144,6 +5145,13 @@
             ],
             "playbookID": "playbook-ForescoutEyeInspect_Test",
             "fromversion": "6.1.0"
+        },
+        {
+            "integrations": [
+                "Github Event Collector"
+            ],
+            "playbookID": "Github Event Collector-test",
+            "fromversion": "6.6.0"
         }
     ],
     "skipped_tests": {
@@ -5396,7 +5404,8 @@
         "Lastline v2": "Temporary skipping, due to quota issues, in order to merge a PR",
         "AttackIQFireDrill": "License issues #29774",
         "SentinelOne V2": "License expired issue #24933",
-        "LogRhythm": "The integration is deprecated"
+        "LogRhythm": "The integration is deprecated",
+        "Github Event Collector" : "XSIAM integration"
     },
     "nightly_integrations": [
         "Laline v2",
