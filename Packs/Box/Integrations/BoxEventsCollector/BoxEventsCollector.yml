@@ -18,21 +18,22 @@ configuration:
   name: created_after
   required: false
   type: 0
-- defaultvalue: '500'
-  display: The maximum amount of events to fetch at once. 500 is maximum
-  name: limit
+- defaultvalue: 500
+  display: |
+    The maximum amount of events to fetch for each page. 
+    If you're encountering timeouts, consider decrease this value. range 500.
+  name: page_size
   required: false
   type: 0
 - display: Verify SSL Certificate
   hidden: false
   name: verify
   required: false
-  defaultvalue: true
+  defaultvalue: 'true'
   type: 8
 - display: Use system proxy settings
   name: proxy
   required: false
-  defaultvalue: false
   type: 8
 description: Collect events from Box's logs.
 display: Box Event Collector

@@ -63,7 +63,7 @@ def get_box_events_timestamp_format(value):
 
 class BoxEventsParams(BaseModel):
     event_type: Optional[str] = None
-    limit: int = Field(500, gt=0, le=500)
+    limit: int = Field(500, alias='page_size', gt=0, le=500)
     stream_position: Optional[str]
     stream_type = 'admin_logs'
     created_after: Optional[str]
