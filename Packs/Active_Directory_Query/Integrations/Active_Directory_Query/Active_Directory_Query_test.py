@@ -586,6 +586,6 @@ def test_search_with_paging_bug(mocker):
 
     Active_Directory_Query.conn = ConnectionMocker()
 
-    with patch('logging.Logger.info') as mock:
+    with patch('logging.Logger.info'):
         Active_Directory_Query.search_group_members('dc', 1)
         assert len(demisto.results.call_args[0][0]['Contents']) == 3
