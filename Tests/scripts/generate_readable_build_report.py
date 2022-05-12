@@ -122,7 +122,6 @@ def get_failing_server_6_1():
     failing_6_1 = get_file_data(os.path.join(f'{ARTIFACTS_FOLDER}/xsoar', 'test_playbooks_report_Server 6.1.json'))
     # file = open('validate_outputs.json', 'r')
     # failed_validations = json.load(file)
-
     return 'pr_message', failing_6_1
 
 
