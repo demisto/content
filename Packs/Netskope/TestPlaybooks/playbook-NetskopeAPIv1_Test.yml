@@ -1,6 +1,6 @@
-id: playbook-NetskopeAPIv1_Test
+id: NetskopeAPIv1 Test
 version: -1
-name: playbook-NetskopeAPIv1_Test
+name: NetskopeAPIv1 Test
 starttaskid: "0"
 tasks:
   "0":

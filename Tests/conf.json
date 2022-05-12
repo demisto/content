@@ -5051,6 +5051,10 @@
             "playbookID": "IPToHost - Test"
         },
         {
+            "playbookID": "NetskopeAPIv1 Test",
+            "integrations": "NetskopeAPIv1"
+        },
+        {
             "playbookID": "Grafana-Test",
             "fromversion": "6.0.0",
             "integrations": [
@@ -5305,6 +5309,7 @@
         "Atlassian Confluence Cloud": "No instance - developed by Crest",
         "SOCRadarIncidents": "No instance - developed by partner",
         "SOCRadarThreatFusion": "No instance - developed by partner",
+        "NetskopeAPIv1": "No instance - developed by Qmasters",
         "trustwave secure email gateway": "No instance - developed by Qmasters",
         "Azure Storage Table": "No instance - developed by Qmasters",
         "Azure Storage Queue": "No instance - developed by Qmasters",
