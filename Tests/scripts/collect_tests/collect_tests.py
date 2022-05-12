@@ -190,6 +190,8 @@ class Machine(Enum):
     def __repr__(self):
         return self.value
 
+    def __str__(self):
+        return self.value
 
 class TestConf(DictFileBased):
     __test__ = False  # prevents pytest from running it
