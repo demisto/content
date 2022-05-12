@@ -110,70 +110,65 @@ class InvalidUrlLengthException(Exception):
     pass
 
 
-class Line():
-    def __init__(self, input_data: dict = {}):
-        self.line = dict_safe_get(input_data, ['line'], default_return_value=[])
-
-    def __bool__(self):
-        if self.line:
-            return True
-        else:
-            return False
-
-
-class JobData():
-    def __init__(self, job_data: any = None):
-        self.id = None
-        self.status = None
-        self.type = None
-        self.result = None
-        self.details = None
-        self.warnings = None
-        if isinstance(job_data, dict):
-            self.id = dict_safe_get(job_data, ['id'])
-            self.status = dict_safe_get(job_data, ['status'])
-            self.type = dict_safe_get(job_data, ['type'])
-            self.result = dict_safe_get(job_data, ['result'])
-            self.details = Line(dict_safe_get(job_data, ['details']))
-            self.warnings = Line(dict_safe_get(job_data, ['warnings']))
-            
-        elif isinstance(job_data, str):
-            self.id = job_data
-
-
-class LogData():
-    def __init__(self, log_data: dict = {}):
-        self.logs = dict_safe_get(log_data, ['logs'])
-
-
-class ResponseResult():
-    def __init__(self, result: dict = {}):
-        self.job = JobData(dict_safe_get(result, ['job']))
-        self.log = LogData(dict_safe_get(result, ['log']))
-
-    def __bool__(self):
-        if self.job:
-            return True
-        else:
-            return False
-
-
-class APIResponse():
-    def __init__(self, response_data: dict = {}):
-        self.status = dict_safe_get(response_data, ['@status'])
-        self.msg =  Line(dict_safe_get(response_data, ['msg']))
-        self.result = ResponseResult(dict_safe_get(response_data, ['result']))
-
-
 class ResponseObject():
+    """
+    Takes in a response from the PANOS command and provides a convenient object
+    in which to access data from.
+
+    :param response: The response received from the PANOS command executed.
+
+    Returns:
+        ResponseObject containing information from the PANOS command.
+    """
     def __init__(self, response: dict = {}):
-        self.response = APIResponse(dict_safe_get(response, ['response'], default_return_value={}))
+        self.response = self.APIResponse(dict_safe_get(response, ['response'], default_return_value={}))
 
     def __bool__(self):
         if self.response:
             return True
         else:
             return False
+
+    class APIResponse():
+        def __init__(self, response_data: dict = {}):
+            self.status = dict_safe_get(response_data, ['@status'])
+            self.msg =  dict_safe_get(response_data, ['msg'])
+            self.result = self.ResponseResult(dict_safe_get(response_data, ['result']))
+
+        class ResponseResult():
+            def __init__(self, result: dict = {}):
+                self.job = self.JobData(dict_safe_get(result, ['job']))
+                self.log = self.LogData(dict_safe_get(result, ['log']))
+
+            def __bool__(self):
+                if self.job:
+                    return True
+                else:
+                    return False
+
+            class JobData():
+                def __init__(self, job_data: any = None):
+                    self.id = None
+                    self.status = None
+                    self.type = None
+                    self.result = None
+                    self.details = None
+                    self.warnings = None
+                    if isinstance(job_data, dict):
+                        self.id = dict_safe_get(job_data, ['id'])
+                        self.status = dict_safe_get(job_data, ['status'])
+                        self.type = dict_safe_get(job_data, ['type'])
+                        self.result = dict_safe_get(job_data, ['result'])
+                        self.details = dict_safe_get(job_data, ['details'])
+                        self.warnings = dict_safe_get(job_data, ['warnings', 'line'])
+                        
+                    elif isinstance(job_data, str):
+                        self.id = job_data
+
+            class LogData():
+                def __init__(self, log_data: dict = {}):
+                    self.logs = dict_safe_get(log_data, ['logs'])
+                    self.log_entries = dict_safe_get(self.logs, ['entry'])
 
 
 def http_request(uri: str, method: str, headers: dict = {},
@@ -731,11 +726,11 @@ def panorama_commit_command(args: dict):
                     commit_status_output['Status'] = 'Completed'
                 else:
                     commit_status_output['Status'] = 'Failed'
-                commit_status_output['Details'] = api_response.response.result.job.details.line
+                commit_status_output['Details'] = api_response.response.result.job.details
                 
                 status_warnings = []
                 if api_response.response.result.job.warnings:
-                    status_warnings = api_response.response.result.job.warnings.line
+                    status_warnings = api_response.response.result.job.warnings
                 ignored_error = 'configured with no certificate profile'
                 commit_status_output["Warnings"] = [item for item in status_warnings if item not in ignored_error]
                 readable_output = tableToMarkdown(
@@ -4614,8 +4609,8 @@ def panorama_query_logs_command(args: dict):
             #call_status = dict_safe_get(response, ['@status'])
 
             if api_result.response.status == 'error':
-                if api_result.response.msg and api_result.response.msg.line:
-                    message = f". Reason is: {api_result.response.msg.line}"
+                if api_result.response.msg and api_result.response.msg:
+                    message = f". Reason is: {api_result.response.msg}"
                     raise Exception(f"Query logs failed{message}")
                 else:
                     raise Exception("Query logs failed.")
@@ -4645,13 +4640,13 @@ def panorama_query_logs_command(args: dict):
             api_result = ResponseObject(panorama_get_traffic_logs(job_id))
             
             if api_result.response.status == 'error':
-                if api_result.response.msg.line:
-                    message = f". Reason is: {api_result.response.msg.line}"
+                if api_result.response.msg:
+                    message = f". Reason is: {api_result.response.msg}"
                     raise Exception(f"Query logs failed{message}")
                 else:
                     raise Exception("Query logs failed.")
 
-            if job_status != "FIN":
+            if api_result.response.result.job.status != "FIN":
 
                 polling_args = {
                     'job_id': job_id,
@@ -4671,8 +4666,8 @@ def panorama_query_logs_command(args: dict):
                 api_result = ResponseObject(panorama_get_traffic_logs(job_id))
                 
                 if api_result.response.status == 'error':
-                    if api_result.response.msg.line:
-                        message = f". Reason is: {api_result.response.msg.line}"
+                    if api_result.response.msg:
+                        message = f". Reason is: {api_result.response.msg}"
                         raise Exception(f"Query logs failed{message}")
                     else:
                         raise Exception("Query logs failed.")
@@ -4690,19 +4685,18 @@ def panorama_query_logs_command(args: dict):
                         or not api_result.response.result.log.logs:
                     raise Exception("Missing logs in response.")
 
-                logs = api_result.response.result.log.logs
-                if logs.get('@count', 0) == '0':
+                if api_result.response.result.log.logs.get('@count', 0) == '0':
                     human_readable = f'No {log_type} logs matched the query.'
                 else:
-                    pretty_logs = prettify_logs(logs.get('entry'))
+                    pretty_logs = prettify_logs(api_result.response.result.log.log_entries)
                     query_logs_output['Logs'] = pretty_logs
-                    human_readable = tableToMarkdown(f'Query {log_type} Logs:', query_logs_output['Logs'],
+                    human_readable = tableToMarkdown(f'Query {log_type} Logs:', pretty_logs,
                                                      ['TimeGenerated', 'SourceAddress', 'DestinationAddress', 'Application',
                                                       'Action', 'Rule', 'URLOrFilename'], removeNull=True)
                 script_results.append(CommandResults(
                     outputs_prefix='Panorama.Monitor',
                     outputs_key_field='JobID',
-                    outputs=result,
+                    outputs=api_result.response.result.log.log_entries,
                     readable_output=human_readable,
                     ignore_auto_extract=True))
 
@@ -5548,8 +5542,8 @@ def panorama_download_latest_content_update_command(args):
             api_result = ResponseObject(panorama_download_latest_content_update_content(target))
 
             if api_result.response.status == 'error':
-                if api_result.response.msg.line:
-                    message = f". Reason is: {api_result.response.msg.line}"
+                if api_result.response.msg:
+                    message = f". Reason is: {api_result.response.msg}"
                     raise Exception(f"Update content failed{message}")
                 else:
                     raise Exception("Update content failed.")
@@ -5581,8 +5575,8 @@ def panorama_download_latest_content_update_command(args):
             api_result = ResponseObject(panorama_content_update_download_status(target, job_id))
             
             if api_result.response.status == 'error':
-                if api_result.response.msg.line:
-                    message = f". Reason is: {api_result.response.msg.line}"
+                if api_result.response.msg:
+                    message = f". Reason is: {api_result.response.msg}"
                     raise Exception(f"Update content failed{message}")
                 else:
                     raise Exception("Update content failed.")
@@ -5617,7 +5611,7 @@ def panorama_download_latest_content_update_command(args):
                     content_download_status['Status'] = 'Completed'
                 else:
                     content_download_status['Status'] = 'Failed'
-                content_download_status['Details'] = api_result.response.result.job.details.line
+                content_download_status['Details'] = api_result.response.result.job.details
                 readable_output = tableToMarkdown('Content download status:', content_download_status,
                                                  ['JobID', 'Status', 'Details'], removeNull=True)
 
@@ -5753,8 +5747,8 @@ def panorama_install_latest_content_update_command(args):
             api_result = ResponseObject(panorama_install_latest_content_update(target))
             
             if api_result.response.status == 'error':
-                if api_result.response.msg.line:
-                    message = f". Reason is: {api_result.response.msg.line}"
+                if api_result.response.msg:
+                    message = f". Reason is: {api_result.response.msg}"
                     raise Exception(f"Update content failed{message}")
                 else:
                     raise Exception("Update content failed.")
@@ -5786,8 +5780,8 @@ def panorama_install_latest_content_update_command(args):
             api_result = ResponseObject(panorama_content_update_install_status(target, job_id))
 
             if api_result.response.status == 'error':
-                if api_result.response.msg.line:
-                    message = f". Reason is: {api_result.response.msg.line}"
+                if api_result.response.msg:
+                    message = f". Reason is: {api_result.response.msg}"
                     raise Exception("Update content failed{message}")
                 else:
                     raise Exception("Update content failed.")
@@ -5822,7 +5816,7 @@ def panorama_install_latest_content_update_command(args):
                     content_install_status['Status'] = 'Completed'
                 else:
                     content_install_status['Status'] = 'Failed'
-                content_install_status['Details'] = api_result.response.result.job.details.line
+                content_install_status['Details'] = api_result.response.result.job.details
 
                 readable_output = tableToMarkdown('Content install status:', content_install_status,
                          ['JobID', 'Status', 'Details'], removeNull=True)
@@ -5971,8 +5965,8 @@ def panorama_download_panos_version_command(args: dict):
             api_result = ResponseObject(panorama_download_panos_version(target, target_version))
 
             if api_result.response.status == 'error':
-                if api_result.response.msg.line:
-                    message = f". Reason is: {api_result.response.msg.line}"
+                if api_result.response.msg:
+                    message = f". Reason is: {api_result.response.msg}"
                     raise Exception(f"Update content failed{message}")
                 else:
                     raise Exception("Update content failed.")
@@ -6004,8 +5998,8 @@ def panorama_download_panos_version_command(args: dict):
         else:
             api_result = ResponseObject(panorama_download_panos_status(target, job_id))
             if api_result.response.status == 'error':
-                if api_result.response.msg.line:
-                    message = f". Reason is: {api_result.response.msg.line}"
+                if api_result.response.msg:
+                    message = f". Reason is: {api_result.response.msg}"
                     raise Exception(f"Download failed{message}")
                 else:
                     raise Exception("Download failed.")
@@ -6038,7 +6032,7 @@ def panorama_download_panos_version_command(args: dict):
                     panos_download_status['Status'] = 'Completed'
                 else:
                     panos_download_status['Status'] = 'Failed'
-                panos_download_status['Details'] = api_result.response.result.job.details.line
+                panos_download_status['Details'] = api_result.response.result.job.details
 
                 readable_output = tableToMarkdown('PAN-OS download status:', panos_download_status,
                                                  ['JobID', 'Status', 'Details'], removeNull=True)
