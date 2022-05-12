@@ -237,8 +237,29 @@ def test_module():
     """
     Test Module
     """
-    http_request('GET', "/health_check")
-    demisto.results("ok")
+    try:
+        api_suffix = "/api/v1"
+        base_url = demisto.params().get('base_url')
+        if base_url.endswith("/"):  # remove slash in the end
+            base_url = base_url[:-1]
+        api_key = demisto.params().get('apikey')
+
+        headers = {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'Authorization': str(api_key)
+        }
+        request_url = f'{base_url}/{api_suffix}/groups/'
+
+        r = requests.get(request_url, headers=headers)
+
+        if r.status_code == 200:
+            demisto.results("ok")
+
+        if r.status_code == 401:
+            return_error(message='Unauthorized request. Please Check your API token and try again')
+    except Exception:
+        return_error(message='Invalid URL, please correct and try again')
 
 
 def get_suspicious_events():
