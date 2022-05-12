@@ -113,24 +113,32 @@ class VersionRange:
         return self.min_version == version.NegativeInfinity and self.max_version == version.Infinity
 
 
+class NonDictException(Exception):
+    def __init__(self, path: Path):
+        self.message = path
+        super().__init__(self.message)
+
+
 class DictFileBased(DictBased):
     def __init__(self, path: Path):
+        if path.suffix not in ('.json', '.yml'):
+            raise NonDictException(path)
+
         self.path = path
-        match path.suffix:
-            case '.json':
-                body = json.load(path.open())
-            case '.yml':
-                body = yaml.load(path.open())
-            case _:
-                raise RuntimeError(f'unexpected file type {path.suffix}')
+        with path.open() as file:
+            match path.suffix:
+                case '.json':
+                    body = json.load(file)
+                case '.yml':
+                    body = yaml.load(file)
         super().__init__(body)
 
 
 class ContentItem(DictFileBased):
     def __init__(self, path: Path):
         super().__init__(path)
-        self.file_type: FileType = find_type_by_path(path)
-        self.pack = find_pack(path)  # todo if not used elsewhere, create inside pack_tuple
+        self.file_type: FileType = find_type_by_path(self.path)
+        self.pack = find_pack(self.path)  # todo if not used elsewhere, create inside pack_tuple
 
     @property
     def pack_tuple(self) -> tuple[str]:
@@ -256,7 +264,7 @@ class IdSetItem(DictBased):
 
 class IdSet(DictFileBased):
     def __init__(self, marketplace: MarketplaceVersions):
-        super().__init__(DEBUG_ID_SET_PATH)  # todo use real path
+        super().__init__(DEBUG_ID_SET_PATH)  # todo use real original_file_path
         self.marketplace = marketplace
 
         # Content items mentioned in the file
@@ -611,19 +619,19 @@ class BranchTestCollector(TestCollector):
 
     def _collect_yml(
             self,
-            content_item: ContentItem,
-            file_type: FileType,
-            path: Path
+            yml_content_item: ContentItem,
+            original_file_type: FileType,
+            original_file_path: Path,
     ) -> CollectedTests:
-        match content_item_folder := path.parents[1].name:
+        match content_item_folder := yml_content_item.path.parents[1].name:
 
             case 'Integrations':
-                tests = self.conf.integrations_to_tests[content_item.id_]
+                tests = self.conf.integrations_to_tests[yml_content_item.id_]
                 reason = CollectionReason.INTEGRATION_CHANGED
 
             case 'Scripts' | 'Playbooks':
                 try:
-                    tests = content_item.tests  # raises if 'no tests' in the tests field
+                    tests = yml_content_item.tests  # raises if 'no tests' in the tests field
                     reason = CollectionReason.SCRIPT_PLAYBOOK_CHANGED
 
                 except NoTestsConfiguredException:  # collecting all implementing
@@ -631,40 +639,40 @@ class BranchTestCollector(TestCollector):
 
                     match content_item_folder:
                         case 'Scripts':
-                            tests = self.id_set.implemented_scripts_to_tests.get(content_item.id_)
+                            tests = self.id_set.implemented_scripts_to_tests.get(yml_content_item.id_)
                         case 'Playbooks':
-                            tests = self.id_set.implemented_playbooks_to_tests.get(content_item.id_)
+                            tests = self.id_set.implemented_playbooks_to_tests.get(yml_content_item.id_)
                         case _:
                             raise RuntimeError('this can not really happen')
 
                     if not tests:
-                        logger.warning(f'{file_type.value} {str(path)} has `No Tests` configured,'
+                        logger.warning(f'{original_file_type.value} {str(yml_content_item.path)} has `No Tests` configured,'
                                        f' and no tests in id_set')  # todo is this necessary?
             case _:
-                raise RuntimeError(f'Unexpected content type path {content_item_folder}'
+                raise RuntimeError(f'Unexpected content type original_file_path {content_item_folder}'
                                    f' (expected `Integrations`, `Scripts`, etc)')
 
         return CollectedTests(
             tests=tests,
-            packs=content_item.pack_tuple,
+            packs=yml_content_item.pack_tuple,
             reason=reason,
             id_set=self.id_set,
-            version_range=content_item.version_range,
-            reason_description=f'{content_item.id_=}'
+            version_range=yml_content_item.version_range,
+            reason_description=f'{yml_content_item.id_=} ({original_file_path})'
         )
 
     def _collect_single(self, path) -> CollectedTests:
         file_type = find_type_by_path(path)
         try:
             content_item = ContentItem(path)
+        except NonDictException:
+            pass  # Python, JS and PS files are handled below.
 
         except NoPackException as e:
             # files that are supposed to not be in a pack, and are ignored.
             if path in {}:  # todo handle non-content items, exclude list
                 raise NoTestsToCollect(path, e.message)
             raise  # files that are either supposed to be in a pack, or should not be ignored.
-
-        reason_description = content_item.name
 
         match file_type:
             case FileType.PYTHON_FILE | FileType.POWERSHELL_FILE | FileType.JAVASCRIPT_FILE:
@@ -721,7 +729,7 @@ class BranchTestCollector(TestCollector):
                 # todo layout container, XSIAM config?
 
             case None:
-                raise RuntimeError(f'could not find file_type for {path}')
+                raise RuntimeError(f'could not find original_file_type for {path}')
 
             case _:
                 if path.suffix == '.yml':
