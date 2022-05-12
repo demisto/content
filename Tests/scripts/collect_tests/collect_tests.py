@@ -728,9 +728,6 @@ class BranchTestCollector(TestCollector):
                 reason_description = str(path)
                 # todo layout container, XSIAM config?
 
-            case None:
-                raise RuntimeError(f'could not find original_file_type for {path}')
-
             case _:
                 if path.suffix == '.yml':
                     return self._collect_yml(content_item, file_type, path)
