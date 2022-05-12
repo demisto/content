@@ -7,7 +7,6 @@ from demisto_sdk.commands.test_content.execute_test_content import ParallelLoggi
 
 ARTIFACTS_FOLDER = os.getenv('ARTIFACTS_FOLDER', './artifacts')
 JOB_ID = os.environ.get('CI_JOB_ID')
-summary_file = os.path.join(ARTIFACTS_FOLDER, 'summary.html')
 
 
 def get_file_data(file_path: str) -> dict:
@@ -33,11 +32,15 @@ def get_file_data(file_path: str) -> dict:
 def create_pr_comment(validate_pr_comment, unit_tests_pr_comment) -> str:
     comment = ''
     comment += validate_pr_comment
-    comment += unit_tests_pr_comment
     comment += f'here is a link to the full report: ' \
-               f'https://xsoar.docs.pan.run/-/content/-/jobs/{JOB_ID}/artifacts/artifacts/summary.html'
+               f'https://code.pan.run/xsoar/content/-/pipelines/{JOB_ID}/test_report'
     return comment
 
+
+def generate_error_msg_for_servers(failing_test_data):
+    return f'Investigate your failing test throw this ssh: {failing_test_data.get("ssh_tunnel", "")}' \
+           f'and use this link: {failing_test_data.get("server_url", "")}.' \
+           f'The error as it appears in the logs: {failing_test_data.get("error", "")}'
 
 def build_summary_report(logging_manager,
                          validate_summary, unit_tests_summary, create_instances_summary, server_6_1_summary,
@@ -60,12 +63,22 @@ def build_summary_report(logging_manager,
     create_test_cases = []
     for failing_pack, failing_pack_data in create_instances_summary.items():
         test_case = TestCase(f'create_instances.{failing_pack}', 'Create Instances')
+        # TODO change to all list
         test_case.add_failure_info(message=failing_pack_data.get('errors')[0])
         create_test_cases.append(test_case)
     create_ts = TestSuite("Create Instances", create_test_cases)
+
+    six_one_test_cases = []
+    for failing_test, failing_test_data in server_6_1_summary.items():
+        test_case = TestCase(f'6_1.{failing_test}', 'Server 6.1')
+        test_case.add_failure_info(message=generate_error_msg_for_servers(failing_test_data))
+        six_one_test_cases.append(test_case)
+    six_one_ts = TestSuite("Server 6.1", create_test_cases)
+
+
     with open(output_file, 'a') as f:
         logging_manager.info("opened file")
-        to_xml_report_file(f, [validate_ts, create_ts], prettyprint=False)
+        to_xml_report_file(f, [validate_ts, create_ts, six_one_ts], prettyprint=False)
 
 
 def test_get_failing_ut():
@@ -97,7 +110,7 @@ def test_get_failing_validations():
     return pr_message, validate_summary
 
 
-def test_get_failing_create_instances():
+def get_failing_create_instances():
     failing_create = get_file_data(os.path.join(f'{ARTIFACTS_FOLDER}/xsoar', 'packs_results.json'))
     # file = open('validate_outputs.json', 'r')
     # failed_validations = json.load(file)
@@ -105,10 +118,17 @@ def test_get_failing_create_instances():
 
     return 'pr_message', create_instances_summary
 
+def get_failing_server_6_1():
+    failing_6_1 = get_file_data(os.path.join(f'{ARTIFACTS_FOLDER}/xsoar', 'test_playbooks_report_Server 6.1.json'))
+    # file = open('validate_outputs.json', 'r')
+    # failed_validations = json.load(file)
+
+    return 'pr_message', failing_6_1
+
 
 def options_handler():
-    parser = argparse.ArgumentParser(description='Parser for slack_notifier args')
-    parser.add_argument('-o', '--output', help='The gitlab server url')
+    parser = argparse.ArgumentParser(description='Parser for build_report args')
+    parser.add_argument('-o', '--output', help='The xml file of the report')
     options = parser.parse_args()
 
     return options
@@ -117,14 +137,15 @@ def options_handler():
 def generate_build_report(logging_manager, output_file):
     validate_pr_comment, validate_summary = test_get_failing_validations()
     unit_tests_pr_comment, unit_tests_summary = test_get_failing_ut()
-    create_instances_pr_comment, create_instances_summary = test_get_failing_create_instances()
+    create_instances_pr_comment, create_instances_summary = get_failing_create_instances()
+    server_6_1_pr_comment, server_6_1_summary = get_failing_server_6_1()
     pr_comment = create_pr_comment(validate_pr_comment, unit_tests_pr_comment)
     _add_pr_comment(pr_comment, logging_manager, 'here is a link to the full report')
     build_summary_report(logging_manager,
                          validate_summary,
                          unit_tests_summary,
                          create_instances_summary,
-                         server_6_1_summary={},
+                         server_6_1_summary,
                          server_6_2_summary={},
                          server_master_summary={}, output_file=output_file)
 
