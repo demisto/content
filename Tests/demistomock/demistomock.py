@@ -412,6 +412,19 @@ exampleAutoFocusApiKey = '1234'
 
 callingContext = {}  # type: dict
 
+contentSecrets = {
+    "WildFire-Reports": {
+        "token": "<ReplaceWithToken>"
+    },
+    "AutoFocusTagsFeed": {
+        "api_key": "<ReplaceWithApiKey>"
+    },
+    "Http_Connector": {
+        "token": "<ReplaceWithToken>",
+        "url": "<ReplaceWithURL>"
+    }
+}
+
 
 def params():
     """(Integration only)
@@ -1157,10 +1170,6 @@ def parentEntry():
     return {}
 
 
-def getLicenseCustomField(api_key):
-    return api_key
-
-
 def getLastMirrorRun():
     """(Integration only)
     Retrieves the LastMirrorRun object
@@ -1280,3 +1289,17 @@ def _apiCall(name, params=None, data=None):
 
     """
     return {}
+
+
+def getLicenseCustomField(key):
+    """
+    Get a custom field from content XSOAR configuration (can only be run in system integrations)
+
+    Args:
+        key (str): The key name inside the content object to search for.
+
+    Returns:
+        str: the value stored in content object that matced the given key.
+    """
+
+    return get(contentSecrets, key)

@@ -162,3 +162,15 @@ ipstack
 SNDBOX
 C
 integrationReliability
+Mapper
+Mappers
+EDL
+XSIAM
+TLD
+Wildcards
+CIDRs
+CIDR
+domainglob
+subdomain
+PDF
+auth
