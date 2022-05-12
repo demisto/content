@@ -730,7 +730,7 @@ def test_handle_general_result_missing_output_builder():
 
 
 class TestHostDetectionOutputBuilder:
-    DETECTION_INPUTS = [({'HOST_LIST': {'HOST_ITEM': []}}, '', []),
+    DETECTION_INPUTS = [({'HOST_LIST': {'HOST_ITEM': []}}, '### Host Detection List\n\n**No entries.**\n', []),
                         ({'HOST_LIST': {'HOST_ITEM': [{'ID': 'ID123', 'IP': '1.1.1.1', 'DNS_DATA': {'data': 'dns data'},
                                                        'DETECTION_LIST': {
                                                            'DETECTION': [
