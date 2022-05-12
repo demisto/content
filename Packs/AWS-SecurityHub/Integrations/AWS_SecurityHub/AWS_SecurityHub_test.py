@@ -181,10 +181,10 @@ def test_list_members_command(mocker):
     aws_client = AWSClient("reg", "", "", 900, "p", "mock_aws_access_key_id", "mock_aws_secret_access_key", "", "", 3)
     client = aws_client.aws_session(service='securityhub', region="reg", role_arn='roleArnroleArnroleArn',
                                     role_session_name='roleSessionName')
-    now_time = datetime.datetime.now()
-    mock_response = {'ResponseMetadata': 'mock_ResponseMetadata', 'Members': [{'UpdatedAt': now_time, 'InvitedAt': now_time}]}
+    time_val = datetime.datetime(2022, 1, 1, 12, 0, 0, 0)
+    mock_response = {'ResponseMetadata': 'mock_ResponseMetadata', 'Members': [{'UpdatedAt': time_val, 'InvitedAt': time_val}]}
     mocker.patch.object(client, 'list_members', return_value=mock_response)
     _, _, response = list_members_command(client, {})
-    now_time_iso_format = now_time.isoformat()
-    assert response == {'Members': [{'UpdatedAt': now_time_iso_format, 'InvitedAt': now_time_iso_format}]}
+    time_val_iso_format = time_val.isoformat()
+    assert response == {'Members': [{'UpdatedAt': time_val_iso_format, 'InvitedAt': time_val_iso_format}]}
     assert type(response['Members'][0]['UpdatedAt']) == str
