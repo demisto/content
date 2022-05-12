@@ -139,6 +139,7 @@ def main() -> None:  # pragma: no cover
         scope += params.get('scope')
 
     app_secret = params.get('app_secret') or (params.get('credentials') or {}).get('password')
+    app_secret = app_secret if isinstance(app_secret, str) else ''
     certificate_thumbprint = params.get('certificate_thumbprint')
     private_key = params.get('private_key')
 
@@ -146,7 +147,7 @@ def main() -> None:  # pragma: no cover
         client = MsGraphClient(
             app_id=params.get('app_id'),
             scope=scope,
-            app_secret=app_secret if isinstance(app_secret, str) else '',
+            app_secret=app_secret,
             tenant_id=params.get('tenant_id'),
             verify=not params.get('insecure', False),
             proxy=params.get('proxy', False),
