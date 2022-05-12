@@ -138,9 +138,9 @@ args:
   secret: false
 - auto: PREDEFINED
   default: false
-  defaultValue: 'true'
+  defaultValue: 'false'
   description: 'Whether to plot incidents-indicators relations to canvas. Default
-    is "true". Skipping canvas ploting stage would improve runtime. Canvas skipping
+    is "false". Skipping canvas ploting stage would improve runtime. Canvas skipping
     would be skipped anyway if number of incidents exceeds a certain threshold to
     avoid perofrmance issues.  '
   isArray: false
