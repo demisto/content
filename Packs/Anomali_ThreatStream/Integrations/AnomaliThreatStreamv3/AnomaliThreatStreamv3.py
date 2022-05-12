@@ -65,6 +65,7 @@ DEFAULT_INDICATOR_MAPPING = {
     'org': 'Organization',
     'source': 'Source',
     'tags': 'Tags',
+    'itype': 'IType',
 }
 
 FILE_INDICATOR_MAPPING = {
@@ -73,7 +74,8 @@ FILE_INDICATOR_MAPPING = {
     'status': 'Status',
     'source': 'Source',
     'subtype': 'Type',
-    'tags': 'Tags'
+    'tags': 'Tags',
+    'itype': 'IType',
 }
 
 
@@ -449,7 +451,9 @@ def get_ip_reputation(client: Client, score_calc: DBotScoreCalculator, ip, statu
     }
     indicator = search_worst_indicator_by_params(client, params)
     if not indicator:
-        return NO_INDICATORS_FOUND_MSG.format(searchable_value=ip)
+        return create_indicator_result_with_dbotscore_unknown(indicator=ip,
+                                                              indicator_type=DBotScoreType.IP,
+                                                              reliability=client.reliability)
 
     # Convert the tags objects into s string for the human readable.
     threat_context = get_generic_threat_context(indicator)
@@ -514,7 +518,9 @@ def get_domain_reputation(client: Client, score_calc: DBotScoreCalculator, domai
     params = dict(value=domain, type=DBotScoreType.DOMAIN, status=status, limit=0)
     indicator = search_worst_indicator_by_params(client, params)
     if not indicator:
-        return NO_INDICATORS_FOUND_MSG.format(searchable_value=domain)
+        return create_indicator_result_with_dbotscore_unknown(indicator=domain,
+                                                              indicator_type=DBotScoreType.DOMAIN,
+                                                              reliability=client.reliability)
 
     # Convert the tags objects into s string for the human readable.
     threat_context = get_generic_threat_context(indicator)
@@ -580,7 +586,9 @@ def get_file_reputation(client: Client, score_calc: DBotScoreCalculator, file, s
     params = dict(value=file, type="md5", status=status, limit=0)
     indicator = search_worst_indicator_by_params(client, params)
     if not indicator:
-        return NO_INDICATORS_FOUND_MSG.format(searchable_value=file)
+        return create_indicator_result_with_dbotscore_unknown(indicator=file,
+                                                              indicator_type=DBotScoreType.FILE,
+                                                              reliability=client.reliability)
 
     # save the hash value under the hash type key
     threat_context = get_generic_threat_context(indicator, indicator_mapping=FILE_INDICATOR_MAPPING)
@@ -653,7 +661,9 @@ def get_url_reputation(client: Client, score_calc: DBotScoreCalculator, url, sta
     params = dict(value=url, type=DBotScoreType.URL, status=status, limit=0)
     indicator = search_worst_indicator_by_params(client, params)
     if not indicator:
-        return NO_INDICATORS_FOUND_MSG.format(searchable_value=url)
+        return create_indicator_result_with_dbotscore_unknown(indicator=url,
+                                                              indicator_type=DBotScoreType.URL,
+                                                              reliability=client.reliability)
 
     # Convert the tags objects into s string for the human readable.
     threat_context = get_generic_threat_context(indicator)
@@ -1141,7 +1151,7 @@ def get_indicators(client: Client, **kwargs):
     offset = kwargs['offset'] = 0
     url = "v2/intelligence/"
     if 'query' in kwargs:
-        url += f"?{kwargs.pop('query')}"
+        url += f"?q={kwargs.pop('query')}"
     iocs_list = client.http_request("GET", url, params=kwargs).get('objects', None)
     if not iocs_list:
         return 'No indicators found from ThreatStream'
@@ -1153,7 +1163,7 @@ def get_indicators(client: Client, **kwargs):
             offset += len(iocs_list)
             kwargs['limit'] = limit
             kwargs['offset'] = offset
-            iocs_list = client.http_request("GET", "v2/intelligence/", params=kwargs).get('objects', None)
+            iocs_list = client.http_request("GET", url, params=kwargs).get('objects', None)
             if iocs_list:
                 iocs_context.extend(parse_indicators_list(iocs_list))
             else:

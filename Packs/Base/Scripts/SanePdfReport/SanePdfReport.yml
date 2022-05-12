@@ -52,6 +52,13 @@ args:
   name: disableHeaders
   required: false
   secret: false
+- default: false
+  defaultValue: '300'
+  description: table text max length
+  isArray: false
+  name: tableTextMaxLength
+  required: false
+  secret: false
 comment: Parse Sane-json-reports and export them as pdf files (used internally).
 commonfields:
   id: SanePdfReports
@@ -67,7 +74,7 @@ tags:
 - pdf
 timeout: '0'
 type: python
-dockerimage: demisto/sane-pdf-reports:1.0.0.25047
+dockerimage: demisto/sane-pdf-reports:1.0.0.27759
 runas: DBotWeakRole
 runonce: false
 tests:

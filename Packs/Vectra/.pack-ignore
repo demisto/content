@@ -3,3 +3,10 @@ ignore=IN126,BA108,BA109,IN145
 
 [file:Vectra.yml]
 ignore=IN126
+
+
+[file:Vectra_image.png]
+ignore=IM111
+
+[file:Vectra_v2_image.png]
+ignore=IM111

@@ -1,0 +1,20 @@
+{
+    "name": "Prisma Cloud Compute Reporting",
+    "description": "Generate compliance and vulnerability reports from Prisma Cloud Compute",
+    "support": "community",
+    "currentVersion": "1.0.1",
+    "author": "SA Team",
+    "url": "https://live.paloaltonetworks.com/t5/cortex-xsoar-discussions/bd-p/Cortex_XSOAR_Discussions",
+    "email": "",
+    "categories": [
+        "Utilities"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": []
+}

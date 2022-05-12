@@ -4,6 +4,8 @@ import json
 import pytest
 from RemoteAccessv2 import CommandResults, DemistoException
 import demistomock as demisto
+from paramiko.ssh_exception import SSHException
+from paramiko import RSAKey
 
 
 def util_load_json(path):
@@ -42,6 +44,51 @@ def test_create_paramiko_ssh_client_valid(mocker, cipher_arg, key_arg, server_ci
     if server_key_algorithms:
         mocker.patch('RemoteAccessv2.get_available_key_algorithms', return_value=server_key_algorithms)
     create_paramiko_ssh_client('host', 'user', 'password', cipher_arg, key_arg)
+
+
+def test_create_paramiko_ssh_client_with_valid_ssh_certificate(mocker):
+    """"
+    Given:
+    - valid SSH certificate.
+
+    When:
+    - trying to connect to an SSH client.
+
+    Then:
+    - Ensure that creating SSH connection was successful.
+    """
+    from RemoteAccessv2 import create_paramiko_ssh_client
+    ssh_connect_mock = mocker.patch('paramiko.SSHClient.connect')
+    valid_private_key = '1234\n1234'
+
+    mocker.patch('paramiko.RSAKey.from_private_key', return_value=RSAKey(key=valid_private_key))
+
+    create_paramiko_ssh_client('host', 'user', None, set(), set(), private_key=valid_private_key)
+    assert type(ssh_connect_mock.call_args.kwargs.get('pkey')) == RSAKey
+    assert not ssh_connect_mock.call_args.kwargs.get('password')
+
+
+@pytest.mark.parametrize(
+    'invalid_private_key',
+    [
+        '1234\n1234',
+        '-----BEGIN RSA PRIVATE KEY-----\n1234-----END RSA PRIVATE KEY-----'
+    ]
+)
+def test_create_paramiko_ssh_client_with_invalid_ssh_certificate(invalid_private_key):
+    """
+    Given:
+    - invalid SSH certificate structure.
+
+    When:
+    - trying to connect to an SSH client.
+
+    Then:
+    - Ensure that SSHException is raised.
+    """
+    from RemoteAccessv2 import create_paramiko_ssh_client
+    with pytest.raises(SSHException):
+        create_paramiko_ssh_client('host', 'user', 'password', set(), set(), private_key=invalid_private_key)
 
 
 @pytest.mark.parametrize('cipher_arg, key_arg, server_ciphers, server_key_algorithms',
@@ -117,7 +164,8 @@ def test_copy_to_command_valid(mocker):
     - Cortex XSOAR arguments
 
     When:
-    - Calling the copy-to command.
+    - Calling the copy-to command with the entry_id argument.
+    - Calling the copy-to command with both the entry_id and entry argument.
 
     Then:
     - Ensure expected readable output is returned upon successful copy.
@@ -125,9 +173,14 @@ def test_copy_to_command_valid(mocker):
     from RemoteAccessv2 import copy_to_command
     from paramiko import SSHClient
     mock_client: SSHClient = SSHClient()
+    mocker.patch.object(demisto, 'getFilePath', return_value={'path': 'test', 'name': 'file-name.txt'})
     mocker.patch('RemoteAccessv2.perform_copy_command', return_value='')
     results: CommandResults = copy_to_command(mock_client, {'entry_id': 123})
     assert results.readable_output == '### The file corresponding to entry ID: 123 was copied to remote host.'
+
+    # When both entry and entry_id are given, validate that entry_id is used
+    results: CommandResults = copy_to_command(mock_client, {'entry': 123, 'entry_id': 456})
+    assert results.readable_output == '### The file corresponding to entry ID: 456 was copied to remote host.'
 
 
 def test_copy_to_command_invalid_entry_id(mocker):
@@ -149,6 +202,25 @@ def test_copy_to_command_invalid_entry_id(mocker):
     with pytest.raises(DemistoException,
                        match='Could not find given entry ID path. Please assure given entry ID is correct.'):
         copy_to_command(mock_client, {'entry_id': 123})
+
+
+def test_copy_to_command_invalid_arguments():
+    """
+    Given:
+    - Cortex XSOAR arguments
+
+    When:
+    - Calling the copy-to command with both dest-dir and destination_path arguments.
+
+    Then:
+    - Ensure DemistoException is thrown with expected error message.
+    """
+    from RemoteAccessv2 import copy_to_command
+    from paramiko import SSHClient
+    mock_client: SSHClient = SSHClient()
+    with pytest.raises(DemistoException,
+                       match='Please provide at most one of "dest-dir" argument or "destination_path", not both.'):
+        copy_to_command(mock_client, {'entry_id': 123, 'dest-dir': 'A', 'destination_path': 'B/file.txt'})
 
 
 @pytest.mark.parametrize('file_name, expected_file_name', ([None, 'mock_path.txt'], ['Name', 'Name']))

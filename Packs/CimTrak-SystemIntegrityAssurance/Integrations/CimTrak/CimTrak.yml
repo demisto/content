@@ -1,0 +1,2343 @@
+category: File Integrity Management
+commonfields:
+  id: CimTrak
+  version: -1
+configuration:
+- defaultvalue: https://127.0.0.1
+  display: App Server URL
+  name: url
+  required: true
+  type: 0
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- display: API Key
+  name: apikey
+  required: true
+  type: 4
+- defaultvalue: "false"
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- defaultvalue: 127.0.0.1
+  display: Repository  URL
+  name: Repository URL
+  required: true
+  type: 0
+- defaultvalue: "3749"
+  display: Repository Port
+  name: Repository Port
+  required: true
+  type: 0
+- defaultvalue: "1"
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  required: false
+  type: 19
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- defaultvalue: 7 days
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  name: first_fetch
+  required: false
+  type: 0
+- name: max_fetch
+  display: Maximum number of incidents to fetch every time
+  required: false
+  type: 0
+  defaultvalue: '50'
+description: >-
+  The CimTrak integration helps you detect unexpected system/device/config
+  modifications and automatically respond/react to threats
+detaileddescription: "# CimTrak Integration to SOAR:\n  The CimTrak integration with
+  Palo Alto XSOAR allows you further vet and respond to emerging threats to your infrastructure.
+  \ CimTrak performs realtime detection of unauthorized modifications to servers and
+  network devices, while also levering CIS Benchmarks to ensure that your key servers
+  and devices are always in a hardened state. In addition, CimTrak can perform advanced
+  remediation actions such as rolling back to a previous version of critical files.
+  By combining CimTrak & Palo Alto XSOAR, via this integration, you now have the power
+  to further analyze certain security events using CimTrak''s rich file assessment
+  engines and/or verify them against a curated allow-list.   In addition, this integration
+  will allow you to leverage CimTrak to integrate your your existing ITSM system such
+  as ServiceNow, BMC Remedy, and Jira.     By unlocking dozens of new capabilities,
+  this integration truly unlocks the orchestration and response capabilities of the
+  Palo Alto SOAR.\n\n1.) Fill in the URL to your App Server\n   - Example URL -- https://192.168.1.1\n
+  \  \n2.) Fill the in API Key with your CimTrak API Key\n   - To create an API Key,
+  right click the top node in the Tree View\n      - Click Properties\n      - Click
+  the \"CimTrak Repo API Keys\" Tab\n      - Generate API Key\n\n3.) Fill in Repository
+  IP relative to the CimTrak AppServer (Management Console)\n   - Typically they are
+  installed on the same machine and you can use 127.0.0.1\n   \n4.) Fill in Repository
+  Port\n   - Default is 3749\n   \n5.) Once configured all unreconciled items from
+  each CimTrak FIM Policies will be brought into XSOAR as an Incident as well as the
+  ability to initiate Compliance Scans manually or based off a playbook as part of
+  the Incident investigation.\n\n# Additional CimTrak Resources & Documentation:\n\nIf
+  you need any help please do not hesitate to reach out to our support team by submitting
+  a ticket at https://www.cimcor.com/support\nYou can also call our support team at
+  1-877-424-6267 or 1-219-736-4400 and then press #2 for support.\n\nYou can find
+  CimTrak Installation Guide and User Guide in your primary download package you received
+  in the CimTrak_Enterprise_Server.zip file.\n\nFor more information and documentation
+  on the CimTrak API navigate to your Management Console with the example link below:\n-
+  Note: Replace 192.168.1.1 with your CimTrak Server IP Address or FQDN\n- https://192.168.1.1/cmc/#/apidoc"
+display: CimTrak - System Integrity Assurance
+name: CimTrak
+script:
+  commands:
+  - arguments:
+    - defaultValue: "1"
+      description: Starting number of record to get
+      name: Start
+    - defaultValue: "50"
+      description: Ending number of record to get
+      name: End
+    - description: "Filter array to limit results IE: [{name: id, operator:>, value:5}]"
+      name: Filter
+    - description: "Sort array to sort data IE: [{field: id, descending: False}]"
+      name: Sorts
+    description: Returns Events from the event log
+    name: get-events
+    outputs:
+    - contextPath: CommandStatus.status
+      description: Status of request
+      type: string
+    - contextPath: CommandStatus.errorCode
+      description: Error Code of request
+      type: string
+    - contextPath: CommandStatus.errorDescription
+      description: Error description of request
+      type: string
+    - contextPath: CimTrak.Event.id
+      description: Event ID
+      type: number
+    - contextPath: CimTrak.Event.leventid
+      description: Event ID
+      type: number
+    - contextPath: CimTrak.Event.lagentid
+      description: Agent ID
+      type: number
+    - contextPath: CimTrak.Event.lobjectid
+      description: Object ID
+      type: number
+    - contextPath: CimTrak.Event.lobjectdetailid
+      description: Object Detail ID
+      type: number
+    - contextPath: CimTrak.Event.lobjectdetailidint
+      description: Object Detail Intrusion ID
+      type: number
+    - contextPath: CimTrak.Event.lmessagelevel
+      description: Message Level
+      type: number
+    - contextPath: CimTrak.Event.szuser
+      description: User
+      type: string
+    - contextPath: CimTrak.Event.szfileuser
+      description: File User
+      type: string
+    - contextPath: CimTrak.Event.szmessageid
+      description: Message ID
+      type: string
+    - contextPath: CimTrak.Event.szmessage
+      description: Message
+      type: string
+    - contextPath: CimTrak.Event.szfile
+      description: File
+      type: string
+    - contextPath: CimTrak.Event.szcorrectionid
+      description: Correction ID
+      type: string
+    - contextPath: CimTrak.Event.szcorrection
+      description: Correction
+      type: string
+    - contextPath: CimTrak.Event.lcategory
+      description: Category
+      type: number
+    - contextPath: CimTrak.Event.lemailsent
+      description: Email Sent
+      type: number
+    - contextPath: CimTrak.Event.lstoragestatus
+      description: Storage Status
+      type: number
+    - contextPath: CimTrak.Event.dtmdatetime1
+      description: Date Time 1
+      type: string
+    - contextPath: CimTrak.Event.dtmdatetime2
+      description: Date Time 2
+      type: string
+    - contextPath: CimTrak.Event.szchecksum
+      description: Checksum
+      type: string
+    - contextPath: CimTrak.Event.status
+      description: Status
+      type: string
+    - contextPath: CimTrak.Event.lprocessid
+      description: Process ID
+      type: number
+    - contextPath: CimTrak.Event.lthreadid
+      description: Thread ID
+      type: number
+    - contextPath: CimTrak.Event.szprocess
+      description: Process
+      type: string
+    - contextPath: CimTrak.Event.szforensicdata
+      description: Forensic Data
+      type: string
+    - contextPath: CimTrak.Event.dtmdeleted
+      description: Deleted Date Time
+      type: string
+    - contextPath: CimTrak.Event.ltickcount
+      description: Tick Count
+      type: number
+    - contextPath: CimTrak.Event.lsubtype
+      description: SubType
+      type: number
+    - contextPath: CimTrak.Event.ticketNumber
+      description: Ticket Number
+      type: string
+    - contextPath: CimTrak.Event.ldeleteobjectdetailid
+      description: Deleted Object Detail ID
+      type: number
+    - contextPath: CimTrak.Event.bfoundinblacklist
+      description: Found In Blacklist
+      type: number
+    - contextPath: CimTrak.Event.filecontenthash
+      description: File Content Hash
+      type: string
+    - contextPath: CimTrak.Event.lobjectsettingid
+      description: Object Setting ID
+      type: number
+    - contextPath: CimTrak.Event.reconciled
+      description: Reconciled
+      type: number
+    - contextPath: CimTrak.Event.isauthcopy
+      description: Is Auth Copy
+      type: number
+    - contextPath: CimTrak.Event.externalticketnumber
+      description: External Ticket Number
+      type: string
+    - contextPath: CimTrak.Event.lparentid
+      description: Parent ID
+      type: number
+    - contextPath: CimTrak.Event.szobjectpath
+      description: Object Path
+      type: string
+    - contextPath: CimTrak.Event.dfilesize
+      description: File Size
+      type: number
+  - arguments:
+    - description: The hash of the file to analyze.
+      name: Hash
+    description: "Submits a file's hash for analysis and returns the results."
+    name: file-analysis-by-hash
+    outputs:
+    - contextPath: CommandStatus.status
+      description: Status of request
+      type: string
+    - contextPath: CommandStatus.errorCode
+      description: Error Code of request
+      type: string
+    - contextPath: CommandStatus.errorDescription
+      description: Error description of request
+      type: string
+    - contextPath: CimTrak.FileAnalysis.analysisEngine
+      description: Analysis Engine used
+      type: string
+    - contextPath: CimTrak.FileAnalysis.analysisSuccess
+      description: Analysis Success Flag
+      type: boolean
+    - contextPath: CimTrak.FileAnalysis.analysisResults
+      description: Agent ID
+      type: string
+  - arguments:
+    - description: The objectDetailId of the file to analyze.
+      name: ObjectDetailId
+    description: Submits a file's objectDetailId for analysis and returns the results.
+    name: file-analysis-by-objectdetail-id
+    outputs:
+    - contextPath: CommandStatus.status
+      description: Status of request
+      type: string
+    - contextPath: CommandStatus.errorCode
+      description: Error Code of request
+      type: string
+    - contextPath: CommandStatus.errorDescription
+      description: Error description of request
+      type: string
+    - contextPath: CimTrak.FileAnalysis.analysisEngine
+      description: Analysis Engine used
+      type: string
+    - contextPath: CimTrak.FileAnalysis.analysisSuccess
+      description: Analysis Success Flag
+      type: boolean
+    - contextPath: CimTrak.FileAnalysis.analysisResults
+      description: Agent ID
+      type: string
+  - arguments:
+    - description: The array of file hashes to check against the trusted file registry.
+      name: Hashes
+    description: "Description\r\nIssues a request to check a list of files (specified by hashes) against the trusted file registry."
+    name: check-file-against-trusted-file-registry-by-hash
+    outputs:
+    - contextPath: CommandStatus.status
+      description: Status of request
+      type: string
+    - contextPath: CommandStatus.errorCode
+      description: Error Code of request
+      type: string
+    - contextPath: CommandStatus.errorDescription
+      description: Error description of request
+      type: string
+    - contextPath: CimTrak.TrustedFileRegistry.hash
+      description: Hash found in registry
+      type: string
+  - arguments:
+    - description: Array of object detail IDs of file to check IE:42,43
+      name: ObjectDetaildIds
+    description: This function sets a file (or list of files) as the authoritative baseline.
+    name: promote-authoritative-baseline-files
+    outputs:
+    - contextPath: CommandStatus.status
+      description: Status of request
+      type: string
+    - contextPath: CommandStatus.errorCode
+      description: Error Code of request
+      type: string
+    - contextPath: CommandStatus.errorDescription
+      description: Error description of request
+      type: string
+    - contextPath: CimTrak.AuthoritizeBaseline.objectDetailId
+      description: objectDetailId of file
+      type: number
+    - contextPath: CimTrak.AuthoritizeBaseline.status
+      description: Status
+      type: string
+    - contextPath: CimTrak.AuthoritizeBaseline.errorCode
+      description: Error Code
+      type: string
+    - contextPath: CimTrak.AuthoritizeBaseline.errorDescription
+      description: Status
+      type: string
+  - arguments:
+    - description: Array of object detail IDs of file to check IE:42,43
+      name: ObjectDetaildIds
+    description: This function removes a file (or list of files) from being the authoritative baseline.
+    name: demote-authoritative-baseline-files
+    outputs:
+    - contextPath: CommandStatus.status
+      description: Status of request
+      type: string
+    - contextPath: CommandStatus.errorCode
+      description: Error Code of request
+      type: string
+    - contextPath: CommandStatus.errorDescription
+      description: Error description of request
+      type: string
+    - contextPath: CimTrak.AuthoritizeBaseline.objectDetailId
+      description: objectDetailId of file
+      type: number
+    - contextPath: CimTrak.AuthoritizeBaseline.status
+      description: Status
+      type: string
+  - arguments:
+    - description: Task ID
+      name: taskId
+    - description: 'The requested disposition of the specified task. Valid dispositions are: ["COMPLETED", "REJECTED", "ASSIGNED"]'
+      name: Disposition
+    description: Updates the tasks specified in taskIdArray to the disposition specified in the disposition parameter.
+    name: update-task-disposition
+    outputs:
+    - contextPath: CommandStatus.status
+      description: Status of request
+      type: string
+    - contextPath: CommandStatus.errorCode
+      description: Error Code of request
+      type: string
+    - contextPath: CommandStatus.errorDescription
+      description: Error description of request
+      type: string
+    - contextPath: CimTrak.TaskDisposition.taskId
+      description: Task Id
+      type: number
+    - contextPath: CimTrak.TaskDisposition.status
+      description: Status
+      type: string
+  - arguments: []
+    description: This function gets ticket information from  a CimTrak Master Repository. This function returns an array of ticket objects.
+    name: get-tickets
+    outputs:
+    - contextPath: CommandStatus.status
+      description: Status of request
+      type: string
+    - contextPath: CommandStatus.errorCode
+      description: Error Code of request
+      type: string
+    - contextPath: CommandStatus.errorDescription
+      description: Error description of request
+      type: string
+    - contextPath: CimTrak.Ticket.id
+      description: Ticket Id
+      type: number
+    - contextPath: CimTrak.Ticket.ticketNumber
+      description: Ticket number
+      type: string
+    - contextPath: CimTrak.Ticket.sentiment
+      description: Ticket sentiment
+      type: string
+    - contextPath: CimTrak.Ticket.sentimenttypeid
+      description: Ticket sentiment id
+      type: string
+    - contextPath: CimTrak.Ticket.title
+      description: Ticket title
+      type: string
+    - contextPath: CimTrak.Ticket.description
+      description: Ticket description
+      type: string
+    - contextPath: CimTrak.Ticket.priority
+      description: Ticket priority
+      type: number
+    - contextPath: CimTrak.Ticket.disposition
+      description: Ticket disposition
+      type: string
+    - contextPath: CimTrak.Ticket.creationDate
+      description: Ticket creation date
+      type: string
+    - contextPath: CimTrak.Ticket.createdByUser
+      description: Ticket created by user
+      type: string
+    - contextPath: CimTrak.Ticket.modificationDate
+      description: Ticket modification date
+      type: string
+    - contextPath: CimTrak.Ticket.modifiedByUser
+      description: Ticket modified by user
+      type: string
+    - contextPath: CimTrak.Ticket.requiresAcknowledgement
+      description: Ticket requires acknowledgement
+      type: boolean
+    - contextPath: CimTrak.Ticket.requiresConfirmation
+      description: Ticket requires confirmation
+      type: boolean
+    - contextPath: CimTrak.Ticket.requiresAssessment
+      description: Ticket requires assessment
+      type: boolean
+    - contextPath: CimTrak.Ticket.startDate
+      description: Ticket start date
+      type: string
+    - contextPath: CimTrak.Ticket.endDate
+      description: Ticket end date
+      type: string
+    - contextPath: CimTrak.Ticket.autoPromote
+      description: Ticket auto promote
+      type: boolean
+    - contextPath: CimTrak.Ticket.assignedToUserId
+      description: Ticket assigned yo UserId
+      type: number
+    - contextPath: CimTrak.Ticket.assignedToUser
+      description: Ticket assigned to user
+      type: string
+    - contextPath: CimTrak.Ticket.assignedToGroupId
+      description: Ticket assigned to GroupId
+      type: number
+    - contextPath: CimTrak.Ticket.assignedToGroup
+      description: Ticket assigned to group
+      type: string
+    - contextPath: CimTrak.Ticket.externalTicketNumber
+      description: Ticket external ticket number
+      type: string
+    - contextPath: CimTrak.Ticket.externalTicketType
+      description: Ticket external ticket type
+      type: string
+    - contextPath: CimTrak.Ticket.tasks
+      description: Ticket tasks
+      type: string
+    - contextPath: CimTrak.Ticket.comments
+      description: Ticket comments
+      type: string
+    - contextPath: CimTrak.Ticket.events
+      description: Ticket events
+      type: string
+  - arguments: []
+    description: This function gets ticket task information from  a CimTrak Master Repository. This function returns an array of ticket task objects.
+    name: get-ticket-tasks
+    outputs:
+    - contextPath: CommandStatus.status
+      description: Status of request
+      type: string
+    - contextPath: CommandStatus.errorCode
+      description: Error Code of request
+      type: string
+    - contextPath: CommandStatus.errorDescription
+      description: Error description of request
+      type: string
+    - contextPath: CimTrak.TicketTask.id
+      description: Ticket Task Id
+      type: number
+    - contextPath: CimTrak.TicketTask.ticketId
+      description: Ticket Id
+      type: number
+    - contextPath: CimTrak.TicketTask.agentObjectId
+      description: Agent Object id
+      type: number
+    - contextPath: CimTrak.TicketTask.startDate
+      description: Ticket start date
+      type: string
+    - contextPath: CimTrak.TicketTask.endDate
+      description: Ticket end date
+      type: string
+    - contextPath: CimTrak.TicketTask.disposition
+      description: Ticket disposition
+      type: string
+    - contextPath: CimTrak.TicketTask.creationDate
+      description: Ticket creation date
+      type: string
+    - contextPath: CimTrak.TicketTask.createdByUserId
+      description: Ticket created by user Id
+      type: number
+    - contextPath: CimTrak.TicketTask.modificationDate
+      description: Ticket modification date
+      type: string
+    - contextPath: CimTrak.TicketTask.modifiedByUserId
+      description: Ticket modified by user Id
+      type: number
+    - contextPath: CimTrak.TicketTask.assignedToUserId
+      description: Ticket assigned yo UserId
+      type: number
+    - contextPath: CimTrak.TicketTask.assignedToGroupId
+      description: Ticket assigned to GroupId
+      type: number
+    - contextPath: CimTrak.TicketTask.assigneeDisposition
+      description: Assignee Disposition
+      type: string
+    - contextPath: CimTrak.TicketTask.ticketTitle
+      description: Ticket title
+      type: string
+    - contextPath: CimTrak.TicketTask.description
+      description: Ticket description
+      type: string
+    - contextPath: CimTrak.TicketTask.priority
+      description: Ticket priority
+      type: number
+    - contextPath: CimTrak.TicketTask.ticketDisposition
+      description: Ticket disposition
+      type: string
+    - contextPath: CimTrak.TicketTask.ticketCreationDate
+      description: Ticket creation date
+      type: string
+    - contextPath: CimTrak.TicketTask.ticketCreatedByUserId
+      description: Ticket created by user Id
+      type: string
+    - contextPath: CimTrak.TicketTask.ticketModificationDate
+      description: Ticket modification date
+      type: string
+    - contextPath: CimTrak.TicketTask.requiresAcknowledgement
+      description: Ticket requires acknowledgment
+      type: string
+    - contextPath: CimTrak.TicketTask.requiresConfirmation
+      description: Ticket requires confirmation
+      type: string
+    - contextPath: CimTrak.TicketTask.requiresAssessment
+      description: Ticket requires assessment
+      type: string
+    - contextPath: CimTrak.TicketTask.ticketNumber
+      description: Ticket number
+      type: string
+    - contextPath: CimTrak.TicketTask.agentName
+      description: Agent name
+      type: string
+    - contextPath: CimTrak.TicketTask.createdByUsername
+      description: Created By Username
+      type: string
+    - contextPath: CimTrak.TicketTask.modifiedByUsername
+      description: Modified by username
+      type: string
+    - contextPath: CimTrak.TicketTask.assigneeName
+      description: Assignee Name
+      type: string
+  - arguments:
+    - description: Title of ticket
+      name: title
+    - defaultValue: "1"
+      description: A priority from 1-5
+      name: priority
+    - description: Ticket description
+      name: description
+    - description: Either both start date must be valid and startDate < endDate OR they must both be blank (no dates) - if not supplied, we will fallback to the ticket dates
+      name: startDate
+    - description: Ticket end date
+      name: endDate
+    - description: For integration with external ticketing systems.
+      name: externalTicketNumber
+    - description: A string describing an external ticketing system.
+      name: externalTicketType
+    - defaultValue: "false"
+      description: Associated events will get promoted to the Authoritative Baseline
+      name: autoPromote
+    - description: This value is defaulted.  If you are admin then "ASSIGNED", else "AWAITING_APPROVAL"
+      name: disposition
+    - defaultValue: "false"
+      description: Non admins can create tickets for themselves only and in that case this value is replaced with "false".  If an admin creates a ticket, the passed value is used, otherwise default to "false".
+      name: requiresAcknowledgement
+    - defaultValue: "false"
+      description: Non admins can create tickets for themselves only and in that case this value is replaced with "true".  If an admin creates a ticket, the passed value is used, otherwise the default is "true".
+      name: requiresAssessment
+    - defaultValue: "false"
+      description: Requires confirmation
+      name: requiresConfirmation
+    - defaultValue: "0"
+      description: These 4 values are taken as a set and only one value will get used.  Here is their priority order
+      name: assignedToUserId
+    - description: Assigned to user
+      name: assignedToUser
+    - defaultValue: "0"
+      description: Assigned to group Id
+      name: assignedToGroupId
+    - description: Assigned to group
+      name: assignedToGroup
+    description: Creates a ticket.
+    name: add-ticket
+    outputs:
+    - contextPath: CommandStatus.status
+      description: Status of request
+      type: string
+    - contextPath: CommandStatus.errorCode
+      description: Error Code of request
+      type: string
+    - contextPath: CommandStatus.errorDescription
+      description: Error description of request
+      type: string
+    - contextPath: CimTrak.Ticket.id
+      description: Ticket Id
+      type: number
+    - contextPath: CimTrak.Ticket.ticketNumber
+      description: Ticket number
+      type: string
+    - contextPath: CimTrak.Ticket.sentiment
+      description: Ticket sentiment
+      type: string
+    - contextPath: CimTrak.Ticket.sentimenttypeid
+      description: Ticket sentiment id
+      type: string
+    - contextPath: CimTrak.Ticket.title
+      description: Ticket title
+      type: string
+    - contextPath: CimTrak.Ticket.description
+      description: Ticket description
+      type: string
+    - contextPath: CimTrak.Ticket.priority
+      description: Ticket priority
+      type: number
+    - contextPath: CimTrak.Ticket.disposition
+      description: Ticket disposition
+      type: string
+    - contextPath: CimTrak.Ticket.creationDate
+      description: Ticket creation date
+      type: string
+    - contextPath: CimTrak.Ticket.createdByUser
+      description: Ticket created by user
+      type: string
+    - contextPath: CimTrak.Ticket.modificationDate
+      description: Ticket modification date
+      type: string
+    - contextPath: CimTrak.Ticket.modifiedByUser
+      description: Ticket modified by user
+      type: string
+    - contextPath: CimTrak.Ticket.requiresAcknowledgement
+      description: Ticket requires acknowledgement
+      type: boolean
+    - contextPath: CimTrak.Ticket.requiresConfirmation
+      description: Ticket requires confirmation
+      type: boolean
+    - contextPath: CimTrak.Ticket.requiresAssessment
+      description: Ticket requires assessment
+      type: boolean
+    - contextPath: CimTrak.Ticket.startDate
+      description: Ticket start date
+      type: string
+    - contextPath: CimTrak.Ticket.endDate
+      description: Ticket end date
+      type: string
+    - contextPath: CimTrak.Ticket.autoPromote
+      description: Ticket auto promote
+      type: boolean
+    - contextPath: CimTrak.Ticket.assignedToUserId
+      description: Ticket assigned yo UserId
+      type: number
+    - contextPath: CimTrak.Ticket.assignedToUser
+      description: Ticket assigned to user
+      type: string
+    - contextPath: CimTrak.Ticket.assignedToGroupId
+      description: Ticket assigned to GroupId
+      type: number
+    - contextPath: CimTrak.Ticket.assignedToGroup
+      description: Ticket assigned to group
+      type: string
+    - contextPath: CimTrak.Ticket.externalTicketNumber
+      description: Ticket external ticket number
+      type: string
+    - contextPath: CimTrak.Ticket.externalTicketType
+      description: Ticket external ticket type
+      type: string
+    - contextPath: CimTrak.Ticket.tasks
+      description: Ticket tasks
+      type: string
+    - contextPath: CimTrak.Ticket.comments
+      description: Ticket comments
+      type: string
+    - contextPath: CimTrak.Ticket.events
+      description: Ticket events
+      type: string
+  - arguments:
+    - description: Ticket Id
+      name: ticketId
+    - description: Title of ticket
+      name: title
+    - defaultValue: "1"
+      description: Ticket priority
+      name: priority
+    - description: Ticket description
+      name: description
+    - description: Ticket start date
+      name: startDate
+    - description: Ticket end date
+      name: endDate
+    - description: ' External ticket number'
+      name: externalTicketNumber
+    - description: External ticket type
+      name: externalTicketType
+    - defaultValue: "false"
+      description: Auto promote
+      name: autoPromote
+    - description: Ticket disposition
+      name: disposition
+    - defaultValue: "false"
+      description: Requires acknowledgement
+      name: requiresAcknowledgement
+    - defaultValue: "false"
+      description: Requires assessment
+      name: requiresAssessment
+    - defaultValue: "false"
+      description: Requires confirmation
+      name: requiresConfirmation
+    - defaultValue: "0"
+      description: Assigned to user Id
+      name: assignedToUserId
+    - description: Assigned to user
+      name: assignedToUser
+    - defaultValue: "0"
+      description: Assigned to group Id
+      name: assignedToGroupId
+    - description: Assigned to group
+      name: assignedToGroup
+    description: Update Ticket
+    name: update-ticket
+    outputs:
+    - contextPath: CommandStatus.status
+      description: Status of request
+      type: string
+    - contextPath: CommandStatus.errorCode
+      description: Error Code of request
+      type: string
+    - contextPath: CommandStatus.errorDescription
+      description: Error description of request
+      type: string
+    - contextPath: CimTrak.Ticket.id
+      description: Ticket Id
+      type: number
+    - contextPath: CimTrak.Ticket.ticketNumber
+      description: Ticket number
+      type: string
+    - contextPath: CimTrak.Ticket.sentiment
+      description: Ticket sentiment
+      type: string
+    - contextPath: CimTrak.Ticket.sentimenttypeid
+      description: Ticket sentiment id
+      type: string
+    - contextPath: CimTrak.Ticket.title
+      description: Ticket title
+      type: string
+    - contextPath: CimTrak.Ticket.description
+      description: Ticket description
+      type: string
+    - contextPath: CimTrak.Ticket.priority
+      description: Ticket priority
+      type: number
+    - contextPath: CimTrak.Ticket.disposition
+      description: Ticket disposition
+      type: string
+    - contextPath: CimTrak.Ticket.creationDate
+      description: Ticket creation date
+      type: string
+    - contextPath: CimTrak.Ticket.createdByUser
+      description: Ticket created by user
+      type: string
+    - contextPath: CimTrak.Ticket.modificationDate
+      description: Ticket modification date
+      type: string
+    - contextPath: CimTrak.Ticket.modifiedByUser
+      description: Ticket modified by user
+      type: string
+    - contextPath: CimTrak.Ticket.requiresAcknowledgement
+      description: Ticket requires acknowledgement
+      type: boolean
+    - contextPath: CimTrak.Ticket.requiresConfirmation
+      description: Ticket requires confirmation
+      type: boolean
+    - contextPath: CimTrak.Ticket.requiresAssessment
+      description: Ticket requires assessment
+      type: boolean
+    - contextPath: CimTrak.Ticket.startDate
+      description: Ticket start date
+      type: string
+    - contextPath: CimTrak.Ticket.endDate
+      description: Ticket end date
+      type: string
+    - contextPath: CimTrak.Ticket.autoPromote
+      description: Ticket auto promote
+      type: boolean
+    - contextPath: CimTrak.Ticket.assignedToUserId
+      description: Ticket assigned yo UserId
+      type: number
+    - contextPath: CimTrak.Ticket.assignedToUser
+      description: Ticket assigned to user
+      type: string
+    - contextPath: CimTrak.Ticket.assignedToGroupId
+      description: Ticket assigned to GroupId
+      type: number
+    - contextPath: CimTrak.Ticket.assignedToGroup
+      description: Ticket assigned to group
+      type: string
+    - contextPath: CimTrak.Ticket.externalTicketNumber
+      description: Ticket external ticket number
+      type: string
+    - contextPath: CimTrak.Ticket.externalTicketType
+      description: Ticket external ticket type
+      type: string
+    - contextPath: CimTrak.Ticket.tasks
+      description: Ticket tasks
+      type: string
+    - contextPath: CimTrak.Ticket.comments
+      description: Ticket comments
+      type: string
+    - contextPath: CimTrak.Ticket.events
+      description: Ticket events
+      type: string
+  - arguments:
+    - description: Either ticketId or taskId will be 0.  A comment is added either at the ticket level or the task level.
+      name: ticketId
+    - description: 'Some Comment '
+      name: comment
+    description: Adds a comment to a ticket or task.
+    name: add-ticket-comment
+    outputs:
+    - contextPath: CommandStatus.status
+      description: Status of request
+      type: string
+    - contextPath: CommandStatus.errorCode
+      description: Error Code of request
+      type: string
+    - contextPath: CommandStatus.errorDescription
+      description: Error description of request
+      type: string
+  - arguments:
+    - description: Hash
+      name: hash
+    - description: Filename for hash
+      name: filename
+    - description: Source for hash
+      name: source
+    - description: SourceReference for hash
+      name: sourceReference
+    description: Add Hash to allow list
+    name: add-hash-allow-list
+    outputs:
+    - contextPath: CommandStatus.status
+      description: Status of request
+      type: string
+    - contextPath: CommandStatus.errorCode
+      description: Error Code of request
+      type: string
+    - contextPath: CommandStatus.errorDescription
+      description: Error description of request
+      type: string
+    - contextPath: CimTrak.AllowList.status
+      description: Status of adding hash
+      type: string
+    - contextPath: CimTrak.AllowList.errorCode
+      description: Error Code of adding hash
+      type: string
+    - contextPath: CimTrak.AllowList.errorDescription
+      description: Error Description of adding hash
+      type: string
+    - contextPath: CimTrak.AllowList.hash
+      description: Hash added
+      type: string
+    - contextPath: CimTrak.AllowList.tagId
+      description: TagId of adding hash
+      type: number
+  - arguments:
+    - description: Hash
+      name: hash
+    - description: Filename for hash
+      name: filename
+    - description: Source for hash
+      name: source
+    - description: SourceReference for hash
+      name: sourceReference
+    description: Add Hash to deny list
+    name: add-hash-deny-list
+    outputs:
+    - contextPath: CommandStatus.status
+      description: Status of request
+      type: string
+    - contextPath: CommandStatus.errorCode
+      description: Error Code of request
+      type: string
+    - contextPath: CommandStatus.errorDescription
+      description: Error description of request
+      type: string
+    - contextPath: CimTrak.DenyList.status
+      description: Status of adding hash
+      type: string
+    - contextPath: CimTrak.DenyList.errorCode
+      description: Error Code of adding hash
+      type: string
+    - contextPath: CimTrak.DenyList.errorDescription
+      description: Error Description of adding hash
+      type: string
+    - contextPath: CimTrak.DenyList.hash
+      description: Hash added
+      type: string
+    - contextPath: CimTrak.DenyList.tagId
+      description: TagId of adding hash
+      type: number
+  - arguments:
+    - description: Hash
+      name: hash
+    - description: Reason for deleting hash
+      name: reason
+    description: Add Hash to allow list
+    name: delete-hash-allow-list
+    outputs:
+    - contextPath: CommandStatus.status
+      description: Status of request
+      type: string
+    - contextPath: CommandStatus.errorCode
+      description: Error Code of request
+      type: string
+    - contextPath: CommandStatus.errorDescription
+      description: Error description of request
+      type: string
+    - contextPath: CimTrak.AllowList.status
+      description: Status of deleting hash
+      type: string
+    - contextPath: CimTrak.AllowList.hash
+      description: Hash deleted
+      type: string
+    - contextPath: CimTrak.AllowList.tagId
+      description: TagId of deleting hash
+      type: number
+  - arguments:
+    - description: Hash
+      name: hash
+    - description: Reason for deleting hash
+      name: reason
+    description: Add Hash to deny list
+    name: delete-hash-deny-list
+    outputs:
+    - contextPath: CommandStatus.status
+      description: Status of request
+      type: string
+    - contextPath: CommandStatus.errorCode
+      description: Error Code of request
+      type: string
+    - contextPath: CommandStatus.errorDescription
+      description: Error description of request
+      type: string
+    - contextPath: CimTrak.DenyList.status
+      description: Status of deleting hash
+      type: string
+    - contextPath: CimTrak.DenyList.hash
+      description: Hash deleted
+      type: string
+    - contextPath: CimTrak.DenyList.tagId
+      description: TagId of deleting hash
+      type: number
+  - arguments:
+    - description: Object Id
+      name: objectId
+    description: Returns the subGenerations for an object group (specified by object ID.
+    name: get-sub-generations
+    outputs:
+    - contextPath: CommandStatus.status
+      description: Status of request
+      type: string
+    - contextPath: CommandStatus.errorCode
+      description: Error Code of request
+      type: string
+    - contextPath: CommandStatus.errorDescription
+      description: Error description of request
+      type: string
+    - contextPath: CimTrak.SubGenerations.caseSensitive
+      description: Case Sensitive
+      type: number
+    - contextPath: CimTrak.SubGenerations.agentObjectId
+      description: Agent Object Id
+      type: number
+    - contextPath: CimTrak.SubGenerations.subGenerationId
+      description: Subgeneration Id
+      type: number
+    - contextPath: CimTrak.SubGenerations.objectId
+      description: Object Id
+      type: number
+    - contextPath: CimTrak.SubGenerations.generationId
+      description: Generation Id
+      type: number
+    - contextPath: CimTrak.SubGenerations.subRevision
+      description: SubRevision
+      type: number
+    - contextPath: CimTrak.SubGenerations.notes
+      description: Notes
+      type: string
+    - contextPath: CimTrak.SubGenerations.creationDate
+      description: Creation Date
+      type: string
+    - contextPath: CimTrak.SubGenerations.files
+      description: Files
+      type: number
+    - contextPath: CimTrak.SubGenerations.directories
+      description: Directories
+      type: number
+    - contextPath: CimTrak.SubGenerations.totalSize
+      description: Total Size
+      type: number
+    - contextPath: CimTrak.SubGenerations.revision
+      description: Revision
+      type: number
+    - contextPath: CimTrak.SubGenerations.userName
+      description: User Name
+      type: string
+  - arguments:
+    - description: Agent Object Id
+      name: agentObjectId
+    - description: Sub Generation Id
+      name: subGenerationId
+    - description: Notes
+      name: notes
+    description: Deploys a specific version of an object group.  All existing files will be overwritten with the specified set.
+    name: deploy
+    outputs:
+    - contextPath: CommandStatus.status
+      description: Status of request
+      type: string
+    - contextPath: CommandStatus.errorCode
+      description: Error Code of request
+      type: string
+    - contextPath: CommandStatus.errorDescription
+      description: Error description of request
+      type: string
+  - arguments:
+    - description: Object Id
+      name: objectId
+    description: This function returns an entire data structure describing an object group.
+    name: get-object-group
+    outputs:
+    - contextPath: CommandStatus.status
+      description: Status of request
+      type: string
+    - contextPath: CommandStatus.errorCode
+      description: Error Code of request
+      type: string
+    - contextPath: CommandStatus.errorDescription
+      description: Error description of request
+      type: string
+    - contextPath: CimTrak.ObjectGroup.agentIsFilesystem
+      description: Agent Is Filesystem
+      type: boolean
+    - contextPath: CimTrak.ObjectGroup.cancel
+      description: Cancel
+      type: boolean
+    - contextPath: CimTrak.ObjectGroup.connected
+      description: Connected
+      type: boolean
+    - contextPath: CimTrak.ObjectGroup.logsByDays
+      description: Logs By Days
+      type: boolean
+    - contextPath: CimTrak.ObjectGroup.requireNotes
+      description: Require Notes
+      type: boolean
+    - contextPath: CimTrak.ObjectGroup.inService
+      description: In Service
+      type: string
+    - contextPath: CimTrak.ObjectGroup.children
+      description: Children
+      type: number
+    - contextPath: CimTrak.ObjectGroup.events
+      description: Events
+      type: number
+    - contextPath: CimTrak.ObjectGroup.intrusions
+      description: Intrusions
+      type: number
+    - contextPath: CimTrak.ObjectGroup.intrusionSize
+      description: Intrusion Size
+      type: number
+    - contextPath: CimTrak.ObjectGroup.objectId
+      description: Object Id
+      type: number
+    - contextPath: CimTrak.ObjectGroup.objectStatus
+      description: Object Status
+      type: number
+    - contextPath: CimTrak.ObjectGroup.objectSubType
+      description: Object SubType
+      type: number
+    - contextPath: CimTrak.ObjectGroup.objectType
+      description: Object Type
+      type: number
+    - contextPath: CimTrak.ObjectGroup.parentId
+      description: Parent Id
+      type: number
+    - contextPath: CimTrak.ObjectGroup.revisions
+      description: Revisions
+      type: number
+    - contextPath: CimTrak.ObjectGroup.templateId
+      description: Template Id
+      type: number
+    - contextPath: CimTrak.ObjectGroup.securityAdd
+      description: Security Add
+      type: boolean
+    - contextPath: CimTrak.ObjectGroup.securityEdit
+      description: Security Edit
+      type: boolean
+    - contextPath: CimTrak.ObjectGroup.securityLock
+      description: Security Lock
+      type: boolean
+    - contextPath: CimTrak.ObjectGroup.securityReport
+      description: Security Report
+      type: boolean
+    - contextPath: CimTrak.ObjectGroup.securityUnlock
+      description: Security Unlock
+      type: boolean
+    - contextPath: CimTrak.ObjectGroup.securityView
+      description: Security View
+      type: boolean
+    - contextPath: CimTrak.ObjectGroup.warnMinutes
+      description: Warn Minutes
+      type: number
+    - contextPath: CimTrak.ObjectGroup.contact
+      description: Contact
+      type: string
+    - contextPath: CimTrak.ObjectGroup.createDate
+      description: Create Date
+      type: string
+    - contextPath: CimTrak.ObjectGroup.description
+      description: Description
+      type: string
+    - contextPath: CimTrak.ObjectGroup.location
+      description: Location
+      type: string
+    - contextPath: CimTrak.ObjectGroup.name
+      description: Name
+      type: string
+    - contextPath: CimTrak.ObjectGroup.objectPath
+      description: Object Path
+      type: string
+    - contextPath: CimTrak.ObjectGroup.url
+      description: URL
+      type: string
+    - contextPath: CimTrak.ObjectGroup.agentObjectId
+      description: Agent Object Id
+      type: number
+    - contextPath: CimTrak.ObjectGroup.objectsCustom
+      description: Objects Custom
+      type: string
+    - contextPath: CimTrak.ObjectGroup.watchArray
+      description: Watch Array
+      type: string
+    - contextPath: CimTrak.ObjectGroup.comparisonMethod
+      description: Comparison Method
+      type: number
+  - arguments:
+    - description: Object Id
+      name: objectId
+    description: Unlocks an object group.
+    name: unlock
+    outputs:
+    - contextPath: CommandStatus.status
+      description: Status of request
+      type: string
+    - contextPath: CommandStatus.errorCode
+      description: Error Code of request
+      type: string
+    - contextPath: CommandStatus.errorDescription
+      description: Error description of request
+      type: string
+  - arguments:
+    - description: Object Id
+      name: objectId
+    description: Locks an object group.
+    name: lock
+    outputs:
+    - contextPath: CommandStatus.status
+      description: Status of request
+      type: string
+    - contextPath: CommandStatus.errorCode
+      description: Error Code of request
+      type: string
+    - contextPath: CommandStatus.errorDescription
+      description: Error description of request
+      type: string
+  - arguments:
+    - description: Object Id
+      name: objectId
+    description: Retrieves information for an object.
+    name: get-object
+    outputs:
+    - contextPath: CommandStatus.status
+      description: Status of request
+      type: string
+    - contextPath: CommandStatus.errorCode
+      description: Error Code of request
+      type: string
+    - contextPath: CommandStatus.errorDescription
+      description: Error description of request
+      type: string
+    - contextPath: CimTrak.Object.agentIsFilesystem
+      description: Agent Is Filesystem
+      type: boolean
+    - contextPath: CimTrak.Object.cancel
+      description: Cancel
+      type: boolean
+    - contextPath: CimTrak.Object.connected
+      description: Connected
+      type: boolean
+    - contextPath: CimTrak.Object.logsByDays
+      description: Logs By Days
+      type: boolean
+    - contextPath: CimTrak.Object.requireNotes
+      description: Require Notes
+      type: boolean
+    - contextPath: CimTrak.Object.inService
+      description: In Service
+      type: string
+    - contextPath: CimTrak.Object.children
+      description: Children
+      type: number
+    - contextPath: CimTrak.Object.events
+      description: Events
+      type: number
+    - contextPath: CimTrak.Object.intrusions
+      description: Intrusions
+      type: number
+    - contextPath: CimTrak.Object.intrusionSize
+      description: Intrusion Size
+      type: number
+    - contextPath: CimTrak.Object.objectId
+      description: Object Id
+      type: number
+    - contextPath: CimTrak.Object.objectStatus
+      description: Object Status
+      type: number
+    - contextPath: CimTrak.Object.objectSubType
+      description: Object SubType
+      type: number
+    - contextPath: CimTrak.Object.objectType
+      description: Object Type
+      type: number
+    - contextPath: CimTrak.Object.parentId
+      description: Parent Id
+      type: number
+    - contextPath: CimTrak.Object.revisions
+      description: Revisions
+      type: number
+    - contextPath: CimTrak.Object.templateId
+      description: Template Id
+      type: number
+    - contextPath: CimTrak.Object.securityAdd
+      description: Security Add
+      type: boolean
+    - contextPath: CimTrak.Object.securityEdit
+      description: Security Edit
+      type: boolean
+    - contextPath: CimTrak.Object.securityLock
+      description: Security Lock
+      type: boolean
+    - contextPath: CimTrak.Object.securityReport
+      description: Security Report
+      type: boolean
+    - contextPath: CimTrak.Object.securityUnlock
+      description: Security Unlock
+      type: boolean
+    - contextPath: CimTrak.Object.securityView
+      description: Security View
+      type: boolean
+    - contextPath: CimTrak.Object.warnMinutes
+      description: Warn Minutes
+      type: number
+    - contextPath: CimTrak.Object.contact
+      description: Contact
+      type: string
+    - contextPath: CimTrak.Object.createDate
+      description: Create Date
+      type: string
+    - contextPath: CimTrak.Object.description
+      description: Description
+      type: string
+    - contextPath: CimTrak.Object.location
+      description: Location
+      type: string
+    - contextPath: CimTrak.Object.name
+      description: Name
+      type: string
+    - contextPath: CimTrak.Object.objectPath
+      description: Object Path
+      type: string
+    - contextPath: CimTrak.Object.url
+      description: URL
+      type: string
+    - contextPath: CimTrak.Object.agentObjectId
+      description: Agent Object Id
+      type: number
+  - arguments:
+    - description: Object Id
+      name: objectId
+    description: Sends a request to the server to synchronize an object group.
+    name: force-sync
+    outputs:
+    - contextPath: CommandStatus.status
+      description: Status of request
+      type: string
+    - contextPath: CommandStatus.errorCode
+      description: Error Code of request
+      type: string
+    - contextPath: CommandStatus.errorDescription
+      description: Error description of request
+      type: string
+  - arguments:
+    - description: Object Detail Id
+      name: objectDetailId
+    description: This function returns the contents of the requested file encoded in base64.
+    name: view-file
+    outputs:
+    - contextPath: CommandStatus.status
+      description: Status of request
+      type: string
+    - contextPath: CommandStatus.errorCode
+      description: Error Code of request
+      type: string
+    - contextPath: CommandStatus.errorDescription
+      description: Error description of request
+      type: string
+    - contextPath: CimTrak.Sync.contents
+      description: Contents
+      type: string
+  - arguments:
+    - description: Name
+      name: name
+    - description: Object Id
+      name: objectId
+    - description: Parameters for report
+      name: ReportParameters
+    description: This function runs the report specified by the report name. The report name can be obtained from the getReportHeaders API. The report's parameters can be obtained from the getReportArguments API.
+    name: run-report-by-name
+    outputs:
+    - contextPath: CommandStatus.status
+      description: Status of request
+      type: string
+    - contextPath: CommandStatus.errorCode
+      description: Error Code of request
+      type: string
+    - contextPath: CommandStatus.errorDescription
+      description: Error description of request
+      type: string
+    - contextPath: CimTrak.Sync.html
+      description: HTML Report
+      type: string
+  - arguments:
+    - description: Date
+      name: date
+    - description: Object Id
+      name: objectId
+    description: Deploy By Date
+    name: deploy-by-date
+    outputs:
+    - contextPath: CommandStatus.status
+      description: Status of request
+      type: string
+    - contextPath: CommandStatus.errorCode
+      description: Error Code of request
+      type: string
+    - contextPath: CommandStatus.errorDescription
+      description: Error description of request
+      type: string
+  - arguments:
+    - description: The object ID of the compliance policy.
+      name: ObjectId
+    - defaultValue: "-1"
+      description: 'The record ID of the compliance scan. '
+      name: ComplianceScanId
+    description: This function returns the benchmarks and/or compliance mappings for the compliance policy specified by the object ID.
+    name: get-current-compliance-items
+    outputs:
+    - contextPath: CommandStatus.status
+      description: Status of request
+      type: string
+    - contextPath: CommandStatus.errorCode
+      description: Error Code of request
+      type: string
+    - contextPath: CommandStatus.errorDescription
+      description: Error description of request
+      type: string
+    - contextPath: CimTrak.ComplianceItems.objectid
+      description: Object ID
+      type: number
+    - contextPath: CimTrak.ComplianceItems.type
+      description: Type of item
+      type: number
+    - contextPath: CimTrak.ComplianceItems.name
+      description: Name
+      type: string
+    - contextPath: CimTrak.ComplianceItems.description
+      description: Description
+      type: string
+    - contextPath: CimTrak.ComplianceItems.scanstarttime
+      description: Scan Start Time
+      type: string
+    - contextPath: CimTrak.ComplianceItems.scanendtime
+      description: Scan End Time
+      type: string
+    - contextPath: CimTrak.ComplianceItems.scanid
+      description: Scan id
+      type: number
+    - contextPath: CimTrak.ComplianceItems.compliancemappingid
+      description: Compliance Mapping id
+      type: number
+    - contextPath: CimTrak.ComplianceItems.id
+      description: id
+      type: number
+  - arguments:
+    - defaultValue: "-1"
+      description: Object Type to retrieve
+      name: ObjectType
+    - defaultValue: "-1"
+      description: Object Sub Type to retrieve
+      name: ObjectSubType
+    - defaultValue: "-1"
+      description: Parent ID to retrieve
+      name: ParentId
+    - defaultValue: "-1"
+      description: Object ID to retrieve
+      name: ObjectId
+    - description: Object path and name to retrieve
+      name: ObjectPathAndName
+    - defaultValue: "false"
+      description: Recursive
+      name: Recursive
+    description: Retrieves a list of objects.
+    name: get-objects
+    outputs:
+    - contextPath: CommandStatus.status
+      description: Status of request
+      type: string
+    - contextPath: CommandStatus.errorCode
+      description: Error Code of request
+      type: string
+    - contextPath: CommandStatus.errorDescription
+      description: Error description of request
+      type: string
+    - contextPath: CimTrak.Objects.repositoryDisplayName
+      description: Repository display name
+      type: string
+    - contextPath: CimTrak.Objects.connected
+      description: Connected
+      type: boolean
+    - contextPath: CimTrak.Objects.agentObjectId
+      description: Agent object Id
+      type: number
+    - contextPath: CimTrak.Objects.description
+      description: Description
+      type: string
+    - contextPath: CimTrak.Objects.name
+      description: Name
+      type: string
+    - contextPath: CimTrak.Objects.objectPath
+      description: Object Path
+      type: string
+    - contextPath: CimTrak.Objects.agentIsFilesystem
+      description: Agent is filesystem
+      type: boolean
+    - contextPath: CimTrak.Objects.cancel
+      description: Cancel
+      type: boolean
+    - contextPath: CimTrak.Objects.logsByDays
+      description: Logs by days
+      type: boolean
+    - contextPath: CimTrak.Objects.requireNotes
+      description: Require notes
+      type: boolean
+    - contextPath: CimTrak.Objects.inService
+      description: In service
+      type: string
+    - contextPath: CimTrak.Objects.events
+      description: Events
+      type: number
+    - contextPath: CimTrak.Objects.intrusions
+      description: Intrusions
+      type: number
+    - contextPath: CimTrak.Objects.intrusionSize
+      description: Intrusion size
+      type: number
+    - contextPath: CimTrak.Objects.objectId
+      description: Object ID
+      type: number
+    - contextPath: CimTrak.Objects.objectStatus
+      description: Object Status
+      type: number
+    - contextPath: CimTrak.Objects.objectSubType
+      description: object subtype
+      type: number
+    - contextPath: CimTrak.Objects.objectType
+      description: object type
+      type: number
+    - contextPath: CimTrak.Objects.parentId
+      description: Parent ID
+      type: number
+    - contextPath: CimTrak.Objects.revisions
+      description: Revisions
+      type: number
+    - contextPath: CimTrak.Objects.templateId
+      description: Template Id
+      type: number
+    - contextPath: CimTrak.Objects.securityAdd
+      description: Security add
+      type: boolean
+    - contextPath: CimTrak.Objects.securityEdit
+      description: Security edit
+      type: boolean
+    - contextPath: CimTrak.Objects.securityLock
+      description: Security lock
+      type: boolean
+    - contextPath: CimTrak.Objects.securityReport
+      description: Security report
+      type: boolean
+    - contextPath: CimTrak.Objects.securityUnlock
+      description: Security unlock
+      type: boolean
+    - contextPath: CimTrak.Objects.securityView
+      description: Security view
+      type: boolean
+    - contextPath: CimTrak.Objects.warnMinutes
+      description: Warn minutes
+      type: number
+    - contextPath: CimTrak.Objects.contact
+      description: Contact
+      type: string
+    - contextPath: CimTrak.Objects.createDate
+      description: Create date
+      type: string
+    - contextPath: CimTrak.Objects.location
+      description: Location
+      type: string
+    - contextPath: CimTrak.Objects.url
+      description: Url
+      type: string
+    - contextPath: CimTrak.Objects.parentName
+      description: Parent name
+      type: string
+    - contextPath: CimTrak.Objects.children
+      description: Children
+      type: number
+    - contextPath: CimTrak.Objects.agentVersion
+      description: Agent version
+      type: string
+    - contextPath: CimTrak.Objects.agentBuild
+      description: Agent build
+      type: number
+    - contextPath: CimTrak.Objects.agentOsVersion
+      description: Agent Os version
+      type: string
+    - contextPath: CimTrak.Objects.agentIp
+      description: agent Ip
+      type: string
+    - contextPath: CimTrak.Objects.agentName
+      description: Agent name
+      type: string
+    - contextPath: CimTrak.Objects.agentInstalled
+      description: Agent installed
+      type: boolean
+  - arguments:
+    - description: Object ID to retrieve compliance items
+      name: ObjectId
+    description: Returns an array of agent information given an object ID.
+    name: get-agent-info
+    outputs:
+    - contextPath: CommandStatus.status
+      description: Status of request
+      type: string
+    - contextPath: CommandStatus.errorCode
+      description: Error Code of request
+      type: string
+    - contextPath: CommandStatus.errorDescription
+      description: Error description of request
+      type: string
+    - contextPath: CimTrak.AgentInfo.objectData
+      description: Object data
+      type: string
+    - contextPath: CimTrak.AgentInfo.objectsCustom
+      description: Object custom
+      type: string
+    - contextPath: CimTrak.AgentInfo.agentData
+      description: Agent data
+      type: string
+    - contextPath: CimTrak.AgentInfo.state
+      description: State
+      type: string
+  - arguments:
+    - description: Object ID to retrieve compliance items
+      name: ObjectId
+    - defaultValue: "-1"
+      description: Compliance Scan ID to retrieve compliance items
+      name: ComplianceScanId
+    - description: 'Filter array to limit results IE: [{name: id, operator:>, value:5}]'
+      name: Filter
+    - defaultValue: "1"
+      description: Starting number of record to get
+      name: Start
+    - defaultValue: "50"
+      description: Ending number of record to get
+      name: End
+    description: Returns compliance scans details
+    name: get-compliance-archive-details
+    outputs:
+    - contextPath: CommandStatus.status
+      description: Status of request
+      type: string
+    - contextPath: CommandStatus.errorCode
+      description: Error Code of request
+      type: string
+    - contextPath: CommandStatus.errorDescription
+      description: Error description of request
+      type: string
+    - contextPath: CimTrak.Compliance.testdate
+      description: Test Date
+      type: string
+    - contextPath: CimTrak.Compliance.datatype
+      description: Data Type
+      type: string
+    - contextPath: CimTrak.Compliance.scanid
+      description: Scan id
+      type: number
+    - contextPath: CimTrak.Compliance.ipaddress
+      description: IP address
+      type: string
+    - contextPath: CimTrak.Compliance.lobjectid
+      description: Object Id
+      type: number
+    - contextPath: CimTrak.Compliance.alternatesystemid
+      description: Alternate System ID
+      type: string
+    - contextPath: CimTrak.Compliance.agentuuid
+      description: Agent uuid
+      type: string
+    - contextPath: CimTrak.Compliance.agentname
+      description: Agent name
+      type: string
+    - contextPath: CimTrak.Compliance.objectpath
+      description: Object path
+      type: string
+    - contextPath: CimTrak.Compliance.benchmark
+      description: Benchmark
+      type: string
+    - contextPath: CimTrak.Compliance.profile
+      description: Profile
+      type: string
+    - contextPath: CimTrak.Compliance.test
+      description: Test
+      type: string
+    - contextPath: CimTrak.Compliance.pass
+      description: Pass
+      type: boolean
+    - contextPath: CimTrak.Compliance.iswaived
+      description: Is waived
+      type: boolean
+    - contextPath: CimTrak.Compliance.adjustedscore
+      description: Adjusted score
+      type: number
+    - contextPath: CimTrak.Compliance.possiblescore
+      description: Possible score
+      type: number
+    - contextPath: CimTrak.Compliance.rawscore
+      description: Raws core
+      type: number
+    - contextPath: CimTrak.Compliance.weight
+      description: Weight
+      type: number
+    - contextPath: CimTrak.Compliance.testran
+      description: Test ran
+      type: boolean
+    - contextPath: CimTrak.Compliance.remediation
+      description: Remediation
+      type: string
+    - contextPath: CimTrak.Compliance.severity
+      description: Severity
+      type: string
+    - contextPath: CimTrak.Compliance.version
+      description: Version
+      type: string
+    - contextPath: CimTrak.Compliance.rationale
+      description: Rationale
+      type: string
+    - contextPath: CimTrak.Compliance.description
+      description: Description
+      type: string
+    - contextPath: CimTrak.Compliance.assessment
+      description: Assessment
+      type: string
+    - contextPath: CimTrak.Compliance.disposition
+      description: Disposition
+      type: string
+    - contextPath: CimTrak.Compliance.conjunction
+      description: Conjunction
+      type: string
+    - contextPath: CimTrak.Compliance.negatatevalue
+      description: Negatate value
+      type: boolean
+    - contextPath: CimTrak.Compliance.comment
+      description: Comment
+      type: string
+    - contextPath: CimTrak.Compliance.controlversion
+      description: Control version
+      type: string
+    - contextPath: CimTrak.Compliance.controlnumber
+      description: Control number
+      type: string
+    - contextPath: CimTrak.Compliance.osversion
+      description: OS version
+      type: string
+    - contextPath: CimTrak.Compliance.personality
+      description: Personality
+      type: string
+    - contextPath: CimTrak.Compliance.objectid
+      description: Object id
+      type: number
+    - contextPath: CimTrak.Compliance.userId
+      description: User id
+      type: number
+    - contextPath: CimTrak.Compliance.block
+      description: Lock
+      type: boolean
+    - contextPath: CimTrak.Compliance.bunlock
+      description: Unlock
+      type: boolean
+    - contextPath: CimTrak.Compliance.bview
+      description: View
+      type: boolean
+    - contextPath: CimTrak.Compliance.bedit
+      description: Edit
+      type: boolean
+    - contextPath: CimTrak.Compliance.badd
+      description: Add
+      type: boolean
+    - contextPath: CimTrak.Compliance.breports
+      description: Reports
+      type: boolean
+    - contextPath: CimTrak.Compliance.blogon
+      description: Logon
+      type: boolean
+    - contextPath: CimTrak.Compliance.isadmin
+      description: Is admin
+      type: boolean
+  - arguments:
+    - description: Object ID to retrieve compliance items
+      name: ObjectId
+    - defaultValue: "-1"
+      description: Compliance Scan ID to retrieve compliance items
+      name: ComplianceScanId
+    - description: 'Filter array to limit results IE: [{name: id, operator:>, value:5}]'
+      name: Filter
+    - defaultValue: "1"
+      description: Starting number of record to get
+      name: Start
+    - defaultValue: "50"
+      description: Ending number of record to get
+      name: End
+    description: Returns compliance scans summary
+    name: get-compliance-archive-summary
+    outputs:
+    - contextPath: CommandStatus.status
+      description: Status of request
+      type: string
+    - contextPath: CommandStatus.errorCode
+      description: Error Code of request
+      type: string
+    - contextPath: CommandStatus.errorDescription
+      description: Error description of request
+      type: string
+    - contextPath: CimTrak.Compliance.testdate
+      description: Test Date
+      type: string
+    - contextPath: CimTrak.Compliance.scanid
+      description: Scan id
+      type: number
+    - contextPath: CimTrak.Compliance.ipaddress
+      description: IP address
+      type: string
+    - contextPath: CimTrak.Compliance.datatype
+      description: Data Type
+      type: string
+    - contextPath: CimTrak.Compliance.alternatesystemid
+      description: Alternate System ID
+      type: string
+    - contextPath: CimTrak.Compliance.agentuuid
+      description: Agent uuid
+      type: string
+    - contextPath: CimTrak.Compliance.agentname
+      description: Agent name
+      type: string
+    - contextPath: CimTrak.Compliance.objectpath
+      description: Object path
+      type: string
+    - contextPath: CimTrak.Compliance.lobjectid
+      description: Object Id
+      type: number
+    - contextPath: CimTrak.Compliance.benchmark
+      description: Benchmark
+      type: string
+    - contextPath: CimTrak.Compliance.profile
+      description: Profile
+      type: string
+    - contextPath: CimTrak.Compliance.totalfailcount
+      description: Total fail count
+      type: number
+    - contextPath: CimTrak.Compliance.totalpasscount
+      description: Total pass count
+      type: number
+    - contextPath: CimTrak.Compliance.totaltestsskipped
+      description: Total tests skipped
+      type: number
+    - contextPath: CimTrak.Compliance.totalwaivecount
+      description: Total waive count
+      type: number
+    - contextPath: CimTrak.Compliance.pass
+      description: Pass
+      type: boolean
+    - contextPath: CimTrak.Compliance.totaltestsran
+      description: Total tests ran
+      type: number
+    - contextPath: CimTrak.Compliance.osversion
+      description: OS version
+      type: string
+    - contextPath: CimTrak.Compliance.personality
+      description: Personality
+      type: string
+    - contextPath: CimTrak.Compliance.userId
+      description: User id
+      type: number
+    - contextPath: CimTrak.Compliance.objectid
+      description: Object id
+      type: number
+    - contextPath: CimTrak.Compliance.block
+      description: Lock
+      type: boolean
+    - contextPath: CimTrak.Compliance.bunlock
+      description: Unlock
+      type: boolean
+    - contextPath: CimTrak.Compliance.bview
+      description: View
+      type: boolean
+    - contextPath: CimTrak.Compliance.bedit
+      description: Edit
+      type: boolean
+    - contextPath: CimTrak.Compliance.badd
+      description: Add
+      type: boolean
+    - contextPath: CimTrak.Compliance.breports
+      description: Reports
+      type: boolean
+    - contextPath: CimTrak.Compliance.blogon
+      description: Logon
+      type: boolean
+  - arguments:
+    - description: Parent Object Id
+      name: objectParentId
+    description: Launch compliance scan for all children of object
+    name: compliance-scan-children
+    outputs:
+    - contextPath: CommandStatus.status
+      description: Status of request
+      type: string
+    - contextPath: CommandStatus.errorCode
+      description: Error Code of request
+      type: string
+    - contextPath: CommandStatus.errorDescription
+      description: Error description of request
+      type: string
+  - arguments:
+    - description: Object Id
+      name: objectId
+    - defaultValue: "20"
+      description: Number of times to retry to check if scan has completed
+      name: retryCount
+    - defaultValue: "10"
+      description: Number of seconds to wait before retry to check if scan completed
+      name: retrySeconds
+    description: Launch compliance scan for object and return results
+    name: compliance-scan-with-summary
+    outputs:
+    - contextPath: CommandStatus.status
+      description: Status of request
+      type: string
+    - contextPath: CommandStatus.errorCode
+      description: Error Code of request
+      type: string
+    - contextPath: CommandStatus.errorDescription
+      description: Error description of request
+      type: string
+    - contextPath: CimTrak.Compliance.testdate
+      description: Test Date
+      type: string
+    - contextPath: CimTrak.Compliance.scanid
+      description: Scan id
+      type: number
+    - contextPath: CimTrak.Compliance.ipaddress
+      description: IP address
+      type: string
+    - contextPath: CimTrak.Compliance.datatype
+      description: Data Type
+      type: string
+    - contextPath: CimTrak.Compliance.alternatesystemid
+      description: Alternate System ID
+      type: string
+    - contextPath: CimTrak.Compliance.agentuuid
+      description: Agent uuid
+      type: string
+    - contextPath: CimTrak.Compliance.agentname
+      description: Agent name
+      type: string
+    - contextPath: CimTrak.Compliance.objectpath
+      description: Object path
+      type: string
+    - contextPath: CimTrak.Compliance.lobjectid
+      description: Object Id
+      type: number
+    - contextPath: CimTrak.Compliance.benchmark
+      description: Benchmark
+      type: string
+    - contextPath: CimTrak.Compliance.profile
+      description: Profile
+      type: string
+    - contextPath: CimTrak.Compliance.totalfailcount
+      description: Total fail count
+      type: number
+    - contextPath: CimTrak.Compliance.totalpasscount
+      description: Total pass count
+      type: number
+    - contextPath: CimTrak.Compliance.totaltestsskipped
+      description: Total tests skipped
+      type: number
+    - contextPath: CimTrak.Compliance.totalwaivecount
+      description: Total waive count
+      type: number
+    - contextPath: CimTrak.Compliance.pass
+      description: Pass
+      type: boolean
+    - contextPath: CimTrak.Compliance.totaltestsran
+      description: Total tests ran
+      type: number
+    - contextPath: CimTrak.Compliance.osversion
+      description: OS version
+      type: string
+    - contextPath: CimTrak.Compliance.personality
+      description: Personality
+      type: string
+    - contextPath: CimTrak.Compliance.userId
+      description: User id
+      type: number
+    - contextPath: CimTrak.Compliance.objectid
+      description: Object id
+      type: number
+    - contextPath: CimTrak.Compliance.block
+      description: Lock
+      type: boolean
+    - contextPath: CimTrak.Compliance.bunlock
+      description: Unlock
+      type: boolean
+    - contextPath: CimTrak.Compliance.bview
+      description: View
+      type: boolean
+    - contextPath: CimTrak.Compliance.bedit
+      description: Edit
+      type: boolean
+    - contextPath: CimTrak.Compliance.badd
+      description: Add
+      type: boolean
+    - contextPath: CimTrak.Compliance.breports
+      description: Reports
+      type: boolean
+    - contextPath: CimTrak.Compliance.blogon
+      description: Logon
+      type: boolean
+  - arguments:
+    - description: Alternate system Id
+      name: alternateSystemId
+    description: Get agent object id from alternate system id
+    name: get-agent-object-id-by-alternate-system-id
+    outputs:
+    - contextPath: CommandStatus.status
+      description: Status of request
+      type: string
+    - contextPath: CommandStatus.errorCode
+      description: Error Code of request
+      type: string
+    - contextPath: CommandStatus.errorDescription
+      description: Error description of request
+      type: string
+    - contextPath: CimTrak.Object.agentObjectId
+      description: Object Id of agent
+      type: number
+  - arguments:
+    - description: Agent name
+      name: agentName
+    description: Get agent object from agent name
+    name: get-agent-object-by-name
+    outputs:
+    - contextPath: CommandStatus.status
+      description: Status of request
+      type: string
+    - contextPath: CommandStatus.errorCode
+      description: Error Code of request
+      type: string
+    - contextPath: CommandStatus.errorDescription
+      description: Error description of request
+      type: string
+    - contextPath: CimTrak.Object.agentIsFilesystem
+      description: Agent Is Filesystem
+      type: boolean
+    - contextPath: CimTrak.Object.cancel
+      description: Cancel
+      type: boolean
+    - contextPath: CimTrak.Object.connected
+      description: Connected
+      type: boolean
+    - contextPath: CimTrak.Object.logsByDays
+      description: Logs By Days
+      type: boolean
+    - contextPath: CimTrak.Object.requireNotes
+      description: Require Notes
+      type: boolean
+    - contextPath: CimTrak.Object.inService
+      description: In Service
+      type: string
+    - contextPath: CimTrak.Object.children
+      description: Children
+      type: number
+    - contextPath: CimTrak.Object.events
+      description: Events
+      type: number
+    - contextPath: CimTrak.Object.intrusions
+      description: Intrusions
+      type: number
+    - contextPath: CimTrak.Object.intrusionSize
+      description: Intrusion Size
+      type: number
+    - contextPath: CimTrak.Object.objectId
+      description: Object Id
+      type: number
+    - contextPath: CimTrak.Object.objectStatus
+      description: Object Status
+      type: number
+    - contextPath: CimTrak.Object.objectSubType
+      description: Object SubType
+      type: number
+    - contextPath: CimTrak.Object.objectType
+      description: Object Type
+      type: number
+    - contextPath: CimTrak.Object.parentId
+      description: Parent Id
+      type: number
+    - contextPath: CimTrak.Object.revisions
+      description: Revisions
+      type: number
+    - contextPath: CimTrak.Object.templateId
+      description: Template Id
+      type: number
+    - contextPath: CimTrak.Object.securityAdd
+      description: Security Add
+      type: boolean
+    - contextPath: CimTrak.Object.securityEdit
+      description: Security Edit
+      type: boolean
+    - contextPath: CimTrak.Object.securityLock
+      description: Security Lock
+      type: boolean
+    - contextPath: CimTrak.Object.securityReport
+      description: Security Report
+      type: boolean
+    - contextPath: CimTrak.Object.securityUnlock
+      description: Security Unlock
+      type: boolean
+    - contextPath: CimTrak.Object.securityView
+      description: Security View
+      type: boolean
+    - contextPath: CimTrak.Object.warnMinutes
+      description: Warn Minutes
+      type: number
+    - contextPath: CimTrak.Object.contact
+      description: Contact
+      type: string
+    - contextPath: CimTrak.Object.createDate
+      description: Create Date
+      type: string
+    - contextPath: CimTrak.Object.description
+      description: Description
+      type: string
+    - contextPath: CimTrak.Object.location
+      description: Location
+      type: string
+    - contextPath: CimTrak.Object.name
+      description: Name
+      type: string
+    - contextPath: CimTrak.Object.objectPath
+      description: Object Path
+      type: string
+    - contextPath: CimTrak.Object.url
+      description: URL
+      type: string
+    - contextPath: CimTrak.Object.agentObjectId
+      description: Agent Object Id
+      type: number
+  - arguments:
+    - description: Agent alternate id
+      name: alternateSystemId
+    description: Get agent object from alternate id
+    name: get-agent-object-by-alternate-id
+    outputs:
+    - contextPath: CommandStatus.status
+      description: Status of request
+      type: string
+    - contextPath: CommandStatus.errorCode
+      description: Error Code of request
+      type: string
+    - contextPath: CommandStatus.errorDescription
+      description: Error description of request
+      type: string
+    - contextPath: CimTrak.Object.agentIsFilesystem
+      description: Agent Is Filesystem
+      type: boolean
+    - contextPath: CimTrak.Object.cancel
+      description: Cancel
+      type: boolean
+    - contextPath: CimTrak.Object.connected
+      description: Connected
+      type: boolean
+    - contextPath: CimTrak.Object.logsByDays
+      description: Logs By Days
+      type: boolean
+    - contextPath: CimTrak.Object.requireNotes
+      description: Require Notes
+      type: boolean
+    - contextPath: CimTrak.Object.inService
+      description: In Service
+      type: string
+    - contextPath: CimTrak.Object.children
+      description: Children
+      type: number
+    - contextPath: CimTrak.Object.events
+      description: Events
+      type: number
+    - contextPath: CimTrak.Object.intrusions
+      description: Intrusions
+      type: number
+    - contextPath: CimTrak.Object.intrusionSize
+      description: Intrusion Size
+      type: number
+    - contextPath: CimTrak.Object.objectId
+      description: Object Id
+      type: number
+    - contextPath: CimTrak.Object.objectStatus
+      description: Object Status
+      type: number
+    - contextPath: CimTrak.Object.objectSubType
+      description: Object SubType
+      type: number
+    - contextPath: CimTrak.Object.objectType
+      description: Object Type
+      type: number
+    - contextPath: CimTrak.Object.parentId
+      description: Parent Id
+      type: number
+    - contextPath: CimTrak.Object.revisions
+      description: Revisions
+      type: number
+    - contextPath: CimTrak.Object.templateId
+      description: Template Id
+      type: number
+    - contextPath: CimTrak.Object.securityAdd
+      description: Security Add
+      type: boolean
+    - contextPath: CimTrak.Object.securityEdit
+      description: Security Edit
+      type: boolean
+    - contextPath: CimTrak.Object.securityLock
+      description: Security Lock
+      type: boolean
+    - contextPath: CimTrak.Object.securityReport
+      description: Security Report
+      type: boolean
+    - contextPath: CimTrak.Object.securityUnlock
+      description: Security Unlock
+      type: boolean
+    - contextPath: CimTrak.Object.securityView
+      description: Security View
+      type: boolean
+    - contextPath: CimTrak.Object.warnMinutes
+      description: Warn Minutes
+      type: number
+    - contextPath: CimTrak.Object.contact
+      description: Contact
+      type: string
+    - contextPath: CimTrak.Object.createDate
+      description: Create Date
+      type: string
+    - contextPath: CimTrak.Object.description
+      description: Description
+      type: string
+    - contextPath: CimTrak.Object.location
+      description: Location
+      type: string
+    - contextPath: CimTrak.Object.name
+      description: Name
+      type: string
+    - contextPath: CimTrak.Object.objectPath
+      description: Object Path
+      type: string
+    - contextPath: CimTrak.Object.url
+      description: URL
+      type: string
+    - contextPath: CimTrak.Object.agentObjectId
+      description: Agent Object Id
+      type: number
+  - arguments:
+    - description: Agent alternate id
+      name: ip
+    description: Get agent object from ip address
+    name: get-agent-object-by-ip
+    outputs:
+    - contextPath: CommandStatus.status
+      description: Status of request
+      type: string
+    - contextPath: CommandStatus.errorCode
+      description: Error Code of request
+      type: string
+    - contextPath: CommandStatus.errorDescription
+      description: Error description of request
+      type: string
+    - contextPath: CimTrak.Object.agentIsFilesystem
+      description: Agent Is Filesystem
+      type: boolean
+    - contextPath: CimTrak.Object.cancel
+      description: Cancel
+      type: boolean
+    - contextPath: CimTrak.Object.connected
+      description: Connected
+      type: boolean
+    - contextPath: CimTrak.Object.logsByDays
+      description: Logs By Days
+      type: boolean
+    - contextPath: CimTrak.Object.requireNotes
+      description: Require Notes
+      type: boolean
+    - contextPath: CimTrak.Object.inService
+      description: In Service
+      type: string
+    - contextPath: CimTrak.Object.children
+      description: Children
+      type: number
+    - contextPath: CimTrak.Object.events
+      description: Events
+      type: number
+    - contextPath: CimTrak.Object.intrusions
+      description: Intrusions
+      type: number
+    - contextPath: CimTrak.Object.intrusionSize
+      description: Intrusion Size
+      type: number
+    - contextPath: CimTrak.Object.objectId
+      description: Object Id
+      type: number
+    - contextPath: CimTrak.Object.objectStatus
+      description: Object Status
+      type: number
+    - contextPath: CimTrak.Object.objectSubType
+      description: Object SubType
+      type: number
+    - contextPath: CimTrak.Object.objectType
+      description: Object Type
+      type: number
+    - contextPath: CimTrak.Object.parentId
+      description: Parent Id
+      type: number
+    - contextPath: CimTrak.Object.revisions
+      description: Revisions
+      type: number
+    - contextPath: CimTrak.Object.templateId
+      description: Template Id
+      type: number
+    - contextPath: CimTrak.Object.securityAdd
+      description: Security Add
+      type: boolean
+    - contextPath: CimTrak.Object.securityEdit
+      description: Security Edit
+      type: boolean
+    - contextPath: CimTrak.Object.securityLock
+      description: Security Lock
+      type: boolean
+    - contextPath: CimTrak.Object.securityReport
+      description: Security Report
+      type: boolean
+    - contextPath: CimTrak.Object.securityUnlock
+      description: Security Unlock
+      type: boolean
+    - contextPath: CimTrak.Object.securityView
+      description: Security View
+      type: boolean
+    - contextPath: CimTrak.Object.warnMinutes
+      description: Warn Minutes
+      type: number
+    - contextPath: CimTrak.Object.contact
+      description: Contact
+      type: string
+    - contextPath: CimTrak.Object.createDate
+      description: Create Date
+      type: string
+    - contextPath: CimTrak.Object.description
+      description: Description
+      type: string
+    - contextPath: CimTrak.Object.location
+      description: Location
+      type: string
+    - contextPath: CimTrak.Object.name
+      description: Name
+      type: string
+    - contextPath: CimTrak.Object.objectPath
+      description: Object Path
+      type: string
+    - contextPath: CimTrak.Object.url
+      description: URL
+      type: string
+    - contextPath: CimTrak.Object.agentObjectId
+      description: Agent Object Id
+      type: number
+  dockerimage: demisto/python3:3.10.4.28442
+  isfetch: true
+  longRunning: true
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

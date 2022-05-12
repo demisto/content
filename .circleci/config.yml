@@ -94,7 +94,7 @@ references:
 
   container_config: &container_config
     docker:
-      - image: devdemisto/content-build:3.0.0.12681  # disable-secrets-detection
+      - image: devdemisto/content-build:3.0.0.27109  # disable-secrets-detection
         auth:
           username: $DOCKERHUB_USER
           password: $DOCKERHUB_PASSWORD
@@ -162,8 +162,10 @@ references:
 
         echo "========== Build Parameters =========="
         set | grep -E "^NIGHTLY=|^CONTRIB_BRANCH=|^SDK_REF"
-        python --version
-        python3 --version
+        python --version | tee -a $CIRCLE_ARTIFACTS/python2_list.txt
+        python3 --version | tee -a $CIRCLE_ARTIFACTS/python3_list.txt
+        python -m pip list | tee -a $CIRCLE_ARTIFACTS/python2_list.txt
+        python3 -m pip list | tee -a $CIRCLE_ARTIFACTS/python3_list.txt
         node --version
         npm --version
         demisto-sdk --version
@@ -175,6 +177,7 @@ references:
   remote_docker: &remote_docker
     setup_remote_docker:
       version: 20.10.6
+      docker_layer_caching: true
 
   persist_to_workspace: &persist_to_workspace
     persist_to_workspace:
@@ -194,6 +197,7 @@ references:
     run:
       name: Validate Files and Yaml
       when: always
+      no_output_timeout: 1h
       command: |
         if [[ "$(echo "$GCS_MARKET_BUCKET" | tr '[:upper:]' '[:lower:]')" != "marketplace-dist" ]]; then
           echo "Skipping the -Validate Files and Yaml- step when uploading to a test bucket."
@@ -223,7 +227,7 @@ references:
         echo "vulture py2 version: $(python2 -m vulture --version 2>&1)"
         echo "vulture py3 version: $(python3 -m vulture --version 2>&1)"
         mkdir ./unit-tests
-        demisto-sdk lint -p 8 -g -v --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts --coverage-report $ARTIFACTS_FOLDER/coverage_report
+        demisto-sdk lint -p 8 -g -vvv --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts --coverage-report $ARTIFACTS_FOLDER/coverage_report
 
   generate_coverage_reports: &generate_coverage_reports
     run:
@@ -353,6 +357,13 @@ jobs:
     <<: *environment
     steps:
       - *attach_workspace
+      - run:
+          name: Check if CircleCI's config file and requirements.txt files are up to date
+          when: always
+          command: |
+            ./Tests/scripts/is_file_up_to_date.sh .circleci/config.yml $CIRCLE_BRANCH
+            ./Tests/scripts/is_file_up_to_date.sh dev-requirements-py2.txt $CIRCLE_BRANCH
+            ./Tests/scripts/is_file_up_to_date.sh dev-requirements-py3.txt $CIRCLE_BRANCH
       - *restore_cache
       - *add_ssh_keys
       - *prepare_environment
@@ -364,13 +375,6 @@ jobs:
           name: Spell Checks
           command: |
             python3 ./Tests/scripts/circleci_spell_checker.py $CIRCLE_BRANCH
-      - run:
-          name: Check if CircleCI's config file and requirements.txt files are up to date
-          when: always
-          command: |
-            ./Tests/scripts/is_file_up_to_date.sh .circleci/config.yml $CIRCLE_BRANCH
-            ./Tests/scripts/is_file_up_to_date.sh dev-requirements-py2.txt $CIRCLE_BRANCH
-            ./Tests/scripts/is_file_up_to_date.sh dev-requirements-py3.txt $CIRCLE_BRANCH
       - run:
           name: Verify Base Branch for Contribution
           when: always

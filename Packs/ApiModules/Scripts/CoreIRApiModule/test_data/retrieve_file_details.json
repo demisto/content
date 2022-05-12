@@ -1,0 +1,7 @@
+{
+  "reply": {
+    "data": {
+      "endpoint_test": "https://api-xsiam-playbooks-v3.xdr.us.paloaltonetworks.com/public_api/v1/download/file_hash"
+    }
+  }
+}

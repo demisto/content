@@ -33,6 +33,16 @@ configuration:
   required: false
   type: 9
   hiddenusername: true
+- additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
+  display: Certificate Thumbprint
+  name: certificate_thumbprint
+  required: false
+  type: 4
+- additionalinfo: Used for certificate authentication. The private key of the registered certificate.
+  display: Private Key
+  name: private_key
+  required: false
+  type: 14
 - defaultvalue: 12 hours
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   hidden: false
@@ -90,7 +100,7 @@ description: Microsoft 365 Defender is a unified pre- and post-breach enterprise
   suite that natively coordinates detection, prevention, investigation, and response
   across endpoints, identities, email, and applications to provide integrated protection
   against sophisticated attacks.
-display: Microsoft 365 Defender (Beta)
+display: Microsoft 365 Defender
 name: Microsoft 365 Defender
 script:
   commands:
@@ -334,7 +344,7 @@ script:
     - contextPath: Microsoft365Defender.Hunt.results.
       description: The results of the query.
       type: Unknown
-  dockerimage: demisto/crypto:1.0.0.24380
+  dockerimage: demisto/crypto:1.0.0.27590
   feed: false
   isfetch: true
   longRunning: false
@@ -347,4 +357,4 @@ tests:
 - No tests
 defaultmapperin: Microsoft 365 Defender - Incoming Mapper
 fromversion: 5.5.0
-beta: true
+beta: false

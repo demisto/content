@@ -26,6 +26,14 @@ Previous versions have been declared [EOL](https://kc.mcafee.com/corporate/index
 | proxy | Use system proxy settings | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
+## Required Permissions
+| Component | Permission |
+| --- | --- |
+| Alarms | Alarm Management *and* View Data |
+| Cases | Incident Management Administrator *and* Incident Management User |
+| Watchlists | Watchlists |
+
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
@@ -306,14 +314,14 @@ Perform a query against Mcafee ESM SIEM
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| timeRange | The time period for the search. Can be LAST_3_DAYS, LAST_2_DAYS, LAST_24_HOURS, PREVIOUS_DAY, CURRENT_DAY, LAST_HOUR, LAST_30_MINUTES, LAST_10_MINUTES, LAST_MINUTE, CUSTOM, PREVIOUS_YEAR, CURRENT_YEAR, PREVIOUS_QUARTER, CURRENT_QUARTER, PREVIOUS_MONTH, CURRENT_MONTH, PREVIOUS_WEEK, or CURRENT_WEEK. | Optional | 
-| filters | Filter on the query results, should be a JSON string, of the format EsmFilter (read more on that here - https://&lt;esm-ip&gt;:&lt;esm-port&gt;/rs/esm/help/types/EsmFilter) | Required | 
-| queryType | Type of query to run. Can be "EVENT", "FLOW", or "ASSETS". Default is "EVENT". | Optional | 
-| timeOut | Maximum time to wait before timeout (in minutes). Default is 30. | Optional | 
-| customStart | If the timeRange argument is set to CUSTOM, the start time for the time range. For example: 2017-06-01T12:48:16.734Z | Optional | 
-| customEnd | If the timeRange argument is set to CUSTOM, the end time for the time range. For example: 2017-06-01T12:48:16.734Z | Optional | 
-| fields | The fields that will be selected when this query is executed. | Optional | 
-| limit | Query results can be limited to a maximum row count. | Optional | 
+| timeRange | The time period for the search. Can be LAST_3_DAYS, LAST_2_DAYS, LAST_24_HOURS, PREVIOUS_DAY, CURRENT_DAY, LAST_HOUR, LAST_30_MINUTES, LAST_10_MINUTES, LAST_MINUTE, CUSTOM, PREVIOUS_YEAR, CURRENT_YEAR, PREVIOUS_QUARTER, CURRENT_QUARTER, PREVIOUS_MONTH, CURRENT_MONTH, PREVIOUS_WEEK, or CURRENT_WEEK. | Optional |
+| filters | Filter on the query results, should be a JSON string, of the format EsmFilter (read more on that here - https://&lt;esm-ip&gt;:&lt;esm-port&gt;/rs/esm/help/types/EsmFilter) | Required |
+| queryType | Type of query to run. Can be "EVENT", "FLOW", or "ASSETS". Default is "EVENT". | Optional |
+| timeOut | Maximum time to wait before timeout (in minutes). Default is 30. | Optional |
+| customStart | If the timeRange argument is set to CUSTOM, the start time for the time range. For example: 2017-06-01T12:48:16.734Z | Optional |
+| customEnd | If the timeRange argument is set to CUSTOM, the end time for the time range. For example: 2017-06-01T12:48:16.734Z | Optional |
+| fields | The fields that will be selected when this query is executed. | Optional |
+| limit | Query results can be limited to a maximum row count. | Optional |
 
 
 #### Context Output
@@ -384,25 +392,25 @@ Retrieves a list of triggered alarms.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| timeRange | The time period for the search. Can be LAST_3_DAYS, LAST_2_DAYS, LAST_24_HOURS, PREVIOUS_DAY, CURRENT_DAY, LAST_HOUR, LAST_30_MINUTES, LAST_10_MINUTES, LAST_MINUTE, CUSTOM, PREVIOUS_YEAR, CURRENT_YEAR, PREVIOUS_QUARTER, CURRENT_QUARTER, PREVIOUS_MONTH, CURRENT_MONTH, PREVIOUS_WEEK, or CURRENT_WEEK. | Optional | 
-| customStart | If the timeRange argument is set to CUSTOM, the start time for the time range. For example: 2017-06-01T12:48:16.734Z | Optional | 
-| customEnd | If the timeRange argument is set to CUSTOM, the end time for the time range. For example: 2017-06-01T12:48:16.734Z | Optional | 
-| assignedUser | User assigned to handle the triggered alarm. Use the 'ME' option to use the instance user, or use [format EsmUser](https://&lt;esm-ip&gt;:&lt;esm-port&gt;/rs/esm/help/types/EsmUser).  | Optional | 
+| timeRange | The time period for the search. Can be LAST_3_DAYS, LAST_2_DAYS, LAST_24_HOURS, PREVIOUS_DAY, CURRENT_DAY, LAST_HOUR, LAST_30_MINUTES, LAST_10_MINUTES, LAST_MINUTE, CUSTOM, PREVIOUS_YEAR, CURRENT_YEAR, PREVIOUS_QUARTER, CURRENT_QUARTER, PREVIOUS_MONTH, CURRENT_MONTH, PREVIOUS_WEEK, or CURRENT_WEEK. | Optional |
+| customStart | If the timeRange argument is set to CUSTOM, the start time for the time range. For example: 2017-06-01T12:48:16.734Z | Optional |
+| customEnd | If the timeRange argument is set to CUSTOM, the end time for the time range. For example: 2017-06-01T12:48:16.734Z | Optional |
+| assignedUser | User assigned to handle the triggered alarm. Use the 'ME' option to use the instance user, or use [format EsmUser](https://&lt;esm-ip&gt;:&lt;esm-port&gt;/rs/esm/help/types/EsmUser).  | Optional |
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| McAfeeESM.Alarm.ID | number | Alarm ID. | 
-| McAfeeESM.Alarm.summary | string | Alarm summary. | 
-| McAfeeESM.Alarm.assignee | string | Alarm assignee. | 
-| McAfeeESM.Alarm.severity | number | Alarm severity. | 
-| McAfeeESM.Alarm.triggeredDate | date | Alarm triggered date. | 
-| McAfeeESM.Alarm.acknowledgedDate | date | Alarm acknowledged date. | 
-| McAfeeESM.Alarm.acknowledgedUsername | string | Alarm acknowledged username. | 
-| McAfeeESM.Alarm.alarmName | string | Alarm name. | 
-| McAfeeESM.Alarm.conditionType | number | Alarm condition type. | 
+| McAfeeESM.Alarm.ID | number | Alarm ID. |
+| McAfeeESM.Alarm.summary | string | Alarm summary. |
+| McAfeeESM.Alarm.assignee | string | Alarm assignee. |
+| McAfeeESM.Alarm.severity | number | Alarm severity. |
+| McAfeeESM.Alarm.triggeredDate | date | Alarm triggered date. |
+| McAfeeESM.Alarm.acknowledgedDate | date | Alarm acknowledged date. |
+| McAfeeESM.Alarm.acknowledgedUsername | string | Alarm acknowledged username. |
+| McAfeeESM.Alarm.alarmName | string | Alarm name. |
+| McAfeeESM.Alarm.conditionType | number | Alarm condition type. |
 
 
 #### Command Example
@@ -473,18 +481,18 @@ Gets a list of cases from McAfee ESM.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| since | Filters for cases that were opened before this date. In the format "&lt;number&gt;&lt;timeunit&gt;", for example: 1 day,30 minutes,2 weeks,6 months,1 year | Optional | 
+| since | Filters for cases that were opened before this date. In the format "&lt;number&gt;&lt;timeunit&gt;", for example: 1 day,30 minutes,2 weeks,6 months,1 year | Optional |
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| McAfeeESM.Case.ID | number | Case ID. | 
-| McAfeeESM.Case.Summary | string | The summary of the case. | 
-| McAfeeESM.Case.Status | string | The status of the case. | 
-| McAfeeESM.Case.OpenTime | date | The date and time when the case was opened. | 
-| McAfeeESM.Case.Severity | number | The severity of the case. | 
+| McAfeeESM.Case.ID | number | Case ID. |
+| McAfeeESM.Case.Summary | string | The summary of the case. |
+| McAfeeESM.Case.Status | string | The status of the case. |
+| McAfeeESM.Case.OpenTime | date | The date and time when the case was opened. |
+| McAfeeESM.Case.Severity | number | The severity of the case. |
 
 
 #### Command Example
@@ -542,26 +550,26 @@ Adds a case to the system.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| summary | The name of the case. | Required | 
-| status | The status of the case. Run the esm-get-case-statuses command to view all statuses. | Optional | 
-| assignee | User assigned to the case. | Optional | 
-| severity | The severity of the case (1 - 100). | Optional | 
-| organization | The organization assigned to the case. Run the esm-get-organization-list command to view all organizations. | Optional | 
+| summary | The name of the case. | Required |
+| status | The status of the case. Run the esm-get-case-statuses command to view all statuses. | Optional |
+| assignee | User assigned to the case. | Optional |
+| severity | The severity of the case (1 - 100). | Optional |
+| organization | The organization assigned to the case. Run the esm-get-organization-list command to view all organizations. | Optional |
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| McAfeeESM.Case.ID | number | The ID of the case. | 
-| McAfeeESM.Case.Summary | string | The summary of the case. | 
-| McAfeeESM.Case.Status | string | The status of the case. | 
-| McAfeeESM.Case.OpenTime | date | The open time of the case. | 
-| McAfeeESM.Case.Severity | number | The severity of the case. | 
-| McAfeeESM.Case.Assignee | string | The assignee of the case. | 
-| McAfeeESM.Case.Organization | string | The organization of the case. | 
-| McAfeeESM.Case.EventList | Unknown | List of the case's events. | 
-| McAfeeESM.Case.Notes | Unknown | List of the case's notes. | 
+| McAfeeESM.Case.ID | number | The ID of the case. |
+| McAfeeESM.Case.Summary | string | The summary of the case. |
+| McAfeeESM.Case.Status | string | The status of the case. |
+| McAfeeESM.Case.OpenTime | date | The open time of the case. |
+| McAfeeESM.Case.Severity | number | The severity of the case. |
+| McAfeeESM.Case.Assignee | string | The assignee of the case. |
+| McAfeeESM.Case.Organization | string | The organization of the case. |
+| McAfeeESM.Case.EventList | Unknown | List of the case's events. |
+| McAfeeESM.Case.Notes | Unknown | List of the case's notes. |
 
 
 #### Command Example
@@ -604,27 +612,27 @@ Edit the details of an existing case.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | The ID of the case. | Required | 
-| summary | The name of the case. | Optional | 
-| severity | The new severity of the case (1 - 100). | Optional | 
-| assignee | User assigned to the case. | Optional | 
-| status | The new status of the case. Run the esm-get-case-statuses command to view all statuses. | Optional | 
-| organization | The organization assigned to the case. Run the esm-get-organization-list command to view all organizations. | Optional | 
+| id | The ID of the case. | Required |
+| summary | The name of the case. | Optional |
+| severity | The new severity of the case (1 - 100). | Optional |
+| assignee | User assigned to the case. | Optional |
+| status | The new status of the case. Run the esm-get-case-statuses command to view all statuses. | Optional |
+| organization | The organization assigned to the case. Run the esm-get-organization-list command to view all organizations. | Optional |
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| McAfeeESM.Case.ID | number | The ID of the case. | 
-| McAfeeESM.Case.Summary | string | The summary of the case. | 
-| McAfeeESM.Case.Status | string | The status of the case. | 
-| McAfeeESM.Case.OpenTime | date | The open time of the case. | 
-| McAfeeESM.Case.Severity | number | The severity of the case. | 
-| McAfeeESM.Case.Assignee | string | The assignee of the case. | 
-| McAfeeESM.Case.Organization | string | The organization of the case. | 
-| McAfeeESM.Case.EventList | Unknown | List of the case's events. | 
-| McAfeeESM.Case.Notes | Unknown | List of the case's notes. | 
+| McAfeeESM.Case.ID | number | The ID of the case. |
+| McAfeeESM.Case.Summary | string | The summary of the case. |
+| McAfeeESM.Case.Status | string | The status of the case. |
+| McAfeeESM.Case.OpenTime | date | The open time of the case. |
+| McAfeeESM.Case.Severity | number | The severity of the case. |
+| McAfeeESM.Case.Assignee | string | The assignee of the case. |
+| McAfeeESM.Case.Organization | string | The organization of the case. |
+| McAfeeESM.Case.EventList | Unknown | List of the case's events. |
+| McAfeeESM.Case.Notes | Unknown | List of the case's notes. |
 
 
 #### Command Example
@@ -705,9 +713,9 @@ Edits the status of a case.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| original_name | The name of the case status to edit. | Required | 
-| new_name | The new name for the case status. | Required | 
-| show_in_case_pane | Whether the status will display in the case pane. Can be "True" or "False". Default is "True". | Optional | 
+| original_name | The name of the case status to edit. | Required |
+| new_name | The new name for the case status. | Required |
+| show_in_case_pane | Whether the status will display in the case pane. Can be "True" or "False". Default is "True". | Optional |
 
 
 #### Context Output
@@ -733,22 +741,22 @@ Gets the details of an existing case.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | The ID of the case. | Required | 
+| id | The ID of the case. | Required |
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| McAfeeESM.Case.ID | number | The ID of the case. | 
-| McAfeeESM.Case.Summary | string | The summary of the case. | 
-| McAfeeESM.Case.Status | string | The status of the case. | 
-| McAfeeESM.Case.OpenTime | date | The open time of the case. | 
-| McAfeeESM.Case.Severity | number | The severity of the case. | 
-| McAfeeESM.Case.Assignee | string | The assignee of the case. | 
-| McAfeeESM.Case.Organization | string | The organization of the case. | 
-| McAfeeESM.Case.EventList | Unknown | List of the case's events. | 
-| McAfeeESM.Case.Notes | Unknown | List of the case's notes. | 
+| McAfeeESM.Case.ID | number | The ID of the case. |
+| McAfeeESM.Case.Summary | string | The summary of the case. |
+| McAfeeESM.Case.Status | string | The status of the case. |
+| McAfeeESM.Case.OpenTime | date | The open time of the case. |
+| McAfeeESM.Case.Severity | number | The severity of the case. |
+| McAfeeESM.Case.Assignee | string | The assignee of the case. |
+| McAfeeESM.Case.Organization | string | The organization of the case. |
+| McAfeeESM.Case.EventList | Unknown | List of the case's events. |
+| McAfeeESM.Case.Notes | Unknown | List of the case's notes. |
 
 
 #### Command Example
@@ -791,16 +799,16 @@ Gets case event details.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ids | Comma-separated list of event IDs. | Required | 
+| ids | Comma-separated list of event IDs. | Required |
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| McAfeeESM.CaseEvent.ID | string | The ID of the event. | 
-| McAfeeESM.CaseEvent.LastTime | date | The time the event was last updated. | 
-| McAfeeESM.CaseEvent.Message | string | The message of the event. | 
+| McAfeeESM.CaseEvent.ID | string | The ID of the event. |
+| McAfeeESM.CaseEvent.LastTime | date | The time the event was last updated. |
+| McAfeeESM.CaseEvent.Message | string | The message of the event. |
 
 
 #### Command Example
@@ -818,8 +826,8 @@ Adds a status to the specified case.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | The name of the case status. | Required | 
-| show_in_case_pane | Whether the status will display in the case pane. Can be "True" or "False". Default is "True". | Optional | 
+| name | The name of the case status. | Required |
+| show_in_case_pane | Whether the status will display in the case pane. Can be "True" or "False". Default is "True". | Optional |
 
 
 #### Context Output
@@ -846,7 +854,7 @@ Deletes the status of a case.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | The name of the case status to delete. | Required | 
+| name | The name of the case status to delete. | Required |
 
 
 #### Context Output
@@ -875,8 +883,8 @@ There are no input arguments for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| McAfeeESM.Organization.ID | number | Organization ID. | 
-| McAfeeESM.Organization.Name | string | Organization name. | 
+| McAfeeESM.Organization.ID | number | Organization ID. |
+| McAfeeESM.Organization.Name | string | Organization name. |
 
 
 #### Command Example
@@ -925,12 +933,12 @@ There are no input arguments for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| McAfeeESM.User.ID | number | The ID of the user. | 
-| McAfeeESM.User.Name | string | The ESM user name. | 
-| McAfeeESM.User.Email | string | The email address of the user. | 
-| McAfeeESM.User.SMS | string | The SMS details of the user. | 
-| McAfeeESM.User.IsMaster | boolean | Whether the user is a master user. | 
-| McAfeeESM.User.IsAdmin | boolean | Whether the user is an admin. | 
+| McAfeeESM.User.ID | number | The ID of the user. |
+| McAfeeESM.User.Name | string | The ESM user name. |
+| McAfeeESM.User.Email | string | The email address of the user. |
+| McAfeeESM.User.SMS | string | The SMS details of the user. |
+| McAfeeESM.User.IsMaster | boolean | Whether the user is a master user. |
+| McAfeeESM.User.IsAdmin | boolean | Whether the user is an admin. |
 
 
 #### Command Example
@@ -995,7 +1003,7 @@ Marks triggered alarms as acknowledged.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| alarmIds | Comma-separated list of triggered alarm IDs to be marked as acknowledged. | Required | 
+| alarmIds | Comma-separated list of triggered alarm IDs to be marked as acknowledged. | Required |
 
 
 #### Context Output
@@ -1022,7 +1030,7 @@ Marks triggered alarms as unacknowledged.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| alarmIds | Comma-separated list of triggered alarm IDs to be marked as unacknowledged. | Required | 
+| alarmIds | Comma-separated list of triggered alarm IDs to be marked as unacknowledged. | Required |
 
 
 #### Context Output
@@ -1048,7 +1056,7 @@ Deletes triggered alarms.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| alarmIds | Comma-separated list of triggered alarm IDs to delete. | Required | 
+| alarmIds | Comma-separated list of triggered alarm IDs to delete. | Required |
 
 
 #### Context Output
@@ -1074,32 +1082,32 @@ Gets the details for the triggered alarm.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| eventId | The event for which to get the details. Run the esm-list-alarm-events command to get the ID. | Required | 
+| eventId | The event for which to get the details. Run the esm-list-alarm-events command to get the ID. | Required |
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| McAfeeESM.AlarmEvent.ID | string | Event ID. | 
-| McAfeeESM.AlarmEvent.SubType | string | Event type. | 
-| McAfeeESM.AlarmEvent.Severity | number | Event severity. | 
-| McAfeeESM.AlarmEvent.Message | string | Event message. | 
-| McAfeeESM.AlarmEvent.LastTime | date | Event time. | 
-| McAfeeESM.AlarmEvent.SrcIP | string | Source IP of the event. | 
-| McAfeeESM.AlarmEvent.DstIP | string | Destination IP of the event. | 
-| McAfeeESM.AlarmEvent.Cases | Unknown | A list of cases related to the event. | 
-| McAfeeESM.AlarmEvent.Cases.ID | string | Case ID. | 
-| McAfeeESM.AlarmEvent.Cases.OpenTime | date | Case creation time. | 
-| McAfeeESM.AlarmEvent.Cases.Severity | number | Case severity. | 
-| McAfeeESM.AlarmEvent.Cases.Status | string | Case status. | 
-| McAfeeESM.AlarmEvent.Cases.Summary | string | Case summary. | 
-| McAfeeESM.AlarmEvent.DstMac | string | Destination MAC address of the event. | 
-| McAfeeESM.AlarmEvent.SrcMac | string | Source MAC address of the event. | 
-| McAfeeESM.AlarmEvent.DstPort | string | Destination port of the event. | 
-| McAfeeESM.AlarmEvent.SrcPort | string | Source port of the event. | 
-| McAfeeESM.AlarmEvent.FirstTime | date | The first time for the event. | 
-| McAfeeESM.AlarmEvent.NormalizedDescription | string | Normalized description of the event. | 
+| McAfeeESM.AlarmEvent.ID | string | Event ID. |
+| McAfeeESM.AlarmEvent.SubType | string | Event type. |
+| McAfeeESM.AlarmEvent.Severity | number | Event severity. |
+| McAfeeESM.AlarmEvent.Message | string | Event message. |
+| McAfeeESM.AlarmEvent.LastTime | date | Event time. |
+| McAfeeESM.AlarmEvent.SrcIP | string | Source IP of the event. |
+| McAfeeESM.AlarmEvent.DstIP | string | Destination IP of the event. |
+| McAfeeESM.AlarmEvent.Cases | Unknown | A list of cases related to the event. |
+| McAfeeESM.AlarmEvent.Cases.ID | string | Case ID. |
+| McAfeeESM.AlarmEvent.Cases.OpenTime | date | Case creation time. |
+| McAfeeESM.AlarmEvent.Cases.Severity | number | Case severity. |
+| McAfeeESM.AlarmEvent.Cases.Status | string | Case status. |
+| McAfeeESM.AlarmEvent.Cases.Summary | string | Case summary. |
+| McAfeeESM.AlarmEvent.DstMac | string | Destination MAC address of the event. |
+| McAfeeESM.AlarmEvent.SrcMac | string | Source MAC address of the event. |
+| McAfeeESM.AlarmEvent.DstPort | string | Destination port of the event. |
+| McAfeeESM.AlarmEvent.SrcPort | string | Source port of the event. |
+| McAfeeESM.AlarmEvent.FirstTime | date | The first time for the event. |
+| McAfeeESM.AlarmEvent.NormalizedDescription | string | Normalized description of the event. |
 
 
 #### Command Example
@@ -1157,26 +1165,26 @@ Gets a list of events related to the alarm.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| alarmId | The alarm for which to get the details. Run the esm-fetch-alarms command to get the ID. | Required | 
+| alarmId | The alarm for which to get the details. Run the esm-fetch-alarms command to get the ID. | Required |
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| McAfeeESM.AlarmEvent.ID | string | Event ID. | 
-| McAfeeESM.AlarmEvent.SubType | string | Event type. | 
-| McAfeeESM.AlarmEvent.Severity | number | Event severity. | 
-| McAfeeESM.AlarmEvent.Message | string | Event message. | 
-| McAfeeESM.AlarmEvent.LastTime | date | Event time. | 
-| McAfeeESM.AlarmEvent.SrcIP | string | Source IP of the event. | 
-| McAfeeESM.AlarmEvent.DstIP | string | Destination IP of the event. | 
-| McAfeeESM.AlarmEvent.Cases | Unknown | A list of cases related to the event. | 
-| McAfeeESM.AlarmEvent.Cases.ID | string | Case ID. | 
-| McAfeeESM.AlarmEvent.Cases.OpenTime | date | Case creation time. | 
-| McAfeeESM.AlarmEvent.Cases.Severity | number | Case severity. | 
-| McAfeeESM.AlarmEvent.Cases.Status | string | Case status. | 
-| McAfeeESM.AlarmEvent.Cases.Summary | string | Case summary. | 
+| McAfeeESM.AlarmEvent.ID | string | Event ID. |
+| McAfeeESM.AlarmEvent.SubType | string | Event type. |
+| McAfeeESM.AlarmEvent.Severity | number | Event severity. |
+| McAfeeESM.AlarmEvent.Message | string | Event message. |
+| McAfeeESM.AlarmEvent.LastTime | date | Event time. |
+| McAfeeESM.AlarmEvent.SrcIP | string | Source IP of the event. |
+| McAfeeESM.AlarmEvent.DstIP | string | Destination IP of the event. |
+| McAfeeESM.AlarmEvent.Cases | Unknown | A list of cases related to the event. |
+| McAfeeESM.AlarmEvent.Cases.ID | string | Case ID. |
+| McAfeeESM.AlarmEvent.Cases.OpenTime | date | Case creation time. |
+| McAfeeESM.AlarmEvent.Cases.Severity | number | Case severity. |
+| McAfeeESM.AlarmEvent.Cases.Status | string | Case status. |
+| McAfeeESM.AlarmEvent.Cases.Summary | string | Case summary. |
 
 
 #### Command Example
@@ -1212,34 +1220,34 @@ Gets a list of events related to the alarm.
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 192.168.1.111 |  |  |  | 144115188075855872\|802641 | 2020-06-22T06:16:05Z | Failed User Logon |  | 25 | 11.11.11.11 |  |  | failure |
 
-### esm-create-watchlist  
-***  
-Create a new watchlist.  
-  
-  
-#### Base Command  
-  
-`esm-create-watchlist`  
-#### Input  
-  
-| **Argument Name** | **Description** | **Required** |  
-| --- | --- | --- |  
+### esm-create-watchlist
+***
+Create a new watchlist.
+
+
+#### Base Command
+
+`esm-create-watchlist`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
 | name | The new watchlist name. | Required |
-| type | The type of the new watchlist. | Required |   
-  
-#### Context Output  
-  
-| **Path** | **Type** | **Description** |  
-| --- | --- | --- |  
+| type | The type of the new watchlist. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
 | McAfeeESM.Watchlist.name | string | The watchlist name |
 | McAfeeESM.Watchlist.id | number | The watchlist id |
-| McAfeeESM.Watchlist.type | string | The watchlist type |   
-  
-#### Command Example  
-```!esm-create-watchlist name=test_watchlist type=IPAddress```  
-  
-#### Context Example  
-```  
+| McAfeeESM.Watchlist.type | string | The watchlist type |
+
+#### Command Example
+```!esm-create-watchlist name=test_watchlist type=IPAddress```
+
+#### Context Example
+```
 {
 	"McAfeeESM": {
 		"Watchlist": {
@@ -1248,124 +1256,124 @@ Create a new watchlist.
 			"type": "IPAddress"
 		}
 	}
-}  
-```  
-  
-#### Human Readable Output  
-  
->Watchlist test_watchlist created.  
-  
-### esm-delete-watchlist  
-***  
-Delete a watchlist.  
-  
-  
-#### Base Command  
-  
-`esm-delete-watchlist`  
-#### Input  
-  
-| **Argument Name** | **Description** | **Required** |  
-| --- | --- | --- |  
+}
+```
+
+#### Human Readable Output
+
+>Watchlist test_watchlist created.
+
+### esm-delete-watchlist
+***
+Delete a watchlist.
+
+
+#### Base Command
+
+`esm-delete-watchlist`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
 | ids | the watch list ids to delete. | Optional |
-| names | the watch list names to delete. | Optional |   
-  
-#### Context Output  
-  
-There is no context output for this command.  
-  
-#### Command Example  
-```!esm-delete-watchlist names=test_watchlist```  
-    
-#### Human Readable Output  
-  
->Watchlists removed  
-  
-### esm-watchlist-add-entry  
-***  
-Create a new watchlist entry.  
-  
-  
-#### Base Command  
-  
-`esm-watchlist-add-entry`  
-#### Input  
-  
-| **Argument Name** | **Description** | **Required** |  
-| --- | --- | --- |  
+| names | the watch list names to delete. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+```!esm-delete-watchlist names=test_watchlist```
+
+#### Human Readable Output
+
+>Watchlists removed
+
+### esm-watchlist-add-entry
+***
+Create a new watchlist entry.
+
+
+#### Base Command
+
+`esm-watchlist-add-entry`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
 | watchlist_name | The watchlist name. | Optional |
 | watchlist_id | The watchlist id. | Optional |
-| values | The values you want to add to watchlist. (CSV format) | Required |   
-  
-#### Context Output  
-  
-There is no context output for this command.  
-  
-#### Command Example  
-```!esm-watchlist-add-entry watchlist_name=test_watchlist values=1.1.1.1,2.2.2.2```  
-    
-#### Human Readable Output  
-  
->Watchlist successfully updated.  
-  
-### esm-watchlist-delete-entry  
-***  
-Delete watchlist entry.  
-  
-  
-#### Base Command  
-  
-`esm-watchlist-delete-entry`  
-#### Input  
-  
-| **Argument Name** | **Description** | **Required** |  
-| --- | --- | --- |  
+| values | The values you want to add to watchlist. (CSV format) | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+```!esm-watchlist-add-entry watchlist_name=test_watchlist values=1.1.1.1,2.2.2.2```
+
+#### Human Readable Output
+
+>Watchlist successfully updated.
+
+### esm-watchlist-delete-entry
+***
+Delete watchlist entry.
+
+
+#### Base Command
+
+`esm-watchlist-delete-entry`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
 | watchlist_name | The watchlist name. | Optional |
 | watchlist_id | The watchlist id. | Optional |
-| values | The values you want to remove from watchlist.  (CSV format) | Required |   
-  
-#### Context Output  
-  
-There is no context output for this command.  
-  
-#### Command Example  
-```!esm-watchlist-delete-entry watchlist_name=test_watchlist values=1.1.1.1,2.2.2.2```  
-  
-  
-#### Human Readable Output  
-  
->Watchlist successfully updated.  
-  
-### esm-watchlist-list-entries  
-***  
-Get watchlist entries.  
-  
-  
-#### Base Command  
-  
-`esm-watchlist-list-entries`  
-#### Input  
-  
-| **Argument Name** | **Description** | **Required** |  
-| --- | --- | --- |  
+| values | The values you want to remove from watchlist.  (CSV format) | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+```!esm-watchlist-delete-entry watchlist_name=test_watchlist values=1.1.1.1,2.2.2.2```
+
+
+#### Human Readable Output
+
+>Watchlist successfully updated.
+
+### esm-watchlist-list-entries
+***
+Get watchlist entries.
+
+
+#### Base Command
+
+`esm-watchlist-list-entries`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
 | watchlist_name | The watchlist name. | Optional |
 | watchlist_id | The watchlist id. | Optional |
 | limit | max count of values. | Required |
-| offset | values offset. | Required |   
-  
-#### Context Output  
-  
-| **Path** | **Type** | **Description** |  
-| --- | --- | --- |  
-| McAfeeESM.Watchlist.data | Unknown | The watchlist data | 
-| McAfeeESM.Watchlist.name | string | The watchlist name |   
-  
-#### Command Example  
-```!esm-watchlist-list-entries watchlist_name=test_watchlist```  
-  
-#### Context Example  
-```  
-{  
+| offset | values offset. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| McAfeeESM.Watchlist.data | Unknown | The watchlist data |
+| McAfeeESM.Watchlist.name | string | The watchlist name |
+
+#### Command Example
+```!esm-watchlist-list-entries watchlist_name=test_watchlist```
+
+#### Context Example
+```
+{
 	"McAfeeESM": {
 		"Watchlist": {
 			"data": [
@@ -1375,12 +1383,39 @@ Get watchlist entries.
             "name": "test_watchlist"
 		}
 	}
-}  
-```  
-  
-#### Human Readable Output  
-  
->### results from test_watchlist watchlist  
->|data|  
->|---|  
+}
+```
+
+#### Human Readable Output
+
+>### results from test_watchlist watchlist
+>|data|
+>|---|
 >| 1.1.1.1,<br/>2.2.2.2,<br/> |
+
+
+### esm-get-watchlists
+***
+Returns a list of watchlists' names and IDs.
+
+
+#### Base Command
+
+`esm-get-watchlists`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| hidden | Whether to include hidden watchlists. Can be true or false. Possible values are: true, false. Default is true. | Required | 
+| dynamic | Whether to include dynamic watchlists. Can be true or false. Possible values are: true, false. Default is true. | Required | 
+| write_only | Whether to include write only watchlists. Can be true or false. Possible values are: true, false. Default is false. | Required | 
+| indexed_only | Whether to include indexed only watchlists. Can be true or false. Possible values are: true, false. Default is false. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| McAfeeESM.Watchlist.name | string | The name of the watchlist. | 
+| McAfeeESM.Watchlist.id | number | The ID of the watchlist. | 
+| McAfeeESM.Watchlist.type | string | The type of the watchlist. | 

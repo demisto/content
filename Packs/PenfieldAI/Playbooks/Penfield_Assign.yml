@@ -1,7 +1,7 @@
 id: Penfield Assign
 version: -1
 name: Penfield Assign
-description: This playbook invokes PenfieldAI backend to assign incident to an online
+description: This playbook invokes Penfield.AI backend to assign incident to an online
   analyst.
 starttaskid: "0"
 tasks:
