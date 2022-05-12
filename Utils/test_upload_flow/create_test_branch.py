@@ -11,9 +11,9 @@ import json
 def print_status(func):
     """Log the date and time of a function"""
 
-    def wrapper():
+    def wrapper(*args, **kwargs):
         print(f'Running {func.__name__}')
-        func()
+        func(*args, **kwargs)
         print("Done\n")
     return wrapper
 
