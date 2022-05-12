@@ -275,7 +275,6 @@ class IdSet(DictFileBased):
         self.id_to_script = self._parse_items(self['scripts'])
         self.id_to_integration = self._parse_items(self['integrations'])
         self.id_to_test_playbook = self._parse_items(self['TestPlaybooks'])
-        # self.id_to_packs = self._parse_items(self['Packs']) # todo remove
 
         self.implemented_scripts_to_tests = defaultdict(list)
         self.implemented_playbooks_to_tests = defaultdict(list)
@@ -285,24 +284,6 @@ class IdSet(DictFileBased):
                 self.implemented_scripts_to_tests[script].append(test)
             for playbook in test.implementing_playbooks:
                 self.implemented_playbooks_to_tests[playbook].append(test)
-
-        # todo are all the following necessary?
-        # self.id_to_classifier = self._parse_items(self['Classifiers'])
-        # self.id_to_incident_field = self._parse_items(self['IncidentFields'])
-        # self.id_to_incident_type = self._parse_items(self['IncidentType'])
-        # self.id_to_indicator_field = self._parse_items(self['IndicatorFields'])
-        # self.id_to_indicator_type = self._parse_items(self['IndicatorTypes'])
-        # self.id_to_layout =  self._parse_items(self['Layouts'])
-        # self.id_to_list = self._parse_items(self['Lists'])
-        # self.id_to_job = self._parse_items(self['Jobs'])
-        # self.id_to_mapper = self._parse_items(self['Mappers'])
-        # self.id_to_generic_type = self._parse_items(self['GenericTypes'])
-        # self.id_to_generic_field = self._parse_items(self['GenericFields'])
-        # self.id_to_generic_module = self._parse_items(self['GenericModules'])
-        # self.id_to_generic_definitions = self._parse_items(self['GenericDefinitions'])
-        # self.id_to_report = self._parse_items(self['Reports'])
-        # self.id_to_widget = self._parse_items(self['Widgets'])
-        # self.id_to_dashboard = self._parse_items(self['Dashboards'])
 
         self.integration_to_pack = {integration.name: integration.pack for integration in self.integrations}
         self.scripts_to_pack = {script.name: script.pack for script in self.scripts}
@@ -421,13 +402,13 @@ class CollectedTests:
             raise RuntimeError('both test and pack provided are empty')
 
         if test:
-            logger.info(f'collecting {test=}, {reason.value=} {reason_description}')
+            logger.info(f'collecting {test=}, {reason.value} {reason_description}')
             self.tests.add(test)
 
         if pack:
             try:
                 self._validate_pack(pack)
-                logger.info(f'collecting {pack=}, {reason.value=} {reason_description}')
+                logger.info(f'collecting {pack=}, {reason.value} {reason_description}')
                 self.packs.add(pack)
             except (IgnoredPackException, SkippedPackException) as e:
                 logger.info(str(e))
@@ -453,7 +434,7 @@ class CollectedTests:
         #     raise DeprecatedPackException(pack)
 
     def __repr__(self):
-        return f'{len(self.packs)} pack_name_to_pack_metadata, {len(self.tests)} tests, {self.version_range=}'
+        return f'{len(self.packs)} packs, {len(self.tests)} tests, {self.version_range=}'
 
 
 def to_tuple(value: Optional[str | list]) -> Optional[tuple]:
