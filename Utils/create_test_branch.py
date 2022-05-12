@@ -14,9 +14,9 @@ if __name__ == "__main__":
     args = parse_arguments()
     repo = Repo(args.path)
     original_branch = repo.active_branch
-    repo.chekcout('master')
+    repo.git.checkout('master')
     print(repo.active_branch)
-    repo.checkout(original_branch)
+    repo.git.checkout(original_branch)
     
     """
     # parse inputs
