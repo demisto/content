@@ -9,7 +9,7 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
-def test_dummy():
+def test_test_module():
     """Tests helloworld-say-hello command function.
 
     Checks the output of the command function with the expected output.

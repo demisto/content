@@ -1,4 +1,7 @@
-
+import demistomock as demisto
+from CommonServerPython import *
+class Client(BaseClient):
+    pass
 
 def test_module(client: Client) -> str:
     """Tests API connectivity and authentication'
