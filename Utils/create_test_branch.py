@@ -1,15 +1,12 @@
 import argparse
 from git import Repo
+from pathlib import Path, Head
 
-def create_new_branch(repo: Repo, new_branch_name:str) -> None:
-    if new_branch_name in repo.git.branch("--all"):
-        print("Branch already exits.")
-        return
-
+def create_new_branch(repo: Repo, new_branch_name:str) -> Head:      
     branch = repo.create_head(new_branch_name)
     branch.checkout()
-    print(repo.active_branch)
-
+    print(f"Created new branch {repo.active_branch}")
+    return branch
 
 def parse_arguments() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
@@ -28,7 +25,11 @@ if __name__ == "__main__":
         original_branch = repo.active_branch
     
     new_branch_name = f"{original_branch}_upload_test_branch_{repo.active_branch.object.hexsha}"
-    create_new_branch(repo, new_branch_name)
+    branch = create_new_branch(repo, new_branch_name)
+    Path("./test.txt").write_text("Hello!")
+    repo.git.add("test.txt")
+    repo.git.commit(m=f"Added Test file")
+    repo.git.push('--set-upstream', 'https://code.pan.run/xsoar/content.git', branch)
     repo.git.checkout(original_branch)
     """
     # parse inputs
