@@ -143,7 +143,7 @@ def main():
         last_run = demisto.getLastRun()
         last_object_ids = last_run.get('ids')
         if 'after' not in last_run:
-            last_run = after.isoformat()
+            last_run = after.isoformat()  # type: ignore
         else:
             last_run = last_run['after']
         demisto_params['params'] = ReqParams(**demisto_params, since=last_run)
