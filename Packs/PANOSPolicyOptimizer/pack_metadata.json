@@ -14,10 +14,6 @@
     "useCases": [],
     "keywords": [],
     "dependencies": {
-        "Panorama": {
-            "mandatory": true,
-            "display_name": "PAN-OS"
-        },
         "CommonScripts": {
             "mandatory": true,
             "display_name": "Common Scripts"

@@ -11,7 +11,7 @@
             "mandatory": true,
             "display_name": "SplunkPy"
         },
-        "Demisto REST API": {
+        "DemistoRESTAPI": {
             "mandatory": true,
             "display_name": "Demisto REST API"
         }

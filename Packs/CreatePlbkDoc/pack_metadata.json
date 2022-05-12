@@ -15,7 +15,7 @@
         "mazmat-panw"
     ],
     "dependencies": {
-        "Demisto REST API": {
+        "DemistoRESTAPI": {
             "mandatory": true,
             "display_name": "Demisto REST API"
         }

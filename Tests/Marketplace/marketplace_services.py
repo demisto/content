@@ -119,8 +119,13 @@ class Pack(object):
 
     @property
     def name(self):
-        """ str: pack root folder name.
+        """ str: pack name.
         """
+        return self._pack_name
+
+    def id(self):
+        """ str: pack root folder name.
+                """
         return self._pack_name
 
     @property
@@ -2032,7 +2037,7 @@ class Pack(object):
             build_number (str): circleCI build number.
             commit_hash (str): current commit hash.
             statistics_handler (StatisticsHandler): The marketplace statistics handler
-            packs_dict (dict): dict of all packs relevant for current marketplace, as {pack_id: pack_object}.
+            packs_dict (dict): dict of all packs relevant for current marketplace, as {pack_name: pack_object}.
             marketplace (str): Marketplace of current upload.
             format_dependencies_only (bool): Indicates whether the metadata formation is just for formatting the
              dependencies or not.

@@ -89,10 +89,6 @@
             "mandatory": false,
             "display_name": "Flashpoint"
         },
-        "XFE": {
-            "mandatory": false,
-            "display_name": "IBM X-Force Exchange"
-        },
         "GoogleChronicleBackstory": {
             "mandatory": false,
             "display_name": "Chronicle"
