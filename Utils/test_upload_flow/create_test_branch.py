@@ -126,6 +126,7 @@ def add_1_0_0_release_notes(pack: Path):
 ##### {pack.name}
 first release note
 """)
+    return pack
 
 
 def create_new_branch(repo: Repo, new_branch_name: str) -> Head:
