@@ -37,50 +37,51 @@ def create_pr_comment(validate_pr_comment, unit_tests_pr_comment) -> str:
 
 
 def generate_error_msg_for_servers(failing_test_data):
-    return f'Investigate your failing test throw this ssh: {failing_test_data.get("ssh_tunnel", "")}' \
-           f'and use this link: {failing_test_data.get("server_url", "")}.' \
+    return f'Investigate your failing test throw this ssh: {failing_test_data.get("ssh_tunnel", "")} ' \
+           f'and use this link: {failing_test_data.get("server_url", "")}. ' \
            f'The error as it appears in the logs: {failing_test_data.get("error", "")}'
 
 
-def build_summary_report(logging_manager,
-                         validate_summary, unit_tests_summary, create_instances_summary, server_6_1_summary,
+def build_summary_report(logging_manager,create_instances_summary, server_6_1_summary,
                          server_6_2_summary,
                          server_master_summary,
                          output_file):
 
-    test_cases = []
-
-    for file, failing_validations in validate_summary.items():
-        # test_case = TestCase('Test1', 'some.class.name', 123.345, 'I am stdout!', 'I am stderr!')
-        for failing_validation in failing_validations:
-            test_case = TestCase(f'validate.{file}', 'Validate', stdout='I am stdout!', stderr=failing_validation)
-            test_case.add_failure_info(message=failing_validation)
-            test_cases.append(test_case)
-
-            logging_manager.info(f"creating test case for {failing_validation}")
-    validate_ts = TestSuite("Validate", test_cases)
-
     create_test_cases = []
     for failing_pack, failing_pack_data in create_instances_summary.items():
         test_case = TestCase(f'create_instances.{failing_pack}', 'Create Instances')
-        # TODO change to all list
-        test_case.add_failure_info(message=failing_pack_data.get('errors')[0])
+        errors = failing_pack_data.get('errors', [])
+        for error in errors:
+            test_case.add_failure_info(message=error)
         create_test_cases.append(test_case)
     create_ts = TestSuite("Create Instances", create_test_cases)
 
-    six_one_test_cases = []
+    test_cases_6_1 = []
     for failing_test, failing_test_data in server_6_1_summary.items():
         test_case = TestCase(f'6_1.{failing_test}', 'Server 6.1')
         test_case.add_failure_info(message=generate_error_msg_for_servers(failing_test_data[0]))
-        six_one_test_cases.append(test_case)
-    six_one_ts = TestSuite("Server 6.1", six_one_test_cases)
+        test_cases_6_1.append(test_case)
+    ts_6_1 = TestSuite("Server 6.1", test_cases_6_1)
+
+    test_cases_6_2 = []
+    for failing_test, failing_test_data in server_6_2_summary.items():
+        test_case = TestCase(f'6_2.{failing_test}', 'Server 6.2')
+        test_case.add_failure_info(message=generate_error_msg_for_servers(failing_test_data[0]))
+        test_cases_6_2.append(test_case)
+    ts_6_2 = TestSuite("Server 6.1", test_cases_6_2)
+
+    test_cases_server_master = []
+    for failing_test, failing_test_data in server_6_1_summary.items():
+        test_case = TestCase(f'master.{failing_test}', 'Server Master')
+        test_case.add_failure_info(message=generate_error_msg_for_servers(failing_test_data[0]))
+        test_cases_server_master.append(test_case)
+    ts_master = TestSuite("Server Master", test_cases_server_master)
 
     with open(output_file, 'a') as f:
-        logging_manager.info("opened file")
-        to_xml_report_file(f, [validate_ts, create_ts, six_one_ts], prettyprint=False)
+        to_xml_report_file(f, [create_ts, ts_6_1, ts_6_2, ts_master], prettyprint=False)
 
 
-def test_get_failing_ut():
+def get_failing_ut():
     failed_ut = get_file_data(os.path.join(ARTIFACTS_FOLDER, 'failed_unit_tests.json'))
     if failed_ut:
         # TODO change method of counting
@@ -91,10 +92,8 @@ def test_get_failing_ut():
     return pr_message, failed_ut
 
 
-def test_get_failing_validations():
+def get_failing_validations():
     failed_validations = get_file_data(os.path.join(ARTIFACTS_FOLDER, 'validate_outputs.json'))
-    # file = open('validate_outputs.json', 'r')
-    # failed_validations = json.load(file)
     validate_summary = {}
     if failed_validations:
         pr_message = f'You have {len(failed_validations)} failing validations in this push.\n'
@@ -135,8 +134,8 @@ def options_handler():
 
 
 def generate_build_report(logging_manager, output_file):
-    validate_pr_comment, validate_summary = test_get_failing_validations()
-    unit_tests_pr_comment, unit_tests_summary = test_get_failing_ut()
+    validate_pr_comment, validate_summary = get_failing_validations()
+    unit_tests_pr_comment, unit_tests_summary = get_failing_ut()
     create_instances_pr_comment, create_instances_summary = get_failing_create_instances()
     server_6_1_pr_comment, server_6_1_summary = get_failing_server_6_1()
     pr_comment = create_pr_comment(validate_pr_comment, unit_tests_pr_comment)
