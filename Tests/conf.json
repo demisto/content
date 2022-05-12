@@ -4408,7 +4408,7 @@
         {
             "playbookID": "CrowdStrike_FalconX_Test",
             "fromversion": "6.1.0",
-            "memory_threshold": 80,
+            "memory_threshold": 90,
             "integrations": [
                 "CrowdStrike Falcon X"
             ]
@@ -5012,7 +5012,8 @@
         {
             "integrations": "MalwareBazaar",
             "playbookID": "MalwareBazaar_Test",
-            "fromversion": "6.0.0"
+            "fromversion": "6.0.0",
+            "memory_threshold": 90
         },
         {
             "integrations": "OpsGenieV3",
