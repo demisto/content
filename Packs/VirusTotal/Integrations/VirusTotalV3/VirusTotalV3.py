@@ -99,7 +99,10 @@ class Client(BaseClient):
             'https://www.virustotal.com/api/v3/',
             verify=not argToBoolean(params.get('insecure')),
             proxy=argToBoolean(params.get('proxy')),
-            headers={'x-apikey': params['credentials']['password']}
+            headers={
+                'x-apikey': params['credentials']['password'],
+                'x-tool': 'CortexVirusTotalV3'
+            }
         )
 
     # region Reputation calls
