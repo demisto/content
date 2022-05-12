@@ -68,6 +68,7 @@ def change_image(pack: Path):
         shutil.copy(new_image, p)
     return pack
 
+
 @add_changed_pack
 def update_existing_release_notes(pack: Path, relese_note: str):
     path = pack / 'ReleaseNotes' / relese_note
@@ -76,6 +77,7 @@ def update_existing_release_notes(pack: Path, relese_note: str):
 
     with path.open('a') as f:
         f.write('\n#### Upload flow\n - Test\n')
+    return pack
 
 
 @add_changed_pack
@@ -167,7 +169,7 @@ if __name__ == "__main__":
         update_existing_release_notes(packs_path / 'Box', "2_1_2.md")
         enhance_release_notes(packs_path / 'Box')
         update_existing_release_notes(packs_path / 'Base', "1_13_13.md")
-        add_1_0_0_release_notes(packs_path/ 'BPA')
+        add_1_0_0_release_notes(packs_path / 'BPA')
         set_pack_hidden(packs_path / 'Microsoft365Defender')
         update_readme(packs_path / 'Maltiverse')
         update_pack_ignore(packs_path / 'MISP')
