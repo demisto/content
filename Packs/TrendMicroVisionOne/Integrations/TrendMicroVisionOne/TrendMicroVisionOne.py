@@ -203,8 +203,8 @@ class Client(BaseClient):
         """
         header = {
             "Authorization": "Bearer {token}".format(token=self.api_key),
-            "Content-Type": f'{CONTENT_TYPE_JSON}{";charset=utf-8"}',
-            "User-Agent": f'{USER_AGENT}'
+            "Content-Type": f'{CONTENT_TYPE_JSON};charset=utf-8',
+            "User-Agent": USER_AGENT,
         }
         try:
             response = self._http_request(method=method, full_url=f'{self.base_url}{url_suffix}', retries=3, json_data=json_data,
