@@ -695,9 +695,6 @@ class BranchTestCollector(TestCollector):
             raise  # files that are either supposed to be in a pack, or should not be ignored.
 
         match file_type:
-            case FileType.PYTHON_FILE | FileType.POWERSHELL_FILE | FileType.JAVASCRIPT_FILE:
-                raise RuntimeError('impossible, these files are handled before the switch case')
-
             case FileType.PACK_IGNORE | FileType.SECRET_IGNORE | FileType.DOC_FILE | FileType.README:
                 raise NoTestsToCollect(path, f'ignored type ({file_type}')
 
