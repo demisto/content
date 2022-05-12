@@ -1,3 +1,5 @@
+from csv import DictWriter
+
 import functools
 import json
 import sys
@@ -6,7 +8,7 @@ from collections import defaultdict
 from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
-from typing import Any, Iterable, Optional
+from typing import Any, Iterable, Optional, NamedTuple
 
 from demisto_sdk.commands.common.constants import FileType, MarketplaceVersions
 
@@ -52,6 +54,14 @@ class CollectionReason(Enum):
     MAPPER_CHANGED = 'mapper file changed, configured as incoming_mapper_id in test conf'
     CLASSIFIER_CHANGED = 'classifier file changed, configured as classifier_id in test conf'
     EMPTY_UNION = 'no tests to union'
+
+
+CollectionLog = NamedTuple('CollectionLog', (('test', Optional[str]),
+                                             ('pack', Optional[str]),
+                                             ('reason', CollectionReason),
+                                             ('description', str),
+                                             ))
+collection_log: list[CollectionLog] = []
 
 
 class DictBased:
@@ -388,23 +398,24 @@ class CollectedTests:
             test: Optional[str],
             pack: Optional[str],
             reason: CollectionReason,
-            reason_description: str = '',
+            description: str = '',
     ):
         """ Should only be called from add_multiple """  # todo really?
         if not any((test, pack)):
             raise RuntimeError('both test and pack provided are empty')
 
         if test:
-            logger.info(f'collecting {test=}, {reason.value} {reason_description}')
+            logger.info(f'collecting {test=}, {reason.value} {description}')
             self.tests.add(test)
 
         if pack:
             try:
                 self._validate_pack(pack)
-                logger.info(f'collecting {pack=}, {reason.value} {reason_description}')
+                logger.info(f'collecting {pack=}, {reason.value} {description}')
                 self.packs.add(pack)
             except (IgnoredPackException, SkippedPackException) as e:
                 logger.info(str(e))
+        collection_log.append(CollectionLog(test, pack, reason, description))
 
     def add_id_set_item(self, item: IdSetItem, reason: CollectionReason, reason_description: str = '',
                         add_pack: bool = True, add_test: bool = True):
@@ -784,12 +795,22 @@ class UploadCollector(TestCollector):
         pass
 
 
+def write_log(log: list[CollectionLog]):
+    keys = ('test', 'pack', 'reason', 'description')
+    with Path('collected_tests.tsv', 'w', delimiter='\t') as file:
+        writer = DictWriter(file, keys)
+        writer.writeheader()
+        for row in log:
+            writer.writerow(row._asdict())
+
+
 if __name__ == '__main__':
     try:
         sys.path.append(str(CONTENT_PATH))
         # collector = NightlyTestCollector(marketplace=MarketplaceVersions.XSOAR)
         collector = BranchTestCollector(marketplace=MarketplaceVersions.XSOAR, branch_name='master')
         print(collector.collect(True, True))
+        write_log(collection_log)
 
     except:
         Repo(CONTENT_PATH).git.checkout('ds-test-collection')  # todo remove
