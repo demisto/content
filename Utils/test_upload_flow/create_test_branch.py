@@ -66,7 +66,7 @@ def change_image(pack: Path):
     for p in Path(pack).glob('**/*.png'):
         # shutil.rmtree(p)
         shutil.copy(new_image, p)
-
+    return pack
 
 @add_changed_pack
 def update_existing_release_notes(pack: Path, relese_note: str):
