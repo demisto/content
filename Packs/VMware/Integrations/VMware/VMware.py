@@ -20,8 +20,6 @@ def parse_params(params):
     user_name = params.get('credentials').get('identifier')
     password = params.get('credentials').get('password')
     test = 'test'
-
-    test1 = {}
     return full_url, url, port, user_name, password, test
 
 

@@ -6,6 +6,7 @@ import json
 import urllib3
 import traceback
 from typing import Any, Dict, Tuple, List
+import junit_xml
 
 # Disable insecure warnings
 urllib3.disable_warnings()
