@@ -631,7 +631,7 @@ class Pack(object):
             Metadata.VERSION_INFO: build_number,
             Metadata.COMMIT: commit_hash,
             Metadata.DOWNLOADS: self._downloads_count,
-            Metadata.TAGS: self._tags or [],
+            Metadata.TAGS: list(self._tags or []),
             Metadata.CATEGORIES: self._categories,
             Metadata.CONTENT_ITEMS: self._content_items,
             Metadata.SEARCH_RANK: self._search_rank,
