@@ -10,7 +10,6 @@ import json
 from IAMApiModule import *
 from unittest.mock import patch
 
-
 BASE_TEST_PARAMS = {
     'server_ip': '127.0.0.1',
     'secure_connection': 'None',
@@ -511,3 +510,44 @@ def test_user_account_to_boolean_fields():
 
     fields = Active_Directory_Query.user_account_to_boolean_fields(0x50)
     assert {k for k, v in fields.items() if v} == {'LOCKOUT', 'PASSWD_CANT_CHANGE'}
+
+
+@pytest.mark.parametrize('flags', [512, 0, 544])
+def test_restore_user(mocker, flags):
+    """
+    Given:
+        A disabled user.
+    When:
+        Calling restore_user method.
+    Then:
+        Verify the existing flag is returned.
+    """
+    from Active_Directory_Query import restore_user
+
+    re_val = {'flat': [{'userAccountControl': [flags]}]}
+    mocker.patch('Active_Directory_Query.search_with_paging', return_value=re_val)
+    mocker.patch.object(demisto, 'args')
+
+    assert restore_user('test_user', 0) == flags
+
+
+def test_enable_user_with_restore_user_option(mocker):
+    """
+    Given:
+        A disabled user.
+    When:
+        Calling enable_user method.
+    Then:
+        Verify the existing flag is returned with the disable bit off.
+    """
+    from Active_Directory_Query import enable_user
+    disabled_account_with_properties = 546
+    enabled_account_with_properties = 544
+    mocker.patch('Active_Directory_Query.restore_user', return_value=disabled_account_with_properties)
+    mocker.patch('Active_Directory_Query.user_dn', return_value='test_dn')
+    modify_data = mocker.patch('Active_Directory_Query.modify_object')
+    mocker.patch.object(demisto, 'args')
+
+    enable_user('test_user', 0)
+
+    assert modify_data.call_args.args[1].get('userAccountControl')[0][1] == enabled_account_with_properties

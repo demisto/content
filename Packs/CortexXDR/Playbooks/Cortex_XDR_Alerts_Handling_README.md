@@ -69,7 +69,8 @@ This playbook does not use any scripts.
 | PortScan.FileArtifacts | File artifacts from the port scan alert. | unknown |
 | PortScan.LateralMovementFirstDatetime | Lateral Movement First Date time from the port scan alert. | unknown |
 | PortScan.PortScanFirstDatetime | Port Scan First Date time | unknown |
+| PaloAltoNetworksXDR.Incident.shouldRetrieveFile | Files hashes which are not present and were marked as "not retrieve" by the user | unknown |
 
 ## Playbook Image
 ---
-![Cortex XDR Alerts Handling](https://github.com/demisto/content/raw/3fadebe9e16eb7c9fc28ce3bb600319ec875e3b5/Packs/CortexXDR/doc_files/Cortex_XDR_Alerts_Handling.png)
+![Cortex XDR Alerts Handling](https://raw.githubusercontent.com/demisto/content/master/Packs/CortexXDR/doc_files/Cortex_XDR_Alerts_Handling.png)
