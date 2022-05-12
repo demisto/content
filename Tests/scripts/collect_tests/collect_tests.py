@@ -666,8 +666,9 @@ class BranchTestCollector(TestCollector):
         )
 
     def _collect_single(self, path) -> CollectedTests:
-        if file_type := find_type_by_path(path):
-            reason_description = file_type.value
+        file_type = find_type_by_path(path)
+        reason_description = f'{path.name} ({file_type.value})'
+
         try:
             content_item = ContentItem(path)
         except NonDictException:
