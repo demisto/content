@@ -55,8 +55,8 @@ def add_dependency(base_pack: Path, new_depndency_pack: Path):
 
 @add_changed_pack
 def enhance_release_notes(pack: Path):
-    subprocess.call['demisto-sdk', 'update-release-notes', '-i',
-                    f'{pack}', "--force", '--text', 'Adding release notes to check the upload flow']
+    subprocess.call(['demisto-sdk', 'update-release-notes', '-i',
+                    f'{pack}', "--force", '--text', 'Adding release notes to check the upload flow'])
     return pack
 
 
