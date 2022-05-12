@@ -190,8 +190,6 @@ class Machine(Enum):
     def __repr__(self):
         return self.value
 
-    def __str__(self):
-        return self.value
 
 class TestConf(DictFileBased):
     __test__ = False  # prevents pytest from running it
@@ -438,8 +436,7 @@ class CollectedTests:
         #     raise DeprecatedPackException(pack)
 
     def __repr__(self):
-        machines = f' {self.machines}' if self.machines else ''
-        return f'{len(self.packs)} packs, {len(self.tests)} tests, {self.version_range=}{machines}'
+        return f'{len(self.packs)} packs, {len(self.tests)} tests, {self.version_range=}'
 
 
 def to_tuple(value: Optional[str | list]) -> Optional[tuple]:
