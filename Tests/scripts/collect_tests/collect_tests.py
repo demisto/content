@@ -717,14 +717,14 @@ class BranchTestCollector(TestCollector):
                     reason = CollectionReason.NON_CODE_FILE_CHANGED
                     reason_description = f'no specific tests for {content_item.name} were found'
 
-            case FileType.README | FileType.METADATA | FileType.RELEASE_NOTES | FileType.RELEASE_NOTES_CONFIG | \
-                 FileType.IMAGE | FileType.DESCRIPTION | FileType.INCIDENT_TYPE | FileType.INCIDENT_FIELD | \
-                 FileType.INDICATOR_FIELD | FileType.LAYOUT | FileType.WIDGET | FileType.DASHBOARD | FileType.REPORT | \
-                 FileType.PARSING_RULE | FileType.MODELING_RULE | FileType.CORRELATION_RULE | \
-                 FileType.XSIAM_DASHBOARD | FileType.XSIAM_REPORT | FileType.REPORT | FileType.GENERIC_TYPE | \
-                 FileType.GENERIC_FIELD | FileType.GENERIC_MODULE | FileType.GENERIC_DEFINITION | \
-                 FileType.PRE_PROCESS_RULES | FileType.JOB | FileType.CONNECTION | FileType.RELEASE_NOTES_CONFIG | \
-                 FileType.XSOAR_CONFIG:
+            case FileType.README | FileType.METADATA | FileType.README | FileType.RELEASE_NOTES \
+                 | FileType.RELEASE_NOTES_CONFIG | FileType.IMAGE | FileType.DESCRIPTION | FileType.INCIDENT_TYPE | \
+                 FileType.INCIDENT_FIELD | FileType.INDICATOR_FIELD | FileType.LAYOUT | FileType.WIDGET \
+                 | FileType.DASHBOARD | FileType.REPORT | FileType.PARSING_RULE | FileType.MODELING_RULE | \
+                 FileType.CORRELATION_RULE | FileType.XSIAM_DASHBOARD | FileType.XSIAM_REPORT | FileType.REPORT | \
+                 FileType.GENERIC_TYPE | FileType.GENERIC_FIELD | FileType.GENERIC_MODULE | \
+                 FileType.GENERIC_DEFINITION | FileType.PRE_PROCESS_RULES | FileType.JOB | FileType.CONNECTION | \
+                 FileType.RELEASE_NOTES_CONFIG | FileType.XSOAR_CONFIG:
 
                 tests = None
                 reason = CollectionReason.NON_CODE_FILE_CHANGED
