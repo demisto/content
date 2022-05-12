@@ -79,15 +79,16 @@ if __name__ == "__main__":
 
       new_pack_path = create_new_pack()
       add_dependency(content_path/'Packs'/'Armis', new_pack_path)
-
+      
+      repo.git.add(f"{content_path/'Packs'}/*")
       repo.git.commit(m=f"Added Test file")
       repo.git.push('--set-upstream', 'https://code.pan.run/xsoar/content.git', branch)
       repo.git.checkout(original_branch)
 
     except GitCommandError as e:
       print(e)
-      
+
     finally:
       repo.git.checkout(original_branch)
       if branch:
-        branch.delete()
+        branch.delete(repo)
