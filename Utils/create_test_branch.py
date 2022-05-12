@@ -1,23 +1,35 @@
 import argparse
 from git import Repo
 
+def create_new_branch(repo: Repo, new_branch_name:str) -> None:
+    if new_branch_name in repo.git.branch("--all"):
+        print("Branch already exits.")
+        return
 
-def parse_arguments():
+    branch = repo.create_head(new_branch_name)
+    branch.checkout()
+    print(repo.active_branch)
+
+
+def parse_arguments() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument("-p","--path", nargs="?", help="Content directory path, default is current directory.", default='.')
     parser.add_argument("-cb","--content-branch", nargs="?", help="The content branch name, if empty will run on current branch.")
     return parser.parse_args()
 
-
 if __name__ == "__main__":
 
     args = parse_arguments()
     repo = Repo(args.path)
-    original_branch = repo.active_branch
-    repo.git.checkout('master')
-    print(repo.active_branch)
-    repo.git.checkout(original_branch)
+    if args.content_branch:
+        original_branch = args.content_branch
+        repo.git.checkout(original_branch)
+    else:
+        original_branch = repo.active_branch
     
+    new_branch_name = f"{original_branch}_upload_test_branch_{repo.active_branch.object.hexsha}"
+    create_new_branch(repo, new_branch_name)
+    repo.git.checkout(original_branch)
     """
     # parse inputs
 if [ "$#" -lt "1" ]; then
