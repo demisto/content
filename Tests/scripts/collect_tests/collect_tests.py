@@ -643,14 +643,14 @@ class BranchTestCollector(TestCollector):
                         case 'Playbooks':
                             tests = self.id_set.implemented_playbooks_to_tests.get(yml_content_item.id_)
                         case _:
-                            raise RuntimeError('this can not really happen')
+                            raise RuntimeError(f'unexpected content type folder {content_item_folder}')
 
                     if not tests:
-                        logger.warning(f'{original_file_type.value} {str(yml_content_item.path)} has `No Tests` configured,'
-                                       f' and no tests in id_set')  # todo is this necessary?
+                        logger.warning(f'{original_file_type.value} {str(yml_content_item.path)} '
+                                       f'has `No Tests` configured, and no tests in id_set')  # todo necessary?
             case _:
-                raise RuntimeError(f'Unexpected content type original_file_path {content_item_folder}'
-                                   f' (expected `Integrations`, `Scripts`, etc)')
+                raise RuntimeError(f'Unexpected content type original_file_path {content_item_folder} '
+                                   f'(expected `Integrations`, `Scripts`, etc)')
 
         return CollectedTests(
             tests=tests,
