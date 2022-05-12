@@ -1799,6 +1799,66 @@ def malware_query(action_values, limit):
     return http_request('POST', '/rest/malware/query', json_body=json_body)
 
 
+def start_host_scan_command():
+    sensor_id = demisto.getArg('sensorID')
+    sensor_ids = sensor_id.split(",")
+    argument = demisto.getArg('scanType')
+    json_body = {
+        "sensorsIds":sensor_ids,
+        "argument":argument
+    }
+    response = http_request('POST', '/rest/sensors/action/schedulerScan', json_body=json_body, return_json=False, custom_response=True)
+    if response.status_code == 204:
+        demisto.results("The given Sensor ID/ID's: {sensor_ids} is/are not available for scanning.".format(sensor_ids=sensor_ids))
+    elif response.status_code == 200:
+        try:
+            response_json = response.json()
+            batch_id = dict_safe_get(response_json, ['batchId'])
+            demisto.results("Scanning initiation successful. Batch ID: {}".format(batch_id))
+        except Exception as e:
+            raise Exception("Exception occurred while processing response for scanning a host: " + str(e))
+    else:
+        try:
+            json_response = response.json()
+            demisto.results("Could not scan the host. The received response is {json_response}".format(json_response=json_response))
+        except Exception as e:
+            raise Exception('Your request failed with the following error: ' + response.content + '. Response Status code: ' + str(response.status_code))
+
+
+def fetch_scan_status_command():
+    batch_id = demisto.getArg('batchID')
+    action_response = http_request('GET', '/rest/sensors/allActions')
+    output = "The given batch ID does not match with any actions on sensors."
+    for item in action_response:
+        if dict_safe_get(item, ['batchId']) == int(batch_id):
+            output = item
+            break
+    demisto.results(output)
+
+
+def get_sensor_id_command():
+    machine_name = demisto.getArg('machineName')
+    json_body = {}
+    if machine_name:
+        json_body = {
+            "filters": [
+                {
+                    "fieldName": "machineName",
+                    "operator": "Equals",
+                    "values": [machine_name]
+                }
+            ]
+        }
+    response = http_request('POST', '/rest/sensors/query', json_body=json_body)
+    if dict_safe_get(response, ['sensors']) == []:
+        demisto.results("Could not found any Sensor ID for the machine '{}'".format(machine_name))
+    else:
+        output = {}
+        for single_sensor in response['sensors']:
+            output[single_sensor['machineName']] = single_sensor['sensorId']
+        demisto.results(f"Available Sensor IDs are {output}")
+
+
 def main():
     auth = ''
     try:
@@ -1908,6 +1968,15 @@ def main():
 
         elif demisto.command() == 'cybereason-malware-query':
             malware_query_command()
+
+        elif demisto.command() == 'cybereason-start-host-scan':
+            start_host_scan_command()
+
+        elif demisto.command() == 'cybereason-fetch-scan-status':
+            fetch_scan_status_command()
+
+        elif demisto.command() == 'cybereason-get-sensor-id':
+            get_sensor_id_command()
 
     except Exception as e:
         return_error(str(e))
