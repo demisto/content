@@ -4,6 +4,7 @@ import os
 from junit_xml import TestSuite, TestCase, to_xml_report_file
 from demisto_sdk.commands.test_content.execute_test_content import _add_pr_comment
 from demisto_sdk.commands.test_content.execute_test_content import ParallelLoggingManager
+import re
 
 ARTIFACTS_FOLDER = os.getenv('ARTIFACTS_FOLDER', './artifacts')
 JOB_ID = os.environ.get('CI_JOB_ID')
@@ -42,7 +43,7 @@ def generate_error_msg_for_servers(failing_test_data):
            f'The error as it appears in the logs: {failing_test_data.get("error", "")}'
 
 
-def build_summary_report(logging_manager,create_instances_summary, server_6_1_summary,
+def build_summary_report(logging_manager, create_instances_summary, server_6_1_summary,
                          server_6_2_summary,
                          server_master_summary,
                          output_file):
