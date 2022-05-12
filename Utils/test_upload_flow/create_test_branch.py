@@ -13,8 +13,9 @@ def print_status(func):
 
     def wrapper(*args, **kwargs):
         print(f'Running {func.__name__}')
-        func(*args, **kwargs)
+        res = func(*args, **kwargs)
         print("Done\n")
+        return res
     return wrapper
 
 
