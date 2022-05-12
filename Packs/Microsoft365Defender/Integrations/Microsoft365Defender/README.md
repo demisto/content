@@ -52,20 +52,20 @@ Follow these steps for a self-deployed configuration:
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Application ID | The API key to use to connect. | True |
+    | Application ID | The API key to use to connect. | False |
     | Endpoint URI | The United States: api-us.security.microsoft.com<br/>Europe: api-eu.security.microsoft.com<br/>The United Kingdom: api-uk.security.microsoft.co | True |
     | Use Client Credentials Authorization Flow | Use a self-deployed Azure application and authenticate using the Client Credentials flow. | False |
-    | Tenant ID (for Client Credentials mode) | Tenant ID | False |
-    | Client Secret (for Client Credentials mode) | Encryption key given by the admin | False |
+    | Tenant ID (for Client Credentials mode) |  | False |
+    | Password |  | False |
     | Certificate Thumbprint | Used for certificate authentication. As appears in the "Certificates & secrets" page of the app. | False |
     | Private Key | Used for certificate authentication. The private key of the registered certificate. | False |
     | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
     | Fetch incidents timeout | The time limit in seconds for fetch incidents to run. Leave this empty to cancel the timeout limit. | False |
     | Number of incidents for each fetch. | Due to API limitations, the maximum is 100. | False |
-    | Incident type | | False |
-    | isFetch | Fetch incidents | False |
-    | insecure | Trust any certificate (not secure) | False |
-    | proxy | Use system proxy settings | False |
+    | Incident type |  | False |
+    | Fetch incidents |  | False |
+    | Trust any certificate (not secure) |  | False |
+    | Use system proxy settings |  | False |
 
 4. Run the !microsoft-365-defender-auth-test command to validate the authentication process.
 
@@ -164,7 +164,7 @@ There is no context output for this command.
 
 ### microsoft-365-defender-auth-test
 ***
-Tests the connectivity to the Azure SQL Management.
+Tests the connectivity to the Microsoft 365 Defender.
 
 
 #### Base Command
@@ -201,7 +201,7 @@ Get the most recent incidents.
 | assigned_to | Owner of the incident. | Optional | 
 | limit | Number of incidents in the list. Maximum is 100. Default is 100. | Optional | 
 | offset | Number of entries to skip. | Optional | 
-| timeout | The time limit in seconds for the http request to run. Default value is 30. | Optional | 
+| timeout | The time limit in seconds for the http request to run. Default is 30. | Optional | 
 
 
 #### Context Output
@@ -235,7 +235,7 @@ Get the most recent incidents.
 
 ### microsoft-365-defender-incident-update
 ***
-Update incident with the given ID.
+Update the incident with the given ID.
 
 
 #### Base Command
@@ -245,13 +245,13 @@ Update incident with the given ID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| status | Categorize incidents. Possible values are: Active, Resolved, and Redirected. | Optional | 
+| status | Categorize incidents (as Active, Resolved, or Redirected). Possible values are: Active, Resolved, Redirected. | Optional | 
 | assigned_to | Owner of the incident. | Optional | 
 | id | Incident's ID. | Required | 
-| classification | The specification for the incident. Possible values are: Unknown, FalsePositive, and TruePositive. | Optional | 
-| determination | Determination of the incident. Possible values are: NotAvailable, Apt, Malware, SecurityPersonnel, SecurityTesting, UnwantedSoftware, and Other. | Optional | 
+| classification | The specification for the incident. Possible values are: Unknown, FalsePositive, TruePositive. | Optional | 
+| determination | Determination of the incident. Possible values are: NotAvailable, Apt, Malware, SecurityPersonnel, SecurityTesting, UnwantedSoftware, Other. | Optional | 
 | tags | A comma-separated list of custom tags associated with an incident. For example: tag1,tag2,tag3. | Optional | 
-| timeout | The time limit in seconds for the http request to run. Default value is 30| Optional |
+| timeout | The time limit in seconds for the http request to run. Default is 30. | Optional | 
 
 
 #### Context Output
@@ -266,8 +266,8 @@ Update incident with the given ID.
 | Microsoft365Defender.Incident.assignedTo | String | Owner of the incident. | 
 | Microsoft365Defender.Incident.classification | String | Specification of the incident. Possible values are: Unknown, FalsePositive, and TruePositive. | 
 | Microsoft365Defender.Incident.determination | String | The determination of the incident. Possible values are: NotAvailable, Apt, Malware, SecurityPersonnel, SecurityTesting, UnwantedSoftware, and Other. | 
-| Microsoft365Defender.Incident.status | String | The current status of the incident. Possible values are: Active, Resolved, and Redirected. | 
 | Microsoft365Defender.Incident.severity | String | Severity of the incident. Possible values are: UnSpecified, Informational, Low, Medium, and High. | 
+| Microsoft365Defender.Incident.status | String | The current status of the incident. Possible values are: Active, Resolved, and Redirected. | 
 | Microsoft365Defender.Incident.alerts | Unknown | List of alerts relevant for the incidents. | 
 
 
@@ -295,8 +295,8 @@ Details on how to write queries you can find [here](https://docs.microsoft.com/e
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | query | Advanced hunting query. | Required | 
-| limit | Number of entries.  Enter -1 for unlimited query. Default is 50. | Required | 
 | timeout | The time limit in seconds for the http request to run. Default is 30. | Optional | 
+| limit | Number of entries.  Enter -1 for unlimited query. Default is 50. | Required | 
 
 
 #### Context Output
