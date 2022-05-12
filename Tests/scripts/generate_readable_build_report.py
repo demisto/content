@@ -73,7 +73,7 @@ def build_summary_report(logging_manager,
         test_case = TestCase(f'6_1.{failing_test}', 'Server 6.1')
         test_case.add_failure_info(message=generate_error_msg_for_servers(failing_test_data[0]))
         six_one_test_cases.append(test_case)
-    six_one_ts = TestSuite("Server 6.1", create_test_cases)
+    six_one_ts = TestSuite("Server 6.1", six_one_test_cases)
 
     with open(output_file, 'a') as f:
         logging_manager.info("opened file")
