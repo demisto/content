@@ -1,8 +1,12 @@
 import datetime
-from GoogleBigQuery import convert_to_string_if_datetime
+import json
+
+import demistomock as demisto
+
 
 
 def test_convert_to_string_if_datetime():
+    from GoogleBigQuery import convert_to_string_if_datetime
     test_conversion_for_none = convert_to_string_if_datetime(None)
     assert test_conversion_for_none is None
 
@@ -64,3 +68,110 @@ def test_remove_outdated_incident_ids_keep_equal_no_incidents():
     assert 'aaa' not in res and 'bbb' not in res
 
 
+def test_verify_params_all_existing(mocker):
+    from GoogleBigQuery import verify_params
+    mock_params = {
+        'first_fetch_time': "1 days",
+        'fetch_query': "test",
+        'fetch_time_field': "test"
+    }
+
+    mocker.patch.object(demisto, 'params', return_value=mock_params)
+
+    return_error_target = 'GoogleBigQuery.return_error'
+    return_error_mock = mocker.patch(return_error_target)
+    verify_params()
+    assert return_error_mock.call_count == 0
+
+
+def test_verify_params_first_fetch_time_missing(mocker):
+    from GoogleBigQuery import verify_params
+
+    mock_params = {
+        'fetch_query': "test",
+        'fetch_time_field': "test"
+    }
+    mocker.patch.object(demisto, 'params', return_value=mock_params)
+
+    return_error_target = 'GoogleBigQuery.return_error'
+
+    return_error_mock = mocker.patch(return_error_target)
+    verify_params()
+    assert return_error_mock.call_count == 1
+
+    mock_params = {
+        'first_fetch_time': '',
+        'fetch_query': "test",
+        'fetch_time_field': "test"
+    }
+    mocker.patch.object(demisto, 'params', return_value=mock_params)
+
+    verify_params()
+    assert return_error_mock.call_count == 2
+
+
+def test_verify_params_fetch_query_missing(mocker):
+    from GoogleBigQuery import verify_params
+
+    mock_params = {
+        'first_fetch_time': "1 days",
+        'fetch_time_field': "test"
+    }
+    mocker.patch.object(demisto, 'params', return_value=mock_params)
+
+    return_error_target = 'GoogleBigQuery.return_error'
+
+    return_error_mock = mocker.patch(return_error_target)
+    verify_params()
+    assert return_error_mock.call_count == 1
+
+    mock_params = {
+        'first_fetch_time': "1 days",
+        'fetch_query': "",
+        'fetch_time_field': "test"
+    }
+    mocker.patch.object(demisto, 'params', return_value=mock_params)
+
+    verify_params()
+    assert return_error_mock.call_count == 2
+
+
+def test_verify_params_fetch_time_field_missing(mocker):
+    from GoogleBigQuery import verify_params
+
+    mock_params = {
+        'first_fetch_time': "1 days",
+        'fetch_query': "test",
+    }
+    mocker.patch.object(demisto, 'params', return_value=mock_params)
+
+    return_error_target = 'GoogleBigQuery.return_error'
+
+    return_error_mock = mocker.patch(return_error_target)
+    verify_params()
+    assert return_error_mock.call_count == 1
+
+    mock_params = {
+        'first_fetch_time': "1 days",
+        'fetch_query': "test",
+        'fetch_time_field': ""
+    }
+    mocker.patch.object(demisto, 'params', return_value=mock_params)
+
+    verify_params()
+    assert return_error_mock.call_count == 2
+
+
+def test_get_max_incident_time_single_incident():
+    from GoogleBigQuery import get_max_incident_time
+
+    incident = {
+        'rawJSON': {
+            'creation_time': '2020-05-05 08:08:09.000'
+        }
+    }
+
+    incident['rawJSON'] = json.dumps(incident['rawJSON'])
+    incidents = [incident]
+
+    assert get_max_incident_time(incidents) == '2020-05-05 08:08:09.000'
