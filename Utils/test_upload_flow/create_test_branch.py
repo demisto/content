@@ -64,7 +64,7 @@ def enhance_release_notes(pack: Path):
 def change_image(pack: Path):
     new_image = Path(__file__).parent / 'TestUploadFlow' / 'Integrations' / 'TestUploadFlow' / 'TestUploadFlow_image.png'
     for p in Path(pack).glob('**/*.png'):
-        shutil.rmtree(p)
+        # shutil.rmtree(p)
         shutil.copy(new_image, p)
 
 
