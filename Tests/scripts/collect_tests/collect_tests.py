@@ -520,7 +520,7 @@ class TestCollector(ABC):
 
     def collect(self, run_nightly: bool, run_master: bool):
         collected: CollectedTests = self._collect()
-        collected.machines = Machine.get_suitable_machines(self.version_range, run_nightly, run_master)
+        collected.machines = Machine.get_suitable_machines(collected.version_range, run_nightly, run_master)
 
         if collected.machines is None and not collected.not_empty:  # todo reconsider
             raise EmptyMachineListException()
