@@ -43,6 +43,7 @@
 
 <p><img src="https://github.com/demisto/content-docs/blob/master/docs/doc_imgs/integrations/cybereason-pre-process.png" alt="Cybereason_Pre_Process_Rule.jpg"></p>
 <p><strong>Integration Instance Configuration</strong></p>
+
 <p><img src="https://raw.githubusercontent.com/demisto/content/ca13780e216a39751600dcb1e386d12f52fc8f25/docs/images/Integrations/Cybereason_Cybereason_Fetched_Incidents_2.jpg" alt="Cybereason_Fetched_Incidents_2.jpg"></p>
 
 <h2>Commands</h2>
