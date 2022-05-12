@@ -32,8 +32,7 @@ def get_file_data(file_path: str) -> dict:
 def create_pr_comment(validate_pr_comment, unit_tests_pr_comment) -> str:
     comment = ''
     comment += validate_pr_comment
-    comment += f'here is a link to the full report: ' \
-               f'code.pan.run/xsoar/content/-/pipelines/{JOB_ID}/test_report'
+    comment += f'here is a link to the full report: code.pan.run/xsoar/content/-/pipelines/{JOB_ID}/test_report'
     return comment
 
 
@@ -41,6 +40,7 @@ def generate_error_msg_for_servers(failing_test_data):
     return f'Investigate your failing test throw this ssh: {failing_test_data.get("ssh_tunnel", "")}' \
            f'and use this link: {failing_test_data.get("server_url", "")}.' \
            f'The error as it appears in the logs: {failing_test_data.get("error", "")}'
+
 
 def build_summary_report(logging_manager,
                          validate_summary, unit_tests_summary, create_instances_summary, server_6_1_summary,
@@ -74,7 +74,6 @@ def build_summary_report(logging_manager,
         test_case.add_failure_info(message=generate_error_msg_for_servers(failing_test_data[0]))
         six_one_test_cases.append(test_case)
     six_one_ts = TestSuite("Server 6.1", create_test_cases)
-
 
     with open(output_file, 'a') as f:
         logging_manager.info("opened file")
@@ -117,6 +116,7 @@ def get_failing_create_instances():
     create_instances_summary = failing_create.get('prepare_content_for_testing', {}).get('failed_packs', {})
 
     return 'pr_message', create_instances_summary
+
 
 def get_failing_server_6_1():
     failing_6_1 = get_file_data(os.path.join(f'{ARTIFACTS_FOLDER}/xsoar', 'test_playbooks_report_Server 6.1.json'))
