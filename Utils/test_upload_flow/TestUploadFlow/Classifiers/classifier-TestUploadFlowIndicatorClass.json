@@ -1,0 +1,11 @@
+{
+    "description": "",
+    "feed": true,
+    "id": "a3985aac-b6aa-45d0-8d1f-93ab3f4bdd01",
+    "keyTypeMap": {},
+    "name": "TestUploadFlowIndicatorClass",
+    "transformer": {},
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.2.0"
+}
