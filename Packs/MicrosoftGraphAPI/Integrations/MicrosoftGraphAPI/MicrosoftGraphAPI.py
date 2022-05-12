@@ -72,8 +72,8 @@ def complete_auth(client: MsGraphClient):  # pragma: no cover
     return 'Authorization completed successfully.'
 
 
-def test_module(client: MsGraphClient, params: Dict) -> str:  # pragma: no cover
-    if params.get('app_secret') and params.get('tenant_id'):
+def test_module(client: MsGraphClient, app_secret: str, tenant_id: str) -> str:  # pragma: no cover
+    if app_secret and tenant_id:
         client.ms_client.get_access_token()
         return 'ok'
     else:
@@ -157,7 +157,7 @@ def main() -> None:  # pragma: no cover
         )
 
         if command == 'test-module':
-            result = test_module(client, params)
+            result = test_module(client, app_secret, params.get('tenant_id'))
             return_results(result)
         elif command == 'msgraph-api-request':
             return_results(generic_command(client, demisto.args()))
