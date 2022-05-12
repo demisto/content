@@ -4,7 +4,7 @@ import io
 from datetime import datetime, timedelta
 from freezegun import freeze_time
 import ServiceNowv2
-from CommonServerPython import DemistoException
+from CommonServerPython import DemistoException, EntryType
 from ServiceNowv2 import get_server_url, get_ticket_context, get_ticket_human_readable, \
     generate_body, split_fields, Client, update_ticket_command, create_ticket_command, delete_ticket_command, \
     query_tickets_command, add_link_command, add_comment_command, upload_file_command, get_ticket_notes_command, \
@@ -1059,7 +1059,7 @@ def test_get_remote_data(mocker):
     res = get_remote_data_command(client, args, params)
 
     assert res[1]['File'] == 'test.txt'
-    assert res[2]['Contents'] == 'Type: comments\n\nThis is a comment'
+    assert res[2]['Contents'] == 'Type: comments\nCreated By: admin\nCreated On: 2020-08-17 06:31:49\nThis is a comment'
 
 
 def test_assigned_to_field_no_user():
@@ -1163,7 +1163,7 @@ def test_get_remote_data_no_attachment(mocker):
     mocker.patch.object(client, 'get', return_value=RESPONSE_ASSIGNMENT_GROUP)
 
     res = get_remote_data_command(client, args, params)
-    assert res[1]['Contents'] == 'Type: comments\n\nThis is a comment'
+    assert res[1]['Contents'] == 'Type: comments\nCreated By: admin\nCreated On: 2020-08-17 06:31:49\nThis is a comment'
     assert len(res) == 2
 
 
@@ -1578,3 +1578,21 @@ def test_generic_api_call_command(command, args, response, mocker):
     mocker.patch.object(client, 'send_request', return_value=response)
     result = command(client, args)
     assert result.outputs == response
+
+
+@pytest.mark.parametrize('file_type , expected',
+                         [(EntryType.FILE, True),
+                          (3, True),
+                          (EntryType.IMAGE, True),
+                          (EntryType.NOTE, False),
+                          (15, False)])
+def test_is_entry_type_mirror_supported(file_type, expected):
+    """
+    Given:
+        - an entry file type
+    When:
+        - running the update_remote_system_command checking if the entry supports mirroring
+    Then:
+        - return True if the file entry type supports mirroring else return False
+    """
+    assert ServiceNowv2.is_entry_type_mirror_supported(file_type) == expected
