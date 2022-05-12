@@ -186,6 +186,6 @@ script:
   isfetch: true
   runonce: false
 tests:
-- Netskope Test
+- No Test - deprecated
 fromversion: 5.0.0
 deprecated: true
