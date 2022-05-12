@@ -18,6 +18,9 @@ URLREGEX = r"^(?:(?:(?:https?|ftps?):)?\/\/)?((?:\S+(?::\S*)?@)?(?:(?!(?:10|127)
     r"(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|" + \
     r"(?:(?:[a-z0-9\\u00a1-\\uffff][a-z0-9\\u00a1-\\uffff_-]{0,62})?" + \
     r"[a-z0-9\\u00a1-\\uffff]\.)+(?:[a-z\\u00a1-\\uffff]{2,}|xn--[a-z0-9]+\.?))(?::\d{2,5})?(?:[\/?#]\S*)?)$"
+MD5REGEX = r"^[a-f0-9]{32}$"
+SHA1REGEX = r"^[0-9a-f]{40}$"
+SHA256REGEX = r"^[A-Fa-f0-9]{64}$"
 
 ''' CLIENT CLASS '''
 
@@ -142,6 +145,49 @@ class RSTUrl(Common.URL):
         return ret_value
 
 
+class RSTFile(Common.File):
+    CONTEXT_PATH = 'File(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 || ' \
+        'val.SHA256 && val.SHA256 == obj.SHA256 || val.SHA512 && val.SHA512 == obj.SHA512 || ' \
+        'val.CRC32 && val.CRC32 == obj.CRC32 || val.CTPH && val.CTPH == obj.CTPH || ' \
+        'val.SSDeep && val.SSDeep == obj.SSDeep)'
+
+    def __init__(self, dbot_score, md5=None, sha1=None, sha256=None, detection_engines=None,
+                 positive_detections=None, category=None, rstscore=None, tags=None,
+                 malwarefamily=None, firstseenbysource=None, lastseenbysource=None):
+        super().__init__(md5, sha1, sha256, dbot_score, detection_engines, positive_detections, category)
+        self.rstscore = rstscore
+        self.tags = tags
+        self.malwarefamily = malwarefamily
+        self.firstseenbysource = firstseenbysource
+        self.lastseenbysource = lastseenbysource
+
+    def to_context(self):
+        ret_value = super().to_context()
+        file_context = {
+            'MD5': self.md5,
+            'SHA1': self.sha1,
+            'SHA256': self.sha256
+        }
+        if self.rstscore:
+            file_context['RST Score'] = self.rstscore
+
+        if self.tags:
+            file_context['Tags'] = self.tags
+
+        if self.malwarefamily:
+            file_context['MalwareFamily'] = self.malwarefamily
+
+        if self.lastseenbysource:
+            file_context['FirstSeenBySource'] = self.firstseenbysource
+
+        if self.lastseenbysource:
+            file_context['LastSeenBySource'] = self.lastseenbysource
+
+        ret_value[Common.File.CONTEXT_PATH].update(file_context)
+
+        return ret_value
+
+
 class Client:
     def __init__(self, apikey, api_url='https://api.rstcloud.net/v1', verify=False, proxy=False):
         self.apikey = apikey
@@ -253,12 +299,27 @@ def parse_indicator_response(res, indicator_type):
 
     Args:
       res (Dict[str, str]): RST Threat Feed response
-      indicator_type (str): IP, Domain or UL
+      indicator_type (str): IP, Domain, URL or File
     Returns:
       (Dict[str, str]): a result to return into XSOAR's context.
     """
     name = {'IP': 'Address', 'Domain': 'Name', 'URL': 'Data'}
-    indicator = {name[indicator_type]: res.get('ioc_value', ''), 'Type': indicator_type}
+    if indicator_type != 'File':
+        indicator = {name[indicator_type]: res.get('ioc_value', ''), 'Type': indicator_type}
+    else:
+        indicator = {}
+        try:
+            indicator = {"MD5": res.get('md5', ''), 'Type': indicator_type}
+        except Exception:
+            pass
+        try:
+            indicator = {"SHA1": res.get('sha1', ''), 'Type': indicator_type}
+        except Exception:
+            pass
+        try:
+            indicator = {"SHA256": res.get('sha256', ''), 'Type': indicator_type}
+        except Exception:
+            pass
     if 'error' not in res:
         first_seen = str(int(res.get('fseen', '')) * 1000)
         last_seen = str(int(res.get('lseen', '')) * 1000)
@@ -275,6 +336,15 @@ def parse_indicator_response(res, indicator_type):
         if 'fp' in res:
             indicator['FalsePositive'] = res.get('fp').get('alarm', '')
             indicator['FalsePositiveDesc'] = res.get('fp').get('descr', '')
+        if 'cve' in res:
+            indicator['CVE'] = res.get('cve', '')
+        if 'industry' in res:
+            indicator['Industry'] = res.get('industry', '')
+        if 'src' in res and 'report' in res['src']:
+            try:
+                indicator['Report'] = res.get('src').get('report', '').split(',')
+            except Exception:
+                indicator['Report'] = res.get('src').get('report', '')
         if 'id' in res:
             indicator['UUID'] = res.get('id', '')
             indicator['RSTReference'] = "https://rstcloud.net/uuid?id=" + res.get('id', '')
@@ -297,7 +367,8 @@ def parse_indicator_response(res, indicator_type):
         if indicator_type == 'URL':
             indicator['Parsed'] = res.get('parsed', '')
             indicator['Status'] = res.get('resolved').get('status', '')
-            indicator['CVE'] = res.get('cve', '')
+        if indicator_type == 'File':
+            indicator['Name'] = res.get('filename', '')
     else:
         indicator['error'] = res.get('error', '')
     return indicator
@@ -316,8 +387,8 @@ def test_module(client: Client) -> str:
       str: 'ok' if test passed, anything else will fail the test.
     """
     result = ''
-    params = ['threshold_ip', 'threshold_domain', 'threshold_url', 'indicator_expiration_ip',
-              'indicator_expiration_domain', 'indicator_expiration_url']
+    params = ['threshold_ip', 'threshold_domain', 'threshold_url', 'threshold_hash', 'indicator_expiration_ip',
+              'indicator_expiration_domain', 'indicator_expiration_url', 'indicator_expiration_hash']
     for param in params:
         result += check_arg_type(param, demisto.params().get(param))
     if result == '':
@@ -577,6 +648,94 @@ def url_command(client: Client, args: Dict[str, str]) -> Tuple[list, list, list]
     return markdown, raw_results, indicators
 
 
+def file_command(client: Client, args: Dict[str, str]) -> Tuple[list, list, list]:
+    """
+    Executes File enrichment against RST Threat Feed.
+
+    Args:
+      client (Client): RST Threat Feed client.
+      args (Dict[str, str]): the arguments for the command.
+    Returns:
+      list(str): human readable presentation of the Hash indicators.
+      list(dict): the results to return into XSOAR's context.
+      list(dict): the raw results to return into XSOAR's context.
+    """
+
+    hashes = argToList(args.get('file', ''))
+    threshold = int(args.get('threshold', DEFAULT_THRESHOLD))
+    if check_arg_type('threshold_hash', str(threshold)) != '':
+        raise Exception(str(threshold) + ': threshold must be from 0 to 100')
+    markdown = []
+    raw_results = []
+    indicators = []
+
+    for hash in hashes:
+        markdown_item = ''
+        md5regex = re.compile(MD5REGEX)
+        sha1regex = re.compile(SHA1REGEX)
+        sha256regex = re.compile(SHA256REGEX)
+        md5match = md5regex.fullmatch(hash)
+        sha1match = sha1regex.fullmatch(hash)
+        sha256match = sha256regex.fullmatch(hash)
+        if md5match or sha1match or sha256match:
+            indicator = client.get_indicator(hash)
+        else:
+            raise Exception('is not a valid Hash')
+        if 'error' in indicator:
+            if indicator['error'] == 'Not Found':
+                score = Common.DBotScore(
+                    indicator=hash,
+                    indicator_type=DBotScoreType.FILE,
+                    integration_name='RST Cloud',
+                    score=Common.DBotScore.NONE
+                )
+                markdown_item += f'Hash: {hash} not found\n'
+                raw_results.append(parse_indicator_response(indicator, 'File'))
+                if md5match:
+                    indicators.append(Common.File(md5=hash, sha1='', sha256='', dbot_score=score))
+                if sha1match:
+                    indicators.append(Common.File(md5='', sha1=hash, sha256='', dbot_score=score))
+                if sha256match:
+                    indicators.append(Common.File(md5='', sha1='', sha256=hash, dbot_score=score))
+                markdown.append(markdown_item)
+                continue
+            else:
+                raise Exception(f"RST Threat Feed API error while getting a response "
+                                f"for {indicator['ioc_value']}: {indicator['error']}\n")
+        else:
+            total_score = int(indicator.get('score', {}).get('total'))
+            calc_score = calculate_score(total_score, threshold, 'hash', int(indicator.get('lseen', '')))
+            dbot_score = Common.DBotScore(
+                indicator=indicator['ioc_value'],
+                indicator_type=DBotScoreType.FILE,
+                integration_name='RST Cloud',
+                score=calc_score,
+                malicious_description=indicator.get('description', '')
+            )
+            result = Common.File(
+                md5=indicator['md5'], sha1=indicator['sha1'], sha256=indicator['sha256'],
+                dbot_score=dbot_score
+            )
+            human_readable_score = ''
+            if calc_score == 3:
+                human_readable_score = 'Malicious'
+            if calc_score == 2:
+                human_readable_score = 'Suspicious'
+
+            table = {'Score': total_score,
+                     'Relevance': human_readable_score,
+                     'Threat': ', '.join(threat for threat in indicator.get('threat', '')),
+                     'Last Seen': time.strftime('%Y-%m-%d', time.localtime(int(indicator.get('lseen', 0)))),
+                     'Description': f"{string_to_context_key(indicator.get('description', ''))}\n",
+                     'Tags': ', '.join(tag for tag in indicator.get('tags', '').get('str', ''))}
+            markdown_item += tableToMarkdown(f'RST Threat Feed File Reputation for: {indicator["ioc_value"]}\n',
+                                             table, removeNull=True)
+            markdown.append(markdown_item)
+            raw_results.append(parse_indicator_response(indicator, 'File'))
+            indicators.append(result)
+    return markdown, raw_results, indicators
+
+
 def submit_command(client: Client, args: Dict[str, str]) -> list:
     """
         Submits a new indicator to RST Threat Feed via API
@@ -665,6 +824,17 @@ def main():
                     readable_output=markdown[i],
                     outputs_prefix='RST.URL',
                     outputs_key_field='Data',
+                    outputs=raw_results[i],
+                    indicator=indicators[i]
+                )
+                return_results(output)
+        elif command == 'file':
+            markdown, raw_results, indicators = file_command(client, demisto.args())
+            for i in range(0, len(raw_results)):
+                output = CommandResults(
+                    readable_output=markdown[i],
+                    outputs_prefix='RST.File',
+                    outputs_key_field='UUID',
                     outputs=raw_results[i],
                     indicator=indicators[i]
                 )
