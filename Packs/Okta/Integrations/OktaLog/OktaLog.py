@@ -23,7 +23,7 @@ class ReqParams(BaseModel):
     sortOrder: Optional[str] = 'ASCENDING'
     limit: str = '1000'
 
-    def set_since_value(self, since: str) -> None:
+    def set_since_value(self, since: str) -> None:  # pragma: no cover
         self.since = since
 
 
@@ -47,7 +47,7 @@ class Client:
     def __init__(self, request: Request):
         self.request = request
 
-    def call(self, requests=requests) -> requests.Response:
+    def call(self, requests=requests) -> requests.Response:  # pragma: no cover
         try:
             response = requests.request(**self.request.dict())
             response.raise_for_status()
@@ -97,7 +97,7 @@ class GetEvents:
                 LOG('empty list, breaking')
                 break
 
-    def aggregated_results(self, last_object_ids: List[str] = None) -> List[dict]:
+    def aggregated_results(self, last_object_ids: List[str] = None) -> List[dict]:  # pragma: no cover
         """
         Function to group the events returned from the api
         """
@@ -132,7 +132,7 @@ class GetEvents:
         return [event for event in events if event['uuid'] not in ids]
 
 
-def main():
+def main():  # pragma: no cover
     try:
         demisto_params = demisto.params() | demisto.args()
         events_limit = int(demisto_params.get('limit', 2000))
