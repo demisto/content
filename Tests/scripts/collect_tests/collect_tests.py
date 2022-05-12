@@ -345,7 +345,7 @@ class IdSet(DictFileBased):
                     if existing := result.get(id_):
                         # Some content items have multiple copies, each supporting different versions. We use the newer.
                         if item.to_version <= existing.to_version and item.from_version <= existing.from_version:
-                            logger.info(f'skipping duplicate of {item.name} as its version range {item.version_range}'
+                            logger.info(f'skipping duplicate of {item.name} as its version range {item.version_range} '
                                         f'is older than of the existing one, {existing.version_range}')
                             continue  # todo makes sense?
 
@@ -812,7 +812,12 @@ class NoTestsConfiguredException(Exception):
 
 
 if __name__ == '__main__':
-    sys.path.append(str(CONTENT_PATH))
-    # collector = NightlyTestCollector(marketplace=MarketplaceVersions.XSOAR)
-    collector = BranchTestCollector(marketplace=MarketplaceVersions.XSOAR, branch_name='master')
-    print(collector.collect(True, True))
+    try:
+        sys.path.append(str(CONTENT_PATH))
+        # collector = NightlyTestCollector(marketplace=MarketplaceVersions.XSOAR)
+        collector = BranchTestCollector(marketplace=MarketplaceVersions.XSOAR, branch_name='master')
+        print(collector.collect(True, True))
+
+    except:
+        Repo(CONTENT_PATH).git.checkout('ds-test-collection')  # todo remove
+        raise
