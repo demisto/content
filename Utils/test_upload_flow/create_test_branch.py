@@ -35,7 +35,8 @@ def create_new_pack():
 
 @print_status
 def add_dependency(base_pack: Path, new_depndency_pack: Path):
-    with base_pack.open('r') as f:
+    metadata_json = base_pack / 'pack_metadata.json'
+    with metadata_json.open('r') as f:
         base_metadata = json.load(f)
     new_pack_name = new_depndency_pack.name
     base_metadata['dependencies'][new_pack_name] = {
@@ -43,7 +44,7 @@ def add_dependency(base_pack: Path, new_depndency_pack: Path):
         "display_name": new_pack_name
     }
 
-    with base_pack.open('w') as f:
+    with metadata_json.open('w') as f:
       json.dump(base_metadata, f)
 
 
