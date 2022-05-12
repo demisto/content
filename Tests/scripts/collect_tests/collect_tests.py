@@ -1,3 +1,5 @@
+import logging
+
 import functools
 
 import sys
@@ -11,7 +13,7 @@ from typing import Any, Iterable, Optional
 
 from demisto_sdk.commands.common.constants import FileType, MarketplaceVersions
 from demisto_sdk.commands.common.git_util import GitUtil
-from demisto_sdk.commands.common.tools import find_type_by_path, get_file
+from demisto_sdk.commands.common.tools import find_type_by_path, get_file, get_remote_file
 from git import Repo
 from packaging import version
 from packaging.version import Version
@@ -24,13 +26,13 @@ from Tests.scripts.collect_tests.constants import (CONTENT_PATH,
 from Tests.scripts.collect_tests.exceptions import (IgnoredPackException,
                                                     InvalidPackNameException,
                                                     SkippedPackException, InexistentPackException)
-import logging
+from logging import getLogger, DEBUG, WARNING, ERROR
 
-logging.basicConfig(level=logging.DEBUG)
+logger = getLogger()
+logger.level = DEBUG
 
 PACK_NAMES = {p.name for p in PACKS_PATH.glob('*') if p.is_dir()}
-
-# git_util = GitUtil(CONTENT_PATH) # todo delete
+COMMIT = 'ds-test-collection'
 
 
 class CollectionReason(Enum):
@@ -61,7 +63,7 @@ class DictBased:
 
     def get(self, key: str, default: Any = None, warn_if_missing: bool = True):
         if key not in self.content and warn_if_missing:
-            logging.warning(f'attempted to access key {key}, which does not exist')
+            logger.warning(f'attempted to access key {key}, which does not exist')
         return self.content.get(key, default)
 
     def __getitem__(self, key):
@@ -114,7 +116,8 @@ class VersionRange:
 class DictFileBased(DictBased):
     def __init__(self, path: Path):
         self.path = path
-        super().__init__(get_file(path, path.suffix[1:]))  # returns an empty dictionary # todo handle?
+        logger.debug(f'opening file {path}')
+        super().__init__(get_remote_file(full_file_path=str(path), tag=COMMIT, git_content_config=None))
 
 
 class ContentItem(DictFileBased):
@@ -223,14 +226,14 @@ class IdSetItem(DictBased):
         # hidden for pack_name_to_pack_metadata, deprecated for content items
         self.pack: Optional[str] = self.get('pack', warn_if_missing=False)
         if 'pack' not in self.content:
-            logging.warning(f'content item with id={id_} and name={self.name} has no pack value')  # todo debug? info?
+            logger.warning(f'content item with id={id_} and name={self.name} has no pack value')  # todo debug? info?
 
         self.marketplaces: Optional[tuple[MarketplaceVersions]] = \
             tuple(MarketplaceVersions(v) for v in self.get('marketplaces', (), warn_if_missing=False)) or None
 
     @property
     def integrations(self):
-        return to_tuple(self.content.get('integrations'))
+        return to_tuple(self.get('integrations', (), warn_if_missing=False))
 
     @property
     def tests(self):
@@ -330,14 +333,14 @@ class IdSet(DictFileBased):
                     item = IdSetItem(id_, value)
 
                     if item.pack in SKIPPED_PACKS:  # todo does this make sense here? raise exception instead?
-                        logging.info(f'skipping {id_=} as the {item.pack} pack is skipped')
+                        logger.info(f'skipping {id_=} as the {item.pack} pack is skipped')
                         continue
 
                     if existing := result.get(id_):
                         # Some content items have multiple copies, each supporting different versions. We use the newer.
                         if item.to_version <= existing.to_version and item.from_version <= existing.from_version:
-                            logging.info(f'skipping duplicate of {item.name} as its version range {item.version_range}'
-                                         f'is older than of the existing one, {existing.version_range}')
+                            logger.info(f'skipping duplicate of {item.name} as its version range {item.version_range}'
+                                        f'is older than of the existing one, {existing.version_range}')
                             continue  # todo makes sense?
 
                     result[id_] = item
@@ -383,7 +386,7 @@ class CollectedTests:
     @classmethod
     def union(cls, collected_tests: list['CollectedTests']) -> 'CollectedTests':
         if not collected_tests:
-            logging.warning('no tests to union')
+            logger.warning('no tests to union')
             return None  # todo
 
         return functools.reduce(lambda a, b: a | b, collected_tests)
@@ -400,16 +403,16 @@ class CollectedTests:
             raise RuntimeError('both test and pack provided are empty')
 
         if test:
-            logging.info(f'collecting {test=}, {reason.value=} {reason_description}')
+            logger.info(f'collecting {test=}, {reason.value=} {reason_description}')
             self.tests.add(test)
 
         if pack:
             try:
                 self._validate_pack(pack)
-                logging.info(f'collecting {pack=}, {reason.value=} {reason_description}')
+                logger.info(f'collecting {pack=}, {reason.value=} {reason_description}')
                 self.packs.add(pack)
             except (IgnoredPackException, SkippedPackException) as e:
-                logging.info(str(e))
+                logger.info(str(e))
 
     def add_id_set_item(self, item: IdSetItem, reason: CollectionReason, reason_description: str = '',
                         add_pack: bool = True, add_test: bool = True):
@@ -421,7 +424,7 @@ class CollectedTests:
         if not pack:
             raise InvalidPackNameException(pack)
         if pack not in PACK_NAMES:
-            logging.error(f'inexistent pack {pack}')
+            logger.error(f'inexistent pack {pack}')
             raise InexistentPackException(pack)
         if pack in IGNORED_FILES:  # todo is necessary?
             raise IgnoredPackException(pack)
@@ -460,7 +463,7 @@ class TestConfItem(DictBased):
 
     @property
     def integrations(self) -> tuple[str]:
-        return to_tuple(self.get('integrations'))  # todo may warn a lot, consider default value
+        return to_tuple(self.get('integrations', (), warn_if_missing=False))  # todo warn?
 
     @property
     def is_mockable(self):
@@ -513,8 +516,8 @@ class TestCollector(ABC):
     def _add_packs_from_tested_integrations(self, tests: set[str]) -> list[CollectedTests]:
         # only called in _add_packs_used
         # todo is it used in the new version?
-        logging.info(f'searching for integrations used in test playbooks, '
-                     f'to make sure the integration pack_name_to_pack_metadata are installed')
+        logger.info(f'searching for integrations used in test playbooks, '
+                    f'to make sure the integration pack_name_to_pack_metadata are installed')
         collected = []
 
         for test in tests:
@@ -536,8 +539,8 @@ class TestCollector(ABC):
         )
 
     def _add_packs_from_test_playbooks(self, tests: set[str]) -> list[CollectedTests]:  # only called in _add_packs_used
-        logging.info(f'searching for pack_name_to_pack_metadata under which test playbooks are saved,'
-                     f' to make sure they are installed')
+        logger.info(f'searching for pack_name_to_pack_metadata under which test playbooks are saved,'
+                    f' to make sure they are installed')
         collected = []
 
         for test in tests:
@@ -548,24 +551,7 @@ class TestCollector(ABC):
         return collected
 
 
-def get_changed_files(branch_name: str):
-    repo = Repo(CONTENT_PATH)
-    repo.git.checkout(branch_name)
-
-    git_util = GitUtil(repo)  # todo provide path or use the one above
-    prev_ver = MASTER
-    if str(git_util.repo.active_branch == MASTER):
-        # 2 instead of 1, as gitlab creates an extra commit when merging
-        prev_ver = str(next(islice(git_util.repo.iter_commits(), 2, 3)))  # returns 2nd latest commit todo test
-
-        # prev_ver = str(tuple(repo.iter_commits())[2]) # todo remove after testing previous line
-
-    added_files = git_util.added_files(prev_ver=prev_ver)
-    modified_files = git_util.modified_files(prev_ver=prev_ver)
-    renamed_files = {new_file_path for _, new_file_path in git_util.renamed_files(prev_ver=prev_ver)}
-    deleted_files = git_util.deleted_files(prev_ver=prev_ver)  # todo necessary?
-
-    return added_files | modified_files | renamed_files | deleted_files
+IS_GITLAB = False  # todo remove
 
 
 class NoPackException(Exception):
@@ -600,15 +586,16 @@ class BranchTestCollector(TestCollector):
     def __init__(self, branch_name: str, marketplace: MarketplaceVersions):
         super().__init__(marketplace)
         self.branch_name = branch_name
+        self.repo = Repo(CONTENT_PATH)
 
     def _collect(self) -> CollectedTests:
         # None filter is for empty tests, returned by
         collected = []
-        for path in get_changed_files(self.branch_name):
+        for path in self._get_changed_files():
             try:
                 collected.append(self._collect_single(path))
             except NoTestsToCollect as e:
-                logging.warning(e.message)
+                logger.warning(e.message)
         collected = CollectedTests.union(*collected)  # todo
         if not collected:
             raise NotImplementedError()  # todo return sanity tests
@@ -643,8 +630,8 @@ class BranchTestCollector(TestCollector):
                             raise RuntimeError('this can not really happen')
 
                     if not tests:
-                        logging.warning(f'{file_type.value} {str(path)} has `No Tests` configured,'
-                                        f' and no tests in id_set')  # todo is this necessary?
+                        logger.warning(f'{file_type.value} {str(path)} has `No Tests` configured,'
+                                       f' and no tests in id_set')  # todo is this necessary?
             case _:
                 raise RuntimeError(f'Unexpected content type path {content_item_folder}'
                                    f' (expected `Integrations`, `Scripts`, etc)')
@@ -743,6 +730,15 @@ class BranchTestCollector(TestCollector):
             reason_description=reason_description
         )
 
+    def _get_changed_files(self) -> tuple[str]:
+        repo = Repo(CONTENT_PATH)
+        full_branch_name = f'origin/{self.branch_name}'  # todo remove, debugging only
+        latest, previous = tuple(repo.iter_commits(
+            rev=f'{full_branch_name}~1...{full_branch_name}~3' if IS_GITLAB
+            else f'{full_branch_name}...{full_branch_name}~2'
+        ))
+        return tuple(str(file.b_path) for file in latest.diff(previous))
+
 
 class NightlyTestCollector(TestCollector):
     def _collect(self) -> CollectedTests:
@@ -759,7 +755,7 @@ class NightlyTestCollector(TestCollector):
 
     def _tests_matching_marketplace_value(self) -> CollectedTests:
         marketplace_string = self.marketplace.value  # todo is necessary?
-        logging.info(f'collecting test playbooks by their marketplace field, searching for {marketplace_string}')
+        logger.info(f'collecting test playbooks by their marketplace field, searching for {marketplace_string}')
         tests = []
 
         for playbook in self.id_set.test_playbooks:
@@ -778,7 +774,7 @@ class NightlyTestCollector(TestCollector):
     def _packs_matching_marketplace_value(self) -> CollectedTests:
         # todo make sure we have a validation, that pack_metadata.marketplaces includes
         marketplace_string = self.marketplace.value
-        logging.info(
+        logger.info(
             f'collecting pack_name_to_pack_metadata by their marketplace field, searching for {marketplace_string}')
         packs = tuple(pack.name for pack in self.packs if marketplace_string in pack.get('marketplaces', ()))
         # todo what's the default behavior for a missing marketplace value?
