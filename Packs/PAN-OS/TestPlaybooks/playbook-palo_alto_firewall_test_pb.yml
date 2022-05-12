@@ -2659,7 +2659,7 @@ tasks:
       pcapType:
         simple: threat-pcap
       searchTime:
-        simple: 2022/05/11 19:04:30
+        simple: '2022/05/11 19:04:30'
       sessionID:
         simple: '103174'
     separatecontext: false
