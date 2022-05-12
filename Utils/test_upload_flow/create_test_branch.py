@@ -56,7 +56,7 @@ def add_dependency(base_pack: Path, new_depndency_pack: Path):
 @add_changed_pack
 def enhance_release_notes(pack: Path):
     subprocess.call(['demisto-sdk', 'update-release-notes', '-i',
-                    f'{pack}', "--force", '--text', 'Adding release notes to check the upload flow'])
+                    f'{pack}', "--force", '--text', 'Adding release notes to check the upload flow'], stdout=subprocess.DEVNULL)
     return pack
 
 
@@ -115,7 +115,7 @@ def add_pack_to_landing_page(pack_name: str):
     landing_json['Featured'].append(pack_name)
     with landing_page.open('w') as f:
         json.dump(landing_json, f)
-    changed_packs.append(landing_page)
+    changed_packs.add(landing_page)
 
 
 @add_changed_pack
