@@ -6,8 +6,6 @@ import demistomock as demisto  # noqa: F401
 import urllib3
 from CommonServerPython import *  # noqa: F401
 
-register_module_line('RSA Archer v2', 'start', __line__())
-
 
 ''' IMPORTS '''
 
@@ -1366,5 +1364,3 @@ def main():
 
 if __name__ in ('__builtin__', 'builtins', '__main__'):
     main()
-
-register_module_line('RSA Archer v2', 'end', __line__())
