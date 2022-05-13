@@ -19,6 +19,24 @@ def util_load_json(path, wrap_in_response=False):
             return jsonres
 
 
+@pytest.mark.parametrize('arg1, arg2, expected_output', [
+    ('given', 'given', False),
+    ('given', None, True),
+    (None, 'yes', True),
+    (None, None, False)
+])
+def test_is_one_argument_given(arg1, arg2, expected_output):
+    """
+    Given:
+        - Combinations of two arguments
+    When:
+        - Calling function is_one_argument_given
+    Then:
+        - Ensure the resultes are correct
+    """
+    assert OpsGenieV3.is_one_argument_given(arg1, arg2) == expected_output
+
+
 def test_create_alert_wrong_responders():
     """
     Given:
@@ -381,6 +399,34 @@ def test_get_schedules():
     mock_client.list_schedules = mock.MagicMock()
     OpsGenieV3.get_schedules(mock_client, {})
     assert mock_client.list_schedules.called
+
+
+def test_get_schedules_with_no_args():
+    """
+    Given:
+        - An app client object
+    When:
+        - Calling function get_schedules with no arguments
+    Then:
+        - Ensure the resulted will raise an exception.
+    """
+    mock_client = OpsGenieV3.Client(base_url="")
+    with pytest.raises(DemistoException):
+        OpsGenieV3.Client.get_schedule(mock_client, {})
+
+
+def test_get_schedules_with_both_args():
+    """
+    Given:
+        - An app client object
+    When:
+        - Calling function get_schedules with both arguments
+    Then:
+        - Ensure the resulted will raise an exception.
+    """
+    mock_client = OpsGenieV3.Client(base_url="")
+    with pytest.raises(DemistoException):
+        OpsGenieV3.get_schedules(mock_client, {"schedule_id": "ID", "schedule_name": "NAME"})
 
 
 def test_get_schedule_overrides_without_args():

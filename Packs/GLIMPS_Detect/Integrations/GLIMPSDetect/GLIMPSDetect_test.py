@@ -29,11 +29,11 @@ mocked_gdetect_get = {
             "ssdeep": "6153:KyJE1yd7WHJmcyfjtPWna8DQFu/U3buRKlemZ9DnGAevIhdi++:KU/d7WsvBPWa9DQFu/U3buRKlemZ9DnG",
             "magic": "PE32 executable (GUI) Intel 80386, for MS Windows",
             "av_results": [
-                    {
+                {
                         "av": "SignatureOyster",
                         "result": "Win.Ransomware.Buhtrap-9865977-0",
                         "score": 1000
-                    },
+                        },
                 {
                         "av": "SignatureUmbrella",
                         "result": "TR/Redcap.ltkcp",

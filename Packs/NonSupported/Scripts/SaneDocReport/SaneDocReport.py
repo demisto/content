@@ -24,7 +24,7 @@ try:
         'paper_size': paper_size.decode('utf-8', 'ignore')
     })
 
-    with open(OUTPUT_FILE_PATH, 'rb') as f:
+    with open(OUTPUT_FILE_PATH, 'rb') as f:  # type: ignore
         encoded = base64.b64encode(f.read()).decode('utf-8', 'ignore')
 
     os.remove(OUTPUT_FILE_PATH)

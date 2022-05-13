@@ -38,9 +38,9 @@ tasks:
     task:
       id: 2b0f9a00-495e-45d1-8a07-df0818217a83
       version: -1
-      name: Panorama - Tag User
+      name: Pan-os - Tag User
       description: ""
-      script: '|||panorama-register-user-tag'
+      script: '|||pan-os-register-user-tag'
       type: regular
       iscommand: true
       brand: ""

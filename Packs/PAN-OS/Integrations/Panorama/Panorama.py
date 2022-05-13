@@ -1,15 +1,27 @@
-import shutil
+from collections import defaultdict
+from dataclasses import dataclass, fields
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
+import panos.errors
+
+from panos.base import PanDevice, VersionedPanObject, Root, ENTRY, VersionedParamPath  # type: ignore
+from panos.panorama import Panorama, DeviceGroup, Template, PanoramaCommitAll
+from panos.objects import LogForwardingProfile, LogForwardingProfileMatchList
+from panos.firewall import Firewall
+from panos.device import Vsys
+from urllib.error import HTTPError
+
+import shutil
 ''' IMPORTS '''
 import json
 import uuid
 from datetime import datetime
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any, Dict, List, Optional, Tuple, Union, Callable, ValuesView, Iterator
 
 import requests
+from urllib.parse import urlparse
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -22,6 +34,9 @@ USE_URL_FILTERING = None
 TEMPLATE = None
 VSYS = ''
 PRE_POST = ''
+OUTPUT_PREFIX = "PANOS."
+UNICODE_FAIL = u'\U0000274c'
+UNICODE_PASS = u'\U00002714\U0000FE0F'
 
 XPATH_SECURITY_RULES = ''
 DEVICE_GROUP = ''
@@ -29,6 +44,9 @@ DEVICE_GROUP = ''
 XPATH_OBJECTS = ''
 
 XPATH_RULEBASE = ''
+
+# pan-os-python device timeout value, in seconds
+DEVICE_TIMEOUT = 120
 
 # Security rule arguments for output handling
 SECURITY_RULE_ARGS = {
@@ -40,6 +58,7 @@ SECURITY_RULE_ARGS = {
     'action': 'Action',
     'service': 'Service',
     'disable': 'Disabled',
+    'disabled': 'Disabled',
     'application': 'Application',
     'source_user': 'SourceUser',
     'disable_server_response_inspection': 'DisableServerResponseInspection',
@@ -244,7 +263,7 @@ def add_argument_open(arg: Optional[str], field_name: str, member: bool) -> str:
 
 
 def add_argument_yes_no(arg: Optional[str], field_name: str, option: bool = False) -> str:
-    if arg and arg == 'No':
+    if arg and arg.lower() == 'no':
         result = '<' + field_name + '>' + 'no' + '</' + field_name + '>'
     else:
         result = '<' + field_name + '>' + ('yes' if arg else 'no') + '</' + field_name + '>'
@@ -394,6 +413,14 @@ def panorama_test():
     _, template = set_xpath_network()
     if template:
         template_test(template)
+
+    try:
+        # Test the topology functionality
+        topology = get_topology()
+        test_topology_connectivity(topology)
+    except Exception as exception_text:
+        demisto.debug(f"Failed to create topology; topology commands will not work. {exception_text}")
+        pass
 
     return_results('ok')
 
@@ -3243,11 +3270,14 @@ def panorama_list_pcaps_command(args: dict):
         raise Exception('Request to get list of Pcaps Failed.\nStatus code: ' + str(
             json_result['response']['@code']) + '\nWith message: ' + str(json_result['response']['msg']['line']))
 
-    dir_listing = json_result['result']['dir-listing']
+    dir_listing = (json_result.get('result') or {}).get('dir-listing') or {}
     if 'file' not in dir_listing:
         return_results(f'PAN-OS has no Pcaps of type: {pcap_type}.')
     else:
         pcaps = dir_listing['file']
+        if isinstance(pcaps, str):
+            # means we have only 1 pcap in the firewall, the api returns string if only 1 pcap is available
+            pcaps = [pcaps]
         pcap_list = [pcap[1:] for pcap in pcaps]
         return_results({
             'Type': entryTypes['note'],
@@ -3294,6 +3324,10 @@ def panorama_get_pcap_command(args: dict):
     password = args.get('password')
     pcap_id = args.get('pcapID')
     search_time = args.get('searchTime')
+    pcap_name = args.get('from')
+
+    if pcap_type == 'filter-pcap' and not pcap_name:
+        raise Exception('cannot download filter-pcap without the from argument')
 
     if pcap_type == 'dlp-pcap' and not password:
         raise Exception('Can not download dlp-pcap without the password argument.')
@@ -3302,7 +3336,6 @@ def panorama_get_pcap_command(args: dict):
     if pcap_type == 'threat-pcap' and (not pcap_id or not search_time):
         raise Exception('Can not download threat-pcap without the pcapID and the searchTime arguments.')
 
-    pcap_name = args.get('from')
     local_name = args.get('localName')
     serial_no = args.get('serialNo')
     session_id = args.get('sessionID')
@@ -3343,6 +3376,12 @@ def panorama_get_pcap_command(args: dict):
 
     # due to pcap file size limitation in the product. For more details, please see the documentation.
     if result.headers['Content-Type'] != 'application/octet-stream':
+        json_result = json.loads(xml2json(result.text)).get('response', {})
+        if (json_result.get('@status') or '') == 'error':
+            errors = '\n'.join(
+                [f'{error_key}: {error_val}' for error_key, error_val in (json_result.get('msg') or {}).items()]
+            )
+            raise Exception(errors)
         raise Exception(
             'PCAP download failed. Most likely cause is the file size limitation.\n'
             'For information on how to download manually, see the documentation for this integration.')
@@ -3372,7 +3411,7 @@ def prettify_applications_arr(applications_arr: Union[List[dict], dict]):
 
 
 @logger
-def panorama_list_applications(predefined: bool):
+def panorama_list_applications(predefined: bool) -> Union[List[dict], dict]:
     major_version = get_pan_os_major_version()
     params = {
         'type': 'config',
@@ -3392,16 +3431,15 @@ def panorama_list_applications(predefined: bool):
         'POST',
         body=params
     )
-    applications = result['response']['result']
+    applications_api_response = result['response']['result']
     if predefined:
-        application_arr = applications.get('application', {}).get('entry')
+        applications = applications_api_response.get('application', {}).get('entry') or []
     else:
-        if major_version < 9:
-            application_arr = applications.get('entry')
-        else:
-            application_arr = applications.get('application')
+        applications = applications_api_response.get('entry') or []
+        if not applications and major_version >= 9:
+            applications = applications_api_response.get('application') or []
 
-    return application_arr
+    return applications
 
 
 def panorama_list_applications_command(predefined: Optional[str] = None):
@@ -3810,7 +3848,7 @@ def panorama_register_ip_tag_command(args: dict):
     persistent = args.get('persistent', 'true')
     persistent = '1' if persistent == 'true' else '0'
     # if not given, timeout will be 0 and persistent will be used
-    timeout = int(args.get('timeout', '0'))
+    timeout = arg_to_number(args.get('timeout', '0'))
 
     major_version = get_pan_os_major_version()
 
@@ -3892,10 +3930,13 @@ def panorama_unregister_ip_tag_command(args: dict):
 
 
 @logger
-def panorama_register_user_tag(tag: str, users: List):
+def panorama_register_user_tag(tag: str, users: List, timeout: Optional[int]):
     entry: str = ''
     for user in users:
-        entry += f'<entry user=\"{user}\"><tag><member>{tag}</member></tag></entry>'
+        if timeout:
+            entry += f'<entry user=\"{user}\"><tag><member timeout="{timeout}">{tag}</member></tag></entry>'
+        else:
+            entry += f'<entry user=\"{user}\"><tag><member>{tag}</member></tag></entry>'
 
     params = {
         'type': 'user-id',
@@ -3922,8 +3963,10 @@ def panorama_register_user_tag_command(args: dict):
         raise Exception('The panorama-register-user-tag command is only available for PAN-OS 9.X and above versions.')
     tag = args['tag']
     users = argToList(args['Users'])
+    # if not given, timeout will be 0 (never expires)
+    timeout = arg_to_number(args.get('timeout', '0'))
 
-    result = panorama_register_user_tag(tag, users)
+    result = panorama_register_user_tag(tag, users, timeout)
 
     # get existing Users for this tag
     context_users = demisto.dt(demisto.context(), 'Panorama.DynamicTags(val.Tag ==\"' + tag + '\").Users')
@@ -4747,7 +4790,7 @@ def devices(targets=None, vsys_s=None):
                     vsys_s_entry = vsys_s_entry if isinstance(vsys_s_entry, list) else [vsys_s_entry]
                     final_vsys_s = map(lambda x: x['@name'], vsys_s_entry)
                 else:
-                    final_vsys_s = iter([None])
+                    final_vsys_s = iter([None])  # type: ignore
             else:
                 final_vsys_s = vsys_s
             for vsys in final_vsys_s:
@@ -6175,6 +6218,47 @@ def get_anti_spyware_best_practice_command():
     })
 
 
+def apply_dns_signature_policy_command(args: dict) -> CommandResults:
+    """
+        Args:
+            - the args passed by the user
+
+        Returns:
+            - A CommandResult object
+    """
+    anti_spy_ware_name = args.get('anti_spyware_profile_name')
+    edl = args.get('dns_signature_source')
+    action = args.get('action')
+    packet_capture = args.get('packet_capture', 'disable')
+    params = {
+        'action': 'set',
+        'type': 'config',
+        'xpath': f"/config/devices/entry[@name='localhost.localdomain']/device-group/entry[@name='{DEVICE_GROUP}']"
+                 f"/profiles/spyware/entry[@name='{anti_spy_ware_name}']",
+        'key': API_KEY,
+        'element': f'<botnet-domains>'
+                   f'<lists>'
+                   f'<entry name="{edl}"><packet-capture>{packet_capture}</packet-capture>'
+                   f'<action><{action}/></action></entry>'
+                   f'</lists>'
+                   f'</botnet-domains>'
+    }
+    result = http_request(
+        URL,
+        'POST',
+        params=params,
+    )
+    res_status = result.get('response', {}).get('@status')
+    if res_status == 'error':
+        err_msg = result.get('response', {}).get('msg', {}).get('line')
+        raise DemistoException(f'Error: {err_msg}')
+
+    return CommandResults(
+        readable_output=f'**{res_status}**',
+        raw_response=result,
+    )
+
+
 @logger
 def get_file_blocking_best_practice() -> Dict:
     params = {
@@ -7247,6 +7331,2652 @@ def panorama_install_file_content_update_command(args: dict):
         return_results(result['response']['msg'])
 
 
+"""
+PAN-OS Network Operations Integration
+Provides additional complex commands for PAN-OS firewalls and ingests configuration issues as incidents.
+"""
+
+
+# Errors
+class OpCommandError(Exception):
+    pass
+
+
+# Best practices
+class BestPractices:
+    SPYWARE_ALERT_THRESHOLD = ["medium, low"]
+    SPYWARE_BLOCK_SEVERITIES = ["critical", "high"]
+    VULNERABILITY_ALERT_THRESHOLD = ["medium", "low"]
+    VULNERABILITY_BLOCK_SEVERITIES = ["critical", "high"]
+    URL_BLOCK_CATEGORIES = ["command-and-control", "hacking", "malware", "phishing"]
+
+
+# pan-os-python new classes
+class CustomVersionedPanObject(VersionedPanObject):
+    """This is a patch for functionality in pan-os-python that doesn't easily enable us to retrieve these specific types of
+    objects. This allows us to still use VersionedPanObjects to keep the code consistent."""
+
+    def __init__(self):
+        super(CustomVersionedPanObject, self).__init__()
+
+    def _refresh_children(self, running_config=False, xml=None):
+        """Override normal refresh method"""
+        # Retrieve the xml if we weren't given it
+        if xml is None:
+            xml = self._refresh_xml(running_config, True)
+
+        if xml is None:
+            return
+
+        # Remove all the current child instances first
+        self.removeall()
+
+        child = self.CHILDTYPES[0]()
+        child.parent = self
+        childroot = xml.find(child.XPATH[1:])
+        if childroot is not None:
+            child_xml_elements = child.refreshall_from_xml(childroot)
+            self.extend(child_xml_elements)
+
+        return self.children
+
+
+class AntiSpywareProfileBotnetDomainList(CustomVersionedPanObject):
+    ROOT = Root.VSYS  # pylint: disable=E1101
+    SUFFIX = ENTRY
+
+    def _setup(self):
+        # xpaths
+        self._xpaths.add_profile(value="/lists")
+        self._params = (
+            VersionedParamPath("packet_capture", path="packet-capture"),
+            VersionedParamPath("is_action_sinkhole", path="action/sinkhole")
+        )
+
+
+class AntiSpywareProfileBotnetDomains(CustomVersionedPanObject):
+    ROOT = Root.VSYS  # pylint: disable=E1101
+    SUFFIX = ENTRY
+    CHILDTYPES = (AntiSpywareProfileBotnetDomainList,)
+
+    def _setup(self):
+        # xpaths
+        self._xpaths.add_profile(value="/botnet-domains")
+        self._params = tuple()  # type: ignore[var-annotated]
+
+
+class AntiSpywareProfileRule(VersionedPanObject):
+    ROOT = Root.VSYS  # pylint: disable=E1101
+    SUFFIX = ENTRY
+
+    def _setup(self):
+        # xpaths
+        self._xpaths.add_profile(value="/rules")
+        # params
+        self._params = (
+            VersionedParamPath("severity", vartype="member", path="severity"),
+            VersionedParamPath("is_reset_both", vartype="exist", path="action/reset-both"),
+            VersionedParamPath("is_reset_client", vartype="exist", path="action/reset-client"),
+            VersionedParamPath("is_reset_server", vartype="exist", path="action/reset-server"),
+            VersionedParamPath("is_alert", vartype="exist", path="action/alert"),
+            VersionedParamPath("is_default", vartype="exist", path="action/default"),
+            VersionedParamPath("is_allow", vartype="exist", path="action/allow"),
+            VersionedParamPath("is_drop", vartype="exist", path="action/drop"),
+            VersionedParamPath("is_block_ip", vartype="exist", path="action/block-ip")
+        )
+
+
+class AntiSpywareProfile(CustomVersionedPanObject):
+    """Vulnerability Profile Group Object
+    Args:
+        name (str): Name of the object
+    """
+
+    ROOT = Root.VSYS  # pylint: disable=E1101
+    SUFFIX = ENTRY
+    CHILDTYPES = (AntiSpywareProfileRule,)
+
+    def _setup(self):
+        # xpaths
+        self._xpaths.add_profile(value="/profiles/spyware")
+        self._params = tuple()  # type: ignore[var-annotated]
+
+
+class VulnerabilityProfileRule(VersionedPanObject):
+    """Vulnerability Profile Rule Object
+    Args:
+        name (str): Name of the object
+        severity (list:str): List of severities matching this rule
+    """
+    ROOT = Root.VSYS  # pylint: disable=E1101
+    SUFFIX = ENTRY
+
+    def _setup(self):
+        # xpaths
+        self._xpaths.add_profile(value="/rules")
+        self._params = (
+            VersionedParamPath("severity", vartype="member", path="severity"),
+            VersionedParamPath("is_reset_both", vartype="exist", path="action/reset-both"),
+            VersionedParamPath("is_reset_client", vartype="exist", path="action/reset-client"),
+            VersionedParamPath("is_reset_server", vartype="exist", path="action/reset-server"),
+            VersionedParamPath("is_alert", vartype="exist", path="action/alert"),
+            VersionedParamPath("is_default", vartype="exist", path="action/default"),
+            VersionedParamPath("is_allow", vartype="exist", path="action/allow"),
+            VersionedParamPath("is_drop", vartype="exist", path="action/drop"),
+            VersionedParamPath("is_block_ip", vartype="exist", path="action/block-ip")
+        )
+
+
+class VulnerabilityProfile(CustomVersionedPanObject):
+    """Vulnerability Profile Group Object
+    Args:
+        name (str): Name of the object
+    """
+
+    ROOT = Root.VSYS  # pylint: disable=E1101
+    SUFFIX = ENTRY
+    CHILDTYPES = (VulnerabilityProfileRule,)
+
+    def _setup(self):
+        # xpaths
+        self._xpaths.add_profile(value="/profiles/vulnerability")
+        self._params = tuple()  # type: ignore[var-annotated]
+
+
+class URLFilteringProfile(VersionedPanObject):
+    """URL Filtering profile
+    :param block: Block URL categories
+    :param alert: Alert URL categories
+    :param credential_enforce_block: Categories blocking credentials
+    :param credential_enforce_alert: Categories alerting on credentials
+    """
+
+    ROOT = Root.VSYS  # pylint: disable=E1101
+    SUFFIX = ENTRY
+
+    def _setup(self):
+        # xpaths
+        self._xpaths.add_profile(value="/profiles/url-filtering")
+        # params
+        self._params = (
+            VersionedParamPath("block", vartype="member", path="block"),
+            VersionedParamPath("alert", vartype="member", path="alert"),
+            VersionedParamPath("credential_enforce_alert", vartype="member",
+                               path="credential-enforcement/alert"),
+            VersionedParamPath("credential_enforce_block", vartype="member",
+                               path="credential-enforcement/block")
+        )
+
+
+def run_op_command(device: Union[Panorama, Firewall], cmd: str, **kwargs):
+    """
+    Run OP command.
+
+    Returns:
+        Element: XML element object.
+    """
+    result = device.op(cmd, **kwargs)
+    if "status" in result and result.attrib.get("status") != "success":
+        raise OpCommandError(f"Operational command {cmd} failed!")
+
+    return result
+
+
+def find_text_in_element(element, tag: str) -> str:
+    """
+    Find a text in an XML element.
+
+    Args:
+        element (Element): XML element.
+        tag (str): the XML tag to search for.
+
+    Returns:
+        str: the text of the tag that was searched.
+    """
+    result = element.find(tag)
+    # This has to be an exact check, as an element that has no text will evaluate to none.
+    if result is None:
+        raise LookupError(f"Tag {tag} not found in element.")
+
+    if not hasattr(result, "text"):
+        raise LookupError(f"Tag {tag} has no text.")
+
+    return result.text if result.text else ""
+
+
+def get_element_attribute(element, attribute: str) -> str:
+    """
+    Find a text in an XML element.
+
+    Args:
+        element (Element): XML element.
+        attribute (str): the attribute of the element.
+    """
+    if attribute in element.attrib:
+        return element.attrib.get(attribute, "")
+
+    else:
+        raise AttributeError(f"Element is missing requested attribute {attribute}")
+
+
+@dataclass
+class FrozenTopology(object):
+    panorama_objects: list
+    firewall_objects: list
+
+
+class Topology:
+    """
+    Core topology class; stores references to each object that can be connected to such as Panorama or NGFW
+    Endpoints are each `Node`, which can have any number of child `Node` objects to form a tree.
+    :param Panorama_objects: Panorama PanDevice object dict
+    :param firewall_objects: Firewall PanDevice object dict
+    :param ha_pair_serials: Mapping of HA pairs, where the keys are the active members, values are passive.
+    """
+
+    def __init__(self):
+        self.panorama_objects: Dict[str, Panorama] = {}
+        self.firewall_objects: Dict[str, Firewall] = {}
+        self.ha_pair_serials: dict = {}
+        self.ha_active_devices: dict = {}
+        self.username: str = ""
+        self.password: str = ""
+        self.api_key: str = ""
+
+    def get_peer(self, serial: str):
+        """Given a serial, get it's peer, if part of a HA pair."""
+        return self.ha_pair_serials.get(serial)
+
+    def get_all_child_firewalls(self, device: Panorama):
+        """
+        Connect to Panorama and retrieves the full list of managed devices.
+        This list will only retrieve devices that are connected to panorama.
+        Devices are stored by their serial number.
+        :param device: Panorama PanDevice instance
+        """
+        ha_pair_dict = {}
+        device_op_command_result = run_op_command(device, "show devices all")
+        for device_entry in device_op_command_result.findall("./result/devices/entry"):
+            serial_number: str = find_text_in_element(device_entry, "./serial")
+            connected: str = find_text_in_element(device_entry, "./connected")
+            if connected == "yes":
+                new_firewall_object = Firewall(serial=serial_number)
+                device.add(new_firewall_object)
+                self.add_device_object(new_firewall_object)
+                ha_peer_serial_element = device_entry.find("./ha/peer/serial")
+                ha_peer_serial = None
+                if ha_peer_serial_element is not None and hasattr(ha_peer_serial_element, "text"):
+                    ha_peer_serial = ha_peer_serial_element.text
+
+                if ha_peer_serial is not None:
+                    # The key is always the active device.
+                    ha_status: str = find_text_in_element(device_entry, "./ha/state")
+                    if ha_status == "active":
+                        self.ha_active_devices[serial_number] = ha_peer_serial
+
+                    ha_pair_dict[serial_number] = ha_peer_serial
+                else:
+                    self.ha_active_devices[serial_number] = "STANDALONE"
+
+        self.ha_pair_serials = ha_pair_dict
+
+    def add_device_object(self, device: Union[PanDevice, Panorama, Firewall]):
+        """
+        Given a PANdevice device object, works out how to add it to this Topology instance.
+        Firewalls get added directly to the object. If `device` is Panorama, then it's queried for all
+        connected Firewalls, which are then also added to the object.
+        This function also checks the HA state of all firewalls using the Panorama output.
+        :param device: Either Panorama or Firewall Pandevice instance
+        """
+        if isinstance(device, Panorama):
+            # Check if HA is active and if so, what the system state is.
+            panorama_ha_state_result = run_op_command(device, "show high-availability state")
+            enabled = panorama_ha_state_result.find("./result/enabled")
+            if enabled is not None:
+                if enabled.text == "yes":
+                    # Only associate Firewalls with the active Panorama instance
+                    state = find_text_in_element(panorama_ha_state_result, "./result/group/local-info/state")
+                    if "active" in state:
+                        # TODO: Work out how to get the Panorama peer serial..
+                        self.ha_active_devices[device.serial] = "peer serial not implemented here.."
+                        self.get_all_child_firewalls(device)
+                        return
+                else:
+                    self.get_all_child_firewalls(device)
+            else:
+                self.get_all_child_firewalls(device)
+
+            # This is a bit of a hack - if no ha, treat it as active
+            self.ha_active_devices[device.serial] = "STANDALONE"
+            self.panorama_objects[device.serial] = device
+
+            return
+
+        elif isinstance(device, Firewall):
+            self.firewall_objects[device.serial] = device
+            return
+
+        raise TypeError(f"{type(device)} is not valid as a topology object.")
+
+    def panorama_devices(self) -> ValuesView[Panorama]:
+        """
+        Returns the Panorama objects in the topology
+        """
+        return self.panorama_objects.values()
+
+    def firewall_devices(self) -> ValuesView[Firewall]:
+        """
+        Returns the firewall devices in the topology
+        """
+        return self.firewall_objects.values()
+
+    def top_level_devices(self) -> Iterator[Union[Firewall, Panorama]]:
+        """
+        Returns a list of the highest level devices. This is normally Panorama, or in a pure NGFW deployment,
+        this would be a list of all the `Firewall` instances.
+        Top level devices may or may not have any children.
+        """
+        if self.panorama_objects:
+            for value in self.panorama_devices():
+                yield value
+
+            return
+
+        if self.firewall_objects:
+            for value in self.firewall_devices():
+                yield value
+
+    def active_devices(self, filter_str: Optional[str] = None) -> Iterator[Union[Firewall, Panorama]]:
+        """
+        Yields active devices in the topology - Active refers to the HA state of the device. If the device
+        is not in a HA pair, it is active by default.
+        :param filter_str: The filter string to filter the devices on
+        """
+        # If the ha_active_devices dict is not empty, we have gotten HA info from panorama.
+        # This means we don't need to refresh the state.
+        for device in self.all(filter_str):
+            if self.ha_active_devices:
+                if device.serial in self.ha_active_devices:
+                    yield device
+            else:
+                status = device.refresh_ha_active()
+                if status == "active" or not status:
+                    yield device
+
+    def active_top_level_devices(self, device_filter_string: Optional[str] = None):
+        """
+        Same as `active_devices`, but only returns top level devices as opposed to all active devices.
+        :param device_filter_string: The string to filter the devices by
+        """
+        return [x for x in self.top_level_devices() if x in self.active_devices(device_filter_string)]
+
+    @staticmethod
+    def filter_devices(devices: Dict[str, PanDevice], filter_str: Optional[str] = None):
+        """
+        Filters a list of devices to find matching entries based on the string.
+        If the filter string matches a device serial or IP exactly, then returns just that one device.
+        If not, it will compare the device hostname instead for a match.
+        :param devices: The list of PanDevice instances to filter by the filter string
+        :param filter_str: The filter string to filter the devices on
+        """
+        # Exact match based on device serial number
+        if not filter_str:
+            return devices
+
+        if filter_str in devices:
+            return {
+                filter_str: devices.get(filter_str)
+            }
+
+        for serial, device in devices.items():
+            if device.hostname == filter_str:
+                return {
+                    serial: device
+                }
+
+    def firewalls(self, filter_string: Optional[str] = None, target: Optional[str] = None) -> Iterator[Firewall]:
+        """
+        Returns an iterable of firewalls in the topology
+        :param filter_string: The filter string to filter he devices on
+        :param target: Instead of a filter string, target can be used to only ever return one device.
+        """
+        if target:
+            yield self.get_single_device(filter_string=target)
+            return
+
+        firewall_objects = Topology.filter_devices(self.firewall_objects, filter_string)
+        if not firewall_objects:
+            raise DemistoException("Filter string returned no devices known to this topology.")
+
+        for firewall in firewall_objects.values():
+            yield firewall
+
+    def all(
+        self, filter_string: Optional[str] = None, target: Optional[str] = None
+    ) -> Iterator[Union[Firewall, Panorama]]:
+        """
+        Returns an iterable for all devices in the topology
+        :param filter_string: The filter string to filter he devices on
+        :param target: Instead of a filter string, target can be used to only ever return one device.
+        """
+        if target:
+            yield self.get_single_device(filter_string=target)
+            return
+
+        all_devices = {**self.firewall_objects, **self.panorama_objects}
+        all_devices = Topology.filter_devices(all_devices, filter_string)
+        # Raise if we get an empty dict back
+        if not all_devices:
+            raise DemistoException("Filter string returned no devices known to this topology.")
+
+        for device in all_devices.values():
+            yield device
+
+    def get_single_device(self, filter_string: str) -> Union[Firewall, Panorama]:
+        """
+        Returns JUST ONE device, based on the filter string, and errors if the filter returns more.
+        Safeguard for functions that should only ever operate on a single device.
+        :param filter_string: The exact ID of the device to return from the topology.
+        """
+        all_devices = {**self.firewall_objects, **self.panorama_objects}
+        if device := all_devices.get(filter_string):
+           return device
+
+        raise DemistoException(f"filter_str {filter_string} is not the exact ID of a host in this topology; " +
+                               f"use a more specific filter string.")
+
+    def get_by_filter_str(self, filter_string: Optional[str] = None) -> dict:
+        """
+        Filters all devices and returns a dictionary of matching.
+        :param filter_string: The filter string to filter he devices on
+        """
+        return Topology.filter_devices({**self.firewall_objects, **self.panorama_objects}, filter_string)
+
+    @classmethod
+    def build_from_string(
+        cls, hostnames: str, username: str, password: str, port: Optional[int] = None, api_key: Optional[str] = None
+    ):
+        """
+        Splits a csv list of hostnames and builds the topology based on it. This allows you to pass a series of PanOS hostnames
+        into the topology instead of building it from each device.
+        This function will convert each hostname/username/password/api_key combination into a PanDevice
+        object type, add them into a new instance of `Topology`, then return it.
+        :param hostnames: A string of hostnames in CSV format, ex. hostname1,hostname2
+        :param username: The PAN-OS username
+        :param password: the PAN-OS password
+        :param port: The PAN-OS port
+        :param api_key: The PAN-OS api key
+        """
+        topology = cls()
+        for hostname in hostnames.split(","):
+            try:
+                if api_key:
+                    device = PanDevice.create_from_device(
+                        hostname=hostname,
+                        api_key=api_key,
+                        port=port
+                    )
+                else:
+                    device = PanDevice.create_from_device(
+                        hostname=hostname,
+                        api_username=username,
+                        api_password=password,
+                        port=port
+                    )
+                # Set the timeout
+                device.timeout = DEVICE_TIMEOUT
+                topology.add_device_object(device)
+            except (panos.errors.PanURLError, panos.errors.PanXapiError, HTTPError) as e:
+                demisto.debug(f"Failed to connected to {hostname}, {e}")
+                # If a device fails to respond, don't add it to the topology.
+                pass
+
+        topology.username = username
+        topology.password = password
+        topology.api_key = str(api_key or "")
+
+        return topology
+
+    @classmethod
+    def build_from_device(cls, ip: str, username: str, password: str):
+        """
+        Creates a PanDevice object out of a single IP/username/password and adds it to the topology.
+        :param ip: The IP address or hostname of the device
+        :param username: The PAN-OS username
+        :param password: the PAN-OS password
+        """
+        device: PanDevice = PanDevice.create_from_device(
+            hostname=ip,
+            api_username=username,
+            api_password=password,
+        )
+        # Set the timeout
+        device.timeout = DEVICE_TIMEOUT
+        topology = cls()
+        topology.add_device_object(device)
+
+        topology.username = username
+        topology.password = password
+
+        return topology
+
+    def get_direct_device(self, firewall: Firewall) -> PanDevice:
+        """
+        Given a firewall object that's proxied via Panorama, create a device that uses a direct API connection
+        instead. Used by any command that can't be routed via Panorama.
+        :param firewall: The `Firewall` device to directly connect to
+        """
+        if firewall.hostname:
+            # If it's already a direct connection
+            return firewall
+
+        ip_address = (firewall.show_system_info().get("system") or {}).get("ip-address")
+
+        return PanDevice.create_from_device(
+            hostname=ip_address,
+            api_username=self.username,
+            api_password=self.password
+        )
+
+    def get_all_object_containers(
+        self,
+        device_filter_string: Optional[str] = None,
+        container_name: Optional[str] = None,
+        top_level_devices_only: Optional[bool] = False,
+    ) -> List[Tuple[PanDevice, Union[Panorama, Firewall, DeviceGroup, Template, Vsys]]]:
+        """
+        Given a device, returns all the possible configuration containers that can contain objects -
+        vsys, device-groups, templates and template-stacks.
+        :param device_filter_string: The filter string to filter he devices on
+        :param container_name: The string name of the device group, template-stack, or vsys to return
+        :param top_level_devices_only: If set, only containers will be returned from the top level devices, usually Panorama.
+        """
+        containers = []
+        # for device in self.all(device_filter_string):
+        # Changed to only refer to active devices, no passives.
+        device_retrieval_func = self.active_devices
+        if top_level_devices_only:
+            device_retrieval_func = self.active_top_level_devices  # type: ignore[assignment]
+
+        for device in device_retrieval_func(device_filter_string):
+            device_groups = DeviceGroup.refreshall(device)
+            for device_group in device_groups:
+                containers.append((device, device_group))
+
+            templates = Template.refreshall(device)
+            for template in templates:
+                containers.append((device, template))
+
+            virtual_systems = Vsys.refreshall(device)
+            for virtual_system in virtual_systems:
+                containers.append((device, virtual_system))
+
+            if isinstance(device, Panorama):
+                # Add the "shared" device if Panorama. Firewalls will always have vsys1
+                containers.append((device, device))
+
+        return_containers = []
+
+        if container_name:
+            for container in containers:
+                if container_name == "shared":
+                    if isinstance(container[1], Panorama):
+                        return_containers.append(container)
+                if not isinstance(container[1], (Panorama, Firewall)):
+                    if container[1].name == container_name:
+                        return_containers.append(container)
+        else:
+            return_containers = containers
+
+        return return_containers
+
+
+"""
+--- Dataclass Definitions Start Below ---
+Dataclasses are split into three types;
+ SummaryData: Classes that hold only summary data, and are safe to display in the incident layout
+ ResultData: Classes that hold a full representation of the data, used to pass between tasks only
+
+The dataclasses are used for automatic generation of the integration YAML, as well as controlling the 
+format of the result data being sent to XSOAR.
+In each dataclass, the attributes are used as below;
+    _output_prefix: The prefix of the context output
+    _title: The human readable title for human readable tables (using TableToMarkdown)
+
+    _summary_cls: For commands with very large resultant data, the summary dataclass stores a cutdown 
+        summary to avoid overloading incident layouts.
+    _result_cls:
+Some dataclasses don't split the data by summary and result data, because they should never return a large 
+amount. As such, _summary_cls and _result_cls are optional.
+"""
+
+
+@dataclass
+class ResultData:
+    hostid: str
+
+
+@dataclass
+class ShowArpCommandResultData(ResultData):
+    """
+    :param interface: Network interface learnt ARP entry
+    :param ip: layer 3 address
+    :param mac: Layer 2 address
+    :param port: Network interface matching entry
+    :param status: ARP Entry status
+    :param ttl: Time to Live
+    """
+    interface: str
+    ip: str
+    mac: str
+    port: str
+    status: str
+    ttl: str
+
+
+@dataclass
+class ShowArpCommandSummaryData(ResultData):
+    """
+    :param max: Maximum supported ARP Entries
+    :param total: Total current arp entries
+    :param timeout: ARP entry timeout
+    :param dp: Firewall dataplane associated with Entry
+    """
+    max: str
+    total: str
+    timeout: str
+    dp: str
+
+
+@dataclass
+class ShowArpCommandResult:
+    summary_data: List[ShowArpCommandSummaryData]
+    result_data: List[ShowArpCommandResultData]
+
+    _output_prefix = OUTPUT_PREFIX + "ShowArp"
+    _title = "PAN-OS ARP Table"
+
+    # The below is required for integration autogen, we can't inspect the original class from the List[]
+    _summary_cls = ShowArpCommandSummaryData
+    _result_cls = ShowArpCommandResultData
+
+
+@dataclass
+class ShowRoutingCommandSummaryData(ResultData):
+    """
+    :param total: Total routes
+    :param limit: Maximum routes for platform
+    :param active: Active routes in routing table
+    """
+    total: int
+    limit: int
+    active: int
+
+    def __post_init__(self):
+        self.total = int(self.total)
+        self.limit = int(self.limit)
+        self.active = int(self.active)
+
+
+@dataclass
+class ShowRouteSummaryCommandResult:
+    summary_data: List[ShowRoutingCommandSummaryData]
+    result_data: list
+
+    _output_prefix = OUTPUT_PREFIX + "ShowRouteSummary"
+    _title = "PAN-OS Route Summary"
+
+    _summary_cls = ShowRoutingCommandSummaryData
+
+
+@dataclass
+class ShowRoutingRouteResultData(ResultData):
+    """
+    :param virtual_router: Virtual router this route belongs to
+    :param destination: Network destination of route
+    :param nexthop: Next hop to destination
+    :param metric: Route metric
+    :param flags: Route flags
+    :param interface: Next hop interface
+    :param route-table: Unicast|multicast route table
+    """
+    virtual_router: str
+    destination: str
+    nexthop: str
+    metric: str
+    flags: str
+    age: int
+    interface: str
+    route_table: str
+
+    def __post_init__(self):
+        # Self.age can be null if the route is static, so set it to 0 in this case so it's still a valid int.
+        if self.age:
+            self.age = int(self.age)
+        else:
+            self.age = 0
+
+
+@dataclass
+class ShowRoutingRouteSummaryData(ResultData):
+    """
+    :param interface: Next hop interface
+    :param route_count: Total routes seen on virtual router interface
+    """
+    interface: str
+    route_count: int
+
+
+@dataclass
+class ShowRoutingRouteCommandResult:
+    summary_data: List[ShowRoutingRouteSummaryData]
+    result_data: List[ShowRoutingRouteResultData]
+
+    _output_prefix = OUTPUT_PREFIX + "ShowRoute"
+    _title = "PAN-OS Routes"
+
+    _summary_cls = ShowRoutingRouteSummaryData
+    _result_cls = ShowRoutingRouteResultData
+
+
+@dataclass
+class ShowSystemInfoResultData(ResultData):
+    """
+    :param ip_address: Management IP Address
+    :param ipv6_address: Management IPv6 address
+    :param netmask: Management Netmask
+    :param default_gateway: Management Default Gateway
+    :param mac_address: Management MAC address
+    :param uptime: Total System uptime
+    :param family: Platform family
+    :param model: Platform model
+    :param sw_version: System software version
+    :param av_version: System anti-virus version
+    :param app_version: App content version
+    :param threat_version: Threat content version
+    :param threat_release_date: Release date of threat content
+    :param app_release_date: Release date of application content
+    :param wildfire_version: Wildfire content version
+    :param wildfire_release_date: Wildfire release date
+    :param url_filtering_version: URL Filtering content version
+    """
+    ip_address: str
+    netmask: str
+    mac_address: str
+    uptime: str
+    family: str
+    model: str
+    sw_version: str
+    operational_mode: str
+    # Nullable fields - when using Panorama these can be null
+    ipv6_address: str = ""
+    default_gateway: str = ""
+    public_ip_address: str = ""
+    hostname: str = ""
+    av_version: str = "not_installed"
+    av_release_date: str = "not_installed"
+    app_version: str = "not_installed"
+    app_release_date: str = "not_installed"
+    threat_version: str = "not_installed"
+    threat_release_date: str = "not_installed"
+    wildfire_version: str = "not_installed"
+    wildfire_release_date: str = "not_installed"
+    url_filtering_version: str = "not_installed"
+
+
+@dataclass
+class ShowSystemInfoSummaryData(ResultData):
+    """
+    :param ip_address: Management IP Address
+    :param sw_version: System software version
+    :param uptime: Total System uptime
+    :param family: Platform family
+    :param model: Platform model
+    :param hostname: System Hostname
+    """
+    ip_address: str
+    sw_version: str
+    family: str
+    model: str
+    uptime: str
+    hostname: str = ""
+
+
+@dataclass
+class ShowSystemInfoCommandResult:
+    summary_data: List[ShowSystemInfoSummaryData]
+    result_data: List[ShowSystemInfoResultData]
+
+    _output_prefix = OUTPUT_PREFIX + "ShowSystemInfo"
+    _title = "PAN-OS System Info"
+
+    _summary_cls = ShowSystemInfoSummaryData
+    _result_cls = ShowSystemInfoResultData
+
+
+@dataclass
+class ShowCounterGlobalResultData(ResultData):
+    """
+    :param category: The counter category
+    :param name: Human readable counter name
+    :param value: Current counter value
+    :param rate: Packets per second rate
+    :param aspect: PANOS Aspect
+    :param desc: Human readable counter description
+    :param counter_id: Counter ID
+    :param severity: Counter severity
+    :param id: Counter ID
+    """
+    category: str
+    name: str
+    value: int
+    rate: int
+    aspect: str
+    desc: str
+    id: str
+    severity: str
+
+    timestamp = datetime.now()
+
+    def __post_init__(self):
+        self.value = int(self.value)
+        self.rate = int(self.rate)
+
+
+@dataclass
+class ShowCounterGlobalSummaryData(ResultData):
+    """
+    :param name: Human readable counter name
+    :param value: Current counter value
+    :param rate: Packets per second rate
+    :param desc: Human readable counter description
+    """
+    name: str
+    value: int
+    rate: int
+    desc: str
+
+    def __post_init__(self):
+        self.value = int(self.value)
+        self.rate = int(self.rate)
+
+
+@dataclass
+class ShowCounterGlobalCommmandResult:
+    summary_data: List[ShowCounterGlobalSummaryData]
+    result_data: List[ShowCounterGlobalResultData]
+
+    _output_prefix = OUTPUT_PREFIX + "ShowCounters"
+    _title = "PAN-OS Global Counters"
+
+    _summary_cls = ShowCounterGlobalSummaryData
+    _result_cls = ShowCounterGlobalResultData
+
+
+@dataclass
+class ShowRoutingProtocolBGPPeersResultData(ResultData):
+    """
+    :param peer: Name of BGP peer
+    :param vr: Virtual router peer resides in
+    :param remote_as: Remote AS (Autonomous System) of Peer
+    :param status: Peer connection status
+    :param incoming_total: Total incoming routes from peer
+    :param incoming_accepted: Total accepted routes from peer
+    :param incoming_rejected: Total rejected routes from peer
+    :param policy_rejected: Total routes rejected by peer by policy
+    :param outgoing_total: Total routes advertised to peer
+    :param outgoing_advertised: Count of advertised routes to peer
+    :param peer_address: IP address and port of peer
+    :param local_address: Local router address and port
+    """
+    peer: str
+    vr: str
+    remote_as: str
+    status: str
+    peer_address: str
+    local_address: str
+    incoming_total: int = 0
+    incoming_accepted: int = 0
+    incoming_rejected: int = 0
+    policy_rejected: int = 0
+    outgoing_total: int = 0
+    outgoing_advertised: int = 0
+
+    def __post_init__(self):
+        self.incoming_total = int(self.incoming_total)
+        self.incoming_accepted = int(self.incoming_accepted)
+        self.incoming_rejected = int(self.incoming_rejected)
+        self.policy_rejected = int(self.policy_rejected)
+        self.outgoing_total = int(self.outgoing_total)
+        self.outgoing_advertised = int(self.outgoing_advertised)
+
+
+@dataclass
+class ShowRoutingProtocolBGPPeersSummaryData(ResultData):
+    """
+    :param peer: Name of BGP peer
+    :param status: Peer connection status
+    :param incoming_accepted: Total accepted routes from peer
+    """
+    peer: str
+    status: str
+    incoming_accepted: int = 0
+
+    def __post_init__(self):
+        self.incoming_accepted = int(self.incoming_accepted)
+
+
+@dataclass
+class ShowRoutingProtocolBGPCommandResult:
+    summary_data: List[ShowRoutingProtocolBGPPeersSummaryData]
+    result_data: List[ShowRoutingProtocolBGPPeersResultData]
+
+    _output_prefix = OUTPUT_PREFIX + "ShowBGPPeers"
+    _title = "PAN-OS BGP Peers"
+
+    _summary_cls = ShowRoutingProtocolBGPPeersSummaryData
+    _result_cls = ShowRoutingProtocolBGPPeersResultData
+
+
+@dataclass
+class GetDeviceConnectivityResultData(ResultData):
+    """
+    :param connected: Whether the host is reachable and connected.
+    """
+    connected: bool
+
+
+@dataclass
+class GetDeviceConnectivityCommandResult:
+    summary_data: List[GetDeviceConnectivityResultData]
+    result_data: None = None
+
+    _output_prefix = OUTPUT_PREFIX + "DeviceConnectivity"
+    _title = "PAN-OS Device Connectivity Status"
+
+    _summary_data = GetDeviceConnectivityResultData
+
+
+@dataclass
+class SoftwareVersion(ResultData):
+    """
+    :param version: software version in Major.Minor.Maint format
+    :param filename: Software version filename
+    :param size: Size of software in MB
+    :param size_kb: Size of software in KB
+    :param release_notes: Link to version release notes on PAN knowledge base
+    :param downloaded: True if the software version is present on the system
+    :param current: True if this is the currently installed software on the system
+    :param latest: True if this is the most recently released software for this platform
+    :param uploaded: True if the software version has been uploaded to the system
+    """
+    version: str
+    filename: str
+    size: int
+    size_kb: int
+    release_notes: str
+    downloaded: bool
+    current: bool
+    latest: bool
+    uploaded: bool
+
+
+@dataclass
+class SoftwareVersionCommandResult:
+    summary_data: List[SoftwareVersion]
+    result_data: None = None
+
+    _output_prefix = OUTPUT_PREFIX + "SoftwareVersions"
+    _title = "PAN-OS Available Software Versions"
+
+    _summary_cls = SoftwareVersion
+
+
+@dataclass
+class FileInfoResult:
+    """
+    :param Name: Filename
+    :param EntryID: Entry ID
+    :param Size: Size of file
+    :param Type: Type of file
+    :param Info: Basic information of file
+    """
+    Name: str
+    EntryID: str
+    Size: int
+    Type: str
+    Info: str
+
+    _output_prefix = "InfoFile"
+
+
+@dataclass
+class ShowHAState(ResultData):
+    """
+    :param active: Whether this is the active firewall in a pair or not. True if standalone as well
+    :param status: String HA status
+    :param peer: HA Peer
+    """
+    active: bool
+    status: str
+    peer: str
+
+    _output_prefix = OUTPUT_PREFIX + "HAState"
+    _title = "PAN-OS HA State"
+    _outputs_key_field = "hostid"
+
+
+@dataclass
+class ShowJobsAllSummaryData(ResultData):
+    """
+    :param type: Job type
+    :param tfin: Time finished
+    :param status: Status of job
+    :param id: ID of job
+    """
+    id: int
+    type: str
+    tfin: str
+    status: str
+    result: str
+
+    def __post_init__(self):
+        self.id = int(self.id)
+
+
+@dataclass
+class ShowJobsAllResultData(ResultData):
+    """
+    Note; this is only a subset so it supports the
+    :param type: Job type
+    :param tfin: Time finished
+    :param status: Status of job
+    :param id: ID of job
+    """
+    id: int
+    type: str
+    tfin: str
+    status: str
+    result: str
+    user: str
+    tenq: str
+    stoppable: str
+    positionInQ: int
+    progress: int
+    description: str = ""
+
+    _output_prefix = OUTPUT_PREFIX + "JobStatus"
+    _title = "PAN-OS Job Status"
+    _outputs_key_field = "id"
+
+    def __post_init__(self):
+        self.id = int(self.id)
+
+
+@dataclass
+class ShowJobsAllCommandResult:
+    summary_data: List[ShowJobsAllSummaryData]
+    result_data: List[ShowJobsAllResultData]
+
+    _output_prefix = OUTPUT_PREFIX + "JobStatus"
+    _title = "PAN-OS Job Status"
+
+    _summary_cls = ShowJobsAllSummaryData
+    _result_cls = ShowJobsAllResultData
+    _outputs_key_field = "id"
+
+
+@dataclass
+class GenericSoftwareStatus(ResultData):
+    """
+    :param started: Whether download process has started.
+    """
+    started: bool
+
+
+@dataclass
+class CommitStatus(ResultData):
+    """
+    :param job_id: The ID of the commit job. May be empty on first run.,
+    :param status: The current status of the commit operation.
+    :param device_type: The type of device; can be either "Panorama" or "Firewall"
+    :param commit_type: The type of commit operation.
+    """
+    job_id: str
+    commit_type: str
+    status: str
+    device_type: str
+
+    _output_prefix = OUTPUT_PREFIX + "CommitStatus"
+    _title = "PAN-OS Commit Job"
+    _outputs_key_field = "job_id"
+
+
+@dataclass
+class PushStatus(ResultData):
+    """
+    :param job_id: The ID of the push job.
+    :param commit_all_status: The current status of the commit all operation on Panorama.
+    :param name: The name of the device group or template being pushed.
+    :param commit_type: The name of the device group or template being pushed.
+    :param device: The device currently being pushed to - None when first initiated.
+    :param device_status: The status of the actual commit operation on the device itself
+    """
+    job_id: str
+    commit_type: str
+    commit_all_status: str
+    device_status: str
+    name: str
+    device: str
+
+    _output_prefix = OUTPUT_PREFIX + "PushStatus"
+    _title = "PAN-OS Push Job"
+    _outputs_key_field = "job_id"
+
+
+@dataclass
+class HighAvailabilityStateStatus(ResultData):
+    """
+    :param state: New HA State
+    """
+    state: str
+    _output_prefix = OUTPUT_PREFIX + "HAStateUpdate"
+    _title = "PAN-OS High-Availability Updated State"
+
+
+@dataclass
+class DownloadSoftwareCommandResult:
+    summary_data: List[GenericSoftwareStatus]
+    result_data: None = None
+
+    _output_prefix = OUTPUT_PREFIX + "DownloadStatus"
+    _title = "PAN-OS Software Download request Status"
+
+    _summary_cls = GenericSoftwareStatus
+
+
+@dataclass
+class InstallSoftwareCommandResult:
+    summary_data: List[GenericSoftwareStatus]
+    result_data: None = None
+
+    _output_prefix = OUTPUT_PREFIX + "InstallStatus"
+    _title = "PAN-OS Software Install request Status"
+
+    _summary_cls = GenericSoftwareStatus
+
+
+@dataclass
+class RestartSystemCommandResult:
+    summary_data: List[GenericSoftwareStatus]
+    result_data: None = None
+
+    _output_prefix = OUTPUT_PREFIX + "RestartStatus"
+    _title = "PAN-OS Software Restart request Status"
+
+    _summary_cls = GenericSoftwareStatus
+
+
+@dataclass
+class CheckSystemStatus(ResultData):
+    """
+    :param up: Whether the host device is up or still unavailable.
+    """
+    up: bool
+
+    _output_prefix = OUTPUT_PREFIX + "SystemStatus"
+    _title = "PAN-OS System Status"
+    _outputs_key_field = "hostid"
+
+
+@dataclass
+class DeviceGroupInformation(ResultData):
+    """
+    :param serial: Serial number of firewall
+    :param connected: Whether the firewall is currently connected
+    :param hostname: Firewall hostname
+    :param last_commit_all_state_sp: Text state of last commit
+    :param name: Device group Name
+    """
+    serial: str
+    connected: str
+    hostname: str
+    last_commit_all_state_sp: str
+    name: str = ""
+
+    _output_prefix = OUTPUT_PREFIX + "DeviceGroupOp"
+    _title = "PAN-OS Operational Device Group Status"
+    _outputs_key_field = "name"
+
+
+@dataclass
+class TemplateStackInformation(ResultData):
+    """
+    :param serial: Serial number of firewall
+    :param connected: Whether the firewall is currently connected
+    :param hostname: Firewall hostname
+    :param last_commit_all_state_tpl: Text state of last commit
+    :param name: Template Stack Name
+    """
+    serial: str
+    connected: str
+    hostname: str
+    last_commit_all_state_tpl: str
+    name: str = ""
+
+    _output_prefix = OUTPUT_PREFIX + "TemplateStackOp"
+    _title = "PAN-OS Operational Template Stack status"
+    _outputs_key_field = "name"
+
+
+@dataclass
+class PanosObjectReference(ResultData):
+    """
+    :param container_name: What parent container (DG, Template, VSYS) this object belongs to.
+    :param name: The PAN-OS object name
+    :param object_type: The PAN-OS-Python object type
+    """
+    container_name: str
+    name: str
+    object_type: str
+
+    _output_prefix = OUTPUT_PREFIX + "PanosObject"
+    _title = "PAN-OS Objects"
+
+
+def dataclass_from_dict(device: Union[Panorama, Firewall], object_dict: dict, class_type: Callable):
+    """
+    Given a dictionary and a datacalass, converts the dictionary into the dataclass type.
+    :param device: The PAnDevice instance that this result data belongs to
+    :param object_dict: the dictionary of the object data
+    :param class_type the dataclass to convert the dict into
+    """
+    if device.hostname:
+        object_dict["hostid"] = device.hostname
+    if device.serial:
+        object_dict["hostid"] = device.serial
+
+    result_dict = {}
+    for key, value in object_dict.items():
+        d_key = key.replace("-", "_")
+        dataclass_field = next((x for x in fields(class_type) if x.name == d_key), None)
+        if dataclass_field:
+            result_dict[d_key] = value
+
+    return class_type(**result_dict)
+
+
+def flatten_xml_to_dict(element, object_dict: dict, class_type: Callable):
+    """
+    Given an XML element, a dictionary, and a class, flattens the XML into the class.
+    This is a recursive function that will resolve child elements.
+    :param element: XML element object
+    :param object_dict: A dictionary to populate with the XML tag text
+    :param class_type: The class type that this XML will be converted to - filters the XML tags by it's attributes
+    """
+    for child_element in element:
+        tag = child_element.tag
+
+        # Replace hyphens in tags with underscores to match python attributes
+        tag = tag.replace("-", "_")
+        dataclass_field = next((x for x in fields(class_type) if x.name == tag), None)
+        if dataclass_field:
+            object_dict[tag] = child_element.text
+
+        if len(child_element) > 0:
+            object_dict = {**object_dict, **flatten_xml_to_dict(child_element, object_dict, class_type)}
+
+    return object_dict
+
+
+def dataclass_from_element(device: Union[Panorama, Firewall],class_type: Callable, element):
+    """
+    Turns an XML `Element` Object into an instance of the provided dataclass. Dataclass parameters must match
+    element: Optional[Element]
+    child XML tags exactly.
+    :param device: Instance of `Panorama` or `Firewall` object
+    :param class_type: The dataclass to convert the XML into
+    :param element: The XML element to convert to the dataclass of type `class_type`
+    """
+    object_dict = {}
+    if not element:
+        return
+
+    if device.hostname:
+        object_dict["hostid"] = device.hostname
+    if device.serial:
+        object_dict["hostid"] = device.serial
+
+    # Handle the XML attributes, if any and if they match dataclass field
+    for attr_name, attr_value in element.attrib.items():
+        dataclass_field = next((x for x in fields(class_type) if x.name == attr_name), None)
+        if dataclass_field:
+            object_dict[attr_name] = attr_value
+
+    return class_type(**flatten_xml_to_dict(element, object_dict, class_type))
+
+
+def resolve_host_id(device: PanDevice):
+    """
+    Gets the ID of the host from a PanDevice object. This may be an IP address or serial number.
+    :param device: `Pandevice` object instance, can also be a `Firewall` or `Panorama` type.
+    """
+    host_id: str = ""
+    if device.hostname:
+        host_id = device.hostname
+    if device.serial:
+        host_id = device.serial
+
+    return host_id
+
+
+def resolve_container_name(container: Union[Panorama, Firewall, DeviceGroup, Template, Vsys]):
+    """
+    Gets the name of a given PanDevice container or if it's not a container, returns shared.
+    :param container: Named container, or device instance
+    """
+    if isinstance(container, (Panorama, Firewall)):
+        return "shared"
+
+    return container.name
+
+@dataclass
+class ConfigurationHygieneIssue(ResultData):
+    """
+    :param container_name: What parent container (DG, Template, VSYS) this object belongs to.
+    :param issue_code: The shorthand code for the issue
+    :param description: Human readable description of issue
+    :param name: The affected object name
+    """
+    container_name: str
+    issue_code: str
+    description: str
+    name: str
+
+    _output_prefix = OUTPUT_PREFIX + "ConfigurationHygiene"
+    _title = "PAN-OS Configuration Hygiene Check"
+
+
+@dataclass
+class ConfigurationHygieneCheck:
+    """
+    :param description: The description of the check
+    :param issue_code: The shorthand code for this hygiene check
+    :param result: Whether the check passed or failed
+    :param issue_count: Total number of matching issues
+    """
+    description: str
+    issue_code: str
+    result: str
+    issue_count: int = 0
+
+
+@dataclass
+class ConfigurationHygieneCheckResult:
+    summary_data: list[ConfigurationHygieneCheck]
+    result_data: list[ConfigurationHygieneIssue]
+
+    _output_prefix = OUTPUT_PREFIX + "ConfigurationHygiene"
+    _title = "PAN-OS Configuration Hygiene Check"
+
+    _summary_cls = ConfigurationHygieneCheck
+    _result_cls = ConfigurationHygieneIssue
+    _outputs_key_field = "issue_code"
+
+
+class HygieneCheckRegister:
+    """Stores all the hygiene checks this integration is capable of and their associated details."""
+
+    def __init__(self, register: dict):
+        self.register: Dict[str, ConfigurationHygieneCheck] = register
+
+    def get(self, issue_code: str) -> ConfigurationHygieneCheck:
+        """
+        Gets a single Hygiene check by it's string issue code.
+        :param issue_code: The string issue code, such as BP-V-1
+        """
+        if issue_check := self.register.get(issue_code):
+            return issue_check
+        raise DemistoException("Invalid Hygiene check issue name")
+
+    def values(self):
+        return self.register.values()
+
+    @classmethod
+    def get_hygiene_check_register(cls, issue_codes: List[str]):
+        """
+        Builds the hygiene check register which stores a representation of all the hygiene checks supported by this integration,
+        filtered by the list of issue_codes provided
+        This function allows a hygiene lookup command to check for the presence of specific hygiene issues and set the result
+        accordingly.
+
+        :param issue_codes: List of string issue codes to return hygiene check objects for.
+        """
+        check_register = {
+            "BP-V-1": ConfigurationHygieneCheck(
+                issue_code="BP-V-1",
+                result=UNICODE_PASS,
+                description="Fails if there are no valid log forwarding profiles configured.",
+            ),
+            "BP-V-2": ConfigurationHygieneCheck(
+                issue_code="BP-V-2",
+                result=UNICODE_PASS,
+                description="Fails if the configured log forwarding profile has no match list.",
+            ),
+            "BP-V-3": ConfigurationHygieneCheck(
+                issue_code="BP-V-3",
+                result=UNICODE_PASS,
+                description="Fails if enhanced application logging is not configured.",
+            ),
+            "BP-V-4": ConfigurationHygieneCheck(
+                issue_code="BP-V-4",
+                result=UNICODE_PASS,
+                description="Fails if no vulnerability profile is configured for visibility.",
+            ),
+            "BP-V-5": ConfigurationHygieneCheck(
+                issue_code="BP-V-5",
+                result=UNICODE_PASS,
+                description="Fails if no spyware profile is configured for visibility."
+            ),
+            "BP-V-6": ConfigurationHygieneCheck(
+                issue_code="BP-V-6",
+                result=UNICODE_PASS,
+                description="Fails if no spyware profile is configured for url-filtering",
+            ),
+            "BP-V-7": ConfigurationHygieneCheck(
+                issue_code="BP-V-7",
+                result=UNICODE_PASS,
+                description="Fails when a security zone has no log forwarding setting.",
+            ),
+            "BP-V-8": ConfigurationHygieneCheck(
+                issue_code="BP-V-8",
+                result=UNICODE_PASS,
+                description="Fails when a security rule is not configured to log at session end.",
+            ),
+            "BP-V-9": ConfigurationHygieneCheck(
+                issue_code="BP-V-9",
+                result=UNICODE_PASS,
+                description="Fails when a security rule has no log forwarding profile configured.",
+            ),
+            "BP-V-10": ConfigurationHygieneCheck(
+                issue_code="BP-V-10",
+                result=UNICODE_PASS,
+                description="Fails when a security rule has no configured profiles or profile groups.",
+            ),
+        }
+
+        return cls({issue_code: check_register[issue_code] for issue_code in issue_codes})
+
+
+class HygieneLookups:
+    """Functions that inspect firewall and panorama configurations for config issues"""
+
+    @staticmethod
+    def check_log_forwarding_profiles(
+        topology: Topology,
+        device_filter_str: Optional[str] = None,
+    ):
+        """
+        Evaluates the log forwarding profiles configured througout the environment to validate at least one is present with the
+        correct settings required for log visibility.
+        :param topology: `Topology` instance
+        :param device_filter_str: Filter checks to a specific device or devices
+        """
+        issues = []
+        lf_profile_list: list[LogForwardingProfile] = []
+        check_register = HygieneCheckRegister.get_hygiene_check_register([
+            "BP-V-1",
+            "BP-V-2",
+            "BP-V-3"
+        ])
+        for device, container in topology.get_all_object_containers(device_filter_str):
+            log_forwarding_profiles: list[LogForwardingProfile] = LogForwardingProfile.refreshall(container)
+            lf_profile_list = lf_profile_list + log_forwarding_profiles
+            for log_forwarding_profile in log_forwarding_profiles:
+                # Enhanced app logging - BP-V-2
+                if not log_forwarding_profile.enhanced_logging:
+                    issues.append(ConfigurationHygieneIssue(
+                        hostid=resolve_host_id(device),
+                        container_name=resolve_container_name(container),
+                        description="Log forwarding profile is missing enhanced application logging.",
+                        name=log_forwarding_profile.name,
+                        issue_code="BP-V-3"
+                    ))
+                    check = check_register.get("BP-V-3")
+                    check.result = UNICODE_FAIL
+                    check.issue_count += 1
+
+                match_list_list = LogForwardingProfileMatchList.refreshall(log_forwarding_profile)
+                if len(match_list_list) == 0:
+                    issues.append(ConfigurationHygieneIssue(
+                        hostid=resolve_host_id(device),
+                        container_name=resolve_container_name(container),
+                        description="Log forwarding profile contains no match list.",
+                        name=log_forwarding_profile.name,
+                        issue_code="BP-V-2"
+                    ))
+                    check = check_register.get("BP-V-2")
+                    check.result = UNICODE_FAIL
+                    check.issue_count += 1
+
+                required_log_types = ["traffic", "threat"]
+                for log_forwarding_profile_match_list in match_list_list:
+                    if log_forwarding_profile_match_list.log_type in required_log_types:
+                        required_log_types.remove(log_forwarding_profile_match_list.log_type)
+
+                for missing_required_log_type in required_log_types:
+                    issues.append(ConfigurationHygieneIssue(
+                        hostid=resolve_host_id(device),
+                        container_name=resolve_container_name(container),
+                        description=f"Log forwarding profile missing log type '{missing_required_log_type}'.",
+                        name=log_forwarding_profile.name,
+                        issue_code="BP-V-2"
+                    ))
+                    check = check_register.get("BP-V-2")
+                    check.result = UNICODE_FAIL
+                    check.issue_count += 1
+
+        # No logging profiles configured in environment - BP-V-1
+        if len(lf_profile_list) == 0:
+            issues.append(ConfigurationHygieneIssue(
+                hostid="PLATFORM",
+                container_name="",
+                description="No log profiles configured!",
+                name="",
+                issue_code="BP-V-1"
+            ))
+            check = check_register.get("BP-V-1")
+            check.result = UNICODE_FAIL
+            check.issue_count += 1
+
+        return ConfigurationHygieneCheckResult(
+            summary_data=[item for item in check_register.values()],
+            result_data=issues
+        )
+
+    @staticmethod
+    def get_conforming_threat_profiles(
+        profiles: Union[List[VulnerabilityProfile], List[AntiSpywareProfile]],
+        minimum_block_severities: List[str],
+        minimum_alert_severities: List[str]
+    ) -> Union[List[VulnerabilityProfile], List[AntiSpywareProfile]]:
+        """
+        Given a list of threat (vulnerability or spyware) profiles, return any that conform to best practices.
+
+        :param profiles: A list of ..Profile pan-os-python objects
+        :param minimum_alert_severities: A string list of severities that MUST be in a alert mode
+        :param minimum_block_severities: A string list of severities that MUST be in block mode
+        """
+        conforming_profiles = []
+        for profile in profiles:
+            block_severities = minimum_block_severities.copy()
+            alert_severities = minimum_alert_severities.copy()
+
+            for rule in profile.children:
+                block_actions = [rule.is_reset_both, rule.is_reset_client, rule.is_reset_server,
+                                 rule.is_drop, rule.is_block_ip]
+                alert_actions = [rule.is_default, rule.is_alert]
+                is_blocked = any(block_actions)
+                is_alert = any(alert_actions)
+                for rule_severity in rule.severity:
+
+                    # If the block severities are blocked
+                    if is_blocked and rule_severity in block_severities:
+                        block_severities.remove(rule_severity)
+                        if rule_severity in alert_severities:
+                            alert_severities.remove(rule_severity)
+                    # If the alert severities are blocked
+                    elif is_blocked and rule_severity in alert_severities:
+                        if rule_severity in alert_severities:
+                            alert_severities.remove(rule_severity)
+                    # If the alert severities are alert/default
+                    elif is_alert and rule_severity in alert_severities:
+                        if rule_severity in alert_severities:
+                            alert_severities.remove(rule_severity)
+
+            if not block_severities and not alert_severities:
+                conforming_profiles.append(profile)
+
+        return conforming_profiles
+
+    @staticmethod
+    def check_vulnerability_profiles(
+        topology: Topology,
+        device_filter_str: Optional[str] = None,
+        minimum_block_severities: Optional[List[str]] = None,
+        minimum_alert_severities: Optional[List[str]] = None
+    ) -> ConfigurationHygieneCheckResult:
+        """
+        Checks the environment to ensure at least one vulnerability profile is configured according to visibility best practices.
+        The minimum severities can be tweaked to customize what "best practices" is.
+
+        :param topology: `Topology` instance
+        :param device_filter_str: Filter checks to a specific device or devices
+        :param minimum_alert_severities: A string list of severities that MUST be in a alert mode
+        :param minimum_block_severities: A string list of severities that MUST be in block mode
+        """
+
+        if not minimum_block_severities:
+            minimum_block_severities = BestPractices.VULNERABILITY_BLOCK_SEVERITIES
+        if not minimum_alert_severities:
+            minimum_alert_severities = BestPractices.VULNERABILITY_ALERT_THRESHOLD
+
+        conforming_profiles: Union[List[VulnerabilityProfile], List[AntiSpywareProfile]] = []
+        issues = []
+
+        check_register = HygieneCheckRegister.get_hygiene_check_register([
+            "BP-V-4"
+        ])
+
+        # BP-V-4 - Check at least one vulnerability profile exists with the correct settings.
+        for device, container in topology.get_all_object_containers(device_filter_str):
+            vulnerability_profiles: list[VulnerabilityProfile] = VulnerabilityProfile.refreshall(container)
+            conforming_profiles = conforming_profiles + HygieneLookups.get_conforming_threat_profiles(
+                vulnerability_profiles,
+                minimum_block_severities=minimum_block_severities,
+                minimum_alert_severities=minimum_alert_severities
+            )
+
+        if len(conforming_profiles) == 0:
+            issues.append(ConfigurationHygieneIssue(
+                hostid="GLOBAL",
+                container_name="",
+                description="No conforming vulnerability profiles.",
+                name="",
+                issue_code="BP-V-4"
+            ))
+            check = check_register.get("BP-V-4")
+            check.result = UNICODE_FAIL
+            check.issue_count += 1
+
+        return ConfigurationHygieneCheckResult(
+            summary_data=[item for item in check_register.values()],
+            result_data=issues
+        )
+
+
+class PanoramaCommand:
+    """Commands that can only be run, or are relevant only on Panorama."""
+    GET_DEVICEGROUPS_COMMAND = "show devicegroups"
+    GET_TEMPLATE_STACK_COMMAND = "show template-stack"
+
+    @staticmethod
+    def get_device_groups(
+        topology: Topology,
+        device_filter_str: Optional[str] = None,
+    ) -> List[DeviceGroupInformation]:
+        """
+        Get all the device groups from Panorama and their associated devices.
+        :param topology: `Topology` instance.
+        :param device_filter_str: If provided, filters this command to only the devices specified.
+        """
+        result = []
+        for device in topology.active_top_level_devices(device_filter_str):
+            if isinstance(device, Panorama):
+                response = run_op_command(device, PanoramaCommand.GET_DEVICEGROUPS_COMMAND)
+                for device_group_xml in response.findall("./result/devicegroups/entry"):
+                    dg_name = get_element_attribute(device_group_xml, "name")
+                    for device_xml in device_group_xml.findall("./devices/entry"):
+                        device_group_information: DeviceGroupInformation = dataclass_from_element(
+                            device, DeviceGroupInformation, device_xml
+                        )
+                        device_group_information.name = dg_name
+                        result.append(device_group_information)
+
+        return result
+
+    @staticmethod
+    def get_template_stacks(
+        topology: Topology,
+        device_filter_str: Optional[str] = None,
+    ) -> List[TemplateStackInformation]:
+        """
+        Get all the template-stacks from Panorama and their associated devices.
+        :param topology: `Topology` instance.
+        :param device_filter_str: If provided, filters this command to only the devices specified.
+        """
+
+        result = []
+        for device in topology.active_top_level_devices(device_filter_str):
+            if isinstance(device, Panorama):
+                response = run_op_command(device, PanoramaCommand.GET_TEMPLATE_STACK_COMMAND)
+                for template_stack_xml in response.findall("./result/template-stack/entry"):
+                    template_name = get_element_attribute(template_stack_xml, "name")
+                    for device_xml in template_stack_xml.findall("./devices/entry"):
+                        result_template_stack_information: TemplateStackInformation = dataclass_from_element(
+                            device, TemplateStackInformation, device_xml
+                        )
+                        result_template_stack_information.name = template_name
+                        result.append(result_template_stack_information)
+
+        return result
+
+    @staticmethod
+    def push_all(
+        topology: Topology,
+        device_filter_str: str = None,
+        device_group_filter: Optional[List[str]] = None,
+        template_stack_filter: Optional[List[str]] = None
+    ) -> List[PushStatus]:
+        """
+        Pushes the pending configuration from Panorama to the firewalls. This is an async function,
+        and will only push if there is config pending.
+        :param topology: `Topology` instance.
+        :param device_filter_str: If provided, filters this command to only the devices specified.
+        :param device_group_filter: If provided, only the given named device groups will be pushed to devices
+        :param template_stack_filter: If provided, only the given named template-stacks will be pushed to devices
+        """
+        result = []
+
+        for device in topology.active_top_level_devices(device_filter_str):
+            # Get the relevent DGs and Templates to push.
+            device_groups = PanoramaCommand.get_device_groups(topology, resolve_host_id(device))
+            device_group_names = set([x.name for x in device_groups])
+            template_stacks = PanoramaCommand.get_template_stacks(topology, resolve_host_id(device))
+            template_stack_names = set([x.name for x in template_stacks])
+
+            if device_group_filter:
+                device_group_names = set([x for x in device_group_names if x in device_group_filter])
+
+            if template_stack_filter:
+                template_stack_names = set([x for x in template_stack_names if x in template_stack_filter])
+
+            for dg_name in device_group_names:
+                device_group_commit = PanoramaCommitAll(
+                    style="device group",
+                    name=dg_name
+                )
+                result_job_id = device.commit(cmd=device_group_commit)
+                result.append(PushStatus(
+                    hostid=resolve_host_id(device),
+                    commit_type="devicegroup",
+                    name=dg_name,
+                    job_id=result_job_id,
+                    commit_all_status="Initiated",
+                    device_status="",
+                    device=""
+                ))
+
+            for template_name in template_stack_names:
+                template_stack_commit = PanoramaCommitAll(
+                    style="template stack",
+                    name=template_name
+                )
+                result_job_id = device.commit(cmd=template_stack_commit)
+                result.append(PushStatus(
+                    hostid=resolve_host_id(device),
+                    commit_type="template-stack",
+                    name=template_name,
+                    job_id=result_job_id,
+                    commit_all_status="Initiated",
+                    device_status="",
+                    device=""
+                ))
+
+        return result
+
+    @staticmethod
+    def get_push_status(topology: Topology, match_job_ids: Optional[List[str]] = None) -> List[PushStatus]:
+        """
+        Retrieves the status of a Panorama Push, using the given job ids.
+        :param topology: `Topology` instance.
+        :param match_job_ids: If provided, only returns the jobs with the given ID.
+        """
+        result: List[PushStatus] = []
+        for device in topology.active_top_level_devices():
+            response = run_op_command(device, UniversalCommand.SHOW_JOBS_COMMAND)
+            for job in response.findall("./result/job"):
+                commit_type = find_text_in_element(job, "./type")
+                if commit_type in ["CommitAll"]:
+                    commit_all_status = find_text_in_element(job, "./status")
+                    job_id = find_text_in_element(job, "./id")
+                    commit_type = find_text_in_element(job, "./type")
+                    dg_name_xml = job.find("./dgname")
+                    tpl_name_xml = job.find("./tplname")
+                    name = ""
+                    if hasattr(dg_name_xml, "text") and dg_name_xml:
+                        name = dg_name_xml.text  # type: ignore
+
+                    if hasattr(tpl_name_xml, "text") and tpl_name_xml:
+                        name = tpl_name_xml.text  # type: ignore
+
+                    for device_xml in job.findall("./devices/entry"):
+                        serial = find_text_in_element(device_xml, "./serial-no")
+                        device_status = find_text_in_element(device_xml, "./result")
+                        result.append(PushStatus(
+                            hostid=resolve_host_id(device),
+                            job_id=job_id,
+                            commit_type=commit_type,
+                            commit_all_status=commit_all_status,
+                            device_status=device_status,
+                            name=name,
+                            device=serial
+                        ))
+
+        if match_job_ids:
+            return [x for x in result if x.job_id in match_job_ids]
+
+        return result
+
+
+class UniversalCommand:
+    """Command list for commands that are consistent between PANORAMA and NGFW"""
+    SYSTEM_INFO_COMMAND = "show system info"
+    SHOW_JOBS_COMMAND = "show jobs all"
+
+    @staticmethod
+    def get_system_info(
+        topology: Topology,
+        device_filter_str: Optional[str] = None,
+        target: Optional[str] = None
+    ) -> ShowSystemInfoCommandResult:
+        """
+        Get the running system information
+        :param topology: `Topology` instance.
+        :param device_filter_str: If provided, filters this command to only the devices specified.
+        :param target: Single target device, by serial number
+        """
+        result_data: List[ShowSystemInfoResultData] = []
+        summary_data: List[ShowSystemInfoSummaryData] = []
+        for device in topology.all(filter_string=device_filter_str, target=target):
+            response = run_op_command(device, UniversalCommand.SYSTEM_INFO_COMMAND)
+            result_data.append(dataclass_from_element(device, ShowSystemInfoResultData,
+                                                      response.find("./result/system")))
+            summary_data.append(dataclass_from_element(device, ShowSystemInfoSummaryData,
+                                                       response.find("./result/system")))
+
+        return ShowSystemInfoCommandResult(result_data=result_data, summary_data=summary_data)
+
+    @staticmethod
+    def get_available_software(
+        topology: Topology,
+        device_filter_str: Optional[str] = None,
+        target: Optional[str] = None
+    ) -> SoftwareVersionCommandResult:
+        """
+        Get all available software updates
+        :param topology: `Topology` instance.
+        :param device_filter_str: If provided, filters this command to only the devices specified.
+        """
+        summary_data = []
+        for device in topology.all(filter_string=device_filter_str, target=target):
+            device.software.check()
+            for version_dict in device.software.versions.values():
+                summary_data.append(dataclass_from_dict(device, version_dict, SoftwareVersion))
+
+        return SoftwareVersionCommandResult(summary_data=summary_data)
+
+    @staticmethod
+    def download_software(
+        topology: Topology,
+        version: str,
+        sync: bool = False,
+        device_filter_str: Optional[str] = None,
+        target: Optional[str] = None
+    ) -> DownloadSoftwareCommandResult:
+        """
+        Download the given software version to the device. This is an async command, and returns
+        immediately.
+        :param topology: `Topology` instance.
+        :param device_filter_str: If provided, filters this command to only the devices specified.
+        :param sync: If provided, command will block while downloading
+        :param version: The software version to download
+        """
+        result = []
+        for device in topology.all(filter_string=device_filter_str, target=target):
+            device.software.download(version, sync=sync)
+            result.append(GenericSoftwareStatus(
+                hostid=resolve_host_id(device),
+                started=True
+            ))
+
+        return DownloadSoftwareCommandResult(summary_data=result)
+
+    @staticmethod
+    def install_software(
+        topology: Topology, version: str,
+        sync: Optional[bool] = False,
+        device_filter_str: Optional[str] = None,
+        target: Optional[str] = None
+    ) -> InstallSoftwareCommandResult:
+
+        """
+        Start the installation process for the given software version.
+        :param version The software version to install
+        :param sync: Whether to install in a synchronous or async manner - defaults to false
+        :param device_filter_str: The filter string to match devices against
+        :param `Topology` class instance
+        """
+        result = []
+        for device in topology.all(filter_string=device_filter_str, target=target):
+            device.software.install(version, sync=sync)
+            result.append(GenericSoftwareStatus(
+                hostid=resolve_host_id(device),
+                started=True
+            ))
+
+        return InstallSoftwareCommandResult(summary_data=result)
+
+    @staticmethod
+    def reboot(topology: Topology, hostid: str) -> RestartSystemCommandResult:
+        """
+        Reboots the system.
+        :param topology: `Topology` instance.
+        :param hostid: The host to reboot - this function will only ever reboot one device at a time.
+        """
+        result = []
+        device = topology.get_single_device(filter_string=hostid)
+        device.restart()
+        result.append(GenericSoftwareStatus(
+            hostid=resolve_host_id(device),
+            started=True
+        ))
+
+        return RestartSystemCommandResult(summary_data=result)
+
+    @staticmethod
+    def commit(topology: Topology, device_filter_string: Optional[str] = None) -> List[CommitStatus]:
+        """
+        Commits the configuration
+
+        :param topology: `Topology` instance.
+        :param device_filter_string: If provided, filters this command to only the devices specified.
+        """
+        result = []
+        for device in topology.active_devices(device_filter_string):
+            job_id = device.commit()
+            if isinstance(device, Panorama):
+                device_type = "Panorama"
+            else:
+                device_type = "Firewall"
+
+            result.append(CommitStatus(
+                hostid=resolve_host_id(device),
+                job_id=job_id,
+                commit_type="Commit",
+                status="started",
+                device_type=device_type
+            ))
+
+        return result
+
+    @staticmethod
+    def get_commit_job_status(topology: Topology, match_job_ids: Optional[List[str]] = None) -> List[CommitStatus]:
+        """
+        Gets the status of all the commit jobs on the device.
+
+        :param topology: `Topology` instance.
+        :param match_job_ids: List of IDs to return
+        """
+        result: List[CommitStatus] = []
+        for device in topology.active_devices():
+            response = run_op_command(device, UniversalCommand.SHOW_JOBS_COMMAND)
+            for job in response.findall("./result/job"):
+                commit_type = find_text_in_element(job, "./type")
+                if commit_type in ["Commit", "CommitAll"]:
+                    status = find_text_in_element(job, "./status")
+                    job_id = find_text_in_element(job, "./id")
+                    commit_type = find_text_in_element(job, "./type")
+                    if isinstance(device, Panorama):
+                        device_type = "Panorama"
+                    else:
+                        device_type = "Firewall"
+                    result.append(CommitStatus(
+                        hostid=resolve_host_id(device),
+                        job_id=job_id,
+                        commit_type=commit_type,
+                        status=status,
+                        device_type=device_type
+                    ))
+
+        if match_job_ids:
+            return [job for job in result if job.job_id in match_job_ids]
+
+        return result
+
+    @staticmethod
+    def check_system_availability(topology: Topology, hostid: str) -> CheckSystemStatus:
+        """
+        Checks if the provided device is up by attempting to connect to it and run a show system info.
+
+        This function will show a device as disconnected in the following scenarios;
+            * If the device is not present in the topology, which means it's not appearing in the output of show devices on
+            Panorama
+            * If the device is in the topology but it is not returning a "normal" operatational mode.
+
+        :param topology: `Topology` instance.
+        :param hostid: hostid of device to check.
+        """
+        devices: dict = topology.get_by_filter_str(hostid)
+        # first check if the system exists in the topology; if not, we've failed to connect altogether
+        if not devices:
+            return CheckSystemStatus(hostid=hostid, up=False)
+
+        show_system_info = UniversalCommand.get_system_info(topology, hostid)
+        show_system_info_result = show_system_info.result_data[0]
+        if show_system_info_result.operational_mode != "normal":
+            return CheckSystemStatus(
+                hostid=hostid,
+                up=False
+            )
+
+        return CheckSystemStatus(hostid=hostid, up=True)
+
+    @staticmethod
+    def show_jobs(
+        topology: Topology,
+        device_filter_str: Optional[str] = None,
+        job_type: Optional[str] = None,
+        status=None,
+        id: Optional[int] = None,
+        target: Optional[str] = None
+    ) -> List[ShowJobsAllResultData]:
+
+        """
+        Returns all jobs running on the system.
+        :param topology: `Topology` instance.
+        :param device_filter_str: If provided, filters this command to only the devices specified.
+        :param job_type: Filters the results by the provided job type
+        :param status: Filters the results by the status of the job
+        :param id: Only returns the specific job by it's ID
+        """
+        result_data = []
+        for device in topology.all(filter_string=device_filter_str, target=target):
+            response = run_op_command(device, UniversalCommand.SHOW_JOBS_COMMAND)
+            for job in response.findall("./result/job"):
+                result_data_obj: ShowJobsAllResultData = dataclass_from_element(device, ShowJobsAllResultData,
+                                                                                job)
+
+                result_data.append(result_data_obj)
+
+                # Filter the result data
+                result_data = [x for x in result_data if x.status == status or not status]
+                result_data = [x for x in result_data if x.type == job_type or not job_type]
+                result_data = [x for x in result_data if x.id == id or not id]
+
+        # The below is very important for XSOAR to de-duplicate the returned key. If there is only one obj
+        # being returned, return it as a dict instead of a list.
+        if len(result_data) == 1:
+            return result_data[0]  # type: ignore
+
+        return result_data
+
+
+class FirewallCommand:
+    """Command List for commands that are relevant only to NGFWs"""
+    ARP_COMMAND = "<show><arp><entry name='all'/></arp></show>"
+    HA_STATE_COMMAND = "show high-availability state"
+    ROUTING_SUMMARY_COMMAND = "show routing summary"
+    ROUTING_ROUTE_COMMAND = "show routing route"
+    GLOBAL_COUNTER_COMMAND = "show counter global"
+    ROUTING_PROTOCOL_BGP_PEER_COMMAND = "show routing protocol bgp peer"
+    REQUEST_STATE_PREFIX = "request high-availability state"
+
+    @staticmethod
+    def get_arp_table(
+            topology: Topology, device_filter_str: Optional[str] = None, target: Optional[str] = None
+    ) -> ShowArpCommandResult:
+        """
+        Gets the ARP (Address Resolution Protocol) table
+        :param topology: `Topology` instance.
+        :param device_filter_str: If provided, filters this command to only the devices specified.
+        :param target: Single serial number to target with this command
+        """
+        result_data: List[ShowArpCommandResultData] = []
+        summary_data: List[ShowArpCommandSummaryData] = []
+        for firewall in topology.firewalls(filter_string=device_filter_str, target=target):
+            response = run_op_command(firewall, FirewallCommand.ARP_COMMAND, cmd_xml=False)
+            summary_data.append(dataclass_from_element(firewall, ShowArpCommandSummaryData,
+                                                       response.find("./result")))
+            for entry in response.findall("./result/entries/entry"):
+                result_data.append(dataclass_from_element(firewall, ShowArpCommandResultData, entry))
+
+        return ShowArpCommandResult(
+            result_data=result_data,
+            summary_data=summary_data
+        )
+
+    @staticmethod
+    def get_counter_global(
+        topology: Topology, device_filter_str: Optional[str] = None, target: Optional[str] = None
+    ) -> ShowCounterGlobalCommmandResult:
+        """
+        Gets the global counter details
+        :param topology: `Topology` instance.
+        :param device_filter_str: If provided, filters this command to only the devices specified.
+        :param target: Single serial number to target with this command
+        """
+        result_data: List[ShowCounterGlobalResultData] = []
+        summary_data: List[ShowCounterGlobalSummaryData] = []
+        for firewall in topology.firewalls(filter_string=device_filter_str, target=target):
+            response = run_op_command(firewall, FirewallCommand.GLOBAL_COUNTER_COMMAND)
+            for entry in response.findall("./result/global/counters/entry"):
+                summary_data.append(dataclass_from_element(firewall, ShowCounterGlobalSummaryData, entry))
+                result_data.append(dataclass_from_element(firewall, ShowCounterGlobalResultData, entry))
+
+        return ShowCounterGlobalCommmandResult(
+            result_data=result_data,
+            summary_data=summary_data
+        )
+
+    @staticmethod
+    def get_routing_summary(
+        topology: Topology, device_filter_str: Optional[str] = None, target: Optional[str] = None
+    ) -> ShowRouteSummaryCommandResult:
+        """
+        Gets the routing summary table
+        :param topology: `Topology` instance.
+        :param device_filter_str: If provided, filters this command to only the devices specified.
+        :param target: Single serial number to target with this command
+        """
+        summary_data = []
+        for firewall in topology.firewalls(filter_string=device_filter_str, target=target):
+            response = run_op_command(firewall, FirewallCommand.ROUTING_SUMMARY_COMMAND)
+            summary_data.append(dataclass_from_element(firewall, ShowRoutingCommandSummaryData,
+                                                       response.find("./result/entry/All-Routes")))
+
+        return ShowRouteSummaryCommandResult(
+            summary_data=summary_data,
+            result_data=[]
+        )
+
+    @staticmethod
+    def get_bgp_peers(
+        topology: Topology, device_filter_str: Optional[str] = None, target: Optional[str] = None
+    ) -> ShowRoutingProtocolBGPCommandResult:
+        """
+        Gets all BGP peers
+        :param topology: `Topology` instance.
+        :param device_filter_str: If provided, filters this command to only the devices specified.
+        :param target: Single serial number to target with this command
+        """
+        summary_data = []
+        result_data = []
+        for firewall in topology.firewalls(filter_string=device_filter_str, target=target):
+            response = run_op_command(firewall, FirewallCommand.ROUTING_PROTOCOL_BGP_PEER_COMMAND)
+            summary_data.append(dataclass_from_element(firewall, ShowRoutingProtocolBGPPeersSummaryData,
+                                                       response.find("./result/entry")))
+            result_data.append(dataclass_from_element(firewall, ShowRoutingProtocolBGPPeersResultData,
+                                                      response.find("./result/entry")))
+
+        return ShowRoutingProtocolBGPCommandResult(
+            summary_data=summary_data,
+            result_data=result_data
+        )
+
+    @staticmethod
+    def get_device_state(topology: Topology, device_filter_str: str):
+        """
+        Returns an exported device state, as binary data
+        :param topology: `Topology` instance.
+        :param device_filter_str: If provided, filters this command to only the devices specified.
+        """
+        for firewall in topology.firewalls(filter_string=device_filter_str):
+            # Connect directly to the firewall
+            direct_firewall_connection: Firewall = topology.get_direct_device(firewall)
+            direct_firewall_connection.xapi.export(category="device-state")
+            return direct_firewall_connection.xapi.export_result.get("content")
+
+    @staticmethod
+    def get_ha_status(
+        topology: Topology, device_filter_str: Optional[str] = None, target: Optional[str] = None
+    ) -> List[ShowHAState]:
+        """
+        Gets the HA status of the device. If HA is not enabled, assumes the device is active.
+        :param topology: `Topology` instance.
+        :param device_filter_str: If provided, filters this command to only the devices specified.
+        :param target: Single serial number to target with this command
+        """
+        result: List[ShowHAState] = []
+        for firewall in topology.all(filter_string=device_filter_str, target=target):
+            firewall_host_id: str = resolve_host_id(firewall)
+
+            peer_serial: str = topology.get_peer(firewall_host_id)
+            if not peer_serial:
+                result.append(ShowHAState(
+                    hostid=firewall_host_id,
+                    status="HA Not enabled.",
+                    active=True,
+                    peer=""
+                ))
+            else:
+                state_information_element = run_op_command(firewall, FirewallCommand.HA_STATE_COMMAND)
+                state = find_text_in_element(state_information_element, "./result/group/local-info/state")
+
+                if state == "active":
+                    result.append(ShowHAState(
+                        hostid=firewall_host_id,
+                        status=state,
+                        active=True,
+                        peer=peer_serial
+                    ))
+                else:
+                    result.append(ShowHAState(
+                        hostid=firewall_host_id,
+                        status=state,
+                        active=False,
+                        peer=peer_serial
+                    ))
+
+        if len(result) == 1:
+            return result[0]  # type: ignore
+        return result
+
+    @staticmethod
+    def change_status(topology: Topology, hostid: str, state: str) -> HighAvailabilityStateStatus:
+        """
+        Changes the HA status of the  device to the specified state.
+        :param topology: `Topology` instance.
+        :param hostid: The ID of the host to change
+        :param state: The HA state to change the device to
+        """
+        firewall = topology.get_single_device(hostid)
+        run_op_command(firewall, f'{FirewallCommand.REQUEST_STATE_PREFIX} {state}')
+        return HighAvailabilityStateStatus(
+            hostid=resolve_host_id(firewall),
+            state=state
+        )
+
+    @staticmethod
+    def get_routes(
+        topology: Topology, device_filter_str: Optional[str] = None, target: Optional[str] = None
+    ) -> ShowRoutingRouteCommandResult:
+        """
+        Gets the entire routing table.
+        :param topology: `Topology` instance.
+        :param device_filter_str: If provided, filters this command to only the devices specified.
+        :param target: Single serial number to target with this command
+        """
+        summary_data = []
+        result_data = []
+        for firewall in topology.firewalls(filter_string=device_filter_str, target=target):
+            response = run_op_command(firewall, FirewallCommand.ROUTING_ROUTE_COMMAND)
+            for entry in response.findall("./result/entry"):
+                result_data.append(
+                    dataclass_from_element(firewall, ShowRoutingRouteResultData, entry))
+
+        # Calculate summary as number of routes by network interface and VR
+        row: ShowRoutingRouteResultData
+        count_data: Dict[str, dict] = {}
+        for row in result_data:
+            if not count_data.get(row.hostid):
+                count_data[row.hostid] = defaultdict(int)
+
+            count_data[row.hostid][row.interface] += 1
+
+        for firewall_hostname, interfaces in count_data.items():
+            for interface, route_count in interfaces.items():
+                summary_data.append(ShowRoutingRouteSummaryData(
+                    hostid=firewall_hostname,
+                    interface=interface,
+                    route_count=route_count
+                ))
+
+        return ShowRoutingRouteCommandResult(summary_data=summary_data, result_data=result_data)
+
+
+"""
+-- XSOAR Specific Code Starts below --
+"""
+
+
+def test_topology_connectivity(topology: Topology):
+    """To get to the test-module command we must connect to the devices, thus no further test is required."""
+    if len(topology.firewall_objects) + len(topology.panorama_objects) == 0:
+        raise ConnectionError("No firewalls or panorama instances could be connected.")
+
+    return "ok"
+
+
+def get_arp_tables(
+    topology: Topology, device_filter_string: Optional[str] = None, target: Optional[str] = None
+) -> ShowArpCommandResult:
+    """
+    Gets all arp tables from all firewalls in the topology.
+    :param topology: `Topology` instance !no-auto-argument
+    :param device_filter_string: String to filter to only show specific hostnames or serial numbers.
+    :param target: Single serial number to target with this command
+    """
+    return FirewallCommand.get_arp_table(topology, device_filter_string, target)
+
+
+def get_route_summaries(
+    topology: Topology, device_filter_string: Optional[str] = None, target: Optional[str] = None
+) -> ShowRouteSummaryCommandResult:
+    """
+    Pulls all route summary information from the topology
+    :param topology: `Topology` instance !no-auto-argument
+    :param device_filter_string: String to filter to only show specific hostnames or serial numbers.
+    :param target: Single serial number to target with this command
+    """
+    return FirewallCommand.get_routing_summary(topology, device_filter_string, target)
+
+
+def get_routes(topology: Topology,
+    device_filter_string: Optional[str] = None, target: Optional[str] = None
+) -> ShowRoutingRouteCommandResult:
+    """
+    Pulls all route summary information from the topology
+    :param topology: `Topology` instance !no-auto-argument
+    :param device_filter_string: String to filter to only show specific hostnames or serial numbers.
+    :param target: Single serial number to target with this command
+    """
+    return FirewallCommand.get_routes(topology, device_filter_string, target)
+
+
+def get_system_info(
+    topology: Topology,
+    device_filter_string: Optional[str] = None,
+    target: Optional[str] = None
+) -> ShowSystemInfoCommandResult:
+    """
+    Gets information from all PAN-OS systems in the topology.
+    :param topology: `Topology` instance !no-auto-argument
+    :param device_filter_string: String to filter to only show specific hostnames or serial numbers.
+    :param target: Single target device, by serial number
+    """
+    return UniversalCommand.get_system_info(topology, device_filter_string, target)
+
+
+def get_device_groups(
+    topology: Topology,
+    device_filter_string: Optional[str] = None,
+) -> List[DeviceGroupInformation]:
+    """
+    Gets the operational information of the device groups in the topology.
+    :param topology: `Topology` instance !no-auto-argument
+    :param device_filter_string: String to filter to only show specific hostnames or serial numbers.
+    """
+    return PanoramaCommand.get_device_groups(topology, device_filter_string)
+
+
+def get_template_stacks(
+    topology: Topology,
+    device_filter_string: Optional[str] = None,
+) -> List[TemplateStackInformation]:
+    """
+    Gets the operational information of the template-stacks in the topology.
+    :param topology: `Topology` instance !no-auto-argument
+    :param device_filter_string: String to filter to only show specific hostnames or serial numbers.
+    """
+    return PanoramaCommand.get_template_stacks(topology, device_filter_string)
+
+
+def get_global_counters(
+    topology: Topology,
+    device_filter_string: Optional[str] = None,
+    target: Optional[str] = None
+) -> ShowCounterGlobalCommmandResult:
+    """
+    Gets global counter information from all the PAN-OS firewalls in the topology
+    :param topology: `Topology` instance !no-auto-argument
+    :param device_filter_string: String to filter to only show specific hostnames or serial numbers.
+    :param target: Single serial number to target with this command
+    """
+    return FirewallCommand.get_counter_global(topology, device_filter_string, target)
+
+
+def get_bgp_peers(
+    topology: Topology,
+    device_filter_string: Optional[str] = None,
+    target: Optional[str] = None
+) -> ShowRoutingProtocolBGPCommandResult:
+    """
+    Retrieves all BGP peer information from the PAN-OS firewalls in the topology.
+    :param topology: `Topology` instance !no-auto-argument
+    :param device_filter_string: String to filter to only show specific hostnames or serial numbers.
+    :param target: Single serial number to target with this command
+    """
+    return FirewallCommand.get_bgp_peers(topology, device_filter_string, target)
+
+
+def get_available_software(
+    topology: Topology,
+    device_filter_string: Optional[str] = None,
+    target: Optional[str] = None
+) -> SoftwareVersionCommandResult:
+    """
+    Check the devices for software that is available to be installed.
+    :param topology: `Topology` instance !no-auto-argument
+    :param device_filter_string: String to filter to only show specific hostnames or serial numbers.
+    :param target: Single serial number to target with this command
+    """
+    return UniversalCommand.get_available_software(topology, device_filter_string, target)
+
+
+def get_ha_state(
+    topology: Topology,
+    device_filter_string: Optional[str] = None,
+    target: Optional[str] = None
+) -> List[ShowHAState]:
+    """
+    Get the HA state and associated details from the given device and any other details.
+    :param topology: `Topology` instance !no-auto-argument
+    :param device_filter_string: String to filter to only show specific hostnames or serial numbers.
+    :param target: Single serial number to target with this command
+    :param target: Single serial number to target with this command
+    """
+    return FirewallCommand.get_ha_status(topology, device_filter_string, target)
+
+
+def get_jobs(
+    topology: Topology,
+    device_filter_string: Optional[str] = None,
+    status: Optional[str] = None,
+    job_type: Optional[str] = None,
+    id: Optional[str] = None,
+    target: Optional[str] = None
+) -> List[ShowJobsAllResultData]:
+    """
+    Get all the jobs from the devices in the environment, or a single job when ID is specified.
+
+    Jobs are sorted by the most recent queued and are returned in a way that's consumable by Generic Polling.
+    :param topology: `Topology` instance !no-auto-argument
+    :param device_filter_string: String to filter to only show specific hostnames or serial numbers.
+    :param status: Filter returned jobs by status
+    :param job_type: Filter returned jobs by type
+    :param id: Filter by ID
+    :param target: Single serial number to target with this command
+    """
+    _id = arg_to_number(id)
+
+    return UniversalCommand.show_jobs(
+        topology,
+        device_filter_string,
+        job_type=job_type,
+        status=status,
+        id=_id,
+        target=target
+    )
+
+
+def download_software(
+    topology: Topology,
+    version: str,
+    device_filter_string: Optional[str] = None,
+    sync: Optional[bool] = False,
+    target: Optional[str] = None
+) -> DownloadSoftwareCommandResult:
+    """
+    Download The provided software version onto the device.
+    :param topology: `Topology` instance !no-auto-argument
+    :param device_filter_string: String to filter to only install to sepecific devices or serial numbers
+    :param version: software version to upgrade to, ex. 9.1.2
+    :param sync: If provided, runs the download synchronously - make sure 'execution-timeout' is increased.
+    :param target: Single serial number to target with this command
+    """
+    return UniversalCommand.download_software(
+        topology, version, device_filter_str=device_filter_string, sync=argToBoolean(sync), target=target)
+
+
+def install_software(
+    topology: Topology,
+    version: str,
+    device_filter_string: Optional[str] = None,
+    sync: Optional[bool] = False,
+    target: Optional[str] = None
+) -> InstallSoftwareCommandResult:
+    """
+    Install the given software version onto the device. Download the software first with
+    pan-os-platform-download-software
+
+    :param topology: `Topology` instance !no-auto-argument
+    :param device_filter_string: String to filter to only install to specific devices or serial numbers
+    :param version: software version to upgrade to, ex. 9.1.2
+    :param sync: If provided, runs the download synchronously - make sure 'execution-timeout' is increased.
+    """
+    return UniversalCommand.install_software(
+        topology, version, device_filter_str=device_filter_string, sync=argToBoolean(sync), target=target)
+
+
+def reboot(topology: Topology, target: str) -> RestartSystemCommandResult:
+    """
+    Reboot the given host.
+
+    :param topology: `Topology` instance !no-auto-argument
+    :param target: ID of host (serial or hostname) to reboot
+    """
+    return UniversalCommand.reboot(topology, hostid=target)
+
+
+def system_status(topology: Topology,  target: str) -> CheckSystemStatus:
+    """
+    Checks the status of the given device, checking whether it's up or down and the operational mode normal
+
+    :param topology: `Topology` instance !no-auto-argument
+    :param target: ID of host (serial or hostname) to check.
+    """
+    return UniversalCommand.check_system_availability(topology, hostid=target)
+
+
+def update_ha_state(topology: Topology, target: str, state: str) -> HighAvailabilityStateStatus:
+    """
+    Checks the status of the given device, checking whether it's up or down and the operational mode normal
+
+    :param topology: `Topology` instance !no-auto-argument
+    :param target: ID of host (serial or hostname) to update the state.
+    :param state: New state.
+    """
+    return FirewallCommand.change_status(topology, hostid=target, state=state)
+
+
+"""Hygiene Commands"""
+
+
+def check_log_forwarding(
+    topology: Topology,
+    device_filter_string: Optional[str] = None
+) -> ConfigurationHygieneCheckResult:
+    """
+    Checks all log forwarding profiles to confirm at least one meets PAN best practices.  This will validate profiles
+    configured anywhere in Panorama or the firewalls - device groups, virtual systems, and templates.
+
+    :param topology: `Topology` instance !no-auto-argument
+    :param device_filter_string: String to filter to only check given device
+    """
+    return HygieneLookups.check_log_forwarding_profiles(topology, device_filter_str=device_filter_string)
+
+
+def check_vulnerability_profiles(
+    topology: Topology,
+    device_filter_string: Optional[str] = None,
+    minimum_block_severities: str = "critical,high",
+    minimum_alert_severities: str = "medium,low"
+) -> ConfigurationHygieneCheckResult:
+    """
+    Checks the configured Vulnerability profiles to ensure at least one meets best practices. This will validate profiles
+    configured anywhere in Panorama or the firewalls - device groups, virtual systems, and templates.
+
+    :param topology: `Topology` instance !no-auto-argument
+    :param device_filter_string: String to filter to only check given device
+    :param minimum_block_severities: csv list of severities that must be in drop/reset/block-ip mode.
+    :param minimum_alert_severities: csv list of severities that must be in alert/default or higher mode.
+    """
+    return HygieneLookups.check_vulnerability_profiles(
+        topology,
+        device_filter_str=device_filter_string,
+        minimum_block_severities=argToList(minimum_block_severities),
+        minimum_alert_severities=argToList(minimum_alert_severities)
+    )
+
+
+def get_topology() -> Topology:
+    """
+    Builds and returns the Topology instance
+    """
+    params = demisto.params()
+    server_url = params.get('server')
+    port = arg_to_number(arg=params.get('port', '443'))
+    parsed_url = urlparse(server_url)
+    hostname = parsed_url.hostname
+    params = demisto.params()
+    api_key = str(params.get('key')) or str((params.get('credentials') or {}).get('password', ''))  # type: ignore
+
+    return Topology.build_from_string(
+        hostname,
+        username="",
+        password="",
+        api_key=api_key,
+        port=port
+    )
+
+
+def dataclasses_to_command_results(result: Any, empty_result_message: str = "No results."):
+    """
+    Given a dataclass or list of dataclasses,
+    convert it into a tabular format and finally return CommandResults to demisto.
+    :param empty_result_message: If the result data is non
+    """
+    if not result:
+        return CommandResults(
+            readable_output=empty_result_message,
+        )
+
+    # Convert the dataclasses into dicts
+    outputs: Union[list, dict] = {}
+    summary_list = []
+
+    if not hasattr(result, "summary_data"):
+        # If this isn't a regular summary/result return, but instead, is just one object or a list of flat
+        # objects
+        if isinstance(result, list):
+            outputs = [vars(x) for x in result]
+            summary_list = [vars(x) for x in result]
+            # This is a bit controversial
+            title = result[0]._title
+            output_prefix = result[0]._output_prefix
+        else:
+            outputs = vars(result)
+            summary_list = [vars(result)]
+            title = result._title
+            output_prefix = result._output_prefix
+    else:
+        if result.summary_data:
+            summary_list = [vars(x) for x in result.summary_data if hasattr(x, "__dict__")]
+            outputs = {
+                "Summary": summary_list,
+            }
+
+        if result.result_data:
+            outputs["Result"] = [vars(x) for x in result.result_data if hasattr(x, "__dict__")]  # type: ignore
+
+        title = result._title
+        output_prefix = result._output_prefix
+
+    extra_args = {}
+    if hasattr(result, "_outputs_key_field"):
+        extra_args["outputs_key_field"] = getattr(result, "_outputs_key_field")
+
+    readable_output = tableToMarkdown(title, summary_list, removeNull=True)
+    command_result = CommandResults(
+        outputs_prefix=output_prefix,
+        outputs=outputs,
+        readable_output=readable_output,
+        **extra_args
+    )
+    return command_result
+
+
 def main():
     try:
         args = demisto.args()
@@ -7254,367 +9984,520 @@ def main():
         additional_malicious = argToList(params.get('additional_malicious'))
         additional_suspicious = argToList(params.get('additional_suspicious'))
         initialize_instance(args=args, params=params)
-        LOG(f'Command being called is: {demisto.command()}')
+        command = demisto.command()
+        LOG(f'Command being called is: {command}')
 
         # Remove proxy if not set to true in params
         handle_proxy()
 
-        if demisto.command() == 'test-module':
+        if command == 'test-module':
             panorama_test()
 
-        elif demisto.command() == 'panorama':
+        elif command == 'panorama' or command == 'pan-os':
             panorama_command(args)
 
-        elif demisto.command() == 'panorama-commit':
+        elif command == 'panorama-commit' or command == 'pan-os-commit':
             panorama_commit_command(args)
 
-        elif demisto.command() == 'panorama-commit-status':
+        elif command == 'panorama-commit-status' or command == 'pan-os-commit-status':
             panorama_commit_status_command(args)
 
-        elif demisto.command() == 'panorama-push-to-device-group':
+        elif command == 'panorama-push-to-device-group' or command == 'pan-os-push-to-device-group':
             panorama_push_to_device_group_command(args)
 
-        elif demisto.command() == 'panorama-push-status':
+        elif command == 'panorama-push-status' or command == 'pan-os-push-status':
             panorama_push_status_command(**args)
 
         # Addresses commands
-        elif demisto.command() == 'panorama-list-addresses':
+        elif command == 'panorama-list-addresses' or command == 'pan-os-list-addresses':
             panorama_list_addresses_command(args)
 
-        elif demisto.command() == 'panorama-get-address':
+        elif command == 'panorama-get-address' or command == 'pan-os-get-address':
             panorama_get_address_command(args)
 
-        elif demisto.command() == 'panorama-create-address':
+        elif command == 'panorama-create-address' or command == 'pan-os-create-address':
             panorama_create_address_command(args)
 
-        elif demisto.command() == 'panorama-delete-address':
+        elif command == 'panorama-delete-address' or command == 'pan-os-delete-address':
             panorama_delete_address_command(args)
 
         # Address groups commands
-        elif demisto.command() == 'panorama-list-address-groups':
+        elif command == 'panorama-list-address-groups' or command == 'pan-os-list-address-groups':
             panorama_list_address_groups_command(args)
 
-        elif demisto.command() == 'panorama-get-address-group':
+        elif command == 'panorama-get-address-group' or command == 'pan-os-get-address-group':
             panorama_get_address_group_command(args)
 
-        elif demisto.command() == 'panorama-create-address-group':
+        elif command == 'panorama-create-address-group' or command == 'pan-os-create-address-group':
             panorama_create_address_group_command(args)
 
-        elif demisto.command() == 'panorama-delete-address-group':
+        elif command == 'panorama-delete-address-group' or command == 'pan-os-delete-address-group':
             panorama_delete_address_group_command(args.get('name'))
 
-        elif demisto.command() == 'panorama-edit-address-group':
+        elif command == 'panorama-edit-address-group' or command == 'pan-os-edit-address-group':
             panorama_edit_address_group_command(args)
 
         # Services commands
-        elif demisto.command() == 'panorama-list-services':
+        elif command == 'panorama-list-services' or command == 'pan-os-list-services':
             panorama_list_services_command(args.get('tag'))
 
-        elif demisto.command() == 'panorama-get-service':
+        elif command == 'panorama-get-service' or command == 'pan-os-get-service':
             panorama_get_service_command(args.get('name'))
 
-        elif demisto.command() == 'panorama-create-service':
+        elif command == 'panorama-create-service' or command == 'pan-os-create-service':
             panorama_create_service_command(args)
 
-        elif demisto.command() == 'panorama-delete-service':
+        elif command == 'panorama-delete-service' or command == 'pan-os-delete-service':
             panorama_delete_service_command(args.get('name'))
 
         # Service groups commands
-        elif demisto.command() == 'panorama-list-service-groups':
+        elif command == 'panorama-list-service-groups' or command == 'pan-os-list-service-groups':
             panorama_list_service_groups_command(args.get('tags'))
 
-        elif demisto.command() == 'panorama-get-service-group':
+        elif command == 'panorama-get-service-group' or command == 'pan-os-get-service-group':
             panorama_get_service_group_command(args.get('name'))
 
-        elif demisto.command() == 'panorama-create-service-group':
+        elif command == 'panorama-create-service-group' or command == 'pan-os-create-service-group':
             panorama_create_service_group_command(args)
 
-        elif demisto.command() == 'panorama-delete-service-group':
+        elif command == 'panorama-delete-service-group' or command == 'pan-os-delete-service-group':
             panorama_delete_service_group_command(args.get('name'))
 
-        elif demisto.command() == 'panorama-edit-service-group':
+        elif command == 'panorama-edit-service-group' or command == 'pan-os-edit-service-group':
             panorama_edit_service_group_command(args)
 
         # Custom Url Category commands
-        elif demisto.command() == 'panorama-get-custom-url-category':
+        elif command == 'panorama-get-custom-url-category' or command == 'pan-os-get-custom-url-category':
             panorama_get_custom_url_category_command(args.get('name'))
 
-        elif demisto.command() == 'panorama-create-custom-url-category':
+        elif command == 'panorama-create-custom-url-category' or command == 'pan-os-create-custom-url-category':
             panorama_create_custom_url_category_command(args)
 
-        elif demisto.command() == 'panorama-delete-custom-url-category':
+        elif command == 'panorama-delete-custom-url-category' or command == 'pan-os-delete-custom-url-category':
             panorama_delete_custom_url_category_command(args.get('name'))
 
-        elif demisto.command() == 'panorama-edit-custom-url-category':
+        elif command == 'panorama-edit-custom-url-category' or command == 'pan-os-edit-custom-url-category':
             panorama_edit_custom_url_category_command(args)
 
         # URL Filtering capabilities
-        elif demisto.command() == 'url':
+        elif command == 'url':
             if USE_URL_FILTERING:  # default is false
                 panorama_get_url_category_command(url_cmd='url', url=args.get('url'),
                                                   additional_suspicious=additional_suspicious,
                                                   additional_malicious=additional_malicious)
             # do not error out
 
-        elif demisto.command() == 'panorama-get-url-category':
+        elif command == 'panorama-get-url-category' or command == 'pan-os-get-url-category':
             panorama_get_url_category_command(url_cmd='url', url=args.get('url'),
                                               additional_suspicious=additional_suspicious,
                                               additional_malicious=additional_malicious)
 
-        elif demisto.command() == 'panorama-get-url-category-from-cloud':
+        elif command == 'panorama-get-url-category-from-cloud' or command == 'pan-os-get-url-category-from-cloud':
             panorama_get_url_category_command(url_cmd='url-info-cloud', url=args.get('url'),
                                               additional_suspicious=additional_suspicious,
                                               additional_malicious=additional_malicious)
 
-        elif demisto.command() == 'panorama-get-url-category-from-host':
+        elif command == 'panorama-get-url-category-from-host' or command == 'pan-os-get-url-category-from-host':
             panorama_get_url_category_command(url_cmd='url-info-host', url=args.get('url'),
                                               additional_suspicious=additional_suspicious,
                                               additional_malicious=additional_malicious)
 
         # URL Filter
-        elif demisto.command() == 'panorama-get-url-filter':
+        elif command == 'panorama-get-url-filter' or command == 'pan-os-get-url-filter':
             panorama_get_url_filter_command(args.get('name'))
 
-        elif demisto.command() == 'panorama-create-url-filter':
+        elif command == 'panorama-create-url-filter' or command == 'pan-os-create-url-filter':
             panorama_create_url_filter_command(args)
 
-        elif demisto.command() == 'panorama-edit-url-filter':
+        elif command == 'panorama-edit-url-filter' or command == 'pan-os-edit-url-filter':
             panorama_edit_url_filter_command(args)
 
-        elif demisto.command() == 'panorama-delete-url-filter':
+        elif command == 'panorama-delete-url-filter' or command == 'pan-os-delete-url-filter':
             panorama_delete_url_filter_command(demisto.args().get('name'))
 
         # EDL
-        elif demisto.command() == 'panorama-list-edls':
+        elif command == 'panorama-list-edls' or command == 'pan-os-list-edls':
             panorama_list_edls_command()
 
-        elif demisto.command() == 'panorama-get-edl':
+        elif command == 'panorama-get-edl' or command == 'pan-os-get-edl':
             panorama_get_edl_command(demisto.args().get('name'))
 
-        elif demisto.command() == 'panorama-create-edl':
+        elif command == 'panorama-create-edl' or command == 'pan-os-create-edl':
             panorama_create_edl_command(args)
 
-        elif demisto.command() == 'panorama-edit-edl':
+        elif command == 'panorama-edit-edl' or command == 'pan-os-edit-edl':
             panorama_edit_edl_command(args)
 
-        elif demisto.command() == 'panorama-delete-edl':
+        elif command == 'panorama-delete-edl' or command == 'pan-os-delete-edl':
             panorama_delete_edl_command(demisto.args().get('name'))
 
-        elif demisto.command() == 'panorama-refresh-edl':
+        elif command == 'panorama-refresh-edl' or command == 'pan-os-refresh-edl':
             panorama_refresh_edl_command(args)
 
         # Registered IPs
-        elif demisto.command() == 'panorama-register-ip-tag':
+        elif command == 'panorama-register-ip-tag' or command == 'pan-os-register-ip-tag':
             panorama_register_ip_tag_command(args)
 
-        elif demisto.command() == 'panorama-unregister-ip-tag':
+        elif command == 'panorama-unregister-ip-tag' or command == 'pan-os-unregister-ip-tag':
             panorama_unregister_ip_tag_command(args)
 
         # Registered Users
-        elif demisto.command() == 'panorama-register-user-tag':
+        elif command == 'panorama-register-user-tag' or command == 'pan-os-register-user-tag':
             panorama_register_user_tag_command(args)
 
-        elif demisto.command() == 'panorama-unregister-user-tag':
+        elif command == 'panorama-unregister-user-tag' or command == 'pan-os-unregister-user-tag':
             panorama_unregister_user_tag_command(args)
 
         # Security Rules Managing
-        elif demisto.command() == 'panorama-list-rules':
+        elif command == 'panorama-list-rules' or command == 'pan-os-list-rules':
             panorama_list_rules_command(args.get('tag'))
 
-        elif demisto.command() == 'panorama-move-rule':
+        elif command == 'panorama-move-rule' or command == 'pan-os-move-rule':
             panorama_move_rule_command(args)
 
         # Security Rules Configuration
-        elif demisto.command() == 'panorama-create-rule':
+        elif command == 'panorama-create-rule' or command == 'pan-os-create-rule':
             panorama_create_rule_command(args)
 
-        elif demisto.command() == 'panorama-custom-block-rule':
+        elif command == 'panorama-custom-block-rule' or command == 'pan-os-custom-block-rule':
             panorama_custom_block_rule_command(args)
 
-        elif demisto.command() == 'panorama-edit-rule':
+        elif command == 'panorama-edit-rule' or command == 'pan-os-edit-rule':
             panorama_edit_rule_command(args)
 
-        elif demisto.command() == 'panorama-delete-rule':
+        elif command == 'panorama-delete-rule' or command == 'pan-os-delete-rule':
             panorama_delete_rule_command(args.get('rulename'))
 
         # Traffic Logs - deprecated
-        elif demisto.command() == 'panorama-query-traffic-logs':
+        elif command == 'panorama-query-traffic-logs' or command == 'pan-os-query-traffic-logs':
             panorama_query_traffic_logs_command(args)
 
-        elif demisto.command() == 'panorama-check-traffic-logs-status':
+        elif command == 'panorama-check-traffic-logs-status' or command == 'pan-os-check-traffic-logs-status':
             panorama_check_traffic_logs_status_command(args.get('job_id'))
 
-        elif demisto.command() == 'panorama-get-traffic-logs':
+        elif command == 'panorama-get-traffic-logs' or command == 'pan-os-get-traffic-logs':
             panorama_get_traffic_logs_command(args.get('job_id'))
 
         # Logs
-        elif demisto.command() == 'panorama-query-logs':
+        elif command == 'panorama-query-logs' or command == 'pan-os-query-logs':
             panorama_query_logs_command(args)
 
-        elif demisto.command() == 'panorama-check-logs-status':
+        elif command == 'panorama-check-logs-status' or command == 'pan-os-check-logs-status':
             panorama_check_logs_status_command(args.get('job_id'))
 
-        elif demisto.command() == 'panorama-get-logs':
+        elif command == 'panorama-get-logs' or command == 'pan-os-get-logs':
             panorama_get_logs_command(args)
 
         # Pcaps
-        elif demisto.command() == 'panorama-list-pcaps':
+        elif command == 'panorama-list-pcaps' or command == 'pan-os-list-pcaps':
             panorama_list_pcaps_command(args)
 
-        elif demisto.command() == 'panorama-get-pcap':
+        elif command == 'panorama-get-pcap' or command == 'pan-os-get-pcap':
             panorama_get_pcap_command(args)
 
         # Application
-        elif demisto.command() == 'panorama-list-applications':
+        elif command == 'panorama-list-applications' or command == 'pan-os-list-applications':
             panorama_list_applications_command(args.get('predefined'))
 
         # Test security policy match
-        elif demisto.command() == 'panorama-security-policy-match':
+        elif command == 'panorama-security-policy-match' or command == 'pan-os-security-policy-match':
             panorama_security_policy_match_command(args)
 
         # Static Routes
-        elif demisto.command() == 'panorama-list-static-routes':
+        elif command == 'panorama-list-static-routes' or command == 'pan-os-list-static-routes':
             panorama_list_static_routes_command(args)
 
-        elif demisto.command() == 'panorama-get-static-route':
+        elif command == 'panorama-get-static-route' or command == 'pan-os-get-static-route':
             panorama_get_static_route_command(args)
 
-        elif demisto.command() == 'panorama-add-static-route':
+        elif command == 'panorama-add-static-route' or command == 'pan-os-add-static-route':
             panorama_add_static_route_command(args)
 
-        elif demisto.command() == 'panorama-delete-static-route':
+        elif command == 'panorama-delete-static-route' or command == 'pan-os-delete-static-route':
             panorama_delete_static_route_command(args)
 
         # Firewall Upgrade
         # Check device software version
-        elif demisto.command() == 'panorama-show-device-version':
+        elif command == 'panorama-show-device-version' or command == 'pan-os-show-device-version':
             panorama_show_device_version_command(args.get('target'))
 
         # Download the latest content update
-        elif demisto.command() == 'panorama-download-latest-content-update':
+        elif command == 'panorama-download-latest-content-update' or command == 'pan-os-download-latest-content-update':
             panorama_download_latest_content_update_command(args.get('target'))
 
         # Download the latest content update
-        elif demisto.command() == 'panorama-content-update-download-status':
+        elif command == 'panorama-content-update-download-status' or command == 'pan-os-content-update-download-status':
             panorama_content_update_download_status_command(args)
 
         # Install the latest content update
-        elif demisto.command() == 'panorama-install-latest-content-update':
+        elif command == 'panorama-install-latest-content-update' or command == 'pan-os-install-latest-content-update':
             panorama_install_latest_content_update_command(args.get('target'))
 
         # Content update install status
-        elif demisto.command() == 'panorama-content-update-install-status':
+        elif command == 'panorama-content-update-install-status' or command == 'pan-os-content-update-install-status':
             panorama_content_update_install_status_command(args)
 
         # Check PAN-OS latest software update
-        elif demisto.command() == 'panorama-check-latest-panos-software':
+        elif command == 'panorama-check-latest-panos-software' or command == 'pan-os-check-latest-panos-software':
             panorama_check_latest_panos_software_command(args.get('target'))
 
         # Download target PAN-OS version
-        elif demisto.command() == 'panorama-download-panos-version':
+        elif command == 'panorama-download-panos-version' or command == 'pan-os-download-panos-version':
             panorama_download_panos_version_command(args)
 
         # PAN-OS download status
-        elif demisto.command() == 'panorama-download-panos-status':
+        elif command == 'panorama-download-panos-status' or command == 'pan-os-download-panos-status':
             panorama_download_panos_status_command(args)
 
         # PAN-OS software install
-        elif demisto.command() == 'panorama-install-panos-version':
+        elif command == 'panorama-install-panos-version' or command == 'pan-os-install-panos-version':
             panorama_install_panos_version_command(args)
 
         # PAN-OS install status
-        elif demisto.command() == 'panorama-install-panos-status':
+        elif command == 'panorama-install-panos-status' or command == 'pan-os-install-panos-status':
             panorama_install_panos_status_command(args)
 
         # Reboot Panorama Device
-        elif demisto.command() == 'panorama-device-reboot':
+        elif command == 'panorama-device-reboot' or command == 'pan-os-device-reboot':
             panorama_device_reboot_command(args.get('target'))
 
         # PAN-OS Set vulnerability to drop
-        elif demisto.command() == 'panorama-block-vulnerability':
+        elif command == 'panorama-block-vulnerability' or command == 'pan-os-block-vulnerability':
             panorama_block_vulnerability(args)
 
         # Get pre-defined threats list from the firewall
-        elif demisto.command() == 'panorama-get-predefined-threats-list':
+        elif command == 'panorama-get-predefined-threats-list' or command == 'pan-os-get-predefined-threats-list':
             panorama_get_predefined_threats_list_command(args.get('target'))
 
-        elif demisto.command() == 'panorama-show-location-ip':
+        elif command == 'panorama-show-location-ip' or command == 'pan-os-show-location-ip':
             panorama_show_location_ip_command(args.get('ip_address'))
 
-        elif demisto.command() == 'panorama-get-licenses':
+        elif command == 'panorama-get-licenses' or command == 'pan-os-get-licenses':
             panorama_get_license_command()
 
-        elif demisto.command() == 'panorama-get-security-profiles':
+        elif command == 'panorama-get-security-profiles' or command == 'pan-os-get-security-profiles':
             get_security_profiles_command(args.get('security_profile'))
 
-        elif demisto.command() == 'panorama-apply-security-profile':
+        elif command == 'panorama-apply-security-profile' or command == 'pan-os-apply-security-profile':
             apply_security_profile_command(**args)
 
-        elif demisto.command() == 'panorama-get-ssl-decryption-rules':
+        elif command == 'panorama-get-ssl-decryption-rules' or command == 'pan-os-get-ssl-decryption-rules':
             get_ssl_decryption_rules_command(**args)
 
-        elif demisto.command() == 'panorama-get-wildfire-configuration':
+        elif command == 'panorama-get-wildfire-configuration' or command == 'pan-os-get-wildfire-configuration':
             get_wildfire_configuration_command(**args)
 
-        elif demisto.command() == 'panorama-get-wildfire-best-practice':
+        elif command == 'panorama-get-wildfire-best-practice' or command == 'pan-os-get-wildfire-best-practice':
             get_wildfire_best_practice_command()
 
-        elif demisto.command() == 'panorama-enforce-wildfire-best-practice':
+        elif command == 'panorama-enforce-wildfire-best-practice' or command == 'pan-os-enforce-wildfire-best-practice':
             enforce_wildfire_best_practice_command(**args)
 
-        elif demisto.command() == 'panorama-url-filtering-block-default-categories':
+        elif command == 'panorama-url-filtering-block-default-categories' \
+                or command == 'pan-os-url-filtering-block-default-categories':
             url_filtering_block_default_categories_command(**args)
 
-        elif demisto.command() == 'panorama-get-anti-spyware-best-practice':
+        elif command == 'panorama-get-anti-spyware-best-practice' or command == 'pan-os-get-anti-spyware-best-practice':
             get_anti_spyware_best_practice_command()
 
-        elif demisto.command() == 'panorama-get-file-blocking-best-practice':
+        elif command == 'panorama-get-file-blocking-best-practice' \
+                or command == 'pan-os-get-file-blocking-best-practice':
             get_file_blocking_best_practice_command()
 
-        elif demisto.command() == 'panorama-get-antivirus-best-practice':
+        elif command == 'panorama-get-antivirus-best-practice' or command == 'pan-os-get-antivirus-best-practice':
             get_antivirus_best_practice_command()
 
-        elif demisto.command() == 'panorama-get-vulnerability-protection-best-practice':
+        elif command == 'panorama-get-vulnerability-protection-best-practice' \
+                or command == 'pan-os-get-vulnerability-protection-best-practice':
             get_vulnerability_protection_best_practice_command()
 
-        elif demisto.command() == 'panorama-get-url-filtering-best-practice':
+        elif command == 'panorama-get-url-filtering-best-practice' \
+                or command == 'pan-os-get-url-filtering-best-practice':
             get_url_filtering_best_practice_command()
 
-        elif demisto.command() == 'panorama-create-antivirus-best-practice-profile':
+        elif command == 'panorama-create-antivirus-best-practice-profile' \
+                or command == 'pan-os-create-antivirus-best-practice-profile':
             create_antivirus_best_practice_profile_command(**args)
 
-        elif demisto.command() == 'panorama-create-anti-spyware-best-practice-profile':
+        elif command == 'panorama-create-anti-spyware-best-practice-profile' \
+                or command == 'pan-os-create-anti-spyware-best-practice-profile':
             create_anti_spyware_best_practice_profile_command(**args)
 
-        elif demisto.command() == 'panorama-create-vulnerability-best-practice-profile':
+        elif command == 'panorama-create-vulnerability-best-practice-profile' \
+                or command == 'pan-os-create-vulnerability-best-practice-profile':
             create_vulnerability_best_practice_profile_command(**args)
 
-        elif demisto.command() == 'panorama-create-url-filtering-best-practice-profile':
+        elif command == 'panorama-create-url-filtering-best-practice-profile' \
+                or command == 'pan-os-create-url-filtering-best-practice-profile':
             create_url_filtering_best_practice_profile_command(**args)
 
-        elif demisto.command() == 'panorama-create-file-blocking-best-practice-profile':
+        elif command == 'panorama-create-file-blocking-best-practice-profile' \
+                or command == 'pan-os-create-file-blocking-best-practice-profile':
             create_file_blocking_best_practice_profile_command(**args)
 
-        elif demisto.command() == 'panorama-create-wildfire-best-practice-profile':
+        elif command == 'panorama-create-wildfire-best-practice-profile' \
+                or command == 'pan-os-create-wildfire-best-practice-profile':
             create_wildfire_best_practice_profile_command(**args)
 
-        elif demisto.command() == 'panorama-show-user-id-interfaces-config':
+        elif command == 'panorama-show-user-id-interfaces-config' or command == 'pan-os-show-user-id-interfaces-config':
             show_user_id_interface_config_command(args)
 
-        elif demisto.command() == 'panorama-show-zones-config':
+        elif command == 'panorama-show-zones-config' or command == 'pan-os-show-zones-config':
             show_zone_config_command(args)
 
-        elif demisto.command() == 'panorama-list-configured-user-id-agents':
+        elif command == 'panorama-list-configured-user-id-agents' or command == 'pan-os-list-configured-user-id-agents':
             list_configured_user_id_agents_command(args)
 
-        elif demisto.command() == 'panorama-upload-content-update-file':
+        elif command == 'panorama-upload-content-update-file' or command == 'pan-os-upload-content-update-file':
             return_results(panorama_upload_content_update_file_command(args))
 
-        elif demisto.command() == 'panorama-install-file-content-update':
+        elif command == 'panorama-install-file-content-update' or command == 'pan-os-install-file-content-update':
             panorama_install_file_content_update_command(args)
-
+        elif command == 'pan-os-platform-get-arp-tables':
+            topology = get_topology()
+            return_results(
+                dataclasses_to_command_results(
+                    get_arp_tables(topology, **demisto.args()),
+                    empty_result_message="No ARP entries."
+                )
+            )
+        elif command == 'pan-os-platform-get-route-summary':
+            topology = get_topology()
+            return_results(
+                dataclasses_to_command_results(
+                    get_route_summaries(topology, **demisto.args()),
+                    empty_result_message="Empty route summary result."
+                )
+            )
+        elif command == 'pan-os-platform-get-routes':
+            topology = get_topology()
+            return_results(
+                dataclasses_to_command_results(
+                    get_routes(topology, **demisto.args()),
+                    empty_result_message="Empty route summary result."
+                )
+            )
+        elif command == 'pan-os-platform-get-system-info':
+            topology = get_topology()
+            return_results(dataclasses_to_command_results(get_system_info(topology, **demisto.args())))
+        elif command == 'pan-os-platform-get-device-groups':
+            topology = get_topology()
+            return_results(
+                dataclasses_to_command_results(
+                    get_device_groups(topology, **demisto.args()),
+                    empty_result_message="No device groups found."
+                )
+            )
+        elif command == 'pan-os-platform-get-template-stacks':
+            topology = get_topology()
+            return_results(
+                dataclasses_to_command_results(
+                    get_template_stacks(topology, **demisto.args()),
+                    empty_result_message="No template stacks found."
+                )
+            )
+        elif command == 'pan-os-platform-get-global-counters':
+            topology = get_topology()
+            return_results(
+                dataclasses_to_command_results(
+                    get_global_counters(topology, **demisto.args()),
+                    empty_result_message="No Global Counters Found"
+                )
+            )
+        elif command == 'pan-os-platform-get-bgp-peers':
+            topology = get_topology()
+            return_results(
+                dataclasses_to_command_results(
+                    get_bgp_peers(topology, **demisto.args()),
+                    empty_result_message="No BGP Peers found."
+                )
+            )
+        elif command == 'pan-os-platform-get-available-software':
+            topology = get_topology()
+            return_results(
+                dataclasses_to_command_results(
+                    get_available_software(topology, **demisto.args()),
+                    empty_result_message="No Available software images found"
+                )
+            )
+        elif command == 'pan-os-platform-get-ha-state':
+            topology = get_topology()
+            return_results(
+                dataclasses_to_command_results(
+                    get_ha_state(topology, **demisto.args()),
+                    empty_result_message="No HA information available"
+                )
+            )
+        elif command == 'pan-os-platform-get-jobs':
+            topology = get_topology()
+            return_results(
+                dataclasses_to_command_results(
+                    get_jobs(topology, **demisto.args()),
+                    empty_result_message="No jobs returned"
+                )
+            )
+        elif command == 'pan-os-platform-download-software':
+            topology = get_topology()
+            return_results(
+                dataclasses_to_command_results(
+                    download_software(topology, **demisto.args()),
+                    empty_result_message="Software download not started"
+                )
+            )
+        elif command == 'pan-os-apply-dns-signature-policy':
+            return_results(
+                apply_dns_signature_policy_command(args)
+            )
+        elif command == 'pan-os-platform-install-software':
+            topology = get_topology()
+            return_results(
+                dataclasses_to_command_results(
+                    install_software(topology, **demisto.args()),
+                    empty_result_message="Software Install not started"
+                )
+            )
+        elif command == 'pan-os-platform-reboot':
+            topology = get_topology()
+            return_results(
+                dataclasses_to_command_results(
+                    reboot(topology, **demisto.args()),
+                    empty_result_message="Device not rebooted, or did not respond."
+                )
+            )
+        elif command == 'pan-os-platform-get-system-status':
+            topology = get_topology()
+            return_results(
+                dataclasses_to_command_results(
+                    system_status(topology, **demisto.args()),
+                    empty_result_message="No system status."
+                )
+            )
+        elif command == 'pan-os-platform-update-ha-state':
+            topology = get_topology()
+            return_results(
+                dataclasses_to_command_results(
+                    update_ha_state(topology, **demisto.args()),
+                    empty_result_message="HA State either wasn't change or the device did not respond."
+                )
+            )
+        elif command == 'pan-os-hygiene-check-log-forwarding':
+            topology = get_topology()
+            return_results(
+                dataclasses_to_command_results(
+                    check_log_forwarding(topology, **demisto.args()),
+                    empty_result_message="At least one log forwarding profile is configured according to best practices."
+                )
+            )
+        elif command == 'pan-os-hygiene-check-vulnerability-profiles':
+            topology = get_topology()
+            return_results(
+                dataclasses_to_command_results(
+                    check_vulnerability_profiles(topology, **demisto.args()),
+                    empty_result_message="At least one vulnerability profile is configured according to best practices."
+                )
+            )
         else:
-            raise NotImplementedError(f'Command {demisto.command()} was not implemented.')
+            raise NotImplementedError(f'Command {command} is not implemented.')
     except Exception as err:
         return_error(str(err), error=traceback.format_exc())
 

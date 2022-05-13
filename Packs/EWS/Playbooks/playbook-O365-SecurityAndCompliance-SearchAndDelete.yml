@@ -537,9 +537,9 @@ tasks:
       delete_type:
         simple: Soft
       polling_interval:
-        simple: ${inputs.search_action_polling_timeout}
-      polling_timeout:
         simple: ${inputs.search_action_polling_interval}
+      polling_timeout:
+        simple: ${inputs.search_action_polling_timeout}
       search_name:
         complex:
           root: O365.SecurityAndCompliance.ContentSearch.Search

@@ -6,9 +6,68 @@ import requests_mock
 from CommonServerPython import *
 from MicrosoftGraphMail import MsGraphClient, build_mail_object, assert_pages, build_folders_path, \
     add_second_to_str_date, list_mails_command, item_result_creator, create_attachment, reply_email_command, \
-    send_email_command, list_attachments_command
+    send_email_command, list_attachments_command, main
 from MicrosoftApiModule import MicrosoftClient
 import demistomock as demisto
+
+
+@pytest.mark.parametrize('params, expected_result', [
+    ({'creds_tenant_id': {'password': '1234'}, 'creds_auth_id': {'password': '1234'}}, 'Key must be provided.'),
+    ({'creds_tenant_id': {'password': '1234'}, 'credentials': {'password': '1234'}}, 'ID must be provided.'),
+    ({'credentials': {'password': '1234'}, 'creds_auth_id': {'password': '1234'}}, 'Token must be provided.')
+])
+def test_params(mocker, params, expected_result):
+    """
+    Given:
+      - Case 1: tenant id and auth id but no key.
+      - Case 2: tenant id and key but no auth id.
+      - Case 3: key and auth id but no tenant id.
+    When:
+      - Setting an instance
+    Then:
+      - Ensure the exception message as expected.
+      - Case 1: Should return "Key must be provided.".
+      - Case 2: Should return "ID must be provided.".
+      - Case 3: Should return "Token must be provided.".
+    """
+
+    mocker.patch.object(demisto, 'params', return_value=params)
+
+    with pytest.raises(Exception) as e:
+        main()
+
+    assert expected_result in str(e.value)
+
+
+@pytest.mark.parametrize('params, expected_results', [
+    ({'creds_tenant_id': {'password': '1234'}, 'creds_auth_id': {'password': '3124'},
+      'credentials': {'password': '2412'}}, ['1234', '3124', '2412']),
+    ({'tenant_id': '5678', 'enc_key': '8142', 'auth_id': '5678'}, ['5678', '5678', '8142']),
+    ({'_tenant_id': '1267', 'credentials': {'password': '1234'}, '_auth_id': '8888'}, ['1267', '8888', '1234'])
+])
+def test_params_working(mocker, params, expected_results):
+    """
+    Given:
+      - Case 1: tenant id, auth id and key where all three are part of the credentials.
+      - Case 2: tenant id, auth id and key where all three aren't part of the credentials.
+      - Case 3: tenant id, auth id and key where only the key is part of the credentials.
+    When:
+      - Setting an instance
+    Then:
+      - Ensure that the instance can Co-op with previous versions params names and that MsGraphClient.__init__
+      was called with the right tenant id, auth id and key.
+      - Case 1: MsGraphClient.__init__ Should be called with tenant id, auth id and key extracted from credentials type params.
+      - Case 2: MsGraphClient.__init__ Should be called with tenant id, auth id and key
+      not extracted from credentials type params.
+      - Case 3: MsGraphClient.__init__ Should be called with only key param extracted from credentials type params.
+    """
+
+    mocker.patch.object(demisto, 'params', return_value=params)
+    mocker.patch.object(MsGraphClient, '__init__', return_value=None)
+    main()
+    MsGraphClient.__init__.assert_called_with(False, expected_results[0], expected_results[1], expected_results[2],
+                                              'ms-graph-mail', '/v1.0', True, False, (200, 201, 202, 204), '', 'Inbox',
+                                              '15 minutes', 50, 10, 'com', certificate_thumbprint='', private_key='')
 
 
 def test_build_mail_object():

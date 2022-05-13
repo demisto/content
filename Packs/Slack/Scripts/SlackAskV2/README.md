@@ -1,6 +1,6 @@
 Sends a message (question) to either user (in a direct message) or to a channel. The message includes predefined reply options. The response can also close a task (might be conditional) in a playbook.
 
-SlackAskV2 was added to support the beta release of SlackV3 is only compatible with SlackV3.
+SlackAskV2 was added to support the release of SlackV3 is only compatible with SlackV3.
 
 ## Script Data
 ---
@@ -13,7 +13,7 @@ SlackAskV2 was added to support the beta release of SlackV3 is only compatible w
 
 ## Use Case
 ---
-This automation allows you to ask users in Slack(including external to Cortex XSOAR) questions, have them respond and 
+This automation allows you to ask users in Slack (including external to Cortex XSOAR) questions, have them respond and 
 reflect the answer back to Cortex XSOAR.
 
 ## Dependencies
@@ -58,3 +58,7 @@ The automation can utilize the interactive capabilities of Slack to send a form 
 this requires the external endpoint for interactive responses to be available for connection (See the SlackV3 integration documentation for more information).
 You can also utilize threads instead, simply by specifying the `responseType` argument.
 
+## Notes
+---
+- When using the `replyEntriesTag` argument, the `persistent` argument must be set to `True`.
+- `SlackAskV2` will not work when run in the playbook debugger. This is because the debugger does not generate entitlements, since they must be tied to an investigation. Entitlements are needed to track the response.

@@ -26,6 +26,8 @@ For more details about the authentication used in this integration, see <a href=
 <li><strong>ID (<a href="#h_d0642479-95d1-4f92-b2da-f6c16c3e48b2" target="_self">from the admin consent - see Detailed Instructions</a>)</strong></li>
 <li><strong>Token (<a href="#h_d0642479-95d1-4f92-b2da-f6c16c3e48b2" target="_self">from the admin consent - see Detailed Instructions</a>)</strong></li>
 <li><strong>Key (<a href="#h_d0642479-95d1-4f92-b2da-f6c16c3e48b2" target="_self">from the admin consent - see Detailed Instructions</a>)</strong></li>
+<li><strong>Certificate Thumbprint</strong></li>
+<li><strong>Private Key</strong></li>
 <li><strong>Default user</strong></li>
 <li><strong>Trust any certificate (not secure)</strong></li>
 <li><strong>Use system proxy settings</strong></li>

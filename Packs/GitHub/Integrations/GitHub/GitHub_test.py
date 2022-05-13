@@ -74,6 +74,32 @@ LIST_TEAM_MEMBERS_CASES = [
 ]
 
 
+RETURN_ERROR_TARGET = 'GitHub.return_error'
+
+
+@pytest.mark.parametrize('params, expected_result', [
+    ({'credentials': {'password': '1234'}}, "Insert api token or private key")
+])
+def test_missing_params(mocker, params, expected_result):
+    """
+    Given:
+      - Case 1: credentials with no sshkey.
+    When:
+      - all the required parameters are missing.
+    Then:
+      - Ensure the exception message as expected.
+      - Case 1: Should return "Insert api token or private key" error message.
+    """
+
+    mocker.patch.object(demisto, 'params', return_value=params)
+    return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
+    main()
+    assert return_error_mock.call_count == 1
+    # call_args last call with a tuple of args list and kwargs
+    err_msg = return_error_mock.call_args[0][0]
+    assert expected_result in err_msg
+
+
 @pytest.mark.parametrize('limit, expected_result', SEARCH_CASES)
 def test_search_command(mocker, limit, expected_result):
     """

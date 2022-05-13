@@ -307,7 +307,9 @@ def fetch_incidents(client: Client, last_run, first_fetch_str):
                     used in ``last_run`` on the next fetch.
             incidents (``List[dict]``): List of incidents that will be created in XSOAR
     """
-    first_fetch = dateparser.parse(first_fetch_str).strftime(DATE_FORMAT)
+    first_fetch_date = dateparser.parse(first_fetch_str)
+    assert first_fetch_date is not None, f'could not parse {first_fetch_str}'
+    first_fetch = first_fetch_date.strftime(DATE_FORMAT)
     last_processed = last_run.get('last_fetch', first_fetch)
     now = dt.datetime.now().strftime(DATE_FORMAT)
 

@@ -41,7 +41,7 @@ def create_script_output(result):
 
 def panorama_security_policy_match(args):
     res = []
-    result = demisto.executeCommand('panorama-security-policy-match', args=args)
+    result = demisto.executeCommand('pan-os-security-policy-match', args=args)
     if 'The query did not match a Security policy' in result[0].get('Contents'):
         res = [f'The query for source: {args.get("source")}, destination: '
                f'{args.get("destination")} did not match a Security policy.']
@@ -53,7 +53,7 @@ def panorama_security_policy_match(args):
                 fix_nested_dicts(rules)
                 res.append(rules)
     elif is_error(result):
-        res = [f'For the following arguments: {args}, panorama-security-policy-match command failed to run: '
+        res = [f'For the following arguments: {args}, pan-os-security-policy-match command failed to run: '
                f'Error: {get_error(result)}']
     else:
         res = result[0].get("Contents")

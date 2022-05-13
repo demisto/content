@@ -46,7 +46,7 @@ configuration:
   name: auto_notifications
   required: false
   type: 8
-  defaultvalue: false
+  defaultvalue: 'false'
 - display: Allow external users to create incidents via direct message
   name: allow_external_incidents_creation
   required: false
@@ -63,8 +63,7 @@ configuration:
   name: longRunning
   required: false
   type: 8
-- display: Listen port, e.g. 7000 (Required for investigation mirroring and direct
-    messages)
+- display: Listen port, e.g. 7000 (Required for investigation mirroring and direct messages)
   name: longRunningPort
   required: false
   type: 0
@@ -91,16 +90,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: Display name or email address of the team member to send the message
-        to.
+      description: Display name or email address of the team member to send the message to.
       isArray: false
       name: team_member
       required: false
       secret: false
     - default: false
-      description: The team in which the specified channel exists. The team must already
-        exist, and this value will override the default channel configured in the
-        integration parameters.
+      description: The team in which the specified channel exists. The team must already exist, and this value will override the default channel configured in the integration parameters.
       isArray: false
       name: team
       required: false
@@ -127,8 +123,7 @@ script:
     - auto: PREDEFINED
       default: true
       defaultValue: all
-      description: The mirroring type. Can be "all", which mirrors everything, "chat",
-        which mirrors only chats (not commands), or "none", which stops all mirroring.
+      description: The mirroring type. Can be "all", which mirrors everything, "chat", which mirrors only chats (not commands), or "none", which stops all mirroring.
       isArray: false
       name: mirror_type
       predefined:
@@ -140,8 +135,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'true'
-      description: Whether to auto-close the channel when the incident is closed in
-        XSOAR. If "true", the channel will be auto-closed. Default is "true".
+      description: Whether to auto-close the channel when the incident is closed in XSOAR. If "true", the channel will be auto-closed. Default is "true".
       isArray: false
       name: autoclose
       predefined:
@@ -152,8 +146,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: both
-      description: The mirroring direction. Can be "FromDemisto", "ToDemisto", or
-        "Both".
+      description: The mirroring direction. Can be "FromDemisto", "ToDemisto", or "Both".
       isArray: false
       name: direction
       predefined:
@@ -163,8 +156,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The team in which to mirror the XSOAR investigation. If not specified,
-        the default team configured in the integration parameters will be used.
+      description: The team in which to mirror the XSOAR investigation. If not specified, the default team configured in the integration parameters will be used.
       isArray: false
       name: team
       required: false
@@ -176,8 +168,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Mirrors the XSOAR investigation to the specified Microsoft Teams
-      channel.
+    description: Mirrors the XSOAR investigation to the specified Microsoft Teams channel.
     execution: false
     name: mirror-investigation
   - arguments:
@@ -249,9 +240,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: 'Ring a user''s Teams account. Note: This is a ring only! no media
-      will play in case the generated call is answered. To use this make sure your
-      Bot has the following permissions - Calls.Initiate.All and Calls.InitiateGroupCall.All'
+    description: 'Ring a user''s Teams account. Note: This is a ring only! no media will play in case the generated call is answered. To use this make sure your Bot has the following permissions - Calls.Initiate.All and Calls.InitiateGroupCall.All'
     execution: false
     name: microsoft-teams-ring-user
   - arguments:
@@ -320,8 +309,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: Display name/mail/UPN of user who created the meeting, e.g., Adam
-        Smith.
+      description: Display name/mail/UPN of user who created the meeting, e.g., Adam Smith.
       isArray: false
       name: member
       required: true
@@ -352,7 +340,7 @@ script:
     - contextPath: MicrosoftTeams.CreateMeeting.participantDisplayName
       description: The display name of the participants.
       type: String
-  dockerimage: demisto/teams:1.0.0.23674
+  dockerimage: demisto/teams:1.0.0.26837
   feed: false
   isfetch: false
   longRunning: true
