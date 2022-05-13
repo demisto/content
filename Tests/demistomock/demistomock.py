@@ -905,12 +905,13 @@ def mirrorInvestigation(id, mirrorType, autoClose=False):
     return ""
 
 
-def updateModuleHealth(error):
+def updateModuleHealth(message, is_error=False):
     """(Integration only)
-    Updated integration module health with given error message
+    Updated integration module health with given message
 
     Args:
-      error (str): The error message to display in the integration module health
+      message (str): The message to display in the integration module health
+      is_error (bool): Whether or not to display it as an error message in the fetch history
 
     Returns:
       None: No data returned
