@@ -25,7 +25,7 @@ from google.cloud import storage
 
 import Tests.Marketplace.marketplace_statistics as mp_statistics
 from Tests.Marketplace.marketplace_constants import PackFolders, Metadata, GCPConfig, BucketUploadFlow, PACKS_FOLDER, \
-    PackTags, PackIgnored, Changelog, BASE_PACK_DEPENDENCY_DICT, SIEM_RULES_OBJECTS
+    PackTags, PackIgnored, Changelog, BASE_PACK_DEPENDENCY_DICT, SIEM_RULES_OBJECTS, PackStatus
 from Utils.release_notes_generator import aggregate_release_notes_for_marketplace
 from Tests.scripts.utils import logging_wrapper as logging
 
@@ -639,7 +639,7 @@ class Pack(object):
             Metadata.USE_CASES: self._use_cases,
             Metadata.KEY_WORDS: self._keywords,
             Metadata.DEPENDENCIES: self._parsed_dependencies,
-            Metadata.VIDEOS: self.user_metadata.get(Metadata.VIDEOS, ''),
+            Metadata.VIDEOS: self.user_metadata.get(Metadata.VIDEOS) or [],
         }
 
         if self._is_private_pack:
@@ -2594,6 +2594,41 @@ class Pack(object):
         else:
             logging.info(f"No added/modified author image was detected in {self._pack_name} pack.")
             return True
+
+    def upload_images(self, index_folder_path, storage_bucket, storage_base_path, diff_files_list):
+        """
+        Upload the images related to the pack.
+        The image is uploaded in the case it was modified, OR if this is the first time the current pack is being
+        uploaded to this current marketplace (#46785).
+        Args:
+            index_folder_path (str): the path to the local index folder
+            storage_bucket (google.cloud.storage.bucket.Bucket): gcs bucket where author image will be uploaded.
+            storage_base_path (str): the path under the bucket to upload to.
+            diff_files_list (list): The list of all modified/added files found in the diff
+        Returns:
+            True if the images were successfully uploaded, false otherwise.
+
+        """
+        detect_changes = os.path.exists(os.path.join(index_folder_path, self.name, Pack.METADATA)) or self.hidden
+        # Don't check if the image was modified if this is the first time it is uploaded to this marketplace, meaning it
+        # doesn't exist in the index (and it isn't deprecated)
+
+        if not detect_changes:
+            logging.info(f'Uploading images of pack {self.name} which did not exist in this marketplace before')
+
+        task_status = self.upload_integration_images(storage_bucket, storage_base_path, diff_files_list, detect_changes)
+        if not task_status:
+            self._status = PackStatus.FAILED_IMAGES_UPLOAD.name
+            self.cleanup()
+            return False
+
+        task_status = self.upload_author_image(storage_bucket, storage_base_path, diff_files_list, detect_changes)
+        if not task_status:
+            self._status = PackStatus.FAILED_AUTHOR_IMAGE_UPLOAD.name
+            self.cleanup()
+            return False
+
+        return True
 
     def cleanup(self):
         """ Finalization action, removes extracted pack folder.

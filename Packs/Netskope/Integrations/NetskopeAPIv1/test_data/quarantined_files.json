@@ -1,0 +1,21 @@
+{
+    "status": "success",
+    "msg": "",
+    "data": {
+        "quarantined": [
+            {
+                "files": [
+                    {
+                        "file_id": "1R_MU41LPUwclKOhqZ7sPSqMkNS-S6Vyr",
+                        "original_file_name": "test.xlsx",
+                        "policy": "[Data Protection] - Quarantine PII Uploads to Box",
+                        "quarantined_file_name": "inline_998943759783_1_F2DD7F63_test.xlsx",
+                        "user_id": "test@goxsoar.com"
+                    }
+                ],
+                "quarantine_profile_id": "1",
+                "quarantine_profile_name": "XSOAR Google Drive"
+            }
+        ]
+    }
+}
