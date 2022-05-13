@@ -2,7 +2,7 @@ import pytest
 import json
 
 from AzureCompute_v2 import MsGraphClient, screen_errors, assign_image_attributes, list_vms_command,\
-    create_vm_parameters, get_network_interface_command
+    create_vm_parameters, get_network_interface_command, get_public_ip_details_command, create_nic_command
 
 # test_create_vm_parameters data:
 CREATE_VM_PARAMS_ARGS = {"resource_group": "compute-integration",
@@ -93,6 +93,36 @@ INTERFACE_EC = {
         }
 }
 
+PUBLIC_IP_EC = {
+    'Azure.NetworkInterfaces.IPConfigurations(val.PublicIPAddressID === obj.PublicIPAddressID)':
+        {
+            'PublicIPAddressID': 'ip_id',
+            'PublicConfigName': 'webserver-ip',
+            'Location': 'eastus',
+            'PublicConfigID': "ip_id",
+            'ResourceGroup': 'resource_group',
+            'PublicIPAddress': '1.1.1.1',
+            'PublicIPAddressVersion': 'IPv4',
+            'PublicIPAddressAllocationMethod': 'Static',
+            'PublicIPAddressDomainName': 'tesdomain',
+            'PublicIPAddressFQDN': 'webserver.eastus.cloudapp.azure.com'
+        }
+}
+
+CREATE_NIC_EC = {
+    'Azure.NetworkInterfaces(val.ID && val.Name === obj.ID)':
+        {
+            'Name': 'test-nic100',
+            'ID': 'nic_id',
+            'IPConfigurations': [{'ConfigName': 'ipconfig1', 'ConfigID': 'nic_id', 'PrivateIPAddress': '10.0.0.5',
+                                  'PublicIPAddressID': 'NA', 'SubNet': 'subnet_id'}],
+            'ProvisioningState': 'Succeeded',
+            'Location': 'eastus',
+            'ResourceGroup': 'resource_group',
+            'NetworkSecurityGroup': 'security_group_id',
+            'DNSSuffix': 'test.bx.internal.cloudapp.net'
+        }
+}
 
 client = MsGraphClient(
     base_url="url", tenant_id="tenant", auth_id="auth_id", enc_key="enc_key", app_name="APP_NAME", verify="verify",
@@ -138,3 +168,21 @@ def test_get_network_interface_command(mocker):
     mocker.patch.object(client, 'get_network_interface', return_value=interface_data)
     _, ec, _ = get_network_interface_command(client, {'resource_group': 'resource_group', 'nic_name': 'nic_name'})
     assert INTERFACE_EC == ec
+
+
+def test_get_public_ip_details_command(mocker):
+    ip_data = load_test_data('./test_data/get_public_ip_details_command.json')
+    mocker.patch.object(client, 'get_public_ip_details', return_value=ip_data)
+    _, ec, _ = get_public_ip_details_command(client, {'resource_group': 'resource_group', 'address_name': 'webserver-ip'})
+    assert PUBLIC_IP_EC == ec
+
+
+def test_create_nic_command(mocker):
+    nic_data = load_test_data('./test_data/create_nic_command.json')
+    mocker.patch.object(client, 'create_nic', return_value=nic_data)
+    _, ec, _ = create_nic_command(client, {'resource_group': 'resource_group', 'nic_name': 'test-nic100',
+                                           'nic_location': 'eastus', 'vnet_name': 'subnet_id',
+                                           'subnet_name': 'subnet_name', 'address_assignment_method': 'Static',
+                                           'private_ip_address': '10.0.0.5', 'ip_config_name': 'ipconfig1',
+                                           'network_security_group': 'security_group_id'})
+    assert CREATE_NIC_EC == ec

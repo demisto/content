@@ -1,0 +1,27 @@
+{
+    "name": "webserver-ip",
+    "id": "ip_id",
+    "etag": "tag",
+    "location": "eastus",
+    "properties": {
+        "provisioningState": "Succeeded",
+        "resourceGuid": "ip_id",
+        "ipAddress": "1.1.1.1",
+        "publicIPAddressVersion": "IPv4",
+        "publicIPAllocationMethod": "Static",
+        "idleTimeoutInMinutes": 4,
+        "dnsSettings": {
+            "domainNameLabel": "tesdomain",
+            "fqdn": "webserver.eastus.cloudapp.azure.com"
+        },
+        "ipTags": [],
+        "ipConfiguration": {
+            "id": "ip_id"
+        }
+    },
+    "type": "Microsoft.Network/publicIPAddresses",
+    "sku": {
+        "name": "Basic",
+        "tier": "Regional"
+    }
+}
