@@ -740,6 +740,7 @@ script:
         unknown, activated, deactivated, secured, lowSeverity, mediumSeverity, highSeverity,
         unresponsive, compromised, misconfigured.
       type: String
+      description: List of managed devices
   name: msgraph-find-managed-devices-by-name
 - arguments:
   - name: device_name
