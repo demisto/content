@@ -748,244 +748,243 @@ script:
   outputs:
   - contextPath: MSGraphDeviceManagement.Device.ID
     description: The ID of the managed device
-  type: string
-  - contextPath: MSGraphDeviceManagement.Device.UserID
-    description: Unique Identifier for the user associated with the device
     type: string
-  - contextPath: MSGraphDeviceManagement.Device.Name
-    description: Name of the device
-    type: string
-  - contextPath: MSGraphDeviceManagement.Device.ManagedDeviceOwnerType
-    description: Ownership of the device. Possible values are unknown, company,
-      personal.
-    type: string
-  - contextPath: MSGraphDeviceManagement.Device.ActionResults.actionName
-    description: Action name
-    type: string
-  - contextPath: MSGraphDeviceManagement.Device.ActionResults.ActionState
-    description: State of the action. Possible values are none, pending, canceled,
-      active, done, failed, notSupported
-    type: string
-  - contextPath: MSGraphDeviceManagement.Device.ActionResults.StartDateTime
-    description: Time the action was initiated
-    type: date
-  - contextPath: MSGraphDeviceManagement.Device.ActionResults.lastUpdatedDateTime
-    description: Time the action state was last updated
-    type: date
-  - contextPath: MSGraphDeviceManagement.Device.EnrolledDateTime
-    description: Enrollment time of the device
-    type: date
-  - contextPath: MSGraphDeviceManagement.Device.LastSyncDateTime
-    description: The date and time that the device last completed a successful sync
-      with Intune.
-    type: date
-  - contextPath: MSGraphDeviceManagement.Device.OperatingSystem
-    description: Operating system of the device. Windows, iOS, etc.
-    type: string
-  - contextPath: MSGraphDeviceManagement.Device.ComplianceState
-    description: Compliance state of the device. Possible values are unknown, compliant,
-      noncompliant, conflict, error, inGracePeriod, configManager
-    type: string
-  - contextPath: MSGraphDeviceManagement.Device.JailBroken
-    description: Whether the device is jail broken or rooted.
-    type: string
-  - contextPath: MSGraphDeviceManagement.Device.ManagementAgent
-    description: Management channel of the device. Possible values are eas, mdm,
-      easMdm, intuneClient, easIntuneClient, configurationManagerClient, configurationManagerClientMdm,
-      configurationManagerClientMdmEas, unknown, jamf, googleCloudDevicePolicyController.
-    type: string
-  - contextPath: MSGraphDeviceManagement.Device.OSVersion
-    description: Operating system version of the device.
-    type: string
-  - contextPath: MSGraphDeviceManagement.Device.EASDeviceId
-    description: Exchange ActiveSync Id of the device.
-    type: string
-  - contextPath: MSGraphDeviceManagement.Device.EASActivationDateTime
-    description: Exchange ActivationSync activation time of the device.
-    type: date
-  - contextPath: MSGraphDeviceManagement.Device.ActivationLockBypassCode
-    description: Code that allows the Activation Lock on a device to be bypassed.
-    type: string
-  - contextPath: MSGraphDeviceManagement.Device.EmailAddress
-    description: Email(s) for the user associated with the device
-    type: string
-  - contextPath: MSGraphDeviceManagement.Device.AzureADDeviceId
-    description: The unique identifier for the Azure Active Directory device. Read
-      only.
-    type: string
-  - contextPath: MSGraphDeviceManagement.Device.CategoryDisplayName
-    description: Device category display name
-    type: string
-  - contextPath: MSGraphDeviceManagement.Device.ExchangeAccessState
-    description: The Access State of the device in Exchange. Possible values are
-      none, unknown, allowed, blocked, quarantined.
-    type: string
-  - contextPath: MSGraphDeviceManagement.Device.exchangeAccessStateReason
-    description: The reason for the device's access state in Exchange. Possible
-      values are none, unknown, exchangeGlobalRule, exchangeIndividualRule, exchangeDeviceRule,
-      exchangeUpgrade, exchangeMailboxPolicy, other, compliant, notCompliant, notEnrolled,
-      unknownLocation, mfaRequired, azureADBlockDueToAccessPolicy, compromisedPassword,
-      deviceNotKnownWithManagedApp.
-    type: string
-  - contextPath: MSGraphDeviceManagement.Device.IsSupervised
-    description: Device supervised status
-    type: boolean
-  - contextPath: MSGraphDeviceManagement.Device.IsEncrypted
-    description: Device encryption status
-    type: boolean
-  - contextPath: MSGraphDeviceManagement.Device.UserPrincipalName
-    description: Device user principal name
-    type: string
-  - contextPath: MSGraphDeviceManagement.Device.Model
-    description: Model of the device
-    type: string
-  - contextPath: MSGraphDeviceManagement.Device.Manufacturer
-    description: Manufacturer of the device
-    type: string
-  - contextPath: MSGraphDeviceManagement.Device.IMEI
-    description: IMEI of the device
-    type: string
-  - contextPath: MSGraphDeviceManagement.Device.SerialNumber
-    description: Serial number of the device
-    type: string
-  - contextPath: MSGraphDeviceManagement.Device.PhoneNumber
-    description: Phone number of the device
-    type: string
-  - contextPath: MSGraphDeviceManagement.Device.AndroidSecurityPatchLevel
-    description: Android security patch level of the device
-    type: string
-  - contextPath: MSGraphDeviceManagement.Device.ConfigurationManagerClientEnabledFeatures.inventory
-    description: Whether inventory is managed by Intune
-    type: boolean
-  - contextPath: MSGraphDeviceManagement.Device.ConfigurationManagerClientEnabledFeatures.modernApps
-    description: Whether modern application is managed by Intune
-    type: boolean
-  - contextPath: MSGraphDeviceManagement.Device.ConfigurationManagerClientEnabledFeatures.resourceAccess
-    description: Whether resource access is managed by Intune
-    type: boolean
-  - contextPath: MSGraphDeviceManagement.Device.ConfigurationManagerClientEnabledFeatures.deviceConfiguration
-    description: Whether device configuration is managed by Intune
-    type: boolean
-  - contextPath: MSGraphDeviceManagement.Device.ConfigurationManagerClientEnabledFeatures.compliancePolicy
-    description: Whether compliance policy is managed by Intune
-    type: boolean
-  - contextPath: MSGraphDeviceManagement.Device.ConfigurationManagerClientEnabledFeatures.windowsUpdateForBusiness
-    description: Whether Windows Update for Business is managed by Intune
-    type: boolean
-  - contextPath: MSGraphDeviceManagement.Device.WiFiMacAddress
-    description: Wi-Fi MAC
-    type: string
-  - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.lastUpdateDateTime
-    description: The Timestamp of the last update.
-    type: string
-  - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.issuedDateTime
-    description: The DateTime when device was evaluated or issued to MDM
-    type: date
-  - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.resetCount
-    description: The number of times a PC device has hibernated or resumed
-    type: number
-  - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.restartCount
-    description: The number of times a PC device has rebooted
-    type: number
-  - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.bitLockerStatus
-    description: On or Off of BitLocker Drive Encryption
-    type: string
-  - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.bootManagerVersion
-    description: The version of the Boot Manager
-    type: string
-  - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.secureBoot
-    description: When Secure Boot is enabled, the core components must have the
-      correct cryptographic signatures
-    type: string
-  - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.bootDebugging
-    description: When bootDebugging is enabled, the device is used in development
-      and testing
-    type: string
-  - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.operatingSystemKernelDebugging
-    description: When operatingSystemKernelDebugging is enabled, the device is used
-      in development and testing
-    type: string
-  - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.codeIntegrity
-    description: When code integrity is enabled, code execution is restricted to
-      integrity verified code
-    type: string
-  - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.testSigning
-    description: When test signing is allowed, the device does not enforce signature
-      validation during boot
-    type: string
-  - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.safeMode,
-    description: Safe mode is a troubleshooting option for Windows that starts your
-      computer in a limited state
-    type: string
-  - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.windowsPE
-    description: Operating system running with limited services that is used to
-      prepare a computer for Windows
-    type: string
-  - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.earlyLaunchAntiMalwareDriverProtection
-    description: ELAM provides protection for the computers in your network when
-      they start up
-    type: string
-  - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.virtualSecureMode
-    description: VSM is a container that protects high value assets from a compromised
-      kernel
-    type: string
-  - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.pcrHashAlgorithm
-    description: Informational attribute that identifies the HASH algorithm that
-      was used by TPM
-    type: string
-  - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.bootAppSecurityVersion
-    description: The security version number of the Boot Application
-    type: string
-  - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.bootManagerSecurityVersion
-    description: The security version number of the Boot Application
-    type: string
-  - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.tpmVersion
-    description: The security version number of the Boot Application
-    type: string
-  - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.pcr0
-    description: The measurement that is captured in PCR[0]
-    type: string
-  - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.secureBootConfigurationPolicyFingerPrint
-    description: Fingerprint of the Custom Secure Boot Configuration Policy
-    type: string
-  - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.codeIntegrityPolicy
-    description: The Code Integrity policy that is controlling the security of the
-      boot environment
-    type: string
-  - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.bootRevisionListInfo
-    description: The Boot Revision List that was loaded during initial boot on the
-      attested device
-    type: string
-  - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.operatingSystemRevListInfo
-    description: The Operating System Revision List that was loaded during initial
-      boot on the attested device
-    type: string
-  - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.healthStatusMismatchInfo
-    description: This attribute appears if DHA-Service detects an integrity issue
-    type: string
-  - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.healthAttestationSupportedStatus
-    description: This attribute indicates if DHA is supported for the device
-    type: string
-  - contextPath: MSGraphDeviceManagement.Device.SubscriberCarrier
-    description: Subscriber Carrier
-    type: string
-  - contextPath: MSGraphDeviceManagement.Device.MEID
-    description: MEID
-    type: string
-  - contextPath: MSGraphDeviceManagement.Device.TotalStorageSpaceInBytes
-    description: Total Storage in Bytes
-    type: number
-  - contextPath: MSGraphDeviceManagement.Device.ManagedDeviceName
-    description: Automatically generated name to identify a device. Can be overwritten
-      to a user friendly name.
-    type: string
-  - contextPath: MSGraphDeviceManagement.Device.PartnerReportedThreatState
-    description: Indicates the threat state of a device when a Mobile Threat Defense
-      partner is in use by the account and device. Read Only. Possible values are
-      unknown, activated, deactivated, secured, lowSeverity, mediumSeverity, highSeverity,
-      unresponsive, compromised, misconfigured.
-    type: string
-  description: Search of managed devices by name
+    - contextPath: MSGraphDeviceManagement.Device.UserID
+      description: Unique Identifier for the user associated with the device
+      type: string
+    - contextPath: MSGraphDeviceManagement.Device.Name
+      description: Name of the device
+      type: string
+    - contextPath: MSGraphDeviceManagement.Device.ManagedDeviceOwnerType
+      description: Ownership of the device. Possible values are unknown, company,
+        personal.
+      type: string
+    - contextPath: MSGraphDeviceManagement.Device.ActionResults.actionName
+      description: Action name
+      type: string
+    - contextPath: MSGraphDeviceManagement.Device.ActionResults.ActionState
+      description: State of the action. Possible values are none, pending, canceled,
+        active, done, failed, notSupported
+      type: string
+    - contextPath: MSGraphDeviceManagement.Device.ActionResults.StartDateTime
+      description: Time the action was initiated
+      type: date
+    - contextPath: MSGraphDeviceManagement.Device.ActionResults.lastUpdatedDateTime
+      description: Time the action state was last updated
+      type: date
+    - contextPath: MSGraphDeviceManagement.Device.EnrolledDateTime
+      description: Enrollment time of the device
+      type: date
+    - contextPath: MSGraphDeviceManagement.Device.LastSyncDateTime
+      description: The date and time that the device last completed a successful sync
+        with Intune.
+      type: date
+    - contextPath: MSGraphDeviceManagement.Device.OperatingSystem
+      description: Operating system of the device. Windows, iOS, etc.
+      type: string
+    - contextPath: MSGraphDeviceManagement.Device.ComplianceState
+      description: Compliance state of the device. Possible values are unknown, compliant,
+        noncompliant, conflict, error, inGracePeriod, configManager
+      type: string
+    - contextPath: MSGraphDeviceManagement.Device.JailBroken
+      description: Whether the device is jail broken or rooted.
+      type: string
+    - contextPath: MSGraphDeviceManagement.Device.ManagementAgent
+      description: Management channel of the device. Possible values are eas, mdm,
+        easMdm, intuneClient, easIntuneClient, configurationManagerClient, configurationManagerClientMdm,
+        configurationManagerClientMdmEas, unknown, jamf, googleCloudDevicePolicyController.
+      type: string
+    - contextPath: MSGraphDeviceManagement.Device.OSVersion
+      description: Operating system version of the device.
+      type: string
+    - contextPath: MSGraphDeviceManagement.Device.EASDeviceId
+      description: Exchange ActiveSync Id of the device.
+      type: string
+    - contextPath: MSGraphDeviceManagement.Device.EASActivationDateTime
+      description: Exchange ActivationSync activation time of the device.
+      type: date
+    - contextPath: MSGraphDeviceManagement.Device.ActivationLockBypassCode
+      description: Code that allows the Activation Lock on a device to be bypassed.
+      type: string
+    - contextPath: MSGraphDeviceManagement.Device.EmailAddress
+      description: Email(s) for the user associated with the device
+      type: string
+    - contextPath: MSGraphDeviceManagement.Device.AzureADDeviceId
+      description: The unique identifier for the Azure Active Directory device. Read
+        only.
+      type: string
+    - contextPath: MSGraphDeviceManagement.Device.CategoryDisplayName
+      description: Device category display name
+      type: string
+    - contextPath: MSGraphDeviceManagement.Device.ExchangeAccessState
+      description: The Access State of the device in Exchange. Possible values are
+        none, unknown, allowed, blocked, quarantined.
+      type: string
+    - contextPath: MSGraphDeviceManagement.Device.exchangeAccessStateReason
+      description: The reason for the device's access state in Exchange. Possible
+        values are none, unknown, exchangeGlobalRule, exchangeIndividualRule, exchangeDeviceRule,
+        exchangeUpgrade, exchangeMailboxPolicy, other, compliant, notCompliant, notEnrolled,
+        unknownLocation, mfaRequired, azureADBlockDueToAccessPolicy, compromisedPassword,
+        deviceNotKnownWithManagedApp.
+      type: string
+    - contextPath: MSGraphDeviceManagement.Device.IsSupervised
+      description: Device supervised status
+      type: boolean
+    - contextPath: MSGraphDeviceManagement.Device.IsEncrypted
+      description: Device encryption status
+      type: boolean
+    - contextPath: MSGraphDeviceManagement.Device.UserPrincipalName
+      description: Device user principal name
+      type: string
+    - contextPath: MSGraphDeviceManagement.Device.Model
+      description: Model of the device
+      type: string
+    - contextPath: MSGraphDeviceManagement.Device.Manufacturer
+      description: Manufacturer of the device
+      type: string
+    - contextPath: MSGraphDeviceManagement.Device.IMEI
+      description: IMEI of the device
+      type: string
+    - contextPath: MSGraphDeviceManagement.Device.SerialNumber
+      description: Serial number of the device
+      type: string
+    - contextPath: MSGraphDeviceManagement.Device.PhoneNumber
+      description: Phone number of the device
+      type: string
+    - contextPath: MSGraphDeviceManagement.Device.AndroidSecurityPatchLevel
+      description: Android security patch level of the device
+      type: string
+    - contextPath: MSGraphDeviceManagement.Device.ConfigurationManagerClientEnabledFeatures.inventory
+      description: Whether inventory is managed by Intune
+      type: boolean
+    - contextPath: MSGraphDeviceManagement.Device.ConfigurationManagerClientEnabledFeatures.modernApps
+      description: Whether modern application is managed by Intune
+      type: boolean
+    - contextPath: MSGraphDeviceManagement.Device.ConfigurationManagerClientEnabledFeatures.resourceAccess
+      description: Whether resource access is managed by Intune
+      type: boolean
+    - contextPath: MSGraphDeviceManagement.Device.ConfigurationManagerClientEnabledFeatures.deviceConfiguration
+      description: Whether device configuration is managed by Intune
+      type: boolean
+    - contextPath: MSGraphDeviceManagement.Device.ConfigurationManagerClientEnabledFeatures.compliancePolicy
+      description: Whether compliance policy is managed by Intune
+      type: boolean
+    - contextPath: MSGraphDeviceManagement.Device.ConfigurationManagerClientEnabledFeatures.windowsUpdateForBusiness
+      description: Whether Windows Update for Business is managed by Intune
+      type: boolean
+    - contextPath: MSGraphDeviceManagement.Device.WiFiMacAddress
+      description: Wi-Fi MAC
+      type: string
+    - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.lastUpdateDateTime
+      description: The Timestamp of the last update.
+      type: string
+    - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.issuedDateTime
+      description: The DateTime when device was evaluated or issued to MDM
+      type: date
+    - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.resetCount
+      description: The number of times a PC device has hibernated or resumed
+      type: number
+    - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.restartCount
+      description: The number of times a PC device has rebooted
+      type: number
+    - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.bitLockerStatus
+      description: On or Off of BitLocker Drive Encryption
+      type: string
+    - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.bootManagerVersion
+      description: The version of the Boot Manager
+      type: string
+    - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.secureBoot
+      description: When Secure Boot is enabled, the core components must have the
+        correct cryptographic signatures
+      type: string
+    - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.bootDebugging
+      description: When bootDebugging is enabled, the device is used in development
+        and testing
+      type: string
+    - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.operatingSystemKernelDebugging
+      description: When operatingSystemKernelDebugging is enabled, the device is used
+        in development and testing
+      type: string
+    - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.codeIntegrity
+      description: When code integrity is enabled, code execution is restricted to
+        integrity verified code
+      type: string
+    - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.testSigning
+      description: When test signing is allowed, the device does not enforce signature
+        validation during boot
+      type: string
+    - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.safeMode,
+      description: Safe mode is a troubleshooting option for Windows that starts your
+        computer in a limited state
+      type: string
+    - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.windowsPE
+      description: Operating system running with limited services that is used to
+        prepare a computer for Windows
+      type: string
+    - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.earlyLaunchAntiMalwareDriverProtection
+      description: ELAM provides protection for the computers in your network when
+        they start up
+      type: string
+    - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.virtualSecureMode
+      description: VSM is a container that protects high value assets from a compromised
+        kernel
+      type: string
+    - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.pcrHashAlgorithm
+      description: Informational attribute that identifies the HASH algorithm that
+        was used by TPM
+      type: string
+    - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.bootAppSecurityVersion
+      description: The security version number of the Boot Application
+      type: string
+    - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.bootManagerSecurityVersion
+      description: The security version number of the Boot Application
+      type: string
+    - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.tpmVersion
+      description: The security version number of the Boot Application
+      type: string
+    - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.pcr0
+      description: The measurement that is captured in PCR[0]
+      type: string
+    - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.secureBootConfigurationPolicyFingerPrint
+      description: Fingerprint of the Custom Secure Boot Configuration Policy
+      type: string
+    - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.codeIntegrityPolicy
+      description: The Code Integrity policy that is controlling the security of the
+        boot environment
+      type: string
+    - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.bootRevisionListInfo
+      description: The Boot Revision List that was loaded during initial boot on the
+        attested device
+      type: string
+    - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.operatingSystemRevListInfo
+      description: The Operating System Revision List that was loaded during initial
+        boot on the attested device
+      type: string
+    - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.healthStatusMismatchInfo
+      description: This attribute appears if DHA-Service detects an integrity issue
+      type: string
+    - contextPath: MSGraphDeviceManagement.Device.HealthAttestationState.healthAttestationSupportedStatus
+      description: This attribute indicates if DHA is supported for the device
+      type: string
+    - contextPath: MSGraphDeviceManagement.Device.SubscriberCarrier
+      description: Subscriber Carrier
+      type: string
+    - contextPath: MSGraphDeviceManagement.Device.MEID
+      description: MEID
+      type: string
+    - contextPath: MSGraphDeviceManagement.Device.TotalStorageSpaceInBytes
+      description: Total Storage in Bytes
+      type: number
+    - contextPath: MSGraphDeviceManagement.Device.ManagedDeviceName
+      description: Automatically generated name to identify a device. Can be overwritten
+        to a user friendly name.
+      type: string
+    - contextPath: MSGraphDeviceManagement.Device.PartnerReportedThreatState
+      description: Indicates the threat state of a device when a Mobile Threat Defense
+        partner is in use by the account and device. Read Only. Possible values are
+        unknown, activated, deactivated, secured, lowSeverity, mediumSeverity, highSeverity,
+        unresponsive, compromised, misconfigured.
+      type: string
   dockerimage: demisto/crypto:1.0.0.28507
   runonce: false
   script: ''
