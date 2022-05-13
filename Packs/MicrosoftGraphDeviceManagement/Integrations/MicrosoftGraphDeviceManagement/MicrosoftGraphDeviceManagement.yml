@@ -741,11 +741,11 @@ script:
         unresponsive, compromised, misconfigured.
       type: String
       description: List of managed devices
-  name: msgraph-find-managed-devices-by-name
 - arguments:
   - name: device_name
     required: true
   description: The name of the managed device to be fetched.
+  name: msgraph-find-managed-devices-by-name
   outputs:
   - contextPath: MSGraphDeviceManagement.Device.ID
     description: The ID of the managed device
