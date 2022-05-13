@@ -15,7 +15,7 @@ from TrendMicroVisionOne import (
     get_task_status,
     get_endpoint_info,
     add_note,
-    update_status
+    update_status,
 )
 
 # Provide valid API KEY
@@ -774,3 +774,4 @@ def test_update_status(mocker):
     assert result.outputs["response_msg"] == "Alert status changed successfully."
     assert isinstance(result.outputs["Workbench_Id"], str)
     assert isinstance(result.outputs["response_code"], int)
+
