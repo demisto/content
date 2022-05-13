@@ -365,7 +365,7 @@ script:
       description: Filter list items that are set to never expire.
       defaultValue: 'false'
     - name: entry
-      description: Specific entry to retrieve.
+      description: Specific entry value to retrieve.
     - name: set_context
       auto: PREDEFINED
       predefined:
