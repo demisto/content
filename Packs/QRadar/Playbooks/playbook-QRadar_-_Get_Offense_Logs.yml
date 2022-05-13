@@ -1,0 +1,793 @@
+id: QRadar - Get Offense Logs
+version: -1
+name: QRadar - Get Offense Logs
+description: "Works for QRadar integration version 3, v1 and v2 are deprecated.\n\nNote:
+  You can use the integration to fetch the events with the
+  offense however it will fetch the events according to the specified limit defined
+  in the instance settings. By using this playbook you can define an additional search
+  to query a larger number of logs.\n\nDefault playbook inputs use the QRadar incident
+  fields such as idoffense, starttime. These fields can be replaced but need to point
+  to relevant offense ID and starttime fields. "
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: db9fb0e9-591e-47b6-89e6-58e12e0a4b87
+    type: start
+    task:
+      id: db9fb0e9-591e-47b6-89e6-58e12e0a4b87
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "26"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -420,
+          "y": -580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: cfe123d7-145e-466b-8ffb-2854f10cac72
+    type: condition
+    task:
+      id: cfe123d7-145e-466b-8ffb-2854f10cac72
+      version: -1
+      name: Is CRE inserted correctly?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "2"
+      "true":
+      - "29"
+    separatecontext: false
+    conditions:
+    - label: "true"
+      condition:
+      - - operator: inList
+          left:
+            value:
+              simple: inputs.GetOnlyCREEvents
+            iscontext: true
+          right:
+            value:
+              simple: OnlyCRE,OnlyNotCRE, All
+    view: |-
+      {
+        "position": {
+          "x": -170,
+          "y": 160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 9adcf948-d938-4fc1-8da2-ec3d45741b5a
+    type: title
+    task:
+      id: 9adcf948-d938-4fc1-8da2-ec3d45741b5a
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -170,
+          "y": 1305
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: dc8e361c-083a-429c-8276-7e488e5874f5
+    type: regular
+    task:
+      id: dc8e361c-083a-429c-8276-7e488e5874f5
+      version: -1
+      name: Change Context
+      scriptName: ChangeContext
+      type: regular
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "34"
+      - "35"
+      - "36"
+      - "37"
+      - "38"
+      - "40"
+      - "41"
+    scriptarguments:
+      capitalize:
+        simple: "True"
+      inplace:
+        simple: "False"
+      input:
+        simple: ${QRadar.Search.Result.events}
+      input_key:
+        simple: ${QRadar.Search.Result}
+      key:
+        simple: ${QRadar.Search.Results}
+      output_key:
+        simple: QRadar.Events
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 880,
+          "y": 790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: ff090f6c-de26-4237-8521-28c6bff4cd59
+    type: condition
+    task:
+      id: ff090f6c-de26-4237-8521-28c6bff4cd59
+      version: -1
+      name: Is QRadar v3 enabled?
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "2"
+      "yes":
+      - "28"
+    scriptarguments:
+      brandname:
+        simple: QRadar v3
+    results:
+    - brandInstances
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -420,
+          "y": -370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: 1328c153-20bf-44c8-8a0b-13dc79c0682f
+    type: regular
+    task:
+      id: 1328c153-20bf-44c8-8a0b-13dc79c0682f
+      version: -1
+      name: Set timestamp to epoch
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      key:
+        simple: Time
+      value:
+        complex:
+          root: inputs.StartTime
+          transformers:
+          - operator: FormattedDateToEpoch
+            args:
+              formatter:
+                value:
+                  simple: '%Y-%m-%dT%H:%M:%S.%f+00:00'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -170,
+          "y": -180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 75c91b83-9320-4020-8919-d6d2951d1c46
+    type: regular
+    task:
+      id: 75c91b83-9320-4020-8919-d6d2951d1c46
+      version: -1
+      name: Set CRE settings
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      key:
+        simple: CRESettings
+      value:
+        complex:
+          root: inputs.GetOnlyCREEvents
+          transformers:
+          - operator: MapValuesTransformer
+            args:
+              input_values:
+                value:
+                  simple: OnlyCRE,OnlyNotCRE,All
+              mapped_values:
+                value:
+                  simple: 'AND "CRE NAME" IS NOT NULL , AND "CRE NAME" IS NULL , '
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 320,
+          "y": 330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: a7434a88-e468-4074-8e43-d35ddecc4fcf
+    type: playbook
+    task:
+      id: a7434a88-e468-4074-8e43-d35ddecc4fcf
+      version: -1
+      name: QRadarFullSearch
+      description: This playbook runs a QRadar query and return its results to the
+        context.
+      playbookName: QRadarFullSearch
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "39"
+    scriptarguments:
+      interval:
+        simple: "1"
+      query_expression:
+        simple: |-
+          select  ${inputs.Fields} from events WHERE InOffense(${inputs.ID}) ${CRESettings}
+          LIMIT ${inputs.MaxLogsCount}
+          START '${Time}'
+      timeout:
+        simple: "600"
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 320,
+          "y": 480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: 40c58bab-c6d0-4861-8dcf-34be07bbf662
+    type: regular
+    task:
+      id: 40c58bab-c6d0-4861-8dcf-34be07bbf662
+      version: -1
+      name: Set source IP addresses
+      description: Set a value in context under the key you entered. If no value is
+        entered, the script doesn't do anything.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "42"
+    scriptarguments:
+      key:
+        simple: QRadar.SourceIP
+      value:
+        complex:
+          root: QRadar.Events
+          accessor: Sourceip
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 80,
+          "y": 960
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: a950f9b4-7aad-497a-879f-fd6c30ae8a86
+    type: regular
+    task:
+      id: a950f9b4-7aad-497a-879f-fd6c30ae8a86
+      version: -1
+      name: Set destination IP addresses
+      description: Set a value in context under the key you entered. If no value is
+        entered, the script doesn't do anything.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "42"
+    scriptarguments:
+      key:
+        simple: QRadar.DestinationIP
+      value:
+        complex:
+          root: QRadar.Events
+          accessor: Destinationip
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 960
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: cbd30f15-a825-41ea-873e-0384bbc32ee9
+    type: regular
+    task:
+      id: cbd30f15-a825-41ea-873e-0384bbc32ee9
+      version: -1
+      name: Set usernames
+      description: Set a value in context under the key you entered. If no value is
+        entered, the script doesn't do anything.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "42"
+    scriptarguments:
+      key:
+        simple: QRadar.Username
+      value:
+        complex:
+          root: QRadar.Events
+          accessor: Username
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 880,
+          "y": 960
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: 17c15e6d-4f67-433e-88e4-f57c3a1ef009
+    type: regular
+    task:
+      id: 17c15e6d-4f67-433e-88e4-f57c3a1ef009
+      version: -1
+      name: Set high level category
+      description: Set a value in context under the key you entered. If no value is
+        entered, the script doesn't do anything.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "42"
+    scriptarguments:
+      key:
+        simple: QRadar.HighLevelCategory
+      value:
+        complex:
+          root: QRadar.Events
+          accessor: Categoryname_Highlevelcategory
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1280,
+          "y": 960
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: d877e6c0-eaae-4d5b-805f-a1c3c49fbdc4
+    type: regular
+    task:
+      id: d877e6c0-eaae-4d5b-805f-a1c3c49fbdc4
+      version: -1
+      name: Set low level category
+      description: Set a value in context under the key you entered. If no value is
+        entered, the script doesn't do anything.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "42"
+    scriptarguments:
+      key:
+        simple: QRadar.LowLevelCategory
+      value:
+        complex:
+          root: QRadar.Events
+          accessor: Categoryname_Category
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1680,
+          "y": 960
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: 8ac47530-b8b4-478c-8d47-878e72542262
+    type: title
+    task:
+      id: 8ac47530-b8b4-478c-8d47-878e72542262
+      version: -1
+      name: Set outputs
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 880,
+          "y": 660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: 8f5b0991-8787-4f8d-8215-ef5a544b3787
+    type: regular
+    task:
+      id: 8f5b0991-8787-4f8d-8215-ef5a544b3787
+      version: -1
+      name: Set QID name
+      description: Set a value in context under the key you entered. If no value is
+        entered, the script doesn't do anything.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "42"
+    scriptarguments:
+      key:
+        simple: QRadar.QidName
+      value:
+        complex:
+          root: QRadar.Events
+          accessor: Qidname_Qid
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2090,
+          "y": 960
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: 949f936f-ecf8-41cb-8053-8495674e7cb3
+    type: regular
+    task:
+      id: 949f936f-ecf8-41cb-8053-8495674e7cb3
+      version: -1
+      name: Set Start time
+      description: Set a value in context under the key you entered. If no value is
+        entered, the script doesn't do anything.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "42"
+    scriptarguments:
+      key:
+        simple: QRadar.StartTime
+      value:
+        complex:
+          root: QRadar.Events.[0]
+          accessor: Starttime
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2490,
+          "y": 960
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: a9282a51-1602-49c6-8b50-f5051f09eefb
+    type: regular
+    task:
+      id: a9282a51-1602-49c6-8b50-f5051f09eefb
+      version: -1
+      name: Set incident fields
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "2"
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1080,
+          "y": 1130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: Source IPs
+      output:
+        simple: ${QRadar.SourceIP}
+    - incidentfield: Destination IPs
+      output:
+        simple: ${QRadar.DestinationIP}
+    - incidentfield: Usernames
+      output:
+        simple: ${QRadar.Username}
+    - incidentfield: High Level Categories
+      output:
+        simple: ${QRadar.HighLevelCategory}
+    - incidentfield: Low Level Categories Events
+      output:
+        simple: ${QRadar.LowLevelCategory}
+    - incidentfield: Event Names
+      output:
+        simple: ${QRadar.QidName}
+    - incidentfield: Start Time
+      output:
+        simple: ${QRadar.StartTime}
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "1_2_#default#": 0.74
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1950,
+        "width": 3290,
+        "x": -420,
+        "y": -580
+      }
+    }
+  }
+inputs:
+- key: MaxLogsCount
+  value:
+    simple: "50"
+  required: false
+  description: 'Maximum number of log entires to query from QRadar (default: 50)'
+  playbookInputQuery: null
+- key: ID
+  value:
+    complex:
+      root: incident
+      accessor: idoffense
+  required: true
+  description: The QRadar offense ID. Uses the id offense incident field.
+  playbookInputQuery: null
+- key: StartTime
+  value:
+    complex:
+      root: incident
+      accessor: starttime
+  required: true
+  description: The QRadar offense start time
+  playbookInputQuery: null
+- key: GetOnlyCREEvents
+  value:
+    simple: All
+  required: false
+  description: |-
+    If value "OnlyCRE" get only events made by CRE.
+    Values can be "OnlyCRE", "OnlyNotCRE", "All".
+  playbookInputQuery: null
+- key: Fields
+  value:
+    simple: QIDNAME(qid), LOGSOURCENAME(logsourceid), CATEGORYNAME(highlevelcategory),
+      CATEGORYNAME(category), PROTOCOLNAME(protocolid), sourceip, sourceport, destinationip,
+      destinationport, QIDDESCRIPTION(qid), username, PROTOCOLNAME(protocolid), RULENAME("creEventList"),
+      sourcegeographiclocation, sourceMAC, sourcev6, destinationgeographiclocation,
+      destinationv6, LOGSOURCETYPENAME(devicetype), credibility, severity, magnitude,
+      eventcount, eventDirection, postNatDestinationIP, postNatDestinationPort, postNatSourceIP,
+      postNatSourcePort, preNatDestinationPort, preNatSourceIP, preNatSourcePort,
+      UTF8(payload), starttime, devicetime
+  required: false
+  description: |-
+    A comma-separated list of extra fields to get from each event.
+    You can replace with different fields as well as rename the field names.
+  playbookInputQuery: null
+outputs:
+- contextPath: QRadar
+  description: The QRadar offense logs.
+  type: string
+- contextPath: QRadar.SourceIP
+  description: The unique source ips.
+  type: string
+- contextPath: QRadar.DestinationIP
+  description: The unique destination ips.
+  type: string
+- contextPath: QRadar.Username
+  description: The unique usernames.
+  type: string
+- contextPath: QRadar.HighLevelCategory
+  description: The unique high level categories.
+  type: string
+- contextPath: QRadar.LowLevelCategory
+  description: The unique high low categories.
+  type: string
+- contextPath: QRadar.QidName
+  description: The unique QID names.
+  type: string
+- contextPath: QRadar.StartTime
+  description: The start time of the first event.
+  type: string
+tests:
+- QRadar - Get Offense Logs Test
+fromversion: 6.0.0

@@ -17,7 +17,6 @@
 	"neverSetAsRequired": false,
 	"isReadOnly": false,
 	"selectValues": [
-		"",
 		"Activated",
 		"Deactivated"
 	],

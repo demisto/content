@@ -1,0 +1,129 @@
+{
+	"defaultIncidentType": "",
+	"description": "Maps a User Profile data to an Clarizen user data.",
+	"id": "User Profile - Clarizen (Outgoing)",
+	"mapping": {
+		"User Profile - Create": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Location": {
+					"complex": null,
+					"simple": "city"
+				},
+				"Name": {
+					"complex": null,
+					"simple": "displayname"
+				},
+				"Email": {
+					"complex": null,
+					"simple": "email"
+				},
+				"firstname": {
+					"complex": null,
+					"simple": "givenname"
+				},
+				"lastname": {
+					"complex": null,
+					"simple": "surname"
+				},
+				"MobilePhone": {
+					"complex": null,
+					"simple": "mobilephone"
+				},
+				"UserName": {
+					"complex": null,
+					"simple": "username"
+				},
+				"DirectManager": {
+					"complex": null,
+					"simple": "manageremail"
+				},
+				"u_language": {
+					"complex": null,
+					"simple": "C_PrimaryLanguage"
+				},
+				"u_secondary_language": {
+					"complex": null,
+					"simple": "C_SecondaryLanguages"
+				},
+				"u_clarizen_region": {
+					"complex": null,
+					"simple": "Region"
+				},
+				"u_role_clarizen_job_title": {
+					"complex": null,
+					"simple": "JobTitle"
+				},
+				"u_clarizen_company": {
+					"complex": null,
+					"simple": "C_Company"
+				},
+				"DisplayName": {
+					"complex": null,
+					"simple": "displayname"
+				}
+			}
+		},
+		"User Profile - Update": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Location": {
+					"complex": null,
+					"simple": "city"
+				},
+				"Name": {
+					"complex": null,
+					"simple": "displayname"
+				},
+				"Email": {
+					"complex": null,
+					"simple": "email"
+				},
+				"firstname": {
+					"complex": null,
+					"simple": "givenname"
+				},
+				"lastname": {
+					"complex": null,
+					"simple": "surname"
+				},
+				"MobilePhone": {
+					"complex": null,
+					"simple": "mobilephone"
+				},
+				"UserName": {
+					"complex": null,
+					"simple": "username"
+				},
+				"u_language": {
+					"complex": null,
+					"simple": "C_PrimaryLanguage"
+				},
+				"u_secondary_language": {
+					"complex": null,
+					"simple": "C_SecondaryLanguages"
+				},
+				"u_clarizen_region": {
+					"complex": null,
+					"simple": "Region"
+				},
+				"u_role_clarizen_job_title": {
+					"complex": null,
+					"simple": "JobTitle"
+				},
+				"u_clarizen_company": {
+					"complex": null,
+					"simple": "C_Company"
+				},
+				"DisplayName": {
+					"complex": null,
+					"simple": "displayname"
+				}
+			}
+		}
+	},
+	"name": "User Profile - Clarizen (Outgoing)",
+	"type": "mapping-outgoing",
+	"version": -1,
+	"fromVersion": "6.0.0"
+}

@@ -51,13 +51,13 @@ script:
     arguments:
     - name: siteName
       required: true
-      description: The site that holds the whitelist you want to get.
+      description: The site that holds the allow list you want to get.
     outputs:
     - contextPath: SigSciences.Corp.Site.Whitelist.ID
       description: ID for this particular entry.
       type: string
     - contextPath: SigSciences.Corp.Site.Whitelist.Source
-      description: IP Address present in the whitelist.
+      description: IP Address present in the allow list.
       type: string
     - contextPath: SigSciences.Corp.Site.Whitelist.ExpiryDate
       description: Expiration Timestamp.
@@ -71,18 +71,18 @@ script:
     - contextPath: SigSciences.Corp.Site.Whitelist.CreatedBy
       description: The user who added this source.
       type: string
-    description: Fetches a site's whitelist, which resides on the Signal Sciences' platform.
+    description: Fetches a site's allow list, which resides on the Signal Sciences' platform.
   - name: sigsci-get-blacklist
     arguments:
     - name: siteName
       required: true
-      description: The site that holds the blacklist you wish to get
+      description: The site that holds the block list you wish to get
     outputs:
     - contextPath: SigSciences.Corp.Site.Blacklist.ID
       description: The ID for this entry.
       type: string
     - contextPath: SigSciences.Corp.Site.Blacklist.Source
-      description: The IP address on the blacklist.
+      description: The IP address on the block list.
       type: string
     - contextPath: SigSciences.Corp.Site.Blacklist.ExpiryDate
       description: The expiration timestamp.
@@ -96,23 +96,23 @@ script:
     - contextPath: SigSciences.Corp.Site.Blacklist.CreatedBy
       description: The user who added this source.
       type: string
-    description: Fetches a site's blacklist, which resides on the Signal Sciences' platform.
+    description: Fetches a site's block list, which resides on the Signal Sciences' platform.
   - name: sigsci-whitelist-add-ip
     arguments:
     - name: siteName
       required: true
-      description: The site that holds the whitelist you want to add an IP address to.
+      description: The site that holds the allow list you want to add an IP address to.
     - name: ip
       required: true
-      description: The IP address to add to the site's whitelist.
+      description: The IP address to add to the site's allow list.
     - name: note
       required: true
       description: The note associated with the tag.
     - name: expires
-      description: The datetime for the IP address to removed from the site's whitelist (in RFC3339 format). To keep the IP address on the site's whitelist indefinitely, do not specify this argument.
+      description: The datetime for the IP address to removed from the site's allow list (in RFC3339 format). To keep the IP address on the site's allow list indefinitely, do not specify this argument.
     outputs:
     - contextPath: SigSciences.Corp.Site.Whitelist.Source
-      description: The IP address on the whitelist.
+      description: The IP address on the allow list.
       type: string
     - contextPath: SigSciences.Corp.Site.Whitelist.Note
       description: The note associated with the tag.
@@ -129,23 +129,23 @@ script:
     - contextPath: SigSciences.Corp.Site.Whitelist.ExpiryDate
       description: The expiration timestamp.
       type: date
-    description: Adds an IP address to a site's whitelist, which resides the Signal Sciences' platform.
+    description: Adds an IP address to a site's allow list, which resides the Signal Sciences' platform.
   - name: sigsci-blacklist-add-ip
     arguments:
     - name: siteName
       required: true
-      description: The site that holds the blacklist you wish to add to
+      description: The site that holds the block list you wish to add to
     - name: ip
       required: true
-      description: The IP address to add to the site's blacklist.
+      description: The IP address to add to the site's block list.
     - name: note
       required: true
       description: The note associated with the tag.
     - name: expires
-      description: The datetime for the IP address to removed from the site's blacklist (in RFC3339 format). To keep the IP address on the site's blacklist indefinitely, do not specify this argument.
+      description: The datetime for the IP address to removed from the site's block list (in RFC3339 format). To keep the IP address on the site's block list indefinitely, do not specify this argument.
     outputs:
     - contextPath: SigSciences.Corp.Site.Blacklist.Source
-      description: The IP address on the blacklist.
+      description: The IP address on the block list.
       type: string
     - contextPath: SigSciences.Corp.Site.Blacklist.Note
       description: The note associated with the tag.
@@ -162,25 +162,25 @@ script:
     - contextPath: SigSciences.Corp.Site.Blacklist.ExpiryDate
       description: The expiration timestamp.
       type: date
-    description: Adds an IP to a site's blacklist, which resides on the Signal Sciences' platform.
+    description: Adds an IP to a site's block list, which resides on the Signal Sciences' platform.
   - name: sigsci-whitelist-remove-ip
     arguments:
     - name: siteName
       required: true
-      description: The site that contains the whitelist you want to remove an IP address from.
+      description: The site that contains the allow list you want to remove an IP address from.
     - name: IP
       required: true
       description: The IP address entry to remove.
-    description: Removes an IP address from a site's whitelist, which resides on the Signal Sciences' platform.
+    description: Removes an IP address from a site's allow list, which resides on the Signal Sciences' platform.
   - name: sigsci-blacklist-remove-ip
     arguments:
     - name: siteName
       required: true
-      description: The site that contains the blacklist you want to remove an IP address from.
+      description: The site that contains the block list you want to remove an IP address from.
     - name: IP
       required: true
       description: The IP address entry to remove.
-    description: Removes an IP from a site's blacklist, which resides on the Signal Sciences' platform.
+    description: Removes an IP from a site's block list, which resides on the Signal Sciences' platform.
   - name: sigsci-get-sites
     arguments: []
     outputs:

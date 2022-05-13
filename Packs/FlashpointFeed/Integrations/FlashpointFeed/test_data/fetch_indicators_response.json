@@ -1,0 +1,274 @@
+[
+  {
+    "Event": {
+      "Galaxy": [
+        {
+          "GalaxyCluster": [
+            {
+              "authors": [
+                "MITRE"
+              ],
+              "collection_uuid": "",
+              "default": true,
+              "description": "Code signing provides a level of authenticity on a binary from the developer and a guarantee that the binary has not been tampered with. (Citation: Wikipedia Code Signing) However, adversaries are known to use code signing certificates to masquerade malware and tools as legitimate binaries (Citation: Janicab). The certificates used during an operation may be created, forged, or stolen by the adversary. (Citation: Securelist Digital Certificates) (Citation: Symantec Digital Certificates)\n\nCode signing to verify software on first run can be used on modern Windows and macOS/OS X systems. It is not used on Linux due to the decentralized nature of the platform. (Citation: Wikipedia Code Signing)\n\nCode signing certificates may be used to bypass security policies that require signed code to execute on a system.\n\nDetection: Collect and analyze signing certificate metadata on software that executes within the environment to look for unusual certificate characteristics and outliers.\n\nPlatforms: Windows, macOS\n\nData Sources: Binary file metadata\n\nDefense Bypassed: Windows User Account Control",
+              "extends_version": "0",
+              "galaxy_id": "22",
+              "local": false,
+              "meta": {
+                "external_id": [
+                  "T1116"
+                ],
+                "kill_chain": [
+                  "mitre-attack:enterprise-attack:defense-evasion"
+                ],
+                "mitre_data_sources": [
+                  "Binary file metadata"
+                ],
+                "mitre_platforms": [
+                  "Windows",
+                  "macOS"
+                ],
+                "refs": [
+                  "https://attack.mitre.org/wiki/Technique/T1116",
+                  "https://en.wikipedia.org/wiki/Code%20signing",
+                  "http://www.thesafemac.com/new-signed-malware-called-janicab/",
+                  "https://securelist.com/why-you-shouldnt-completely-trust-files-signed-with-digital-certificates/68593/",
+                  "http://www.symantec.com/connect/blogs/how-attackers-steal-private-keys-digital-certificates"
+                ]
+              },
+              "source": "https://github.com/mitre/cti",
+              "tag_id": "18587",
+              "tag_name": "misp-galaxy:mitre-enterprise-attack-attack-pattern=\"Code Signing - T1116\"",
+              "type": "mitre-enterprise-attack-attack-pattern",
+              "uuid": "fb2242d8-1707-11e8-ab20-6fa7448c3640",
+              "value": "Code Signing - T1116",
+              "version": "4"
+            }
+          ],
+          "description": "ATT&CK Tactic",
+          "icon": "map",
+          "name": "Enterprise Attack - Attack Pattern",
+          "namespace": "deprecated",
+          "type": "mitre-enterprise-attack-attack-pattern",
+          "uuid": "fa7016a8-1707-11e8-82d0-1b73d76eb204",
+          "version": "5"
+        }
+      ],
+      "Tag": [
+        {
+          "is_custom_galaxy": false,
+          "is_galaxy": false,
+          "local": 0,
+          "name": "analysis_id:34978",
+          "numerical_value": null
+        },
+        {
+          "is_custom_galaxy": false,
+          "is_galaxy": false,
+          "local": 0,
+          "name": "event:analysis",
+          "numerical_value": null
+        },
+        {
+          "is_custom_galaxy": false,
+          "is_galaxy": false,
+          "local": 0,
+          "name": "file_type:exe",
+          "numerical_value": null
+        },
+        {
+          "is_custom_galaxy": false,
+          "is_galaxy": false,
+          "local": 0,
+          "name": "malware:quasar",
+          "numerical_value": null
+        },
+        {
+          "is_custom_galaxy": false,
+          "is_galaxy": true,
+          "local": 0,
+          "name": "misp-galaxy:mitre-enterprise-attack-attack-pattern=\"Code Signing - T1116\"",
+          "numerical_value": null
+        },
+        {
+          "is_custom_galaxy": false,
+          "is_galaxy": true,
+          "local": 0,
+          "name": "misp-galaxy:mitre-enterprise-attack-intrusion-set=\"Execution through API - T1106\"",
+          "numerical_value": null
+        },
+        {
+          "is_custom_galaxy": false,
+          "is_galaxy": true,
+          "local": 0,
+          "name": "misp-galaxy:mitre-enterprise-attack-tool=\"Execution through Module Load - T1129\"",
+          "numerical_value": null
+        },
+        {
+          "is_custom_galaxy": false,
+          "is_galaxy": true,
+          "local": 0,
+          "name": "misp-galaxy:mitre-enterprise-attack-malware=\"Process Discovery - T1057\"",
+          "numerical_value": null
+        },
+        {
+          "is_custom_galaxy": false,
+          "is_galaxy": true,
+          "local": 0,
+          "name": "misp-galaxy:mitre-enterprise-attack-attack-pattern=\"Registry Run Keys / Start Folder - T1060\"",
+          "numerical_value": null
+        },
+        {
+          "is_custom_galaxy": false,
+          "is_galaxy": true,
+          "local": 0,
+          "name": "misp-galaxy:mitre-mobile-attack-attack-pattern=\"Lockscreen Bypass - MOB-T1064\"",
+          "numerical_value": null
+        },
+        {
+          "is_custom_galaxy": false,
+          "is_galaxy": true,
+          "local": 0,
+          "name": "misp-galaxy:mitre-enterprise-attack-course-of-action=\"Process Injection Mitigation - T1055\"",
+          "numerical_value": null
+        },
+        {
+          "is_custom_galaxy": false,
+          "is_galaxy": false,
+          "local": 0,
+          "name": "os:windows",
+          "numerical_value": null
+        },
+        {
+          "is_custom_galaxy": false,
+          "is_galaxy": false,
+          "local": 0,
+          "name": "source:virustotal",
+          "numerical_value": null
+        },
+        {
+          "is_custom_galaxy": false,
+          "is_galaxy": false,
+          "local": 0,
+          "name": "type:trojan",
+          "numerical_value": null
+        }
+      ],
+      "attack_ids": [
+        "T1116"
+      ],
+      "attribute_count": "4",
+      "date": "2021-07-05",
+      "event_creator_email": "dummy@flashpoint-dummy.com",
+      "fpid": "JWTy97NhWeW3xDleT3CFyg",
+      "href": "https://fp.tools/api/v4/indicators/event/JWTy97NhWeW3xDleT3CFyg",
+      "info": "Analysis: quasar \"jLikteQnlDEVdTa\" [2021-07-05 06:10:32]",
+      "publish_timestamp": "1625468815",
+      "timestamp": "1625468810",
+      "uuid": "ac489282-756e-4e9a-957e-6c35ab59a277"
+    },
+    "_meta": {
+      "enrichments": {
+        "v1": {
+          "bitcoin_addresses": {
+            "enriched_at": "2021-07-05T07:07:43Z",
+            "found": 0,
+            "version": 1
+          },
+          "email_addresses": {
+            "enriched_at": "2021-07-05T07:07:43Z",
+            "found": 0,
+            "version": 1
+          },
+          "ethereum_addresses": {
+            "enriched_at": "2021-07-05T07:07:43Z",
+            "found": 0,
+            "version": 1
+          },
+          "first_observed_at": {
+            "enriched_at": "2021-07-05T07:07:43Z",
+            "version": 1
+          },
+          "ip_addresses": {
+            "enriched_at": "2021-07-05T07:07:43Z",
+            "found": 0,
+            "version": 1
+          },
+          "monero_addresses": {
+            "enriched_at": "2021-07-05T07:07:43Z",
+            "found": 0,
+            "version": 1
+          },
+          "social_media": {
+            "enriched_at": "2021-07-05T07:07:43Z",
+            "found": 0,
+            "version": 1
+          },
+          "urls": {
+            "enriched_at": "2021-07-05T07:07:43Z",
+            "found": 1,
+            "version": 1
+          }
+        }
+      },
+      "size": {
+        "base_document": 6124,
+        "enriched_document": 6989
+      }
+    },
+    "basetypes": [
+      "indicator",
+      "indicator_attribute"
+    ],
+    "category": "Payload delivery",
+    "enrichments": {
+      "card-numbers": {
+        "_enriched_at": "2021-07-05T07:07:43Z",
+        "_version": 0
+      },
+      "v1": {
+        "urls": [
+          {
+            "domain": "flashpoint-intel.com",
+            "positions": [
+              {
+                "domain_length": 20,
+                "domain_offset": 9,
+                "length": 20,
+                "offset": 9,
+                "path": "$.Event.event_creator_email"
+              }
+            ],
+            "url": "flashpoint-intel.com"
+          }
+        ]
+      }
+    },
+    "first_observed_at": {
+      "date-time": "2021-07-05T07:06:25+00:00",
+      "raw": "1625468785",
+      "timestamp": 1625468785
+    },
+    "first_seen": null,
+    "fpid": "_fQKGM3qXd2uxRRPVc8rMw",
+    "header_": {
+      "indexed_at": 1625468864,
+      "ingested_at": 1625468861,
+      "is_visible": true,
+      "observed_at": 1625468861,
+      "pipeline_duration": 1,
+      "source": "urn:fp:resource:qualified:indicator"
+    },
+    "href": "https://fp.tools/api/v4/indicators/attribute/_fQKGM3qXd2uxRRPVc8rMw",
+    "last_seen": null,
+    "malware_description": "<p>\"Quasar\" is a publicly available, open-source remote access trojan (RAT) for Microsoft Windows operating systems written in the C# programming language. Quasar is authored by GitHub user \"MaxXor\" and publicly hosted as a GitHub repository. The functionality of the Quasar malware includes remote file management on the infected machine, registry alterations, recording the actions of the victim, and establishing remote desktop connections.</p>",
+    "sort_date": "2021-07-05T07:06:50Z",
+    "timestamp": "1625468765",
+    "type": "sha1",
+    "uuid": "1bbe1b1f-4160-4a95-8282-08ac2e6f28a7",
+    "value": {
+      "comment": "",
+      "sha1": "45210dee100c67b7a0edf4447b8c9e12f786f088"
+    }
+  }
+]

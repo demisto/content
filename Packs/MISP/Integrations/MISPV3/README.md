@@ -48,6 +48,7 @@ Search for events in MISP. This search command will return only information abou
 | uuid | The event UUID to be returned by the search. For example, 59523300-4be8-4fa6-8867-0037ac110002. | Optional | 
 | page | If a limit is set, sets the page to be returned. For example, page 3, limit 100 will return records 201-&gt;300. Default is 1. | Optional | 
 | limit | Limit the number of events returned. Default is 50. | Optional | 
+| include_feed_correlations | Whether to return the event related feeds. Possible values are: true, false. Note: Only if this argument set to "true" the response will include attributes' feed hits values.| Optional | 
 
 
 #### Context Output
@@ -88,7 +89,20 @@ Search for events in MISP. This search command will return only information abou
 | MISP.Event.Object.Description | String | Description of the object. | 
 | MISP.Event.Object.ID | Number | ID of the object. | 
 | MISP.Event.Object.UUID | String | UUID of the object. | 
-
+| MISP.Event.Feed.ID | String | Feed id. | 
+| MISP.Event.Feed.Name | String | Feed name. | 
+| MISP.Event.Feed.Provider | String | Feed provider. | 
+| MISP.Event.Feed.SourceFormat | String | Feed source format \(MISP for example\). | 
+| MISP.Event.Feed.URL | String | Feed url. | 
+| MISP.Event.Feed.EventUUIDS | Unknown | List of event uuids include the feed. | 
+| MISP.Event.Attribute.Feed.ID | String | Attribute feed id. | 
+| MISP.Event.Attribute.Feed.Name | String | Attribute feed name. | 
+| MISP.Event.Attribute.Feed.Provider | String | Attribute feed provider. | 
+| MISP.Event.Attribute.Feed.SourceFormat | String | Attribute feed source format \(MISP for example\). | 
+| MISP.Event.Attribute.Feed.URL | String | Attribute feed url. | 
+| MISP.Event.Attribute.Feed.EventUUIDS | Unknown | List of event uuids include the attribute feed. | 
+| MISP.Event.Attribute.ID | String | MISP attribute ID. | 
+| MISP.Event.Attribute.Value | String | MISP attribute value. | 
 
 #### Command Example
 ```!misp-search-events category="Other" limit=3 page=1```
@@ -2165,13 +2179,14 @@ Creates a new MISP event.
 | type | Attribute type to be created as part of the new event. For example: "md5", "sha1", "email", "url". Default is other. | Optional | 
 | category | Attribute category to be created as part of the new event. For example: "Other", "Person", "Attribution", "Payload type". Default is External analysis. | Optional | 
 | to_ids | Whether to create the event's attribute with the Intrusion Detection System flag. Possible values: "true" and "false". Possible values are: true, false. Default is true. | Optional | 
-| distribution | Where to distribute the event. Possible values: "Your_organization_only", "This_community_only", "Connected_communities", "All_communities", and "Inherit_event". Possible values are: Your_organization_only, This_community_only, Connected_communities, All_communities, Inherit_event. Default is Your_organization_only. | Optional | 
+| distribution | Where to distribute the event. Possible values: "Your_organization_only", "This_community_only", "Connected_communities", "All_communities", "Sharing_group" and "Inherit_event". Possible values are: Your_organization_only, This_community_only, Connected_communities, All_communities, Sharing_group, Inherit_event. Default is Your_organization_only. | Optional | 
 | comment | Attribute comment to be created as part of the new event. | Optional | 
 | value | Attribute value to be created as part of the new event. For example: "1.2.3.4" (and other IP addresses), "google.com" (and other domains), "www.example.com" (and other URLs). | Required | 
 | info | Event name. | Required | 
 | published | Whether to publish the event. Possible values: "false" and "true". Possible values are: false, true. Default is false. | Optional | 
 | threat_level_id | MISP Threat level ID. Possible values: "High", "Medium", "Low", and "Unknown". Possible values are: High, Medium, Low, Unknown. Default is High. | Optional | 
 | analysis | The analysis event level. Possible values: "initial", "ongoing", and "completed". Possible values are: initial, ongoing, completed. Default is initial. | Optional | 
+| sharing_group_id | Sharing group ID. Mandatory when Sharing_group distribution is set. | Optional | 
 
 
 #### Context Output
@@ -2282,9 +2297,10 @@ Adds an attribute to an existing MISP event.
 | type | Attribute type. For example: "md5", "sha1", "email", "url". Default is other. | Optional | 
 | category | Attribute category. For example: "Other", "Person", "Attribution", "Payload type". Default is External analysis. | Optional | 
 | to_ids | Whether to create the attribute with the Intrusion Detection System flag. Possible values: "true" and "false". Possible values are: true, false. Default is true. | Optional | 
-| distribution | Where to distribute the event. Possible values: "Your_organization_only", "This_community_only", "Connected_communities", "All_communities", and "Inherit_event". Possible values are: Your_organization_only, This_community_only, Connected_communities, All_communities, Inherit_event. Default is Inherit_event. | Optional | 
+| distribution | Where to distribute the event. Possible values: "Your_organization_only", "This_community_only", "Connected_communities", "Sharing_group", "All_communities", and "Inherit_event". Possible values are: Your_organization_only, This_community_only, Connected_communities, All_communities, Sharing_group, Inherit_event. Default is Inherit_event. | Optional | 
 | comment | Comment for the attribute. | Optional | 
 | value | Attribute value. For example: "1.2.3.4" (and other IP addresses), "google.com" (and other domains), "www.example.com" (and other URLs). | Required | 
+| sharing_group_id | Sharing group ID. Mandatory when Sharing_group distribution is set. | Optional | 
 
 
 #### Context Output
@@ -2501,9 +2517,10 @@ Adds a tag to the given UUID event .
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| uuid | UUID of the event. For example, 59575300-4be8-4ff6-8767-0037ac110032. | Required | 
-| tag | Tag to add to the event. | Required | 
+| --- | --- |--------------|
+| uuid | UUID of the event. For example, 59575300-4be8-4ff6-8767-0037ac110032. | Required     | 
+| tag | Tag to add to the event. | Required     | 
+| is_local | Whether to add the tag as a local tag. | Optional     | 
 
 
 #### Context Output
@@ -2616,6 +2633,7 @@ Adds a tag to the given UUID attribute.
 | --- | --- | --- |
 | uuid | UUID of the attribute. For example, 59575300-4be8-4ff6-8767-0037ac110032. | Required | 
 | tag | Tag to add to the attribute. | Required | 
+| is_local | Whether to add the tag as a local tag. | Optional     | 
 
 
 #### Context Output
@@ -3738,3 +3756,146 @@ When configuring an instance, you should set:
 - Malicious tag IDs with tag IDs that would be calculated as malicious.
 - Suspicious tag IDs with tag IDs that would be calculated as suspicious.
 
+### misp-update-attribute
+***
+Update an attribute of an existing MISP event.
+
+
+#### Base Command
+
+`misp-update-attribute`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| attribute_uuid | UUID of the attribute to be updated. | Required | 
+| type | Attribute type. For example: "md5", "sha1", "email", "url". | Optional | 
+| category | Attribute category. For example: "Other", "Person", "Attribution", "Payload type". | Optional | 
+| distribution | Where to distribute the event. Possible values: "Your_organization_only", "This_community_only", "Connected_communities", "All_communities", and "Inherit_event". Possible values are: Your_organization_only, This_community_only, Connected_communities, All_communities, Inherit_event. | Optional | 
+| comment | Comment for the attribute. | Optional | 
+| value | Attribute value. For example: "1.2.3.4" (and other IP addresses), "google.com" (and other domains), "www.example.com" (and other URLs). | Optional | 
+| first_seen | Updated date when the attribute was first seen. For example, `2019-02-03`. | Optional | 
+| last_seen | Updated date when the attribute was last seen. For example, `2019-02-03`. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MISP.Attribute.Distribution | string | Attribute distribution. | 
+| MISP.Attribute.Value | string | Attribute value. | 
+| MISP.Attribute.EventID | string | Attribute event ID. | 
+| MISP.Attribute.last_seen | string | Attribute last_seen timestamp. | 
+| MISP.Attribute.first_seen | string | Attribute first_seen timestamp. | 
+| MISP.Attribute.LastChanged | date | Attribute last changed timestamp. | 
+| MISP.Attribute.Deleted | boolean | Is the attribute deleted. | 
+| MISP.Attribute.DisableCorrelation | boolean | Is attribute correlation disabled. | 
+| MISP.Attribute.Type | string | Attribute type. | 
+| MISP.Attribute.ID | string | Attribute ID. | 
+| MISP.Attribute.UUID | string | Attribute UUID. | 
+| MISP.Attribute.ToIDs | boolean | Is the Intrusion Detection System flag set. | 
+| MISP.Attribute.Category | string | Attribute category. | 
+| MISP.Attribute.SharingGroupID | string | Attribute sharing group ID. | 
+| MISP.Attribute.Comment | string | Attribute comment. |
+
+
+#### Command Example
+``` !misp-update-attribute attribute_uuid=c0ba7147-d99a-418a-a23a-d9be62590c33 category=Other ```
+
+#### Human Readable Output
+
+>## MISP update attribute
+>Attribute: c0ba7147-d99a-418a-a23a-d9be62590c33 was updated.
+
+### misp-delete-attribute
+***
+Delete an attribute according to the given attribute ID.
+
+#### Base Command
+
+`misp-delete-attribute`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| attribute_id | Attribute ID to delete. | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!misp-delete-attribute attribute_id=3f5917b3-100c-4e21-91c3-48b265337232```
+#### Human Readable Output
+
+>Attribute 3f5917b3-100c-4e21-91c3-48b265337232 has been deleted
+> 
+
+
+### misp-publish-event
+***
+Publish an event.
+
+
+#### Base Command
+
+`misp-publish-event`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| event_id | Event ID to be published. | Required | 
+| alert | Whether to send an email. The default is to not send a mail. Possible values are: true, false. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!misp-publish-event event_id=20536```
+#### Human Readable Output
+
+>Event 20536 has been published
+
+
+### misp-set-event-attributes
+***
+Set event attributes according to the given attributes data.
+
+
+#### Base Command
+
+`misp-set-event-attributes`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| event_id | Event ID to set attributes for. | Required | 
+| attribute_data | Adjust current attributes of an event to match the given attribute data. Has to be json formated list with attributes that should be part of the event. E.g.: [{"type":"domain","value":"target.domain"},{"type":"ip-dst","value":"1.2.3.4"}]. | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.
+### misp-check-warninglist
+***
+Check a list of indicator values against the MISP warninglist.
+
+
+#### Base Command
+
+`misp-check-warninglist`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| value | Indicator values to check against the MISP warninglist. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MISP.Warninglist.Count | number | Count on how many warninglists the value was found. | 
+| MISP.Warninglist.Value | string | Value checked. | 
+| MISP.Warninglist.Lists | string | Name of warninglists where the value was found. | 

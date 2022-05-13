@@ -1,0 +1,25 @@
+commonfields:
+  id: RemoteExec
+  version: -1
+name: RemoteExec
+script: ''
+type: javascript
+tags:
+- endpoint
+comment: Execute a command on a remote machine (without installing a D2 agent)
+system: true
+args:
+- name: system
+  required: true
+  description: Name of system on which to run the command
+- name: cmd
+  required: true
+  description: Command to run
+scripttarget: 0
+dependson:
+  must:
+  - ssh
+timeout: 0s
+fromversion: 5.0.0
+tests:
+- No tests

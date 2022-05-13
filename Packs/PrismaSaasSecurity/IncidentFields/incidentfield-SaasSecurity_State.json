@@ -1,0 +1,33 @@
+{
+    "id": "incident_saassecuritystate",
+    "description": "Incident state, either **Open** or **Closed**.",
+    "version": -1,
+    "modified": "2021-10-26T10:39:00.784636+03:00",
+    "name": "Saas Security State",
+    "ownerOnly": true,
+    "cliName": "saassecuritystate",
+    "type": "singleSelect",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "selectValues": [
+        "open",
+        "closed"
+    ],
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedToAll": true,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.0.0"
+}

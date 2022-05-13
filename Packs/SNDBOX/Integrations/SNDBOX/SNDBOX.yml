@@ -2,9 +2,10 @@ commonfields:
   id: SNDBOX
   version: -1
 name: SNDBOX
-display: SNDBOX
+display: SNDBOX (Deprecated)
+deprecated: true
 category: Forensics & Malware Analysis
-description: SNDBOX as a service
+description: Deprecated. No available replacement.
 configuration:
 - display: 'Use Public API Key. (By approving SNDBOX public API you are accepting SNDBOX TOS @ https://app.sndbox.com/tos). Public submissions are shared with the community'
   name: public_api_key
@@ -235,7 +236,7 @@ script:
       type: string
     description: Download the sample file of an analysis. for security reasons, the extension will be "dontrun"
   runonce: false
-  dockerimage: demisto/python:2.7.18.20958
+  dockerimage: demisto/python:2.7.18.24398
 tests:
 - SNDBOX_Test
 fromversion: 5.0.0

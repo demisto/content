@@ -1,0 +1,36 @@
+commonfields:
+  id: CEFParser
+  version: -1
+name: CEFParser
+script: ''
+type: javascript
+tags:
+- Utility
+comment: Parse CEF data into the context. Please notice that outputs will display
+  only the 7 mandatory fields even if the CEF event includes many other custom or
+  extended fields.
+enabled: true
+args:
+- name: data
+  required: true
+  default: true
+  description: The data that contains the CEF rows
+outputs:
+- contextPath: CEFEvent.cefVersion
+  description: The CEF version
+- contextPath: CEFEvent.vendor
+  description: The product vendor
+- contextPath: CEFEvent.product
+  description: The product name
+- contextPath: CEFEvent.version
+  description: The product version
+- contextPath: CEFEvent.signatureID
+  description: The signature ID for the alert, if relevant
+- contextPath: CEFEvent.name
+  description: The alert name
+- contextPath: CEFEvent.severity
+  description: The alert severity
+scripttarget: 0
+fromversion: 5.0.0
+tests:
+- No tests

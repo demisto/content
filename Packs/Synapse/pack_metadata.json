@@ -15,5 +15,9 @@
     "keywords": [],
     "githubUser": [
         "cmd-not-found"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
     ]
 }

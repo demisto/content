@@ -22,9 +22,9 @@ This playbook does not use any scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| QRadarBlackListIPReferenceSetName | The name of the QRadar black list IP reference set to insert the data to. |  | Optional |
+| QRadarBlackListIPReferenceSetName | The name of the QRadar block list IP reference set to insert the data to. |  | Optional |
 | Indicator Query | Indicators matching the indicator query will be used as playbook input |  | Optional |
-| QRadarWhiteListIPReferenceSetName | The name of the QRadar white list IP reference set to insert the data in to. |  | Optional |
+| QRadarWhiteListIPReferenceSetName | The name of the QRadar allow list IP reference set to insert the data in to. |  | Optional |
 | QRadarWatchListIPReferenceSetName | The name of the QRadar watch list IP reference set to insert the data in to. |  | Optional |
 
 ## Playbook Outputs

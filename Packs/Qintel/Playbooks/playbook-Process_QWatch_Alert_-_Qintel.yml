@@ -1,0 +1,236 @@
+id: Process QWatch Alert - Qintel
+version: -1
+name: Process QWatch Alert - Qintel
+description: Extracts exposure records from a QWatch alert
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 432e5f75-2d2e-44c4-84e4-4e18a4351b0b
+    type: start
+    task:
+      id: 432e5f75-2d2e-44c4-84e4-4e18a4351b0b
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 8320ea18-0bed-4b48-888b-93db2c295763
+    type: regular
+    task:
+      id: 8320ea18-0bed-4b48-888b-93db2c295763
+      version: -1
+      name: Load Exposures
+      description: Loads a json from string input, and returns a json object result
+      scriptName: LoadJSON
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+      - "7"
+    scriptarguments:
+      input:
+        simple: ${inputs.Incident.labels.QWatch}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: Qintel QWatch Exposures
+      output:
+        simple: ${JsonObject.Exposures}
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: c6cad15a-4105-4498-8890-441e9ecfa0fe
+    type: regular
+    task:
+      id: c6cad15a-4105-4498-8890-441e9ecfa0fe
+      version: -1
+      name: IncreaseIncidentSeverity
+      description: Optionally increases the incident severity to the new value if
+        it is greater than the existing severity.
+      scriptName: IncreaseIncidentSeverity
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      severity:
+        simple: High
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 170,
+          "y": 710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 63c139ba-fada-4011-8d0d-f6ba4993e31a
+    type: regular
+    task:
+      id: 63c139ba-fada-4011-8d0d-f6ba4993e31a
+      version: -1
+      name: AssignAnalystToIncident
+      description: Assign analyst to incident.
+      scriptName: AssignAnalystToIncident
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      assignBy:
+        simple: random
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 710,
+          "y": 460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 4abc0d35-29b6-4d61-8548-73f2115ff62c
+    type: title
+    task:
+      id: 4abc0d35-29b6-4d61-8548-73f2115ff62c
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 980
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: a9535dfd-8128-495e-8298-6bc2b23e82a5
+    type: condition
+    task:
+      id: a9535dfd-8128-495e-8298-6bc2b23e82a5
+      version: -1
+      name: Is Source Malware?
+      description: Determines if the exposure source is malware
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: ${incident.labels.QWatch}
+            iscontext: true
+          right:
+            value:
+              simple: malware
+    view: |-
+      {
+        "position": {
+          "x": 170,
+          "y": 460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "7_2_yes": 0.5,
+      "7_6_#default#": 0.21
+    },
+    "paper": {
+      "dimensions": {
+        "height": 995,
+        "width": 920,
+        "x": 170,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: Incident
+  value:
+    simple: ${incident}
+  required: false
+  description: ""
+  playbookInputQuery:
+outputs: []
+fromversion: 6.0.0
+tests:
+- QintelQWatch-Test

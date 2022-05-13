@@ -826,18 +826,18 @@
                 "sections": [
                     {
                         "displayType": "ROW",
-                        "h": 18,
+                        "h": 7,
                         "hideName": true,
-                        "i": "lthdv5gwt9-d986a3c0-abfc-11eb-9d9c-cffd34bfbbb3",
+                        "i": "1vduzkpmlh-lthdv5gwt9-d986a3c0-abfc-11eb-9d9c-cffd34bfbbb3",
                         "items": [
                             {
                                 "dropEffect": "move",
-                                "endCol": 4,
+                                "endCol": 6,
                                 "fieldId": "xdrsimilarincidents",
                                 "height": 106,
                                 "id": "e18d8a70-abfc-11eb-9d9c-cffd34bfbbb3",
                                 "index": 0,
-                                "listId": "lthdv5gwt9-d986a3c0-abfc-11eb-9d9c-cffd34bfbbb3",
+                                "listId": "1vduzkpmlh-lthdv5gwt9-d986a3c0-abfc-11eb-9d9c-cffd34bfbbb3",
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }
@@ -848,7 +848,7 @@
                         "moved": false,
                         "name": "XDR Similar Incidents",
                         "static": false,
-                        "w": 2,
+                        "w": 3,
                         "x": 0,
                         "y": 0
                     }
@@ -885,7 +885,7 @@
     "group": "incident",
     "id": "Cortex XDR Incident",
     "name": "Cortex XDR Incident",
-    "system": false,
+    "system": true,
     "version": -1,
     "fromVersion": "6.0.0",
     "description": ""

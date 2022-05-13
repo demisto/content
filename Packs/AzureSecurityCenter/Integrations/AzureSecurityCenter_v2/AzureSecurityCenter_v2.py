@@ -33,6 +33,7 @@ APS_API_VERSION = "2017-08-01-preview"
 IPP_API_VERSION = "2017-08-01-preview"
 JIT_API_VERSION = "2015-06-01-preview"
 STORAGE_API_VERSION = "2018-07-01"
+SECURE_STORES_API_VERSION = "2020-01-01"
 
 """ HELPER FUNCTIONS """
 
@@ -89,12 +90,13 @@ class MsClient:
     """
 
     def __init__(self, tenant_id, auth_id, enc_key, app_name, server, verify, proxy, self_deployed, subscription_id,
-                 ok_codes):
+                 ok_codes, certificate_thumbprint, private_key):
         base_url_with_subscription = f"{server}subscriptions/{subscription_id}/"
         self.ms_client = MicrosoftClient(
             tenant_id=tenant_id, auth_id=auth_id, enc_key=enc_key, app_name=app_name,
             base_url=base_url_with_subscription, verify=verify, proxy=proxy, self_deployed=self_deployed,
-            ok_codes=ok_codes, scope="https://management.azure.com/.default")
+            ok_codes=ok_codes, scope="https://management.azure.com/.default",
+            certificate_thumbprint=certificate_thumbprint, private_key=private_key)
         self.server = server
         self.subscription_id = subscription_id
 
@@ -393,6 +395,17 @@ class MsClient:
         full_url = f"{self.server}/subscriptions"
         params = {"api-version": SUBSCRIPTION_API_VERSION}
         return self.ms_client.http_request(method="GET", full_url=full_url, url_suffix="", params=params)
+
+    def get_secure_scores(self, secure_score_name):
+        """
+        Returns:
+            dict: response body
+
+        """
+
+        cmd_url = f"/providers/Microsoft.Security/secureScores/{secure_score_name}"
+        params = {"api-version": SECURE_STORES_API_VERSION}
+        return self.ms_client.http_request(method="GET", url_suffix=cmd_url, params=params)
 
 
 """ FUNCTIONS """
@@ -1263,6 +1276,27 @@ def list_sc_subscriptions_command(client: MsClient):
 
 """ Subscriptions end """
 
+""" Secure Score Start"""
+
+
+def get_secure_scores_command(client: MsClient, args: dict):
+
+    secure_score_name = args.get("secure_score_name", "ascScore")
+
+    securescore = client.get_secure_scores(secure_score_name)
+
+    md = tableToMarkdown(
+        "Azure Security Center - Secure Score",
+        securescore['properties']
+    )
+
+    ec = {"Azure.Securescore(val.ID && val.ID === obj.ID)": securescore['properties']}
+
+    return md, ec, securescore
+
+
+""" Secure Scores End"""
+
 
 def test_module(client: MsClient):
     """
@@ -1287,13 +1321,22 @@ def main():
     proxy = params.get('proxy', False)
     subscription_id = demisto.args().get("subscription_id") or params.get("default_sub_id")
     ok_codes = (200, 201, 202, 204)
+    certificate_thumbprint = params.get('certificate_thumbprint')
+    private_key = params.get('private_key')
+    if not self_deployed and not enc_key:
+        raise DemistoException('Key must be provided. For further information see '
+                               'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')
+    elif not enc_key and not (certificate_thumbprint and private_key):
+        raise DemistoException('Key or Certificate Thumbprint and Private Key must be provided.'
+                               'For further information see '
+                               'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')
 
     try:
         if demisto.command() in SUB_ID_REQUIRING_CMD and not subscription_id:
             raise DemistoException("A subscription ID must be provided.")
         client = MsClient(tenant_id=tenant, auth_id=auth_and_token_url, enc_key=enc_key, app_name=APP_NAME, proxy=proxy,
                           server=server, verify=use_ssl, self_deployed=self_deployed, subscription_id=subscription_id,
-                          ok_codes=ok_codes)
+                          ok_codes=ok_codes, certificate_thumbprint=certificate_thumbprint, private_key=private_key)
 
         if demisto.command() == "test-module":
             # If the command will fail, error will be thrown from the request itself
@@ -1332,6 +1375,8 @@ def main():
             return_outputs(*list_sc_storage_command(client))
         elif demisto.command() == "azure-list-subscriptions":
             return_outputs(*list_sc_subscriptions_command(client))
+        elif demisto.command() == "azure-get-secure-score":
+            return_outputs(*get_secure_scores_command(client, demisto.args()))
 
     except Exception as err:
         LOG(str(err))

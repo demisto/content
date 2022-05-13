@@ -19,7 +19,6 @@
  "required": false,
  "script": "NCSCFieldProtection",
  "selectValues": [
-  "",
   "Achieved",
   "Partially Achieved",
   "Not Achieved"

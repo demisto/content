@@ -4,7 +4,9 @@ bulit-in AWS policies:
 * _AmazonGuardDutyFullAccess_
 * _AmazonGuardDutyReadOnlyAccess_
 
-## Prerequisites
+For detailed instructions about setting up authentication, see: [AWS Integrations - Authentication](https://xsoar.pan.dev/docs/reference/articles/aws-integrations---authentication).
+
+## Prerequisies
 
 It is important that you familiarize yourself with and complete all steps detailed in
 the [Amazon AWS Integrations Configuration Guide](https://xsoar.pan.dev/docs/reference/articles/aws-integrations---authentication)
@@ -24,6 +26,10 @@ the [Amazon AWS Integrations Configuration Guide](https://xsoar.pan.dev/docs/ref
    | Role Session Name | False |
    | Role Session Duration | False |
    | Guard Duty Severity level | False |
+   | Access Key | False |
+   | Secret Key | False
+   | Timeout | False |
+   | Retries | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
@@ -183,7 +189,7 @@ There is no context output for this command.
 ### aws-gd-create-ip-set
 
 ***
-A list of trusted IP addresses that have been whitelisted for secure communication with AWS infrastructure and applications.
+A list of trusted IP addresses on allow list for secure communication with AWS infrastructure and applications.
 
 ##### AWS IAM Policy Permission
 

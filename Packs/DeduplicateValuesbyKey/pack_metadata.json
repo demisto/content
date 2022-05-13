@@ -1,0 +1,21 @@
+{
+    "name": "DeduplicateValuesbyKey",
+    "description": "Given a list of objects (dictionaries) and a key (string), return a list of unique values that appear for that key in the list of objects. \n\nThe current implementation only works on the first-level of keys. That is, given a dictionary like {key1: {key2: value}}, you can return a list of unique values for key1, but not key2. ",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Laura Farvour",
+    "url": "",
+    "email": "",
+    "created": "2021-12-07T17:00:09Z",
+    "categories": ["Utilities"],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "lfarvour"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
+}

@@ -1,0 +1,36 @@
+{
+ "associatedToAll": false,
+ "associatedTypes": [
+  "Policy Optimizer"
+ ],
+ "caseInsensitive": true,
+ "cliName": "policyoptimizerusecase",
+ "closeForm": false,
+ "content": true,
+ "description": "Policy Optimizer use-case that will be handled by the Policy Optimizer playbook.",
+ "editForm": true,
+ "group": 0,
+ "hidden": false,
+ "id": "incident_policyoptimizerusecase",
+ "isReadOnly": false,
+ "locked": false,
+ "name": "Policy Optimizer Use-Case",
+ "neverSetAsRequired": false,
+ "openEnded": false,
+ "ownerOnly": false,
+ "required": false,
+ "selectValues": [
+  "Manage Unused Rules",
+  "Manage Rules with Unused Applications",
+  "Manage Port Based Rules"
+ ],
+ "sla": 0,
+ "system": false,
+ "threshold": 72,
+ "type": "multiSelect",
+ "unmapped": false,
+ "unsearchable": true,
+ "useAsKpi": false,
+ "version": -1,
+ "fromVersion": "6.0.0"
+}

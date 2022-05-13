@@ -1,0 +1,2 @@
+Blockade focuses on those who are often targeted via phishing attacks and may not have a substantial capability at their disposal. Using threat intelligence mined from multiple sources (and analysts), Blockade attempts to detect attacks that may exist in the browser by monitoring web traffic requests. The primary goal for the project is to detect and prevent as many attacks as possible for those who would otherwise go left unnoticed.
+To learn more and set your own cloud node go to https://www.blockade.io/

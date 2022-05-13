@@ -171,7 +171,7 @@
 <tr>
 <td style="width: 321px;">AwakeSecurity.Devices.whiteListed</td>
 <td style="width: 67px;">bool</td>
-<td style="width: 320px;">Is the device associated with the specified email address in the white list</td>
+<td style="width: 320px;">Is the device associated with the specified email address in the allow list</td>
 </tr>
 </tbody>
 </table>
@@ -459,7 +459,7 @@
 <tr>
 <td style="width: 294px;">AwakeSecurity.Domains.whiteListed</td>
 <td style="width: 59px;">bool</td>
-<td style="width: 355px;">Is the specified domain in white list</td>
+<td style="width: 355px;">Is the specified domain in allow list</td>
 </tr>
 </tbody>
 </table>
@@ -707,7 +707,7 @@
 <tr>
 <td style="width: 487px;">AwakeSecurity.Domains.whiteListed</td>
 <td style="width: 72px;">boolean</td>
-<td style="width: 149px;">Is the specified domain in white list</td>
+<td style="width: 149px;">Is the specified domain in allow list</td>
 </tr>
 <tr>
 <td style="width: 487px;">DBotScore.Indicator</td>
@@ -940,7 +940,7 @@
 <tr>
 <td style="width: 308px;">AwakeSecurity.Emails.whiteListed</td>
 <td style="width: 63px;">bool</td>
-<td style="width: 337px;">Is the device associated with the specified email address in the white list</td>
+<td style="width: 337px;">Is the device associated with the specified email address in the allow list</td>
 </tr>
 <tr>
 <td style="width: 308px;">DBotScore.Score</td>
@@ -1194,7 +1194,7 @@
 <tr>
 <td style="width: 387px;">AwakeSecurity.Devices.whiteListed</td>
 <td style="width: 66px;">bool</td>
-<td style="width: 255px;">Is the device associated with the specified email address in the white list</td>
+<td style="width: 255px;">Is the device associated with the specified email address in the allow list</td>
 </tr>
 <tr>
 <td style="width: 387px;">AwakeSecurity.Devices.protocols.name</td>

@@ -1295,59 +1295,59 @@ script:
       \ at https://docs.ansible.com/ansible/2.9/modules/nxos_facts_module.html"
     name: nxos-facts
     outputs:
-    - contextPath: CiscoNXOS.NxosFacts.ansible_net_gather_subset
+    - contextPath: CiscoNXOS.NxosFacts.net_gather_subset
       description: The list of fact subsets collected from the device
       type: unknown
-    - contextPath: CiscoNXOS.NxosFacts.ansible_net_gather_network_resources
+    - contextPath: CiscoNXOS.NxosFacts.net_gather_network_resources
       description: The list of fact for network resource subsets collected from the
         device
       type: unknown
-    - contextPath: CiscoNXOS.NxosFacts.ansible_net_model
+    - contextPath: CiscoNXOS.NxosFacts.net_model
       description: The model name returned from the device
       type: string
-    - contextPath: CiscoNXOS.NxosFacts.ansible_net_serialnum
+    - contextPath: CiscoNXOS.NxosFacts.net_serialnum
       description: The serial number of the remote device
       type: string
-    - contextPath: CiscoNXOS.NxosFacts.ansible_net_version
+    - contextPath: CiscoNXOS.NxosFacts.net_version
       description: The operating system version running on the remote device
       type: string
-    - contextPath: CiscoNXOS.NxosFacts.ansible_net_hostname
+    - contextPath: CiscoNXOS.NxosFacts.net_hostname
       description: The configured hostname of the device
       type: string
-    - contextPath: CiscoNXOS.NxosFacts.ansible_net_image
+    - contextPath: CiscoNXOS.NxosFacts.net_image
       description: The image file the device is running
       type: string
-    - contextPath: CiscoNXOS.NxosFacts.ansible_net_api
+    - contextPath: CiscoNXOS.NxosFacts.net_api
       description: The name of the transport
       type: string
-    - contextPath: CiscoNXOS.NxosFacts.ansible_net_license_hostid
+    - contextPath: CiscoNXOS.NxosFacts.net_license_hostid
       description: The License host id of the device
       type: string
-    - contextPath: CiscoNXOS.NxosFacts.ansible_net_python_version
+    - contextPath: CiscoNXOS.NxosFacts.net_python_version
       description: The Python version Ansible controller is using
       type: string
-    - contextPath: CiscoNXOS.NxosFacts.ansible_net_filesystems
+    - contextPath: CiscoNXOS.NxosFacts.net_filesystems
       description: All file system names available on the device
       type: unknown
-    - contextPath: CiscoNXOS.NxosFacts.ansible_net_memfree_mb
+    - contextPath: CiscoNXOS.NxosFacts.net_memfree_mb
       description: The available free memory on the remote device in Mb
       type: number
-    - contextPath: CiscoNXOS.NxosFacts.ansible_net_memtotal_mb
+    - contextPath: CiscoNXOS.NxosFacts.net_memtotal_mb
       description: The total memory on the remote device in Mb
       type: number
-    - contextPath: CiscoNXOS.NxosFacts.ansible_net_config
+    - contextPath: CiscoNXOS.NxosFacts.net_config
       description: The current active config from the device
       type: string
-    - contextPath: CiscoNXOS.NxosFacts.ansible_net_all_ipv4_addresses
+    - contextPath: CiscoNXOS.NxosFacts.net_all_ipv4_addresses
       description: All IPv4 addresses configured on the device
       type: unknown
-    - contextPath: CiscoNXOS.NxosFacts.ansible_net_all_ipv6_addresses
+    - contextPath: CiscoNXOS.NxosFacts.net_all_ipv6_addresses
       description: All IPv6 addresses configured on the device
       type: unknown
-    - contextPath: CiscoNXOS.NxosFacts.ansible_net_interfaces
+    - contextPath: CiscoNXOS.NxosFacts.net_interfaces
       description: A hash of all interfaces running on the system
       type: unknown
-    - contextPath: CiscoNXOS.NxosFacts.ansible_net_neighbors
+    - contextPath: CiscoNXOS.NxosFacts.net_neighbors
       description: The list of LLDP and CDP neighbors from the device. If both, CDP
         and LLDP neighbor data is present on one port, CDP is preferred.
       type: unknown
@@ -2166,8 +2166,8 @@ script:
     - auto: PREDEFINED
       defaultValue: 'No'
       description: Remove any switch logging configuration that does not match what
-        has been configured Not supported for ansible_connection local. All nxos_logging
-        tasks must use the same ansible_connection type.
+        has been configured Not supported for connection local. All nxos_logging
+        tasks must use the same connection type.
       name: purge
       predefined:
       - 'Yes'
@@ -3869,10 +3869,10 @@ script:
     - contextPath: CiscoNXOS.NxosVxlanVtepVni.commands
       description: commands sent to the device
       type: unknown
-  dockerimage: demisto/ansible-runner:1.0.0.23806
+  dockerimage: demisto/ansible-runner:1.0.0.24037
   runonce: false
   script: ''
   subtype: python3
   type: python
 tests:
-- No tests (auto formatted)
+- Test-AnsibleCiscoNXOS

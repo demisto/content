@@ -1,0 +1,21 @@
+comment: Extracts email addresses from the given value.
+commonfields:
+  id: ExtractEmailTransformer
+  version: -1
+name: ExtractEmailTransformer
+script: '-'
+args:
+- name: value
+  required: true
+  description: the input value.
+  isArray: true
+
+tags:
+- transformer
+timeout: '0'
+type: python
+subtype: python3
+dockerimage: demisto/python3:3.10.4.29342
+fromversion: 6.1.0
+tests:
+- No tests (auto formatted)

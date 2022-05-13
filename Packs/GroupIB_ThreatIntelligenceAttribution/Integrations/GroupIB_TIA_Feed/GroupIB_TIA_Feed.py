@@ -15,6 +15,19 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 # todo: add all necessary field types
 COMMON_FIELD_TYPES = ['trafficlightprotocol']
 DATE_FIELDS_LIST = ["creationdate", "firstseenbysource", "lastseenbysource", "gibdatecompromised"]
+
+IP_COMMON_FIELD_TYPES = ['asn', 'geocountry', 'geolocation']
+
+EVALUATION_FIELDS = ['evaluation.reliability', 'evaluation.credibility',
+                     'evaluation.admiraltyCode', 'evaluation.severity']
+EVALUATION_FIELD_TYPES = ['gibreliability', 'gibcredibility', 'gibadmiraltycode', 'gibseverity']
+
+MALWARE_FIELDS = ['malware.name']
+MALWARE_FIELD_TYPES = ['gibmalwarename']
+
+THREAT_ACTOR_FIELDS = ['threatActor.name', 'threatActor.isAPT', 'threatActor.id']
+THREAT_ACTOR_FIELD_TYPES = ['gibthreatactorname', 'gibthreatactorisapt', 'gibthreatactorid']
+
 MAPPING: dict = {
     "compromised/mule": {
         "indicators":
@@ -22,45 +35,40 @@ MAPPING: dict = {
                 {
                     "main_field": 'account', "main_field_type": 'GIB Compromised Mule',
                     "add_fields": [
-                        'dateAdd', 'sourceType', 'malware_name', 'threatActor_name',
-                        'threatActor_isAPT', 'threatActor_id'
+                        'dateAdd', 'sourceType', *MALWARE_FIELDS,
+                        *THREAT_ACTOR_FIELDS, *EVALUATION_FIELDS
                     ],
                     "add_fields_types": [
-                        'creationdate', 'source', 'gibmalwarename', 'gibthreatactorname',
-                        'gibthreatactorisapt', 'gibthreatactorid'
+                        'creationdate', 'source', *MALWARE_FIELD_TYPES,
+                        *THREAT_ACTOR_FIELD_TYPES, *EVALUATION_FIELD_TYPES
                     ]
                 },
                 {
-                    "main_field": 'cnc_url', "main_field_type": 'URL',
+                    "main_field": 'cnc.url', "main_field_type": 'URL',
                     "add_fields": [
-                        'malware_name', 'threatActor_name',
-                        'threatActor_isAPT', 'threatActor_id'
+                        *MALWARE_FIELDS, *THREAT_ACTOR_FIELDS, *EVALUATION_FIELDS
                     ],
                     "add_fields_types": [
-                        'gibmalwarename', 'gibthreatactorname',
-                        'gibthreatactorisapt', 'gibthreatactorid'
+                        *MALWARE_FIELD_TYPES, *THREAT_ACTOR_FIELD_TYPES, *EVALUATION_FIELD_TYPES
                     ]
                 },
                 {
-                    "main_field": 'cnc_domain', "main_field_type": 'Domain',
+                    "main_field": 'cnc.domain', "main_field_type": 'Domain',
                     "add_fields": [
-                        'malware_name', 'threatActor_name',
-                        'threatActor_isAPT', 'threatActor_id'
+                        *MALWARE_FIELDS, *THREAT_ACTOR_FIELDS, *EVALUATION_FIELDS
                     ],
                     "add_fields_types": [
-                        'gibmalwarename', 'gibthreatactorname',
-                        'gibthreatactorisapt', 'gibthreatactorid'
+                        *MALWARE_FIELD_TYPES, *THREAT_ACTOR_FIELD_TYPES, *EVALUATION_FIELD_TYPES
                     ]
                 },
                 {
-                    "main_field": 'cnc_ipv4_ip', "main_field_type": 'IP',
+                    "main_field": 'cnc.ipv4.ip', "main_field_type": 'IP',
                     "add_fields": [
-                        'cnc_ipv4_asn', 'cnc_ipv4_countryName', 'cnc_ipv4_region', 'malware_name',
-                        'threatActor_name', 'threatActor_isAPT', 'threatActor_id',
+                        'cnc.ipv4.asn', 'cnc.ipv4.countryName', 'cnc.ipv4.region',
+                        *MALWARE_FIELDS, *THREAT_ACTOR_FIELDS, *EVALUATION_FIELDS
                     ],
                     "add_fields_types": [
-                        'asn', 'geocountry', 'geolocation', 'gibmalwarename',
-                        'gibthreatactorname', 'gibthreatactorisapt', 'gibthreatactorid'
+                        *IP_COMMON_FIELD_TYPES, *MALWARE_FIELD_TYPES, *THREAT_ACTOR_FIELD_TYPES, *EVALUATION_FIELD_TYPES
                     ]
                 }
             ]
@@ -69,54 +77,43 @@ MAPPING: dict = {
         "indicators":
             [
                 {
-                    "main_field": 'cnc_url', "main_field_type": 'URL',
+                    "main_field": 'cnc.url', "main_field_type": 'URL',
                     "add_fields": [
-                        'malware_name', 'threatActor_name',
-                        'threatActor_isAPT', 'threatActor_id'
+                        *MALWARE_FIELDS, *THREAT_ACTOR_FIELDS, *EVALUATION_FIELDS
                     ],
                     "add_fields_types": [
-                        'gibmalwarename', 'gibthreatactorname',
-                        'gibthreatactorisapt', 'gibthreatactorid'
+                        *MALWARE_FIELD_TYPES, *THREAT_ACTOR_FIELD_TYPES, *EVALUATION_FIELD_TYPES
                     ]
                 },
                 {
-                    "main_field": 'cnc_domain', "main_field_type": 'Domain',
+                    "main_field": 'cnc.domain', "main_field_type": 'Domain',
                     "add_fields": [
-                        'malware_name', 'threatActor_name',
-                        'threatActor_isAPT', 'threatActor_id'
+                        *MALWARE_FIELDS, *THREAT_ACTOR_FIELDS, *EVALUATION_FIELDS
                     ],
                     "add_fields_types": [
-                        'gibmalwarename', 'gibthreatactorname',
-                        'gibthreatactorisapt', 'gibthreatactorid'
+                        *MALWARE_FIELD_TYPES, *THREAT_ACTOR_FIELD_TYPES, *EVALUATION_FIELD_TYPES
                     ]
                 },
                 {
-                    "main_field": 'cnc_ipv4_ip', "main_field_type": 'IP',
+                    "main_field": 'cnc.ipv4.ip', "main_field_type": 'IP',
                     "add_fields": [
-                        'cnc_ipv4_asn', 'cnc_ipv4_countryName', 'cnc_ipv4_region',
-                        'malware_name', 'threatActor_name',
-                        'threatActor_isAPT', 'threatActor_id'
+                        'cnc.ipv4.asn', 'cnc.ipv4.countryName', 'cnc.ipv4.region',
+                        *MALWARE_FIELDS, *THREAT_ACTOR_FIELDS, *EVALUATION_FIELDS
                     ],
                     "add_fields_types": [
-                        'asn', 'geocountry', 'geolocation',
-                        'gibmalwarename', 'gibthreatactorname',
-                        'gibthreatactorisapt', 'gibthreatactorid'
+                        *IP_COMMON_FIELD_TYPES, *MALWARE_FIELD_TYPES, *THREAT_ACTOR_FIELD_TYPES, *EVALUATION_FIELD_TYPES
                     ]
                 },
                 {
-                    "main_field": 'device_imei', "main_field_type": 'GIB Compromised IMEI',
+                    "main_field": 'device.imei', "main_field_type": 'GIB Compromised IMEI',
                     "add_fields": [
-                        'dateDetected', 'dateCompromised', 'device_model',
-                        'client_ipv4_asn', 'client_ipv4_countryName',
-                        'client_ipv4_region', 'client_ipv4_ip',
-                        'malware_name', 'threatActor_name',
-                        'threatActor_isAPT', 'threatActor_id'
+                        'dateDetected', 'dateCompromised', 'device.model',
+                        'client.ipv4.asn', 'client.ipv4.countryName', 'client.ipv4.region', 'client.ipv4.ip',
+                        *MALWARE_FIELDS, *THREAT_ACTOR_FIELDS, *EVALUATION_FIELDS
                     ],
-                    "add_fields_types":[
-                        'creationdate', 'gibdatecompromised', 'devicemodel',
-                        'asn', 'geocountry', 'geolocation', 'ipaddress',
-                        'gibmalwarename', 'gibthreatactorname',
-                        'gibthreatactorisapt', 'gibthreatactorid'
+                    "add_fields_types": [
+                        'creationdate', 'gibdatecompromised', 'devicemodel', *IP_COMMON_FIELD_TYPES, 'ipaddress',
+                        *MALWARE_FIELD_TYPES, *THREAT_ACTOR_FIELD_TYPES, *EVALUATION_FIELD_TYPES
                     ]
                 }
             ]
@@ -125,53 +122,43 @@ MAPPING: dict = {
         "indicators":
             [
                 {
-                    "main_field": 'cnc_url', "main_field_type": 'URL',
+                    "main_field": 'cnc.url', "main_field_type": 'URL',
                     "add_fields": [
-                        'malware_name', 'threatActor_name',
-                        'threatActor_isAPT', 'threatActor_id'
+                        *MALWARE_FIELDS, *THREAT_ACTOR_FIELDS, *EVALUATION_FIELDS
                     ],
                     "add_fields_types": [
-                        'gibmalwarename', 'gibthreatactorname',
-                        'gibthreatactorisapt', 'gibthreatactorid'
+                        *MALWARE_FIELD_TYPES, *THREAT_ACTOR_FIELD_TYPES, *EVALUATION_FIELD_TYPES
                     ]
                 },
                 {
-                    "main_field": 'cnc_domain', "main_field_type": 'Domain',
+                    "main_field": 'cnc.domain', "main_field_type": 'Domain',
                     "add_fields": [
-                        'malware_name', 'threatActor_name',
-                        'threatActor_isAPT', 'threatActor_id'
+                        *MALWARE_FIELDS, *THREAT_ACTOR_FIELDS, *EVALUATION_FIELDS
                     ],
                     "add_fields_types": [
-                        'gibmalwarename', 'gibthreatactorname',
-                        'gibthreatactorisapt', 'gibthreatactorid'
+                        *MALWARE_FIELD_TYPES, *THREAT_ACTOR_FIELD_TYPES, *EVALUATION_FIELD_TYPES
                     ]
                 },
                 {
-                    "main_field": 'cnc_ipv4_ip', "main_field_type": 'IP',
+                    "main_field": 'cnc.ipv4.ip', "main_field_type": 'IP',
                     "add_fields": [
-                        'cnc_ipv4_asn', 'cnc_ipv4_countryName', 'cnc_ipv4_region',
-                        'malware_name', 'threatActor_name',
-                        'threatActor_isAPT', 'threatActor_id'
+                        'cnc.ipv4.asn', 'cnc.ipv4.countryName', 'cnc.ipv4.region',
+                        *MALWARE_FIELDS, *THREAT_ACTOR_FIELDS, *EVALUATION_FIELDS
                     ],
                     "add_fields_types": [
-                        'asn', 'geocountry', 'geolocation',
-                        'gibmalwarename', 'gibthreatactorname',
-                        'gibthreatactorisapt', 'gibthreatactorid'
+                        *IP_COMMON_FIELD_TYPES, *MALWARE_FIELD_TYPES, *THREAT_ACTOR_FIELD_TYPES, *EVALUATION_FIELD_TYPES
                     ]
                 },
                 {
-                    "main_field": 'target_ipv4_ip', "main_field_type": 'GIB Victim IP',
+                    "main_field": 'target.ipv4.ip', "main_field_type": 'GIB Victim IP',
                     "add_fields": [
-                        'target_ipv4_asn', 'target_ipv4_countryName', 'target_ipv4_region',
-                        'malware_name', 'threatActor_name',
-                        'threatActor_isAPT', 'threatActor_id',
-                        'dateBegin', 'dateEnd'
+                        'target.ipv4.asn', 'target.ipv4.countryName', 'target.ipv4.region',
+                        *MALWARE_FIELDS, *THREAT_ACTOR_FIELDS,
+                        'dateBegin', 'dateEnd', *EVALUATION_FIELDS
                     ],
                     "add_fields_types": [
-                        'asn', 'geocountry', 'geolocation',
-                        'gibmalwarename', 'gibthreatactorname',
-                        'gibthreatactorisapt', 'gibthreatactorid',
-                        'firstseenbysource', 'lastseenbysource'
+                        *IP_COMMON_FIELD_TYPES, *MALWARE_FIELD_TYPES, *THREAT_ACTOR_FIELD_TYPES,
+                        'firstseenbysource', 'lastseenbysource', *EVALUATION_FIELD_TYPES
                     ]
                 }
             ]
@@ -181,23 +168,30 @@ MAPPING: dict = {
             [
                 {
                     "main_field": 'url', "main_field_type": 'URL',
-                    "add_fields": ['threatActor_name', 'threatActor_isAPT', 'threatActor_id'],
-                    "add_fields_types": ['gibthreatactorname', 'gibthreatactorisapt', 'gibthreatactorid']
+                    "add_fields": [
+                        *THREAT_ACTOR_FIELDS, *EVALUATION_FIELDS
+                    ],
+                    "add_fields_types": [
+                        *THREAT_ACTOR_FIELD_TYPES, *EVALUATION_FIELD_TYPES
+                    ]
                 },
                 {
                     "main_field": 'targetDomain', "main_field_type": 'Domain',
-                    "add_fields": ['threatActor_name', 'threatActor_isAPT', 'threatActor_id'],
-                    "add_fields_types": ['gibthreatactorname', 'gibthreatactorisapt', 'gibthreatactorid']
-                },
-                {
-                    "main_field": 'targetIp_ip', "main_field_type": 'IP',
                     "add_fields": [
-                        'targetIp_asn', 'targetIp_countryName', 'targetIp_region',
-                        'threatActor_name', 'threatActor_isAPT', 'threatActor_id'
+                        *THREAT_ACTOR_FIELDS, *EVALUATION_FIELDS
                     ],
                     "add_fields_types": [
-                        'asn', 'geocountry', 'geolocation',
-                        'gibthreatactorname', 'gibthreatactorisapt', 'gibthreatactorid'
+                        *THREAT_ACTOR_FIELD_TYPES, *EVALUATION_FIELD_TYPES
+                    ]
+                },
+                {
+                    "main_field": 'targetIp.ip', "main_field_type": 'IP',
+                    "add_fields": [
+                        'targetIp.asn', 'targetIp.countryName', 'targetIp.region',
+                        *THREAT_ACTOR_FIELDS, *EVALUATION_FIELDS
+                    ],
+                    "add_fields_types": [
+                        *IP_COMMON_FIELD_TYPES, *THREAT_ACTOR_FIELD_TYPES, *EVALUATION_FIELD_TYPES
                     ]
                 }
             ]
@@ -207,28 +201,34 @@ MAPPING: dict = {
             [
                 {
                     "main_field": 'url', "main_field_type": 'URL',
-                },
-                {
-                    "main_field": 'phishingDomain_domain', "main_field_type": 'Domain',
-                    "add_fields":
-                    [
-                        'phishingDomain_dateRegistered', 'dateDetected',
-                        'phishingDomain_registrar',
-                        'phishingDomain_title', 'targetBrand',
-                        'targetCategory', 'targetDomain'
+                    "add_fields": [
+                        'type', *EVALUATION_FIELDS
                     ],
-                    "add_fields_types":
-                    [
-                        'creationdate', 'firstseenbysource',
-                        'registrarname',
-                        'gibphishingtitle', 'gibtargetbrand',
-                        'gibtargetcategory', 'gibtargetdomain'
+                    "add_fields_types": [
+                        'gibphishingtype', *EVALUATION_FIELD_TYPES
                     ]
                 },
                 {
-                    "main_field": 'ipv4_ip', "main_field_type": 'IP',
-                    "add_fields": ['ipv4_asn', 'ipv4_countryName', 'ipv4_region'],
-                    "add_fields_types": ['asn', 'geocountry', 'geolocation']
+                    "main_field": 'phishingDomain.domain', "main_field_type": 'Domain',
+                    "add_fields": [
+                        'phishingDomain.dateRegistered', 'dateDetected', 'phishingDomain.registrar',
+                        'phishingDomain.title', 'targetBrand', 'targetCategory', 'targetDomain',
+                        'type', *EVALUATION_FIELDS
+                    ],
+                    "add_fields_types": [
+                        'creationdate', 'firstseenbysource', 'registrarname',
+                        'gibphishingtitle', 'gibtargetbrand', 'gibtargetcategory', 'gibtargetdomain',
+                        'gibphishingtype', *EVALUATION_FIELD_TYPES
+                    ]
+                },
+                {
+                    "main_field": 'ipv4.ip', "main_field_type": 'IP',
+                    "add_fields": [
+                        'ipv4.asn', 'ipv4.countryName', 'ipv4.region', 'type', *EVALUATION_FIELDS
+                    ],
+                    "add_fields_types": [
+                        *IP_COMMON_FIELD_TYPES, 'gibphishingtype', *EVALUATION_FIELD_TYPES
+                    ]
                 }
             ]
     },
@@ -237,8 +237,12 @@ MAPPING: dict = {
             [
                 {
                     "main_field": 'emails', "main_field_type": 'Email',
-                    "add_fields": ['dateFirstSeen', 'dateLastSeen'],
-                    "add_fields_types": ['firstseenbysource', 'lastseenbysource']
+                    "add_fields": [
+                        'dateFirstSeen', 'dateLastSeen', *EVALUATION_FIELDS
+                    ],
+                    "add_fields_types": [
+                        'firstseenbysource', 'lastseenbysource', *EVALUATION_FIELD_TYPES
+                    ]
                 }
             ]
     },
@@ -246,57 +250,42 @@ MAPPING: dict = {
         "indicators":
             [
                 {
-                    "main_field": 'indicators_params_ipv4', "main_field_type": 'IP',
+                    "main_field": 'indicators.params.ipv4', "main_field_type": 'IP',
                     "add_fields": [
-                        'threatActor_name',
-                        'threatActor_isAPT', 'threatActor_id',
-                        'indicators_dateFirstSeen', 'indicators_dateLastSeen'
+                        *THREAT_ACTOR_FIELDS, 'indicators.dateFirstSeen', 'indicators.dateLastSeen', *EVALUATION_FIELDS
                     ],
                     "add_fields_types": [
-                        'gibthreatactorname',
-                        'gibthreatactorisapt', 'gibthreatactorid',
-                        'firstseenbysource', 'lastseenbysource'
+                        *THREAT_ACTOR_FIELD_TYPES, 'firstseenbysource', 'lastseenbysource', *EVALUATION_FIELD_TYPES
                     ]
                 },
                 {
-                    "main_field": 'indicators_params_domain', "main_field_type": 'Domain',
+                    "main_field": 'indicators.params.domain', "main_field_type": 'Domain',
                     "add_fields": [
-                        'threatActor_name',
-                        'threatActor_isAPT', 'threatActor_id',
-                        'indicators_dateFirstSeen', 'indicators_dateLastSeen'
+                        *THREAT_ACTOR_FIELDS, 'indicators.dateFirstSeen', 'indicators.dateLastSeen', *EVALUATION_FIELDS
                     ],
                     "add_fields_types": [
-                        'gibthreatactorname',
-                        'gibthreatactorisapt', 'gibthreatactorid',
-                        'firstseenbysource', 'lastseenbysource'
+                        *THREAT_ACTOR_FIELD_TYPES, 'firstseenbysource', 'lastseenbysource', *EVALUATION_FIELD_TYPES
                     ]
                 },
                 {
-                    "main_field": 'indicators_params_url', "main_field_type": 'URL',
+                    "main_field": 'indicators.params.url', "main_field_type": 'URL',
                     "add_fields": [
-                        'threatActor_name',
-                        'threatActor_isAPT', 'threatActor_id',
-                        'indicators_dateFirstSeen', 'indicators_dateLastSeen'
+                        *THREAT_ACTOR_FIELDS, 'indicators.dateFirstSeen', 'indicators.dateLastSeen', *EVALUATION_FIELDS
                     ],
                     "add_fields_types": [
-                        'gibthreatactorname',
-                        'gibthreatactorisapt', 'gibthreatactorid',
-                        'firstseenbysource', 'lastseenbysource'
+                        *THREAT_ACTOR_FIELD_TYPES, 'firstseenbysource', 'lastseenbysource', *EVALUATION_FIELD_TYPES
                     ]
                 },
                 {
-                    "main_field": 'indicators_params_hashes_md5', "main_field_type": 'File',
+                    "main_field": 'indicators.params.hashes.md5', "main_field_type": 'File',
                     "add_fields": [
-                        'indicators_params_name', 'indicators_params_hashes_md5',
-                        'indicators_params_hashes_sha1',
-                        'indicators_params_hashes_sha256', 'indicators_params_size',
-                        'threatActor_name', 'threatActor_isAPT', 'threatActor_id',
-                        'indicators_dateFirstSeen', 'indicators_dateLastSeen'
+                        'indicators.params.name', 'indicators.params.hashes.md5', 'indicators.params.hashes.sha1',
+                        'indicators.params.hashes.sha256', 'indicators.params.size',
+                        *THREAT_ACTOR_FIELDS, 'indicators.dateFirstSeen', 'indicators.dateLastSeen', *EVALUATION_FIELDS
                     ],
                     "add_fields_types": [
                         'gibfilename', 'md5', 'sha1', 'sha256', 'size',
-                        'gibthreatactorname', 'gibthreatactorisapt', 'gibthreatactorid',
-                        'firstseenbysource', 'lastseenbysource'
+                        *THREAT_ACTOR_FIELD_TYPES, 'firstseenbysource', 'lastseenbysource', *EVALUATION_FIELD_TYPES
                     ]
                 }
             ]
@@ -305,57 +294,42 @@ MAPPING: dict = {
         "indicators":
             [
                 {
-                    "main_field": 'indicators_params_ipv4', "main_field_type": 'IP',
+                    "main_field": 'indicators.params.ipv4', "main_field_type": 'IP',
                     "add_fields": [
-                        'threatActor_name',
-                        'threatActor_isAPT', 'threatActor_id',
-                        'indicators_dateFirstSeen', 'indicators_dateLastSeen'
+                        *THREAT_ACTOR_FIELDS, 'indicators.dateFirstSeen', 'indicators.dateLastSeen', *EVALUATION_FIELDS
                     ],
                     "add_fields_types": [
-                        'gibthreatactorname',
-                        'gibthreatactorisapt', 'gibthreatactorid',
-                        'firstseenbysource', 'lastseenbysource'
+                        *THREAT_ACTOR_FIELD_TYPES, 'firstseenbysource', 'lastseenbysource', *EVALUATION_FIELD_TYPES
                     ]
                 },
                 {
-                    "main_field": 'indicators_params_domain', "main_field_type": 'Domain',
+                    "main_field": 'indicators.params.domain', "main_field_type": 'Domain',
                     "add_fields": [
-                        'threatActor_name',
-                        'threatActor_isAPT', 'threatActor_id',
-                        'indicators_dateFirstSeen', 'indicators_dateLastSeen'
+                        *THREAT_ACTOR_FIELDS, 'indicators.dateFirstSeen', 'indicators.dateLastSeen', *EVALUATION_FIELDS
                     ],
                     "add_fields_types": [
-                        'gibthreatactorname',
-                        'gibthreatactorisapt', 'gibthreatactorid',
-                        'firstseenbysource', 'lastseenbysource'
+                        *THREAT_ACTOR_FIELD_TYPES, 'firstseenbysource', 'lastseenbysource', *EVALUATION_FIELD_TYPES
                     ]
                 },
                 {
-                    "main_field": 'indicators_params_url', "main_field_type": 'URL',
+                    "main_field": 'indicators.params.url', "main_field_type": 'URL',
                     "add_fields": [
-                        'threatActor_name',
-                        'threatActor_isAPT', 'threatActor_id',
-                        'indicators_dateFirstSeen', 'indicators_dateLastSeen'
+                        *THREAT_ACTOR_FIELDS, 'indicators.dateFirstSeen', 'indicators.dateLastSeen', *EVALUATION_FIELDS
                     ],
                     "add_fields_types": [
-                        'gibthreatactorname',
-                        'gibthreatactorisapt', 'gibthreatactorid',
-                        'firstseenbysource', 'lastseenbysource'
+                        *THREAT_ACTOR_FIELD_TYPES, 'firstseenbysource', 'lastseenbysource', *EVALUATION_FIELD_TYPES
                     ]
                 },
                 {
-                    "main_field": 'indicators_params_hashes_md5', "main_field_type": 'File',
+                    "main_field": 'indicators.params.hashes.md5', "main_field_type": 'File',
                     "add_fields": [
-                        'indicators_params_name', 'indicators_params_hashes_md5',
-                        'indicators_params_hashes_sha1',
-                        'indicators_params_hashes_sha256', 'indicators_params_size',
-                        'threatActor_name', 'threatActor_isAPT', 'threatActor_id',
-                        'indicators_dateFirstSeen', 'indicators_dateLastSeen'
+                        'indicators.params.name', 'indicators.params.hashes.md5', 'indicators.params.hashes.sha1',
+                        'indicators.params.hashes.sha256', 'indicators.params.size',
+                        *THREAT_ACTOR_FIELDS, 'indicators.dateFirstSeen', 'indicators.dateLastSeen', *EVALUATION_FIELDS
                     ],
                     "add_fields_types": [
                         'gibfilename', 'md5', 'sha1', 'sha256', 'size',
-                        'gibthreatactorname', 'gibthreatactorisapt', 'gibthreatactorid',
-                        'firstseenbysource', 'lastseenbysource'
+                        *THREAT_ACTOR_FIELD_TYPES, 'firstseenbysource', 'lastseenbysource', *EVALUATION_FIELD_TYPES
                     ]
                 }
             ]
@@ -364,9 +338,14 @@ MAPPING: dict = {
         'indicators':
             [
                 {
-                    "main_field": 'ipv4_ip', "main_field_type": 'IP',
-                    "add_fields": ['ipv4_asn', 'ipv4_countryName', 'ipv4_region', 'dateFirstSeen', 'dateLastSeen'],
-                    "add_fields_types": ['asn', 'geocountry', 'geolocation', 'firstseenbysource', 'lastseenbysource']
+                    "main_field": 'ipv4.ip', "main_field_type": 'IP',
+                    "add_fields": [
+                        'ipv4.asn', 'ipv4.countryName', 'ipv4.region',
+                        'dateFirstSeen', 'dateLastSeen', *EVALUATION_FIELDS
+                    ],
+                    "add_fields_types": [
+                        *IP_COMMON_FIELD_TYPES, 'firstseenbysource', 'lastseenbysource', *EVALUATION_FIELD_TYPES
+                    ]
                 }
             ]
     },
@@ -374,18 +353,14 @@ MAPPING: dict = {
         'indicators':
             [
                 {
-                    "main_field": 'ipv4_ip', "main_field_type": 'IP',
-                    "add_fields":
-                    [
-                        'ipv4_asn', 'ipv4_countryName', 'ipv4_region',
-                        'port', 'anonymous', 'source',
-                        'dateFirstSeen', 'dateDetected'
+                    "main_field": 'ipv4.ip', "main_field_type": 'IP',
+                    "add_fields": [
+                        'ipv4.asn', 'ipv4.countryName', 'ipv4.region', 'port', 'anonymous', 'source',
+                        'dateFirstSeen', 'dateDetected', *EVALUATION_FIELDS
                     ],
-                    "add_fields_types":
-                    [
-                        'asn', 'geocountry', 'geolocation',
-                        'gibproxyport', 'gibproxyanonymous', 'source',
-                        'firstseenbysource', 'lastseenbysource'
+                    "add_fields_types": [
+                        *IP_COMMON_FIELD_TYPES, 'gibproxyport', 'gibproxyanonymous', 'source',
+                        'firstseenbysource', 'lastseenbysource', *EVALUATION_FIELD_TYPES
                     ]
                 }
             ]
@@ -394,9 +369,14 @@ MAPPING: dict = {
         'indicators':
             [
                 {
-                    "main_field": 'ipv4_ip', "main_field_type": 'IP',
-                    "add_fields": ['ipv4_asn', 'ipv4_countryName', 'ipv4_region', 'dateFirstSeen', 'dateLastSeen'],
-                    "add_fields_types": ['asn', 'geocountry', 'geolocation', 'firstseenbysource', 'lastseenbysource']
+                    "main_field": 'ipv4.ip', "main_field_type": 'IP',
+                    "add_fields": [
+                        'ipv4.asn', 'ipv4.countryName', 'ipv4.region', 'dateFirstSeen',
+                        'dateLastSeen', *EVALUATION_FIELDS
+                    ],
+                    "add_fields_types": [
+                        *IP_COMMON_FIELD_TYPES, 'firstseenbysource', 'lastseenbysource', *EVALUATION_FIELD_TYPES
+                    ]
                 }
             ]
     },
@@ -406,36 +386,29 @@ MAPPING: dict = {
                 {
                     'main_field': 'url', "main_field_type": 'URL',
                     "add_fields": [
-                        'threatActor_name', 'threatActor_isAPT', 'threatActor_id',
-                        'dateDetected', 'dateLastSeen'
+                        *THREAT_ACTOR_FIELDS, 'dateDetected', 'dateLastSeen'
                     ],
                     "add_fields_types": [
-                        'gibthreatactorname', 'gibthreatactorisapt', 'gibthreatactorid',
-                        'firstseenbysource', 'lastseenbysource'
+                        *THREAT_ACTOR_FIELD_TYPES, 'firstseenbysource', 'lastseenbysource'
                     ]
                 },
                 {
                     'main_field': 'domain', "main_field_type": 'Domain',
                     "add_fields": [
-                        'threatActor_name', 'threatActor_isAPT', 'threatActor_id',
-                        'dateDetected', 'dateLastSeen'
+                        *THREAT_ACTOR_FIELDS, 'dateDetected', 'dateLastSeen'
                     ],
                     "add_fields_types": [
-                        'gibthreatactorname', 'gibthreatactorisapt', 'gibthreatactorid',
-                        'firstseenbysource', 'lastseenbysource'
+                        *THREAT_ACTOR_FIELD_TYPES, 'firstseenbysource', 'lastseenbysource'
                     ]
                 },
                 {
-                    "main_field": 'ipv4_ip', "main_field_type": 'IP',
+                    "main_field": 'ipv4.ip', "main_field_type": 'IP',
                     "add_fields": [
-                        'ipv4_asn', 'ipv4_countryName', 'ipv4_region',
-                        'threatActor_name', 'threatActor_isAPT', 'threatActor_id',
-                        'dateDetected', 'dateLastSeen'
+                        'ipv4.asn', 'ipv4.countryName', 'ipv4.region',
+                        *THREAT_ACTOR_FIELDS, 'dateDetected', 'dateLastSeen'
                     ],
                     "add_fields_types": [
-                        'asn', 'geocountry', 'geolocation',
-                        'gibthreatactorname', 'gibthreatactorisapt', 'gibthreatactorid',
-                        'firstseenbysource', 'lastseenbysource'
+                        *IP_COMMON_FIELD_TYPES, *THREAT_ACTOR_FIELD_TYPES, 'firstseenbysource', 'lastseenbysource'
                     ]
                 }
             ]
@@ -445,15 +418,13 @@ MAPPING: dict = {
             [
                 {
                     'main_field': 'id', "main_field_type": 'CVE',
-                    "add_fields":
-                    [
-                        'cvss_score', 'cvss_vector', 'softwareMixed',
-                        'description', 'dateModified', 'datePublished'
+                    "add_fields": [
+                        'cvss.score', 'cvss.vector', 'softwareMixed',
+                        'description', 'dateModified', 'datePublished', *EVALUATION_FIELDS
                     ],
-                    "add_fields_types":
-                    [
+                    "add_fields_types": [
                         'cvss', 'gibcvssvector', 'gibsoftwaremixed',
-                        'cvedescription', 'cvemodified', 'published'
+                        'cvedescription', 'cvemodified', 'published', *EVALUATION_FIELD_TYPES
                     ]
                 }
             ]
@@ -558,7 +529,7 @@ def find_element_by_key(obj, key):
     Recursively finds element or elements in dict.
     """
 
-    path = key.split("_", 1)
+    path = key.split(".", 1)
     if len(path) == 1:
         if isinstance(obj, list):
             return [i.get(path[0]) for i in obj]
@@ -616,11 +587,14 @@ def unpack_iocs(iocs, ioc_type, fields, fields_names, collection_name):
         # Transforming into correct date format
         for date_field in DATE_FIELDS_LIST:
             if fields_dict.get(date_field):
-                fields_dict[date_field] = dateparser.parse(fields_dict.get(date_field)).strftime('%Y-%m-%dT%H:%M:%SZ')
+                previous_date = dateparser.parse(fields_dict.get(date_field, ""))
+                if previous_date:
+                    fields_dict[date_field] = previous_date.strftime('%Y-%m-%dT%H:%M:%SZ')
 
         fields_dict.update({'gibcollection': collection_name})
-        unpacked.append({'value': iocs, 'type': ioc_type,
-                         'rawJSON': {'value': iocs, 'type': ioc_type, **fields_dict}, 'fields': fields_dict})
+
+        raw_json = {'value': iocs, 'type': ioc_type, **fields_dict}
+        unpacked.append({'value': iocs, 'type': ioc_type, 'rawJSON': raw_json, 'fields': fields_dict})
 
     return unpacked
 
@@ -649,7 +623,7 @@ def find_iocs_in_feed(feed: Dict, collection_name: str, common_fields: Dict) -> 
                 add_fields.append(common_fields.get(field_type))
                 add_fields_types.append(field_type)
         if collection_name in ['apt/threat', 'hi/threat', 'malware/cnc']:
-            add_fields.append(', '.join(find_element_by_key(feed, "malwareList_name")))
+            add_fields.append(', '.join(find_element_by_key(feed, "malwareList.name")))
             add_fields_types = add_fields_types + ['gibmalwarename']
         indicators.extend(unpack_iocs(main_field, main_field_type, add_fields,
                                       add_fields_types, collection_name))
@@ -682,6 +656,24 @@ def format_result_for_manual(indicators: List) -> Dict:
     return formatted_indicators
 
 
+def handle_first_time_fetch(last_run, collection_name, first_fetch_time):
+    last_fetch = last_run.get('last_fetch', {}).get(collection_name)
+
+    # Handle first time fetch
+    date_from = None
+    seq_update = None
+    if not last_fetch:
+        date_from_for_mypy = dateparser.parse(first_fetch_time)
+        if date_from_for_mypy is None:
+            raise DemistoException('Inappropriate indicators_first_fetch format, '
+                                   'please use something like this: 2020-01-01 or January 1 2020 or 3 days')
+        date_from = date_from_for_mypy.strftime('%Y-%m-%d')
+    else:
+        seq_update = last_fetch
+
+    return date_from, seq_update
+
+
 """ Commands """
 
 
@@ -704,24 +696,13 @@ def fetch_indicators_command(client: Client, last_run: Dict, first_fetch_time: s
     next_run: Dict[str, Dict[str, Union[int, Any]]] = {"last_fetch": {}}
     tags = common_fields.pop("tags", [])
     for collection_name in indicator_collections:
-        last_fetch = last_run.get('last_fetch', {}).get(collection_name)
+        date_from, seq_update = handle_first_time_fetch(last_run=last_run, collection_name=collection_name,
+                                                        first_fetch_time=first_fetch_time)
 
-        # Handle first time fetch
-        date_from = None
-        seq_update = None
-        if not last_fetch:
-            date_from = dateparser.parse(first_fetch_time)
-            if date_from is None:
-                raise DemistoException('Inappropriate indicators_first_fetch format, '
-                                       'please use something like this: 2020-01-01 or January 1 2020 or 3 days')
-            date_from = date_from.strftime('%Y-%m-%d')
-        else:
-            seq_update = last_fetch
-
-        portions = client.create_update_generator(collection_name=collection_name,
-                                                  date_from=date_from, seq_update=seq_update)
+        generator = client.create_update_generator(collection_name=collection_name,
+                                                   date_from=date_from, seq_update=seq_update)
         k = 0
-        for portion in portions:
+        for portion in generator:
             for feed in portion:
                 seq_update = feed.get('seqUpdate')
                 indicators.extend(find_iocs_in_feed(feed, collection_name, common_fields))
@@ -761,8 +742,8 @@ def get_indicators_command(client: Client, args: Dict[str, str]):
         raise Exception('Incorrect collection name. Please, choose one of the displayed options.')
 
     if not id_:
-        portions = client.create_search_generator(collection_name=collection_name, limit=limit)
-        for portion in portions:
+        generator = client.create_search_generator(collection_name=collection_name, limit=limit)
+        for portion in generator:
             for feed in portion:
                 indicators.extend(find_iocs_in_feed(feed, collection_name, {}))
                 if len(indicators) >= limit:

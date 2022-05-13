@@ -2,7 +2,7 @@
     "name": "Strip Accent Marks From String",
     "description": "Strip accent marks (diacritics) from a given string",
     "support": "community",
-    "currentVersion": "1.0.0",
+    "currentVersion": "1.0.1",
     "author": "Gavriel Filippov",
     "url": "",
     "email": "",
@@ -13,5 +13,9 @@
     "keywords": [],
     "githubUser": [
         "GavrielFilippov"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
     ]
 }

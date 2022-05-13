@@ -48,7 +48,7 @@ tasks:
       - "2"
     scriptarguments:
       initial_interval:
-        simple: 4 days
+        simple: 3 minutes
       limit:
         simple: "10"
     separatecontext: false
@@ -389,7 +389,7 @@ tasks:
       - "8"
     scriptarguments:
       initial_interval:
-        simple: 4 days
+        simple: 4 minutes
       limit:
         simple: "10"
     separatecontext: false

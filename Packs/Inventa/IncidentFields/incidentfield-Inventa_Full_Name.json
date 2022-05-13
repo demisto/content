@@ -1,0 +1,30 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "iDSAR"
+    ],
+    "caseInsensitive": true,
+    "cliName": "inventafullname",
+    "closeForm": false,
+    "content": true,
+    "description": "Full Name for the PII.Used in [full_name + birthday] and [full_name + city + street_address] constraints",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_inventafullname",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Inventa Full Name",
+    "neverSetAsRequired": false,
+    "ownerOnly": true,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

@@ -1,0 +1,193 @@
+description: Set grid for RaDark - Hacking Discussions incidents.
+id: Set RaDark Grid For Hacking Discussions
+inputs: []
+name: Set RaDark Grid For Hacking Discussions
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "14"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Playbook triggered.
+      id: ac5e843a-84cc-43a8-85be-2708ecc69bfc
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: ac5e843a-84cc-43a8-85be-2708ecc69bfc
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": -1760,
+          "y": 540
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Done.
+      id: b3c842cc-f957-4b2a-8f5c-20f3ebfcdfa8
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: b3c842cc-f957-4b2a-8f5c-20f3ebfcdfa8
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": -1760,
+          "y": 1100
+        }
+      }
+  "11":
+    id: "11"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      columns:
+        simple: Type, Tags, Link, Context
+      context_path:
+        simple: Radark.itemDetails.items
+      grid_id:
+        simple: kelaradarktablehackingdiscussions
+      keys:
+        simple: type, tags, link, context
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Creates a Grid table from items or key-value pairs.
+      id: cf6ff2b8-ba76-49c9-8475-ea9867bf3141
+      iscommand: false
+      name: Set Grid - Hacking Discussions
+      script: SetGridField
+      type: regular
+      version: -1
+    taskid: cf6ff2b8-ba76-49c9-8475-ea9867bf3141
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -1760,
+          "y": 860
+        }
+      }
+  "14":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: incident.kelaradarksubtype
+          operator: isEqualString
+          right:
+            value:
+              simple: "1"
+      label: "1"
+    id: "14"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "26"
+      "1":
+      - "11"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Return the sub type of the incident in order to set the proper
+        grid table.
+      id: 84e04d4e-6062-4185-80f2-93c5bf5b772d
+      iscommand: false
+      name: RaDark - Extract Hacking Discussions Grid Type
+      type: condition
+      version: -1
+    taskid: 84e04d4e-6062-4185-80f2-93c5bf5b772d
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": -1760,
+          "y": 650
+        }
+      }
+  "26":
+    id: "26"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: No action required.
+      id: 7672f78b-6278-4dd9-8a40-05d9c9d10894
+      iscommand: false
+      name: No Grid Type Incident
+      type: title
+      version: -1
+    taskid: 7672f78b-6278-4dd9-8a40-05d9c9d10894
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": -2400,
+          "y": 820
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 625,
+        "width": 1020,
+        "x": -2400,
+        "y": 540
+      }
+    }
+  }
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

@@ -619,7 +619,7 @@ def _get_top_techniques_incidents(create_time):
             '?timeId=timeAgo_days_7',
             'type': XM_CYBER_INCIDENT_TYPE_TECHNIQUE,
             'advices': [{
-                'text': 'Use application whitelisting software (e.g AppLocker) to restrict password dumping tools',
+                'text': 'Use application allow list software (e.g AppLocker) to restrict password dumping tools',
                 'type': 'Remediation'
             }, {
                 'text': 'Prevent the credential from being stored in the machine memory. This usually happens due to '
@@ -713,7 +713,7 @@ def _get_top_techniques_incidents(create_time):
                 'text': 'Remove write permissions for the following users to the specified shared folder',
                 'type': 'Remediation'
             }, {
-                'text': 'Use application whitelisting software (e.g AppLocker) to restrict password dumping tools',
+                'text': 'Use application allow list software (e.g AppLocker) to restrict password dumping tools',
                 'type': 'Remediation'
             }, {
                 'text': 'Prevent the credential from being stored in the machine memory. This usually happens due to '
@@ -785,7 +785,7 @@ def _get_top_techniques_incidents(create_time):
                 'text': 'Remove write permissions for the following users to the specified shared folder',
                 'type': 'Remediation'
             }, {
-                'text': 'Use application whitelisting software (e.g AppLocker) to restrict password dumping tools',
+                'text': 'Use application allow list software (e.g AppLocker) to restrict password dumping tools',
                 'type': 'Remediation'
             }, {
                 'text': 'Prevent the credential from being stored in the machine memory. This usually happens due to '

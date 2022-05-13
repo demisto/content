@@ -501,6 +501,27 @@
           "defenderAvStatus": "Updated",
           "onboardingStatus": "Onboarded",
           "vmMetadata": null
+        },
+        {
+          "mdatpDeviceId": "mdatpDeviceId",
+          "aadDeviceId": null,
+          "deviceDnsName": null,
+          "osPlatform": "Windows10",
+          "version": "1909",
+          "osProcessor": "x64",
+          "osBuild": 18363,
+          "healthStatus": "Active",
+          "riskScore": "Informational",
+          "rbacGroupName": null,
+          "firstSeen": "2020-02-20T14:44:11.4627779Z",
+          "tags": [
+            "new test",
+            "test add tag",
+            "testing123"
+          ],
+          "defenderAvStatus": "Updated",
+          "onboardingStatus": "Onboarded",
+          "vmMetadata": null
         }
       ],
       "entities": []

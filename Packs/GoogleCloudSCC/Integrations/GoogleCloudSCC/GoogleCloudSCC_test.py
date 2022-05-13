@@ -1,4 +1,5 @@
 import json
+import os
 from unittest.mock import patch, Mock
 
 import pytest
@@ -808,27 +809,31 @@ def test_validate_project_and_subscription_id(mock1, pubsub_client):
     assert pubsub_client.pull_messages.call_count == 1
 
 
-@patch('GoogleCloudSCC.handle_proxy')
-def test_get_http_client_with_proxy(mock1, client):
+def test_get_http_client_with_proxy(mocker, client):
     """
     Scenario: Validate that proxy is set in http object
 
     Given:
-    - proxy is given
+    - proxy
+      insecure
+      path to custom certificate
 
     When:
-    - correct proxy provided
+    - correct proxy, insecure and certificate path arguments provided
 
     Then:
-    - Ensure command that proxy should set in Http object
+    - Ensure command that proxy, insecure and certificate path should set in Http object
     """
-    mock1.return_value = {"https": "admin:password@127.0.0.1:3128"}
-    http_obj = client.get_http_client_with_proxy(True)
+    mocker.patch('GoogleCloudSCC.handle_proxy', return_value={"https": "admin:password@127.0.0.1:3128"})
+    mocker.patch.dict(os.environ, {"REQUESTS_CA_BUNDLE": "path/to/cert"})
+    http_obj = client.get_http_client_with_proxy(True, True)
 
     assert http_obj.proxy_info.proxy_host == "127.0.0.1"
     assert http_obj.proxy_info.proxy_port == 3128
     assert http_obj.proxy_info.proxy_user == "admin"
     assert http_obj.proxy_info.proxy_pass == "password"
+    assert http_obj.disable_ssl_certificate_validation
+    assert http_obj.ca_certs == "path/to/cert"
 
 
 def test_google_name_parser():
@@ -1018,3 +1023,54 @@ def test_validate_with_regex():
         validate_with_regex("validation error", r"^\d{1,4}$", "12345")
 
     assert str(e.value) == "validation error"
+
+
+def test_finding_state_update_command(client):
+    """
+    Scenario: Validates command result for update-finding command.
+
+    Given:
+    - command arguments given for update finding command
+
+    Then:
+    - Ensure command should return proper outputs.
+    """
+    from GoogleCloudSCC import finding_state_update_command
+    with open('TestData/update_finding_response.json') as file:
+        mock_data = json.load(file)
+    with open('./TestData/update_finding_ec.json') as f:
+        finding_ec = json.load(f)
+    client.update_state = Mock(return_value=mock_data)
+
+    arguments = {
+        "state": "ACTIVE",
+        "name": "name"
+    }
+    command_output = finding_state_update_command(client, arguments)
+
+    assert command_output.outputs_key_field == "name"
+    assert command_output.raw_response == mock_data
+    assert command_output.to_context()["EntryContext"] == finding_ec
+
+
+def test_finding_state_update_command_invalid_args(client):
+    """
+    Scenario: Validates command result for update-finding command.
+
+    Given:
+    - command arguments given for update finding command
+
+    Then:
+    - Ensure command should return proper outputs.
+    """
+    from GoogleCloudSCC import finding_state_update_command
+
+    arguments = {
+        "state": "dummy",
+        "name": "name"
+    }
+
+    with pytest.raises(ValueError) as err:
+        finding_state_update_command(client, arguments)
+
+    assert str(err.value) == ERROR_MESSAGES["INVALID_STATE_ERROR"]

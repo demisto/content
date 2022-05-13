@@ -1,0 +1,182 @@
+id: AWS IAM - User enrichment
+version: -1
+name: AWS IAM - User enrichment
+description: |
+  Enrich AWS IAM user information from AWS Identity and Access Management.
+  - List user access keys
+  - Get user information
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: bf88e387-af78-4e87-8bb3-68cba5afb624
+    type: start
+    task:
+      id: bf88e387-af78-4e87-8bb3-68cba5afb624
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "3"
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 410,
+          "y": -20
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 6375c9c5-a24c-4469-8b62-21f382d3d5a5
+    type: regular
+    task:
+      id: 6375c9c5-a24c-4469-8b62-21f382d3d5a5
+      version: -1
+      name: AWS IAM - Get user information
+      description: Retrieves information about the specified IAM user, including the
+        user's creation date, path, unique ID, and ARN.
+      script: AWS - IAM|||aws-iam-get-user
+      type: regular
+      iscommand: true
+      brand: AWS - IAM
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      userName:
+        complex:
+          root: inputs.username
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 640,
+          "y": 120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 05067a56-0350-4f75-8075-85ccd9c98f0c
+    type: regular
+    task:
+      id: 05067a56-0350-4f75-8075-85ccd9c98f0c
+      version: -1
+      name: 'AWS IAM -  List user access keys   '
+      description: Returns information about the access key IDs associated with the
+        specified IAM user.
+      script: AWS - IAM|||aws-iam-list-access-keys-for-user
+      type: regular
+      iscommand: true
+      brand: AWS - IAM
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      userName:
+        complex:
+          root: inputs.username
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 170,
+          "y": 120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 8841cc35-4eda-42cc-82a9-fb7806cb3642
+    type: title
+    task:
+      id: 8841cc35-4eda-42cc-82a9-fb7806cb3642
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 410,
+          "y": 290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 375,
+        "width": 850,
+        "x": 170,
+        "y": -20
+      }
+    }
+  }
+inputs:
+- key: username
+  value: {}
+  required: false
+  description: Name of the AWS IAM user to enrich.
+  playbookInputQuery:
+outputs:
+- contextPath: AWS.IAM.Users.UserName
+  description: The friendly name identifying the user.
+- contextPath: AWS.IAM.Users.UserId
+  description: The stable and unique string identifying the user.
+- contextPath: AWS.IAM.Users.Arn
+  description: The Amazon Resource Name (ARN) that identifies the user.
+- contextPath: AWS.IAM.Users.CreateDate
+  description: The date and time when the user was created.
+- contextPath: AWS.IAM.Users.Path
+  description: The path to the user.
+- contextPath: AWS.IAM.Users.PasswordLastUsed
+  description: The date and time,  when the user's password was last used to sign
+    in to an AWS website.
+- contextPath: AWS.IAM.Users.AccessKeys.AccessKeyId
+  description: The ID for this access key.
+- contextPath: AWS.IAM.Users.AccessKeys.Status
+  description: The status of the access key. Active means the key is valid for API
+    calls; Inactive means it is not.
+- contextPath: AWS.IAM.Users.AccessKeys.CreateDate
+  description: The date when the access key was created.
+- contextPath: AWS.IAM.Users.AccessKeys.UserName
+  description: The name of the IAM user that the key is associated with.
+tests:
+- No tests
+fromversion: 5.5.0

@@ -97,16 +97,16 @@ def get_last_run_time(params: Optional[dict] = None, last_run: Optional[dict] = 
     if params is None:
         params = demisto.params()
     if last_run:
-        last_run_date = parse(last_run.get('date'))
+        last_run_date = parse(last_run.get('date'))  # type: ignore
     else:  # first run
         first_fetch = params.get('first_fetch')
         try:
-            last_run_date = parse(first_fetch)
+            last_run_date = parse(first_fetch)  # type: ignore
             if not last_run_date:
                 raise TypeError
         except TypeError:
             raise DemistoException(f'The first fetch time is invalid "{first_fetch=}"')
-
+    assert last_run_date is not None
     return last_run_date
 
 
@@ -131,9 +131,9 @@ def get_time_range_object(start_time: Optional[str] = None, end_time: Optional[s
     start_date: datetime
     end_date: datetime
     if start_time and end_time:
-        start_date = parse(start_time)
+        start_date = parse(start_time)  # type: ignore
         assert start_date, f'Could not parse start_date argument. {start_time=}'
-        end_date = parse(end_time)
+        end_date = parse(end_time)  # type: ignore
         assert end_date, f'Could not parse end_time argument. {end_time=}'
 
         time_range = {
@@ -141,7 +141,7 @@ def get_time_range_object(start_time: Optional[str] = None, end_time: Optional[s
             'end': int(end_date.timestamp())
         }
     elif start_time:
-        start_date, end_date = parse(start_time), datetime.now()
+        start_date, end_date = parse(start_time), datetime.now()  # type: ignore
         assert start_date, f'Could not parse start_date argument. {start_time=}'
         assert end_date, f'Could not parse end_time argument. {end_time=}'
 
@@ -215,7 +215,10 @@ class Client(BaseClient):
             'https://www.virustotal.com/api/v3/',
             verify=not params.get('insecure'),
             proxy=params.get('proxy'),
-            headers={'x-apikey': self.api_key}
+            headers={
+                'x-apikey': self.api_key,
+                'x-tool': 'CortexVirusTotalV3Premium'
+            }
         )
 
     def download_file(self, file: str) -> requests.Response:

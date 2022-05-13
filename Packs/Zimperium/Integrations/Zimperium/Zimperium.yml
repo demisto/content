@@ -1026,9 +1026,9 @@ script:
   - arguments:
     - default: true
       description: The MD5 hash of the file.
-      isArray: false
+      isArray: true
       name: file
-      required: false
+      required: true
       secret: false
     outputs:
       - contextPath: DBotScore.Vendor
@@ -1059,7 +1059,7 @@ script:
     description: Checks the reputation of an app in Zimperium.
     execution: false
     name: file
-  dockerimage: demisto/python3:3.9.6.22912
+  dockerimage: demisto/python3:3.10.1.25933
   feed: false
   isfetch: true
   longRunning: false

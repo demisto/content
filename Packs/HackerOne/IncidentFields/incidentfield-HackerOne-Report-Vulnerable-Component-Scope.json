@@ -1,0 +1,31 @@
+{
+    "id": "incident_hackeronereportvulnerablecomponentscope",
+    "version": -1,
+    "modified": "2021-08-25T19:38:04.518480871+05:30",
+    "name": "HackerOne Report Vulnerable Component Scope",
+    "ownerOnly": false,
+    "description": "A CVSS metric that determines if a successful attack impacts a component other than the vulnerable component.",
+    "cliName": "hackeronereportvulnerablecomponentscope",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "HackerOne Report"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.0.0"
+}

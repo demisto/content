@@ -1,0 +1,12 @@
+[
+  {
+    "app_name": "Box 1",
+    "app_id": "acf49b2389c09f26ad0ccd2b1a603328",
+    "app_type": "box"
+  },
+  {
+    "app_name": "Office 365 1",
+    "app_id": "2642aaa03dc6fc44496bdfffe5e1bc74",
+    "app_type": "office365"
+  }
+]

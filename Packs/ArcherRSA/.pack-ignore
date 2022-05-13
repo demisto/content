@@ -1,14 +1,15 @@
 [file:playbook-Archer_Playbook_Test.yml]
 ignore=auto-test
 
-[file:integration-ArcherRSA.yml]
+[file:RSAArcher.yml]
 ignore=IN126
 
 [file:ArcherV2.yml]
 ignore=IN126
 
 [file:README.md]
-ignore=RM102,RM104
+ignore=RM102,RM104,RM106
 
-[file:integration-ArcherRSA_README.md]
-ignore=RM106
+
+[file:ArcherV2_image.png]
+ignore=IM111

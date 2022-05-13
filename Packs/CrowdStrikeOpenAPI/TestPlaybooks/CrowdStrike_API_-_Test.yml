@@ -1,0 +1,176 @@
+id: CrowdStrike OpenAPI - Test
+version: -1
+name: CrowdStrike OpenAPI - Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: a6f1fbf6-683a-48f9-8312-42f3660332bf
+    type: start
+    task:
+      id: a6f1fbf6-683a-48f9-8312-42f3660332bf
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 294f3cd3-2bc7-490f-8e54-624c86027fa5
+    type: regular
+    task:
+      id: 294f3cd3-2bc7-490f-8e54-624c86027fa5
+      version: -1
+      name: Query behaviors
+      description: Search for behaviors by providing an FQL filter, sorting, and paging
+        details
+      script: '|||cs-query-behaviors'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      limit:
+        simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 5ca50c44-298a-4ec4-8eea-130f2e878860
+    type: condition
+    task:
+      id: 5ca50c44-298a-4ec4-8eea-130f2e878860
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: hasLength
+          left:
+            value:
+              simple: CrowdStrike.msaQueryResponse.resources
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: f961f41d-81ac-419c-8c18-1ab48c36ff65
+    type: title
+    task:
+      id: f961f41d-81ac-419c-8c18-1ab48c36ff65
+      version: -1
+      name: Success
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 501a53cd-52ff-4bfc-8332-e66cc49a349b
+    type: regular
+    task:
+      id: 501a53cd-52ff-4bfc-8332-e66cc49a349b
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 735,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.0.0
+description: ''

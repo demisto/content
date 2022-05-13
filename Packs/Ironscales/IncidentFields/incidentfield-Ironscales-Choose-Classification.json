@@ -21,6 +21,7 @@
         "all"
     ],
     "required": false,
+    "script": "IronscalesEmailFieldTrigger",
     "selectValues": [
         "Report",
         "attack",

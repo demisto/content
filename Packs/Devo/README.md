@@ -1,1 +1,1 @@
-Note: Support for this pack will be moving to the partner around October 1st, 2021
+Note: Support for this pack moved to the partner on December, 16, 2021. Please contact the partner directly via the support link on the right.

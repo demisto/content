@@ -1,0 +1,44 @@
+{
+    "associatedToAll": true,
+    "caseInsensitive": true,
+    "cliName": "cgoname",
+    "closeForm": false,
+    "content": true,
+    "description": "The name of the process that started the causality chain based on Cortex XDR causality logic.",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_cgoname",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "CGO name",
+    "neverSetAsRequired": false,
+    "openEnded": true,
+    "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "multiSelect",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.5.0",
+    "x2_fields": "causality_actor_process_image_name",
+    "Aliases": [
+        {
+            "cliName": "parentprocess",
+            "type": "multiSelect",
+            "name": "Parent Process"
+        },
+        {
+            "cliName": "digitalguardianparentprocessname",
+            "type": "shortText",
+            "name": "Digital Guardian Parent Process Name"
+        }
+    ]
+}

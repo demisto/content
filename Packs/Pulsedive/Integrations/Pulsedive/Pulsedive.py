@@ -40,7 +40,6 @@ class Client(BaseClient):
                 'indicator': ip,
                 'pretty': '1',
                 'key': api_key
-
             }
         )
 
@@ -61,6 +60,29 @@ class Client(BaseClient):
             url_suffix='/info.php?',
             params={
                 'indicator': url,
+                'pretty': '1',
+                'key': api_key
+            }
+        )
+
+    def post_value_scan(self, value: str, probe: str, api_key) -> Dict[str, Any]:
+        return self._http_request(
+            method='POST',
+            url_suffix='/analyze.php',
+            params={
+                'value': value,
+                'probe': probe,
+                'pretty': '1',
+                'key': api_key
+            }
+        )
+
+    def get_value_scan(self, qid: str, api_key) -> Dict[str, Any]:
+        return self._http_request(
+            method='GET',
+            url_suffix='/analyze.php?',
+            params={
+                'qid': qid,
                 'pretty': '1',
                 'key': api_key
             }
@@ -87,10 +109,12 @@ def parse_domain_date(domain_date: Union[List[str], str], date_format: str = '%Y
 
     if isinstance(domain_date, str):
         # if str parse the value
-        return dateparser.parse(domain_date).strftime(date_format)
+        if _date := dateparser.parse(domain_date).strftime(date_format):  # type: ignore[union-attr]
+            return _date
+        return None
     elif isinstance(domain_date, list) and len(domain_date) > 0 and isinstance(domain_date[0], str):
         # if list with at least one element, parse the first element
-        return dateparser.parse(domain_date[0]).strftime(date_format)
+        return dateparser.parse(domain_date[0]).strftime(date_format)  # type: ignore[union-attr]
     # in any other case return nothing
     return None
 
@@ -215,14 +239,6 @@ def domain_reputation_command(client: Client, args: Dict[str, Any], api_key) -> 
 
             domain_standard_context = Common.Domain(
                 domain=indicator_domain,
-                # creation_date=domain_data.get('creation_date', None),
-                # expiration_date=domain_data.get('expiration_date', None),
-                # updated_date=domain_data.get('updated_date', None),
-                # organization=domain_data.get('org', None),
-                # name_servers=domain_data.get('name_servers', None),
-                # registrant_name=domain_data.get('name', None),
-                # registrant_country=domain_data.get('country', None),
-                # registrar_name=domain_data.get('registrar', None),
                 dbot_score=dbot_score
             )
 
@@ -319,6 +335,162 @@ def url_reputation_command(client: Client, args: Dict[str, Any], api_key) -> Lis
     return command_results
 
 
+def scan_value_command(client: Client, args: Dict[str, Any], api_key) -> List[CommandResults]:
+    values = argToList(args.get('value'))
+    if len(values) == 0:
+        raise ValueError('Value(s) not specified')
+
+    if args.get('scan_type') == 'passiv':
+        scan_type_value = '0'
+    else:
+        scan_type_value = '1'
+
+    command_results: List[CommandResults] = []
+    for value in values:
+        try:
+            value_data = client.post_value_scan(value, scan_type_value, api_key)
+            value_data.update({'value': value})
+            command_results.append(CommandResults(
+                readable_output=tableToMarkdown('Value Details:', value_data),
+                outputs_prefix='Pulsedive.Scan',
+                outputs_key_field='value',
+                outputs=value_data
+            ))
+        except DemistoException:
+            raise DemistoException(
+                f'Failed to execute {demisto.command()} command. Error: Problem submitting the data for scanning'
+            )
+
+    return command_results
+
+
+def scan_result_command(client: Client, args: Dict[str, Any], api_key) -> List[CommandResults]:
+    """
+    Scan result command
+    """
+    qids = argToList(args.get('qid'))
+    if len(qids) == 0:
+        raise ValueError('QID(s) not specified')
+
+    command_results: List[CommandResults] = []
+    for qid in qids:
+        try:
+            qid_data = client.get_value_scan(qid, api_key)
+            if 'data' in qid_data and qid_data['data']:
+                qid_data.update({'qid': qid, 'indicator': qid_data['data']['indicator']})
+                if qid_data['data']['type'] == 'url' or qid_data['data']['type'] == 'domain':
+                    try:
+                        screenshot = requests.get(
+                            qid_data['data']['properties']['dom']['screenshot']
+                        )
+                        screenshot_file = fileResult(
+                            qid_data['data']['properties']['dom']['screenshot'],
+                            screenshot.content,
+                            file_type=EntryType.ENTRY_INFO_FILE
+                        )
+                        screenshot_file['Type'] = entryTypes['image']
+                        demisto.results(screenshot_file)
+                    except DemistoException:
+                        raise DemistoException(
+                            f'Failed to execute {demisto.command()} command. Error: Problem getting the screenshot'
+                        )
+                reputation = qid_data['data']['risk']
+                score = convert_to_xsoar_severity(reputation)
+                if qid_data['data']['type'] == 'url':
+                    dbot_score = Common.DBotScore(
+                        indicator=qid_data['data']['indicator'],
+                        indicator_type=DBotScoreType.URL,
+                        integration_name='Pulsedive',
+                        score=score
+                    )
+
+                    url_indicator = Common.URL(
+                        url=qid_data['data']['indicator'],
+                        dbot_score=dbot_score
+                    )
+
+                    command_results.append(CommandResults(
+                        readable_output=tableToMarkdown(
+                            'Value Details:',
+                            qid_data,
+                            headers=('indicator', 'qid', 'status', 'success')
+                        ),
+                        outputs_prefix='Pulsedive.ScanResult',
+                        outputs_key_field='qid',
+                        outputs=qid_data['data'],
+                        indicator=url_indicator
+                    ))
+
+                if qid_data['data']['type'] == 'ip':
+                    dbot_score = Common.DBotScore(
+                        indicator=qid_data['data']['indicator'],
+                        indicator_type=DBotScoreType.IP,
+                        integration_name='Pulsedive',
+                        score=score
+                    )
+
+                    ip_indicator = Common.IP(
+                        ip=qid_data['data']['indicator'],
+                        asn=qid_data['data']['properties']['geo']['asn'],
+                        geo_country=qid_data['data']['properties']['geo']['country'],
+                        port=qid_data['data']['attributes']['port'],
+                        dbot_score=dbot_score
+                    )
+
+                    command_results.append(CommandResults(
+                        readable_output=tableToMarkdown(
+                            'Value Details:',
+                            qid_data,
+                            headers=('indicator', 'qid', 'status', 'success')
+                        ),
+                        outputs_prefix='Pulsedive.ScanResult',
+                        outputs_key_field='qid',
+                        outputs=qid_data['data'],
+                        indicator=ip_indicator
+                    ))
+
+                if qid_data['data']['type'] == 'domain':
+                    dbot_score = Common.DBotScore(
+                        indicator=qid_data['data']['indicator'],
+                        indicator_type=DBotScoreType.DOMAIN,
+                        integration_name='Pulsedive',
+                        score=score
+                    )
+
+                    domain_indicator = Common.Domain(
+                        domain=qid_data['data']['indicator'],
+                        domain_status=qid_data['data']['properties']['whois']['status'],
+                        name_servers=qid_data['data']['properties']['whois']['nserver'],
+                        dbot_score=dbot_score
+                    )
+
+                    command_results.append(CommandResults(
+                        readable_output=tableToMarkdown(
+                            'Value Details:',
+                            qid_data,
+                            headers=('indicator', 'qid', 'status', 'success')
+                        ),
+                        outputs_prefix='Pulsedive.ScanResult',
+                        outputs_key_field='qid',
+                        outputs=qid_data['data'],
+                        indicator=domain_indicator
+                    ))
+
+            else:
+                command_results.append(CommandResults(
+                    readable_output=tableToMarkdown('Value Details:', qid_data),
+                    outputs_prefix='Pulsedive.ScanResult',
+                    outputs_key_field='qid',
+                    outputs=qid_data
+                ))
+        except DemistoException:
+            return_error(
+                f'Failed to execute {demisto.command()} command. Error: Problem with processing the scan results'
+            )
+
+    return command_results
+
+
 ''' MAIN FUNCTION '''
 
 
@@ -350,6 +522,12 @@ def main() -> None:
 
         elif demisto.command() == 'url':
             return_results(url_reputation_command(client, demisto.args(), api_key))
+
+        elif demisto.command() == 'pulsedive-scan':
+            return_results(scan_value_command(client, demisto.args(), api_key))
+
+        elif demisto.command() == 'pulsedive-scan-result':
+            return_results(scan_result_command(client, demisto.args(), api_key))
 
     # Log exceptions and return errors
     except Exception as e:

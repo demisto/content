@@ -31,8 +31,8 @@ This playbook does not use any commands.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| IPBlacklistMiner | The name of the IP blacklist miner in Minemeld. |  | Optional |
-| URLBlacklistMiner | The name of the URL blacklist miner in Minemeld. |  | Optional |
+| IPBlacklistMiner | The name of the IP block list miner in Minemeld. |  | Optional |
+| URLBlacklistMiner | The name of the URL block list miner in Minemeld. |  | Optional |
 | IP | Array of malicious IPs to block. | DBotScore.Indicator | Optional |
 | URL | Array of malicious URLs to block. | DBotScore.Indicator | Optional |
 | Username | Array of malicious usernames to block. | DBotScore.Indicator | Optional |
@@ -87,4 +87,4 @@ This playbook does not use any commands.
 
 ## Playbook Image
 ---
-![Block Indicators - Generic v2](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Block_Indicators_Generic_v2.png)
+![Block Indicators - Generic v2](https://raw.githubusercontent.com/demisto/content/1077ac4f6a51a75ab0aa149785095aad3a8757fa/Packs/CommonPlaybooks/doc_files/Block_Indicators_-_Generic_v2.png)

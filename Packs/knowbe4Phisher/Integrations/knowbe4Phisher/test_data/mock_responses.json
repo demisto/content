@@ -1,0 +1,144 @@
+{
+  "message_list_all": {
+    "data": {
+      "phisherMessages": {
+        "nodes": [
+          {
+            "actionStatus": "IN_REVIEW",
+            "attachments": [],
+            "category": "THREAT",
+            "comments": [
+              {
+                "body": "cool",
+                "createdAt": "2021-07-19T09:55:27Z"
+              }
+            ],
+            "events": [
+              {
+                "causer": "None",
+                "createdAt": "2021-07-19T09:40:42Z",
+                "eventType": "OTHER",
+                "events": {
+                  "changes": [
+                    {
+                      "from": "unknown",
+                      "name": "category",
+                      "to": "threat"
+                    },
+                    {
+                      "from": "unknown_severity",
+                      "name": "severity",
+                      "to": "high"
+                    },
+                    {
+                      "from": "received",
+                      "name": "action_status",
+                      "to": "in_review"
+                    }
+                  ]
+                },
+                "id": "1d5e113d-7842-4019-b5f2-f101dbc63c70",
+                "triggerer": "None"
+              },
+              {
+                "causer": "E K",
+                "createdAt": "2021-07-12T08:48:53Z",
+                "eventType": "OTHER",
+                "events": {
+                  "changes": [
+                    {
+                      "from": "false",
+                      "name": "viewed",
+                      "to": "true"
+                    }
+                  ]
+                },
+                "id": "ef087b29-6d38-4c80-9e0d-7d704414cd69",
+                "triggerer": "None"
+              },
+              {
+                "causer": "None",
+                "createdAt": "2021-07-08T18:28:37Z",
+                "eventType": "OTHER",
+                "events": {
+                  "changes": [
+                    {
+                      "from": "processing",
+                      "name": "pipeline_status",
+                      "to": "processed"
+                    }
+                  ]
+                },
+                "id": "f1042606-78ea-483c-9faf-d9bd402f77e1",
+                "triggerer": "None"
+              },
+              {
+                "causer": "None",
+                "createdAt": "2021-07-08T18:28:27Z",
+                "eventType": "CREATED",
+                "events": "None",
+                "id": "a6fd20ce-0d2b-48de-965e-5a4aade10567",
+                "triggerer": "None"
+              }
+            ],
+            "from": "xxxx",
+            "id": "cff35e34-aeb6-4263-b592-c68fc03ea7cb",
+            "links": [
+              {
+                "dispositions": [
+                  "NONE"
+                ],
+                "firstSeen": "2021-07-08T18:26:40Z",
+                "id": "799955e4-9a31-40df-874d-62c6978c20b4",
+                "lastSeen": "2021-07-08T18:28:27Z",
+                "scheme": "http",
+                "target": "xxxx",
+                "url": "shenkar.ac.il",
+                "virustotal": "None"
+              }
+            ],
+            "phishmlReport": "None",
+            "pipelineStatus": "PROCESSED",
+            "reportedBy": "xxxx",
+            "rules": [],
+            "severity": "HIGH",
+            "subject": "Fwd: Test",
+            "tags": []
+          }
+        ],
+        "pagination": {
+          "page": 1,
+          "pages": 1,
+          "per": 50,
+          "totalCount": 1
+        }
+      }
+    }
+  },
+  "create_comment": {
+    "data": {
+      "phisherCommentCreate": {
+        "errors": null,
+        "node": {
+          "body": "Infinity Test",
+          "createdAt": "2021-09-13T16:06:03Z"
+        }
+      }
+    }
+  },
+  "update_message": {
+    "query": "mutation {\n  phisherMessageUpdate(id: \"cff35e34-aeb6-4263-b592-c68fc03ea7cb\", payload: {category:SPAM,status:RESOLVED,severity:HIGH}) {\n    errors {\n      field\n      placeholders\n      reason\n    }\n  }\n}\n",
+    "variables": {}
+  },
+  "create_tags": {
+    "query": "mutation {\n  phisherTagsCreate(id: \"cff35e34-aeb6-4263-b592-c68fc03ea7cb\", tags: [\"Test Tag\"]) {\n    errors {\n      field\n      placeholders\n      reason\n    }\n  }\n}\n",
+    "variables": {}
+  },
+  "delete_tags": {
+    "data": {
+      "phisherTagsDelete": {
+        "errors": null
+      }
+    }
+  }
+}

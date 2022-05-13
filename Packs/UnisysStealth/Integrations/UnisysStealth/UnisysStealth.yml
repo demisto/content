@@ -77,7 +77,7 @@ script:
     description: This is the command which will un-isolate an endpoint and user from
       Stealth Network
     name: stealth-unisolate-machine-and-user
-  dockerimage: demisto/python3:3.9.6.22912
+  dockerimage: demisto/python3:3.9.8.24399
   runonce: false
   script: ''
   subtype: python3

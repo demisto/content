@@ -1,0 +1,30 @@
+{
+    "id": "Jira Create Issue and Mirror",
+    "version": -1,
+    "vcShouldIgnore": false,
+    "locked": false,
+    "name": "Jira Create Issue and Mirror",
+    "prevName": "Jira Create Issue and Mirror",
+    "color": "#2A4AA8",
+    "playbookId": "Create Jira Issue",
+    "hours": 0,
+    "days": 0,
+    "weeks": 0,
+    "hoursR": 0,
+    "daysR": 0,
+    "weeksR": 0,
+    "system": false,
+    "readonly": false,
+    "default": false,
+    "autorun": true,
+    "disabled": false,
+    "reputationCalc": 0,
+    "onChangeRepAlg": 1,
+    "layout": "Jira Incident Layout",
+    "detached": false,
+    "extractSettings": {
+        "mode": "All",
+        "fieldCliNameToExtractSettings": {}
+    },
+    "fromVersion": "6.0.0"
+}

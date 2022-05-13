@@ -2,7 +2,7 @@ contentitemexportablefields:
   contentitemfields:
     propagationLabels:
     - all
-description: This playbook will check to see if there are any content updates available
+description: Deprecated. Use "Content Update Manager" playbook instead. This playbook will check to see if there are any content updates available
   for installed packs and notify users via e-mail or Slack.
 id: Content Update Check
 inputs:
@@ -1365,6 +1365,8 @@ view: |-
       }
     }
   }
+hidden: true
+deprecated: true
 tests:
 - No tests (auto formatted)
 fromversion: 6.0.0

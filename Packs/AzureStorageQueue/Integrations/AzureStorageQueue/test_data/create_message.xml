@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<QueueMessagesList>
+    <QueueMessage>
+        <MessageId>111111111</MessageId>
+        <InsertionTime>Tue, 10 Aug 2021 13:42:46 GMT</InsertionTime>
+        <ExpirationTime>Tue, 17 Aug 2021 13:42:46 GMT</ExpirationTime>
+        <PopReceipt>AgAAVAOSVKREAAAAcFdYmu2N1wE=</PopReceipt>
+        <TimeNextVisible>Tue, 10 Aug 2021 13:42:46 GMT</TimeNextVisible>
+    </QueueMessage>
+</QueueMessagesList>

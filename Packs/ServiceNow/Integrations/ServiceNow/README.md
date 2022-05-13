@@ -35,7 +35,7 @@
 </li>
 <li>Click <strong>Test</strong> to validate the URLs, token, and connection.</li>
 </ol>
-<p><strong>Cortex XSOAR engine</strong>: If relevant, select the engine that acts as a proxy to the IMAP server.<br>Engines are used when you need to access a remote network segments and there are network devices such as proxies, firewalls, etc. that prevent the Cortex XSOAR server from accessing the remote networks. For more information, see <a href="https://support.demisto.com/hc/en-us/articles/360006524673-Understanding-Demisto-Engines">Understanding Cortex XSOAR Engines</a>.</p>
+<p><strong>Cortex XSOAR engine</strong>: If relevant, select the engine that acts as a proxy to the IMAP server.<br>Engines are used when you need to access a remote network segments and there are network devices such as proxies, firewalls, etc. that prevent the Cortex XSOAR server from accessing the remote networks. For more information, see <a href="https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/engines"> Cortex XSOAR Engines</a>.</p>
 <h2>Fetched Incidents Data</h2>
 <p>The integration fetches newly created tickets according to the following parameters, which you define in the instance configuration: <em><strong>ticket_type</strong></em>, <em><strong>query</strong></em>, and <em><strong>limit</strong></em>. For the first fetch, the integration will fetch incidents that were created 10 minutes earlier. After that, it will fetch incidents that were created after the timestamp of the last fetch.</p>
 <p>Data:</p>

@@ -1,16 +1,20 @@
 {
-  "name": "GenerateAsBuilt",
-  "description": "Autogenerate As-built documentation based on the running XSOAR instance.",
-  "support": "community",
-  "currentVersion": "1.0.0",
-  "author": "Adam Baumeister",
-  "url": "",
-  "email": "abaumeister@paloaltonetworks.com",
-  "created": "2021-06-02T00:00:00Z",
-  "categories": [
-    "Utilities"
-  ],
-  "tags": [],
-  "useCases": [],
-  "keywords": []
+    "name": "GenerateAsBuilt",
+    "description": "Autogenerate As-built documentation based on the running XSOAR instance.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Adam Baumeister",
+    "url": "",
+    "email": "abaumeister@paloaltonetworks.com",
+    "created": "2021-06-02T00:00:00Z",
+    "categories": [
+        "Utilities"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

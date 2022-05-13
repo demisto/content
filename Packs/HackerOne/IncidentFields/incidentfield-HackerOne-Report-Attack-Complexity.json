@@ -1,0 +1,31 @@
+{
+    "id": "incident_hackeronereportattackcomplexity",
+    "version": -1,
+    "modified": "2021-08-26T19:09:50.297027388+05:30",
+    "name": "HackerOne Report Attack Complexity",
+    "ownerOnly": false,
+    "description": "A CVSS metric that describes the conditions beyond the attacker's control that must exist in order to exploit the vulnerability.",
+    "cliName": "hackeronereportattackcomplexity",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "HackerOne Report"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.0.0"
+}

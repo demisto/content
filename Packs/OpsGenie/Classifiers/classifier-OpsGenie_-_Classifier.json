@@ -1,0 +1,21 @@
+{
+    "defaultIncidentType": "Unclassified",
+    "description": "",
+    "feed": false,
+    "id": "OpsGenie",
+    "keyTypeMap": {
+        "Alerts": "OpsGenie Alert",
+        "Incidents": "OpsGenie Incident"
+    },
+    "name": "OpsGenie - Classifier",
+    "propagationLabels": [
+        "all"
+    ],
+    "transformer": {
+        "complex": null,
+        "simple": "event_type"
+    },
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

@@ -1,0 +1,300 @@
+category: Messaging
+commonfields:
+  id: Zoom
+  version: -1
+configuration:
+- display: API key
+  name: apiKey
+  required: true
+  type: 4
+- display: API secret
+  name: apiSecret
+  required: true
+  type: 4
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: Trust any certificate (not secure)
+  hidden: false
+  name: insecure
+  required: false
+  type: 8
+description: Use the Zoom integration manage your Zoom users and meetings
+display: Zoom
+name: Zoom
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: First name of the new user
+      isArray: false
+      name: first_name
+      required: true
+      secret: false
+    - default: false
+      description: Last name of the new user
+      isArray: false
+      name: last_name
+      required: true
+      secret: false
+    - default: false
+      description: The email of the new user
+      isArray: false
+      name: email
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: Basic
+      description: The type of the newly created user
+      isArray: false
+      name: user_type
+      predefined:
+      - Basic
+      - Pro
+      - Corporate
+      required: false
+      secret: false
+    deprecated: false
+    description: Create a new user in zoom account
+    execution: true
+    name: zoom-create-user
+    outputs:
+    - contextPath: Zoom.User.id
+      description: The ID of the created user
+      type: string
+    - contextPath: Zoom.User.first_name
+      description: First name of the created user
+      type: string
+    - contextPath: Zoom.User.last_name
+      description: Last name for the created user
+      type: string
+    - contextPath: Zoom.User.email
+      description: Email of the created user
+      type: string
+    - contextPath: Zoom.User.created_at
+      description: Created date of the user
+      type: date
+    - contextPath: Zoom.User.type
+      description: The type of the user
+      type: number
+  - arguments:
+    - auto: PREDEFINED
+      default: true
+      defaultValue: Instant
+      description: The type of the meeting
+      isArray: false
+      name: type
+      predefined:
+      - Instant
+      - Scheduled
+      required: true
+      secret: false
+    - default: false
+      description: email address or id of user for meeting
+      isArray: false
+      name: user
+      required: true
+      secret: false
+    - default: false
+      description: The topic of the meeting
+      isArray: false
+      name: topic
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'no'
+      description: 'Record zoom meeting? '
+      isArray: false
+      name: auto-record-meeting
+      predefined:
+      - 'yes'
+      - 'no'
+      required: false
+      secret: false
+    - default: false
+      description: Meeting start time. When using a format like “yyyy-MM-dd’T'HH:mm:ss'Z’”,
+        always use GMT time. When using a format like “yyyy-MM-dd’T'HH:mm:ss”, you
+        should use local time and you will need to specify the time zone. Only used
+        for scheduled meetings and recurring meetings with fixed time.
+      isArray: false
+      name: start-time
+      required: false
+      secret: false
+    - default: false
+      description: 'Timezone to format start_time. For example, “America/Los_Angeles”.
+        For scheduled meetings only. '
+      isArray: false
+      name: timezone
+      required: false
+      secret: false
+    deprecated: false
+    description: Create a new zoom meeting (scheduled or instant)
+    execution: false
+    name: zoom-create-meeting
+    outputs:
+    - contextPath: Zoom.Meeting.join_url
+      description: Join url for the meeting
+      type: string
+    - contextPath: Zoom.Meeting.id
+      description: Meeting id of the new meeting that is created
+      type: string
+    - contextPath: Zoom.Meeting.start_url
+      description: The URL to start the meeting
+      type: string
+  - arguments:
+    - default: false
+      description: Meeting id to get the recording
+      isArray: false
+      name: meeting_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Get meeting record and save as file in the warroom
+    execution: false
+    name: zoom-fetch-recording
+    outputs:
+    - contextPath: File.SHA256
+      description: Attachment's SHA256
+      type: Unknown
+    - contextPath: File.SHA1
+      description: Attachment's SHA1
+      type: Unknown
+    - contextPath: File.MD5
+      description: Attachment's MD5
+      type: Unknown
+    - contextPath: File.Name
+      description: Attachment's Name
+      type: Unknown
+    - contextPath: File.Info
+      description: Attachment's Info
+      type: Unknown
+    - contextPath: File.Size
+      description: Attachment's Size (In Bytes)
+      type: Unknown
+    - contextPath: File.Extension
+      description: Attachment's Extension
+      type: Unknown
+    - contextPath: File.Type
+      description: Attachment's Type
+      type: Unknown
+    - contextPath: File.EntryID
+      description: Attachment's EntryID
+      type: Unknown
+    - contextPath: File.SSDeep
+      description: Attachment's SSDeep hash
+      type: Unknown
+  - arguments:
+    - auto: PREDEFINED
+      default: true
+      defaultValue: active
+      description: Which status of users to list
+      isArray: false
+      name: status
+      predefined:
+      - active
+      - inactive
+      - pending
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '30'
+      description: Number of users to return. Max 300.
+      isArray: false
+      name: page-size
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '1'
+      description: Which page of results to return
+      isArray: false
+      name: page-number
+      required: false
+      secret: false
+    deprecated: false
+    description: List the existing users
+    execution: false
+    name: zoom-list-users
+    outputs:
+    - contextPath: Zoom.Metadata.Count
+      description: Total page count available
+      type: number
+    - contextPath: Zoom.Metadata.Number
+      description: Current page number
+      type: number
+    - contextPath: Zoom.Metadata.Size
+      description: Number of results in current page
+      type: number
+    - contextPath: Zoom.Metadata.Total
+      description: Total number of records
+      type: number
+    - contextPath: Zoom.User.id
+      description: ID of the user
+      type: string
+    - contextPath: Zoom.User.first_name
+      description: First name of user
+      type: string
+    - contextPath: Zoom.User.last_name
+      description: Last name of user
+      type: string
+    - contextPath: Zoom.User.email
+      description: Email of user
+      type: string
+    - contextPath: Zoom.User.type
+      description: Type of user
+      type: number
+    - contextPath: Zoom.User.created_at
+      description: Date when user was created
+      type: date
+    - contextPath: Zoom.User.dept
+      description: Department for user
+      type: string
+    - contextPath: Zoom.User.verified
+      description: Is the user verified
+      type: number
+    - contextPath: Zoom.User.last_login_time
+      description: Last login time of the user
+      type: date
+    - contextPath: Zoom.User.timezone
+      description: Default timezone for the user
+      type: string
+    - contextPath: Zoom.User.pmi
+      description: PMI of user
+      type: string
+    - contextPath: Zoom.User.group_ids
+      description: Groups user belongs to
+      type: string
+  - arguments:
+    - default: true
+      description: The user ID or email to delete
+      isArray: false
+      name: user
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: disassociate
+      description: The action to take
+      isArray: false
+      name: action
+      predefined:
+      - disassociate
+      - delete
+      required: false
+      secret: false
+    deprecated: false
+    description: Delete a user from Zoom
+    execution: true
+    name: zoom-delete-user
+  dockerimage: demisto/pyjwt:1.0.0.24033
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python2
+  type: python
+fromversion: 5.0.0

@@ -99,6 +99,8 @@ def extract(file_info, dir_path, zip_tool='7z', password=None):
     stdout = ''
     if '.rar' in file_name and sys.version_info > (3, 0):
         stdout = extract_using_unrar(file_path, dir_path, password=password)
+    elif '.tar' in file_name:
+        stdout = extract_using_tarfile(file_path, dir_path, file_name)
     else:
         if zip_tool == '7z':
             stdout = extract_using_7z(file_path, dir_path, password=password)
@@ -121,7 +123,7 @@ def extract_using_unrar(file_path, dir_path, password=None):
     :param password: password if the zip file is encrypted
     """
     if password:
-        cmd = 'unrar x -p {} {} {}'.format(password, file_path, dir_path)
+        cmd = 'unrar x -p{} {} {}'.format(password, file_path, dir_path)
     else:
         cmd = 'unrar x -p- {} {}'.format(file_path, dir_path)
     process = Popen(shlex.split(cmd), stdout=PIPE, stderr=PIPE)
@@ -133,6 +135,21 @@ def extract_using_unrar(file_path, dir_path, password=None):
             return_error("The .rar file provided requires a password.")
         else:
             return_error(str(stderr))
+    return stdout
+
+
+def extract_using_tarfile(file_path: str, dir_path: str, file_name: str) -> str:
+    if '.tar.gz' in file_name:
+        cmd = 'tar -xzvf {} -C {}'.format(file_path, dir_path)
+    elif file_name.endswith('.tar'):
+        cmd = 'tar -xf {} -C {}'.format(file_path, dir_path)
+    process = Popen(shlex.split(cmd), stdout=PIPE, stderr=PIPE)
+    stdout, stderr = process.communicate()
+    stdout = str(stdout)
+    if stderr:
+        return_error(str(stderr))
+    if "Errors" in stdout:
+        return_error(f"Couldn't extract the file {file_name}.")
     return stdout
 
 
@@ -232,13 +249,35 @@ def upload_files(excluded_dirs, excluded_files, dir_path):
         demisto.results(results)
 
 
+def get_password(args):
+    """
+    Get the file's password argument inserted by the user. The password can be inserted either in the sensitive
+    argument (named 'password') or nonsensitive argument (named 'nonsensitive_password). This function asserts these
+    arguments are used properly and raises an error if both are inserted and have a different value.
+    so this
+    Args:
+        args: script's arguments
+
+    Returns:
+        the password given for the file.
+    """
+    sensitive_password = args.get('password')
+    nonsensitive_password = args.get('nonsensitive_password')
+    if sensitive_password and nonsensitive_password and sensitive_password != nonsensitive_password:
+        raise ValueError('Please use either the password argument or the non_sensitive_password argument, '
+                         'and not both.')
+
+    return sensitive_password or nonsensitive_password
+
+
 def main():
     dir_path = mkdtemp()
     try:
         args = demisto.args()
         zip_tool = args.get('zipTool', '7z')
         file_info = get_zip_path(args)
-        excluded_dirs, excluded_files = extract(file_info=file_info, dir_path=dir_path, password=args.get('password'),
+        password = get_password(args)
+        excluded_dirs, excluded_files = extract(file_info=file_info, dir_path=dir_path, password=password,
                                                 zip_tool=zip_tool)
         upload_files(excluded_dirs, excluded_files, dir_path)
 

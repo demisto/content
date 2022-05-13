@@ -542,6 +542,9 @@ def test_send_message(mocker, requests_mock):
                     'type': 'TextBlock'
                 }],
                 'type': 'AdaptiveCard',
+                'msteams': {
+                    'width': 'Full'
+                },
                 'version': '1.0'
             },
             'contentType': 'application/vnd.microsoft.card.adaptive'
@@ -996,6 +999,9 @@ def test_create_adaptive_card():
             '$schema': 'http://adaptivecards.io/schemas/adaptive-card.json',
             'version': '1.0',
             'type': 'AdaptiveCard',
+            'msteams': {
+                'width': 'Full'
+            },
             'body': body
         }
     }
@@ -1023,6 +1029,9 @@ def test_process_tasks_list():
             '$schema': 'http://adaptivecards.io/schemas/adaptive-card.json',
             'version': '1.0',
             'type': 'AdaptiveCard',
+            'msteams': {
+                'width': 'Full'
+            },
             'body': [{
                 'type': 'FactSet',
                 'facts': [
@@ -1065,6 +1074,9 @@ def test_process_incidents_list():
             '$schema': 'http://adaptivecards.io/schemas/adaptive-card.json',
             'version': '1.0',
             'type': 'AdaptiveCard',
+            'msteams': {
+                'width': 'Full'
+            },
             'body': [
                 {
                     'type': 'FactSet',
@@ -1148,6 +1160,9 @@ def test_process_mirror_or_unknown_message():
             '$schema': 'http://adaptivecards.io/schemas/adaptive-card.json',
             'version': '1.0',
             'type': 'AdaptiveCard',
+            'msteams': {
+                'width': 'Full'
+            },
             'body': [{
                 'type': 'TextBlock',
                 'text': 'I can understand the following commands:\n\nlist incidents [page x]\n\nlist my incidents [page'
@@ -1258,6 +1273,9 @@ def test_update_message(requests_mock):
             'content': {
                 '$schema': 'http://adaptivecards.io/schemas/adaptive-card.json',
                 'version': '1.0', 'type': 'AdaptiveCard',
+                'msteams': {
+                    'width': 'Full'
+                },
                 'body': [{
                     'type': 'TextBlock', 'text': 'OMG!'
                 }]
@@ -1388,6 +1406,9 @@ def test_direct_message_handler(mocker, requests_mock):
                     'type': 'FactSet'
                 }],
                 'type': 'AdaptiveCard',
+                'msteams': {
+                    'width': 'Full'
+                },
                 'version': '1.0'
             },
             'contentType': 'application/vnd.microsoft.card.adaptive'

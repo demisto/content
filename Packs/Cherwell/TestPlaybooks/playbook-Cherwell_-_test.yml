@@ -1,21 +1,19 @@
 id: Cherwell - test
 version: -1
 name: Cherwell - test
-fromversion: 5.0.0
 starttaskid: "0"
-description: ""
 tasks:
   "0":
     id: "0"
-    taskid: a9988339-5e7b-4c4c-8613-095f0a2c7e89
+    taskid: 6dfcfa35-5397-45f9-8d55-389a0dc2a117
     type: start
     task:
-      description: ""
-      id: a9988339-5e7b-4c4c-8613-095f0a2c7e89
+      id: 6dfcfa35-5397-45f9-8d55-389a0dc2a117
       version: -1
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "16"
@@ -23,18 +21,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
+          "x": 592.5,
           "y": 50
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "1":
     id: "1"
-    taskid: 471bfe14-069f-41b1-875c-152eb5b3918a
+    taskid: 16fc1649-7c6b-4a2d-8993-e2b1b749feb8
     type: regular
     task:
-      id: 471bfe14-069f-41b1-875c-152eb5b3918a
+      id: 16fc1649-7c6b-4a2d-8993-e2b1b749feb8
       version: -1
       name: Create Business Object - Incident
       description: Create a business object
@@ -47,26 +48,29 @@ tasks:
       - "2"
     scriptarguments:
       json:
-        simple: '{"Priority": "3", "CustomerDisplayName": "Playbook customer", "Description": "This incident was created by Cherwell test playbook"}'
+        simple: '{"Priority": "3", "CustomerDisplayName": "Playbook customer", "Description":
+          "The incident was created by Cherwell test playbook", "CallSource": "Event"}'
       type:
         simple: Incident
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 910,
+          "x": 592.5,
           "y": 370
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "2":
     id: "2"
-    taskid: ba7ae06b-53de-4b53-849f-e986d8c257cf
+    taskid: 3e74da6d-45a4-4389-8e76-7eee48a1dd39
     type: condition
     task:
-      description: ""
-      id: ba7ae06b-53de-4b53-849f-e986d8c257cf
+      id: 3e74da6d-45a4-4389-8e76-7eee48a1dd39
       version: -1
       name: Validate ID's in the context
       type: condition
@@ -92,18 +96,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
+          "x": 592.5,
           "y": 545
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "3":
     id: "3"
-    taskid: aed88d3d-d08f-44df-8f26-6e211d0c239a
+    taskid: 51b544f5-08ec-49d8-8939-b5c52380c74a
     type: regular
     task:
-      id: aed88d3d-d08f-44df-8f26-6e211d0c239a
+      id: 51b544f5-08ec-49d8-8939-b5c52380c74a
       version: -1
       name: Update Business Object - Incident priority to 1
       description: Update a business object with the given fields
@@ -127,19 +134,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 1237.5,
           "y": 1040
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "4":
     id: "4"
-    taskid: 13aaa93d-7cec-4672-8097-db2cf2032b33
+    taskid: 0ee73a3b-3bf3-4eac-8811-d27827e4b5e8
     type: condition
     task:
-      description: ""
-      id: 13aaa93d-7cec-4672-8097-db2cf2032b33
+      id: 0ee73a3b-3bf3-4eac-8811-d27827e4b5e8
       version: -1
       name: Validate Priority is 1
       type: condition
@@ -163,18 +172,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 1237.5,
           "y": 1390
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "5":
     id: "5"
-    taskid: 0e60f9ac-23f5-4e91-80b1-f36c27f7bb9e
+    taskid: bd2d4e66-ea42-4615-8b66-12aab66f4b3f
     type: regular
     task:
-      id: 0e60f9ac-23f5-4e91-80b1-f36c27f7bb9e
+      id: bd2d4e66-ea42-4615-8b66-12aab66f4b3f
       version: -1
       name: Get Business Object - Get the last created incident
       description: Get a business objects by an ID
@@ -196,18 +208,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 1237.5,
           "y": 1215
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "6":
     id: "6"
-    taskid: 038d3f4c-8800-4848-85f2-f0c5cd749fda
+    taskid: 4a907ae8-0baa-4720-817e-11bbad93f2af
     type: regular
     task:
-      id: 038d3f4c-8800-4848-85f2-f0c5cd749fda
+      id: 4a907ae8-0baa-4720-817e-11bbad93f2af
       version: -1
       name: 'Create File '
       description: |
@@ -222,25 +237,27 @@ tasks:
     scriptarguments:
       data:
         simple: This is dummy data for Cherwell test
-      entryId: {}
       filename:
         simple: CherwellTestFile.txt
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 1237.5,
           "y": 1565
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "7":
     id: "7"
-    taskid: 49a82695-9fec-44ff-8e1d-f3478488fdf4
+    taskid: 73b6af67-e7fc-48c3-82be-bb42c25d4222
     type: regular
     task:
-      id: 49a82695-9fec-44ff-8e1d-f3478488fdf4
+      id: 73b6af67-e7fc-48c3-82be-bb42c25d4222
       version: -1
       name: Upload Attachment to Cherwell
       description: Upload an attachment to a given business object
@@ -264,18 +281,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 1237.5,
           "y": 1740
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "8":
     id: "8"
-    taskid: f3ee4068-47bb-4962-81c9-00dfa7eafb98
+    taskid: 30f5ea2d-d75c-4290-8f20-53613e8f25be
     type: regular
     task:
-      id: f3ee4068-47bb-4962-81c9-00dfa7eafb98
+      id: 30f5ea2d-d75c-4290-8f20-53613e8f25be
       version: -1
       name: Get Attachment Info
       description: Get business object attachments info
@@ -299,18 +319,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 1237.5,
           "y": 2090
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "9":
     id: "9"
-    taskid: 4121bf2e-00b6-4a81-879d-f989878c290f
+    taskid: 23d4965a-5179-4963-882e-30ab6cf3da7d
     type: regular
     task:
-      id: 4121bf2e-00b6-4a81-879d-f989878c290f
+      id: 23d4965a-5179-4963-882e-30ab6cf3da7d
       version: -1
       name: Download Attachment
       description: Get attachements from given business object
@@ -332,19 +355,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 1237.5,
           "y": 2440
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "10":
     id: "10"
-    taskid: c5b4b0cc-d7e0-4039-8125-adda914adb68
+    taskid: ce80cef1-2d87-4364-8b4d-f6738af558bf
     type: condition
     task:
-      description: ""
-      id: c5b4b0cc-d7e0-4039-8125-adda914adb68
+      id: ce80cef1-2d87-4364-8b4d-f6738af558bf
       version: -1
       name: Validate Upload Attachment
       type: condition
@@ -383,19 +408,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 1237.5,
           "y": 1915
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "11":
     id: "11"
-    taskid: 4ec18993-5fe6-46ba-868e-f2e9fcf395c8
+    taskid: a623ff26-4eff-4fbe-8b89-fe42f84cc1af
     type: condition
     task:
-      description: ""
-      id: 4ec18993-5fe6-46ba-868e-f2e9fcf395c8
+      id: a623ff26-4eff-4fbe-8b89-fe42f84cc1af
       version: -1
       name: Validate Get Attachment Info
       type: condition
@@ -449,19 +476,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 1237.5,
           "y": 2265
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "12":
     id: "12"
-    taskid: 70a75a71-05b6-4e24-882c-8606522f404b
+    taskid: 9ed2fa28-5d9a-48b4-8011-4d14daf08dac
     type: condition
     task:
-      description: ""
-      id: 70a75a71-05b6-4e24-882c-8606522f404b
+      id: 9ed2fa28-5d9a-48b4-8011-4d14daf08dac
       version: -1
       name: Validate Download Attachment
       type: condition
@@ -500,18 +529,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 1237.5,
           "y": 2615
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "13":
     id: "13"
-    taskid: 000dafbd-cb7b-4fac-8a46-efcc048b7c90
+    taskid: 2fb725c0-cf49-4f5f-8e4d-133e82bc2944
     type: regular
     task:
-      id: 000dafbd-cb7b-4fac-8a46-efcc048b7c90
+      id: 2fb725c0-cf49-4f5f-8e4d-133e82bc2944
       version: -1
       name: Remove Attachment
       description: Remove the given attachment from the given business object
@@ -535,18 +567,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 1022.5,
           "y": 3140
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "14":
     id: "14"
-    taskid: d6f731fe-bb81-4d3f-8334-35cbc2812f7a
+    taskid: 4077737d-5113-4b0d-8dfe-6066e2aaea79
     type: regular
     task:
-      id: d6f731fe-bb81-4d3f-8334-35cbc2812f7a
+      id: 4077737d-5113-4b0d-8dfe-6066e2aaea79
       version: -1
       name: Link Business Objects - Incident Own Task
       description: Link related business objects
@@ -588,18 +623,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 1022.5,
           "y": 3490
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "15":
     id: "15"
-    taskid: 06203ce2-b487-42d2-83d4-f3cb1a70967d
+    taskid: 87e1c4d5-6abf-46d5-8dbc-813a47949bcf
     type: regular
     task:
-      id: 06203ce2-b487-42d2-83d4-f3cb1a70967d
+      id: 87e1c4d5-6abf-46d5-8dbc-813a47949bcf
       version: -1
       name: Create Business Object - Task
       description: Create a business object
@@ -612,25 +650,29 @@ tasks:
       - "14"
     scriptarguments:
       json:
-        simple: '{"Title": "Test task", "Description": "Test task generated from test playbook", "OwnedByTeam": "HR",  "Type":"Work Item", "Status":"New"}'
+        simple: '{"Title": "Test task", "Description": "Test task generated from test
+          playbook", "OwnedByTeam": "HR",  "Type":"Work Item", "Status":"New"}'
       type:
         simple: Task
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 1022.5,
           "y": 3315
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "16":
     id: "16"
-    taskid: 36675088-a189-4577-882e-d767a2d4278c
+    taskid: 746f5599-d821-4c60-804e-d79984398d06
     type: regular
     task:
-      id: 36675088-a189-4577-882e-d767a2d4278c
+      id: 746f5599-d821-4c60-804e-d79984398d06
       version: -1
       name: Delete context
       description: Delete field from context
@@ -644,26 +686,25 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 910,
+          "x": 592.5,
           "y": 195
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "17":
     id: "17"
-    taskid: f16c4bfc-c2cd-4dd1-8bca-177d5f9bd527
+    taskid: d87f9294-2475-49c0-8da7-4e17372ed752
     type: regular
     task:
-      id: f16c4bfc-c2cd-4dd1-8bca-177d5f9bd527
+      id: d87f9294-2475-49c0-8da7-4e17372ed752
       version: -1
       name: Unlink Business Objects - Incident Own Task
       description: Unlink linked, related business objects
@@ -673,7 +714,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "23"
+      - "34"
     scriptarguments:
       child_record_id:
         complex:
@@ -705,18 +746,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 1022.5,
           "y": 3665
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "18":
     id: "18"
-    taskid: a41cd015-5d2b-4dc3-862f-1b6fefb6c55e
+    taskid: 576045b3-c2ed-4a34-843b-0643c03699ba
     type: regular
     task:
-      id: a41cd015-5d2b-4dc3-862f-1b6fefb6c55e
+      id: 576045b3-c2ed-4a34-843b-0643c03699ba
       version: -1
       name: 'Query Business Object '
       description: Run advanced queries to search in a given business object.
@@ -728,7 +772,6 @@ tasks:
       '#none#':
       - "32"
     scriptarguments:
-      max_results: {}
       query:
         complex:
           root: ${Cherwell
@@ -748,28 +791,32 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 1452.5,
           "y": 2790
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "19":
     id: "19"
-    taskid: c3170507-39ef-4f4e-8eaf-0a1feab5b1b5
+    taskid: 2dc0bdcf-149f-4ba7-86d4-aa9e2284882a
     type: regular
     task:
-      id: c3170507-39ef-4f4e-8eaf-0a1feab5b1b5
+      id: 2dc0bdcf-149f-4ba7-86d4-aa9e2284882a
       version: -1
       name: Get Field Info
-      description: Get field info by one of its properties (Name, DIsplay Name or ID)
+      description: Get field info by one of its properties (Name, DIsplay Name or
+        ID)
       script: '|||cherwell-get-field-info'
       type: regular
       iscommand: true
       brand: ""
     nexttasks:
       '#none#':
-      - "23"
+      - "34"
     scriptarguments:
       field_property:
         simple: Customer Display Name
@@ -779,18 +826,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1022.5,
+          "x": 50,
           "y": 3665
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "20":
     id: "20"
-    taskid: fc4d89a9-1b7f-49e5-81e4-6b07ad87ffdc
+    taskid: df133dd0-724b-492b-8a63-817920772e24
     type: regular
     task:
-      id: fc4d89a9-1b7f-49e5-81e4-6b07ad87ffdc
+      id: df133dd0-724b-492b-8a63-817920772e24
       version: -1
       name: Fetch Incidents
       description: Execute FetchIncident for a given instance
@@ -806,30 +856,31 @@ tasks:
         simple: "true"
       brand_name:
         simple: Cherwell
-      expect_data: {}
-      instance_name: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 592.5,
           "y": 2790
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "21":
     id: "21"
-    taskid: ff992638-4bfe-48b3-89cb-8826955ee81e
+    taskid: 93218952-3c11-4fc2-890d-29a49e542893
     type: title
     task:
-      description: ""
-      id: ff992638-4bfe-48b3-89cb-8826955ee81e
+      id: 93218952-3c11-4fc2-890d-29a49e542893
       version: -1
       name: Additional Commands
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "19"
@@ -838,24 +889,27 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1237.5,
+          "x": 265,
           "y": 3330
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "22":
     id: "22"
-    taskid: 437ef14a-47fd-4734-83fc-72babbcd8ef0
+    taskid: 710ec718-d127-44ac-8c5f-0077a45c5f8f
     type: title
     task:
-      description: ""
-      id: 437ef14a-47fd-4734-83fc-72babbcd8ef0
+      id: 710ec718-d127-44ac-8c5f-0077a45c5f8f
       version: -1
       name: Business Object Flow
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "3"
@@ -863,18 +917,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 1237.5,
           "y": 895
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "23":
     id: "23"
-    taskid: 50ceaab1-378b-4a0f-8c92-0329d2358746
+    taskid: 42389fbf-1b04-4c48-80fc-ed3e483284a7
     type: regular
     task:
-      id: 50ceaab1-378b-4a0f-8c92-0329d2358746
+      id: 42389fbf-1b04-4c48-80fc-ed3e483284a7
       version: -1
       name: Delete Business Object
       description: Delete a given business object
@@ -904,43 +961,50 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1022.5,
-          "y": 3840
+          "x": 480,
+          "y": 4715
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "24":
     id: "24"
-    taskid: 1b018a2b-8eff-435e-823f-92cb90b0c45a
+    taskid: 31b99516-76b7-4fcb-8559-a09e32471543
     type: title
     task:
-      description: ""
-      id: 1b018a2b-8eff-435e-823f-92cb90b0c45a
+      id: 31b99516-76b7-4fcb-8559-a09e32471543
       version: -1
       name: Done
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 1022.5,
-          "y": 4190
+          "x": 480,
+          "y": 5065
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "26":
     id: "26"
-    taskid: 15a3bfe9-0aea-45a9-8a86-b16bcd97eb7a
+    taskid: df5815f1-bb61-430f-8e7e-afe9807ff5ff
     type: condition
     task:
-      id: 15a3bfe9-0aea-45a9-8a86-b16bcd97eb7a
+      id: df5815f1-bb61-430f-8e7e-afe9807ff5ff
       version: -1
       name: Validate Query Business Object
-      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
       type: condition
       iscommand: false
       brand: ""
@@ -951,33 +1015,31 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: containsGeneral
+      - - operator: isExists
           left:
             value:
               complex:
                 root: FetchedIncidents
                 accessor: RecordId
             iscontext: true
-          right:
-            value:
-              simple: ${Cherwell.BusinessObjects(val.IncidentType).RecordId}
-            iscontext: true
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 592.5,
           "y": 2965
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "27":
     id: "27"
-    taskid: c8eb2b50-2d76-456d-8de0-0e5a035c542d
+    taskid: dd42a274-cc10-4e36-8d11-cfd985975363
     type: regular
     task:
-      description: ""
-      id: c8eb2b50-2d76-456d-8de0-0e5a035c542d
+      id: dd42a274-cc10-4e36-8d11-cfd985975363
       version: -1
       name: Get business Object ID
       script: '|||cherwell-get-business-object-id'
@@ -994,19 +1056,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1452.5,
+          "x": 480,
           "y": 3490
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "28":
     id: "28"
-    taskid: ea365864-273f-4fed-83db-18cc7503f9ea
+    taskid: 3367c6ee-6840-461c-855e-0c0ec91858c0
     type: condition
     task:
-      description: ""
-      id: ea365864-273f-4fed-83db-18cc7503f9ea
+      id: 3367c6ee-6840-461c-855e-0c0ec91858c0
       version: -1
       name: Validate Get Business Object ID
       type: condition
@@ -1014,7 +1078,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "23"
+      - "34"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1030,18 +1094,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1452.5,
+          "x": 480,
           "y": 3665
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "29":
     id: "29"
-    taskid: d0cc01cd-3234-4edb-8a0b-13ff16125376
+    taskid: da5c51d4-a23f-45a5-872e-9fe9be79836f
     type: regular
     task:
-      id: d0cc01cd-3234-4edb-8a0b-13ff16125376
+      id: da5c51d4-a23f-45a5-872e-9fe9be79836f
       version: -1
       name: Run saved search
       description: Returns the results of a saved search
@@ -1065,19 +1132,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
+          "x": 1022.5,
           "y": 2790
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "30":
     id: "30"
-    taskid: 2df6ec58-99fd-4b8c-8405-76935aa0913f
+    taskid: 149373b4-c392-4a25-8315-3e750bec46df
     type: condition
     task:
-      description: ""
-      id: 2df6ec58-99fd-4b8c-8405-76935aa0913f
+      id: 149373b4-c392-4a25-8315-3e750bec46df
       version: -1
       name: Validate Run Saved Search
       type: condition
@@ -1103,18 +1172,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
+          "x": 1022.5,
           "y": 2965
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "31":
     id: "31"
-    taskid: a3e79146-845e-42f1-82b3-c2064a41a028
+    taskid: 3bc641a9-8814-4988-8363-4685b2811e7a
     type: regular
     task:
-      id: a3e79146-845e-42f1-82b3-c2064a41a028
+      id: 3bc641a9-8814-4988-8363-4685b2811e7a
       version: -1
       name: Get Business Object - Get the last created incident
       description: Get a business objects by an ID
@@ -1137,19 +1209,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
+          "x": 592.5,
           "y": 720
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "32":
     id: "32"
-    taskid: f342f9ce-8e0b-479c-89c7-34e70d523c12
+    taskid: b54adf04-11bf-45c0-8af7-3a26eadccbf0
     type: condition
     task:
-      description: ""
-      id: f342f9ce-8e0b-479c-89c7-34e70d523c12
+      id: b54adf04-11bf-45c0-8af7-3a26eadccbf0
       version: -1
       name: Validate Query Business Object
       type: condition
@@ -1175,18 +1249,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 1452.5,
           "y": 2965
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "33":
     id: "33"
-    taskid: 51e34cee-2310-4a28-86d8-ae5682b57ea9
+    taskid: d3248a34-32a3-4613-8e02-ce4b3463f996
     type: regular
     task:
-      id: 51e34cee-2310-4a28-86d8-ae5682b57ea9
+      id: d3248a34-32a3-4613-8e02-ce4b3463f996
       version: -1
       name: Delete Business Object
       description: Delete a given business object
@@ -1216,18 +1293,244 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1022.5,
+          "x": 480,
+          "y": 4890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "34":
+    id: "34"
+    taskid: 957a51aa-b197-407d-8a5e-e1ec860f9a86
+    type: regular
+    task:
+      id: 957a51aa-b197-407d-8a5e-e1ec860f9a86
+      version: -1
+      name: Get business object summary
+      description: Get business object summary by name or ID.
+      script: '|||cherwell-get-business-object-summary'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      name:
+        simple: Incident
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "35":
+    id: "35"
+    taskid: 9448db6d-29fc-4de7-8f5b-4ffdf702a9cb
+    type: condition
+    task:
+      id: 9448db6d-29fc-4de7-8f5b-4ffdf702a9cb
+      version: -1
+      name: Validate business object summary
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "36"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Cherwell.BusinessObjectSummary
+                accessor: name
+            iscontext: true
+          right:
+            value:
+              simple: Incident
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Cherwell.BusinessObjectSummary
+                accessor: busObId
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: Cherwell.BusinessObjectInfo
+                accessor: BusinessObjectId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cherwell
+                accessor: BusinessObjectSummary
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 480,
           "y": 4015
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "36":
+    id: "36"
+    taskid: 3b0a120a-9569-4328-8264-2265b66b1b8a
+    type: regular
+    task:
+      id: 3b0a120a-9569-4328-8264-2265b66b1b8a
+      version: -1
+      name: Get one step actions for business object
+      description: Get One-Step Actions by business object ID
+      script: '|||cherwell-get-one-step-actions-for-business-object'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "37"
+    scriptarguments:
+      busobjectid:
+        complex:
+          root: Cherwell.BusinessObjectSummary
+          accessor: busObId
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 4190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "37":
+    id: "37"
+    taskid: e89adadf-de96-4df9-8928-29b7cd7a5577
+    type: condition
+    task:
+      id: e89adadf-de96-4df9-8928-29b7cd7a5577
+      version: -1
+      name: Validate one step actions
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "38"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Cherwell.OneStepActions
+                accessor: Actions
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Cherwell.OneStepActions
+                accessor: BusinessObjectId
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: Cherwell.BusinessObjectInfo
+                accessor: BusinessObjectId
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 4365
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "38":
+    id: "38"
+    taskid: 2684edff-d70d-4332-80ec-970759773259
+    type: regular
+    task:
+      id: 2684edff-d70d-4332-80ec-970759773259
+      version: -1
+      name: Run one step action
+      description: Operation to run a One-Step Action using a OneStepActionRequest.
+        This request is used to start a One-Step Action run with additional information
+        such as prompt values.
+      script: '|||cherwell-run-one-step-action-on-business-object'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      busobjectid:
+        complex:
+          root: Cherwell.OneStepActions
+          accessor: BusinessObjectId
+      busobrecid:
+        complex:
+          root: Cherwell.BusinessObjects
+          accessor: RecordId
+          transformers:
+          - operator: FirstArrayElement
+      oneStepAction_StandInKey:
+        simple: DefType:OneStepDef#Scope:Global#Id:947509fc528a451570e6c14223a9a8ca12b0856fc2#Owner:6dd53665c0c24cab86870a21cf6434ae
+      prompt_values:
+        simple: '[{"promptDefId": "947509fe4c84176152bcaa472b929d556b47c5df6d","value":
+          "This is from the REST API"}]'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 4540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 4205,
+        "height": 5080,
         "width": 1782.5,
         "x": 50,
         "y": 50
@@ -1236,3 +1539,5 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0
+description: ''

@@ -1,0 +1,19 @@
+commonfields:
+  id: DBotAverageScore
+  version: -1
+name: DBotAverageScore
+script: ''
+type: javascript
+comment: Calculates average score for each indicator from context
+tags:
+- Utility
+outputs:
+- contextPath: DBotAvgScore.Indicator
+  description: The indicator we calculate average score for
+- contextPath: DBotAvgScore.Score
+  description: The average score per indicator
+enabled: true
+scripttarget: 0
+fromversion: 5.0.0
+tests:
+- DbotAverageScore-Test

@@ -3,7 +3,8 @@ Investigates a Cortex XDR incident containing internal port scan alerts. The pla
 - Notifies management about a compromised host.
 - Escalates the incident in case of lateral movement alert detection.
 
-The playbook is used as a sub- playbook in 'Cortex XDR Incident Handling - v2'
+The playbook is designed to run as a sub-playbook in 'Cortex XDR Incident Handling - v3 & Cortex XDR Alerts Handling'. 
+It depends on the data from the parent playbooks and can not be used as a standalone version.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -34,7 +35,7 @@ This playbook does not use any integrations.
 | RoleForEscalation | The name of the Cortex XSOAR role of the users that the incident can be escalated to in case of developments like lateral movement. If this input is left empty, no escalation will take place. |  | Optional |
 | OnCall | Set to true to assign only the users that are currently on shift. | false | Optional |
 | xdr_alert_id | Unique ID for the XDR alert. |  | Optional |
-| InternalIPRange | Please use "InternalIPRanges" input instead.<br/>this input is deprecated. |  | Optional |
+| InternalIPRange | Please use "InternalIPRanges" input instead.<br/>This input is deprecated. |  | Optional |
 
 ## Playbook Outputs
 ---
@@ -51,4 +52,4 @@ This playbook does not use any integrations.
 
 ## Playbook Image
 ---
-![Cortex XDR - Port Scan - Adjusted](https://github.com/demisto/content/raw/3fadebe9e16eb7c9fc28ce3bb600319ec875e3b5/Packs/CortexXDR/doc_files/Cortex_XDR_-_Port_Scan_-_Adjusted.png)
+![Cortex XDR - Port Scan - Adjusted](https://raw.githubusercontent.com/demisto/content/59e1358f019b04d1706562dda5eeeb623ed5160b/Packs/CortexXDR/doc_files/Cortex_XDR_-_Port_Scan_-_Adjusted.png)

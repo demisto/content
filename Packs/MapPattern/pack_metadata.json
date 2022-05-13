@@ -2,7 +2,7 @@
     "name": "MapPattern",
     "description": "This transformer will take in a value and transform it based on multiple condition expressions (wildcard, regex, etc) defined in a JSON dictionary structure.",
     "support": "community",
-    "currentVersion": "1.0.0",
+    "currentVersion": "1.0.5",
     "author": "Masahiko Inoue",
     "url": "",
     "email": "",
@@ -13,5 +13,9 @@
     "keywords": [],
     "githubUser": [
         "spearmin10"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
     ]
 }

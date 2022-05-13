@@ -7,7 +7,12 @@ This script will extract indicators from given HTML and will handle bad top-leve
 | --- | --- |
 | Script Type | python3 |
 | Tags |  |
-| Demisto Version | 5.5.0 |
+| Cortex XSOAR Version | 5.5.0 |
+
+## Used In
+---
+This script is used in the following playbooks and scripts.
+* Kaseya VSA  0-day - REvil Ransomware Supply Chain Attack
 
 ## Inputs
 ---
@@ -21,4 +26,8 @@ This script will extract indicators from given HTML and will handle bad top-leve
 
 ## Outputs
 ---
-There are no outputs for this script.
+
+| **Path** | **Description** | **Type** |
+| --- | --- | --- |
+| http.parsedBlog.indicators | The extracted indicators | Unknown |
+| http.parsedBlog.sourceLink | The link for the source of the indicators | Unknown |

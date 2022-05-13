@@ -2905,7 +2905,7 @@ script:
       \ available at https://docs.ansible.com/ansible/2.9/modules/vmware_host_facts_module.html"
     name: vmware-host-facts
     outputs:
-    - contextPath: VMware.VmwareHostFacts.ansible_facts
+    - contextPath: VMware.VmwareHostFacts.facts
       description: system info about the host machine
       type: unknown
   - arguments:
@@ -4702,10 +4702,10 @@ script:
     - contextPath: VMware.VcenterLicense.licenses
       description: list of license keys after module executed
       type: unknown
-  dockerimage: demisto/ansible-runner:1.0.0.23806
+  dockerimage: demisto/ansible-runner:1.0.0.24037
   runonce: false
   script: ''
   subtype: python3
   type: python
 tests:
-- No tests (auto formatted)
+- Test-AnsibleVMware

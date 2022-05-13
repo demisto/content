@@ -6,3 +6,6 @@ ignore=BA110
 
 [file:RiskSenseGetRansomewareCVEScript.yml]
 ignore=BA110
+
+[file:RiskSense.yml]
+ignore=IN145

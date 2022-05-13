@@ -3582,15 +3582,13 @@ script:
       required: true
       secret: false
     - default: false
-      description: The start of port range for the TCP and UDP protocols. In case
-        ipProtocol is specified, this argument will be ignored.
+      description: The start of port range for the TCP and UDP protocols.
       isArray: false
       name: fromPort
       required: false
       secret: false
     - default: false
-      description: The end of port range for the TCP and UDP protocols. In case ipProtocol
-        is specified, this argument will be ignored.
+      description: The end of port range for the TCP and UDP protocols.
       isArray: false
       name: toPort
       required: false
@@ -3771,15 +3769,13 @@ script:
       required: true
       secret: false
     - default: false
-      description: The start of port range for the TCP and UDP protocols. In case
-        ipProtocol is specified, this argument will be ignored.
+      description: The start of port range for the TCP and UDP protocols.
       isArray: false
       name: fromPort
       required: false
       secret: false
     - default: false
-      description: The end of port range for the TCP and UDP protocols. In case ipProtocol
-        is specified, this argument will be ignored.
+      description: The end of port range for the TCP and UDP protocols.
       isArray: false
       name: toPort
       required: false
@@ -6785,7 +6781,7 @@ script:
     description: Release on demand dedicated host.
     execution: false
     name: aws-ec2-release-hosts
-  dockerimage: demisto/boto3:2.0.0.20379
+  dockerimage: demisto/boto3:2.0.0.24033
   feed: false
   isfetch: false
   longRunning: false

@@ -1,56 +1,58 @@
-Adds email details to the relevant context entities and handle the case where original emails are attached.
+This playbook adds email details to the relevant context entities and handles original email attachments.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Get Original Email - Generic
+Get Original Email - Generic
 
 ### Integrations
-* Builtin
+This playbook does not use any integrations.
 
 ### Scripts
+* SetAndHandleEmpty
+* ParseEmailFiles
 * Set
 * IdentifyAttachedEmail
-* ParseEmailFiles
+* SetGridField
 
 ### Commands
-* setIncident
 * rasterize-email
+* setIncident
 
 ## Playbook Inputs
 ---
 
-| **Name** | **Description** | **Default Value** | **Source** | **Required** |
-| --- | --- | --- | --- | --- |
-| File | An EML or MSG file. | None | File | Optional |
-| Email | The receiving email address. | labels.Email | incident | Optional |
-| Email/cc | The "cc" addresses. | labels.CC | incident | Optional |
-| Email/from | The originator of the email. | labels.Email/from | incident | Optional |
-| Email/subject | The email’s subject. | labels.Email/subject | incident | Optional |
-| Email/text | The email’s text. | labels.Email/text | incident | Optional |
-| Email/html | The email’s HTML. | labels.Email/html | incident | Optional |
-| Email/headers | The email’s headers. | labels.Email/headers | incident | Optional |
-| Email/format | The email’s format. | labels.Email/format | incident | Optional |
-| GetOriginalEmail | Returns the original email in the thread. The default is "False". You must have the necessary permissions in your email service to execute global,search. **EWS: eDiscovery** and **Gmail: Google Apps Domain-Wide Delegation of Authority**. | False | - | Optional |
+| **Name** | **Description** | **Default Value** | **Required** |
+| --- | --- | --- | --- |
+| File | An EML or MSG file. | File.None | Optional |
+| Email | The receiving email address. | incident.labels.Email | Optional |
+| Email/cc | The CC addresses. | incident.labels.CC | Optional |
+| Email/from | The originator of the email. | incident.labels.Email/from | Optional |
+| Email/subject | The email subject. | incident.labels.Email/subject | Optional |
+| Email/text | The email text. | incident.labels.Email/text | Optional |
+| Email/html | The email HTML. | incident.labels.Email/html | Optional |
+| Email/headers | The email headers. | incident.labels.Email/headers | Optional |
+| Email/format | The email format. | incident.labels.Email/format | Optional |
+| GetOriginalEmail | Retrieves the original email in the thread. <br/><br/>You must have the necessary permissions in your email service to execute global search.<br/>- EWS: eDiscovery<br/>- Gmail: Google Apps Domain-Wide Delegation of Authority | False | Optional |
 
 ## Playbook Outputs
 ---
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| Email.HTML | The email "html" body if exists | string |
+| Email.HTML | The email HTML body if it exists. | string |
 | Email | The email object. | unknown |
-| Email.CC | The email "cc" addresses. | string |
-| Email.From | The email "from" sender. | string |
-| Email.Subject | The email subject. | string |
-| Email.To | The email "to" addresses. | string |
-| Email.Text | The email "text" body if exists. | string |
+| Email.CC |The email CC addresses. | string |
+| Email.From | The email from sender. | string |
+| Email.Subject |The email subject. | string |
+| Email.To | The email to addresses. | string |
+| Email.Text | The email text body if exists. | string |
 | Email.Headers | The full email headers as a single string. | string |
 | Email.Attachments | The list of attachment names in the email. | string |
-| Email.Format | The format of the email if available. | string |
+| Email.Format | The email format if available. | string |
 | File | The file object. | unknown |
 
 ## Playbook Image
 ---
-![Process_Email_Generic](https://raw.githubusercontent.com/demisto/content/82895af983e287954ef4565db548f9ae91d0487a/Packs/Phishing/doc_files/Process_Email_-_Generic.png)
+![Process Email - Generic](../doc_files/Process_Email_-_Generic.png)

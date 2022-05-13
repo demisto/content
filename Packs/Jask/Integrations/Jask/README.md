@@ -35,7 +35,7 @@
 <li><a href="#h_5004381221501533534476337">Get details for a signal: jask-get-signal-details</a></li>
 <li><a href="#h_8236589612211533534481518">Get details for an entity: jask-get-entity-details</a></li>
 <li><a href="#h_7145323282911533534488219">Get related entities: jask-get-related-entities</a></li>
-<li><a href="#h_8632925473601533534494371">Get a list of whitelisted entities: jask-get-whitelisted-entities</a></li>
+<li><a href="#h_8632925473601533534494371">Get a list of entities on allow list: jask-get-whitelisted-entities</a></li>
 <li><a href="#h_2458651614281533534504337">Search JASK insights: jask-search-insights</a></li>
 <li><a href="#h_3876303084951533534510096">Search JASK signals: jask-search-signals</a></li>
 <li><a href="#h_2402374295611533534516772">Search JASK entities: jask-search-entities</a></li>
@@ -168,7 +168,7 @@
 </tr>
 <tr>
 <td>Jask.Insight.RelatedEntityList.IsWhitelisted</td>
-<td>Whether or not the entity is whitelisted</td>
+<td>Whether or not the entity is on allow list</td>
 </tr>
 <tr>
 <td>Jask.Insight.RelatedEntityList.RiskScore</td>
@@ -553,7 +553,7 @@
 </tr>
 <tr>
 <td>Jask.Entity.IsWhiteListed</td>
-<td>Whether or not the entity is whitelisted</td>
+<td>Whether or not the entity is on allow list</td>
 </tr>
 </tbody>
 </table>
@@ -665,7 +665,7 @@
 </tr>
 <tr>
 <td>Jask.RelatedEntityList.IsWhiteListed</td>
-<td>Whether or not the entity is whitelisted</td>
+<td>Whether or not the entity is on allow list</td>
 </tr>
 <tr>
 <td>Jask.RelatedEntityList.LastSeen</td>
@@ -726,10 +726,10 @@
 <h5>Human Readable Output</h5>
 <p><img src="https://user-images.githubusercontent.com/7270217/43685082-fe26e220-98b4-11e8-8050-77e37a7348c4.png" alt="image" width="752" height="197"></p>
 <p> </p>
-<h3 id="h_8632925473601533534494371">6. Get a list of whitelisted entities</h3>
+<h3 id="h_8632925473601533534494371">6. Get a list of entities on allow list</h3>
 <hr>
 <p><i>Note:</i> This command is deprecated and will not be supported in Sumo Logic SIEM. For further details, visit our <a href="https://xsoar.pan.dev/docs/reference/integrations/sumo-logic-sec#migrating-from-jask-content-pack">Sumo Logic SIEM integration documentation</a>.</p>
-<p>Returns a list of all whitelisted entities.</p>
+<p>Returns a list of all entities on allow list.</p>
 <p> </p>
 <h5>Base Command</h5>
 <p><code>jask-get-whitelisted-entities</code></p>
@@ -748,27 +748,27 @@
 <tbody>
 <tr>
 <td>Jask.Whitelisted.EntityList.Id</td>
-<td>ID of the whitelisted entity</td>
+<td>ID of the entity on allow list</td>
 </tr>
 <tr>
 <td>Jask.Whitelisted.EntityList.Name</td>
-<td>Name of the whitelisted entity</td>
+<td>Name of the entity on allow list</td>
 </tr>
 <tr>
 <td>Jask.Whitelisted.EntityList.UserName</td>
-<td>Username of the whitelisted entity</td>
+<td>Username of the entity on allow list</td>
 </tr>
 <tr>
 <td>Jask.Whitelisted.EntityList.ModelId</td>
-<td>The modelID of the whitelisted entity</td>
+<td>The modelID of the entity on allow list</td>
 </tr>
 <tr>
 <td>Jask.Whitelisted.EntityList.Timestamp</td>
-<td>Time of the whitelisted entity</td>
+<td>Time of the entity on allow list</td>
 </tr>
 <tr>
 <td>Jask.Whitelisted.EntityList.Metadata.TotalCount</td>
-<td>Number of whitelisted entities</td>
+<td>Number of entities on allow list</td>
 </tr>
 </tbody>
 </table>
@@ -1174,7 +1174,7 @@
 </tr>
 <tr>
 <td>Jask.Entity.IsWhiteListed</td>
-<td>Whether or not the entity is whitelisted</td>
+<td>Whether or not the entity is on allow list</td>
 </tr>
 <tr>
 <td>Jask.Entity.Groups</td>

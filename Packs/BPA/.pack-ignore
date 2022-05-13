@@ -3,3 +3,6 @@ ignore=BA101
 
 [file:README.md]
 ignore=RM104
+
+[file:BPA.yml]
+ignore=IN145

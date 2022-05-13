@@ -50,7 +50,7 @@ tasks:
       RequestId:
         simple: ${ServiceDeskPlus.Request.Id}
       Timeout:
-        simple: "15"
+        simple: "20"
     separatecontext: true
     loop:
       iscommand: false

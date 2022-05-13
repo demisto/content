@@ -1,0 +1,814 @@
+commonfields:
+  id: carbonblack-v2
+  version: -1
+name: carbonblack-v2
+display: VMware Carbon Black EDR (Deprecated)
+deprecated: true
+fromversion: 5.0.0
+category: Endpoint
+description: Deprecated. Use VMware Carbon Black EDR v2 instead.
+configuration:
+- display: Server URL
+  name: serverurl
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: API Token
+  name: apitoken
+  defaultvalue: ""
+  type: 4
+  required: true
+- display: Trust any certificate (not secure)
+  name: insecure
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Fetch incidents
+  name: isFetch
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  type: 13
+  required: false
+- display: Fetch Alert Severity Threshold Higher Than
+  name: fetchAlertsSeverityThreshold
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: Maximum Number Of Incidents To Fetch
+  name: rows
+  defaultvalue: "10"
+  type: 0
+  required: false
+script:
+  script: ''
+  type: javascript
+  commands:
+  - name: cb-alert
+    arguments:
+    - name: status
+      auto: PREDEFINED
+      predefined:
+      - Unresolved
+      - In Progress
+      - Resolved
+      - False Positive
+      description: Alert status to filter by
+    - name: username
+      description: Alert username to filter by
+    - name: feedname
+      description: Alert feedname to filter by
+    - name: hostname
+      description: Alert hostname to filter by
+    - name: report
+      description: Alert report name (watchlist_id) to filter by
+    - name: query
+      default: true
+      description: Query string. Accepts the same data as the search box on the Binary
+        Search page. See https://github.com/carbonblack/cbapi/blob/master/client_apis/docs/query_overview.pdf
+    - name: rows
+      description: Return this many rows, 10 by default.
+    - name: start
+      description: Start at this row, 0 by default.
+    - name: sort
+      description: Sort rows by this field and order. server_added_timestamp desc
+        by default.
+    - name: facet
+      description: Return facet results. 'false' by default, set to 'true' for facets.
+    outputs:
+    - contextPath: CbResponse.Alerts.CbAlertID
+      description: Alert unique id
+    - contextPath: CbResponse.Alerts.ProcessPath
+      description: Alert Process Path
+      type: string
+    - contextPath: CbResponse.Alerts.Hostname
+      description: Alert Hostname
+      type: string
+    - contextPath: CbResponse.Alerts.InterfaceIP
+      description: Alert interface IP
+      type: string
+    - contextPath: CbResponse.Alerts.CommsIP
+      description: Communications IP
+      type: string
+    - contextPath: CbResponse.Alerts.MD5
+      description: Alert process MD5
+      type: string
+    - contextPath: CbResponse.Alerts.Description
+      description: Alert description
+    - contextPath: CbResponse.Alerts.FeedName
+      description: Alert feed name
+    - contextPath: CbResponse.Alerts.Severity
+      description: Alert severity
+    - contextPath: CbResponse.Alerts.Time
+      description: Alert created time
+    - contextPath: CbResponse.Alerts.Status
+      description: 'Alert status. One of: Unresolved, Resolved, False Positive'
+    description: Retrieve alerts from Carbon Black Response.
+  - name: cb-binary
+    arguments:
+    - name: digital-signature
+      auto: PREDEFINED
+      predefined:
+      - Signed
+      - Unsigned
+      description: Whether digital signature is signed or not
+    - name: publisher
+      description: Filter binary by publisher
+    - name: company-name
+      description: Filter binary by company name
+    - name: product-name
+      description: Filter binary by product name
+    - name: filepath
+      description: Filter binary by file path
+    - name: group
+      description: Filter binary by group
+    - name: hostname
+      description: Filter binary by hostname
+    - name: query
+      default: true
+      description: Query string. Accepts the same data as the search box on the Binary
+        Search page. See https://github.com/carbonblack/cbapi/blob/master/client_apis/docs/query_overview.pdf
+    - name: rows
+      description: Return this many rows, 10 by default.
+    - name: start
+      description: Start at this row, 0 by default.
+    - name: sort
+      description: Sort rows by this field and order. server_added_timestamp desc
+        by default.
+    - name: facet
+      description: Return facet results. 'false' by default, set to 'true' for facets.
+    outputs:
+    - contextPath: File.DigSig.Publisher
+      description: The publisher of the Digital Signature
+    - contextPath: File.InternalName
+      description: The Internal Name
+    - contextPath: File.ServerAddedTimestamp
+      description: The server added timestamp
+    - contextPath: File.Name
+      description: Binary Name
+    - contextPath: File.Extension
+      description: Binary Extension
+    - contextPath: File.Timestamp
+      description: Binary Timestamp
+    - contextPath: File.Hostname
+      description: Binary Hostname
+    - contextPath: File.Description
+      description: The description
+    - contextPath: File.DigSig.Result
+      description: Cb's decision after checking this binary's Digital Signature
+    - contextPath: File.LastSeen
+      description: Last time binary was seen
+    - contextPath: File.Path
+      description: Binary Path
+    - contextPath: File.ProductName
+      description: The Product Name
+    - contextPath: File.OS
+      description: The OS
+    - contextPath: File.MD5
+      description: Binary MD5
+    - contextPath: File.Company
+      description: Name of the company that released a binary
+      type: string
+    - contextPath: File.DigitalSignature.Publisher
+      description: Publisher of the digital signature for the file.
+      type: string
+    - contextPath: File.Name
+      description: Full Filename e.g. data.xls.
+      type: string
+    - contextPath: File.Signature.OriginalName
+      description: File's original name.
+      type: string
+    - contextPath: File.Signature.InternalName
+      description: File's internal name.
+      type: string
+    - contextPath: File.Signature.FileVersion
+      description: File version.
+      type: string
+    - contextPath: File.Signature.Description
+      description: Description of the signature.
+      type: string
+    description: Query for binaries based on given parameters
+  - name: cb-binary-get
+    arguments:
+    - name: md5
+      required: true
+      default: true
+      description: MD5 File Hash
+    - name: summary
+      auto: PREDEFINED
+      predefined:
+      - "yes"
+      - "no"
+      description: Whether to include summary
+    - name: decompress
+      auto: PREDEFINED
+      predefined:
+      - "yes"
+      - "no"
+      description: Whether to decompress results
+      defaultValue: "yes"
+    outputs:
+    - contextPath: File.DigSig.Publisher
+      description: The publisher of the Digital Signature
+    - contextPath: File.InternalName
+      description: The Internal Name
+    - contextPath: File.ServerAddedTimestamp
+      description: The server added timestamp
+    - contextPath: File.Name
+      description: Binary Name
+    - contextPath: File.Extension
+      description: Binary Extension
+    - contextPath: File.Timestamp
+      description: Binary Timestamp
+    - contextPath: File.Hostname
+      description: Binary Hostname
+    - contextPath: File.Description
+      description: The description
+    - contextPath: File.DigSig.Result
+      description: Cb's decision after checking this binary's Digital Signature
+    - contextPath: File.LastSeen
+      description: Last time binary was seen
+    - contextPath: File.Path
+      description: Binary Path
+    - contextPath: File.ProductName
+      description: The Product Name
+    - contextPath: File.OS
+      description: The OS
+    - contextPath: File.MD5
+      description: Binary MD5
+    - contextPath: File.Company
+      description: Name of the company that released a binary
+      type: string
+    - contextPath: File.DigitalSignature.Publisher
+      description: Publisher of the digital signature for the file.
+      type: string
+    - contextPath: File.Name
+      description: Full Filename e.g. data.xls.
+      type: string
+    - contextPath: File.Signature.OriginalName
+      description: File's original name.
+      type: string
+    - contextPath: File.Signature.InternalName
+      description: File's internal name.
+      type: string
+    - contextPath: File.Signature.FileVersion
+      description: File version.
+      type: string
+    - contextPath: File.Signature.Description
+      description: Description of the signature.
+      type: string
+    description: Deprecated. Use the cb-binary-download command instead.
+    deprecated: true
+  - name: cb-block-hash
+    arguments:
+    - name: md5hash
+      required: true
+      description: the hash on the block list
+    - name: text
+      required: true
+      description: text description of block list
+    - name: lastBanTime
+      description: the last time the hash was blocked or prevented from being executed
+    - name: banCount
+      description: total number of blocks on this block list
+    - name: lastBanHost
+      description: last hostname to block this hash
+    outputs:
+    - contextPath: File.LastAction
+      description: Last action taken on this file
+    important:
+    - contextPath: File(val.LastAction)
+      description: File Actions
+      related: ""
+    description: Blocking hash
+  - name: cb-get-hash-blacklist
+    arguments:
+    - name: filter
+      description: 'OPTIONAL filters blacklist by fields. Example: filter="md5hash
+        == put_your_hash_here"'
+    outputs:
+    - contextPath: CbResponse.BlockedHashes.MD5
+      description: Blocked MD5
+    - contextPath: CbResponse.BlockedHashes.Enabled
+      description: Is Enabled
+    - contextPath: CbResponse.BlockedHashes.Description
+      description: Blocked Description
+    - contextPath: CbResponse.BlockedHashes.Timestamp
+      description: Blocked Timestamp
+    - contextPath: CbResponse.BlockedHashes.BlockCount
+      description: Blocked Count
+    - contextPath: CbResponse.BlockedHashes.Username
+      description: Blocked hash username
+    - contextPath: CbResponse.BlockedHashes.LastBlock.Time
+      description: Last block time
+    - contextPath: CbResponse.BlockedHashes.LastBlock.Hostname
+      description: Last block hostname
+    - contextPath: CbResponse.BlockedHashes.LastBlock.CbSensorID
+      description: Last block sensor ID
+    description: Returns a list of hashes on block list, with each list entry describing
+      one hash on block list.
+  - name: cb-get-process
+    arguments:
+    - name: pid
+      required: true
+      description: the internal CB process id; this is the id field in search results
+    - name: segid
+      required: true
+      description: the process segment id, the segment_id field in search results.
+    - name: get_related
+      auto: PREDEFINED
+      predefined:
+      - "false"
+      - "true"
+      description: If set to true, will get process siblings, parent and children.
+      defaultValue: "false"
+    outputs:
+    - contextPath: Process.Siblings.MD5
+      description: The sibling Process MD5
+    - contextPath: Process.CbSegmentID
+      description: Cb 'segment' where this process instance is stored. Required to
+        fetch further info on a process.
+    - contextPath: Process.Parent.MD5
+      description: The parent Process MD5
+    - contextPath: Process.Children.CommandLine
+      description: The children Process CommandLine
+    - contextPath: Process.Hostname
+      description: Process Hostname
+    - contextPath: Process.Parent.CbSegmentID
+      description: The parent Cb 'segment' where this process instance is stored.
+        Required to fetch further info on a process.
+    - contextPath: Process.CbID
+      description: Cb unique ID for this process instance - required (together with
+        CbSegmentID) to fetch further info on a process.
+    - contextPath: Process.Siblings.CbSegmentID
+      description: The sibling Cb 'segment' where this process instance is stored.
+        Required to fetch further info on a process.
+    - contextPath: Process.Children.Name
+      description: The children Process Name
+    - contextPath: Process.Parent.Name
+      description: The parent Process Name
+    - contextPath: Process.Siblings.Hostname
+      description: The sibling Process Hostname
+    - contextPath: Process.Parent.Path
+      description: The parent Process Path
+    - contextPath: Process.Children.Hostname
+      description: The children Process Hostname
+    - contextPath: Process.PID
+      description: Process PID
+    - contextPath: Process.Children.CbSegmentID
+      description: The children Cb 'segment' where this process instance is stored.
+        Required to fetch further info on a process.
+    - contextPath: Process.Children.CbID
+      description: The children Cb unique ID for this process instance - required
+        (together with CbSegmentID) to fetch further info on a process.
+    - contextPath: Process.Path
+      description: Process Path
+    - contextPath: Process.Parent.PID
+      description: The parent Process PID
+    - contextPath: Process.Children.Path
+      description: The children Process Path
+    - contextPath: Process.Name
+      description: Process Name
+    - contextPath: Process.Children.PID
+      description: The children Process PID
+    - contextPath: Process.Parent.CbID
+      description: The parent Cb unique ID for this process instance - required (together
+        with CbSegmentID) to fetch further info on a process.
+    - contextPath: Process.CommandLine
+      description: Process CommandLine
+    - contextPath: Process.Siblings.CommandLine
+      description: The sibling Process CommandLine
+    - contextPath: Process.Siblings.Name
+      description: The sibling Process Name
+    - contextPath: Process.Parent.CommandLine
+      description: The parent Process CommandLine
+    - contextPath: Process.Parent.Hostname
+      description: The parent Process Hostname
+    - contextPath: Process.MD5
+      description: Process MD5
+    - contextPath: Process.Children.MD5
+      description: The children Process MD5
+    - contextPath: Process.Siblings.CbID
+      description: The sibling Cb unique ID for this process instance - required (together
+        with CbSegmentID) to fetch further info on a process.
+    - contextPath: Process.Siblings.Path
+      description: The sibling Process Path
+    - contextPath: Process.Siblings.PID
+      description: The sibling Process PID
+    - contextPath: Process.StartTime
+      description: Start time of the process.
+      type: date
+    description: Gets basic process information for segment (segment_id) of process
+      (process_id)
+  - name: cb-get-processes
+    arguments:
+    - name: name
+      description: Filter processes by name
+    - name: group
+      description: Filter processes by group
+    - name: hostname
+      description: Filter processes by hostname
+    - name: parent-process-name
+      description: Filter processes by parent process name
+    - name: process-path
+      description: 'Filter processes by process path (Example: "c:\windows\resources\spoolsv.exe")'
+    - name: md5
+      description: Filter processes by md5 hash
+    - name: query
+      default: true
+      description: Query string. Accepts the same data as the search box on the Binary
+        Search page. See https://github.com/carbonblack/cbapi/blob/master/client_apis/docs/query_overview.pdf
+    - name: rows
+      description: Return this many rows, 10 by default.
+    - name: start
+      description: Start at this row, 0 by default.
+    - name: sort
+      description: Sort rows by this field and order. server_added_timestamp desc
+        by default.
+    - name: facet
+      description: Return facet results. 'false' by default, set to 'true' for facets.
+    outputs:
+    - contextPath: File.Name
+      description: File Name
+    - contextPath: File.MD5
+      description: File MD5
+    - contextPath: File.Path
+      description: File Path
+    - contextPath: Endpoint.Hostname
+      description: Endpoint Hostname
+    - contextPath: Process.CommandLine
+      description: Process  Commandline
+    - contextPath: Process.PID
+      description: Process PID
+    - contextPath: Process.CbID
+      description: Cb unique ID for this process instance - required (together with
+        CbSegmentID) to fetch further info on a process.
+    - contextPath: Process.CbSegmentId
+      description: Cb "segment" where this process instance is stored. Required to
+        fetch further info on a process.
+    - contextPath: Process.Parent.PID
+      description: Process Parent PID
+    - contextPath: Process.Parent.Name
+      description: Process Parent Name
+    - contextPath: Process.StartTime
+      description: Start time of the process.
+      type: date
+    description: Query processes based on given parameters
+  - name: cb-list-sensors
+    arguments:
+    - name: limit
+      description: The maximum amount of sensors to be returned.
+    outputs:
+    - contextPath: CbResponse.Sensors.Status
+      description: Sensor Status
+    - contextPath: CbResponse.Sensors.LastUpdate
+      description: Sensor Last Updated
+    - contextPath: CbResponse.Sensors.Uptime
+      description: The Sensor uptime
+    - contextPath: CbResponse.Sensors.SupportsCbLive
+      description: Sensor Support CB Live
+    - contextPath: CbResponse.Sensors.Notes
+      description: Sensor Notes
+    - contextPath: CbResponse.Sensors.Hostname
+      description: Hostname
+    - contextPath: CbResponse.Sensors.CbSensorID
+      description: Sensor ID
+    - contextPath: CbResponse.Sensors.Isolated
+      description: Sensor Isolated
+    - contextPath: CbResponse.Sensors.IPAddresses
+      description: Sensor IP Addresses
+    - contextPath: CbResponse.Sensors.OS
+      description: Sensor OS
+    - contextPath: Endpoint.Hostname
+      description: Sensor Hostname
+    - contextPath: Endpoint.OS
+      description: Sensor OS
+    - contextPath: Endpoint.IPAddresses
+      description: Sensor IP Addresses
+    description: List the CarbonBlack sensors
+  - name: cb-process-events
+    arguments:
+    - name: pid
+      required: true
+      description: the internal CB process id; this is the id field in search results
+    - name: segid
+      required: true
+      description: the process segment id; this is the segment_id field in search
+        results.
+    outputs:
+    - contextPath: Process.CrossProc.OtherProcessMD5
+      description: Other process MD5
+    - contextPath: Process.MD5
+      description: Process MD5
+    - contextPath: Process.Modules.MD5
+      description: Module MD5
+    - contextPath: Process.CommandLine
+      description: Process CommandLine
+    - contextPath: Process.Registry.RegistryPath
+      description: Registry path
+    - contextPath: Process.Path
+      description: Process Path
+    - contextPath: Process.CbID
+      description: Cb unique ID for this process instance - required (together with
+        CbSegmentID) to fetch further info on a process.
+    - contextPath: Process.Parent.Name
+      description: The parent Process Name
+    - contextPath: Process.Hostname
+      description: Process Hostname
+    - contextPath: Process.Binaries.DigSig.Publisher
+      description: The publisher of the Digital Signature
+    - contextPath: Process.CrossProc.Action
+      description: Cross process action
+    - contextPath: Process.CrossProc.OtherProcessCbID
+      description: Other process CbID
+    - contextPath: Process.CbSegmentID
+      description: Cb 'segment' where this process instance is stored. Required to
+        fetch further info on a process.
+    - contextPath: Process.Name
+      description: Process Name
+    - contextPath: Process.CrossProc.Time
+      description: Time of action
+    - contextPath: Process.PID
+      description: Process PID
+    - contextPath: Process.Modules.Filepath
+      description: Module path
+    - contextPath: Process.Binaries.DigSig.Result
+      description: Cb's decision after checking this binary's Digital Signature
+    - contextPath: Process.Parent.PID
+      description: The parent Process PID
+    - contextPath: Process.Binaries.MD5
+      description: Binary MD5
+    - contextPath: Process.CrossProc.OtherProcessBinary
+      description: Other process binary
+    - contextPath: Process.Registry.Time
+      description: Registry time
+    - contextPath: Process.Modules.Time
+      description: Module time
+    description: Retrieve all process events for a given process segmented by segment
+      ID
+  - name: cb-quarantine-device
+    arguments:
+    - name: sensor
+      required: true
+      default: true
+      description: the sensor ID to quarantine
+    outputs:
+    - contextPath: Endpoint.LastAction
+      description: Endpoint Actions
+    important:
+    - contextPath: Endpoint(val.LastAction)
+      description: Endpoint Actions
+      related: ""
+    description: Isolate the endpoint from the network
+  - name: cb-sensor-info
+    arguments:
+    - name: sensor
+      default: true
+      description: the sensor id
+    - name: ip
+      description: returns the sensor registration(s) with specified IP address
+    - name: hostname
+      description: returns the sensor registration(s) with matching hostname
+    - name: groupid
+      description: returns the sensor registration(s) in the specified sensor group
+        id
+    outputs:
+    - contextPath: CbResponse.Sensors.Status
+      description: Sensor Status
+    - contextPath: CbResponse.Sensors.LastUpdate
+      description: Sensor Last Updated
+    - contextPath: CbResponse.Sensors.Uptime
+      description: The Sensor uptime
+    - contextPath: CbResponse.Sensors.SupportsCbLive
+      description: Sensor Support CB Live
+    - contextPath: CbResponse.Sensors.Notes
+      description: Sensor Notes
+    - contextPath: CbResponse.Sensors.Hostname
+      description: Sensor Hostname
+    - contextPath: CbResponse.Sensors.CbSensorID
+      description: Sensor ID
+    - contextPath: CbResponse.Sensors.Isolated
+      description: Sensor Isolated
+    - contextPath: CbResponse.Sensors.IPAddresses
+      description: Sensor IP Addresses
+    - contextPath: CbResponse.Sensors.OS
+      description: Sensor OS
+    description: Display information about the given sensor
+  - name: cb-unblock-hash
+    arguments:
+    - name: md5hash
+      required: true
+      description: the hash on block list
+    - name: text
+      required: true
+      description: text description of block list
+    outputs:
+    - contextPath: File.LastAction
+      description: Last action taken on this file
+    important:
+    - contextPath: File(val.LastAction)
+      description: File Actions
+      related: ""
+    description: Unblocking hash
+  - name: cb-unquarantine-device
+    arguments:
+    - name: sensor
+      required: true
+      default: true
+      description: the sensor ID to quarantine
+    outputs:
+    - contextPath: Endpoint.LastAction
+      description: Endpoint Actions
+    important:
+    - contextPath: Endpoint(val.LastAction)
+      description: Endpoint Actions
+      related: ""
+    description: Unquarantine the endpoint
+  - name: cb-version
+    arguments: []
+    description: Display the CarbonBlack version
+  - name: cb-watchlist-del
+    arguments:
+    - name: watchlist-id
+      required: true
+      description: Watchlist ID
+    description: Delete a watchlist in Carbon black Response.
+  - name: cb-watchlist-get
+    arguments:
+    - name: watchlist-id
+      default: true
+      description: Watchlist ID
+    outputs:
+    - contextPath: CbResponse.Watchlists.LastHit
+      description: Watchlist last hit
+    - contextPath: CbResponse.Watchlists.TotalHits
+      description: Watchlist Total hits
+    - contextPath: CbResponse.Watchlists.SearchQuery
+      description: Cb search query used for the watchlist.
+    - contextPath: CbResponse.Watchlists.Name
+      description: Watchlist Name
+    - contextPath: CbResponse.Watchlists.Enabled
+      description: Watchlist is enabled
+    - contextPath: CbResponse.Watchlists.LastHitCount
+      description: Watchlist last hit count
+    - contextPath: CbResponse.Watchlists.DateAdded
+      description: Watchlist Date added
+    - contextPath: CbResponse.Watchlists.SearchTimestamp
+      description: Watchlist last hit count
+    - contextPath: CbResponse.Watchlists.CbWatchlistID
+      description: Watchlist ID
+    description: Retrieve info for a watchlist in Carbon black Response.
+  - name: cb-watchlist-new
+    arguments:
+    - name: search-query
+      required: true
+      description: the raw Carbon Black query that this watchlist matches
+    - name: name
+      required: true
+      description: name of this watchlist
+    outputs:
+    - contextPath: CbResponse.Watchlists.LastHit
+      description: Watchlist last hit
+    - contextPath: CbResponse.Watchlists.TotalHits
+      description: Watchlist Total hits
+    - contextPath: CbResponse.Watchlists.SearchQuery
+      description: Cb search query used for the watchlist.
+    - contextPath: CbResponse.Watchlists.Name
+      description: Watchlist Name
+    - contextPath: CbResponse.Watchlists.Enabled
+      description: Watchlist is enabled
+    - contextPath: CbResponse.Watchlists.LastHitCount
+      description: Watchlist last hit count
+    - contextPath: CbResponse.Watchlists.DateAdded
+      description: Watchlist Date added
+    - contextPath: CbResponse.Watchlists.SearchTimestamp
+      description: Watchlist last hit count
+    - contextPath: CbResponse.Watchlists.CbWatchlistID
+      description: Watchlist ID
+    description: Create a new watchlist in Carbon black Response.
+  - name: cb-watchlist-set
+    arguments:
+    - name: watchlist-id
+      required: true
+      description: Watchlist ID
+    - name: search-query
+      description: the raw Carbon Black query that this watchlist matches
+    - name: name
+      description: name of this watchlist
+    - name: indexType
+      description: the type of watchlist. Valid values are 'modules' and 'events'
+        for binary and process watchlists, respectively
+    description: Modify a watchlist in Carbon black Response.
+  - name: cb-alert-update
+    arguments:
+    - name: uniqueId
+      required: true
+      description: Alert unique identifier
+    - name: status
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - Resolved
+      - Unresolved
+      - In Progress
+      - False Positive
+      description: 'Updated alert''s status: Resolved,Unresolved,In Progress or False
+        Positive'
+    - name: setIgnored
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Whether to stop showing this type of alert
+    description: Alert update and resolution
+  - name: cb-watchlist
+    arguments: []
+    outputs:
+    - contextPath: CbResponse.Watchlists.LastHit
+      description: Watchlist last hit
+    - contextPath: CbResponse.Watchlists.TotalHits
+      description: Watchlist Total hits
+    - contextPath: CbResponse.Watchlists.SearchQuery
+      description: Cb search query used for the watchlist.
+    - contextPath: CbResponse.Watchlists.Name
+      description: Watchlist Name
+    - contextPath: CbResponse.Watchlists.Enabled
+      description: Watchlist is enabled
+    - contextPath: CbResponse.Watchlists.LastHitCount
+      description: Watchlist last hit count
+    - contextPath: CbResponse.Watchlists.DateAdded
+      description: Watchlist Date added
+    - contextPath: CbResponse.Watchlists.SearchTimestamp
+      description: Watchlist last hit count
+    - contextPath: CbResponse.Watchlists.CbWatchlistID
+      description: Watchlist ID
+    description: Retrieve watchlist in Carbon black Response.
+  - name: cb-binary-download
+    arguments:
+    - name: md5
+      required: true
+      default: true
+      description: MD5 hash of the file.
+    - name: summary
+      auto: PREDEFINED
+      predefined:
+      - "yes"
+      - "no"
+      description: Whether to include the summary.
+    outputs:
+    - contextPath: File.DigSig.Publisher
+      description: The publisher of the digital signature.
+    - contextPath: File.InternalName
+      description: The internal name.
+    - contextPath: File.ServerAddedTimestamp
+      description: The timestamp when the server was added.
+    - contextPath: File.Name
+      description: The binary name.
+    - contextPath: File.Extension
+      description: The binary extension.
+    - contextPath: File.Timestamp
+      description: The binary timestamp.
+    - contextPath: File.Hostname
+      description: The binary hostname.
+    - contextPath: File.Description
+      description: The binary description.
+    - contextPath: File.DigSig.Result
+      description: The Carbon Black decision after checking this binary's digital
+        signature.
+    - contextPath: File.LastSeen
+      description: LThe lst time the binary was seen.
+    - contextPath: File.Path
+      description: The binary path.
+    - contextPath: File.ProductName
+      description: The product name.
+    - contextPath: File.OS
+      description: The OS.
+    - contextPath: File.MD5
+      description: The MD5 hash of the binary.
+    - contextPath: File.Company
+      description: Name of the company that released a binary.
+    - contextPath: File.DigitalSignature.Publisher
+      description: Publisher of the digital signature for the file.
+    - contextPath: File.Name
+      description: Full filename, for example data.xls.
+    - contextPath: File.Signature.OriginalName
+      description: The file's original name.
+    - contextPath: File.Signature.InternalName
+      description: The file's internal name.
+    - contextPath: File.Signature.FileVersion
+      description: The file version.
+    - contextPath: File.Signature.Description
+      description: The description of the signature.
+    description: Retrieve a binary from CarbonBlack based on hash. Returns a .zip
+      file containing the requested file and it's metadata.
+  isfetch: true
+  runonce: false
+  dockerimage: demisto/python:2.7.18.8715
+tests:
+- Carbon Black Response Test

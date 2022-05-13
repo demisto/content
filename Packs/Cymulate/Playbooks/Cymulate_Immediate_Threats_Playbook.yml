@@ -37,10 +37,10 @@ tasks:
     taskid: 4cd7bb94-f1ca-4003-8f4f-dd1f9788c857
     type: regular
     task:
-      description: Push malicious hashes to Endpoint Security blocklist.
+      description: Push malicious hashes to Endpoint Security block list.
       id: 4cd7bb94-f1ca-4003-8f4f-dd1f9788c857
       version: -1
-      name: Push malicious hashes to Endpoint Security blocklist
+      name: Push malicious hashes to Endpoint Security block list
       type: regular
       iscommand: false
       brand: ""
@@ -65,10 +65,10 @@ tasks:
     taskid: f4c78891-3865-41d2-8694-f5d2a7f17208
     type: regular
     task:
-      description: Push malicious Emails to Email Gateway blocklist
+      description: Push malicious Emails to Email Gateway block list
       id: f4c78891-3865-41d2-8694-f5d2a7f17208
       version: -1
-      name: Push malicious Emails to Email Gateway blocklist
+      name: Push malicious Emails to Email Gateway block list
       type: regular
       iscommand: false
       brand: ""
@@ -93,10 +93,10 @@ tasks:
     taskid: a407f347-50e5-41e2-8e7c-fcf8abf06f49
     type: regular
     task:
-      description: Push malicious URL's to Web Gateway blocklist.
+      description: Push malicious URL's to Web Gateway block list.
       id: a407f347-50e5-41e2-8e7c-fcf8abf06f49
       version: -1
-      name: Push malicious URL's to Web Gateway blocklist
+      name: Push malicious URL's to Web Gateway block list
       type: regular
       iscommand: false
       brand: ""

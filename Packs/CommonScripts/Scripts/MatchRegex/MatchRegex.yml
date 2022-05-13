@@ -1,0 +1,35 @@
+commonfields:
+  id: MatchRegex
+  version: -1
+name: MatchRegex
+script: ''
+type: javascript
+tags:
+- Utility
+comment: Deprecated. Use the **MatchRegexV2** script instead.
+enabled: true
+args:
+- name: data
+  required: true
+  default: true
+  description: The text date from which to extract thee regex.
+- name: regex
+  required: true
+  description: The regex to match and extract.
+- name: group
+  description: The matching group to return (if not provided the full match will be
+    returned), group value should start at 1
+- name: contextKey
+  description: The context key to populate with the result.
+- name: flags
+  description: The regex flags to match. Default is -gim.
+  defaultValue:
+outputs:
+- contextPath: MatchRegex.results
+  description: List of regex matches.
+  type: string
+scripttarget: 0
+deprecated: true
+tests:
+- No test - deprecated. use MatchRegexV2
+fromversion: 5.0.0

@@ -19,7 +19,8 @@
         "Link",
         "Link \u0026 Close",
         "Reopen",
-        "Unlink"
+        "Unlink",
+        "Take Ownership"
     ],
     "sla": 0,
     "system": false,

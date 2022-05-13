@@ -22,6 +22,9 @@ class Client(BaseClient):
         super().__init__(base_url, verify=use_ssl, proxy=use_proxy, **kwargs)
         self.verify = use_ssl
         self.sid = sid if sid != "None" else None
+        self.has_performed_login = False  # set to True once username and password are used to login.
+        """ Note that Client is "disposable", and will not be the same object on the next command,
+        has_performed_login is used to decide whether to logout after running the command."""
 
     @property
     def headers(self):
@@ -41,8 +44,11 @@ class Client(BaseClient):
 
         if sid:
             self.sid = sid
+            self.has_performed_login = True
+            demisto.debug(f"login: success, saving sid={sid} to integrationContext")
             demisto.setIntegrationContext({'cp_sid': sid})
         else:
+            demisto.debug("login: failed, clearing integrationContext")
             demisto.setIntegrationContext({})
 
         printable_result = {'session-id': sid}
@@ -57,8 +63,10 @@ class Client(BaseClient):
     def restore_sid_from_context_or_login(self, username: str, password: str, session_timeout: int,
                                           domain_arg: str = None):
         if sid_from_context := demisto.getIntegrationContext().get('cp_sid'):
+            demisto.debug(f"restore sid: success, setting restored sid on Client (sid={sid_from_context})")
             self.sid = sid_from_context
         else:
+            demisto.debug("restore sid: failed to restore, logging in")
             self.login(username, password, session_timeout, domain_arg)
 
     def test_connection(self):
@@ -67,7 +75,7 @@ class Client(BaseClient):
         Otherwise, an exception should be raised by self._http_request()
         """
         response = self._http_request(method='POST', url_suffix='show-api-versions', headers=self.headers,
-                                      ok_codes=(200, 500), resp_type='response')  # returns requests.Response
+                                      ok_codes=(200, 500), resp_type='response', json_data={})
         if response.status_code == 500:
             return 'Server Error: make sure Server URL and Server Port are correctly set'
 
@@ -81,7 +89,11 @@ class Client(BaseClient):
         response = self._http_request(method='POST', url_suffix='logout', headers=self.headers, json_data={})
         self.sid = None
         demisto.setIntegrationContext({})
-        return response.get('message')
+        self.has_performed_login = False
+
+        message = response.get('message')
+        demisto.debug(f"logout: sid={self.sid}, message={message}")
+        return message
 
     def list_hosts(self, limit: int, offset: int):
         return self._http_request(method='POST', url_suffix='show-hosts',
@@ -130,14 +142,17 @@ class Client(BaseClient):
         return self._http_request(method='POST', url_suffix='add-group', headers=self.headers,
                                   json_data={"name": name})
 
-    def update_group(self, identifier: str, ignore_warnings: bool, ignore_errors: bool, members,
+    def update_group(self, identifier: str, ignore_warnings: bool, ignore_errors: bool, action: str, members,
                      new_name: Optional[str], comments: Optional[str]):
+        # If the desired action is to add or remove members, they should be specified differently.
+        members_value = {action: members} if action in ['add', 'remove'] else members
         body = {'name': identifier,
                 'new-name': new_name,
-                'members': members,
+                'members': members_value,
                 'comments': comments,
                 'ignore-warnings': ignore_warnings,
                 'ignore-errors': ignore_errors}
+
         response = self._http_request(method='POST', url_suffix='set-group', headers=self.headers,
                                       json_data=body)
         return response
@@ -275,6 +290,14 @@ class Client(BaseClient):
                 }
         return self._http_request(method='POST', url_suffix='set-application-site',
                                   headers=self.headers, json_data=body)
+
+    def add_objects_batch(self, object_type, add_list):
+        body = {'objects': [{'type': object_type, 'list': add_list}]}
+        return self._http_request(method='POST', url_suffix='add-objects-batch', headers=self.headers, json_data=body)
+
+    def delete_objects_batch(self, object_type, delete_list):
+        body = {'objects': [{'type': object_type, 'list': delete_list}]}
+        return self._http_request(method='POST', url_suffix='delete-objects-batch', headers=self.headers, json_data=body)
 
     def delete_application_site(self, identifier: str):
         return self._http_request(method='POST', url_suffix='delete-application-site',
@@ -618,7 +641,7 @@ def checkpoint_add_group_command(client: Client, name) -> CommandResults:
 
 
 def checkpoint_update_group_command(client: Client, identifier: str, ignore_warnings: bool,
-                                    ignore_errors: bool, members=None, new_name: str = None,
+                                    ignore_errors: bool, action: str = '', members=None, new_name: str = None,
                                     comments: str = None) -> CommandResults:
     """
     Edit existing group using object name or uid.
@@ -627,6 +650,7 @@ def checkpoint_update_group_command(client: Client, identifier: str, ignore_warn
         client (Client): CheckPoint client.
         identifier(str): uid or name.
         ignore_warnings(bool):Apply changes ignoring warnings.
+        action(str): The action to take towards the modified objects.
         ignore_errors(bool): Apply changes ignoring errors. You won't be able to publish such
                              a changes. If ignore-warnings flag was omitted- warnings will also
                              be ignored
@@ -637,8 +661,7 @@ def checkpoint_update_group_command(client: Client, identifier: str, ignore_warn
     if members:
         # noinspection PyTypeChecker
         members = argToList(members)
-    result = client.update_group(identifier, ignore_warnings, ignore_errors,
-                                 members, new_name, comments)
+    result = client.update_group(identifier, ignore_warnings, ignore_errors, action, members, new_name, comments)
     headers = ['name', 'uid', 'type', 'domain-name', 'domain-type', 'domain-uid', 'creator',
                'last-modifier', 'read-only']
     printable_result = build_printable_result(headers, result)
@@ -1275,7 +1298,7 @@ def checkpoint_update_application_site_command(client: Client, identifier: str,
 
     elif url_list_to_remove:
         url_list_to_remove = argToList(url_list_to_remove)
-        url_list_object = {'add': url_list_to_remove}
+        url_list_object = {'remove': url_list_to_remove}
 
     if groups:
         groups = argToList(groups)
@@ -1629,6 +1652,57 @@ def checkpoint_show_task_command(client: Client, task_id: str) -> CommandResults
     return command_results
 
 
+def checkpoint_add_objects_batch_command(client: Client, object_type: str, ipaddress, name):
+    context_data = {}
+    readable_output = ''
+
+    ip_addresses = argToList(ipaddress, ',')
+    ip_object_names = argToList(name, ',')
+    add_list = []
+    for ip, name in zip(ip_addresses, ip_object_names):
+        tmp_dict = {'name': name, 'ip-address': ip}
+        add_list.append(tmp_dict)
+
+    result = client.add_objects_batch(object_type, add_list)
+
+    if result:
+        context_data = {'task-id': result.get('task-id')}
+        readable_output = tableToMarkdown('CheckPoint data for add-objects-batch command:',
+                                          context_data)
+
+    command_results = CommandResults(
+        outputs_prefix='CheckPoint.AddObjectBatch',
+        outputs_key_field='task-id',
+        readable_output=readable_output,
+        outputs=context_data,
+        raw_response=result
+    )
+    return command_results
+
+
+def checkpoint_delete_objects_batch_command(client: Client, object_type: str, name):
+    context_data = {}
+    readable_output = ''
+
+    object_names = argToList(name)
+    objects_to_delete = [{'name': object_name} for object_name in object_names]
+
+    result = client.delete_objects_batch(object_type, objects_to_delete)
+
+    if result:
+        context_data = {'task-id': result.get('task-id')}
+        readable_output = tableToMarkdown('CheckPoint data for delete-objects-batch command:',
+                                          context_data)
+    command_results = CommandResults(
+        outputs_prefix='CheckPoint.DeleteObjectsBatch',
+        outputs_key_field='task-id',
+        readable_output=readable_output,
+        outputs=context_data,
+        raw_response=result
+    )
+    return command_results
+
+
 def checkpoint_install_policy_command(client: Client, policy_package: str, targets,
                                       access: bool) -> CommandResults:
     """
@@ -1780,7 +1854,7 @@ def checkpoint_logout_command(client: Client, sid: str = None) -> str:
     return client.logout()
 
 
-def main():
+def main():  # pragma: no cover
     """
         Client is created with a session id. if a session id was given as argument
         use it, else use the session id from the integration context.
@@ -1803,15 +1877,16 @@ def main():
     proxy = params.get('proxy', False)
     verify_certificate = not params.get('insecure', False)
 
-    if server[-1] == "/":
+    if server.startswith("https://"):
+        server = server[len("https://"):]
+
+    if server.endswith("/"):
         server = server[:-1]
 
     client = Client(base_url=f'https://{server}:{port}/web_api/',
                     use_ssl=verify_certificate,
                     use_proxy=proxy,
                     sid=sid_arg)
-
-    stay_logged_in = True
 
     try:
         # commands that perform login
@@ -1824,17 +1899,16 @@ def main():
 
         elif command == 'checkpoint-login-and-get-session-id':
             return_results(client.login(**login_args))
+            # note that the "if client.has_logged in: client.logout()" mechanism is NOT used here, to allow sid reuse
             return
 
         elif command == 'checkpoint-logout':
-            if sid_arg:
-                client.sid = sid_arg
-            return_results(client.logout())
+            return_results(checkpoint_logout_command(client, sid_arg))
+            return
 
         else:
-            if not client.sid:
+            if not client.sid:  # client.sid is None if `sid_arg in {None, "None"}`
                 client.restore_sid_from_context_or_login(**login_args)
-            stay_logged_in = False
 
         demisto.info(f'Command being called is {demisto.command()}')
 
@@ -1958,10 +2032,18 @@ def main():
         elif command == 'checkpoint-package-list':
             return_results(checkpoint_list_package_command(client, **demisto.args()))
 
+        elif command == 'checkpoint-add-objects-batch':
+            return_results(checkpoint_add_objects_batch_command(client, **demisto.args()))
+
+        elif command == 'checkpoint-delete-objects-batch':
+            return_results(checkpoint_delete_objects_batch_command(client, **demisto.args()))
+
         else:
             raise NotImplementedError(f"Unknown command {demisto.command()}.")
 
-        if not stay_logged_in:
+        if client.has_performed_login:
+            # this part is not reached when login() is explicitly called
+            demisto.debug("main: client.has_performed_login==True, logging out.")
             client.logout()
 
     except DemistoException as e:

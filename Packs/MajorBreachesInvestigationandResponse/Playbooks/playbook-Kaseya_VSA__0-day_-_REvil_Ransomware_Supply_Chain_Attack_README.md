@@ -66,7 +66,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | SplunkAdvancedSearch4FilesandReg | Search splunk for related REvil - Kaseya breach file names. | index=* "c:\\kworking\\agent.exe" OR "c:\\windows\\mpsvc.dll" OR "c:\\windows\\system32\\sfc.dll" OR "c:\\kworking\\binco-readme.txt" OR "c:\\kworking\\agent.crt" OR "c:\\windows\\cert.exe" OR "SOFTWARE\\BlackLivesMatter" | Optional |
 | SplunkAdvancedSearch4PSCMD | Search Splunk for related REvil - Kaseya breach Powershell behaviours. | index=* "*C:\\Windows\\cert.exe &amp; echo %RANDOM%*" OR "*C:\\Windows\\cert.exe -decode c:\\kworking\\agent.crt*" OR "*del /q /f c:\\kworking\\agent.crt*" | Optional |
 | SplunkAdvancedSearch4WebLog | Search Splunk for related REvil - Kaseya breach web access logs activity. | index=* ("POST" AND "/dl.asp") OR ("GET" AND "/done.asp") OR ("POST" AND "/cgi-bin/KUpload.dll") OR ("POST" AND "/userFilterTableRpt.asp")  | Optional |
-| EDLDomainBlocklist | The name of the EDL Domain Blocklist. | Demisto Remediation - Domain EDL | Optional |
+| EDLDomainBlocklist | The name of the EDL Domain Block List. | Demisto Remediation - Domain EDL | Optional |
 | QRadarDomainFieldName | The QRadar domain field name to check against the Reference Set of Kaseya domains. | domain | Optional |
 | ReferenceListName | The reference list name to create in QRadar for the Domain Indicators Hunting. | KaseyaDomainIndicators | Optional |
 

@@ -48,12 +48,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: d8e239ed-2461-42d6-8691-b724318df91f
+    taskid: b438c457-bde4-4f03-8e38-f8aeee661f1b
     type: regular
     task:
-      id: d8e239ed-2461-42d6-8691-b724318df91f
+      id: b438c457-bde4-4f03-8e38-f8aeee661f1b
       version: -1
       name: 'Get XDR disconnected endpoints '
       description: Gets a list of endpoints, according to the passed filters. If there
@@ -69,26 +71,24 @@ tasks:
       '#none#':
       - "5"
     scriptarguments:
-      alias_name: {}
-      dist_name: {}
-      endpoint_id_list: {}
-      first_seen_gte: {}
-      first_seen_lte: {}
-      group_name: {}
-      hostname: {}
-      ip_list: {}
-      isolate: {}
       last_seen_gte:
         complex:
           root: inputs.LastSeenStartDate
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.LastSeenStartDate
+                iscontext: true
       last_seen_lte:
         complex:
           root: inputs.LastSeenEndDate
-      limit: {}
-      page: {}
-      platform: {}
-      sort_by: {}
-      sort_order: {}
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.LastSeenEndDate
+                iscontext: true
     separatecontext: false
     view: |-
       {
@@ -102,12 +102,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: ac6ed082-4b59-4d9f-80b0-4d40403df5e7
+    taskid: 12957918-32bb-4c3b-8cdc-4b149812f2f7
     type: regular
     task:
-      id: ac6ed082-4b59-4d9f-80b0-4d40403df5e7
+      id: 12957918-32bb-4c3b-8cdc-4b149812f2f7
       version: -1
       name: Generate a CSV report for disconnected XDR endpoints
       description: Export the given array to a CSV file.
@@ -128,7 +130,7 @@ tasks:
           - - operator: isEqualString
               left:
                 value:
-                  simple: PaloAltoNetworksXDR.Endpoint.endpoint_status
+                  simple: PaloAltoNetworksXDR.Endpoint.agent_status
                 iscontext: true
               right:
                 value:
@@ -136,14 +138,13 @@ tasks:
             - operator: isEqualString
               left:
                 value:
-                  simple: PaloAltoNetworksXDR.Endpoint.endpoint_status
+                  simple: PaloAltoNetworksXDR.Endpoint.agent_status
                 iscontext: true
               right:
                 value:
                   simple: DISCONNECTED
       fileName:
         simple: Disconnected XDR endpoints - ${incident.created}.csv
-      headers: {}
     separatecontext: false
     view: |-
       {
@@ -157,12 +158,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 0a1cdfc8-c773-4a9e-88ae-38daba14eef4
+    taskid: bbf59aee-7646-48d3-881d-3dda5c1f2052
     type: regular
     task:
-      id: 0a1cdfc8-c773-4a9e-88ae-38daba14eef4
+      id: bbf59aee-7646-48d3-881d-3dda5c1f2052
       version: -1
       name: Mail disconnected endpoints report
       description: Sends an mail using Gmail/EWS.
@@ -174,30 +177,18 @@ tasks:
       '#none#':
       - "6"
     scriptarguments:
-      additionalHeader: {}
-      attachCIDs: {}
       attachIDs:
         complex:
           root: File
           accessor: EntryID
-      attachNames: {}
-      bcc: {}
-      body: {}
-      cc: {}
-      from: {}
       htmlBody:
         complex:
           root: inputs.MessageBody
-      replyTo: {}
       subject:
-        simple: 'CortexXDR Discconcted endpoint '
-      templateParams: {}
+        simple: Cortex XDR Discconcted endpoints
       to:
         complex:
           root: inputs.Email
-      transientFile: {}
-      transientFileCID: {}
-      transientFileContent: {}
     separatecontext: false
     view: |-
       {
@@ -211,6 +202,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "4":
     id: "4"
     taskid: 6daa6400-3c03-4285-8c7a-672e14d9bf8c
@@ -236,14 +229,16 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 73b70a82-bab1-494c-8ba0-de37a20ee4bd
+    taskid: fa23f54f-4e1c-44dd-8ad7-d5c1ae59b2ca
     type: condition
     task:
-      id: 73b70a82-bab1-494c-8ba0-de37a20ee4bd
+      id: fa23f54f-4e1c-44dd-8ad7-d5c1ae59b2ca
       version: -1
-      name: Was an disconnected endpoint found?
+      name: Disconnected endpoints found?
       description: ''''''
       type: condition
       iscommand: false
@@ -265,7 +260,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: PaloAltoNetworksXDR.Endpoint.endpoint_status
+              simple: PaloAltoNetworksXDR.Endpoint.agent_status
             iscontext: true
           right:
             value:
@@ -273,7 +268,7 @@ tasks:
         - operator: isEqualString
           left:
             value:
-              simple: PaloAltoNetworksXDR.Endpoint.endpoint_status
+              simple: PaloAltoNetworksXDR.Endpoint.agent_status
             iscontext: true
           right:
             value:
@@ -290,12 +285,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: d925c92f-8f91-4854-83aa-08b4f423d779
+    taskid: 004b7e07-9e8a-4ec3-8c63-a02e05bab64e
     type: regular
     task:
-      id: d925c92f-8f91-4854-83aa-08b4f423d779
+      id: 004b7e07-9e8a-4ec3-8c63-a02e05bab64e
       version: -1
       name: Count involved users and hosts
       description: Count the users and hosts involved in the incidents and insert
@@ -308,397 +305,6 @@ tasks:
       '#none#':
       - "8"
     scriptarguments:
-      accountid: {}
-      accountinformationbreached: {}
-      accountname: {}
-      addLabels: {}
-      affecteddata: {}
-      affecteddatatype: {}
-      affectedindividualscontactinformation: {}
-      agentid: {}
-      alertid: {}
-      alertname: {}
-      app: {}
-      appchannelname: {}
-      appendMultiSelect: {}
-      appendTags: {}
-      applicationid: {}
-      applicationname: {}
-      appmessage: {}
-      approximatenumberofaffecteddatasubjects: {}
-      assetid: {}
-      assigneduser: {}
-      assignmentgroup: {}
-      attachmentcount: {}
-      attachmentextension: {}
-      attachmenthash: {}
-      attachmentid: {}
-      attachmentname: {}
-      attachmentsize: {}
-      attachmenttype: {}
-      attorneygeneralnotification: {}
-      blockedaction: {}
-      breachconfirmation: {}
-      bugtraq: {}
-      caller: {}
-      categorycount: {}
-      city: {}
-      closeNotes: {}
-      closeReason: {}
-      closetime: {}
-      closingreason: {}
-      closinguser: {}
-      cloudservice: {}
-      commandline: {}
-      companyaddress: {}
-      companycity: {}
-      companycountry: {}
-      companyhasinsuranceforthebreach: {}
-      companyname: {}
-      companypostalcode: {}
-      compliancenotes: {}
-      consumerreportingagenciesnotification: {}
-      contactaddress: {}
-      contactemailaddress: {}
-      contactname: {}
-      contacttelephonenumber: {}
-      costcenter: {}
-      costcentercode: {}
-      country: {}
-      countryname: {}
-      countrywherebusinesshasitsmainestablishment: {}
-      countrywherethebreachtookplace: {}
-      createddatefailedincidents: {}
-      criticalassets: {}
-      customFields: {}
-      cve: {}
-      cvss: {}
-      cvssavailabilityrequirement: {}
-      cvsscollateraldamagepotential: {}
-      cvssconfidentialityrequirement: {}
-      cvssintegrityrequirement: {}
-      dataencryptionstatus: {}
-      datetimeofthebreach: {}
-      dbotMirrorDirection: {}
-      dbotMirrorId: {}
-      dbotMirrorInstance: {}
-      dbotMirrorTags: {}
-      dbotprediction: {}
-      dbotpredictionprobability: {}
-      dbottextsuggestionhighlighted: {}
-      deleteEmptyField: {}
-      department: {}
-      dest: {}
-      desthostname: {}
-      destinationgeolocation: {}
-      destinationhostname: {}
-      destinationip: {}
-      destinationips: {}
-      destinationipv6: {}
-      destinationmacaddress: {}
-      destinationnetwork: {}
-      destinationport: {}
-      destntdomain: {}
-      destos: {}
-      details: {}
-      detectedexternalhosts: {}
-      detectedexternalips: {}
-      detectedinternalhosts: {}
-      detectedinternalips: {}
-      detectedusers: {}
-      detectionendtime: {}
-      detectionid: {}
-      detectionupdatetime: {}
-      detectionurl: {}
-      deviceexternalip: {}
-      devicehash: {}
-      deviceid: {}
-      devicelocalip: {}
-      devicemodel: {}
-      devicename: {}
-      devicetime: {}
-      displayname: {}
-      dnsname: {}
-      dpoemailaddress: {}
-      dponotification: {}
-      dstports: {}
-      duration: {}
-      email: {}
-      emailaddress: {}
-      emailauthenticitycheck: {}
-      emailbcc: {}
-      emailbody: {}
-      emailbodyformat: {}
-      emailbodyhtml: {}
-      emailcc: {}
-      emailclassification: {}
-      emailclientname: {}
-      emailfrom: {}
-      emailheaders: {}
-      emailhtml: {}
-      emailhtmlimage: {}
-      emailinreplyto: {}
-      emailkeywords: {}
-      emaillabels: {}
-      emaillatestmessage: {}
-      emailmessageid: {}
-      emailreceived: {}
-      emailreplyto: {}
-      emailreturnpath: {}
-      emailsenderip: {}
-      emailsize: {}
-      emailsource: {}
-      emailsubject: {}
-      emailto: {}
-      emailtocount: {}
-      emailurlclicked: {}
-      employeedisplayname: {}
-      employeeemail: {}
-      employeemanageremail: {}
-      errorcode: {}
-      errormessage: {}
-      escalation: {}
-      eventaction: {}
-      eventdescriptions: {}
-      eventid: {}
-      eventnames: {}
-      events: {}
-      eventtype: {}
-      externaladdresses: {}
-      failedincidentscreateddate: {}
-      filehash: {}
-      filename: {}
-      filepath: {}
-      filesize: {}
-      financialinformationbreached: {}
-      firstname: {}
-      firstseen: {}
-      followup: {}
-      givenname: {}
-      healthinsurancebreached: {}
-      helloworldid: {}
-      helloworldstatus: {}
-      helloworldtype: {}
-      highlevelcategories: {}
-      hostname: {}
-      hosts: {}
-      id: {}
-      incomingmirrorerror: {}
-      individualsnotification: {}
-      infectedhosts: {}
-      integrationscategories: {}
-      integrationsfailedcategories: {}
-      integrationstestgrid: {}
-      internaladdresses: {}
-      investigationstage: {}
-      isolated: {}
-      isthedatasubjecttodpia: {}
-      jobcode: {}
-      jobfamily: {}
-      jobfunction: {}
-      labels: {}
-      lastmirroredintime: {}
-      lastmodifiedby: {}
-      lastmodifiedon: {}
-      lastname: {}
-      lastseen: {}
-      lastupdatetime: {}
-      leadership: {}
-      likelyimpact: {}
-      listofrulesevent: {}
-      location: {}
-      locationregion: {}
-      logsource: {}
-      logsourcename: {}
-      logsourcetype: {}
-      lowlevelcategoriesevents: {}
-      macaddress: {}
-      maliciousbehavior: {}
-      maliciouscauseifthecauseisamaliciousattack: {}
-      malwarefamily: {}
-      malwarename: {}
-      managementnotification: {}
-      manageremailaddress: {}
-      managername: {}
-      md5: {}
-      measurestomitigate: {}
-      medianotification: {}
-      medicalinformationbreached: {}
-      mobiledevicemodel: {}
-      mobilephone: {}
-      name: {}
-      numberofentriesiderrors: {}
-      numberoffailedincidents: {}
-      numberoflogsources: {}
-      occurred: {}
-      os: {}
-      osversion: {}
-      otherpiidatabreached: {}
-      outgoingmirrorerror: {}
-      owner: {}
-      parentprocessid: {}
-      personalemail: {}
-      phase: {}
-      phishingsubtype: {}
-      phonenumber: {}
-      pid: {}
-      piidatatype: {}
-      playbooknameswithfailedtasks: {}
-      playbooksfailedcommands: {}
-      playbookswithfailedtasks: {}
-      playbooktaskserrors: {}
-      policydeleted: {}
-      policydescription: {}
-      policydetails: {}
-      policyid: {}
-      policyrecommendation: {}
-      policyremediable: {}
-      policyseverity: {}
-      policytype: {}
-      possiblecauseofthebreach: {}
-      postalcode: {}
-      postnatdestinationip: {}
-      postnatdestinationport: {}
-      postnatsourceip: {}
-      postnatsourceport: {}
-      prenatdestinationport: {}
-      prenatsourceip: {}
-      prenatsourceport: {}
-      protocol: {}
-      protocolevent: {}
-      protocols: {}
-      quarantined: {}
-      ransomwareapproximatenumberofencryptedendpoints: {}
-      ransomwarecryptocurrencyaddress: {}
-      ransomwarecryptocurrencyaddresstype: {}
-      ransomwaredataencryptionstatus: {}
-      ransomwareemail: {}
-      ransomwareencryptedfileowner: {}
-      ransomwarenote: {}
-      ransomwareonionaddress: {}
-      ransomwarerecoverytool: {}
-      ransomwarestrain: {}
-      rating: {}
-      rawevent: {}
-      region: {}
-      regionid: {}
-      replacePlaybook: {}
-      reporteremailaddress: {}
-      residentnotificationoption: {}
-      residentsemailaddress: {}
-      resourceid: {}
-      resourcename: {}
-      resourcetype: {}
-      riskrating: {}
-      riskscore: {}
-      roles: {}
-      samaccountname: {}
-      secretarynotification: {}
-      sectorofaffectedparty: {}
-      servicenowassignedto: {}
-      servicenowassignmentgroup: {}
-      servicenowcaller: {}
-      servicenowcallerid: {}
-      servicenowcategory: {}
-      servicenowclosedby: {}
-      servicenowcloseddate: {}
-      servicenowdescription: {}
-      servicenowduedate: {}
-      servicenowescalation: {}
-      servicenowimpact: {}
-      servicenownotify: {}
-      servicenowopeneddate: {}
-      servicenowpriority: {}
-      servicenowresolutioncode: {}
-      servicenowresolutionnotes: {}
-      servicenowresolvedtime: {}
-      servicenowseverity: {}
-      servicenowstate: {}
-      servicenowticketnumber: {}
-      servicenowurgency: {}
-      severity: {}
-      sha1: {}
-      sha256: {}
-      sha512: {}
-      signature: {}
-      similarincident: {}
-      similarincidents: {}
-      sizenumberofemployees: {}
-      sizeturnover: {}
-      skuname: {}
-      skutier: {}
-      sla: {}
-      slaField: {}
-      sourcegeolocation: {}
-      sourcehostname: {}
-      sourceip: {}
-      sourceips: {}
-      sourceipv6: {}
-      sourcemacaddress: {}
-      sourcenetwork: {}
-      sourceport: {}
-      sourceusername: {}
-      src: {}
-      srchostname: {}
-      srcntdomain: {}
-      srcos: {}
-      srcports: {}
-      srcuser: {}
-      starttime: {}
-      state: {}
-      statecisonotification: {}
-      statewherethebreachtookplace: {}
-      streetaddress: {}
-      subcategory: {}
-      subtype: {}
-      surname: {}
-      systems: {}
-      teamname: {}
-      technicalowner: {}
-      technicalownercontact: {}
-      technicaluser: {}
-      telephoneno: {}
-      tenantname: {}
-      terminatedaction: {}
-      threatactor: {}
-      ticketacknowledgeddate: {}
-      ticketcloseddate: {}
-      ticketnumber: {}
-      ticketopeneddate: {}
-      title: {}
-      totalfailedinstances: {}
-      totalgoodinstances: {}
-      totalinstances: {}
-      trafficdirection: {}
-      triggeredsecurityprofile: {}
-      type: {}
-      unassignedincidents: {}
-      unhealthyendpoints: {}
-      uniquebiometricdatabreached: {}
-      uniqueidentificationnumberbreached: {}
-      uniqueports: {}
-      urlsslverification: {}
-      user: {}
-      useraccountcontrol: {}
-      userid: {}
-      username: {}
-      usernames: {}
-      users: {}
-      vendorid: {}
-      vendorproduct: {}
-      vulnerabilitycategory: {}
-      whereisdatahosted: {}
-      workphone: {}
-      xdralertcount: {}
-      xdralerts: {}
-      xdrassigneduseremail: {}
-      xdrassigneduserprettyname: {}
-      xdrdescription: {}
-      xdrdetectiontime: {}
-      xdrdevicecontrolviolations: {}
-      xdrdisconnectedendpoints: {}
-      xdrfileartifacts: {}
-      xdrhighseverityalertcount: {}
       xdrhostcount:
         complex:
           root: PaloAltoNetworksXDR.Endpoint
@@ -706,7 +312,7 @@ tasks:
           - - operator: isEqualString
               left:
                 value:
-                  simple: PaloAltoNetworksXDR.Endpoint.endpoint_status
+                  simple: PaloAltoNetworksXDR.Endpoint.agent_status
                 iscontext: true
               right:
                 value:
@@ -714,25 +320,14 @@ tasks:
             - operator: isEqualString
               left:
                 value:
-                  simple: PaloAltoNetworksXDR.Endpoint.endpoint_status
+                  simple: PaloAltoNetworksXDR.Endpoint.agent_status
                 iscontext: true
               right:
                 value:
                   simple: DISCONNECTED
-          accessor: endpoint_name
+          accessor: host_name
           transformers:
           - operator: count
-      xdrincidentid: {}
-      xdrlowseverityalertcount: {}
-      xdrmanualseverity: {}
-      xdrmediumseverityalertcount: {}
-      xdrmodificationtime: {}
-      xdrnetworkartifacts: {}
-      xdrnotes: {}
-      xdrresolvecomment: {}
-      xdrstatus: {}
-      xdrstatusv2: {}
-      xdrurl: {}
       xdrusercount:
         complex:
           root: PaloAltoNetworksXDR.Endpoint
@@ -740,7 +335,7 @@ tasks:
           - - operator: isEqualString
               left:
                 value:
-                  simple: PaloAltoNetworksXDR.Endpoint.endpoint_status
+                  simple: PaloAltoNetworksXDR.Endpoint.agent_status
                 iscontext: true
               right:
                 value:
@@ -748,7 +343,7 @@ tasks:
             - operator: isEqualString
               left:
                 value:
-                  simple: PaloAltoNetworksXDR.Endpoint.endpoint_status
+                  simple: PaloAltoNetworksXDR.Endpoint.agent_status
                 iscontext: true
               right:
                 value:
@@ -756,8 +351,6 @@ tasks:
           accessor: users
           transformers:
           - operator: count
-      xsoarReadOnlyRoles: {}
-      zipcode: {}
     separatecontext: false
     view: |-
       {
@@ -771,12 +364,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: a72ddaa3-0c3b-4741-8846-58ff955a44ef
+    taskid: db61aeaf-0ea6-4a74-88e1-67d2909483d2
     type: regular
     task:
-      id: a72ddaa3-0c3b-4741-8846-58ff955a44ef
+      id: db61aeaf-0ea6-4a74-88e1-67d2909483d2
       version: -1
       name: Set endpoints grid
       description: Creates a grid table from items or key-value pairs.
@@ -796,10 +391,7 @@ tasks:
       grid_id:
         simple: xdrdisconnectedendpoints
       keys:
-        simple: endpoint_name,endpoint_status,os_type,endpoint_id,last_seen
-      overwrite: {}
-      sort_by: {}
-      unpack_nested_elements: {}
+        simple: host_name,agent_status,agent_type,endpoint_id,last_seen
     separatecontext: false
     view: |-
       {
@@ -813,12 +405,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 7a078ea1-8797-4c71-8cfc-f5ebc2ed2bba
+    taskid: fec15313-a2c7-445c-8fff-808bce828aea
     type: regular
     task:
-      id: 7a078ea1-8797-4c71-8cfc-f5ebc2ed2bba
+      id: fec15313-a2c7-445c-8fff-808bce828aea
       version: -1
       name: Set disconnected endpoints
       description: Set a value in context under the key you entered.
@@ -830,10 +424,8 @@ tasks:
       '#none#':
       - "7"
     scriptarguments:
-      append: {}
       key:
         simple: XDR.DisconnectedEndpoints
-      stringify: {}
       value:
         complex:
           root: PaloAltoNetworksXDR.Endpoint
@@ -841,7 +433,7 @@ tasks:
           - - operator: isEqualString
               left:
                 value:
-                  simple: PaloAltoNetworksXDR.Endpoint.endpoint_status
+                  simple: PaloAltoNetworksXDR.Endpoint.agent_status
                 iscontext: true
               right:
                 value:
@@ -849,7 +441,7 @@ tasks:
             - operator: isEqualString
               left:
                 value:
-                  simple: PaloAltoNetworksXDR.EndpoiPaloAltoNetworksXDR.Endpoint.endpoint_statusnt
+                  simple: PaloAltoNetworksXDR.EndpoiPaloAltoNetworksXDR.Endpoint.agent_status
                 iscontext: true
               right:
                 value:
@@ -867,12 +459,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 25a1efd4-8409-466f-80fb-d89d76b9049e
+    taskid: 64c667fe-c0c9-45e5-8a98-36853b612485
     type: condition
     task:
-      id: 25a1efd4-8409-466f-80fb-d89d76b9049e
+      id: 64c667fe-c0c9-45e5-8a98-36853b612485
       version: -1
       name: Email report?
       description: ''''''
@@ -906,6 +500,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "10":
     id: "10"
     taskid: 531e649f-d89d-4269-8cbd-e1e041e272f9
@@ -922,15 +518,6 @@ tasks:
     nexttasks:
       '#none#':
       - "4"
-    scriptarguments:
-      assetid: {}
-      closeNotes: {}
-      closeReason: {}
-      emailclassification: {}
-      id: {}
-      incomingmirrorerror: {}
-      outgoingmirrorerror: {}
-      phishingsubtype: {}
     separatecontext: false
     view: |-
       {
@@ -944,6 +531,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 system: true
 view: |-
   {

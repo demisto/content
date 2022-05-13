@@ -1,0 +1,144 @@
+{
+    "brandName": "Flashpoint",
+    "custom": true,
+    "feed": false,
+    "id": "Flashpoint Alerts - Incoming Mapper",
+    "defaultIncidentType": "Flashpoint Alerts",
+    "isDefault": false,
+    "mapping": {
+        "Flashpoint Alerts": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Flashpoint Alert ID": {
+                    "complex": null,
+                    "simple": "alert_id"
+                },
+                "Flashpoint Alert Text": {
+                    "complex": null,
+                    "simple": "source.body.text/plain"
+                },
+                "Flashpoint Created Date": {
+                    "complex": null,
+                    "simple": "source.created_at.date-time"
+                },
+                "Flashpoint First Observed Date": {
+                    "complex": null,
+                    "simple": "source.first_observed_at.date-time"
+                },
+                "Flashpoint ID": {
+                    "complex": null,
+                    "simple": "fpid"
+                },
+                "Flashpoint Keyword Text": {
+                    "complex": null,
+                    "simple": "keyword.keyword_text"
+                },
+                "Flashpoint Last Observed Date": {
+                    "complex": null,
+                    "simple": "source.last_observed_at.date-time"
+                },
+                "Flashpoint Link to Alert": {
+                    "complex": {
+                        "accessor": "fpid",
+                        "filters": [
+
+                        ],
+                        "root": "source",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "prefix": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "https://fp.tools/home/redirect/"
+                                        }
+                                    },
+                                    "suffix": {
+                                        "isContext": false,
+                                        "value": null
+                                    }
+                                },
+                                "operator": "concat"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Flashpoint Native ID": {
+                    "complex": null,
+                    "simple": "source.native_id"
+                },
+                "Flashpoint Site Actor Names": {
+                    "complex": null,
+                    "simple": "source.site_actor.names.handle"
+                },
+                "Flashpoint Site Title": {
+                    "complex": null,
+                    "simple": "source.site.title"
+                },
+                "Flashpoint Sort Date": {
+                    "complex": null,
+                    "simple": "source.sort_date"
+                },
+                "Flashpoint Source": {
+                    "complex": null,
+                    "simple": "source.source"
+                },
+                "Flashpoint Source Basetypes": {
+                    "complex": {
+                        "accessor": "basetypes",
+                        "filters": [],
+                        "root": "source",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "separator": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": ", "
+                                        }
+                                    }
+                                },
+                                "operator": "join"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Flashpoint Source File": {
+                    "complex": null,
+                    "simple": "source.file"
+                },
+                "Flashpoint Source Owner": {
+                    "complex": null,
+                    "simple": "source.owner"
+                },
+                "Flashpoint Source Repo": {
+                    "complex": null,
+                    "simple": "source.repo"
+                },
+                "Flashpoint Source URL": {
+                    "complex": null,
+                    "simple": "source.url"
+                },
+                "Flashpoint Title": {
+                    "complex": null,
+                    "simple": "source.title"
+                },
+                "occurred": {
+                    "complex": null,
+                    "simple": "source.created_at.date-time"
+                }
+            }
+        }
+    },
+    "transformer": {
+        "complex": null,
+        "simple": ""
+    },
+    "version": -1,
+    "fromVersion": "5.0.0",
+    "toVersion": "5.9.9"
+}

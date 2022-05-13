@@ -1,0 +1,20 @@
+commonfields:
+  id: D2Autoruns
+  version: -1
+name: D2Autoruns
+script: ''
+type: javascript
+tags:
+- agent
+- endpoint
+- forensics
+comment: |-
+  Used by the server-side script "Autoruns".
+  Uses d2 agent on endpoint to run SysInternals Autoruns.
+system: true
+scripttarget: 1
+dependson: {}
+timeout: 0s
+fromversion: 5.0.0
+tests:
+- no test

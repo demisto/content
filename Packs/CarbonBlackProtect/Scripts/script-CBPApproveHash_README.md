@@ -1,4 +1,4 @@
-Approves a whitelist a hash in CBEP/Bit9.
+Approve/add to allow list a hash in CBEP/Bit9
 
 ## Script Data
 ---

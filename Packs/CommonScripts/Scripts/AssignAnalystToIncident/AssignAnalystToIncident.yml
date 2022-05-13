@@ -1,0 +1,51 @@
+commonfields:
+  id: AssignAnalystToIncident
+  version: -1
+name: AssignAnalystToIncident
+script: ''
+type: javascript
+tags:
+- Utility
+comment: |-
+  Assign analyst to incident.
+  By default,  the analyst is picked randomly from the available users, according to the provided roles (if no roles provided, will fetch all users).
+  Otherwise, the analyst will be picked according to the 'assignBy' arguments.
+  machine-learning: DBot will calculated and decide who is the best analyst for the job.
+  top-user: The user that is most commonly owns this type of incident
+  less-busy-user: The less busy analyst will be picked to be the incident owner.
+  online: The analyst is picked randomly from all online analysts, according to the provided roles (if no roles provided, will fetch all users).
+  current: The user that executed the command
+enabled: true
+args:
+- name: roles
+  default: true
+  description: The optional list of roles we want to assign users from. Can accept
+    arrays or comma separated list. Leave empty to fetch all users.
+- name: assignBy
+  auto: PREDEFINED
+  predefined:
+  - random
+  - machine-learning
+  - top-user
+  - less-busy-user
+  - online
+  - current
+  description: '(default: random) You can pick how to assign the owner - by random,
+    online, current, machine-learning, top-user or less-busy-user.'
+- name: username
+  description: When specified, the provided user will be assigned as the incident
+    owner (optional).
+- name: email
+  description: When specified, the user of provided email will be assigned as the
+    incident owner (optional)
+- name: onCall
+  auto: PREDEFINED
+  predefined:
+  - "true"
+  - "false"
+  description: Set to true to assign only user that is currently on shift. Requires
+    Cortex XSOAR v5.5 or later.
+  defaultValue: "false"
+scripttarget: 0
+runonce: false
+fromversion: 5.0.0

@@ -1,0 +1,398 @@
+commonfields:
+  id: PassiveTotal
+  version: -1
+name: PassiveTotal
+display: PassiveTotal (Deprecated)
+category: Data Enrichment & Threat Intelligence
+system: true
+description: Deprecated. Use the PassiveTotal v2 integration instead.
+configuration:
+- display: Server URL
+  name: ServerURL
+  defaultvalue: https://api.passivetotal.org/
+  type: 0
+  required: false
+- display: Username/API Key
+  name: Username
+  type: 0
+  required: true
+- display: API Secret
+  name: APIKey
+  type: 4
+  required: true
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- display: Tags to signify this is a malicious domain
+  name: tags
+  defaultvalue: malware,blacklist,phishing,typo-squatting
+  type: 0
+  required: true
+script:
+  script: ''
+  type: javascript
+  commands:
+  - name: pt-get-subdomains
+    deprecated: true
+    arguments:
+    - name: query
+      required: true
+      description: The name of the domain to retrieve sub domains for
+    outputs:
+    - contextPath: subdomains
+      description: List of subdomains as strings
+    description: Get subdomains using a wildcard query.
+  - name: pt-account
+    deprecated: true
+    arguments: []
+    outputs:
+    - contextPath: passivetotal.username
+      description: Username / Key used for PassiveTotal
+    description: Retrieve account details from PassiveTotal
+  - name: pt-monitors
+    deprecated: true
+    arguments: []
+    description: Get monitors associated with your account
+  - name: pt-passive-dns
+    deprecated: true
+    arguments:
+    - name: query
+      required: true
+      default: true
+      description: Query value to use in your request
+    - name: direction
+      description: 'Pagination direction: next or previous'
+    - name: page
+      description: Page ID to request
+    - name: sources
+      description: Comma seperated list of sources to process with
+    - name: start
+      description: 'Only show data starting from date: YYYY-mm-dd'
+    - name: end
+      description: 'Only show data up to date: YYYY-mm-dd'
+    - name: timeout
+      description: Timeout to use on all source requests
+    outputs:
+    - contextPath: Domain.Name
+      description: The name of the queries domain
+    - contextPath: Domain.DNS.Address
+      description: The resolved address of the domain
+    description: Get passive DNS data
+  - name: pt-passive-unique
+    deprecated: true
+    arguments:
+    - name: query
+      required: true
+      default: true
+      description: Query value to use in your request
+    - name: direction
+      description: 'Pagination direction: next or previous'
+    - name: page
+      description: Page ID to request
+    - name: sources
+      description: Comma seperated list of sources to process with
+    - name: start
+      description: 'Only show data starting from date: YYYY-mm-dd'
+    - name: from
+      description: 'Only show data up to date: YYYY-mm-dd'
+    outputs:
+    - contextPath: Domain.Name
+      description: The name of the queries domain
+    - contextPath: Domain.DNS.Address
+      description: The resolved address of the domain
+    description: Get unique resolutions from passive DNS data
+  - name: pt-dns-keyword
+    deprecated: true
+    arguments:
+    - name: query
+      required: true
+      default: true
+      description: Query value to use in your request
+    description: Search DNS data for keywords
+  - name: pt-enrichment
+    deprecated: true
+    arguments:
+    - name: query
+      required: true
+      default: true
+      description: The data to enrich
+    outputs:
+    - contextPath: IP.Address
+      description: IP address
+    - contextPath: IP.Geo.Country
+      description: Country of IP address
+    - contextPath: IP.Geo.Location
+      description: Location of IP as latitude,longitude
+    - contextPath: IP.Malicious.Vendor
+      description: For malicious IPs, the vendor that made the decision
+    - contextPath: IP.Malicious.Description
+      description: For malicious IPs, the reason for the vendor to make the decision
+    - contextPath: Domain.Name
+      description: Bad domains found during enrichment
+    - contextPath: Domain.Malicious.Vendor
+      description: For malicious domains, the vendor that made the decision
+    - contextPath: Domain.Malicious.Description
+      description: For malicious domains, the reason for the vendor to make the decision
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+    - contextPath: DBotScore.Score
+      description: The actual score
+    description: Enrich the given query with metadata
+  - name: pt-malware
+    deprecated: true
+    arguments:
+    - name: query
+      required: true
+      default: true
+      description: The data to get malware for
+    - name: samples
+      description: The number of malware samples to return
+      defaultValue: "10"
+    - name: threshold
+      description: Above this number of samples we will consider this to be malicious
+      defaultValue: "10"
+    outputs:
+    - contextPath: IP.Address
+      description: Bad IPs found during enrichment
+    - contextPath: IP.Malicious.Vendor
+      description: For malicious IPs, the vendor that made the decision
+    - contextPath: IP.Malicious.Description
+      description: For malicious IPs, the reason for the vendor to make the decision
+    - contextPath: Domain.Name
+      description: Bad domains found during enrichment
+    - contextPath: Domain.Malicious.Vendor
+      description: For malicious domains, the vendor that made the decision
+    - contextPath: Domain.Malicious.Description
+      description: For malicious domains, the reason for the vendor to make the decision
+    - contextPath: File.MD5
+      description: Bad hash MD5
+    - contextPath: File.SHA1
+      description: Bad hash SHA1
+    - contextPath: File.SHA256
+      description: Bad hash SHA256
+    - contextPath: File.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision
+    - contextPath: File.Malicious.Description
+      description: For malicious files, the reason for the vendor to make the decision
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+    - contextPath: DBotScore.Score
+      description: The actual score
+    description: Get malware data
+  - name: url
+    deprecated: true
+    arguments:
+    - name: url
+      required: true
+      default: true
+      description: The URL to check reputation for
+      isArray: true
+    - name: samples
+      deprecated: true
+      description: The number of malware samples to return
+      defaultValue: "10"
+    - name: threshold
+      deprecated: true
+      description: Above this number of samples we will consider this to be malicious
+      defaultValue: "10"
+    outputs:
+    - contextPath: IP.Address
+      description: IP address
+    - contextPath: IP.Geo.Country
+      description: Country of IP address
+    - contextPath: IP.Geo.Location
+      description: Location of IP as latitude,longitude
+    - contextPath: IP.Malicious.Vendor
+      description: For malicious IPs, the vendor that made the decision
+    - contextPath: IP.Malicious.Description
+      description: For malicious IPs, the reason for the vendor to make the decision
+    - contextPath: Domain.Name
+      description: Bad domains found during enrichment
+    - contextPath: Domain.Malicious.Vendor
+      description: For malicious domains, the vendor that made the decision
+    - contextPath: Domain.Malicious.Description
+      description: For malicious domains, the reason for the vendor to make the decision
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+    - contextPath: DBotScore.Score
+      description: The actual score
+    description: Check URL reputation data
+  - name: domain
+    deprecated: true
+    arguments:
+    - name: domain
+      required: true
+      default: true
+      description: The domain to get malware for
+      isArray: true
+    outputs:
+    - contextPath: Domain.Name
+      description: Bad domains found during enrichment
+    - contextPath: Domain.Malicious.Vendor
+      description: For malicious domains, the vendor that made the decision
+    - contextPath: Domain.Malicious.Description
+      description: For malicious domains, the reason for the vendor to make the decision
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+    - contextPath: DBotScore.Score
+      description: The actual score
+    description: Check domain reputation data
+  - name: ip
+    deprecated: true
+    arguments:
+    - name: ip
+      required: true
+      default: true
+      description: The IP to check reputation for
+      isArray: true
+    outputs:
+    - contextPath: IP.Address
+      description: IP address
+    - contextPath: IP.Geo.Country
+      description: Country of IP address
+    - contextPath: IP.Geo.Location
+      description: Location of IP as latitude,longitude
+    - contextPath: IP.Malicious.Vendor
+      description: For malicious IPs, the vendor that made the decision
+    - contextPath: IP.Malicious.Description
+      description: For malicious IPs, the reason for the vendor to make the decision
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+    - contextPath: DBotScore.Score
+      description: The actual score
+    description: Check IP reputation
+  - name: pt-osint
+    deprecated: true
+    arguments:
+    - name: query
+      required: true
+      default: true
+      description: The data to get OSINT for
+    description: Get opensource intelligence data
+  - name: pt-whois
+    deprecated: true
+    arguments:
+    - name: query
+      required: true
+      default: true
+      description: Query value to use in your request
+    - name: compact_record
+      description: Compress the WHOIS record into a deduplicated format - true or
+        false
+      defaultValue: "true"
+    outputs:
+    - contextPath: passivetotal.whois.email
+      description: Contact email for the queried domain
+    description: Get WHOIS data for a domain or IP address
+  - name: pt-whois-keyword
+    deprecated: true
+    arguments:
+    - name: query
+      required: true
+      default: true
+      description: Keyword to search WHOIS database
+    description: Search WHOIS details based on keywords
+  - name: pt-whois-search
+    deprecated: true
+    arguments:
+    - name: query
+      required: true
+      default: true
+      description: Query value to use in your request
+    - name: field
+      required: true
+      description: 'WHOIS field to execute the search on: domain, email, name, organization,
+        address, phone, nameserver'
+    description: Get WHOIS records based on field matching queries
+  - name: pt-get-components
+    deprecated: true
+    arguments:
+    - name: query
+      required: true
+      default: true
+      description: Query value to use in your request
+    description: Get detailed information about a host
+  - name: pt-get-pairs
+    deprecated: true
+    arguments:
+    - name: query
+      required: true
+      default: true
+      description: Query value to use in your request
+    - name: direction
+      required: true
+      description: Relationship direction - parents, children.
+      defaultValue: children
+    description: Get host pairs based on dependent requests observed in web crawls
+  - name: pt-ssl-cert
+    deprecated: true
+    arguments:
+    - name: query
+      required: true
+      default: true
+      description: The SHA1 to retrieve SSL certificate data for
+    description: Get the SSL certificate associated with the SHA-1
+  - name: pt-ssl-cert-history
+    deprecated: true
+    arguments:
+    - name: query
+      required: true
+      default: true
+      description: The SHA1 or IP to retrieve SSL certificate data for
+    description: Get the SSL certificate history associated with an IP address or
+      SHA-1
+  - name: pt-ssl-cert-keyword
+    deprecated: true
+    arguments:
+    - name: query
+      required: true
+      default: true
+      description: Query value to use in your request
+    description: Search for SSL certificates based on a keyword
+  - name: pt-ssl-cert-search
+    deprecated: true
+    arguments:
+    - name: query
+      required: true
+      default: true
+      description: Query value to use in your request
+    - name: field
+      required: true
+      description: 'Field to search against: issuerSurname, subjectOrganizationName,
+        issuerCountry, issuerOrganizationUnitName, fingerprint, subjectOrganizationUnitName,
+        serialNumber, subjectEmailAddress, subjectCountry, issuerGivenName, subjectCommonName,
+        issuerCommonName, issuerStateOrProvinceName, issuerProvince, subjectStateOrProvinceName,
+        sha1, sslVersion, subjectStreetAddress, subjectSerialNumber, issuerOrganizationName,
+        subjectSurname, subjectLocalityName, issuerStreetAddress, issuerLocalityName,
+        subjectGivenName, subjectProvince, issuerSerialNumber, issuerEmailAddress'
+    description: Search for SSL certificates based on field values
+  runonce: false
+tests:
+- no test
+fromversion: 5.0.0
+deprecated: true

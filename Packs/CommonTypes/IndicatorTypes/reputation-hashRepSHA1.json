@@ -8,8 +8,7 @@
   "contextValue": "SHA1",
   "contextPath": "File(val.SHA1 && val.SHA1 === obj.SHA1)",
   "enhancementScriptNames": [
-    "FileReputation",
-    "SplunkPySearch"
+    "FileReputation"
   ],
   "fromVersion": "5.0.0"
 }

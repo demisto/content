@@ -3,15 +3,30 @@ commonfields:
   id: vmray
   version: -1
 configuration:
+- additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: C - Fairly reliable
+  display: Source Reliability
+  name: integrationReliability
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: true
+  type: 15
 - defaultvalue: https://cloud.vmray.com
   display: Server URL (e.g., https://cloud.vmray.com)
   name: server
   required: true
   type: 0
-- display: API Key
-  name: api_key
-  required: true
-  type: 4
+- displaypassword: API Key (Recommended)
+  name: credentials
+  required: false
+  hiddenusername: true
+  type: 9
 - display: Use system proxy settings
   name: proxy
   required: false
@@ -20,6 +35,11 @@ configuration:
   name: insecure
   required: false
   type: 8
+- display: API Key (Deprecated)
+  additionalinfo: Use the "API Key (Recommended)" parameter instead.
+  name: api_key
+  required: false
+  type: 4
 description: Malware analysis sandboxing.
 display: VMRay
 name: vmray
@@ -399,6 +419,36 @@ script:
     execution: false
     name: vmray-get-sample-by-hash
     outputs:
+    - contextPath: File.Name
+      description: The full file name (including file extension).
+      type: String
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: File.SSDeep
+      description: The SSDeep hash of the file.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
     - contextPath: VMRay.Sample.SampleID
       description: ID of the sample.
       type: Number
@@ -554,6 +604,9 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score.
       type: Number
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
     - contextPath: Domain.Name
       description: The domain name
       type: String
@@ -1162,7 +1215,7 @@ script:
     description: Retrieves a sample using the sample ID. (Deprecated)
     execution: false
     name: upload_sample
-  dockerimage: demisto/python:2.7.18.22912
+  dockerimage: demisto/python:2.7.18.27799
   feed: false
   isfetch: false
   longRunning: false

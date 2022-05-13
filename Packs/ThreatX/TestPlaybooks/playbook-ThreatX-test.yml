@@ -133,7 +133,7 @@ tasks:
       id: 54bcd200-cad1-41ec-852b-a9a19c37b218
       version: -1
       name: threatx-blacklist-ip
-      description: Add an IP or CIDR to the Blacklist
+      description: Add an IP or CIDR to the block list
       script: ThreatX|||threatx-blacklist-ip
       type: regular
       iscommand: true
@@ -165,7 +165,7 @@ tasks:
       id: 463eb9c6-dfa2-4e2e-809c-b4a9ca6d6e22
       version: -1
       name: threatx-whitelist-ip
-      description: Add an IP or CIDR to the Whitelist
+      description: Add an IP or CIDR to the allow list
       script: ThreatX|||threatx-whitelist-ip
       type: regular
       iscommand: true
@@ -261,7 +261,7 @@ tasks:
       id: cd1c3b5a-d7c2-44c8-8b1a-16a79d255083
       version: -1
       name: threatx-unblacklist-ip
-      description: Remove an IP or CIDR from the Blacklist
+      description: Remove an IP or CIDR from the block list
       script: ThreatX|||threatx-unblacklist-ip
       type: regular
       iscommand: true
@@ -391,7 +391,7 @@ tasks:
       id: ec41a7fa-99e1-4146-8be5-b1af11d33b9c
       version: -1
       name: threatx-unwhitelist-ip
-      description: Remove an IP or CIDR from the Whitelist
+      description: Remove an IP or CIDR from the allow list
       script: ThreatX|||threatx-unwhitelist-ip
       type: regular
       iscommand: true

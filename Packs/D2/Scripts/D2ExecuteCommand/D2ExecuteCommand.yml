@@ -1,0 +1,22 @@
+commonfields:
+  id: D2ExecuteCommand
+  version: -1
+name: D2ExecuteCommand
+script: ''
+type: javascript
+tags:
+- endpoint
+- agent
+comment: Run a D2 built-in command on a D2 agent
+system: true
+args:
+- name: arguments
+  default: true
+  description: The arguments to pass to the D2script - Dictionary format "{arg1:val1,arg2:val2}"
+- name: commandName
+  required: true
+  description: The d2 command to run
+scripttarget: 0
+fromversion: 5.0.0
+tests:
+- no test

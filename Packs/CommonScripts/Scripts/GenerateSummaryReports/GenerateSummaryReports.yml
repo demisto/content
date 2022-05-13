@@ -1,0 +1,40 @@
+commonfields:
+  id: GenerateSummaryReports
+  version: -1
+name: GenerateSummaryReports
+fromversion: 5.0.0
+script: ''
+type: javascript
+tags:
+- Utility
+comment: Generate report summaries for the passed incidents.
+enabled: true
+args:
+- name: name
+  description: Template name of the generated report in the incident.
+  defaultValue: Investigation Summary
+- name: type
+  description: Report type to generate.
+  defaultValue: pdf
+- name: ids
+  required: true
+  description: Incident IDs for which to generate.
+  isArray: true
+outputs:
+- contextPath: SummaryReports.IncidentID
+  description: Incident ID of each generated report.
+  type: number
+- contextPath: SummaryReports.ReportName
+  description: The report name.
+  type: string
+- contextPath: SummaryReports.File
+  description: File name of the report file.
+  type: string
+- contextPath: SummaryReports.FileID
+  description: File ID of the generated report.
+  type: string
+scripttarget: 0
+runonce: false
+runas: DBotWeakRole
+tests:
+- Send Investigation Summary Reports - Test

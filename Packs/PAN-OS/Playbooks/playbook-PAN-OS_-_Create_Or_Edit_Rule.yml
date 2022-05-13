@@ -39,7 +39,7 @@ tasks:
       version: -1
       name: List all rules
       description: Returns a list of predefined security rules.
-      script: '|||panorama-list-rules'
+      script: '|||pan-os-list-rules'
       type: regular
       iscommand: true
       brand: ""
@@ -212,7 +212,7 @@ tasks:
       version: -1
       name: Add new source to the rule
       description: Add the element in the input as the new source of the rule
-      script: '|||panorama-edit-rule'
+      script: '|||pan-os-edit-rule'
       type: regular
       iscommand: true
       brand: ""
@@ -251,7 +251,7 @@ tasks:
       version: -1
       name: Add the new destination to the rule
       description: Add the element in the input as the new destination of the rule
-      script: '|||panorama-edit-rule'
+      script: '|||pan-os-edit-rule'
       type: regular
       iscommand: true
       brand: ""
@@ -290,7 +290,7 @@ tasks:
       version: -1
       name: Create an outbound rule
       description: Add the element in the input as the new destination of the rule.
-      script: '|||panorama-create-rule'
+      script: '|||pan-os-create-rule'
       type: regular
       iscommand: true
       brand: ""
@@ -346,7 +346,7 @@ tasks:
       version: -1
       name: Move the rule into its position
       description: Changes the location of a policy rule.
-      script: '|||panorama-move-rule'
+      script: '|||pan-os-move-rule'
       type: regular
       iscommand: true
       brand: ""
@@ -412,7 +412,7 @@ tasks:
       version: -1
       name: Create an inbound rule
       description: Add the element in the input as the new source of the rule
-      script: '|||panorama-create-rule'
+      script: '|||pan-os-create-rule'
       type: regular
       iscommand: true
       brand: ""

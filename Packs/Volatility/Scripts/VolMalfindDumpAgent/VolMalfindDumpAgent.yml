@@ -1,0 +1,30 @@
+commonfields:
+  id: VolMalfindDumpAgent
+  version: -1
+name: VolMalfindDumpAgent
+script: ''
+type: javascript
+tags:
+- volatility
+comment: Volatility script for command ldrmodules
+system: true
+args:
+- name: memdump
+  required: true
+  default: true
+  description: Path to memory dump file on the system being used
+- name: pid
+  required: true
+  description: Process ID to pass to volatility malfind command
+- name: dumpdir
+  required: true
+  description: Path to directory in which to save dumped memory sections
+- name: dodelete
+  description: If "true", deletes the dir with the VAD dumps
+- name: system
+  required: true
+  description: Volatility system to run the script on.
+scripttarget: 0
+dependson: {}
+timeout: 0s
+fromversion: 5.0.0

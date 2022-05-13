@@ -1,0 +1,39 @@
+{
+  "EMAIL_ENRICH_RESPONSE": {
+    "data": {
+        "incidents": [
+            {
+                "email": "test@test.com",
+                "domain": "test.com",
+                "password": null,
+                "password_type": null,
+                "source": "Test Source",
+                "posted_date": 1568062800,
+                "service": "Test Service"
+            }
+        ]
+    }
+  },
+  "EMAIL_ENRICH_ARGS": {
+    "email": "testa@test.com"
+  },
+  "EMAIL_ENRICH_COMMAND_RESULTS": {
+    "readable_output": "|Email|Domain|Password Type|Password|Service|Source|Date|\n|---|---|---|---|---|---|---|\n| test@test.com | test.com | - | - | Test Service | Test Source | 2019-09-09T21:00:00Z |\n",
+    "outputs_prefix": "Radark.emailDetails",
+    "outputs_key_field": "emails",
+    "outputs": {
+        "emails": [
+            {
+                "email": "test@test.com",
+                "domain": "test.com",
+                "password": "-",
+                "password_type": "-",
+                "source": "Test Source",
+                "date": "2019-09-09T21:00:00Z",
+                "service": "Test Service"
+            }
+        ]
+    }
+  }
+}
+

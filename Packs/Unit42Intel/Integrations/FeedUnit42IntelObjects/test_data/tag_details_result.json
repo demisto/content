@@ -1,0 +1,40 @@
+{
+    "tag": {
+        "tag_definition_id": 38866,
+        "tag_name": "mocktag",
+        "public_tag_name": "Mock.mocktag1",
+        "tag_definition_scope_id": 4,
+        "tag_definition_scope": "mock",
+        "tag_definition_status_id": 1,
+        "tag_definition_status": "enabled",
+        "count": 1081,
+        "lasthit": "2021-03-31 17:50:24",
+        "description": "some description",
+        "customer_name": "some customer",
+        "refs": "[{\"source\":\"some source\",\"title\":\"some title\",\"url\":\"http://www.example.com\",\"created\":\"2016-08-10T14:27:05\"}]",
+        "tag_class_id": 3,
+        "tag_class": "malware_family",
+        "source": "Some Source",
+        "created_at": "2016-01-01 00:00:00",
+        "updated_at": "2021-03-15 19:27:21",
+        "comments": [],
+        "reported": true,
+        "up_votes": 12
+    },
+    "aliases": ["alias"],
+    "related_tags": ["Mock.mocktag"],
+    "tag_groups": [
+        {
+            "tag_group_name": "PotentiallyUnwantedProgram",
+            "description": "PUPs, or Potentially Unwanted Programs, are programs that may include adware, advertising, toolbars, and pop-ups that are unrelated to the software you downloaded. PUPs often come bundled with other software that you installed."
+        }
+    ],
+    "bucket_info": {
+        "minute_points": 200,
+        "daily_points": 100000,
+        "minute_points_remaining": 198,
+        "daily_points_remaining": 91950,
+        "minute_bucket_start": "2021-09-19 11:55:33",
+        "daily_bucket_start": "2021-09-18 17:47:39"
+    }
+}

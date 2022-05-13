@@ -662,41 +662,45 @@ def url_report_output(response_json, url):
         return_error("There is no rl object in the response JSON.")
 
     classification = report_base.get("classification", "UNAVAILABLE").upper()
-    analysis = report_base.get("analysis")
-    statistics = analysis.get("statistics")
-    analysis_history = analysis.get("analysis_history")
-    last_analysis = analysis.get("last_analysis")
-    third_party = report_base.get("third_party_reputations")
-    third_party_statistics = third_party.get("statistics")
-    third_party_sources = third_party.get("sources")
-
     markdown = f"""## ReversingLabs URL Threat Intelligence report for URL {url}\n **Requested URL**: {report_base.get(
         "requested_url")}
-    **Classification**: {classification}
-    **First analysis**: {analysis.get("first_analysis")}
-    **Analysis count**: {analysis.get("analysis_count")}\n ### Last analysis\n **Analysis ID**: {last_analysis.get(
-        "analysis_id")}
-    **Analysis time**: {last_analysis.get("analysis_time")}
-    **Final URL**: {last_analysis.get("final_url")}
-    **Availability status**: {last_analysis.get("availability_status")}
-    **Domain**: {last_analysis.get("domain")}
-    **Serving IP Address**: {last_analysis.get("serving_ip_address")}\n ### Statistics\n **KNOWN**: {statistics.get(
-        "known")}
-    **SUSPICIOUS**: {statistics.get("suspicious")}
-    **MALICIOUS**: {statistics.get("malicious")}
-    **UNKNOWN**: {statistics.get("unknown")}
-    **TOTAL**: {statistics.get("total")}"""
+    **Classification**: {classification}"""
 
-    analysis_table = tableToMarkdown("Analysis history", analysis_history)
-    markdown = f"{markdown}\n {analysis_table}"
+    analysis = report_base.get("analysis")
+    if analysis:
+        statistics = analysis.get("statistics")
+        analysis_history = analysis.get("analysis_history")
+        last_analysis = analysis.get("last_analysis")
 
-    markdown = f"""{markdown}\n ### Third party statistics\n **TOTAL**: {third_party_statistics.get("total")}
-    **MALICIOUS**: {third_party_statistics.get("malicious")}
-    **CLEAN**: {third_party_statistics.get("clean")}
-    **UNDETECTED**: {third_party_statistics.get("undetected")}\n"""
+        markdown += f"""\n    **First analysis**: {analysis.get("first_analysis")}
+        **Analysis count**: {analysis.get("analysis_count")}\n ### Last analysis\n **Analysis ID**: {last_analysis.get(
+            "analysis_id")}
+        **Analysis time**: {last_analysis.get("analysis_time")}
+        **Final URL**: {last_analysis.get("final_url")}
+        **Availability status**: {last_analysis.get("availability_status")}
+        **Domain**: {last_analysis.get("domain")}
+        **Serving IP Address**: {last_analysis.get("serving_ip_address")}\n ### Statistics\n **KNOWN**: {statistics.get(
+            "known")}
+        **SUSPICIOUS**: {statistics.get("suspicious")}
+        **MALICIOUS**: {statistics.get("malicious")}
+        **UNKNOWN**: {statistics.get("unknown")}
+        **TOTAL**: {statistics.get("total")}"""
 
-    sources_table = tableToMarkdown("Third party sources", third_party_sources)
-    markdown = f"{markdown}\n {sources_table}"
+        analysis_table = tableToMarkdown("Analysis history", analysis_history)
+        markdown = f"{markdown}\n {analysis_table}"
+
+    third_party = report_base.get("third_party_reputations")
+    if third_party:
+        third_party_statistics = third_party.get("statistics")
+        third_party_sources = third_party.get("sources")
+
+        markdown += f"""\n ### Third party statistics\n **TOTAL**: {third_party_statistics.get("total")}
+        **MALICIOUS**: {third_party_statistics.get("malicious")}
+        **CLEAN**: {third_party_statistics.get("clean")}
+        **UNDETECTED**: {third_party_statistics.get("undetected")}\n"""
+
+        sources_table = tableToMarkdown("Third party sources", third_party_sources)
+        markdown = f"{markdown}\n {sources_table}"
 
     d_bot_score = classification_to_score(classification)
 

@@ -5,7 +5,7 @@ Dumps a JSON from the context key input, and returns a JSON object string result
 
 | **Name** | **Description** |
 | --- | --- |
-| Script Type | python |
+| Script Type | python3 |
 | Tags | Utility |
 
 

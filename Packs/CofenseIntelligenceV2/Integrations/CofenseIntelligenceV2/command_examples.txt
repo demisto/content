@@ -3,3 +3,4 @@
 !file file=hash using=CofenseIntelligenceV2_instance
 !cofense-search str=border using=CofenseIntelligenceV2_instance
 !url url=http://www.someurl.com/cp5/ using=CofenseIntelligenceV2_instance
+!domain domain=www.sutomoresmestaj.net days_back=20000 using=CofenseIntelligenceV2_instance

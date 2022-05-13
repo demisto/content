@@ -1,0 +1,199 @@
+{
+  "data": [
+    {
+      "id": "1295856",
+      "type": "report",
+      "attributes": {
+        "title": "Demo report: XSS in checker_program H1B home page",
+        "state": "new",
+        "created_at": "2021-08-09T13:41:38.039Z",
+        "vulnerability_information": "In some ***fantasy world***, the home page of checker_program H1B is vulnerable to an *imaginary* Cross-Site Scripting attack.\n\n1. Visit home page of checker_program H1B\n2. Open the browser's javascript console\n3. Type `alert(/xss!/)` and press enter\n4. Profit!\n\n## Impact\n\nIn our fantasy world, exploiting this vulnerability allows us to run an external script on your website that for example steals the cookies of the users that's facing the XSS and thus gaining access to the account of the victim.",
+        "triaged_at": null,
+        "closed_at": null,
+        "last_reporter_activity_at": "2021-09-01T10:04:25.203Z",
+        "first_program_activity_at": "2021-08-10T06:25:24.792Z",
+        "last_program_activity_at": "2021-09-01T10:04:25.102Z",
+        "bounty_awarded_at": "2021-09-01T10:04:25.102Z",
+        "swag_awarded_at": null,
+        "disclosed_at": null,
+        "reporter_agreed_on_going_public_at": null,
+        "last_public_activity_at": "2021-09-01T10:04:25.203Z",
+        "last_activity_at": "2021-09-01T10:04:25.203Z",
+        "source": null,
+        "timer_bounty_awarded_elapsed_time": 1455751,
+        "timer_bounty_awarded_miss_at": null,
+        "timer_first_program_response_miss_at": null,
+        "timer_first_program_response_elapsed_time": 60226,
+        "timer_report_resolved_miss_at": null,
+        "timer_report_resolved_elapsed_time": null,
+        "timer_report_triage_miss_at": null,
+        "timer_report_triage_elapsed_time": null
+      },
+      "relationships": {
+        "reporter": {
+          "data": {
+            "id": "3683",
+            "type": "user",
+            "attributes": {
+              "reputation": 100,
+              "username": "demo-hacker",
+              "name": "Demo Hacker",
+              "disabled": false,
+              "created_at": "2014-03-17T20:14:25.383Z",
+              "profile_picture": {
+                "62x62": "https://profile-photos.hackerone-user-content.com/variants/000/003/683/34dc17c69760632eba8908c6bc708eb7a20edee3_original.png/b5f65e84b294d95ac0e5fb3698d567882eeab915bc7725c4748f6d620a9f6f32",
+                "82x82": "https://profile-photos.hackerone-user-content.com/variants/000/003/683/34dc17c69760632eba8908c6bc708eb7a20edee3_original.png/89a94cba69dc9474b9dcbe84db52487a172581abe654290fb10ed6a4585414a9",
+                "110x110": "https://profile-photos.hackerone-user-content.com/variants/000/003/683/34dc17c69760632eba8908c6bc708eb7a20edee3_original.png/752d2b30dee362362a0bae9136e023e297ab1b5d752f5f982c8d27b3c2e1b14d",
+                "260x260": "https://profile-photos.hackerone-user-content.com/variants/000/003/683/34dc17c69760632eba8908c6bc708eb7a20edee3_original.png/5050d9689b90aee3f5bcd28e0e44e43067b7f21994f12447c87bef07e5a33711"
+              },
+              "bio": "",
+              "website": null,
+              "location": "support@hackerone.com",
+              "hackerone_triager": false
+            }
+          }
+        },
+        "assignee": {
+          "data": {
+            "id": "1878386",
+            "type": "user",
+            "attributes": {
+              "username": "jahnvi_crest",
+              "name": "Jahnvi",
+              "disabled": false,
+              "created_at": "2021-08-02T09:27:56.324Z",
+              "profile_picture": {
+                "62x62": "/assets/avatars/default-71a302d706457f3d3a31eb30fa3e73e6cf0b1d677b8fa218eaeaffd67ae97918.png",
+                "82x82": "/assets/avatars/default-71a302d706457f3d3a31eb30fa3e73e6cf0b1d677b8fa218eaeaffd67ae97918.png",
+                "110x110": "/assets/avatars/default-71a302d706457f3d3a31eb30fa3e73e6cf0b1d677b8fa218eaeaffd67ae97918.png",
+                "260x260": "/assets/avatars/default-71a302d706457f3d3a31eb30fa3e73e6cf0b1d677b8fa218eaeaffd67ae97918.png"
+              },
+              "signal": null,
+              "impact": null,
+              "reputation": null,
+              "bio": null,
+              "website": null,
+              "location": null,
+              "hackerone_triager": false
+            }
+          }
+        },
+        "program": {
+          "data": {
+            "id": "53996",
+            "type": "program",
+            "attributes": {
+              "handle": "checker_program_h1b",
+              "created_at": "2021-08-09T13:41:35.764Z",
+              "updated_at": "2021-08-10T09:29:56.984Z"
+            }
+          }
+        },
+        "severity": {
+          "data": {
+            "id": "1185908",
+            "type": "severity",
+            "attributes": {
+              "rating": "low",
+              "author_type": "Team",
+              "user_id": 1878386,
+              "created_at": "2021-08-10T06:26:14.670Z",
+              "score": 3.7,
+              "attack_complexity": "high",
+              "attack_vector": "adjacent",
+              "availability": "low",
+              "confidentiality": "none",
+              "integrity": "low",
+              "privileges_required": "none",
+              "user_interaction": "required",
+              "scope": "unchanged"
+            }
+          }
+        },
+        "weakness": {
+          "data": {
+            "id": "120",
+            "type": "weakness",
+            "attributes": {
+              "name": "Allocation of Resources Without Limits or Throttling",
+              "description": "The software allocates a reusable resource or group of resources on behalf of an actor without imposing any restrictions on how many resources can be allocated, in violation of the intended security policy for that actor.",
+              "external_id": "cwe-770",
+              "created_at": "2018-05-14T20:48:46.308Z"
+            }
+          }
+        },
+        "structured_scope": {
+          "data": {
+            "id": "77411",
+            "type": "structured-scope",
+            "attributes": {
+              "asset_type": "GOOGLE_PLAY_APP_ID",
+              "asset_identifier": "com.sec.my_app",
+              "eligible_for_bounty": true,
+              "eligible_for_submission": true,
+              "instruction": "",
+              "max_severity": "critical",
+              "created_at": "2021-08-09T13:48:56.007Z",
+              "updated_at": "2021-08-09T13:48:56.007Z",
+              "reference": ""
+            }
+          }
+        },
+        "bounties": {
+          "data": [
+            {
+              "id": "331781",
+              "type": "bounty",
+              "attributes": {
+                "amount": "100.00",
+                "bonus_amount": "0.00",
+                "awarded_amount": "100.00",
+                "awarded_bonus_amount": "0.00",
+                "awarded_currency": "USD",
+                "created_at": "2021-09-01T10:04:25.093Z",
+                "relationships": {
+                  "report": {
+                    "data": {
+                      "id": "1295856",
+                      "type": "report",
+                      "attributes": {
+                        "title": "Demo report: XSS in checker_program H1B home page",
+                        "state": "new",
+                        "created_at": "2021-08-09T13:41:38.039Z",
+                        "vulnerability_information": "In some ***fantasy world***, the home page of checker_program H1B is vulnerable to an *imaginary* Cross-Site Scripting attack.\n\n1. Visit home page of checker_program H1B\n2. Open the browser's javascript console\n3. Type `alert(/xss!/)` and press enter\n4. Profit!\n\n## Impact\n\nIn our fantasy world, exploiting this vulnerability allows us to run an external script on your website that for example steals the cookies of the users that's facing the XSS and thus gaining access to the account of the victim.",
+                        "triaged_at": null,
+                        "closed_at": null,
+                        "last_reporter_activity_at": "2021-09-01T10:04:25.203Z",
+                        "first_program_activity_at": "2021-08-10T06:25:24.792Z",
+                        "last_program_activity_at": "2021-09-01T10:04:25.102Z",
+                        "bounty_awarded_at": "2021-09-01T10:04:25.102Z",
+                        "swag_awarded_at": null,
+                        "disclosed_at": null,
+                        "reporter_agreed_on_going_public_at": null,
+                        "last_public_activity_at": "2021-09-01T10:04:25.203Z",
+                        "last_activity_at": "2021-09-01T10:04:25.203Z",
+                        "source": null,
+                        "timer_bounty_awarded_elapsed_time": 1455751,
+                        "timer_bounty_awarded_miss_at": null,
+                        "timer_first_program_response_miss_at": null,
+                        "timer_first_program_response_elapsed_time": 60226,
+                        "timer_report_resolved_miss_at": null,
+                        "timer_report_resolved_elapsed_time": null,
+                        "timer_report_triage_miss_at": null,
+                        "timer_report_triage_elapsed_time": null
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "custom_field_values": {
+          "data": []
+        }
+      }
+    }
+  ],
+  "links": {}
+}

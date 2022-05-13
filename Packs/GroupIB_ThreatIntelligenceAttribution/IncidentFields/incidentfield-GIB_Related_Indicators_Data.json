@@ -5,7 +5,8 @@
         "GIB Brand Protection Phishing Kit",
         "GIB Compromised Account",
         "GIB Compromised Card",
-        "GIB Targeted Malware"
+        "GIB Targeted Malware",
+        "GIB Brand Protection Domain"
     ],
     "caseInsensitive": true,
     "cliName": "gibrelatedindicatorsdata",

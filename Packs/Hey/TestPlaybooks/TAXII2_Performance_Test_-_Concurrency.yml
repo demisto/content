@@ -1,0 +1,837 @@
+id: TAXII2 Performance Test - Concurrency
+version: -1
+name: TAXII2 Performance Test - Concurrency
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 1592fb22-24f7-4f6c-8981-477d576b4aef
+    type: start
+    task:
+      id: 1592fb22-24f7-4f6c-8981-477d576b4aef
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 1fb834e4-87d2-4c30-8275-8edf8146f8f6
+    type: title
+    task:
+      id: 1fb834e4-87d2-4c30-8275-8edf8146f8f6
+      version: -1
+      name: Concurrency 1
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "12"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 2f5077ce-f0d9-4252-8911-f93a13524f0d
+    type: title
+    task:
+      id: 2f5077ce-f0d9-4252-8911-f93a13524f0d
+      version: -1
+      name: Concurrency 10
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "13"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 29510033-5303-4090-817d-bbd3c0be4ee2
+    type: title
+    task:
+      id: 29510033-5303-4090-817d-bbd3c0be4ee2
+      version: -1
+      name: Concurrency 20
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "14"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1535
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: e6c4b55b-28ee-41fd-894c-df08f832654a
+    type: title
+    task:
+      id: e6c4b55b-28ee-41fd-894c-df08f832654a
+      version: -1
+      name: Concurrency 100
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "15"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2205
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 2bee193b-5df2-47a0-8861-ab8cf16eef77
+    type: title
+    task:
+      id: 2bee193b-5df2-47a0-8861-ab8cf16eef77
+      version: -1
+      name: Concurrency 200
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "16"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2875
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: d9ba7d7c-959f-404c-89e6-f7a1391338f1
+    type: playbook
+    task:
+      id: d9ba7d7c-959f-404c-89e6-f7a1391338f1
+      version: -1
+      name: TAXII2 Indicator Performance Test
+      playbookName: TAXII2 Indicator Performance Test
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      c:
+        simple: "1"
+      "n":
+        simple: ${inputs.n}
+      results_map:
+        simple: ${inputs.results_map}
+      t:
+        simple: "0"
+      url:
+        complex:
+          root: inputs.url
+      z:
+        simple: ${inputs.z}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 47d02a6f-9986-452e-8c44-cbc5a9039cf6
+    type: playbook
+    task:
+      id: 47d02a6f-9986-452e-8c44-cbc5a9039cf6
+      version: -1
+      name: TAXII2 Indicator Performance Test
+      playbookName: TAXII2 Indicator Performance Test
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      c:
+        simple: "10"
+      "n":
+        simple: ${inputs.n}
+      results_map:
+        simple: ${inputs.results_map}
+      t:
+        simple: "2"
+      url:
+        complex:
+          root: inputs.url
+      z:
+        simple: ${inputs.z}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: ae4fe9ec-a082-4f27-830b-9788db4b1359
+    type: playbook
+    task:
+      id: ae4fe9ec-a082-4f27-830b-9788db4b1359
+      version: -1
+      name: TAXII2 Indicator Performance Test
+      playbookName: TAXII2 Indicator Performance Test
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      c:
+        simple: "20"
+      "n":
+        simple: ${inputs.n}
+      results_map:
+        simple: ${inputs.results_map}
+      t:
+        simple: "2"
+      url:
+        complex:
+          root: inputs.url
+      z:
+        simple: ${inputs.z}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 6be478b1-1da5-4d5e-8e90-384558c63bb8
+    type: playbook
+    task:
+      id: 6be478b1-1da5-4d5e-8e90-384558c63bb8
+      version: -1
+      name: TAXII2 Indicator Performance Test
+      playbookName: TAXII2 Indicator Performance Test
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      c:
+        simple: "100"
+      "n":
+        simple: ${inputs.n}
+      results_map:
+        simple: ${inputs.results_map}
+      t:
+        simple: "3"
+      url:
+        complex:
+          root: inputs.url
+      z:
+        simple: ${inputs.z}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 1d3f2ffd-e1c5-453e-82f2-f77eb4d4b1af
+    type: playbook
+    task:
+      id: 1d3f2ffd-e1c5-453e-82f2-f77eb4d4b1af
+      version: -1
+      name: TAXII2 Indicator Performance Test
+      playbookName: TAXII2 Indicator Performance Test
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      c:
+        simple: "200"
+      "n":
+        simple: ${inputs.n}
+      results_map:
+        simple: ${inputs.results_map}
+      t:
+        simple: "0"
+      url:
+        complex:
+          root: inputs.url
+      z:
+        simple: ${inputs.z}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3020
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: d5a14775-ef54-494b-8cde-b1fba02d063d
+    type: regular
+    task:
+      id: d5a14775-ef54-494b-8cde-b1fba02d063d
+      version: -1
+      name: Set HeyConcurrency
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      key:
+        simple: HeyConcurrency
+      value:
+        simple: ${Hey}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: d6a54306-4c81-4d89-85c2-da0c30c7fba6
+    type: regular
+    task:
+      id: d6a54306-4c81-4d89-85c2-da0c30c7fba6
+      version: -1
+      name: Clear Hey Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      all:
+        simple: "no"
+      key:
+        simple: Hey
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 26c25dfc-ca36-424c-81fa-64e6554cb083
+    type: regular
+    task:
+      id: 26c25dfc-ca36-424c-81fa-64e6554cb083
+      version: -1
+      name: Set HeyConcurrency
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: HeyConcurrency
+      value:
+        simple: ${Hey}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1185
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 876d3a7d-5f8c-4812-85eb-c4fe5b760b04
+    type: regular
+    task:
+      id: 876d3a7d-5f8c-4812-85eb-c4fe5b760b04
+      version: -1
+      name: Clear Hey Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      all:
+        simple: "no"
+      key:
+        simple: Hey
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: cd2ff040-ac7f-4c87-8654-fb20db6fdaf5
+    type: regular
+    task:
+      id: cd2ff040-ac7f-4c87-8654-fb20db6fdaf5
+      version: -1
+      name: Set HeyConcurrency
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: HeyConcurrency
+      value:
+        simple: ${Hey}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1855
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 6485c2e3-e283-4146-8ee6-c239ea66d292
+    type: regular
+    task:
+      id: 6485c2e3-e283-4146-8ee6-c239ea66d292
+      version: -1
+      name: Clear Hey Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      all:
+        simple: "no"
+      key:
+        simple: Hey
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: e8c93645-e662-45da-80f5-dcfb62288f51
+    type: regular
+    task:
+      id: e8c93645-e662-45da-80f5-dcfb62288f51
+      version: -1
+      name: Set HeyConcurrency
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: HeyConcurrency
+      value:
+        simple: ${Hey}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2525
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 01782155-5bfc-4416-8cf7-8afe1524dc40
+    type: regular
+    task:
+      id: 01782155-5bfc-4416-8cf7-8afe1524dc40
+      version: -1
+      name: Clear Hey Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      all:
+        simple: "no"
+      key:
+        simple: Hey
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 922b03c7-e1df-41f2-864c-a3b58df6e0c2
+    type: regular
+    task:
+      id: 922b03c7-e1df-41f2-864c-a3b58df6e0c2
+      version: -1
+      name: Set HeyConcurrency
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: HeyConcurrency
+      value:
+        simple: ${Hey}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 71753358-5578-4bd8-8531-ba8459bdccf5
+    type: regular
+    task:
+      id: 71753358-5578-4bd8-8531-ba8459bdccf5
+      version: -1
+      name: Clear Hey Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      all:
+        simple: "no"
+      key:
+        simple: Hey
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 3415,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: url
+  value: {}
+  required: false
+  description: The URL of the EDL instance with with query in the end
+  playbookInputQuery:
+- key: results_map
+  value: {}
+  required: false
+  description: ""
+  playbookInputQuery:
+- key: "n"
+  value: {}
+  required: false
+  description: ""
+  playbookInputQuery:
+- key: z
+  value: {}
+  required: false
+  description: ""
+  playbookInputQuery:
+outputs:
+- contextPath: HeyConcurrency
+  type: unknown
+fromversion: 6.1.0
+description: ''

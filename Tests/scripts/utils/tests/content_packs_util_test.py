@@ -35,9 +35,11 @@ def test_is_pack_xsoar_supported(tmp_path, pack_metadata_content, expected):
         - Case B: Verify pack is certified, since it is set to be
         - Case C: Verify pack is not certified, since it is partner supported and not set to be certified
     """
-    pack_metadata_file = tmp_path / PACKS_PACK_META_FILE_NAME
+    os.mkdir(tmp_path / 'Packs')
+    os.mkdir(tmp_path / 'Packs' / 'DummyPack')
+    pack_metadata_file = tmp_path / 'Packs' / 'DummyPack' / PACKS_PACK_META_FILE_NAME
     pack_metadata_file.write_text(json.dumps(pack_metadata_content))
-    assert is_pack_xsoar_supported(str(tmp_path)) == expected
+    assert is_pack_xsoar_supported(str(pack_metadata_file)) == expected
 
 
 @pytest.mark.parametrize("pack_metadata_content, expected", [
@@ -57,9 +59,11 @@ def test_is_pack_deprecated(tmp_path, pack_metadata_content, expected):
         - Case A: Verify pack is not deprecated, since the 'hidden' flag is set to 'false'
         - Case B: Verify pack is deprecated, since the 'hidden' flag is set to 'true'
     """
-    pack_metadata_file = tmp_path / PACKS_PACK_META_FILE_NAME
+    os.mkdir(tmp_path / 'Packs')
+    os.mkdir(tmp_path / 'Packs' / 'BitcoinAbuse')
+    pack_metadata_file = tmp_path / 'Packs' / 'BitcoinAbuse' / PACKS_PACK_META_FILE_NAME
     pack_metadata_file.write_text(json.dumps(pack_metadata_content))
-    assert is_pack_deprecated(str(tmp_path)) == expected
+    assert is_pack_deprecated(str(tmp_path / 'Packs' / 'BitcoinAbuse')) == expected
 
 
 def test_is_pack_certified_pack_metadata_does_not_exist(tmp_path):
@@ -105,12 +109,13 @@ def test_should_test_content_pack(mocker, tmp_path, pack_metadata_content, pack_
 
     # Mocking os.path.join to return the temp path created instead the path in content
     mocker.patch.object(os.path, 'join', return_value=str(pack_metadata_file))
-    assert should_test_content_pack(pack_name) == expected
+    assert should_test_content_pack(pack_name, 'xsoar', MOCK_ID_SET) == expected
 
 
 @pytest.mark.parametrize("pack_metadata_content, pack_name, expected", [
     ({PACK_METADATA_SUPPORT: 'partner'}, 'Partner', (True, '')),
-    ({PACK_METADATA_SUPPORT: 'community'}, 'Community', (True, '')),
+    ({PACK_METADATA_SUPPORT: 'community'}, 'Community', (False, 'This pack with marketplace version [] is not '
+                                                                'supported in the xsoar marketplace version')),
     ({PACK_METADATA_SUPPORT: 'xsoar'}, 'NonSupported', (False, 'Pack is either the "NonSupported" pack or the '
                                                                '"DeprecatedContent" pack.')),
     ({'hidden': True, PACK_METADATA_SUPPORT: 'xsoar'}, 'CortexXDR', (False, 'Pack is Deprecated')),
@@ -146,7 +151,7 @@ def test_should_install_content_pack(mocker, tmp_path, pack_metadata_content, pa
 
     # Mocking os.path.join to return the temp path created instead the path in content
     mocker.patch.object(os.path, 'join', return_value=str(pack_metadata_file))
-    assert should_install_content_pack(pack_name) == expected
+    assert should_install_content_pack(pack_name, 'xsoar', MOCK_ID_SET) == expected
 
 
 def test_get_packs_from_landing_page(mocker, tmp_path):

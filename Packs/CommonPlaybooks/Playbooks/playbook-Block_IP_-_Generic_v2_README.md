@@ -33,7 +33,7 @@ This playbook does not use any scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| IPBlacklistMiner | The name of the IP blacklist Miner in  Minemeld. |  | Optional |
+| IPBlacklistMiner | The name of the IP block list Miner in  Minemeld. |  | Optional |
 | IP | Array of malicious IPs to block. |  | Optional |
 | CustomBlockRule | This input determines whether Palo Alto Networks Panorama or Firewall Custom Block Rules are used.
 Specify True to use Custom Block Rules. | True | Optional |

@@ -1,0 +1,85 @@
+args:
+- auto: PREDEFINED
+  default: false
+  defaultValue: 'false'
+  description: 'A comma separated list of states. Possible values: New, InProgress, Completed, Waiting, Error, Skipped, Blocked (leave empty to get all tasks).'
+  isArray: true
+  name: task_states
+  predefined:
+  - 'New'
+  - 'InProgress'
+  - 'Completed'
+  - 'Waiting'
+  - 'Error'
+  - 'Skipped'
+  - 'Blocked'
+  required: false
+  secret: false
+- default: false
+  description: 'Outcome for a conditional task. For example, "Yes".'
+  isArray: false
+  name: complete_option
+  required: false
+  secret: false
+- default: false
+  description: 'The incident ID where the task should be completed. Leave empty
+    to use current incident ID.'
+  isArray: false
+  name: incident_id
+  required: false
+  secret: false
+- default: false
+  description: 'The name of the task that should be completed. If no task name is entered,
+    will complete all tasks with the state `task_state`.'
+  isArray: false
+  name: task_name
+  required: false
+  secret: false
+- default: false
+  description: 'Timeout in seconds for the script to complete tasks.'
+  isArray: false
+  name: max_timeout
+  defaultValue: '60'
+  required: false
+  secret: false
+- default: false
+  description: 'Time (seconds) to wait between each check iteration. '
+  isArray: false
+  name: interval_between_tries
+  required: false
+  secret: false
+  defaultValue: '3'
+- auto: PREDEFINED
+  default: false
+  defaultValue: 'false'
+  description: "Whether to complete the task in addition to checking if it is completed."
+  isArray: false
+  name: complete_task
+  predefined:
+  - 'true'
+  - 'false'
+  required: false
+  secret: false
+comment: 'Wait and complete tasks by given status. Used for test playbooks.'
+commonfields:
+  id: WaitAndCompleteTask
+  version: -1
+enabled: false
+name: WaitAndCompleteTask
+outputs:
+- contextPath: WaitAndCompleteTask.CompletedTask
+  description: 'Task name that was completed by the script.'
+  type: String
+- contextPath: WaitAndCompleteTask.FoundTask
+  description: 'Tasks that were found by the script.'
+script: '-'
+system: false
+tags:
+- basescript
+timeout: 2400
+type: python
+subtype: python3
+dockerimage: demisto/python3:3.10.1.25933
+fromversion: 6.1.0
+tests:
+- No tests (auto formatted)

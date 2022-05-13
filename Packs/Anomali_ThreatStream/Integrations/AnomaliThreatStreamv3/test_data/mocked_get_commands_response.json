@@ -1,0 +1,150 @@
+{
+  "threatstream-get-analysis-status": {
+    "platform": "TEST_PLATFORM",
+    "status": "errors",
+    "verdict": "benign"
+  },
+  "threatstream-get-passive-dns": {
+    "results": [
+        {
+            "domain": "test.com",
+            "ip": "1.1.1.1",
+            "rrtype": "A",
+            "source": "Test Labs",
+            "first_seen": "2015-07-20 02:33:47",
+            "last_seen": "2015-12-19 06:44:35"
+        },
+        {
+            "domain": "test.com",
+            "ip": "2.2.2.2",
+            "rrtype": "TXT",
+            "source": "Test Labs",
+            "first_seen": "2015-07-20 02:33:47",
+            "last_seen": "2015-12-19 06:44:35"
+        }
+    ],
+    "success": true
+  },
+  "threatstream-get-model-list": {
+    "objects": [
+        {
+          "created_ts": "2019-02-19T16:42:00.933984",
+          "id": 1,
+          "name": "Test Actor"
+        }
+      ]
+  },
+  "threatstream-get-model-description": {
+    "description": "<h1 style='color: #ffcc00;'>Test Summary HTML</h1>"
+  },
+  "threatstream-get-indicators-by-model": {
+    "objects": [
+        {
+            "itype": "apt_md5",
+            "org": "",
+            "id": 123456789,
+            "rdns": null,
+            "confidence": 50,
+            "subtype": "SHA256",
+            "source": "TestSource",
+            "type": "md5",
+            "status": "active",
+            "tags": [
+                {
+                    "org_id": "11",
+                    "name": "test-tag-1",
+                    "id": "1qq"
+                },
+                {
+                    "org_id": "11",
+                    "name": "test-tag-2",
+                    "id": "123"
+                }
+            ],
+            "modified_ts": "2020-11-12T10:00:34.398Z",
+            "asn": "",
+            "country": null,
+            "value": "test_value",
+            "meta": {
+                "detail2": "imported for test",
+                "detail": "test detail",
+                "severity": "medium"
+            }
+        }
+    ]
+  },
+  "threatstream-get-indicators": {
+    "objects": [
+        {
+            "itype": "apt_md5",
+            "org": "",
+            "id": 123456789,
+            "rdns": null,
+            "confidence": 50,
+            "subtype": "SHA256",
+            "source": "TestSource",
+            "type": "md5",
+            "status": "active",
+            "tags": [
+                {
+                    "org_id": "11",
+                    "name": "test-tag-1",
+                    "id": "1qq"
+                },
+                {
+                    "org_id": "11",
+                    "name": "test-tag-2",
+                    "id": "123"
+                }
+            ],
+            "modified_ts": "2020-11-12T10:00:34.398Z",
+            "asn": "",
+            "country": null,
+            "value": "test_value",
+            "meta": {
+                "detail2": "imported for test",
+                "detail": "test detail",
+                "severity": "medium"
+            }
+        }
+    ]
+  },
+  "threatstream-supported-platforms": {
+    "platform_choices": [
+        {
+            "platform": "test_platform",
+            "name": "TEST_PLATFORM",
+            "types": [
+                "file",
+                "url"
+            ],
+            "label": "PLATFORM 1"
+        }
+    ]
+  },
+  "threatstream-analysis-report": {
+    "results": {
+      "info": {
+        "category": "URL",
+        "confidence": 0,
+        "started": "2021-08-19 06:49:22",
+        "is_unknown": false,
+        "is_suspicious": false,
+        "ended": "2021-08-19 06:51:06",
+        "is_malicious": false,
+        "duration": 104
+      },
+      "network": {
+        "domains": [
+          {
+            "ip": "1.1.1.1",
+            "domain": "test.com"
+          }
+        ],
+        "hosts": [
+          "1.1.1.1"
+        ]
+      }
+    }
+  }
+}

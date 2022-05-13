@@ -1,0 +1,389 @@
+id: LogRhythmRestV2 - Search query
+version: -1
+name: LogRhythmRestV2 - Search query
+description: 'This playbook used generic polling to get query results using the command:
+  lr-execute-search-query.'
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 3526d18a-1838-430e-8c3e-176384cfc476
+    type: start
+    task:
+      id: 3526d18a-1838-430e-8c3e-176384cfc476
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 69b4bbd3-aef3-4374-8307-b16fb29724bb
+    type: regular
+    task:
+      id: 69b4bbd3-aef3-4374-8307-b16fb29724bb
+      version: -1
+      name: Execute search query
+      description: Execute a search query to the LogRhythm log database.
+      script: '|||lr-execute-search-query'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      entity_id:
+        complex:
+          root: inputs.entity_id
+      hash:
+        complex:
+          root: inputs.hash
+      host-name:
+        complex:
+          root: inputs.host-name
+      host_name:
+        complex:
+          root: inputs.host_name
+      ip_address:
+        complex:
+          root: inputs.ip_address
+      ipaddress:
+        complex:
+          root: inputs.ipaddress
+      max_massage:
+        complex:
+          root: inputs.max_massage
+      max_message:
+        complex:
+          root: inputs.max_massage
+      number-of-date:
+        complex:
+          root: inputs.number-of-date
+      number_of_date:
+        complex:
+          root: inputs.number_of_date
+      number_of_days:
+        complex:
+          root: inputs.number_of_days
+      object:
+        complex:
+          root: inputs.object
+      process-name:
+        complex:
+          root: inputs.process-name
+      process_name:
+        complex:
+          root: inputs.process_name
+      query_timeout:
+        complex:
+          root: inputs.query_timeout
+      recipient:
+        complex:
+          root: inputs.recipient
+      sender:
+        complex:
+          root: inputs.sender
+      source-type:
+        complex:
+          root: inputs.source-type
+      source_type:
+        complex:
+          root: inputs.source_type
+      subject:
+        complex:
+          root: inputs.subject
+      url:
+        complex:
+          root: inputs.URL
+      username:
+        complex:
+          root: inputs.username
+      search_name:
+        complex:
+          root: inputs.search_name
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: bbb6ddc2-ed6d-43cd-8f39-89bf5c3fdf57
+    type: playbook
+    task:
+      id: bbb6ddc2-ed6d-43cd-8f39-89bf5c3fdf57
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      Ids:
+        complex:
+          root: LogRhythm.Search
+          accessor: TaskId
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: task_id
+      PollingCommandName:
+        simple: lr-get-query-result
+      Timeout:
+        simple: "60"
+      dt:
+        simple: LogRhythm.Search(val.TaskStatus == 'Searching').TaskId
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 71283421-3034-44cf-8d26-74fcfcdb280a
+    type: regular
+    task:
+      id: 71283421-3034-44cf-8d26-74fcfcdb280a
+      version: -1
+      name: Get results
+      description: Get search query results with task ID output from the lr-execute-search-query
+        command.
+      script: '|||lr-get-query-result'
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      task_id:
+        complex:
+          root: LogRhythm.Search
+          accessor: TaskId
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 590,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: number_of_days
+  value:
+    simple: "7"
+  required: true
+  description: Number of days to search.
+  playbookInputQuery:
+- key: search_name
+  value: {}
+  required: false
+  description: Name of the search.
+  playbookInputQuery:
+- key: source_type
+  value: {}
+  required: false
+  description: Log source type.
+  playbookInputQuery:
+- key: host_name
+  value: {}
+  required: false
+  description: Impacted host name.
+  playbookInputQuery:
+- key: username
+  value: {}
+  required: false
+  description: Username.
+  playbookInputQuery:
+- key: subject
+  value: {}
+  required: false
+  description: Email subject.
+  playbookInputQuery:
+- key: sender
+  value: {}
+  required: false
+  description: Email sender.
+  playbookInputQuery:
+- key: recipient
+  value: {}
+  required: false
+  description: Email recipient.
+  playbookInputQuery:
+- key: hash
+  value: {}
+  required: false
+  description: Hash.
+  playbookInputQuery:
+- key: URL
+  value: {}
+  required: false
+  description: URL.
+  playbookInputQuery:
+- key: process_name
+  value: {}
+  required: false
+  description: Process name.
+  playbookInputQuery:
+- key: object
+  value: {}
+  required: false
+  description: Log object.
+  playbookInputQuery:
+- key: ip_address
+  value: {}
+  required: false
+  description: IP address.
+  playbookInputQuery:
+- key: max_massage
+  value:
+    simple: "10"
+  required: false
+  description: Maximum number of log messages to query.
+  playbookInputQuery:
+- key: query_timeout
+  value:
+    simple: "60"
+  required: false
+  description: The query timeout in seconds.
+  playbookInputQuery:
+- key: entity_id
+  value: {}
+  required: false
+  description: Entity ID.
+  playbookInputQuery:
+outputs:
+- contextPath: LogRhythm.Search.TaskStatus
+  description: Task Status.
+  type: string
+- contextPath: LogRhythm.Search.TaskId
+  description: Task Id.
+  type: string
+- contextPath: LogRhythm.Search.SearchName
+  description: The name of the search query in Cortex XSOAR.
+  type: string
+- contextPath: LogRhythm.Search.Results.originEntityId
+  description: Entity ID.
+  type: number
+- contextPath: LogRhythm.Search.Results.impactedIp
+  description: Impacted IP address.
+  type: string
+- contextPath: LogRhythm.Search.Results.classificationTypeName
+  description: Classification name.
+  type: string
+- contextPath: LogRhythm.Search.Results.logSourceName
+  description: Log source name.
+  type: string
+- contextPath: LogRhythm.Search.Results.entityName
+  description: Entity name.
+  type: string
+- contextPath: LogRhythm.Search.Results.normalDate
+  description: Date.
+  type: date
+- contextPath: LogRhythm.Search.Results.vendorMessageId
+  description: Vendor log message.
+  type: string
+- contextPath: LogRhythm.Search.Results.priority
+  description: Log priority.
+  type: number
+- contextPath: LogRhythm.Search.Results.sequenceNumber
+  description: Sequence number.
+  type: string
+- contextPath: LogRhythm.Search.Results.originHostId
+  description: Origin host ID.
+  type: number
+- contextPath: LogRhythm.Search.Results.mpeRuleId
+  description: LogRhythm rule ID.
+  type: number
+- contextPath: LogRhythm.Search.Results.originIp
+  description: Origin IP address.
+  type: string
+- contextPath: LogRhythm.Search.Results.mpeRuleName
+  description: LogRhythm rule name.
+  type: string
+- contextPath: LogRhythm.Search.Results.logSourceHostId
+  description: Log source host ID.
+  type: number
+- contextPath: LogRhythm.Search.Results.originHost
+  description: Origin host.
+  type: string
+- contextPath: LogRhythm.Search.Results.logDate
+  description: Log date.
+  type: date
+- contextPath: LogRhythm.Search.Results.classificationName
+  description: Log classification name.
+  type: string
+fromversion: 5.5.0
+tests:
+- LogRhythmRestV2-test

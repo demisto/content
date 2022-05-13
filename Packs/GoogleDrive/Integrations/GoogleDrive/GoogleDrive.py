@@ -1129,9 +1129,8 @@ def file_upload_command(client: 'GSuiteClient', args: Dict[str, str]) -> Command
     user_id = args.get('user_id') or client.user_id
     client.set_authorized_http(scopes=COMMAND_SCOPES['FILES'], subject=user_id)
     drive_service = discovery.build(serviceName=service_name, version=version, http=client.authorized_http)
-
     body: Dict[str, str] = assign_params(
-        parents=args.get('parent'),
+        parents=[args.get('parent')] if 'parent' in args else None,
         name=args.get('file_name'),
     )
 

@@ -458,7 +458,7 @@ def file_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
                    'Size': report.get('size', ''),
                    'Type': report.get('type', ''),
                    'Extension': (report['filename'][0]).split('.')[-1],
-                   'Path': report['process_list'][0]['normalizedpath'],
+                   'Path': report.get('process_list', [{}])[0].get('normalizedpath'),
                    'Tags': create_tags(report.get('tag', '')),
                    'ThreatTypes': {'threatcategory': [blacklist_context['Blacklist'][i]['Description'] for i in
                                                       range(len(report.get('blacklist', [])))]}
@@ -470,7 +470,7 @@ def file_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
 
         process_list = {
             'ProcessList': {
-                string_to_context_key(field): report['process_list'][0][field] for field in
+                string_to_context_key(field): report.get('process_list', [{}])[0].get(field) for field in
                 ['name', 'normalizedpath', 'sha256', 'uid']
             }
         }

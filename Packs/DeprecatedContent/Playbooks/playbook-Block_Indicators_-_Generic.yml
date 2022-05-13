@@ -290,11 +290,11 @@ inputs:
 - key: IPBlacklistMiner
   value: {}
   required: false
-  description: The name of the IP blacklist Miner in  Minemeld.
+  description: The name of the IP block list Miner in  Minemeld.
 - key: URLBlacklistMiner
   value: {}
   required: false
-  description: The name of the URL blacklist Miner in  Minemeld.
+  description: The name of the URL block list Miner in  Minemeld.
 - key: IP
   value:
     complex:

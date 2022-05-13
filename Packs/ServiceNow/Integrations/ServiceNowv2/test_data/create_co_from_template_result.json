@@ -1,0 +1,477 @@
+{
+  "result": {
+    "reason": {
+      "display_value": "",
+      "value": ""
+    },
+    "parent": {
+      "display_value": "",
+      "value": ""
+    },
+    "watch_list": {
+      "display_value": "",
+      "value": ""
+    },
+    "upon_reject": {
+      "display_value": "Cancel all future Tasks",
+      "value": "cancel"
+    },
+    "sys_updated_on": {
+      "display_value": "06/01/2022 04:12:43",
+      "value": "2022-01-06 12:12:43",
+      "display_value_internal": "2022-01-06 04:12:43"
+    },
+    "type": {
+      "display_value": "Standard",
+      "value": "standard"
+    },
+    "approval_history": {
+      "display_value": "",
+      "value": ""
+    },
+    "skills": {
+      "display_value": "",
+      "value": ""
+    },
+    "test_plan": {
+      "display_value": "-- Run connectivity tests by connecting laptop to copper interface\r\n-- Ensure that switch is showing as healthy in network monitoring console",
+      "value": "-- Run connectivity tests by connecting laptop to copper interface\r\n-- Ensure that switch is showing as healthy in network monitoring console"
+    },
+    "u_destination_port": {
+      "display_value": "",
+      "value": ""
+    },
+    "number": {
+      "display_value": "CHG0031889",
+      "value": "CHG0031889"
+    },
+    "cab_delegate": {
+      "display_value": "",
+      "value": ""
+    },
+    "requested_by_date": {
+      "display_value": "",
+      "value": "",
+      "display_value_internal": ""
+    },
+    "state": {
+      "display_value": "New",
+      "value": -5.0
+    },
+    "sys_created_by": {
+      "display_value": "admin_test_Nov2020-01",
+      "value": "admin_test_Nov2020-01"
+    },
+    "knowledge": {
+      "display_value": "false",
+      "value": false
+    },
+    "order": {
+      "display_value": "",
+      "value": ""
+    },
+    "phase": {
+      "display_value": "Requested",
+      "value": "requested"
+    },
+    "u_protocol": {
+      "display_value": "",
+      "value": ""
+    },
+    "cmdb_ci": {
+      "display_value": "",
+      "value": ""
+    },
+    "delivery_plan": {
+      "display_value": "",
+      "value": ""
+    },
+    "impact": {
+      "display_value": "3 - Low",
+      "value": 3.0
+    },
+    "contract": {
+      "display_value": "",
+      "value": ""
+    },
+    "active": {
+      "display_value": "true",
+      "value": true
+    },
+    "work_notes_list": {
+      "display_value": "",
+      "value": ""
+    },
+    "priority": {
+      "display_value": "4 - Low",
+      "value": 4.0
+    },
+    "sys_domain_path": {
+      "display_value": "/",
+      "value": "/"
+    },
+    "production_system": {
+      "display_value": "false",
+      "value": false
+    },
+    "cab_recommendation": {
+      "display_value": "",
+      "value": ""
+    },
+    "rejection_goto": {
+      "display_value": "",
+      "value": ""
+    },
+    "review_date": {
+      "display_value": "",
+      "value": "",
+      "display_value_internal": ""
+    },
+    "requested_by": {
+      "display_value": "Content Test admin ",
+      "value": "46428af1db202c1026fca015ca961994"
+    },
+    "business_duration": {
+      "display_value": "",
+      "value": ""
+    },
+    "group_list": {
+      "display_value": "",
+      "value": ""
+    },
+    "change_plan": {
+      "display_value": "",
+      "value": ""
+    },
+    "approval_set": {
+      "display_value": "06/01/2022 04:12:43",
+      "value": "2022-01-06 12:12:43",
+      "display_value_internal": "2022-01-06 04:12:43"
+    },
+    "wf_activity": {
+      "display_value": "",
+      "value": ""
+    },
+    "implementation_plan": {
+      "display_value": "-- Physically rack switch in top of cabinet\r\n-- Ensure that redundant power supply is connected to the backup power circuit in the cabinet\r\n-- Ensure that first GBIC fibre connector (Gi0/1) connects to primary distribution switch\r\n-- Ensure that second GBIC fibre connector (Gi1/1) connects to secondary distribution switch\r\n-- Connect console port to cabinet management console\r\n-- Add switch to network management console\r\n-- Add switch to network monitoring console\r\n-- Add switch to ServiceNow CMDB\r\n",
+      "value": "-- Physically rack switch in top of cabinet\r\n-- Ensure that redundant power supply is connected to the backup power circuit in the cabinet\r\n-- Ensure that first GBIC fibre connector (Gi0/1) connects to primary distribution switch\r\n-- Ensure that second GBIC fibre connector (Gi1/1) connects to secondary distribution switch\r\n-- Connect console port to cabinet management console\r\n-- Add switch to network management console\r\n-- Add switch to network monitoring console\r\n-- Add switch to ServiceNow CMDB\r\n"
+    },
+    "universal_request": {
+      "display_value": "",
+      "value": ""
+    },
+    "end_date": {
+      "display_value": "",
+      "value": "",
+      "display_value_internal": ""
+    },
+    "short_description": {
+      "display_value": "Add network switch to cabinet",
+      "value": "Add network switch to cabinet"
+    },
+    "correlation_display": {
+      "display_value": "",
+      "value": ""
+    },
+    "work_start": {
+      "display_value": "",
+      "value": "",
+      "display_value_internal": ""
+    },
+    "delivery_task": {
+      "display_value": "",
+      "value": ""
+    },
+    "outside_maintenance_schedule": {
+      "display_value": "false",
+      "value": false
+    },
+    "additional_assignee_list": {
+      "display_value": "",
+      "value": ""
+    },
+    "std_change_producer_version": {
+      "display_value": "Add network switch to datacenter cabinet - 1",
+      "value": "a08e02ec47410200e90d87e8dee4905a"
+    },
+    "sys_class_name": {
+      "display_value": "Change Request",
+      "value": "change_request"
+    },
+    "service_offering": {
+      "display_value": "",
+      "value": ""
+    },
+    "closed_by": {
+      "display_value": "",
+      "value": ""
+    },
+    "follow_up": {
+      "display_value": "",
+      "value": "",
+      "display_value_internal": ""
+    },
+    "review_status": {
+      "display_value": "",
+      "value": ""
+    },
+    "reassignment_count": {
+      "display_value": "0",
+      "value": 0.0
+    },
+    "start_date": {
+      "display_value": "",
+      "value": "",
+      "display_value_internal": ""
+    },
+    "assigned_to": {
+      "display_value": "",
+      "value": ""
+    },
+    "variables": {
+      "display_value": "variable_pool",
+      "value": "variable_pool"
+    },
+    "u_dst_ip": {
+      "display_value": "",
+      "value": ""
+    },
+    "sla_due": {
+      "display_value": "UNKNOWN",
+      "value": "",
+      "display_value_internal": ""
+    },
+    "u_src_ip": {
+      "display_value": "",
+      "value": ""
+    },
+    "comments_and_work_notes": {
+      "display_value": "",
+      "value": ""
+    },
+    "escalation": {
+      "display_value": "Normal",
+      "value": 0.0
+    },
+    "upon_approval": {
+      "display_value": "Proceed to Next Task",
+      "value": "proceed"
+    },
+    "correlation_id": {
+      "display_value": "",
+      "value": ""
+    },
+    "made_sla": {
+      "display_value": "true",
+      "value": true
+    },
+    "backout_plan": {
+      "display_value": "-- Physically remove switch and all associated cabling\r\n-- Remove switch from management, monitoring and ServiceNow CMDB",
+      "value": "-- Physically remove switch and all associated cabling\r\n-- Remove switch from management, monitoring and ServiceNow CMDB"
+    },
+    "conflict_status": {
+      "display_value": "Not Run",
+      "value": "Not Run"
+    },
+    "task_effective_number": {
+      "display_value": "CHG0031889",
+      "value": "CHG0031889"
+    },
+    "sys_updated_by": {
+      "display_value": "admin_test_Nov2020-01",
+      "value": "admin_test_Nov2020-01"
+    },
+    "opened_by": {
+      "display_value": "Content Test admin ",
+      "value": "46428af1db202c1026fca015ca961994"
+    },
+    "user_input": {
+      "display_value": "",
+      "value": ""
+    },
+    "sys_created_on": {
+      "display_value": "06/01/2022 04:12:43",
+      "value": "2022-01-06 12:12:43",
+      "display_value_internal": "2022-01-06 04:12:43"
+    },
+    "on_hold_task": {
+      "display_value": "",
+      "value": ""
+    },
+    "sys_domain": {
+      "display_value": "global",
+      "value": "global"
+    },
+    "route_reason": {
+      "display_value": "",
+      "value": ""
+    },
+    "closed_at": {
+      "display_value": "",
+      "value": "",
+      "display_value_internal": ""
+    },
+    "u_fw_service": {
+      "display_value": "",
+      "value": ""
+    },
+    "review_comments": {
+      "display_value": "",
+      "value": ""
+    },
+    "business_service": {
+      "display_value": "",
+      "value": ""
+    },
+    "time_worked": {
+      "display_value": "",
+      "value": ""
+    },
+    "chg_model": {
+      "display_value": "",
+      "value": ""
+    },
+    "expected_start": {
+      "display_value": "",
+      "value": "",
+      "display_value_internal": ""
+    },
+    "opened_at": {
+      "display_value": "06/01/2022 04:12:43",
+      "value": "2022-01-06 12:12:43",
+      "display_value_internal": "2022-01-06 04:12:43"
+    },
+    "work_end": {
+      "display_value": "",
+      "value": "",
+      "display_value_internal": ""
+    },
+    "phase_state": {
+      "display_value": "Open",
+      "value": "open"
+    },
+    "cab_date": {
+      "display_value": "",
+      "value": "",
+      "display_value_internal": ""
+    },
+    "work_notes": {
+      "display_value": "",
+      "value": ""
+    },
+    "close_code": {
+      "display_value": "",
+      "value": ""
+    },
+    "assignment_group": {
+      "display_value": "",
+      "value": ""
+    },
+    "description": {
+      "display_value": "This standard change template describes adding a new network switch to a datacenter cabinet",
+      "value": "This standard change template describes adding a new network switch to a datacenter cabinet"
+    },
+    "on_hold_reason": {
+      "display_value": "",
+      "value": ""
+    },
+    "calendar_duration": {
+      "display_value": "",
+      "value": ""
+    },
+    "close_notes": {
+      "display_value": "",
+      "value": ""
+    },
+    "sys_id": {
+      "display_value": "11ab5ccfdb784d505da401a3ca96190a",
+      "value": "11ab5ccfdb784d505da401a3ca96190a"
+    },
+    "contact_type": {
+      "display_value": "",
+      "value": ""
+    },
+    "cab_required": {
+      "display_value": "false",
+      "value": false
+    },
+    "urgency": {
+      "display_value": "3 - Low",
+      "value": 3.0
+    },
+    "scope": {
+      "display_value": "Medium",
+      "value": 3.0
+    },
+    "company": {
+      "display_value": "",
+      "value": ""
+    },
+    "justification": {
+      "display_value": "",
+      "value": ""
+    },
+    "activity_due": {
+      "display_value": "UNKNOWN",
+      "value": "",
+      "display_value_internal": ""
+    },
+    "comments": {
+      "display_value": "",
+      "value": ""
+    },
+    "u_fw_policy_action": {
+      "display_value": "",
+      "value": ""
+    },
+    "approval": {
+      "display_value": "Approved",
+      "value": "approved"
+    },
+    "due_date": {
+      "display_value": "",
+      "value": "",
+      "display_value_internal": ""
+    },
+    "sys_mod_count": {
+      "display_value": "0",
+      "value": 0.0
+    },
+    "on_hold": {
+      "display_value": "false",
+      "value": false
+    },
+    "sys_tags": {
+      "display_value": "",
+      "value": ""
+    },
+    "conflict_last_run": {
+      "display_value": "",
+      "value": "",
+      "display_value_internal": ""
+    },
+    "unauthorized": {
+      "display_value": "false",
+      "value": false
+    },
+    "risk": {
+      "display_value": "Moderate",
+      "value": 3.0
+    },
+    "location": {
+      "display_value": "",
+      "value": ""
+    },
+    "category": {
+      "display_value": "Other",
+      "value": "Other"
+    },
+    "risk_impact_analysis": {
+      "display_value": "",
+      "value": ""
+    },
+    "__meta": {
+      "ignoredFields": []
+    }
+  }
+}

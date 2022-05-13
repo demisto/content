@@ -523,7 +523,7 @@ script:
       type: string
     description: Lists the specified metric filters. You can list all the metric filters
       or filter the results by log name, prefix, metric name, or metric namespace.
-  dockerimage: demisto/boto3:2.0.0.20482
+  dockerimage: demisto/boto3:2.0.0.24033
   runonce: false
 tests:
 - No Tests

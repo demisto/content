@@ -146,7 +146,7 @@ tasks:
     task:
       id: a5dab966-16d7-4140-8d12-3c986b5b23da
       version: -1
-      name: Is there an ArcSight Black list IP Active List and values?
+      name: Is there an ArcSight Block list IP Active List and values?
       type: condition
       iscommand: false
       brand: ""
@@ -213,7 +213,7 @@ tasks:
     task:
       id: e61e1b21-5c82-4b2f-8daf-b471442edd35
       version: -1
-      name: Add IP to ArcSight Active list black list
+      name: Add IP to ArcSight Active list block list
       description: Adds new entries to the Active List.
       script: ArcSight ESM v2|||as-add-entries
       type: regular
@@ -309,7 +309,7 @@ tasks:
     task:
       id: 242b10aa-b4ca-452a-8b4f-2e42167be3d3
       version: -1
-      name: Is there an ArcSight White list IP Active List and values?
+      name: Is there an ArcSight allow list IP Active List and values?
       type: condition
       iscommand: false
       brand: ""
@@ -376,7 +376,7 @@ tasks:
     task:
       id: 86d47d96-1201-4252-88a5-a91e06f8fe56
       version: -1
-      name: Add IP to ArcSight Active list white list
+      name: Add IP to ArcSight Active list allow list
       description: Adds new entries to the Active List.
       script: ArcSight ESM v2|||as-add-entries
       type: regular
@@ -840,23 +840,23 @@ inputs:
 - key: ArcSightBlackListIPActiveListID
   value: {}
   required: false
-  description: ID of the black list IP Active List resource as appears in ArcSight.
+  description: ID of the block list IP Active List resource as appears in ArcSight.
   playbookInputQuery: null
 - key: ArcsightBlackListIPValueFieldName
   value: {}
   required: false
-  description: The name of the black list Active List field to insert the IP value
+  description: The name of the block list Active List field to insert the IP value
     to.
   playbookInputQuery: null
 - key: ArcSightWhiteListIPActiveListID
   value: {}
   required: false
-  description: ID of the white list IP Active List resource as appears in ArcSight.
+  description: ID of the allow list IP Active List resource as appears in ArcSight.
   playbookInputQuery: null
 - key: ArcsightWhiteListIPValueFieldName
   value: {}
   required: false
-  description: The name of the white list Active List field to insert the IP value
+  description: The name of the allow list Active List field to insert the IP value
     to.
   playbookInputQuery: null
 - key: ArcSightWatchListIPActiveListID

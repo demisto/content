@@ -1206,19 +1206,19 @@ script:
       isArray: true
       name: host
       required: true
-    - description: Name of kernel module to black- or whitelist.
+    - description: Name of kernel module to add to block list or allow list.
       name: name
       required: true
     - auto: PREDEFINED
       defaultValue: present
-      description: Whether the module should be present in the blacklist or absent.
+      description: Whether the module should be present in the block list or absent.
       name: state
       predefined:
       - absent
       - present
-    - description: If specified, use this blacklist file instead of `/etc/modprobe.d/blacklist-ansible.conf`.
+    - description: If specified, use this block list file instead of `/etc/modprobe.d/blacklist-ansible.conf`.
       name: blacklist_file
-    description: "Blacklist kernel modules\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/kernel_blacklist_module.html"
+    description: "Block list kernel modules\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/kernel_blacklist_module.html"
     name: linux-kernel-blacklist
     outputs: []
   - arguments:
@@ -1270,7 +1270,7 @@ script:
       \ documentation available at https://docs.ansible.com/ansible/2.9/modules/listen_ports_facts_module.html"
     name: linux-listen-ports-facts
     outputs:
-    - contextPath: Linux.ListenPortsFacts.ansible_facts
+    - contextPath: Linux.ListenPortsFacts.facts
       description: Dictionary containing details of TCP and UDP ports with listening
         servers
       type: unknown
@@ -2131,7 +2131,7 @@ script:
     - defaultValue: auto
       description: 'The service module actually uses system specific modules, normally
         through auto detection, this setting can force a specific module. Normally
-        it uses the value of the ''ansible_service_mgr'' fact and falls back to the
+        it uses the value of the ''service_mgr'' fact and falls back to the
         old ''service'' module when none matching is found.'
       name: use
     description: "Manage services\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/service_module.html"
@@ -2148,8 +2148,8 @@ script:
       \ available at https://docs.ansible.com/ansible/2.9/modules/service_facts_module.html"
     name: linux-service-facts
     outputs:
-    - contextPath: Linux.ServiceFacts.ansible_facts
-      description: Facts to add to ansible_facts about the services on the system
+    - contextPath: Linux.ServiceFacts.facts
+      description: Facts to add to facts about the services on the system
       type: unknown
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
@@ -2178,7 +2178,7 @@ script:
       name: filter
     - defaultValue: /etc/ansible/facts.d
       description: Path used for local ansible facts (`*.fact`) - files in this dir
-        will be run (if executable) and their results be added to `ansible_local`
+        will be run (if executable) and their results be added to `local`
         facts if a file is not executable it is read. Check notes for Windows options.
         (from 2.1 on) File/results format can be JSON or INI-format. The default `fact_path`
         can be specified in `ansible.cfg` for when setup is automatically called as
@@ -2628,7 +2628,7 @@ script:
       predefined:
       - 'Yes'
       - 'No'
-    - defaultValue: default set by ssh-keygen
+    - defaultValue: ''
       description: Optionally specify number of bits in SSH key to create.
       name: ssh_key_bits
     - defaultValue: rsa
@@ -4462,8 +4462,8 @@ script:
       name: dest
       required: true
     - description: 'Port number for ssh on the destination host. Prior to Ansible
-        2.0, the ansible_ssh_port inventory var took precedence over this value. This
-        parameter defaults to the value of `ansible_ssh_port` or `ansible_port`, the
+        2.0, the ssh_port inventory var took precedence over this value. This
+        parameter defaults to the value of `ssh_port` or `port`, the
         `remote_port` config setting or the value from ssh client configuration if
         none of the former have been set.'
       name: dest_port
@@ -4552,7 +4552,7 @@ script:
       name: group
     - description: 'Specify the rsync command to run on the remote host. See `--rsync-path`
         on the rsync man page. To specify the rsync command to run on the local host,
-        you need to set this your task var `ansible_rsync_path`.'
+        you need to set this your task var `rsync_path`.'
       name: rsync_path
     - defaultValue: '0'
       description: Specify a `--timeout` for the rsync command in seconds.
@@ -6291,8 +6291,8 @@ script:
       \ https://docs.ansible.com/ansible/2.9/modules/package_facts_module.html"
     name: linux-package-facts
     outputs:
-    - contextPath: Linux.PackageFacts.ansible_facts
-      description: facts to add to ansible_facts
+    - contextPath: Linux.PackageFacts.facts
+      description: facts to add to facts
       type: unknown
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
@@ -6306,7 +6306,7 @@ script:
       description: 'This module supports `yum` (as it always has), this is known as
         `yum3`/`YUM3`/`yum-deprecated` by upstream yum developers. As of Ansible 2.7+,
         this module also supports `YUM4`, which is the "new yum" and it has an `dnf`
-        backend. By default, this module will select the backend based on the `ansible_pkg_mgr`
+        backend. By default, this module will select the backend based on the `pkg_mgr`
         fact.'
       name: use_backend
       predefined:
@@ -7398,10 +7398,10 @@ script:
     - contextPath: Linux.GetUrl.url
       description: the actual URL used for the request
       type: string
-  dockerimage: demisto/ansible-runner:1.0.0.23806
+  dockerimage: demisto/ansible-runner:1.0.0.24037
   runonce: false
   script: ''
   subtype: python3
   type: python
 tests:
-- No tests (auto formatted)
+- Test-AnsibleLinux

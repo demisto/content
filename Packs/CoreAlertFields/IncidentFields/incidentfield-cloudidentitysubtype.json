@@ -1,0 +1,32 @@
+{
+    "associatedToAll": true,
+    "caseInsensitive": true,
+    "cliName": "cloudidentitysubtype",
+    "closeForm": false,
+    "content": true,
+    "description": "A more specific classification of the identity initiated operation. For example, for Identity Type: Temporary Credentials the sub type could be Assumed Role",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_cloudidentitysubtype",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Cloud Identity Sub Type",
+    "neverSetAsRequired": false,
+    "openEnded": true,
+    "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "multiSelect",
+    "unmapped": true,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.5.0",
+	"x2_fields": "identity_sub_type"
+}

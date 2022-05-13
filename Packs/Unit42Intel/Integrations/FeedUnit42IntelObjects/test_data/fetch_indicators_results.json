@@ -1,0 +1,21 @@
+[{
+  "value": "mocktag",
+  "type": "Malware",
+  "service": "AutoFocus",
+  "fields": {
+    "tags": ["PotentiallyUnwantedProgram"],
+    "aliases": ["alias"],
+    "description": "some description",
+    "lastseenbysource": "2021-03-31T17:50:24Z",
+    "updateddate": "2021-03-15T19:27:21Z",
+    "reportedby": "Some Source",
+    "trafficlightprotocol": "RED",
+    "publications": [{
+      "link": "http://www.example.com",
+      "title": "some title",
+      "source": "some source",
+      "timestamp": "2016-08-10T14:27:05"
+    }]
+  }
+}
+]

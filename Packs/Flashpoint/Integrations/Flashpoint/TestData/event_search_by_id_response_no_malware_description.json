@@ -1,0 +1,61 @@
+[
+  {
+    "Event": {
+      "Attribute": [
+        {
+          "category": "CATEGORY1",
+          "comment": "",
+          "fpid": "test_scan_id",
+          "href": "http://123-fake-api.com/api/v4/indicators/attribute/test_scan_id",
+          "timestamp": "1560895692",
+          "to_ids": false,
+          "type": "other",
+          "uuid": "5d8bb545-3eds-2222-1111-aaaaaaaaaaaa",
+          "value": {
+            "comment": "",
+            "other": "id:test_scan_id"
+          }
+        },
+        {
+          "category": "Payload delivery",
+          "comment": "",
+          "fpid": "test_scan_id",
+          "href": "http://123-fake-api.com/api/v4/indicators/attribute/test_scan_id",
+          "timestamp": "1560895692",
+          "to_ids": true,
+          "type": "md5",
+          "uuid": "c0b03621-02b8-41d8-8f6d-d1e6946e011b",
+          "value": {
+            "comment": "",
+            "md5": "testfile"
+          }
+        }
+      ],
+      "Tag": [
+        {
+          "name": "tag1"
+        }
+      ],
+      "attribute_count": "4",
+      "date": "2019-06-18",
+      "event_creator_email": "fake@test.com",
+      "info": "testing info",
+      "publish_timestamp": "1560895692",
+      "timestamp": "1560895692",
+      "uuid": "5d0960cc-6128-4416-9996-05d20a640c05"
+    },
+    "basetypes": [
+      "b1",
+      "b2"
+    ],
+    "fpid": "test_scan_id",
+    "header_": {
+      "indexed_at": 1560965494,
+      "ingested_at": 1560961813,
+      "is_visible": true,
+      "observed_at": 1560961813,
+      "source": "source1"
+    },
+    "href": "http://123-fake-api.com/api/v4/indicators/event/test_scan_id"
+  }
+]

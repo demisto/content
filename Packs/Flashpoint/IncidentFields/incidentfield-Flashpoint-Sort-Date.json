@@ -1,0 +1,31 @@
+{
+    "id": "incident_flashpointsortdate",
+    "version": -1,
+    "modified": "2021-07-22T11:50:29.645942838+05:30",
+    "name": "Flashpoint Sort Date",
+    "description": "Sort date of the alert.",
+    "ownerOnly": false,
+    "cliName": "flashpointsortdate",
+    "type": "date",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "Flashpoint Alerts"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "5.0.0"
+}

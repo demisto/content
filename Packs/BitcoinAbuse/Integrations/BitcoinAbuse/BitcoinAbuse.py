@@ -88,7 +88,7 @@ class BitcoinAbuseClient(BaseClient):
             )
         )
 
-    def get_indicators(self) -> List[Dict]:
+    def get_indicators(self) -> Tuple[List[Dict], bool]:
         """
         Builds CSV module client and performs the API call to Bitcoin Abuse service.
         If the call was successful, returns list of indicators.
@@ -105,7 +105,7 @@ class BitcoinAbuseClient(BaseClient):
         params = self.build_params_for_csv_module()
         csv_module_client = Client(**params)
 
-        indicators = fetch_indicators_command(
+        indicators, no_update = fetch_indicators_command(
             client=csv_module_client,
             default_indicator_type='Cryptocurrency Address',
             auto_detect=False,
@@ -142,7 +142,7 @@ class BitcoinAbuseClient(BaseClient):
             indicator['fields']['reportscount'] = indicator_count
             indicator['fields']['cryptocurrencyaddresstype'] = 'bitcoin'
 
-        return indicators_without_duplicates
+        return indicators_without_duplicates, no_update
 
     def build_fetch_indicators_url_suffixes(self) -> Set[str]:
         """
@@ -301,9 +301,14 @@ def bitcoin_abuse_fetch_indicators_command(bitcoin_client: BitcoinAbuseClient) -
     Returns:
 
     """
-    indicators = bitcoin_client.get_indicators()
-    for b in batch(indicators, batch_size=2000):
-        demisto.createIndicators(b)  # type: ignore
+    indicators, no_update = bitcoin_client.get_indicators()
+    if is_demisto_version_ge('6.5.0'):
+        for b in batch(indicators, batch_size=2000):
+            demisto.createIndicators(b, noUpdate=no_update)  # type: ignore
+    else:
+        for b in batch(indicators, batch_size=2000):
+            demisto.createIndicators(b, noUpdate=no_update)  # type: ignore
+
     demisto.setIntegrationContext({'have_fetched_first_time': True})
 
 
@@ -318,7 +323,7 @@ def bitcoin_abuse_get_indicators_command(bitcoin_client: BitcoinAbuseClient, arg
     Returns:
         CommandResults.
     """
-    indicators = bitcoin_client.get_indicators()
+    indicators, _ = bitcoin_client.get_indicators()
     limit = arg_to_number(args.get('limit', 50), 'limit')
     truncated_indicators_list = indicators[:limit]
     return CommandResults(

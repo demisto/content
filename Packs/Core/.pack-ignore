@@ -1,0 +1,15 @@
+[file:CoreIOCs.yml]
+ignore=IN145,IN124
+
+[file:CortexCoreIR.yml]
+ignore=IN145,IN124,IN139
+
+[file:README.md]
+ignore=RM104
+
+[file:impossibleTravelerGetDistance.yml]
+ignore=CJ105
+
+[known_words]
+XSIAM
+CoreIRApiModule

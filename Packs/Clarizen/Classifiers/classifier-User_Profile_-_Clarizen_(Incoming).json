@@ -1,0 +1,44 @@
+{
+	"defaultIncidentType": "",
+	"description": "Maps an Clarizen user data to a User Profile data.",
+	"id": "User Profile - Clarizen (Incoming)",
+	"mapping": {
+		"User Profile": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"City": {
+					"complex": null,
+					"simple": "Location"
+				},
+				"Display Name": {
+					"complex": null,
+					"simple": "Name"
+				},
+				"Email": {
+					"complex": null,
+					"simple": "Email"
+				},
+				"Given Name": {
+					"complex": null,
+					"simple": "firstname"
+				},
+				"Surname": {
+					"complex": null,
+					"simple": "lastname"
+				},
+				"Mobile Phone": {
+					"complex": null,
+					"simple": "MobilePhone"
+				},
+				"Username": {
+					"complex": null,
+					"simple": "Username"
+				}
+			}
+		}
+	},
+	"name": "User Profile - Clarizen (Incoming)",
+	"type": "mapping-incoming",
+	"version": -1,
+	"fromVersion": "6.0.0"
+}

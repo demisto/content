@@ -1,0 +1,14 @@
+{
+	"id": "Lacework - Classifier",
+	"name": "Lacework - Classifier",
+	"type": "classification",
+	"description": "Lacework Incident Classifier",
+	"version": -1,
+	"defaultIncidentType": "Lacework Event",
+	"transformer": {
+		"complex": null,
+		"simple": ""
+	},
+	"keyTypeMap": {},
+	"fromVersion": "6.0.0"
+}

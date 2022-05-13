@@ -2,7 +2,7 @@
     "name": "SCADAfence CNM",
     "description": "Fetching data from CNM",
     "support": "partner",
-    "currentVersion": "1.0.3",
+    "currentVersion": "1.0.7",
     "author": "SCADAfence CNM",
     "url": "www.scadafence.com",
     "email": "support@scadafence.com",
@@ -16,5 +16,9 @@
     "githubUser": [
         "AlexzxelA"
     ],
-    "certification": "certified"
+    "certification": "certified",
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

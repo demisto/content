@@ -1,5 +1,5 @@
 Fetches SOCRadar incidents with desired parameters so that relevant actions over the incidents can be taken by using Cortex XSOAR.
-This integration was integrated and tested with version 1.0 of SOCRadarIncidents.
+This integration was integrated and tested with v21.11 of SOCRadar.
 
 ## Configure SOCRadarIncidents on Cortex XSOAR
 

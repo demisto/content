@@ -2,13 +2,15 @@ import pytest
 from Exabeam import Client, contents_append_notable_user_info, contents_user_info, get_peer_groups, \
     get_user_labels, get_watchlist, get_asset_data, get_session_info_by_id, get_rules_model_definition, \
     parse_context_table_records_list, get_notable_assets, get_notable_session_details, get_notable_sequence_details, \
-    get_notable_sequence_event_types
+    get_notable_sequence_event_types, delete_context_table_records
 from test_data.response_constants import RESPONSE_PEER_GROUPS, RESPONSE_USER_LABELS, RESPONSE_WATCHLISTS, \
     RESPONSE_ASSET_DATA, RESPONSE_SESSION_INFO, RESPONSE_MODEL_DATA, RESPONSE_NOTABLE_ASSET_DATA, \
-    RESPONSE_NOTABLE_SESSION_DETAILS, RESPONSE_NOTABLE_SEQUENCE_DETAILS, RESPONSE_NOTABLE_SEQUENCE_EVENTS
+    RESPONSE_NOTABLE_SESSION_DETAILS, RESPONSE_NOTABLE_SEQUENCE_DETAILS, RESPONSE_NOTABLE_SEQUENCE_EVENTS,\
+    DELETE_RECORD_RESPONSE
 from test_data.result_constants import EXPECTED_PEER_GROUPS, EXPECTED_USER_LABELS, EXPECTED_WATCHLISTS, \
     EXPECTED_ASSET_DATA, EXPECTED_SESSION_INFO, EXPECTED_MODEL_DATA, EXPECTED_NOTABLE_ASSET_DATA, \
-    EXPECTED_NOTABLE_SESSION_DETAILS, EXPECTED_NOTABLE_SEQUENCE_DETAILS, EXPECTED_NOTABLE_SEQUENCE_EVENTS
+    EXPECTED_NOTABLE_SESSION_DETAILS, EXPECTED_NOTABLE_SEQUENCE_DETAILS, EXPECTED_NOTABLE_SEQUENCE_EVENTS, \
+    EXPECTED_RESULT_AFTER_RECORD_DELETION
 
 
 def test_contents_append_notable_user_info():
@@ -101,7 +103,9 @@ def test_contents_user_info():
     (get_notable_sequence_details, {'limit': 1, 'page': 0}, RESPONSE_NOTABLE_SEQUENCE_DETAILS,
      EXPECTED_NOTABLE_SEQUENCE_DETAILS),
     (get_notable_sequence_event_types, {'limit': 9, 'page': 0}, RESPONSE_NOTABLE_SEQUENCE_EVENTS,
-     EXPECTED_NOTABLE_SEQUENCE_EVENTS)
+     EXPECTED_NOTABLE_SEQUENCE_EVENTS),
+    (delete_context_table_records, {"records": "test_key", "context_table_name": "test_table"},
+     DELETE_RECORD_RESPONSE, EXPECTED_RESULT_AFTER_RECORD_DELETION)
 ])  # noqa: E124
 def test_commands(command, args, response, expected_result, mocker):
     import requests

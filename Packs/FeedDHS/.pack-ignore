@@ -1,2 +1,5 @@
 [file:DHS_Feed.yml]
-ignore=IN122,BA108,BA109
+ignore=IN122,BA108,BA109,IN145
+
+[file:pack_metadata.json]
+ignore=PA129

@@ -182,3 +182,20 @@ def test_add_technique_prefix_to_sub_technique():
     add_technique_prefix_to_sub_technique(indicators, id_to_name, mitre_id_to_mitre_name)
     assert indicators == NEW_INDICATORS_LIST
     assert id_to_name == NEW_ID_TO_NAME
+
+
+def test_publication_link_not_none():
+    from FeedMitreAttackv2 import map_fields_by_type
+    indicator = {'created': '2022-01-05T14:27:46.612705Z',
+                 'modified': '2022-01-05T14:27:46.612705Z',
+                 'external_references': [{}]}
+
+    res = map_fields_by_type('Malware', indicator)
+    assert res['publications'][0]['link'] is not None
+
+
+def test_create_relationships_invalid():
+    from FeedMitreAttackv2 import create_relationship
+    item_json = {'source_ref': '',
+                 'target_ref': ''}
+    assert create_relationship(item_json, {}) is None

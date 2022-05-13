@@ -701,7 +701,7 @@ tasks:
       id: 94a926e1-2aac-4682-863b-869dfb60257f
       version: -1
       name: Can the host that initiated the scan be isolated?
-      description: Checks whether attacker hostnames exist in context, are not whitelisted,
+      description: Checks whether attacker hostnames exist in context, are not on allow list,
         and the IsolateEndpointAutomatically input is set to True.
       type: condition
       iscommand: false
@@ -917,7 +917,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
   "89":
     id: "89"

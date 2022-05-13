@@ -1,0 +1,26 @@
+commonfields:
+  id: MarkRelatedIncidents
+  version: -1
+name: MarkRelatedIncidents
+script: ''
+type: javascript
+tags:
+- Utility
+comment: |-
+  Marks given incidents as related to current incident.
+
+  This automation runs using the default Limited User role, unless you explicitly change the permissions.
+  For more information, see the section about permissions here:
+  https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+enabled: true
+system: true
+args:
+- name: related
+  required: true
+  default: true
+  description: The list of related incident IDs we want to mark
+  isArray: true
+scripttarget: 0
+tests:
+- No tests (auto formatted)
+fromversion: 5.0.0

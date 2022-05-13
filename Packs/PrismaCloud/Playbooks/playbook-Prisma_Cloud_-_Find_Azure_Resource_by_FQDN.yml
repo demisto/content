@@ -44,7 +44,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2350,
+          "x": 2010,
           "y": -1190
         }
       }
@@ -72,8 +72,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 500,
-          "y": 1690
+          "x": 1670,
+          "y": 1080
         }
       }
   "10":
@@ -122,8 +122,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1580,
-          "y": 875
+          "x": 1070,
+          "y": 520
         }
       }
   "12":
@@ -162,8 +162,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 500,
-          "y": 1810
+          "x": 1670,
+          "y": 1230
         }
       }
   "13":
@@ -197,8 +197,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 200,
-          "y": 2070
+          "x": 1390,
+          "y": 1400
         }
       }
   "14":
@@ -222,8 +222,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 510,
-          "y": 2320
+          "x": 2010,
+          "y": 1570
         }
       }
   "15":
@@ -278,8 +278,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2140,
-          "y": -850
+          "x": 1700,
+          "y": -870
         }
       }
   "16":
@@ -306,8 +306,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 570,
-          "y": -380
+          "x": 1400,
+          "y": -700
         }
       }
   "20":
@@ -345,8 +345,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2350,
-          "y": -1060
+          "x": 2010,
+          "y": -1040
         }
       }
   "22":
@@ -394,8 +394,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 570,
-          "y": -50
+          "x": 1400,
+          "y": -350
         }
       }
   "23":
@@ -443,8 +443,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 570,
-          "y": 140
+          "x": 1400,
+          "y": -160
         }
       }
   "24":
@@ -482,8 +482,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1900,
-          "y": 470
+          "x": 570,
+          "y": 210
         }
       }
   "25":
@@ -512,8 +512,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 570,
-          "y": 330
+          "x": 1400,
+          "y": 60
         }
       }
   "26":
@@ -551,8 +551,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1350,
-          "y": 470
+          "x": 1200,
+          "y": 210
         }
       }
   "27":
@@ -579,8 +579,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1650,
-          "y": 715
+          "x": 1070,
+          "y": 390
         }
       }
   "28":
@@ -610,8 +610,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 660,
-          "y": 650
+          "x": 330,
+          "y": 380
         }
       }
   "29":
@@ -638,8 +638,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1020,
-          "y": 650
+          "x": 1670,
+          "y": 210
         }
       }
   "30":
@@ -683,8 +683,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 570,
-          "y": -220
+          "x": 1400,
+          "y": -540
         }
       }
   "31":
@@ -733,8 +733,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 900,
-          "y": 800
+          "x": 490,
+          "y": 520
         }
       }
   "32":
@@ -772,8 +772,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1230,
-          "y": 970
+          "x": 490,
+          "y": 710
         }
       }
   "33":
@@ -803,8 +803,9 @@ tasks:
           - args:
               prefix:
                 value:
-                  simple: 'config where cloud.type = ''azure'' and cloud.service =
-                    ''Azure App Service'' and json.rule =  ( '
+                  simple: 'config from cloud.resource where cloud.type = ''azure''
+                    AND cloud.service = ''Azure App Service'' AND api.name = ''azure-app-service''
+                    AND json.rule = ( '
               suffix:
                 value:
                   simple: )
@@ -819,20 +820,20 @@ tasks:
       brand: ""
       description: Search configuration inventory on the Prisma Cloud (RedLock) platform
         using RQL language
-      id: 1310abac-4fba-442a-8917-50b083086dc9
+      id: 3107b94b-2010-48eb-85c0-ebaed826a7ec
       iscommand: true
       name: Search FQDNs in App Service
       script: '|||redlock-search-config'
       type: regular
       version: -1
-    taskid: 1310abac-4fba-442a-8917-50b083086dc9
+    taskid: 3107b94b-2010-48eb-85c0-ebaed826a7ec
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 890,
-          "y": 1140
+          "x": 310,
+          "y": 900
         }
       }
   "34":
@@ -881,8 +882,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 410,
-          "y": 800
+          "x": -160,
+          "y": 520
         }
       }
   "35":
@@ -920,8 +921,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 350,
-          "y": 970
+          "x": -160,
+          "y": 710
         }
       }
   "36":
@@ -951,8 +952,9 @@ tasks:
           - args:
               prefix:
                 value:
-                  simple: 'config where cloud.type = ''azure'' and cloud.service =
-                    ''Azure Virtual Network'' and json.rule =  ( '
+                  simple: 'config from cloud.resource where cloud.type = ''azure''
+                    AND cloud.service = ''Azure Virtual Network'' AND api.name = ''azure-network-public-ip-address''
+                    AND json.rule = ( '
               suffix:
                 value:
                   simple: )
@@ -967,20 +969,20 @@ tasks:
       brand: ""
       description: Search configuration inventory on the Prisma Cloud (RedLock) platform
         using RQL language
-      id: bd299765-2d65-4603-827c-43ed8978261e
+      id: 80352352-4b39-4b7a-86d4-c07bf3a61b9d
       iscommand: true
       name: Search FQDNs in Public IPs
       script: '|||redlock-search-config'
       type: regular
       version: -1
-    taskid: bd299765-2d65-4603-827c-43ed8978261e
+    taskid: 80352352-4b39-4b7a-86d4-c07bf3a61b9d
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1140
+          "x": -380,
+          "y": 900
         }
       }
   "37":
@@ -1011,8 +1013,9 @@ tasks:
           - args:
               prefix:
                 value:
-                  simple: 'config where cloud.type = ''azure'' and cloud.service =
-                    ''Azure Application Gateway'' and json.rule =  ( '
+                  simple: 'config from cloud.resource where cloud.type = ''azure''
+                    AND cloud.service = ''Azure Application Gateway'' AND api.name
+                    = ''azure-application-gateway'' AND json.rule = ( '
               suffix:
                 value:
                   simple: )
@@ -1027,20 +1030,20 @@ tasks:
       brand: ""
       description: Search configuration inventory on the Prisma Cloud (RedLock) platform
         using RQL language
-      id: b9f87a1a-8f45-44e3-8233-6e07a7320f58
+      id: c91a738c-b191-4725-894b-8deeef6ef3a2
       iscommand: true
       name: Search FQDNs in Azure Application Gateway
       script: '|||redlock-search-config'
       type: regular
       version: -1
-    taskid: b9f87a1a-8f45-44e3-8233-6e07a7320f58
+    taskid: c91a738c-b191-4725-894b-8deeef6ef3a2
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": -1750,
-          "y": 1065
+          "x": 1070,
+          "y": 700
         }
       }
   "38":
@@ -1100,8 +1103,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -30,
-          "y": 800
+          "x": -840,
+          "y": 520
         }
       }
   "39":
@@ -1139,8 +1142,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -60,
-          "y": 970
+          "x": -840,
+          "y": 725
         }
       }
   "40":
@@ -1171,8 +1174,9 @@ tasks:
           - args:
               prefix:
                 value:
-                  simple: 'config where cloud.type = ''azure'' and cloud.service =
-                    ''Azure Storage'' and json.rule =  ( '
+                  simple: 'config from cloud.resource where cloud.type = ''azure''
+                    AND cloud.service = ''Azure Storage'' AND api.name = ''azure-storage-account-list''
+                    AND json.rule = ( '
               suffix:
                 value:
                   simple: )
@@ -1187,20 +1191,20 @@ tasks:
       brand: ""
       description: Search configuration inventory on the Prisma Cloud (RedLock) platform
         using RQL language
-      id: e7b16762-83e9-41b7-8095-266d36a5d466
+      id: 49476811-2e58-4291-8f00-305c666af44b
       iscommand: true
       name: Search FQDNs in Azure Storage
       script: '|||redlock-search-config'
       type: regular
       version: -1
-    taskid: e7b16762-83e9-41b7-8095-266d36a5d466
+    taskid: 49476811-2e58-4291-8f00-305c666af44b
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": -90,
-          "y": 1280
+          "x": -1020,
+          "y": 900
         }
       }
   "41":
@@ -1249,8 +1253,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -430,
-          "y": 800
+          "x": -1470,
+          "y": 520
         }
       }
   "42":
@@ -1288,8 +1292,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -460,
-          "y": 970
+          "x": -1470,
+          "y": 725
         }
       }
   "43":
@@ -1319,8 +1323,9 @@ tasks:
           - args:
               prefix:
                 value:
-                  simple: 'config where cloud.type = ''azure'' and cloud.service =
-                    ''Azure Kubernetes Service'' and json.rule =  ( '
+                  simple: 'config from cloud.resource where cloud.type = ''azure''
+                    AND cloud.service = ''Azure Kubernetes Service'' AND api.name
+                    = ''azure-kubernetes-cluster'' AND json.rule = ( '
               suffix:
                 value:
                   simple: )
@@ -1335,31 +1340,40 @@ tasks:
       brand: ""
       description: Search configuration inventory on the Prisma Cloud (RedLock) platform
         using RQL language
-      id: 28ea4616-343e-4625-8289-2a946282bbb6
+      id: 8ddbb096-d42c-49a5-846e-30995677f78c
       iscommand: true
       name: Search FQDNs in AKS
       script: '|||redlock-search-config'
       type: regular
       version: -1
-    taskid: 28ea4616-343e-4625-8289-2a946282bbb6
+    taskid: 8ddbb096-d42c-49a5-846e-30995677f78c
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": -350,
-          "y": 1110
+          "x": -1730,
+          "y": 910
         }
       }
 version: -1
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "12_14_#default#": 0.29,
+      "15_14_#default#": 0.11,
+      "24_7_#default#": 0.14,
+      "26_7_#default#": 0.26,
+      "32_7_#default#": 0.13,
+      "35_7_#default#": 0.1,
+      "39_7_#default#": 0.1,
+      "42_7_#default#": 0.1
+    },
     "paper": {
       "dimensions": {
-        "height": 3575,
-        "width": 4480,
-        "x": -1750,
+        "height": 2825,
+        "width": 4120,
+        "x": -1730,
         "y": -1190
       }
     }

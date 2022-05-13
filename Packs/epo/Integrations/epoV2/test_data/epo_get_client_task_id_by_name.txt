@@ -1,0 +1,10 @@
+OK: [
+    {
+        "objectId": 33,
+        "objectName": "VSEContentUpdateDemisto",
+        "productId": "EPOAGENTMETA",
+        "productName": "McAfee Agent ",
+        "typeId": 1,
+        "typeName": "McAfee Agent: Product Update"
+    }
+]

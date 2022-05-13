@@ -2,7 +2,7 @@
     "id": "prismaCloud_app-mapper",
     "name": "Prisma Cloud App - Incoming Mapper",
     "type": "mapping-incoming",
-    "description": "Maps incoming Prisma Cloud App event fields.",
+    "description": "Maps incoming Prisma Cloud event fields that are pushed into Cortex XSOAR through the Prisma Cloud App add-on.",
 	"defaultIncidentType": "",
 	"mapping": {
 		"AWS CloudTrail Misconfiguration": {

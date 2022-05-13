@@ -1,0 +1,1 @@
+Accessing the Devo API requires administrator privileges.

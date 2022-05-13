@@ -8,11 +8,11 @@ configuration:
   name: feed
   required: false
   type: 8
-- display: API Key
-  hidden: false
+- displaypassword: API Token
   name: api_token
+  type: 9
   required: true
-  type: 4
+  hiddenusername: true
 - additionalinfo: Indicators from this integration instance will be marked with this
     reputation
   defaultvalue: Bad
@@ -157,10 +157,10 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Fetches indicators from a iDefense feed. You can filter returned indicators
+description: Fetches indicators from a ACTI feed. You can filter returned indicators
   by indicator type, indicator severity, threat type, confidence, and malware family
   (each of these are an integration parameter).
-display: iDefense Feed
+display: ACTI Feed
 name: iDefense Feed
 script:
   commands:
@@ -176,7 +176,7 @@ script:
     description: Gets the feed indicators.
     execution: false
     name: idefense-get-indicators
-  dockerimage: demisto/jmespath:1.0.0.23290
+  dockerimage: demisto/jmespath:1.0.0.23980
   feed: true
   isfetch: false
   longRunning: false

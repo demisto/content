@@ -1,12 +1,11 @@
 from copy import deepcopy
 
-from ThreatConnect_v2 import calculate_freshness_time, create_context, demisto,\
+from ThreatConnect_v2 import calculate_freshness_time, create_context, demisto, \
     associate_indicator_request, get_indicators
 from freezegun import freeze_time
 import pytest
 from requests import Response
 from threatconnect import ThreatConnect
-
 
 data_test_calculate_freshness_time = [
     (0, '2020-04-20'),
@@ -172,46 +171,42 @@ FILE_INDICATOR = [{
     'confidence': 20,
     'threatAssessRating': 4.0,
     'threatAssessConfidence': 20.0,
-    'webLink': 'https://sandbox.threatconnect.com/auth/indicators/details/file.xhtml?file=49456A'     # noqa: W504
+    'webLink': 'https://sandbox.threatconnect.com/auth/indicators/details/file.xhtml?file=49456A'  # noqa: W504
                + '40536940A1304A506D7278F6B19FC7F71BE545810F7CAFEAA35A086229&owner=Demisto+Inc.',
     'sha256': '49456A40536940A1304A506D7278F6B19FC7F71BE545810F7CAFEAA35A086229',
+    'md5': 'md5test',
+    'sha1': 'sha1test',
     'type': 'File'
 }]
 FILE_CONTEXT = (
     {
-        'File(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 || val.SHA256 &&'
-        ' val.SHA256 == obj.SHA256 || val.SHA512 && val.SHA512 == obj.SHA512 || '
-        'val.CRC32 && val.CRC32 == obj.CRC32 || val.CTPH && val.CTPH == obj.CTPH || '
-        'val.SSDeep && val.SSDeep == obj.SSDeep)': [
-            {'Malicious': {
-                'Vendor': 'ThreatConnect',
-                'Description': ''},
-                'SHA256': '49456A40536940A1304A506D7278F6B19FC7F71BE545810F7CAFEAA35A086229'}
-        ],
-        'TC.Indicator(val.ID && val.ID === obj.ID)': [{
-            'ID': 113286426,
-            'Type': 'File',
-            'Owner': 'Demisto Inc.',
-            'CreateDate': '2020-05-14T13:22:49Z',
-            'LastModified': '2020-05-14T13:22:49Z',
-            'Rating': 4,
-            'Confidence': 20,
-            'WebLink': 'https://sandbox.threatconnect.com/auth/indicators/details/file.xhtml?file=49456'
-                       'A40536940A1304A506D7278F6B19FC7F71BE545810F7CAFEAA35A086229&owner=Demisto+Inc.',
-            'File': {
+        'File(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 || val.SHA256 && val.SHA256 == obj.SHA256 || val.SHA512 && val.SHA512 == obj.SHA512 || val.CRC32 && val.CRC32 == obj.CRC32 || val.CTPH && val.CTPH == obj.CTPH || val.SSDeep && val.SSDeep == obj.SSDeep)': [  # noqa: E501
+            {
+                'Malicious':
+                    {'Vendor': 'ThreatConnect', 'Description': ''},
+                'MD5': 'md5test',
+                'SHA1': 'sha1test',
                 'SHA256': '49456A40536940A1304A506D7278F6B19FC7F71BE545810F7CAFEAA35A086229'
-            }}]},
-    [{
-        'ID': 113286426,
-        'Type': 'File',
-        'Owner': 'Demisto Inc.',
-        'CreateDate': '2020-05-14T13:22:49Z',
-        'LastModified': '2020-05-14T13:22:49Z',
-        'Rating': 4,
-        'Confidence': 20,
-        'WebLink': 'https://sandbox.threatconnect.com/auth/indicators/details/file.xhtml?file=49456A40536940A1304'
-                   'A506D7278F6B19FC7F71BE545810F7CAFEAA35A086229&owner=Demisto+Inc.',
-        'File': {'SHA256': '49456A40536940A1304A506D7278F6B19FC7F71BE545810F7CAFEAA35A086229'}}]
+            }
+        ],
+        'TC.Indicator(val.ID && val.ID === obj.ID)': [
+            {'ID': 113286426, 'Name': 'md5test', 'Type': 'File', 'Owner': 'Demisto Inc.',
+             'CreateDate': '2020-05-14T13:22:49Z', 'LastModified': '2020-05-14T13:22:49Z', 'Rating': 4,
+             'Confidence': 20,
+             'WebLink': 'https://sandbox.threatconnect.com/auth/indicators/details/file.xhtml?file=49456A40536940A1304A506D7278F6B19FC7F71BE545810F7CAFEAA35A086229&owner=Demisto+Inc.',  # noqa: E501
+             'File': {'MD5': 'md5test', 'SHA1': 'sha1test',
+                      'SHA256': '49456A40536940A1304A506D7278F6B19FC7F71BE545810F7CAFEAA35A086229'}}]}, [
+        {'ID': 113286426, 'Name': 'md5test', 'Type': 'File', 'Owner': 'Demisto Inc.',
+         'CreateDate': '2020-05-14T13:22:49Z', 'LastModified': '2020-05-14T13:22:49Z', 'Rating': 4, 'Confidence': 20,
+         'WebLink': 'https://sandbox.threatconnect.com/auth/indicators/details/file.xhtml?file=49456A40536940A1304A506D7278F6B19FC7F71BE545810F7CAFEAA35A086229&owner=Demisto+Inc.',  # noqa: E501
+         'File':
+             {
+                 'MD5': 'md5test',
+                 'SHA1': 'sha1test',
+                 'SHA256': '49456A40536940A1304A506D7278F6B19FC7F71BE545810F7CAFEAA35A086229'
+             }
+         }
+    ]
 )
 
 GET_XINDAPI_OWNER1 = [{'id': 1, 'owner': 'Demisto Inc.', 'dateAdded': '2020-08-26T10:14:55Z',
@@ -236,7 +231,6 @@ EXPECTED_INDOCATORS_OUTPUT = [
      "rating": 0.0, "confidence": 0, "threatAssessRating": 1.29, "threatAssessConfidence": 5.29, "webLink": "",
      "ip": "127.0.0.1", "type": "Address"}]
 
-
 PARAMS = {"defaultOrg": "Demisto Inc.", "freshness": 7, "rating": 0, "confidence": 0}
 data_test_create_context = [
     ({}, ({}, []), PARAMS),
@@ -247,7 +241,7 @@ data_test_create_context = [
 ]
 
 
-@ pytest.mark.parametrize('indicators, expected_output, params', data_test_create_context)
+@pytest.mark.parametrize('indicators, expected_output, params', data_test_create_context)
 def test_create_context(indicators, expected_output, params, mocker):
     mocker.patch.object(demisto, 'params', return_value=params)
     output = create_context(indicators)
@@ -274,7 +268,7 @@ data_test_create_context_debotscore = [
 ]
 
 
-@ pytest.mark.parametrize('params, rate, expected_score', data_test_create_context_debotscore)
+@pytest.mark.parametrize('params, rate, expected_score', data_test_create_context_debotscore)
 def test_create_context_debotscore(params, rate, expected_score, mocker):
     expected_output = {'Indicator': '88.88.88.88', 'Score': expected_score, 'Type': 'ip', 'Vendor': 'ThreatConnect',
                        'Reliability': 'B - Usually reliable'}
@@ -292,7 +286,7 @@ data_test_associate_indicator_request = [
 ]
 
 
-@ pytest.mark.parametrize('indicator_type, indicator, expected_url', data_test_associate_indicator_request)
+@pytest.mark.parametrize('indicator_type, indicator, expected_url', data_test_associate_indicator_request)
 def test_associate_indicator_request(indicator_type, indicator, expected_url, mocker):
     mocker.patch.object(Response, 'json', return_value={})
     api_request = mocker.patch.object(ThreatConnect, 'api_request', return_value=Response())

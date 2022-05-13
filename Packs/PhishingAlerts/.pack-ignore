@@ -1,0 +1,8 @@
+[file:README.md]
+ignore=RM104
+
+[file:incidentfield-Email_Source_Domain.json]
+ignore=IF115
+
+[file:incidentfield-Email_Queue_ID.json]
+ignore=IF115

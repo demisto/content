@@ -3,11 +3,18 @@ commonfields:
   id: Sophos Central
   version: -1
 configuration:
-- additionalinfo: The Sophos account secret should be in the password field.
-  display: Sophos account ID
+- display: Client ID
+  displaypassword: Client Secret
   name: credentials
-  required: true
   type: 9
+  required: true
+  additionalinfo: The Sophos account secret should be in the password field.
+- display: Tenant ID
+  name: tenant_id
+  additionalinfo: Tenant ID on which the commands would be executed by default. Keep
+    it empty if using tenant level credentials.
+  type: 0
+  required: false
 - display: Fetch incidents
   name: isFetch
   required: false
@@ -73,10 +80,6 @@ configuration:
   name: first_fetch
   required: false
   type: 0
-- display: Trust any certificate (not secure)
-  name: insecure
-  required: false
-  type: 8
 - display: Use system proxy settings
   name: proxy
   required: false
@@ -93,7 +96,7 @@ script:
   - arguments:
     - default: false
       defaultValue: '50'
-      description: The maximum number of items to return. Maximum
+      description: The maximum number of items to return. Default is "50". Maximum
         is "100".
       isArray: false
       name: limit
@@ -382,7 +385,8 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: The maximum number of items to return. Maximum is "100".
+      description: The maximum number of items to return. Default is "50". Maximum
+        is "100".
       isArray: false
       name: limit
       required: false
@@ -529,7 +533,7 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: The maximum number of items to return. Maximum
+      description: The maximum number of items to return. Default is "50". Maximum
         is "100".
       isArray: false
       name: limit
@@ -700,7 +704,7 @@ script:
   - arguments:
     - default: false
       defaultValue: '50'
-      description: The maximum size of the page requested. Maximum
+      description: The maximum size of the page requested. Default is "50". Maximum
         is "100".
       isArray: false
       name: page_size
@@ -990,7 +994,7 @@ script:
   - arguments:
     - default: false
       defaultValue: '50'
-      description: The maximum size of the page requested. Maximum
+      description: The maximum size of the page requested. Default is "50". Maximum
         is "100".
       isArray: false
       name: page_size
@@ -1227,7 +1231,7 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: The maximum size of the page requested. Maximum
+      description: The maximum size of the page requested. Default is "50". Maximum
         is "100".
       isArray: false
       name: page_size
@@ -1459,7 +1463,7 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: The maximum size of the page requested. Maximum
+      description: The maximum size of the page requested. Default is "50". Maximum
         is "100".
       isArray: false
       name: page_size
@@ -1615,7 +1619,7 @@ script:
   - arguments:
     - default: false
       defaultValue: '50'
-      description: The maximum size of the page requested. Maximum
+      description: The maximum size of the page requested. Default is "50". Maximum
         is "100".
       isArray: false
       name: page_size
@@ -1713,7 +1717,85 @@ script:
     - contextPath: SophosCentral.DetectedExploit.thumbprint
       description: Matches [0-9a-zA-Z]{64}.
       type: String
-  dockerimage: demisto/python3:3.9.6.22912
+  - arguments:
+    - default: false
+      description: The endpoint ID(s).
+      isArray: true
+      name: endpoint_id
+      required: true
+      secret: false
+    - default: false
+      description: Comment indicating why the endpoint(s) should be isolated.
+      isArray: false
+      name: comment
+      required: false
+      secret: false
+    deprecated: false
+    description: Initiate isolation request on the endpoint(s).
+    execution: false
+    name: sophos-central-isolate-endpoint
+    outputs:
+    - contextPath: SophosCentral.EndpointIsolation.items.id
+      description: 'The unique endpoint ID.'
+      type: String
+    - contextPath: SophosCentral.EndpointIsolation.items.isolation.enabled
+      description: 'Isolation status.'
+      type: Boolean
+    - contextPath: SophosCentral.EndpointIsolation.items.isolation.lastEnabledAt
+      description: 'When isolation was last enabled for the endpoint.'
+      type: String
+    - contextPath: SophosCentral.EndpointIsolation.items.isolation.lastEnabledBy.id
+      description: 'Principal Email or clientId by whom isolation was enabled.'
+      type: String
+    - contextPath: SophosCentral.EndpointIsolation.items.isolation.lastDisabledAt
+      description: 'When isolation was last disabled for the endpoint.'
+      type: String
+    - contextPath: SophosCentral.EndpointIsolation.items.isolation.lastDisabledBy.id
+      description: 'Principal Email or clientId by whom isolation was disabled.'
+      type: String
+    - contextPath: SophosCentral.EndpointIsolation.items.isolation.comment
+      description: 'Reason endpoint should be isolated or not.'
+      type: String
+  - arguments:
+    - default: false
+      description: The endpoint ID(s).
+      isArray: true
+      name: endpoint_id
+      required: true
+      secret: false
+    - default: false
+      description: Comment indicating why the endpoint(s) should be de-isolated.
+      isArray: false
+      name: comment
+      required: false
+      secret: false
+    deprecated: false
+    description: Initiate de-isolation request on the endpoint(s).
+    execution: false
+    name: sophos-central-deisolate-endpoint
+    outputs:
+    - contextPath: SophosCentral.EndpointIsolation.items.id
+      description: 'The unique endpoint ID.'
+      type: String
+    - contextPath: SophosCentral.EndpointIsolation.items.isolation.enabled
+      description: 'Isolation status.'
+      type: Boolean
+    - contextPath: SophosCentral.EndpointIsolation.items.isolation.lastEnabledAt
+      description: 'When isolation was last enabled for the endpoint.'
+      type: String
+    - contextPath: SophosCentral.EndpointIsolation.items.isolation.lastEnabledBy.id
+      description: 'Principal Email or clientId by whom isolation was enabled.'
+      type: String
+    - contextPath: SophosCentral.EndpointIsolation.items.isolation.lastDisabledAt
+      description: 'When isolation was last disabled for the endpoint.'
+      type: String
+    - contextPath: SophosCentral.EndpointIsolation.items.isolation.lastDisabledBy.id
+      description: 'Principal Email or clientId by whom isolation was disabled.'
+      type: String
+    - contextPath: SophosCentral.EndpointIsolation.items.isolation.comment
+      description: 'Reason endpoint should be isolated or not.'
+      type: String
+  dockerimage: demisto/python3:3.9.8.24399
   feed: false
   isfetch: true
   longRunning: false

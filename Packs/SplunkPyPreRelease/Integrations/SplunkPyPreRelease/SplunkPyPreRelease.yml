@@ -50,7 +50,7 @@ configuration:
   name: parseNotableEventsRaw
   required: false
   type: 8
-- defaultvalue: false
+- defaultvalue: 'false'
   display: Replace with Underscore in Incident Fields
   name: replaceKeys
   required: false
@@ -185,7 +185,7 @@ configuration:
   additionalinfo: The limit of how many events to retrieve per each one of the enrichment
     types (Drilldown, Asset, and Identity). To retrieve all events, enter "0" (not
     recommended).
-- display: 'Advanced: Extensive logging (for debugging purposes) - Please use this option unless advised otherwise.'
+- display: 'Advanced: Extensive logging (for debugging purposes) - Please do not use this option unless advised otherwise.'
   name: extensive_logs
   type: 8
   required: false
@@ -792,7 +792,7 @@ script:
   - name: splunk-reset-enriching-fetch-mechanism
     arguments: []
     description: Resets the enrichment mechanism of fetched notables.
-  dockerimage: demisto/splunksdk:1.0.0.21241
+  dockerimage: demisto/splunksdk:1.0.0.24033
   feed: false
   isfetch: true
   longRunning: false

@@ -15,9 +15,11 @@ def util_load_json(path):
 
 IP_ADDRESSES_TO_ADD = [
     ({'list_type': 'denylist', 'cidr_range': '1.2.3.4'},
-     'IP object with CIDR range address: 1.2.3.4/32 added successfully into the denylist list.'),
+     'IP objects wehre added successfully into the denylist\n| IP |\n| - |\n| 1.2.3.4/32 |'),
     ({'list_type': 'allowlist', 'cidr_range': '1.2.3.4', 'note': "test"},
-     "IP object with CIDR range address: 1.2.3.4/32 added successfully into the allowlist list."),
+     "IP objects wehre added successfully into the allowlist\n| IP |\n| - |\n| 1.2.3.4/32 |"),
+    ({'list_type': 'allowlist', 'cidr_range': '1.2.3.4,1.2.3.4/23', 'note': "test"},
+     "IP objects wehre added successfully into the allowlist\n| IP |\n| - |\n| 1.2.3.4/32 |\n| 1.2.3.4/23 |"),
 ]
 
 IP_ADDRESSES_TO_DELETE = [
@@ -50,10 +52,11 @@ def test_add_ip_objects_command(mocker, args, expected_output):
         - Validating the returned human readable.
     """
     mocker.patch.object(Client, "request_ip_objects")
+    return_results_mock = mocker.patch('F5Silverline.return_results')
     client = create_client(base_url='https://portal.f5silverline.com/api/v1/ip_lists', verify=False, headers={},
                            proxy=False)
-    result = add_ip_objects_command(client, args)
-    assert result.readable_output == expected_output
+    add_ip_objects_command(client, args)
+    assert return_results_mock.call_args[0][0].readable_output == expected_output
 
 
 @pytest.mark.parametrize('args,expected_output, is_object_exist', IP_ADDRESSES_TO_DELETE)

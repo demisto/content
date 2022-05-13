@@ -10,10 +10,8 @@ import logging
 
 from Tests.scripts.utils.log_util import install_logging
 from demisto_sdk.commands.common.tools import find_type
-from Tests.configure_and_test_integration_instances import Build, configure_servers_and_restart, \
-    get_tests, \
-    get_changed_integrations, configure_server_instances, instance_testing, disable_instances, \
-    report_tests_status, nightly_install_packs, test_files, \
+from Tests.configure_and_test_integration_instances import XSOARBuild, Build, \
+    test_files, report_tests_status, \
     test_pack_metadata, options_handler
 from Tests.Marketplace.search_and_install_packs import \
     search_and_install_packs_and_their_dependencies_private, upload_zipped_packs
@@ -26,10 +24,10 @@ def install_private_testing_pack(build: Build, test_pack_zip_path: str):
 
     :param build: Build object containing the build settings.
     :param test_pack_zip_path: Path to test_pack zip.
-    :return: No object is returned. nightly_install_packs will wait for the process to finish.
+    :return: No object is returned. concurrently_run_function_on_servers will wait for the process to finish.
     """
-    nightly_install_packs(build, install_method=upload_zipped_packs,
-                          pack_path=test_pack_zip_path)
+    build.concurrently_run_function_on_servers(function=upload_zipped_packs,
+                                               pack_path=test_pack_zip_path)
 
 
 def install_packs_private(build: Build, pack_ids: list = None) -> bool:
@@ -112,34 +110,32 @@ def write_test_pack_zip(tests_file_paths: set, path_to_content: str,
 
 def main():
     install_logging('Install Content And Configure Integrations On Server.log')
-    build = Build(options_handler())
+    build = XSOARBuild(options_handler())
 
-    configure_servers_and_restart(build)
+    build.configure_servers_and_restart()
 
-    disable_instances(build)
+    build.disable_instances()
     #  Get a list of the test we need to run.
-    tests_for_iteration = get_tests(build)
+    tests_for_iteration = build.get_tests()
     #  Installing the packs.
     installed_content_packs_successfully = install_packs_private(build)
     #  Get a list of the integrations that have changed.
-    new_integrations, modified_integrations = get_changed_integrations(build)
+    new_integrations, modified_integrations = build.get_changed_integrations()
     #  Configuring the instances which are used in testing.
     all_module_instances, brand_new_integrations = \
-        configure_server_instances(build, tests_for_iteration, new_integrations, modified_integrations)
+        build.configure_server_instances(tests_for_iteration, new_integrations, modified_integrations)
 
     #  Running the instance tests (pushing the test button)
-    successful_tests_pre, failed_tests_pre = instance_testing(build,
-                                                              all_module_instances,
-                                                              pre_update=True,
-                                                              use_mock=False)
+    successful_tests_pre, failed_tests_pre = build.instance_testing(all_module_instances,
+                                                                    pre_update=True,
+                                                                    use_mock=False)
     #  Adding the new integrations to the instance test list and testing them.
     all_module_instances.extend(brand_new_integrations)
-    successful_tests_post, failed_tests_post = instance_testing(build,
-                                                                all_module_instances,
-                                                                pre_update=False,
-                                                                use_mock=False)
+    successful_tests_post, failed_tests_post = build.instance_testing(all_module_instances,
+                                                                      pre_update=False,
+                                                                      use_mock=False)
     #  Gather tests to add to test pack
-    test_playbooks_from_id_set = build.id_set.get('TestPlaybooks', [])
+    test_playbooks_from_id_set = build.id_set.get('TestPlaybooks', []) if build.id_set else None
     tests_to_add_to_test_pack = find_needed_test_playbook_paths(test_playbooks=test_playbooks_from_id_set,
                                                                 tests_to_run=build.tests_to_run,
                                                                 path_to_content=build.content_root)

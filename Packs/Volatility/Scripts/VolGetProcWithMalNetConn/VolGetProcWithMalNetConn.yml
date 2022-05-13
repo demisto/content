@@ -1,0 +1,33 @@
+commonfields:
+  id: VolGetProcWithMalNetConn
+  version: -1
+name: VolGetProcWithMalNetConn
+script: ''
+type: javascript
+tags:
+- memory
+- forensics
+- volatility
+- server
+comment: Volatility script for getting the list of processes that have connections
+  to ip address with bad reputation.
+system: true
+args:
+- name: memdump
+  required: true
+  description: Path to memory dump file on the system being used
+- name: system
+  required: true
+  description: System with Volatility installed to be used for the analysis
+- name: profile
+  required: true
+  description: Volatility profile to use
+- name: repthreshold
+  description: Reputation threshold - any IP addresses up to and including this score
+    are considered malicious
+- name: repscript
+  description: Reputation script to use for checking IP addresses
+scripttarget: 0
+dependson: {}
+timeout: 0s
+fromversion: 5.0.0

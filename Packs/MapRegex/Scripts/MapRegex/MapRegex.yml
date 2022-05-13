@@ -22,7 +22,7 @@ comment: |-
 commonfields:
   id: MapRegex
   version: -1
-dockerimage: demisto/python3:3.8.6.14516
+dockerimage: demisto/python3:3.9.7.24076
 enabled: true
 name: MapRegex
 runas: DBotWeakRole

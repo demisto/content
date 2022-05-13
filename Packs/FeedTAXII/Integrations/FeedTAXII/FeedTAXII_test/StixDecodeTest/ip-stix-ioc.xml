@@ -6,7 +6,7 @@
             <indicator:Observable id="example:Observable-1c798262-a4cd-434d-a958-884d6980c459">
                 <cybox:Object id="example:Object-1980ce43-8e03-490b-863a-ea404d12242e">
                     <cybox:Properties xsi:type="AddressObject:AddressObjectType" category="ipv4-addr">
-                        <AddressObject:Address_Value condition="Equals">10.0.0.0</AddressObject:Address_Value>
+                        <AddressObject:Address_Value condition="Equals">10.0.0.0/20##comma##10.0.0.1##comma##10.0.0.2</AddressObject:Address_Value>
                     </cybox:Properties>
                 </cybox:Object>
             </indicator:Observable>

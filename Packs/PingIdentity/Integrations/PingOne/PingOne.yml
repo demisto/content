@@ -1,0 +1,231 @@
+commonfields:
+  id: PingOne
+  version: -1
+name: PingOne
+display: PingOne
+category: Identity and Access Management
+description: 'Integrates with the PingOne Management API to unlock, create, delete
+  and update users. '
+configuration:
+- display: Your PingOne Environment ID
+  name: environment_id
+  type: 0
+  required: true
+  additionalinfo: Environment ID is available under the PingOne Dashboard->Environment
+    Properties.
+- display: PingOne Region
+  name: region
+  defaultvalue: US
+  type: 15
+  required: true
+  options:
+  - US
+  - EU
+  - Asia
+  additionalinfo: PingOne has 3 regions, US, EU and Asia.
+- display: Client ID
+  displaypassword: Client Secret
+  name: credentials
+  type: 9
+  required: true
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+script:
+  script: ''
+  type: python
+  commands:
+  - name: pingone-unlock-user
+    arguments:
+    - name: username
+      required: true
+      default: true
+      description: Username to unlock.
+    description: Unlock a user's account.
+  - name: pingone-deactivate-user
+    arguments:
+    - name: username
+      required: true
+      default: true
+      description: A username to deactivate.
+    description: Deactivate a user's account.
+  - name: pingone-activate-user
+    arguments:
+    - name: username
+      required: true
+      default: true
+      description: A username to activate.
+    description: Activate a user's account.
+  - name: pingone-set-password
+    arguments:
+    - name: username
+      required: true
+      default: true
+      description: The username to change the password for.
+    - name: password
+      required: true
+      description: The new password.
+    description: "Sets a user's password. Further password details available here:
+    https://apidocs.pingidentity.com/pingone/platform/v1/api/#put-update-password-self ."
+  - name: pingone-add-to-group
+    arguments:
+    - name: username
+      description: Username.
+    - name: groupName
+      description: Group name.
+    - name: groupId
+      description: Group id.
+    - name: userId
+      description: User id.
+    description: Add user to the group. One of the following has to be given username or userId and groupName or groupId.
+  - name: pingone-remove-from-group
+    arguments:
+    - name: username
+      description: Username.
+    - name: groupName
+      description: Group name.
+    - name: userId
+      description: User id.
+    - name: groupId
+      description: Group id.
+    description: Remove user from the group. One of the following has to be given username or userId and groupName or groupId.
+  - name: pingone-get-groups
+    arguments:
+    - name: username
+      description: Username.
+      required: true
+    outputs:
+    - contextPath: PingOne.Account.Group
+      description: PingOne groups of the user.
+      type: string
+    - contextPath: PingOne.Account.ID
+      description: PingOne account id.
+      type: string
+    - contextPath: PingOne.Account.Type
+      description: PingOne account type.
+      type: string
+    - contextPath: PingOne.Account.Group.ID
+      description: Group unique id.
+      type: string
+    - contextPath: PingOne.Account.Group.Name
+      description: Group name.
+      type: string
+    description: Returns user's group memberships.
+  - name: pingone-get-user
+    arguments:
+    - name: username
+      description: Username.
+    - name: userId
+      description: User id.
+    - name: detailed
+      description: PingOne user details.
+    outputs:
+    - contextPath: PingOne.Account.ID
+      description: PingOne account ID.
+      type: string
+    - contextPath: PingOne.Account.Username
+      description: PingOne account username.
+      type: string
+    - contextPath: PingOne.Account.DisplayName
+      description: PingOne account display name.
+      type: string
+    - contextPath: PingOne.Account.Email
+      description: PingOne account email.
+      type: string
+    - contextPath: PingOne.Account.Enabled
+      description: PingOne account enabled status.
+      type: boolean
+    - contextPath: PingOne.Account.CreatedAt
+      description: PingOne account create date.
+      type: date
+    - contextPath: PingOne.Account.UpdatedAt
+      description: PingOne account updated date.
+      type: date
+    description: Returns a PingOne user. One of the following has to be given username or userId.
+  - name: pingone-create-user
+    arguments:
+    - name: username
+      required: true
+      description: The username to create.
+    - name: populationId
+      description: PingOne population ID where the new user will be created.
+      required: true
+    outputs:
+    - contextPath: PingOne.Account.ID
+      description: PingOne account ID.
+      type: string
+    - contextPath: PingOne.Account.Username
+      description: PingOne account username.
+      type: string
+    - contextPath: PingOne.Account.DisplayName
+      description: PingOne account display name.
+      type: string
+    - contextPath: PingOne.Account.Email
+      description: PingOne account email.
+      type: string
+    - contextPath: PingOne.Account.Enabled
+      description: PingOne account enabled status.
+      type: boolean
+    - contextPath: PingOne.Account.CreatedAt
+      description: PingOne account create date.
+      type: date
+    - contextPath: PingOne.Account.UpdatedAt
+      description: PingOne account updated date.
+      type: date
+    description: Create a PingOne user.
+  - name: pingone-update-user
+    arguments:
+    - name: username
+      required: true
+      description: The username to be updated.
+    - name: formatted
+      description: Formatted PingOne name.
+    - name: given
+      description: Given name.
+    - name: middle
+      description: Middle name.
+    - name: family
+      description: Family name.
+    - name: nickname
+      description: Nickname.
+    - name: title
+      description: Title.
+    - name: locale
+      description: Locale.
+    - name: email
+      description: Email.
+    - name: primaryPhone
+      description: Primary phone number.
+    - name: mobilePhone
+      description: Mobile phone number.
+    - name: streetAddress
+      description: Street address.
+    - name: locality
+      description: Locality.
+    - name: region
+      description: Region.
+    - name: postalCode
+      description: Zip code.
+    - name: countryCode
+      description: Country code.
+    - name: Type
+      description: Account type.
+    description: Update a PingOne user.
+  - name: pingone-delete-user
+    arguments:
+    - name: username
+      description: Username.
+    - name: userId
+      description: User id.
+    description: Delete a PingOne user. One of the following has to be given username or userId.
+  dockerimage: demisto/python3:3.9.8.24399
+  runonce: false
+  subtype: python3
+fromversion: 6.0.0
+tests:
+- No tests

@@ -19,7 +19,6 @@
  "required": false,
  "script": "NCSCFieldProtection",
  "selectValues": [
-  "",
   "Waiting for answers",
   "Complete"
  ],

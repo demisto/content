@@ -8,10 +8,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 0c6f2a17-b80c-480d-822f-65036ddc443d
+    taskid: 48f0a353-dc8a-4273-8d07-1bd020f00443
     type: start
     task:
-      id: 0c6f2a17-b80c-480d-822f-65036ddc443d
+      id: 48f0a353-dc8a-4273-8d07-1bd020f00443
       version: -1
       name: ""
       iscommand: false
@@ -34,10 +34,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: b24aaae4-5be9-45df-8f69-52d83331b709
+    taskid: f74cf08f-97f5-4c84-8923-50cacdf8bbcc
     type: regular
     task:
-      id: b24aaae4-5be9-45df-8f69-52d83331b709
+      id: f74cf08f-97f5-4c84-8923-50cacdf8bbcc
       version: -1
       name: URLSSLVerification
       description: Verify URL SSL certificate
@@ -66,10 +66,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: fe43f706-8081-4455-85b2-7e2ea08c2a4a
+    taskid: 398dea21-4659-49e0-8197-9f99511f7802
     type: condition
     task:
-      id: fe43f706-8081-4455-85b2-7e2ea08c2a4a
+      id: 398dea21-4659-49e0-8197-9f99511f7802
       version: -1
       name: Verify https://ynet.co.il
       type: condition
@@ -77,7 +77,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "3"
+      - "4"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -118,90 +118,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "3":
-    id: "3"
-    taskid: 52b5ffeb-08fd-4835-8026-72534b155ca3
-    type: condition
-    task:
-      id: 52b5ffeb-08fd-4835-8026-72534b155ca3
-      version: -1
-      name: Verify http://ynet.co.il
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "4"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: URL
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: URL.Data
-                      iscontext: true
-                    right:
-                      value:
-                        simple: http://ynet.co.il
-                transformers:
-                - operator: getField
-                  args:
-                    field:
-                      value:
-                        simple: Verified
-            iscontext: true
-          right:
-            value:
-              simple: "false"
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: DBotScore
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: DBotScore.Indicator
-                      iscontext: true
-                    right:
-                      value:
-                        simple: http://ynet.co.il
-                transformers:
-                - operator: getField
-                  args:
-                    field:
-                      value:
-                        simple: Score
-            iscontext: true
-          right:
-            value:
-              simple: "2"
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 545
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 5a84060f-36e4-4da8-8545-8963f88db10e
+    taskid: fded8d71-86e7-4c32-86db-f8090fb5dea7
     type: condition
     task:
-      id: 5a84060f-36e4-4da8-8545-8963f88db10e
+      id: fded8d71-86e7-4c32-86db-f8090fb5dea7
       version: -1
       name: Verify https://a.b?a,b
       type: condition
@@ -266,7 +190,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 720
+          "y": 545
         }
       }
     note: false
@@ -274,12 +198,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 1d746008-932b-4ed6-8a55-a77a8e9ea610
+    taskid: 39d1268d-e79b-4d1b-82ba-f8015449b53a
     type: title
     task:
-      id: 1d746008-932b-4ed6-8a55-a77a8e9ea610
+      id: 39d1268d-e79b-4d1b-82ba-f8015449b53a
       version: -1
       name: Done
       type: title
@@ -290,7 +216,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 895
+          "y": 720
         }
       }
     note: false
@@ -303,7 +229,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 910,
+        "height": 735,
         "width": 380,
         "x": 50,
         "y": 50

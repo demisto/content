@@ -55,4 +55,4 @@ type: python
 fromversion: 6.2.0
 tests:
 - No tests (auto formatted)
-dockerimage: demisto/python3:3.9.5.22665
+dockerimage: demisto/python3:3.9.8.24399

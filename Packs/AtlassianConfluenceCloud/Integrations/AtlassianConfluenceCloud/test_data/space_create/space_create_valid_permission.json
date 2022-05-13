@@ -1,0 +1,26 @@
+[
+  {
+    "subjects": {
+      "user": {
+        "results": [
+          {
+            "accountId": "123"
+          }
+        ]
+      },
+      "group": {
+        "results": [
+          {
+            "name": "abc"
+          }
+        ]
+      }
+    },
+    "operation": {
+      "operation": "read",
+      "targetType": "space"
+    },
+    "anonymousAccess": false,
+    "unlicensedAccess": false
+  }
+]

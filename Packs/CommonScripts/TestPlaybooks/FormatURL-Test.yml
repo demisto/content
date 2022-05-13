@@ -1,0 +1,524 @@
+id: FormatURL-Test
+version: -1
+contentitemexportablefields:
+  contentitemfields: {}
+name: FormatURL-Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 992a1aa0-984f-4815-8395-9eebef9750b5
+    type: start
+    task:
+      id: 992a1aa0-984f-4815-8395-9eebef9750b5
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 6fcc77f4-8cec-45f3-8f83-98cca3df09b1
+    type: regular
+    task:
+      id: 6fcc77f4-8cec-45f3-8f83-98cca3df09b1
+      version: -1
+      name: Extract ATP URL
+      description: Strips, unquotes and unescapes URLs. If the URL is a Proofpoint
+        or ATP URL, extracts its redirect URL.
+      scriptName: FormatURL
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      input:
+        simple: https://na01.safelinks.protection.outlook.com/?url=hXXps%3A%2F%2Foffice.memoriesflower.com%2FPermission%2Foffice.php&data=01%7C01%7Cdavid.levin%40mheducation.com%7C0ac9a3770fe64fbb21fb08d50764c401%7Cf919b1efc0c347358fca0928ec39d8d5%7C0&sdata=PEoDOerQnha%2FACafNx8JAep8O9MdllcKCsHET2Ye%2B4%3D&reserved=0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: ae7f6777-9fb4-4b57-8a3c-c834a6d927ef
+    type: regular
+    task:
+      id: ae7f6777-9fb4-4b57-8a3c-c834a6d927ef
+      version: -1
+      name: Assert Expected URL is Extracted
+      description: Verify given entry contains a string
+      scriptName: VerifyHumanReadableContains
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      humanReadableEntryId:
+        complex:
+          root: lastCompletedTaskEntries
+          transformers:
+          - operator: LastArrayElement
+      substring:
+        simple: https://office.memoriesflower.com/Permission/office.php
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: e0cfcbce-529c-479b-8afe-d7bc88976667
+    type: regular
+    task:
+      id: e0cfcbce-529c-479b-8afe-d7bc88976667
+      version: -1
+      name: 'Extract Proof Point V1 URL '
+      description: Strips, unquotes and unescapes URLs. If the URL is a Proofpoint
+        or ATP URL, extracts its redirect URL.
+      scriptName: FormatURL
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      input:
+        simple: https://urldefense.proofpoint.com/v1/url?u=meow://www.bouncycastle.org/&amp;k=oIvRg1%2BdGAgOoM1BIlLLqw%3D%3D%0A&amp;r=IKM5u8%2B%2F%2Fi8EBhWOS%2BqGbTqCC%2BrMqWI%2FVfEAEsQO%2F0Y%3D%0A&amp;m=Ww6iaHO73mDQpPQwOwfLfN8WMapqHyvtu8jM8SjqmVQ%3D%0A&amp;s=d3583cfa53dade97025bc6274c6c8951dc29fe0f38830cf8e5a447723b9f1c9a
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 0fd0876c-559a-478a-8177-ad872f417c3c
+    type: regular
+    task:
+      id: 0fd0876c-559a-478a-8177-ad872f417c3c
+      version: -1
+      name: Assert Expected URL is Extracted
+      description: Verify given entry contains a string
+      scriptName: VerifyHumanReadableContains
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      humanReadableEntryId:
+        complex:
+          root: lastCompletedTaskEntries
+          transformers:
+          - operator: LastArrayElement
+      substring:
+        simple: http://www.bouncycastle.org/
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: cbfbe89d-d40b-4a90-8447-841e2b9a117f
+    type: regular
+    task:
+      id: cbfbe89d-d40b-4a90-8447-841e2b9a117f
+      version: -1
+      name: Extract Proof Point V2 URL
+      description: Strips, unquotes and unescapes URLs. If the URL is a Proofpoint
+        or ATP URL, extracts its redirect URL.
+      scriptName: FormatURL
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      input:
+        simple: https://urldefense.proofpoint.com/v2/url?u=http-3A__links.mkt3337.com_ctt-3Fkn-3D3-26ms-3DMzQ3OTg3MDQS1-26r-3DMzkxNzk3NDkwMDA0S0-26b-3D0-26j-3DMTMwMjA1ODYzNQS2-26mt-3D1-26rt-3D0&d=DwMFaQ&c=Vxt5e0Osvvt2gflwSlsJ5DmPGcPvTRKLJyp031rXjhg&r=MujLDFBJstxoxZI_GKbsW7wxGM7nnIK__qZvVy6j9Wc&m=QJGhloAyfD0UZ6n8r6y9dF-khNKqvRAIWDRU_K65xPI&s=ew-rOtBFjiX1Hgv71XQJ5BEgl9TPaoWRm_Xp9Nuo8bk&e=
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 41ae7a6c-5444-4088-8ec2-58dd383933b8
+    type: regular
+    task:
+      id: 41ae7a6c-5444-4088-8ec2-58dd383933b8
+      version: -1
+      name: Assert Expected URL is Extracted
+      description: Verify given entry contains a string
+      scriptName: VerifyHumanReadableContains
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      humanReadableEntryId:
+        complex:
+          root: lastCompletedTaskEntries
+          transformers:
+          - operator: LastArrayElement
+      substring:
+        simple: http://links.mkt3337.com/ctt?kn=3&ms=MzQ3OTg3MDQS1&r=MzkxNzk3NDkwMDA0S0&b=0&j=MTMwMjA1ODYzNQS2&mt=1&rt=0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: f9f090fb-0490-4b0a-86cc-2ae1e287f102
+    type: regular
+    task:
+      id: f9f090fb-0490-4b0a-86cc-2ae1e287f102
+      version: -1
+      name: Extract Proof Point V3 URL
+      description: Strips, unquotes and unescapes URLs. If the URL is a Proofpoint
+        or ATP URL, extracts its redirect URL.
+      scriptName: FormatURL
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      input:
+        simple: https://urldefense.com/v3/__https://google.com:443/search?q=a*test&gs=ps__;Kw!-612Flbf0JvQ3kNJkRi5Jg!Ue6tQudNKaShHg93trcdjqDP8se2ySE65jyCIe2K1D_uNjZ1Lnf6YLQERujngZv9UWf66ujQIQ$
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: b6417b5e-4ad6-4b61-8023-493ad3f7c7b7
+    type: regular
+    task:
+      id: b6417b5e-4ad6-4b61-8023-493ad3f7c7b7
+      version: -1
+      name: Assert Expected URL is Extracted
+      description: Verify given entry contains a string
+      scriptName: VerifyHumanReadableContains
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      humanReadableEntryId:
+        complex:
+          root: lastCompletedTaskEntries
+          transformers:
+          - operator: LastArrayElement
+      substring:
+        simple: https://google.com:443/search?q=a*test&gs=ps
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 229a1199-272b-4c38-8c31-feda86e99c1b
+    type: regular
+    task:
+      id: 229a1199-272b-4c38-8c31-feda86e99c1b
+      version: -1
+      name: Extract Proof Point V3 Gov URL
+      description: Strips, unquotes and unescapes URLs. If the URL is a Proofpoint
+        or ATP URL, extracts its redirect URL.
+      scriptName: FormatURL
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      input:
+        simple: https://urldefense.us/v3/__https://google.com:443/search?q=a*test&gs=ps__;Kw!-612Flbf0JvQ3kNJkRi5Jg!Ue6tQudNKaShHg93trcdjqDP8se2ySE65jyCIe2K1D_uNjZ1Lnf6YLQERujngZv9UWf66ujQIQ$
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: bc20d083-87b8-403c-80d8-8e8701644a1b
+    type: regular
+    task:
+      id: bc20d083-87b8-403c-80d8-8e8701644a1b
+      version: -1
+      name: Assert Expected URL is Extracted
+      description: Verify given entry contains a string
+      scriptName: VerifyHumanReadableContains
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      humanReadableEntryId:
+        complex:
+          root: lastCompletedTaskEntries
+          transformers:
+          - operator: LastArrayElement
+      substring:
+        simple: https://google.com:443/search?q=a*test&gs=ps
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 49281140-1ea1-4d6f-8ede-68648ec0cf3c
+    type: regular
+    task:
+      id: 49281140-1ea1-4d6f-8ede-68648ec0cf3c
+      version: -1
+      name: Extract Test URL
+      description: Strips, unquotes and unescapes URLs. If the URL is a Proofpoint
+        or ATP URL, extracts its redirect URL.
+      scriptName: FormatURL
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      input:
+        simple: https://www.test.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 249c5610-aba2-4128-8118-504aba0a3ad7
+    type: regular
+    task:
+      id: 249c5610-aba2-4128-8118-504aba0a3ad7
+      version: -1
+      name: Assert Expected URL is Extracted
+      description: Verify given entry contains a string
+      scriptName: VerifyHumanReadableContains
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      humanReadableEntryId:
+        complex:
+          root: lastCompletedTaskEntries
+          transformers:
+          - operator: LastArrayElement
+      substring:
+        simple: https://www.test.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 569ff6b4-bd7a-4c85-8650-6a55a19ac554
+    type: title
+    task:
+      id: 569ff6b4-bd7a-4c85-8650-6a55a19ac554
+      version: -1
+      name: Playbook Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2310,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.5.0
+description: Format URL test playbook

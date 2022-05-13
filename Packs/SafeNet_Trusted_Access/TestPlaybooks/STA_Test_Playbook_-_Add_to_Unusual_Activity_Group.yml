@@ -1,0 +1,121 @@
+description: This is a test playbook for SafeNet Trusted Access - Add to Unusual Activity
+  Group.
+id: STA Test Playbook - Add to Unusual Activity Group
+inputs: []
+name: STA Test Playbook - Add to Unusual Activity Group
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 49af7f50-e639-4632-89d1-65967a827c1d
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 49af7f50-e639-4632-89d1-65967a827c1d
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 3b1c06ff-d582-44db-8bac-257d09cb86bb
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: 3b1c06ff-d582-44db-8bac-257d09cb86bb
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      InstanceName:
+        simple: SafeNet Trusted Access_instance_1
+      Time:
+        simple: "24"
+      UnusualActivityGroup:
+        simple: Unusual Activity Group
+      UserName:
+        simple: demouser
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      description: This playbook adds the user to a group that was created to identify
+        unusual activity. SafeNet Trusted Access policies can be configured to take
+        this into account and provide stronger protection when handling access events
+        from users who are members of the group. The user is added to this group for
+        a configurable period of time.
+      id: 9efbc076-6bc8-412e-8917-84acd98c6be4
+      iscommand: false
+      name: SafeNet Trusted Access - Add to Unusual Activity Group
+      playbookId: SafeNet Trusted Access - Add to Unusual Activity Group
+      type: playbook
+      version: -1
+    taskid: 9efbc076-6bc8-412e-8917-84acd98c6be4
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 385,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+fromversion: 6.0.0

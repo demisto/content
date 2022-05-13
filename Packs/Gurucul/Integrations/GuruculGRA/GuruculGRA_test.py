@@ -591,3 +591,37 @@ def test_gra_investigate_anomaly_summary(requests_mock):
     assert response.outputs == mock_response_array
     assert response.outputs_prefix == 'Gra.Investigate.Anomaly.Summary'
     assert response.outputs_key_field == 'modelId'
+
+
+def test_gra_analytical_features_entity_value(requests_mock):
+    """Unit test
+        Given
+        - gra analytical features entity value
+        - command args page, max
+        - command raw response
+        When
+        - mock the Client's send_request.
+        Then
+        - run the gra investigate anomaly summary command using the Client
+        Validate the output with mock response
+        Validate the output prefix
+        Validate key field
+    """
+    from GuruculGRA import Client, fetch_record_command
+    mock_response = util_load_json('test_data/gra-analytical-features-entity-value.json')
+    requests_mock.get('https://test.com/api/profile/analyticalFeatures/entityValue',
+                      json=mock_response)
+    investigateAnomaly_url = '/profile/analyticalFeatures/entityValue'
+    client = Client(
+        base_url='https://test.com/api',
+        verify=False,
+        headers={
+            'Authentication': 'Bearer some_api_key'
+        }
+    )
+    response = fetch_record_command(client, investigateAnomaly_url, 'Gra.Analytical.Features.Entity.Value', 'entityID', None)
+    mock_response_array = []
+    mock_response_array.append(mock_response)
+    assert response.outputs == mock_response_array
+    assert response.outputs_prefix == 'Gra.Analytical.Features.Entity.Value'
+    assert response.outputs_key_field == 'entityID'

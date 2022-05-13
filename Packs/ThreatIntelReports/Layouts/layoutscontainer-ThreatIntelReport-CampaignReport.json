@@ -1,0 +1,542 @@
+{
+    "definitionId": "ThreatIntelReport",
+    "group": "incident",
+    "id": "Campaign Report",
+    "detailsV2": {
+        "tabs": [
+            {
+                "hidden": false,
+                "id": "vug7e0qild",
+                "name": "Summary",
+                "sections": [
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "vug7e0qild-5ddcdd29-1503-43be-8c54-1f54f685eec3-vug7e0qild-5ddcdd29-1503-43be-8c54-1f54f685eec3-vug7e0qild-5ddcdd29-1503-43be-8c54-1f54f685eec3-vug7e0qild-5ddcdd29-1503-43be-8c54-1f54f685eec3-vug7e0qild-5ddcdd29-1503-43be-8c54-1f54f685eec3-vug7e0qild-5ddcdd29-1503-43be-8c54-1f54f685eec3-vug7e0qild-5ddcdd29-1503-43be-8c54-1f54f685eec3-vug7e0qild-5ddcdd29-1503-43be-8c54-1f54f685eec3-vug7e0qild-5ddcdd29-1503-43be-8c54-1f54f685eec3-vug7e0qild-ceba8ff0-b30a-11eb-941c-e725acf1fbbc",
+                        "items": [
+                            {
+                                "endCol": 4,
+                                "fieldId": "name",
+                                "height": 53,
+                                "id": "f931bcb0-34a4-11ec-bf7d-11af3a6d740b",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 1,
+                                "fieldId": "creator",
+                                "height": 53,
+                                "id": "29c6a860-00d2-11ec-a297-5338d677a3d9",
+                                "index": 1,
+                                "listId": "vug7e0qild-ceba8ff0-b30a-11eb-941c-e725acf1fbbc",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 3,
+                                "fieldId": "tags",
+                                "height": 53,
+                                "id": "19541f60-00ca-11ec-a297-5338d677a3d9",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "created",
+                                "height": 53,
+                                "id": "30e4dcc0-00d2-11ec-a297-5338d677a3d9",
+                                "index": 1,
+                                "listId": "vug7e0qild-ceba8ff0-b30a-11eb-941c-e725acf1fbbc",
+                                "sectionItemType": "field",
+                                "startCol": 1
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 3,
+                                "fieldId": "modified",
+                                "height": 53,
+                                "id": "71e1c250-00c9-11ec-a297-5338d677a3d9",
+                                "index": 1,
+                                "listId": "vug7e0qild-ceba8ff0-b30a-11eb-941c-e725acf1fbbc",
+                                "sectionItemType": "field",
+                                "startCol": 2
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "trafficlightprotocol",
+                                "height": 53,
+                                "id": "f47fc070-b30a-11eb-941c-e725acf1fbbc",
+                                "index": 1,
+                                "listId": "vug7e0qild-ceba8ff0-b30a-11eb-941c-e725acf1fbbc",
+                                "sectionItemType": "field",
+                                "startCol": 3
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "type",
+                                "height": 53,
+                                "id": "d6b393f0-b30a-11eb-941c-e725acf1fbbc",
+                                "index": 2,
+                                "listId": "vug7e0qild-ceba8ff0-b30a-11eb-941c-e725acf1fbbc",
+                                "sectionItemType": "field",
+                                "startCol": 3
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Report Details",
+                        "static": false,
+                        "w": 2,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 5,
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": true,
+                        "i": "vug7e0qild-5ddcdd29-1503-43be-8c54-1f54f685eec3-vug7e0qild-5ddcdd29-1503-43be-8c54-1f54f685eec3-vug7e0qild-5ddcdd29-1503-43be-8c54-1f54f685eec3-vug7e0qild-5ddcdd29-1503-43be-8c54-1f54f685eec3-vug7e0qild-5ddcdd29-1503-43be-8c54-1f54f685eec3-vug7e0qild-5ddcdd29-1503-43be-8c54-1f54f685eec3-vug7e0qild-5ddcdd29-1503-43be-8c54-1f54f685eec3-vug7e0qild-5ddcdd29-1503-43be-8c54-1f54f685eec3-vug7e0qild-5ddcdd29-1503-43be-8c54-1f54f685eec3-vug7e0qild-ea684940-b30a-11eb-941c-e725acf1fbbc",
+                        "items": [
+                            {
+                                "endCol": 4,
+                                "fieldId": "bodycampaign",
+                                "height": 106,
+                                "id": "c79f2d90-2680-11ec-9e51-e53ce5b892ff",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Report Body",
+                        "static": false,
+                        "w": 2,
+                        "x": 0,
+                        "y": 4
+                    },
+                    {
+                        "columns": [
+                            {
+                                "displayed": true,
+                                "isDefault": true,
+                                "key": "name",
+                                "width": 150
+                            },
+                            {
+                                "displayed": true,
+                                "isDefault": true,
+                                "key": "entityB",
+                                "width": 100
+                            },
+                            {
+                                "displayed": true,
+                                "isDefault": true,
+                                "key": "entityBType",
+                                "width": 100
+                            },
+                            {
+                                "displayed": true,
+                                "isDefault": true,
+                                "key": "modified",
+                                "width": 150
+                            },
+                            {
+                                "displayed": true,
+                                "isDefault": true,
+                                "key": "actions",
+                                "width": 60
+                            },
+                            {
+                                "displayed": true,
+                                "isDefault": true,
+                                "key": "revoked",
+                                "width": 100
+                            }
+                        ],
+                        "h": 7,
+                        "i": "vug7e0qild-7dd401c8-ae6d-44e5-8d04-0841609649eb-vug7e0qild-5ddcdd29-1503-43be-8c54-1f54f685eec3-vug7e0qild-5ddcdd29-1503-43be-8c54-1f54f685eec3-vug7e0qild-5ddcdd29-1503-43be-8c54-1f54f685eec3-vug7e0qild-5ddcdd29-1503-43be-8c54-1f54f685eec3-vug7e0qild-5ddcdd29-1503-43be-8c54-1f54f685eec3-vug7e0qild-5ddcdd29-1503-43be-8c54-1f54f685eec3-vug7e0qild-5ddcdd29-1503-43be-8c54-1f54f685eec3-vug7e0qild-5ddcdd29-1503-43be-8c54-1f54f685eec3-vug7e0qild-5ddcdd29-1503-43be-8c54-1f54f685eec3-vug7e0qild-00d25a90-b30b-11eb-941c-e725acf1fbbc",
+                        "items": [],
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Relationships",
+                        "static": false,
+                        "type": "relationshipsTable",
+                        "w": 1,
+                        "x": 2,
+                        "y": 2
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "vug7e0qild-5ddcdd29-1503-43be-8c54-1f54f685eec3-vug7e0qild-5ddcdd29-1503-43be-8c54-1f54f685eec3-vug7e0qild-5ddcdd29-1503-43be-8c54-1f54f685eec3-vug7e0qild-5ddcdd29-1503-43be-8c54-1f54f685eec3-vug7e0qild-5ddcdd29-1503-43be-8c54-1f54f685eec3-vug7e0qild-5ddcdd29-1503-43be-8c54-1f54f685eec3-vug7e0qild-5ddcdd29-1503-43be-8c54-1f54f685eec3-vug7e0qild-5ddcdd29-1503-43be-8c54-1f54f685eec3-vug7e0qild-5ddcdd29-1503-43be-8c54-1f54f685eec3-vug7e0qild-6f681d80-00ce-11ec-a297-5338d677a3d9",
+                        "items": [
+                            {
+                                "endCol": 4,
+                                "fieldId": "threatactor",
+                                "height": 53,
+                                "id": "fa2bb300-2680-11ec-9e51-e53ce5b892ff",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "objective",
+                                "height": 53,
+                                "id": "a05b4c50-2680-11ec-ab70-3db76b5afa59",
+                                "index": 1,
+                                "listId": "vug7e0qild-6f681d80-00ce-11ec-a297-5338d677a3d9",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 1,
+                                "fieldId": "actor",
+                                "height": 53,
+                                "id": "3130e140-00cf-11ec-a297-5338d677a3d9",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Campaign Details",
+                        "static": false,
+                        "w": 2,
+                        "x": 0,
+                        "y": 2
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "vug7e0qild-5ddcdd29-1503-43be-8c54-1f54f685eec3-vug7e0qild-feaf2490-30ce-11ec-b47a-c9c7aa670747",
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "reportstatus",
+                                "height": 22,
+                                "id": "55258ad0-30cf-11ec-b47a-c9c7aa670747",
+                                "index": 0,
+                                "listId": "vug7e0qild-feaf2490-30ce-11ec-b47a-c9c7aa670747",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "published",
+                                "height": 22,
+                                "id": "5004ad10-30cf-11ec-b47a-c9c7aa670747",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "roles",
+                                "height": 22,
+                                "id": "a04f91f0-51c1-11ec-8296-e53bcff8ec1e",
+                                "index": 2,
+                                "listId": "vug7e0qild-5ddcdd29-1503-43be-8c54-1f54f685eec3-vug7e0qild-feaf2490-30ce-11ec-b47a-c9c7aa670747",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {},
+                                "buttonClass": "primary",
+                                "endCol": 1,
+                                "fieldId": "",
+                                "height": 44,
+                                "id": "1531ee00-30cf-11ec-b47a-c9c7aa670747",
+                                "index": 2,
+                                "name": "Publish",
+                                "scriptId": "PublishThreatIntelReport",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {},
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 44,
+                                "id": "177e9d20-30cf-11ec-b47a-c9c7aa670747",
+                                "index": 2,
+                                "listId": "vug7e0qild-feaf2490-30ce-11ec-b47a-c9c7aa670747",
+                                "name": "Unpublish",
+                                "scriptId": "UnpublishThreatIntelReport",
+                                "sectionItemType": "button",
+                                "startCol": 1
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Access",
+                        "static": false,
+                        "w": 1,
+                        "x": 2,
+                        "y": 0
+                    }
+                ],
+                "showEmptyFields": true,
+                "type": "custom"
+            },
+            {
+                "hidden": true,
+                "report": true,
+                "id": "hresggmems",
+                "name": "Campaign Report - Export",
+                "sections": [
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "vug7e0qild-67fb6800-3273-11ec-b393-053bb5ecdeef",
+                        "items": [
+                            {
+                                "endCol": 3,
+                                "fieldId": "creator",
+                                "height": 53,
+                                "id": "7584fb80-3273-11ec-b393-053bb5ecdeef",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 3,
+                                "fieldId": "created",
+                                "height": 53,
+                                "id": "812eab70-3273-11ec-b393-053bb5ecdeef",
+                                "index": 1,
+                                "listId": "vug7e0qild-67fb6800-3273-11ec-b393-053bb5ecdeef",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 6,
+                                "fieldId": "tags",
+                                "height": 53,
+                                "id": "8d87ae30-3273-11ec-b393-053bb5ecdeef",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 6,
+                                "fieldId": "trafficlightprotocol",
+                                "height": 53,
+                                "id": "79f59c10-3273-11ec-b393-053bb5ecdeef",
+                                "index": 0,
+                                "listId": "vug7e0qild-67fb6800-3273-11ec-b393-053bb5ecdeef",
+                                "sectionItemType": "field",
+                                "startCol": 3
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 6,
+                                "fieldId": "modified",
+                                "height": 53,
+                                "id": "88e79930-3273-11ec-b393-053bb5ecdeef",
+                                "index": 2,
+                                "listId": "vug7e0qild-67fb6800-3273-11ec-b393-053bb5ecdeef",
+                                "sectionItemType": "field",
+                                "startCol": 3
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Report Details",
+                        "static": false,
+                        "w": 3,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "vug7e0qild-91db9f00-3273-11ec-b393-053bb5ecdeef",
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 6,
+                                "fieldId": "threatactor",
+                                "height": 53,
+                                "id": "a13a67b0-3273-11ec-b393-053bb5ecdeef",
+                                "index": 0,
+                                "listId": "vug7e0qild-91db9f00-3273-11ec-b393-053bb5ecdeef",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 6,
+                                "fieldId": "objective",
+                                "height": 53,
+                                "id": "a5bdf400-3273-11ec-b393-053bb5ecdeef",
+                                "index": 1,
+                                "listId": "vug7e0qild-91db9f00-3273-11ec-b393-053bb5ecdeef",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Campaign Details",
+                        "static": false,
+                        "w": 3,
+                        "x": 0,
+                        "y": 2
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": true,
+                        "i": "vug7e0qild-aa90b1c0-3273-11ec-b393-053bb5ecdeef",
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 6,
+                                "fieldId": "bodycampaign",
+                                "height": 106,
+                                "id": "cad669c0-3273-11ec-b393-053bb5ecdeef",
+                                "index": 0,
+                                "listId": "vug7e0qild-aa90b1c0-3273-11ec-b393-053bb5ecdeef",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Report Body",
+                        "static": false,
+                        "w": 3,
+                        "x": 0,
+                        "y": 4
+                    },
+                    {
+                        "columns": [
+                            {
+                                "displayed": true,
+                                "isDefault": true,
+                                "key": "name",
+                                "width": 150
+                            },
+                            {
+                                "displayed": true,
+                                "isDefault": true,
+                                "key": "entityB",
+                                "width": 100
+                            },
+                            {
+                                "displayed": true,
+                                "isDefault": true,
+                                "key": "entityBType",
+                                "width": 100
+                            },
+                            {
+                                "displayed": true,
+                                "isDefault": true,
+                                "key": "revoked",
+                                "width": 100
+                            }
+                        ],
+                        "h": 2,
+                        "i": "hresggmems-vug7e0qild-fbc6c590-3a2d-11ec-8aed-3d3ab0ae463a",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Relationships",
+                        "static": false,
+                        "type": "relationshipsTable",
+                        "w": 3,
+                        "x": 0,
+                        "y": 6
+                    }
+                ],
+                "type": "custom"
+            }
+        ]
+    },
+    "edit": {
+        "sections": [
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "generic_ThreatIntelReport_name",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "generic_ThreatIntelReport_type",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "generic_ThreatIntelReport_trafficlightprotocol",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "generic_ThreatIntelReport_creator",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "generic_ThreatIntelReport_tags",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Report Details",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": ""
+            },
+            {
+                "description": "#### {{color:#ef9700}}(**By default, all roles have read+write access.**)\nIf you would like to limit this - choose specific roles.",
+                "fields": [
+                    {
+                        "fieldId": "generic_ThreatIntelReport_roles",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Permissions",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": ""
+            }
+        ]
+    },
+    "name": "Campaign Report",
+    "system": false,
+    "version": -1,
+    "fromVersion": "6.5.0",
+    "description": "A layout template for an out of the box report describing a Campaign ran by a threat actor"
+}

@@ -194,6 +194,8 @@ script:
     - description: The end date of the statistics to retrieve. Defaults to today.
         Must follow format YYYY-MM-DD.
       name: end_date
+    - description: The number of results to return.
+      name: limit
     - auto: PREDEFINED
       description: How to group the statistics. Must be either "day", "week", or "month".
       name: aggregated_by
@@ -229,15 +231,14 @@ script:
       predefined:
       - asc
       - desc
-    - description: The number of results to return.
-      name: limit
     - description: The point in the list to begin retrieving results.
       name: offset
     - description: 'Table headers to use the human readable output (if none provided,
         will show all table headers). Available headers: blocks,bounce_drops,bounces,clicks,date,deferred,delivered,invalid_emails,opens,processed,requests,spam_report_drops,spam_reports,unique_clicks,unique_opens,unsubscribe_drops,unsubscribes'
       name: headers
-    description: Retrieves the total sum of each email statistic for every category
-      over the given date range.
+    description: 'Retrieves the total sum of each email statistic for every category
+      over the given date range. By default it returns only 5 categories. Use limit=
+      argument to define the number of categories to return. '
     name: sg-get-all-categories-stats
     outputs:
     - contextPath: Sendgrid.AllCategoriesStats
@@ -337,7 +338,92 @@ script:
     - contextPath: Sendgrid.EmailList
       description: Email activity list associated with the messages matching your
         query.
-  dockerimage: demisto/sendgrid:1.0.0.23423
+  - arguments:
+    - description: 'Maximum number of elements to return. returns
+        1000 max. default: 100'
+      name: page_size
+    - description: 'Token corresponding to a specific page of results, as provided
+        by metadata. default: None'
+      name: page_token
+    - description: 'Table headers to use the human readable output (if none provided,
+        will show all table headers). Available headers: id, name, contact_count,
+        _metadata'
+      name: headers
+    description: Retrieves all of your recipient lists. If you don't have any lists,
+      an empty array will be returned.
+    name: sg-get-all-lists
+    outputs:
+    - contextPath: Sendgrid.Lists.Result
+      description: Array of your contact lists
+    - contextPath: Sendgrid.Lists.Metadata
+      description: Metadata of returned set of result
+  - arguments:
+    - description: ID of contact list
+      name: list_id
+      required: true
+    - auto: PREDEFINED
+      defaultValue: 'False'
+      description: Setting the optional parameter contact_sample=true returns the
+        contact_sample in the response body. Up to fifty of the most recent contacts
+        uploaded or attached to a list will be returned, sorted alphabetically, by
+        email address. Default:False
+      name: contact_sample
+      predefined:
+      - 'True'
+      - 'False'
+    description: Retrieves a single recipient list.
+    name: sg-get-list-by-id
+    outputs:
+    - contextPath: Sendgrid.List
+      description: Contact list details
+  - arguments:
+    - description: Name for your list
+      name: list_name
+      required: true
+    description: Creates a new contacts list
+    name: sg-create-list
+    outputs:
+    - contextPath: Sendgrid.NewList
+      description: Newly created List details
+  - arguments:
+    - description: ID of contact list
+      name: list_id
+      required: true
+    description: Returns the number of contacts on a specific list
+    name: sg-get-list-contact-count-by-id
+    outputs:
+    - contextPath: Sendgrid.ListCount
+      description: List contact count details
+  - arguments:
+    - description: ID of contact list
+      name: list_id
+      required: true
+    - description: New name for your list
+      name: updated_list_name
+      required: true
+    description: Updates the name of a list
+    name: sg-update-list-name
+    outputs:
+    - contextPath: Sendgrid.updatedList
+      description: Updated list details
+  - arguments:
+    - description: ID of contact list or job Id
+      name: list_id
+      required: true
+    - auto: PREDEFINED
+      defaultValue: 'False'
+      description: 'Flag indicates that all contacts on the list are also to be deleted. default:
+        False'
+      name: delete_contacts
+      predefined:
+      - 'True'
+      - 'False'
+    description: Deletes a specific list
+    name: sg-delete-list
+    outputs:
+    - contextPath: Sendgrid.DeleteListJobId
+      description: 'Job id of the async job'
+  dockerimage: demisto/sendgrid:1.0.0.25330
   runonce: false
   script: ''
   subtype: python3

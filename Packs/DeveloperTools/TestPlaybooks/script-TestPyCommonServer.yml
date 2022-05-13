@@ -581,6 +581,8 @@ script: >-
 
 
   if __name__ == '__builtin__':
+      c = BaseClient(base_url='www.google.com')
+      c.__del__()
       main()
 type: python
 subtype: python2
@@ -613,3 +615,5 @@ scripttarget: 0
 runonce: false
 runas: DBotWeakRole
 fromversion: 5.0.0
+tests:
+- TestCommonPython

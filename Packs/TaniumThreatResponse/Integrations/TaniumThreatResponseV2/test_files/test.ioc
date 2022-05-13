@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<ioc
+	xmlns:xsi="http://www.test1.org/2001/"
+	xmlns:xsd="http://www.test1.org" id="11111" last-modified="2011-11-04T19:35:05"
+	xmlns="http://test1.com/2010/ioc">
+	<short_description>STUXNET VIRUS TEST</short_description>
+	<description>Generic indicator for the stuxnet virus.</description>
+	<keywords>methodology</keywords>
+	<authored_by>test</authored_by>
+	<authored_date>0001-01-01T00:00:00</authored_date>
+	<links />
+	<definition>
+		<Indicator operator="OR" id="4-826b-48d2-b4a8-48918e29e323">
+			<IndicatorItem id="4-cc59-4463-81d9-52800545e16e" condition="contains">
+				<Context document="FileItem" search="FileItem/PEInfo/Sections/Section/Name" type="mir" />
+				<Content type="string">.stub</Content>
+			</IndicatorItem>
+			<IndicatorItem id="4-a2a1-4735-bfe8-6c8d1f7eae38" condition="contains">
+				<Context document="FileItem" search="FileItem/FileName" type="mir" />
+				<Content type="string">test.PNF</Content>
+			</IndicatorItem>
+		</Indicator>
+		<Indicator operator="AND" id="4-f648-4552-9805-93c05ed48219">
+			<IndicatorItem id="4-e88c-433c-b463-763bdddeff82" condition="contains">
+				<Context document="RegistryItem" search="RegistryItem/Path" type="mir" />
+				<Content type="string">\ImagePath</Content>
+			</IndicatorItem>
+		</Indicator>
+	</definition>
+</ioc>

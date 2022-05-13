@@ -9,3 +9,6 @@ ignore=BA101
 
 [file:README.md]
 ignore=RM104
+
+[file:JoeSecurity.yml]
+ignore=IN145

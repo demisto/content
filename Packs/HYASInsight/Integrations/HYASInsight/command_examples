@@ -3,12 +3,16 @@
 !hyas-get-dynamic-dns-records-by-indicator indicator_type="email" indicator_value="comptrasfluber@gmail.com" limit="3"
 !hyas-get-passive-dns-records-by-indicator indicator_type="domain" indicator_value="domain.org" limit="3"
 !hyas-get-passive-dns-records-by-indicator indicator_type="ipv4" indicator_value="189.70.45.212" limit="3"
-!hyas-get-whois-records-by-indicator indicator_type="domain" indicator_value="domain.net" limit="3"
+!hyas-get-whois-records-by-indicator indicator_type="domain" indicator_value="dulieuonline.net" limit="3"
 !hyas-get-whois-records-by-indicator indicator_type="email" indicator_value="viendongonline@gmail.com" limit="3"
 !hyas-get-whois-records-by-indicator indicator_type="phone" indicator_value="+84909095309" limit="3"
 !hyas-get-whois-current-records-by-domain domain="www.hyas.com"
 !hyas-get-malware-samples-records-by-indicator indicator_type="domain" indicator_value="butterfly.bigmoney.biz" limit="3"
 !hyas-get-malware-samples-records-by-indicator indicator_type="ipv4" indicator_value="106.187.43.98" limit="3"
 !hyas-get-malware-samples-records-by-indicator indicator_type="md5" indicator_value="1d0a97c41afe5540edd0a8c1fb9a0f2d" limit="3"
-!hyas-get-associated-ips-by-hash md5="1d0a97c41afe5540edd0a8c1fb9a0f2d"
-!hyas-get-associated-domains-by-hash md5="1d0a97c41afe5540edd0a8c1fb9a0f2d"
+!hyas-get-associated-ips-by-hash md5="1d0a97c41afe5540edd0a8c1fb9a0f1c"
+!hyas-get-associated-domains-by-hash md5="1d0a97c41afe5540edd0a8c1fb9a0f1c"
+!hyas-get-c2attribution-records-by-indicator indicator_type=domain indicator_value=himionsa.com limit=3
+!hyas-get-c2attribution-records-by-indicator indicator_type=ip indicator_value=197.210.84.34 limit=3
+!hyas-get-c2attribution-records-by-indicator indicator_type=email indicator_value=ip@allbayrak.com limit=3
+!hyas-get-c2attribution-records-by-indicator indicator_type=sha256 indicator_value=281af32d4b70417c5027c9590f494aa9026c540a5c8af407dc3d464afe0a23ae limit=3

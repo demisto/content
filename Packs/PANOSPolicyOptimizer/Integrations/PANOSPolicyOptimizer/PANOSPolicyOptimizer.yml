@@ -27,8 +27,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Automate your AppID Adoption by using this integration together with
-  your Palo Alto Networks Next-Generation Firewall or Panorama.
+description: Automate your AppID Adoption by using this integration together with your Palo Alto Networks Next-Generation Firewall or Panorama.
 display: PAN-OS Policy Optimizer
 name: PAN-OS Policy Optimizer
 script:
@@ -59,8 +58,7 @@ script:
     name: pan-os-po-no-apps
     outputs:
     - contextPath: PanOS.PolicyOptimizer.NoApps
-      description: Contains information about the rules that have no apps specified.
-        i.e., Source, Destination, etc.
+      description: Contains information about the rules that have no apps specified. For example, Source and Destination.
       type: Unknown
   - deprecated: false
     description: Gets the unused apps.
@@ -73,7 +71,7 @@ script:
   - arguments:
     - default: false
       defaultValue: '30'
-      description: The time frame in days for which to show the unused rules. Default is 30.
+      description: The time frame in days to show the unused rules.
       isArray: false
       name: timeframe
       required: false
@@ -81,7 +79,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: Unused
-      description: Rule usage type. The values by which you want to filter.
+      description: Rule usage type to filter by. Can be Unused, Used, or Any.
       isArray: false
       name: usage
       predefined:
@@ -96,12 +94,39 @@ script:
       isArray: false
       name: exclude
       predefined:
-        - 'false'
-        - 'true'
+      - 'false'
+      - 'true'
+      required: false
+      secret: false
+    - default: false
+      description: Whether to get pre-rules or post-rules, 'pre' for pre rules, 'post' for post-rules, only for panorama instances.
+      isArray: false
+      name: position
+      predefined:
+      - pre
+      - post
+      required: false
+      secret: false
+    - default: false
+      defaultValue: security
+      description: Which type of rules to query.
+      isArray: false
+      name: rule_type
+      predefined:
+      - security
+      - nat
+      - qos
+      - pbf
+      - decryption
+      - tunnel-inspect
+      - application-override
+      - authentication
+      - dos
+      - sdwan
       required: false
       secret: false
     deprecated: false
-    description: Gets unused, used, or any rules
+    description: Gets unused, used, or any rules.
     execution: false
     name: pan-os-po-get-rules
     outputs:
@@ -140,7 +165,7 @@ script:
     description: Gets a specific dynamic address group.
     execution: false
     name: pan-os-get-dag
-  dockerimage: demisto/python3:3.9.4.18682
+  dockerimage: demisto/python3:3.10.4.27798
   feed: false
   isfetch: false
   longRunning: false

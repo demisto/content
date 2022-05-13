@@ -1,0 +1,29 @@
+{
+    "autorun": true,
+    "closureScript": "STA-PostProcessing",
+    "color": "#00E5FF",
+    "days": 0,
+    "daysR": 0,
+    "default": false,
+    "detached": false,
+    "disabled": false,
+    "extractSettings": {
+        "fieldCliNameToExtractSettings": {},
+        "mode": "Specific"
+    },
+    "hours": 0,
+    "hoursR": 0,
+    "id": "SafeNet Trusted Access Push Reject Alert",
+    "layout": "SafeNet Trusted Access - Incident Layout",
+    "locked": false,
+    "name": "SafeNet Trusted Access Push Reject Alert",
+    "onChangeRepAlg": 0,
+    "playbookId": "SafeNet Trusted Access - Add to Unusual Activity Group",
+    "readonly": false,
+    "reputationCalc": 0,
+    "system": false,
+    "version": -1,
+    "weeks": 0,
+    "weeksR": 0,
+    "fromVersion": "6.0.0"
+}

@@ -1,0 +1,239 @@
+id: Detonate File - ReversingLabs A1000
+version: -1
+name: Detonate File - ReversingLabs A1000
+description: Upload sample to ReversingLabs A1000 appliance and automatically retrieve
+  the analysis report.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: b5751cc5-b463-40c3-80dc-4c32d5ade525
+    type: start
+    task:
+      id: b5751cc5-b463-40c3-80dc-4c32d5ade525
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: f2710d7f-68af-447d-8f30-3222813663fc
+    type: condition
+    task:
+      id: f2710d7f-68af-447d-8f30-3222813663fc
+      version: -1
+      name: Is ReversingLabs A1000 v2 enabled?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: ReversingLabs A1000 v2
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 194c115a-3e57-4d57-8400-3a486a4918fd
+    type: title
+    task:
+      id: 194c115a-3e57-4d57-8400-3a486a4918fd
+      version: -1
+      name: done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 1170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 1dde1975-6706-4af6-853d-852764d6a1d1
+    type: condition
+    task:
+      id: 1dde1975-6706-4af6-853d-852764d6a1d1
+      version: -1
+      name: Is there a file  to detonate?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: inputs.EntryID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 45461da5-9448-4dde-890c-6c242c08901d
+    type: regular
+    task:
+      id: 45461da5-9448-4dde-890c-6c242c08901d
+      version: -1
+      name: reversinglabs-a1000-upload-sample-and-get-results
+      description: Upload sample to A1000 and retrieve analysis results
+      script: ReversingLabs A1000 v2|||reversinglabs-a1000-upload-sample-and-get-results
+      type: regular
+      iscommand: true
+      brand: ReversingLabs A1000 v2
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      comment: {}
+      entryId:
+        simple: ${inputs.EntryID}
+      tags: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1185,
+        "width": 760,
+        "x": 70,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: EntryID
+  value:
+    simple: ${File.EntryID}
+  required: false
+  description: The Entry ID.
+  playbookInputQuery:
+outputs:
+- contextPath: File.SHA256
+  description: The SHA256 hash of the file.
+- contextPath: File.SHA1
+  description: The SHA1 hash of the file.
+- contextPath: File.SHA512
+  description: The SHA512 hash of the file.
+- contextPath: File.Name
+  description: The name of the file.
+- contextPath: File.EntryID
+  description: The Entry ID.
+- contextPath: File.Info
+  description: Information about the file.
+- contextPath: File.Type
+  description: The type of the file.
+- contextPath: File.MD5
+  description: MD5 hash of the file.
+- contextPath: DBotScore.Score
+  description: The actual score.
+- contextPath: DBotScore.Type
+  description: The indicator type.
+- contextPath: DBotScore.Indicator
+  description: The indicator that was tested.
+- contextPath: DBotScore.Vendor
+  description: The vendor used to calculate the score.
+- contextPath: ReversingLabs.a1000_report
+  description: A1000 report
+tests:
+- No tests
+fromversion: 6.0.0

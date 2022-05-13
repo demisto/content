@@ -1,0 +1,34 @@
+{
+  "Awis": {
+    "OperationRequest": {
+      "RequestId": "557d6ebe-3a5f-4d9f-bd21-e7b087155a0b"
+    },
+    "Results": {
+      "Result": {
+        "Alexa": {
+          "Request": {
+            "Arguments": {
+              "Argument": [
+                {
+                  "Name": "url",
+                  "Value": "google.com"
+                },
+                {
+                  "Name": "responsegroup",
+                  "Value": "Rank"
+                }
+              ]
+            }
+          },
+          "TrafficData": {
+            "DataUrl": "google.com/",
+            "Rank": "1"
+          }
+        }
+      },
+      "ResponseStatus": {
+        "StatusCode": "200"
+      }
+    }
+  }
+}

@@ -1,0 +1,21 @@
+{
+    "name": "Schedule Task and Poll",
+    "description": "This playbook will schedule a specified command and monitor for completion by looking for output in context. Make the playbook context shared globally if you have a command that returns to Context automatically and you have a specific key to monitor. The key monitored must be a single field value and not an array.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Dilan Kapadia",
+    "url": "",
+    "email": "",
+    "created": "2021-11-12T15:19:27Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "dilankapadia"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
+}

@@ -2543,7 +2543,7 @@
     <tr>
       <td>ExtraHop.Device.OnWatchlist</td>
       <td>Boolean</td>
-      <td>b'Whether the device is on the advanced analysis whitelist.'</td>
+      <td>b'Whether the device is on the advanced analysis allow list.'</td>
     </tr>
     <tr>
       <td>ExtraHop.Device.ModTime</td>
@@ -2873,7 +2873,7 @@ Successful Modification
     <tr>
       <td>Extrahop.Device.OnWatchlist</td>
       <td>Boolean</td>
-      <td>b'Whether the device is on the advanced analysis whitelist.'</td>
+      <td>b'Whether the device is on the advanced analysis allow list.'</td>
     </tr>
     <tr>
       <td>Extrahop.Device.ModTime</td>
@@ -3534,7 +3534,7 @@ Successful Modification
     <tr>
       <td>ExtraHop.Device.OnWatchlist</td>
       <td>boolean</td>
-      <td>b'Whether the device is on the advanced analysis whitelist.'</td>
+      <td>b'Whether the device is on the advanced analysis allow list.'</td>
     </tr>
     <tr>
       <td>ExtraHop.Device.ModTime</td>
@@ -3851,7 +3851,7 @@ Successful Modification
     <tr>
       <td>ExtraHop.Device.OnWatchlist</td>
       <td>boolean</td>
-      <td>b'Whether the device is on the advanced analysis whitelist.'</td>
+      <td>b'Whether the device is on the advanced analysis allow list.'</td>
     </tr>
     <tr>
       <td>ExtraHop.Device.ModTime</td>

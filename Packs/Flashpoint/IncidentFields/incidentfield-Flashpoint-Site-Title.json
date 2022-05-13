@@ -1,0 +1,31 @@
+{
+    "id": "incident_flashpointsitetitle",
+    "version": -1,
+    "modified": "2021-07-17T08:44:03.168678286+05:30",
+    "name": "Flashpoint Site Title",
+    "description": "The original site or platform where the resource was published.",
+    "ownerOnly": false,
+    "cliName": "flashpointsitetitle",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "Flashpoint Alerts"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "5.0.0"
+}

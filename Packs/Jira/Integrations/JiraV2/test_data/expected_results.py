@@ -2,7 +2,28 @@ QUERY_ISSUE_RESULT = {'Ticket(val.Id == obj.Id)':
     [
         {
             'Id': '12652', 'Key': 'VIK-3', 'Summary': 'JiraTestMohitM', 'Status': 'To Do', 'Assignee': 'null(null)',
-            'Creator': 'jon doe(admin@demistodev.com)'
+            'Creator': 'jon doe(email)', 'Priority': 'High', 'ProjectName': 'VikTest', 'DueDate': None,
+            'Created': '2019-05-04T00:44:31.743+0300', 'LastSeen': None, 'LastUpdate': '2019-05-15T21:24:07.222+0300'
+        }
+    ]
+}
+QUERY_ISSUE_RESULT_WITH_CUSTOM_FIELDS = {'Ticket(val.Id == obj.Id)':
+    [
+        {
+            'Id': '12652', 'Key': 'VIK-3', 'Summary': 'JiraTestMohitM', 'Status': 'To Do', 'Assignee': 'null(null)',
+            'Creator': 'jon doe(email)', 'Priority': 'High', 'ProjectName': 'VikTest', 'DueDate': None,
+            'Created': '2019-05-04T00:44:31.743+0300', 'LastSeen': None, 'LastUpdate': '2019-05-15T21:24:07.222+0300',
+            'Owner': 'John Doe'
+        }
+    ]
+}
+GET_ISSUE_OUTPUTS_RESULT = {'Ticket(val.Id == obj.Id)':
+    [
+        {
+            'Id': '19141', 'Key': 'VIK-238', 'Summary': 'test master1', 'Status': 'To Do', 'Assignee': 'null(null)',
+            'Creator': 'jon doe(email)', 'Priority': 'Medium', 'ProjectName': 'VikTest', 'DueDate': None,
+            'Created': '2021-04-04T12:25:48.114+0300', 'LastSeen': None, 'LastUpdate': '2021-04-04T12:49:43.546+0300',
+            'attachment': 'entry_artifact_5@317.json'
         }
     ]
 }
@@ -25,7 +46,7 @@ GET_JIRA_ISSUE_RES = {
             "name": "High",
             "id": "2"
         },
-
+        "lastViewed": "2020-12-17T12:38:30.006+0200",
         "labels": [
 
         ],
@@ -39,17 +60,17 @@ GET_JIRA_ISSUE_RES = {
         "description": "None",
         "security": "None",
         "attachment": [
-        "here is attahchment"
+            "here is attahchment"
         ],
         "summary": "test_out1666",
         "creator": {
-            "emailAddress": "admin@demistodev.com",
-            "displayName": "Meir Wahnon",
+            "emailAddress": "email",
+            "displayName": "displayName",
         },
 
         "reporter": {
-            "emailAddress": "admin@demistodev.com",
-            "displayName": "Meir Wahnon",
+            "emailAddress": "email",
+            "displayName": "displayName",
         },
         "comment": {
             "comments": [
@@ -63,11 +84,22 @@ GET_JIRA_ISSUE_RES = {
     }
 }
 
-JIRA_ATTACHMENT = [{'created': '1996-11-25T16:29:37.277764067Z', "content": "https://demistodev.atlassian.net/secure/attachment/14848/download.png"}]
+JIRA_ATTACHMENT = [{'created': '1996-11-25T16:29:37.277764067Z',
+                    'content': 'https://localhost/rest/attachment/content/14848',
+                    'self': 'https://localhost/rest/attachment/14848', 'filename': 'download.png'}]
 
-JIRA_ATTACHMENT_ALL = [{'created': '1996-11-25T16:29:37.277764067Z', "content": "https://demistodev.atlassian.net/secure/attachment/14848/download.png"},
-                       {'created': '1992-11-25T16:29:37.277764067Z', "content": "https://demistodev.atlassian.net/secure/attachment/14848/download1.png"},
-                       {'created': '2170-11-25T16:29:37.277764067Z', "content": "https://demistodev.atlassian.net/secure/attachment/14848/download2.png"}]
+JIRA_ATTACHMENT_ALL = [{'created': '1996-11-25T16:29:37.277764067Z',
+                        'content': 'https://localhost/rest/attachment/content/14840',
+                        'filename': 'filename1',
+                        'self': 'https://localhost/rest/attachment/14840'},
+                       {'created': '1992-11-25T16:29:37.277764067Z',
+                        'content': 'https://localhost/rest/attachment/content/14841',
+                        'filename': 'filename2',
+                        'self': 'https://localhost/rest/attachment/14841'},
+                       {'created': '2170-11-25T16:29:37.277764067Z',
+                        'content': 'https://localhost/rest/attachment/content/14842',
+                        'filename': 'filename3',
+                        'self': 'https://localhost/rest/attachment/14842'}]
 
 ARGS_FROM_UPDATE_REMOTE_SYS = {
     'lastUpdate': '2020-12-14T12:38:30.006+0200',

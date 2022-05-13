@@ -6131,7 +6131,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VMware.VmwareHostFacts.ansible_facts | unknown | system info about the host machine | 
+| VMware.VmwareHostFacts.facts | unknown | system info about the host machine | 
 
 
 

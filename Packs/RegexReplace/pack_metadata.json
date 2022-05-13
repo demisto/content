@@ -2,7 +2,7 @@
     "name": "RegexReplace",
     "description": "A transformer to do re.sub() which replaces a sub-string matched with a regex pattern. It supports group reference like \\1 in formatting.",
     "support": "community",
-    "currentVersion": "1.0.0",
+    "currentVersion": "1.0.1",
     "author": "Masahiko Inoue",
     "url": "",
     "email": "",
@@ -10,5 +10,9 @@
     "categories": [],
     "tags": [],
     "useCases": [],
-    "keywords": []
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

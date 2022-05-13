@@ -22,7 +22,6 @@
     "required": false,
     "script": "",
     "selectValues": [
-        "",
         "1 - Critical",
         "2 - High",
         "3 - Moderate",

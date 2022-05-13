@@ -1,4 +1,6 @@
-from CommonServerPython import *
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+
 
 # IMPORTS
 # Disable insecure warnings
@@ -199,8 +201,8 @@ class Client(BaseClient):
                 if (not os) or os.lower() == 'unknown':
                     os = 'Unknown OS'
                 device = log.get('client', {}).get('device')
-            if (not device) or device.lower() == 'unknown':
-                device = 'Unknown device'
+                if (not device) or device.lower() == 'unknown':
+                    device = 'Unknown device'
             targets = ''
             if log.get('target'):
                 for target in log.get('target'):
@@ -216,7 +218,7 @@ class Client(BaseClient):
                 'EventSeverity': log.get('severity'),
                 'Client': f"{browser} on {os} {device}",
                 'RequestIP': log.get('client', {}).get('ipAddress'),
-                'ChainIP': log.get('request', {}).get('ipChain')[0].get('ip'),
+                'ChainIP': [ip_chain.get('ip') for ip_chain in log.get('request', {}).get('ipChain', [])],
                 'Targets': targets or '-',
                 'Time': time_published
             }
@@ -449,6 +451,22 @@ class Client(BaseClient):
             )
         return self.get_paged_results(uri)
 
+    def list_users(self, args):
+        # Base url - if none of the above specified - returns all the users (default 200 items)
+        uri = "users"
+        query_params = {}
+        for key, value in args.items():
+            if key == 'query':
+                key = 'q'
+            query_params[key] = encode_string_results(value)
+        if args.get('limit'):
+            return self._http_request(
+                method='GET',
+                url_suffix=uri,
+                params=query_params
+            )
+        return self.get_paged_results(uri, query_params)
+
     def list_groups(self, args):
         # Base url - if none of the the above specified - returns all the groups (default 200 items)
         uri = "groups"
@@ -508,6 +526,14 @@ class Client(BaseClient):
         return self._http_request(
             method='GET',
             url_suffix=uri
+        )
+
+    def create_zone(self, zoneObject):
+        uri = 'zones'
+        return self._http_request(
+            method='POST',
+            url_suffix=uri,
+            json_data=zoneObject
         )
 
     def update_zone(self, zoneObject):
@@ -849,6 +875,27 @@ def get_group_members_command(client, args):
     )
 
 
+def list_users_command(client, args):
+    raw_response = client.list_users(args)
+    verbose = args.get('verbose')
+    users = client.get_readable_users(raw_response, verbose)
+    user_context = client.get_users_context(raw_response)
+    context = createContext(user_context, removeNull=True)
+    outputs = {
+        'Account(val.ID && val.ID == obj.ID)': context
+    }
+    if verbose == 'true':
+        readable_output = f"### Okta users found:\n {users}"
+    else:
+        readable_output = f"### Okta users found:\n {tableToMarkdown('Users', users)} "
+
+    return(
+        readable_output,
+        outputs,
+        raw_response
+    )
+
+
 def list_groups_command(client, args):
     raw_response = client.list_groups(args)
     groups = client.get_readable_groups(raw_response)
@@ -1025,6 +1072,37 @@ def apply_zone_updates(zoneObject, zoneName, gatewayIPs, proxyIPs):
     return zoneObject
 
 
+def create_zone_command(client, args):
+    zone_name = args.get('name')
+    gateway_ips = argToList(args.get('gateway_ips'))
+    proxies = argToList(args.get('proxies'))
+    if not (gateway_ips or proxies):
+        raise Exception("You must supply either 'gateway_ips' or 'proxies'.")
+
+    zoneObject = {
+        "name": '',
+        "type": "IP",
+        "status": "ACTIVE",
+        "gateways": [],
+        "proxies": []
+    }
+    zoneObject = apply_zone_updates(zoneObject, zone_name, gateway_ips, proxies)
+
+    raw_response = client.create_zone(zoneObject)
+    if not raw_response:
+        return 'Zone not created.', {}, raw_response
+    readable_output = tableToMarkdown('Okta Zones', raw_response, headers=[
+        'name', 'id', 'gateways', 'status', 'system', 'lastUpdated', 'created'])
+    outputs = {
+        'Okta.Zone(val.id && val.id === obj.id)': createContext(raw_response)
+    }
+    return (
+        readable_output,
+        outputs,
+        raw_response
+    )
+
+
 def update_zone_command(client, args):
 
     if not args.get('zoneName', '') and not args.get('gatewayIPs', '') and not args.get('proxyIPs', ''):
@@ -1090,6 +1168,7 @@ def main():
         'okta-create-user': create_user_command,
         'okta-update-user': update_user_command,
         'okta-get-group-members': get_group_members_command,
+        'okta-list-users': list_users_command,
         'okta-list-groups': list_groups_command,
         'okta-get-logs': get_logs_command,
         'okta-get-failed-logins': get_failed_login_command,
@@ -1100,7 +1179,8 @@ def main():
         'okta-clear-user-sessions': clear_user_sessions_command,
         'okta-list-zones': list_zones_command,
         'okta-get-zone': get_zone_command,
-        'okta-update-zone': update_zone_command
+        'okta-update-zone': update_zone_command,
+        'okta-create-zone': create_zone_command
 
     }
 

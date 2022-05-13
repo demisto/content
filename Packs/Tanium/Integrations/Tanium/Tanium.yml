@@ -745,7 +745,7 @@ script:
     - contextPath: Tanium.Actions.package_spec.name
       description: Name of the package that was deployed
       type: string
-  dockerimage: demisto/pytan:latest
+  dockerimage: demisto/pytan:1.0.0.24291
   isfetch: false
   runonce: false
   script: '-'

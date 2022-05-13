@@ -8,7 +8,7 @@
     "hours": 0,
     "hoursR": 0,
     "id": "Ironscales",
-    "layout": "Ironscales Incident Layout",
+    "layout": "Ironscales",
     "locked": false,
     "name": "Ironscales",
     "playbookId": "Ironscales-Classify-Incident",

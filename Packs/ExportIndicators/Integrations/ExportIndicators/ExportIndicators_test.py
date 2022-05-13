@@ -193,7 +193,8 @@ class TestHelperFunctions:
         import ExportIndicators as ei
         with open('ExportIndicators_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
             iocs_json = json.loads(iocs_json_f.read())
-            mocker.patch.object(ei, 'find_indicators_with_limit', return_value=iocs_json)
+            iocs_json_result = {'iocs': iocs_json, 'total': 100}
+            mocker.patch.object(demisto, 'searchIndicators', return_value=iocs_json_result)
             request_args = ei.RequestArguments(query='', out_format='XSOAR json', limit=39)
             ei_vals = ei.refresh_outbound_context(request_args)
             assert isinstance(ei_vals, str)
@@ -218,7 +219,8 @@ class TestHelperFunctions:
         import ExportIndicators as ei
         with open('ExportIndicators_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
             iocs_json = json.loads(iocs_json_f.read())
-            mocker.patch.object(ei, 'find_indicators_with_limit', return_value=iocs_json)
+            iocs_json_result = {'iocs': iocs_json, 'total': 100}
+            mocker.patch.object(demisto, 'searchIndicators', return_value=iocs_json_result)
             request_args = ei.RequestArguments(query='', out_format='XSOAR json-seq', limit=38)
             ei_vals = ei.refresh_outbound_context(request_args)
             with open('ExportIndicators_test/TestHelperFunctions/iocs_out_json_seq.txt', 'r') as iocs_out_f:
@@ -230,7 +232,8 @@ class TestHelperFunctions:
         import ExportIndicators as ei
         with open('ExportIndicators_test/TestHelperFunctions/demisto_url_iocs.json', 'r') as iocs_json_f:
             iocs_json = json.loads(iocs_json_f.read())
-            mocker.patch.object(ei, 'find_indicators_with_limit', return_value=iocs_json)
+            iocs_json_result = {'iocs': iocs_json, 'total': 100}
+            mocker.patch.object(demisto, 'searchIndicators', return_value=iocs_json_result)
             request_args = ei.RequestArguments(query='', out_format='json', limit=2)
             ei_vals = ei.refresh_outbound_context(request_args)
             ei_vals = json.loads(ei_vals)
@@ -243,7 +246,8 @@ class TestHelperFunctions:
         import ExportIndicators as ei
         with open('ExportIndicators_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
             iocs_json = json.loads(iocs_json_f.read())
-            mocker.patch.object(ei, 'find_indicators_with_limit', return_value=iocs_json)
+            iocs_json_result = {'iocs': iocs_json, 'total': 100}
+            mocker.patch.object(demisto, 'searchIndicators', return_value=iocs_json_result)
             request_args = ei.RequestArguments(query='', out_format='json-seq', limit=38)
             ei_vals = ei.refresh_outbound_context(request_args)
             with open('ExportIndicators_test/TestHelperFunctions/iocs_out_json_seq_old.txt', 'r') as iocs_out_f:

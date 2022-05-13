@@ -1,0 +1,30 @@
+[
+    {
+        "context": "node",
+        "children_count": 0,
+        "process_events_count": 1,
+        "registry_events_count": 0,
+        "file_events_count": 0,
+        "security_events_count": 0,
+        "image_events_count": 0,
+        "driver_events_count": 0,
+        "network_events_count": 0,
+        "dns_events_count": 0,
+        "create_time": "2021-07-06 13:01:02.984",
+        "end_time": "2021-07-06 13:01:08.060",
+        "exit_code": 0,
+        "pid": 3404,
+        "unique_process_id": "1",
+        "process_path": "C:\\file.exe",
+        "id": "1",
+        "process_table_id": "1",
+        "parent_process_table_id": "3",
+        "user_name": "Administrator",
+        "group_name": "host",
+        "hash_type_name": "MD5",
+        "process_hash": "da3245694d74eaf0cd444979",
+        "process_command_line": null,
+        "create_time_raw": 1625576462984,
+        "end_time_raw": 1625576468060
+    }
+]

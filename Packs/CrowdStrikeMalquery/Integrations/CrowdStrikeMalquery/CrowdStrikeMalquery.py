@@ -159,7 +159,7 @@ def test_module(client: Client, args: dict):
         'ok' if test passed, anything else will fail the test.
     """
     try:
-        client.get_access_token()
+        client.get_quotas()
     except Exception as e:
         raise DemistoException(
             f"Test failed. Please check your parameters. \n {e}")

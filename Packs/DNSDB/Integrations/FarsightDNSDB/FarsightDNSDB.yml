@@ -1,0 +1,79 @@
+commonfields:
+  id: Farsight DNSDB
+  version: -1
+name: Farsight DNSDB
+display: Farsight DNSDB
+category: Data Enrichment & Threat Intelligence
+description: Query Farsight DNSDB service
+configuration:
+- display: API Key
+  name: apiKey
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: DNSDB Service URL
+  name: url
+  defaultvalue: https://api.dnsdb.info/
+  type: 0
+  required: true
+- display: Use system proxy settings
+  name: useproxy
+  defaultvalue: "true"
+  type: 8
+  required: false
+script:
+  script: ''
+  type: javascript
+  commands:
+  - name: dnsdb-rdata
+    arguments:
+    - name: type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - name
+      - ip
+      - raw
+      description: query type
+    - name: value
+      required: true
+      description: query value
+    - name: limit
+      description: Limit the number of returned records
+      defaultValue: "100"
+    - name: time_first_before
+      description: Filter results for entries seen for first time before (seconds)
+    - name: time_last_before
+      description: Filter results for entries seen last time before (seconds)
+    - name: time_first_after
+      description: filter results for entries seen first time after (seconds)
+    - name: time_last_after
+      description: filter results for entries seen last time after (seconds)
+    - name: rrtype
+      description: query rrtype
+    description: Lookup rdata records
+  - name: dnsdb-rrset
+    arguments:
+    - name: owner
+      required: true
+      description: Owner name to query
+    - name: rrtype
+      description: rrtype value to query
+    - name: bailiwick
+      description: Bailiwick value to query
+    - name: limit
+      description: Limit the number of returned records
+      defaultValue: "100"
+    - name: time_first_before
+      description: Filter results for entries seen for first time before (seconds)
+    - name: time_first_after
+      description: Filter results for entries seen for first time after (seconds)
+    - name: time_last_before
+      description: Filter results for entries seen for last time before (seconds)
+    - name: time_last_after
+      description: Filter results for entries seen for last time after (seconds)
+    description: Lookup rrser records
+  runonce: false
+tests:
+- No tests
+fromversion: 5.0.0

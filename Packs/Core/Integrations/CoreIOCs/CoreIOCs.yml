@@ -1,0 +1,122 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: Cortex Core - IOC
+  version: -1
+configuration:
+- display: Server URL (e.g. https://example.net)
+  name: url
+  required: false
+  type: 0
+  hidden: true
+- display: API Key ID
+  name: apikey_id
+  required: false
+  type: 4
+  hidden: true
+- display: API Key
+  name: apikey
+  required: false
+  type: 4
+  hidden: true
+- additionalinfo: Map the severity of each indicator that will be synced to Cortex.
+  display: Cortex Severity
+  hidden: false
+  name: severity
+  options:
+  - info
+  - low
+  - medium
+  - high
+  required: true
+  type: 15
+- additionalinfo: The query used to collect indicators to sync from Cortex.
+  defaultvalue: reputation:Bad and (type:File or type:Domain or type:IP)
+  display: Sync Query
+  hidden: false
+  name: query
+  required: true
+  type: 0
+description: The Cortex Core - IOCs integration uses the Cortex API for detection and response, by natively integrating network, endpoint, and cloud data to stop sophisticated attacks.
+display: Indicators detection
+name: Cortex Core - IOC
+script:
+  commands:
+  - arguments:
+    - auto: PREDEFINED
+      default: true
+      defaultValue: 'false'
+      description: |-
+        For first sync, set to true.
+        (do NOT run this twice!)
+      isArray: false
+      name: firstTime
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    deprecated: false
+    description: Sync your IOC with Cortex and delete the previous version.
+    execution: false
+    name: core-iocs-sync
+  - arguments:
+    - default: false
+      description: IOCs to push. leave empty to push all recently modified IOCs.the indicators
+      isArray: true
+      name: indicator
+      required: false
+      secret: false
+    deprecated: false
+    description: Push modified IOCs to Cortex.
+    execution: false
+    name: core-iocs-push
+  - arguments:
+    - default: false
+      description: The time of the file creation (use UTC time zone).
+      isArray: false
+      name: time
+      required: true
+      secret: false
+    deprecated: false
+    description: Set sync time manually (Do not use this command unless you unredstandard the consequences).
+    execution: false
+    name: core-iocs-set-sync-time
+  - deprecated: false
+    description: Creates the sync file for the manual process. Run this command when instructed by the Cortex support team.
+    execution: false
+    name: core-iocs-create-sync-file
+  - arguments:
+    - default: false
+      description: The indicator to enable.
+      isArray: true
+      name: indicator
+      required: true
+      secret: false
+    deprecated: false
+    description: Enables IOCs in the Cortex server.
+    execution: false
+    name: core-iocs-enable
+  - arguments:
+    - default: false
+      description: The indicator to disable.
+      isArray: true
+      name: indicator
+      required: true
+      secret: false
+    deprecated: false
+    description: Disables IOCs in the Cortex server.
+    execution: false
+    name: core-iocs-disable
+  dockerimage: demisto/python3:3.10.1.26972
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- No tests
+fromversion: 5.5.0
+defaultEnabled: true

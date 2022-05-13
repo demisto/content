@@ -498,7 +498,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftWindows.WinChocolateyFacts.ansible_facts | unknown | Detailed information about the Chocolatey installation | 
+| MicrosoftWindows.WinChocolateyFacts.facts | unknown | Detailed information about the Chocolatey installation | 
 
 
 #### Command Example
@@ -1149,7 +1149,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftWindows.WinDiskFacts.ansible_facts | unknown | Dictionary containing all the detailed information about the disks of the target. | 
+| MicrosoftWindows.WinDiskFacts.facts | unknown | Dictionary containing all the detailed information about the disks of the target. | 
 
 
 #### Command Example
@@ -4293,7 +4293,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftWindows.WinProductFacts.ansible_facts | unknown | Dictionary containing all the detailed information about the Windows product and license. | 
+| MicrosoftWindows.WinProductFacts.facts | unknown | Dictionary containing all the detailed information about the Windows product and license. | 
 
 
 #### Command Example
@@ -6163,7 +6163,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 | server_selection | Defines the Windows Update source catalog.<br/>`default` Use the default search source. For many systems default is set to the Microsoft Windows Update catalog. Systems participating in Windows Server Update Services (WSUS), Systems Center Configuration Manager (SCCM), or similar corporate update server environments may default to those managed update sources instead of the Windows Update catalog.<br/>`managed_server` Use a managed server catalog. For environments utilizing Windows Server Update Services (WSUS), Systems Center Configuration Manager (SCCM), or similar corporate update servers, this option selects the defined corporate update source.<br/>`windows_update` Use the Microsoft Windows Update catalog. Possible values are: default, managed_server, windows_update. Default is default. | Optional | 
 | state | Controls whether found updates are downloaded or installed or listed<br/>This module also supports Ansible check mode, which has the same effect as setting state=searched. Possible values are: installed, searched, downloaded. Default is installed. | Optional | 
 | log_path | If set, `win_updates` will append update progress to the specified file. The directory must already exist. | Optional | 
-| whitelist | A list of update titles or KB numbers that can be used to specify which updates are to be searched or installed.<br/>If an available update does not match one of the entries, then it is skipped and not installed.<br/>Each entry can either be the KB article or Update title as a regex according to the PowerShell regex rules.<br/>The whitelist is only validated on updates that were found based on `category_names`. It will not force the module to install an update if it was not in the category specified. | Optional | 
+| allow list | A list of update titles or KB numbers that can be used to specify which updates are to be searched or installed.<br/>If an available update does not match one of the entries, then it is skipped and not installed.<br/>Each entry can either be the KB article or Update title as a regex according to the PowerShell regex rules.<br/>The allow list is only validated on updates that were found based on `category_names`. It will not force the module to install an update if it was not in the category specified. | Optional | 
 | use_scheduled_task | Will not auto elevate the remote process with `become` and use a scheduled task instead.<br/>Set this to `yes` when using this module with async on Server 2008, 2008 R2, or Windows 7, or on Server 2008 that is not authenticated with basic or credssp.<br/>Can also be set to `yes` on newer hosts where become does not work due to further privilege restrictions from the OS defaults. Possible values are: Yes, No. Default is No. | Optional | 
 
 

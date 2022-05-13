@@ -1,0 +1,32 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Executive Brief"
+    ],
+    "caseInsensitive": true,
+    "cliName": "bodyexecutivebrief",
+    "id": "generic_ThreatIntelReport_bodyexecutivebrief",
+    "name": "Body Executive Brief",
+    "closeForm": false,
+    "content": true,
+    "editForm": true,
+    "group": 4,
+    "definitionId": "ThreatIntelReport",
+    "genericModuleId": "threatIntel",
+    "hidden": false,
+    "isReadOnly": false,
+    "locked": false,
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "markdown",
+    "template": "### Summary",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.5.0"
+}

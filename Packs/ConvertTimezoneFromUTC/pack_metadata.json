@@ -2,7 +2,7 @@
     "name": "ConvertTimezoneFromUTC",
     "description": "Transformer (Date) to Convert UTC to another Timezone",
     "support": "community",
-    "currentVersion": "1.0.0",
+    "currentVersion": "1.0.1",
     "author": "Synthanee Humbert",
     "url": "",
     "email": "",
@@ -13,5 +13,9 @@
     "keywords": [],
     "githubUser": [
         "synth-humbert"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
     ]
 }

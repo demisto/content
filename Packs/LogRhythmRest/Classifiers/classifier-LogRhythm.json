@@ -1,0 +1,20 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "LogRhythm Classifier",
+    "keyTypeMap": {
+		"Alarm": "Logrhythm Alarm",
+		"Case": "Logrhythm Case"
+    },
+    "name": "LogRhythm Classifier",
+    "propagationLabels": [
+        "all"
+    ],
+    "transformer": {
+        "complex": null,
+        "simple": "incidentType"
+    },
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

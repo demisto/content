@@ -27,6 +27,7 @@ page_update = ' '.join(soup.stripped_strings)
 domain_regex = r"([a-zA-Z0-9]+?\.?[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9]\[\.\][a-zA-Z]{2,}\.?[a-zA-Z]{0,})"
 url_regex = r"([https|ftp|hxxps]+:[//|\\\\]+[\w\d:#@%/;$()~_\+-=\\\[\.\]&]*)"
 ip_regex = r"(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(?:\[\.\]|\.)){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])"
+cve_regex = r"(CVE-\d{4}-\d{4,7})"
 
 # Allow domain regex replacement between "[.]" and "."
 if unescapeDomain == "True":
@@ -39,6 +40,7 @@ sha256 = sha256Regex.findall(page_update)
 domain = re.findall(domain_regex, page_update)
 url = re.findall(url_regex, page_update)
 ip = re.findall(ip_regex, page_update)
+cve = re.findall(cve_regex, page_update, flags=re.IGNORECASE)
 
 # Indicators exclusion
 for ex_indicator in exclusionList:
@@ -48,6 +50,7 @@ for ex_indicator in exclusionList:
     md5[:] = (value for value in md5 if value != ex_indicator)
     sha1[:] = (value for value in sha1 if value != ex_indicator)
     sha256[:] = (value for value in sha256 if value != ex_indicator)
+    cve[:] = (value for value in cve if value != ex_indicator)
 
 # Convert domain indicators to url (match Domain Indicator Type formatting script)
 domain = ["hxxp://" + sub for sub in domain]
@@ -66,7 +69,7 @@ if unescapeDomain == "True":
             badDomainTLD.append(dn)
 
 # Combine all indicators
-blogIndicators = [*md5, *sha1, *sha256, *domain, *url, *ip]
+blogIndicators = [*md5, *sha1, *sha256, *domain, *url, *ip, *cve]
 
 # Remove bad formatted indicators
 for fp_indicator in badDomainTLD:
@@ -76,4 +79,5 @@ for fp_indicator in badDomainTLD:
 blogIndicators = list(dict.fromkeys(blogIndicators))
 blogIndicators = str(blogIndicators)
 
-return_results(CommandResults(readable_output=blogIndicators, outputs={"http.parsedBlog.indicators": blogIndicators}))
+return_results(CommandResults(readable_output=blogIndicators, outputs={
+               "http.parsedBlog.indicators": blogIndicators, "http.parsedBlog.sourceLink": blog_url}))
