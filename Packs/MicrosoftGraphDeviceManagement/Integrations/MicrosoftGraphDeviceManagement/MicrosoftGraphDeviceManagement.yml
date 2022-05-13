@@ -985,6 +985,7 @@ script:
         unknown, activated, deactivated, secured, lowSeverity, mediumSeverity, highSeverity,
         unresponsive, compromised, misconfigured.
       type: string
+    description: Search of managed devices by name
   dockerimage: demisto/crypto:1.0.0.28507
   runonce: false
   script: ''
