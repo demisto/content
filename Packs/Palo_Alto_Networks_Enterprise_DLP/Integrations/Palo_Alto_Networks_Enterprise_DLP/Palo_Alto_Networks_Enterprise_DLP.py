@@ -17,8 +17,8 @@ urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
 MAX_ATTEMPTS = 3
-BASE_URL = 'https://a972d9a03d0db414181c26da059eaf33-2040715922.us-west-2.elb.amazonaws.com/v1/'
-PAN_AUTH_URL = 'https://auth.qa.appsvc.paloaltonetworks.com/am/oauth2/access_token'
+BASE_URL = 'https://api.dlp.paloaltonetworks.com/v1/'
+PAN_AUTH_URL = 'https://auth.apps.paloaltonetworks.com/auth/v1/oauth2/access_token'
 REPORT_URL = 'public/report/{}'
 INCIDENTS_URL = 'public/incident-notifications'
 REFRESH_TOKEN_URL = 'public/oauth/refreshToken'
