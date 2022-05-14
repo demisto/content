@@ -46,8 +46,23 @@ class InvalidVersionException(Exception):
 
 
 class NoTestsConfiguredException(Exception):
-    """ used when an integration has no tests configured """
+    """ raised when an integration has no tests configured """
 
     # todo log test collection reasons
     def __init__(self, content_id: str):
         self.id_ = content_id  # todo use or remove
+        self.message = f'The content item with id={content_id} has `Tests: No Tests` configured. ' \
+                       f'This is not an error! Tests for this integration are to be taken from the conf.json instead.'
+        super().__init__(self.message)
+
+
+class NotUnderPackException(Exception):
+    def __init__(self, path: Path):
+        self.message = f'Could not find a pack for {str(path)}'
+        super().__init__(self.message)
+
+
+class NothingToCollectException(Exception):
+    def __init__(self, path: Path, reason: str):
+        self.message = f'No tests or packs to collect for {str(path)}: {reason}'
+        super().__init__(self.message)

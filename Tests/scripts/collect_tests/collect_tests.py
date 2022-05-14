@@ -22,14 +22,16 @@ from packaging.version import Version
 from Tests.scripts.collect_tests.constants import (CONTENT_PATH,
                                                    DEBUG_CONF_PATH,
                                                    DEBUG_ID_SET_PATH,
-                                                   PACKS_PATH, SKIPPED_PACKS, XSOAR_SANITY_TESTS)
+                                                   PACKS_PATH,
+                                                   XSOAR_SANITY_TEST_NAMES)
 from Tests.scripts.collect_tests.exceptions import (IgnoredPackException,
                                                     InexistentPackException,
                                                     InvalidPackNameException,
                                                     SkippedPackException, NonDictException, EmptyMachineListException,
-                                                    NoTestsConfiguredException, DeprecatedPackException)
+                                                    NoTestsConfiguredException, DeprecatedPackException,
+                                                    NotUnderPackException, NothingToCollectException)
 
-IGNORED_INFRASTRUCTURE_FILES = {
+IGNORED_INFRASTRUCTURE_FILES = {  # todo check the list
     '.gitignore',
     '.lgtm.yml',
     '.nvmrc',
@@ -53,14 +55,13 @@ logger = getLogger()
 logger.level = DEBUG
 IS_GITLAB = False  # todo replace
 
-PACK_NAMES = {p.name for p in PACKS_PATH.glob('*') if p.is_dir()}  # todo here or in PackMetadata?
 COMMIT = 'ds-test-collection'  # todo use arg
 
 
 class CollectionReason(Enum):
     # todo remove unused
     MARKETPLACE_VERSION_BY_VALUE = 'value of the test `marketplace` field'
-    CONF_MARKETPLACE_V2 = 'conf.json marketplace v2 sanity tests'
+    SANITY_TESTS = 'sanity tests by marketplace value'  # todo this way (generic) or a reason per marketplace, which also explains where the tests are taken from?
     PACK_MATCHES_INTEGRATION = 'pack added as the integration is used in a playbook'
     PACK_MATCHES_TEST = 'pack added as the test playbook was collected earlier'
     NIGHTLY_ALL_TESTS__ID_SET = 'collecting all id_set test playbooks for nightly'
@@ -164,7 +165,6 @@ class DictFileBased(DictBased):
 class ContentItem(DictFileBased):
     def __init__(self, path: Path):
         super().__init__(path)
-        self.file_type: FileType = find_type_by_path(self.path)
         self.pack = find_pack(self.path)  # todo if not used elsewhere, create inside pack_tuple
         self.id_ = self['commonfields']['id'] if 'commonfields' in self.content else self['id']
         self.deprecated = self.get('deprecated', warn_if_missing=False)
@@ -191,13 +191,16 @@ class ContentItem(DictFileBased):
         return tests
 
 
-class PackMetadata:
+class PackManager:
+    skipped_packs = {'DeprecatedContent', 'NonSupported', 'ApiModules'}
+    pack_names = {p.name for p in PACKS_PATH.glob('*') if p.is_dir()}
+
     def __init__(self):
         self.pack_name_to_pack_metadata: dict[str, ContentItem] = {}
         self.deprecated_packs: set[str] = set()
 
-        for name in PACK_NAMES:
-            metadata = ContentItem(PACKS_PATH / name / 'pack_metadata.json')
+        for name in PackManager.pack_names:
+            metadata = ContentItem(PACKS_PATH / name / 'PACK_MANAGER.json')
             self.pack_name_to_pack_metadata[name] = metadata
 
             if metadata.deprecated:
@@ -209,8 +212,20 @@ class PackMetadata:
     def __iter__(self):
         yield from self.pack_name_to_pack_metadata.values()
 
+    def validate_pack(self, pack: str) -> None:
+        """ raises InvalidPackException if the pack name is not valid."""
+        if not pack:
+            raise InvalidPackNameException(pack)
+        if pack not in PackManager.pack_names:
+            logger.error(f'inexistent pack {pack}')
+            raise InexistentPackException(pack)
+        if pack in PackManager.skipped_packs:  # todo is necessary?
+            raise SkippedPackException(pack)
+        if pack in self.deprecated_packs:
+            raise DeprecatedPackException(pack)
 
-pack_metadata = PackMetadata()  # todo main, global?
+
+PACK_MANAGER = PackManager()  # todo main, global?
 
 
 class Machine(Enum):
@@ -323,7 +338,7 @@ class IdSet(DictFileBased):
                 for value in values:  # multiple values possible, for different server versions
                     item = IdSetItem(id_, value)
 
-                    if item.pack in SKIPPED_PACKS:  # todo does this make sense here? raise exception instead?
+                    if item.pack in PackManager.skipped_packs:  # todo does this make sense here? raise exception?
                         logger.info(f'skipping {id_=} as the {item.pack} pack is skipped')
                         continue
 
@@ -393,34 +408,18 @@ class CollectedTests:
             raise RuntimeError('both test and pack provided are empty')
 
         if test:
-            logger.info(f'collecting {test=}, {reason.value} {description}')
             self.tests.add(test)
+            logger.info(f'collected {test=}, {reason.value} {description}')
 
         if pack:
             try:
-                self._validate_pack(pack)
-                logger.info(f'collecting {pack=}, {reason.value} {description}')
+                PACK_MANAGER.validate_pack(pack)
                 self.packs.add(pack)
+                logger.info(f'collected {pack=}, {reason.value} {description}')
             except (IgnoredPackException, SkippedPackException) as e:
                 logger.info(str(e))
+
         collection_log.append(CollectionLog(test, pack, reason, description))
-
-    def add_id_set_item(self, item: IdSetItem, reason: CollectionReason, reason_description: str = '',
-                        add_pack: bool = True, add_test: bool = True):
-        self._add_single(item.name, item.pack, reason, reason_description)
-
-    @staticmethod
-    def _validate_pack(pack: str) -> None:
-        """ raises InvalidPackException if the pack name is not valid."""
-        if not pack:
-            raise InvalidPackNameException(pack)
-        if pack not in PACK_NAMES:
-            logger.error(f'inexistent pack {pack}')
-            raise InexistentPackException(pack)
-        if pack in SKIPPED_PACKS:  # todo is necessary?
-            raise SkippedPackException(pack)
-        if pack in pack_metadata.deprecated_packs:
-            raise DeprecatedPackException(pack)
 
     def __repr__(self):
         return f'{len(self.packs)} packs, {len(self.tests)} tests, {self.version_range=}'
@@ -464,14 +463,6 @@ class TestConf(DictFileBased):
     # def get_skipped_tests(self):  # todo is used?
     #     return tuple(self.get('skipped_tests', {}).keys())
 
-    def get_marketplace_v2_sanity_tests(self) -> 'CollectedTests':
-        return CollectedTests(
-            tests=self['test_marketplacev2'],
-            packs=None,
-            reason=CollectionReason.CONF_MARKETPLACE_V2,
-            version_range=None,
-        )
-
 
 def to_tuple(value: Optional[str | list]) -> Optional[tuple]:
     if value is None:
@@ -512,6 +503,24 @@ class TestCollector(ABC):
         self.conf = TestConf()
         # todo FAILED_
 
+    @property
+    def sanity_tests(self) -> CollectedTests:
+        match self.marketplace:
+            case MarketplaceVersions.MarketplaceV2:
+                test_names = self.conf['test_marketplacev2']
+            case MarketplaceVersions.XSOAR:
+                test_names = XSOAR_SANITY_TEST_NAMES
+            case _:
+                raise RuntimeError(f'unexpected marketplace value {self.marketplace.value}')
+
+        return CollectedTests(
+            tests=test_names,
+            packs=None,
+            reason=CollectionReason.SANITY_TESTS,
+            version_range=None,
+            reason_description=self.marketplace.value,
+        )
+
     @abstractmethod
     def _collect(self) -> CollectedTests:
         """
@@ -548,14 +557,14 @@ class TestCollector(ABC):
                                                         reason_description=f'{integration=}'))
         return collected
 
-    def _collect_pack(self, name: str, reason: CollectionReason, reason_description: str) -> CollectedTests:
+    @staticmethod
+    def _collect_pack(name: str, reason: CollectionReason, reason_description: str) -> CollectedTests:
         return CollectedTests(
             tests=None,
             packs=(name,),
             reason=reason,
-            version_range=ContentItem(PACKS_PATH / name / 'pack_metadata.json').version_range,
-            # todo instead of creating a ContentItem here, can we create all of them
-            reason_description=reason_description
+            version_range=PACK_MANAGER[name].version_range,
+            reason_description=reason_description,
         )
 
     def _add_packs_from_test_playbooks(self, tests: set[str]) -> list[CollectedTests]:  # only called in _add_packs_used
@@ -571,12 +580,6 @@ class TestCollector(ABC):
         return collected
 
 
-class NoPackException(Exception):
-    def __init__(self, path: Path):
-        self.message = f'Could not find a pack for {str(path)}'
-        super().__init__(self.message)
-
-
 def find_pack(path: Path) -> Path:
     """
     >>> find_pack(Path('root/Packs/MyPack/Integrations/MyIntegration/MyIntegration.yml'))
@@ -589,14 +592,8 @@ def find_pack(path: Path) -> Path:
     'MyPack3'
     """
     if 'Packs' not in path.parts:
-        raise NoPackException(path)
+        raise NotUnderPackException(path)
     return path.parents[len(path.parts) - (path.parts.index('Packs')) - 3]
-
-
-class NoTestsToCollect(Exception):
-    def __init__(self, path: Path, reason: str):
-        self.message = f'No tests to collect for {str(path)}: {reason}'
-        super().__init__(self.message)
 
 
 class BranchTestCollector(TestCollector):
@@ -607,27 +604,23 @@ class BranchTestCollector(TestCollector):
         self.repo.git.checkout(self.branch_name)
 
     def _collect(self) -> CollectedTests:
-        # None filter is for empty tests, returned by
         collected = []
         for path in self._get_changed_files():
             try:
                 collected.append(self._collect_single(CONTENT_PATH / Path(path)))
-            except NoTestsToCollect as e:
+            except NothingToCollectException as e:
                 logger.warning(e.message)
-        collected = CollectedTests.union(collected)
+
         if not collected:
-            # todo return sanity tests
-            raise NotImplementedError()
-        return collected
+            logger.warning('No tests were collected, returning sanity tests only')
+            return self.sanity_tests
 
-    def _collect_yml(
-            self,
-            yml_content_item: ContentItem,
-            original_file_type: FileType,
-            original_file_path: Path,
-    ) -> CollectedTests:
-        match content_item_folder := yml_content_item.path.parents[1].name:
+        return CollectedTests.union(collected)
 
+    def _collect_yml(self, original_file_path: Path) -> CollectedTests:
+        yml_content_item = ContentItem(original_file_path.with_suffix('.yml'))
+
+        match containing_folder := yml_content_item.path.parents[1].name:
             case 'Integrations':
                 tests = self.conf.integrations_to_tests[yml_content_item.id_]
                 reason = CollectionReason.INTEGRATION_CHANGED
@@ -637,23 +630,24 @@ class BranchTestCollector(TestCollector):
                     tests = yml_content_item.tests  # raises if 'no tests' in the tests field
                     reason = CollectionReason.SCRIPT_PLAYBOOK_CHANGED
 
-                except NoTestsConfiguredException:  # collecting all implementing
+                except NoTestsConfiguredException:  # collecting all tests that implement this script/playbook
                     reason = CollectionReason.SCRIPT_PLAYBOOK_CHANGED_NO_TESTS
 
-                    match content_item_folder:
+                    match containing_folder:
                         case 'Scripts':
                             tests = self.id_set.implemented_scripts_to_tests.get(yml_content_item.id_)
                         case 'Playbooks':
                             tests = self.id_set.implemented_playbooks_to_tests.get(yml_content_item.id_)
                         case _:
-                            raise RuntimeError(f'unexpected content type folder {content_item_folder}')
+                            raise RuntimeError(f'unexpected content type folder {containing_folder}')
 
                     if not tests:
-                        logger.warning(
-                            f'{original_file_type.value} {str(yml_content_item.path.relative_to(PACKS_PATH))} '
-                            f'has `No Tests` configured, and no tests in id_set')  # todo necessary?
+                        original_type: str = find_type_by_path(original_file_path).value
+                        relative_path = str(yml_content_item.path.relative_to(PACKS_PATH))
+                        logger.warning(f'{original_type} {relative_path} '
+                                       f'has `No Tests` configured, and no tests in id_set')  # todo necessary?
             case _:
-                raise RuntimeError(f'Unexpected content type original_file_path {content_item_folder} '
+                raise RuntimeError(f'Unexpected content type original_file_path {containing_folder} '
                                    f'(expected `Integrations`, `Scripts`, etc)')
 
         return CollectedTests(tests=tests, packs=yml_content_item.pack_tuple, reason=reason,
@@ -668,67 +662,19 @@ class BranchTestCollector(TestCollector):
 
         try:
             content_item = ContentItem(path)
-        except NonDictException:
-            match file_type:
-                case FileType.PYTHON_FILE | FileType.POWERSHELL_FILE | FileType.JAVASCRIPT_FILE:
-                    if path.name.endswith('Tests.ps1'):
-                        path = path.with_name(path.name.replace('Tests.ps1', '.ps1'))  # todo ok?
-                    # todo should this yml be created inside _collect_yml?
-                    # todo what if yml not exists?
-                    yml = ContentItem(path.with_suffix('.yml'))
-                    return self._collect_yml(yml, yml.file_type, path)
-
-                case FileType.README | FileType.RELEASE_NOTES_CONFIG | FileType.RELEASE_NOTES:
-                    return self._collect_pack(
-                        name=find_pack(path).name,
-                        reason=CollectionReason.NON_CODE_FILE_CHANGED,
-                        reason_description=reason_description
-                    )
-                case _:
-                    raise
-
-        except NoPackException as e:
-            # files that are NOT supposed to be in a pack, and are ignored.
+        except NonDictException:  # for `.py`, `.md`, etc., that are not dictionary-based. Suitable logic follows.
+            content_item = None
+        except NotUnderPackException:
             if path.parent == CONTENT_PATH and path.name in IGNORED_INFRASTRUCTURE_FILES:
-                # todo is the list ok?
-                raise NoTestsToCollect(path, e.message)
-            raise  # files that are either supposed to be in a pack, or should not be ignored.
+                raise NothingToCollectException(path, 'not under a pack')  # infrastructure files that are ignored
+            raise  # files that are either supposed to be under a pack OR should not be ignored. # todo wat
 
         match file_type:
             case FileType.PACK_IGNORE | FileType.SECRET_IGNORE | FileType.DOC_FILE | FileType.README:
-                raise NoTestsToCollect(path, f'ignored type ({file_type}')
+                raise NothingToCollectException(path, f'ignored type ({file_type}')
 
-            case FileType.IMAGE | FileType.DESCRIPTION:  # todo readme shows twice
-                tests = None  # pack should be installed, but no tests are collected.
-                reason = CollectionReason.NON_CODE_FILE_CHANGED
-
-            case FileType.TEST_PLAYBOOK:
-                if (test_id := content_item.id_) in self.conf.test_ids:
-                    tests = test_id,
-                    reason = CollectionReason.TEST_PLAYBOOK_CHANGED
-                else:
-                    raise
-
-            case FileType.REPUTATION:  # todo reputationjson
-                raise NotImplementedError()  # todo
-
-            case FileType.MAPPER | FileType.CLASSIFIER:
-                source: dict[str, str] = {
-                    FileType.MAPPER: self.conf.incoming_mapper_to_test,
-                    FileType.CLASSIFIER: self.conf.classifier_to_test
-                }[file_type]
-
-                reason: CollectionReason = {
-                    FileType.MAPPER: CollectionReason.MAPPER_CHANGED,
-                    FileType.CLASSIFIER: CollectionReason.CLASSIFIER_CHANGED
-                }[file_type]
-
-                if not (tests := source.get(content_item.id_)):
-                    tests = None  # passing None so the pack is installed
-                    reason = CollectionReason.NON_CODE_FILE_CHANGED
-                    reason_description = f'no specific tests for {relative_path} were found, using tests from id_set'
-
-            case FileType.METADATA | \
+            case FileType.README | FileType.RELEASE_NOTES_CONFIG | FileType.RELEASE_NOTES | FileType.IMAGE | \
+                 FileType.DESCRIPTION | FileType.METADATA | \
                  FileType.RELEASE_NOTES_CONFIG | FileType.IMAGE | FileType.DESCRIPTION | FileType.INCIDENT_TYPE | \
                  FileType.INCIDENT_FIELD | FileType.INDICATOR_FIELD | FileType.LAYOUT | FileType.WIDGET | \
                  FileType.DASHBOARD | FileType.REPORT | FileType.PARSING_RULE | FileType.MODELING_RULE | \
@@ -736,18 +682,59 @@ class BranchTestCollector(TestCollector):
                  FileType.GENERIC_TYPE | FileType.GENERIC_FIELD | FileType.GENERIC_MODULE | \
                  FileType.GENERIC_DEFINITION | FileType.PRE_PROCESS_RULES | FileType.JOB | FileType.CONNECTION | \
                  FileType.RELEASE_NOTES_CONFIG | FileType.XSOAR_CONFIG:
+                # pack should be installed, but no tests are collected.
+                return self._collect_pack(
+                    name=find_pack(path).name,
+                    reason=CollectionReason.NON_CODE_FILE_CHANGED,
+                    reason_description=reason_description,
+                )
 
-                tests = None
-                reason = CollectionReason.NON_CODE_FILE_CHANGED
-                # todo layout container, XSIAM config?
+            case FileType.PYTHON_FILE | FileType.POWERSHELL_FILE | FileType.JAVASCRIPT_FILE:
+                if path.name.endswith('Tests.ps1'):
+                    path = path.with_name(path.name.replace('.Tests.ps1', '.ps1'))  # todo ok?
+
+                # todo should this yml be created inside _collect_yml?
+                # todo what if yml not exists?
+                return self._collect_yml(path)
+
+            case FileType.TEST_PLAYBOOK:
+                if (test_id := content_item.id_) in self.conf.test_ids:
+                    tests = test_id,
+                    reason = CollectionReason.TEST_PLAYBOOK_CHANGED
+                else:
+                    raise  # todo wat
+
+            case FileType.REPUTATION:  # todo reputationjson
+                raise NotImplementedError()  # todo
+
+            case FileType.MAPPER | FileType.CLASSIFIER:
+                source: dict[str, str] = {
+                    FileType.MAPPER: self.conf.incoming_mapper_to_test,
+                    FileType.CLASSIFIER: self.conf.classifier_to_test,
+                }[file_type]
+
+                reason = {
+                    FileType.MAPPER: CollectionReason.MAPPER_CHANGED,
+                    FileType.CLASSIFIER: CollectionReason.CLASSIFIER_CHANGED,
+                }[file_type]
+
+                if not (tests := source.get(content_item.id_)):
+                    tests = None  # replacing with None, so the pack is installed # todo shouldn't we take from id_set?
+                    reason = CollectionReason.NON_CODE_FILE_CHANGED
+                    reason_description = f'no specific tests for {relative_path} were found, using tests from id_set'
 
             case _:
                 if path.suffix == '.yml':
-                    return self._collect_yml(content_item, file_type, path)
+                    return self._collect_yml(path)  # checks for containing folder (content item type)
                 raise RuntimeError(f'Unexpected filetype {file_type}, {relative_path}')
 
-        return CollectedTests(tests=tests, packs=content_item.pack_tuple, reason=reason,
-                              version_range=content_item.version_range, reason_description=reason_description)
+        return CollectedTests(
+            tests=tests,
+            packs=content_item.pack_tuple,
+            reason=reason,
+            version_range=content_item.version_range,
+            reason_description=reason_description,
+        )
 
     def _get_changed_files(self) -> tuple[str]:
         repo = Repo(CONTENT_PATH)
@@ -766,14 +753,6 @@ class NightlyTestCollector(TestCollector):
             self._packs_matching_marketplace_value(),
         ]
 
-        match self.marketplace:
-            case MarketplaceVersions.MarketplaceV2:
-                collected.append(self.conf.get_marketplace_v2_sanity_tests())
-            case MarketplaceVersions.XSOAR:
-                collected.append(XSOAR_SANITY_TESTS)
-            case _:
-                raise RuntimeError(f'unexpected marketplace value {self.marketplace.value=}')
-
         return CollectedTests.union(collected)
 
     def _tests_matching_marketplace_value(self) -> CollectedTests:
@@ -789,11 +768,11 @@ class NightlyTestCollector(TestCollector):
                               version_range=None, reason_description=f'({marketplace_string})')
 
     def _packs_matching_marketplace_value(self) -> CollectedTests:
-        # todo make sure we have a validation, that pack_metadata.marketplaces includes a marketplace
+        # todo make sure we have a validation, that PACK_MANAGER.marketplaces includes a marketplace
         marketplace_string = self.marketplace.value
         logger.info(
             f'collecting pack_name_to_pack_metadata by their marketplace field, searching for {marketplace_string}')
-        packs = tuple(pack.name for pack in pack_metadata if marketplace_string in pack.get('marketplaces', ()))
+        packs = tuple(pack.name for pack in PACK_MANAGER if marketplace_string in pack.get('marketplaces', ()))
         # todo what's the default behavior for a missing marketplace value?
 
         return CollectedTests(tests=None, packs=packs, reason=CollectionReason.MARKETPLACE_VERSION_BY_VALUE,
