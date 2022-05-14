@@ -774,4 +774,3 @@ def test_update_status(mocker):
     assert result.outputs["response_msg"] == "Alert status changed successfully."
     assert isinstance(result.outputs["Workbench_Id"], str)
     assert isinstance(result.outputs["response_code"], int)
-
