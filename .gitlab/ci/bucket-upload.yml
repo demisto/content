@@ -35,7 +35,6 @@ run-validations-upload-flow:
     - .run-validations
     - .bucket-upload-rule
 
-
 run-unittests-and-lint-upload-flow:
   extends:
     - .run-unittests-and-lint
