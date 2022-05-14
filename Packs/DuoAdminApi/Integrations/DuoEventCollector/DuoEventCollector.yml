@@ -30,7 +30,7 @@ configuration:
   required: true
 - display: Secrete key
   name: secret_key
-  type: 4
+  type: 9
   required: true
 - display: XSIAM request limit
   name: limit
@@ -42,7 +42,6 @@ configuration:
   type: 0
   defaultvalue: 5
   required: false
-  hidden: true
 - display: Use system proxy settings
   name: proxy
   type: 8
@@ -57,8 +56,9 @@ script:
     name: fetch-events
   - description: Manual command to fetch events and display them.
     name: duo-get-events
-  dockerimage: devdemisto/duoadmin3:1.0.0.29577
+  dockerimage: devdemisto/duoadmin3:1.0.0.29639
   runonce: false
   subtype: python3
 fromversion: 6.5.0
 tests:
+  - No Test

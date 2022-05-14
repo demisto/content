@@ -22,6 +22,7 @@ Duo Events collector XSIAM
 * **SECRET KEY** - The secrete key.
 * **First fetch from api time** - The time to take events from if no time is saved in the system.
 * **XSIAM request limit** - The limit amount of events to retrieve from the api.
+* **Request retries** - The number of retries to do to the api(we need it because too frequent request make the api retun a"too many requests 429" error).
 
 
 ## Step by step configuration
@@ -32,3 +33,4 @@ Duo Events collector XSIAM
 **Api request limit** - 100  
 **First fetch from api time** - 1 Day  
 **XSIAM request limit** - 01 Minutes 
+**Request retries** - 5 

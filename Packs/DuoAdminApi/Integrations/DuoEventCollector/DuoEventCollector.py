@@ -1,14 +1,8 @@
 from collections import deque
 from enum import Enum
-
 import duo_client
 from pydantic import BaseModel
 from CommonServerPython import *
-
-HOST = demisto.getParam('host')
-INTEGRATION_KEY = demisto.getParam('integration_key')
-SECRET_KEY = demisto.getParam('secret_key')
-USE_PROXY = demisto.params().get('proxy', False)
 
 
 class LogType(str, Enum):
@@ -27,7 +21,7 @@ class Params(BaseModel):
     """
     mintime: dict
     limit: str = 1000
-    retries: int = 5
+    retries: Optional[str] = 5
 
     def set_mintime_value(self, mintime: list, log_type: LogType) -> None:
         self.mintime[log_type] = mintime
@@ -39,11 +33,12 @@ class Client:
     """
 
     def __init__(self, params: Params):
-        self.params = params
-        self.admin_api = create_api_call()
+        self.params = params['params']
+        self.admin_api = create_api_call(params.get('host'), params.get('integration_key'),
+                                         (params.get('secret_key')).get('password'))
 
-    def call(self, request_order) -> dict:
-        retries = self.params.retries
+    def call(self, request_order: list) -> dict:
+        retries = int(self.params.retries)
         while retries != 0:
             try:
                 if request_order[0] == LogType.AUTHENTICATION:
@@ -122,14 +117,15 @@ class GetEvents:
         """
         Get the info from the last run, it returns the time to query from and a list of ids to prevent duplications
         """
-
         ids = []
-        # gets the last event time
-        last_time = events[-1].get('timestamp')
-        for event in events:
-            if event.get('timestamp') == last_time:
-                event_id = f'{event.get("username")}{event.get("eventtype")}{event.get("timestamp")}'
-                ids.append(event_id)
+        last_time = self.client.params.mintime
+        if events:
+            # gets the last event time
+            last_time = events[-1].get('timestamp')
+            for event in events:
+                if event.get('timestamp') == last_time:
+                    event_id = f'{event.get("username")}{event.get("eventtype")}{event.get("timestamp")}'
+                    ids.append(event_id)
         return {'mintime': last_time, 'ids': ids, 'request_order': self.request_order}
 
     @staticmethod
@@ -142,7 +138,7 @@ class GetEvents:
                 event[f'{event.get("username")}{event.get("eventtype")}{event.get("timestamp")}'] not in ids]
 
 
-def override_make_request(self, method, uri, body, headers):
+def override_make_request(self, method: str, uri: str, body: dict, headers: dict):
     """
 
     This function is an override function to the original
@@ -160,11 +156,11 @@ def override_make_request(self, method, uri, body, headers):
     return response, data
 
 
-def create_api_call():
+def create_api_call(host: str, integration_key: str, secrete_key: str):
     client = duo_client.Admin(
-        ikey=INTEGRATION_KEY,
-        skey=SECRET_KEY,
-        host=HOST,
+        ikey=integration_key,
+        skey=secrete_key,
+        host=host,
         ca_certs='DISABLE'
     )
     try:
@@ -180,7 +176,7 @@ def create_api_call():
 
 def main():
     try:
-        demisto_params = demisto.params()  # | demisto.args()
+        demisto_params = demisto.params() | demisto.args()
         after = dateparser.parse(demisto_params['after'].strip())
         last_run = demisto.getLastRun()
         last_object_ids = last_run.get('ids')
@@ -198,8 +194,7 @@ def main():
         request_order = last_run.get('request_order',
                                      [LogType.AUTHENTICATION, LogType.ADMINISTRATION, LogType.TELEPHONY])
         demisto_params['params'] = Params(**demisto_params, mintime=last_run)
-
-        client = Client(demisto_params['params'])
+        client = Client(demisto_params)
 
         get_events = GetEvents(client, request_order)
 
@@ -210,18 +205,14 @@ def main():
             demisto.results('ok')
         elif command == 'duo-get-events' or command == 'fetch-events':
             events = get_events.aggregated_results(last_object_ids=last_object_ids)
-            if events:
-                demisto.setLastRun(get_events.get_last_run(events))
-                if command == 'duo-get-events':
-                    command_results = CommandResults(
-                        readable_output=tableToMarkdown('Duo Logs', events, headerTransform=pascalToSpace),
-                        outputs_prefix='Duo.Logs',
-                        outputs_key_field='timestamp',
-                        outputs=events,
-                        raw_response=events,
-                    )
-                    return_results(command_results)
+            demisto.setLastRun(get_events.get_last_run(events))
             send_events_to_xsiam(events, 'duo', 'duo')
+            if command == 'duo-get-events':
+                command_results = CommandResults(
+                    readable_output=tableToMarkdown('Duo Logs', events, headerTransform=pascalToSpace),
+                    raw_response=events,
+                )
+                return_results(command_results)
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
 
