@@ -29,9 +29,29 @@ from Tests.scripts.collect_tests.exceptions import (IgnoredPackException,
                                                     SkippedPackException, NonDictException, EmptyMachineListException,
                                                     NoTestsConfiguredException)
 
+IGNORED_INFRASTRUCTURE_FILES = {
+    '.gitignore',
+    '.lgtm.yml',
+    '.nvmrc',
+    '.pylintrc',
+    '__init__.py',
+    'CODE_OF_CONDUCT.md',
+    'content-descriptor.json',
+    'CONTRIBUTING.md',
+    'dev-requirements-py2.txt',
+    'dev-requirements-py3.txt',
+    'LICENSE',
+    'package.json',
+    'package-lock.json',
+    'Pipfile',
+    'Pipfile.lock',
+    'tox.ini',
+    'xsoar_content_logo.png',
+}
+
 logger = getLogger()
 logger.level = DEBUG
-IS_GITLAB = False  # todo remove
+IS_GITLAB = False  # todo replace
 
 PACK_NAMES = {p.name for p in PACKS_PATH.glob('*') if p.is_dir()}
 COMMIT = 'ds-test-collection'  # todo use arg
@@ -56,11 +76,14 @@ class CollectionReason(Enum):
     EMPTY_UNION = 'no tests to union'
 
 
-CollectionLog = NamedTuple('CollectionLog', (('test', Optional[str]),
-                                             ('pack', Optional[str]),
-                                             ('reason', CollectionReason),
-                                             ('description', str),
-                                             ))
+CollectionLog = NamedTuple(
+    'CollectionLog', (
+        ('test', Optional[str]),
+        ('pack', Optional[str]),
+        ('reason', CollectionReason),
+        ('description', str),
+    )
+)
 collection_log: list[CollectionLog] = []
 
 
@@ -143,21 +166,21 @@ class ContentItem(DictFileBased):
         super().__init__(path)
         self.file_type: FileType = find_type_by_path(self.path)
         self.pack = find_pack(self.path)  # todo if not used elsewhere, create inside pack_tuple
+        self.id_ = self['commonfields']['id'] if 'commonfields' in self.content else self['id']
 
     @property
     def pack_tuple(self) -> tuple[str]:
         return self.pack.name,
 
-    @property
-    def id_(self):
-        if 'commonfields' in self.content:
-            return self['commonfields']['id']
-        return self['id']
+    # @property # todo choose between property and attribute
+    # def id_(self) -> str:
+    #     if 'commonfields' in self.content:
+    #         return self['commonfields']['id']
+    #     return self['id']
 
     @property
     def name(self) -> str:
-        if self.content:
-            return self.get('name', default='')  # todo default?
+        return self.get('name', default='')  # todo default? todo warn?
 
     @property
     def tests(self):
@@ -222,14 +245,11 @@ class TestConf(DictFileBased):
                 result[integration].append(test)
         return result
 
-    def get_skipped_tests(self):
+    def get_skipped_tests(self):  # todo is used?
         return tuple(self.get('skipped_tests', {}).keys())
 
-    def get_private_tests(self) -> tuple:
-        return tuple(self.get('private_tests', ()))
-
     def get_tests(self) -> dict:
-        return self.get('tests', {})
+        return self['tests']
 
     def get_xsiam_tests(self):
         return self.get('test_marketplacev2')  # todo what's the type here? Add default.
@@ -241,10 +261,13 @@ class IdSetItem(DictBased):
         self.id_: str = id_
         self.name: str = self['name']
         self.file_path: str = self['file_path']
-        self.deprecated: Optional[bool] = self.get('deprecated', warn_if_missing=False) \
-                                          or self.get('hidden', warn_if_missing=False)
+
         # hidden for pack_name_to_pack_metadata, deprecated for content items
+        self.deprecated: Optional[bool] = \
+            self.get('deprecated', warn_if_missing=False) or self.get('hidden', warn_if_missing=False)
+
         self.pack: Optional[str] = self.get('pack', warn_if_missing=False)
+
         if 'pack' not in self.content:
             logger.warning(f'content item with id={id_} and name={self.name} has no pack value')  # todo debug? info?
 
@@ -274,9 +297,9 @@ class IdSet(DictFileBased):
         self.marketplace = marketplace
 
         # Content items mentioned in the file
-        self.id_to_script = self._parse_items(self['scripts'])
-        self.id_to_integration = self._parse_items(self['integrations'])
-        self.id_to_test_playbook = self._parse_items(self['TestPlaybooks'])
+        self.id_to_script = self._parse_items('scripts')
+        self.id_to_integration = self._parse_items('integrations')
+        self.id_to_test_playbook = self._parse_items('TestPlaybooks')
 
         self.implemented_scripts_to_tests = defaultdict(list)
         self.implemented_playbooks_to_tests = defaultdict(list)
@@ -292,7 +315,7 @@ class IdSet(DictFileBased):
         self.test_playbooks_to_pack = {test.name: test.pack for test in self.test_playbooks}
 
     @property
-    def artifact_iterator(self):
+    def artifact_iterator(self):  # todo is used?
         """ returns an iterator for all content items"""
         return (value for value in self.content if isinstance(value, list))
 
@@ -308,7 +331,7 @@ class IdSet(DictFileBased):
     def scripts(self) -> Iterable[IdSetItem]:
         return self.id_to_script.values()
 
-    # @property # todo
+    # @property # todo is used?
     # def pack_name_to_pack_metadata(self) -> Iterable[IdSetItem]:
     #     return self.id_to_packs.values()
 
@@ -322,10 +345,9 @@ class IdSet(DictFileBased):
             reason_description=f'({self.marketplace.value})'
         )
 
-    @staticmethod
-    def _parse_items(dictionaries: list[dict[str, dict]]) -> dict[str, IdSetItem]:
+    def _parse_items(self, key: str) -> dict[str, IdSetItem]:
         result = {}
-        for dict_ in dictionaries:
+        for dict_ in self[key]:
             for id_, values in dict_.items():
                 if isinstance(values, dict):
                     values = (values,)
@@ -452,7 +474,7 @@ def to_tuple(value: Optional[str | list]) -> Optional[tuple]:
 class TestConfItem(DictBased):
     def __init__(self, dict_: dict):
         super().__init__(dict_)
-        self.playbook_id = self['playbookID']
+        self.playbook_id: str = self['playbookID']
 
     @property
     def integrations(self) -> tuple[str]:
@@ -521,14 +543,13 @@ class TestCollector(ABC):
         return collected
 
     def _collect_pack(self, name: str, reason: CollectionReason, reason_description: str) -> CollectedTests:
-        pack = ContentItem(PACKS_PATH / name / 'pack_metadata.json')
         return CollectedTests(
             tests=None,
             packs=(name,),
             reason=reason,
             reason_description=reason_description,
             id_set=self.id_set,
-            version_range=pack.version_range
+            version_range=ContentItem(PACKS_PATH / name / 'pack_metadata.json').version_range
         )
 
     def _add_packs_from_test_playbooks(self, tests: set[str]) -> list[CollectedTests]:  # only called in _add_packs_used
@@ -649,9 +670,10 @@ class BranchTestCollector(TestCollector):
         except NonDictException:
             match file_type:
                 case FileType.PYTHON_FILE | FileType.POWERSHELL_FILE | FileType.JAVASCRIPT_FILE:
-                    # todo handle foo.Tests.ps1
+                    if path.name.endswith('Tests.ps1'):
+                        path = path.with_name(path.name.replace('Tests.ps1', '.ps1'))  # todo ok?
                     # todo should this yml be created inside _collect_yml?
-                    # todo what if not exists?
+                    # todo what if yml not exists?
                     yml = ContentItem(path.with_suffix('.yml'))
                     return self._collect_yml(yml, yml.file_type, path)
 
@@ -663,9 +685,11 @@ class BranchTestCollector(TestCollector):
                     )
                 case _:
                     raise
+
         except NoPackException as e:
-            # files that are supposed to not be in a pack, and are ignored.
-            if path in {}:  # todo handle non-content items, exclude list
+            # files that are NOT supposed to be in a pack, and are ignored.
+            if path.parent == CONTENT_PATH and path.name in IGNORED_INFRASTRUCTURE_FILES:
+                # todo is the list ok?
                 raise NoTestsToCollect(path, e.message)
             raise  # files that are either supposed to be in a pack, or should not be ignored.
 
@@ -674,7 +698,7 @@ class BranchTestCollector(TestCollector):
                 raise NoTestsToCollect(path, f'ignored type ({file_type}')
 
             case FileType.IMAGE | FileType.DESCRIPTION:  # todo readme shows twice
-                tests = None
+                tests = None  # pack should be installed, but no tests are collected.
                 reason = CollectionReason.NON_CODE_FILE_CHANGED
 
             case FileType.TEST_PLAYBOOK:
@@ -687,19 +711,21 @@ class BranchTestCollector(TestCollector):
             case FileType.REPUTATION:  # todo reputationjson
                 raise NotImplementedError()  # todo
 
-            case FileType.MAPPER:
-                if tests := (self.conf.incoming_mapper_to_test.get(content_item.id_)):
-                    reason = CollectionReason.MAPPER_CHANGED
-                else:
-                    reason = CollectionReason.NON_CODE_FILE_CHANGED
-                    reason_description = f'no specific tests for {relative_path} were found'
+            case FileType.MAPPER | FileType.CLASSIFIER:
+                source: dict[str, str] = {
+                    FileType.MAPPER: self.conf.incoming_mapper_to_test,
+                    FileType.CLASSIFIER: self.conf.classifier_to_test
+                }[file_type]
 
-            case FileType.CLASSIFIER:
-                if tests := (self.conf.classifier_to_test.get(content_item.id_)):
-                    reason = CollectionReason.CLASSIFIER_CHANGED
-                else:
+                reason: CollectionReason = {
+                    FileType.MAPPER: CollectionReason.MAPPER_CHANGED,
+                    FileType.CLASSIFIER: CollectionReason.CLASSIFIER_CHANGED
+                }[file_type]
+
+                if not (tests := source.get(content_item.id_)):
+                    tests = None  # passing None so the pack is installed
                     reason = CollectionReason.NON_CODE_FILE_CHANGED
-                    reason_description = f'no specific tests for {relative_path} were found'
+                    reason_description = f'no specific tests for {relative_path} were found, using tests from id_set'
 
             case FileType.METADATA | \
                  FileType.RELEASE_NOTES_CONFIG | FileType.IMAGE | FileType.DESCRIPTION | FileType.INCIDENT_TYPE | \
@@ -719,7 +745,6 @@ class BranchTestCollector(TestCollector):
                     return self._collect_yml(content_item, file_type, path)
                 raise RuntimeError(f'Unexpected filetype {file_type}, {relative_path}')
 
-        # todo usage before assignment?
         return CollectedTests(
             tests=tests,
             packs=content_item.pack_tuple,
@@ -771,7 +796,7 @@ class NightlyTestCollector(TestCollector):
         )
 
     def _packs_matching_marketplace_value(self) -> CollectedTests:
-        # todo make sure we have a validation, that pack_metadata.marketplaces includes
+        # todo make sure we have a validation, that pack_metadata.marketplaces includes a marketplace
         marketplace_string = self.marketplace.value
         logger.info(
             f'collecting pack_name_to_pack_metadata by their marketplace field, searching for {marketplace_string}')
@@ -811,6 +836,6 @@ if __name__ == '__main__':
         print(collector.collect(True, True))
         write_log(collection_log)
 
-    except:
+    except:  # todo remove
         Repo(CONTENT_PATH).git.checkout('ds-test-collection')  # todo remove
         raise
