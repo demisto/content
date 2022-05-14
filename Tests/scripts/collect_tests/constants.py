@@ -12,3 +12,9 @@ ARTIFACTS_ID_SET_PATH = ARTIFACTS_PATH / 'id_set.json'
 ARTIFACTS_CONF_PATH = ARTIFACTS_PATH / 'conf.json'
 DEBUG_ID_SET_PATH = CONTENT_PATH / 'Utils' / 'tests' / 'id_set.json'
 DEBUG_CONF_PATH = CONTENT_PATH / 'Tests' / 'conf.json'
+XSOAR_SANITY_TESTS = (
+    'Sanity Test - Playbook with integration',
+    'Sanity Test - Playbook with no integration',
+    'Sanity Test - Playbook with mocked integration',
+    'Sanity Test - Playbook with Unmockable Integration',
+)

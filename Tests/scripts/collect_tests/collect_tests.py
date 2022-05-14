@@ -22,7 +22,7 @@ from packaging.version import Version
 from Tests.scripts.collect_tests.constants import (CONTENT_PATH,
                                                    DEBUG_CONF_PATH,
                                                    DEBUG_ID_SET_PATH,
-                                                   PACKS_PATH, SKIPPED_PACKS)
+                                                   PACKS_PATH, SKIPPED_PACKS, XSOAR_SANITY_TESTS)
 from Tests.scripts.collect_tests.exceptions import (IgnoredPackException,
                                                     InexistentPackException,
                                                     InvalidPackNameException,
@@ -60,7 +60,7 @@ COMMIT = 'ds-test-collection'  # todo use arg
 class CollectionReason(Enum):
     # todo remove unused
     MARKETPLACE_VERSION_BY_VALUE = 'value of the test `marketplace` field'
-    MARKETPLACE_VERSION_SECTION = 'listed under conf.json marketplace-specific section'
+    CONF_MARKETPLACE_V2 = 'conf.json marketplace v2 sanity tests'
     PACK_MATCHES_INTEGRATION = 'pack added as the integration is used in a playbook'
     PACK_MATCHES_TEST = 'pack added as the test playbook was collected earlier'
     NIGHTLY_ALL_TESTS__ID_SET = 'collecting all id_set test playbooks for nightly'
@@ -214,47 +214,6 @@ class Machine(Enum):
         return self.value
 
 
-class TestConf(DictFileBased):
-    __test__ = False  # prevents pytest from running it
-
-    def __init__(self):
-        super().__init__(DEBUG_CONF_PATH)  # todo not use debug
-        self.tests = tuple(TestConfItem(value) for value in self['tests'])
-        self.test_ids = {test.playbook_id for test in self.tests}
-
-        self.tests_to_integrations = {test.playbook_id: test.integrations for test in self.tests if test.integrations}
-        self.integrations_to_tests = self._calculate_integration_to_tests()
-
-        # Attributes
-        self.skipped_tests_dict: dict = self['skipped_tests']  # todo is used?
-        self.skipped_integrations_dict: dict[str, str] = self['skipped_integrations']  # todo is used?
-        self.unmockable_integrations_dict: dict[str, str] = self['unmockable_integrations']  # todo is used?
-        self.nightly_integrations: list[str] = self['nightly_integrations']  # todo is used?
-        self.parallel_integrations: list[str] = self['parallel_integrations']  # todo is used?
-        self.private_tests: list[str] = self['private_tests']  # todo is used?
-
-        self.classifier_to_test = {test.classifier: test.playbook_id
-                                   for test in self.tests if test.classifier}
-        self.incoming_mapper_to_test = {test.incoming_mapper: test.playbook_id
-                                        for test in self.tests if test.incoming_mapper}
-
-    def _calculate_integration_to_tests(self) -> dict[str, list[str]]:
-        result = defaultdict(list)
-        for test, integrations in self.tests_to_integrations.items():
-            for integration in integrations:
-                result[integration].append(test)
-        return result
-
-    def get_skipped_tests(self):  # todo is used?
-        return tuple(self.get('skipped_tests', {}).keys())
-
-    def get_tests(self) -> dict:
-        return self['tests']
-
-    def get_xsiam_tests(self):
-        return self.get('test_marketplacev2')  # todo what's the type here? Add default.
-
-
 class IdSetItem(DictBased):
     def __init__(self, id_: str, dict_: dict):
         super().__init__(dict_)
@@ -335,16 +294,6 @@ class IdSet(DictFileBased):
     # def pack_name_to_pack_metadata(self) -> Iterable[IdSetItem]:
     #     return self.id_to_packs.values()
 
-    def get_marketplace_v2_tests(self) -> 'CollectedTests':
-        return CollectedTests(
-            tests=self['test_marketplacev2'],
-            packs=None,
-            reason=CollectionReason.MARKETPLACE_VERSION_SECTION,
-            id_set=self,
-            version_range=None,
-            reason_description=f'({self.marketplace.value})'
-        )
-
     def _parse_items(self, key: str) -> dict[str, IdSetItem]:
         result = {}
         for dict_ in self[key]:
@@ -380,7 +329,7 @@ class CollectedTests:
             version_range: Optional[VersionRange],  # None when the range should not be changed
             reason_description: Optional[str] = None
     ):
-        self._id_set = id_set  # used for validations
+        self._id_set = id_set  # used for validations # todo is it?
 
         self.tests = set()  # only updated on init
         self.packs = set()  # only updated on init
@@ -459,6 +408,54 @@ class CollectedTests:
 
     def __repr__(self):
         return f'{len(self.packs)} packs, {len(self.tests)} tests, {self.version_range=}'
+
+
+class TestConf(DictFileBased):
+    __test__ = False  # prevents pytest from running it
+
+    def __init__(self):
+        super().__init__(DEBUG_CONF_PATH)  # todo not use debug
+        self.tests = tuple(TestConfItem(value) for value in self['tests'])
+        self.test_ids = {test.playbook_id for test in self.tests}
+
+        self.tests_to_integrations = {test.playbook_id: test.integrations for test in self.tests if test.integrations}
+        self.integrations_to_tests = self._calculate_integration_to_tests()
+
+        # Attributes
+        self.skipped_tests_dict: dict = self['skipped_tests']  # todo is used?
+        self.skipped_integrations_dict: dict[str, str] = self['skipped_integrations']  # todo is used?
+        self.unmockable_integrations_dict: dict[str, str] = self['unmockable_integrations']  # todo is used?
+        self.nightly_integrations: list[str] = self['nightly_integrations']  # todo is used?
+        self.parallel_integrations: list[str] = self['parallel_integrations']  # todo is used?
+        self.private_tests: list[str] = self['private_tests']  # todo is used?
+
+        self.classifier_to_test = {test.classifier: test.playbook_id
+                                   for test in self.tests if test.classifier}
+        self.incoming_mapper_to_test = {test.incoming_mapper: test.playbook_id
+                                        for test in self.tests if test.incoming_mapper}
+
+    def _calculate_integration_to_tests(self) -> dict[str, list[str]]:
+        result = defaultdict(list)
+        for test, integrations in self.tests_to_integrations.items():
+            for integration in integrations:
+                result[integration].append(test)
+        return result
+
+    def get_skipped_tests(self):  # todo is used?
+        return tuple(self.get('skipped_tests', {}).keys())
+
+    def get_tests(self) -> dict:
+        return self['tests']
+
+    def get_marketplace_v2_sanity_tests(self, id_set: IdSet) -> 'CollectedTests':
+        return CollectedTests(
+            tests=self['test_marketplacev2'],
+            packs=None,
+            reason=CollectionReason.CONF_MARKETPLACE_V2,
+            id_set=id_set,
+            version_range=None,
+            reason_description=None
+        )
 
 
 def to_tuple(value: Optional[str | list]) -> Optional[tuple]:
@@ -771,9 +768,13 @@ class NightlyTestCollector(TestCollector):
             self._packs_matching_marketplace_value(),
         ]
 
-        if self.marketplace == MarketplaceVersions.MarketplaceV2:
-            collected.append(self.id_set.get_marketplace_v2_tests())
-        # todo is there a similar list for the marketplacev1?
+        match self.marketplace:
+            case MarketplaceVersions.MarketplaceV2:
+                collected.append(self.conf.get_marketplace_v2_sanity_tests(self.id_set))
+            case MarketplaceVersions.XSOAR:
+                collected.append(XSOAR_SANITY_TESTS)
+            case _:
+                raise RuntimeError(f'unexpected marketplace value {self.marketplace.value=}')
 
         return CollectedTests.union(collected)
 
