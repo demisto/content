@@ -200,7 +200,7 @@ class PackManager:
         self.deprecated_packs: set[str] = set()
 
         for name in PackManager.pack_names:
-            metadata = ContentItem(PACKS_PATH / name / 'PACK_MANAGER.json')
+            metadata = ContentItem(PACKS_PATH / name / 'pack_metadata.json')
             self.pack_name_to_pack_metadata[name] = metadata
 
             if metadata.deprecated:
