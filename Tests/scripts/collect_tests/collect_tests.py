@@ -212,6 +212,10 @@ class PackManager:
     def __iter__(self):
         yield from self.pack_name_to_pack_metadata.values()
 
+    @staticmethod
+    def relative_to_packs(path: Path):
+        return path.relative_to(PACKS_PATH)
+
     def validate_pack(self, pack: str) -> None:
         """ raises InvalidPackException if the pack name is not valid."""
         if not pack:
@@ -290,7 +294,7 @@ class IdSetItem(DictBased):
 
 class IdSet(DictFileBased):
     def __init__(self, marketplace: MarketplaceVersions):
-        super().__init__(DEBUG_ID_SET_PATH)  # todo use real original_file_path
+        super().__init__(DEBUG_ID_SET_PATH)  # todo use real content_item
         self.marketplace = marketplace
 
         # Content items mentioned in the file
@@ -617,46 +621,47 @@ class BranchTestCollector(TestCollector):
 
         return CollectedTests.union(collected)
 
-    def _collect_yml(self, original_file_path: Path) -> CollectedTests:
-        yml_content_item = ContentItem(original_file_path.with_suffix('.yml'))
+    def _collect_yml(self, content_item: Path) -> CollectedTests:
+        yml = ContentItem(content_item.with_suffix('.yml'))
 
-        match containing_folder := yml_content_item.path.parents[1].name:
+        match containing_folder := yml.path.parents[1].name:
             case 'Integrations':
-                tests = self.conf.integrations_to_tests[yml_content_item.id_]
+                tests = self.conf.integrations_to_tests[yml.id_]
                 reason = CollectionReason.INTEGRATION_CHANGED
 
             case 'Scripts' | 'Playbooks':
                 try:
-                    tests = yml_content_item.tests  # raises if 'no tests' in the tests field
+                    tests = yml.tests  # raises if 'no tests' in the tests field
                     reason = CollectionReason.SCRIPT_PLAYBOOK_CHANGED
 
-                except NoTestsConfiguredException:  # collecting all tests that implement this script/playbook
+                except NoTestsConfiguredException:
+                    # collecting all tests that implement this script/playbook
                     reason = CollectionReason.SCRIPT_PLAYBOOK_CHANGED_NO_TESTS
 
                     match containing_folder:
                         case 'Scripts':
-                            tests = self.id_set.implemented_scripts_to_tests.get(yml_content_item.id_)
+                            tests = self.id_set.implemented_scripts_to_tests.get(yml.id_)
                         case 'Playbooks':
-                            tests = self.id_set.implemented_playbooks_to_tests.get(yml_content_item.id_)
+                            tests = self.id_set.implemented_playbooks_to_tests.get(yml.id_)
                         case _:
                             raise RuntimeError(f'unexpected content type folder {containing_folder}')
 
                     if not tests:
-                        original_type: str = find_type_by_path(original_file_path).value
-                        relative_path = str(yml_content_item.path.relative_to(PACKS_PATH))
+                        original_type: str = find_type_by_path(content_item).value
+                        relative_path = str(PackManager.relative_to_packs(yml.path))
                         logger.warning(f'{original_type} {relative_path} '
                                        f'has `No Tests` configured, and no tests in id_set')  # todo necessary?
             case _:
                 raise RuntimeError(f'Unexpected content type original_file_path {containing_folder} '
                                    f'(expected `Integrations`, `Scripts`, etc)')
-
-        return CollectedTests(tests=tests, packs=yml_content_item.pack_tuple, reason=reason,
-                              version_range=yml_content_item.version_range,
-                              reason_description=f'{yml_content_item.id_=} ({original_file_path.relative_to(PACKS_PATH)})')
+        relative_path = PackManager.relative_to_packs(content_item)
+        return CollectedTests(tests=tests, packs=yml.pack_tuple, reason=reason,
+                              version_range=yml.version_range,
+                              reason_description=f'{yml.id_=} ({relative_path})')
 
     def _collect_single(self, path) -> CollectedTests:
         file_type = find_type_by_path(path)
-        relative_path = path.relative_to(CONTENT_PATH)
+        relative_path = PackManager.relative_to_packs(path)
         description_suffix = f'({file_type.value})' if file_type else ''
         reason_description = f'{relative_path} {description_suffix}'
 
