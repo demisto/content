@@ -405,7 +405,7 @@ class CollectedTests:
             test: Optional[str],
             pack: Optional[str],
             reason: CollectionReason,
-            description: str = '',
+            description: str,
     ):
         """ Should only be called from add_multiple """  # todo really?
         if not any((test, pack)):
