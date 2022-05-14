@@ -166,8 +166,11 @@ class ContentItem(DictFileBased):
     def __init__(self, path: Path):
         super().__init__(path)
         self.pack = find_pack(self.path)  # todo if not used elsewhere, create inside pack_tuple
-        self.id_ = self['commonfields']['id'] if 'commonfields' in self.content else self['id']
         self.deprecated = self.get('deprecated', warn_if_missing=False)
+
+    @property
+    def id_(self):  # property as pack_metadata (for examaple) doesn't have this field
+        return self['commonfields']['id'] if 'commonfields' in self.content else self['id']
 
     @property
     def pack_tuple(self) -> tuple[str]:
@@ -227,6 +230,22 @@ class PackManager:
             raise SkippedPackException(pack)
         if pack in self.deprecated_packs:
             raise DeprecatedPackException(pack)
+
+
+def find_pack(path: Path) -> Path:
+    """
+    >>> find_pack(Path('root/Packs/MyPack/Integrations/MyIntegration/MyIntegration.yml'))
+    PosixPath('root/Packs/MyPack')
+    >>> find_pack(Path('Packs/MyPack1/Scripts/MyScript/MyScript.py')).name
+    'MyPack1'
+    >>> find_pack(Path('Packs/MyPack2/Scripts/MyScript')).name
+    'MyPack2'
+    >>> find_pack(Path('Packs/MyPack3/Scripts')).name
+    'MyPack3'
+    """
+    if 'Packs' not in path.parts:
+        raise NotUnderPackException(path)
+    return path.parents[len(path.parts) - (path.parts.index('Packs')) - 3]
 
 
 PACK_MANAGER = PackManager()  # todo main, global?
@@ -582,22 +601,6 @@ class TestCollector(ABC):
                     self._collect_pack(pack, reason=CollectionReason.PACK_MATCHES_TEST, reason_description='')
                 )
         return collected
-
-
-def find_pack(path: Path) -> Path:
-    """
-    >>> find_pack(Path('root/Packs/MyPack/Integrations/MyIntegration/MyIntegration.yml'))
-    PosixPath('root/Packs/MyPack')
-    >>> find_pack(Path('Packs/MyPack1/Scripts/MyScript/MyScript.py')).name
-    'MyPack1'
-    >>> find_pack(Path('Packs/MyPack2/Scripts/MyScript')).name
-    'MyPack2'
-    >>> find_pack(Path('Packs/MyPack3/Scripts')).name
-    'MyPack3'
-    """
-    if 'Packs' not in path.parts:
-        raise NotUnderPackException(path)
-    return path.parents[len(path.parts) - (path.parts.index('Packs')) - 3]
 
 
 class BranchTestCollector(TestCollector):
