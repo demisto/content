@@ -52,7 +52,7 @@ class CyberArkEventsClient(IntegrationEventsClient):
         super().__init__(request, options, session)
 
     def set_request_filter(self, after: Any):
-        self.request.data = json.dumps({"Script": f"Select ID from Event where WhenOccurred >= '{dateparser.parse('1 week', settings={'TIMEZONE': 'UTC'}).strftime(DATE_FORMAT)}' and WhenOccurred <= '{datetime.now().strftime(DATE_FORMAT)}'"})
+        return
 
     def authenticate(self):
         request = IntegrationHTTPRequest(
@@ -80,8 +80,7 @@ class CyberArkGetEvents(IntegrationGetEvents):
         # The date is in timestamp format and looks like {'WhenOccurred': '/Date(1651483379362)/'}
         last_timestamp = max([int(e.get('WhenOccurred', '').removesuffix(')/').removeprefix('/Date(')) for e in events])
 
-        # https://stackoverflow.com/questions/3682748/converting-unix-timestamp-string-to-readable-date#3682808
-        return datetime.fromtimestamp(last_timestamp / 1000).strftime(DATETIME_FORMAT)
+        return datetime.utcfromtimestamp(last_timestamp / 1000).strftime(DATETIME_FORMAT)
 
     def get_last_run(self, events: list) -> tuple[str, list]:
         return self.get_last_run_time(events), self.get_last_run_ids(events)
