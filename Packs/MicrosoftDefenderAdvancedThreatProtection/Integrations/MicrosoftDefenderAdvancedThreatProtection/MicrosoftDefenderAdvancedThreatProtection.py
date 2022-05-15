@@ -2723,9 +2723,9 @@ def download_file_after_successful_status(client, res):
     }
     return [fileResult('Response Result.gz', f_data.content),
             CommandResults(
-                outputs_prefix='MicrosoftATP.InvestigationUR',
+                outputs_prefix='MicrosoftATP.MachineAction',
                 outputs=res,
-                readable_output=tableToMarkdown('Machine Action:', md_results, is_auto_json_transform=True)
+                readable_output=tableToMarkdown('Machine Action:', md_results)
     )]
 
 
