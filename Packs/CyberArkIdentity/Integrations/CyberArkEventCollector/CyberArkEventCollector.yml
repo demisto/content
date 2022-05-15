@@ -1,6 +1,6 @@
 category: Analytics & SIEM
 commonfields:
-  id: CyberArkIdentity
+  id: CyberArk Event Collector
   version: -1
 configuration:
 - defaultvalue: https://example.com/
@@ -36,32 +36,34 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: '[Enter a comprehensive, yet concise, description of what the integration does, what use cases it is designed for, etc.]'
-display: CyberArkIdentity
-name: CyberArkIdentity
+description: 'CyberArk logs event collector integration for XSIAM.'
+display: CyberArk Event Collector
+name: CyberArk Event Collector
 script:
   commands:
-  - arguments:
-    - default: false
-      description: '[Enter a description of the argument, including any important information users need to know, for example, default values.]'
-      isArray: false
-      name: dummy
-      required: true
-      secret: false
-    deprecated: false
-    description: '[Enter a description of the command, including any important information users need to know, for example required permissions.]'
+  - deprecated: false
+    description: 'Returns a list of events'
     execution: false
-    name: baseintegration-dummy
-    outputs:
-    - contextPath: BaseIntegration.Output
-      description: '[Enter a description of the data returned in this output.]'
-      type: String
-  isfetchevents: true
+    name: CyberArk-get-events
+    arguments:
+    - description: The maximum number of incidents per fetch. Default is 100.
+      isArray: true
+      name: limit
+      required: false
+      secret: false
+    - description: First fetch time (<number> <time unit>, e.g., 12 hours, 1 day, 3 months). default is 3 days.
+      isArray: true
+      name: from
+      required: false
+      secret: false
   runonce: false
   script: '-'
+  isfetchevents: true
   type: python
   subtype: python3
   dockerimage: demisto/fastapi:1.0.0.29406
-fromversion: 5.5.0
+marketplaces:
+- marketplacev2
+fromversion: 6.5.0
 tests:
 - No tests (auto formatted)

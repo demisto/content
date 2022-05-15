@@ -6,7 +6,29 @@ from SiemApiModule import *  # noqa: E402
 urllib3.disable_warnings()
 
 # -----------------------------------------  GLOBAL VARIABLES  -----------------------------------------
-DATETIME_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
+DATETIME_FORMAT = '%Y-%m-%dT%H:%M:%S.%f'
+EVENT_FIELDS = [
+    'ID',
+    'AuthMethod',
+    'DirectoryServiceUuid',
+    'DirectoryServicePartnerName',
+    'EntityName',
+    'EntityType',
+    'EntityUuid',
+    'FromIPAddress',
+    'Level',
+    'ImpersonatorUuid',
+    'NewEntity',
+    'NormalizedUser',
+    'OldEntity',
+    'RequestDeviceOS',
+    'RequestHostName',
+    'RequestIsMobileDevice',
+    'Tenant',
+    'UserGuid',
+    'WhenLogged',
+    'WhenOccurred',
+]
 
 
 class CyberArkEventsRequest(IntegrationHTTPRequest):
@@ -49,13 +71,20 @@ class CyberArkEventsClient(IntegrationEventsClient):
 class CyberArkGetEvents(IntegrationGetEvents):
     client: CyberArkEventsClient
 
-    def get_last_run(self: Any, event) -> dict:  # type: ignore
-        # The date is in timestamp format and looks like {'WhenOccurred': '/Date(1651483379362)/'}
-        last_date = int(dict(event).get('WhenOccurred', '').removesuffix(')/').removeprefix('/Date('))
-        last_run = datetime.utcfromtimestamp(last_date / 1000).strftime(DATETIME_FORMAT)
+    @staticmethod
+    def get_last_run_ids(events: list) -> list:
+        return [event.get('ID') for event in events]
 
-        demisto.debug(f"Getting the last run {last_run}")
-        return {'from': last_run}
+    @staticmethod
+    def get_last_run_time(events: list) -> str:
+        # The date is in timestamp format and looks like {'WhenOccurred': '/Date(1651483379362)/'}
+        last_timestamp = max([int(e.get('WhenOccurred', '').removesuffix(')/').removeprefix('/Date(')) for e in events])
+
+        # https://stackoverflow.com/questions/3682748/converting-unix-timestamp-string-to-readable-date#3682808
+        return datetime.fromtimestamp(last_timestamp / 1000).strftime(DATETIME_FORMAT)
+
+    def get_last_run(self, events: list) -> tuple[str, list]:
+        return self.get_last_run_time(events), self.get_last_run_ids(events)
 
     def _iter_events(self):
         self.client.authenticate()
@@ -64,18 +93,18 @@ class CyberArkGetEvents(IntegrationGetEvents):
         result = self.client.call(self.client.request).json()['Result']
 
         if events := result.get('Results'):
-            yield [event.get('Row') for event in events]
+            fetched_events_ids = demisto.getLastRun().get('ids', [])
+            yield [event.get('Row') for event in events if event.get('Row', {}).get('ID') not in fetched_events_ids]
 
 
 def get_request_params(**kwargs: dict) -> dict:
     fetch_from = kwargs.get('from', '3 days')
-    from_day = datetime.strftime(dateparser.parse(fetch_from, settings={'TIMEZONE': 'UTC'}), DATETIME_FORMAT)
-    to_day = datetime.strftime(datetime.now(), DATETIME_FORMAT)
+    from_time = datetime.strftime(dateparser.parse(fetch_from, settings={'TIMEZONE': 'UTC'}), DATETIME_FORMAT)
 
     params = {
         'url': f'{kwargs.get("url", "").removesuffix("/")}/RedRock/Query',
         'data': json.dumps({
-            "Script": f"Select * from Event where WhenOccurred > '{from_day}' and WhenOccurred <= '{to_day}'"
+            "Script": f"Select {', '.join(EVENT_FIELDS)} from Event where WhenOccurred > '{from_time}'"
         }),
         'verify': not kwargs.get('insecure')
     }
@@ -100,9 +129,9 @@ def main(command: str, demisto_params: dict):
             send_events_to_xsiam(events, vendor='CyberArk', product='Idaptive')
 
             if events:
-                last_run = get_events.get_last_run(events[-1])
-                demisto.setLastRun(last_run)
-                demisto.debug(f'Set last run to {last_run}')
+                last_run_time, last_run_ids = get_events.get_last_run(events)
+                demisto.setLastRun({'from': last_run_time, 'ids': last_run_ids})
+                demisto.debug(f'Set last run to {last_run_time}')
 
                 if command == 'CyberArk-fetch-events':
                     CommandResults(
