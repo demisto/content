@@ -147,17 +147,20 @@ references:
 
         chmod +x ./Tests/scripts/*
         chmod +x ./Tests/Marketplace/*
-        if [ ! -e "venv" ]; then
+
+        # configure poetry to save virtual environment in the project
+        poetry config virtualenvs.in-project true
+        if [ ! -e ".venv" ]; then
           echo "installing venv"
-          NO_HOOKS=1 SETUP_PY2=yes .hooks/bootstrap
-          source ./venv/bin/activate
-          pip3 install -r .circleci/build-requirements.txt
+          poetry install
+          npm ci --cache .npm --prefer-offline
+          source ./.venv/bin/activate
         else
           echo "venv exists (from cache). activating"
-          source ./venv/bin/activate
+          source ./.venv/bin/activate
         fi
         # store in bash env so we load our venv in each step
-        echo 'source /home/circleci/project/venv/bin/activate' >> $BASH_ENV
+        echo 'source /home/circleci/project/.venv/bin/activate' >> $BASH_ENV
         git config diff.renameLimit 6000
 
         echo "========== Build Parameters =========="
@@ -172,7 +175,7 @@ references:
 
   restore_cache: &restore_cache
     restore_cache:
-      key: virtualenv-venv-{{ checksum "dev-requirements-py2.txt" }}-{{ checksum "dev-requirements-py3.txt" }}-{{ checksum ".circleci/build-requirements.txt" }}-{{ checksum "package-lock.json" }}
+      key: virtualenv-venv-{{ checksum "dev-requirements-py2.txt" }}-{{ checksum "poetry.lock" }}-{{ checksum ".circleci/build-requirements.txt" }}-{{ checksum "package-lock.json" }}
 
   remote_docker: &remote_docker
     setup_remote_docker:
@@ -327,9 +330,9 @@ jobs:
       - *prepare_environment
       - save_cache:
           paths:
-            - venv
+            - .venv
             - node_modules
-          key: virtualenv-venv-{{ checksum "dev-requirements-py2.txt" }}-{{ checksum "dev-requirements-py3.txt" }}-{{ checksum ".circleci/build-requirements.txt" }}-{{ checksum "package-lock.json" }}
+          key: virtualenv-venv-{{ checksum "dev-requirements-py2.txt" }}-{{ checksum "poetry.lock" }}-{{ checksum ".circleci/build-requirements.txt" }}-{{ checksum "package-lock.json" }}
       - *get_contribution_pack
       - *add_ssh_keys
       - *persist_to_workspace
