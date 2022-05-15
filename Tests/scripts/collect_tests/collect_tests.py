@@ -24,8 +24,7 @@ from Tests.scripts.collect_tests.constants import (CONTENT_PATH,
                                                    DEBUG_ID_SET_PATH,
                                                    PACKS_PATH,
                                                    XSOAR_SANITY_TEST_NAMES)
-from Tests.scripts.collect_tests.exceptions import (IgnoredPackException,
-                                                    InexistentPackException,
+from Tests.scripts.collect_tests.exceptions import (InexistentPackException,
                                                     InvalidPackNameException,
                                                     SkippedPackException, NonDictException, EmptyMachineListException,
                                                     NoTestsConfiguredException, DeprecatedPackException,
@@ -220,7 +219,7 @@ class PackManager:
         if pack not in PackManager.pack_names:
             logger.error(f'inexistent pack {pack}')
             raise InexistentPackException(pack)
-        if pack in PackManager.skipped_packs:  # todo handle this and deprecated
+        if pack in PackManager.skipped_packs:
             raise SkippedPackException(pack)
         if pack in self.deprecated_packs:
             raise DeprecatedPackException(pack)
@@ -434,7 +433,7 @@ class CollectedTests:
                 PACK_MANAGER.validate_pack(pack)
                 self.packs.add(pack)
                 logger.info(f'collected {pack=}, {reason.value} {description}')
-            except (IgnoredPackException, SkippedPackException) as e:
+            except (SkippedPackException, DeprecatedPackException) as e:
                 logger.info(str(e))
 
         collection_log.append(CollectionLog(test, pack, reason, description))
@@ -774,7 +773,7 @@ class NightlyTestCollector(TestCollector):
         )
 
         return CollectedTests(tests=None, packs=packs, reason=CollectionReason.MARKETPLACE_VERSION_BY_VALUE,
-                              version_range=None, reason_description=f'({marketplace_string})')
+                              version_range=None, reason_description=f'({self.marketplace.value})')
 
 
 class UploadCollector(TestCollector):

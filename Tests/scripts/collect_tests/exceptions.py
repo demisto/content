@@ -16,9 +16,6 @@ class InexistentPackException(InvalidPackException):
         super().__init__(pack_name, 'Inexistent pack name')
 
 
-class IgnoredPackException(InvalidPackException):
-    def __init__(self, pack_name: str):
-        super().__init__(pack_name, 'Pack is ignored')
 
 
 class DeprecatedPackException(InvalidPackException):
