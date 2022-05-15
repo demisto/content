@@ -2835,7 +2835,7 @@ def target_filter(rule: dict, target: str) -> bool:
     if not isinstance(firewalls_the_rule_applies_to, list):
         firewalls_the_rule_applies_to = [firewalls_the_rule_applies_to]
     for entry in firewalls_the_rule_applies_to:
-        if entry.get('@name') == target:
+        if entry and entry.get('@name', None) == target:
             return True
 
     return False
@@ -5284,6 +5284,9 @@ def panorama_download_latest_content_update_command(args: dict):
     Download content and show message in war room
     """
     target = args.get('target', None)
+    if DEVICE_GROUP and not target:
+        raise Exception('Download latest content is only supported on Firewall (not Panorama).')
+
     result = panorama_download_latest_content_update_content(target)
 
     if 'result' in result['response']:
@@ -5333,6 +5336,8 @@ def panorama_content_update_download_status_command(args: dict):
     Check jobID of content update download status
     """
     target = str(args['target']) if 'target' in args else None
+    if DEVICE_GROUP and not target:
+        raise Exception('Content download status is only supported on Firewall (not Panorama).')
     job_id = args['job_id']
     result = panorama_content_update_download_status(target, job_id)
 
@@ -5608,6 +5613,8 @@ def panorama_install_panos_version_command(args: dict):
     Check jobID of panos install
     """
     target = str(args['target']) if 'target' in args else None
+    if DEVICE_GROUP and not target:
+        raise Exception('PAN-OS installation is only supported on Firewall (not Panorama).')
     target_version = str(args['target_version'])
     result = panorama_install_panos_version(target, target_version)
 
