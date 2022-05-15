@@ -125,7 +125,7 @@ def main(command: str, demisto_params: dict):
 
         if command in ('fetch-events', 'CyberArk-get-events'):
             events = get_events.run()
-            send_events_to_xsiam(events, vendor='CyberArk', product='Idaptive')
+            # send_events_to_xsiam(events, vendor='CyberArk', product='Idaptive')
 
             if events:
                 last_run_time, last_run_ids = get_events.get_last_run(events)
