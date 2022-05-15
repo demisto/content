@@ -4838,27 +4838,23 @@ class Common(object):
         """
         CONTEXT_PATH = 'AttackPattern(val.value && val.value == obj.value)'
 
-        def __init__(self, stix_id, kill_chain_phases=None, first_seen_by_source=None, description=None,
-                     operating_system_refs=None, publications=None, mitre_id=None, tags=None,
-                     traffic_light_protocol=None, dbot_score=None, community_notes=None, external_references=None):
-
-            self.community_notes = community_notes
-            self.description = description
-            self.external_references = external_references
-            self.first_seen_by_source = first_seen_by_source
+        def __init__(self, stix_id, value, kill_chain_phases, first_seen_by_source, description,
+                     operating_system_refs, publications, mitre_id, tags, dbot_score):
+            self.stix_id = stix_id
             self.kill_chain_phases = kill_chain_phases
-            self.mitre_id = mitre_id
+            self.first_seen_by_source = first_seen_by_source
+            self.description = description
             self.operating_system_refs = operating_system_refs
             self.publications = publications
-            self.stix_id = stix_id
+            self.mitre_id = mitre_id
             self.tags = tags
-            self.traffic_light_protocol = traffic_light_protocol
-
+            self.value = value
             self.dbot_score = dbot_score
 
         def to_context(self):
             attack_pattern_context = {
                 'STIXID': self.stix_id,
+                'Name': self.value,
                 "KillChainPhases": self.kill_chain_phases,
                 "FirstSeenBySource": self.first_seen_by_source,
                 'OperatingSystemRefs': self.operating_system_refs,
