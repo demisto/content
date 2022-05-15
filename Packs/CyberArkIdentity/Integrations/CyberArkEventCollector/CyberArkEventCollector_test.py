@@ -5,21 +5,17 @@ from freezegun import freeze_time
 import demistomock as demisto
 
 
-URL = 'https://aam4730.my.idaptive.app/'
+URL = 'https://example.my.idaptive.app/'
 DEMISTO_PARAMS = {
     'url': URL,
     'credentials': {
-        'identifier': 'siemuser@paloaltonetworks.com.98',
-        'password': 'q123456Q',
+        'identifier': 'admin@example.com.11',
+        'password': '123456',
     },
-    'from': '1 year',
-    'verify': True,
-    'proxy': False,
-    'app_id': 'oauthsiem',
-    'limit': 6000,
+    'from': '3 days',
+    'app_id': 'test_app',
+    'limit': 100,
 }
-# FIRST_REQUESTS_PARAMS = 'from=2022-04-11T00:00:00.000000&limit=1000&offset=0'
-# SECOND_REQUESTS_PARAMS = 'from=2022-04-11T00:00:00.000000&limit=1000&offset=1000'
 
 
 def util_load_json(path):
@@ -27,106 +23,91 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
-def calculate_next_run(time):
-    next_time = time.removesuffix('+0000')
-    next_time_with_delta = next_time[:-1] + str(int(next_time[-1]) + 1)
-    return next_time_with_delta
-
-
-@freeze_time('2022-04-14T00:00:00Z')
-def test_fetch_incidents_few_incidents(mocker):
+@freeze_time('2022-05-12T00:00:00Z')
+def test_fetch_events_few_events(mocker):
     """
     Given
-        - 3 events was created in Jira side in the last 3 days.
+        - 3 events was created in CyberArk side in the last 3 days.
     When
-        - fetch-events is running (with max_fetch set to 100).
+        - fetch-events is running (with limit set to 100).
     Then
         - Verify that all 3 events were created in XSIAM.
         - Verify last_run was set as expected.
     """
 
-    mocker.patch.object(demisto, 'params', return_value=DEMISTO_PARAMS)
+    params = mocker.patch.object(demisto, 'params', return_value=DEMISTO_PARAMS)
     mocker.patch.object(demisto, 'args', return_value={})
-    mocker.patch.object(demisto, 'command', return_value='jira-get-events')
     last_run = mocker.patch.object(demisto, 'getLastRun', return_value={})
     results = mocker.patch.object(demisto, 'results')
-    mocker.patch('JiraEventCollector.send_events_to_xsiam')
+    mocker.patch('CyberArkEventCollector.send_events_to_xsiam')
 
     with requests_mock.Mocker() as m:
-        m.get(f'{URL}?{FIRST_REQUESTS_PARAMS}', json=util_load_json('test_data/events.json'))
-        m.get(f'{URL}?{SECOND_REQUESTS_PARAMS}', json={})
+        m.get(f'{URL}oauth2/token/test_app', json={'access_token': '123456abc'})
+        m.get(f'{URL}RedRock/Query', json=util_load_json('test_data/events.json'))
 
-        from JiraEventCollector import main
-        main()
+        from CyberArkEventCollector import main
+        main('CyberArk-get-events', params.return_value)
 
     events = results.call_args[0][0]['Contents']
-    assert last_run.return_value.get('from') == calculate_next_run(events[0]['created'])
-    assert not last_run.return_value.get('next_time')
-    assert last_run.return_value.get('offset') == 0
-    assert len(events) == 3
+    assert last_run.return_value.get('from') == '2022-05-15T13:35:26.645000'
+    assert len(last_run.return_value.get('ids')) == len(events) == 3
 
 
-@freeze_time('2022-04-14T00:00:00Z')
-def test_fetch_events_no_incidents(mocker):
+@freeze_time('2022-05-12T00:00:00Z')
+def test_fetch_events_no_events(mocker):
     """
     Given
-        - No events was created in Jira side in the last 3 days.
+        - 3 events was created in CyberArk side in the last 3 days.
     When
-        - fetch-events is running.
+        - fetch-events is running (with limit set to 100).
     Then
         - Make sure no events was created in XSIAM.
         - Make sure last_run was set as expected.
     """
 
-    mocker.patch.object(demisto, 'params', return_value=DEMISTO_PARAMS)
+    params = mocker.patch.object(demisto, 'params', return_value=DEMISTO_PARAMS)
     mocker.patch.object(demisto, 'args', return_value={})
-    mocker.patch.object(demisto, 'command', return_value='jira-get-events')
     last_run = mocker.patch.object(demisto, 'getLastRun', return_value={})
-    incidents = mocker.patch.object(demisto, 'incidents')
-    mocker.patch('JiraEventCollector.send_events_to_xsiam')
+    results = mocker.patch.object(demisto, 'results')
+    mocker.patch('CyberArkEventCollector.send_events_to_xsiam')
 
     with requests_mock.Mocker() as m:
-        m.get(f'{URL}?{FIRST_REQUESTS_PARAMS}', json={})
+        m.get(f'{URL}oauth2/token/test_app', json={'access_token': '123456abc'})
+        m.get(f'{URL}RedRock/Query', json={'Result': {}})
 
-        from JiraEventCollector import main
-        main()
+        from CyberArkEventCollector import main
+        main('CyberArk-get-events', params.return_value)
 
-    assert not last_run.return_value.get('from')
-    assert last_run.return_value.get('offset') == 0
-    assert not incidents.call_args
+    events = results.call_args[0][0]['Contents']
+    assert last_run.return_value.get('from') == last_run.return_value.get('ids') == events is None
 
 
-@freeze_time('2022-04-14T00:00:00Z')
-def test_fetch_events_max_fetch_set_to_one(mocker):
+@freeze_time('2022-05-12T00:00:00Z')
+def test_fetch_events_limit_set_to_one(mocker):
     """
     Given
-        - 3 events was created in Jira side in the last 3 days.
+        - 3 events was created in CyberArk side in the last 3 days.
     When
-        - fetch-events is running (with max_fetch set to 1).
+        - fetch-events is running (with limit set to 1).
     Then
         - Verify that only 1 event were created in XSIAM.
         - Verify last_run was set as expected.
     """
 
-    params = DEMISTO_PARAMS
-    params['max_fetch'] = 1
-
-    mocker.patch.object(demisto, 'params', return_value=params)
+    params = mocker.patch.object(demisto, 'params', return_value=DEMISTO_PARAMS)
+    params['limit'] = 1
     mocker.patch.object(demisto, 'args', return_value={})
-    mocker.patch.object(demisto, 'command', return_value='jira-get-events')
     last_run = mocker.patch.object(demisto, 'getLastRun', return_value={})
     results = mocker.patch.object(demisto, 'results')
-    mocker.patch('JiraEventCollector.send_events_to_xsiam')
+    mocker.patch('CyberArkEventCollector.send_events_to_xsiam')
 
     with requests_mock.Mocker() as m:
-        m.get(f'{URL}?{FIRST_REQUESTS_PARAMS}', json=util_load_json('test_data/events.json'))
-        m.get(f'{URL}?{SECOND_REQUESTS_PARAMS}', json={})
+        m.get(f'{URL}oauth2/token/test_app', json={'access_token': '123456abc'})
+        m.get(f'{URL}RedRock/Query', json=util_load_json('test_data/events.json'))
 
-        from JiraEventCollector import main
-        main()
+        from CyberArkEventCollector import main
+        main('CyberArk-get-events', params.return_value)
 
     events = results.call_args[0][0]['Contents']
-    assert not last_run.return_value.get('from')
-    assert last_run.return_value.get('next_time') == calculate_next_run(events[0]['created'])
-    assert last_run.return_value.get('offset') == 1
-    assert len(events) == 1
+    assert last_run.return_value.get('from') == '2022-05-15T13:35:03.570000'
+    assert len(last_run.return_value.get('ids')) == len(events) == 1

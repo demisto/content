@@ -57,7 +57,7 @@ class CyberArkEventsClient(IntegrationEventsClient):
     def authenticate(self):
         request = IntegrationHTTPRequest(
             method=self.request.method,
-            url=f"{demisto.params().get('url')}/oauth2/token/{demisto.params().get('app_id')}",
+            url=f"{demisto.params().get('url', '').removesuffix('/')}/oauth2/token/{demisto.params().get('app_id')}",
             headers={'Authorization': f"Basic {base64.b64encode(f'{self.credentials.identifier}:{self.credentials.password}'.encode()).decode()}"},
             data={'grant_type': 'client_credentials', 'scope': 'siem'},
             verify=not self.request.verify,
@@ -132,14 +132,14 @@ def main(command: str, demisto_params: dict):
                 demisto.setLastRun({'from': last_run_time, 'ids': last_run_ids})
                 demisto.debug(f'Set last run to {last_run_time}')
 
-                if command == 'CyberArk-fetch-events':
-                    CommandResults(
-                        readable_output=tableToMarkdown(
-                            'CyberArkIdentity RedRock records', events, removeNull=True, headerTransform=pascalToSpace
-                        ),
-                        raw_response=events,
-                    )
-                    demisto.results(CommandResults)
+            if command == 'CyberArk-get-events':
+                command_results = CommandResults(
+                    readable_output=tableToMarkdown(
+                        'CyberArkIdentity RedRock records', events, removeNull=True, headerTransform=pascalToSpace
+                    ),
+                    raw_response=events,
+                )
+                return_results(command_results)
 
     except Exception as e:
         return_error(str(e))
