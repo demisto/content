@@ -1,0 +1,81 @@
+{
+    "total_count": 1,
+    "results": [
+        {
+            "id": 2,
+            "name": "sensor1",
+            "address": "127.0.0.1",
+            "port": 9999,
+            "type": "PASSIVE",
+            "sensor_version": "4.3.21",
+            "state": "OPERATIVE_ON",
+            "health_status": {
+                "cpu_load_avg_1_min": {
+                    "name": "",
+                    "level": "NORMAL",
+                    "current_value": "3.75%"
+                },
+                "memory_usage": {
+                    "name": "",
+                    "level": "NORMAL",
+                    "current_value": "72.44%"
+                },
+                "throughput": {
+                    "name": "",
+                    "level": "CRITICAL",
+                    "current_value": "0.0 bps"
+                },
+                "dropped_packets": {
+                    "name": "",
+                    "level": "NORMAL",
+                    "current_value": "0%"
+                },
+                "disk_usage": [
+                    {
+                        "name": "/",
+                        "level": "NORMAL",
+                        "current_value": "7%"
+                    }
+                ],
+                "net_if_status": [
+                    {
+                        "name": "br-1b1f2d7e6a87",
+                        "level": "NORMAL",
+                        "current_value": "Running"
+                    },
+                    {
+                        "name": "ens160",
+                        "level": "NORMAL",
+                        "current_value": "Running"
+                    },
+                    {
+                        "name": "ens192",
+                        "level": "NORMAL",
+                        "current_value": "Running"
+                    },
+                    {
+                        "name": "veth24fab08",
+                        "level": "NORMAL",
+                        "current_value": "Running"
+                    },
+                    {
+                        "name": "vethf0fd758",
+                        "level": "NORMAL",
+                        "current_value": "Running"
+                    },
+                    {
+                        "name": "vethfb6c608",
+                        "level": "NORMAL",
+                        "current_value": "Running"
+                    }
+                ],
+                "license_status": {
+                    "name": "",
+                    "level": "NORMAL",
+                    "current_value": "VALID"
+                },
+                "services": []
+            }
+        }
+    ]
+}

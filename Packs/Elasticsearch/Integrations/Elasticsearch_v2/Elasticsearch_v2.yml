@@ -52,7 +52,7 @@ configuration:
   required: false
   type: 15
 - display: Map JSON fields into labels
-  defaultvalue: true
+  defaultvalue: 'true'
   name: map_labels
   required: false
   type: 8

@@ -1,5 +1,4 @@
 An integration for Netcraft, allowing you to open and handle takedown requests.
-This integration was integrated and tested with version xx of Netcraft
 
 ## Configure Netcraft on Cortex XSOAR
 

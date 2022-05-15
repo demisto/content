@@ -48,6 +48,31 @@ run-validations:
   rules:
     - if: '$NIGHTLY'
 
+# runs in gitlab for the on-push flow, on every new commit pushed to the branch.
+validate-content-conf:
+  stage: unittests-and-validations
+  needs: []
+  extends:
+    - .default-job-settings
+  rules:
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push)$/ && $CI_COMMIT_BRANCH !~ /^[0-9]{2}\.[0-9]{1,2}\.[0-9]$/'
+  script:
+    - section_start "Validate content-test-conf Branch Merged"
+    - |
+      if [[ $CI_COMMIT_BRANCH = "master" ]]; then
+        echo "Skipping, Should not run on master branch."
+      else
+        # replace slashes ('/') in the branch name, if exist, with underscores ('_')
+        UNDERSCORE_CI_BRANCH=${CI_COMMIT_BRANCH//\//_}
+        RESP=$(curl --location --request GET "https://code.pan.run/api/v4/projects/3734/repository/branches?search=$UNDERSCORE_CI_BRANCH" --header "PRIVATE-TOKEN: $GITLAB_API_READ_TOKEN") # disable-secrets-detection
+        if [ "$RESP" != "[]" ]; then
+            echo "Found a branch with the same name in contest-test-conf- $UNDERSCORE_CI_BRANCH."
+            echo "Merge it in order to merge the current branch into content repo."
+            exit 1
+        fi
+            echo "No branch with the name *$UNDERSCORE_CI_BRANCH* were found in contest-test-conf repo."
+      fi
+    - section_end "Validate content-tesgt-conf Branch Merged"
 
 create-instances:
   tags:
@@ -87,7 +112,7 @@ create-instances:
         echo "Skipping - not running in INSTANCE_TESTS build"
       else
         [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
-        python3 ./Tests/scripts/collect_tests_and_content_packs.py -n $IS_NIGHTLY --marketplace "xsoar"
+        python3 ./Tests/scripts/collect_tests_and_content_packs.py -n $IS_NIGHTLY --marketplace "xsoar" --service_account $GCS_MARKET_KEY
       fi
     - section_end "Collect Tests and Content Packs"
 
@@ -144,7 +169,7 @@ prepare-testing-bucket-mpv2:
     - section_start "Collect Tests and Content Packs"
     - |
       [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
-      python3 ./Tests/scripts/collect_tests_and_content_packs.py -n $IS_NIGHTLY --marketplace "marketplacev2"
+      python3 ./Tests/scripts/collect_tests_and_content_packs.py -n $IS_NIGHTLY --marketplace "marketplacev2" --service_account $GCS_MARKET_KEY
     - section_end "Collect Tests and Content Packs"
 
     - section_start "Prepare Content Packs for Testing"

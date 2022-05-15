@@ -19,6 +19,9 @@
 /Utils/trigger_test_upload_flow.sh @Noy-Maimon
 /Utils/trigger_upload_packs_to_production.sh @Noy-Maimon
 
+# Test Collection
+/Tests/scripts/collect_tests_and_content_packs.py @dorschw
+
 # PANW Products
 /Packs/PaloAltoNetworksIoT/Integrations/* @bakatzir
 /Packs/PaloAltoNetworksIoT3rdParty/Integrations/* @bakatzir
@@ -40,8 +43,7 @@
 /Packs/Active_Directory_Query/Integrations/Active_Directory_Query/* @demisto/content-leaders
 /Packs/VirusTotal/Integrations/integration-VirusTotal_5.5.yml @demisto/content-leaders
 /Packs/VirusTotal/* @jochman
-/Packs/ContentManagement/* @ChanochShayner
-/Packs/MISP/* @abaumgarten
+/Packs/ContentManagement/* @adi88d
 
 # Important Scripts
 /Packs/CommonScripts/Scripts/SetGridField/* @yaakovi @David-BMS @altmannyarden

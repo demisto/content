@@ -24,7 +24,10 @@ GET_REPORT_SUMMARY_CONTEXT = {
          'Signature': {'Authentihash': '', 'Copyright': 'Microsoft Corporation. All rights reserved.',
                        'Description': 'Microsoft Smartcard Certificate Propagation Service',
                        'FileVersion': '10.0.19041.844 (WinBuild.160101.0800)', 'InternalName': 'certprop.dll',
-                       'OriginalName': 'certprop.dll'}}],
+                       'OriginalName': 'certprop.dll'},
+         'Hashes': [{'type': 'SHA256', 'value': 'sha256'}]
+         }
+    ],
     'DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)': [
         {'Indicator': 'sha256', 'Type': 'file', 'Vendor': '', 'Score': 2, 'Reliability': 'B - Usually reliable'}],
     'csfalconx.resource(val.id && val.id == obj.id)': {
