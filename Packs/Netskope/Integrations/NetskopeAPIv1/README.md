@@ -434,7 +434,7 @@ Take an action on a quarantined file.
 
 There is no context output for this command.
 
-### Command example
+#### Command example
 !netskope-quarantined-file-update file_id=1M_RR4jLPUwclKOhqZ7sPSqkMNS-S6Vyr quarantine_profile_id=1 action=block
 
 #### Human Readable Output
