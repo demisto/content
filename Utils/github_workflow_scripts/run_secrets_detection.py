@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import argparse
+import os
 import sys
 
 import requests
@@ -41,18 +42,25 @@ def trigger_generic_webhook(options):
     if res.status_code != 200:
         print(
             f"Secrets detection playbook was failed. Post request to Content Gold has status code of {res.status_code}")
-        sys.exit(1)
+        return
 
     res_json = res.json()
     if res_json and isinstance(res_json, list):
         res_json_response_data = res.json()[0]
         if res_json_response_data:
             investigation_id = res_json_response_data.get("id")
-            print(investigation_id)
+            write_id_to_env(investigation_id)
             return
 
     print("Secrets detection playbook has failed")
-    sys.exit(1)
+    return
+
+
+def write_id_to_env(investigation_id):
+    env_file = os.getenv('GITHUB_ENV')
+
+    with open(env_file, "a") as env_file:
+        env_file.write(f"INVESTIGATION_ID={investigation_id}")
 
 
 def main():
