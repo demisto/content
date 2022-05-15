@@ -1869,11 +1869,10 @@ class Pack(object):
                         })
 
                     elif current_directory == PackFolders.WIZARD.value:
-                        logging.info('Collected Wizard')  # TODO: remove this debug msg
                         folder_collected_items.append({
                             'id': content_item.get('id', ''),
                             'name': content_item.get('name', ''),
-                            'description': content_item.get('details', ''),
+                            'description': content_item.get('description', ''),
                             'dependency_packs': content_item.get('dependency_packs', {})
                         })
 
