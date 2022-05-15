@@ -27,8 +27,9 @@ After you successfully execute a command, a DBot message appears in the War Room
 Add a new user to the vault.
 
 To run this command, you must have the following permissions:
-- *Add Users*
-- *Update Users*
+
+* *Add Users*
+* *Update Users*
 
 #### Base Command
 
@@ -156,8 +157,9 @@ To run this command, you must have the following permissions:
 Update an existing vault user.
 
 To run this command, you must have the following permissions:
-- *Add Users* or *Update Users*
-- In order to edit *change_password_on_the_next_logon*, you must have the *Reset Password* authorization
+
+* *Add Users* or *Update Users*
+* In order to edit *change_password_on_the_next_logon*, you must have the *Reset Password* authorization
 
 
 #### Base Command
@@ -1215,8 +1217,9 @@ To run this command, you must have *Manage Safe Members* permission in the Safe.
 Add a new privileged account or SSH key to the vault.
 
 To run this command, you must have the following permissions in the Vault:
-- *Add Account*
-- *Update Password* or *Update Password Properties*
+
+* *Add Account*
+* *Update Password* or *Update Password Properties*
 
 #### Base Command
 
@@ -1341,9 +1344,10 @@ To run this command, you must have *Delete Accounts* permission in the Vault.
 Update the details of an existing account.
 
 To run this command, you must have the following permissions in the Safe:
-- For updating account properties: *Update Password Properties*.
-- For renaming accounts: *Rename Accounts*.
-- For moving accounts to a different folder: *Move Accounts* or *Move Folders*.
+
+* For updating account properties: *Update Password Properties*.
+* For renaming accounts: *Rename Accounts*.
+* For moving accounts to a different folder: *Move Accounts* or *Move Folders*.
 
 #### Base Command
 
@@ -1755,8 +1759,9 @@ There is no context output for this command.
 Mark an account for an immediate credentials change by the CPM to a new random value.
 
 To run this command, you must have the following permissions in the Safe where the privileged account is stored:
-- *Initiate CPM password management operations*
-- *Specify next password value*
+
+* *Initiate CPM password management operations*
+* *Specify next password value*
 
 #### Base Command
 
