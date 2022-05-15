@@ -22,7 +22,7 @@ requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 ''' CONSTANTS '''
 MAX_ALERTS_PAGE_SIZE = 10000
 ALERT_CREATION_TIME = 'alertCreationTime'
-DEFNDER_DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'  # ISO8601 format with UTC, default in XSOAR
+DEFNDER_DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
 SECURITY_SCOPE = 'https://securitycenter.onmicrosoft.com/windowsatpservice/.default'
 AUTH_ERROR_MSG = 'Authorization Error: make sure tenant id, client id and client secret is correctly set'
 
@@ -207,6 +207,7 @@ class DefenderAuthenticator(BaseModel):
                     verify=self.verify,
                     self_deployed=True
                 )
+
             token = self.ms_client.get_access_token()
             auth = {'Authorization': f'Bearer {token}'}
             if request.headers:
@@ -214,7 +215,7 @@ class DefenderAuthenticator(BaseModel):
             else:
                 request.headers = auth  # type: ignore[assignment]
 
-            demisto.debug('init the ms client - succeded')
+            demisto.debug('getting access token for Defender Authenticator - succeeded')
 
         except BaseException:
             # catch BaseException to catch also sys.exit via return_error
@@ -223,9 +224,8 @@ class DefenderAuthenticator(BaseModel):
 
 
 class DefenderHTTPRequest(IntegrationHTTPRequest):
-    params: dict = {}
+    params: dict = dict()
     method: Method = Method.GET
-    url: AnyUrl
 
     _normalize_url = validator('url', pre=True, allow_reuse=True)(
         lambda base_url: base_url + '/api/alerts'
@@ -245,27 +245,32 @@ class DefenderClient(IntegrationEventsClient):
     def set_request_filter(self, after: Any):
         limit = min(self.options.limit, MAX_ALERTS_PAGE_SIZE)
         if not after:
+            demisto.debug(f'lastRunObj is empty, calculate the first fetch time according {self.options.first_fetch=}')
             first_fetch_date = dateparser.parse(self.options.first_fetch, settings={'TIMEZONE': 'UTC'})
             after = datetime.strftime(first_fetch_date, DEFNDER_DATE_FORMAT)  # type: ignore[arg-type]
         self.request.params = {
             '$filter': f'{ALERT_CREATION_TIME}+gt+{after}',
-            '$orderby': f'{ALERT_CREATION_TIME} asc',
+            '$orderby': f'{ALERT_CREATION_TIME}+asc',
             '$top': limit,
         }
+        demisto.debug(f'setting the request filter to be: {self.request.params}')
 
     def authenticate(self):
         self.authenticator.set_authorization(self.request)
-        demisto.debug('authentication succeded')
 
 
 class DefenderGetEvents(IntegrationGetEvents):
     client: DefenderClient
 
     def _iter_events(self):
+
         self.client.authenticate()
         self.client.set_request_filter(demisto.getLastRun() and demisto.getLastRun().get('after'))
+
         response = self.client.call(self.client.request)
         value = response.json().get('value', [])
+
+        demisto.debug(f'getting {len(value)} alerts from Defender Api')
         return [value]
 
     @staticmethod
@@ -315,8 +320,9 @@ def main(command: str, demisto_params: dict):
 
         options = DefenderIntegrationOptions.parse_obj(demisto_params)
         request = DefenderHTTPRequest.parse_obj(demisto_params)
+        authenticator = DefenderAuthenticator.parse_obj(demisto_params)
 
-        clinet = DefenderClient(request=request, options=options, authenticator=DefenderAuthenticator.parse_obj(demisto_params))
+        clinet = DefenderClient(request=request, options=options, authenticator=authenticator)
         get_events = DefenderGetEvents(client=clinet, options=options)
 
         if command == 'test-module':
@@ -330,6 +336,7 @@ def main(command: str, demisto_params: dict):
                 return_results(CommandResults('Microsoft365Defender.alerts', 'id', events, readable_output=human_readable))
             if events:
                 # publishing events to XSIAM
+                demisto.debug(f'{command=}, publishing events to XSIAM')
                 demisto.setLastRun(get_events.get_last_run(events))
                 demisto.debug(f'Last run set to {demisto.getLastRun()}')
                 send_events_to_xsiam(events, vendor='Microsoft', product='Defender 365')

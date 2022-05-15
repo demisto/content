@@ -14,7 +14,6 @@ configuration:
   required: true
   type: 0
 - additionalinfo: The Client (Application) ID to use to connect.
-  defaultvalue: 9093c354-630a-47f1-b087-6768eb9427e6
   display: Client (Application) ID
   name: client_id
   required: true
