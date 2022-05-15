@@ -20,8 +20,6 @@ class Claims(BaseModel):
     sub: str = Field(alias='id', description='user id or enterprise id')
     box_sub_type = 'enterprise'
     aud: AnyUrl
-
-     
     jti: str = secrets.token_hex(64)
     exp: int = round(time.time()) + 45
 
@@ -76,7 +74,7 @@ class BoxEventsParams(BaseModel):
         validate_assignment = True
 
 
-class BoxEventsRequest(IntegrationHTTPRequest):
+class BoxEventsRequestConfig(IntegrationHTTPRequest):
     # Endpoint: https://developer.box.com/reference/get-events/
     url = parse_obj_as(AnyUrl, 'https://api.box.com/2.0/events')
     method = Method.GET
@@ -84,12 +82,13 @@ class BoxEventsRequest(IntegrationHTTPRequest):
 
 
 class BoxEventsClient(IntegrationEventsClient):
-    request: BoxEventsRequest
+    request: BoxEventsRequestConfig
     options: IntegrationOptions
     authorization_url = parse_obj_as(AnyUrl, 'https://api.box.com/oauth2/token')
+
     def __init__(
         self,
-        request: BoxEventsRequest,
+        request: BoxEventsRequestConfig,
         options: IntegrationOptions,
         box_credentials: BoxCredentials,
         session: Optional[requests.Session] = None,
@@ -141,7 +140,7 @@ class BoxEventsClient(IntegrationEventsClient):
         return body
 
 
-class BoxGetEvents(IntegrationGetEvents):
+class BoxEventsGetter(IntegrationGetEvents):
     client: BoxEventsClient
 
     def get_last_run(self: Any) -> dict:  # type: ignore
@@ -197,13 +196,13 @@ def main(command: str, demisto_params: dict):
     box_credentials = BoxCredentials.parse_raw(
         demisto_params['credentials_json']['password']
     )
-    request = BoxEventsRequest(
+    request = BoxEventsRequestConfig(
         params=BoxEventsParams.parse_obj(demisto_params),
         **demisto_params,
     )
     options = IntegrationOptions.parse_obj(demisto_params)
     client = BoxEventsClient(request, options, box_credentials)
-    get_events = BoxGetEvents(client, options)
+    get_events = BoxEventsGetter(client, options)
     if command == 'test-module':
         get_events.client.request.params.limit = 1
         get_events.run()
