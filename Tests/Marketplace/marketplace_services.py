@@ -639,7 +639,7 @@ class Pack(object):
             Metadata.USE_CASES: self._use_cases,
             Metadata.KEY_WORDS: self._keywords,
             Metadata.DEPENDENCIES: self._parsed_dependencies,
-            Metadata.VIDEOS: self.user_metadata.get(Metadata.VIDEOS, ''),
+            Metadata.VIDEOS: self.user_metadata.get(Metadata.VIDEOS) or [],
         }
 
         if self._is_private_pack:

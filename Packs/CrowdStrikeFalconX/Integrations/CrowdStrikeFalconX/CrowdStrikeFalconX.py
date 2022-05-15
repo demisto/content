@@ -1121,7 +1121,7 @@ def find_sandbox_reports_command(
                 if total_count > len(report_ids):
                     demisto.info(f'Warning: there are {total_count} reports, but only {len(report_ids)} were fetched.')
             else:
-                found_reports.append({'sha256': single_hash, 'reportIds': 'Not found'})
+                found_reports.append({'sha256': single_hash, 'reportIds': []})
 
         outputs = {
             'resources': all_report_ids,
