@@ -123,3 +123,29 @@ def test_generic_command_no_content(requests_mock, client):
     }
     res = generic_command(client, args)
     assert res
+
+
+@pytest.mark.parametrize('params', [
+    {'app_id': 'app_id', 'tenant_id': 'tenant_id', 'credentials': {'password': 'password'}},
+    {'app_id': 'app_id', 'tenant_id': 'tenant_id', 'app_secret': 'password'}
+])
+def test_test_module(mocker, params):
+    """
+    Given:
+        - Parameter credentials instead of the app_secret (in self-deployed mode).
+    When:
+        - Running the test-module command.
+    Then:
+        - Ensure the command doesn't fails on ValueError (as for device-flow mode).
+    """
+    from MicrosoftGraphAPI import demisto, main, MicrosoftClient
+
+    mocker.patch.object(demisto, 'command', return_value='test-module')
+    mocker.patch.object(demisto, 'params', return_value=params)
+    mocker.patch.object(MicrosoftClient, 'get_access_token')
+    mocker.patch.object(demisto, 'results')
+
+    main()
+
+    result = demisto.results.call_args[0][0]
+    assert result == 'ok'
