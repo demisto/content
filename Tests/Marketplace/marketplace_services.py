@@ -1580,7 +1580,6 @@ class Pack(object):
             dict: Parsed content items
             .
         """
-        logging.info('Starting to collect content items')
         task_status = False
         content_items_result: dict = {}
 
