@@ -14,7 +14,7 @@ configuration:
   required: true
 - display: First event ID to fetch from
   name: first_fetch_id
-  defaultvalue: "0"
+  defaultvalue: '0'
   type: 0
   required: false
 - display: Fetch incidents
@@ -23,7 +23,7 @@ configuration:
   required: false
 - display: Incidents Fetch Interval
   name: incidentFetchInterval
-  defaultvalue: "1"
+  defaultvalue: '1'
   type: 19
   required: false
 - display: Incident type
@@ -317,13 +317,7 @@ script:
     - contextPath: DeepInstinct.Suspicious-Events.events.path
       description: event file path
       type: unknown
-  - arguments:
-    - default: false
-      description: Get all groups
-      isArray: false
-      required: false
-      secret: false
-    deprecated: false
+  - deprecated: false
     name: deepinstinct-get-all-groups
     outputs:
     - contextPath: DeepInstinct.Groups.ID
@@ -345,13 +339,7 @@ script:
       description: group policy ID
       type: number
     description: Get all groups
-  - arguments:
-    - default: false
-      description: Get All policies
-      isArray: false
-      required: false
-      secret: false
-    deprecated: false
+  - deprecated: false
     name: deepinstinct-get-all-policies
     outputs:
     - contextPath: DeepInstinct.Policies.ID
@@ -387,9 +375,9 @@ script:
       required: true
       secret: false
     - default: false
-      decription: Optional, add comment
       isArray: false
       name: comment
+      description: comment to hash field
       required: false
       secret: false
     deprecated: false
@@ -409,9 +397,9 @@ script:
       required: true
       secret: false
     - default: false
-      decription: Optional, add comment
       isArray: false
       name: comment
+      description: comment to hash field
       required: false
       secret: false
     deprecated: false
@@ -478,7 +466,6 @@ script:
       name: device_ids
       required: true
       secret: false
-    depecrated: false
     description: Remove list of devices from groups
     name: deepinstinct-remove-devices-from-group
   - arguments:
@@ -512,7 +499,7 @@ script:
     description: Close list of events
     name: deepinstinct-close-events
   - arguments:
-    - default: no
+    - default: false
       description: single device id
       isArray: false
       name: device_id
@@ -522,7 +509,7 @@ script:
     description: Disable device at next check-in
     name: deepinstinct-disable-device
   - arguments:
-    - default: no
+    - default: false
       description: single device id
       isArray: false
       name: device_id
@@ -532,7 +519,7 @@ script:
     description: Enable device at next check-in
     name: deepinstinct-enable-device
   - arguments:
-    - default: no
+    - default: false
       description: comma separated list of device ids
       isArray: false
       name: device_ids
@@ -542,7 +529,7 @@ script:
     description: Isolate device(s) from Network
     name: deepinstinct-isolate-from-network
   - arguments:
-    - default: no
+    - default: false
       description: comma separated list of device ids
       isArray: false
       name: device_ids
@@ -552,7 +539,7 @@ script:
     description: Release device(s) from isolation
     name: deepinstinct-release-from-isolation
   - arguments:
-    - default: no
+    - default: false
       isArray: false
       name: event_id
       required: true
@@ -561,7 +548,7 @@ script:
     description: Upload file associated with given event id at next check-in
     name: deepinstinct-remote-file-upload
   - arguments:
-    - default: no
+    - default: false
       isArray: false
       name: device_id
       required: true
@@ -570,7 +557,7 @@ script:
     description: Upload device logs from given device at next check-in
     name: deepinstinct-upload-logs
   - arguments:
-    - default: no
+    - default: false
       isArray: false
       name: device_id
       required: true
@@ -584,4 +571,6 @@ script:
   script: '-'
   type: python
   subtype: python3
-  sourcemoduleid: DeepInstinct
+fromversion: 6.2.0
+tests:
+- No tests (auto formatted)

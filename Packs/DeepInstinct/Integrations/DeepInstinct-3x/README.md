@@ -417,8 +417,7 @@ get all groups
 `deepinstinct-get-all-groups`
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
+There are no input arguments for this command.
 
 
 ##### Context Output
@@ -524,8 +523,7 @@ get all policies
 `deepinstinct-get-all-policies`
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
+There are no input arguments for this command.
 
 
 ##### Context Output
