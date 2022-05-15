@@ -1,7 +1,7 @@
 import os
-from demisto_sdk.commands.common.constants import FileType
-
 from pathlib import Path
+
+from demisto_sdk.commands.common.constants import FileType
 
 MASTER = 'master'  # todo use
 CONTENT_PATH = Path(__file__).absolute().parents[3]
@@ -16,4 +16,9 @@ XSOAR_SANITY_TEST_NAMES = (
     'Sanity Test - Playbook with no integration',
     'Sanity Test - Playbook with mocked integration',
     'Sanity Test - Playbook with Unmockable Integration',
+)
+DEFAULT_REPUTATION_TESTS = (
+    'FormattingPerformance - Test',
+    'reputations.json Test',
+    'Indicators reputation-.json Test'
 )
