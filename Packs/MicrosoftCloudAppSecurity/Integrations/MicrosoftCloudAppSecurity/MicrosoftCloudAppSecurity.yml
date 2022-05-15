@@ -71,6 +71,13 @@ configuration:
   name: custom_filter
   required: false
   type: 0
+- defaultvalue: 0
+  display: 'Advanced: Minutes to look back when fetching'
+  additionalinfo: Use this parameter to determine how long backward to look in the search for incidents
+    that were created before the last run time and did not match the query when they were created.
+  name: look_back
+  required: false
+  type: 0
 description: Microsoft Cloud App Security is a multimode Cloud Access Security Broker
   (CASB). It provides rich visibility, control over data travel, and sophisticated
   analytics to identify and combat cyber threats across all your cloud services. Use
