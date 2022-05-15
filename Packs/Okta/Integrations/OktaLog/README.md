@@ -8,13 +8,11 @@ Log collecting from Okta
 
 | **Parameter**             | **Description** | **Required** |
 |---------------------------| --- |--------------|
-| url                       | Okta URL (https://yourdomain.okta.com) | True         |
-| events_to_add_per_request | Cortex XSIAM update limit per request | False        |
-| limit                     | API request limit | True         |
+| Server URL                       | Okta URL (https://yourdomain.okta.com) | True         |
+| Api request limit                     | The amount of items to retrieve from Okta's API per request (a number between 1 and 1000) | False        |
 | proxy                     | Use system proxy settings | False        |
-| method                    | HTTP Method | True         |
-| headers                   | Headers | True         |
-| encrypted_headers         | Encrypted headers | True         |
+| API key                   | The request API key | True         |
+| First fetch time interval                   | The period (in days) to retrieve events from, if no time is saved in the system | True         |
 
 
 4. Click **Test** to validate the URLs, token, and connection.
