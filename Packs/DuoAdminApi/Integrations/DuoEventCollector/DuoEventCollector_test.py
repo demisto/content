@@ -1,63 +1,28 @@
-from DuoEventCollector import Client, GetEvents, LogType
+from DuoEventCollector import Client, GetEvents, LogType, Params
 import pytest
 
-client = Client({})
-get_events = GetEvents(client)
-id1 = {'uuid': 'a5b57ec5febb'}
-id2 = {'uuid': 'a5b57ec5fecc'}
-id3 = {'uuid': 'a12f3c5d77f3'}
-id4 = {'uuid': 'a12f3c5dxxxx'}
-
-
-class MockResponse:
-    def __init__(self, data):
-        self.data = data
-
-    def json(self):
-        return self.data
+demisto_params = {'after': '1 month', 'host': 'api-a1fdb00d.duosecurity.com', 'integration_key': 'DI47EXXXXXXXWRYV2',
+                  'limit': '5', 'proxy': False, 'retries': '5', 'secret_key': {'password': 'YK6mtSzXXXXXXXXXXX',
+                                                                               'passwordChanged': False}}
+demisto_params['params'] = Params(**demisto_params, mintime={})
+client = Client(demisto_params)
+get_events = GetEvents(client=client, request_order=[LogType.AUTHENTICATION, LogType.ADMINISTRATION, LogType.TELEPHONY])
+id1 = {'username': 'a', 'eventtype': 'a', 'timestamp': 'a'}
+id2 = {'username': 'b', 'eventtype': 'b', 'timestamp': 'b'}
+id3 = {'username': 'c', 'eventtype': 'c', 'timestamp': 'c'}
 
 
 @pytest.mark.parametrize("events,ids,result", [
-    ([id1, id2, id3], ['a12f3c5d77f3'], [id1, id2]),
-    ([id1, id2, id3], ['a12f3c5dxxxx'], [id1, id2, id3]),
-    ([], ['a12f3c5d77f3'], []),
-    ([{'uuid': 0}, {'uuid': 1}, {'uuid': 2}, {'uuid': 3}, {'uuid': 4}, {'uuid': 5}, {'uuid': 6}, {'uuid': 7},
-      {'uuid': 8}, {'uuid': 9}], [0, 4, 7, 9],
-     [{'uuid': 1}, {'uuid': 2}, {'uuid': 3}, {'uuid': 5}, {'uuid': 6}, {'uuid': 8}])])
+    ([id1, id2, id3], ['aaa'], [id2, id3]),
+    ([id1, id2, id3], ['ddd'], [id1, id2, id3]),
+    ([], ['aaa'], [])])
 def test_remove_duplicates(events, ids, result):
-    # assert get_events.remove_duplicates(events, ids) == result
-    assert 1 == 1
+    assert get_events.remove_duplicates(events, ids) == result
 
 
-# @pytest.mark.parametrize("events,result", [
-#     ([{'published': '2022-04-17T12:31:36.667',
-#        'uuid': '1d0844b6-3148-11ec-9027-a5b57ec5faaa'},
-#       {'published': '2022-04-17T12:32:36.667',
-#        'uuid': '1d0844b6-3148-11ec-9027-a5b57ec5fbbb'},
-#       {'published': '2022-04-17T12:33:36.667',
-#        'uuid': '1d0844b6-3148-11ec-9027-a5b57ec5fccc'}],
-#      {'after': '2022-04-17T12:33:36.667000', 'ids': ['1d0844b6-3148-11ec-9027-a5b57ec5fccc']}),
-#     ([{'published': '2022-04-17T12:31:36.667',
-#        'uuid': '1d0844b6-3148-11ec-9027-a5b57ec5faaa'},
-#       {'published': '2022-04-17T12:32:36.667',
-#        'uuid': '1d0844b6-3148-11ec-9027-a5b57ec5fbbb'},
-#       {'published': '2022-04-17T12:32:36.667',
-#        'uuid': '1d0844b6-3148-11ec-9027-a5b57ec5fccc'}], {'after': '2022-04-17T12:32:36.667000',
-#                                                           'ids': ['1d0844b6-3148-11ec-9027-a5b57ec5fccc',
-#                                                                   '1d0844b6-3148-11ec-9027-a5b57ec5fbbb']})])
-# def test_get_last_run(events, result):
-#     assert get_events.get_last_run(events) == result
-#
-#
-# @pytest.mark.parametrize("time", ['2022-04-17T12:32:36.667)'])
-# def test_set_since_value(time):
-#     req_params.set_since_value(time)
-#     assert req_params.since == time
-#
-#
-# def test_make_api_call(mocker):
-#     mock_res = MockResponse([{1}, {1}, {1}, {1}, {1}])
-#     mocker.patch.object(client, 'call', return_value=mock_res)
-#     assert get_events.make_api_call() == [{1}, {1}, {1}, {1}, {1}]
-#     mock_res.data = [{1}, {1}, {1}, {1}, {1}, {1}, {1}, {1}, {1}, {1}]
-#     assert get_events.make_api_call() == [{1}, {1}, {1}, {1}, {1}, {1}, {1}, {1}, {1}, {1}]
+def test_rotate_request_order():
+    get_events.rotate_request_order()
+    assert get_events.request_order == [LogType.ADMINISTRATION, LogType.TELEPHONY, LogType.AUTHENTICATION]
+    get_events.rotate_request_order()
+    get_events.rotate_request_order()
+    assert get_events.request_order == [LogType.AUTHENTICATION, LogType.ADMINISTRATION, LogType.TELEPHONY]
