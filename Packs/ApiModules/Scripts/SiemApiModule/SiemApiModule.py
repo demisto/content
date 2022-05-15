@@ -74,7 +74,7 @@ def set_authorization(request: IntegrationHTTPRequest, auth_credendtials):
 class IntegrationOptions(BaseModel):
     """Add here any option you need to add to the logic"""
 
-    proxy: bool = False
+    proxy: Optional[bool] = False
     limit: Optional[int] = Field(None, ge=1)
 
 

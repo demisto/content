@@ -1831,10 +1831,6 @@
             "playbookID": "remedy_sr_test_pb"
         },
         {
-            "integrations": "Netskope",
-            "playbookID": "Netskope Test"
-        },
-        {
             "integrations": "Cylance Protect v2",
             "playbookID": "Cylance Protect v2 Test"
         },
@@ -5056,6 +5052,10 @@
             "playbookID": "IPToHost - Test"
         },
         {
+            "playbookID": "NetskopeAPIv1 Test",
+            "integrations": "NetskopeAPIv1"
+        },
+        {
             "playbookID": "Grafana-Test",
             "fromversion": "6.0.0",
             "integrations": [
@@ -5310,6 +5310,7 @@
         "Atlassian Confluence Cloud": "No instance - developed by Crest",
         "SOCRadarIncidents": "No instance - developed by partner",
         "SOCRadarThreatFusion": "No instance - developed by partner",
+        "NetskopeAPIv1": "No instance - developed by Qmasters",
         "trustwave secure email gateway": "No instance - developed by Qmasters",
         "Azure Storage Table": "No instance - developed by Qmasters",
         "Azure Storage Queue": "No instance - developed by Qmasters",
@@ -5357,7 +5358,6 @@
         "ArcSight ESM v2": "Issue #18328",
         "AlienVault USM Anywhere": "Issue #18273",
         "Dell Secureworks": "No instance",
-        "Netskope": "instance is down",
         "Service Manager": "Expired license",
         "carbonblackprotection": "License expired",
         "icebrg": "Issue 14312",
