@@ -6,7 +6,7 @@ authors = ["Cortex XSOAR"]
 license = "MIT"
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.8,<3.11"
 blessings = "^1.7"
 coloredlogs = "^15.0.1"
 demisto_py = "^3.1.5"
@@ -27,7 +27,7 @@ pytest = "^7.1.2"
 mock-open = "^1.4.0"
 python-gitlab = "^2.6.0"
 PyGithub = "^1.54.1"
-
+google-cloud-bigquery = "^3.1.0"
 
 [tool.poetry.dev-dependencies]
 
