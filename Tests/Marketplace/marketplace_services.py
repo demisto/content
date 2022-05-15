@@ -639,7 +639,7 @@ class Pack(object):
             Metadata.USE_CASES: self._use_cases,
             Metadata.KEY_WORDS: self._keywords,
             Metadata.DEPENDENCIES: self._parsed_dependencies,
-            Metadata.VIDEOS: self.user_metadata.get(Metadata.VIDEOS, ''),
+            Metadata.VIDEOS: self.user_metadata.get(Metadata.VIDEOS) or [],
         }
 
         if self._is_private_pack:
@@ -1611,6 +1611,7 @@ class Pack(object):
                 PackFolders.XSIAM_DASHBOARDS.value: "xsiamdashboard",
                 PackFolders.XSIAM_REPORTS.value: "xsiamreport",
                 PackFolders.TRIGGERS.value: "trigger",
+                PackFolders.WIZARDS.value: "wizard",
             }
 
             for root, pack_dirs, pack_files_names in os.walk(self._pack_path, topdown=False):
@@ -1865,6 +1866,17 @@ class Pack(object):
                             'name': content_item.get('trigger_name', ''),
                             'description': content_item.get('description', ''),
                         })
+
+                    elif current_directory == PackFolders.WIZARDS.value:
+                        folder_collected_items.append({
+                            'id': content_item.get('id', ''),
+                            'name': content_item.get('name', ''),
+                            'description': content_item.get('description', ''),
+                            'dependency_packs': content_item.get('dependency_packs', {})
+                        })
+
+                    else:
+                        logging.info(f'Failed to collect: {current_directory}')
 
                 if current_directory in PackFolders.pack_displayed_items():
                     content_item_key = content_item_name_mapping[current_directory]

@@ -233,6 +233,40 @@ Get the most recent incidents.
 
 
 
+### microsoft-365-defender-incident-get
+***
+Get incident with the given ID.
+
+
+#### Base Command
+
+`microsoft-365-defender-incident-get`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | Incident's ID. | Required | 
+| timeout | The time limit in seconds for the http request to run. Default value is 30| Optional |
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Microsoft365Defender.Incident.incidentId | Number | Incident's ID. | 
+| Microsoft365Defender.Incident.redirectIncidentId | Unknown | Only populated in case an incident is grouped together with another incident, as part of the incident processing logic. | 
+| Microsoft365Defender.Incident.incidentName | String | The name of the incident. | 
+| Microsoft365Defender.Incident.createdTime | Date | The date and time \(in UTC\) the incident was created. | 
+| Microsoft365Defender.Incident.lastUpdateTime | Date | The date and time \(in UTC\) the incident was last updated. | 
+| Microsoft365Defender.Incident.assignedTo | String | Owner of the incident. | 
+| Microsoft365Defender.Incident.classification | String | Specification of the incident. Possible values are: Unknown, FalsePositive, and TruePositive. | 
+| Microsoft365Defender.Incident.determination | String | The determination of the incident. Possible values are: NotAvailable, Apt, Malware, SecurityPersonnel, SecurityTesting, UnwantedSoftware, and Other. | 
+| Microsoft365Defender.Incident.status | String | The current status of the incident. Possible values are: Active, Resolved, and Redirected. | 
+| Microsoft365Defender.Incident.severity | String | Severity of the incident. Possible values are: UnSpecified, Informational, Low, Medium, and High. | 
+| Microsoft365Defender.Incident.alerts | Unknown | List of alerts relevant for the incidents. | 
+
+
+
 ### microsoft-365-defender-incident-update
 ***
 Update the incident with the given ID.
