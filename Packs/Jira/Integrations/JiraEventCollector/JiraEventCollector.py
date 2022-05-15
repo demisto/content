@@ -6,7 +6,7 @@ from pydantic import BaseConfig, BaseModel, AnyUrl, Json, Field  # pylint: disab
 import requests
 from requests.auth import HTTPBasicAuth
 import dateparser
-from datetime import datetime
+from datetime import datetime, timedelta
 
 urllib3.disable_warnings()
 
@@ -152,8 +152,9 @@ class GetEvents:
         last_run = demisto.getLastRun()
 
         if not last_run.get('next_time'):
-            last_time = log.get('created', '').removesuffix('+0000')
-            next_time = last_time[:-1] + str(int(last_time[-1]) + 1)
+            last_datetime = log.get('created', '').removesuffix('+0000')
+            last_datetime_with_delta = datetime.strptime(last_datetime, DATETIME_FORMAT) + timedelta(milliseconds=1)
+            next_time = datetime.strftime(last_datetime_with_delta, DATETIME_FORMAT)
 
             if last_run.get('offset'):
                 last_run['next_time'] = next_time
