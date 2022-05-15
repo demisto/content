@@ -61,7 +61,7 @@ COMMIT = 'ds-test-collection'  # todo use arg
 class CollectionReason(Enum):
     # todo remove unused
     MARKETPLACE_VERSION_BY_VALUE = 'value of the test `marketplace` field'
-    SANITY_TESTS = 'sanity tests by marketplace value'  # todo this way (generic) or a reason per marketplace, which also explains where the tests are taken from?
+    SANITY_TESTS = 'sanity tests by marketplace value'
     PACK_MATCHES_INTEGRATION = 'pack added as the integration is used in a playbook'
     PACK_MATCHES_TEST = 'pack added as the test playbook was collected earlier'
     NIGHTLY_ALL_TESTS__ID_SET = 'collecting all id_set test playbooks for nightly'
@@ -85,7 +85,7 @@ CollectionLog = NamedTuple(
         ('description', str),
     )
 )
-collection_log: list[CollectionLog] = []  # todo main?
+collection_log: list[CollectionLog] = []
 
 
 class DictBased:
@@ -169,22 +169,16 @@ class ContentItem(DictFileBased):
         self.deprecated = self.get('deprecated', warn_if_missing=False)
 
     @property
-    def id_(self):  # property as pack_metadata (for examaple) doesn't have this field
+    def id_(self):  # property as pack_metadata (for example) doesn't have this field
         return self['commonfields']['id'] if 'commonfields' in self.content else self['id']
 
     @property
     def pack_tuple(self) -> tuple[str]:
         return self.pack.name,
 
-    # @property # todo choose between property and attribute
-    # def id_(self) -> str:
-    #     if 'commonfields' in self.content:
-    #         return self['commonfields']['id']
-    #     return self['id']
-
     @property
     def name(self) -> str:
-        return self.get('name', default='')  # todo default? todo warn?
+        return self.get('name', default='', warn_if_missing=True)
 
     @property
     def tests(self):
@@ -226,7 +220,7 @@ class PackManager:
         if pack not in PackManager.pack_names:
             logger.error(f'inexistent pack {pack}')
             raise InexistentPackException(pack)
-        if pack in PackManager.skipped_packs:  # todo is necessary?
+        if pack in PackManager.skipped_packs:  # todo handle this and deprecated
             raise SkippedPackException(pack)
         if pack in self.deprecated_packs:
             raise DeprecatedPackException(pack)
@@ -248,7 +242,7 @@ def find_pack(path: Path) -> Path:
     return path.parents[len(path.parts) - (path.parts.index('Packs')) - 3]
 
 
-PACK_MANAGER = PackManager()  # todo main, global?
+PACK_MANAGER = PackManager()
 
 
 class Machine(Enum):
@@ -289,7 +283,8 @@ class IdSetItem(DictBased):
         self.pack: Optional[str] = self.get('pack', warn_if_missing=False)
 
         if 'pack' not in self.content:
-            logger.warning(f'content item with id={id_} and name={self.name} has no pack value')  # todo debug? info?
+            # todo fix in id_set
+            logger.error(f'content item with id={id_} and name={self.name} has no pack value in id_set')
 
         self.marketplaces: Optional[tuple[MarketplaceVersions]] = \
             tuple(MarketplaceVersions(v) for v in self.get('marketplaces', (), warn_if_missing=False)) or None
@@ -582,6 +577,7 @@ class TestCollector(ABC):
 
     @staticmethod
     def _collect_pack(name: str, reason: CollectionReason, reason_description: str) -> CollectedTests:
+        # todo decide whether we also want to collect all tests related to the pack (Dean)
         return CollectedTests(
             tests=None,
             packs=(name,),
@@ -626,6 +622,9 @@ class BranchTestCollector(TestCollector):
 
     def _collect_yml(self, content_item: Path) -> CollectedTests:
         yml = ContentItem(content_item.with_suffix('.yml'))
+        # todo handle yml-free python files
+        if not yml.path.exists():
+            raise FileNotFoundError(f'could not find yml matching {PackManager.relative_to_packs(content_item)}')
 
         match containing_folder := yml.path.parents[1].name:
             case 'Integrations':
@@ -653,7 +652,7 @@ class BranchTestCollector(TestCollector):
                         original_type: str = find_type_by_path(content_item).value
                         relative_path = str(PackManager.relative_to_packs(yml.path))
                         logger.warning(f'{original_type} {relative_path} '
-                                       f'has `No Tests` configured, and no tests in id_set')  # todo necessary?
+                                       f'has `No Tests` configured, and no tests in id_set')
             case _:
                 raise RuntimeError(f'Unexpected content type original_file_path {containing_folder} '
                                    f'(expected `Integrations`, `Scripts`, etc)')
@@ -681,7 +680,7 @@ class BranchTestCollector(TestCollector):
             case FileType.PACK_IGNORE | FileType.SECRET_IGNORE | FileType.DOC_FILE | FileType.README:
                 raise NothingToCollectException(path, f'ignored type ({file_type}')
 
-            case FileType.README | FileType.RELEASE_NOTES_CONFIG | FileType.RELEASE_NOTES | FileType.IMAGE | \
+            case FileType.RELEASE_NOTES_CONFIG | FileType.RELEASE_NOTES | FileType.IMAGE | \
                  FileType.DESCRIPTION | FileType.METADATA | \
                  FileType.RELEASE_NOTES_CONFIG | FileType.IMAGE | FileType.DESCRIPTION | FileType.INCIDENT_TYPE | \
                  FileType.INCIDENT_FIELD | FileType.INDICATOR_FIELD | FileType.LAYOUT | FileType.WIDGET | \
@@ -699,10 +698,7 @@ class BranchTestCollector(TestCollector):
 
             case FileType.PYTHON_FILE | FileType.POWERSHELL_FILE | FileType.JAVASCRIPT_FILE:
                 if path.name.endswith('Tests.ps1'):
-                    path = path.with_name(path.name.replace('.Tests.ps1', '.ps1'))  # todo ok?
-
-                # todo should this yml be created inside _collect_yml?
-                # todo what if yml not exists?
+                    path = path.with_name(path.name.replace('.Tests.ps1', '.ps1'))
                 return self._collect_yml(path)
 
             case FileType.TEST_PLAYBOOK:
@@ -710,26 +706,21 @@ class BranchTestCollector(TestCollector):
                     tests = test_id,
                     reason = CollectionReason.TEST_PLAYBOOK_CHANGED
                 else:
-                    raise  # todo wat
+                    raise
 
             case FileType.REPUTATION:  # todo reputationjson
                 raise NotImplementedError()  # todo
 
             case FileType.MAPPER | FileType.CLASSIFIER:
-                source: dict[str, str] = {
-                    FileType.MAPPER: self.conf.incoming_mapper_to_test,
-                    FileType.CLASSIFIER: self.conf.classifier_to_test,
-                }[file_type]
-
-                reason = {
-                    FileType.MAPPER: CollectionReason.MAPPER_CHANGED,
-                    FileType.CLASSIFIER: CollectionReason.CLASSIFIER_CHANGED,
+                source, reason = {
+                    FileType.MAPPER: (self.conf.incoming_mapper_to_test, CollectionReason.MAPPER_CHANGED),
+                    FileType.CLASSIFIER: (self.conf.classifier_to_test, CollectionReason.CLASSIFIER_CHANGED),
                 }[file_type]
 
                 if not (tests := source.get(content_item.id_)):
-                    tests = None  # replacing with None, so the pack is installed # todo shouldn't we take from id_set?
+                    tests = None  # replacing with None, so the pack is installed
                     reason = CollectionReason.NON_CODE_FILE_CHANGED
-                    reason_description = f'no specific tests for {relative_path} were found, using tests from id_set'
+                    reason_description = f'no specific tests for {relative_path} were found'
 
             case _:
                 if path.suffix == '.yml':
@@ -764,24 +755,23 @@ class NightlyTestCollector(TestCollector):
         return CollectedTests.union(collected)
 
     def _tests_matching_marketplace_value(self) -> CollectedTests:
-        marketplace_string = self.marketplace.value  # todo is necessary?
-        logger.info(f'collecting test playbooks by their marketplace field, searching for {marketplace_string}')
+        logger.info(f'collecting test playbooks by their marketplace field, searching for {self.marketplace.value}')
         tests = []
 
         for playbook in self.id_set.test_playbooks:
-            if marketplace_string in (playbook.marketplaces or ()) and playbook.tests:
+            if self.marketplace.value in (playbook.marketplaces or ()) and playbook.tests:
                 tests.extend(playbook.tests)
 
         return CollectedTests(tests=tests, packs=None, reason=CollectionReason.MARKETPLACE_VERSION_BY_VALUE,
-                              version_range=None, reason_description=f'({marketplace_string})')
+                              version_range=None, reason_description=f'({self.marketplace.value})')
 
     def _packs_matching_marketplace_value(self) -> CollectedTests:
-        # todo make sure we have a validation, that PACK_MANAGER.marketplaces includes a marketplace
-        marketplace_string = self.marketplace.value
         logger.info(
-            f'collecting pack_name_to_pack_metadata by their marketplace field, searching for {marketplace_string}')
-        packs = tuple(pack.name for pack in PACK_MANAGER if marketplace_string in pack.get('marketplaces', ()))
-        # todo what's the default behavior for a missing marketplace value?
+            f'collecting pack_name_to_pack_metadata by their marketplace field, searching for {self.marketplace.value}')
+        packs = tuple(
+            pack.name for pack in PACK_MANAGER if self.marketplace.value in
+            pack.get('marketplaces', (MarketplaceVersions.XSOAR.value,))
+        )
 
         return CollectedTests(tests=None, packs=packs, reason=CollectionReason.MARKETPLACE_VERSION_BY_VALUE,
                               version_range=None, reason_description=f'({marketplace_string})')
