@@ -905,13 +905,14 @@ def mirrorInvestigation(id, mirrorType, autoClose=False):
     return ""
 
 
-def updateModuleHealth(message, is_error=False):
+def updateModuleHealth(data, is_error=False):
     """(Integration only)
     Updated integration module health with given message
 
     Args:
-      message (str): The message to display in the integration module health
-      is_error (bool): Whether or not to display it as an error message in the fetch history
+      data (Union[str, dict]): Either the message to display in the integration module health,
+        or a dictionary containing the "eventsPulled" field (number).
+      is_error (bool): Whether or not to display it as an error message in the fetch history.
 
     Returns:
       None: No data returned
