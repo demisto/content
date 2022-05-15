@@ -598,7 +598,54 @@ script:
     name: trendmicro-visionone-check-task-status
     polling: true
     description: Command gives the status of the running task based on the action id.
-  dockerimage: demisto/python3:3.10.1.25933
+  - arguments:
+    - description: ID of the workbench you would like to attach the note to.
+      name: workbench_id
+      required: true
+    - description: Contents of the note to be attached
+      name: content
+      required: true
+    outputs:
+    - contextPath: VisionOne.Add_Note.Workbench_Id
+      description: The ID of the workbench that the note was added to.
+      type: string
+    - contextPath: VisionOne.Add_Note.Note_Id
+      description: The ID of the note that was added.
+      type: string
+    - contextPath: VisionOne.Add_Note.Response_Code
+      description: The response code from the command
+      type: string
+    - contextPath: VisionOne.Add_Note.Response_Msg
+      description: The response message from the commandß
+      type: string
+    description: Attaches a note to a workbench alert
+    name: trendmicro-visionone-add-note
+  - arguments:
+    - description: ID of the workbench you would like to update the status for.
+      name: workbench_id
+      required: true
+    - description: Status to assign to the workbench alert
+      name: status
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - new
+      - in_progress
+      - resolved_true_positive
+      - resolved_false_positive
+    outputs:
+    - contextPath: VisionOne.Update_Status.Workbench_Id
+      description: The ID of the workbench that had the status updated.
+      type: string
+    - contextPath: VisionOne.Update_Status.Response_Code
+      description: The response code from the command
+      type: string
+    - contextPath: VisionOne.Update_Status.Response_Msg
+      description: The response message from the commandß
+      type: string
+    description: Updates the status of a workbench alert
+    name: trendmicro-visionone-update-status
+  dockerimage: demisto/python3:3.10.4.29342
   isFetchSamples: true
   isfetch: true
   runonce: false
