@@ -4864,7 +4864,7 @@ class Common(object):
                 'OperatingSystemRefs': self.operating_system_refs,
                 "Publications": self.publications,
                 "MITREID": self.mitre_id,
-                "Value" : self.value,
+                "Value": self.value,
                 "Tags": self.tags,
                 "Description": self.description
             }
