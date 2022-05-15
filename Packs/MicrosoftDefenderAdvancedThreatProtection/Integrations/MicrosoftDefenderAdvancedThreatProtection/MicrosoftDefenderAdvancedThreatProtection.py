@@ -4490,13 +4490,13 @@ def run_polling_command(client: MsClient, args: dict, cmd: str, action_func: Cal
     command_result = results_function(client, args)
     action_status = command_result.outputs.get("status")
     demisto.debug(f"action status is: {action_status}")
-    if len(command_result.outputs.get("commands", [])) > 0:
+    if command_result.outputs.get("commands", []):
         command_status = command_result.outputs.get("commands", [{}])[0].get("commandStatus")
     else:
         command_status = 'Completed' if action_status == "Succeeded" else None
     if action_status in ['Failed', 'Cancelled'] or command_status == 'Failed':
         error_msg = f"Command {action_status}."
-        if len(command_result.outputs.get("commands", [])) > 0:
+        if command_result.outputs.get("commands", []):
             error_msg += f'{command_result.outputs.get("commands", [{}])[0].get("errors")}'
         raise Exception(error_msg)
     elif command_status != 'Completed' or action_status == 'InProgress':
