@@ -40,10 +40,8 @@ If no time-range arguments are given, the search will filter only alerts from th
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| time-range-date-from | Start time for search in the following string format -  MM/DD/YYYY 
-  Should be provided along with time-range-date-to. If not both are provided, the time range will be set to the last 7 days and this argument will be ignored.| Optional | 
-| time-range-date-to | End time for search in the following format -  MM/DD/YYYY 
-  Should be provided along with time-range-date-from. If not both are provided, the time range will be set to the last 7 days and this argument will be ignored.| Optional | 
+| time-range-date-from | Start time for search in the following string format -  MM/DD/YYYY, Should be provided along with time-range-date-to. If not both are provided, the time range will be set to the last 7 days and this argument will be ignored.| Optional | 
+| time-range-date-to | End time for search in the following format -  MM/DD/YYYY, Should be provided along with time-range-date-from. If not both are provided, the time range will be set to the last 7 days and this argument will be ignored.| Optional | 
 | time-range-value | The amount of units to go back in time | Optional | 
 | time-range-unit | The search unit. login and epoch are only available if timeRangeValue is not provided. | Optional | 
 | policy-name | The policy name | Optional | 
