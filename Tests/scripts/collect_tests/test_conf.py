@@ -1,6 +1,7 @@
 from collections import defaultdict
 
-from Tests.scripts.collect_tests.constants import DEBUG_CONF_PATH  # todo remove
+from Tests.scripts.collect_tests.constants import \
+    DEBUG_CONF_PATH  # todo remove
 from Tests.scripts.collect_tests.utils import (DictBased, DictFileBased,
                                                to_tuple)
 

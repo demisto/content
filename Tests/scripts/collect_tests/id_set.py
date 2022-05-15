@@ -4,7 +4,8 @@ from typing import Iterable, Optional
 
 from demisto_sdk.commands.common.constants import MarketplaceVersions
 
-from Tests.scripts.collect_tests.constants import DEBUG_ID_SET_PATH  # todo remove
+from Tests.scripts.collect_tests.constants import \
+    DEBUG_ID_SET_PATH  # todo remove
 from Tests.scripts.collect_tests.utils import (DictBased, DictFileBased,
                                                PackManager)
 

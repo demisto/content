@@ -48,9 +48,8 @@ IGNORED_INFRASTRUCTURE_FILES = {  # todo check the list
     'tox.ini',
     'xsoar_content_logo.png',
 }
-
 IS_GITLAB = False  # todo replace
-
+PACK_MANAGER = PackManager()
 COMMIT = 'ds-test-collection'  # todo use arg
 
 
@@ -72,9 +71,6 @@ class CollectionReason(Enum):
     CLASSIFIER_CHANGED = 'classifier file changed, configured as classifier_id in test conf'
     EMPTY_UNION = 'no tests to union'
     DEFAULT_REPUTATION_TESTS = 'default reputation tests'
-
-
-PACK_MANAGER = PackManager()
 
 
 class CollectedTests:
@@ -148,7 +144,7 @@ class CollectedTests:
 
 class TestCollector(ABC):
     def __init__(self, marketplace: MarketplaceVersions):
-        self.marketplace = marketplace  # todo is this used anywhere but in passing to id_set?
+        self.marketplace = marketplace
         self.id_set = IdSet(marketplace)
         self.conf = TestConf()
         # todo FAILED_
