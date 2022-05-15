@@ -13,10 +13,15 @@ configuration:
   type: 4
   required: true
 - display: First event ID to fetch from
-  name: first_fetch_id
+  name: first_fetch
   defaultvalue: '0'
   type: 0
   required: false
+- name: max_fetch
+  display: Maximum number of indicators per fetch
+  required: false
+  type: 0
+  defaultvalue: '50'
 - display: Fetch incidents
   name: isFetch
   type: 8
@@ -266,7 +271,7 @@ script:
     - contextPath: DeepInstinct.Suspicious-Events.events.timestamp
       description: event timestamp from device
       type: string
-    - contextPath: DeepInstinct.Events.events.insertion_timestamp
+    - contextPath: DeepInstinct.Suspicious-Events.events.insertion_timestamp
       description: event timestamp from console
       type: string
     - contextPath: DeepInstinct.Suspicious-Events.events.status
@@ -544,12 +549,14 @@ script:
       name: event_id
       required: true
       secret: false
+      description: the event id
     deprecated: false
     description: Upload file associated with given event id at next check-in
     name: deepinstinct-remote-file-upload
   - arguments:
     - default: false
       isArray: false
+      description: single device id
       name: device_id
       required: true
       secret: false
@@ -559,13 +566,14 @@ script:
   - arguments:
     - default: false
       isArray: false
+      description: single device id
       name: device_id
       required: true
       secret: false
     deprecated: false
     description: Remove agent from device at next check-in
     name: deepinstinct-remove-device
-  dockerimage: demisto/python3:3.10.4.28442
+  dockerimage: demisto/python3:3.10.4.29342
   isfetch: true
   runonce: false
   script: '-'

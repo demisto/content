@@ -211,7 +211,7 @@ def close_events():
 
 def fetch_incidents():
     incidents = []
-    last_id = demisto.params().get('first_fetch_id')
+    last_id = demisto.params().get('first_fetch')
 
     last_run = demisto.getLastRun()
     if last_run and last_run.get('last_id') is not None:
@@ -225,7 +225,7 @@ def fetch_incidents():
                 'occurred': event['insertion_timestamp'],
                 'rawJSON': json.dumps(event)
             }
-        incidents.append(incident)
+            incidents.append(incident)
 
         demisto.setLastRun({'last_id': events['last_id']})
         events = http_request('GET', '/events?after_event_id=' + str(events['last_id']))
@@ -271,7 +271,7 @@ def get_suspicious_events():
     events = {}
     if 'events' in result:
         events = result['events']
-    ec = {'DeepInstinct.Events(val.id && val.id == obj.id)': events}
+    ec = {'DeepInstinct.Suspicious-Events(val.id && val.id == obj.id)': events}
 
     return_outputs(
         readable_output=tableToMarkdown('Events', events),
