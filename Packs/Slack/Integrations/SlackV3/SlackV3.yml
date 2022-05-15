@@ -107,7 +107,7 @@ configuration:
   hidden: false
   name: enable_dm
   required: false
-  defaultvalue: '200'
+  defaultvalue: 'false'
   type: 8
 - display: Disable Caching of Users and Channels
   additionalinfo: This parameter prevents this integration from storing Users and Channels into the integration
