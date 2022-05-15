@@ -15,6 +15,8 @@ import os
 import sys
 
 import demisto_sdk.commands.common.tools as tools
+
+from Tests.Marketplace.marketplace_services import get_last_commit_from_index
 from Tests.scripts.utils import collect_helpers
 from Tests.scripts.utils.collect_helpers import LANDING_PAGE_SECTIONS_JSON_PATH
 from Tests.scripts.utils.content_packs_util import should_test_content_pack, should_install_content_pack, \
@@ -1464,7 +1466,7 @@ def changed_files_to_string(changed_files):
     return '\n'.join(files_with_status)
 
 
-def create_test_file(is_nightly, skip_save=False, path_to_pack='', marketplace_version='xsoar'):
+def create_test_file(is_nightly, skip_save=False, path_to_pack='', marketplace_version='xsoar', service_account=None):
     """Create a file containing all the tests we need to run for the CI"""
     if is_nightly:
         if marketplace_version == 'marketplacev2':
@@ -1501,6 +1503,11 @@ def create_test_file(is_nightly, skip_save=False, path_to_pack='', marketplace_v
         if path_to_pack:
             changed_files = get_list_of_files_in_the_pack(path_to_pack)
             files_string = changed_files_to_string(changed_files)
+        elif os.environ.get("IFRA_ENV_TYPE") == 'Bucket-Upload':
+            last_upload_commit = get_last_commit_from_index(service_account)
+            current_commit = branch_name if branch_name != 'master' else 'origin/master'
+            files_string = tools.run_command(f'git diff --name-status {last_upload_commit}..{current_commit}')
+            logging.debug(f'Current commit: {current_commit}, Last upload commit: {last_upload_commit}')
         elif branch_name != 'master':
             files_string = tools.run_command("git diff --name-status origin/master...{0}".format(branch_name))
             # Checks if the build is for contributor PR and if so add it's pack.
@@ -1510,7 +1517,6 @@ def create_test_file(is_nightly, skip_save=False, path_to_pack='', marketplace_v
         else:
             commit_string = tools.run_command("git log -n 2 --pretty='%H'")
             logging.debug(f'commit string: {commit_string}')
-
             commit_string = commit_string.replace("'", "")
             last_commit, second_last_commit = commit_string.split()
             files_string = tools.run_command(f'git diff --name-status {second_last_commit}...{last_commit}')
@@ -1560,10 +1566,12 @@ if __name__ == "__main__":
                         help='Skipping saving the test filter file (good for simply doing validation)')
     parser.add_argument('-p', '--changed_pack_path', type=str, help='A string representing the changed files')
     parser.add_argument('-mp', '--marketplace', help='marketplace version.', default='xsoar')
+    parser.add_argument('--service_account', help="Path to gcloud service account")
     options = parser.parse_args()
 
     # Create test file based only on committed files
-    create_test_file(options.nightly, options.skip_save, options.changed_pack_path, options.marketplace)
+    create_test_file(options.nightly, options.skip_save, options.changed_pack_path, options.marketplace,
+                     options.service_account)
     if not _FAILED:
         logging.info("Finished test configuration")
         sys.exit(0)
