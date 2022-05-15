@@ -942,7 +942,7 @@ def upload_packs_with_dependencies_zip(storage_bucket, storage_base_path, signat
                 upload_path = os.path.join(storage_base_path, pack_name, f"{pack_name}_with_dependencies.zip")
                 Path(pack_with_dep_path).mkdir(parents=True, exist_ok=True)
                 for current_pack in pack_and_its_dependencies:
-                    logging.info(f"Starting to collect zip of pack {current_pack.name}")
+                    logging.debug(f"Starting to collect zip of pack {current_pack.name}")
                     # zip the pack and each of the pack's dependencies (or copy existing zip if was already zipped)
                     if not (current_pack.zip_path and os.path.isfile(current_pack.zip_path)):
                         # the zip does not exist yet, zip the current pack
@@ -950,7 +950,7 @@ def upload_packs_with_dependencies_zip(storage_bucket, storage_base_path, signat
                         if not task_status:
                             # modify the pack's status to indicate the failure was in the dependencies zip step
                             current_pack.status = PackStatus.FAILED_CREATING_DEPENDENCIES_ZIP_SIGNING.name
-                            logging.warning(f"Skipping uploading {pack.name} since failed zipping {current_pack.name}.")
+                            logging.debug(f"Skipping uploading {pack.name} since failed zipping {current_pack.name}.")
                             continue
                     shutil.copy(current_pack.zip_path, os.path.join(pack_with_dep_path, current_pack.name + ".zip"))
                 logging.info(f"Zipping {pack_name} with its dependencies")
