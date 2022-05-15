@@ -1,0 +1,587 @@
+category: Endpoint
+commonfields:
+  id: DeepInstinct v3
+  version: -1
+configuration:
+- display: Base server URL
+  name: base_url
+  defaultvalue: https://my-deep-instinct-path.deepinstinctweb.com
+  type: 0
+  required: true
+- display: API Key
+  name: apikey
+  type: 4
+  required: true
+- display: First event ID to fetch from
+  name: first_fetch_id
+  defaultvalue: "0"
+  type: 0
+  required: false
+- display: Fetch incidents
+  name: isFetch
+  type: 8
+  required: false
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: "1"
+  type: 19
+  required: false
+- display: Incident type
+  name: incidentType
+  type: 13
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Deep Instinct is a prevention-first approach to stopping ransomware and other malware using the world's first purpose-built, deep learning cybersecurity framework.
+display: DeepInstinct v3
+name: DeepInstinct v3
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: Get device information from its ID
+      isArray: false
+      name: device_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Get device information from its ID
+    name: deepinstinct-get-device
+    outputs:
+    - contextPath: DeepInstinct.devices.ID
+      description: Device ID
+      type: number
+    - contextPath: DeepInstinct.devices.os
+      description: Device OS
+      type: string
+    - contextPath: DeepInstinct.devices.osv
+      description: Device OS version
+      type: string
+    - contextPath: DeepInstinct.devices.ip_address
+      description: Device IP address
+      type: string
+    - contextPath: DeepInstinct.devices.email
+      description: Device email ip_address
+      type: sting
+    - contextPath: DeepInstinct.devices.mac_address
+      description: Device mac address
+      type: string
+    - contextPath: DeepInstinct.devices.hostname
+      description: Device hostname
+      type: string
+    - contextPath: DeepInstinct.devices.domain
+      description: Device domain
+      type: string
+    - contextPath: DeepInstinct.devices.scanned_files
+      description: Num of device scanned files
+      type: number
+    - contextPath: DeepInstinct.devices.comment
+      description: Device comment
+      type: string
+    - contextPath: DeepInstinct.devices.tag
+      description: Device tag
+      type: string
+    - contextPath: DeepInstinct.devices.connectivity_status
+      description: Device connectivity status
+      type: string
+    - contextPath: DeepInstinct.devices.deployment_status
+      description: Device deployment status
+      type: string
+    - contextPath: DeepInstinct.devices.deployment_status_last_update
+      description: Device last client version update
+      type: string
+    - contextPath: DeepInstinct.devices.license_status
+      description: Device license status
+      type: string
+    - contextPath: DeepInstinct.devices.last_registration
+      description: Device last registration datetime
+      type: string
+    - contextPath: DeepInstinct.devices.last_contact
+      description: Device last contact datetime
+      type: string
+    - contextPath: DeepInstinct.devices.distinguished_name
+      description: Device distinguished name
+      type: string
+    - contextPath: DeepInstinct.devices.group_name
+      description: Device group name
+      type: string
+    - contextPath: DeepInstinct.devices.group_id
+      description: Device group ID
+      type: number
+    - contextPath: DeepInstinct.devices.policy_name
+      description: Device policy name
+      type: string
+    - contextPath: DeepInstinct.devices.policy_id
+      description: Device policy ID
+      type: number
+    - contextPath: DeepInstinct.devices.log_status
+      description: Device log status
+      type: string
+    - contextPath: DeepInstinct.devices.agent_version
+      description: Device agent version
+      type: string
+    - contextPath: DeepInstinct.devices.brain_version
+      description: Device brain version
+      type: string
+    - contextPath: DeepInstinct.devices.logged_in_users
+      description: Device logged in user(s)
+      type: string
+    - contextPath: DeepInstinct.devices.msp_name
+      description: Device msp name
+      type: string
+    - contextPath: DeepInstinct.devices.msp_id
+      description: Device msp ID
+      type: number
+    - contextPath: DeepInstinct.devices.tenant_name
+      description: Device tenant name
+      type: string
+    - contextPath: DeepInstinct.devices.tenant_id
+      description: Device tenant ID
+      type: number
+  - arguments:
+    - default: false
+      description: Get all events. Max events in response is 50, use first_event_id parameter to define first event id to get.
+      isArray: false
+      name: first_event_id
+      required: true
+      secret: false
+      defaultValue: '0'
+    deprecated: false
+    description: Get all events after given event ID
+    name: deepinstinct-get-events
+    outputs:
+    - contextPath: DeepInstinct.Events.events.id
+      description: event ID
+      type: number
+    - contextPath: DeepInstinct.Events.events.device_id
+      description: event device ID
+      type: number
+    - contextPath: DeepInstinct.Events.events.timestamp
+      description: event timestamp from device
+      type: string
+    - contextPath: DeepInstinct.Events.events.insertion_timestamp
+      description: event timestamp from console
+      type: string
+    - contextPath: DeepInstinct.Events.events.close_timestamp
+      description: event closed timestamp
+      type: string
+    - contextPath: DeepInstinct.Events.events.last_action
+      description: event last last_action
+      type: string
+    - contextPath: DeepInstinct.Events.events.status
+      description: event status
+      type: string
+    - contextPath: DeepInstinct.Events.events.comment
+      description: event comment
+      type: string
+    - contextPath: DeepInstinct.Events.events.recorded_device_info
+      description: event device information
+      type: unknown
+    - contextPath: DeepInstinct.Events.events.msp_name
+      description: event msp name
+      type: string
+    - contextPath: DeepInstinct.Events.events.msp_id
+      description: event msp id
+      type: number
+    - contextPath: DeepInstinct.Events.events.tenant_name
+      description: event tenant name
+      type: string
+    - contextPath: DeepInstinct.Events.events.tenant_id
+      description: event tenant id
+      type: number
+    - contextPath: DeepInstinct.Events.events.mitre_classifications
+      description: event MITRE classification
+      type: unknown
+    - contextPath: DeepInstinct.Events.events.type
+      description: event type
+      type: string
+    - contextPath: DeepInstinct.Events.events.trigger
+      description: event trigger
+      type: string
+    - contextPath: DeepInstinct.Events.events.action
+      description: event action
+      type: string
+    - contextPath: DeepInstinct.Events.events.close_trigger
+      description: event close trigger
+      type: string
+    - contextPath: DeepInstinct.Events.events.reoccurrence_count
+      description: event reoccurrence_count
+      type: number
+    - contextPath: DeepInstinct.Events.events.file_type
+      description: event file type
+      type: string
+    - contextPath: DeepInstinct.Events.events.file_hash
+      description: event file hash
+      type: string
+    - contextPath: DeepInstinct.Events.events.file_archive_hash
+      description: event file archive hash
+      type: string
+    - contextPath: DeepInstinct.Events.events.path
+      description: event file path
+    - contextPath: DeepInstinct.Events.events.file_size
+      description: event file size
+      type: number
+    - contextPath: DeepInstinct.Events.events.threat_severity
+      description: event threat severity
+      type: string
+    - contextPath: DeepInstinct.Events.events.certificate_thumbprint
+      description: event certificate certificate thumbprint
+      type: string
+    - contextPath: DeepInstinct.Events.events.certificate_vendor_name
+      description: event certificate certificate vendor name
+      type: string
+    - contextPath: DeepInstinct.Events.events.deep_classification
+      description: Deep Instinct classification
+      type: string
+    - contextPath: DeepInstinct.Events.events.file_status
+      description: event file status
+      type: string
+    - contextPath: DeepInstinct.Events.events.sandbox_status
+      description: event sandbox status
+      type: string
+  - arguments:
+    - default: false
+      description: Get all suspicious events. Max events in response is 50, use first_event_id parameter to define first event id to get.
+      isArray: false
+      name: first_event_id
+      required: true
+      secret: false
+      defaultValue: '0'
+    deprecated: false
+    description: Get all suspicious events after given event ID
+    name: deepinstinct-get-suspicious-events
+    outputs:
+    - contextPath: DeepInstinct.Suspicious-Events.events.ID
+      description: event ID
+      type: number
+    - contextPath: DeepInstinct.Suspicious-Events.events.device_id
+      description: event device ID
+      type: number
+    - contextPath: DeepInstinct.Suspicious-Events.events.timestamp
+      description: event timestamp from device
+      type: string
+    - contextPath: DeepInstinct.Events.events.insertion_timestamp
+      description: event timestamp from console
+      type: string
+    - contextPath: DeepInstinct.Suspicious-Events.events.status
+      description: event status
+      type: string
+    - contextPath: DeepInstinct.Suspicious-Events.events.recorded_device_info
+      description: event device info
+      type: unkown
+    - contextPath: DeepInstinct.Suspicious-Events.events.msp_name
+      description: event msp name
+      type: string
+    - contextPath: DeepInstinct.Suspicious-Events.events.msp_id
+      description: event msp id
+      type: number
+    - contextPath: DeepInstinct.Suspicious-Events.events.tenant_name
+      description: event tenant name
+      type: string
+    - contextPath: DeepInstinct.Suspicious-Events.events.tenant_id
+      description: event tenant id
+      type: number
+    - contextPath: DeepInstinct.Suspicious-Events.events.mitre_classifications
+      description: event MITRE classification
+      type: unknown
+    - contextPath: DeepInstinct.Suspicious-Events.events.type
+      description: event type
+      type: string
+    - contextPath: DeepInstinct.Suspicious-Events.events.trigger
+      description: event trigger
+      type: string
+    - contextPath: DeepInstinct.Suspicious-Events.events.action
+      description: event action
+      type: string
+    - contextPath: DeepInstinct.Suspicious-Events.events.close_trigger
+      description: event close trigger
+      type: string
+    - contextPath: DeepInstinct.Suspicious-Events.events.file_type
+      description: event file type
+      type: string
+    - contextPath: DeepInstinct.Suspicious-Events.events.rule_trigger
+      description: event rule trigger
+      type: string
+    - contextPath: DeepInstinct.Suspicious-Events.events.file_archive_hash
+      description: event file archive hash
+      type: string
+    - contextPath: DeepInstinct.Suspicious-Events.events.remediation
+      description: event remediation
+      type: unknown
+    - contextPath: DeepInstinct.Suspicious-Events.events.path
+      description: event file path
+      type: unknown
+  - arguments:
+    - default: false
+      description: Get all groups
+      isArray: false
+      required: false
+      secret: false
+    deprecated: false
+    name: deepinstinct-get-all-groups
+    outputs:
+    - contextPath: DeepInstinct.Groups.ID
+      description: group id
+      type: number
+    - contextPath: DeepInstinct.Groups.is_default_group
+      description: True if group is a default group, false otherwise
+      type: boolean
+    - contextPath: DeepInstinct.Groups.msp_id
+      description: msp ID
+      type: number
+    - contextPath: DeepInstinct.Groups.name
+      description: group name
+      type: string
+    - contextPath: DeepInstinct.Groups.os
+      description: group operation system
+      type: string
+    - contextPath: DeepInstinct.Groups.policy_id
+      description: group policy ID
+      type: number
+    description: Get all groups
+  - arguments:
+    - default: false
+      description: Get All policies
+      isArray: false
+      required: false
+      secret: false
+    deprecated: false
+    name: deepinstinct-get-all-policies
+    outputs:
+    - contextPath: DeepInstinct.Policies.ID
+      description: policy ID
+      type: number
+    - contextPath: DeepInstinct.Policies.name
+      description: policy name
+      type: string
+    - contextPath: DeepInstinct.Policies.os
+      description: policy operating system
+      type: string
+    - contextPath: DeepInstinct.Policies.is_default_policy
+      description: True if policy is a default policy, False otherwise
+      type: boolean
+    - contextPath: DeepInstinct.Policies.msp_id
+      description: msp ID
+      type: number
+    - contextPath: DeepInstinct.Policies.msp_name
+      description: msp name
+      type: string
+    description: Get list of all policies
+  - arguments:
+    - default: false
+      description: Policy ID
+      isArray: false
+      name: policy_id
+      required: true
+      secret: false
+    - default: false
+      description: file hash
+      isArray: false
+      name: file_hash
+      required: true
+      secret: false
+    - default: false
+      decription: Optional, add comment
+      isArray: false
+      name: comment
+      required: false
+      secret: false
+    deprecated: false
+    description: Add file hash to Deny List
+    name: deepinstinct-add-hash-to-deny-list
+  - arguments:
+    - default: false
+      description: Policy ID
+      isArray: false
+      name: policy_id
+      required: true
+      secret: false
+    - default: false
+      description: file hash
+      isArray: false
+      name: file_hash
+      required: true
+      secret: false
+    - default: false
+      decription: Optional, add comment
+      isArray: false
+      name: comment
+      required: false
+      secret: false
+    deprecated: false
+    description: Add file hash to Allow List
+    name: deepinstinct-add-hash-to-allow-list
+  - arguments:
+    - default: false
+      description: Policy ID
+      isArray: false
+      name: policy_id
+      required: true
+      secret: false
+    - default: false
+      description: file hash
+      isArray: false
+      name: file_hash
+      required: true
+      secret: false
+    deprecated: false
+    description: Remove hash from Deny List
+    name: deepinstinct-remove-hash-from-deny-list
+  - arguments:
+    - default: false
+      description: Policy ID
+      isArray: false
+      name: policy_id
+      required: true
+      secret: false
+    - default: false
+      description: file hash
+      isArray: false
+      name: file_hash
+      required: true
+      secret: false
+    deprecated: false
+    description: Remove hash from Allow List
+    name: deepinstinct-remove-hash-from-allow-list
+  - arguments:
+    - default: false
+      description: group ID
+      isArray: false
+      name: group_id
+      required: true
+      secret: false
+    - default: false
+      description: comma seperated list of device ids to address
+      isArray: false
+      name: device_ids
+      required: true
+      secret: false
+    deprecated: false
+    description: Add multiple devices to a group
+    name: deepinstinct-add-devices-to-group
+  - arguments:
+    - default: false
+      description: Group ID to remove from
+      isArray: false
+      name: group_id
+      required: true
+      secret: false
+    - default: false
+      description: Comma seperated list of device ids to remove
+      isArray: false
+      name: device_ids
+      required: true
+      secret: false
+    depecrated: false
+    description: Remove list of devices from groups
+    name: deepinstinct-remove-devices-from-group
+  - arguments:
+    - default: false
+      description: comma separated list of event ids
+      isArray: false
+      name: event_ids
+      required: true
+      secret: false
+    deprecated: false
+    description: Delete multiple files remotely
+    name: deepinstinct-delete-files-remotely
+  - arguments:
+    - default: false
+      description: comma separated list of event ids
+      isArray: false
+      name: event_ids
+      required: true
+      secret: false
+    deprecated: false
+    description: Terminate list of processes
+    name: deepinstinct-terminate-processes
+  - arguments:
+    - default: false
+      description: comma separated list of event ids
+      isArray: false
+      name: event_ids
+      required: true
+      secret: false
+    deprecated: false
+    description: Close list of events
+    name: deepinstinct-close-events
+  - arguments:
+    - default: no
+      description: single device id
+      isArray: false
+      name: device_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Disable device at next check-in
+    name: deepinstinct-disable-device
+  - arguments:
+    - default: no
+      description: single device id
+      isArray: false
+      name: device_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Enable device at next check-in
+    name: deepinstinct-enable-device
+  - arguments:
+    - default: no
+      description: comma separated list of device ids
+      isArray: false
+      name: device_ids
+      required: true
+      secret: false
+    deprecated: false
+    description: Isolate device(s) from Network
+    name: deepinstinct-isolate-from-network
+  - arguments:
+    - default: no
+      description: comma separated list of device ids
+      isArray: false
+      name: device_ids
+      required: true
+      secret: false
+    deprecated: false
+    description: Release device(s) from isolation
+    name: deepinstinct-release-from-isolation
+  - arguments:
+    - default: no
+      isArray: false
+      name: event_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Upload file associated with given event id at next check-in
+    name: deepinstinct-remote-file-upload
+  - arguments:
+    - default: no
+      isArray: false
+      name: device_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Upload device logs from given device at next check-in
+    name: deepinstinct-upload-logs
+  - arguments:
+    - default: no
+      isArray: false
+      name: device_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Remove agent from device at next check-in
+    name: deepinstinct-remove-device
+  dockerimage: demisto/python3:3.10.4.28442
+  isfetch: true
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  sourcemoduleid: DeepInstinct
