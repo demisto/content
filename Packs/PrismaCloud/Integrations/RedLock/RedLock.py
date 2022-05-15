@@ -147,12 +147,8 @@ def handle_time_filter(payload, base_case):
                 return_error('Time unit for to_now time must be one of the following: ' + ','.join(to_now))
             payload['timeRange'] = {'type': 'to_now', 'value': unit}
     else:
-        if not time_from and not time_to:
+        if not time_from or not time_to:
             payload['timeRange'] = base_case
-        elif not time_from:
-            return_error("Please enter 'time-range-date-from' as well")
-        elif not time_to:
-            return_error("Please enter 'time-range-date-to' as well")
         else:
             payload['timeRange'] = {'type': 'absolute', 'value': {
                 'startTime': convert_date_to_unix(time_from), 'endTime': convert_date_to_unix(time_to)}}

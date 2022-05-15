@@ -287,30 +287,3 @@ def test_redlock_search_network(mocker):
     mocker.patch.object(demisto, 'results')
     redlock_search_network()
     assert demisto.results.call_args[0][0].get('EntryContext') == expected_context_entry
-
-
-TEST_HANDLE_TIME_FILTER_DATA = [({'time-range-date-from': '01/01/2022'}, "Please enter 'time-range-date-to' as well"),
-                                ({'time-range-date-to': '01/01/2022'}, "Please enter 'time-range-date-from' as well")]
-
-
-@pytest.mark.parametrize('args_mock, expected_results', TEST_HANDLE_TIME_FILTER_DATA)
-def test_handle_time_filter(mocker, args_mock, expected_results):
-    """
-    Given
-        Case 1: args with only 'time-range-date-from' filled in.
-        Case 2: args with only 'time-range-date-to' filled in.
-    When
-        Calling handle_time_filter function.
-    Then
-        Ensure an error with the right message is returned.
-        Case 1: Should return an error telling the user 'time-range-date-to' is missing.
-        Case 2: Should return an error telling the user 'time-range-date-from' is missing.
-    """
-    from RedLock import handle_time_filter
-    RETURN_ERROR_TARGET = 'RedLock.return_error'
-    mocker.patch.object(demisto, 'args', return_value=args_mock)
-    return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
-    handle_time_filter({}, {'type': 'to_now', 'value': 'epoch'})
-    # call_args last call with a tuple of args list and kwargs
-    err_msg = return_error_mock.call_args[0][0]
-    assert expected_results == err_msg
