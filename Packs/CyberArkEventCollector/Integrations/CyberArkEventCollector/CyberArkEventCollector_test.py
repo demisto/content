@@ -1,7 +1,6 @@
 import json
 import io
 import requests_mock
-from freezegun import freeze_time
 import demistomock as demisto
 
 
@@ -23,7 +22,11 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
-@freeze_time('2022-05-12T00:00:00Z')
+def mock_set_last_run(last_run):
+    return last_run
+
+
+# @freeze_time('2022-05-12T00:00:00Z')
 def test_fetch_events_few_events(mocker):
     """
     Given
@@ -37,7 +40,7 @@ def test_fetch_events_few_events(mocker):
 
     params = mocker.patch.object(demisto, 'params', return_value=DEMISTO_PARAMS)
     mocker.patch.object(demisto, 'args', return_value={})
-    last_run = mocker.patch.object(demisto, 'getLastRun', return_value={})
+    mock_last_run = mocker.patch.object(demisto, 'setLastRun', side_effect=mock_set_last_run)
     results = mocker.patch.object(demisto, 'results')
     mocker.patch('CyberArkEventCollector.send_events_to_xsiam')
 
@@ -49,11 +52,11 @@ def test_fetch_events_few_events(mocker):
         main('CyberArk-get-events', params.return_value)
 
     events = results.call_args[0][0]['Contents']
-    assert last_run.return_value.get('from') == '2022-05-15T13:35:26.645000'
-    assert len(last_run.return_value.get('ids')) == len(events) == 3
+    last_run = mock_last_run.call_args[0][0]
+    assert last_run.get('from') == '2022-05-15T13:35:26.645000'
+    assert len(last_run.get('ids')) == len(events) == 3
 
 
-@freeze_time('2022-05-12T00:00:00Z')
 def test_fetch_events_no_events(mocker):
     """
     Given
@@ -67,7 +70,7 @@ def test_fetch_events_no_events(mocker):
 
     params = mocker.patch.object(demisto, 'params', return_value=DEMISTO_PARAMS)
     mocker.patch.object(demisto, 'args', return_value={})
-    last_run = mocker.patch.object(demisto, 'getLastRun', return_value={})
+    mock_last_run = mocker.patch.object(demisto, 'setLastRun', side_effect=mock_set_last_run)
     results = mocker.patch.object(demisto, 'results')
     mocker.patch('CyberArkEventCollector.send_events_to_xsiam')
 
@@ -79,10 +82,10 @@ def test_fetch_events_no_events(mocker):
         main('CyberArk-get-events', params.return_value)
 
     events = results.call_args[0][0]['Contents']
-    assert last_run.return_value.get('from') == last_run.return_value.get('ids') == events is None
+    last_run = mock_last_run.call_args
+    assert last_run == events is None
 
 
-@freeze_time('2022-05-12T00:00:00Z')
 def test_fetch_events_limit_set_to_one(mocker):
     """
     Given
@@ -94,10 +97,11 @@ def test_fetch_events_limit_set_to_one(mocker):
         - Verify last_run was set as expected.
     """
 
-    params = mocker.patch.object(demisto, 'params', return_value=DEMISTO_PARAMS)
-    params['limit'] = 1
+    demisto_params = DEMISTO_PARAMS
+    demisto_params['limit'] = 1
+    params = mocker.patch.object(demisto, 'params', return_value=demisto_params)
     mocker.patch.object(demisto, 'args', return_value={})
-    last_run = mocker.patch.object(demisto, 'getLastRun', return_value={})
+    mock_last_run = mocker.patch.object(demisto, 'setLastRun', side_effect=mock_set_last_run)
     results = mocker.patch.object(demisto, 'results')
     mocker.patch('CyberArkEventCollector.send_events_to_xsiam')
 
@@ -109,5 +113,6 @@ def test_fetch_events_limit_set_to_one(mocker):
         main('CyberArk-get-events', params.return_value)
 
     events = results.call_args[0][0]['Contents']
-    assert last_run.return_value.get('from') == '2022-05-15T13:35:03.570000'
-    assert len(last_run.return_value.get('ids')) == len(events) == 1
+    last_run = mock_last_run.call_args[0][0]
+    assert last_run.get('from') == '2022-05-15T13:35:03.570000'
+    assert len(last_run.get('ids')) == len(events) == 1
