@@ -192,7 +192,7 @@ class PackFolders(enum.Enum):
     XSIAM_DASHBOARDS = 'XSIAMDashboards'
     XSIAM_REPORTS = 'XSIAMReports'
     TRIGGERS = 'Triggers'
-    WIZARD = 'Wizards'
+    WIZARDS = 'Wizards'
 
     @classmethod
     def pack_displayed_items(cls):
@@ -205,7 +205,7 @@ class PackFolders(enum.Enum):
             PackFolders.GENERIC_TYPES.value, PackFolders.LISTS.value, PackFolders.JOBS.value,
             PackFolders.PARSING_RULES.value, PackFolders.MODELING_RULES.value, PackFolders.CORRELATION_RULES.value,
             PackFolders.XSIAM_DASHBOARDS.value, PackFolders.XSIAM_REPORTS.value, PackFolders.TRIGGERS.value,
-            PackFolders.WIZARD.value,
+            PackFolders.WIZARDS.value,
         }
 
     @classmethod
@@ -223,7 +223,7 @@ class PackFolders(enum.Enum):
             PackFolders.WIDGETS.value, PackFolders.GENERIC_DEFINITIONS.value, PackFolders.GENERIC_FIELDS.value,
             PackFolders.GENERIC_MODULES.value, PackFolders.GENERIC_TYPES.value, PackFolders.LISTS.value,
             PackFolders.PREPROCESS_RULES.value, PackFolders.JOBS.value, PackFolders.XSIAM_DASHBOARDS.value,
-            PackFolders.XSIAM_REPORTS.value, PackFolders.TRIGGERS.value, PackFolders.WIZARD.value,
+            PackFolders.XSIAM_REPORTS.value, PackFolders.TRIGGERS.value, PackFolders.WIZARDS.value,
         }
 
 

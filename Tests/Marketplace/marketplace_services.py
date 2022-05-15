@@ -1611,7 +1611,7 @@ class Pack(object):
                 PackFolders.XSIAM_DASHBOARDS.value: "xsiamdashboard",
                 PackFolders.XSIAM_REPORTS.value: "xsiamreport",
                 PackFolders.TRIGGERS.value: "trigger",
-                PackFolders.WIZARD.value: "wizard",
+                PackFolders.WIZARDS.value: "wizard",
             }
 
             for root, pack_dirs, pack_files_names in os.walk(self._pack_path, topdown=False):
@@ -1867,7 +1867,7 @@ class Pack(object):
                             'description': content_item.get('description', ''),
                         })
 
-                    elif current_directory == PackFolders.WIZARD.value:
+                    elif current_directory == PackFolders.WIZARDS.value:
                         folder_collected_items.append({
                             'id': content_item.get('id', ''),
                             'name': content_item.get('name', ''),
