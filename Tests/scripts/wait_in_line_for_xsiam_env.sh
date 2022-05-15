@@ -15,8 +15,8 @@
 export GCS_LOCKS_PATH=gs://xsoar-ci-artifacts/content-locks-xsiam
 export LOCK_IDENTIFIER=lock
 export ALLOWED_STATES=running
-export JOBS_STATUS_API=https://code.pan.run/api/v4/projects/2596/jobs   # disable-secrets-detection
-export PIPELINE_STATUS_API=https://code.pan.run/api/v4/projects/3734/pipelines  # disable-secrets-detection
+export JOBS_STATUS_API=https://code.pan.run/api/v4/projects/2596/jobs   # disable-secrets-detection # check jobs in content repo
+export PIPELINE_STATUS_API=https://code.pan.run/api/v4/projects/3734/pipelines  # disable-secrets-detection # check pipelines in content-test-conf repo
 export SELF_LOCK_PATTERN=*-$LOCK_IDENTIFIER-$CI_JOB_ID
 
 #=================================
