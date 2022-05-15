@@ -656,9 +656,11 @@ class BranchTestCollector(TestCollector):
                 raise RuntimeError(f'Unexpected content type original_file_path {containing_folder} '
                                    f'(expected `Integrations`, `Scripts`, etc)')
         relative_path = PackManager.relative_to_packs(content_item)
-        return CollectedTests(tests=tests, packs=yml.pack_tuple, reason=reason,
-                              version_range=yml.version_range,
-                              reason_description=f'{yml.id_=} ({relative_path})')
+        # creating an object for each, as CollectedTests require #packs==#tests
+        return CollectedTests.union([CollectedTests(tests=(test,), packs=yml.pack_tuple, reason=reason,
+                                                    version_range=yml.version_range,
+                                                    reason_description=f'{yml.id_=} ({relative_path})')
+                                     for test in tests])
 
     def _collect_single(self, path) -> CollectedTests:
         file_type = find_type_by_path(path)
