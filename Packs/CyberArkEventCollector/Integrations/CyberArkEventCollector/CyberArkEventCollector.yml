@@ -9,7 +9,7 @@ configuration:
   required: true
   type: 0
 - defaultvalue: oauthsiem
-  display: app ID
+  display: App ID
   name: app_id
   required: true
   type: 0
