@@ -84,6 +84,7 @@ def create_dependencies_data_structure(response_data: dict, dependants_ids: list
     """
 
     next_call_dependants_ids = []
+    logging.debug('Got here 3')
 
     for dependency in response_data:
         dependants = dependency.get('dependants', {})
@@ -122,6 +123,7 @@ def get_pack_dependencies(client: demisto_client, pack_data: dict, lock: Lock):
             accept='application/json',
             _request_timeout=None
         )
+        logging.debug(f'Got here 1')
 
         if 200 <= status_code < 300:
             dependencies_data: list = []
@@ -131,6 +133,7 @@ def get_pack_dependencies(client: demisto_client, pack_data: dict, lock: Lock):
             dependencies_str = ', '.join([dep['id'] for dep in dependencies_data])
             if dependencies_data:
                 logging.debug(f'Found the following dependencies for pack {pack_id}: {dependencies_str}')
+            logging.debug(f'Got here 2 {dependencies_data=}')
             return dependencies_data
         if status_code == 400:
             logging.error(f'Unable to find dependencies for {pack_id}.')
@@ -226,9 +229,7 @@ def find_malformed_pack_id(body: str) -> List:
                     ' ', '').split(','))
             else:
                 malformed_pack_pattern = re.compile(r'invalid version [0-9.]+ for pack with ID ([\w_-]+)')
-                # todo: delete:
-                pass
-                malformed_pack_id = malformed_pack_pattern.findall(error)
+                malformed_pack_id = malformed_pack_pattern.findall(error) if error else None
                 if malformed_pack_id and error:
                     malformed_ids.extend(malformed_pack_id)
     return malformed_ids
@@ -336,6 +337,7 @@ def install_packs(client: demisto_client,
                                                                                       'ignoreWarnings': True},
                                                                                 accept='application/json',
                                                                                 _request_timeout=request_timeout)
+            logging.debug(f'body: {response_data=}')
 
             if status_code in range(200, 300) and status_code != 204:
                 packs_data = [{'ID': pack.get('id'), 'CurrentVersion': pack.get('currentVersion')} for pack in
@@ -344,6 +346,7 @@ def install_packs(client: demisto_client,
                 logging.debug(f'The packs that were successfully installed on server {host}:\n{packs_data}')
 
         except ApiException as ex:
+            logging.debug(f'ex: {ex}')
             logging.debug(f'ex.body: {ex.body}')
             logging.debug(f'ex: {ex}, {ex.headers=}, {ex.reason=}, {ex.status=}')
             if 'timeout awaiting response' in ex.body:
@@ -435,6 +438,7 @@ def search_pack_and_its_dependencies(client: demisto_client,
             if pack['id'] not in packs_to_install:
                 packs_to_install.append(pack['id'])
                 installation_request_body.append(pack)
+        logging.info(f'{packs_to_install=}, {installation_request_body}')
         lock.release()
 
 
@@ -648,6 +652,8 @@ def search_and_install_packs_and_their_dependencies(pack_ids: list,
                                 'lock': lock})
         threads_list.append(thread)
     run_threads_list(threads_list)
+
+    logging.info(f'Finally: {packs_to_install=}, {installation_request_body=}')
 
     install_packs(client, host, installation_request_body)
 
