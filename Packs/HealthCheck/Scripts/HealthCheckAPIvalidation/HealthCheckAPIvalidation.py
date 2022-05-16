@@ -36,7 +36,7 @@ def isAdminAPIInstance():
     for module in res:
         if isinstance(module['Contents'], str):
             return_error(module['Contents'])
-        elif module.get('Contents',{}).get('response',{}).get('defaultAdmin',{}) == True:
+        elif module.get('Contents', {}).get('response', {}).get('defaultAdmin', {}) == True:
             isDefaultAdminExist = True
         else:
             continue
