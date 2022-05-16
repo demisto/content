@@ -63,6 +63,7 @@ def write_id_to_env(investigation_id):
 
 
 def main():
+    raise Exception('Adi 0')
     print('try- before start')
     options = arguments_handler()
     trigger_generic_webhook(options)
