@@ -5,9 +5,7 @@ contentitemexportablefields:
   contentitemfields: {}
 name: Domain Enrichment - RST Threat Feed
 description: |-
-  Enrich domains using one or more integrations.
-  Domain enrichment includes:
-  * Threat information
+  Enrich domains using RST Threat Feed integration
 starttaskid: "0"
 tasks:
   "0":
@@ -110,7 +108,7 @@ tasks:
       version: -1
       name: Is RST Threat Feed API enabled?
       description: Checks if there is an active instance of the RST Threat Feed API
-        API integration enabled. enabled.
+        API integration enabled.
       type: condition
       iscommand: false
       brand: ""

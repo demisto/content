@@ -5,7 +5,7 @@ For more details about the authentication used in this integration, see [Microso
 
 ### Required Permissions
 * Mail.ReadWrite - Application
-* User.Read - Application
+* User.Read - Delegated
 * Mail.Send - Application
 
 ### OData Usage
@@ -948,6 +948,10 @@ Creates a draft message in the specified user's mailbox.
 ### Send an email
 ***
 Sends an email using Microsoft Graph.
+
+**NOTE:**
+
+Attachments size is limited to 3 MB.
 
 ##### Required Permissions
 **The following permissions are required for this command:**
