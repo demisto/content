@@ -91,7 +91,7 @@ class GetEvents:
             demisto.error(f'File list getting failed: {r.status_code} {r.text}')
 
     def get_files_from_res(self, query_res):
-        r = None
+        r = requests.Response()
         files = query_res['records']
         done_status = query_res['done']
 
