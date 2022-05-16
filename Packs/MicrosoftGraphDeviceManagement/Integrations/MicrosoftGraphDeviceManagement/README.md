@@ -977,7 +977,7 @@ DeviceManagementManagedDevices.ReadWrite.All, DeviceManagementManagedDevices.Rea
 
 
 #### Command Example
-```!msgraph-find-managed-devices-by-name```
+```!msgraph-find-managed-devices-by-name device_name=NAME_VALUE```
 
 #### Context Example
 ```
