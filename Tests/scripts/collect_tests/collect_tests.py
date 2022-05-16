@@ -482,7 +482,7 @@ class UploadCollector(TestCollector):
 if __name__ == '__main__':
     try:
         sys.path.append(str(CONTENT_PATH))
-        collector = NightlyTestCollector(marketplace=MarketplaceVersions.XSOAR)
+        collector = XSOARNightlyTestCollector(marketplace=MarketplaceVersions.XSOAR)
         # collector = BranchTestCollector(marketplace=MarketplaceVersions.XSOAR, branch_name='master')
         print(collector.collect(True, True))
 
