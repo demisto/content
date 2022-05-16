@@ -1,4 +1,4 @@
-[{
+{
 	"id": "ACTI Intelligence Report",
 	"version": -1,
 	"fromVersion": "6.0.0",
@@ -82,4 +82,4 @@
 	"fileHashesPriority": null,
 	"expiration": 0,
 	"layout": "ACTI Intelligence Report"
-}]
+}
