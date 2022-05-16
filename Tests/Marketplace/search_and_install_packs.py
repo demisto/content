@@ -219,12 +219,15 @@ def find_malformed_pack_id(body: str) -> List:
         else:
             # the error is returned as a list of error
             errors_info = response_info.get('errors', [])
+        logging.info(f'Error infos: {errors_info}')
         for error in errors_info:
             if 'pack id: ' in error:
                 malformed_ids.extend(error.split('pack id: ')[1].replace(']', '').replace('[', '').replace(
                     ' ', '').split(','))
             else:
                 malformed_pack_pattern = re.compile(r'invalid version [0-9.]+ for pack with ID ([\w_-]+)')
+                # todo: delete:
+                pass
                 malformed_pack_id = malformed_pack_pattern.findall(error)
                 if malformed_pack_id and error:
                     malformed_ids.extend(malformed_pack_id)
@@ -325,6 +328,7 @@ def install_packs(client: demisto_client,
     def call_install_packs_request(packs):
         try:
             logging.debug(f'Installing the following packs on server {host}:\n{[pack["id"] for pack in packs]}')
+            logging.debug(f'Body packs: {packs}')
             response_data, status_code, _ = demisto_client.generic_request_func(client,
                                                                                 path='/contentpacks/marketplace/install',
                                                                                 method='POST',
@@ -340,9 +344,11 @@ def install_packs(client: demisto_client,
                 logging.debug(f'The packs that were successfully installed on server {host}:\n{packs_data}')
 
         except ApiException as ex:
+            logging.debug(f'ex.body: {ex.body}')
             if 'timeout awaiting response' in ex.body:
                 raise GCPTimeOutException(ex.body)
             if malformed_ids := find_malformed_pack_id(ex.body):
+                logging.debug(f'malformed_ids: {malformed_ids}')
                 raise MalformedPackException(malformed_ids)
             if 'Item not found' in ex.body:
                 raise GeneralItemNotFoundError(ex.body)
