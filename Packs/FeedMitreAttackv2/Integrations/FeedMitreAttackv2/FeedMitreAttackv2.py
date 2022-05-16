@@ -6,6 +6,8 @@ import json
 import requests
 from stix2 import TAXIICollectionSource, Filter
 from taxii2client.v20 import Server, Collection, ApiRoot
+import warnings
+warnings.filterwarnings("error")
 
 ''' CONSTANT VARIABLES '''
 
@@ -475,64 +477,68 @@ def build_command_result(value, score, md, attack_obj):
 
 
 def attack_pattern_reputation_command(client, args):
-    command_results: List[CommandResults] = []
+    try:
+        command_results: List[CommandResults] = []
 
-    mitre_names = argToList(args.get('attack_pattern'))
-    for name in mitre_names:
-        if ':' not in name:  # not sub-technique
-            filter_by_name = [Filter('type', '=', 'attack-pattern'), Filter('name', '=', name)]
-            mitre_data = get_mitre_data_by_filter(client, filter_by_name)
-            if not mitre_data:
-                break
+        mitre_names = argToList(args.get('attack_pattern'))
+        for name in mitre_names:
+            if ':' not in name:  # not sub-technique
+                filter_by_name = [Filter('type', '=', 'attack-pattern'), Filter('name', '=', name)]
+                mitre_data = get_mitre_data_by_filter(client, filter_by_name)
+                if not mitre_data:
+                    break
 
-            value = mitre_data.get('name')
+                value = mitre_data.get('name')
 
-        else:
-            all_name = name.split(':')
-            parent = all_name[0]
-            sub = all_name[1][1:]
-            mitre_id = ''
+            else:
+                all_name = name.split(':')
+                parent = all_name[0]
+                sub = all_name[1][1:]
+                mitre_id = ''
 
-            # get parent MITRE ID
-            filter_by_name = [Filter('type', '=', 'attack-pattern'), Filter('name', '=', parent)]
-            mitre_data = get_mitre_data_by_filter(client, filter_by_name)
-            if not mitre_data:
-                break
-            indicator_json = json.loads(str(mitre_data))
-            parent_mitre_id = [external.get('external_id') for external in
-                               indicator_json.get('external_references', [])
-                               if external.get('source_name', '') == 'mitre-attack']
-            parent_mitre_id = parent_mitre_id[0]
-            parent_name = indicator_json['name']
+                # get parent MITRE ID
+                filter_by_name = [Filter('type', '=', 'attack-pattern'), Filter('name', '=', parent)]
+                mitre_data = get_mitre_data_by_filter(client, filter_by_name)
+                if not mitre_data:
+                    break
+                indicator_json = json.loads(str(mitre_data))
+                parent_mitre_id = [external.get('external_id') for external in
+                                   indicator_json.get('external_references', [])
+                                   if external.get('source_name', '') == 'mitre-attack']
+                parent_mitre_id = parent_mitre_id[0]
+                parent_name = indicator_json['name']
 
-            # get sub MITRE ID
-            filter_by_name = [Filter('type', '=', 'attack-pattern'), Filter('name', '=', sub)]
-            mitre_data = get_mitre_data_by_filter(client, filter_by_name)
-            if not mitre_data:
-                break
-            indicator_json = json.loads(str(mitre_data))
-            sub_mitre_id = [external.get('external_id') for external in
-                            indicator_json.get('external_references', [])
-                            if external.get('source_name', '') == 'mitre-attack']
-            sub_mitre_id = sub_mitre_id[0]
-            sub_mitre_id = sub_mitre_id[5:]
+                # get sub MITRE ID
+                filter_by_name = [Filter('type', '=', 'attack-pattern'), Filter('name', '=', sub)]
+                mitre_data = get_mitre_data_by_filter(client, filter_by_name)
+                if not mitre_data:
+                    break
+                indicator_json = json.loads(str(mitre_data))
+                sub_mitre_id = [external.get('external_id') for external in
+                                indicator_json.get('external_references', [])
+                                if external.get('source_name', '') == 'mitre-attack']
+                sub_mitre_id = sub_mitre_id[0]
+                sub_mitre_id = sub_mitre_id[5:]
 
-            mitre_id = f'{parent_mitre_id}{sub_mitre_id}'
-            mitre_filter = [Filter("external_references.external_id", "=", mitre_id),
-                            Filter("type", "=", "attack-pattern")]
-            mitre_data = get_mitre_data_by_filter(client, mitre_filter)
-            if not mitre_data:
-                break
+                mitre_id = f'{parent_mitre_id}{sub_mitre_id}'
+                mitre_filter = [Filter("external_references.external_id", "=", mitre_id),
+                                Filter("type", "=", "attack-pattern")]
+                mitre_data = get_mitre_data_by_filter(client, mitre_filter)
+                if not mitre_data:
+                    break
 
-            value = f'{parent_name}: {mitre_data.get("name")}'
+                value = f'{parent_name}: {mitre_data.get("name")}'
 
-        attack_obj = map_fields_by_type('Attack Pattern', json.loads(str(mitre_data)))
-        custom_fields = attack_obj or {}
-        score = INDICATOR_TYPE_TO_SCORE.get('Attack Pattern')
-        md = f"## MITRE ATTACK \n ## Name: {value} - ID: {attack_obj.get('mitreid')} \n {custom_fields.get('description', '')}"
-        command_results.append(build_command_result(value, score, md, attack_obj))
+            attack_obj = map_fields_by_type('Attack Pattern', json.loads(str(mitre_data)))
+            custom_fields = attack_obj or {}
+            score = INDICATOR_TYPE_TO_SCORE.get('Attack Pattern')
+            md = f"## MITRE ATTACK \n ## Name: {value} - ID: {attack_obj.get('mitreid')} \n {custom_fields.get('description', '')}"
+            command_results.append(build_command_result(value, score, md, attack_obj))
 
-    return command_results
+        return command_results
+    except RuntimeWarning as r:
+        demisto.debug(f'Run time warning {r}')
+        pass
 
 
 def get_mitre_value_from_id(client, args):
