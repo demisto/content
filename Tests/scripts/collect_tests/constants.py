@@ -23,3 +23,8 @@ DEFAULT_REPUTATION_TESTS = (
     'Indicators reputation-.json Test'
 )
 DEFAULT_MARKETPLACE_WHEN_MISSING: MarketplaceVersions = MarketplaceVersions.XSOAR
+
+SKIPPED_CONTENT_ITEMS = {
+    # these are not under packs, and are not supported anymore.
+    'playbook-Jask_Test-4.0.0.yml'
+}

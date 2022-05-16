@@ -16,10 +16,10 @@ class IdSetItem(DictBased):
     def __init__(self, id_: Optional[str], dict_: dict):
         super().__init__(dict_)
         self.id_: str = id_  # None for packs, as they don't have it.
-        self.name: str = self['name']
+        self.name: str = self.get('name', '')  # todo is ok w/o name?
         self.file_path: str = self.get('file_path', warn_if_missing=False)  # packs have no file_path value
         self.pack: Optional[str] = self.get('pack', warn_if_missing=False)  # we log an error instead of warning
-        if 'pack' not in self.content:  # todo fix in id_set
+        if id_ and 'pack' not in self.content:  # packs have no ids, and no `pack`, so non-packs are errors
             logger.error(f'content item with id={id_} and name={self.name} has no pack value in id_set')
 
         # hidden for pack_name_to_pack_metadata, deprecated for content items
@@ -71,9 +71,10 @@ class IdSet(DictFileBased):
     def artifact_iterator(self) -> Iterable[IdSetItem]:  # todo is used?
         """ returns an iterator for all content items EXCLUDING PACKS """
         for content_type, values in self.content.items():
-            if isinstance(values, dict):
-                for id_, value in values.items():
-                    yield IdSetItem(id_, value)
+            if isinstance(values, list):
+                for list_item in values:
+                    for id_, value in list_item.items():
+                        yield IdSetItem(id_, value)
             elif content_type == 'Packs':
                 continue  # Packs are skipped as they have no ID.
             else:

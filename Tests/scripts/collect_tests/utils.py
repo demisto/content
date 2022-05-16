@@ -21,15 +21,15 @@ from Tests.scripts.collect_tests.exceptions import (DeprecatedPackException,
 logger = getLogger('test_collection')  # todo is this the right way?
 
 
-def find_pack(path: Path) -> Path:
+def find_pack_folder(path: Path) -> Path:
     """
-    >>> find_pack(Path('root/Packs/MyPack/Integrations/MyIntegration/MyIntegration.yml'))
+    >>> find_pack_folder(Path('root/Packs/MyPack/Integrations/MyIntegration/MyIntegration.yml'))
     PosixPath('root/Packs/MyPack')
-    >>> find_pack(Path('Packs/MyPack1/Scripts/MyScript/MyScript.py')).name
+    >>> find_pack_folder(Path('Packs/MyPack1/Scripts/MyScript/MyScript.py')).name
     'MyPack1'
-    >>> find_pack(Path('Packs/MyPack2/Scripts/MyScript')).name
+    >>> find_pack_folder(Path('Packs/MyPack2/Scripts/MyScript')).name
     'MyPack2'
-    >>> find_pack(Path('Packs/MyPack3/Scripts')).name
+    >>> find_pack_folder(Path('Packs/MyPack3/Scripts')).name
     'MyPack3'
     """
     if 'Packs' not in path.parts:
@@ -71,10 +71,10 @@ class Machine(Enum):
 
     @staticmethod
     def get_suitable_machines(version_range: VersionRange, run_nightly: bool, run_master: bool) -> tuple['Machine']:
-        result = [
-            machine for machine in Machine
-            if isinstance(machine.value, Version) and machine.value in version_range
-        ]
+        result = []
+        if version_range:
+            result.extend([machine for machine in Machine
+                           if isinstance(machine.value, Version) and machine.value in version_range])
         if run_nightly:
             result.append(Machine.NIGHTLY)
         if run_master:
@@ -140,7 +140,7 @@ class DictFileBased(DictBased):
 class ContentItem(DictFileBased):
     def __init__(self, path: Path):
         super().__init__(path)
-        self.pack = find_pack(self.path)  # todo if not used elsewhere, create inside pack_tuple
+        self.pack = find_pack_folder(self.path)  # todo if not used elsewhere, create inside pack_tuple
         self.deprecated = self.get('deprecated', warn_if_missing=False)
 
     @property
@@ -165,18 +165,23 @@ class ContentItem(DictFileBased):
 
 class PackManager:
     skipped_packs = {'DeprecatedContent', 'NonSupported', 'ApiModules'}
-    pack_folders = {p.name for p in PACKS_PATH.glob('*') if p.is_dir()}
 
     def __init__(self):
         self.pack_name_to_pack_metadata: dict[str, ContentItem] = {}
+        self.pack_folder_to_pack_metadata: dict[Path, ContentItem] = {}
         self.deprecated_packs: set[str] = set()
 
-        for name in PackManager.pack_folders:
-            metadata = ContentItem(PACKS_PATH / name / 'pack_metadata.json')
-            self.pack_name_to_pack_metadata[name] = metadata
+        for folder in (folder.name for folder in PACKS_PATH.glob('*') if folder.is_dir()):
+            metadata = ContentItem(PACKS_PATH / folder / 'pack_metadata.json')
+            self.pack_name_to_pack_metadata[metadata.name] = metadata
+            self.pack_folder_to_pack_metadata[metadata.path.parent] = metadata
+
             if metadata.deprecated:
-                self.deprecated_packs.add(name)
+                self.deprecated_packs.add(folder)
         self.pack_names = set(self.pack_name_to_pack_metadata.keys())
+
+    def get_pack_by_path(self, path: Path) -> ContentItem:
+        return self.pack_folder_to_pack_metadata[path]
 
     def __getitem__(self, pack_name: str) -> ContentItem:
         return self.pack_name_to_pack_metadata[pack_name]
@@ -192,13 +197,13 @@ class PackManager:
         """ raises InvalidPackException if the pack name is not valid."""
         if not pack:
             raise InvalidPackNameException(pack)
-        if pack not in self.pack_names:
-            logger.error(f'inexistent pack {pack}')
-            raise InexistentPackException(pack)
         if pack in PackManager.skipped_packs:
             raise SkippedPackException(pack)
         if pack in self.deprecated_packs:
             raise DeprecatedPackException(pack)
+        if pack not in self.pack_names:
+            logger.error(f'inexistent pack {pack}')
+            raise InexistentPackException(pack)
 
 
 def to_tuple(value: Optional[str | list]) -> Optional[tuple]:

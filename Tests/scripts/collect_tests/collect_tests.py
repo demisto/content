@@ -12,19 +12,19 @@ from git import Repo
 
 from Tests.scripts.collect_tests.constants import (
     CONTENT_PATH, DEFAULT_MARKETPLACE_WHEN_MISSING, DEFAULT_REPUTATION_TESTS,
-    XSOAR_SANITY_TEST_NAMES)
+    XSOAR_SANITY_TEST_NAMES, SKIPPED_CONTENT_ITEMS)
 from Tests.scripts.collect_tests.exceptions import (DeprecatedPackException,
                                                     EmptyMachineListException,
                                                     NonDictException,
                                                     NoTestsConfiguredException,
                                                     NothingToCollectException,
                                                     NotUnderPackException,
-                                                    SkippedPackException)
+                                                    SkippedPackException, InexistentPackException)
 from Tests.scripts.collect_tests.id_set import IdSet
 from Tests.scripts.collect_tests.test_conf import TestConf
 from Tests.scripts.collect_tests.utils import (ContentItem, Machine,
                                                PackManager, VersionRange,
-                                               find_pack)
+                                               find_pack_folder)
 
 logger = getLogger('test_collection')
 logger.level = DEBUG
@@ -137,6 +137,8 @@ class CollectedTests:
                 logger.info(f'collected {pack=}, {reason.value} {description}')
             except (SkippedPackException, DeprecatedPackException) as e:
                 logger.info(str(e))
+            # except (InexistentPackException,) as e:
+            #     logger.critical(e)
 
     def __repr__(self):
         return f'{len(self.packs)} packs, {len(self.tests)} tests, {self.version_range=}'
@@ -323,9 +325,11 @@ class BranchTestCollector(TestCollector):
                  FileType.GENERIC_TYPE | FileType.GENERIC_FIELD | FileType.GENERIC_MODULE | \
                  FileType.GENERIC_DEFINITION | FileType.PRE_PROCESS_RULES | FileType.JOB | FileType.CONNECTION | \
                  FileType.RELEASE_NOTES_CONFIG | FileType.XSOAR_CONFIG:
-                # pack should be installed, but no tests are collected.
+
+                # pack is installed, but no tests are collected.
+                pack = PACK_MANAGER.get_pack_by_path(find_pack_folder(path))
                 return self._collect_pack(
-                    name=find_pack(path).name,
+                    name=pack.name,
                     reason=CollectionReason.NON_CODE_FILE_CHANGED,
                     reason_description=reason_description,
                 )
@@ -342,10 +346,9 @@ class BranchTestCollector(TestCollector):
                 else:
                     raise
 
-            case FileType.REPUTATION:  # todo reputationjson
+            case FileType.REPUTATION:
                 tests = DEFAULT_REPUTATION_TESTS
                 reason = CollectionReason.DEFAULT_REPUTATION_TESTS
-                # todo anything else?
 
             case FileType.MAPPER | FileType.CLASSIFIER:
                 source, reason = {
@@ -403,7 +406,7 @@ class NightlyTestCollector(TestCollector, ABC):
                 tests.extend(playbook.tests)
 
         return CollectedTests(tests=tests, packs=None, reason=CollectionReason.MARKETPLACE_VERSION_BY_VALUE,
-                              version_range=None, reason_description=f'({self.marketplace.value})')
+                              version_range=None, reason_description=f'({self.marketplace.value}), {tests=}')
 
     def _packs_matching_marketplace_value(self, only_value: bool) -> CollectedTests:
         """
@@ -447,9 +450,21 @@ class NightlyTestCollector(TestCollector, ABC):
                 continue
 
             if self.marketplace in item_marketplaces:
-                if not item.pack:
-                    raise ValueError('can not collect pack for items without one')  # todo replace with `continue`?
-                packs.append(item.pack)
+                path = CONTENT_PATH / item.file_path
+                try:
+                    pack_folder = find_pack_folder(path)
+                    pack = PACK_MANAGER.get_pack_by_path(pack_folder)
+                    packs.append(pack.name)
+                except NotUnderPackException:
+                    if path.name in SKIPPED_CONTENT_ITEMS:
+                        logger.info(f'skipping unsupported content item: {str(path)}')
+                        continue
+
+                # todo check if the following can be replaced by the previous 2 lines
+                # if not item.pack:
+                #     logger.error('can not collect pack for items without a pack value')  # todo fix in id_set
+                #     continue  # todo remove, fix in id_set
+                # packs.append(item.pack)
 
         return CollectedTests(tests=None, packs=tuple(packs), reason=CollectionReason.MARKETPLACE_VERSION_BY_VALUE,
                               version_range=None, reason_description=f'({self.marketplace.value})')
