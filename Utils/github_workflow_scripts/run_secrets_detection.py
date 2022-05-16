@@ -66,6 +66,8 @@ def write_id_to_env(investigation_id):
 def main():
     options = arguments_handler()
     trigger_generic_webhook(options)
+    print('different for checking')
+    sys.exit(1)
 
 
 if __name__ == "__main__":
