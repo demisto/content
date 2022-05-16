@@ -154,7 +154,9 @@ def main():
         elif options.override_all_packs:
             xsoar_configure_and_install_all_packs(options, branch_name, build_number)
         else:
-            xsoar_configure_and_install_flow(options, branch_name, build_number)
+            # Hot Fix: Upload flow failed when trying to install packs that has fromversion above 6.2
+            # CIAC-2626 issue in jira
+            xsoar_configure_and_install_all_packs(options, branch_name, build_number)
 
     except Exception as e:
         logging.error(f'Failed to configure and install packs: {e}')
