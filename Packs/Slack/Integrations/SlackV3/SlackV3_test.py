@@ -4694,3 +4694,25 @@ async def test_process_entitlement_reply(mocker, entitlement_reply, expected_tex
     )
 
     assert SlackV3.send_slack_request_async.mock_calls[0].kwargs.get('body').get('text') == expected_text
+
+
+def test_handle_tags_in_message_sync_url(mocker):
+    from SlackV3 import handle_tags_in_message_sync
+
+    # Set
+    def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
+        if method == 'users.list':
+            return {'members': js.loads(USERS)}
+        return None
+
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
+    mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
+    mocker.patch.object(slack_sdk.WebClient, 'api_call', side_effect=api_call)
+
+    user_exists_message_url = "Hello <@spengler>! <https://google.com|This message is a link to google.>"
+
+    user_message_exists_in_url_result = handle_tags_in_message_sync(user_exists_message_url)
+
+    # Assert
+
+    assert user_message_exists_in_url_result == 'Hello <@U012A3CDE>! <https://google.com|This message is a link to google.>'

@@ -21,6 +21,9 @@ BASE_PACK_DEPENDENCY_DICT = {
 }
 
 
+SIEM_RULES_OBJECTS = ['ParsingRule', 'ModelingRule', 'CorrelationRule']
+
+
 class BucketUploadFlow(object):
     """ Bucket Upload Flow constants
 
@@ -103,6 +106,7 @@ class PackTags(object):
     USE_CASE = "Use Case"
     TRANSFORMER = "Transformer"
     FILTER = "Filter"
+    COLLECTION = "Collection"
 
 
 class Metadata(object):
@@ -151,7 +155,7 @@ class Metadata(object):
     CONTENT_COMMIT_HASH = 'contentCommitHash'
     PREVIEW_ONLY = 'previewOnly'
     MANDATORY = 'mandatory'
-
+    VIDEOS = 'videos'
     DISPLAYED_IMAGES = 'displayedImages'
     EMAIL = 'email'
     URL = 'url'
@@ -182,6 +186,13 @@ class PackFolders(enum.Enum):
     LISTS = 'Lists'
     PREPROCESS_RULES = "PreProcessRules"
     JOBS = 'Jobs'
+    PARSING_RULES = 'ParsingRules'
+    MODELING_RULES = 'ModelingRules'
+    CORRELATION_RULES = 'CorrelationRules'
+    XSIAM_DASHBOARDS = 'XSIAMDashboards'
+    XSIAM_REPORTS = 'XSIAMReports'
+    TRIGGERS = 'Triggers'
+    WIZARDS = 'Wizards'
 
     @classmethod
     def pack_displayed_items(cls):
@@ -191,13 +202,17 @@ class PackFolders(enum.Enum):
             PackFolders.INDICATOR_FIELDS.value, PackFolders.REPORTS.value, PackFolders.INDICATOR_TYPES.value,
             PackFolders.LAYOUTS.value, PackFolders.CLASSIFIERS.value, PackFolders.WIDGETS.value,
             PackFolders.GENERIC_DEFINITIONS.value, PackFolders.GENERIC_FIELDS.value, PackFolders.GENERIC_MODULES.value,
-            PackFolders.GENERIC_TYPES.value, PackFolders.LISTS.value, PackFolders.JOBS.value
+            PackFolders.GENERIC_TYPES.value, PackFolders.LISTS.value, PackFolders.JOBS.value,
+            PackFolders.PARSING_RULES.value, PackFolders.MODELING_RULES.value, PackFolders.CORRELATION_RULES.value,
+            PackFolders.XSIAM_DASHBOARDS.value, PackFolders.XSIAM_REPORTS.value, PackFolders.TRIGGERS.value,
+            PackFolders.WIZARDS.value,
         }
 
     @classmethod
     def yml_supported_folders(cls):
         return {PackFolders.INTEGRATIONS.value, PackFolders.SCRIPTS.value, PackFolders.PLAYBOOKS.value,
-                PackFolders.TEST_PLAYBOOKS.value}
+                PackFolders.TEST_PLAYBOOKS.value, PackFolders.PARSING_RULES.value, PackFolders.MODELING_RULES.value,
+                PackFolders.CORRELATION_RULES.value}
 
     @classmethod
     def json_supported_folders(cls):
@@ -207,7 +222,8 @@ class PackFolders(enum.Enum):
             PackFolders.LAYOUTS.value, PackFolders.INDICATOR_TYPES.value, PackFolders.REPORTS.value,
             PackFolders.WIDGETS.value, PackFolders.GENERIC_DEFINITIONS.value, PackFolders.GENERIC_FIELDS.value,
             PackFolders.GENERIC_MODULES.value, PackFolders.GENERIC_TYPES.value, PackFolders.LISTS.value,
-            PackFolders.PREPROCESS_RULES.value, PackFolders.JOBS.value
+            PackFolders.PREPROCESS_RULES.value, PackFolders.JOBS.value, PackFolders.XSIAM_DASHBOARDS.value,
+            PackFolders.XSIAM_REPORTS.value, PackFolders.TRIGGERS.value, PackFolders.WIZARDS.value,
         }
 
 
@@ -257,6 +273,15 @@ class PackStatus(enum.Enum):
                           " which should be encrypted, seems not to be encrypted."
     FAILED_METADATA_REFORMATING = "Failed to reparse and create metadata.json when missing dependencies"
     NOT_RELEVANT_FOR_MARKETPLACE = "Pack is not relevant for current marketplace."
+    FAILED_CREATING_DEPENDENCIES_ZIP_SIGNING = "Failed signing pack while creating dependencies zip"
+    FAILED_CREATING_DEPENDENCIES_ZIP_UPLOADING = "Failed uploading pack while creating dependencies zip"
+
+
+SKIPPED_STATUS_CODES = {
+    PackStatus.PACK_ALREADY_EXISTS.name,
+    PackStatus.PACK_IS_NOT_UPDATED_IN_RUNNING_BUILD.name,
+    PackStatus.NOT_RELEVANT_FOR_MARKETPLACE.name,
+}
 
 
 class Changelog(object):

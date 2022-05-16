@@ -900,7 +900,7 @@ class ExtFilter:
                             Ddict.set(parent, child_name, child)
                     else:
                         Ddict.set(root, parent_path, child)
-                else:
+                elif not path:
                     root = child
 
             return Value(root)

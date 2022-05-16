@@ -97,6 +97,18 @@ MOCK_SEARCH_BY_NAME_RESPONSE = {
     ]
 }
 
+MOCK_SEARCH_BY_EMAIL_RESPONSE = {
+    'total': 1,
+    'data': [
+        {'class': 'network', 'score': 0, 'value': 'foo@demisto.com', 'touched_at': '2019-11-20 08:23:21', 'id': 2019,
+         'updated_at': '2019-11-20 08:22:51', 'published_at': '2019-11-20 08:22:51', 'created_at': '2019-11-20 08:22:51',
+         'status_id': 5, 'type_id': 4, 'adversaries': [], 'type': {'name': 'Email Address', 'id': 4, 'class': 'network'},
+         'status': {'name': 'Whitelisted', 'id': 5, 'description': 'Poses NO risk and should never be deployed.'},
+         'sources': [{'indicator_id': 20, 'indicator_status_id': 5, 'published_at': '2019-11-20 08:22:51', 'source_id': 8,
+                      'id': 22, 'created_at': '2019-11-20 08:22:51', 'source_type': 'users', 'creator_source_id': 8,
+                      'indicator_type_id': 4, 'reference_id': 1, 'updated_at': '2019-11-20 08:22:51',
+                      'name': 'foo@demisto.com'}]}], 'limit': 500, 'offset': 0}
+
 MOCK_GET_EVENT_RESPONSE = {
     'data': {
         'id': 2019,
@@ -228,7 +240,6 @@ def test_create_indicator_command(mocker, requests_mock):
     requests_mock.post(MOCK_API_URL + '/token', json=MOCK_ACCESS_TOKEN)
     requests_mock.get(MOCK_API_URL + '/indicator/statuses/1', json=MOCK_GET_INDICATOR_STATUS_RESPONSE_1)
     requests_mock.get(MOCK_API_URL + '/indicator/types/4', json=MOCK_GET_INDICATOR_TYPE_RESPONSE_1)
-
     from ThreatQ_v2 import create_indicator_command
     create_indicator_command()
 
@@ -288,8 +299,7 @@ def test_upload_file_command(mocker, requests_mock):
 def test_get_email_reputation(mocker, requests_mock):
     mock_demisto(mocker, MOCK_EMAIL_REPUTATION_ARGUMENTS)
     requests_mock.post(MOCK_API_URL + '/token', json=MOCK_ACCESS_TOKEN)
-    requests_mock.get(MOCK_API_URL + '/search?query=foo@demisto.com&limit=1',
-                      json=MOCK_SEARCH_BY_NAME_RESPONSE)
+    requests_mock.post(MOCK_API_URL + '/indicators/query?limit=500&offset=0&sort=id', json=MOCK_SEARCH_BY_EMAIL_RESPONSE)
     requests_mock.get(MOCK_API_URL + '/indicators/2019?with=attributes,sources,score,type',
                       json=MOCK_GET_INDICATOR_RESPONSE)
     requests_mock.get(MOCK_API_URL + '/indicator/statuses/1', json=MOCK_GET_INDICATOR_STATUS_RESPONSE_1)

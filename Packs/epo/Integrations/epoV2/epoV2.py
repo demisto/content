@@ -504,14 +504,14 @@ class Client(BaseClient):
         return self._parse_response(response)
 
     def assign_policy_to_group(self, group_id: int, product_id: str, object_id: int,
-                               reset_inheritance: bool = False) -> Tuple[int, str]:
+                               reset_inheritance: str = 'false') -> Tuple[int, str]:
         """
            Assign policy to group of machines
         Args:
            group_id (int): System tree Group ID.(as returned by system.findGroups)
            product_id (int): Product ID.(as returned by policy.find)
            object_id (int): Object ID.(as returned by policy.find)
-           reset_inheritance (bool):If true resets the inheritance for the specified policy on the given group. Defaults
+           reset_inheritance (str):If true resets the inheritance for the specified policy on the given group. Defaults
                                     to false.
         Returns:
            string indication
@@ -526,7 +526,7 @@ class Client(BaseClient):
         return self._parse_response(response)
 
     def assign_policy_to_system(self, names: str, product_id: str, type_id: int, object_id: int,
-                                reset_inheritance: bool = False) -> Tuple[dict, str]:
+                                reset_inheritance: str = 'false') -> Tuple[dict, str]:
         """
            Assign policy to system(s)
         Args:
@@ -534,7 +534,7 @@ class Client(BaseClient):
            product_id (int): Product ID.(as returned by policy.find)
            type_id (int): Type ID.(as returned by policy.find)
            object_id (int): Object ID.(as returned by policy.find)
-           reset_inheritance (bool):If true resets the inheritance for the specified policy on the given group. Defaults
+           reset_inheritance (str):If true resets the inheritance for the specified policy on the given group. Defaults
                                     to false.
         Returns:
            string indication
@@ -1545,7 +1545,7 @@ def epo_assign_policy_to_group(client: Client, args: Dict[str, Any]) -> CommandR
     object_id = arg_to_number(args.get('objectId', str))
     if object_id is None:
         raise ValueError('Must provide objectId')
-    reset_inheritance = args.get('resetInheritance', 'False')
+    reset_inheritance = args.get('resetInheritance', 'false')
 
     json_response, raw_response = client.assign_policy_to_group(group_id, product_id, object_id,
                                                                 reset_inheritance=reset_inheritance)
@@ -1579,7 +1579,7 @@ def epo_assign_policy_to_system(client: Client, args: Dict[str, Any]) -> Command
     object_id = arg_to_number(args.get('objectId', str))
     if object_id is None:
         raise ValueError('Must provide objectId')
-    reset_inheritance = argToBoolean(args.get('resetInheritance', False))
+    reset_inheritance = args.get('resetInheritance', 'false')
 
     response_json, raw_response = client.assign_policy_to_system(names, product_id, type_id, object_id,
                                                                  reset_inheritance=reset_inheritance)

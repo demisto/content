@@ -23,7 +23,7 @@ from email.parser import HeaderParser
 from email.utils import getaddresses
 from struct import unpack
 
-import chardet
+import chardet  # type: ignore
 from olefile import OleFileIO, isOleFile
 
 import demistomock as demisto  # noqa: F401
@@ -3512,7 +3512,7 @@ def unfold(s):
     :param string s: a string to unfold
     :rtype: string
     """
-    return re.sub(r'[ \t]*[\r\n][ \t\r\n]*', ' ', s).strip(' ')
+    return re.sub(r'[ \t]*[\r\n][ \t\r\n]*', ' ', s).strip(' ') if s else s
 
 
 def decode_attachment_payload(message):
@@ -3584,7 +3584,7 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
         header_list = []
         headers_map = {}  # type: dict
         for item in headers.items():
-            value = unfold(convert_to_unicode(item[1]))
+            value = unfold(convert_to_unicode(unfold(item[1])))
             item_dict = {
                 "name": item[0],
                 "value": value
@@ -3766,7 +3766,7 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
                 'To': extract_address_eml(eml, 'to'),
                 'CC': extract_address_eml(eml, 'cc'),
                 'From': extract_address_eml(eml, 'from'),
-                'Subject': convert_to_unicode(eml['Subject']),
+                'Subject': convert_to_unicode(unfold(eml['Subject'])),
                 'HTML': convert_to_unicode(html, is_msg_header=False),
                 'Text': convert_to_unicode(text, is_msg_header=False),
                 'Headers': header_list,

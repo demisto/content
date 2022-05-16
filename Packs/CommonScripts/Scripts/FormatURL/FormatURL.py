@@ -7,6 +7,8 @@ from CommonServerPython import *
 ATP_REGEX = re.compile(r'(https://\w*|\w*)\.safelinks\.protection\.outlook\.com/.*\?url=')
 FIREEYE_REGEX = re.compile(r'(https:\/\/\w*|\w*)\.fireeye\.com\/.*\/url\?k=')
 PROOF_POINT_URL_REG = re.compile(r'https://urldefense(?:\.proofpoint)?\.(com|us)/(v[0-9])/')
+FIRST_TLD = re.compile(r"([.(?!.)][a-zA-Z]?(?:\/|$))|([.(?!.)][a-zA-Z0-9]{2,}[\/])")
+
 HTTP = 'http'
 PREFIX_TO_NORMALIZE = {
     'hxxp',
@@ -102,6 +104,18 @@ def replace_protocol(url_: str) -> str:
     return url_
 
 
+def remove_brackets_from_end_of_url(url_: str) -> str:
+    """
+    Removes square brackets from the end of URL if there are any.
+    Args:
+        url_ (str): URL to remove the brackets from.
+
+    Returns:
+        (str): URL with removed brackets, if needed to remove, else the URL itself.
+    """
+    return url_[:-1] if url_[-1] in ['[', ']'] else url_
+
+
 def search_for_redirect_url_in_first_query_parameter(parse_results: ParseResult) -> Optional[str]:
     """
     Returns a redirect URL if finds it under the assumption:
@@ -138,6 +152,23 @@ def search_for_redirect_url_in_first_query_parameter(parse_results: ParseResult)
     return None
 
 
+def remove_single_letter_tld_url(url: str):
+    """
+    Args:
+        url (str): url
+    Return:
+         True if the first occurrence of a tld is 0-1 letters.
+         False otherwise.
+    """
+    m = FIRST_TLD.search(url)
+
+    if not m:
+        return False
+    elif not m.group(1):
+        return False
+    return True
+
+
 def format_urls(non_formatted_urls: List[str]) -> List[Dict]:
     """
     Formats a single URL.
@@ -172,6 +203,10 @@ def format_urls(non_formatted_urls: List[str]) -> List[Dict]:
         # Common handling for unescape and normalizing
         non_formatted_url = unquote(unescape(non_formatted_url.replace('[.]', '.')))
         formatted_url = replace_protocol(non_formatted_url)
+        formatted_url = remove_brackets_from_end_of_url(formatted_url)
+        if remove_single_letter_tld_url(formatted_url):
+            return []
+
         return [formatted_url, additional_redirect_url] if additional_redirect_url else [formatted_url]
 
     formatted_urls_groups = [format_single_url(url_) for url_ in non_formatted_urls]

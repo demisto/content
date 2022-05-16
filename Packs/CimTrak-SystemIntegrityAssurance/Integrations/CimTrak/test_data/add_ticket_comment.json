@@ -1,0 +1,21 @@
+{
+    "name": "add_ticket_comment",
+    "execute": "response_raw = CimTrak.add_ticket_comment_command(client,{'ticketId':'6','comment':'test'})\n\nresponse = response_raw[0].outputs\nif len(response_raw) > 1:\n\tret_results: List[Dict[str, Any]] = response_raw[1].outputs\n\tresponse['results'] = list()\n\tresponse_raw[1].outputs\n\tresponse['results'].append(ret_results)\n",
+    "posts": [
+        {
+            "url": "https://test.com/CimTrakRestAPI/v1/Client.addTicketComment",
+            "reply": {
+                "results": [],
+                "status": "success",
+                "errorCode": "",
+                "errorDescription": "",
+                "errorDetails": []
+            }
+        }
+    ],
+    "response": {
+        "status": "success",
+        "errorCode": "",
+        "errorDescription": ""
+    }
+}

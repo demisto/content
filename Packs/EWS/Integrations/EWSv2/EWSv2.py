@@ -4,7 +4,7 @@ import subprocess
 import warnings
 from multiprocessing import Process
 
-import dateparser
+import dateparser  # type: ignore
 import exchangelib
 from CommonServerPython import *
 from cStringIO import StringIO

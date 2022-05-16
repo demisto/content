@@ -61,3 +61,4 @@ You can also utilize threads instead, simply by specifying the `responseType` ar
 ## Notes
 ---
 - When using the `replyEntriesTag` argument, the `persistent` argument must be set to `True`.
+- `SlackAskV2` will not work when run in the playbook debugger. This is because the debugger does not generate entitlements, since they must be tied to an investigation. Entitlements are needed to track the response.

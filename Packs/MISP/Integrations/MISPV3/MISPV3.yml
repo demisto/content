@@ -162,6 +162,12 @@ script:
       - 'false'
       required: false
       secret: false
+    - default: false
+      description: 'Search for events that include match the searchstring in the events info field.'
+      isArray: false
+      name: eventinfo
+      required: false
+      secret: false
     deprecated: false
     description: Search for events in MISP. This search command will return only information
       about the matched events. To get information about attributes, use the misp-search-attributes
@@ -2855,7 +2861,47 @@ script:
     description: Publish an event.
     execution: false
     name: misp-publish-event
-  dockerimage: demisto/pymisp2:1.0.0.27224
+  - arguments:
+    - default: false
+      description: Event ID to set attributes for.
+      isArray: false
+      name: event_id
+      required: true
+      secret: false
+    - default: false
+      description: 'Adjust current attributes of an event to match the given attribute data. Has
+        to be json formated list with attributes that should be part of the event. E.g.:
+        [{"type":"domain","value":"target.domain"},{"type":"ip-dst","value":"1.2.3.4"}]'
+      isArray: false
+      name: attribute_data
+      required: true
+      secret: false
+    deprecated: false
+    description: Set event attributes according to the given attributes data.
+    execution: false
+    name: misp-set-event-attributes
+  - arguments:
+    - default: false
+      description: Indicator values to check against the MISP warninglist.
+      isArray: false
+      name: value
+      required: true
+      secret: false
+    deprecated: false
+    description: Check a list of indicator values against the MISP warninglist.
+    execution: false
+    name: misp-check-warninglist
+    outputs:
+    - contextPath: MISP.Warninglist.Count
+      description: Count on how many warninglists the value was found.
+      type: number
+    - contextPath: MISP.Warninglist.Value
+      description: Value checked.
+      type: string
+    - contextPath: MISP.Warninglist.Lists
+      description: Name of warninglists where the value was found.
+      type: string
+  dockerimage: demisto/pymisp2:1.0.0.27777
   feed: false
   isfetch: false
   longRunning: false

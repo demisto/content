@@ -27,7 +27,7 @@ function sendRequest(method, api, stringifyData) {
         // if fetching incidents, stringify long numbers to not round down long ids, e.g:
         // "dlp_incident_id":3747385551915191779 --> "dlp_incident_id":"3747385551915191779"
         if (stringifyData) {
-            stringifyBody = result.Body.replace(/([\[:])?(\d{11,})([,\}\]])/g, "$1\"$2\"$3");
+            stringifyBody = result.Body.replace(/([\[:]){1}(\d{11,})([,\}\]])/g, "$1\"$2\"$3");
             return JSON.parse(stringifyBody)
         }
         body = JSON.parse(result.Body);
