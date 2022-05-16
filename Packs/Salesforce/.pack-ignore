@@ -16,6 +16,3 @@ ignore=IM111
 
 [file:Salesforce_IAM_image.png]
 ignore=IM111
-
-[known_words]
-XSIAM

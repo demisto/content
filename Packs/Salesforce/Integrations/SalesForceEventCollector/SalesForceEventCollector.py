@@ -217,7 +217,9 @@ def main():
     # Args is always stronger. Get last run even stronger
     demisto_params = demisto.params() | demisto.args() | demisto.getLastRun()
 
-    demisto_params['client_id'] = demisto_params['auth_credendtials']['password']
+    demisto_params['client_id'] = demisto_params['client_id']['password']
+    demisto_params['client_secret'] = demisto_params['client_secret']['password']
+    demisto_params['password'] = demisto_params['password']['password']
 
     events_to_add_per_request = demisto_params.get('events_to_add_per_request', 1000)
     try:
@@ -248,7 +250,7 @@ def main():
         if command == 'test-module':
             get_events.aggregated_results(limit=1)
             return_results('ok')
-        elif command == 'salesforce-get-events' or command == 'fetch-events':
+        elif command in ('salesforce-get-events', 'fetch-events'):
             events = get_events.aggregated_results(limit=int(demisto_params.get('limit')))
 
             if command == 'fetch-events':

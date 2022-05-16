@@ -19,28 +19,12 @@ This integration was integrated and tested with Salesforce REST API V54.0
     | Use system proxy settings | False |
     | Use Secured Connection | False |
     | How many log files to fetch | False |
-    | XSIAM update limit per request | False |
     | First fetch time interval | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
-### fetch-events
-***
-Command that is activated by the engine to fetch event.
-
-
-#### Base Command
-
-`fetch-events`
-#### Input
-
-There are no input arguments for this command.
-
-#### Context Output
-
-There is no context output for this command.
 ### salesforce-get-events
 ***
 Manual command to fetch events and display them.

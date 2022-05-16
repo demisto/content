@@ -1,5 +1,5 @@
-id: test
-version: 8
+id: Salesforce Event Collector-test
+version: -1
 vcShouldKeepItemLegacyProdMachine: false
 name: Salesforce Event Collector-test
 starttaskid: "0"

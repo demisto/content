@@ -13,23 +13,28 @@ configuration:
   required: true
 - display: ""
   displaypassword: Client ID
-  name: auth_credendtials
+  name: client_id
   type: 9
   required: true
   hiddenusername: true
-- display: Client secret
+- display: ""
+  displaypassword: Client Secret
   name: client_secret
-  type: 4
+  type: 9
   required: true
+  hiddenusername: true
 - display: Username
   name: username
   type: 0
   required: true
-- display: Password
+- display: ""
+  displaypassword: Password
   name: password
-  type: 4
+  type: 9
   required: true
+  hiddenusername: true
 - display: Query to get Hourly Event Log Files
+  additionalinfo: For more Information visit the Query Hourly Event Log Files documentation https://developer.salesforce.com/docs/atlas.en-us.234.0.api_rest.meta/api_rest/event_log_file_hourly_query.htm
   name: query
   defaultvalue: "SELECT+Id+,+EventType+,+Interval+,+LogDate+,+LogFile+,+LogFileLength+FROM+EventLogFile+WHERE+Interval+=+'Hourly'"
   type: 12
@@ -44,6 +49,7 @@ configuration:
   type: 0
   defaultvalue: 1000
   required: false
+  hidden: true
 - display: First fetch time interval
   name: after
   type: 0
@@ -62,8 +68,6 @@ script:
   script: ""
   type: python
   commands:
-  - description: Command that is activated by the engine to fetch event.
-    name: fetch-events
   - description: Manual command to fetch events and display them.
     name: salesforce-get-events
     arguments:
