@@ -12,7 +12,6 @@ import urllib3
 
 API_VERSION = '0.6.0'
 
-
 # class ReqParams(BaseModel):
 #     """
 #     A class that stores the request query params
@@ -65,7 +64,7 @@ class AlibabaEventsClient(IntegrationEventsClient):
 class AlibabaGetEvents(IntegrationGetEvents):
     @staticmethod
     def get_last_run(events: list) -> dict:
-        return {'after': events[-1]['created']}
+        return {'from': events[-1]['__time__']}
 
     def _iter_events(self):
         self.client.prepare_request()
@@ -152,12 +151,11 @@ def main():
     project_name = demisto_params.get('project_name')
     endpoint = demisto_params.get('endpoint')
     logstore_name = demisto_params.get('logstore_name')
-    access_key = demisto_params.get('access_key')
-    access_key_id = demisto_params.get('access_key_id')
+    access_key = demisto_params.get('access_key').get('password')
+    access_key_id = demisto_params.get('access_key_id').get('password')
     from_ = int(demisto_params.get('from'))
     query = demisto_params.get('query')
     events_to_add_per_request = int(demisto_params.get('events_to_add_per_request'))
-
 
     headers = {'Content-Length': '0',
                'x-log-bodyrawsize': '0',
