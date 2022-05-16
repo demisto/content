@@ -94,7 +94,7 @@ function release_queue() {
 
 function get_number_in_line() {
   # if $LOCK_BY_PIPELINE_ID var is set, line in queue is: job_id#pipeline_id, else only job_id
-  if [ -n $LOCK_BY_PIPELINE_ID ]; then
+  if ! [ -z $LOCK_BY_PIPELINE_ID ]; then
 	  export NUMBER_IN_LINE=`cat $1 2> /dev/null | grep -n "$CI_JOB_ID#$CI_PIPELINE_ID" | cut -d: -f1`
 	else
 	  export NUMBER_IN_LINE=`cat $1 2> /dev/null | grep -n $CI_JOB_ID | cut -d: -f1`
@@ -103,7 +103,7 @@ function get_number_in_line() {
 
 function register_in_line() {
   # if $LOCK_BY_PIPELINE_ID var is set, line in queue is: job_id#pipeline_id, else only job_id
-  if [ -n $LOCK_BY_PIPELINE_ID ]; then
+  if ! [ -z $LOCK_BY_PIPELINE_ID ]; then
 	  echo "$CI_JOB_ID#$CI_PIPELINE_ID" >> $1
 	else
 	  echo $CI_JOB_ID >> $1
@@ -140,7 +140,7 @@ function get_build_locks() {
 function lock_machine() {
         echo "Locking $TEST_MACHINE for testing"
         # if $LOCK_BY_PIPELINE_ID, lock by $CI_PIPELINE_ID, else lock by $CI_JOB_ID
-        if [ -n $LOCK_BY_PIPELINE_ID ]; then
+        if ! [ -z $LOCK_BY_PIPELINE_ID ]; then
     	    export MACHINE_LOCK_FILE=$TEST_MACHINE-$LOCK_IDENTIFIER-$CI_PIPELINE_ID
     	  else
     	    export MACHINE_LOCK_FILE=$TEST_MACHINE-$LOCK_IDENTIFIER-$CI_JOB_ID
@@ -233,10 +233,10 @@ then
   exit 1
 fi
 
-if [ -n $LOCK_BY_PIPELINE_ID ]; then
-  echo "Locking machine by pipeline_id: $CI_PIPELINE_ID, $LOCK_BY_PIPELINE_ID"
+if ! [ -z $LOCK_BY_PIPELINE_ID ]; then
+  echo "Locking machine by pipeline_id: $CI_PIPELINE_ID, *$LOCK_BY_PIPELINE_ID*"
 else
-  echo "Locking machine by job_id: $CI_JOB_ID, $LOCK_BY_PIPELINE_ID"
+  echo "Locking machine by job_id: $CI_JOB_ID, *$LOCK_BY_PIPELINE_ID*"
 fi
 
 echo -e "We have $NUM_OF_TEST_MACHINES machines for testing and a lot more builds to test"
