@@ -33,6 +33,19 @@ configuration:
   name: first_fetch
   required: false
   type: 0
+- defaultvalue: 'Microsoft 365'
+  additionalinfo: The vendor name to be used in the dataset name, in this format <vendor>_<product>_raw.
+  display: Vendor
+  hidden: false
+  name: vendor
+  required: false
+  type: 0
+- defaultvalue: 'Defender'
+  display: Product
+  hidden: false
+  name: product
+  required: false
+  type: 0
 - additionalinfo: The time limit in seconds for fetch alerts to run. Leave this
     empty to cancel the timeout limit.
   defaultvalue: '30'
@@ -62,7 +75,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Microsoft 365 Defender event collector integration for Cortex XSIAM.
+description: Microsoft 365 Defender Event Collector integration.
 display: Microsoft 365 Defender Event Collector
 name: Microsoft 365 Defender Event Collector
 script:
@@ -82,6 +95,17 @@ script:
       defaultValue: '3 days'
       isArray: true
       name: first_fetch
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: true
+      defaultValue: 'false'
+      description: Whether to push the fetched event to XSIAM or not.
+      isArray: false
+      name: push_to_xsiam
+      predefined:
+      - 'false'
+      - 'true'
       required: false
       secret: false
   isfetch: false

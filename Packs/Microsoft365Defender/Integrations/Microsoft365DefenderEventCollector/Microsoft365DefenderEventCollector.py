@@ -217,8 +217,10 @@ class DefenderAuthenticator(BaseModel):
 
             demisto.debug('getting access token for Defender Authenticator - succeeded')
 
-        except BaseException:
+        except BaseException as e:
             # catch BaseException to catch also sys.exit via return_error
+            demisto.error(f'Fail to authenticate with Microsoft services: {str(e)}')
+
             err_msg = 'Fail to authenticate with Microsoft services, see the error details in the log'
             raise DemistoException(err_msg)
 
@@ -309,13 +311,13 @@ def test_module(get_events: DefenderGetEvents) -> str:
         if 'Forbidden' in str(e) or 'authenticate' in str(e):
             message = AUTH_ERROR_MSG
         else:
-            raise e
+            raise
     return message
 
 
 def main(command: str, demisto_params: dict):
 
-    demisto.debug(f'Command being called is {demisto.command()}')
+    demisto.debug(f'Command being called is {command}')
     try:
 
         options = DefenderIntegrationOptions.parse_obj(demisto_params)
@@ -334,12 +336,17 @@ def main(command: str, demisto_params: dict):
                 demisto.debug(f'{command=}, publishing events to the context')
                 human_readable = tableToMarkdown(name="Alerts:", t=events)
                 return_results(CommandResults('Microsoft365Defender.alerts', 'id', events, readable_output=human_readable))
-            if events:
-                # publishing events to XSIAM
-                demisto.debug(f'{command=}, publishing events to XSIAM')
+            elif events:
                 demisto.setLastRun(get_events.get_last_run(events))
                 demisto.debug(f'Last run set to {demisto.getLastRun()}')
-                send_events_to_xsiam(events, vendor='Microsoft', product='Defender 365')
+            
+            if command == 'fetch-events' or argToBoolean(demisto_params.get('push_to_xsiam', False)):
+                # publishing events to XSIAM
+                vendor = demisto_params.get('vendor')
+                product = demisto_params.get('product')
+                
+                demisto.debug(f'{command=}, publishing events to XSIAM')
+                send_events_to_xsiam(events, vendor=vendor, product=product)
 
     # Log exceptions and return errors
     except Exception as e:
