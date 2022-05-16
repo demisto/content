@@ -55,10 +55,11 @@ class CyberArkEventsClient(IntegrationEventsClient):
         return
 
     def authenticate(self):
+        credentials = base64.b64encode(f'{self.credentials.identifier}:{self.credentials.password}'.encode()).decode()
         request = IntegrationHTTPRequest(
             method=self.request.method,
             url=f"{demisto.params().get('url', '').removesuffix('/')}/oauth2/token/{demisto.params().get('app_id')}",
-            headers={'Authorization': f"Basic {base64.b64encode(f'{self.credentials.identifier}:{self.credentials.password}'.encode()).decode()}"},
+            headers={'Authorization': f"Basic {credentials}"},
             data={'grant_type': 'client_credentials', 'scope': 'siem'},
             verify=not self.request.verify,
         )
@@ -82,8 +83,8 @@ class CyberArkGetEvents(IntegrationGetEvents):
 
         return datetime.utcfromtimestamp(last_timestamp / 1000).strftime(DATETIME_FORMAT)
 
-    def get_last_run(self, events: list) -> tuple[str, list]:
-        return self.get_last_run_time(events), self.get_last_run_ids(events)
+    def get_last_run(self, events: list) -> dict:  # type: ignore
+        return {'from': self.get_last_run_time(events), 'ids': self.get_last_run_ids(events)}
 
     def _iter_events(self):
         self.client.authenticate()
@@ -97,11 +98,12 @@ class CyberArkGetEvents(IntegrationGetEvents):
 
 
 def get_request_params(**kwargs: dict) -> dict:
-    fetch_from = kwargs.get('from', '3 days')
-    from_time = datetime.strftime(dateparser.parse(fetch_from, settings={'TIMEZONE': 'UTC'}), DATETIME_FORMAT)
+    fetch_from = str(kwargs.get('from', '3 days'))
+    default_from_day = datetime.now() - timedelta(days=3)
+    from_time = datetime.strftime(dateparser.parse(fetch_from, settings={'TIMEZONE': 'UTC'}) or default_from_day, DATETIME_FORMAT)
 
     params = {
-        'url': f'{kwargs.get("url", "").removesuffix("/")}/RedRock/Query',
+        'url': f'{str(kwargs.get("url", "")).removesuffix("/")}/RedRock/Query',
         'data': json.dumps({
             "Script": f"Select {', '.join(EVENT_FIELDS)} from Event where WhenOccurred > '{from_time}'"
         }),
@@ -128,9 +130,9 @@ def main(command: str, demisto_params: dict):
             send_events_to_xsiam(events, vendor='CyberArk', product='Idaptive')
 
             if events:
-                last_run_time, last_run_ids = get_events.get_last_run(events)
-                demisto.setLastRun({'from': last_run_time, 'ids': last_run_ids})
-                demisto.debug(f'Set last run to {last_run_time}')
+                last_run = get_events.get_last_run(events)
+                demisto.debug(f'Set last run to {last_run}')
+                demisto.setLastRun(last_run)
 
             if command == 'CyberArk-get-events':
                 command_results = CommandResults(
