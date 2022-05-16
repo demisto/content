@@ -7,6 +7,7 @@ from google.cloud.bigquery.client import Client
 from google.cloud import bigquery
 from datetime import timedelta
 from typing import List, Dict
+from google.oauth2.service_account import Credentials
 
 import Tests.Marketplace.marketplace_services as mp_services
 from Tests.Marketplace.marketplace_constants import Metadata, LANDING_PAGE_SECTIONS_PATH
@@ -143,6 +144,9 @@ class StatisticsHandler:
         query = f"SELECT * FROM `{StatisticsHandler.DOWNLOADS_TABLE}` LIMIT {StatisticsHandler.BIG_QUERY_MAX_RESULTS}"
         # ignore missing package warning
         warnings.filterwarnings("ignore", message="Cannot create BigQuery Storage client, the dependency ")
+        import pandas as pd
+        import google.oauth2 
+        pd.read_gbq(query, )
         packs_statistic_table = self._bq_client.query(query).to_dataframe()
         packs_statistic_table.set_index('pack_name', inplace=True)
 
@@ -214,7 +218,10 @@ def init_bigquery_client(service_account=None):
          google.cloud.bigquery.client.Client: initialized google cloud big query client.
     """
     if service_account:
-        bq_client = bigquery.Client.from_service_account_json(service_account)
+        vision_credentials = Credentials.from_service_account_info(service_account)
+
+        bq_client = bigquery.Client(credentials=vision_credentials)
+        # bq_client = bigquery.Client.from_service_account_json(service_account)
         logging.info("Created big query service account")
     else:
         # in case of local dev use, ignored the warning of non use of service account.
