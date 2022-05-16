@@ -183,7 +183,8 @@ class StatisticsHandler:
             A list with 20 pack names that has the highest download rate.
         """
         query = f"SELECT pack_name FROM `{StatisticsHandler.TOP_PACKS_14_DAYS_TABLE}` ORDER BY num_count DESC"
-        packs_sorted_by_download_count_dataframe = self._bq_client.query(query).result().to_dataframe()
+        query_config = bigquery.QueryJobConfig(use_legacy_sql=True)
+        packs_sorted_by_download_count_dataframe = self._bq_client.query(query, job_config=query_config).to_dataframe()
         packs_sorted_by_download_count = [
             pack_array[0] for pack_array in packs_sorted_by_download_count_dataframe.to_numpy()
         ]
