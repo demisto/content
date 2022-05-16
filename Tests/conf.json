@@ -1033,14 +1033,14 @@
         },
         {
             "integrations": "Panorama",
-            "instance_names": "palo_alto_panorama_9.0",
+            "instance_names": "palo_alto_panorama_9.1",
             "playbookID": "PAN-OS-panorama-topology-test-pb",
             "fromversion": "6.1.0",
             "timeout": 1000
         },
         {
             "integrations": "Panorama",
-            "instance_names": "palo_alto_firewall_9.0",
+            "instance_names": "palo_alto_firewall_9.1",
             "playbookID": "PAN-OS-firewall-topology-test-pb",
             "fromversion": "6.1.0",
             "timeout": 1000
