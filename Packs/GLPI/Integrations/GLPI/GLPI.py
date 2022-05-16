@@ -1,12 +1,8 @@
-# import demistomock as demisto  # noqa: F401
-# from CommonServerPython import *  # noqa: F401
-
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 
 
-# /docker_image_create name=glpi-api dependencies=glpi-api,bcrypt
 ''' IMPORTS '''
 
 import json
@@ -20,6 +16,7 @@ from glpi_api import GLPI
 
 ''' CONSTANTS, GLPI DATA '''
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
+MAX_INCIDENTS_TO_FETCH = 50
 
 
 """Manifest when uploading a document passed as JSON in the multipart/form-data POST
@@ -89,9 +86,11 @@ TICKET_LINK = {
     'Parent': 4
 }
 
-
-class GLPIError(Exception):
-    """Exception raised by this module."""
+USER_TYPE = {
+    'REQUESTER': 1,
+    'ASSIGNED': 2,
+    'WATCHER': 3
+}
 
 
 class myglpi(GLPI):
@@ -134,17 +133,17 @@ class myglpi(GLPI):
         )
 
         if response.status_code != 201:
-            GLPIError(response)
+            DemistoException(response)
 
         doc_id = response.json()['id']
         error = response.json()['upload_result']['filename'][0].get('error', None)
         if error is not None:
-            warnings.warn(WARN_DEL_DOC.format(doc_id), UserWarning)
+            demisto.error(WARN_DEL_DOC.format(doc_id), UserWarning)
             try:
                 self.delete('Document', {'id': doc_id}, force_purge=True)
-            except GLPIError as err:
-                warnings.warn(WARN_DEL_ERR.format(doc_id, str(err)), UserWarning)
-            raise GLPIError('(ERROR_GLPI_INVALID_DOCUMENT) {:s}'.format(error))
+            except DemistoException as err:
+                demisto.error(WARN_DEL_ERR.format(doc_id, str(err)), UserWarning)
+            raise DemistoException('(ERROR_GLPI_INVALID_DOCUMENT) {:s}'.format(error))
 
         return response.json()
 
@@ -296,7 +295,7 @@ def test_module(params):
         result = client.test()
         if 'valid_id' in result:
             return 'ok'
-        return 'Test Failed!'
+        return 'Test Failed! Check your GLPI server'
     except Exception as e:
         if 'ERROR_WRONG_APP_TOKEN_PARAMETER' in str(e):
             return 'Test Failed! Authentication Error: ' + str(e)
@@ -332,11 +331,11 @@ def get_ticket_users_helper(client, ticket_id):
     watcher = []
     users = client.get_ticket_users(ticket_id)
     for user in users:
-        if user['type'] == 1:
+        if user['type'] == USER_TYPE['REQUESTER']:
             requester.append(user['users_id'])
-        elif user['type'] == 2:
+        elif user['type'] == USER_TYPE['ASSIGNED']:
             assigned.append(user['users_id'])
-        elif user['type'] == 3:
+        elif user['type'] == USER_TYPE['WATCHER']:
             watcher.append(user['users_id'])
     return requester, assigned, watcher
 
@@ -363,7 +362,7 @@ def get_ticket_docs_helper(client, ticket_id):
         for doc in docs:
             doc_name = client.get_item('Document', doc['documents_id']).get('filename')
             file = client.download_document(doc['documents_id'], filename=doc_name)
-            filepath, filename = os.path.split(file)
+            filename = os.path.split(file)[1]
             f = open(file, 'rb')
             data = f.read()
             files.append(fileResult(filename, data))
@@ -394,9 +393,7 @@ def output_format(res, output_type=None, readable=None):
             keys = res[0].keys()
         else:
             keys = res.keys()
-        key_list = []
-        for key in keys:
-            key_list.append(key)
+        key_list = [key for key in keys]
         if not output_type:
             output_type = key_list[0].split(".")[0]
         if not readable:
@@ -434,10 +431,10 @@ def upload_files(client, entries, ticket_id=None, filename=None, doc_name=None):
     for entry in entry_ids:
         path_res = demisto.getFilePath(entry)
         full_file_name = path_res.get('name')
-        file_name, file_extension = os.path.splitext(full_file_name)
+        file_extension = os.path.splitext(full_file_name)[1]
         if filename:
             full_file_name = files[entry]
-        filepath, filename = os.path.split(path_res.get('path'))
+        filename = os.path.split(path_res.get('path'))[1]
         with open(path_res.get('path'), "rb") as fhandler:
             if not file_extension:
                 file_extension = ''
@@ -508,7 +505,7 @@ def create_user_command(client, args):
             '_useremails': [email],
             'firstname': firstname,
             'password': glpi_pass,
-            '_profiles_id': profile_id}
+            '_profiles_id': [profile_id]}
 
     if additional_fields:
         user.update(additional_fields)
@@ -518,38 +515,43 @@ def create_user_command(client, args):
 
 
 def update_user_command(client, args):
-    user = {'id': args.get('id')}
+    user_id = args.get('id')
+    user = {'id': user_id}
     additional_fields = split_fields(str(args.get('update_fields', '')), ';')
     if additional_fields:
         user.update(additional_fields)
     res = client.update_user(user)
-    result = output_format(res, 'User', 'User with ID ' + str(args.get('id')) + ' successfully updated')
-    return result
+    if res[0][str(user_id)] is True:
+        return output_format(res, 'User', 'User with ID ' + str(user_id) + ' successfully updated')
+    raise DemistoException('Error when trying to update user ID ' + str(user_id) + ': ' + str(res))
 
 
 def delete_user_command(client, args):
     username = args.get('name')
     purge = args.get('purge')
     user_id = get_user_id_helper(client, args)
-    client.delete_user(user_id, purge)
-    result = 'User ' + str(username) + ' successfully deleted'
-    return result
+    res = client.delete_user(user_id, purge)
+    if res[0][str(user_id)] is True:
+        return 'User ' + str(username) + ' successfully deleted'
+    raise DemistoException('Error when trying to delete user ' + str(username) + ': ' + str(res))
 
 
 def enable_user_command(client, args):
     username = args.get('name')
     user_id = get_user_id_helper(client, args)
-    client.enable_user(user_id)
-    result = 'User ' + str(username) + ' successfully enabled'
-    return result
+    res = client.enable_user(user_id)
+    if res[0][str(user_id)] is True:
+        return 'User ' + str(username) + ' successfully enabled'
+    raise DemistoException('Error when trying to enable user ' + str(username) + ': ' + str(res))
 
 
 def disable_user_command(client, args):
     username = args.get('name')
     user_id = get_user_id_helper(client, args)
-    client.disable_user(user_id)
-    result = 'User ' + str(username) + ' successfully disabled'
-    return result
+    res = client.disable_user(user_id)
+    if res[0][str(user_id)] is True:
+        return 'User ' + str(username) + ' successfully disabled'
+    raise DemistoException('Error when trying to disable user ' + str(username) + ': ' + str(res))
 
 
 def add_comment_command(client, args):
@@ -561,7 +563,7 @@ def add_comment_command(client, args):
             result = output_format(res, 'Comment', 'Comment successfully added to ticket ID : ' + str(ticket_id))
             return result
     else:
-        raise DemistoException('Error add comment')
+        raise DemistoException('Error when trying to add comment: ' + str(res))
 
 
 def add_link_command(client, args):
@@ -574,7 +576,7 @@ def add_link_command(client, args):
             result = output_format(res, 'Link', 'Link successfully added to ticket ID : ' + str(ticket_id_1))
             return result
     else:
-        raise DemistoException('Error add link')
+        raise DemistoException('Error when trying to add link: ' + str(res))
 
 
 def create_ticket_command(client, args):
@@ -594,6 +596,7 @@ def create_ticket_command(client, args):
 
 
 def update_ticket_command(client, args):
+    ticket_id = args.get('id')
     additional_fields = split_fields(str(args.get('additional_fields', '')), ';')
     ticket_data = ticket_format(args)
     if additional_fields:
@@ -603,29 +606,26 @@ def update_ticket_command(client, args):
     entries = args.get('entryid')
     if entries:
         upload_files(client, entries, ticket_data['id'], None, "Document Ticket " + str(ticket_data['id']))
-    result = output_format(res, 'Ticket', 'Ticket successfully updated')
-    return result
+    if res[0][str(ticket_id)] is True:
+        return output_format(res, 'Ticket', 'Ticket successfully updated')
+    raise DemistoException('Error when trying to update ticket ' + ticket_id + ': ' + str(res))
 
 
 def delete_ticket_command(client, args):
     ticket_id = args.get('ticket_id')
     purge = args.get('purge')
-    client.delete_ticket(ticket_id, purge)
-    result = 'Ticket ID ' + str(ticket_id) + ' successfully deleted'
-    return result
+    res = client.delete_ticket(ticket_id, purge)
+    if res[0][str(ticket_id)] is True:
+        return 'Ticket ID ' + str(ticket_id) + ' successfully deleted'
+    raise DemistoException('Error when trying to delete ticket ' + ticket_id + ': ' + str(res))
 
 
 def get_ticket_command(client, args):
     ticket_id = args.get('ticket_id')
     res = client.get_ticket(ticket_id)
-    requester, assigned, watcher = get_ticket_users_helper(client, ticket_id)
-    res['requester_users'] = requester
-    res['assigned_users'] = assigned
-    res['watcher_users'] = watcher
-    grequester, gassigned, gwatcher = get_ticket_groups_helper(client, ticket_id)
-    res['requester_groups'] = grequester
-    res['assigned_groups'] = gassigned
-    res['watcher_groups'] = gwatcher
+    res['requester_users'], res['assigned_users'], res['watcher_users'] = get_ticket_users_helper(client, ticket_id)
+    res['requester_groups'], res['assigned_groups'], res['watcher_groups'] = get_ticket_groups_helper(client, ticket_id)
+
     comments = client.get_ticket_comments(ticket_id)
     for comment in comments:
         html = unescape(comment.get('content'))
@@ -676,13 +676,14 @@ def search_command(client, args):
         return "Nothing found"
 
 
-def fetch_incidents(client, last_run, first_fetch_time):
+def fetch_incidents(client, last_run, max_results, first_fetch_time):
     """
     This function will execute each interval (default is 1 minute).
 
     Args:
         client (Client): HelloWorld client
         last_run (dateparser.time): The greatest incident created_time we fetched from last fetch
+        max_results (int): Maximum numbers of incidents per fetch
         first_fetch_time (dateparser.time): If last_run is None then fetch all incidents since first_fetch_time
 
     Returns:
@@ -704,19 +705,13 @@ def fetch_incidents(client, last_run, first_fetch_time):
     incidents = []
     demisto.info(f'Fetching GLPI tickets since: {str(search_date)}')
     items = client.list_incidents(search_date)
+    count_incidents = 0
     for item in items:
         ticket_id = item.get('2')
         ticket = client.get_ticket(ticket_id)
-        requester, assigned, watcher = get_ticket_users_helper(client, ticket_id)
-        ticket['requester_users'] = requester
-        ticket['assigned_users'] = assigned
-        ticket['watcher_users'] = watcher
-        grequester, gassigned, gwatcher = get_ticket_groups_helper(client, ticket_id)
-        ticket['requester_groups'] = grequester
-        ticket['assigned_groups'] = gassigned
-        ticket['watcher_groups'] = gwatcher
-        htmldetails = unescape(ticket['content'])
-        ticket['content'] = htmldetails
+        ticket['requester_users'], ticket['assigned_users'], ticket['watcher_users'] = get_ticket_users_helper(client, ticket_id)  # noqa: E501
+        ticket['requester_groups'], ticket['assigned_groups'], ticket['watcher_groups'] = get_ticket_groups_helper(client, ticket_id)  # noqa: E501
+        ticket['content'] = unescape(ticket['content'])
         files = []
         files_entries = get_ticket_docs_helper(client, ticket_id)
         for file in files_entries:
@@ -732,7 +727,8 @@ def fetch_incidents(client, last_run, first_fetch_time):
             demisto.params().get('file_tag'),
             demisto.params().get('work_notes_tag')
         ]
-        demisto.debug('incident occured : ' + str(incident_created_time.strftime(DATE_FORMAT)))  # type: ignore[union-attr]
+        demisto.debug(f'Incident with ID {ticket_id} and name {ticket["name"]} occured: {str(incident_created_time.strftime(DATE_FORMAT))}')  # type: ignore[union-attr]  # noqa: E501
+
         incident = {
             'name': ticket['name'],
             'occurred': incident_created_time.strftime(DATE_FORMAT),  # type: ignore[union-attr]
@@ -740,10 +736,16 @@ def fetch_incidents(client, last_run, first_fetch_time):
             'rawJSON': json.dumps(ticket)
         }
         incidents.append(incident)
+        count_incidents += 1
 
         # Update last run and add incident if the incident is newer than last fetch
         if incident_created_time > latest_created_time:  # type: ignore[operator]
             latest_created_time = incident_created_time
+
+        if count_incidents >= max_results:
+            demisto.debug('max_results reached')
+            break
+
     next_run = {'last_fetch': latest_created_time.strftime(DATE_FORMAT)}  # type: ignore[union-attr]
     return next_run, incidents
 
@@ -755,7 +757,7 @@ def get_mapping_fields_command() -> GetMappingFieldsResponse:
         client: XSOAR client to use
     Returns: Dictionary with keys as field names
     """
-    incident_type_scheme = SchemeTypeMapping(type_name="incident")
+    incident_type_scheme = SchemeTypeMapping(type_name="GLPI Incident")
 
     for field in GLPI_ARGS:
         incident_type_scheme.add_field(field)
@@ -780,14 +782,13 @@ def get_remote_data_command(client, args, params={}):
     parsed_args = GetRemoteDataArgs(args)
     # ticket_id = args.get('id', '')
     ticket_id = parsed_args.remote_incident_id
-    demisto.debug(f'Getting update for remote {ticket_id}')
     last_update = args.get('lastUpdate')
-    demisto.debug('last_update: ' + str(last_update))
+    demisto.debug(f'Getting update for remote id {ticket_id} with last_update: {str(last_update)}')
     formated_date = last_update.replace('T', ' ').split('.')[0]
     try:
         new_incident_data = client.get_ticket(ticket_id)
         entries = []
-        demisto.debug('fetch files')
+        demisto.debug(f'fetch files for ticket with id {ticket_id}')
         ticket_docs = client.get_ticket_docs(ticket_id)
         if ticket_docs:
             for ticket_doc in ticket_docs:
@@ -795,8 +796,8 @@ def get_remote_data_command(client, args, params={}):
                     document = client.get_item('Document', ticket_doc.get('documents_id'))
                     if '_mirrored_from_xsoar' not in document.get('filename'):
                         file = client.download_document(ticket_doc.get('documents_id'), filename=document.get('filename'))
-                        demisto.debug('file fetched')
-                        filepath, filename = os.path.split(file)
+                        demisto.debug(f'file {document.get("filename")} fetched for ticket with id {ticket_id}')
+                        filename = os.path.split(file)[1]
                         f = open(file, 'rb')
                         data = f.read()
                         entries.append(fileResult(filename, data))
@@ -816,10 +817,10 @@ def get_remote_data_command(client, args, params={}):
         demisto.debug(f'Pull result is {new_incident_data}')
         return GetRemoteDataResponse(new_incident_data, entries)
     except Exception as e:
-        raise DemistoException('Error : ' + str(e))
+        raise DemistoException(f'Error in incoming mirror for incident id {ticket_id}. :Error message: {str(e)}')
 
 
-def update_remote_system_command(client: Client, args: Dict[str, Any], params: Dict[str, Any]) -> str:
+def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
     """update-remote-system command: pushes local changes to the remote system
 
     :type client: ``Client``
@@ -839,7 +840,6 @@ def update_remote_system_command(client: Client, args: Dict[str, Any], params: D
     :rtype: ``str``
     """
     parsed_args = UpdateRemoteSystemArgs(args)
-    ticket_id = parsed_args.remote_incident_id
     if parsed_args.delta:
         demisto.debug(f'Got the following delta keys {str(list(parsed_args.delta.keys()))}')
 
@@ -862,8 +862,8 @@ def update_remote_system_command(client: Client, args: Dict[str, Any], params: D
                       f'not new nor changed.')
     # Close incident if relevant
     if updated_incident and parsed_args.inc_status == IncidentStatus.DONE:
-        demisto.debug(f'Closing remote incident {ticket_id}')
-        client.close_ticket(ticket_id)
+        demisto.debug(f'Closing remote incident {new_incident_id}')
+        client.close_ticket(new_incident_id)
 
     entries = parsed_args.entries
 
@@ -880,12 +880,12 @@ def update_remote_system_command(client: Client, args: Dict[str, Any], params: D
                 if not file_extension:
                     file_extension = ''
                 up = client.upload_document(file_name + '_mirrored_from_xsoar' + file_extension, path_res.get('path'))
-                client.link_document_to_ticket(up['id'], ticket_id)
+                client.link_document_to_ticket(up['id'], new_incident_id)
             else:
                 # Mirroring comment and work notes as entries
                 user = entry.get('user', 'dbot') or 'dbot'
                 text = f"({user}): {str(entry.get('contents', ''))}\n\n Mirrored from Cortex XSOAR"
-                client.add_comment(ticket_id, text)
+                client.add_comment(new_incident_id, text)
 
     return new_incident_id
 
@@ -950,12 +950,21 @@ def main():
         elif cmd == 'get-modified-remote-data':
             return_results(get_modified_remote_data_command(client, demisto.args(), params['mirror_limit']))
         elif cmd == 'update-remote-system':
-            return_results(update_remote_system_command(client, demisto.args(), demisto.params()))
+            return_results(update_remote_system_command(client, demisto.args()))
         elif cmd == 'fetch-incidents':
+            # Convert the argument to an int using helper function or set to MAX_INCIDENTS_TO_FETCH
+            max_results = arg_to_number(
+                arg=demisto.params().get('max_fetch'),
+                arg_name='max_fetch',
+                required=False
+            )
+            if not max_results or max_results > MAX_INCIDENTS_TO_FETCH:
+                max_results = MAX_INCIDENTS_TO_FETCH
             # Set and define the fetch incidents command to run after activated via integration settings.
             new_run, incidents = fetch_incidents(
                 client=client,
                 last_run=demisto.getLastRun(),
+                max_results=max_results,
                 first_fetch_time=params['first_fetch_time'])
             demisto.setLastRun(new_run)
             demisto.incidents(incidents)

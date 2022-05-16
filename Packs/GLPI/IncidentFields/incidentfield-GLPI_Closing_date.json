@@ -1,7 +1,8 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "GLPI Ticket"
+        "GLPI Incident",
+        "GLPI Request"
     ],
     "caseInsensitive": true,
     "cliName": "glpiclosingdate",
@@ -13,7 +14,7 @@
     "id": "incident_glpiclosingdate",
     "isReadOnly": false,
     "locked": false,
-    "name": "GLPI Closing date",
+    "name": "GLPI Closing Date",
     "neverSetAsRequired": false,
     "openEnded": false,
     "ownerOnly": false,

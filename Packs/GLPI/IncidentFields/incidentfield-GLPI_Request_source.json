@@ -1,7 +1,8 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "GLPI Ticket"
+        "GLPI Incident",
+        "GLPI Request"
     ],
     "caseInsensitive": true,
     "cliName": "glpirequestsource",
@@ -13,7 +14,7 @@
     "id": "incident_glpirequestsource",
     "isReadOnly": false,
     "locked": false,
-    "name": "GLPI Request source",
+    "name": "GLPI Request Source",
     "neverSetAsRequired": false,
     "openEnded": false,
     "ownerOnly": false,

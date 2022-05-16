@@ -1,7 +1,8 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "GLPI Ticket"
+        "GLPI Incident",
+        "GLPI Request"
     ],
     "caseInsensitive": true,
     "cliName": "glpicategory",

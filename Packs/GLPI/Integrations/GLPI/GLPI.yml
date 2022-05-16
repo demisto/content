@@ -5,6 +5,9 @@ name: GLPI
 display: GLPI
 category: Case Management
 description: GLPI open source ITSM solution
+defaultclassifier: GLPI - Classifier
+defaultmapperin: GLPI - Incoming Mapper
+defaultmapperout: GLPI - Outgoing Mapper
 configuration:
 - name: url
   display: Server URL (e.g. https://example.net/apirest.php)
@@ -60,7 +63,7 @@ configuration:
 - name: mirror_limit
   display: Maximum number of incidents to mirror each time
   required: false
-  defaultvalue: '100'
+  defaultvalue: '50'
   type: 0
   additionalinfo:
 - name: mirror_direction
@@ -699,7 +702,24 @@ script:
   - name: glpi-update-user
     description: Update a user
     deprecated: false
-    arguments: []
+    arguments:
+    - name: id
+      required: true
+      description: User ID
+    - name: name
+      description: Login
+    - name: firstname
+      description: Firstname
+    - name: lastname
+      description: Lastname
+    - name: email
+      description: Email address
+    - name: password
+      description: Password
+    - name: profile
+      description: Profile name
+    - name: update_fields
+      description: 'Additional fields in the format: fieldname1=value;fieldname2=value;'
     outputs: []
   dockerimage: demisto/glpi:1.0.0.29210
   isfetch: true

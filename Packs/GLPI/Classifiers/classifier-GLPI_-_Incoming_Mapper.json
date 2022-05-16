@@ -1,10 +1,342 @@
 {
-    "defaultIncidentType": "GLPI Ticket",
+    "defaultIncidentType": "",
     "description": "Maps incoming GLPI incidents fields.",
     "feed": false,
     "id": "GLPI - Incoming Mapper",
     "mapping": {
-        "GLPI Ticket": {
+        "GLPI Incident": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "GLPI Assigned to": {
+                    "complex": {
+                        "filters": [],
+                        "root": "assigned_users",
+                        "transformers": [
+                            {
+                                "operator": "Stringify"
+                            }
+                        ]
+                    }
+                },
+                "GLPI Assigned to group": {
+                    "complex": {
+                        "filters": [],
+                        "root": "assigned_groups",
+                        "transformers": [
+                            {
+                                "operator": "Stringify"
+                            }
+                        ]
+                    }
+                },
+                "GLPI Category": {
+                    "simple": "itilcategories_id"
+                },
+                "GLPI Closing date": {
+                    "simple": "closedate"
+                },
+                "GLPI Description": {
+                    "simple": "content"
+                },
+                "GLPI Impact": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "impact",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "input_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "1,2,3,4,5"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "1 - Very low,2 - Low,3 - Medium,4 - High,5 - Very high"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "GLPI Internal time to own": {
+                    "simple": "internal_time_to_own"
+                },
+                "GLPI Internal time to resolve": {
+                    "simple": "internal_time_to_resolve"
+                },
+                "GLPI Opening date": {
+                    "simple": "date"
+                },
+                "GLPI Priority": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "priority",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "input_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "1,2,3,4,5,6"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "1 - Very low,2 - Low,3 - Medium,4 - High,5 - Very high,6 - Major"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "GLPI Request source": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "requesttypes_id",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "input_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "1,2,3,4,5,6"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "Helpdesk,E-Mail,Phone,Direct,Written,Other"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "GLPI Requester": {
+                    "complex": {
+                        "filters": [],
+                        "root": "requester_users",
+                        "transformers": [
+                            {
+                                "operator": "Stringify"
+                            }
+                        ]
+                    }
+                },
+                "GLPI Requester group": {
+                    "complex": {
+                        "filters": [],
+                        "root": "requester_groups",
+                        "transformers": [
+                            {
+                                "operator": "Stringify"
+                            }
+                        ]
+                    }
+                },
+                "GLPI Solved date": {
+                    "simple": "solvedate"
+                },
+                "GLPI Status": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "status",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "input_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "1,2,3,4,5,6"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "1 - New,2 - Processing (assigned),3 - Processing (planned),4 - Pending,5 - Solved,6 - Closed"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "GLPI Ticket ID": {
+                    "simple": "id"
+                },
+                "GLPI Time to own": {
+                    "simple": "time_to_own"
+                },
+                "GLPI Time to resolve": {
+                    "simple": "time_to_resolve"
+                },
+                "GLPI Type": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "type",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "input_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "1,2"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "1 - Incident,2 - Request"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "GLPI Urgency": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "urgency",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "input_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "1,2,3,4,5,6"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "1 - Very low,2 - Low,3 - Medium,4 - High,5 - Very high,6 - Major"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "GLPI Watcher": {
+                    "complex": {
+                        "filters": [],
+                        "root": "watcher_users",
+                        "transformers": [
+                            {
+                                "operator": "Stringify"
+                            }
+                        ]
+                    }
+                },
+                "GLPI Watcher group": {
+                    "complex": {
+                        "filters": [],
+                        "root": "watcher_groups",
+                        "transformers": [
+                            {
+                                "operator": "Stringify"
+                            }
+                        ]
+                    }
+                },
+                "Ticket Closed Date": {
+                    "complex": {
+                        "filters": [],
+                        "root": "closedate",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "add_utc_timezone": {},
+                                    "dayfirst": {
+                                        "value": {
+                                            "simple": "false"
+                                        }
+                                    },
+                                    "fuzzy": {},
+                                    "yearfirst": {}
+                                },
+                                "operator": "DateStringToISOFormat"
+                            }
+                        ]
+                    }
+                },
+                "Ticket Opened Date": {
+                    "complex": {
+                        "filters": [],
+                        "root": "date",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "add_utc_timezone": {},
+                                    "dayfirst": {
+                                        "value": {
+                                            "simple": "false"
+                                        }
+                                    },
+                                    "fuzzy": {},
+                                    "yearfirst": {}
+                                },
+                                "operator": "DateStringToISOFormat"
+                            }
+                        ]
+                    }
+                },
+                "dbotMirrorDirection": {
+                    "simple": "mirror_direction"
+                },
+                "dbotMirrorId": {
+                    "simple": "id"
+                },
+                "dbotMirrorInstance": {
+                    "simple": "mirror_instance"
+                },
+                "dbotMirrorTags": {
+                    "simple": "mirror_tags"
+                },
+                "name": {
+                    "simple": "name"
+                }
+            }
+        },
+        "GLPI Request": {
             "dontMapEventToLabels": false,
             "internalMapping": {
                 "GLPI Assigned to": {

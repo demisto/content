@@ -1,7 +1,8 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "GLPI Ticket"
+        "GLPI Incident",
+        "GLPI Request"
     ],
     "caseInsensitive": true,
     "cliName": "glpiinternaltimetoresolve",
@@ -13,7 +14,7 @@
     "id": "incident_glpiinternaltimetoresolve",
     "isReadOnly": false,
     "locked": false,
-    "name": "GLPI Internal time to resolve",
+    "name": "GLPI Internal Time To Resolve",
     "neverSetAsRequired": false,
     "openEnded": false,
     "ownerOnly": false,

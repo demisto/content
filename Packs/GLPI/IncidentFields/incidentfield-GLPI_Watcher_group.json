@@ -1,7 +1,8 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "GLPI Ticket"
+        "GLPI Incident",
+        "GLPI Request"
     ],
     "caseInsensitive": true,
     "cliName": "glpiwatchergroup",
@@ -13,7 +14,7 @@
     "id": "incident_glpiwatchergroup",
     "isReadOnly": false,
     "locked": false,
-    "name": "GLPI Watcher group",
+    "name": "GLPI Watcher Group",
     "neverSetAsRequired": false,
     "openEnded": false,
     "ownerOnly": false,

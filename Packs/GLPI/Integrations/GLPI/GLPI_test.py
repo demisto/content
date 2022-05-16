@@ -100,7 +100,7 @@ def test_glpi_update_user(requests_mock):
 def test_glpi_delete_user(requests_mock):
     command_mock_args = {'name': 'MyUser'}
     requests_mock.get("mock://myglpi.mydomain.tld/apirest.php/initSession", json=TESTDATA_INITSESSION)
-    mock_response_search = {'data': [{'1': 'MyUser', '2': 34}]}
+    mock_response_search = {'data': [{'1': 'MyUser', '2': 31}]}
     requests_mock.get("mock://myglpi.mydomain.tld/apirest.php/search/user", json=mock_response_search)
     mock_response_user = [{'31': True, 'message': ''}]
     requests_mock.delete("mock://myglpi.mydomain.tld/apirest.php/user", json=mock_response_user)
@@ -113,7 +113,7 @@ def test_glpi_delete_user(requests_mock):
 def test_glpi_enable_user(requests_mock):
     command_mock_args = {'name': 'MyUser'}
     requests_mock.get("mock://myglpi.mydomain.tld/apirest.php/initSession", json=TESTDATA_INITSESSION)
-    mock_response_search = {'data': [{'1': 'MyUser', '2': 34}]}
+    mock_response_search = {'data': [{'1': 'MyUser', '2': 31}]}
     requests_mock.get("mock://myglpi.mydomain.tld/apirest.php/search/user", json=mock_response_search)
     mock_response_user = [{'31': True, 'message': ''}]
     requests_mock.put("mock://myglpi.mydomain.tld/apirest.php/user", json=mock_response_user)
@@ -126,7 +126,7 @@ def test_glpi_enable_user(requests_mock):
 def test_glpi_disable_user(requests_mock):
     command_mock_args = {'name': 'MyUser'}
     requests_mock.get("mock://myglpi.mydomain.tld/apirest.php/initSession", json=TESTDATA_INITSESSION)
-    mock_response_search = {'data': [{'1': 'MyUser', '2': 34}]}
+    mock_response_search = {'data': [{'1': 'MyUser', '2': 31}]}
     requests_mock.get("mock://myglpi.mydomain.tld/apirest.php/search/user", json=mock_response_search)
     mock_response_user = [{'31': True, 'message': ''}]
     requests_mock.put("mock://myglpi.mydomain.tld/apirest.php/user", json=mock_response_user)
@@ -245,7 +245,7 @@ def test_glpi_fetch_incidents(requests_mock):
     requests_mock.get("mock://myglpi.mydomain.tld/apirest.php/Document/33847", json=FETCHINCIDENTS_TICKETDOCFILE)
     last_run_mock = {'last_fetch': '2022-04-14T13:51:36'}
     client = Client(PARAMETERS)
-    new_run, incidents = fetch_incidents(client=client, last_run=last_run_mock, first_fetch_time="3 days")
+    new_run, incidents = fetch_incidents(client=client, last_run=last_run_mock, max_results=50, first_fetch_time="3 days")
     assert new_run['last_fetch'] == '2022-04-14T13:51:36Z'
     assert len(incidents) == 1
     assert incidents[0]['name'] == 'testing fetch incident'
@@ -280,7 +280,7 @@ def test_glpi_update_remote_system(requests_mock):
     command_mock_args = {'remoteId': 289, 'delta': {}, 'data': {}}
     requests_mock.get("mock://myglpi.mydomain.tld/apirest.php/initSession", json=TESTDATA_INITSESSION)
     client = Client(PARAMETERS)
-    response = update_remote_system_command(client, command_mock_args, params={})
+    response = update_remote_system_command(client, command_mock_args)
     assert response == 289
 
 

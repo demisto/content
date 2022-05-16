@@ -19,7 +19,7 @@ Generate the **Application Token** :
 
 Generate the **User Token**
 
-1 -   Visit your profile preference page.
+1 - Visit your profile preference page.
 2 - On the remote access keys section, click regenerate next to API token.
 3 - Once saved you can copy the User Token and paste it in the instance configuration page.
 
