@@ -8,6 +8,18 @@ configuration:
   name: url
   required: true
   type: 0
+- defaultvalue: jira
+  additionalinfo: "For the dataset name for example: <vendor name>_<product name>_raw"
+  display: Vendor name
+  name: vendor
+  required: true
+  type: 0
+- defaultvalue: jira
+  additionalinfo: "For the dataset name for example: <vendor name>_<product name>_raw"
+  display: Product name
+  name: product
+  required: true
+  type: 0
 - display: User name
   additionalinfo: The user name (admin@example.com) and password
   name: credentials

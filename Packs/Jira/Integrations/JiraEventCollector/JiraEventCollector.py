@@ -185,7 +185,7 @@ def main():
 
     elif command in ('fetch-events', 'jira-get-events'):
         events = get_events.run(int(demisto_params.get('max_fetch', 100)))
-        send_events_to_xsiam(events, 'Jira', 'jira')
+        send_events_to_xsiam(events, demisto_params.get('vendor'), demisto_params.get('product'))
 
         if events:
             demisto.setLastRun(get_events.set_next_run(events[0]))
