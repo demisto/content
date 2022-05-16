@@ -3,25 +3,15 @@ args:
   name: left
 - description: Value(s) to apply to the filter
   name: right
-comment: "Reports whether the left side is in the right side list.\nHowever, always\
-  \ returns true if the right side is empty. "
+comment: "Reports whether the left side is in the right side list.\nHowever, always returns true if the right side is empty. "
 commonfields:
   id: InOrRightIsEmpty
   version: -1
 contentitemexportablefields:
   contentitemfields:
-    definitionid: ""
-    fromServerVersion: ""
-    itemVersion: ""
-    packID: 01f47800-e559-4a52-8776-d8037b8d58f5
-    propagationLabels:
-    - all
-    toServerVersion: ""
+    fromServerVersion: ''
 enabled: true
-engineinfo: {}
-mainengineinfo: {}
 name: InOrRightIsEmpty
-pswd: ""
 runas: DBotWeakRole
 runonce: false
 script: ''
@@ -30,3 +20,6 @@ tags:
 - filter
 - general
 type: javascript
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
