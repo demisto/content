@@ -1,7 +1,3 @@
-register_module_line('Microsoft Graph Device Management', 'start', __line__())
-
-
-
 ''' IMPORTS '''
 import base64
 import json
