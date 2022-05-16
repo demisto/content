@@ -228,7 +228,7 @@ def build_fetch_query(last_date):
     else:
         fixed_query += " WHERE"
 
-    fetch_time_field = demisto.params().get['fetch_time_field']
+    fetch_time_field = demisto.params().get("fetch_time_field", "CreationTime")
     fetch_query = "{} `{}` > \"{}\"".format(fixed_query, fetch_time_field, last_date)
     return fetch_query
 
