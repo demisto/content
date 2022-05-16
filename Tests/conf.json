@@ -1831,10 +1831,6 @@
             "playbookID": "remedy_sr_test_pb"
         },
         {
-            "integrations": "Netskope",
-            "playbookID": "Netskope Test"
-        },
-        {
             "integrations": "Cylance Protect v2",
             "playbookID": "Cylance Protect v2 Test"
         },
@@ -4408,7 +4404,7 @@
         {
             "playbookID": "CrowdStrike_FalconX_Test",
             "fromversion": "6.1.0",
-            "memory_threshold": 80,
+            "memory_threshold": 90,
             "integrations": [
                 "CrowdStrike Falcon X"
             ]
@@ -5012,7 +5008,8 @@
         {
             "integrations": "MalwareBazaar",
             "playbookID": "MalwareBazaar_Test",
-            "fromversion": "6.0.0"
+            "fromversion": "6.0.0",
+            "memory_threshold": 90
         },
         {
             "integrations": "OpsGenieV3",
@@ -5053,6 +5050,10 @@
         },
         {
             "playbookID": "IPToHost - Test"
+        },
+        {
+            "playbookID": "NetskopeAPIv1 Test",
+            "integrations": "NetskopeAPIv1"
         },
         {
             "playbookID": "Grafana-Test",
@@ -5316,6 +5317,7 @@
         "Atlassian Confluence Cloud": "No instance - developed by Crest",
         "SOCRadarIncidents": "No instance - developed by partner",
         "SOCRadarThreatFusion": "No instance - developed by partner",
+        "NetskopeAPIv1": "No instance - developed by Qmasters",
         "trustwave secure email gateway": "No instance - developed by Qmasters",
         "Azure Storage Table": "No instance - developed by Qmasters",
         "Azure Storage Queue": "No instance - developed by Qmasters",
@@ -5363,7 +5365,6 @@
         "ArcSight ESM v2": "Issue #18328",
         "AlienVault USM Anywhere": "Issue #18273",
         "Dell Secureworks": "No instance",
-        "Netskope": "instance is down",
         "Service Manager": "Expired license",
         "carbonblackprotection": "License expired",
         "icebrg": "Issue 14312",
