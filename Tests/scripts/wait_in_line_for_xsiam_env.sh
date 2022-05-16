@@ -233,6 +233,12 @@ then
   exit 1
 fi
 
+if [ -n $LOCK_BY_PIPELINE_ID ]; then
+  echo "Locking machine by pipeline_id: $CI_PIPELINE_ID, $LOCK_BY_PIPELINE_ID"
+else
+  echo "Locking machine by job_id: $CI_JOB_ID, $LOCK_BY_PIPELINE_ID"
+fi
+
 echo -e "We have $NUM_OF_TEST_MACHINES machines for testing and a lot more builds to test"
 echo -e "If we want to make sure our product stays amazing, we will have to work together and keep an orderly queue"
 echo -e "May the tests be in our favour. Good luck to us all"
