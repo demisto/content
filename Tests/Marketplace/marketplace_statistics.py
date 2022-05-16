@@ -7,8 +7,6 @@ from google.cloud.bigquery.client import Client
 from google.cloud import bigquery
 from datetime import timedelta
 from typing import List, Dict
-from google.oauth2 import service_account
-
 
 import Tests.Marketplace.marketplace_services as mp_services
 from Tests.Marketplace.marketplace_constants import Metadata, LANDING_PAGE_SECTIONS_PATH
@@ -125,8 +123,8 @@ class StatisticsHandler:
     TOP_PACKS_14_DAYS_TABLE = 'oproxy-dev.shared_views.top_packs_14_days'
     BIG_QUERY_MAX_RESULTS = 2000  # big query max row results
 
-    def __init__(self, service_account_: str, index_folder_path: str):
-        self._bq_client: Client = init_bigquery_client(service_account_)
+    def __init__(self, service_account: str, index_folder_path: str):
+        self._bq_client: Client = init_bigquery_client(service_account)
         self._index_folder_path: str = index_folder_path
         self.packs_statistics_df: DataFrame = self._get_packs_statistics_df()
         self.packs_download_count_desc: Series = self.packs_statistics_df.num_count.sort_values(ascending=False).\
@@ -203,7 +201,7 @@ class StatisticsHandler:
 
 # ========== HELPER FUNCTIONS ==========
 
-def init_bigquery_client(service_account_=None):
+def init_bigquery_client(service_account=None):
     """Initialize google cloud big query client.
 
     In case of local dev usage the client will be initialized with user default credentials.
@@ -215,15 +213,14 @@ def init_bigquery_client(service_account_=None):
     Return:
          google.cloud.bigquery.client.Client: initialized google cloud big query client.
     """
-    # in case of local dev use, ignored the warning of non use of service account.
-    if service_account_:
-        logging.info("Created big query from service account")
-        credentials = service_account.Credentials.from_service_account_file(service_account_)
-        project = credentials.project_id
+    if service_account:
+        bq_client = bigquery.Client.from_service_account_json(service_account)
+        logging.info("Created big query service account")
     else:
-        logging.info("Created big query private account")
+        # in case of local dev use, ignored the warning of non use of service account.
         warnings.filterwarnings("ignore", message=google.auth._default._CLOUD_SDK_CREDENTIALS_WARNING)
         credentials, project = google.auth.default()
+        bq_client = bigquery.Client(credentials=credentials, project=project)
+        logging.info("Created big query private account")
 
-    bq_client = bigquery.Client(credentials=credentials, project=project)
     return bq_client
