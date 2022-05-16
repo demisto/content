@@ -345,6 +345,7 @@ def install_packs(client: demisto_client,
 
         except ApiException as ex:
             logging.debug(f'ex.body: {ex.body}')
+            logging.debug(f'ex: {ex}, {ex.headers=}, {ex.reason=}, {ex.status=}')
             if 'timeout awaiting response' in ex.body:
                 raise GCPTimeOutException(ex.body)
             if malformed_ids := find_malformed_pack_id(ex.body):
