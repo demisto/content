@@ -211,18 +211,24 @@ def find_malformed_pack_id(body: str) -> List:
     Returns: list of malformed ids (list)
 
     """
+    malformed_ids = []
     if body:
-        error_info = json.loads(body).get('error')
-        if 'pack id: ' in error_info:
-            return error_info.split('pack id: ')[1].replace(']', '').replace('[', '').replace(' ', '').split(',')
+        response_info = json.loads(body)
+        if error_info := response_info.get('error'):
+            errors_info = [error_info]
         else:
-            malformed_pack_pattern = re.compile(r'invalid version [0-9.]+ for pack with ID ([\w_-]+)')
-            malformed_pack_id = malformed_pack_pattern.findall(error_info)
-            if malformed_pack_id and error_info:
-                return malformed_pack_id
+            # the error is returned as a list of error
+            errors_info = response_info.get('errors', [])
+        for error in errors_info:
+            if 'pack id: ' in error:
+                malformed_ids.extend(error.split('pack id: ')[1].replace(']', '').replace('[', '').replace(
+                    ' ', '').split(','))
             else:
-                return []
-    return []
+                malformed_pack_pattern = re.compile(r'invalid version [0-9.]+ for pack with ID ([\w_-]+)')
+                malformed_pack_id = malformed_pack_pattern.findall(error)
+                if malformed_pack_id and error:
+                    malformed_ids.extend(malformed_pack_id)
+    return malformed_ids
 
 
 def handle_malformed_pack_ids(malformed_pack_ids, packs_to_install):

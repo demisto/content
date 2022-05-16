@@ -60,15 +60,15 @@ configuration:
   name: input_tag
   type: 0
 - display: Fetch attachments for comments from ZTAP
-  defaultvalue: false
+  defaultvalue: 'false'
   name: get_attachments
   type: 8
 - display: Sync closing incidents with ZTAP
-  defaultvalue: false
+  defaultvalue: 'false'
   name: close_incident
   type: 8
 - display: Sync reopening incidents with ZTAP
-  defaultvalue: false
+  defaultvalue: 'false'
   name: reopen_incident
   type: 8
 - display: First fetch timestamp

@@ -19,9 +19,13 @@ ENDPOINTS = {
 class Client(BaseClient):
     def __init__(self, input_url: str, api_key: str, verify_certificate: bool, proxy: bool, endpoint="/rest/threatindicator/v0"):
         base_url = urljoin(input_url, endpoint)
+        PACK_VERSION = get_pack_version()
+        DEMISTO_VERSION = demisto.demistoVersion()
+        DEMISTO_VERSION = f'{DEMISTO_VERSION["version"]}.{DEMISTO_VERSION["buildNumber"]}'
         headers = {
             "Content-Type": "application/json",
-            'auth-token': api_key
+            'auth-token': api_key,
+            "User-Agent": f"AccentureCTI Pack/{PACK_VERSION} Palo Alto XSOAR/{DEMISTO_VERSION}"
         }
         super(Client, self).__init__(base_url=base_url,
                                      verify=verify_certificate,
@@ -364,12 +368,10 @@ def _enrich_analysis_result_with_intelligence(analysis_info, doc_search_client, 
 
     alerts, reports = _get_ia_for_indicator(indicator, doc_search_client)
 
-    if alerts is not None:
-        analysis_info['Intelligence Alerts'] = alerts if len(
-            alerts) > 0 else 'No Intelligence Alert has been linked to this indicator'
-    if reports is not None:
-        analysis_info['Intelligence Reports'] = reports if len(
-            reports) > 0 else 'No Intelligence Report has been linked to this indicator'
+    if alerts:
+        analysis_info['Intelligence Alerts'] = alerts
+    if reports:
+        analysis_info['Intelligence Reports'] = reports
 
     return analysis_info
 
@@ -407,15 +409,73 @@ def _get_ia_for_indicator(indicator: str, doc_search_client: Client):
     return intelligence_alerts, intelligence_reports
 
 
-def fix_markdown(text):
+def markdown_postprocessing(md_text: str) -> str:
+    ''' Applies post processing steps to fix markdown content for XSOAR viewing
+    Arg: md_text, markdown text to work on
+    Returns: output with processed markdown'''
+
+    result = fix_markdown(md_text)
+    result = addBaseUrlToPartialPaths(result)
+    result = convert_inline_image_to_encoded(result)
+    return result
+
+
+def fix_markdown(text: str) -> str:
+    '''Fix markdown formatting issues
+    Arg: Text - Markdown text to be fixed'
+    Returns: output - Markdown with fixed formatting'''
+
     regex_header = r"([#]+)([^\/|\s]\w)"
     subst_header = "\\1 \\2"
     result = re.sub(regex_header, subst_header, text, 0)
+    return result
 
-    regex_url = r"\/?#\/"
-    subst_url = "https://intelgraph.idefense.com/#/"
-    output = re.sub(regex_url, subst_url, result, 0)
-    return output
+
+def addBaseUrlToPartialPaths(content: str) -> str:
+    '''
+    append intelgraph's base URL to partial markdown links
+    e.g. '/rest/files/download/...' => 'https://intelgraph.idefense.com/rest/files/download/...'
+    e.g. '/#/node/region/view/...' => 'https://intelgraph.idefense.com/#/node/region/view/...
+    '''
+
+    files = r"\(\s?(\/rest\/.*?)\)"
+    relative_links = r"\((\s?(/#.*?|#.*?))\)"
+
+    def add_ig(match):
+        match = match.group(1)
+        if match[0] == " ":
+            match = match[1:]
+        if match[0] == '/':
+            match = match[1:]
+        return f'(https://intelgraph.idefense.com/{match})'
+
+    content = re.sub(relative_links, add_ig, content)
+    content = re.sub(files, add_ig, content)
+    return content
+
+
+def convert_inline_image_to_encoded(md_text: str) -> str:
+    ''' Converts inline images in markdown to base64 encoded images
+    arg: md_text, markdown text
+    return: result updated markdown text'''
+    regex = r'(!\[[^\]]+\])\((https?://[^\)]+)\)'
+    matches = re.findall(regex, md_text)
+    encoded_images = []
+    params = demisto.params()
+    api_key = params.get('api_token')
+    if isinstance(api_key, dict):
+        api_key = api_key.get('password')
+
+    for single_match in matches:
+        single_image_link = single_match[1]
+        single_image_name = single_match[0]
+        response = requests.get(single_image_link,
+                                headers={"auth-token": api_key}).content
+        data = base64.b64encode(response).decode('ascii')
+        image_type = single_image_link.split(".")[-1]
+        encoded_images.append(f'{single_image_name}(data:image/{image_type};base64,{data})')
+    result = re.sub(regex, lambda match: encoded_images.pop(0), md_text, 0, re.MULTILINE)
+    return result
 
 
 def getThreatReport_command(doc_search_client: Client, args: dict, reliability: DBotScoreReliability):
@@ -441,11 +501,8 @@ def _ia_ir_extract(Res: dict, reliability: DBotScoreReliability):
     """
     """
     threat_types = Res.get('threat_types', '')
-    threattypes = ''
     uuid = Res.get('uuid', '')
-    if threat_types:
-        for threat_type in threat_types:
-            threattypes = threattypes + '\n- ' + threat_type
+
     context = {
         'created_on': Res.get('created_on', 'NA'),
         'display_text': Res.get('display_text', 'NA'),
@@ -454,18 +511,18 @@ def _ia_ir_extract(Res: dict, reliability: DBotScoreReliability):
         'last_modified': Res.get('last_modified', 'NA'),
         'last_published': Res.get('last_published', 'NA'),
         'links': Res.get('links', 'NA'),
-        'threat_types': threattypes,
+        'threat_types': threat_types,
         'title': Res.get('title', 'NA'),
         'type': Res.get('type', 'NA'),
         'uuid': uuid,
-        'analysis': fix_markdown(Res.get('analysis', 'NA')),
+        'analysis': markdown_postprocessing(Res.get('analysis', 'NA')),
         'sources_external': Res.get('sources_external', 'NA')
     }
 
     type_of_report = Res.get('type', 'NA')
     if 'intelligence_report' in type_of_report:
-        context['conclusion'] = fix_markdown(Res.get('conclusion', 'NA'))
-        context['summary'] = fix_markdown(Res.get('summary', 'NA'))
+        context['conclusion'] = markdown_postprocessing(Res.get('conclusion', 'NA'))
+        context['summary'] = markdown_postprocessing(Res.get('summary', 'NA'))
         severity_dbot_score = Common.DBotScore.NONE
         indicatortype = 'ACTI Intelligence Report'
         iair_link: str = IR_URL + uuid
@@ -473,9 +530,9 @@ def _ia_ir_extract(Res: dict, reliability: DBotScoreReliability):
         severity_dbot_score = Res.get('severity', 'NA')
         if severity_dbot_score != 'NA':
             severity_dbot_score = _calculate_dbot_score(severity_dbot_score)
-        context['mitigation'] = fix_markdown(Res.get('mitigation', 'NA'))
+        context['mitigation'] = markdown_postprocessing(Res.get('mitigation', 'NA'))
         context['severity'] = Res.get('severity', 'NA')
-        context['abstract'] = fix_markdown(Res.get('abstract', 'NA'))
+        context['abstract'] = markdown_postprocessing(Res.get('abstract', 'NA'))
         attachment_links = Res.get('attachment_links', '')
         fqlink: str = ''
         if attachment_links:
@@ -487,7 +544,7 @@ def _ia_ir_extract(Res: dict, reliability: DBotScoreReliability):
         indicatortype = 'ACTI Intelligence Alert'
         iair_link = IA_URL + uuid
     dbot_score = Common.DBotScore(indicator=uuid, indicator_type=DBotScoreType.CUSTOM,
-                                  integration_name='ACTI Threat Intelligence Report',
+                                  integration_name='ACTI Indicator Query',
                                   score=severity_dbot_score, reliability=reliability)
     custom_indicator = Common.CustomIndicator(indicator_type=indicatortype, dbot_score=dbot_score,
                                               value=uuid, data=context, context_prefix='IAIR')
@@ -495,41 +552,42 @@ def _ia_ir_extract(Res: dict, reliability: DBotScoreReliability):
 
 
 def main():
-    params = demisto.params()
-    api_key = params.get('api_token')
-    if isinstance(api_key, dict):  # integration version >=3.2.0
-        api_key = api_key.get('password')
-    base_url = urljoin(params.get('url', ''))
-    reliability = params.get('integrationReliability', 'B - Usually reliable')
+    params = demisto.params()  # pragma: no cover
+    api_key = params.get('api_token')  # pragma: no cover
+    if isinstance(api_key, dict):  # pragma: no cover # integration version >=3.2.0
+        api_key = api_key.get('password')  # pragma: no cover
+    base_url = urljoin(params.get('url', ''))  # pragma: no cover
+    reliability = params.get('integrationReliability', 'B - Usually reliable')  # pragma: no cover
 
-    if DBotScoreReliability.is_valid_type(reliability):
-        reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
+    if DBotScoreReliability.is_valid_type(reliability):  # pragma: no cover
+        reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)  # pragma: no cover
     else:
-        Exception("ACTI error: Please provide a valid value for the Source Reliability parameter")
+        Exception("ACTI error: Please provide a valid value for the Source Reliability parameter")  # pragma: no cover
 
-    commands = {
+    commands = {  # pragma: no cover
         'url': url_command,
         'ip': ip_command,
         'domain': domain_command,
         'acti-get-ioc-by-uuid': uuid_command
     }
-    verify_certificate = not params.get('insecure', False)
-    proxy = params.get('use_proxy', False)
+    verify_certificate = not params.get('insecure', False)  # pragma: no cover
+    proxy = params.get('use_proxy', False)  # pragma: no cover
 
-    try:
-        command = demisto.command()
-        client = Client(base_url, api_key, verify_certificate, proxy, endpoint=ENDPOINTS['threatindicator'])
-        document_search_client = Client(base_url, api_key, verify_certificate, proxy, endpoint=ENDPOINTS['document'])
-        demisto.debug(f'Command being called is {command}')
-        if command == 'test-module':
-            return_results(test_module(client))
-        elif command == 'acti-getThreatIntelReport':
-            return_results(getThreatReport_command(document_search_client, demisto.args(), reliability))
-        elif command in commands:
-            return_results(commands[command](client, demisto.args(), reliability, document_search_client))
+    try:  # pragma: no cover
+        command = demisto.command()  # pragma: no cover
+        client = Client(base_url, api_key, verify_certificate, proxy, endpoint=ENDPOINTS['threatindicator'])  # pragma: no cover
+        document_search_client = Client(base_url, api_key, verify_certificate,  # pragma: no cover
+                                        proxy, endpoint=ENDPOINTS['document'])  # pragma: no cover
+        demisto.debug(f'Command being called is {command}')  # pragma: no cover
+        if command == 'test-module':  # pragma: no cover
+            return_results(test_module(client))  # pragma: no cover
+        elif command == 'acti-getThreatIntelReport':  # pragma: no cover
+            return_results(getThreatReport_command(document_search_client, demisto.args(), reliability))  # pragma: no cover
+        elif command in commands:  # pragma: no cover
+            return_results(commands[command](client, demisto.args(), reliability, document_search_client))  # pragma: no cover
 
-    except Exception as e:
-        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+    except Exception as e:  # pragma: no cover
+        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')  # pragma: no cover
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

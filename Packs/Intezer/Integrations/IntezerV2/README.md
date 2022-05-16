@@ -65,7 +65,14 @@ Analysis created successfully: 59e2f081-45f3-4822-bf45-407670dcb4d7
 ```
 
 
+#### intezer-analyze-url
+***
+Checks file reputation of the given URL
+
+
+#### Base Command
 `intezer-analyze-url`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
