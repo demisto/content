@@ -52,7 +52,7 @@ class CyberArkEventsClient(IntegrationEventsClient):
         super().__init__(request, options, session)
 
     def set_request_filter(self, after: Any):
-        return
+        return after
 
     def authenticate(self):
         credentials = base64.b64encode(f'{self.credentials.identifier}:{self.credentials.password}'.encode()).decode()
