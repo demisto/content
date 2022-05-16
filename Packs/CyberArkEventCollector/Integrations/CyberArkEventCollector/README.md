@@ -1,5 +1,5 @@
 CyberArk logs event collector integration for Cortex XSIAM.
-This integration was integrated and tested with version xx of CyberArk Event Collector.
+This integration was integrated and tested with version 22.4 of CyberArk Event Collector.
 
 ## Configure CyberArk Event Collector on Cortex XSIAM
 
