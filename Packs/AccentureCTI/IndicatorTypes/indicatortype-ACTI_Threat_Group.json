@@ -1,4 +1,4 @@
-{
+[{
 	"id": "ACTI Threat Group",
 	"version": -1,
 	"fromVersion": "6.0.0",
@@ -58,4 +58,4 @@
 	"fileHashesPriority": null,
 	"expiration": 0,
 	"layout": "ACTI Threat Group"
-}
+}]
