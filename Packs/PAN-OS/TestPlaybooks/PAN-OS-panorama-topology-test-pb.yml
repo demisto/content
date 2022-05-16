@@ -1063,12 +1063,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: a0b6c04a-e6be-40f3-8813-409ae46ea483
+      id: 2f7be57e-0654-4ca3-8083-684a7042bd59
       iscommand: false
       name: Verify Outputs
       type: condition
       version: -1
-    taskid: a0b6c04a-e6be-40f3-8813-409ae46ea483
+    taskid: 2f7be57e-0654-4ca3-8083-684a7042bd59
     timertriggers: []
     type: condition
     view: |-
@@ -1355,6 +1355,9 @@ tasks:
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
+    nexttasks:
+      yes:
+      - '35'
     note: false
     quietmode: 0
     separatecontext: false
