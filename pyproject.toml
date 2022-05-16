@@ -27,12 +27,9 @@ pytest = "^7.1.2"
 mock-open = "^1.4.0"
 python-gitlab = "^2.6.0"
 PyGithub = "^1.54.1"
-google-cloud-bigquery = "^3.1.0"
 requests-mock = "^1.9.3"
 pytest-mock = "^3.7.0"
 db-dtypes = "^1.0.1"
-"keyrings.google-artifactregistry-auth" = "^1.0.0"
-google-auth = "*"
 
 [tool.poetry.dev-dependencies]
 
