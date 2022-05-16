@@ -166,15 +166,15 @@ def main():
         if command == 'test-module':
             get_events.aggregated_results(limit=1)
             return_results('ok')
-        elif command == 'github-get-events' or command == 'fetch-events':
+        elif command in ('github-get-events', 'fetch-events'):
             events = get_events.aggregated_results(limit=int(demisto_params.get('limit')))
 
             if command == 'fetch-events':
                 if events:
                     demisto.setLastRun(GetEvents.get_last_run(events))
-                while len(events) > 0:
-                    send_events_to_xsiam(events[:events_to_add_per_request], 'github-audit', 'github-audit')
-                    events = events[events_to_add_per_request:]
+                else:
+                    send_events_to_xsiam([], 'github', demisto_params.get('product'))
+
             elif command == 'github-get-events':
                 command_results = CommandResults(
                     readable_output=tableToMarkdown('Github Logs', events, headerTransform=pascalToSpace),
@@ -184,6 +184,12 @@ def main():
                     raw_response=events,
                 )
                 return_results(command_results)
+
+            while len(events) > 0:
+                send_events_to_xsiam(events[:events_to_add_per_request], 'github',
+                                     demisto_params.get('product'))
+                events = events[events_to_add_per_request:]
+
     except Exception as e:
         return_error(str(e))
 
