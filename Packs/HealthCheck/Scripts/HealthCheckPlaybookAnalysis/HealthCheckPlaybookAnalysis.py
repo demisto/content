@@ -87,7 +87,7 @@ builtinPlaybooks = demisto.executeCommand(
                          "body": {"query": "system:T"}})[0]["Contents"]["response"]["playbooks"]
 
 builtinPlaybooksNames = []
-res = []
+
 if customPlaybooks is not None:
     copyDetected = []
     sleepDetected = []

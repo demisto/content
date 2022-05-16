@@ -60,7 +60,7 @@ This playbook does not use any integrations.
 * HealthCheckUnpack
 
 ### Commands
-* demisto-api-download
+* xsoar-api-download
 
 ## Playbook Inputs
 ---
@@ -72,4 +72,5 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Health Check - Collect Log Bundle](Insert the link to your image here)
+![Health Check - Collect Log Bundle](./../doc_files/HealthCheck-CollectLogBundle-pb.png)
+/Users/tzimmer/Documents/GitHub/content/Packs/HealthCheck/doc_files/HealthCheck-CollectLogBundle-pb.png
