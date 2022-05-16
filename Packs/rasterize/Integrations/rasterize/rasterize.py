@@ -108,8 +108,8 @@ def init_driver(offline_mode=False, include_url=False):
         chrome_options = webdriver.ChromeOptions()
         if include_url:
             # os.environ['DISPLAY'] = ':1'
-            display = Display(visible=False, size=(800, 600))
-            display.start()
+            # display = Display(visible=False, size=(800, 600))
+            # display.start()
             chrome_options.add_argument("disable-infobars")
             chrome_options.add_experimental_option("excludeSwitches", ["enable - automation"])
             chrome_options.add_experimental_option("useAutomationExtension", False)
