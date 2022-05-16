@@ -339,12 +339,12 @@ def main(command: str, demisto_params: dict):
             elif events:
                 demisto.setLastRun(get_events.get_last_run(events))
                 demisto.debug(f'Last run set to {demisto.getLastRun()}')
-            
+
             if command == 'fetch-events' or argToBoolean(demisto_params.get('push_to_xsiam', False)):
                 # publishing events to XSIAM
                 vendor = demisto_params.get('vendor')
                 product = demisto_params.get('product')
-                
+
                 demisto.debug(f'{command=}, publishing events to XSIAM')
                 send_events_to_xsiam(events, vendor=vendor, product=product)
 
