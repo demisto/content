@@ -9,7 +9,7 @@ license = "MIT"
 python = "^3.8,<3.11"
 blessings = "^1.7"
 coloredlogs = "^15.0.1"
-demisto_py = "^3.1.5"
+demisto_py = "^3.1.6"
 demisto_sdk= "^1.6.6"
 freezegun = "^1.1.0"
 pandas = "^1.3.3"
@@ -30,6 +30,7 @@ PyGithub = "^1.54.1"
 requests-mock = "^1.9.3"
 pytest-mock = "^3.7.0"
 db-dtypes = "^1.0.1"
+google-cloud-bigquery = "^3.1.0"
 
 [tool.poetry.dev-dependencies]
 
