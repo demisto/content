@@ -15,8 +15,6 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 
 ''' CLIENT CLASS '''
 
-#MORE CHANGEעכיעיע
-
 
 class Client(BaseClient):
     def __init__(self, api_key: str,
