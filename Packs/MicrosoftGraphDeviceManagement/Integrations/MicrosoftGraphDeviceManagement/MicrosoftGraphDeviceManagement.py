@@ -1,3 +1,8 @@
+register_module_line('Microsoft Graph Device Management', 'start', __line__())
+
+
+
+''' IMPORTS '''
 import base64
 import json
 import re
@@ -9,10 +14,6 @@ import requests
 from CommonServerPython import *  # noqa: F401
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 
-register_module_line('Microsoft Graph Device Management', 'start', __line__())
-
-
-''' IMPORTS '''
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
