@@ -10,9 +10,9 @@ from demisto_sdk.commands.common.constants import FileType, MarketplaceVersions
 from demisto_sdk.commands.common.tools import find_type_by_path
 from git import Repo
 
-from Tests.scripts.collect_tests.constants import (CONTENT_PATH,
-                                                   DEFAULT_REPUTATION_TESTS,
-                                                   XSOAR_SANITY_TEST_NAMES)
+from Tests.scripts.collect_tests.constants import (
+    CONTENT_PATH, DEFAULT_MARKETPLACE_WHEN_MISSING, DEFAULT_REPUTATION_TESTS,
+    XSOAR_SANITY_TEST_NAMES)
 from Tests.scripts.collect_tests.exceptions import (DeprecatedPackException,
                                                     EmptyMachineListException,
                                                     NonDictException,
@@ -109,7 +109,7 @@ class CollectedTests:
         return self
 
     @classmethod
-    def union(cls, collected_tests: list['CollectedTests']) -> Optional['CollectedTests']:
+    def union(cls, collected_tests: Iterable['CollectedTests']) -> Optional['CollectedTests']:
         if not collected_tests:
             logger.warning('no tests to union')
             return None
@@ -168,16 +168,20 @@ class TestCollector(ABC):
         )
 
     @abstractmethod
-    def _collect(self) -> CollectedTests:
+    def _collect(self) -> Optional[CollectedTests]:
         """
         Collects all relevant tests into self.collected.
         Every inheriting class implements its own methodology here.
-        :return: A CollectedTests object with only the pack_name_to_pack_metadata to install and tests to run, with machines=None.
+        :return: A CollectedTests object with only the pack_name_to_pack_metadata to install and tests to run,
+                with machines=None.
         """
         pass
 
-    def collect(self, run_nightly: bool, run_master: bool) -> CollectedTests:
+    def collect(self, run_nightly: bool, run_master: bool) -> Optional[CollectedTests]:
         collected: CollectedTests = self._collect()
+        if not collected:
+            return
+
         collected.machines = Machine.get_suitable_machines(collected.version_range, run_nightly, run_master)
 
         if collected.machines is None and not collected.not_empty:  # todo reconsider
@@ -234,7 +238,7 @@ class BranchTestCollector(TestCollector):
         self.repo = Repo(CONTENT_PATH)
         self.repo.git.checkout(self.branch_name)
 
-    def _collect(self) -> CollectedTests:
+    def _collect(self) -> Optional[CollectedTests]:
         collected = []
         for path in self._get_changed_files():
             try:
@@ -377,50 +381,109 @@ class BranchTestCollector(TestCollector):
         return tuple(str(file.b_path) for file in latest.diff(previous))
 
 
-class NightlyTestCollector(TestCollector):
-    def _collect(self) -> CollectedTests:
-        collected = [
-            self._tests_matching_marketplace_value(),
-            self._packs_matching_marketplace_value(),
-        ]
-
-        return CollectedTests.union(collected)
-
-    def _tests_matching_marketplace_value(self) -> CollectedTests:
-        logger.info(f'collecting test playbooks by their marketplace field, searching for {self.marketplace.value}')
+class NightlyTestCollector(TestCollector, ABC):
+    def _id_set_tests_matching_marketplace_value(self, only_value: bool) -> CollectedTests:
+        """
+        :param only_value: whether the value is the only one under the marketplaces field.
+        :return: all tests whose marketplace field includes the collector's marketplace value.
+        """
+        default = (DEFAULT_MARKETPLACE_WHEN_MISSING,)  # MUST BE OF LENGTH==1
+        postfix = ' (only where this is the only marketplace value)' if only_value else ''
+        logger.info(f'collecting test playbooks by their marketplace field, searching for {self.marketplace.value}'
+                    f'{postfix}')
         tests = []
 
         for playbook in self.id_set.test_playbooks:
-            if self.marketplace.value in (playbook.marketplaces or ()) and playbook.tests:
+            playbook_marketplaces = playbook.marketplaces or default
+
+            if only_value and len(playbook_marketplaces) != 1:
+                continue
+
+            if self.marketplace.value in playbook_marketplaces and playbook.tests:
                 tests.extend(playbook.tests)
 
         return CollectedTests(tests=tests, packs=None, reason=CollectionReason.MARKETPLACE_VERSION_BY_VALUE,
                               version_range=None, reason_description=f'({self.marketplace.value})')
 
-    def _packs_matching_marketplace_value(self) -> CollectedTests:
+    def _packs_matching_marketplace_value(self, only_value: bool) -> CollectedTests:
+        """
+        :param only_value: whether the value is the only one under the marketplaces field.
+        :return: all packs whose marketplaces field contains self.marketplaces (or is equal to, if only_value is True).
+        """
+        default = (DEFAULT_MARKETPLACE_WHEN_MISSING,)  # MUST BE OF LENGTH==1
+        postfix = ' (only where this is the only marketplace value)' if only_value else ''
         logger.info(
-            f'collecting pack_name_to_pack_metadata by their marketplace field, searching for {self.marketplace.value}')
-        packs = tuple(
-            # todo type warning
-            pack.name for pack in PACK_MANAGER
-            if self.marketplace.value in pack.get('marketplaces', (MarketplaceVersions.XSOAR.value,))
-        )
+            f'collecting pack_name_to_pack_metadata by their marketplace field, searching for {self.marketplace.value}'
+            f'{postfix}')
+        packs = []
+
+        for pack in PACK_MANAGER:
+            pack_marketplaces = pack.marketplaces or default
+            if only_value and len(pack_marketplaces) >= 2:
+                continue
+            if self.marketplace in pack_marketplaces:
+                packs.append(pack.name)
 
         return CollectedTests(tests=None, packs=packs, reason=CollectionReason.MARKETPLACE_VERSION_BY_VALUE,
                               version_range=None, reason_description=f'({self.marketplace.value})')
 
+    def _packs_of_content_matching_marketplace_value(self, only_value: bool) -> CollectedTests:
+        """
+        :param only_value: whether the value is the only one under the marketplaces field.
+        :return: all packs whose under which a content item marketplace field contains self.marketplaces
+                (or is equal to, if only_value is True).
+        """
+        default = (DEFAULT_MARKETPLACE_WHEN_MISSING,)  # MUST BE OF LENGTH==1
+        postfix = ' (only where this is the only marketplace value)' if only_value else ''
+        logger.info(
+            f'collecting content items by their marketplace field, searching for {self.marketplace.value}'
+            f'{postfix}')
+
+        packs = []
+        for item in self.id_set.artifact_iterator:
+            item_marketplaces = item.marketplaces or default
+
+            if only_value and len(item_marketplaces) >= 2:  # 0 is ok because of the default, and 1 for obvious reasons
+                continue
+
+            if self.marketplace in item_marketplaces:
+                if not item.pack:
+                    raise ValueError('can not collect pack for items without one')  # todo replace with `continue`?
+                packs.append(item.pack)
+
+        return CollectedTests(tests=None, packs=tuple(packs), reason=CollectionReason.MARKETPLACE_VERSION_BY_VALUE,
+                              version_range=None, reason_description=f'({self.marketplace.value})')
+
+
+class XSIAMNightlyTestCollector(NightlyTestCollector):
+    def _collect(self) -> Optional[CollectedTests]:
+        return CollectedTests.union((
+            self._id_set_tests_matching_marketplace_value(only_value=True),
+            self._packs_matching_marketplace_value(only_value=True),
+            self._packs_of_content_matching_marketplace_value(only_value=True)
+        ))
+
+
+class XSOARNightlyTestCollector(NightlyTestCollector):
+    def _collect(self) -> Optional[CollectedTests]:
+        return CollectedTests.union((
+            self._id_set_tests_matching_marketplace_value(only_value=False),
+            self._packs_matching_marketplace_value(only_value=False),
+            self._packs_of_content_matching_marketplace_value(only_value=False)
+        ))
+
 
 class UploadCollector(TestCollector):
     # todo today we collect pack_name_to_pack_metadata, not tests
-    def _collect(self) -> CollectedTests:
+    def _collect(self) -> Optional[CollectedTests]:
         pass
 
 
 if __name__ == '__main__':
     try:
         sys.path.append(str(CONTENT_PATH))
-        # collector = NightlyTestCollector(marketplace=MarketplaceVersions.XSOAR)
-        collector = BranchTestCollector(marketplace=MarketplaceVersions.XSOAR, branch_name='master')
+        collector = NightlyTestCollector(marketplace=MarketplaceVersions.XSOAR)
+        # collector = BranchTestCollector(marketplace=MarketplaceVersions.XSOAR, branch_name='master')
         print(collector.collect(True, True))
 
     except:  # todo remove

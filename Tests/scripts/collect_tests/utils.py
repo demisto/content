@@ -4,6 +4,7 @@ from logging import getLogger
 from pathlib import Path
 from typing import Any, Optional
 
+from demisto_sdk.commands.common.constants import MarketplaceVersions
 from demisto_sdk.commands.common.tools import json, yaml
 from packaging import version
 from packaging.version import Version
@@ -91,6 +92,8 @@ class DictBased:
         self.from_version = self._calculate_from_version()
         self.to_version = self._calculate_to_version()
         self.version_range = VersionRange(self.from_version, self.to_version)
+        self.marketplaces: Optional[tuple[MarketplaceVersions]] = \
+            tuple(MarketplaceVersions(v) for v in self.get('marketplaces', (), warn_if_missing=False)) or None
 
     def get(self, key: str, default: Any = None, warn_if_missing: bool = True):
         if key not in self.content and warn_if_missing:

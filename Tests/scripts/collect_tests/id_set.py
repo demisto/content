@@ -7,30 +7,24 @@ from demisto_sdk.commands.common.constants import MarketplaceVersions
 from Tests.scripts.collect_tests.constants import \
     DEBUG_ID_SET_PATH  # todo remove
 from Tests.scripts.collect_tests.utils import (DictBased, DictFileBased,
-                                               PackManager)
+                                               PackManager, to_tuple)
 
 logger = getLogger('test_collection')  # todo is this the right way?
 
 
 class IdSetItem(DictBased):
-    def __init__(self, id_: str, dict_: dict):
+    def __init__(self, id_: Optional[str], dict_: dict):
         super().__init__(dict_)
-        self.id_: str = id_
+        self.id_: str = id_  # None for packs, as they don't have it.
         self.name: str = self['name']
         self.file_path: str = self['file_path']
+        self.pack: Optional[str] = self.get('pack', warn_if_missing=False)  # we log an error instead of warning
+        if 'pack' not in self.content:  # todo fix in id_set
+            logger.error(f'content item with id={id_} and name={self.name} has no pack value in id_set')
 
         # hidden for pack_name_to_pack_metadata, deprecated for content items
         self.deprecated: Optional[bool] = \
             self.get('deprecated', warn_if_missing=False) or self.get('hidden', warn_if_missing=False)
-
-        self.pack: Optional[str] = self.get('pack', warn_if_missing=False)
-
-        if 'pack' not in self.content:
-            # todo fix in id_set
-            logger.error(f'content item with id={id_} and name={self.name} has no pack value in id_set')
-
-        self.marketplaces: Optional[tuple[MarketplaceVersions]] = \
-            tuple(MarketplaceVersions(v) for v in self.get('marketplaces', (), warn_if_missing=False)) or None
 
     @property
     def integrations(self):
@@ -58,6 +52,7 @@ class IdSet(DictFileBased):
         self.id_to_script = self._parse_items('scripts')
         self.id_to_integration = self._parse_items('integrations')
         self.id_to_test_playbook = self._parse_items('TestPlaybooks')
+        self.name_to_pack = {name: IdSetItem(None, value) for name, value in self['Packs'].items()}
 
         self.implemented_scripts_to_tests = defaultdict(list)
         self.implemented_playbooks_to_tests = defaultdict(list)
@@ -73,9 +68,16 @@ class IdSet(DictFileBased):
         self.test_playbooks_to_pack = {test.name: test.pack for test in self.test_playbooks}
 
     @property
-    def artifact_iterator(self):  # todo is used?
-        """ returns an iterator for all content items"""
-        return (value for value in self.content if isinstance(value, list))
+    def artifact_iterator(self) -> Iterable[IdSetItem]:  # todo is used?
+        """ returns an iterator for all content items EXCLUDING PACKS """
+        for content_type, values in self.content.items():
+            if isinstance(values, dict):
+                for id_, value in values.items():
+                    yield IdSetItem(id_, value)
+            elif content_type == 'Packs':
+                continue  # Packs are skipped as they have no ID.
+            else:
+                raise RuntimeError(f'unexpected id_set values for {content_type}. expected a list, got {type(values)}')
 
     @property
     def integrations(self) -> Iterable[IdSetItem]:
@@ -96,10 +98,11 @@ class IdSet(DictFileBased):
                 if isinstance(values, dict):
                     values = (values,)
 
-                for value in values:  # multiple values possible, for different server versions
+                for value in values:  # may have multiple values for different from/to versions
                     item = IdSetItem(id_, value)
 
-                    if item.pack in PackManager.skipped_packs:  # todo does this make sense here? raise exception?
+                    # todo does this make sense here? raise exception?
+                    if item.pack in PackManager.skipped_packs:
                         logger.info(f'skipping {id_=} as the {item.pack} pack is skipped')
                         continue
 

@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
 
-from demisto_sdk.commands.common.constants import FileType
+from demisto_sdk.commands.common.constants import FileType, MarketplaceVersions
 
 MASTER = 'master'  # todo use
 CONTENT_PATH = Path(__file__).absolute().parents[3]
@@ -22,3 +22,4 @@ DEFAULT_REPUTATION_TESTS = (
     'reputations.json Test',
     'Indicators reputation-.json Test'
 )
+DEFAULT_MARKETPLACE_WHEN_MISSING: MarketplaceVersions = MarketplaceVersions.XSOAR
