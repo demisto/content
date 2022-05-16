@@ -15,6 +15,7 @@ def http_request(method, url_suffix, json=None):
         if base_url.endswith("/"):  # remove slash in the end
             base_url = base_url[:-1]
         api_key = demisto.params().get('apikey')
+        verify = not demisto.params().get('insecure', True)
 
         headers = {
             'Content-Type': 'application/json',
@@ -26,7 +27,7 @@ def http_request(method, url_suffix, json=None):
             base_url + api_suffix + url_suffix,
             json=json,
             headers=headers,
-            verify=False
+            verify=verify
         )
 
         if r.status_code == 401:
