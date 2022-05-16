@@ -2889,8 +2889,7 @@ Query logs in Panorama.
 | rule | Rule name, e.g "Allow all outbound". | Optional | 
 | url | URL, e.g "safebrowsing.googleapis.com". | Optional | 
 | filedigest | File hash (for WildFire logs only). | Optional | 
-| number_of_logs | Maximum number of logs to retrieve. If empty, the default is 100. The maximum is 5,000. | Optional |
-| target            | Serial number of the firewall on which to run the command. Use only for a Panorama instance. | Optional |
+| number_of_logs | Maximum number of logs to retrieve. If empty, the default is 100. The maximum is 5,000. | Optional | 
 
 
 #### Context Output
@@ -2923,10 +2922,8 @@ Checks the status of a logs query.
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
-| --- | --- | -- |
+| --- | --- | --- |
 | job_id | Job ID of the query. | Required | 
-| job_id | Serial number of the firewall on which to run the command. Use only for a Panorama instance. | Optional | 
-
 
 
 #### Context Output
@@ -2957,11 +2954,11 @@ Retrieves the data of a logs query.
 `pan-os-get-logs`
 #### Input
 
-| **Argument Name**   | **Description** | **Required** |
-|---------------------| --- | --- |
-| job_id              | Job ID of the query. | Required | 
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| job_id | Job ID of the query. | Required | 
 | ignore_auto_extract | Whether to auto-enrich the War Room entry. If "true", entry is not auto-enriched. If "false", entry is auto-extracted. Default is "true". | Optional | 
-| target              | Serial number of the firewall on which to run the command. Use only for a Panorama instance. | Optional|
+
 
 #### Context Output
 

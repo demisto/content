@@ -565,8 +565,6 @@ def panorama_commit(args):
         'cmd': f'<commit>{command}</commit>',
         'key': API_KEY
     }
-    if target := args.get('target'):
-        params['target'] = target
     if is_partial:
         params['action'] = 'partial'
 
@@ -4403,14 +4401,12 @@ def build_logs_query(address_src: Optional[str], address_dst: Optional[str], ip_
 @logger
 def panorama_query_logs(log_type: str, number_of_logs: str, query: str, address_src: str, address_dst: str, ip_: str,
                         zone_src: str, zone_dst: str, time_generated: str, action: str,
-                        port_dst: str, rule: str, url: str, filedigest: str, target: Optional[str] = None):
+                        port_dst: str, rule: str, url: str, filedigest: str):
     params = {
         'type': 'log',
         'log-type': log_type,
         'key': API_KEY
     }
-    if target:
-        params['target'] = target
 
     if filedigest and log_type != 'wildfire':
         raise Exception('The filedigest argument is only relevant to wildfire log type.')
@@ -4456,7 +4452,6 @@ def panorama_query_logs_command(args: dict):
     rule = args.get('rule')
     filedigest = args.get('filedigest')
     url = args.get('url')
-    target = args.get('target')
 
     if query and (address_src or address_dst or zone_src or zone_dst
                   or time_generated or action or port_dst or rule or url or filedigest):
@@ -4464,7 +4459,7 @@ def panorama_query_logs_command(args: dict):
 
     result = panorama_query_logs(log_type, number_of_logs, query, address_src, address_dst, ip_,
                                  zone_src, zone_dst, time_generated, action,
-                                 port_dst, rule, url, filedigest, target)
+                                 port_dst, rule, url, filedigest)
 
     if result['response']['@status'] == 'error':
         if 'msg' in result['response'] and 'line' in result['response']['msg']:
@@ -4492,14 +4487,13 @@ def panorama_query_logs_command(args: dict):
     })
 
 
-def panorama_check_logs_status_command(args: dict):
+def panorama_check_logs_status_command(job_id: str):
     """
     Check query logs status
     """
-    job_ids = argToList(args.get('job_id'))
-    target = args.get('target')
+    job_ids = argToList(job_id)
     for job_id in job_ids:
-        result = panorama_get_traffic_logs(job_id, target)
+        result = panorama_get_traffic_logs(job_id)
 
         if result['response']['@status'] == 'error':
             if 'msg' in result['response'] and 'line' in result['response']['msg']:
