@@ -1,6 +1,6 @@
-Microsoft 365 Defender event collector integration for XSIAM.
+Microsoft 365 Defender event collector integration for Cortex XSIAM.
 
-## Configure Microsoft 365 Defender Event Collector on Cortex XSOAR
+## Configure Microsoft 365 Defender Event Collector on Cortex XSIAM
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for Microsoft 365 Defender Event Collector.
@@ -9,10 +9,10 @@ Microsoft 365 Defender event collector integration for XSIAM.
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
     | Endpoint URI | The United States: api-us.security.microsoft.com<br/>Europe: api-eu.security.microsoft.com<br/>The United Kingdom: api-uk.security.microsoft.co | True |
-    | Client (Application) ID | The Client \(Application\) ID to use to connect. | True |
+    | Client (Application) ID | The client \(application\) ID to use to connect. | True |
     | Client Secret |  | True |
     | Tenant ID |  | True |
-    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
+    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, for example 12 hours, 7 days) |  | False |
     | Fetch alerts timeout | The time limit in seconds for fetch alerts to run. Leave this empty to cancel the timeout limit. | False |
     | Number of alerts for each fetch. | Due to API limitations, the maximum is 10,000. | False |
     | Fetch events |  | False |
@@ -35,8 +35,8 @@ Returns a list of alerts
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of alerts per fetch. Default is 1000. | Optional | 
-| first_fetch | First fetch time (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 1 day, 3 months). default is 12 hours. | Optional | 
+| limit | The maximum number of alerts per fetch. Default is 10000. | Optional | 
+| first_fetch | The first fetch time (&lt;number&gt; &lt;time unit&gt;, for example 12 hours, 1 day, 3 months). Default is 3 days. | Optional | 
 
 
 #### Context Output
