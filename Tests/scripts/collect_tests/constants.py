@@ -9,7 +9,7 @@ PACKS_PATH = CONTENT_PATH / 'Packs'
 ARTIFACTS_PATH = Path(os.getenv('ARTIFACTS_FOLDER', './artifacts'))
 ARTIFACTS_ID_SET_PATH = ARTIFACTS_PATH / 'id_set.json'  # todo use
 ARTIFACTS_CONF_PATH = ARTIFACTS_PATH / 'conf.json'  # todo use
-DEBUG_ID_SET_PATH = CONTENT_PATH / 'Utils' / 'tests' / 'id_set.json'
+DEBUG_ID_SET_PATH = CONTENT_PATH / 'Tests' / 'id_set.json'
 DEBUG_CONF_PATH = CONTENT_PATH / 'Tests' / 'conf.json'
 XSOAR_SANITY_TEST_NAMES = (
     'Sanity Test - Playbook with integration',

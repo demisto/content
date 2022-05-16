@@ -17,7 +17,7 @@ class IdSetItem(DictBased):
         super().__init__(dict_)
         self.id_: str = id_  # None for packs, as they don't have it.
         self.name: str = self['name']
-        self.file_path: str = self['file_path']
+        self.file_path: str = self.get('file_path', warn_if_missing=False)  # packs have no file_path value
         self.pack: Optional[str] = self.get('pack', warn_if_missing=False)  # we log an error instead of warning
         if 'pack' not in self.content:  # todo fix in id_set
             logger.error(f'content item with id={id_} and name={self.name} has no pack value in id_set')

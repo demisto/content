@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from enum import Enum
 from logging import getLogger
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any, Optional, Iterable
 
 from demisto_sdk.commands.common.constants import MarketplaceVersions
 from demisto_sdk.commands.common.tools import json, yaml
@@ -165,18 +165,18 @@ class ContentItem(DictFileBased):
 
 class PackManager:
     skipped_packs = {'DeprecatedContent', 'NonSupported', 'ApiModules'}
-    pack_names = {p.name for p in PACKS_PATH.glob('*') if p.is_dir()}
+    pack_folders = {p.name for p in PACKS_PATH.glob('*') if p.is_dir()}
 
     def __init__(self):
         self.pack_name_to_pack_metadata: dict[str, ContentItem] = {}
         self.deprecated_packs: set[str] = set()
 
-        for name in PackManager.pack_names:
+        for name in PackManager.pack_folders:
             metadata = ContentItem(PACKS_PATH / name / 'pack_metadata.json')
             self.pack_name_to_pack_metadata[name] = metadata
-
             if metadata.deprecated:
                 self.deprecated_packs.add(name)
+        self.pack_names = set(self.pack_name_to_pack_metadata.keys())
 
     def __getitem__(self, pack_name: str) -> ContentItem:
         return self.pack_name_to_pack_metadata[pack_name]
@@ -192,7 +192,7 @@ class PackManager:
         """ raises InvalidPackException if the pack name is not valid."""
         if not pack:
             raise InvalidPackNameException(pack)
-        if pack not in PackManager.pack_names:
+        if pack not in self.pack_names:
             logger.error(f'inexistent pack {pack}')
             raise InexistentPackException(pack)
         if pack in PackManager.skipped_packs:
