@@ -1,3 +1,4 @@
+beta: false
 category: Data Enrichment & Threat Intelligence
 commonfields:
   id: Cortex Core - IOC
@@ -107,6 +108,224 @@ script:
     description: Disables IOCs in the Cortex server.
     execution: false
     name: core-iocs-disable
+  - arguments:
+    - default: false
+      description: The hash values
+      isArray: true
+      name: hash
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      isArray: false
+      name: detailed_response
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      isArray: false
+      name: global_check
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: context
+      required: false
+      secret: false
+    deprecated: false
+    execution: false
+    hidden: false
+    name: core-get-hash-prevalence
+  - arguments:
+    - default: false
+      description: The IP values
+      isArray: true
+      name: ip
+      predefined:
+      - ''
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      isArray: false
+      name: detailed_response
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      isArray: false
+      name: global_check
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: context
+      required: false
+      secret: false
+    deprecated: false
+    execution: false
+    hidden: false
+    name: core-get-ip-prevalence
+  - arguments:
+    - default: false
+      description: The domain values
+      isArray: true
+      name: domain
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      isArray: false
+      name: detailed_response
+      predefined:
+        - 'true'
+        - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      isArray: false
+      name: global_check
+      predefined:
+        - 'true'
+        - 'false'
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: context
+      required: false
+      secret: false
+    deprecated: false
+    execution: false
+    hidden: false
+    name: core-get-domain-prevalence
+  - arguments:
+    - default: false
+      description: The process values
+      isArray: true
+      name: process
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      isArray: false
+      name: detailed_response
+      predefined:
+        - 'true'
+        - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      isArray: false
+      name: global_check
+      predefined:
+        - 'true'
+        - 'false'
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: context
+      required: false
+      secret: false
+    deprecated: false
+    execution: false
+    hidden: false
+    name: core-get-process-prevalence
+  - arguments:
+    - default: false
+      description: The registry values
+      isArray: true
+      name: registry
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      isArray: false
+      name: detailed_response
+      predefined:
+        - 'true'
+        - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      isArray: false
+      name: global_check
+      predefined:
+        - 'true'
+        - 'false'
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: context
+      required: false
+      secret: false
+    deprecated: false
+    execution: false
+    hidden: false
+    name: core-get-registry-prevalence
+  - arguments:
+    - default: false
+      description: The CMD values
+      isArray: true
+      name: CMD
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      isArray: false
+      name: detailed_response
+      predefined:
+        - 'true'
+        - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      isArray: false
+      name: global_check
+      predefined:
+        - 'true'
+        - 'false'
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: context
+      required: false
+      secret: false
+    deprecated: false
+    execution: false
+    hidden: false
+    name: core-get-cmd-prevalence
   dockerimage: demisto/python3:3.10.1.26972
   feed: false
   isfetch: false

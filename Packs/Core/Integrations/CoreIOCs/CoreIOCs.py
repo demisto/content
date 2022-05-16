@@ -158,6 +158,28 @@ def get_iocs(page=0, size=200, query=None) -> List:
         .get('iocs', [])
 
 
+def handle_prevalence_command(client: Client, indicator_name: str, args: dict):
+    indicator_values = argToList(args.get(indicator_name))
+    detailed_response = argToBoolean(args.get('detailed_response', False))
+    global_check = argToBoolean(args.get('global_check', False))
+    context = args.get('context')
+
+    arg_list = [
+        {
+            indicator_name: indicator_value,
+            'detailed_response': detailed_response,
+            'global_check': global_check,
+            'context': context
+        }
+        for indicator_value in indicator_values]
+
+    request_body = {
+        'APIId': f'is_{indicator_name}_prevelant',
+        'args': arg_list
+    }
+    client.http_request('analytics_playbook_questions', requests_kwargs={'data': request_body})
+
+
 def demisto_expiration_to_core(expiration) -> int:
     if expiration and not expiration.startswith('0001'):
         try:
@@ -428,6 +450,7 @@ def main():
     # Executes an integration command
     # """
     params = demisto.params()
+    args = demisto.args()
     Client.severity = params.get('severity', '').upper()
     Client.query = params.get('query', Client.query)
     Client.tlp_color = params.get('tlp_color')
@@ -438,16 +461,28 @@ def main():
         'core-iocs-disable': iocs_command,
         'core-iocs-push': tim_insert_jsons,
     }
+
+    prevalence_commands = {
+        'core-get-hash-prevalence': 'hash',
+        'core-get-ip-prevalence': 'ip',
+        'core-get-domain-prevalence': 'domain',
+        'core-get-process-prevalence': 'process',
+        'core-get-registry-prevalence': 'registry',
+        'core-get-cmd-prevalence': 'cmd',
+    }
+
     command = demisto.command()
     try:
         if command == 'core-iocs-set-sync-time':
-            set_sync_time(demisto.args()['time'])
+            set_sync_time(args['time'])
         elif command == 'core-iocs-create-sync-file':
             get_sync_file()
         elif command in commands:
             commands[command](client)
         elif command == 'core-iocs-sync':
-            core_iocs_sync_command(client, demisto.args().get('firstTime') == 'true')
+            core_iocs_sync_command(client, args.get('firstTime') == 'true')
+        elif command in prevalence_commands:
+            handle_prevalence_command(client, prevalence_commands[command], args)
         else:
             raise NotImplementedError(command)
     except Exception as error:
