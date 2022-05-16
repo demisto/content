@@ -1076,7 +1076,8 @@ def test_run_script_polling(mocker, args, request_status, args_to_compare, expec
     import CommonServerPython
 
     def mock_action_command(client, args):
-        return CommonServerPython.CommandResults(outputs={'action_id': 'action_id_example'})
+        return CommonServerPython.CommandResults(outputs={'action_id': 'action_id_example'},
+                                                 raw_response={'id': 'action_id_example'})
 
     def mock_get_status(client, args):
         return CommonServerPython.CommandResults(
