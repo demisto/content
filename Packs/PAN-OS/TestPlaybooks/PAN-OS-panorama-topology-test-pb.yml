@@ -1003,69 +1003,72 @@ tasks:
             iscontext: true
             value:
               simple: PANOS.JobStatus.hostid
-          operator: isNotEmpty
+          operator: isExists
       - - left:
             iscontext: true
             value:
               simple: PANOS.JobStatus.id
-          operator: isNotEmpty
+          operator: isExists
       - - left:
             iscontext: true
             value:
               simple: PANOS.JobStatus.type
-          operator: isNotEmpty
+          operator: isExists
       - - left:
             iscontext: true
             value:
               simple: PANOS.JobStatus.tfin
-          operator: isNotEmpty
+          operator: isExists
       - - left:
             iscontext: true
             value:
               simple: PANOS.JobStatus.status
-          operator: isNotEmpty
+          operator: isExists
       - - left:
             iscontext: true
             value:
               simple: PANOS.JobStatus.result
-          operator: isNotEmpty
+          operator: isExists
       - - left:
             iscontext: true
             value:
               simple: PANOS.JobStatus.tenq
-          operator: isNotEmpty
+          operator: isExists
       - - left:
             iscontext: true
             value:
               simple: PANOS.JobStatus.stoppable
-          operator: isNotEmpty
+          operator: isExists
       - - left:
             iscontext: true
             value:
               simple: PANOS.JobStatus.positionInQ
-          operator: isNotEmpty
+          operator: isExists
       - - left:
             iscontext: true
             value:
               simple: PANOS.JobStatus.progress
-          operator: isNotEmpty
+          operator: isExists
       label: yes
     id: '24'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
+    nexttasks:
+      yes:
+      - '27'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
       brand: ''
-      id: f62aeae6-baab-4899-860b-83fe41375053
+      id: a0b6c04a-e6be-40f3-8813-409ae46ea483
       iscommand: false
       name: Verify Outputs
       type: condition
       version: -1
-    taskid: f62aeae6-baab-4899-860b-83fe41375053
+    taskid: a0b6c04a-e6be-40f3-8813-409ae46ea483
     timertriggers: []
     type: condition
     view: |-
