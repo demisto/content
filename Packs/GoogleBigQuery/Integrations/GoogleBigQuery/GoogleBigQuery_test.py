@@ -4,7 +4,6 @@ import json
 import demistomock as demisto
 
 
-
 def test_convert_to_string_if_datetime():
     from GoogleBigQuery import convert_to_string_if_datetime
     test_conversion_for_none = convert_to_string_if_datetime(None)
@@ -167,11 +166,48 @@ def test_get_max_incident_time_single_incident():
 
     incident = {
         'rawJSON': {
-            'creation_time': '2020-05-05 08:08:09.000'
+            'CreationTime': '2020-05-05 08:08:09'
         }
     }
 
     incident['rawJSON'] = json.dumps(incident['rawJSON'])
     incidents = [incident]
 
-    assert get_max_incident_time(incidents) == '2020-05-05 08:08:09.000'
+    assert get_max_incident_time(incidents) == '2020-05-05 08:08:09.000000'
+
+
+def test_get_max_incident_time_several_incidents():
+    from GoogleBigQuery import get_max_incident_time
+
+    incident_a = {
+        'rawJSON': {
+            'CreationTime': '2020-05-05 08:08:09'
+        }
+    }
+
+    incident_b = {
+        'rawJSON': {
+            'CreationTime': '2020-05-06 08:08:09'
+        }
+    }
+
+    incident_c = {
+        'rawJSON': {
+            'CreationTime': '2020-05-06 09:08:09'
+        }
+    }
+
+    incident_d = {
+        'rawJSON': {
+            'CreationTime': '2020-05-06 09:09:09'
+        }
+    }
+
+    incident_a['rawJSON'] = json.dumps(incident_d['rawJSON'])
+    incident_b['rawJSON'] = json.dumps(incident_d['rawJSON'])
+    incident_c['rawJSON'] = json.dumps(incident_d['rawJSON'])
+    incident_d['rawJSON'] = json.dumps(incident_d['rawJSON'])
+
+    incidents = [incident_d, incident_a, incident_c, incident_b]
+
+    assert get_max_incident_time(incidents) == '2020-05-06 09:09:09.000000'
