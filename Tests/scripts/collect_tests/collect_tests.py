@@ -488,10 +488,13 @@ class XSOARNightlyTestCollector(NightlyTestCollector):
         ))
 
 
-class UploadCollector(TestCollector):
-    # todo today we collect pack_name_to_pack_metadata, not tests
+class UploadCollector(BranchTestCollector):
+    # todo is necessary? Or can we just use a BranchTestCollector instead?
     def _collect(self) -> Optional[CollectedTests]:
-        pass
+        # same as BranchTestCollector, but without tests.
+        collected = super()._collect()
+        collected.tests = set()
+        return collected
 
 
 if __name__ == '__main__':
