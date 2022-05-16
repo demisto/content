@@ -313,7 +313,7 @@ def create_filter_from_args(args: dict) -> dict:
 
     for arg_name, arg_value in args.items():
         if arg_name not in valid_args:
-            raise DemistoException('Argument is not valid')
+            raise DemistoException(f'Argument {arg_name} is not valid.')
         arg_properties = valid_args.get(arg_name)
 
         # handle time frame

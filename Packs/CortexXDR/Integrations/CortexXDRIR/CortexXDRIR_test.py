@@ -2585,65 +2585,65 @@ def test_get_original_alerts_command(requests_mock):
     assert event.get('raw_log', {}).get('userIdentity', {}).get('accountId') == 'ID'  # assert vendor filter is correct
 
 
-@freeze_time("2022-05-03 11:00:00 GMT")
-def test_get_alert_by_filter(requests_mock, mocker):
-    from CortexXDRIR import get_alerts_by_filter_command, Client
-    api_response = load_test_data('./test_data/get_alerts_by_filter_results.json')
-    requests_mock.post(f'{XDR_URL}/public_api/v1/alerts/get_alerts_by_filter_data/', json=api_response)
-    request_data_log = mocker.patch.object(demisto, 'debug')
-    client = Client(
-        base_url=f'{XDR_URL}/public_api/v1', headers={}
-    )
-    args = {
-        'time_frame': "custom",
-        'start_time': '2018-11-06T08:56:41',
-        'end_time': '2018-11-06T08:56:41',
-        "limit": '2',
-    }
-    response = get_alerts_by_filter_command(client, args)
-    assert response.outputs[0].get('internal_id', {}) == 33333
-    assert "{'filter_data': {'sort': [{'FIELD': 'source_insert_ts', 'ORDER': 'DESC'}], 'paging': {'from': 0, " \
-           "'to': 2}, 'filter': {'AND': [{'SEARCH_FIELD': 'source_insert_ts', 'SEARCH_TYPE': 'RANGE', 'SEARCH_VALUE': " \
-           "{'from': 1541494601000, 'to': 1541494601000}}]}}}" in request_data_log.call_args[0][0]
+class TestGetAlertByFilter:
 
+    @freeze_time("2022-05-03 11:00:00 GMT")
+    def test_get_alert_by_filter(self, requests_mock, mocker):
+        from CortexXDRIR import get_alerts_by_filter_command, Client
+        api_response = load_test_data('./test_data/get_alerts_by_filter_results.json')
+        requests_mock.post(f'{XDR_URL}/public_api/v1/alerts/get_alerts_by_filter_data/', json=api_response)
+        request_data_log = mocker.patch.object(demisto, 'debug')
+        client = Client(
+            base_url=f'{XDR_URL}/public_api/v1', headers={}
+        )
+        args = {
+            'time_frame': "custom",
+            'start_time': '2018-11-06T08:56:41',
+            'end_time': '2018-11-06T08:56:41',
+            "limit": '2',
+        }
+        response = get_alerts_by_filter_command(client, args)
+        assert response.outputs[0].get('internal_id', {}) == 33333
+        assert "{'filter_data': {'sort': [{'FIELD': 'source_insert_ts', 'ORDER': 'DESC'}], 'paging': {'from': 0, " \
+               "'to': 2}, 'filter': {'AND': [{'SEARCH_FIELD': 'source_insert_ts', 'SEARCH_TYPE': 'RANGE', 'SEARCH_VALUE': " \
+               "{'from': 1541494601000, 'to': 1541494601000}}]}}}" in request_data_log.call_args[0][0]
 
-def test_get_alert_by_filter_command_multiple_values_in_same_arg(requests_mock, mocker):
-    from CortexXDRIR import get_alerts_by_filter_command, Client
-    api_response = load_test_data('./test_data/get_alerts_by_filter_results.json')
-    requests_mock.post(f'{XDR_URL}/public_api/v1/alerts/get_alerts_by_filter_data/', json=api_response)
-    request_data_log = mocker.patch.object(demisto, 'debug')
-    client = Client(
-        base_url=f'{XDR_URL}/public_api/v1', headers={}
-    )
-    args = {
-        'alert_source': "first,second",
-    }
-    response = get_alerts_by_filter_command(client, args)
-    assert response.outputs[0].get('internal_id', {}) == 33333
-    assert "{'filter_data': {'sort': [{'FIELD': 'source_insert_ts', 'ORDER': 'DESC'}], 'paging': {'from': 0, " \
-           "'to': 50}, 'filter': {'AND': [{'OR': [{'SEARCH_FIELD': 'alert_source', 'SEARCH_TYPE': 'CONTAINS', " \
-           "'SEARCH_VALUE': 'first'}, {'SEARCH_FIELD': 'alert_source', 'SEARCH_TYPE': 'CONTAINS', 'SEARCH_VALUE': " \
-           "'second'}]}]}}}" in request_data_log.call_args[0][0]
+    def test_get_alert_by_filter_command_multiple_values_in_same_arg(self, requests_mock, mocker):
+        from CortexXDRIR import get_alerts_by_filter_command, Client
+        api_response = load_test_data('./test_data/get_alerts_by_filter_results.json')
+        requests_mock.post(f'{XDR_URL}/public_api/v1/alerts/get_alerts_by_filter_data/', json=api_response)
+        request_data_log = mocker.patch.object(demisto, 'debug')
+        client = Client(
+            base_url=f'{XDR_URL}/public_api/v1', headers={}
+        )
+        args = {
+            'alert_source': "first,second",
+        }
+        response = get_alerts_by_filter_command(client, args)
+        assert response.outputs[0].get('internal_id', {}) == 33333
+        assert "{'filter_data': {'sort': [{'FIELD': 'source_insert_ts', 'ORDER': 'DESC'}], 'paging': {'from': 0, " \
+               "'to': 50}, 'filter': {'AND': [{'OR': [{'SEARCH_FIELD': 'alert_source', 'SEARCH_TYPE': 'CONTAINS', " \
+               "'SEARCH_VALUE': 'first'}, {'SEARCH_FIELD': 'alert_source', 'SEARCH_TYPE': 'CONTAINS', 'SEARCH_VALUE': " \
+               "'second'}]}]}}}" in request_data_log.call_args[0][0]
 
-
-def test_get_alert_by_filter_command_multiple_args(requests_mock, mocker):
-    from CortexXDRIR import get_alerts_by_filter_command, Client
-    api_response = load_test_data('./test_data/get_alerts_by_filter_results.json')
-    requests_mock.post(f'{XDR_URL}/public_api/v1/alerts/get_alerts_by_filter_data/', json=api_response)
-    request_data_log = mocker.patch.object(demisto, 'debug')
-    client = Client(
-        base_url=f'{XDR_URL}/public_api/v1', headers={}
-    )
-    args = {
-        'alert_source': "first,second",
-        'user_name': 'N/A'
-    }
-    response = get_alerts_by_filter_command(client, args)
-    assert response.outputs[0].get('internal_id', {}) == 33333
-    assert "{'AND': [{'OR': [{'SEARCH_FIELD': 'alert_source', 'SEARCH_TYPE': 'CONTAINS', " \
-           "'SEARCH_VALUE': 'first'}, {'SEARCH_FIELD': 'alert_source', 'SEARCH_TYPE': 'CONTAINS', 'SEARCH_VALUE': " \
-           "'second'}]}, {'OR': [{'SEARCH_FIELD': 'actor_effective_username', 'SEARCH_TYPE': 'CONTAINS', " \
-           "'SEARCH_VALUE': 'N/A'}]}]}" in request_data_log.call_args[0][0]
+    def test_get_alert_by_filter_command_multiple_args(self, requests_mock, mocker):
+        from CortexXDRIR import get_alerts_by_filter_command, Client
+        api_response = load_test_data('./test_data/get_alerts_by_filter_results.json')
+        requests_mock.post(f'{XDR_URL}/public_api/v1/alerts/get_alerts_by_filter_data/', json=api_response)
+        request_data_log = mocker.patch.object(demisto, 'debug')
+        client = Client(
+            base_url=f'{XDR_URL}/public_api/v1', headers={}
+        )
+        args = {
+            'alert_source': "first,second",
+            'user_name': 'N/A'
+        }
+        response = get_alerts_by_filter_command(client, args)
+        assert response.outputs[0].get('internal_id', {}) == 33333
+        assert "{'AND': [{'OR': [{'SEARCH_FIELD': 'alert_source', 'SEARCH_TYPE': 'CONTAINS', " \
+               "'SEARCH_VALUE': 'first'}, {'SEARCH_FIELD': 'alert_source', 'SEARCH_TYPE': 'CONTAINS', 'SEARCH_VALUE': " \
+               "'second'}]}, {'OR': [{'SEARCH_FIELD': 'actor_effective_username', 'SEARCH_TYPE': 'CONTAINS', " \
+               "'SEARCH_VALUE': 'N/A'}]}]}" in request_data_log.call_args[0][0]
 
 
 def test_run_script_execute_commands_command(requests_mock):

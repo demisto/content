@@ -3179,16 +3179,16 @@ script:
       isArray: true
       name: Identity_type
       predefined:
-      - ANONYMOUS
-      - ' APPLICATION'
-      - ' COMPUTE'
-      - ' FEDERATED_IDENTITY'
-      - ' SERVICE'
-      - ' SERVICE_ACCOUNT'
-      - ' TEMPORARY_CREDENTIALS'
-      - ' TOKEN'
-      - ' UNKNOWN'
-      - ' USER'
+      - 'ANONYMOUS'
+      - 'APPLICATION'
+      - 'COMPUTE'
+      - 'FEDERATED_IDENTITY'
+      - 'SERVICE'
+      - 'SERVICE_ACCOUNT'
+      - 'TEMPORARY_CREDENTIALS'
+      - 'TOKEN'
+      - 'UNKNOWN'
+      - 'USER'
       required: false
       secret: false
     - default: false
