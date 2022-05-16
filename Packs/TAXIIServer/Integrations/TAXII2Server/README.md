@@ -139,39 +139,24 @@ TIM fields (System generated and custom). A general example of these two related
 
 
 ## Configuration Guide
----
-### How to connect Microsoft Sentinel to the TAXII Server
+
+### Microsoft Sentinel
 
 #### Configure the TAXII2 Server instance
 
-  1. Set **TAXII2 Server version** to **2.0**, not **2.1**.
+  1. Set **TAXII2 Server version** to **2.0** (The integration currently doesn't work with Microsoft Sentinel in TAXII Version 2.1).
     
-     - The integration currently doesn't work with Microsoft Sentinel in TAXII Version 2.1.
-    
-  2. Set **STIX types for STIX indicator Domain Object** you want to publish.
+  2. Under **STIX types for STIX indicator Domain Object** select the indicator types you want to ingest.
 
-  3. Set **Listen Port** and **Collection JSON** you want.
+  3. If needed set the **Listen Port** to your liking.
 
 
-#### Make sure the API root URL
+#### Getting the info needed to for the Sentinel TAXII connector
 
-  The API root URL is always:
-
-  `https://<xsoar-server>/instance/execute/<instance_name>/threatintel/`
-
-
-#### Make sure the ID of the collection from which Microsoft Sentinel ingest
-
-  List the collection resources using REST APIs by running the command below.
+  1. API Root - Your XSOAR TAXII2 API Root can be found at - `https://<xsoar-server>/instance/execute/<instance_name>/threatintel/`
+  2. Collection `id` - Use `curl https://<xsoar-server>/instance/execute/<instance_name>/threatintel/collections/ | jq .` to get a list  of the collections avalable and on your TAXII server. From the list copy the correct `id` of the collection you want to ingest. 
  
-  `curl https://<xsoar-server>/instance/execute/<instance_name>/threatintel/collections/ | jq .`
- 
-  That will give you the output like this. The collection IDs are located in `collections.id`.
-  Please copy a collection ID collesponding to the collection name you want to ingest so that you set it up on the Microsoft Sentinel.
-  
-  e.g. `3709e6df-bbe1-5ece-b683-e99a42f31fce` is the collection ID collesponding to `AllIPs`.
-  
- 
+ Response Example:
   ```JSON
   {
     "collections": [
@@ -201,8 +186,11 @@ TIM fields (System generated and custom). A general example of these two related
   }
   ```
 
-#### Configure Threat intelligence - TAXII Collector in Microsoft Sentinel
+#### Setting up the Microsoft Sentinel TAXII connector
 
-Now that you have the API root URL and Collection ID, configure the Threat intelligence - TAXII Collector in Microsoft Sentinel.
+Now that we have the `API Root URL` and the `Collection ID` we can configure the Threat intelligence - TAXII Connector in Microsoft Sentinel.
 
+Paste your `API root URL` in the field marked with `API Root URL` and the desired collection id we got in step (2) under `Collection ID`, and that is it.
+
+Example:
 ![Microsoft Sentinel TI Configuration](../../doc_files/MS-Sentinel-TI-Config.png)
