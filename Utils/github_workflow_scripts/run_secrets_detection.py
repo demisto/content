@@ -51,6 +51,7 @@ def trigger_generic_webhook(options):
             investigation_id = res_json_response_data.get("id")
             # write_id_to_env(investigation_id)
             print(investigation_id)
+            return
 
     print("Secrets detection playbook has failed")
     sys.exit(1)
