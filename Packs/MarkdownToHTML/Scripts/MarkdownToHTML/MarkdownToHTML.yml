@@ -1,0 +1,51 @@
+args:
+- description: Text to transform
+  name: text
+  required: true
+  type: textArea
+- description: Context key to put result in, leave empty to ignore context
+  name: contextKey
+  type: textArea
+- auto: PREDEFINED
+  defaultValue: "True"
+  description: Full HTML structure or only the text converted
+  name: convertOnlyMarkdown
+  predefined:
+  - "True"
+  - "False"
+  required: true
+- auto: PREDEFINED
+  defaultValue: "False"
+  name: prettifyHTML
+  predefined:
+  - "True"
+  - "False"
+  required: true
+comment: Converts Markdown to HTML.
+commonfields:
+  id: 81f2109a-81d7-40db-8dcd-8284fdec5f54
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ""
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 6aa16f69-6f04-47c4-808d-071b4adc002f
+    propagationLabels:
+    - all
+    toServerVersion: ""
+dockerimage: markdown:latest
+enabled: true
+engineinfo: {}
+mainengineinfo: {}
+name: MarkdownToHTML
+pswd: ""
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- markdown
+- HTML
+type: python
