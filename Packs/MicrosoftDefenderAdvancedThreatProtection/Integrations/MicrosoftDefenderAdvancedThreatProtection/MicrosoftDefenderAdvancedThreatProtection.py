@@ -4473,7 +4473,7 @@ def run_polling_command(client: MsClient, args: dict, cmd: str, action_func: Cal
         outputs = command_results.outputs
         # schedule next poll
         polling_args = {
-            'machine_action_id': outputs.get('action_id') or command_results.raw_response.get("id"),
+            'machine_action_id': command_results.raw_response.get("id"),
             'interval_in_seconds': interval_in_secs,
             'polling': True,
             **args,
