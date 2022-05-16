@@ -197,7 +197,7 @@ def get_incident_id(row):
     row_data_string = ''
     for data_field in data:
         row_data_string += f'{data_field}_'
-    row_id = hashlib.md5(row_data_string.encode('utf-8')).hexdigest()
+    row_id = hashlib.md5(row_data_string.encode('utf-8')).hexdigest()  # nosec
     return row_id
 
 
@@ -327,7 +327,7 @@ def fetch_incidents():
         demisto.debug("[BigQuery Debug] first row is: {}".format(bigquery_rows[0]))
         demisto.debug("[BigQuery Debug] last row is: {}".format(bigquery_rows[-1]))
 
-    new_incidents = []
+    new_incidents = []  # type: ignore
     found_incidents_ids = demisto.getLastRun().get('found_ids', {})
 
     for i in range(len(bigquery_rows) - 1, - 1, -1):
@@ -348,7 +348,7 @@ def fetch_incidents():
     demisto.debug(
         "[BigQuery Debug] new_incidents is: {}\nbigquery_rows is: {}".format(new_incidents, len(bigquery_rows)))
 
-    if 0 < len(new_incidents) < fetch_limit:
+    if 0 < len(new_incidents) < fetch_limit:  # type: ignore
         demisto.debug("[BigQuery Debug] Less than limit")
         latest_incident_time_str = get_max_incident_time(new_incidents)
         found_incidents_ids = remove_outdated_incident_ids(found_incidents_ids, latest_incident_time_str)
@@ -387,12 +387,10 @@ try:
     if demisto.command() == 'test-module':
         test_module()
     elif demisto.command() == 'bigquery-query':
-        query = demisto.args().get('query')
-        query_command(query)
+        search_query = demisto.args().get('query')
+        query_command(search_query)
     elif demisto.command() == 'fetch-incidents':
         fetch_incidents()
-
-
 
 except Exception as e:
     LOG(str(e))
