@@ -740,7 +740,6 @@ script:
         unknown, activated, deactivated, secured, lowSeverity, mediumSeverity, highSeverity,
         unresponsive, compromised, misconfigured.
       type: String
-      description: List of managed devices
   - arguments:
     - description: The name of the managed device to be fetched.
       name: device_name
