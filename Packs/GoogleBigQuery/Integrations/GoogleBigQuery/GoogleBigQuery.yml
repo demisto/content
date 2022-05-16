@@ -16,9 +16,13 @@ configuration:
   defaultvalue: '1 days'
   type: 0
   required: false
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
 - defaultvalue: '50'
   display: Fetch Limit (Max.- 200, Recommended less than 50)
-  name: fetch_limit
+  name: max_fetch
   required: false
   type: 0
 - display: Fetch incidents

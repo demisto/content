@@ -318,7 +318,7 @@ def fetch_incidents():
     latest_incident_time_str = get_last_run_date()
     fetch_query = build_fetch_query(latest_incident_time_str)
     demisto.debug("[BigQuery Debug] fetch query with date is: {}".format(fetch_query))
-    fetch_limit = arg_to_number(demisto.params().get('fetch_limit') or 50)
+    fetch_limit = arg_to_number(demisto.params().get('max_fetch') or 50)
 
     bigquery_rows = list(get_query_results(fetch_query))
 
