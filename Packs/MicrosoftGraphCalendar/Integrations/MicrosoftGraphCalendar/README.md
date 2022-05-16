@@ -23,9 +23,9 @@ For more details about the authentication used in this integration, see <a href=
 <li>
 <strong>Name</strong>: a textual name for the integration instance.</li>
 <li><strong>Server URL</strong></li>
-<li><strong>ID (<a href="https://oproxy.demisto.ninja/ms-Microsoft-Graph-Calendar" target="_self">from the admin consent - see Detailed Instructions</a>)</strong></li>
-<li><strong>Token (<a href="https://oproxy.demisto.ninja/ms-Microsoft-Graph-Calendar" target="_self">from the admin consent - see Detailed Instructions</a>)</strong></li>
-<li><strong>Key (<a href="https://oproxy.demisto.ninja/ms-Microsoft-Graph-Calendar" target="_self">from the admin consent - see Detailed Instructions</a>)</strong></li>
+<li><strong>ID (<a href="https://github.com/demisto/content/blob/master/Packs/MicrosoftGraphCalendar/Integrations/MicrosoftGraphCalendar/MicrosoftGraphCalendar_description.md" target="_self">from the admin consent - see Detailed Instructions</a>)</strong></li>
+<li><strong>Token (<a href="https://github.com/demisto/content/blob/master/Packs/MicrosoftGraphCalendar/Integrations/MicrosoftGraphCalendar/MicrosoftGraphCalendar_description.md" target="_self">from the admin consent - see Detailed Instructions</a>)</strong></li>
+<li><strong>Key (<a href="https://github.com/demisto/content/blob/master/Packs/MicrosoftGraphCalendar/Integrations/MicrosoftGraphCalendar/MicrosoftGraphCalendar_description.md" target="_self">from the admin consent - see Detailed Instructions</a>)</strong></li>
 <li><strong>Certificate Thumbprint</strong></li>
 <li><strong>Private Key</strong></li>
 <li><strong>Default user</strong></li>
