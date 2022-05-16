@@ -40,9 +40,8 @@ def trigger_generic_webhook(options):
     res = requests.post(SECRETS_INSTANCE_URL, json=body, auth=(username, password))
 
     if res.status_code != 200:
-        print(
+        raise Exception(
             f"Secrets detection playbook was failed. Post request to Content Gold has status code of {res.status_code}")
-        return
 
     res_json = res.json()
     if res_json and isinstance(res_json, list):
@@ -50,10 +49,10 @@ def trigger_generic_webhook(options):
         if res_json_response_data:
             investigation_id = res_json_response_data.get("id")
             write_id_to_env(investigation_id)
-            return
+            print(investigation_id)
+            raise Exception('Adi')
 
-    print("Secrets detection playbook has failed")
-    return
+    raise Exception("Secrets detection playbook has failed")
 
 
 def write_id_to_env(investigation_id):
