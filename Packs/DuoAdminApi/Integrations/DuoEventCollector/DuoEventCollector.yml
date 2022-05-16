@@ -54,6 +54,7 @@ script:
     name: duo-get-events
   dockerimage: devdemisto/duoadmin3:1.0.0.29639
   runonce: false
+  isfetchevents: true
   subtype: python3
 fromversion: 6.5.0
 tests:
