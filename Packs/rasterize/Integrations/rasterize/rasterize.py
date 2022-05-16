@@ -107,7 +107,7 @@ def init_driver(offline_mode=False, include_url=False):
     try:
         chrome_options = webdriver.ChromeOptions()
         if include_url:
-            os.environ['DISPLAY'] = ':1'
+            # os.environ['DISPLAY'] = ':1'
             display = Display(visible=False, size=(800, 600))
             display.start()
             chrome_options.add_argument("disable-infobars")
@@ -170,6 +170,28 @@ def convert_file_to_bytes(file_path: str) -> bytes:
     with open(file_path, 'rb') as f:
         file_content = f.read()
     return file_content
+
+
+def rasterize_test(url):
+    os.environ['DISPLAY'] = ':1'
+    display = Display(visible=0, size=(800, 600))
+    display.start()
+    chrome_options = Options()
+    chrome_options.add_argument('--no-sandbox')  # bypass OS security model
+    chrome_options.add_argument("disable-infobars")
+    chrome_options.add_experimental_option("excludeSwitches", ["enable - automation"])
+    chrome_options.add_experimental_option("useAutomationExtension", False)
+    driver = webdriver.Chrome(executable_path="/usr/bin/chromedriver", chrome_options=chrome_options)
+
+    time.sleep(3)
+    driver.get(url)
+    driver.maximize_window()
+    os.system("import -window root /tmp/screenshot.png")
+    driver.close()
+    output = convert_file_to_bytes("/tmp/screenshot.png")
+    res = fileResult(filename="url.png", data=output)
+    res['Type'] = entryTypes['image']
+    demisto.results(res)
 
 
 def rasterize(path: str, width: int, height: int, r_type: str = 'png', wait_time: int = 0,
@@ -235,7 +257,6 @@ def get_image(driver, width: int, height: int, include_url: bool):
     demisto.debug('Capturing screenshot')
     if include_url:
         driver.maximize_window()
-        # driver.set_window_size(width, height)
         os.system("import -window root /tmp/screenshot.png")
         image = convert_file_to_bytes("/tmp/screenshot.png")
     else:
