@@ -62,23 +62,23 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Microsoft 365 Defender event collector integration for XSIAM.
+description: Microsoft 365 Defender event collector integration for Cortex XSIAM.
 display: Microsoft 365 Defender Event Collector
 name: Microsoft 365 Defender Event Collector
 script:
   commands:
   - deprecated: false
-    description: 'Returns a list of alerts'
+    description: 'Returns a list of alerts.'
     execution: false
     name: microsoft-365-defender-get-events
     arguments:
-    - description: The maximum number of alerts per fetch. Default is 1000.
+    - description: The maximum number of alerts per fetch.
       defaultValue: '10000'
       isArray: true
       name: limit
       required: false
       secret: false
-    - description: First fetch time (<number> <time unit>, e.g., 12 hours, 1 day, 3 months). default is 12 hours.
+    - description: The first fetch time (<number> <time unit>, for example 12 hours, 1 day, 3 months).
       defaultValue: '3 days'
       isArray: true
       name: first_fetch
