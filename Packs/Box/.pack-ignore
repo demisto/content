@@ -6,3 +6,6 @@ ignore=BA101
 
 [file:BoxV2.yml]
 ignore=IN145
+
+[file:BoxV2_image.png]
+ignore=IM111

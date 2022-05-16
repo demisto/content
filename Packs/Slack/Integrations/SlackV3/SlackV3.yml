@@ -43,6 +43,8 @@ configuration:
   - incidentReminderSLA
   - taskCompleted
   - incidentStatusChanged
+  - externalFormSubmit
+  - failedFetchIncidents
 - defaultvalue: Unclassified
   display: Type of incidents created in Slack
   name: incidentType
@@ -60,6 +62,11 @@ configuration:
   name: unsecure
   required: false
   type: 8
+- display: Enable Incident Mirroring
+  name: mirroring
+  required: false
+  type: 8
+  defaultvalue: 'true'
 - defaultvalue: 'true'
   additionalinfo: "If your organization does not require incident mirroring, or data collection, it is possible to
   disable the `longRunning` parameter. For those organizations who do wish to use these features, the parameter should
@@ -100,6 +107,7 @@ configuration:
   hidden: false
   name: enable_dm
   required: false
+  defaultvalue: 'false'
   type: 8
 - display: Disable Caching of Users and Channels
   additionalinfo: This parameter prevents this integration from storing Users and Channels into the integration
@@ -108,7 +116,7 @@ configuration:
   name: disable_caching
   required: false
   type: 8
-  defaultvalue: false
+  defaultvalue: 'false'
 - display: Common Channels
   name: common_channels
   type: 12
@@ -591,7 +599,7 @@ script:
     - contextPath: Slack.Thread.Text
       description: The text the message was updated with.
       type: String
-  dockerimage: demisto/slackv3:1.0.0.26640
+  dockerimage: demisto/slackv3:1.0.0.29539
   feed: false
   isfetch: false
   longRunning: true

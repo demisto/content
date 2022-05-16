@@ -1,0 +1,31 @@
+{
+    "id": "incident_reportedemailmessageid",
+    "version": -1,
+    "modified": "2022-02-28T12:28:45.706309491Z",
+    "name": "Reported Email Message ID",
+    "ownerOnly": false,
+    "description": "The message ID of the reported email in a reported (forwarded or attached) phishing email. For example, if Email A is a phishing email, and Email A is attached to Email B in the phishing report, the value of this field is the message ID of Email A.",
+    "cliName": "reportedemailmessageid",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "Phishing"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.0.0"
+}

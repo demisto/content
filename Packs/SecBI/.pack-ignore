@@ -3,3 +3,6 @@ ignore=RM104
 
 [file:SecBI.yml]
 ignore=IN145
+
+[file:SecBI_image.png]
+ignore=IM111

@@ -15,3 +15,10 @@ ignore=ST108
 
 [file:FireMonSecurityManager_description.md]
 ignore=DS104
+
+[file:FireMonSecurityManager_image.png]
+ignore=IM111
+
+[known_words]
+PP
+FireMon

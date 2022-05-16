@@ -147,8 +147,10 @@ def get_iocs_generator(size=200, query=None) -> Iterable:
 def demisto_expiration_to_xdr(expiration) -> int:
     if expiration and not expiration.startswith('0001'):
         try:
-            return int(parse(expiration).astimezone(timezone.utc).timestamp() * 1000)
-        except ValueError:
+            expiration_date = parse(expiration)
+            assert expiration_date is not None, f'could not parse {expiration}'
+            return int(expiration_date.astimezone(timezone.utc).timestamp() * 1000)
+        except (ValueError, AssertionError):
             pass
     return -1
 

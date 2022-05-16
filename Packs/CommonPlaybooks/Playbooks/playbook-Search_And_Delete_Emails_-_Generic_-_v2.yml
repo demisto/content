@@ -760,8 +760,7 @@ inputs:
   required: false
   description: Used only in O365. Description of the compliance search.
   playbookInputQuery:
-- key: |
-    O365AllowNotFoundExchangeLocations
+- key: O365AllowNotFoundExchangeLocations
   value:
     simple: "false"
   required: false

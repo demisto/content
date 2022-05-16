@@ -1,6 +1,7 @@
 <!-- HTML_DOC -->
 <p>Exchange Web Services (EWS) provides the functionality to enable client applications to communicate with the Exchange server. EWS provides access to much of the same data that is made available through Microsoft OfficeOutlook.</p>
 <p>The EWS v2 integration implants EWS leading services. The integration allows getting information on emails and activities in a target mailbox, and some active operations on the mailbox such as deleting emails and attachments or moving emails from folder to folder.</p>
+<p><b>Note:</b> EWS v2 does not support Multi-Factor Authentication (MFA). If using MFA, use EWS O365 (see <code>https://xsoar.pan.dev/docs/reference/integrations/ewso365</code>) or if you have Graph Outlook use O365 Outlook Mail (Using Graph API) (see <code>https://xsoar.pan.dev/docs/reference/integrations/microsoft-graph-mail</code>) or O365 Outlook Mail Single User (Using Graph API) (see <code>https://xsoar.pan.dev/docs/reference/integrations/microsoft-graph-mail-single-user</code>).</p>
 <h2>EWS v2 Playbook</h2>
 <ul>
 <li>Office 365 Search and Delete</li>
@@ -43,7 +44,7 @@
 <li>
 <strong>Email address</strong><span> </span>The email address</li>
 <li>
-<strong>Password</strong><span> </span>The password of the account. Use the API Key if working with Multi-Factor Authentication.</li>
+<strong>Password</strong><span> </span>The password of the account.</li>
 <li>
 <strong>Email address from which to fetch incidents</strong><span> </span>This argument can take various user accounts in your organization. Usually is used as phishing mailbox.<br> Note: To use this functionality, your account must have impersonation rights or delegation for the account specified. In the case of impersonation, make sure to check the<span> </span><code>Has impersonation rights</code><span> </span>checkbox in the instance settings. For more information on impersonation rights see ‘Additional Info’ section below.</li>
 <li><strong>Name of the folder from which to fetch incidents (supports Exchange Folder ID and sub-folders e.g. Inbox/Phishing)</strong></li>

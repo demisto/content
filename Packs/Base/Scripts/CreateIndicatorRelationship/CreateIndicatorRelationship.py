@@ -135,7 +135,8 @@ def validate_arguments(args: dict) -> Dict[str, str]:
         raise Exception("Missing entity_b_type in the create relationships")
 
     args['entity_a_type'] = FeedIndicatorType.indicator_type_by_server_version(args.get('entity_a_type'))
-    args['entity_b_type'] = FeedIndicatorType.indicator_type_by_server_version(args.get('entity_b_type'))
+    if entity_b_type := args.get('entity_b_type'):
+        args['entity_b_type'] = FeedIndicatorType.indicator_type_by_server_version(entity_b_type)
     return args
 
 

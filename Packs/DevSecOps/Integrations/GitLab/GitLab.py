@@ -694,7 +694,7 @@ def gitlab_trigger_build_command(client: Client, args: Dict[str, Any]) -> Union[
     """
     base_branch = args.get('ref_branch', '')
     project_id = str(args.get('project_id', ''))
-    variables = args.get('trigger_variables', '')
+    variables = args.get('trigger_variables', {})
     if not client.trigger_token:
         return_error("A trigger token is required in the integration instance configuration")
 

@@ -2,7 +2,7 @@
 
 # ignored_messages_file contains patterns of mypy messages we want to ignore
 ignored_messages_file="./Tests/scripts/.mypy_ignored_messages"
-mypy_flags="--check-untyped-defs --ignore-missing-imports --follow-imports=silent --show-column-numbers --show-error-codes --allow-redefinition --show-absolute-path --cache-dir=/dev/null"
+mypy_flags="--check-untyped-defs --ignore-missing-imports --follow-imports=silent --show-column-numbers --show-error-codes --allow-redefinition --show-absolute-path"
 
 errors=0
 

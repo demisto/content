@@ -1,12 +1,12 @@
 from CommonServerPython import *
 import json
 
-FAIL_STATUS_MSG = "Command send-mail in module EWS Mail Sender requires argument to that is missing (7)"
 
+def validate_email_sent(incident_id, email_subject, email_to, reply_body, service_mail, email_cc, reply_html_body,
+                        entry_id_list, email_latest_message, email_code):
+    """
+    Validate that the email was actually sent, returns an error string if it wasn't sent successfully.
 
-def send_reply(incident_id, email_subject, email_to, reply_body, service_mail, email_cc, reply_html_body,
-               entry_id_list, email_latest_message, email_code):
-    """Send email reply.-
     Args:
         incident_id: The incident ID.
         email_subject: The email subject.
@@ -18,23 +18,21 @@ def send_reply(incident_id, email_subject, email_to, reply_body, service_mail, e
         entry_id_list: The files entry ids list.
         email_latest_message: The latest message ID in the email thread to reply to.
         email_code: The random code that was generated when the incident was created.
+
+    Returns:
+        str: a message which indicates that the mail was sent successfully or an error message.
     """
-    email_reply = send_mail_request(incident_id, email_subject, email_to, reply_body, service_mail, email_cc,
-                                    reply_html_body, entry_id_list, email_latest_message, email_code)
+    email_reply = execute_reply_mail(incident_id, email_subject, email_to, reply_body, service_mail, email_cc,
+                                     reply_html_body, entry_id_list, email_latest_message, email_code)
 
-    status = email_reply[0].get('Contents', '')
-    if status != FAIL_STATUS_MSG and status:
-        msg = f'Mail sent successfully. To: {email_to}'
-        if email_cc:
-            msg += f' Cc: {email_cc}'
-    else:
-        msg = f'An error occurred while trying to send the mail: {status}'
+    if is_error(email_reply):
+        return f'Error:\n {get_error(email_reply)}'
 
-    return msg
+    return f'Mail sent successfully to {email_to}'
 
 
-def send_mail_request(incident_id, email_subject, email_to, reply_body, service_mail, email_cc, reply_html_body,
-                      entry_id_list, email_latest_message, email_code):
+def execute_reply_mail(incident_id, email_subject, email_to, reply_body, service_mail, email_cc, reply_html_body,
+                       entry_id_list, email_latest_message, email_code):
     if f'<{email_code}' not in email_subject:
         subject_with_id = f"<{email_code}> {email_subject}"
 
@@ -59,8 +57,7 @@ def send_mail_request(incident_id, email_subject, email_to, reply_body, service_
         "attachIDs": ",".join(entry_id_list),
         "replyTo": service_mail,
     }
-    email_reply = demisto.executeCommand("reply-mail", mail_content)
-    return email_reply
+    return demisto.executeCommand("reply-mail", mail_content)
 
 
 def get_email_cc(current_cc=None, additional_cc=None):
@@ -156,6 +153,9 @@ def get_reply_body(notes, incident_id, attachments):
             user_fullname = dict_safe_get(note_userdata[0], ['Contents', 'name']) or "DBot"
             reply_body += f"{user_fullname}: \n{note['Contents']}\n\n"
 
+        if isinstance(attachments, str):
+            attachments = argToList(attachments)
+
         if attachments:
             attachment_names = [attachment.get('name') for attachment in attachments]
             reply_body += f'Attachments: {attachment_names}\n\n'
@@ -246,15 +246,15 @@ def main():
     email_code = custom_fields.get('emailgeneratedcode')
     email_to_str = get_email_recipients(email_to, email_from, service_mail, mailbox)
     files = args.get('files', {})
-    attachments = args.get('attachment', {})
+    attachments = argToList(args.get('attachment', []))
     notes = demisto.executeCommand("getEntries", {'filter': {'categories': ['notes']}})
 
     try:
         final_email_cc = get_email_cc(email_cc, add_cc)
         reply_body, reply_html_body = get_reply_body(notes, incident_id, attachments)
         entry_id_list = get_entry_id_list(incident_id, attachments, files)
-        result = send_reply(incident_id, email_subject, email_to_str, reply_body, service_mail, final_email_cc,
-                            reply_html_body, entry_id_list, email_latest_message, email_code)
+        result = validate_email_sent(incident_id, email_subject, email_to_str, reply_body, service_mail, final_email_cc,
+                                     reply_html_body, entry_id_list, email_latest_message, email_code)
         demisto.results(result)
     except Exception as error:
         return_error(str(error), error)

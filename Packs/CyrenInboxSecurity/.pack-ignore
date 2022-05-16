@@ -1,2 +1,5 @@
 [file:CyrenInboxSecurity.yml]
 ignore=IN145
+
+[file:CyrenInboxSecurity_image.png]
+ignore=IM111

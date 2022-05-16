@@ -36,7 +36,7 @@ configuration:
   required: false
   type: 13
 - display: Incident Mirroring Direction
-  defaultvalue: Incoming
+  defaultvalue: Both
   name: mirror_direction
   options:
   - None
@@ -51,7 +51,7 @@ configuration:
   name: comment_tag
   type: 0
 - display: Escalate entry tag
-  additionalinfo: Adding this tag to a Note will reassign the alert back to CriticalStart SOC
+  additionalinfo: Adding this tag to a Note will reassign the alert back to Critical Start SOC
   defaultvalue: escalate
   name: escalate_tag
   type: 0
@@ -60,15 +60,15 @@ configuration:
   name: input_tag
   type: 0
 - display: Fetch attachments for comments from ZTAP
-  defaultvalue: false
+  defaultvalue: 'false'
   name: get_attachments
   type: 8
 - display: Sync closing incidents with ZTAP
-  defaultvalue: false
+  defaultvalue: 'false'
   name: close_incident
   type: 8
 - display: Sync reopening incidents with ZTAP
-  defaultvalue: false
+  defaultvalue: 'false'
   name: reopen_incident
   type: 8
 - display: First fetch timestamp
@@ -81,8 +81,7 @@ configuration:
   name: max_fetch
   required: false
   type: 0
-description: Zero Trust Analytics Platform (ZTAP) is the underlying investigation
-  platform and user interface for CriticalStart's MDR service.
+description: Zero Trust Analytics Platform (ZTAP) is the underlying investigation platform and user interface for Critical Start's MDR service.
 display: ZeroTrustAnalyticsPlatform
 name: ZeroTrustAnalyticsPlatform
 script:
@@ -101,15 +100,13 @@ script:
       secret: false
     - default: false
       defaultValue: '0'
-      description: UTC timestamp in seconds. The incident is only updated if it was
-        modified after the last update time.
+      description: UTC timestamp in seconds. The incident is only updated if it was modified after the last update time.
       isArray: false
       name: lastUpdate
       required: false
       secret: false
     execution: false
-    description: Get remote data from a remote incident. This command should only be called
-      manually for debugging purposes.
+    description: Get remote data from a remote incident. This command should only be called manually for debugging purposes.
   - name: ztap-get-alert-entries
     arguments:
     - default: false
@@ -127,7 +124,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.4.28442
 fromversion: 6.0.0
 defaultmapperin: ZeroTrustAnalyticsPlatform - Incoming Mapper
 defaultclassifier: ZeroTrustAnalyticsPlatform - Classifier

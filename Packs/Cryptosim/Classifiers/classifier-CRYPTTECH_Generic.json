@@ -1,0 +1,73 @@
+{
+    "description": "Crypttech Generic Mapper is mapper that convert CRYPTOSIM's keys to XSOAR's incident columns.",
+    "feed": false,
+    "id": "CRYPTTECH Generic",
+    "mapping": {
+        "Cryptosim CorrelationAlert": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Alert ID": {
+                    "simple": "ID"
+                },
+                "App message": {
+                    "simple": "MESSAGE"
+                },
+                "Destination IP": {
+                    "simple": "DST_IP"
+                },
+                "Destination Port": {
+                    "simple": "DST_PORT"
+                },
+                "Device Name": {
+                    "simple": "dvcname"
+                },
+                "File Name": {
+                    "simple": "fname"
+                },
+                "Protocol": {
+                    "simple": "proto"
+                },
+                "Rule Name": {
+                    "simple": "NAME"
+                },
+                "Source IP": {
+                    "simple": "SRC_IP"
+                },
+                "Source Port": {
+                    "simple": "SRC_PORT"
+                },
+                "Source Status": {
+                    "simple": "substatus"
+                },
+                "Source Username": {
+                    "simple": "suser"
+                },
+                "Sub Category": {
+                    "simple": "cat"
+                },
+                "CRYPTOSIM Category ID": {
+                    "simple": "catid"
+                },
+                "CRYPTOSIM Correlation ID": {
+                    "simple": "CORRELATIONID"
+                },
+                "CRYPTOSIM Event Start Date": {
+                    "simple": "EVENTSTARTDATE"
+                },
+                "CRYPTOSIM Log Date": {
+                    "simple": "date1"
+                },
+                "CRYPTOSIM Log Type": {
+                    "simple": "type"
+                },
+                "CRYPTOSIM Plugin ID": {
+                    "simple": "plgid"
+                }
+            }
+        }
+    },
+    "name": "CRYPTTECH Generic",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

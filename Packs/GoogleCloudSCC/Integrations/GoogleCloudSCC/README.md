@@ -10,7 +10,23 @@ We need to provide the below mentioned OAuth scope to execute the commands: http
 ### Create a Service Account
 1. Go to the [Google documentation](https://developers.google.com/identity/protocols/OAuth2ServiceAccount#creatinganaccount) and follow the procedure mentioned in the _Creating a Service Account_ section. After you create a service account, a Service Account Private Key file is downloaded. You will need this file when configuring an instance of the integration.
 2. Grant the Security Command Center admin permission to the Service Account to enable the Service Account to perform certain Google Cloud API commands.
-3. In Cortex XSOAR, configure an instance of the Google Cloud Security Command Center integration. For the Service Account Private Key parameter, add the Service Account Private Key file contents (JSON).
+3. For additional information on the types of permissions that can be granted to Service Account, see the ***Permissions*** section below.
+4. In Cortex XSOAR, configure an instance of the Google Cloud Security Command Center integration. For the Service Account Private Key parameter, add the Service Account Private Key file contents (JSON).
+
+### Permissions
+To set up Security Command Center or change the configuration of your organization, you need both of the following roles at the organization level:
+
+* Organization Admin (roles/resourcemanager.organizationAdmin)
+* Security Center Admin (roles/securitycenter.admin)
+
+If a user doesn't require edit permissions, consider granting them viewer roles. To view all assets and findings in Security Command Center, users need the ***Security Center Admin Viewer*** (roles/securitycenter.adminViewer) role at the organization level. Users who need to edit the findings need the ***Security Center Admin*** (roles/securitycenter.admin) role at the organization level.
+
+To restrict access to individual folders and projects, don't grant all roles at the organization level. Instead, grant the following roles at the folder or project level:
+
+* Security Center Assets Viewer (roles/securitycenter.assetsViewer)
+* Security Center Findings Viewer (roles/securitycenter.findingsViewer)
+
+Refer to [Google Documentation](https://cloud.google.com/security-command-center/docs/access-control) for further information on granting roles to persons and applications, as well as specific permissions.
 
 ### Steps to configure workload identity federation:
 1. Follow the [steps](https://cloud.google.com/iam/docs/configuring-workload-identity-federation) to construct a workload identity pool and a workload identity pool provider to leverage workload identity federation.

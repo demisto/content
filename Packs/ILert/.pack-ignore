@@ -6,3 +6,6 @@ ignore=RM104
 
 [file:ILert.yml]
 ignore=IN145
+
+[file:ILert_image.png]
+ignore=IM111

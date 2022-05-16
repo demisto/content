@@ -24,6 +24,9 @@
                 "Behaviour Tactic": {
                     "simple": "behaviors.tactic"
                 },
+                "Technique": {
+					"simple": "behaviors.technique"
+				},
                 "CMD line": {
                     "simple": "behaviors.cmdline"
                 },
@@ -136,6 +139,18 @@
                             }
                         ]
                     }
+                },
+				"dbotMirrorDirection": {
+					"simple": "mirror_direction"
+				},
+				"dbotMirrorId": {
+					"simple": "detection_id"
+				},
+				"dbotMirrorInstance": {
+					"simple": "mirror_instance"
+				},
+                "IncomingMirrorError": {
+                  "simple": "in_mirror_error"
                 }
             }
         },
@@ -193,12 +208,18 @@
                 "Start Time": {
                     "simple": "start"
                 },
+                "Source Status": {
+					"simple": "status"
+                },
                 "State": {
                     "simple": "state"
                 },
                 "Tactic": {
                     "simple": "tactics"
                 },
+                "Tags": {
+					"simple": "tags"
+				},
                 "Technique": {
                     "simple": "techniques"
                 },
@@ -254,6 +275,18 @@
                             }
                         ]
                     }
+                },
+                "dbotMirrorDirection": {
+					"simple": "mirror_direction"
+				},
+				"dbotMirrorId": {
+					"simple": "incident_id"
+				},
+				"dbotMirrorInstance": {
+					"simple": "mirror_instance"
+				},
+                "IncomingMirrorError": {
+                  "simple": "in_mirror_error"
                 }
             }
         },

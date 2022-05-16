@@ -8,7 +8,6 @@ import demistomock as demisto
 from CommonServerPython import *
 from datetime import datetime, timedelta
 
-
 RETURN_ERROR_TARGET = 'SplunkPyPreRelease.return_error'
 SPLUNK_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
 
@@ -860,7 +859,6 @@ def test_get_modified_remote_data_command(mocker):
      4, True)
 ])
 def test_update_remote_system(args, params, call_count, success, mocker, requests_mock):
-
     class Service:
         def __init__(self):
             self.token = 'fake_token'
@@ -1052,19 +1050,22 @@ def test_build_search_human_readable(mocker):
         Test headers are calculated correctly:
             * comma-separated, space-separated
             * support commas and spaces inside header values (if surrounded with parenthesis)
-
+            * rename headers
     """
     func_patch = mocker.patch('SplunkPyPreRelease.update_headers_from_field_names')
     results = [
-        {'ID': 1, 'Header with space': 'h1', 'header3': 1, 'header_without_space': '1234'},
-        {'ID': 2, 'Header with space': 'h2', 'header3': 2, 'header_without_space': '1234'},
+        {'ID': 1, 'Header with space': 'h1', 'header3': 1, 'header_without_space': '1234',
+         'old_header_1': '1', 'old_header_2': '2'},
+        {'ID': 2, 'Header with space': 'h2', 'header3': 2, 'header_without_space': '1234',
+         'old_header_1': '1', 'old_header_2': '2'},
     ]
     args = {
         'query': 'something | table ID "Header with space" header3 header_without_space '
-                 'comma,separated "Single,Header,with,Commas" | something else'
+                 'comma,separated "Single,Header,with,Commas" old_header_1 old_header_2 | something else'
+                 ' | rename old_header_1 AS new_header_1 old_header_2 AS new_header_2'
     }
     expected_headers = ['ID', 'Header with space', 'header3', 'header_without_space',
-                        'comma', 'separated', 'Single,Header,with,Commas']
+                        'comma', 'separated', 'Single,Header,with,Commas', 'new_header_1', 'new_header_2']
 
     splunk.build_search_human_readable(args, results)
     headers = func_patch.call_args[0][1]

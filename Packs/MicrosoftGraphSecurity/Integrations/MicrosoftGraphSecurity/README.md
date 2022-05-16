@@ -28,6 +28,8 @@ For more details about the authentication used in this integration, see <a href=
 <li><strong>Host URL (e.g., <a href="https://graph.microsoft.com/" rel="nofollow">https://graph.microsoft.com</a>)</strong></li>
 <li><strong>ID you received from the admin consent</strong></li>
 <li><strong>Key you received from the admin consent</strong></li>
+<li><strong>Certificate Thumbprint</strong></li>
+<li><strong>Private Key</strong></li>
 <li><strong>Token you received from the admin consent</strong></li>
 <li><strong>Trust any certificate (not secure)</strong></li>
 <li><strong>Use system proxy settings</strong></li>

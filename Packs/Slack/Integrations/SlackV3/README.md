@@ -27,9 +27,10 @@ Please refer to the video tutorial [found here](https://live.paloaltonetworks.co
     | `paginated_count` | Number of objects to return in each paginated call. | False |
     | `proxy_url` | Proxy URL to use in Slack API calls. | False |
     | `filtered_tags` | Comma-separated list of tags by which to filter the messages sent from XSOAR. Only supported in Cortex XSOAR V6.1 and above. | False |
-    | `permitted_notifications` | Types of Notifications to send in the dedicated channel. | False |
+    | `permitted_notifications` | Types of notifications to send (to individual users and to the dedicated Slack channel, if specified). | False |
     | `common_channels` | For workspaces where a handful of channels are consistently being used, you may add them as a CSV in the format ChannelName:ChannelID. | False |
     | `disable_caching` | When configured, Disable Caching will prevent the integration from paginating to search for Users or Conversations. Additionally, it will prevent excess data from being stored to the integration context. If this parameter is disabled, the instance may create high memory usage. | False |
+    | `mirroring` | Enable Incident Mirroring. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
@@ -570,3 +571,18 @@ Because of this, you may have some users in Slack who are not users in XSOAR. Th
 health to indicate that an error has occurred because a user was unable to be found. In this circumstance, the error is expected and is purely cosmetic in nature.
 - In some cases when mirroring an investigation, kicking the admin will cause no further actions to be able to be performed by the bot. Any subsequent actions taken on the channel (such as mirror out) will result in a "not in channel" error.
 - Please note: If a dedicated channel is configured, however there are no notifications being sent, please verify that the **Types of Notifications** to send parameter is populated.
+### slack-get-integration-context
+***
+Returns the integration context as a file. Use this command for debug purposes only.
+
+
+#### Base Command
+
+`slack-get-integration-context`
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.

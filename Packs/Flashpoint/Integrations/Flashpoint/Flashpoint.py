@@ -2299,9 +2299,13 @@ def main():
     proxies = handle_proxy()
 
     args = demisto.args()
+    nargs = {}
     for arg in args:
         if isinstance(args[arg], str):
-            args[arg] = args[arg].strip()
+            nargs[arg] = args[arg].strip()
+        else:
+            nargs[arg] = args[arg]
+    args = nargs
 
     command = demisto.command()
     try:

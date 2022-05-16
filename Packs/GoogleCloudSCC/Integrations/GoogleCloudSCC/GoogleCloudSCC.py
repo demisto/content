@@ -209,7 +209,7 @@ class BaseGoogleClient:
     """
 
     def __init__(self, service_name: str, service_version: str, service_account_json: str, scopes: list, proxy: bool,
-                 **kwargs):
+                 insecure: bool, **kwargs):
         """
         :param service_name: The name of the service. You can find this and the service  here
          https://github.com/googleapis/google-api-python-client/blob/master/docs/dyn/index.md
@@ -228,7 +228,7 @@ class BaseGoogleClient:
             else:
                 credentials = service_account.Credentials.from_service_account_info(info=service_account_json,
                                                                                     scopes=scopes)
-            http_client = AuthorizedHttp(credentials=credentials, http=self.get_http_client_with_proxy(proxy))
+            http_client = AuthorizedHttp(credentials=credentials, http=self.get_http_client_with_proxy(proxy, insecure))
             self.service = discovery.build(service_name, service_version, http=http_client, cache_discovery=False)
         except httplib2.ServerNotFoundError as e:
             raise ValueError(ERROR_MESSAGES["TIMEOUT_ERROR"].format(str(e)))
@@ -244,10 +244,11 @@ class BaseGoogleClient:
             raise ValueError(error_message)
 
     @staticmethod
-    def get_http_client_with_proxy(proxy: bool) -> httplib2.Http:
+    def get_http_client_with_proxy(proxy: bool, insecure: bool) -> httplib2.Http:
         """
         Create an http client with proxy with whom to use when using a proxy.
         :param proxy: Whether to use a proxy.
+        :param insecure: Whether to perform a ssl validation.
 
         :return: ProxyInfo object.
         """
@@ -269,7 +270,12 @@ class BaseGoogleClient:
                     proxy_user=parsed_proxy.username,
                     proxy_pass=parsed_proxy.password,
                 )
-        return httplib2.Http(proxy_info=proxy_info, timeout=TIMEOUT_TIME)
+        return httplib2.Http(
+            proxy_info=proxy_info,
+            timeout=TIMEOUT_TIME,
+            disable_ssl_certificate_validation=insecure,
+            ca_certs=os.getenv('REQUESTS_CA_BUNDLE') or os.getenv('SSL_CERT_FILE'),
+        )
 
     @staticmethod
     def execute_request(request) -> Dict[str, Any]:

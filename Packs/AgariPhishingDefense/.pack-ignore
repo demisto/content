@@ -7,3 +7,6 @@ ignore=IF100
 
 [file:AgariPhishingDefense.yml]
 ignore=IN145
+
+[file:AgariPhishingDefense_image.png]
+ignore=IM111

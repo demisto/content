@@ -396,3 +396,20 @@ def test_demisto_upload_file_error(mocker):
     with pytest.raises(Exception,
                        match="There was an issue uploading the file. Check your API key and input argument."):
         upload_file_command({'incidentId': '1', 'entryID': '12@12', 'body': "test_bark"})
+
+
+@pytest.mark.parametrize(argnames='target, service', argvalues=[('incident attachment', 'incident'),
+                                                                ('war room entry', 'entry')])
+def test_demisto_upload_file_as_attachment(mocker, target, service):
+    """
+    Given:
+        - target where to upload the file
+    When:
+        - Running the upload_file_command command
+    Then:
+        - Validate the correct Uri was sent to the executeCommand
+    """
+    import DemistoUploadFileV2
+    mocker.patch('DemistoUploadFileV2.demisto.executeCommand')
+    upload_file_command({'target': target})
+    assert f'{service}/upload/' in DemistoUploadFileV2.demisto.executeCommand.call_args[0][1]['uri']

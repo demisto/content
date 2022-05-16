@@ -1,9 +1,8 @@
-from typing import Dict, Tuple, Callable
+from typing import Callable, Dict, Tuple
 
+import demistomock as demisto  # noqa: F401
 import requests
-
-from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
-from CommonServerUserPython import *  # noqa
+from CommonServerPython import *  # noqa: F401
 
 requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 ''' CONSTANTS '''
@@ -972,7 +971,7 @@ COMMANDS_ARGS_DATA: Dict[str, Any] = {
         'args': ['id', 'scan_title', 'asset_group_ids', 'asset_groups', 'ip', 'frequency_days', 'weekdays',
                  'frequency_weeks', 'frequency_months', 'day_of_month', 'day_of_week', 'week_of_month', 'start_date',
                  'start_hour', 'start_minute', 'time_zone_code', 'exclude_ip_per_scan', 'default_scanner',
-                 'scanners_in_ag', 'active', 'observe_dst', ],
+                 'scanners_in_ag', 'active', 'observe_dst', 'target_from', 'iscanner_name', ],
         'default_added_depended_args': {'frequency_days': {'occurrence': 'daily', },
                                         'frequency_weeks': {'occurrence': 'weekly', },
                                         'frequency_months': {'occurrence': 'monthly', },

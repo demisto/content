@@ -13,8 +13,8 @@ This playbook does not use any integrations.
 This playbook does not use any scripts.
 
 ### Commands
-* panorama-list-static-routes
-* panorama-add-static-route
+* pan-os-list-static-routes
+* pan-os-add-static-route
 
 ## Playbook Inputs
 ---

@@ -20,7 +20,7 @@ class TestPackStatisticsHandler:
     def dummy_pack(self):
         """ dummy pack fixture
         """
-        return Pack(pack_name="Test Pack Name", pack_path="dummy_path", marketplace="xsoar")
+        return Pack(pack_name="Test Pack Name", pack_path="dummy_path")
 
     def test_search_rank_new_tag(self, dummy_pack_metadata, dummy_pack):
         """

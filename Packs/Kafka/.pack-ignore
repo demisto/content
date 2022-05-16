@@ -1,2 +1,6 @@
 [file:Kafka_V2.yml]
 ignore=IN126,BA108,BA109,IN145
+
+
+[file:KafkaV3_image.png]
+ignore=IM111

@@ -140,14 +140,19 @@ def purge_queue(args, client):
         return raise_error(e)
 
 
-def parse_incident_from_finding(message):
+def parse_incident_from_finding(message, parse_body_as_json=False):
     incident = {}
     incident['name'] = "SQS MessageId: " + message["MessageId"]
+    if parse_body_as_json:
+        try:
+            message["Body"] = json.loads(message["Body"])
+        except Exception:
+            pass
     incident['rawJSON'] = json.dumps(message)
     return incident
 
 
-def fetch_incidents(aws_client, aws_queue_url, max_fetch):
+def fetch_incidents(aws_client, aws_queue_url, max_fetch, parse_body_as_json):
     try:
         client = aws_client.aws_session(service='sqs')
         receipt_handles = []  # type: list
@@ -171,7 +176,7 @@ def fetch_incidents(aws_client, aws_queue_url, max_fetch):
 
             for message in messages["Messages"]:
                 receipt_handles.append(message['ReceiptHandle'])
-                incidents.append(parse_incident_from_finding(message))
+                incidents.append(parse_incident_from_finding(message, parse_body_as_json))
                 if len(incidents) == max_fetch:
                     break
 
@@ -208,6 +213,7 @@ def main():
     retries = params.get('retries') or 5
     aws_queue_url = params.get('queueUrl')
     max_fetch = min(params.get('max_fetch', 10), 100)
+    parse_body_as_json = params.get('parse_body_as_json', False)
 
     commands = {
         'aws-sqs-get-queue-url': get_queue_url,
@@ -230,7 +236,7 @@ def main():
         if command == 'test-module':
             return_results(test_function(aws_client))
         elif demisto.command() == 'fetch-incidents':
-            fetch_incidents(aws_client, aws_queue_url, max_fetch)
+            fetch_incidents(aws_client, aws_queue_url, max_fetch, parse_body_as_json)
             sys.exit(0)
         elif command in commands:
             client = aws_client.aws_session(
