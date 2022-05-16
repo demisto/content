@@ -741,15 +741,16 @@ script:
         unresponsive, compromised, misconfigured.
       type: String
       description: List of managed devices
-- arguments:
-  - name: device_name
-    required: true
-  description: The name of the managed device to be fetched.
-  name: msgraph-find-managed-devices-by-name
-  outputs:
-  - contextPath: MSGraphDeviceManagement.Device.ID
-    description: The ID of the managed device
-    type: string
+  - arguments:
+    - description: The name of the managed device to be fetched.
+      name: device_name
+      required: true
+    description: Search of managed devices by name
+    name: msgraph-find-managed-devices-by-name
+    outputs:
+    - contextPath: MSGraphDeviceManagement.Device.ID
+      description: The ID of the managed device
+      type: string
     - contextPath: MSGraphDeviceManagement.Device.UserID
       description: Unique Identifier for the user associated with the device
       type: string
@@ -986,7 +987,6 @@ script:
         unknown, activated, deactivated, secured, lowSeverity, mediumSeverity, highSeverity,
         unresponsive, compromised, misconfigured.
       type: string
-    description: Search of managed devices by name
   dockerimage: demisto/crypto:1.0.0.28507
   runonce: false
   script: ''
