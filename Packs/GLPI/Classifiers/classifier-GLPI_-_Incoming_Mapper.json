@@ -7,7 +7,7 @@
         "GLPI Incident": {
             "dontMapEventToLabels": false,
             "internalMapping": {
-                "GLPI Assigned to": {
+                "GLPI Assigned To": {
                     "complex": {
                         "filters": [],
                         "root": "assigned_users",
@@ -18,7 +18,7 @@
                         ]
                     }
                 },
-                "GLPI Assigned to group": {
+                "GLPI Assigned To Group": {
                     "complex": {
                         "filters": [],
                         "root": "assigned_groups",
@@ -32,7 +32,7 @@
                 "GLPI Category": {
                     "simple": "itilcategories_id"
                 },
-                "GLPI Closing date": {
+                "GLPI Closing Date": {
                     "simple": "closedate"
                 },
                 "GLPI Description": {
@@ -67,13 +67,13 @@
                     },
                     "simple": ""
                 },
-                "GLPI Internal time to own": {
+                "GLPI Internal Time To Own": {
                     "simple": "internal_time_to_own"
                 },
-                "GLPI Internal time to resolve": {
+                "GLPI Internal Time To Resolve": {
                     "simple": "internal_time_to_resolve"
                 },
-                "GLPI Opening date": {
+                "GLPI Opening Date": {
                     "simple": "date"
                 },
                 "GLPI Priority": {
@@ -105,7 +105,7 @@
                     },
                     "simple": ""
                 },
-                "GLPI Request source": {
+                "GLPI Request Source": {
                     "complex": {
                         "accessor": "",
                         "filters": [],
@@ -145,7 +145,7 @@
                         ]
                     }
                 },
-                "GLPI Requester group": {
+                "GLPI Requester Group": {
                     "complex": {
                         "filters": [],
                         "root": "requester_groups",
@@ -156,7 +156,7 @@
                         ]
                     }
                 },
-                "GLPI Solved date": {
+                "GLPI Solved Date": {
                     "simple": "solvedate"
                 },
                 "GLPI Status": {
@@ -191,10 +191,10 @@
                 "GLPI Ticket ID": {
                     "simple": "id"
                 },
-                "GLPI Time to own": {
+                "GLPI Time To Own": {
                     "simple": "time_to_own"
                 },
-                "GLPI Time to resolve": {
+                "GLPI Time To Resolve": {
                     "simple": "time_to_resolve"
                 },
                 "GLPI Type": {
@@ -266,7 +266,7 @@
                         ]
                     }
                 },
-                "GLPI Watcher group": {
+                "GLPI Watcher Group": {
                     "complex": {
                         "filters": [],
                         "root": "watcher_groups",
@@ -339,7 +339,7 @@
         "GLPI Request": {
             "dontMapEventToLabels": false,
             "internalMapping": {
-                "GLPI Assigned to": {
+                "GLPI Assigned To": {
                     "complex": {
                         "filters": [],
                         "root": "assigned_users",
@@ -350,7 +350,7 @@
                         ]
                     }
                 },
-                "GLPI Assigned to group": {
+                "GLPI Assigned To Group": {
                     "complex": {
                         "filters": [],
                         "root": "assigned_groups",
@@ -364,7 +364,7 @@
                 "GLPI Category": {
                     "simple": "itilcategories_id"
                 },
-                "GLPI Closing date": {
+                "GLPI Closing Date": {
                     "simple": "closedate"
                 },
                 "GLPI Description": {
@@ -399,13 +399,13 @@
                     },
                     "simple": ""
                 },
-                "GLPI Internal time to own": {
+                "GLPI Internal Time To Own": {
                     "simple": "internal_time_to_own"
                 },
-                "GLPI Internal time to resolve": {
+                "GLPI Internal Time To Resolve": {
                     "simple": "internal_time_to_resolve"
                 },
-                "GLPI Opening date": {
+                "GLPI Opening Date": {
                     "simple": "date"
                 },
                 "GLPI Priority": {
@@ -437,7 +437,7 @@
                     },
                     "simple": ""
                 },
-                "GLPI Request source": {
+                "GLPI Request Source": {
                     "complex": {
                         "accessor": "",
                         "filters": [],
@@ -477,7 +477,7 @@
                         ]
                     }
                 },
-                "GLPI Requester group": {
+                "GLPI Requester Group": {
                     "complex": {
                         "filters": [],
                         "root": "requester_groups",
@@ -488,7 +488,7 @@
                         ]
                     }
                 },
-                "GLPI Solved date": {
+                "GLPI Solved Date": {
                     "simple": "solvedate"
                 },
                 "GLPI Status": {
@@ -523,10 +523,10 @@
                 "GLPI Ticket ID": {
                     "simple": "id"
                 },
-                "GLPI Time to own": {
+                "GLPI Time To Own": {
                     "simple": "time_to_own"
                 },
-                "GLPI Time to resolve": {
+                "GLPI Time To Resolve": {
                     "simple": "time_to_resolve"
                 },
                 "GLPI Type": {
@@ -598,7 +598,7 @@
                         ]
                     }
                 },
-                "GLPI Watcher group": {
+                "GLPI Watcher Group": {
                     "complex": {
                         "filters": [],
                         "root": "watcher_groups",
