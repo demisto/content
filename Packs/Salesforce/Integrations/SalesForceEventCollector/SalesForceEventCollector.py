@@ -127,8 +127,6 @@ class GetEvents:
             if file['Id'] == self.last_id:
                 last_id_found = True
 
-        if new_files:
-            demisto.setLastRun(self.get_last_run(new_files))
         return new_files
 
     def get_file_raw_lines(self, file_url, file_in_tmp_path):
@@ -166,8 +164,12 @@ class GetEvents:
 
     def _iter_events(self) -> Generator:
         temp_dir = tempfile.TemporaryDirectory()
+        log_files = self.pull_log_files()
 
-        for line in self.pull_log_files():
+        if log_files:
+            demisto.setLastRun(self.get_last_run(log_files))
+
+        for line in log_files:
             events_list = []
             local_filename = line["LogFile"].replace('/', '_').replace(':', '_')
             file_in_tmp_path = "{}/{}".format(temp_dir.name, local_filename)
