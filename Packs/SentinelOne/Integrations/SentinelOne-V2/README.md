@@ -1360,3 +1360,112 @@ Sends an uninstall command to all agents that match the input filter.
 
 There is no context output for this command.
 
+### sentinelone-get-blocklist
+***
+Add a hash to the blocklist ("blacklist" in SentinelOne documentation). If the `global` flag is `true`, then group_ids, site_ids, and account_ids are ignored.
+
+
+#### Base Command
+
+`sentinelone-get-blocklist`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| global | Access global list? (Same as `tenant` flag in API docs). Possible values are: true, false. Default is true. | Optional | 
+| group_ids | Comma separated list of group IDs to filter by. | Optional | 
+| site_ids | Comma separated list of siteIDs to filter by. | Optional | 
+| account_ids | Comma separated list of account IDs to filter by. | Optional | 
+| offset | How many records to skip (for paging). Default is 0. | Optional | 
+| limit | Max number of records to return. Default is 1000. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+### sentinelone-add-hash-to-blocklist
+***
+Add a hash to the Global blocklist in SentinelOne
+
+
+#### Base Command
+
+`sentinelone-add-hash-to-blocklist`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| sha1 | SHA1 Hash to Add to Global Blocklist. | Optional | 
+| source | String describing the source of the block. Default is XSOAR. | Optional | 
+| os_type | Type of OS. Possible values are: windows, linux, macos. | Required | 
+| description | Note stored in SentinelOne about the block. Default is Blocked from XSOAR. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SentinelOne.AddHashToBlocklist.hash | unknown | Hash of file | 
+| SentinelOne.AddHashToBlocklist.status | unknown | Status of addition action | 
+### sentinelone-remove-hash-from-blocklist
+***
+Remove a hash from the Global blocklist in SentinelOne
+
+
+#### Base Command
+
+`sentinelone-remove-hash-from-blocklist`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| sha1 | SHA1 hash to remove from the Global blocklist. | Optional | 
+| os_type | Optional OS Type. If not supplied, will remove across all platforms. Possible values are: windows, macos, linux. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SentinelOne.RemoveHashFromBlocklist.hash | unknown | Hash of file | 
+| SentinelOne.RemoveHashFromBlocklist.status | unknown | Status of removal action | 
+### sentinelone-fetch-file
+***
+Invokes a fetch files command against an agent endpoint
+
+
+#### Base Command
+
+`sentinelone-fetch-file`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| agent_id | Agent ID to retrieve file from. | Required | 
+| file_path | Filepath to download file from. | Required | 
+| password | Password to protect zip file with. | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.
+### sentinelone-download-fetched-file
+***
+Download a file fetched using sentinelone-fetch-file to submit the request and sentinelone-get-activities to get the download path
+
+
+#### Base Command
+
+`sentinelone-download-fetched-file`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| agent_id | SentinelOne Agent ID. Default is Agent ID. | Required | 
+| activity_id | ID from Activity in get-activities. | Required | 
+| password | Password used in sentinelone-fetch-file command. | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.
