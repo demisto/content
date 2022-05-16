@@ -113,26 +113,26 @@ for key in SystemDiagnosticsResults.keys():
 actionableItems = []
 if SystemDiagnosticsResults['largeIncidents']:
     actionableItems.append({"category": "DB Analysis", "severity": "High",
-                            "description": f"{DESCRIPTION[0]}",
-                            "resolution": f"{RESOLUTION[0]}"
+                            "description": DESCRIPTION[0],
+                            "resolution": RESOLUTION[0]
                             })
 
 if SystemDiagnosticsResults['bigWorkplans']:
     actionableItems.append({"category": "DB Analysis", "severity": "High",
-                            "description": f"{DESCRIPTION[1]}",
-                            "resolution": f"{RESOLUTION[0]}"
+                            "description": DESCRIPTION[1],
+                            "resolution": RESOLUTION[0]
                             })
 
 if SystemDiagnosticsResults['bigContext']:
     actionableItems.append({"category": "DB Analysis", "severity": "High",
-                            "description": f"{DESCRIPTION[2]}",
-                            "resolution": f"{RESOLUTION[1]}"
+                            "description": DESCRIPTION[2],
+                            "resolution": RESOLUTION[1]
                             })
 
 if SystemDiagnosticsResults['bigTasks']:
     actionableItems.append({"category": "DB Analysis", "severity": "High",
-                            "description": f"{DESCRIPTION[3]}",
-                            "resolution": f"{RESOLUTION[0]}"
+                            "description": DESCRIPTION[3],
+                            "resolution": RESOLUTION[0]
                             })
 
 sorted_out = sorted(out, key=itemgetter('incidentid'))
