@@ -56,12 +56,12 @@ class Credentials(BaseModel):
     password: str
 
 
-def set_authorization(request: IntegrationHTTPRequest, auth_credentials):
+def set_authorization(request: IntegrationHTTPRequest, auth_credendtials):
     """Automatic authorization.
     Supports {Authorization: Bearer __token__}
     or Basic Auth.
     """
-    creds = Credentials.parse_obj(auth_credentials)
+    creds = Credentials.parse_obj(auth_credendtials)
     if creds.password and creds.identifier:
         request.auth = HTTPBasicAuth(creds.identifier, creds.password)
     auth = {'Authorization': f'Bearer {creds.password}'}
