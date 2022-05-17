@@ -33,7 +33,7 @@ def test_find_managed_devices_command(mocker):
         data: dict = json.load(json_file)
         raw_device = data.get('value')
 
-    client_mock = mocker.patch.object(MicrosoftGraphDeviceManagement, 'find_managed_devices_command',
+    client_mock = mocker.patch.object(MicrosoftGraphDeviceManagement, 'find_managed_devices',
                         return_value={'list_raw_devices': raw_device, 'raw_response': data})
     
 
