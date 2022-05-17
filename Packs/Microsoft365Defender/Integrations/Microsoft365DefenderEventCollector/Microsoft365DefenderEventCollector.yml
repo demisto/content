@@ -69,7 +69,7 @@ configuration:
   hidden: false
   name: verify
   required: false
-  defaultvalue: true
+  defaultvalue: 'true'
   type: 8
 - display: Use system proxy settings
   name: proxy
