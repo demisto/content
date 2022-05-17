@@ -1,4 +1,4 @@
-category: Authentication
+category: Vulnerability Management
 commonfields:
   id: Palo_Alto_Networks_Security_Advisories
   version: -1
