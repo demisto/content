@@ -30,6 +30,7 @@ PyGithub = "^1.54.1"
 requests-mock = "^1.9.3"
 pytest-mock = "^3.7.0"
 db-dtypes = "^1.0.1"
+google-cloud-bigquery = "^3.1.0"
 
 [tool.poetry.dev-dependencies]
 
