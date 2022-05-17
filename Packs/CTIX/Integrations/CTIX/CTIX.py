@@ -1054,7 +1054,7 @@ def get_indicator_tags_command(client: Client, args: Dict[str, Any]) -> CommandR
     '''
     page = args.get("page", 1)
     page_size = args.get("page_size", 10)
-    object_id = args.get("object_id")
+    object_id = str(args.get("object_id"))
     object_type = args["object_type"]
     params = {"page": page, "page_size": page_size}
 
