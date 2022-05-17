@@ -925,7 +925,8 @@ def upload_packs_with_dependencies_zip(storage_bucket, storage_base_path, signat
         storage_base_path (str): The upload destination in the target bucket for all packs (in the format of
                                  <some_path_in_the_target_bucket>/content/Packs).
         storage_bucket (google.cloud.storage.bucket.Bucket): google cloud storage bucket.
-        packs_for_current_marketplace_dict (dict): Dict of packs relevant for current marketplace as {pack_name: pack_object}
+        packs_for_current_marketplace_dict (dict): Dict of packs relevant for current marketplace as
+        {pack_name: pack_object}
 
     """
     logging.info("Starting to collect pack with dependencies zips")
@@ -934,8 +935,10 @@ def upload_packs_with_dependencies_zip(storage_bucket, storage_base_path, signat
             if pack.status not in [*SKIPPED_STATUS_CODES, PackStatus.SUCCESS.name]:
                 # avoid trying to upload dependencies zip for failed packs
                 continue
-            pack_and_its_dependencies = [packs_for_current_marketplace_dict.get(dep_name) for dep_name in pack.all_levels_dependencies] + [pack]
-            pack_or_dependency_was_uploaded = any(dep_pack.status == PackStatus.SUCCESS.name for dep_pack in pack_and_its_dependencies)
+            pack_and_its_dependencies = [packs_for_current_marketplace_dict.get(dep_name) for dep_name in
+                                         pack.all_levels_dependencies] + [pack]
+            pack_or_dependency_was_uploaded = any(dep_pack.status == PackStatus.SUCCESS.name for dep_pack in
+                                                  pack_and_its_dependencies)
             if pack_or_dependency_was_uploaded:
                 pack_with_dep_path = os.path.join(pack.path, "with_dependencies")
                 zip_with_deps_path = os.path.join(pack.path, f"{pack_name}_with_dependencies.zip")
@@ -959,7 +962,8 @@ def upload_packs_with_dependencies_zip(storage_bucket, storage_base_path, signat
                 logging.info(f"Uploading {pack_name} with its dependencies")
                 task_status, _, _ = pack.upload_to_storage(zip_with_deps_path, '', storage_bucket, True,
                                                            storage_base_path, overridden_upload_path=upload_path)
-                logging.info(f"{pack_name} with dependencies was{' not' if not task_status else ''} uploaded successfully")
+                logging.info(f"{pack_name} with dependencies was{' not' if not task_status else ''} "
+                             f"uploaded successfully")
                 if not task_status:
                     pack.status = PackStatus.FAILED_CREATING_DEPENDENCIES_ZIP_UPLOADING.name
                     pack.cleanup()
@@ -1057,7 +1061,7 @@ def main():
                                                                         is_bucket_upload_flow, ci_branch)
 
     # detect packs to upload
-    pack_names = get_packs_names(target_packs, previous_commit_hash) # TODO: this is actually id
+    pack_names = get_packs_names(target_packs, previous_commit_hash)  # list of the pack's ids
     extract_packs_artifacts(packs_artifacts_path, extract_destination_path)
     packs_list = [Pack(pack_name, os.path.join(extract_destination_path, pack_name)) for pack_name in pack_names
                   if os.path.exists(os.path.join(extract_destination_path, pack_name))]
