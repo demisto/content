@@ -62,7 +62,7 @@ class Client(BaseClient):
             return cases
 
     def update_case(self, case_id: str = None, updates: dict = None):
-        res = self._http_request('PATCH', f'case/{case_id}', ok_codes=[200, 201, 404], data=updates,
+        res = self._http_request('PATCH', f'case/{case_id}', ok_codes=[200, 201, 404], json_data=updates,
                                  resp_type='response')
         if res.status_code != 200:
             return (res.status_code, res.text)
@@ -71,7 +71,7 @@ class Client(BaseClient):
             return case
 
     def create_case(self, details: dict = None):
-        res = self._http_request('POST', 'case', ok_codes=[200, 201, 404], data=details, resp_type='response')
+        res = self._http_request('POST', 'case', ok_codes=[200, 201, 404], json_data=details, resp_type='response')
         if res.status_code not in [200, 201]:
             return (res.status_code, res.text)
         else:
@@ -488,7 +488,7 @@ def search_cases_command(client: Client, args: dict):
 
 def update_case_command(client: Client, args: dict):
     case_id = args.get('id')
-
+    args['tags'] = argToList(args.get('tags', []))
     # Get the case first
     original_case = client.get_case(case_id)
     if not original_case:
@@ -516,7 +516,36 @@ def update_case_command(client: Client, args: dict):
     )
 
 
+def fix_element(args: dict):
+    """
+    Fix args to fit API types requirements.
+
+    Args:
+        args (dict): args to fix
+    """
+    types_dict = {
+        'title': str,
+        'description': str,
+        'tlp': arg_to_number,
+        'pap': arg_to_number,
+        'severity': arg_to_number,
+        'flag': argToBoolean,
+        'tags': argToList,
+        'startDate': dateparser.parse,
+        'metrics': argToList,
+        'customFields': str,
+        'tasks': argToList,
+        'template': str,
+        'owner': str
+    }
+    for k, v in args.items():
+        args[k] = types_dict.get(k, str)(v)  # type: ignore
+        if k == 'tasks':
+            args[k] = [fix_element(task) for task in args[k]]
+
+
 def create_case_command(client: Client, args: dict):
+    fix_element(args)
     case = client.create_case(args)
     if type(case) == tuple:
         raise DemistoException(f'Error creating case ({case[0]}) - {case[1]}')

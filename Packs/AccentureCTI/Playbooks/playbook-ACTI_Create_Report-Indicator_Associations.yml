@@ -1,0 +1,1073 @@
+id: ACTI Create Report-Indicator Associations
+version: -1
+name: ACTI Create Report-Indicator Associations
+description: This sub-playbook makes the connections between ACTI indicators (from ACTI Indicator API) and ACTI intelligence reports (from ACTI Report API) that have pulled into an XSOAR incident via the Enrich Incidents with Indicators and Enrich Incidents with Intelligence Reports sub-playbooks.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: f8d02bed-a932-4dbd-8158-a747e303628b
+    type: start
+    task:
+      id: f8d02bed-a932-4dbd-8158-a747e303628b
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "9"
+      - "11"
+      - "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 660,
+          "y": 290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 82e030b3-550e-466e-8aeb-6c610cb8ad9b
+    type: regular
+    task:
+      id: 82e030b3-550e-466e-8aeb-6c610cb8ad9b
+      version: -1
+      name: IP for IA
+      description: This automation creates a relationship between indicator objects.
+      scriptName: CreateIndicatorRelationship
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      create_indicator:
+        simple: "true"
+      entity_a:
+        simple: ${inputs.IP}
+      entity_a_type:
+        simple: IP
+      entity_b:
+        simple: ${inputs.IA}
+      entity_b_type:
+        simple: Report
+      relationship:
+        simple: related-to
+      reverse_relationship:
+        simple: attachment-of
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -620,
+          "y": 1380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 34a67f0e-8850-4a5b-830a-9170b8708ff1
+    type: regular
+    task:
+      id: 34a67f0e-8850-4a5b-830a-9170b8708ff1
+      version: -1
+      name: Domain for IA
+      description: This automation creates a relationship between indicator objects.
+      scriptName: CreateIndicatorRelationship
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      create_indicator:
+        simple: "true"
+      entity_a:
+        simple: ${inputs.Domain}
+      entity_a_type:
+        simple: Domain
+      entity_b:
+        simple: ${inputs.IA}
+      entity_b_type:
+        simple: Report
+      relationship:
+        simple: related-to
+      reverse_relationship:
+        simple: attachment-of
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1880,
+          "y": 1380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: a6fb0903-b83f-4ce5-8157-fe306f1c8212
+    type: regular
+    task:
+      id: a6fb0903-b83f-4ce5-8157-fe306f1c8212
+      version: -1
+      name: URL for IA
+      description: This automation creates a relationship between indicator objects.
+      scriptName: CreateIndicatorRelationship
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      create_indicator:
+        simple: "true"
+      entity_a:
+        simple: ${inputs.URL}
+      entity_a_type:
+        simple: URL
+      entity_b:
+        simple: ${inputs.IA}
+      entity_b_type:
+        simple: Report
+      relationship:
+        simple: related-to
+      reverse_relationship:
+        simple: attachment-of
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 390,
+          "y": 1380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 0ea7a7e4-6f1b-4469-8962-c6e6457c8e02
+    type: title
+    task:
+      id: 0ea7a7e4-6f1b-4469-8962-c6e6457c8e02
+      version: -1
+      name: END
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 640,
+          "y": 1830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 2c4e0e93-0e24-4589-8513-5024a84cf58c
+    type: condition
+    task:
+      id: 2c4e0e93-0e24-4589-8513-5024a84cf58c
+      version: -1
+      name: Is ACTI URL Indicator?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "4"
+      URL:
+      - "21"
+      - "22"
+    separatecontext: false
+    conditions:
+    - label: URL
+      condition:
+      - - operator: inList
+          left:
+            value:
+              simple: url
+          right:
+            value:
+              complex:
+                root: DBotScore
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DBotScore.Vendor
+                      iscontext: true
+                    right:
+                      value:
+                        simple: ACTI Indicator Query
+                accessor: Type
+                transformers:
+                - operator: join
+                  args:
+                    separator:
+                      value:
+                        simple: ','
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 650,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: e6d076b8-52d5-47a7-8a7b-be58e5881888
+    type: regular
+    task:
+      id: e6d076b8-52d5-47a7-8a7b-be58e5881888
+      version: -1
+      name: GetIPDBotScore
+      description: Add into the incident's context the system internal DBot score
+        for the input indicator.
+      scriptName: GetIndicatorDBotScore
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      indicator:
+        simple: ${inputs.IP}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 87.5,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 2cd50951-818f-4f76-811e-14cf8b7a7ab5
+    type: regular
+    task:
+      id: 2cd50951-818f-4f76-811e-14cf8b7a7ab5
+      version: -1
+      name: GetDomainDBotScore
+      description: Add into the incident's context the system internal DBot score
+        for the input indicator.
+      scriptName: GetIndicatorDBotScore
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      indicator:
+        simple: ${inputs.Domain}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1202.5,
+          "y": 710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: d7e5bcf6-164e-405f-81c4-94602a257cba
+    type: regular
+    task:
+      id: d7e5bcf6-164e-405f-81c4-94602a257cba
+      version: -1
+      name: GetURLDBotScore
+      description: Add into the incident's context the system internal DBot score
+        for the input indicator.
+      scriptName: GetIndicatorDBotScore
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      indicator:
+        simple: ${inputs.URL}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 650,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 207ba64b-9c0b-44c8-8e05-05a4eac56eb2
+    type: condition
+    task:
+      id: 207ba64b-9c0b-44c8-8e05-05a4eac56eb2
+      version: -1
+      name: IP Exists
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "4"
+      "yes":
+      - "6"
+    scriptarguments:
+      value:
+        simple: ${inputs.IP}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 87.5,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 9dcb7045-3efc-4f74-84e3-6e2fa7bedf33
+    type: condition
+    task:
+      id: 9dcb7045-3efc-4f74-84e3-6e2fa7bedf33
+      version: -1
+      name: Domain Exists
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "4"
+      "yes":
+      - "7"
+    scriptarguments:
+      value:
+        simple: ${inputs.Domain}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1202.5,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 1534c225-1b7b-4362-87e4-54e224fa6145
+    type: condition
+    task:
+      id: 1534c225-1b7b-4362-87e4-54e224fa6145
+      version: -1
+      name: URL Exists
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "4"
+      "yes":
+      - "8"
+    scriptarguments:
+      value:
+        simple: ${inputs.URL}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 650,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 9f2b7a15-039a-43fa-8242-6ea335fdaab8
+    type: condition
+    task:
+      id: 9f2b7a15-039a-43fa-8242-6ea335fdaab8
+      version: -1
+      name: Is ACTI IP Indicator?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "4"
+      IP:
+      - "23"
+      - "24"
+    separatecontext: false
+    conditions:
+    - label: IP
+      condition:
+      - - operator: inList
+          left:
+            value:
+              simple: ACTI Indicator Query
+          right:
+            value:
+              complex:
+                root: DBotScore
+                accessor: Vendor
+                transformers:
+                - operator: join
+                  args:
+                    separator:
+                      value:
+                        simple: ','
+            iscontext: true
+      - - operator: inList
+          left:
+            value:
+              simple: ip
+          right:
+            value:
+              complex:
+                root: DBotScore
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DBotScore.Vendor
+                      iscontext: true
+                    right:
+                      value:
+                        simple: ACTI Indicator Query
+                accessor: Type
+                transformers:
+                - operator: join
+                  args:
+                    separator:
+                      value:
+                        simple: ','
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 87.5,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 518cc177-6c90-4467-8b3e-0d1e87a591cd
+    type: condition
+    task:
+      id: 518cc177-6c90-4467-8b3e-0d1e87a591cd
+      version: -1
+      name: Is ACTI domain Indicator?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "4"
+      Domain:
+      - "19"
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: Domain
+      condition:
+      - - operator: inList
+          left:
+            value:
+              simple: domain
+          right:
+            value:
+              complex:
+                root: DBotScore
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DBotScore.Vendor
+                      iscontext: true
+                    right:
+                      value:
+                        simple: ACTI Indicator Query
+                accessor: Type
+                transformers:
+                - operator: join
+                  args:
+                    separator:
+                      value:
+                        simple: ','
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1202.5,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: a3b6306a-6266-43fd-8d14-3d2beda078be
+    type: regular
+    task:
+      id: a3b6306a-6266-43fd-8d14-3d2beda078be
+      version: -1
+      name: IP for IR
+      description: This automation creates a relationship between indicator objects.
+      scriptName: CreateIndicatorRelationship
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      create_indicator:
+        simple: "true"
+      entity_a:
+        simple: ${inputs.IP}
+      entity_a_type:
+        simple: IP
+      entity_b:
+        simple: ${inputs.IR}
+      entity_b_type:
+        simple: Report
+      relationship:
+        simple: related-to
+      reverse_relationship:
+        simple: attachment-of
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -120,
+          "y": 1380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 975e4dc0-8d13-4fd9-8511-07dfe8aca811
+    type: regular
+    task:
+      id: 975e4dc0-8d13-4fd9-8511-07dfe8aca811
+      version: -1
+      name: URL for IR
+      description: This automation creates a relationship between indicator objects.
+      scriptName: CreateIndicatorRelationship
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      create_indicator:
+        simple: "true"
+      entity_a:
+        simple: ${inputs.URL}
+      entity_a_type:
+        simple: URL
+      entity_b:
+        simple: ${inputs.IR}
+      entity_b_type:
+        simple: Report
+      relationship:
+        simple: related-to
+      reverse_relationship:
+        simple: attachment-of
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 887.5,
+          "y": 1380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 41d52944-6125-43eb-88ca-642964d36e2e
+    type: regular
+    task:
+      id: 41d52944-6125-43eb-88ca-642964d36e2e
+      version: -1
+      name: Domain for IR
+      description: This automation creates a relationship between indicator objects.
+      scriptName: CreateIndicatorRelationship
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      create_indicator:
+        simple: "true"
+      entity_a:
+        simple: ${inputs.Domain}
+      entity_a_type:
+        simple: Domain
+      entity_b:
+        simple: ${inputs.IR}
+      entity_b_type:
+        simple: Report
+      relationship:
+        simple: related-to
+      reverse_relationship:
+        simple: attachment-of
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1390,
+          "y": 1380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: d1298106-bc67-48be-857d-79e3b1c91ff8
+    type: condition
+    task:
+      id: d1298106-bc67-48be-857d-79e3b1c91ff8
+      version: -1
+      name: IA present?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.IA
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1880,
+          "y": 1150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 598412fa-5f76-4f4f-8ad4-7751916af60b
+    type: condition
+    task:
+      id: 598412fa-5f76-4f4f-8ad4-7751916af60b
+      version: -1
+      name: IR present?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.IR
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1390,
+          "y": 1150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 162829e8-a18c-4abf-818d-b6a66d6e3545
+    type: condition
+    task:
+      id: 162829e8-a18c-4abf-818d-b6a66d6e3545
+      version: -1
+      name: IR present?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.IR
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 887.5,
+          "y": 1150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 4bdccca2-0e3e-44e9-83e0-af325b971260
+    type: condition
+    task:
+      id: 4bdccca2-0e3e-44e9-83e0-af325b971260
+      version: -1
+      name: IA present?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.IA
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 390,
+          "y": 1150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 72803615-b4e3-4954-86bf-e0337af62e73
+    type: condition
+    task:
+      id: 72803615-b4e3-4954-86bf-e0337af62e73
+      version: -1
+      name: IA present?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.IA
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -620,
+          "y": 1150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 3d38d3f4-b4d3-49e1-8f20-cc96e02e8a59
+    type: condition
+    task:
+      id: 3d38d3f4-b4d3-49e1-8f20-cc96e02e8a59
+      version: -1
+      name: IR present?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.IR
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -120,
+          "y": 1150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "10_4_no": 0.12,
+      "11_4_no": 0.12,
+      "12_4_#default#": 0.13,
+      "13_4_#default#": 0.16,
+      "19_4_#default#": 0.14,
+      "20_4_#default#": 0.18,
+      "21_4_#default#": 0.14,
+      "22_4_#default#": 0.21,
+      "23_4_#default#": 0.1,
+      "24_4_#default#": 0.1,
+      "5_4_#default#": 0.14,
+      "9_4_no": 0.13
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1605,
+        "width": 2880,
+        "x": -620,
+        "y": 290
+      }
+    }
+  }
+inputs:
+- key: IP
+  value:
+    complex:
+      root: ${IP
+      accessor: Address}
+      transformers:
+      - operator: uniq
+  required: false
+  description: ""
+  playbookInputQuery: null
+- key: IA
+  value:
+    complex:
+      root: ${intelligence_alerts}
+      transformers:
+      - operator: uniq
+  required: false
+  description: ""
+  playbookInputQuery: null
+- key: IR
+  value:
+    complex:
+      root: ${intelligence_reports}
+      transformers:
+      - operator: uniq
+  required: false
+  description: ""
+  playbookInputQuery: null
+- key: URL
+  value:
+    complex:
+      root: ${URL
+      accessor: Data}
+      transformers:
+      - operator: uniq
+  required: false
+  description: ""
+  playbookInputQuery: null
+- key: Domain
+  value:
+    complex:
+      root: ${Domain
+      accessor: Name}
+      transformers:
+      - operator: uniq
+  required: false
+  description: ""
+  playbookInputQuery: null
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

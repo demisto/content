@@ -3,7 +3,7 @@ commonfields:
   id: PhishTank V2
   version: -1
 configuration:
-- defaultvalue: false
+- defaultvalue: 'false'
   display: Use HTTPS connection
   name: use_https
   required: false
