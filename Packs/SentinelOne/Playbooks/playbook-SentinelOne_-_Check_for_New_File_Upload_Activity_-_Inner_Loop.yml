@@ -1,63 +1,26 @@
-contentitemexportablefields:
-  contentitemfields:
-    propagationLabels:
-    - all
-description: Playbook called inside a loop by  "SentinelOne - Check for New File Upload Activity". Does the actual poll of the SentinelOne Activity feed, then sleeps for 15 seconds if no result is found.
 id: SentinelOne - Check for New File Upload Activity - Inner Loop
-inputs:
-- description: SentinelOne get-activities created_after field
-  key: StartTimestamp
-  playbookInputQuery:
-  required: true
-  value:
-    simple: ${StartTimestamp}
-- description: Agent ID to check
-  key: AgentId
-  playbookInputQuery:
-  required: true
-  value: {}
-- description: Loop counter variable
-  key: Counter
-  playbookInputQuery:
-  required: true
-  value: {}
-- description: ''
-  key: MaxCounter
-  playbookInputQuery:
-  required: true
-  value: {}
+version: 5
+vcShouldKeepItemLegacyProdMachine: false
 name: SentinelOne - Check for New File Upload Activity - Inner Loop
-outputs:
-- contextPath: SentinelOne.Activity
-  description: Found Activity
-  type: unknown
-- contextPath: Counter
-  description: Counter of number of times executed
-  type: number
-starttaskid: '0'
+description: Playbook called inside a loop by  "SentinelOne - Check for New File Upload
+  Activity". Does the actual poll of the SentinelOne Activity feed, then sleeps for
+  15 seconds if no result is found.
+starttaskid: "0"
 tasks:
-  '0':
-    id: '0'
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
+  "0":
+    id: "0"
+    taskid: 5fcd2e3d-4b9f-469f-8126-1a0ac1baff52
+    type: start
+    task:
+      id: 5fcd2e3d-4b9f-469f-8126-1a0ac1baff52
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
-      - '7'
-    note: false
-    quietmode: 0
+      - "7"
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ''
-      id: 42fea98e-a433-4feb-8171-551b0a696c22
-      iscommand: false
-      name: ''
-      version: -1
-      description: ''
-    taskid: 42fea98e-a433-4feb-8171-551b0a696c22
-    timertriggers: []
-    type: start
     view: |-
       {
         "position": {
@@ -65,40 +28,40 @@ tasks:
           "y": 50
         }
       }
-  '1':
-    continueonerror: true
-    id: '1'
+    note: false
+    timertriggers: []
     ignoreworker: false
-    isautoswitchedtoquietmode: false
+    skipunavailable: false
+    quietmode: 0
     isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 8db1cdf1-1414-404a-8ad7-c46b848cd159
+    type: regular
+    task:
+      id: 8db1cdf1-1414-404a-8ad7-c46b848cd159
+      version: -1
+      name: Get Activities
+      description: Returns a list of activities.
+      script: '|||sentinelone-get-activities'
+      type: regular
+      iscommand: true
+      brand: ""
     nexttasks:
       '#none#':
-      - '9'
-    note: false
-    quietmode: 0
+      - "9"
     scriptarguments:
       activity_types:
-        simple: '80'
+        simple: "80"
       agent_ids:
         simple: ${inputs.AgentId}
       created_after:
         simple: ${inputs.StartTimestamp}
       limit:
-        simple: '1'
+        simple: "1"
+    continueonerror: true
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ''
-      description: Returns a list of activities.
-      id: 1c620c3c-683e-4fe3-82ce-64774a24d570
-      iscommand: true
-      name: Get Activities
-      script: '|||sentinelone-get-activities'
-      type: regular
-      version: -1
-    taskid: 1c620c3c-683e-4fe3-82ce-64774a24d570
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
@@ -106,26 +69,25 @@ tasks:
           "y": 720
         }
       }
-  '3':
-    id: '3'
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     note: false
-    quietmode: 0
-    separatecontext: false
+    timertriggers: []
+    ignoreworker: false
     skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 7c1ce403-3a54-4e7a-869a-5895d1708e9d
+    type: title
     task:
-      brand: ''
-      id: 7e9eb9c6-357b-4aa6-8d2c-1e24eceda7bb
-      iscommand: false
+      id: 7c1ce403-3a54-4e7a-869a-5895d1708e9d
+      version: -1
       name: Done
       type: title
-      version: -1
-      description: ''
-    taskid: 7e9eb9c6-357b-4aa6-8d2c-1e24eceda7bb
-    timertriggers: []
-    type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -133,40 +95,42 @@ tasks:
           "y": 1245
         }
       }
-  '7':
-    id: '7'
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
-    nexttasks:
-      '#none#':
-      - '11'
     note: false
-    quietmode: 0
-    scriptarguments:
-      all:
-        simple: yes
-      subplaybook:
-        simple: auto
-    separatecontext: false
+    timertriggers: []
+    ignoreworker: false
     skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: ca72c22b-6a88-493d-825d-14f6b15ad13f
+    type: regular
     task:
-      brand: ''
+      id: ca72c22b-6a88-493d-825d-14f6b15ad13f
+      version: -1
+      name: Delete Sub PB Context
       description: |-
         Delete field from context.
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
         https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
-      id: 210e37ee-db37-47e1-8963-d4d4d2f79e88
-      iscommand: false
-      name: Delete Sub PB Context
       scriptName: DeleteContext
       type: regular
-      version: -1
-    taskid: 210e37ee-db37-47e1-8963-d4d4d2f79e88
-    timertriggers: []
-    type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      all:
+        simple: "no"
+      key:
+        simple: SentinelOne
+      subplaybook:
+        simple: auto
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -174,45 +138,45 @@ tasks:
           "y": 195
         }
       }
-  '8':
-    id: '8'
+    note: false
+    timertriggers: []
     ignoreworker: false
-    isautoswitchedtoquietmode: false
+    skipunavailable: false
+    quietmode: 0
     isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 4e67b802-a74e-406a-8076-8dee5a3ee6ed
+    type: regular
+    task:
+      id: 4e67b802-a74e-406a-8076-8dee5a3ee6ed
+      version: -1
+      name: Increment Counter
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
-      - '1'
-    note: false
-    quietmode: 0
+      - "1"
     scriptarguments:
       append:
-        simple: 'false'
+        simple: "false"
       key:
         simple: Counter
       value:
         complex:
           root: inputs.Counter
           transformers:
-          - args:
+          - operator: addition
+            args:
               by:
                 value:
-                  simple: '1'
-            operator: addition
+                  simple: "1"
           - operator: LastArrayElement
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ''
-      description: Set a value in context under the key you entered.
-      id: 7d181974-ca5a-441f-8001-e542a427718e
-      iscommand: false
-      name: Increment Counter
-      scriptName: Set
-      type: regular
-      version: -1
-    taskid: 7d181974-ca5a-441f-8001-e542a427718e
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
@@ -220,50 +184,50 @@ tasks:
           "y": 555
         }
       }
-  '9':
-    conditions:
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              simple: SentinelOne.Activity
-          operator: isNotEmpty
-          right:
-            value: {}
-        - left:
-            iscontext: true
-            value:
-              simple: Counter
-          operator: greaterThanOrEqual
-          right:
-            iscontext: true
-            value:
-              simple: MaxCounter
-      label: yes
-    id: '9'
+    note: false
+    timertriggers: []
     ignoreworker: false
-    isautoswitchedtoquietmode: false
+    skipunavailable: false
+    quietmode: 0
     isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 5d36f0bf-b332-4c97-843d-37a732440ec3
+    type: condition
+    task:
+      id: 5d36f0bf-b332-4c97-843d-37a732440ec3
+      version: -1
+      name: Results Found or Last Iteration?
+      description: Conditional
+      type: condition
+      iscommand: false
+      brand: ""
     nexttasks:
       '#default#':
-      - '10'
-      yes:
-      - '3'
-    note: false
-    quietmode: 0
+      - "10"
+      "yes":
+      - "3"
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ''
-      description: Conditional
-      id: 6dbb276f-d373-4039-873f-47d588e1b495
-      iscommand: false
-      name: Results Found or Last Iteration?
-      type: condition
-      version: -1
-    taskid: 6dbb276f-d373-4039-873f-47d588e1b495
-    timertriggers: []
-    type: condition
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SentinelOne.Activity
+            iscontext: true
+          right:
+            value: {}
+        - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: Counter
+            iscontext: true
+          right:
+            value:
+              simple: MaxCounter
+            iscontext: true
     view: |-
       {
         "position": {
@@ -271,33 +235,33 @@ tasks:
           "y": 895
         }
       }
-  '10':
-    id: '10'
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
-    nexttasks:
-      '#none#':
-      - '3'
     note: false
-    quietmode: 0
-    scriptarguments:
-      seconds:
-        simple: '15'
-    separatecontext: false
+    timertriggers: []
+    ignoreworker: false
     skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 8467c083-9167-4667-8230-c6de4c369c09
+    type: regular
     task:
-      brand: ''
-      description: Sleep for X seconds
-      id: 8e983c00-39e2-4631-8b72-5aa0a3069f50
-      iscommand: false
+      id: 8467c083-9167-4667-8230-c6de4c369c09
+      version: -1
       name: Sleep 15 seconds
+      description: Sleep for X seconds
       scriptName: Sleep
       type: regular
-      version: -1
-    taskid: 8e983c00-39e2-4631-8b72-5aa0a3069f50
-    timertriggers: []
-    type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      seconds:
+        simple: "15"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -305,35 +269,35 @@ tasks:
           "y": 1070
         }
       }
-  '11':
-    id: '11'
+    note: false
+    timertriggers: []
     ignoreworker: false
-    isautoswitchedtoquietmode: false
+    skipunavailable: false
+    quietmode: 0
     isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 3ba16971-c7b0-47b3-874c-9186689c5a89
+    type: regular
+    task:
+      id: 3ba16971-c7b0-47b3-874c-9186689c5a89
+      version: -1
+      name: Set MaxCounter
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
-      - '8'
-    note: false
-    quietmode: 0
+      - "8"
     scriptarguments:
       key:
         simple: MaxCounter
       value:
         simple: ${inputs.MaxCounter}
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ''
-      description: Set a value in context under the key you entered.
-      id: 069bc675-242f-46aa-8515-bb07fcba0454
-      iscommand: false
-      name: Set MaxCounter
-      scriptName: Set
-      type: regular
-      version: -1
-    taskid: 069bc675-242f-46aa-8515-bb07fcba0454
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
@@ -341,7 +305,13 @@ tasks:
           "y": 370
         }
       }
-version: -1
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
@@ -354,7 +324,91 @@ view: |-
       }
     }
   }
-tests:
-- SentinelOne V2.1 - Test
-- SentinelOne V2.0 - Test
-fromversion: 6.5.0
+inputs:
+- key: StartTimestamp
+  value:
+    simple: ${StartTimestamp}
+  required: true
+  description: SentinelOne get-activities created_after field
+  playbookInputQuery: null
+- key: AgentId
+  value: {}
+  required: true
+  description: Agent ID to check
+  playbookInputQuery: null
+- key: Counter
+  value: {}
+  required: true
+  description: Loop counter variable
+  playbookInputQuery: null
+- key: MaxCounter
+  value:
+    simple: "40"
+  required: true
+  description: ""
+  playbookInputQuery: null
+outputs:
+- contextPath: Counter
+  description: Counter of number of times executed
+  type: number
+- contextPath: SentinelOne.Activity.AgentID
+  description: Agent ID
+  type: unknown
+- contextPath: SentinelOne.Activity.AgentUpdatedVersion
+  type: unknown
+- contextPath: SentinelOne.Activity.SiteID
+  type: unknown
+- contextPath: SentinelOne.Activity.UserID
+  type: unknown
+- contextPath: SentinelOne.Activity.SecondaryDescription
+  type: unknown
+- contextPath: SentinelOne.Activity.OsFamily
+  type: unknown
+- contextPath: SentinelOne.Activity.ActivityType
+  type: unknown
+- contextPath: SentinelOne.Activity.Data.filePath
+  type: unknown
+- contextPath: SentinelOne.Activity.Data.fullScopeDetailsPath
+  type: unknown
+- contextPath: SentinelOne.Activity.Data.computerName
+  type: unknown
+- contextPath: SentinelOne.Activity.Data.commandId
+  type: unknown
+- contextPath: SentinelOne.Activity.Data.uploadedFilename
+  type: unknown
+- contextPath: SentinelOne.Activity.Data.filename
+  type: unknown
+- contextPath: SentinelOne.Activity.Data.downloadUrl
+  type: unknown
+- contextPath: SentinelOne.Activity.Data.groupName
+  type: unknown
+- contextPath: SentinelOne.Activity.Data.commandBatchUuid
+  type: unknown
+- contextPath: SentinelOne.Activity.Data.scopeLevel
+  type: unknown
+- contextPath: SentinelOne.Activity.Data.externalIp
+  type: unknown
+- contextPath: SentinelOne.Activity.Data.siteName
+  type: unknown
+- contextPath: SentinelOne.Activity.Data.accountName
+  type: unknown
+- contextPath: SentinelOne.Activity.Data.fullScopeDetails
+  type: unknown
+- contextPath: SentinelOne.Activity.Hash
+  type: unknown
+- contextPath: SentinelOne.Activity.UpdatedAt
+  type: unknown
+- contextPath: SentinelOne.Activity.Comments
+  type: unknown
+- contextPath: SentinelOne.Activity.ThreatID
+  type: unknown
+- contextPath: SentinelOne.Activity.PrimaryDescription
+  type: unknown
+- contextPath: SentinelOne.Activity.GroupID
+  type: unknown
+- contextPath: SentinelOne.Activity.ID
+  type: unknown
+- contextPath: SentinelOne.Activity.CreatedAt
+  type: unknown
+- contextPath: SentinelOne.Activity.Desctiption
+  type: unknown

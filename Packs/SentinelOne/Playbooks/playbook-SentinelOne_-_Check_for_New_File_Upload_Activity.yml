@@ -1,7 +1,7 @@
-contentitemexportablefields:
-  contentitemfields:
-    propagationLabels:
-    - all
+id: SentinelOne - Check for New File Upload Activity
+version: 2
+vcShouldKeepItemLegacyProdMachine: false
+name: SentinelOne - Check for New File Upload Activity
 description: |+
   Playbook to abstract out process of polling for  an Activity to appear in the SentinelOne Activity feed after a file upload has been requested.
 
@@ -9,49 +9,22 @@ description: |+
 
   SentinelOne returns *no* results when incompleted, then results when complete - the opposite of GenericPolling semantics. This seemed to be the cleanest way to implement this contract.
 
-id: SentinelOne - Check for New File Upload Activity
-inputs:
-- description: SentenelOne get-activities created_after field
-  key: StartTimestamp
-  playbookInputQuery:
-  required: true
-  value: {}
-- description: Agent ID to check
-  key: AgentId
-  playbookInputQuery:
-  required: true
-  value: {}
-- description: Timeout in minutes
-  key: Timeout
-  playbookInputQuery:
-  required: true
-  value: {}
-name: SentinelOne - Check for New File Upload Activity
-outputs: []
-starttaskid: '0'
+starttaskid: "0"
 tasks:
-  '0':
-    id: '0'
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
+  "0":
+    id: "0"
+    taskid: fab9ae13-df30-4c80-8de5-727ea29f71e5
+    type: start
+    task:
+      id: fab9ae13-df30-4c80-8de5-727ea29f71e5
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
-      - '3'
-    note: false
-    quietmode: 0
+      - "3"
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ''
-      id: 116f6314-00ca-4993-802b-7be2e9a38f73
-      iscommand: false
-      name: ''
-      version: -1
-      description: ''
-    taskid: 116f6314-00ca-4993-802b-7be2e9a38f73
-    timertriggers: []
-    type: start
     view: |-
       {
         "position": {
@@ -59,69 +32,71 @@ tasks:
           "y": 50
         }
       }
-  '1':
-    id: '1'
+    note: false
+    timertriggers: []
     ignoreworker: false
-    isautoswitchedtoquietmode: false
+    skipunavailable: false
+    quietmode: 0
     isoversize: false
-    loop:
-      builtincondition:
-      - - left:
-            iscontext: true
-            value:
-              complex:
-                root: Counter
-                transformers:
-                - operator: LastArrayElement
-          operator: greaterThanOrEqual
-          right:
-            iscontext: true
-            value:
-              simple: MaxCounter
-        - left:
-            iscontext: true
-            value:
-              simple: SentinelOne.Activity
-          operator: isNotEmpty
-      exitCondition: ''
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 04167b3e-4dfd-480d-868c-750767f6b9bc
+    type: playbook
+    task:
+      id: 04167b3e-4dfd-480d-868c-750767f6b9bc
+      version: -1
+      name: SentinelOne - Check for New File Upload Activity - Inner Loop
+      description: Playbook called inside a loop by  "SentinelOne - Check for New
+        File Upload Activity". Does the actual poll of the SentinelOne Activity feed,
+        then sleeps for 15 seconds if no result is found.
+      playbookName: SentinelOne - Check for New File Upload Activity - Inner Loop
+      type: playbook
       iscommand: false
-      max: 60
-      wait: 1
+      brand: ""
     nexttasks:
       '#none#':
-      - '6'
-    note: false
-    quietmode: 0
+      - "6"
     scriptarguments:
+      AgentId:
+        simple: ${inputs.AgentId}
       Counter:
         simple: ${Counter}
       MaxCounter:
         complex:
           root: inputs.Timeout
           transformers:
-          - args:
+          - operator: multiply
+            args:
               by:
                 value:
-                  simple: '4'
-            operator: multiply
+                  simple: "4"
       StartTimestamp:
         simple: ${inputs.StartTimestamp}
-      AgentId:
-        simple: ${inputs.AgentId}
     separatecontext: true
-    skipunavailable: false
-    task:
-      brand: ''
-      description: Playbook called inside a loop by  "SentinelOne - Check for New File Upload Activity". Does the actual poll of the SentinelOne Activity feed, then sleeps for 15 seconds if no result is found.
-      id: 1c6620fc-7113-4167-8630-817585433078
+    loop:
       iscommand: false
-      name: SentinelOne - Check for New File Upload Activity - Inner Loop
-      playbookId: SentinelOne - Check for New File Upload Activity - Inner Loop
-      type: playbook
-      version: -1
-    taskid: 1c6620fc-7113-4167-8630-817585433078
-    timertriggers: []
-    type: playbook
+      builtincondition:
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              complex:
+                root: Counter
+                transformers:
+                - operator: LastArrayElement
+            iscontext: true
+          right:
+            value:
+              simple: MaxCounter
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: SentinelOne.Activity
+            iscontext: true
+      exitCondition: ""
+      wait: 1
+      max: 60
     view: |-
       {
         "position": {
@@ -129,40 +104,42 @@ tasks:
           "y": 530
         }
       }
-  '3':
-    id: '3'
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
-    nexttasks:
-      '#none#':
-      - '4'
     note: false
-    quietmode: 0
-    scriptarguments:
-      all:
-        simple: yes
-      subplaybook:
-        simple: yes
-    separatecontext: false
+    timertriggers: []
+    ignoreworker: false
     skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 45a03f37-4a48-403c-89c7-3986f43591ad
+    type: regular
     task:
-      brand: ''
+      id: 45a03f37-4a48-403c-89c7-3986f43591ad
+      version: -1
+      name: DeleteContext
       description: |-
         Delete field from context.
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
         https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
-      id: 9d6ea723-4d56-4e86-8457-03c0b07010f3
-      iscommand: false
-      name: DeleteContext
       scriptName: DeleteContext
       type: regular
-      version: -1
-    taskid: 9d6ea723-4d56-4e86-8457-03c0b07010f3
-    timertriggers: []
-    type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      all:
+        simple: "no"
+      key:
+        simple: Counter
+      subplaybook:
+        simple: "yes"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -170,36 +147,36 @@ tasks:
           "y": 195
         }
       }
-  '4':
-    id: '4'
+    note: false
+    timertriggers: []
     ignoreworker: false
-    isautoswitchedtoquietmode: false
+    skipunavailable: false
+    quietmode: 0
     isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: fc75b1b1-5687-4d57-892f-6bd786366a07
+    type: regular
+    task:
+      id: fc75b1b1-5687-4d57-892f-6bd786366a07
+      version: -1
+      name: Set Counter
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
-      - '1'
-      - '7'
-    note: false
-    quietmode: 0
+      - "1"
+      - "7"
     scriptarguments:
       key:
         simple: Counter
       value:
-        simple: '0'
+        simple: "0"
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ''
-      description: Set a value in context under the key you entered.
-      id: bc79fdf5-7d9a-41e8-8849-d29737f3a7ed
-      iscommand: false
-      name: Set Counter
-      scriptName: Set
-      type: regular
-      version: -1
-    taskid: bc79fdf5-7d9a-41e8-8849-d29737f3a7ed
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
@@ -207,26 +184,25 @@ tasks:
           "y": 370
         }
       }
-  '6':
-    id: '6'
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     note: false
-    quietmode: 0
-    separatecontext: false
+    timertriggers: []
+    ignoreworker: false
     skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 4ae5594e-a637-4878-8866-fdd268c25a91
+    type: title
     task:
-      brand: ''
-      id: fe5517ff-1a65-44e0-8291-58856d462914
-      iscommand: false
+      id: 4ae5594e-a637-4878-8866-fdd268c25a91
+      version: -1
       name: Done
       type: title
-      version: -1
-      description: ''
-    taskid: fe5517ff-1a65-44e0-8291-58856d462914
-    timertriggers: []
-    type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -234,26 +210,25 @@ tasks:
           "y": 710
         }
       }
-  '7':
-    id: '7'
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     note: false
-    quietmode: 0
-    separatecontext: false
+    timertriggers: []
+    ignoreworker: false
     skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: a73b2fce-ab1f-4017-8b05-f1ec88f691dd
+    type: title
     task:
-      brand: ''
-      id: d578d5c9-0e72-4622-8153-32de0137a133
-      iscommand: false
+      id: a73b2fce-ab1f-4017-8b05-f1ec88f691dd
+      version: -1
       name: Sleeps are 15 seconds. So MaxCounter = Timeout* 4
       type: title
-      version: -1
-      description: ''
-    taskid: d578d5c9-0e72-4622-8153-32de0137a133
-    timertriggers: []
-    type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -261,7 +236,13 @@ tasks:
           "y": 545
         }
       }
-version: -1
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
@@ -274,7 +255,85 @@ view: |-
       }
     }
   }
-tests:
-- SentinelOne V2.1 - Test
-- SentinelOne V2.0 - Test
-fromversion: 6.2.0
+inputs:
+- key: StartTimestamp
+  value: {}
+  required: true
+  description: SentenelOne get-activities created_after field
+  playbookInputQuery: null
+- key: AgentId
+  value: {}
+  required: true
+  description: Agent ID to check
+  playbookInputQuery: null
+- key: Timeout
+  value: {}
+  required: true
+  description: Timeout in minutes
+  playbookInputQuery: null
+outputs:
+- contextPath: Counter
+  description: Counter of number of times executed
+  type: number
+- contextPath: SentinelOne.Activity.AgentID
+  description: Agent ID
+  type: unknown
+- contextPath: SentinelOne.Activity.AgentUpdatedVersion
+  type: unknown
+- contextPath: SentinelOne.Activity.SiteID
+  type: unknown
+- contextPath: SentinelOne.Activity.UserID
+  type: unknown
+- contextPath: SentinelOne.Activity.SecondaryDescription
+  type: unknown
+- contextPath: SentinelOne.Activity.OsFamily
+  type: unknown
+- contextPath: SentinelOne.Activity.ActivityType
+  type: unknown
+- contextPath: SentinelOne.Activity.Data.filePath
+  type: unknown
+- contextPath: SentinelOne.Activity.Data.fullScopeDetailsPath
+  type: unknown
+- contextPath: SentinelOne.Activity.Data.computerName
+  type: unknown
+- contextPath: SentinelOne.Activity.Data.commandId
+  type: unknown
+- contextPath: SentinelOne.Activity.Data.uploadedFilename
+  type: unknown
+- contextPath: SentinelOne.Activity.Data.filename
+  type: unknown
+- contextPath: SentinelOne.Activity.Data.downloadUrl
+  type: unknown
+- contextPath: SentinelOne.Activity.Data.groupName
+  type: unknown
+- contextPath: SentinelOne.Activity.Data.commandBatchUuid
+  type: unknown
+- contextPath: SentinelOne.Activity.Data.scopeLevel
+  type: unknown
+- contextPath: SentinelOne.Activity.Data.externalIp
+  type: unknown
+- contextPath: SentinelOne.Activity.Data.siteName
+  type: unknown
+- contextPath: SentinelOne.Activity.Data.accountName
+  type: unknown
+- contextPath: SentinelOne.Activity.Data.fullScopeDetails
+  type: unknown
+- contextPath: SentinelOne.Activity.Hash
+  type: unknown
+- contextPath: SentinelOne.Activity.UpdatedAt
+  type: unknown
+- contextPath: SentinelOne.Activity.Comments
+  type: unknown
+- contextPath: SentinelOne.Activity.ThreatID
+  type: unknown
+- contextPath: SentinelOne.Activity.PrimaryDescription
+  type: unknown
+- contextPath: SentinelOne.Activity.GroupID
+  type: unknown
+- contextPath: SentinelOne.Activity.ID
+  type: unknown
+- contextPath: SentinelOne.Activity.CreatedAt
+  type: unknown
+- contextPath: SentinelOne.Activity.Desctiption
+  type: unknown
+
