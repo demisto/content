@@ -20,14 +20,15 @@ DICT_RAW_RESPONSE = '"1528755951, url="https://google.ca", search_name="NG_SIEM_
                     'user="xyz\\a1234 , xyz\\b5678 , xyz\\c91011 , xyz\\d121314 , unknown", website="2.2.2.2""'
 
 DICT_RAW_RESPONSE_WITH_MESSAGE_ID = '"1528755951, message-id="1", url="https://google.ca", ' \
-                                 'search_name="NG_SIEM_UC25- High number of hits against ' \
-                                 'unknown website from same subnet", action="allowed", dest="bb.bbb.bb.bbb , cc.ccc.ccc.cc , ' \
-                                 'xx.xx.xxx.xx , yyy.yy.yyy.yy , zz.zzz.zz.zzz , aa.aa.aaa.aaa", distinct_hosts="5", ' \
-                                 'first_3_octets="1.1.1", first_time="06/11/18 17:34:07 , ' \
-                                 '06/11/18 17:37:55 , 06/11/18 17:41:28 , ' \
-                                 '06/11/18 17:42:05 , 06/11/18 17:42:38", info_max_time="+Infinity", info_min_time="0.000", ' \
-                                 'src="xx.xx.xxx.xx , yyy.yy.yyy.yy , zz.zzz.zz.zzz , aa.aa.aaa.aaa", u_category="unknown", ' \
-                                 'user="xyz\\a1234 , xyz\\b5678 , xyz\\c91011 , xyz\\d121314 , unknown", website="2.2.2.2""'
+                                    'search_name="NG_SIEM_UC25- High number of hits against ' \
+                                    'unknown website from same subnet", action="allowed", dest="bb.bbb.bb.bbb , ' \
+                                    'cc.ccc.ccc.cc , xx.xx.xxx.xx , yyy.yy.yyy.yy , zz.zzz.zz.zzz , aa.aa.aaa.aaa", ' \
+                                    'distinct_hosts="5", ' \
+                                    'first_3_octets="1.1.1", first_time="06/11/18 17:34:07 , ' \
+                                    '06/11/18 17:37:55 , 06/11/18 17:41:28 , ' \
+                                    '06/11/18 17:42:05 , 06/11/18 17:42:38", info_max_time="+Infinity", info_min_time="0.000", ' \
+                                    'src="xx.xx.xxx.xx , yyy.yy.yyy.yy , zz.zzz.zz.zzz , aa.aa.aaa.aaa", u_category="unknown", ' \
+                                    'user="xyz\\a1234 , xyz\\b5678 , xyz\\c91011 , xyz\\d121314 , unknown", website="2.2.2.2""'
 
 LIST_RAW = 'Feb 13 09:02:55 1,2020/02/13 09:02:55,001606001116,THREAT,url,' \
            '1,2020/02/13 09:02:55,10.1.1.1,1.2.3.4,0.0.0.0,0.0.0.0,rule1,jordy,,web-browsing,vsys1,trust,untrust,' \
