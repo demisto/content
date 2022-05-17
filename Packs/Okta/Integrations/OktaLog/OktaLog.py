@@ -1,5 +1,5 @@
 from enum import Enum
-from pydantic import BaseModel, AnyUrl, Json  # pylint: disable=no-name-in-module
+from pydantic import BaseModel, AnyUrl, Json, validator  # pylint: disable=no-name-in-module
 from CommonServerPython import *
 
 
@@ -38,6 +38,9 @@ class Request(BaseModel):
     verify = True
     data: Optional[str] = None
 
+    @validator('url')
+    def add_api_url(cls, v):
+        return v + '/api/v1/logs'
 
 class Client:
     """
@@ -134,7 +137,7 @@ class GetEvents:
 
 def main():  # pragma: no cover
     try:
-        demisto_params = demisto.params() | demisto.args()
+        demisto_params = demisto.params() #| demisto.args()
         events_limit = int(demisto_params.get('limit', 2000))
         after = dateparser.parse(demisto_params['after'].strip())
         api_key = demisto_params['api_key']['credentials']['password']
@@ -168,7 +171,7 @@ def main():  # pragma: no cover
                     raw_response=events,
                 )
                 return_results(command_results)
-            send_events_to_xsiam(events[:events_limit], 'okta', 'okta')
+            send_events_to_xsiam(events[:events_limit], 'okta', demisto_params.get('product', 'okta'))
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
 

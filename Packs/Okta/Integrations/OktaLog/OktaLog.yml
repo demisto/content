@@ -4,22 +4,27 @@ commonfields:
 name: Okta Event Collector
 display: Okta Event Collector
 category: Analytics & SIEM
-description: Okta logs event collector integration for XSIAM.
+description: Collects the events log for authentication and Audit provided by Okta admin API.
 configuration:
 - display: Server URL
   name: url
   type: 0
   required: true
-- display: API key
+- display:  key
   name: api_key
   type: 9
   required: true
-- display: Api request limit
+- display: Number of incidents to fetch per fetch
   name: limit
   type: 0
   defaultvalue: 1000
   required: true
-- display: First fetch from api time
+- display: The product corresponding to the integration that originated the events
+  name: product
+  type: 0
+  defaultvalue: okta
+  required: false
+- display: First fetch from API time
   name: after
   type: 15
   required: true
@@ -33,7 +38,7 @@ configuration:
   - 1 week
   - 1 month
   - 1 year
-- display: Use Secured Connection
+- display: Trust any certificate (not secure)
   name: verify
   defaultvalue: "true"
   type: 8
@@ -48,12 +53,16 @@ script:
   commands:
   - description: Manual command to fetch events and display them.
     name: okta-get-events
+    arguments:
+    - description: The name of the product.
+      isArray: false
+      name: product
   dockerimage: demisto/fastapi:1.0.0.29406
   runonce: false
   isfetchevents: true
   subtype: python3
 marketplaces:
 - marketplacev2
-fromversion: 6.6.0
+fromversion: 6.8.0
 tests:
 - No tests (auto formatted)
