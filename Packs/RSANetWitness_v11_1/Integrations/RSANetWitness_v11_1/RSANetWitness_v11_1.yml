@@ -51,7 +51,7 @@ configuration:
   type: 0
 description:  Deprecated. Use RSANetWitnessv115 instead
 display: RSA NetWitness v11.1 (Deprecated)
-name: RSA NetWitness v11.1 (Deprecated)
+name: RSA NetWitness v11.1
 script:
   commands:
   - arguments:
