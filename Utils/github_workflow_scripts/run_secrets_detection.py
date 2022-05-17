@@ -55,7 +55,6 @@ def trigger_generic_webhook(options):
 def main():
     options = arguments_handler()
     trigger_generic_webhook(options)
-    raise ConnectionError('Adi try code')
 
 
 if __name__ == "__main__":
