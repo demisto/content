@@ -1,7 +1,7 @@
 import pytest
 import json
 from CommonServerPython import DemistoException
-from MicrosoftGraphDeviceManagement import MsGraphClient
+import MicrosoftGraphDeviceManagement
 from MicrosoftGraphDeviceManagement import build_device_object, try_parse_integer, find_managed_devices_command, MsGraphClient
 
 with open('test_data/raw_device.json', 'r') as json_file:
@@ -33,9 +33,9 @@ def test_find_managed_devices_command(mocker):
         data: dict = json.load(json_file)
         raw_device = data.get('value')
 
-    client_mock = mocker.patch.object(MsGraphClient, 'find_managed_devices',
+    client_mock = mocker.patch.object(MicrosoftGraphDeviceManagement, 'find_managed_devices',
                         return_value={'list_raw_devices': raw_device, 'raw_response': data})
     
 
     devices = find_managed_devices_command(client=client_mock, args=args)
-    assert devices
+    assert devices is not None
