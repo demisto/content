@@ -1,14 +1,10 @@
 ''' IMPORTS '''
-import base64
 import json
-import re
-import traceback
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Tuple
 
 import demistomock as demisto  # noqa: F401
 import requests
 from CommonServerPython import *  # noqa: F401
-from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 
 
 # Disable insecure warnings
