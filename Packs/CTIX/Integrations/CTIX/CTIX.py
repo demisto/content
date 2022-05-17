@@ -1,22 +1,5 @@
- import demistomock as demisto
- from CommonServerPython import (
-     Common,
-     urlRegex,
-     re,
-     regexFlags,
-     hashRegex,
-     BaseClient,
-     DemistoException,
-     CommandResults,
-     List,
-     tableToMarkdown,
-     argToList,
-     return_warning,
-     handle_proxy,
-     return_results,
-     traceback,
-     return_error,
- )
+import demistomock as demisto
+from CommonServerPython import *
 
 """IMPORTS"""
 
