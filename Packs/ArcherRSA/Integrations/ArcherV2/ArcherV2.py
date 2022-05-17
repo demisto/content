@@ -327,27 +327,23 @@ class Client(BaseClient):
         REQUEST_HEADERS['Authorization'] = f'Archer session-id={session}'
 
     def get_token(self):
-        if self.domain is not None:
-            body = get_token_soap_request(self.username, self.password, self.instance_name, self.domain)
-            headers = {'SOAPAction': 'http://archer-tech.com/webservices/CreateDomainUserSessionFromInstance',
-                       'Content-Type': 'text/xml; charset=utf-8'}
-            res = self._http_request('POST'
-                                     '', 'ws/general.asmx', headers=headers, data=body, resp_type='content')
-
-            return extract_from_xml(res,
-                                    'Envelope.Body.CreateDomainUserSessionFromInstanceResponse.'
-                                    'CreateDomainUserSessionFromInstanceResult')
-
+        if self.domain:
+            endpoint = 'CreateDomainUserSessionFromInstance'
         else:
-            body = get_token_soap_request(self.username, self.password, self.instance_name, None)
-            headers = {'SOAPAction': 'http://archer-tech.com/webservices/CreateUserSessionFromInstance',
-                       'Content-Type': 'text/xml; charset=utf-8'}
-            res = self._http_request('POST'
-                                     '', 'ws/general.asmx', headers=headers, data=body, resp_type='content')
+            endpoint = 'CreateUserSessionFromInstance'
 
-            return extract_from_xml(res,
-                                    'Envelope.Body.CreateUserSessionFromInstanceResponse.'
-                                    'CreateUserSessionFromInstanceResult')
+        body = get_token_soap_request(self.username, self.password, self.instance_name, self.domain)
+        headers = {
+            'SOAPAction': f'http://archer-tech.com/webservices/{endpoint}',
+            'Content-Type': 'text/xml; charset=utf-8',
+        }
+        res = self._http_request('POST', '', 'ws/general.asmx',
+            headers=headers, data=body, resp_type='content')
+        return extract_from_xml(
+            res,
+            f'Envelope.Body.{endpoint}Response.'
+            f'{endpoint}Result'
+        )
 
     def destroy_token(self, token):
         body = terminate_session_soap_request(token)
