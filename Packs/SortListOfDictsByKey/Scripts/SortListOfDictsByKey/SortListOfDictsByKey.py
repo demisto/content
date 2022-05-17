@@ -15,7 +15,7 @@ def sort_list_of_dicts_by_key(args: Dict[str, Any]) -> CommandResults:
     if not _list:
         raise ValueError('List not provided')
 
-    result = _list.sort(key=lambda x: x[key], reverse=reverse)
+    _list.sort(key=lambda x: x[key], reverse=reverse)
 
     return CommandResults(
         outputs_prefix='Sorted List',
