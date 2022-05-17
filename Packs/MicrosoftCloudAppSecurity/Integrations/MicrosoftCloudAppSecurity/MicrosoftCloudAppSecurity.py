@@ -1,4 +1,5 @@
 from dateparser import parse
+from datetime import datetime
 from pytz import utc
 import urllib3
 
@@ -595,12 +596,6 @@ def format_fetch_start_time_to_timestamp(fetch_start_time: Optional[str]):
     return int(first_fetch_dt.timestamp()) * 1000
 
 
-def format_fetch_timestamp_to_string_datetime(timestamp_last_fetch: int, date_format: str):
-    fetch_time_dt = dateparser.parse(datetime.fromtimestamp(timestamp_last_fetch / 1000).isoformat(),
-                                     settings={'TIMEZONE': 'UTC'})
-    return fetch_time_dt.strftime(date_format)
-
-
 def arrange_alerts_by_incident_type(alerts: List[dict]):
     for alert in alerts:
         incident_types: Dict[str, Any] = {}
@@ -653,7 +648,6 @@ def fetch_incidents(client: Client, max_results: Optional[str], last_run: dict, 
     fetch_start_time, fetch_end_time = get_fetch_run_time_range(last_run=last_run, first_fetch=first_fetch,
                                                                 look_back=look_back)
     formatted_fetch_start_time = format_fetch_start_time_to_timestamp(fetch_start_time)
-    formatted_fetch_end_time = format_fetch_start_time_to_timestamp(fetch_end_time)
     filters["date"] = {"gte": formatted_fetch_start_time}
 
     demisto.debug(f'fetching alerts using filter {filters} with max results {max_results}')
@@ -672,7 +666,7 @@ def fetch_incidents(client: Client, max_results: Optional[str], last_run: dict, 
         incidents=alerts_to_incident,
         fetch_limit=max_results,
         start_fetch_time=fetch_start_time,
-        end_fetch_time=format_fetch_timestamp_to_string_datetime(fetch_end_time, date_format),
+        end_fetch_time=fetch_end_time,
         look_back=look_back,
         created_time_field='timestamp',
         id_field='_id',
