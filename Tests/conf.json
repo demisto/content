@@ -5632,7 +5632,10 @@
             },
             "demisto/googleapi-python3": {
                 "memory_threshold": 200
-            }
+            },
+            "demisto/python3:3.10.4.29342": {
+                "memory_threshold": 85
+            },
         }
     },
     "test_marketplacev2": [
