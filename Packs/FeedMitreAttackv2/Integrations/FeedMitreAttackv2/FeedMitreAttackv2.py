@@ -6,8 +6,10 @@ import json
 import requests
 from stix2 import TAXIICollectionSource, Filter
 from taxii2client.v20 import Server, Collection, ApiRoot
-import warnings
-warnings.filterwarnings("error")
+
+import logging
+import sys
+logging.basicConfig(stream=sys.stdout, level=logging.WARNING, force=True)
 
 ''' CONSTANT VARIABLES '''
 
@@ -532,7 +534,8 @@ def attack_pattern_reputation_command(client, args):
             attack_obj = map_fields_by_type('Attack Pattern', json.loads(str(mitre_data)))
             custom_fields = attack_obj or {}
             score = INDICATOR_TYPE_TO_SCORE.get('Attack Pattern')
-            md = f"## MITRE ATTACK \n ## Name: {value} - ID: {attack_obj.get('mitreid')} \n {custom_fields.get('description', '')}"
+            md = f"## MITRE ATTACK \n ## Name: {value} - ID: " \
+                 f"{attack_obj.get('mitreid')} \n {custom_fields.get('description', '')}"
             command_results.append(build_command_result(value, score, md, attack_obj))
 
         return command_results
