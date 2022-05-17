@@ -47,7 +47,12 @@ def _calculate_excluded_files() -> set[Path]:
                 result.append(path)
         return set(result)
 
-    excluded = glob(('Tests', '.gitlab', 'Documentation', 'dev-requirements*'))
+    excluded = glob((
+        'Tests',
+        '.gitlab',
+        'Documentation',
+        'dev-requirements*',
+    ))
     not_excluded = glob((
         'Tests/scripts/infrastructure_tests',
         'Tests/Marketplace/Tests',
