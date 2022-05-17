@@ -45,6 +45,7 @@ function get_build_job_statuses(){
     get_pipelines_statuses "$TO_SEND"
     get_job_statuses "$TO_SEND"
     export BUILD_STATUSES=`echo "$PIPELINES_STATUSES $JOBS_STATUSES" | tr ' ' '\n' | sort | uniq`
+    echo "BUILD_STATUSES: $BUILD_STATUSES"
 }
 
 function is_status_exists() {
@@ -305,4 +306,5 @@ done
 export XSIAM_CHOSEN_MACHINE_ID=`cat ChosenMachine`	# ChosenMachine it is the file with free machine. machine name will be written there.
 # export vars to file
 echo -e "export XSIAM_CHOSEN_MACHINE_ID=$XSIAM_CHOSEN_MACHINE_ID" >>  XSIAMEnvVariables
-
+gsutil cp gs://xsoar-ci-artifacts/content-locks-xsiam/queue-master queue
+cat queue
