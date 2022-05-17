@@ -49,9 +49,9 @@ configuration:
   name: fetch_limit
   required: false
   type: 0
-description: RSA NetWitness Platform provides systems Logs, Network, and endpoint visibility for real-time collection, detection, and automated response with the Demisto Enterprise platform. Providing full session analysis, customers can extract critical data and effectively operate security operations automated playbook.
-display: RSA NetWitness v11.1
-name: RSA NetWitness v11.1
+description:  Deprecated. Use RSANetWitnessv115 instead
+display: RSA NetWitness v11.1 (Deprecated)
+name: RSA NetWitness v11.1 (Deprecated)
 script:
   commands:
   - arguments:
@@ -619,3 +619,4 @@ script:
 tests:
 - RSA NetWitness Test
 fromversion: 5.0.0
+deprecated: true

@@ -3,6 +3,48 @@ This integration was integrated and tested with version 11.5 of RSANetWitness
 The integration supports version 11.5 and higher.
 Note: This is a beta Integration, which lets you implement and test pre-release software. Since the integration is beta, it might contain bugs. Updates to the integration during the beta phase might include non-backward compatible features. We appreciate your feedback on the quality and usability of the integration to help us identify issues, fix them, and continually improve.
 
+## Changes compared to V11.1
+# Changes in commands
+1. rsa-nw-remove-incident - Same functionality as netwitness-delete-incident.
+2. rsa-nw-incident-list-alerts - Same functionalty as netwitness-get-alerts, with an added limit and pagination options.
+3. rsa-nw-list-incidents - Combined functionality as netwitness-get-incident and netwitness-get-incidents.
+4. rsa-nw-update-incident - Same functionality as netwitness-update-incident.
+5. endpoint - New command.
+6. rsa-nw-endpoint-isolate-from-network - New command.
+7. rsa-nw-endpoint-isolation-remove - New command.
+8. rsa-nw-endpoint-update-exclusions - New command.
+9. rsa-nw-file-alerts-list - New command.
+10. rsa-nw-file-download - New command.
+11. rsa-nw-files-list - New command.
+12. rsa-nw-host-alerts-list - New command.
+13. rsa-nw-hosts-list - New command.
+14. rsa-nw-incident-add-journal-entry - New command.
+15. rsa-nw-incident-list-alerts - New command.
+16. rsa-nw-mft-download-request - New command.
+17. rsa-nw-process-dump-download-request - New command.
+18. rsa-nw-scan-request - New command.
+19. rsa-nw-scan-stop-request - New command.
+20. rsa-nw-services-list - New command.
+21. rsa-nw-snapshot-details-get - New command.
+22. rsa-nw-snapshots-list-for-host - New command.
+23. rsa-nw-system-dump-download-request - New command.
+
+# API Limitations
+Commands that require actions within a host, only return the status of the request recieved by our RSA server and not our host.
+Whether the desired action was preformed successfully within the host is not reported back.
+For example - for our **rsa-nw-scan-request** a success message returned only confirmes the request has been recieved by RSA NetWitness,
+But does not indicate the scan has been preformed successfully in the requested host.
+Commands affected by this limitation are- 
+* rsa-nw-endpoint-isolate-from-network
+* rsa-nw-endpoint-isolation-remove 
+* rsa-nw-endpoint-update-exclusions 
+* rsa-nw-file-download 
+* rsa-nw-mft-download-request
+* rsa-nw-process-dump-download-request
+* rsa-nw-scan-request
+* rsa-nw-scan-stop-request
+* rsa-nw-system-dump-download-request
+
 ## Configure RSA NetWitness v11.5 (Beta) on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
