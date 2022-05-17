@@ -1,5 +1,4 @@
 from datetime import datetime
-from enum import Enum
 import urllib3
 from CommonServerPython import *
 import demistomock as demisto
