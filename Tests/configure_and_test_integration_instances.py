@@ -1614,6 +1614,7 @@ def main():
     if build.is_nightly:
         build.install_nightly_pack()
     else:
+        logging.info("Pre update:")
         pack_ids = get_non_added_packs_ids(build)
         build.install_packs(pack_ids=pack_ids)
 
@@ -1622,6 +1623,7 @@ def main():
                                                                                             modified_integrations)
         modified_module_instances, new_module_instances, failed_tests_pre, successful_tests_pre = pre_update_configuration_results
         installed_content_packs_successfully = build.update_content_on_servers()
+        logging.info("Post update:")
         successful_tests_post, failed_tests_post = build.test_integrations_post_update(new_module_instances,
                                                                                        modified_module_instances)
         success = report_tests_status(failed_tests_pre, failed_tests_post, successful_tests_pre, successful_tests_post,
