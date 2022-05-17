@@ -49,7 +49,7 @@ configuration:
   name: fetch_limit
   required: false
   type: 0
-description:  Deprecated. Use RSANetWitnessv115 instead
+description:  Deprecated. Use RSA NetWitness v11.5 instead
 display: RSA NetWitness v11.1 (Deprecated)
 name: RSA NetWitness v11.1
 deprecated: true
