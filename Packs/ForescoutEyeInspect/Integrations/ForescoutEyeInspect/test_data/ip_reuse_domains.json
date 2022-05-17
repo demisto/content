@@ -1,0 +1,13 @@
+{
+    "total_count": 1,
+    "results": [
+        {
+            "id": 1,
+            "name": "Default",
+            "description": "",
+            "address": "-",
+            "mask": 0,
+            "vlan_ids": "any"
+        }
+    ]
+}

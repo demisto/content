@@ -18,6 +18,7 @@
     "group": 2,
     "hidden": false,
     "openEnded": false,
+    "description": "List of associated critical intelligence requirement (CIR) types.",
     "associatedToAll": false,
     "associatedTypes": [
         "ACTI Intelligence Alert",

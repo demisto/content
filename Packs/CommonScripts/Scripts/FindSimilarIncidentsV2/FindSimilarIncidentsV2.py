@@ -2,7 +2,7 @@
 
 from CommonServerPython import *
 import collections
-from dateutil import parser
+from dateutil import parser  # type: ignore[import]
 
 EXACT_MATCH = 0
 CONTAINS = '*'
@@ -282,7 +282,7 @@ def build_incident_query(similar_keys_query, ignore_closed, incident_id, extra_q
         query += " and -status:Closed" if query else "-status:Closed"
 
     if incident_id:
-        query = "(-id:%s) and (%s)" % (incident_id, query) if query else "(-id:%s)' % (incident_id)"
+        query = "(-id:%s) and (%s)" % (incident_id, query) if query else "(-id:%s)" % (incident_id)
 
     if extra_query:
         query += " and (%s)" % extra_query if query else extra_query

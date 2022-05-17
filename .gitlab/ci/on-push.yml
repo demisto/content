@@ -36,7 +36,8 @@ run-unittests-and-lint:
   extends:
     - .run-unittests-and-lint
   rules:
-    - if: '$BUCKET_UPLOAD != "true"'
+    - if: '$BUCKET_UPLOAD == "true"'
+      when: never
     - if: '$DEMISTO_SDK_NIGHTLY != "true"'
 
 
@@ -47,6 +48,31 @@ run-validations:
   rules:
     - if: '$NIGHTLY'
 
+# runs in gitlab for the on-push flow, on every new commit pushed to the branch.
+validate-content-conf:
+  stage: unittests-and-validations
+  needs: []
+  extends:
+    - .default-job-settings
+  rules:
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push)$/ && $CI_COMMIT_BRANCH !~ /^[0-9]{2}\.[0-9]{1,2}\.[0-9]$/'
+  script:
+    - section_start "Validate content-test-conf Branch Merged"
+    - |
+      if [[ $CI_COMMIT_BRANCH = "master" ]]; then
+        echo "Skipping, Should not run on master branch."
+      else
+        # replace slashes ('/') in the branch name, if exist, with underscores ('_')
+        UNDERSCORE_CI_BRANCH=${CI_COMMIT_BRANCH//\//_}
+        RESP=$(curl --location --request GET "https://code.pan.run/api/v4/projects/3734/repository/branches?search=$UNDERSCORE_CI_BRANCH" --header "PRIVATE-TOKEN: $GITLAB_API_READ_TOKEN") # disable-secrets-detection
+        if [ "$RESP" != "[]" ]; then
+            echo "Found a branch with the same name in contest-test-conf- $UNDERSCORE_CI_BRANCH."
+            echo "Merge it in order to merge the current branch into content repo."
+            exit 1
+        fi
+            echo "No branch with the name *$UNDERSCORE_CI_BRANCH* were found in contest-test-conf repo."
+      fi
+    - section_end "Validate content-tesgt-conf Branch Merged"
 
 create-instances:
   tags:
@@ -86,12 +112,12 @@ create-instances:
         echo "Skipping - not running in INSTANCE_TESTS build"
       else
         [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
-        python3 ./Tests/scripts/collect_tests_and_content_packs.py -n $IS_NIGHTLY --marketplace "xsoar"
+        python3 ./Tests/scripts/collect_tests_and_content_packs.py -n $IS_NIGHTLY --marketplace "xsoar" --service_account $GCS_MARKET_KEY
       fi
     - section_end "Collect Tests and Content Packs"
 
     - section_start "Calculate Packs Dependencies" --collapsed
-    - python3 ./Tests/Marketplace/packs_dependencies.py -i ./Tests/id_set.json -o $ARTIFACTS_FOLDER/packs_dependencies.json
+    - demisto-sdk find-dependencies -idp ./Tests/id_set.json --output-path $ARTIFACTS_FOLDER/packs_dependencies.json --all-packs-dependencies
     - section_end "Calculate Packs Dependencies"
 
     - section_start "Prepare Content Packs for Testing"
@@ -143,7 +169,7 @@ prepare-testing-bucket-mpv2:
     - section_start "Collect Tests and Content Packs"
     - |
       [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
-      python3 ./Tests/scripts/collect_tests_and_content_packs.py -n $IS_NIGHTLY --marketplace "marketplacev2"
+      python3 ./Tests/scripts/collect_tests_and_content_packs.py -n $IS_NIGHTLY --marketplace "marketplacev2" --service_account $GCS_MARKET_KEY
     - section_end "Collect Tests and Content Packs"
 
     - section_start "Prepare Content Packs for Testing"
@@ -154,7 +180,7 @@ prepare-testing-bucket-mpv2:
     - ./Tests/scripts/upload_artifacts.sh
     - section_end "Upload Artifacts to GCP"
 
-.test_content_on_server_instances_base:
+.test_content_on_xsoar_server_instances_base:
   tags:
     - gke
   extends:
@@ -163,6 +189,7 @@ prepare-testing-bucket-mpv2:
   variables:
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
     ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_XSOAR}/env_results.json"
+    SERVER_TYPE: "XSOAR"
   needs: ["create-instances"]
   stage: run-instances
   script:
@@ -182,7 +209,7 @@ prepare-testing-bucket-mpv2:
       cp "$ARTIFACTS_FOLDER/env_results.json" "./artifacts/env_results.json"
       cp "$ARTIFACTS_FOLDER/filter_file.txt" "./artifacts/filter_file.txt"
 
-    - ./Tests/scripts/install_content_and_test_integrations.sh "$INSTANCE_ROLE" || EXIT_CODE=$?
+    - ./Tests/scripts/install_content_and_test_integrations.sh "$INSTANCE_ROLE" "$SERVER_TYPE"|| EXIT_CODE=$?
     - cp -f $ARTIFACTS_FOLDER/conf.json Tests/conf.json
     - echo Going to sleep for 60 seconds to allow server finish indexing
     - sleep 60
@@ -209,17 +236,8 @@ prepare-testing-bucket-mpv2:
     - exit $EXIT_CODE
 
 
-server_6_1:
-  extends: .test_content_on_server_instances_base
-  #  No need to trigger in case of release branch
-  rules:
-    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/ && $CI_COMMIT_BRANCH !~ /^[0-9]{2}\.[0-9]{1,2}\.[0-9]$/'
-  variables:
-    INSTANCE_ROLE: "Server 6.1"
-
-
-server_6_2:
-  extends: .test_content_on_server_instances_base
+xsoar_server_6_2:
+  extends: .test_content_on_xsoar_server_instances_base
   #  No need to trigger in case of release branch
   rules:
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/ && $CI_COMMIT_BRANCH !~ /^[0-9]{2}\.[0-9]{1,2}\.[0-9]$/'
@@ -227,9 +245,9 @@ server_6_2:
     INSTANCE_ROLE: "Server 6.2"
 
 
-server_master:
+xsoar_server_master:
   extends:
-    - .test_content_on_server_instances_base
+    - .test_content_on_xsoar_server_instances_base
   #  No need to trigger in case of release branch
   rules:
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/ && $CI_COMMIT_BRANCH !~ /^[0-9]{2}\.[0-9]{1,2}\.[0-9]$/'
@@ -264,3 +282,87 @@ slack-notify-nightly-build:
     # when triggering pipeline with alternate env variable value passed in the API call
     SLACK_CHANNEL: $SLACK_CHANNEL
     SLACK_JOB: 'true'
+
+
+.test_content_on_xsiam_server_instances_base:
+  tags:
+    - gke
+    - us-west1
+  extends:
+    - .default-job-settings
+    - .push-rule
+  variables:
+    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_MPV2}"
+    GCS_MARKET_BUCKET: "${GCS_MARKET_V2_BUCKET}"
+    ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_MPV2}/env_results.json"
+    SERVER_TYPE: "XSIAM"
+  needs: ["prepare-testing-bucket-mpv2"]
+  stage: run-instances
+  script:
+    - EXIT_CODE=0
+    - !reference [.download-demisto-conf]
+
+    - section_start "Are there tests to run?" --collapsed
+    - |
+      if ! [[ -s $ARTIFACTS_FOLDER/content_packs_to_install.txt || -s $ARTIFACTS_FOLDER/filter_file.txt ]]; then
+        # The files are empty.
+        echo "Not running XSIAM instance flow, no tests to run were found."
+        exit $EXIT_CODE
+      fi
+    - section_end "Are there tests to run?"
+
+    - section_start "Lock XSIAM Machine" --collapsed
+    - cp "$ARTIFACTS_FOLDER/filter_file.txt" "./artifacts/filter_file.txt"
+    - echo "Authenticating GCP"
+    - gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" > auth.out 2>&1
+    - echo "Auth done successfully"
+    - ./Tests/scripts/wait_in_line_for_xsiam_env.sh
+    - source XSIAMEnvVariables
+    - echo "XSIAM chosen_machine_id is $XSIAM_CHOSEN_MACHINE_ID"
+    - section_end "Lock XSIAM Machine"
+
+    - section_start "Clean XSIAM Machine" --collapsed
+    - ./Tests/scripts/uninstall_packs_and_reset_bucket_xsiam.sh
+    - section_end "Clean XSIAM Machine"
+
+    - section_start "Install Packs and run Test-Module"
+    - ./Tests/scripts/install_content_and_test_integrations.sh "$INSTANCE_ROLE" "$SERVER_TYPE"|| EXIT_CODE=$?
+    - section_end "Install Packs and run Test-Module"
+
+    - section_start "Run Tests"
+    - cp -f $ARTIFACTS_FOLDER/conf.json Tests/conf.json
+    - ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE" || EXIT_CODE=$?
+    - |
+      if [[ -f ./Tests/failed_tests.txt ]]; then
+        cp ./Tests/failed_tests.txt $ARTIFACTS_FOLDER/failed_tests.txt
+      fi
+    - |
+      if [[ -f ./Tests/succeeded_tests.txt ]]; then
+        cp ./Tests/succeeded_tests.txt $ARTIFACTS_FOLDER/succeeded_tests.txt
+      fi
+    - section_end "Run Tests"
+
+    - section_start "After script" --collapsed
+    - |
+      if ! [ -z "$XSIAM_CHOSEN_MACHINE_ID" ]
+      then
+        echo "Job finished, removing lock file"
+        gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" > auth.out 2>&1
+        gsutil rm "gs://xsoar-ci-artifacts/content-locks-xsiam/*-lock-$CI_JOB_ID"
+        echo "Finished removing lock file"
+      fi
+    - section_end "After script"
+    - exit $EXIT_CODE
+
+
+xsiam_server_master:
+  extends:
+    - .test_content_on_xsiam_server_instances_base
+  rules:
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/ && $CI_COMMIT_BRANCH !~ /^[0-9]{2}\.[0-9]{1,2}\.[0-9]$/'
+    - if: '$NIGHTLY'
+      when: always
+  variables:
+    INSTANCE_ROLE: "XSIAM Master"
+    GCS_QUEUE_FILE: "queue-master"
+    TEST_MACHINES_LIST: "test-machines-master"

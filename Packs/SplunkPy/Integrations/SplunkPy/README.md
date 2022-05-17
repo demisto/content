@@ -987,6 +987,52 @@ There is no context output for this command.
 
 >Enriching fetch mechanism was reset successfully.
 
+### splunk-get-username-by-xsoar-user
+***
+Returns the Splunk's username matching the given Xsoar's username.
+
+
+#### Base Command
+
+`splunk-get-username-by-xsoar-user`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| xsoar_username | Xsoar username to match in splunk's usernames records. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Splunk.UserMapping.XsoarUser | String | xsoar user mapping. | 
+| Splunk.UserMapping.SplunkUser | String | splunk user mapping. | 
+
+
+#### Command Example
+```!splunk-get-username-by-xsoar-user xsoar_username=admin```
+
+#### Context Example
+```
+{
+    "Splunk": {
+        "UserMapping": [
+            {
+                "SplunkUser": "unassigned", 
+                "XsoarUser": "admin"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+### Xsoar-Splunk Username Mapping
+>|Xsoar User|Splunk User|
+>|---|---|
+>| admin | unassigned |
+
+
 ## Additional Information
 To get the HEC token
 1. Go to the Splunk UI.

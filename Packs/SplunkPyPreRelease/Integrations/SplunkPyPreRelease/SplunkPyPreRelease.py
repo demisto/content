@@ -6,7 +6,7 @@ import ssl
 from datetime import timedelta, datetime
 
 import dateparser  # type: ignore
-import pytz
+import pytz  # type: ignore[import]
 import requests
 import splunklib.client as client
 import splunklib.results as results

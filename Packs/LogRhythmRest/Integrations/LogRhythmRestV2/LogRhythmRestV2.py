@@ -1036,7 +1036,7 @@ class Client(BaseClient):
 
             response = self._http_request('GET', 'lr-alarm-api/alarms/', params=params)
             alarms = response.get('alarmsSearchDetails')
-
+            alarms = alarms if alarms else []
             if created_after:
                 filtered_alarms = []
                 created_after = dateparser.parse(created_after)

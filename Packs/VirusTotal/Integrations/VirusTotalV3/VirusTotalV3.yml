@@ -1367,8 +1367,71 @@ script:
         description: The analysis ID.
         type: String
     description: Retrieves resolutions of the given IP.
+  - name: vt-file-sigma-analysis
+    description: Result of the last Sigma analysis in markdown format.
+    arguments:
+    - name: file
+      default: true
+      required: true
+      description: File hash (md5, sha1, sha256).
+    - name: only_stats
+      description: Print only Sigma analysis summary stats.
+      required: false
+      defaultValue: false
+      isArray: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    outputs:
+      - contextPath: VirusTotal.SigmaAnalysis.data.attributes.last_modification_date
+        description: Date of the last update in epoch format.
+        type: Number
+      - contextPath: VirusTotal.SigmaAnalysis.data.attributes.analysis_date
+        description: Date of the last update in epoch format.
+        type: Number
+      - contextPath: VirusTotal.SigmaAnalysis.data.attributes.stats.rule_matches.match_context
+        description: Matched strings from the log file.
+        type: String
+      - contextPath: VirusTotal.SigmaAnalysis.data.attributes.stats.rule_matches.rule_author
+        description: Rule authors separated by commas.
+        type: String
+      - contextPath: VirusTotal.SigmaAnalysis.data.attributes.stats.rule_matches.rule_description
+        description: Brief summary about what the rule detects.
+        type: String
+      - contextPath: VirusTotal.SigmaAnalysis.data.attributes.stats.rule_matches.rule_id
+        description: Rule ID in VirusTotal's database.
+        type: String
+      - contextPath: VirusTotal.SigmaAnalysis.data.attributes.stats.rule_matches.rule_level
+        description: Rule severity. Can be "low", "medium", "high" or "critical".
+        type: String
+      - contextPath: VirusTotal.SigmaAnalysis.data.attributes.stats.rule_matches.rule_source
+        description: Ruleset where the rule belongs.
+        type: String
+      - contextPath: VirusTotal.SigmaAnalysis.data.attributes.stats.rule_matches.rule_title
+        description: Rule title.
+        type: String
+      - contextPath: VirusTotal.SigmaAnalysis.data.attributes.stats.severity_stats.critical
+        description: Number of matched rules having a "critical" severity.
+        type: Number
+      - contextPath: VirusTotal.SigmaAnalysis.data.attributes.stats.severity_stats.high
+        description: Number of matched rules having a "high" severity.
+        type: Number
+      - contextPath: VirusTotal.SigmaAnalysis.data.attributes.stats.severity_stats.low
+        description: Number of matched rules having a "low" severity.
+        type: Number
+      - contextPath: VirusTotal.SigmaAnalysis.data.attributes.stats.severity_stats.medium
+        description: Number of matched rules having a "medium" severity.
+        type: Number
+      - contextPath: VirusTotal.SigmaAnalysis.data.attributes.stats.source_severity_stats
+        description: Same as severity_stats but grouping stats by ruleset. Keys are ruleset names as string and values are stats in a dictionary.
+        type: unknown
+      - contextPath: VirusTotal.SigmaAnalysis.data.id
+        description: ID of the analysis.
+        type: String
+
   runonce: false
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.4.28442
 tests:
 - VirusTotalV3-test
 - VirusTotal (API v3) Detonate Test
