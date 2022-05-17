@@ -3,6 +3,8 @@
 import json
 import io
 import ast
+# from unittest.mock import Mock
+import demistomock as demisto
 from GLPI import Client, upload_file_command, get_user_name_command, create_user_command, update_user_command, \
     delete_user_command, enable_user_command, disable_user_command, add_link_command, add_comment_command, \
     create_ticket_command, update_ticket_command, delete_ticket_command, get_ticket_command, get_item_command, \
@@ -42,12 +44,13 @@ MOCK_INIT_SESSION = "/initSession"
 TESTDATA_INITSESSION = {'session_token': 'SAMPLETOKEN'}
 
 
-def test_glpi_upload_file(requests_mock):
-    command_mock_args = {'entryid': 'entryIDvalue', 'filename': 'filenamevalue', 'doc_name': 'docnamevalue'}
+def test_glpi_upload_file(requests_mock, mocker):
+    command_mock_args = {'entryid': '3@101177'}
     requests_mock.get("mock://myglpi.mydomain.tld/apirest.php/initSession", json=TESTDATA_INITSESSION)
     mock_response_document = util_load_mock('test_data/glpi_upload_file_document.mock')
     requests_mock.post("mock://myglpi.mydomain.tld/apirest.php/Document", json=mock_response_document)
     client = Client(PARAMETERS)
+    mocker.patch.object(demisto, 'getFilePath', return_value={'id': id, 'path': 'test_data/test.txt', 'name': 'test.txt'})
     response = upload_file_command(client, command_mock_args)
     assert response.outputs_prefix == 'GLPI.Document'
     assert response.outputs == util_load_mock('test_data/glpi_upload_file_document.resmock')
