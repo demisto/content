@@ -1,7 +1,9 @@
 import pytest
 import json
+from pytest_mock import path
 from CommonServerPython import DemistoException
-from MicrosoftGraphDeviceManagement import build_device_object, try_parse_integer
+import MicrosoftGraphDeviceManagement
+from MicrosoftGraphDeviceManagement import build_device_object, try_parse_integer, find_managed_devices_command, MsGraphClient
 
 with open('test_data/raw_device.json', 'r') as json_file:
     data: dict = json.load(json_file)
@@ -23,3 +25,18 @@ def test_try_parse_integer():
     assert try_parse_integer(8, '') == 8
     with pytest.raises(DemistoException, match='parse failure'):
         try_parse_integer('a', 'parse failure')
+
+
+def test_find_managed_devices_command(mocker):
+    args = {'device_name', 'test_name'}
+
+    with open('test_data/raw_device.json', 'r') as json_file:
+        data: dict = json.load(json_file)
+        raw_device = data.get('value')
+
+    client_mock = mocker.patch.object(MicrosoftGraphDeviceManagement, 'find_managed_devices_command',
+                        return_value={'list_raw_devices': raw_device, 'raw_response': data})
+    
+
+    devices = find_managed_devices_command(client=client_mock, args=args)
+    assert devices
