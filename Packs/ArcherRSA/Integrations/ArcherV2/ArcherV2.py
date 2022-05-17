@@ -337,7 +337,7 @@ class Client(BaseClient):
             'SOAPAction': f'http://archer-tech.com/webservices/{endpoint}',
             'Content-Type': 'text/xml; charset=utf-8',
         }
-        res = self._http_request('POST', '', 'ws/general.asmx',
+        res = self._http_request('POST', 'ws/general.asmx',
             headers=headers, data=body, resp_type='content')
         return extract_from_xml(
             res,
