@@ -1,131 +1,230 @@
 # pylint: disable=no-name-in-module
 # pylint: disable=no-self-argument
+
+import dateparser
+import secrets
+import jwt
 import urllib3
+from cryptography import exceptions
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives.serialization import load_pem_private_key
+from pydantic import Field, parse_obj_as
+
 from SiemApiModule import *  # noqa: E402
 
 urllib3.disable_warnings()
 
-# -----------------------------------------  GLOBAL VARIABLES  -----------------------------------------
-DATETIME_FORMAT = '%Y-%m-%dT%H:%M:%S.%f'
+
+class Claims(BaseModel):
+    iss: str = Field(alias='client_id')
+    sub: str = Field(alias='id', description='user id or enterprise id')
+    box_sub_type = 'enterprise'
+    aud: AnyUrl
+    jti: str = secrets.token_hex(64)
+    exp: int = round(time.time()) + 45
 
 
-class DropboxEventsRequest(IntegrationHTTPRequest):
+class AppAuth(BaseModel):
+    publicKeyID: str
+    privateKey: str
+    passphrase: str
+
+
+class BoxAppSettings(BaseModel):
+    clientID: str
+    clientSecret: str
+    appAuth: AppAuth
+
+    class Config:
+        arbitrary_types_allowed = True
+
+
+class BoxCredentials(BaseModel):
+    enterpriseID: str
+    boxAppSettings: BoxAppSettings
+
+    class MyConfig:
+        validate_assignment = True
+
+
+def get_box_events_timestamp_format(value):
+    """Converting int(epoch), str(3 days) or datetime to Box's api time"""
+    timestamp: Optional[datetime]
+    if isinstance(value, int):
+        value = str(value)
+    if not isinstance(value, datetime):
+        timestamp = dateparser.parse(value)
+    if timestamp is None:
+        raise TypeError(f'after is not a valid time {value}')
+    return timestamp.isoformat('T', 'seconds')
+
+
+class BoxEventsParams(BaseModel):
+    event_type: Optional[str] = None
+    limit: int = Field(500, alias='page_size', gt=0, le=500)
+    stream_position: Optional[str]
+    stream_type = 'admin_logs'
+    created_after: Optional[str]
+    # validators
+    _normalize_after = validator('created_after', pre=True, allow_reuse=True)(
+        get_box_events_timestamp_format
+    )
+
+    class Config:
+        validate_assignment = True
+
+
+class BoxEventsRequestConfig(IntegrationHTTPRequest):
+    # Endpoint: https://developer.box.com/reference/get-events/
+    url = parse_obj_as(AnyUrl, 'https://api.box.com/2.0/events')
     method = Method.GET
-    headers = {'Accept': '*/*', 'Content-Type': 'application/json'}
+    params: BoxEventsParams
 
 
-class DropboxEventsClient(IntegrationEventsClient):
-    request: IntegrationHTTPRequest
+class BoxEventsClient(IntegrationEventsClient):
+    request: BoxEventsRequestConfig
     options: IntegrationOptions
+    authorization_url = parse_obj_as(AnyUrl, 'https://api.box.com/oauth2/token')
 
     def __init__(
         self,
-        request: DropboxEventsRequest,
+        request: BoxEventsRequestConfig,
         options: IntegrationOptions,
-        credentials: Credentials,
-        session=requests.Session(),
+        box_credentials: BoxCredentials,
+        session: Optional[requests.Session] = None,
     ) -> None:
-        self.access_token = None
-        self.credentials = credentials
+        if session is None:
+            session = requests.Session()
+        self.box_credentials = box_credentials
         super().__init__(request, options, session)
 
-    def set_request_filter(self, after: Any):
-        return after
+    def set_request_filter(self, after: str):
+        self.request.params.stream_position = after
 
     def authenticate(self):
-        credentials = base64.b64encode(f'{self.credentials.identifier}:{self.credentials.password}'.encode()).decode()
         request = IntegrationHTTPRequest(
-            method=self.request.method,
-            url=f"{demisto.params().get('url', '').removesuffix('/')}/oauth2/token/{demisto.params().get('app_id')}",
-            headers={'Authorization': f"Basic {credentials}"},
-            data={'grant_type': 'client_credentials', 'scope': 'siem'},
-            verify=not self.request.verify,
+            method=Method.POST,
+            url=self.authorization_url,
+            data=self._create_authorization_body(),
+            verify=self.request.verify,
         )
 
         response = self.call(request)
         self.access_token = response.json()['access_token']
-        self.request.headers['Authorization'] = f'Bearer {self.access_token}'
+        self.request.headers = {'Authorization': f'Bearer {self.access_token}'}
+
+    def _create_authorization_body(self):
+        claims = Claims(
+            client_id=self.box_credentials.boxAppSettings.clientID,
+            id=self.box_credentials.enterpriseID,
+            aud=self.authorization_url
+        )
+
+        decrypted_private_key = _decrypt_private_key(
+            self.box_credentials.boxAppSettings.appAuth
+        )
+        assertion = jwt.encode(
+            payload=claims.dict(),
+            key=decrypted_private_key,
+            algorithm='RS512',
+            headers={
+                'kid': self.box_credentials.boxAppSettings.appAuth.publicKeyID
+            },
+        )
+        body = {
+            'grant_type': 'urn:ietf:params:oauth:grant-type:jwt-bearer',
+            'assertion': assertion,
+            'client_id': self.box_credentials.boxAppSettings.clientID,
+            'client_secret': self.box_credentials.boxAppSettings.clientSecret,
+        }
+        return body
 
 
-class DropboxGetEvents(IntegrationGetEvents):
-    client: DropboxEventsClient
+class BoxEventsGetter(IntegrationGetEvents):
+    client: BoxEventsClient
 
-    @staticmethod
-    def get_last_run_ids(events: list) -> list:
-        return [event.get('ID') for event in events]
-
-    @staticmethod
-    def get_last_run_time(events: list) -> str:
-        # The date is in timestamp format and looks like {'WhenOccurred': '/Date(1651483379362)/'}
-        last_timestamp = max([int(e.get('WhenOccurred', '').removesuffix(')/').removeprefix('/Date(')) for e in events])
-
-        return datetime.utcfromtimestamp(last_timestamp / 1000).strftime(DATETIME_FORMAT)
-
-    def get_last_run(self, events: list) -> dict:  # type: ignore
-        return {'from': self.get_last_run_time(events), 'ids': self.get_last_run_ids(events)}
+    def get_last_run(self: Any) -> dict:  # type: ignore
+        demisto.debug(f'getting {self.client.request.params.stream_position=}')
+        return {'stream_position': self.client.request.params.stream_position}
 
     def _iter_events(self):
         self.client.authenticate()
         demisto.debug('authenticated successfully')
+        # region First Call
+        events = self.client.call(self.client.request).json()
+        # endregion
+        # region Yield Response
+        while True:  # Run as long there are logs
+            self.client.set_request_filter(events['next_stream_position'])
+            # The next stream position points to where new messages will arrive.
+            demisto.debug(
+                f'setting the next request filter {events["next_stream_position"]=}'
+            )
+            if not events['entries']:
+                break
+            yield events['entries']
+            # endregion
+            # region Do next call
+            events = self.client.call(self.client.request).json()
+            # endregion
 
-        result = self.client.call(self.client.request).json()['Result']
 
-        if events := result.get('Results'):
-            fetched_events_ids = demisto.getLastRun().get('ids', [])
-            yield [event.get('Row') for event in events if event.get('Row', {}).get('ID') not in fetched_events_ids]
+def _decrypt_private_key(app_auth: AppAuth):
+    """
+    Attempts to load the private key as given in the integration configuration.
 
-
-def get_request_params(**kwargs: dict) -> dict:
-    fetch_from = str(kwargs.get('from', '3 days'))
-    default_from_day = datetime.now() - timedelta(days=3)
-    from_time = datetime.strftime(dateparser.parse(fetch_from, settings={'TIMEZONE': 'UTC'}) or default_from_day, DATETIME_FORMAT)
-
-    params = {
-        'url': f'{str(kwargs.get("url", "")).removesuffix("/")}/RedRock/Query',
-        'data': json.dumps({
-            "Script": f"Select {', '.join(EVENT_FIELDS)} from Event where WhenOccurred > '{from_time}'"
-        }),
-        'verify': not kwargs.get('insecure')
-    }
-    return params
+    :return: an initialized Private key object.
+    """
+    try:
+        key = load_pem_private_key(
+            data=app_auth.privateKey.encode('utf8'),
+            password=app_auth.passphrase.encode('utf8'),
+            backend=default_backend(),
+        )
+    except (
+        TypeError,
+        ValueError,
+        exceptions.UnsupportedAlgorithm,
+    ) as exception:
+        raise DemistoException(
+            'An error occurred while loading the private key.', exception
+        )
+    return key
 
 
 def main(command: str, demisto_params: dict):
-    credentials = Credentials(**demisto_params.get('credentials', {}))
-    options = IntegrationOptions(**demisto_params)
-    request_params = get_request_params(**demisto_params)
-    request = DropboxEventsRequest(**request_params)
-    client = DropboxEventsClient(request, options, credentials)
-    get_events = DropboxGetEvents(client, options)
-
-    try:
-        if command == 'test-module':
-            get_events.run()
-            demisto.results('ok')
-
-        if command in ('fetch-events', 'Dropbox-get-events'):
-            events = get_events.run()
-            send_events_to_xsiam(events, vendor='Dropbox', product='Idaptive')
-
-            if events:
-                last_run = get_events.get_last_run(events)
-                demisto.debug(f'Set last run to {last_run}')
-                demisto.setLastRun(last_run)
-
-            if command == 'Dropbox-get-events':
-                command_results = CommandResults(
-                    readable_output=tableToMarkdown(
-                        'Dropbox Events', events, removeNull=True, headerTransform=pascalToSpace
-                    ),
-                    raw_response=events,
-                )
-                return_results(command_results)
-
-    except Exception as e:
-        return_error(str(e))
+    box_credentials = BoxCredentials.parse_raw(
+        demisto_params['credentials_json']['password']
+    )
+    request = BoxEventsRequestConfig(
+        params=BoxEventsParams.parse_obj(demisto_params),
+        **demisto_params,
+    )
+    options = IntegrationOptions.parse_obj(demisto_params)
+    client = BoxEventsClient(request, options, box_credentials)
+    get_events = BoxEventsGetter(client, options)
+    if command == 'test-module':
+        get_events.client.request.params.limit = 1
+        get_events.run()
+        demisto.results('ok')
+        return
+    demisto.debug('not in test module, running box-get-events')
+    events = get_events.run()
+    demisto.debug(f'got {len(events)=} from api')
+    if command == 'box-get-events':
+        demisto.debug('box-get-events, publishing events to incident')
+        return_results(CommandResults('BoxEvents', 'event_id', events))
+    else:
+        demisto.debug('in event collection')
+        if events:
+            demisto.debug('publishing events')
+            demisto.setLastRun(get_events.get_last_run())
+            send_events_to_xsiam(events, 'box', 'box')
+        else:
+            demisto.debug('no events found, finishing script.')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
-    # Args is always stronger. Get getIntegrationContext even stronger
+    # Args is always stronger. Get getLastRun even stronger
     demisto_params_ = demisto.params() | demisto.args() | demisto.getLastRun()
     main(demisto.command(), demisto_params_)
