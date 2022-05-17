@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 
 import argparse
-import os
-import sys
 
 import requests
 import urllib3
@@ -40,7 +38,7 @@ def trigger_generic_webhook(options):
     res = requests.post(SECRETS_INSTANCE_URL, json=body, auth=(username, password))
 
     if res.status_code != 200:
-        raise Exception(
+        raise ConnectionError(
             f"Secrets detection playbook was failed. Post request to Content Gold has status code of {res.status_code}")
 
     res_json = res.json()
@@ -48,24 +46,16 @@ def trigger_generic_webhook(options):
         res_json_response_data = res.json()[0]
         if res_json_response_data:
             investigation_id = res_json_response_data.get("id")
-            # write_id_to_env(investigation_id)
             print(investigation_id)
             return
 
     raise Exception("Secrets detection playbook has failed")
 
 
-def write_id_to_env(investigation_id):
-    env_file = os.getenv('GITHUB_ENV')
-
-    with open(env_file, "a") as env_file:
-        env_file.write(f"INVESTIGATION_ID={investigation_id}")
-
-
 def main():
     options = arguments_handler()
     trigger_generic_webhook(options)
-    raise Exception('Adi try code')
+    raise ConnectionError('Adi try code')
 
 
 if __name__ == "__main__":
