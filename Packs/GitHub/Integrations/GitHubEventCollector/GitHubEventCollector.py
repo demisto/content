@@ -3,9 +3,11 @@ from enum import Enum
 import urllib3
 from CommonServerPython import *
 import demistomock as demisto
-from pydantic import BaseModel, AnyUrl, Json, validator  # pylint: disable=no-name-in-module
 import dateparser
 from collections.abc import Generator
+from SiemApiModule import *  # noqa: E402
+
+urllib3.disable_warnings()
 
 
 def get_github_timestamp_format(value):
@@ -23,19 +25,7 @@ def get_github_timestamp_format(value):
     return base64_bytes.decode('ascii')
 
 
-class Method(str, Enum):
-    """
-    A list that represent the types of http request available
-    """
-    GET = 'GET'
-    POST = 'POST'
-    PUT = 'PUT'
-    HEAD = 'HEAD'
-    PATCH = 'PATCH'
-    DELETE = 'DELETE'
-
-
-class ReqParams(BaseModel):
+class GithubParams(BaseModel):
     """
     A class that stores the request query params
     """
@@ -48,54 +38,25 @@ class ReqParams(BaseModel):
     )
 
 
-class Request(BaseModel):
-    """
-    A class that stores a request configuration
-    """
-    method: Method = Method.GET
-    url: AnyUrl
-    headers: Optional[Union[Json[dict], dict]]
-    params: Optional[ReqParams]
-    verify = True
-    data: Optional[str] = None
+class GithubEventsRequestConfig(IntegrationHTTPRequest):
+    url = AnyUrl
+    method = Method.GET
+    params: GithubParams
 
 
-class Client:
-    """
-    A class for the client request handling
-    """
-
-    def __init__(self, request: Request):
-        self.request = request
-
-    def call(self, requests=requests) -> requests.Response:
-        try:
-            response = requests.request(**self.request.dict())
-            response.raise_for_status()
-            return response
-        except Exception as exc:
-            msg = f'something went wrong with the http call {exc}'
-            LOG(msg)
-            raise DemistoException(msg) from exc
-
-    def set_next_run_filter(self, after: str):
+class GithubClient(IntegrationEventsClient):
+    def set_request_filter(self, after: str):
         if self.request.params:
             self.request.params.after = get_github_timestamp_format(after)
 
 
-class GetEvents:
-    """
-    A class to handle the flow of the integration
-    """
-    def __init__(self, client: Client) -> None:
-        self.client = client
+class GithubGetEvents(IntegrationGetEvents):
 
     def _iter_events(self) -> Generator:
         """
         Function that responsible for the iteration over the events returned from github api
         """
-        response = self.client.call()
-        events: list = response.json()
+        events = self.client.call(self.client.request).json()
 
         if not events:
             return []
@@ -103,26 +64,14 @@ class GetEvents:
         while True:
             yield events
             last = events.pop()
-            self.client.set_next_run_filter(last['@timestamp'])
-            response = self.client.call()
-            events = response.json()
+            self.client.set_request_filter(last['@timestamp'])
+            events = self.client.call(self.client.request).json()
             try:
                 events.pop(0)
                 assert events
             except (IndexError, AssertionError):
                 LOG('empty list, breaking')
                 break
-
-    def aggregated_results(self, limit=2000) -> List[dict]:
-        """
-        Function to group the events returned from the api
-        """
-        stored_events = []
-        for events in self._iter_events():
-            stored_events.extend(events)
-            if len(stored_events) >= limit:
-                return stored_events[:limit]
-        return stored_events
 
     @staticmethod
     def get_last_run(events: List[dict]) -> dict:
@@ -151,27 +100,26 @@ def main():
                'Accept': 'application/vnd.github.v3+json'}
 
     demisto_params['headers'] = headers
-    demisto_params['params'] = ReqParams(**demisto_params)
+    demisto_params['params'] = GithubParams(**demisto_params)
 
-    request = Request(**demisto_params)
+    request = GithubEventsRequestConfig(**demisto_params)
 
-    client = Client(request)
+    options = IntegrationOptions.parse_obj(demisto_params)
+    client = GithubClient(request, options)
 
-    get_events = GetEvents(client)
+    get_events = GithubGetEvents(client, options)
 
     command = demisto.command()
     try:
-        urllib3.disable_warnings()
-
         if command == 'test-module':
-            get_events.aggregated_results(limit=1)
+            get_events.run()
             return_results('ok')
         elif command in ('github-get-events', 'fetch-events'):
-            events = get_events.aggregated_results(limit=int(demisto_params.get('limit')))
+            events = get_events.run()
 
             if command == 'fetch-events':
                 if events:
-                    demisto.setLastRun(GetEvents.get_last_run(events))
+                    demisto.setLastRun(GithubGetEvents.get_last_run(events))
                 else:
                     send_events_to_xsiam([], 'github', demisto_params.get('product'))
 
