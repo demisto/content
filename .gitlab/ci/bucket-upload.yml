@@ -114,12 +114,6 @@ install-packs-in-server6_2:
     INSTANCE_ROLE: "Server 6.2"
 
 
-install-packs-in-server6_1:
-  extends: .install_packs_in_xsoar_server
-  variables:
-    INSTANCE_ROLE: "Server 6.1"
-
-
 install-packs-in-server-master:
   extends: .install_packs_in_xsoar_server
   variables:
@@ -191,7 +185,7 @@ install-packs-in-xsiam-master:
 upload-packs-to-marketplace:
   tags:
     - gke
-  needs: ["run-validations-upload-flow", "install-packs-in-server6_2", "install-packs-in-server6_1", "install-packs-in-server-master", "run-unittests-and-lint-upload-flow"]
+  needs: ["run-validations-upload-flow", "install-packs-in-server6_2", "install-packs-in-server-master", "run-unittests-and-lint-upload-flow"]
   stage: upload-to-marketplace
   artifacts:
     expire_in: 48 hrs
