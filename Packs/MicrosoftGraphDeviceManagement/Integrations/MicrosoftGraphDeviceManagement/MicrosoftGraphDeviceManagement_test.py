@@ -1,6 +1,5 @@
 import pytest
 import json
-from pytest_mock import path
 from CommonServerPython import DemistoException
 import MicrosoftGraphDeviceManagement
 from MicrosoftGraphDeviceManagement import build_device_object, try_parse_integer, find_managed_devices_command, MsGraphClient
