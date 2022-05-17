@@ -1,4 +1,4 @@
-from OktaLog import ReqParams, Client, Request, GetEvents, Method
+from OktaEventCollector import ReqParams, Client, Request, GetEvents, Method
 import pytest
 
 req_params = ReqParams(since='', sortOrder='ASCENDING', limit='5')
