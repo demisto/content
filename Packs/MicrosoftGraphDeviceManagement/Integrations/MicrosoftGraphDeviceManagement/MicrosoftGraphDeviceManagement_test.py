@@ -27,7 +27,7 @@ def test_try_parse_integer():
 
 
 def test_find_managed_devices_command(mocker):
-    args = {'device_name', 'test_name'}
+    args = {'device_name': 'Managed Device Name value'}
 
     with open('test_data/raw_device.json', 'r') as json_file:
         data: dict = json.load(json_file)
