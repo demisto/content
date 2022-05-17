@@ -976,6 +976,9 @@ script:
     - contextPath: MSGraphDeviceManagement.Device.TotalStorageSpaceInBytes
       description: Total Storage in Bytes
       type: number
+    - contextPath: MSGraphDeviceManagement.Device.FreeStorageSpaceInBytes
+      description: Free Storage in Bytes
+      type: number
     - contextPath: MSGraphDeviceManagement.Device.ManagedDeviceName
       description: Automatically generated name to identify a device. Can be overwritten
         to a user friendly name.
