@@ -331,8 +331,7 @@ class BranchTestCollector(TestCollector):
             FileType.RELEASE_NOTES_CONFIG,
             FileType.XSOAR_CONFIG,
         }:
-
-            # pack is installed, but no tests are collected.
+            # install pack without collecting tests.
             return self._collect_pack(
                 name=PACK_MANAGER.get_pack_by_path(find_pack_folder(path)).name,
                 reason=CollectionReason.NON_CODE_FILE_CHANGED,
