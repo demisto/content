@@ -121,7 +121,7 @@ create-instances:
     - section_end "Calculate Packs Dependencies"
 
     - section_start "Prepare Content Packs for Testing"
-    - ./Tests/scripts/prepare_content_packs_for_testing.sh "$GCS_MARKET_KEY" "$STORAGE_BASE_PATH"
+    - ./Tests/scripts/prepare_content_packs_for_testing.sh "$GCS_MARKET_BUCKET" "$STORAGE_BASE_PATH"
     - section_end "Prepare Content Packs for Testing"
 
     - section_start "Create Instances"
