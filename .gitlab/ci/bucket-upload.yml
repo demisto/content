@@ -212,6 +212,8 @@ upload-packs-to-marketplace:
     - !reference [.open-ssh-tunnel]
     - *check_user_permissions_to_upload_packs
     - section_start "Upload Packs To Marketplace Storage"
+    - pip install google-cloud-storage==1.29.0
+    - pip install google-cloud-bigquery==1.26.1 
     - |
       if [[ "$CI_COMMIT_BRANCH" == "master" ]] || [[ "$GCS_MARKET_BUCKET" != "$GCS_PRODUCTION_BUCKET" ]]; then
         EXTRACT_FOLDER=$(mktemp -d)
