@@ -10,12 +10,7 @@ def sort_list_of_dicts_by_key(args: Dict[str, Any]) -> CommandResults:
 
     _list = args.get('value', None)
     key = args.get('key', None)
-    reverse_flag = args.get('reverse', False)
-
-    if reverse_flag == 'True':
-        reverse = True
-    else:
-        reverse = False
+    reverse_flag = argToBoolean(args.get('reverse', False))
 
     if not _list:
         raise ValueError('List not provided')
