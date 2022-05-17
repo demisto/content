@@ -194,7 +194,7 @@ def construct_slack_msg(triggering_workflow, pipeline_url, pipeline_failed_jobs)
     # report failing test-playbooks
     if 'content nightly' in triggering_workflow_lower:
         content_fields += test_playbooks_results(ARTIFACTS_FOLDER_XSOAR, title="XSOAR")
-        content_fields += test_playbooks_results(ARTIFACTS_FOLDER_MPV2, title="MARKETPLACEV2")
+        content_fields += test_playbooks_results(ARTIFACTS_FOLDER_MPV2, title="XSIAM")
         coverage_slack_msg = construct_coverage_slack_msg()
 
     slack_msg = [{
