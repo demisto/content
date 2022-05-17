@@ -212,6 +212,7 @@ class Client(BaseClient):
         """
         url_suffix = "ingestion/tags/"
         client_url = self.base_url + url_suffix
+        params: Dict[str, Any]
         params = {"page": page, "page_size": page_size}
         if q:
             params["q"] = q
