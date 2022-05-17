@@ -106,8 +106,8 @@ class Client(BaseClient):
         try:
             resp.raise_for_status()  # Raising an exception for non-200 status code
         except requests.exceptions.HTTPError as e:
-            err_msg = "Error in API call [{}: {}], payload sent: {}, \
-            url tried: {}".format(
+            err_msg = "Error in API call [{!r}: {!r}], payload sent: {!r}, \
+            url tried: {!r}".format(
                 resp.status_code, resp.reason, resp.request.body, full_url
             )
             raise DemistoException(err_msg, e)
@@ -139,8 +139,8 @@ class Client(BaseClient):
         try:
             response.raise_for_status()  # Raising an exception for non-200 status code
         except requests.exceptions.HTTPError as e:
-            err_msg = "Error in API call [{}: {}], payload sent: {}, \
-            url tried: {} response body: {}".format(
+            err_msg = "Error in API call [{!r}: {!r}], payload sent: {!r}, \
+            url tried: {!r} response body: {!r}".format(
                 response.status_code,
                 response.reason,
                 response.request.body,
