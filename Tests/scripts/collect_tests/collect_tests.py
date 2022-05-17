@@ -298,57 +298,77 @@ class BranchTestCollector(TestCollector):
                 raise NothingToCollectException(path, 'not under a pack')  # infrastructure files that are ignored
             raise  # files that are either supposed to be under a pack OR should not be ignored. # todo wat
 
-        match file_type:
-            case FileType.PACK_IGNORE | FileType.SECRET_IGNORE | FileType.DOC_FILE | FileType.README:
-                raise NothingToCollectException(path, f'ignored type ({file_type}')
+        if file_type in {FileType.PACK_IGNORE, FileType.SECRET_IGNORE, FileType.DOC_FILE, FileType.README}:
+            raise NothingToCollectException(path, f'ignored type ({file_type}')
 
-            case FileType.RELEASE_NOTES_CONFIG | FileType.RELEASE_NOTES | FileType.IMAGE | \
-                 FileType.DESCRIPTION | FileType.METADATA | \
-                 FileType.RELEASE_NOTES_CONFIG | FileType.IMAGE | FileType.DESCRIPTION | FileType.INCIDENT_TYPE | \
-                 FileType.INCIDENT_FIELD | FileType.INDICATOR_FIELD | FileType.LAYOUT | FileType.WIDGET | \
-                 FileType.DASHBOARD | FileType.REPORT | FileType.PARSING_RULE | FileType.MODELING_RULE | \
-                 FileType.CORRELATION_RULE | FileType.XSIAM_DASHBOARD | FileType.XSIAM_REPORT | FileType.REPORT | \
-                 FileType.GENERIC_TYPE | FileType.GENERIC_FIELD | FileType.GENERIC_MODULE | \
-                 FileType.GENERIC_DEFINITION | FileType.PRE_PROCESS_RULES | FileType.JOB | FileType.CONNECTION | \
-                 FileType.RELEASE_NOTES_CONFIG | FileType.XSOAR_CONFIG:
+        elif file_type in {
+            FileType.RELEASE_NOTES_CONFIG,
+            FileType.RELEASE_NOTES,
+            FileType.IMAGE,
+            FileType.DESCRIPTION,
+            FileType.METADATA,
+            FileType.RELEASE_NOTES_CONFIG,
+            FileType.INCIDENT_TYPE,
+            FileType.INCIDENT_FIELD,
+            FileType.INDICATOR_FIELD,
+            FileType.LAYOUT,
+            FileType.WIDGET,
+            FileType.DASHBOARD,
+            FileType.REPORT,
+            FileType.PARSING_RULE,
+            FileType.MODELING_RULE,
+            FileType.CORRELATION_RULE,
+            FileType.XSIAM_DASHBOARD,
+            FileType.XSIAM_REPORT,
+            FileType.REPORT,
+            FileType.GENERIC_TYPE,
+            FileType.GENERIC_FIELD,
+            FileType.GENERIC_MODULE,
+            FileType.GENERIC_DEFINITION,
+            FileType.PRE_PROCESS_RULES,
+            FileType.JOB,
+            FileType.CONNECTION,
+            FileType.RELEASE_NOTES_CONFIG,
+            FileType.XSOAR_CONFIG,
+        }:
 
-                # pack is installed, but no tests are collected.
-                return self._collect_pack(
-                    name=PACK_MANAGER.get_pack_by_path(find_pack_folder(path)).name,
-                    reason=CollectionReason.NON_CODE_FILE_CHANGED,
-                    reason_description=reason_description,
-                )
+            # pack is installed, but no tests are collected.
+            return self._collect_pack(
+                name=PACK_MANAGER.get_pack_by_path(find_pack_folder(path)).name,
+                reason=CollectionReason.NON_CODE_FILE_CHANGED,
+                reason_description=reason_description,
+            )
 
-            case FileType.PYTHON_FILE | FileType.POWERSHELL_FILE | FileType.JAVASCRIPT_FILE:
-                if path.name.endswith('Tests.ps1'):
-                    path = path.with_name(path.name.replace('.Tests.ps1', '.ps1'))
-                return self._collect_yml(path)
+        elif file_type in {FileType.PYTHON_FILE, FileType.POWERSHELL_FILE, FileType.JAVASCRIPT_FILE}:
+            if path.name.endswith('Tests.ps1'):
+                path = path.with_name(path.name.replace('.Tests.ps1', '.ps1'))
+            return self._collect_yml(path)
 
-            case FileType.TEST_PLAYBOOK:
-                if (test_id := content_item.id_) in self.conf.test_ids:
-                    tests = test_id,
-                    reason = CollectionReason.TEST_PLAYBOOK_CHANGED
-                else:
-                    raise ValueError(f'{test_id} not in self.conf.test_ids')
+        elif file_type == FileType.TEST_PLAYBOOK:
+            if (test_id := content_item.id_) in self.conf.test_ids:
+                tests = test_id,
+                reason = CollectionReason.TEST_PLAYBOOK_CHANGED
+            else:
+                raise ValueError(f'{test_id} not in self.conf.test_ids')
 
-            case FileType.REPUTATION:
-                tests = DEFAULT_REPUTATION_TESTS
-                reason = CollectionReason.DEFAULT_REPUTATION_TESTS
+        elif file_type == FileType.REPUTATION:
+            tests = DEFAULT_REPUTATION_TESTS
+            reason = CollectionReason.DEFAULT_REPUTATION_TESTS
 
-            case FileType.MAPPER | FileType.CLASSIFIER:
-                source, reason = {
-                    FileType.MAPPER: (self.conf.incoming_mapper_to_test, CollectionReason.MAPPER_CHANGED),
-                    FileType.CLASSIFIER: (self.conf.classifier_to_test, CollectionReason.CLASSIFIER_CHANGED),
-                }[file_type]
+        elif file_type in {FileType.MAPPER, FileType.CLASSIFIER}:
+            source, reason = {
+                FileType.MAPPER: (self.conf.incoming_mapper_to_test, CollectionReason.MAPPER_CHANGED),
+                FileType.CLASSIFIER: (self.conf.classifier_to_test, CollectionReason.CLASSIFIER_CHANGED),
+            }[file_type]
 
-                if not (tests := source.get(content_item.id_)):
-                    reason = CollectionReason.NON_CODE_FILE_CHANGED
-                    reason_description = f'no specific tests for {relative_path} were found'
+            if not (tests := source.get(content_item.id_)):
+                reason = CollectionReason.NON_CODE_FILE_CHANGED
+                reason_description = f'no specific tests for {relative_path} were found'
+        elif path.suffix == '.yml':
+            return self._collect_yml(path)  # checks for containing folder (content item type)
 
-            case _:
-                if path.suffix == '.yml':
-                    return self._collect_yml(path)  # checks for containing folder (content item type)
-                raise ValueError(f'Unexpected filetype {file_type}, {relative_path}')
+        else:
+            raise ValueError(f'Unexpected filetype {file_type}, {relative_path}')
 
         return CollectedTests(
             tests=tests,
