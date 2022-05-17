@@ -92,6 +92,25 @@ USER_TYPE = {
     'WATCHER': 3
 }
 
+TICKET_FIELDS = (
+    'closedate',
+    'content',
+    'date',
+    'id',
+    'impact',
+    'internal_time_to_own',
+    'internal_time_to_resolve',
+    'itilcategories_id',
+    'name',
+    'priority',
+    'requesttypes_id',
+    'solvedate',
+    'status',
+    'time_to_own',
+    'type',
+    'urgency'
+)
+
 
 class myglpi(GLPI):
     def upload_document(self, name, filepath, fhandler=None, doc_name=None):
@@ -851,7 +870,8 @@ def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
         if parsed_args.remote_incident_id:
             old_incident = client.get_ticket(parsed_args.remote_incident_id)
             for changed_key in parsed_args.delta.keys():
-                old_incident[changed_key] = parsed_args.delta[changed_key]  # type: ignore
+                if changed_key in TICKET_FIELDS:
+                    old_incident[changed_key] = parsed_args.delta[changed_key]  # type: ignore
             parsed_args.data = old_incident
         else:
             parsed_args.data['createInvestigation'] = True
@@ -860,6 +880,7 @@ def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
     else:
         demisto.debug(f'Skipping updating remote incident fields [{parsed_args.remote_incident_id}] as it is '
                       f'not new nor changed.')
+
     # Close incident if relevant
     if updated_incident and parsed_args.inc_status == IncidentStatus.DONE:
         demisto.debug(f'Closing remote incident {new_incident_id}')
