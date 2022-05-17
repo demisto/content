@@ -39,8 +39,8 @@ configuration:
   defaultvalue: "SELECT+Id+,+EventType+,+Interval+,+LogDate+,+LogFile+,+LogFileLength+FROM+EventLogFile+WHERE+Interval+=+'Hourly'"
   type: 12
   required: true
-- display: The maximum number of log files to fetch.
-  name: limit
+- display: How many log files to fetch.
+  name: files_limit
   type: 0
   defaultvalue: 1000
   required: false
@@ -55,11 +55,16 @@ configuration:
   type: 0
   defaultvalue: 3 days
   required: false
+- display: The product corresponding to the integration that originated the events.
+  name: product
+  type: 0
+  defaultvalue: 'salesforce-event-monitor'
+  required: true
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
-- display: Use Secured Connection
+- display: Trust any certificate (not secure)
   name: verify
   defaultvalue: "true"
   type: 8
@@ -80,7 +85,7 @@ script:
   runonce: false
   isfetchevents: true
   subtype: python3
-fromversion: 6.6.0
+fromversion: 6.8.0
 marketplaces:
 - marketplacev2
 tests:

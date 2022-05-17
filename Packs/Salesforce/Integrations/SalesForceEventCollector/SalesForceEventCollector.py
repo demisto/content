@@ -1,113 +1,70 @@
-from enum import Enum
 import urllib3
 from CommonServerPython import *
 import demistomock as demisto
-from pydantic import BaseModel, AnyUrl, Json  # pylint: disable=no-name-in-module
 from collections.abc import Generator
 import tempfile
 import requests
 import csv
+from SiemApiModule import *  # noqa: E402
+
+urllib3.disable_warnings()
 
 
-class Method(str, Enum):
-    """
-    A list that represent the types of http request available
-    """
-    GET = 'GET'
-    POST = 'POST'
-    PUT = 'PUT'
-    HEAD = 'HEAD'
-    PATCH = 'PATCH'
-    DELETE = 'DELETE'
+class SalesforceClient(IntegrationEventsClient):
+    def set_request_filter(self, after: str):
+        if self.request.params:
+            self.request.params.after = get_github_timestamp_format(after)
 
 
-class Request(BaseModel):
-    """
-    A class that stores a request configuration
-    """
-    method: Method = Method.POST
-    url: AnyUrl
-    headers: Optional[Union[Json[dict], dict]]
-    verify = True
-    data: Optional[str] = None
-
-
-class Client:
-    """
-    A class for the client request handling
-    """
-
-    def __init__(self, request: Request):
-        self.request = request
-
-    def call(self, requests=requests) -> requests.Response:
-        try:
-            response = requests.request(**self.request.dict())
-            response.raise_for_status()
-            return response
-        except Exception as exc:
-            msg = f'something went wrong with the http call {exc}'
-            LOG(msg)
-            raise DemistoException(msg) from exc
-
-
-class GetEvents:
+class SalesforceGetEvents(IntegrationGetEvents):
     """
     A class to handle the flow of the integration
     """
-    def __init__(self, client: Client, insecure: bool, query: str, after: str, last_id: str) -> None:
-        self.client: Client = client
-        self.insecure: bool = insecure
-        self.headers: dict = {}
+    def __init__(self, client: SalesforceClient, options: IntegrationOptions,
+                 files_limit: int, query: str, after: str, last_id: str) -> None:
+        self.client: SalesforceClient = client
         self.instance_url: str = ''
         self.query: str = query
-        self.limit: int = 0
+        self.files_limit: int = files_limit
         self.after: str = after
         self.last_id: str = last_id
-        self.get_token()
+        self.last_file: dict = {}
+
+        super().__init__(client, options)
 
     def get_token(self):
-        res = self.client.call().json()
-        self.headers = {'Authorization': f"Bearer {res.get('access_token')}"}
+        res = self.client.call(self.client.request).json()
+        self.client.request.headers = {'Authorization': f"Bearer {res.get('access_token')}"}
         self.instance_url = res.get('instance_url')
 
     def pull_log_files(self):
-        query = f'{self.query}+and+CreatedDate+>+{self.after} limit {self.limit}'
+        query = f'{self.query}+and+CreatedDate+>+{self.after} limit {self.files_limit}'
 
         demisto.info('Searching files last modified from {}'.format(self.after))
 
         url = f'https://um6.salesforce.com/services/data/v44.0/query?q={query}'
 
-        r = requests.get(url, headers=self.headers, verify=self.insecure)
-
-        if r.status_code == 401:
-            self.get_token()
-            r = requests.get(url, headers=self.headers, verify=self.insecure)
-
-        if r.status_code == 200:
-            res = json.loads(r.text)
-            return self.get_files_from_res(res)
-        else:
-            demisto.error(f'File list getting failed: {r.status_code} {r.text}')
+        self.client.request.url = url
+        self.client.request.method = Method.GET
+        res = self.client.call(self.client.request).json()
+        return self.get_files_from_res(res)
 
     def get_files_from_res(self, query_res):
-        r = requests.Response()
         files = query_res['records']
         done_status = query_res['done']
 
         while done_status is False:
             query = query_res['nextRecordsUrl']
             try:
-                r = requests.get(f'{self.instance_url}{query}', headers=self.headers)
+                self.client.request.url = f'{self.instance_url}{query}'
+                self.client.request.method = Method.GET
+                query_res = self.client.call(self.client.request).json()
             except Exception as err:
                 demisto.error(f'File list getting failed: {err}')
-            if r.status_code == 200:
-                res = json.loads(r.text)
-                done_status = res['done']
-                for file in res['records']:
-                    files.append(file)
-            else:
-                done_status = True
+
+            done_status = query_res['done']
+            for file in query_res['records']:
+                files.append(file)
 
         demisto.info('Total number of files is {}.'.format(len(files)))
 
@@ -132,10 +89,10 @@ class GetEvents:
     def get_file_raw_lines(self, file_url, file_in_tmp_path):
         url = f'{self.instance_url}{file_url}'
         try:
-            r = requests.get(url, stream=True, headers=self.headers)
+            r = requests.get(url, stream=True, headers=self.client.request.headers)
             if r.status_code == 401:
                 self.get_token()
-                r = requests.get(url, stream=True, headers=self.headers)
+                r = requests.get(url, stream=True, headers=self.client.request.headers)
 
             with open(file_in_tmp_path, 'wb') as f:
                 for chunk in r.iter_content(chunk_size=1024 * 1024):
@@ -163,11 +120,12 @@ class GetEvents:
         yield chunk
 
     def _iter_events(self) -> Generator:
+        self.get_token()
         temp_dir = tempfile.TemporaryDirectory()
         log_files = self.pull_log_files()
 
         if log_files:
-            demisto.setLastRun(self.get_last_run(log_files))
+            self.last_file = log_files[-1]
 
         for line in log_files:
             events_list = []
@@ -180,28 +138,21 @@ class GetEvents:
 
             yield events_list
 
-    def aggregated_results(self, limit) -> List[dict]:
-        """
-        Function to group the events returned from the api
-        """
-        self.limit = limit
-        stored_events = []
-        for events in self._iter_events():
-            stored_events.extend(events)
-        return stored_events
-
-    @staticmethod
-    def get_last_run(files: List[dict]) -> dict:
+    def get_last_run(self) -> dict:
         """
         Get the info from the last run, it returns the time to query from and a list of ids to prevent duplications
         """
-        last_file = files[-1]
-        last_timestamp = last_file['LogDate']
-        timestamp = dateparser.parse(last_timestamp)
-        if timestamp is None:
-            raise TypeError('Failed to parse LogDate')
-        return {'after': timestamp.strftime("%Y-%m-%dT%H:%M:%SZ"),
-                'last_id': last_file['Id']}
+        last_file = self.last_file
+
+        if last_file:
+            last_timestamp = last_file['LogDate']
+            timestamp = dateparser.parse(last_timestamp)
+            if timestamp is None:
+                raise TypeError('Failed to parse LogDate')
+            return {'after': timestamp.strftime("%Y-%m-%dT%H:%M:%SZ"),
+                    'last_id': last_file['Id']}
+
+        return {}
 
 
 def get_timestamp_format(value):
@@ -223,13 +174,10 @@ def main():
     demisto_params['client_secret'] = demisto_params['client_secret']['password']
     demisto_params['password'] = demisto_params['password']['password']
 
-    events_to_add_per_request = demisto_params.get('events_to_add_per_request', 1000)
-    try:
-        events_to_add_per_request = int(events_to_add_per_request)
-    except ValueError:
-        events_to_add_per_request = 1000
+    events_to_add_per_request = int(demisto_params.get('events_to_add_per_request'))
+    files_limit = int(demisto_params.get('files_limit'))
 
-    request = Request(**demisto_params)
+    request = IntegrationHTTPRequest(**demisto_params)
 
     url = urljoin(demisto_params.get("url"), 'services/oauth2/token')
     request.url = f'{url}?grant_type=password&' \
@@ -238,27 +186,29 @@ def main():
                   f'username={demisto_params.get("username")}&' \
                   f'password={demisto_params.get("password")}'
 
-    client = Client(request)
+    options = IntegrationOptions.parse_obj(demisto_params)
+    client = SalesforceClient(request, options)
 
     after = get_timestamp_format(demisto_params.get('after'))
 
-    get_events = GetEvents(client, demisto_params.get('verify'),
-                           demisto_params.get('query'), after, demisto_params.get('last_id'))
+    get_events = SalesforceGetEvents(client, options, files_limit, demisto_params.get('query'),
+                                     after, demisto_params.get('last_id'))
 
     command = demisto.command()
     try:
-        urllib3.disable_warnings()
-
         if command == 'test-module':
-            get_events.aggregated_results(limit=1)
+            get_events.files_limit = 1
+            get_events.run()
             return_results('ok')
         elif command in ('salesforce-get-events', 'fetch-events'):
-            events = get_events.aggregated_results(limit=int(demisto_params.get('limit')))
+            events = get_events.run()
 
             if command == 'fetch-events':
-                while len(events) > 0:
-                    send_events_to_xsiam(events[:events_to_add_per_request], 'salesforce-audit', 'salesforce-audit')
-                    events = events[events_to_add_per_request:]
+                if events:
+                    demisto.setLastRun(get_events.get_last_run())
+                else:
+                    send_events_to_xsiam([], 'salesforce', demisto_params.get('product'))
+
             elif command == 'salesforce-get-events':
                 command_results = CommandResults(
                     readable_output=tableToMarkdown('salesforce Logs', events, headerTransform=pascalToSpace),
@@ -268,6 +218,11 @@ def main():
                     raw_response=events,
                 )
                 return_results(command_results)
+
+            while len(events) > 0:
+                send_events_to_xsiam(events[:events_to_add_per_request], 'salesforce', demisto_params.get('product'))
+                events = events[events_to_add_per_request:]
+
     except Exception as e:
         return_error(str(e))
 
