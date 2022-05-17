@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from enum import Enum
 from logging import getLogger
 from pathlib import Path
-from typing import Any, Optional, Iterable
+from typing import Any, Optional
 
 from demisto_sdk.commands.common.constants import MarketplaceVersions
 from demisto_sdk.commands.common.tools import json, yaml
@@ -16,7 +16,8 @@ from Tests.scripts.collect_tests.exceptions import (DeprecatedPackException,
                                                     NonDictException,
                                                     NoTestsConfiguredException,
                                                     NotUnderPackException,
-                                                    SkippedPackException)
+                                                    SkippedPackException,
+                                                    UnsupportedPackException)
 
 logger = getLogger('test_collection')  # todo is this the right way?
 
@@ -95,9 +96,10 @@ class DictBased:
         self.marketplaces: Optional[tuple[MarketplaceVersions]] = \
             tuple(MarketplaceVersions(v) for v in self.get('marketplaces', (), warn_if_missing=False)) or None
 
-    def get(self, key: str, default: Any = None, warn_if_missing: bool = True):
+    def get(self, key: str, default: Any = None, warn_if_missing: bool = True, warning_comment: str = ''):
         if key not in self.content and warn_if_missing:
-            logger.warning(f'attempted to access key {key}, which does not exist')
+            suffix = f' ({warning_comment})' if warning_comment else ''
+            logger.warning(f'attempted to access key {key}, which does not exist{suffix}')
         return self.content.get(key, default)
 
     def __getitem__(self, key):
@@ -123,7 +125,13 @@ class DictBased:
 
 
 class DictFileBased(DictBased):
-    def __init__(self, path: Path):
+    def __init__(self, path: Path, is_infrastructure: bool = False):
+        try:
+            PackManager.relative_to_packs(path)  # raises ValueError if not relative
+        except ValueError:
+            if not is_infrastructure:
+                raise NotUnderPackException(path)
+
         if path.suffix not in ('.json', '.yml'):
             raise NonDictException(path)
 
@@ -153,7 +161,8 @@ class ContentItem(DictFileBased):
 
     @property
     def name(self) -> str:
-        return self.get('name', default='', warn_if_missing=True)
+        id_ = self.get('id', '', warn_if_missing=False)
+        return self.get('name', default='', warn_if_missing=True, warning_comment=id_)
 
     @property
     def tests(self):
@@ -204,6 +213,10 @@ class PackManager:
         if pack not in self.pack_names:
             logger.error(f'inexistent pack {pack}')
             raise InexistentPackException(pack)
+        if not (support_level := self[pack].get('support', '')):
+            raise ValueError(f'pack {pack} has no support_level field')  # todo is ok?
+        if support_level.lower() != 'xsoar':
+            raise UnsupportedPackException(pack)
 
 
 def to_tuple(value: Optional[str | list]) -> Optional[tuple]:

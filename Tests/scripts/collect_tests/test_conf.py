@@ -10,7 +10,7 @@ class TestConf(DictFileBased):
     __test__ = False  # prevents pytest from running it
 
     def __init__(self):
-        super().__init__(DEBUG_CONF_PATH)  # todo not use debug
+        super().__init__(DEBUG_CONF_PATH, is_infrastructure=True)  # todo not use debug
         self.tests = tuple(TestConfItem(value) for value in self['tests'])
         self.test_ids = {test.playbook_id for test in self.tests}
 

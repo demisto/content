@@ -16,6 +16,9 @@ class InexistentPackException(InvalidPackException):
         super().__init__(pack_name, 'Inexistent pack name')
 
 
+class UnsupportedPackException(InvalidPackException):
+    def __init__(self, pack_name: str):
+        super().__init__(pack_name, 'pack support level is not XSOAR')
 
 
 class DeprecatedPackException(InvalidPackException):

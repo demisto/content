@@ -1,5 +1,6 @@
 from collections import defaultdict
 from logging import getLogger
+from pathlib import Path
 from typing import Iterable, Optional
 
 from demisto_sdk.commands.common.constants import MarketplaceVersions
@@ -16,9 +17,9 @@ class IdSetItem(DictBased):
     def __init__(self, id_: Optional[str], dict_: dict):
         super().__init__(dict_)
         self.id_: str = id_  # None for packs, as they don't have it.
-        self.name: str = self.get('name', '')  # todo is ok w/o name?
         self.file_path: str = self.get('file_path', warn_if_missing=False)  # packs have no file_path value
         self.pack: Optional[str] = self.get('pack', warn_if_missing=False)  # we log an error instead of warning
+        self.name: str = self.get('name', '', warning_comment=Path(self.file_path or '').name)  # todo is ok w/o name?
         if id_ and 'pack' not in self.content:  # packs have no ids, and no `pack`, so non-packs are errors
             logger.error(f'content item with id={id_} and name={self.name} has no pack value in id_set')
 
@@ -45,7 +46,7 @@ class IdSetItem(DictBased):
 
 class IdSet(DictFileBased):
     def __init__(self, marketplace: MarketplaceVersions):
-        super().__init__(DEBUG_ID_SET_PATH)  # todo use real content_item
+        super().__init__(DEBUG_ID_SET_PATH, is_infrastructure=True)  # todo use real content_item
         self.marketplace = marketplace
 
         # Content items mentioned in the file
