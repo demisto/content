@@ -133,6 +133,7 @@
   before_script:
     - *setup-network-certs
     - *clone_and_export_variables
+    - *check_build_files_are_up_to_date
     - section_start "Creating new clean logs folder" --collapsed
     - rm -rf $ARTIFACTS_FOLDER/logs
     - mkdir -p $ARTIFACTS_FOLDER/logs
@@ -153,7 +154,6 @@
     - jsdoc2md --version
     - demisto-sdk --version
     - section_end "Build Parameters"
-    - *check_build_files_are_up_to_date
 
 .default-job-settings:
   interruptible: true
