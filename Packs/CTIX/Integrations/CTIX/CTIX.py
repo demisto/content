@@ -56,13 +56,13 @@ class Client(BaseClient):
         self.verify = verify
         self.proxies = proxies
 
-    def signature(self, expires:int):
+    def signature(self, expires: int):
         '''
         Signature Generation
 
         :param int expires: Epoch time in which time when signature will expire
         :return str signature : signature queryset
-        '''        
+        '''
         to_sign = "%s\n%i" % (self.access_id, expires)
         return base64.b64encode(
             hmac.new(
@@ -72,11 +72,10 @@ class Client(BaseClient):
 
     def add_common_params(self, params: dict):
         '''
-        Add Common Params 
-
+        Add Common Params
         :param dict params: Paramters to be added in request
         :return dict: Params dictionary with AccessID, Expires and Signature
-        '''        
+        '''
         expires = int(time.time() + 5)
         params["AccessID"] = self.access_id
         params["Expires"] = expires
@@ -90,7 +89,7 @@ class Client(BaseClient):
         :param str full_url: URL to be called
         :param dict payload: Request body, defaults to None
         :raises DemistoException: If Any error is found will be raised on XSOAR
-        :return dict: Response object 
+        :return dict: Response object
         '''
         kwargs = self.add_common_params(kwargs)
         full_url = full_url + "?" + urllib.parse.urlencode(kwargs)
@@ -123,7 +122,7 @@ class Client(BaseClient):
         :param str full_url: URL to be called
         :param dict payload: Request body, defaults to None
         :raises DemistoException: If Any error is found will be raised on XSOAR
-        :return dict: Response object 
+        :return dict: Response object
         '''
         headers = {"content-type": "application/json"}
         params = self.add_common_params(params)
@@ -160,7 +159,7 @@ class Client(BaseClient):
         :param str full_url: URL to be called
         :param dict payload: Request body, defaults to None
         :raises DemistoException: If Any error is found will be raised on XSOAR
-        :return dict: Response object 
+        :return dict: Response object
         '''
         params = self.add_common_params(params)
         full_url = full_url + object_id + "/?" + urllib.parse.urlencode(params)
@@ -180,7 +179,7 @@ class Client(BaseClient):
         Test authentication
 
         :return dict: Returns result for ping
-        '''        
+        '''
         client_url = self.base_url + "ping/"
         return self.get_http_request(client_url)
 
@@ -272,7 +271,7 @@ class Client(BaseClient):
         :param int page_size: Size of the result
         :param str query: CQL query for polling specific result
         :return dict: Returns response for query
-        '''        
+        '''
         url_suffix = "ingestion/threat-data/list/"
         client_url = self.base_url + url_suffix
         params = {"page": page, "page_size": page_size}
@@ -286,7 +285,7 @@ class Client(BaseClient):
         :param int page: Paginated number from where data will be polled
         :param int page_size: Size of the result
         :return dict: Returns response for query
-        '''        
+        '''
         url_suffix = "ingestion/saved-searches/"
         client_url = self.base_url + url_suffix
         params = {"page": page, "page_size": page_size}
@@ -299,7 +298,7 @@ class Client(BaseClient):
         :param int page: Paginated number from where data will be polled
         :param int page_size: Size of the result
         :return dict: Returns response for query
-        '''        
+        '''
         url_suffix = "publishing/collection/"
         client_url = self.base_url + url_suffix
         params = {"page": page, "page_size": page_size}
@@ -313,7 +312,7 @@ class Client(BaseClient):
         :param int page_size: Size of the result
         :param Dict[str, Any] params: Params to be send with request
         :return dict: Returns response for query
-        '''        
+        '''
         url_suffix = "ingestion/actions/"
         client_url = self.base_url + url_suffix
         params["page"] = page
@@ -327,7 +326,7 @@ class Client(BaseClient):
         :param list[str] object_ids: Object IDs of the IOCs
         :param str object_type: Object type of the IOCs
         :return dict: Returns response for query
-        '''        
+        '''
         url_suffix = "ingestion/threat-data/bulk-action/false_positive/"
         client_url = self.base_url + url_suffix
         payload = {"object_ids": object_ids, "object_type": object_type, "data": {}}
@@ -341,51 +340,51 @@ class Client(BaseClient):
         :param list[str] object_ids: Object IDs of the IOCs
         :param str object_type: Object type of the IOCs
         :return dict: Returns response for query
-        '''        
+        '''
         url_suffix = "ingestion/threat-data/bulk-action/manual_review/"
         client_url = self.base_url + url_suffix
         payload = {"object_ids": object_ids, "object_type": object_type, "data": {}}
 
         return self.post_http_request(client_url, payload, {})
 
-    def deprecate_ioc(self, object_ids:str, object_type:str):
+    def deprecate_ioc(self, object_ids: str, object_type: str):
         '''
         Deprecate IOC
 
         :param str object_ids: Object ID of the IOC
         :param str object_type: Object type of the IOC
         :return dict: Returns response for query
-        '''        
+        '''
         url_suffix = "ingestion/threat-data/bulk-action/deprecate/"
         client_url = self.base_url + url_suffix
         payload = {"object_ids": object_ids, "object_type": object_type, "data": {}}
 
         return self.post_http_request(client_url, payload, {})
 
-    def add_analyst_tlp(self, object_id:str, object_type:str, data):
+    def add_analyst_tlp(self, object_id: str, object_type: str, data):
         '''
-        Add Analyst TLP 
+        Add Analyst TLP
 
         :param str object_id: Object ID of the IOCs
         :param str object_type: _Object type of the IOCs
         :param dict data: data to be send over POST request
         :return dict: Returns response for query
-        '''        
+        '''
         url_suffix = "ingestion/threat-data/action/analyst_tlp/"
         client_url = self.base_url + url_suffix
         payload = {"object_id": object_id, "object_type": object_type, "data": data}
 
         return self.post_http_request(client_url, payload, {})
 
-    def add_analyst_score(self, object_id:str, object_type, data):
+    def add_analyst_score(self, object_id: str, object_type, data):
         '''
-        Add Analyst Score 
+        Add Analyst Score
 
         :param str object_id: Object ID of the IOCs
         :param str object_type: Object type of the IOCs
         :param dict data: Request body to be send over POST request
         :return dict: Returns response for query
-        '''        
+        '''
         url_suffix = "ingestion/threat-data/action/analyst_score/"
         client_url = self.base_url + url_suffix
         payload = {"object_id": object_id, "object_type": object_type, "data": data}
@@ -401,7 +400,7 @@ class Client(BaseClient):
         :param str label_name: Label name used to get the data from the rule
         :param str query: CQL query to get specific data
         :return dict: Returns response for query
-        '''        
+        '''
         url_suffix = "ingestion/threat-data/list/"
         client_url = self.base_url + url_suffix
         params = {}
@@ -433,7 +432,7 @@ class Client(BaseClient):
         :param str tag_id: Tag ID that will be removed or added
         :param str operation: Addition or Removal of tag operation
         :return dict: Returns response for query
-        '''    
+        '''
         tags_data = self.get_indicator_tags(
             object_type, object_id, {"page": page, "page_size": page_size}
         )["data"]
@@ -458,11 +457,11 @@ class Client(BaseClient):
 
     def search_for_tag(self, params: dict):
         '''
-        Search for tag 
+        Search for tag
 
         :param dict params: Paramters to be added in request
         :return dict: Returns response for query
-        '''        
+        '''
         url_suffix = "ingestion/tags/"
         client_url = self.base_url + url_suffix
         return self.get_http_request(client_url, **params)
@@ -475,7 +474,7 @@ class Client(BaseClient):
         :param str object_id: Object ID of the IOCs
         :param dict params: Paramters to be added in request
         :return dict: Returns response for query
-        '''        
+        '''
         url_suffix = f"ingestion/threat-data/{object_type}/{object_id}/basic/"
         client_url = self.base_url + url_suffix
         return self.get_http_request(client_url, **params)
@@ -488,7 +487,7 @@ class Client(BaseClient):
         :param str object_id: Object ID of the IOCs
         :param dict params: Paramters to be added in request
         :return dict: Returns response for query
-        '''        
+        '''
         url_suffix = f"ingestion/threat-data/{object_type}/{object_id}/quick-actions/"
         client_url = self.base_url + url_suffix
         return self.get_http_request(client_url, **params)
@@ -501,7 +500,7 @@ class Client(BaseClient):
         :param str object_id: Object ID of the IOCs
         :param dict params: Paramters to be added in request
         :return dict: Returns response for query
-        '''        
+        '''
         url_suffix = f"ingestion/threat-data/{object_type}/{object_id}/relations/"
         client_url = self.base_url + url_suffix
         return self.get_http_request(client_url, **params)
@@ -512,7 +511,7 @@ class Client(BaseClient):
 
         :param dict params: Paramters to be added in request
         :return dict: Returns response for query
-        '''        
+        '''
         url_suffix = "ingestion/threat-data/source-references/"
         client_url = self.base_url + url_suffix
         return self.get_http_request(client_url, **params)
@@ -523,7 +522,7 @@ class Client(BaseClient):
 
         :param dict params: Paramters to be added in request
         :return dict: Returns response for query
-        '''        
+        '''
         url_suffix = "conversion/feed-sources/"
         client_url = self.base_url + url_suffix
         return self.get_http_request(client_url, **params)
@@ -535,10 +534,10 @@ class Client(BaseClient):
         Get Lookup Threat Data
 
         :param str object_type: Object type of the IOCs
-        :param list object_names: Indicator/IOCs names 
+        :param list object_names: Indicator/IOCs names
         :param dict params: Paramters to be added in request
         :return dict: Returns response for query
-        '''    
+        '''
         url_suffix = "ingestion/threat-data/list/"
         query = f"type={object_type} AND value IN {tuple(object_names)}"
         payload = {"query": query}
@@ -653,7 +652,7 @@ def whitelist_iocs_command(client: Client, args: Dict[str, Any]) -> CommandResul
     :Description Whitelist IOCs for a given value
     :param Dict[str, Any] args: Paramters to be send to in request
     :return CommandResults: XSOAR based result
-    '''    
+    '''
     ioc_type = args.get("type")
     values = args.get("values")
     values = argToList(values)
@@ -811,7 +810,7 @@ def add_indicator_as_false_positive_command(
     :Description Add Indicator as False Positive for a given Indicator
     :param Dict[str, str] args: Paramters to be send to in request
     :return CommandResults: XSOAR based result
-    '''    
+    '''
     object_ids = args.get("object_ids")
     object_type = args.get("object_type", "indicator")
     object_ids = argToList(object_ids)
@@ -837,7 +836,7 @@ def add_ioc_manual_review_command(
     :Description Add IOC for Manual Review for a given Indicator
     :param Dict[str, str] args: Paramters to be send to in request
     :return CommandResults: XSOAR based result
-    '''    
+    '''
     object_ids = args.get("object_ids")
     object_type = args.get("object_type", "indicator")
     object_ids = argToList(object_ids)
@@ -881,7 +880,7 @@ def add_analyst_tlp_command(client: Client, args: dict) -> CommandResults:
     :Description Add Analyst TLP for a given Indicator
     :param Dict[str, str] args: Paramters to be send to in request
     :return CommandResults: XSOAR based result
-    '''    
+    '''
     object_id = args.get("object_id")
     object_type = args.get("object_type")
     data = json.loads(args.get("data"))
@@ -910,7 +909,7 @@ def add_analyst_score_command(client: Client, args: dict) -> CommandResults:
     :Description Add Analyst Score for a given Indicator
     :param Dict[str, str] args: Paramters to be send to in request
     :return CommandResults: XSOAR based result
-    '''    
+    '''
     object_id = args.get("object_id")
     object_type = args.get("object_type")
     data = json.loads(args.get("data", "{}"))
@@ -939,7 +938,7 @@ def saved_result_set_command(client: Client, args: Dict[str, Any]) -> CommandRes
     :Description Get Saved Result Set data
     :param Dict[str, str] args: Paramters to be send to in request
     :return CommandResults: XSOAR based result
-    '''    
+    '''
     page = int(args.get("page", 1))
     page_size = int(args.get("page_size", 10))
     label_name = args.get("label_name", "test")
@@ -966,7 +965,7 @@ def tag_indicator_updation_command(
     :Description Updating Tag of a given Indicator
     :param Dict[str, str] args: Paramters to be send to in request
     :return CommandResults: XSOAR based result
-    '''   
+    '''
     page = args.get("page", 1)
     page_size = args.get("page_size", 10)
     object_id = args["object_id"]
@@ -996,7 +995,7 @@ def search_for_tag_command(client: Client, args: Dict[str, Any]) -> CommandResul
     :Description Search for Tag
     :param Dict[str, str] args: Paramters to be send to in request
     :return CommandResults: XSOAR based result
-    '''   
+    '''
     page = args.get("page", 1)
     page_size = args.get("page_size", 10)
     q = args.get("q")
@@ -1020,11 +1019,10 @@ def get_indicator_details_command(
 ) -> CommandResults:
     '''
     Get Indicator Details Command
-
-    :Description Get Indicator Details 
+    :Description Get Indicator Details
     :param Dict[str, str] args: Paramters to be send to in request
     :return CommandResults: XSOAR based result
-    '''   
+    '''
     page = args.get("page", 1)
     page_size = args.get("page_size", 10)
     object_id = args["object_id"]
@@ -1048,10 +1046,10 @@ def get_indicator_tags_command(client: Client, args: Dict[str, Any]) -> CommandR
     '''
     Get Indicator Tags  Command
 
-    :Description Get Tags Details 
+    :Description Get Tags Details
     :param Dict[str, str] args: Paramters to be send to in request
     :return CommandResults: XSOAR based result
-    '''  
+    '''
     page = args.get("page", 1)
     page_size = args.get("page_size", 10)
     object_id = args.get("object_id")
@@ -1077,10 +1075,10 @@ def get_indicator_relations_command(
     '''
     Get Indicator Relations Command
 
-    :Description Get Relations Details 
+    :Description Get Relations Details
     :param Dict[str, str] args: Paramters to be send to in request
     :return CommandResults: XSOAR based result
-    '''  
+    '''
     page = args.get("page", 1)
     page_size = args.get("page_size", 10)
     object_id = args["object_id"]
@@ -1106,10 +1104,10 @@ def get_indicator_observations_command(
     '''
     Get Indicator Observations Command
 
-    :Description Get Indicator Observations 
+    :Description Get Indicator Observations
     :param Dict[str, str] args: Paramters to be send to in request
     :return CommandResults: XSOAR based result
-    '''  
+    '''
     page = args.get("page", 1)
     page_size = args.get("page_size", 10)
     object_id = args.get("object_id")
@@ -1143,7 +1141,7 @@ def get_conversion_feed_source_command(
     :Description Get Conversion Feed Source
     :param Dict[str, str] args: Paramters to be send to in request
     :return CommandResults: XSOAR based result
-    '''  
+    '''
     page = args.get("page", 1)
     page_size = args.get("page_size", 10)
     object_id = args.get("object_id")
@@ -1180,7 +1178,7 @@ def get_lookup_threat_data_command(
     :Description Get Lookup Threat Data
     :param Dict[str, str] args: Paramters to be send to in request
     :return CommandResults: XSOAR based result
-    '''  
+    '''
     object_type = args.get("object_type", "indicator")
     object_names = argToList(args.get("object_names"))
     page_size = args.get("page_size", 10)
