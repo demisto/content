@@ -248,6 +248,7 @@ class Client(BaseClient):
         """
         url_suffix = "conversion/whitelist/"
         client_url = self.base_url + url_suffix
+        params: Dict[str, Any]
         params = {"page": page, "page_size": page_size}
         if q:
             params["q"] = q
@@ -580,8 +581,8 @@ def create_tag_command(client: Client, args: Dict[str, str]) -> CommandResults:
     """
     create_tag command: Creates a new tag in the CTIX platform
     """
-    name = args.get("tag_name")
-    color_code = args.get("color_code")
+    name = str(args.get("tag_name"))
+    color_code = str(args.get("color_code"))
 
     if color_code is not None:
         if not color_code.startswith("#") or len(color_code) != 7:
@@ -859,7 +860,7 @@ def deprecate_ioc_command(client: Client, args: dict) -> CommandResults:
     deprecate_ioc command: Deprecate indicators bulk api
     """
     object_ids = args.get("object_ids")
-    object_type = args.get("object_type")
+    object_type = str(args.get("object_type"))
     object_ids = argToList(object_ids)
     response = client.deprecate_ioc(object_ids, object_type)
     data = response.get("data")
@@ -882,9 +883,9 @@ def add_analyst_tlp_command(client: Client, args: dict) -> CommandResults:
     :param Dict[str, str] args: Paramters to be send to in request
     :return CommandResults: XSOAR based result
     '''
-    object_id = args.get("object_id")
-    object_type = args.get("object_type")
-    data = json.loads(args.get("data"))
+    object_id = str(args.get("object_id"))
+    object_type = str(args.get("object_type"))
+    data = json.loads(str(args.get("data")))
 
     analyst_tlp = data.get("analyst_tlp")
     if not analyst_tlp:
@@ -911,8 +912,8 @@ def add_analyst_score_command(client: Client, args: dict) -> CommandResults:
     :param Dict[str, str] args: Paramters to be send to in request
     :return CommandResults: XSOAR based result
     '''
-    object_id = args.get("object_id")
-    object_type = args.get("object_type")
+    object_id = str(args.get("object_id"))
+    object_type = str(args.get("object_type"))
     data = json.loads(args.get("data", "{}"))
 
     analyst_tlp = data.get("analyst_score")
