@@ -7,7 +7,7 @@ import splunklib.client as client
 import splunklib.results as results
 import json
 from datetime import timedelta, datetime
-import pytz
+import pytz  # type: ignore[import]
 import dateparser  # type: ignore
 import urllib2
 import hashlib

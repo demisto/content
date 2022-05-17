@@ -9,14 +9,13 @@ This integration was integrated and tested with Palo Alto Networks Enterprise DL
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Access Token | The access token generated in the Enterprise DLP UI. | True |
-    | Refresh Token | The refresh token generated in the Enterprise DLP UI. | True |
+    | Access Token | Access token generated in the Enterprise DLP UI | True |
+    | Refresh Token | Refresh token generated in the Enterprise DLP UI | True |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
     | Long running instance |  | False |
-    | Environment | The DLP environment to connect to. Staging environment is for testing only. | False |
     | DLP Regions |  | False |
-    | Data profiles to allow exemption | A comma-separated list of data profile names to request an exemption. | False |
+    | Data profiles to allow exemption | A comma-separated list of data profile names to request an exemption. Use "\*" to allow everything. | False |
     | Slack Bot Message | The Slack message to send to the user to ask for feedback. | False |
     | Fetch incidents |  | False |
 
@@ -37,7 +36,7 @@ Fetches DLP reports associated with a report ID.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | report_id | DLP report ID. | Required | 
-| fetch_snippets | If True, includes snippets with the reports. Default is False. | Optional | 
+| fetch_snippets | If True, includes snippets with the reports. Possible values are: true, false. Default is false. | Optional | 
 
 
 #### Context Output
@@ -134,7 +133,8 @@ Resets the fetch incidents last run value, which resets the fetch to its initial
 `pan-dlp-reset-last-run`
 #### Input
 
-There are no inputs for this command.
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
 
 
 #### Context Output

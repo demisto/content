@@ -120,8 +120,7 @@ def test_get_dlp_report(requests_mock, mocker):
     }
     params = {
         'access_token': 'abcd',
-        'refresh_token': 'xyz',
-        'env': 'prod'
+        'refresh_token': 'xyz'
     }
     mocker.patch.object(demisto, 'args', return_value=args)
     mocker.patch.object(demisto, 'params', return_value=params)
