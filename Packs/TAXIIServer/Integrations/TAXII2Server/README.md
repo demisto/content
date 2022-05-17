@@ -148,12 +148,12 @@ TIM fields (system generated and custom). An example of these two related object
     
   2. Under **STIX types for STIX indicator Domain Object** select the indicator types you want to ingest.
 
-  3. If needed set the **Listen Port** to your preferred port.
+  3. Set the **Listen Port** and **Collection JSON** to your linking.
 
 
 #### Find the information required for the Sentinel TAXII connector
 
-  1. API root - Your XSOAR TAXII2 API root can be found at - https://<xsoar-server>/instance/execute/<instance_name>/threatintel/
+  1. API root - Your XSOAR TAXII2 API root can be found at - https://&lt;xsoar-server&gt;/instance/execute/&lt;instance_name&gt;/threatintel/
   2. Collection ID - Use `curl https://<xsoar-server>/instance/execute/<instance_name>/threatintel/collections/ | jq .` to get a list  of the collections available and on your TAXII server. From the list, copy the correct ID of the collection you want to ingest. 
  
  Response Example:
