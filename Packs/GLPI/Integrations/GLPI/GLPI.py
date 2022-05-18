@@ -776,12 +776,17 @@ def get_mapping_fields_command() -> GetMappingFieldsResponse:
         client: XSOAR client to use
     Returns: Dictionary with keys as field names
     """
-    incident_type_scheme = SchemeTypeMapping(type_name="GLPI Incident")
-
-    for field in GLPI_ARGS:
-        incident_type_scheme.add_field(field)
 
     mapping_response = GetMappingFieldsResponse()
+
+    incident_type_scheme = SchemeTypeMapping(type_name="GLPI Incident")
+    for field in GLPI_ARGS:
+        incident_type_scheme.add_field(field)
+    mapping_response.add_scheme_type(incident_type_scheme)
+
+    incident_type_scheme = SchemeTypeMapping(type_name="GLPI Request")
+    for field in GLPI_ARGS:
+        incident_type_scheme.add_field(field)
     mapping_response.add_scheme_type(incident_type_scheme)
 
     return mapping_response
