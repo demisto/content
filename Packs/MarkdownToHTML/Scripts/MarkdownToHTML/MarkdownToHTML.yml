@@ -34,7 +34,7 @@ contentitemexportablefields:
     propagationLabels:
     - all
     toServerVersion: ""
-dockerimage: markdown:latest
+dockerimage: devdemisto/py3-tools:0.0.1.29826
 enabled: true
 engineinfo: {}
 mainengineinfo: {}
