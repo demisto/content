@@ -642,6 +642,26 @@ FIND_SANDBOX_REPORTS_HTTP_RESPONSE = {
     ]
 }
 
+FIND_SANDBOX_REPORTS_NOT_FOUND_HTTP_RESPONSE = {
+    "errors": [],
+    "meta": {
+        "pagination": {
+            "limit": 10,
+            "offset": 0,
+            "total": 69
+        },
+        "powered_by": "falconx-api",
+        "query_time": 0.008271345,
+        "quota": {
+            "in_progress": 2,
+            "total": 100,
+            "used": 47
+        },
+        "trace_id": "trace_id"
+    },
+    "resources": []
+}
+
 FIND_SUBMISSION_ID_HTTP_RESPONSE = {
     "errors": [],
     "meta": {
