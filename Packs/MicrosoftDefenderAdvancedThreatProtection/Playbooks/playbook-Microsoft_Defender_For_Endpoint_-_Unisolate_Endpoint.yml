@@ -1,7 +1,7 @@
 id: Microsoft Defender For Endpoint - Unisolate Endpoint
 version: -1
 name: Microsoft Defender For Endpoint - Unisolate Endpoint
-description: This playbook auto unisolates endpoints with Microsoft Defender For Endpoint using the host name, IP, or device ID associated with the asset you want to block.
+description: This playbook accepts an endpoint ID, IP, or host name and unisolates it using the Microsoft Defender For Endpoint integration.
 starttaskid: "0"
 tasks:
   "0":

@@ -1,4 +1,4 @@
-This playbook will auto isolate endpoints through Microsoft Defender For Endpoint by using Hostname,IP, or Device ID associated with the asset you wish to block.
+This playbook accepts an endpoint ID, IP, or host name and isolates it using the Microsoft Defender For Endpoint integration.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -10,25 +10,24 @@ This playbook does not use any sub-playbooks.
 * MicrosoftDefenderAdvancedThreatProtection
 
 ### Scripts
-* isError
-* Print
 * SetAndHandleEmpty
+* isError
 * IsIntegrationAvailable
+* Print
 
 ### Commands
+* endpoint
 * microsoft-atp-isolate-machine
-* microsoft-atp-get-machines
-* microsoft-atp-get-machine-details
 
 ## Playbook Inputs
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| Device_id | The device ID to isolate.<br/>For more information, you can use the following commands:<br/>\!microsoft-atp-get-machine-details<br/>\!microsoft-atp-get-machines |  | Optional |
-| Hostname | The Device Hostname that you would like to Isolate |  | Optional |
-| Device_IP | The Device IP that you would like to Isolate |  | Optional |
-| Isolation_type | Optional Values: Full/Selective. Default: Full<br/><br/>For more Information - Check Microsoft Documentation:<br/>  https://docs.microsoft.com/en-us/microsoft-365/security/defender-endpoint/respond-machine-alerts?view=o365-worldwide\#isolate-devices-from-the-network | Full | Optional |
+| Device_id | The device ID to isolate.<br/>For more information about the device, you can use the following commands:<br/>\!microsoft-atp-get-machine-details<br/>\!microsoft-atp-get-machines |  | Optional |
+| Hostname | The host name you want to isolate. |  | Optional |
+| Device_IP | The device IP you want to isolate. |  | Optional |
+| Isolation_type | Optional Values: Full/Selective. Default is Full.<br/><br/>For more information see Microsoft documentation:<br/>  https://docs.microsoft.com/en-us/microsoft-365/security/defender-endpoint/respond-machine-alerts?view=o365-worldwide\#isolate-devices-from-the-network | Full | Optional |
 
 ## Playbook Outputs
 ---
@@ -36,11 +35,11 @@ This playbook does not use any sub-playbooks.
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
 | MicrosoftATP.MachineAction.ID | The machine action ID. | string |
-| MicrosoftATP.IsolateList | The Machine IDs which were Isolated | string |
-| MicrosoftATP.NonIsolateList | Machine ID's which will not be isolated | string |
-| MicrosoftATP.IncorrectIDs | Incorrect Device IDs entered | string |
-| MicrosoftATP.IncorrectHostnames | Incorrect Device Hostnames entered | string |
-| MicrosoftATP.IncorrectIPs | Incorrect Device IPs entered | string |
+| MicrosoftATP.IsolateList | The machine IDs that were isolated. | string |
+| MicrosoftATP.NonIsolateList | The machine IDs that will not be isolated. | string |
+| MicrosoftATP.IncorrectIDs | Incorrect device IDs entered. | string |
+| MicrosoftATP.IncorrectHostnames | Incorrect device host names entered. | string |
+| MicrosoftATP.IncorrectIPs | Incorrect device IPs entered. | string |
 
 ## Playbook Image
 ---

@@ -1,4 +1,4 @@
-This playbook will auto unisolate endpoints through Microsoft Defender For Endpoint by using Hostname, IP, or Device ID associated with the asset you wish to block.
+This playbook accepts an endpoint ID, IP, or host name and unisolates it using the Microsoft Defender For Endpoint integration.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -10,24 +10,23 @@ This playbook does not use any sub-playbooks.
 * MicrosoftDefenderAdvancedThreatProtection
 
 ### Scripts
-* Print
 * SetAndHandleEmpty
 * isError
 * IsIntegrationAvailable
+* Print
 
 ### Commands
-* microsoft-atp-get-machines
+* endpoint
 * microsoft-atp-unisolate-machine
-* microsoft-atp-get-machine-details
 
 ## Playbook Inputs
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| Device_id | The device ID to isolate.<br/>For more information, you can use the following commands:<br/>\!microsoft-atp-get-machine-details<br/>\!microsoft-atp-get-machines |  | Optional |
-| Hostname | The Device Hostname that you would like to Isolate |  | Optional |
-| Device_IP | The Device IP that you would like to Isolate |  | Optional |
+| Device_id | The device ID to isolate.<br/>For more information about the device, you can use the following commands:<br/>\!microsoft-atp-get-machine-details<br/>\!microsoft-atp-get-machines |  | Optional |
+| Hostname | The device host name you want to isolate. |  | Optional |
+| Device_IP | The device IP you want to isolate. |  | Optional |
 
 ## Playbook Outputs
 ---
@@ -35,11 +34,11 @@ This playbook does not use any sub-playbooks.
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
 | MicrosoftATP.MachineAction.ID | The machine action ID. | string |
-| MicrosoftATP.NonUnisolateList | Those machine IDs that won't be released from isolation | string |
-| MicrosoftATP.UnisolateList | Machine IDs that were released from isolation. | string |
-| MicrosoftATP.IncorrectIDs | Incorrect Device IDs entered | string |
-| MicrosoftATP.IncorrectHostnames | IncorrectHostnames entered | string |
-| MicrosoftATP.IncorrectIPs | Incorrect Device IPs entered | string |
+| MicrosoftATP.NonUnisolateList | The machine IDs that will not be released from isolation. | string |
+| MicrosoftATP.UnisolateList | The machine IDs that were released from isolation. | string |
+| MicrosoftATP.IncorrectIDs | Incorrect device IDs entered. | string |
+| MicrosoftATP.IncorrectHostnames | Incorrect host names entered. | string |
+| MicrosoftATP.IncorrectIPs | Incorrect device IPs entered. | string |
 
 ## Playbook Image
 ---
