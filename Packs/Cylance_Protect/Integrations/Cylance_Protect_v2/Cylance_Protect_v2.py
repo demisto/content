@@ -7,7 +7,6 @@ import requests
 import json
 import re
 import zipfile
-from StringIO import StringIO
 from datetime import datetime, timedelta
 
 # disable insecure warnings
@@ -48,7 +47,7 @@ SCOPE_OPTICS_GET = 'opticssurvey:read'  # Read a InstaQuery
 
 
 # PREREQUISITES
-def load_server_url():  # pragma: no cover
+def load_server_url():   # pragma: no cover
     """ Cleans and loads the server url from the configuration """
     url = demisto.params()['server']
     url = re.sub('/[\/]+$/', '', url)
@@ -66,7 +65,7 @@ USE_SSL = False
 
 
 # HELPERS
-def generate_jwt_times():  # pragma: no cover
+def generate_jwt_times():   # pragma: no cover
     """
     Generates the epoch time window in which the token will be valid
     Returns the current timestamp and the timeout timestamp (in that order)
@@ -78,7 +77,7 @@ def generate_jwt_times():  # pragma: no cover
     return epoch_time, epoch_timeout
 
 
-def api_call(uri, method='post', headers={}, body={}, params={}, accept_404=False, access_token=''):  # pragma: no cover
+def api_call(uri, method='post', headers={}, body={}, params={}, accept_404=False, access_token=''):   # pragma: no cover
 
     """
     Makes an API call to the server URL with the supplied uri, method, headers, body and params
@@ -152,14 +151,14 @@ def threat_to_incident(threat):
     return incident
 
 
-def normalize_score(score):  # pragma: no cover
+def normalize_score(score):   # pragma: no cover
     """
     Translates API raw float (-1 to 1) score to UI score (-100 to 100)
     """
     return score * 100
 
 
-def translate_score(score, threshold):  # pragma: no cover
+def translate_score(score, threshold):   # pragma: no cover
     if score > 0:
         dbot_score = 1
     elif threshold <= score:
@@ -170,7 +169,7 @@ def translate_score(score, threshold):  # pragma: no cover
 
 
 # FUNCTIONS
-def test():  # pragma: no cover
+def test():   # pragma: no cover
     access_token = get_authentication_token()
     if not access_token:
         raise Exception('Unable to get access token')
@@ -593,7 +592,7 @@ def get_zones():
     })
 
 
-def get_zones_request(page=None, page_size=None):  # pragma: no cover
+def get_zones_request(page=None, page_size=None):   # pragma: no cover
     access_token = get_authentication_token(scope=SCOPE_ZONE_LIST)
 
     params = {}
@@ -712,7 +711,7 @@ def get_threat():
         demisto.results('Threat was not found.')
 
 
-def get_threat_request(sha256):  # pragma: no cover
+def get_threat_request(sha256):   # pragma: no cover
     access_token = get_authentication_token(scope=SCOPE_THREAT_READ)
 
     uri = '%s/%s' % (URI_THREATS, sha256)
@@ -1254,10 +1253,6 @@ def get_policy_details():
                 ts = float(reg.group())
                 date_time = datetime.fromtimestamp(ts / 1000).strftime('%Y-%m-%dT%H:%M:%S.%f+00:00')
 
-        context = {
-            'Cylance.Policy(val.ID && val.ID == obj.ID)': policy_details
-        }
-
         contents = {
             'Policy Name': policy_details.get('policy_name'),
             'Policy Created At': date_time
@@ -1333,7 +1328,7 @@ def get_policy_details():
     return_results(results)
 
 
-def get_policy_details_request(policy_id):  # pragma: no cover
+def get_policy_details_request(policy_id):   # pragma: no cover
     access_token = get_authentication_token(scope=SCOPE_POLICY_READ)
 
     uri = '%s/%s' % (URI_POLICIES, policy_id)
@@ -1492,7 +1487,7 @@ def add_capitalized_hash_to_context(threats_context):  # pragma: no cover
 
 
 # EXECUTION
-def main():  # pragma: no cover
+def main():    # pragma: no cover
     global APP_ID
     APP_ID = demisto.params()['app_id']
     global APP_SECRET
