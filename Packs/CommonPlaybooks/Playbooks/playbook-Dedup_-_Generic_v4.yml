@@ -1,7 +1,7 @@
 id: Dedup - Generic v4
 version: -1
 name: Dedup - Generic v4
-description: "This playbook identifies duplicate incidents using the XSOAR machine\
+description: "This playbook identifies duplicate incidents using the Cortex XSOAR machine\
   \ learning method (script).\nIn this playbook, you can choose fields and/or indicators\
   \ to be compared against other incidents in the Cortex XSOAR database.\
   \ \n\nNote: To identify similar incidents you must *must* properly define the playbook inputs. "\
@@ -252,8 +252,8 @@ tasks:
     task:
       id: 2101ab53-30b4-498e-8ff3-0d5921eba909
       version: -1
-      name: 'Close incident by a similarity percentage '
-      description: 'Close the similar incident using the CloseSimilar input number '
+      name: 'Close similar incidents'
+      description: 'Close the similar incident with a similarity score greater than or equal to the CloseSimilar value. '
       script: Builtin|||closeInvestigation
       type: regular
       iscommand: true
@@ -362,7 +362,7 @@ tasks:
       id: e6642713-ad4f-4089-89e7-1430c3450afc
       version: -1
       name: Close Incident?
-      description: After Link should I close the incident?
+      description: Do you want to close any similar incidents?
       type: condition
       iscommand: false
       brand: ""
@@ -406,8 +406,7 @@ tasks:
       id: 2cb0faca-df3f-473a-8c9b-f126bcd45b85
       version: -1
       name: Find Similar Incidents by Indicators
-      description: Finds similar incidents based on indicators' similarity. Indicators'
-        contribution to the final score is based on their scarcity.
+      description: Finds similar incidents based on indicator similarity.
       scriptName: DBotFindSimilarIncidentsByIndicators
       type: regular
       iscommand: false
@@ -513,8 +512,7 @@ tasks:
       id: a5db15cf-8ac5-4e5c-8ea7-c4a340ef3197
       version: -1
       name: Also Find Similarity By Indicators?
-      description: Define how you prefer to identify similarity using playbook input
-        - 'method'
+      description: Do you want to identify similar incidents by indicators? If yes, the 'method' input should contain "indicator". 
       type: condition
       iscommand: false
       brand: ""
@@ -561,7 +559,7 @@ tasks:
       id: 50a2dc19-01be-4dbb-8e7a-fa096904c324
       version: -1
       name: A closer percentage was provided?
-      description: Check if a closer percentage was provided.
+      description: Checks if the CloseSimilar input was defined.
       type: condition
       iscommand: false
       brand: ""
@@ -601,8 +599,8 @@ tasks:
     task:
       id: 33bde82d-168b-47f8-89b8-918bbf714342
       version: -1
-      name: Is there Similar Incidents by fields
-      description: check if there are similar Incidents by fields
+      name: Are There Similar Incidents by Fields?
+      description: Checks if there are similar incidents by fields.
       type: condition
       iscommand: false
       brand: ""
@@ -656,8 +654,8 @@ tasks:
     task:
       id: a21a51a9-645a-41e5-8362-2dee5b0721c0
       version: -1
-      name: 'Close incident by a similarity percentage '
-      description: 'Close the similar incident using the CloseSimilar input number '
+      name: 'Close similar incidents '
+      description: 'Close the similar incident with a similarity score greater than or equal to the CloseSimilar value.'
       script: Builtin|||closeInvestigation
       type: regular
       iscommand: true
@@ -709,8 +707,8 @@ tasks:
     task:
       id: 42901ef1-18d5-49d4-8ee2-68f1b1f13420
       version: -1
-      name: Is there Similar Incidents by Indicators
-      description: Check if there are similar Incidents by Indicators
+      name: Are There Similar Incidents by Indicators?
+      description: Checks if there are similar incidents by indicators.
       type: condition
       iscommand: false
       brand: ""
@@ -786,17 +784,16 @@ inputs:
   value:
     simple: Link
   required: true
-  description: "This input defines how to handle similar incidents. \nYou can choose\
-    \ between: \"Link\", \"Close\", \"Link and Close\".\nNote: Close incidents\
-    \ requires you to define the \"CloseSimilar\" input as well.\nAlso, note that\
-    \ the closer will apply on at least one of the options (indicators or fields)\
-    \ which will match the \"closer percentage\" criteria.\nDefault: Link "
-  playbookInputQuery:
+  description: "This input defines how to handle similar incidents. \nPossible values:\
+    \ \"Link \" (default), \"Close\", and \"Link and Close\".\nNote: Close incidents\
+    \ requires you to define the \"CloseSimilar\" input as well.\nAlso, the\
+    \ incidents found by similar indicators or fields will be closed if their similarity score is above the CloseSimilar value." \
+  playbookInputQuery:  
 - key: fieldExactMatch
   value: {}
   required: false
-  description: "Select the incident types you want to be *equal*\
-    \ on queried incidents. \nFor example, if you select <Type>, the PB will query against\
+  description: "Select the incident field name you want the script to query. \
+    \ \nFor example, if you select <Type>, the playbook will query against\
     \ the database for all incidents with the same type as your current incident.\n\
     \ Note: If you use comma-separated values, the operator between\
     \ them will be *AND*."
@@ -843,9 +840,9 @@ inputs:
   value: {}
   required: false
   description: |-
-    Define if you want to close incidents by a similarity percentage. The percentage will be the bottom border for closing inc.
-    This option will close also exact matches as well ( if there are).
-    Value should be between 0 to 1 [0=low similarity , 1=identical]
+    Defines the threshold of similarity to close a similar incident. All similar incidents with similarity above this value will be closed.
+    For example, if CloseSimilar is set to .8 and an incident has a similarity score of .9, the incident will be closed.
+    The value should be between 0 and 1 [0=low similarity , 1=identical].
   playbookInputQuery:
 - key: showIncidentSimilarityForAllFields
   value:
