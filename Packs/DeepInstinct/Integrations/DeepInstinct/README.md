@@ -802,7 +802,7 @@ get all policies
 
 ### 5. deepinstinct-add-hash-to-blacklist
 ---
-add file hash to blacklist
+add file hash to block list
 ##### Base Command
 
 `deepinstinct-add-hash-to-blacklist`
@@ -827,7 +827,7 @@ ok
 
 ### 6. deepinstinct-add-hash-to-whitelist
 ---
-add file hash to whitelist
+add file hash to allow list
 ##### Base Command
 
 `deepinstinct-add-hash-to-whitelist`
@@ -852,7 +852,7 @@ ok
 
 ### 7. deepinstinct-remove-hash-from-blacklist
 ---
-remove file hash from blacklist
+remove file hash from block list
 ##### Base Command
 
 `deepinstinct-remove-hash-from-blacklist`
@@ -876,7 +876,7 @@ ok
 
 ### 8. deepinstinct-remove-hash-from-whitelist
 ---
-remove file hash from whitelist
+remove file hash from allow list
 ##### Base Command
 
 `deepinstinct-remove-hash-from-whitelist`

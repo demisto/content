@@ -29,7 +29,6 @@ configuration:
   required: true
 - display: Fetch indicators
   name: feed
-  defaultvalue: ""
   type: 8
   required: false
 script:
@@ -60,7 +59,7 @@ script:
       description: Tag name
       type: string
     description: Removes the tag(s) from the Node specified.
-  dockerimage: demisto/python3:3.9.5.21272
+  dockerimage: demisto/python3:3.9.8.24399
   feed: false
   isfetch: false
   longRunning: false

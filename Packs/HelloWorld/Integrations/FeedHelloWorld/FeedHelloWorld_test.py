@@ -89,7 +89,9 @@ def test_build_iterator(requests_mock):
     )
     indicators = client.build_iterator()
     url_indicators = {indicator['value'] for indicator in indicators if indicator['type'] == 'URL'}
+    url_relation_domains = [indicator['relations'] for indicator in indicators if indicator['type'] == 'URL']
     assert expected_url in url_indicators
+    assert 'url1.com' == url_relation_domains[0][0].get('value')
 
 
 def test_fetch_indicators(mocker):
@@ -123,7 +125,8 @@ def test_get_indicators_command(mocker):
     client = Client(base_url=URL)
     indicators_list = util_load_json('./test_data/build_iterator_results.json')[:10]
     mocker.patch.object(Client, 'build_iterator', return_value=indicators_list)
-    results = get_indicators_command(client, params={'tlp_color': 'RED'}, args={'limit': '10'})
+    results = get_indicators_command(client, params={'tlp_color': 'RED', 'create_relationships': 'false'},
+                                     args={'limit': '10'})
     human_readable = tableToMarkdown('Indicators from HelloWorld Feed:', indicators_list,
                                      headers=['value', 'type'], headerTransform=string_to_table_header, removeNull=True)
     assert results.readable_output == human_readable

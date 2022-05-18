@@ -1030,9 +1030,10 @@
     {
       "Threat ID": 6435,
       "Threat Report": "[https://www.threathq.com/api/l/activethreatreport/6435/html](https://www.threathq.com/api/l/activethreatreport/6435/html)",
-      "Threat Types": "Malware capable of collecting victim keystrokes for exfiltration",
+      "Threat Type": "MALWARE",
       "Executive Summary": "These e-mails attempt to disguise themselves as orders with PO attached. The attachment is a .zip archive containing a Windows executable file, a malware of the keylogger family. When executed, the file will create a hidden process, as well as drop a persistent file that starts up on every system's restart. The keylogger will then collect sensitive information and exfiltrate it to the threat actors via e-mail.",
       "Campaign": "Purchase Order - Keylogger",
+      "Malware Family Description": "Malware capable of collecting victim keystrokes for exfiltration",
       "Last Published": "2018-09-07 16:38:14",
       "Verdict": "Malicious"
     }

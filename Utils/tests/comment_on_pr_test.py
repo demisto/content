@@ -23,7 +23,7 @@ github_comment_response_2 = [
     }
 ]
 
-github_comment_response_3 = []
+github_comment_response_3: list = []
 
 
 def test_get_pr_comments_url_existing(requests_mock):

@@ -418,7 +418,7 @@ def adjust_alert_human_readable(entry_context_with_spaces, entry_context):
 
 def check_ip_is_valid(ip):
     if not is_ip_valid(ip):
-        return_error("Error: IP argument is invalid. Please enter a valid IP address")
+        return_error("Error: {} is invalid IP. Please enter a valid IP address".format(ip))
 
 
 def gen_entries_data_for_update_list_request(entries_list, method):
@@ -445,42 +445,50 @@ def gen_entries_data_for_update_list_request(entries_list, method):
 
 
 def gen_context_for_add_to_whitelist_or_blacklist(response_data):
-    ip_context = {}
-    ip_context['ID'] = response_data.get('id', '')
-    ip_context['Note'] = response_data.get('note', '')
-    ip_context['Source'] = response_data.get('source', '')
-    ip_context['CreatedBy'] = response_data.get('createdBy', '')
-    ip_context['CreatedDate'] = response_data.get('created', '')
-    ip_context['ExpiryDate'] = response_data.get('expires', '')
-    return ip_context
-
-
-def generate_whitelist_or_blacklist_ip_context(response_data):
-    ips_contexts = []
-    for ip_data in response_data:
-        cur_ip_context = gen_context_for_add_to_whitelist_or_blacklist(ip_data)
-        ips_contexts.append(cur_ip_context)
-    return ips_contexts
+    full_data = []
+    for data in response_data:
+        full_data.append({
+            'ID': data.get('id', ''),
+            'Note': data.get('note', ''),
+            'Source': data.get('source', ''),
+            'CreatedBy': data.get('createdBy', ''),
+            'CreatedDate': data.get('created', ''),
+            'ExpiryDate': data.get('expires', '')
+        })
+    return full_data
 
 
 def gen_human_readable_for_add_to_whitelist_or_blacklist(ip_context):
-    human_readable = {}
-    human_readable['Note'] = ip_context['Note']
-    human_readable['Source'] = ip_context['Source']
-    human_readable['Expiration date'] = ip_context['ExpiryDate'] if ip_context['ExpiryDate'] else "Not Set"
+    human_readable = []
+    for context in ip_context:
+        human_readable.append({
+            'Note': context['Note'],
+            'Source': context['Source'],
+            'Expiration date': context['ExpiryDate'] if context['ExpiryDate'] else "Not Set"
+        })
     return human_readable
 
 
 def add_ip_to_whitelist_or_blacklist(url, ip, note, expires=None):
-    check_ip_is_valid(ip)
-    data = {
-        'source': ip,
-        'note': note
-    }
-    if expires is not None:
-        data['expires'] = expires
-    res = http_request('PUT', url, data=data)
-    return res
+    res_list = []
+    error_list = []
+    for single_ip in argToList(ip):
+        try:
+            check_ip_is_valid(single_ip)
+            data = {
+                'source': single_ip,
+                'note': note
+            }
+            if expires is not None:
+                data['expires'] = expires
+            res_list.append(http_request('PUT', url, data=data))
+        except SystemExit:
+            # handle exceptions in return_error
+            pass
+        except Exception as e:
+            error_list.append('failed adding ip: {} to balcklist error: {}'.format(single_ip, e))
+            demisto.error('failed adding ip: {} to balcklist\n{}'.format(single_ip, traceback.format_exc()))
+    return res_list, error_list
 
 
 def get_all_sites_in_corp():
@@ -1148,7 +1156,7 @@ def get_whitelist_command():
     args = demisto.args()
     site_whitelist = get_whitelist(args['siteName'])
     data = site_whitelist.get('data', [])
-    whitelist_ips_contexts = generate_whitelist_or_blacklist_ip_context(data)
+    whitelist_ips_contexts = gen_context_for_add_to_whitelist_or_blacklist(data)
     whitelist_ips_contexts_with_spaces = return_list_of_dicts_with_spaces(whitelist_ips_contexts)
 
     sidedata = "Number of IPs in the Whitelist {0}".format(len(data))
@@ -1173,7 +1181,7 @@ def get_blacklist_command():
     args = demisto.args()
     site_blacklist = get_blacklist(args['siteName'])
     data = site_blacklist.get('data', [])
-    blacklist_ips_contexts = generate_whitelist_or_blacklist_ip_context(data)
+    blacklist_ips_contexts = gen_context_for_add_to_whitelist_or_blacklist(data)
     blacklist_ips_contexts_with_spaces = return_list_of_dicts_with_spaces(blacklist_ips_contexts)
 
     sidedata = "Number of IPs in the Blacklist {0}".format(len(data))
@@ -1189,49 +1197,53 @@ def get_blacklist_command():
 
 def add_ip_to_whitelist(siteName, ip, note, expires=None):
     url = SERVER_URL + WHITELIST_SUFFIX.format(CORPNAME, siteName)
-    res = add_ip_to_whitelist_or_blacklist(url, ip, note, expires)
-    return res
+    return add_ip_to_whitelist_or_blacklist(url, ip, note, expires)
 
 
 def add_ip_to_whitelist_command():
     """Add an ip to the whitelist"""
     args = demisto.args()
-    response_data = add_ip_to_whitelist(args['siteName'], args['ip'], args['note'], args.get('expires', None))
-    whitelist_ip_context = gen_context_for_add_to_whitelist_or_blacklist(response_data)
-    human_readable = gen_human_readable_for_add_to_whitelist_or_blacklist(whitelist_ip_context)
+    response_data, errors_data = add_ip_to_whitelist(args['siteName'], args['ip'], args['note'], args.get('expires', None))
+    if response_data:
+        whitelist_ip_context = gen_context_for_add_to_whitelist_or_blacklist(response_data)
+        human_readable = gen_human_readable_for_add_to_whitelist_or_blacklist(whitelist_ip_context)
 
-    return_outputs(
-        raw_response=response_data,
-        readable_output=tableToMarkdown(ADD_IP_TO_WHITELIST_TITLE, human_readable, headers=ADD_IP_HEADERS,
-                                        removeNull=True, metadata=IP_ADDED_TO_WHITELIST_TITLE.format(args['ip'])),
-        outputs={
-            'SigSciences.Corp.Site.Whitelist(val.ID==obj.ID)': whitelist_ip_context,
-        }
-    )
+        return_outputs(
+            raw_response=response_data,
+            readable_output=tableToMarkdown(ADD_IP_TO_WHITELIST_TITLE, human_readable, headers=ADD_IP_HEADERS,
+                                            removeNull=True, metadata=IP_ADDED_TO_WHITELIST_TITLE.format(args['ip'])),
+            outputs={
+                'SigSciences.Corp.Site.Whitelist(val.ID==obj.ID)': whitelist_ip_context,
+            }
+        )
+    if errors_data:
+        return_error('\n'.join(errors_data))
 
 
 def add_ip_to_blacklist(siteName, ip, note, expires=None):
     url = SERVER_URL + BLACKLIST_SUFFIX.format(CORPNAME, siteName)
-    res = add_ip_to_whitelist_or_blacklist(url, ip, note, expires)
-    return res
+    return add_ip_to_whitelist_or_blacklist(url, ip, note, expires)
 
 
 def add_ip_to_blacklist_command():
     """Add an ip to the blacklist"""
     args = demisto.args()
-    response_data = add_ip_to_blacklist(args['siteName'], args['ip'], args['note'], args.get('expires', None))
-    blacklist_ip_context = gen_context_for_add_to_whitelist_or_blacklist(response_data)
-    human_readable = gen_human_readable_for_add_to_whitelist_or_blacklist(blacklist_ip_context)
+    response_data, errors_data = add_ip_to_blacklist(args['siteName'], args['ip'], args['note'], args.get('expires', None))
+    if response_data:
+        blacklist_ip_context = gen_context_for_add_to_whitelist_or_blacklist(response_data)
+        human_readable = gen_human_readable_for_add_to_whitelist_or_blacklist(blacklist_ip_context)
 
-    return_outputs(
-        raw_response=response_data,
-        readable_output=tableToMarkdown(ADD_IP_TO_BLACKLIST_TITLE, human_readable,
-                                        headers=ADD_IP_HEADERS, removeNull=True,
-                                        metadata=IP_ADDED_TO_BLACKLIST_TITLE.format(args['ip'])),
-        outputs={
-            'SigSciences.Corp.Site.Blacklist(val.ID==obj.ID)': blacklist_ip_context,
-        }
-    )
+        return_outputs(
+            raw_response=response_data,
+            readable_output=tableToMarkdown(ADD_IP_TO_BLACKLIST_TITLE, human_readable,
+                                            headers=ADD_IP_HEADERS, removeNull=True,
+                                            metadata=IP_ADDED_TO_BLACKLIST_TITLE.format(args['ip'])),
+            outputs={
+                'SigSciences.Corp.Site.Blacklist(val.ID==obj.ID)': blacklist_ip_context,
+            }
+        )
+    if errors_data:
+        return_error('/n'.join(errors_data))
 
 
 def whitelist_remove_ip(siteName, ip):

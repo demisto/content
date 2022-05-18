@@ -336,8 +336,8 @@ def handle_first_fetch_timestamp():
     user_input = demisto.params().get('first_fetch_timestamp')
 
     try:
-        first_fetch_timestamp = parse(user_input).timestamp()
-        first_fetch_timestamp = str(first_fetch_timestamp).split('.')[0]
+        first_fetch_timestamp = parse(user_input).timestamp()  # type: ignore
+        first_fetch_timestamp = str(first_fetch_timestamp).split('.')[0]  # type: ignore
         return first_fetch_timestamp
     except Exception:
         # Timestamp could not be parsed

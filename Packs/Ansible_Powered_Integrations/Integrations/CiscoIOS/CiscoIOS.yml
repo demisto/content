@@ -23,8 +23,8 @@ configuration:
   name: concurrency
   required: true
   type: 0
-description: Cisco IOS Platform management over SSH
-display: Cisco IOS
+description: Cisco IOS Platform management over SSH. Deprecated. Use Ansible Cisco IOS (from the Ansible Cisco IOS pack) instead.
+display: Ansible Cisco IOS (Deprecated)
 name: CiscoIOS
 script:
   commands:
@@ -908,7 +908,7 @@ script:
       name: route_import_ipv6
     description: Manage the collection of VRF definitions on Cisco IOS devices
     name: ios-vrf
-  dockerimage: demisto/ansible-runner:1.0.0.16542
+  dockerimage: demisto/ansible-runner:1.0.0.21184
   runonce: false
   script: ''
   subtype: python3
@@ -916,3 +916,4 @@ script:
 fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
+deprecated: true

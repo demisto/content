@@ -1,10 +1,12 @@
-import demistomock as demisto
-from CommonServerPython import *
+import json
+from datetime import date
+
+import requests
+
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
 ''' IMPORTS '''
-import json
-import requests
-from datetime import date
 
 requests.packages.urllib3.disable_warnings()
 
@@ -245,7 +247,10 @@ def get_emails_context(event):
                 'body': email.get('body'),
                 'body_type': email.get('bodyType'),
                 'headers': email.get('headers'),
-                'urls': email.get('urls')
+                'urls': email.get('urls'),
+                'sender_vap': email.get('sender', {}).get('vap'),
+                'recipient_vap': email.get('recipient', {}).get('vap'),
+                'attachments': email.get('attachments'),
             }))
 
     return emails_context
@@ -321,6 +326,7 @@ def get_incident_command():
     """
     args = demisto.args()
     incident_id = args.pop('incident_id')
+    expand_events = args.get('expand_events')
     fullurl = BASE_URL + 'api/incidents/{}.json'.format(incident_id)
     incident_data = requests.get(
         fullurl,
@@ -328,7 +334,10 @@ def get_incident_command():
             'Content-Type': 'application/json',
             'Authorization': API_KEY
         },
-        verify=VERIFY_CERTIFICATE
+        params={
+            'expand_events': expand_events,
+        },
+        verify=VERIFY_CERTIFICATE,
     )
 
     if incident_data.status_code < 200 or incident_data.status_code >= 300:
@@ -750,6 +759,34 @@ def ingest_alert_command():
     return_outputs('The alert was successfully ingested to TRAP', {}, {})
 
 
+def close_incident_command():
+    args = demisto.args()
+    incident_id = args.get('incident_id')
+    details = args.get('details')
+    summary = args.get('summary')
+    request_body = {
+        "summary": summary,
+        "detail": details
+    }
+
+    fullurl = BASE_URL + f'api/incidents/{incident_id}/close.json'
+    incident_data = requests.post(
+        fullurl,
+        headers={
+            'Content-Type': 'application/json',
+            'Authorization': API_KEY
+        },
+        json=request_body,
+        verify=VERIFY_CERTIFICATE
+    )
+
+    if incident_data.status_code < 200 or incident_data.status_code >= 300:
+        return_error('Incident closure failed. URL: {}, '
+                     'StatusCode: {}'.format(fullurl, incident_data.status_code))
+
+    return_outputs('The incident {} was successfully closed'.format(incident_id), {}, {})
+
+
 ''' EXECUTION CODE '''
 
 
@@ -802,6 +839,8 @@ def main():
 
     elif command == 'proofpoint-tr-ingest-alert':
         ingest_alert_command()
+    elif command == 'proofpoint-tr-close-incident':
+        close_incident_command()
 
 
 if __name__ == '__builtin__' or __name__ == 'builtins':

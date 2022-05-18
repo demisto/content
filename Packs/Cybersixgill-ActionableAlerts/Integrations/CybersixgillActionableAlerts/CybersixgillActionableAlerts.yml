@@ -1,0 +1,105 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: Cybersixgill_Actionable_Alerts
+  version: -1
+configuration:
+- display: Cybersixgill API client ID
+  name: client_id
+  required: true
+  type: 0
+- display: Cybersixgill API client secret
+  name: client_secret
+  required: true
+  type: 4
+- defaultvalue: '25'
+  display: Maximum number of incidents to fetch - maximum is 25
+  name: max_fetch
+  required: false
+  type: 0
+- defaultvalue: '1'
+  display: How many days back to fetch incidents on the first run - maximum is 30
+  name: first_fetch_days
+  required: false
+  type: 0
+- display: Filter by alert threat level
+  name: threat_level
+  options:
+  - imminent
+  - emerging
+  required: false
+  type: 15
+- display: Filter by alert threat type
+  name: threat_type
+  options:
+  - Brand Protection
+  - Data Leak
+  - Malware
+  - Phishing
+  - Fraud
+  - Vulnerability Exploit
+  - Insider Threat
+  - Defacement
+  - Compromised Accounts
+  - DDoS Attack
+  - Web Attack
+  - Trend Anomaly
+  required: false
+  type: 15
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- defaultvalue: 'true'
+  display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- defaultvalue: Cybersixgill Actionable Alerts
+  display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- defaultvalue: '5'
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  required: false
+  type: 19
+description: Cybersixgill automatically collects intelligence in real-time on all
+  items that appear in the underground sources which we monitor. By using various
+  rules and machine learning models, Cybersixgill automatically correlates these intelligence
+  items with pre defined organization assets, and automatically alerts users in real
+  time of any relevant intelligence items.
+display: Cybersixgill Actionable Alerts
+name: Cybersixgill_Actionable_Alerts
+script:
+  commands:
+  - deprecated: false
+    description: updates the existing actionable alert status
+    execution: false
+    name: cybersixgill-update-alert-status
+    arguments:
+    - required: true
+      description: The alert id to update.
+      name: alert_id
+    - required: true
+      description: The new status.
+      name: alert_status
+    - required: false
+      description: The aggregate alert id.
+      name: aggregate_alert_id
+  dockerimage: demisto/sixgill:1.0.0.28665
+  feed: false
+  isfetch: true
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- No tests
+fromversion: 5.0.0

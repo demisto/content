@@ -6,3 +6,6 @@ ignore=BA108,BA109
 
 [file:README.md]
 ignore=RM104,RM106
+
+[file:McAfee_DXL_image.png]
+ignore=IM111

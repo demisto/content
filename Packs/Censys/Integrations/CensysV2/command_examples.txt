@@ -1,0 +1,4 @@
+!cen-search index=certificates query="parsed.issuer.common_name: \"Let's Encrypt\"" limit=1
+!cen-view index=ipv4 query=8.8.8.8
+!cen-view index=certificates query=9d3b51a6b80daf76e074730f19dc01e643ca0c3127d8f48be64cf3302f6622cc
+!cen-search index=ipv4 query="services.service_name:HTTP" limit=1

@@ -87,21 +87,65 @@ output = []
 counter = 0
 higher = 0
 if isWidget is True:
-    buildNumber = demisto.executeCommand("DemistoVersion", {})[0]['Contents']['DemistoVersion']['buildNumber']
-    if int(buildNumber) >= 618657:
-        # Line graph:
-        for entry in res:
-            higher = max(entry["data"][0], higher)
-            if counter % 2 == 0:
-                output.append({"name": counter, "data": [higher]})
-                higher = 0
-            counter += 1
+    ctx = demisto.context()
+    dataFromCtx = ctx.get("widgets")
+    if not dataFromCtx:
+        buildNumber = demisto.executeCommand("DemistoVersion", {})[0]['Contents']['DemistoVersion']['buildNumber']
+        # in local development instances, the build number will be "REPLACE_THIS_WITH_CI_BUILD_NUM"
+        buildNumber = f'{buildNumber}' if buildNumber != "REPLACE_THIS_WITH_CI_BUILD_NUM" else "618658"
+        if int(buildNumber) >= 618657:
+            # Line graph:
+            for entry in res:
+                higher = max(entry["data"][0], higher)
+                if counter % 2 == 0:
+                    output.append({"name": counter, "data": [higher]})
+                    higher = 0
+                counter += 1
 
+            data = {
+                "Type": 17,
+                "ContentsFormat": "line",
+                "Contents": {
+                    "stats": output,
+                    "params": {
+                        "timeFrame": "minutes",
+                        "format": "HH:mm",
+                        "layout": "vertical"
+                    }
+                }
+            }
+
+        else:
+            # Bar graph:
+            now = datetime.utcnow()
+            then = now - timedelta(days=1)
+            for entry in res:
+                higher = max(entry["data"][0], higher)
+                if counter % 60 == 0:
+                    then = then + timedelta(hours=1)
+                    name = then.strftime("%H:%M")
+                    output.append({"name": name, "data": [higher]})
+                    higher = 0
+                counter += 1
+
+            data = {
+                "Type": 17,
+                "ContentsFormat": "bar",
+                "Contents": {
+                    "stats": output,
+                    "params": {
+                        "layout": "horizontal"
+                    }
+                }
+            }
+
+        demisto.results(data)
+    else:
         data = {
             "Type": 17,
             "ContentsFormat": "line",
             "Contents": {
-                "stats": output,
+                "stats": dataFromCtx['MemoryUsage'],
                 "params": {
                     "timeFrame": "minutes",
                     "format": "HH:mm",
@@ -109,32 +153,7 @@ if isWidget is True:
                 }
             }
         }
-
-    else:
-        # Bar graph:
-        now = datetime.utcnow()
-        then = now - timedelta(days=1)
-        for entry in res:
-            higher = max(entry["data"][0], higher)
-            if counter % 60 == 0:
-                then = then + timedelta(hours=1)
-                name = then.strftime("%H:%M")
-                output.append({"name": name, "data": [higher]})
-                higher = 0
-            counter += 1
-
-        data = {
-            "Type": 17,
-            "ContentsFormat": "bar",
-            "Contents": {
-                "stats": output,
-                "params": {
-                    "layout": "horizontal"
-                }
-            }
-        }
-
-    demisto.results(data)
+        demisto.results(data)
 else:
     addActions = analyzeData(res)
 

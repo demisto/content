@@ -1,6 +1,6 @@
 import json
 import io
-
+import demistomock as demisto
 import pytest
 
 
@@ -46,8 +46,9 @@ def test_crowdstrike_indicators_list_command(requests_mock):
 @pytest.mark.parametrize(
     "types_list, expected",
     [
-        (['ALL'], "type:'username',type:'domain',type:'email_address',type:'hash_md5',type:'hash_sha256',"
-                  "type:'registry',type:'url',type:'ip_address'"),
+        (['ALL'], "type:'username',type:'domain',type:'email_address',type:'hash_md5',type:'hash_sha1',"
+                  "type:'hash_sha256',type:'registry',type:'url',type:'ip_address',type:'reports',type:'actors',"
+                  "type:'malware_families',type:'vulnerabilities'"),
         (['Domain', 'Email', 'Registry Key'], "type:'domain',type:'email_address',type:'registry'")
     ]
 )
@@ -81,3 +82,12 @@ def test_create_indicators_from_response():
     expected_result = util_load_json('test_data/create_indicators_from_response.json')
     res = Client.create_indicators_from_response(raw_response)
     assert res == expected_result
+
+
+def test_empty_first_fetch(mocker, requests_mock):
+    mocker.patch.object(demisto, 'params', return_value={'first_fetch': ''})
+    mocker.patch.object(demisto, 'command', return_value='')
+    requests_mock.post('https://api.crowdstrike.com/oauth2/token', json={'access_token': '12345'})
+    from CrowdStrikeIndicatorFeed import main
+    main()
+    assert True

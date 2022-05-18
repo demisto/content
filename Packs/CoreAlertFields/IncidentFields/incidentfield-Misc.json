@@ -1,0 +1,32 @@
+{
+    "associatedToAll": true,
+    "caseInsensitive": true,
+    "cliName": "misc",
+    "closeForm": false,
+    "content": true,
+    "description": "Miscellaneous information about the alert.",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_misc",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Misc",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "multiSelect",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.5.0",
+    "x2_fields": "fw_misc"
+}

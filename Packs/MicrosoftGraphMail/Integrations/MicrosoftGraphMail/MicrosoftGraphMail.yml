@@ -8,18 +8,31 @@ configuration:
   name: url
   required: true
   type: 0
-- display: ID or Client ID - see Detailed Instructions (?)
-  name: auth_id
-  required: true
+- displaypassword: ID or Client ID - see Detailed Instructions (?)
+  name: creds_auth_id
+  required: false
+  type: 9
+  hiddenusername: true
+- displaypassword: Token or Tenant ID - see Detailed Instructions (?)
+  name: creds_tenant_id
+  required: false
+  type: 9
+  hiddenusername: true
+- displaypassword: Key or Client Secret - see Detailed Instructions (?)
+  name: credentials
+  required: false
+  type: 9
+- additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
+  display: Certificate Thumbprint
+  name: certificate_thumbprint
+  required: false
   type: 4
-- display: Token or Tenant ID - see Detailed Instructions (?)
-  name: tenant_id
-  required: true
-  type: 4
-- display: Key or Client Secret - see Detailed Instructions (?)
-  name: enc_key
-  required: true
-  type: 4
+- additionalinfo: Used for certificate authentication. The private key of the registered certificate.
+  display: Private Key
+  name: private_key
+  required: false
+  type: 14
+  hiddenusername: true
 - display: Fetch incidents
   name: isFetch
   required: false
@@ -37,6 +50,13 @@ configuration:
 - defaultvalue: 15 minutes
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch
+  required: false
+  type: 0
+- additionalinfo: The timeout of the HTTP requests sent to Microsoft Graph API (in
+    seconds).
+  defaultvalue: '10'
+  display: HTTP Timeout
+  name: timeout
   required: false
   type: 0
 - defaultvalue: '50'
@@ -60,6 +80,31 @@ configuration:
   name: incidentType
   required: false
   type: 13
+- display: ID or Client ID - see Detailed Instructions (?)
+  name: _auth_id
+  required: false
+  type: 0
+  hidden: true
+- display: Token or Tenant ID - see Detailed Instructions (?)
+  name: _tenant_id
+  required: false
+  type: 0
+  hidden: true
+- display: Key or Client Secret (Deprecated)
+  name: enc_key
+  required: false
+  type: 4
+  hidden: true
+- display: ID or Client ID - see Detailed Instructions (?) (Deprecated)
+  name: auth_id
+  required: false
+  type: 4
+  hidden: true
+- display: Token or Tenant ID - see Detailed Instructions (?) (Deprecated)
+  name: tenant_id
+  required: false
+  type: 4
+  hidden: true
 description: Microsoft Graph lets your app get authorized access to a user's Outlook
   mail data in a personal or organization account.
 display: O365 Outlook Mail (Using Graph API)
@@ -175,6 +220,19 @@ script:
     - contextPath: MSGraphMail.UserID
       description: The ID of the user.
       type: String
+    - contextPath: MSGraphMail.ConversationID
+      description: The ID of the conversation.
+      type: String
+    - contextPath: MSGraphMail.InternetMessageID
+      description: Internet Message ID of the message
+      type: String
+    - contextPath: MSGraphMail.Recipients.Name
+      description: The name of the user in the 'toRecipients' field of the email.
+      type: String
+    - contextPath: MSGraphMail.Recipients.Address
+      description: The email address of the user in the 'toRecipients' field of the
+        email.
+      type: String
     - contextPath: MSGraphMail.NextPage
       description: A token to pass to the next list command to retrieve additional
         results.
@@ -283,6 +341,19 @@ script:
       type: String
     - contextPath: MSGraphMail.UserID
       description: The ID of the user.
+      type: String
+    - contextPath: MSGraphMail.ConversationID
+      description: The ID of the conversation.
+      type: String
+    - contextPath: MSGraphMail.InternetMessageID
+      description: Internet Message ID of the message
+      type: String
+    - contextPath: MSGraphMail.Recipients.Name
+      description: The name of the user in the 'toRecipients' field of the email.
+      type: String
+    - contextPath: MSGraphMail.Recipients.Address
+      description: The email address of the user in the 'toRecipients' field of the
+        email.
       type: String
   - arguments:
     - default: false
@@ -950,6 +1021,19 @@ script:
       name: from
       required: false
       secret: false
+    - default: false
+      description: The content (body) of the email (in HTML format).
+      isArray: false
+      name: htmlBody
+      required: false
+      secret: false
+    - default: false
+      description: Email addresses that need to be used to reply to the message. Supports
+        comma-separated values.
+      isArray: true
+      name: replyTo
+      required: false
+      secret: false
     deprecated: false
     description: Sends an email using Microsoft Graph.
     execution: false
@@ -982,6 +1066,9 @@ script:
     - contextPath: MicrosoftGraph.Email.bccRecipients
       description: The BCC recipients of the email.
       type: String
+    - contextPath: MicrosoftGraph.Email.replyTo
+      description: The replyTo recipients of the email.
+      type: String
   - arguments:
     - default: false
       description: The ID of the message.
@@ -1006,6 +1093,26 @@ script:
       isArray: false
       name: from
       required: true
+      secret: false
+    - default: false
+      description: A comma-separated list of War Room entry IDs that contain files,
+        which are used to attach files for the email to send. For example, attachIDs=15@8,19@8.
+      isArray: true
+      name: attachIDs
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of names of attachments to display in the
+        email to send. Must be the same number of elements as attachIDs.
+      isArray: true
+      name: attachNames
+      required: false
+      secret: false
+    - default: false
+      description: A CSV list of CIDs to embed attachments within the email itself.
+      isArray: true
+      name: attachCIDs
+      required: false
       secret: false
     deprecated: false
     description: The replies to the recipients of a message.
@@ -1121,7 +1228,7 @@ script:
     - contextPath: MicrosoftGraph.SentMail.ID
       description: The immutable ID of the message.
       type: String
-  dockerimage: demisto/crypto:1.0.0.23151
+  dockerimage: demisto/crypto:1.0.0.28507
   feed: false
   isfetch: true
   longRunning: false
@@ -1131,5 +1238,7 @@ script:
   subtype: python3
   type: python
 tests:
-- MicrosoftGraphMail-Test
+- MicrosoftGraphMail-Test_dev_no_oproxy
+- MicrosoftGraphMail-Test_dev
+- MicrosoftGraphMail-Test_prod
 fromversion: 5.0.0

@@ -56,6 +56,10 @@ tasks:
         simple: "false"
       kql:
         simple: test
+      polling_interval:
+        simple: "1"
+      polling_timeout:
+        simple: "10"
       preview:
         simple: "true"
       public_folder_location: {}

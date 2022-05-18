@@ -1,0 +1,39 @@
+{
+    "associatedToAll": true,
+    "caseInsensitive": true,
+    "cliName": "module",
+    "closeForm": false,
+    "content": true,
+    "description": "For XDR Agent alerts, this field identifies the protection module that triggered the alert.",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_module",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Module",
+    "neverSetAsRequired": false,
+    "openEnded": true,
+    "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "multiSelect",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.5.0",
+    "x2_fields": "module_id",
+    "Aliases": [
+        {
+            "cliName": "cymulatemodule",
+            "type": "shortText",
+            "name": "Cymulate Module"
+        }
+    ]
+}

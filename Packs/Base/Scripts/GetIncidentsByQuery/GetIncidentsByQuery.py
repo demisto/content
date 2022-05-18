@@ -5,7 +5,7 @@ import uuid
 from dateutil import parser
 
 PREFIXES_TO_REMOVE = ['incident.']
-PAGE_SIZE = int(demisto.args().get('pageSize', 500))
+PAGE_SIZE = int(demisto.args().get('pageSize', 100))
 PYTHON_MAGIC = "$$##"
 
 
@@ -105,11 +105,11 @@ def get_incidents_by_page(args, page, fields_to_populate, include_context):
     if is_demisto_version_ge('6.2.0') and len(fields_to_populate) > 0:
         args['populateFields'] = get_fields_to_populate_arg(fields_to_populate)
     res = demisto.executeCommand("getIncidents", args)
-    if res[0]['Contents'].get('data') is None:
-        return []
     if is_error(res):
         error_message = get_error(res)
         raise Exception("Failed to get incidents by query args: %s error: %s" % (args, error_message))
+    if res[0]['Contents'].get('data') is None:
+        return []
     incidents = res[0]['Contents'].get('data') or []
 
     parsed_incidents = []
@@ -171,6 +171,7 @@ def get_incidents(query, time_field, size, from_date, to_date, fields_to_populat
 
 
 def get_comma_sep_list(value):
+    value = value.replace('|', ',')
     return map(lambda x: x.strip(), value.split(","))
 
 

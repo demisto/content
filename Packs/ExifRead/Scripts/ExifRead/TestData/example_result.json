@@ -1,0 +1,36 @@
+{
+    "Exif": [
+        {
+            "tag": "Image Orientation",
+            "value": "Horizontal (normal)"
+        },
+        {
+            "tag": "Image XResolution",
+            "value": "300"
+        },
+        {
+            "tag": "Image YResolution",
+            "value": "300"
+        },
+        {
+            "tag": "Image ResolutionUnit",
+            "value": "Pixels/Inch"
+        },
+        {
+            "tag": "Image ExifOffset",
+            "value": "90"
+        },
+        {
+            "tag": "EXIF ColorSpace",
+            "value": "sRGB"
+        },
+        {
+            "tag": "EXIF ExifImageWidth",
+            "value": "1270"
+        },
+        {
+            "tag": "EXIF ExifImageLength",
+            "value": "917"
+        }
+    ]
+}

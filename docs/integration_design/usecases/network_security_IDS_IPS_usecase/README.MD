@@ -37,7 +37,7 @@ Top Use-Cases:
 | AwakeSecurity.Devices.numberSimilarDevices | number | Number of devices that are similar to this device | 
 | AwakeSecurity.Devices.numberSessions | number | Number of TCP sessions for this device | 
 | AwakeSecurity.Devices.ackTime | number | Date of the last TCP session acknowledgment of the device associated with the specified email address | 
-| AwakeSecurity.Devices.whiteListed | bool | Is the device associated with the specified email address in the white list | 
+| AwakeSecurity.Devices.whiteListed | bool | Is the device associated with the specified email address in the allow list | 
 ##### Command Example
 !awake-query-devices startTime="2018-07-18T07:00:00Z" endTime="2018-07-18T07:30:00Z"
 ##### Human Readable Output

@@ -50,6 +50,7 @@ server {
     $sslcerts
 
     proxy_cache_key $scheme$proxy_host$request_uri$extra_cache_key;
+    $proxy_set_range_header
 
     # Static test file
     location = /nginx-test {
@@ -63,10 +64,15 @@ server {
         add_header X-Proxy-Cache $upstream_cache_status;
         # allow bypassing the cache with an arg of nocache=1 ie http://server:7000/?nocache=1
         proxy_cache_bypass $arg_nocache;
+        proxy_read_timeout $timeout;
+        proxy_connect_timeout 1800;
+        proxy_send_timeout 1800;
+        send_timeout 1800;
     }
 }
 
 '''
+NGINX_MAX_POLLING_TRIES = 5
 
 
 def create_nginx_server_conf(file_path: str, port: int, params: Dict):
@@ -84,10 +90,12 @@ def create_nginx_server_conf(file_path: str, port: int, params: Dict):
     template_str = params.get('nginx_server_conf') or NGINX_SERVER_CONF
     certificate: str = params.get('certificate', '')
     private_key: str = params.get('key', '')
+    timeout: str = params.get('timeout') or '1800'
     ssl = ''
     sslcerts = ''
     serverport = port + 1
-    extra_cache_key = ''
+    proxy_set_range_header = ''
+    extra_cache_keys = []
     if (certificate and not private_key) or (private_key and not certificate):
         raise DemistoException('If using HTTPS connection, both certificate and private key should be provided.')
     if certificate and private_key:
@@ -100,9 +108,17 @@ def create_nginx_server_conf(file_path: str, port: int, params: Dict):
         sslcerts = NGINX_SSL_CERTS
     credentials = params.get('credentials') or {}
     if credentials.get('identifier'):
-        extra_cache_key = "$http_authorization"
+        extra_cache_keys.append("$http_authorization")
+    if get_integration_name() == 'TAXII2 Server':
+        extra_cache_keys.append("$http_accept")
+        if params.get('version') == '2.0':
+            proxy_set_range_header = 'proxy_set_header Range $http_range;'
+            extra_cache_keys.extend(['$http_range', '$http_content_range'])
+
+    extra_cache_keys_str = ''.join(extra_cache_keys)
     server_conf = Template(template_str).safe_substitute(port=port, serverport=serverport, ssl=ssl,
-                                                         sslcerts=sslcerts, extra_cache_key=extra_cache_key)
+                                                         sslcerts=sslcerts, extra_cache_key=extra_cache_keys_str,
+                                                         proxy_set_range_header=proxy_set_range_header, timeout=timeout)
     with open(file_path, mode='wt+') as f:
         f.write(server_conf)
 
@@ -193,18 +209,36 @@ def nginx_log_monitor_loop(nginx_process: subprocess.Popen):
         nginx_log_process(nginx_process)
 
 
+def test_nginx_web_server(port: int, params: Dict):
+    polling_tries = 1
+    is_test_done = False
+    try:
+        while polling_tries <= NGINX_MAX_POLLING_TRIES and not is_test_done:
+            try:
+                # let nginx startup
+                time.sleep(0.5)
+                protocol = 'https' if params.get('key') else 'http'
+                res = requests.get(f'{protocol}://localhost:{port}/nginx-test',
+                                   verify=False, proxies={"http": "", "https": ""})  # guardrails-disable-line # nosec
+                res.raise_for_status()
+                welcome = 'Welcome to nginx'
+                if welcome not in res.text:
+                    raise ValueError(f'Unexpected response from nginx-test (does not contain "{welcome}"): {res.text}')
+                is_test_done = True
+            except Exception:
+                if polling_tries == NGINX_MAX_POLLING_TRIES:
+                    raise
+                polling_tries += 1
+    except Exception as ex:
+        err_msg = f'Testing nginx server: {ex}'
+        demisto.error(err_msg)
+        raise DemistoException(err_msg) from ex
+
+
 def test_nginx_server(port: int, params: Dict):
     nginx_process = start_nginx_server(port, params)
-    # let nginx startup
-    time.sleep(0.5)
     try:
-        protocol = 'https' if params.get('key') else 'http'
-        res = requests.get(f'{protocol}://localhost:{port}/nginx-test',
-                           verify=False, proxies={"http": "", "https": ""})  # nosec guardrails-disable-line
-        res.raise_for_status()
-        welcome = 'Welcome to nginx'
-        if welcome not in res.text:
-            raise ValueError(f'Unexpected response from nginx-text (does not contain "{welcome}"): {res.text}')
+        test_nginx_web_server(port, params)
     finally:
         try:
             nginx_process.terminate()
@@ -284,6 +318,7 @@ def run_long_running(params: Dict = None, is_test: bool = False):
 
         else:
             nginx_process = start_nginx_server(nginx_port, params)
+            test_nginx_web_server(nginx_port, params)
             nginx_log_monitor = gevent.spawn(nginx_log_monitor_loop, nginx_process)
             demisto.updateModuleHealth('')
             server.serve_forever()

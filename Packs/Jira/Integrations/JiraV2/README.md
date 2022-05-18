@@ -1,6 +1,6 @@
 Use the Atlassian Jira v2 integration to manage Jira issues and create Cortex XSOAR incidents from Jira projects.
 
-This integration was integrated and tested with version 1001.0.0-SNAPSHOT of Jira.
+This integration was integrated and tested with: Jira Cloud, Jira v8.19.1.
 For more information about JQL syntax, go to https://www.atlassian.com/software/jira/guides/expand-jira/jql.
 
 ## Use Cases
@@ -34,11 +34,11 @@ For more information about JQL syntax, go to https://www.atlassian.com/software/
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
     | Jira URL, for example: https://demisto.atlassian.net/ |  | True |
-    | Username (Basic Authentication) |  | False |
+    | Username (API or Basic Authentication) |  | False |
     | Password (Deprecated - Use API token) |  | False |
     | API token |  | False |
-    | Consumer key (OAuth 1.0) |  | False |
-    | Access token |  | False |
+    | Consumer key (OAuth 1.0) | Will be ignored if other required fields are not provided (for example both the Access Token and the Private Key). | False |
+    | Access token | Used for both OAuth 1.0 and Personal Access Token authentication methods. | False |
     | Private key (PKCS8 format) |  | False |
     | Query (in JQL) for fetching incidents |  | False |
     | Issue index to start fetching incidents from |  | False |
@@ -75,12 +75,13 @@ Queries Jira issues.
 `jira-issue-query`
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| query | The JQL query string. | Required | 
-| startAt | The index (integer) of the first issue to return (0-based). | Optional | 
-| maxResults | The maximum number of users to fetch when searching for a matching user (default is 50). The maximum allowed value is dictated by the Jira property 'jira.search.views.default.max'. If you specify a value that is higher than this number, your search results will be truncated. | Optional | 
-| headers | Display the headers in human readable format. | Optional | 
+| **Argument Name** | **Description**                                                                                                                                                                                                                                                                     | **Required** |
+|-------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
+| query             | The JQL query string.                                                                                                                                                                                                                                                               | Required | 
+| startAt           | The index (integer) of the first issue to return (0-based).                                                                                                                                                                                                                         | Optional | 
+| maxResults        | The maximum number of users to fetch when searching for a matching user (default is 50). The maximum allowed value is dictated by the Jira property 'jira.search.views.default.max'. If you specify a value that is higher than this number, your search results will be truncated. | Optional | 
+| headers           | Display the headers in human readable format.                                                                                                                                                                                                                                       | Optional | 
+| extraFields       | Specify the result fields.                                                                                                                                                                                                                                                          | Optional | 
 
 
 #### Context Output
@@ -93,7 +94,12 @@ Queries Jira issues.
 | Ticket.Creator | Unknown | The user who created the ticket. | 
 | Ticket.Summary | Unknown | The summary of the ticket. | 
 | Ticket.Status | Unknown | The status of the ticket. | 
-
+| Ticket.Priority | String | The priority of the ticket. | 
+| Ticket.ProjectName | String | The ticket project name. | 
+| Ticket.DueDate | Date | The due date. | 
+| Ticket.Created | Date | The time the ticket was created. | 
+| Ticket.LastSeen | Date | The last time the ticket was viewed. | 
+| Ticket.LastUpdate | Date | The last time the ticket was updated. | 
 
 #### Command Example
 ```!jira-issue-query query="status=done"```
@@ -160,7 +166,12 @@ Fetches an issue from Jira.
 | File.SHA256 | Unknown | The SHA256 hash of the file \(Jira attachments are saved as files in Cortex XSOAR\). | 
 | File.Name | Unknown | The name of the file \(Jira attachments are saved as files in Cortex XSOAR\). | 
 | File.SHA1 | Unknown | The SHA1 hash of the file \(Jira attachments are saved as files in Cortex XSOAR\). | 
-
+| Ticket.Priority | String | The priority of the ticket. | 
+| Ticket.ProjectName | String | The ticket project name. | 
+| Ticket.DueDate | Date | The due date. | 
+| Ticket.Created | Date | The time the ticket was created. | 
+| Ticket.LastSeen | Date | The last time the ticket was viewed. | 
+| Ticket.LastUpdate | Date | The last time the ticket was updated. | 
 
 ##### Command Example
 ```!jira-get-issue issueId=15572 getAttachments=true```
@@ -231,7 +242,7 @@ Creates a new issue in Jira.
 
 
 ##### Command Example
-```!jira-create-issue summary="test SOC issue26" issueTypeId=10008 projectKey=DEM issueJson=\`{"fields":{"issuetype":{"name":"Request for Action"}}}```
+```!jira-create-issue summary="test SOC issue26" issueTypeId=10008 projectKey=DEM issueJson=`{"fields":{"issuetype":{"name":"Request for Action"}}}` ```
 
 ##### Context Example
 ```
@@ -393,32 +404,32 @@ Modifies an issue in Jira.
 | Ticket.Status | Unknown | The status of the ticket. | 
 
 
-##### Command Example
-```!jira-edit-issue issueId=15572 customFields=Type_of_incident:Malware(Virus,_Ransomware) description="Just a description"```
+#### Command Example
+```!jira-edit-issue issueId=DEM-5415 issueJson=`{"fields":{"description":"testing3"}}` ```
 
-##### Context Example
-```
+#### Context Example
+```json
 {
-    "Ticket": [
-        {
-            "Status": "To Do", 
-            "Creator": "{creator}", 
-            "Summary": "Test issue23", 
-            "Assignee": "{assignee}", 
-            "attachment": "test_file.yml", 
-            "Key": "DEM-5415", 
-            "Id": "15572"
-        }
-    ]
+    "Ticket": {
+        "Assignee": "{assignee}",
+        "Creator": "{creator}",
+        "Id": "10044",
+        "Key": "DEM-5415",
+        "Status": "To Do",
+        "Summary": "Phishing Incident Declared",
+        "attachment": ""
+    }
 }
 ```
-##### Human Readable Output
+
+#### Human Readable Output
+
 ### jira-edit-issue
 |assignee|attachment|created|creator|description|duedate|id|issueType|key|labels|priority|project|reporter|status|summary|ticket_link|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| {assignee} | test_file.yml | 2020-01-19T12:34:13.784+0200 | {creator} | Just a description |  | 15572 | Request for Action | DEM-5415 |  | Medium | demistodev | {reporter} | To Do | Test issue23 | https://demistodev.atlassian.net/rest/api/latest/issue/15572 |
-Issue #15572 was updated successfully
+| {assignee} |  | 2021-06-02T10:45:15.838-0400 | {creator} | testing3 |  | 10044 | A small, distinct piece of work. | DEM-5415 |  | Medium | SomethingGreat | {reporter} | To Do | Phishing Incident Declared | https://somejira.atlassian.net/rest/api/latest/issue/10044 |
 
+Issue #DEM-5415 was updated successfully
 
 ### jira-get-comments
 ***
@@ -538,7 +549,8 @@ Gets the Account ID for a given user's attribute.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | attribute | The user's attribute value. Can be Username or Email address. | Required | 
-| max_results | The maximum number of users to pull when searching for a matching user (default is 50). The maximum allowed value is dictated by the JIRA property 'jira.search.views.default.max'. If you specify a value that is higher than this number, your search results will be truncated. | Optional | 
+| max_results | The maximum number of users to pull when searching for a matching user (default is 50). The maximum allowed value is dictated by the JIRA property 'jira.search.views.default.max'. If you specify a value that is higher than this number, your search results will be truncated. | Optional |
+| is_jirav2api | Whether the server is on prem and uses the REST v2 API. | Optional |
 
 
 #### Context Output

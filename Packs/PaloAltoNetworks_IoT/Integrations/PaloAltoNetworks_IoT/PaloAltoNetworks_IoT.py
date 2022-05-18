@@ -63,6 +63,20 @@ class Client(BaseClient):
             timeout=self.api_timeout
         )
 
+    def get_device_by_ip(self, ip):
+        """
+        Get a device from IoT security portal by ip
+        """
+        return self._http_request(
+            method='GET',
+            url_suffix='/device/ip',
+            params={
+                'customerid': self.tenant_id,
+                'ip': ip
+            },
+            timeout=self.api_timeout
+        )
+
     def list_alerts(self, stime='-1', offset=0, pagelength=100, sortdirection='asc'):
         """
         returns alerts inventory list
@@ -251,6 +265,30 @@ def iot_get_device(client, args):
         outputs_prefix='PaloAltoNetworksIoT.Device',
         outputs_key_field='deviceid',
         outputs=result
+    )
+
+
+def iot_get_device_by_ip(client, args):
+    """
+    Returns an IoT device
+
+    Args:
+        client (Client): IoT client.
+        args (dict): all command arguments.
+
+    Returns:
+        device
+
+        CommandResults
+    """
+    device_ip = args.get('ip')
+
+    result = client.get_device_by_ip(device_ip)
+
+    return CommandResults(
+        outputs_prefix='PaloAltoNetworksIoT.Device',
+        outputs_key_field='devices',
+        outputs=result['devices']
     )
 
 
@@ -583,6 +621,9 @@ def main():
 
         elif demisto.command() == 'iot-security-get-device':
             return_results(iot_get_device(client, demisto.args()))
+
+        elif demisto.command() == 'iot-security-get-device-by-ip':
+            return_results(iot_get_device_by_ip(client, demisto.args()))
 
         elif demisto.command() == 'iot-security-list-devices':
             return_results(iot_list_devices(client, demisto.args()))

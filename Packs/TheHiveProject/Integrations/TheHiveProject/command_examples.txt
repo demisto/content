@@ -1,0 +1,29 @@
+!thehive-list-cases
+!thehive-get-case id="~479312"
+!thehive-update-case id="~487504" title="updated title for case with no tasks"
+!thehive-create-case title="new created case" description="description for new case" owner="demisto"
+!thehive-create-task id="~479312" title="newly added task" description="new description"
+!thehive-get-task id="~41357336"
+!thehive-get-case-tasks id="~479312"
+!thehive-list-observables id="~561160"
+!thehive-list-users
+!thehive-get-version
+!thehive-create-observable id="~561160" data="domain for readme" dataType="domain"  message="data for readme"
+!thehive-merge-cases firstCaseID="~491600" secondCaseID="~524320"
+!thehive-remove-case id="~41509016"
+!thehive-update-observable id="~41504920" message="updated message for observable"
+!thehive-create-local-user login=demisto name=dem password=1234
+!thehive-get-user id="~41402520"
+!thehive-block-user id="~41208"
+!thehive-get-task id="~41500824"
+!thehive-update-task id="~41500824" title="updated title for task"
+
+
+
+
+
+
+
+
+
+

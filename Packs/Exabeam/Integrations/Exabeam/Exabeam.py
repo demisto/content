@@ -745,7 +745,9 @@ def convert_date_to_unix(date_string):
     if not date_string:
         return None
 
-    return int(dateparser.parse(date_string).timestamp() * 1000)
+    parsed_date = dateparser.parse(date_string)
+    assert parsed_date is not None, f'could not parse {date_string}'
+    return int(parsed_date.timestamp() * 1000)
 
 
 def contents_user_info(user, user_info) -> Dict:
@@ -1622,8 +1624,8 @@ def list_context_table_records(client: Client, args: Dict[str, str]) -> Tuple[An
 
     """
     context_table_name = args.get('context_table_name')
-    page_size = int(args['limit'])
-    page_number = int(args['offset'])
+    page_size = int(args.get('limit', 50))
+    page_number = int(args.get('offset', 1))
 
     records_raw_data = client.list_context_table_records_request(context_table_name, page_size, page_number)
     records = records_raw_data.get('records', [])
@@ -1692,7 +1694,11 @@ def delete_context_table_records(client: Client, args: Dict) -> Tuple[Any, Dict[
     session_id = args.get('session_id')
     records = argToList(args.get('records'))
 
-    record_updates_raw_data = client.delete_context_table_records_request(context_table_name, records, session_id)
+    records_raw_data = client.list_context_table_records_request(context_table_name, 10000, 1)
+    all_records = records_raw_data.get('records', [])
+    ids = [record['id'] for record in all_records if record['key'] in records]
+
+    record_updates_raw_data = client.delete_context_table_records_request(context_table_name, ids, session_id)
     human_readable, entry_context = create_context_table_updates_outputs(context_table_name, record_updates_raw_data)
     return human_readable, entry_context, record_updates_raw_data
 

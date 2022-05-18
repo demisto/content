@@ -861,10 +861,7 @@ List the CarbonBlack sensors
 | CarbonBlackEDR.Sensor.build_id | Number | The sensor version installed on this endpoint. From the /api/builds/ endpoint. | 
 | CarbonBlackEDR.Sensor.uptime | String | Endpoint uptime in seconds. | 
 | CarbonBlackEDR.Sensor.is_isolating | Boolean | Boolean representing sensor-reported isolation status. | 
-| CarbonBlackEDR.Sensor.event_log_flush_time | Date | If event_log_flush_time is set, the server will instruct the sensor to immediately
-send all data before this date, ignoring all other throttling mechansims.
-To force a host current, set this value to a value far in the future.
-When the sensor has finished sending it’s queued data, this value will be null. | 
+| CarbonBlackEDR.Sensor.event_log_flush_time | Date | If event_log_flush_time is set, the server will instruct the sensor to immediately send all data before this date, ignoring all other throttling mechansims. To force a host current, set this value to a value far in the future. When the sensor has finished sending its queued data, this value will be null. | 
 | CarbonBlackEDR.Sensor.computer_dns_name | String | The DNS name of the endpoint on which the sensor is installed. | 
 | CarbonBlackEDR.Sensor.emet_report_setting | String | The report setting of EMET associated with sensor. | 
 | CarbonBlackEDR.Sensor.id | Number | The sensor id of this sensor. | 
@@ -1235,7 +1232,7 @@ Prevent execution of a specified md5 hash
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | md5 | The banned hash. | Required | 
-| text | Text description of blacklist. | Required | 
+| text | Text description of block list. | Required | 
 | last_ban_time | The last time the hash was blocked or prevented from being executed. | Optional | 
 | ban_count | Total number of blocks on the banned list. | Optional | 
 | last_ban_host | Last hostname to block this hash. | Optional | 

@@ -15,19 +15,21 @@ This playbook does not use any sub-playbooks.
 
 ### Integrations
 * McAfee Threat Intelligence Exchange
+* McAfee ePO v2
 
 ### Scripts
 * EPOFindSystem
 
 ### Commands
 * tie-file-references
+* epo-find-system
 
 ## Playbook Inputs
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- | 
-| Hash | The Hash to hunt. Can be, "MD5", "SHA1", or "SHA256". The default is set to all hashes. | ${.=val.File.map(function(f) {return [f.MD5, f.SHA1, f.SHA256];}).reduce(function(a, b){return a.concat(b);}, []).filter(function (val1) {return val1;})} |Optional |
+| Hash | The hash to hunt. Can be, "MD5", "SHA1", or "SHA256". The default is set to all hashes. | ${.=val.File.map(function(f) {return [f.MD5, f.SHA1, f.SHA256];}).reduce(function(a, b){return a.concat(b);}, []).filter(function (val1) {return val1;})} |Optional |
 
 ## Playbook Outputs
 ---

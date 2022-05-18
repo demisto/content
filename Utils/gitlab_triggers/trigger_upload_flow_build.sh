@@ -7,6 +7,7 @@ if [ "$#" -lt "1" ]; then
   -ct, --ci-token             The ci gitlab token.
   [-b, --branch]              The branch name. Default is the current branch.
   [-gb, --bucket]             The name of the bucket to upload the packs to. Default is marketplace-dist-dev.
+  [-gb2, --bucket_v2]         The name of the bucket to upload the marketplace v2 packs to. Default is marketplace-v2-dist-dev.
   [-f, --force]               Whether to trigger the force upload flow.
   [-p, --packs]               CSV list of pack IDs. Mandatory when the --force flag is on.
   [-ch, --slack-channel]      A slack channel to send notifications to. Default is dmst-bucket-upload.
@@ -16,6 +17,7 @@ fi
 
 _branch="$(git branch  --show-current)"
 _bucket="marketplace-dist-dev"
+_bucket_v2="marketplace-v2-dist-dev"
 _bucket_upload="true"
 _slack_channel="dmst-bucket-upload"
 
@@ -32,12 +34,11 @@ while [[ "$#" -gt 0 ]]; do
     shift
     shift;;
 
-  -gb|--bucket)
-  if [ "$(echo "$2" | tr '[:upper:]' '[:lower:]')" == "marketplace-dist" ]; then
-    echo "Only test buckets are allowed to use. Using marketplace-dist-dev instead."
-  else
-    _bucket=$2
-  fi
+  -gb|--bucket) _bucket="$2"
+    shift
+    shift;;
+
+  -gb2|--bucket_v2) _bucket_v2="$2"
     shift
     shift;;
 
@@ -69,8 +70,6 @@ if [ -n "$_force" ] && [ -z "$_packs" ]; then
     exit 1
 fi
 
-source Utils/gitlab_triggers/trigger_build_url.sh
-
 _variables="variables[BUCKET_UPLOAD]=true"
 if [ -n "$_force" ]; then
   _variables="variables[FORCE_BUCKET_UPLOAD]=true"
@@ -85,5 +84,6 @@ curl -k -v --request POST \
   --form "variables[SLACK_CHANNEL]=${_slack_channel}" \
   --form "variables[PACKS_TO_UPLOAD]=${_packs}" \
   --form "variables[GCS_MARKET_BUCKET]=${_bucket}" \
+  --form "variables[GCS_MARKET_V2_BUCKET]=${_bucket_v2}" \
   --form "variables[IFRA_ENV_TYPE]=Bucket-Upload" \
   "$BUILD_TRIGGER_URL"

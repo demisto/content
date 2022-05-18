@@ -43,5 +43,9 @@
             "mandatory": false,
             "display_name": "Rapid Breach Response"
         }
-    }
+    },
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

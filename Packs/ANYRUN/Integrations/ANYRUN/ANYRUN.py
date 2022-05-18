@@ -407,7 +407,7 @@ def images_from_report(response):
     screen_captures = []
     for idx, shot in enumerate(screenshots):
         screen_cap_url = shot.get('permanentUrl')
-        img_response = requests.request('GET', screen_cap_url, verify=USE_SSL)
+        img_response = requests.request('GET', screen_cap_url, verify=USE_SSL, headers=HEADERS)
         stored_img = fileResult('screenshot{}.png'.format(idx), img_response.content)
         img_entry = {
             'Type': entryTypes['image'],

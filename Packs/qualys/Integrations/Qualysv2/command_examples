@@ -35,3 +35,12 @@
 !qualys-report-launch-map domain=qualys-test.com output_format=xml report_refs=map/1618151844.78754 template_id=1528888
 !qualys-ip-restricted-manage action=add ips=5.2.8.9
 !qualys-scap-scan-list action=list
+!qualys-host-list-detection truncation_limit=2
+!qualys-host-update ids=35700896 new_comment=comment
+!qualys-asset-group-add title=Test-Asset-Group123 ips="1.1.1.1"
+!qualys-asset-group-edit id=2886258 add_ips="1.1.1.1"
+!qualys-asset-group-delete id=2886258
+!qualys-schedule-scan-create option_title="Initial Options" scan_title="TestScheduleScan123" start_date=12/15/2023 start_hour=2 start_minute=2 time_zone_code=US-CA asset_group_ids=493238 frequency_days=1 default_scanner=1
+!qualys-schedule-scan-update id=783969 active=0
+!qualys-schedule-scan-delete id=783969
+!qualys-time-zone-code

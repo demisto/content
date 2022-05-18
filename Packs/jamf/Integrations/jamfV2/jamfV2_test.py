@@ -400,3 +400,40 @@ def test_mobile_device_erase_command(mocker):
     computer_response = mobile_device_erase_command(client, args)
     expected_response = util_load_json('test_data/mobile_device_erase/mobile_device_erase_context.json')
     assert computer_response.outputs == expected_response
+
+
+def test_endpoint_command(mocker):
+    """
+    Given:
+        - endpoint_command
+    When:
+        - Filtering using both id and hostname
+    Then:
+        - Verify that duplicates are removed (since the mock is called twice the same endpoint is retrieved, but if
+        working properly, only one result should be returned).
+    """
+    from jamfV2 import endpoint_command, Client
+    from CommonServerPython import Common
+
+    client = Client(base_url='https://paloaltonfr3.jamfcloud.com', verify=False)
+    args = {'id': 'id', 'hostname': 'hostname'}
+    endpoint_response = util_load_json(
+        'test_data/get_computer_subset/get_computer_by_name_general_subset_raw_response.json')
+    mocker.patch.object(client, 'get_computer_subset_request', return_value=endpoint_response)
+
+    outputs = endpoint_command(client, args)
+
+    get_endpoints_response = {
+        Common.Endpoint.CONTEXT_PATH: [{
+            'ID': 1,
+            'Hostname': 'Computer 95',
+            'OS': 'Mac',
+            'Vendor': 'JAMF v2',
+            'MACAddress': '12:5B:35:CA:12:56'
+        }]
+    }
+    results = outputs[0].to_context()
+    for key, val in results.get("EntryContext").items():
+        assert results.get("EntryContext")[key] == get_endpoints_response[key]
+    assert results.get("EntryContext") == get_endpoints_response
+    assert len(outputs) == 1

@@ -65,6 +65,10 @@
 				"Zip Code": {
 					"complex": null,
 					"simple": "zip"
+				},
+				"Username": {
+					"complex": null,
+					"simple": "user_name"
 				}
 			}
 		}

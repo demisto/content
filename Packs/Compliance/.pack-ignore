@@ -38,7 +38,7 @@ ignore=IF107
 ignore=IF107
 
 [file:incidentfield-isthedatasubjecttodpia.json]
-ignore=IF107
+ignore=IF107,BA113
 
 [file:incidentfield-possiblecauseofthebreach.json]
 ignore=IF107
@@ -88,3 +88,5 @@ ignore=IF107
 [file:incidentfield-affectedindividualscontactinformation.json]
 ignore=IF107
 
+[file:pack_metadata.json]
+ignore=PA129

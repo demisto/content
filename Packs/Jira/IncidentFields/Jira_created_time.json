@@ -1,30 +1,38 @@
 {
- "id": "incident_createdtime",
- "version": -1,
- "name": "Created Time",
- "ownerOnly": false,
- "cliName": "createdtime",
- "type": "shortText",
- "closeForm": false,
- "editForm": true,
- "required": false,
- "neverSetAsRequired": false,
- "isReadOnly": false,
- "useAsKpi": false,
- "locked": false,
- "system": false,
- "content": true,
- "group": 0,
- "hidden": false,
- "associatedTypes": [
-  "Jira Incident"
- ],
- "associatedToAll": false,
- "unmapped": false,
- "unsearchable": false,
- "caseInsensitive": true,
- "sla": 0,
- "threshold": 72,
- "isExtractingSpecificIndicatorTypes": false,
- "fromVersion": "5.0.0"
+    "id": "incident_createdtime",
+    "version": -1,
+    "name": "Created Time",
+    "ownerOnly": false,
+    "cliName": "createdtime",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "Jira Incident",
+        "Jira Create Issue and Mirror"
+    ],
+    "systemAssociatedTypes": [
+        "Jira Incident",
+        "Jira Create Issue and Mirror"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "isExtractingSpecificIndicatorTypes": false,
+    "fromVersion": "5.0.0",
+    "marketplaces": [
+        "xsoar"
+    ]
 }

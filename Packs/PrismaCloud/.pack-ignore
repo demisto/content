@@ -36,3 +36,6 @@ ignore=BA101
 
 [file:classifier-mapper-incoming-prismaCloud_app.json]
 ignore=BA101
+
+[file:PrismaCloudIAM_image.png]
+ignore=IM111

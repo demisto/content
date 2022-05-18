@@ -463,10 +463,10 @@ Retrieves a list of entries.
 | CiscoEmailSecurity.ListEntries.Safelist.recipientAddresses | String | The safelist recipient addresses. | 
 | CiscoEmailSecurity.ListEntries.Safelist.recipientList | String | The safelist recipient list. | 
 | CiscoEmailSecurity.ListEntries.Safelist.senderAddresses | Number | The safelist sender addresses. | 
-| CiscoEmailSecurity.ListEntries.Blocklist.senderList | String | The blocklist sender list. | 
-| CiscoEmailSecurity.ListEntries.Blocklist.recipientAddresses | String | The blocklist recipient addresses. | 
-| CiscoEmailSecurity.ListEntries.Blocklist.recipientList | String | The blocklist recipient list. | 
-| CiscoEmailSecurity.ListEntries.Blocklist.senderAddresses | Number | The blocklist sender addresses. | 
+| CiscoEmailSecurity.ListEntries.Blocklist.senderList | String | The block list sender list. | 
+| CiscoEmailSecurity.ListEntries.Blocklist.recipientAddresses | String | The block list recipient addresses. | 
+| CiscoEmailSecurity.ListEntries.Blocklist.recipientList | String | The block list recipient list. | 
+| CiscoEmailSecurity.ListEntries.Blocklist.senderAddresses | Number | The bloc klist sender addresses. | 
 
 
 

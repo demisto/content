@@ -1,0 +1,18 @@
+[
+  {
+    "type": "group",
+    "name": "administrators",
+    "id": "10453df5-f7fc-47be-8ca7-bc2949c1bd5b",
+    "_links": {
+      "self": "https://xsoar-bd.atlassian.net/wiki/rest/experimental/group/administrators"
+    }
+  },
+  {
+    "type": "group",
+    "name": "confluence-users",
+    "id": "e50e7fe6-7961-4775-9bbf-99e4b50f8701",
+    "_links": {
+      "self": "https://xsoar-bd.atlassian.net/wiki/rest/experimental/group/confluence-users"
+    }
+  }
+]

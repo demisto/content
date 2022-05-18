@@ -1,9 +1,73 @@
+from urllib.parse import quote
+
 import pytest
+import requests_mock
+
 from CommonServerPython import *
 from MicrosoftGraphMail import MsGraphClient, build_mail_object, assert_pages, build_folders_path, \
-    add_second_to_str_date, list_mails_command, item_result_creator, create_attachment, reply_email_command
+    add_second_to_str_date, list_mails_command, item_result_creator, create_attachment, reply_email_command, \
+    send_email_command, list_attachments_command, main
 from MicrosoftApiModule import MicrosoftClient
 import demistomock as demisto
+
+
+@pytest.mark.parametrize('params, expected_result', [
+    ({'creds_tenant_id': {'password': '1234'}, 'creds_auth_id': {'password': '1234'}}, 'Key must be provided.'),
+    ({'creds_tenant_id': {'password': '1234'}, 'credentials': {'password': '1234'}}, 'ID must be provided.'),
+    ({'credentials': {'password': '1234'}, 'creds_auth_id': {'password': '1234'}}, 'Token must be provided.')
+])
+def test_params(mocker, params, expected_result):
+    """
+    Given:
+      - Case 1: tenant id and auth id but no key.
+      - Case 2: tenant id and key but no auth id.
+      - Case 3: key and auth id but no tenant id.
+    When:
+      - Setting an instance
+    Then:
+      - Ensure the exception message as expected.
+      - Case 1: Should return "Key must be provided.".
+      - Case 2: Should return "ID must be provided.".
+      - Case 3: Should return "Token must be provided.".
+    """
+
+    mocker.patch.object(demisto, 'params', return_value=params)
+
+    with pytest.raises(Exception) as e:
+        main()
+
+    assert expected_result in str(e.value)
+
+
+@pytest.mark.parametrize('params, expected_results', [
+    ({'creds_tenant_id': {'password': '1234'}, 'creds_auth_id': {'password': '3124'},
+      'credentials': {'password': '2412'}}, ['1234', '3124', '2412']),
+    ({'tenant_id': '5678', 'enc_key': '8142', 'auth_id': '5678'}, ['5678', '5678', '8142']),
+    ({'_tenant_id': '1267', 'credentials': {'password': '1234'}, '_auth_id': '8888'}, ['1267', '8888', '1234'])
+])
+def test_params_working(mocker, params, expected_results):
+    """
+    Given:
+      - Case 1: tenant id, auth id and key where all three are part of the credentials.
+      - Case 2: tenant id, auth id and key where all three aren't part of the credentials.
+      - Case 3: tenant id, auth id and key where only the key is part of the credentials.
+    When:
+      - Setting an instance
+    Then:
+      - Ensure that the instance can Co-op with previous versions params names and that MsGraphClient.__init__
+      was called with the right tenant id, auth id and key.
+      - Case 1: MsGraphClient.__init__ Should be called with tenant id, auth id and key extracted from credentials type params.
+      - Case 2: MsGraphClient.__init__ Should be called with tenant id, auth id and key
+      not extracted from credentials type params.
+      - Case 3: MsGraphClient.__init__ Should be called with only key param extracted from credentials type params.
+    """
+
+    mocker.patch.object(demisto, 'params', return_value=params)
+    mocker.patch.object(MsGraphClient, '__init__', return_value=None)
+    main()
+    MsGraphClient.__init__.assert_called_with(False, expected_results[0], expected_results[1], expected_results[2],
+                                              'ms-graph-mail', '/v1.0', True, False, (200, 201, 202, 204), '', 'Inbox',
+                                              '15 minutes', 50, 10, 'com', certificate_thumbprint='', private_key='')
 
 
 def test_build_mail_object():
@@ -134,6 +198,32 @@ def test_list_mails_command(mocker, client):
         list_mails_command(client, args)
         hr = demisto.results.call_args[0][0].get('HumanReadable')
         assert '### No mails were found' in hr
+
+
+@pytest.mark.parametrize('client', [oproxy_client(), self_deployed_client()])
+def test_list_mails_command_encoding(mocker, client):
+    """Unit test
+    Given
+    - an email query
+    When
+    - calling list_mails
+    Then
+    - Validate that the queried value is properly url-encoded
+    """
+    client = MsGraphClient(True, 'tenant', 'auth_token_url', 'enc_key', 'app_name', 'https://example.com',
+                           use_ssl=True, proxy=False, ok_codes=(200,), mailbox_to_fetch='mailbox',
+                           folder_to_fetch='folder', first_fetch_interval=10, emails_fetch_limit=10)
+    mocker.patch.object(client.ms_client, 'get_access_token')
+
+    search = 'Test&$%^'
+    search_encoded = quote(search)
+
+    with requests_mock.Mocker() as request_mocker:
+        mocked = request_mocker.get(
+            f'https://example.com/users/user_id/messages?$top=20&$search=%22{search_encoded}%22', json={}
+        )
+        client.list_mails('user_id', search=search)
+    assert mocked.call_count == 1
 
 
 @pytest.mark.parametrize('client', [oproxy_client(), self_deployed_client()])
@@ -294,6 +384,7 @@ def test_build_message(client):
         'to_recipients': ['dummy@recipient.com'],  # disable-secrets-detection
         'cc_recipients': ['dummyCC@recipient.com'],  # disable-secrets-detection
         'bcc_recipients': ['dummyBCC@recipient.com'],  # disable-secrets-detection
+        'reply_to': ['dummyreplyTo@recipient.com'],  # disable-secrets-detection
         'subject': 'Dummy Subject',
         'body': 'Dummy Body',
         'body_type': 'text',
@@ -311,6 +402,8 @@ def test_build_message(client):
                         'ccRecipients': [{'emailAddress': {'address': 'dummyCC@recipient.com'}}],
                         # disable-secrets-detection
                         'bccRecipients': [{'emailAddress': {'address': 'dummyBCC@recipient.com'}}],
+                        # disable-secrets-detection
+                        'replyTo': [{'emailAddress': {'address': 'dummyreplyTo@recipient.com'}}],
                         # disable-secrets-detection
                         'subject': 'Dummy Subject', 'body': {'content': 'Dummy Body', 'contentType': 'text'},
                         'bodyPreview': 'Dummy Body', 'importance': 'Normal', 'flag': {'flagStatus': 'flagged'},
@@ -390,6 +483,62 @@ def test_create_attachment(mocker, function_name, attachment_type):
 
 
 @pytest.mark.parametrize('client', [oproxy_client(), self_deployed_client()])
+def test_list_attachments_with_name(mocker, client):
+    """
+    Given:
+        - list attachments command
+        - all attachments has a name
+
+    When:
+        - parsing email attachments
+
+    Then:
+        - Validate that the attachments are being parsed correctly
+
+    """
+    output_prefix = 'MSGraphMailAttachment(val.ID === obj.ID)'
+    with open('test_data/list_attachment_result.json') as attachment_result:
+        args = {"user_id": "example"}
+        raw_response = json.load(attachment_result)
+        mocker.patch.object(client, 'list_attachments', return_value=raw_response)
+        mocker.patch.object(demisto, 'results')
+        list_attachments_command(client, args)
+        context = demisto.results.call_args[0][0].get('EntryContext')
+
+        assert context.get(output_prefix).get('Attachment')[0].get('ID') == 'someID'
+        assert context.get(output_prefix).get('Attachment')[0].get('Name') == 'someName'
+        assert context.get(output_prefix).get('Attachment')[0].get('Type') == 'application/octet-stream'
+
+
+@pytest.mark.parametrize('client', [oproxy_client(), self_deployed_client()])
+def test_list_attachments_without_name(mocker, client):
+    """
+    Given:
+        - list attachments command
+        - there is an attachment without a name
+
+    When:
+        - parsing email attachments
+
+    Then:
+        - Validate that the attachments are being parsed correctly and the name is equal to the ID
+
+    """
+    output_prefix = 'MSGraphMailAttachment(val.ID === obj.ID)'
+    with open('test_data/list_attachment_result_no_name.json') as attachment_result:
+        args = {"user_id": "example"}
+        raw_response = json.load(attachment_result)
+        mocker.patch.object(client, 'list_attachments', return_value=raw_response)
+        mocker.patch.object(demisto, 'results')
+        list_attachments_command(client, args)
+        context = demisto.results.call_args[0][0].get('EntryContext')
+
+        assert context.get(output_prefix).get('Attachment')[0].get('ID') == 'someID'
+        assert context.get(output_prefix).get('Attachment')[0].get('Name') == 'someID'
+        assert context.get(output_prefix).get('Attachment')[0].get('Type') == 'application/octet-stream'
+
+
+@pytest.mark.parametrize('client', [oproxy_client(), self_deployed_client()])
 def test_reply_mail_command(client, mocker):
     """
     Given:
@@ -414,3 +563,97 @@ def test_reply_mail_command(client, mocker):
     assert reply_message.outputs['subject'] == 'Re: ' + args['subject']
     assert reply_message.outputs['toRecipients'] == args['to']
     assert reply_message.outputs['bodyPreview'] == args['body']
+
+
+SEND_MAIL_COMMAND_ARGS = [
+    (
+        oproxy_client(),
+        {
+            'to': ['ex@example.com'],
+            'htmlBody': "<b>This text is bold</b>",
+            'subject': "test subject",
+            'replyTo': ["ex2@example.com", "ex3@example.com"],
+            'from': "ex1@example.com"
+        },
+    ),
+    (
+        self_deployed_client(),
+        {
+            'to': ['ex@example.com'],
+            'htmlBody': "<b>This text is bold</b>",
+            'subject': "test subject",
+            'replyTo': ["ex2@example.com", "ex3@example.com"],
+            'from': "ex1@example.com"
+        },
+    ),
+    (
+        oproxy_client(),
+        {
+            'to': ['ex@example.com'],
+            'body': "test body",
+            'subject': "test subject",
+            'replyTo': ["ex2@example.com", "ex3@example.com"],
+            'from': "ex1@example.com"
+        }
+    ),
+    (
+        self_deployed_client(),
+        {
+            'to': ['ex@example.com'],
+            'body': "test body",
+            'subject': "test subject",
+            'replyTo': ["ex2@example.com", "ex3@example.com"],
+            'from': "ex1@example.com"
+        }
+    )
+]
+
+
+@pytest.mark.parametrize('client, args', SEND_MAIL_COMMAND_ARGS)
+def test_send_mail_command(mocker, client, args):
+    """
+        Given:
+            - send-mail command's arguments
+
+        When:
+            - sending a mail
+
+        Then:
+            - validates that http request to send-mail was called with the correct values.
+    """
+    with requests_mock.Mocker() as request_mocker:
+        from_email = args.get('from')
+
+        mocker.patch.object(client.ms_client, 'get_access_token')
+        send_mail_mocker = request_mocker.post(
+            f'https://graph.microsoft.com/v1.0/users/{from_email}/SendMail'
+        )
+
+        send_email_command(client, args)
+
+        assert send_mail_mocker.called
+        message = send_mail_mocker.last_request.json().get('message')
+        assert message
+        assert message.get('toRecipients')[0].get('emailAddress').get("address") == args.get('to')[0]
+        assert message.get('body').get('content') == args.get('htmlBody') or args.get('body')
+        assert message.get('subject') == args.get('subject')
+        assert message.get('replyTo')[0].get('emailAddress').get("address") == args.get('replyTo')[0]
+        assert message.get('replyTo')[1].get('emailAddress').get("address") == args.get('replyTo')[1]
+
+
+@pytest.mark.parametrize('server_url, expected_endpoint', [('https://graph.microsoft.us', 'gcc-high'),
+                                                           ('https://dod-graph.microsoft.us', 'dod'),
+                                                           ('https://graph.microsoft.de', 'de'),
+                                                           ('https://microsoftgraph.chinacloudapi.cn', 'cn')])
+def test_server_to_endpoint(server_url, expected_endpoint):
+    """
+    Given:
+        - Host address for national endpoints
+    When:
+        - Creating a new MsGraphClient
+    Then:
+        - Verify that the host address is translated to the correct endpoint code, i.e. com/gcc-high/dod/de/cn
+    """
+    from MicrosoftApiModule import GRAPH_BASE_ENDPOINTS
+
+    assert GRAPH_BASE_ENDPOINTS[server_url] == expected_endpoint

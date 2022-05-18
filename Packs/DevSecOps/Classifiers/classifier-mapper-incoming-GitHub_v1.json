@@ -1,0 +1,156 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "GitHub Mapper",
+    "mapping": {
+        "DevSecOps New Git PR": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "DevSecOps Commit ID": {
+                    "complex": null,
+                    "simple": "head.sha"
+                },
+                "DevSecOps Git Pusher Name": {
+                    "complex": null,
+                    "simple": "user.login"
+                },
+                "DevSecOps Head Commit ID": {
+                    "complex": null,
+                    "simple": "head.sha"
+                },
+                "DevSecOps PR Assignee": {
+                    "complex": null,
+                    "simple": "assignee"
+                },
+                "DevSecOps PR Assignees": {
+                    "complex": null,
+                    "simple": "assignees"
+                },
+                "DevSecOps PR Base Label": {
+                    "complex": null,
+                    "simple": "base.label"
+                },
+                "DevSecOps PR Base Size": {
+                    "complex": null,
+                    "simple": "head.repo.size"
+                },
+                "DevSecOps PR Body": {
+                    "complex": null,
+                    "simple": "body"
+                },
+                "DevSecOps PR Branch": {
+                    "complex": null,
+                    "simple": "head.ref"
+                },
+                "DevSecOps PR Comments": {
+                    "complex": null,
+                    "simple": "_links.comments"
+                },
+                "DevSecOps PR Commits": {
+                    "complex": null,
+                    "simple": "_links.commits"
+                },
+                "DevSecOps PR Created At": {
+                    "complex": null,
+                    "simple": "created_at"
+                },
+                "DevSecOps PR Head Commit": {
+                    "complex": null,
+                    "simple": "head.sha"
+                },
+                "DevSecOps PR Head Open Issues": {
+                    "complex": null,
+                    "simple": "_links.issue"
+                },
+                "DevSecOps PR ID": {
+                    "complex": null,
+                    "simple": "id"
+                },
+                "DevSecOps PR Number": {
+                    "complex": null,
+                    "simple": "number"
+                },
+                "DevSecOps PR Pushed At": {
+                    "complex": null,
+                    "simple": "head.repo.pushed_at"
+                },
+                "DevSecOps PR State": {
+                    "complex": null,
+                    "simple": "state"
+                },
+                "DevSecOps PR Title": {
+                    "complex": null,
+                    "simple": "title"
+                },
+                "DevSecOps PR Updated At": {
+                    "complex": null,
+                    "simple": "updated_at"
+                },
+                "DevSecOps Repository ID": {
+                    "complex": null,
+                    "simple": "head.repo.id"
+                },
+                "DevSecOps Repository Name": {
+                    "complex": null,
+                    "simple": "head.repo.name"
+                },
+                "DevSecOps Repository Organization": {
+                    "complex": {
+                        "accessor": "repo.full_name",
+                        "filters": [],
+                        "root": "head",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "to": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "/"
+                                        }
+                                    }
+                                },
+                                "operator": "substringTo"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "DevSecOps Repository URL": {
+                    "complex": null,
+                    "simple": "base.repo.html_url"
+                },
+                "name": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "number",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "prefix": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "DevSecOps - New PR Opened : "
+                                        }
+                                    },
+                                    "suffix": {
+                                        "isContext": false,
+                                        "value": null
+                                    }
+                                },
+                                "operator": "concat"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                }
+            }
+        }
+    },
+    "name": "GitHub Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

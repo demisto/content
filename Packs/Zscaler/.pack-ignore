@@ -1,2 +1,5 @@
 [file:README.md]
-ignore=RM106
+ignore=RM104,RM106
+
+[file:Zscaler.yml]
+ignore=IN145

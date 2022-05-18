@@ -1,0 +1,31 @@
+{
+    "action_raw_response": {"data": {"now": "2022/01/18 09:20:54 GMT-0000", "max_available_age": "", "result_sets": [
+    {"age": 0, "id": 957912, "report_count": 7, "saved_question_id": 57824, "question_id": 957912,
+     "archived_question_id": 0, "seconds_since_issued": 3176, "issue_seconds": 0, "expire_seconds": 3660, "tested": 2,
+     "passed": 2, "mr_tested": 2, "mr_passed": 2, "estimated_total": 2, "select_count": 2, "error_count": 0,
+     "no_results_count": 0, "columns": [
+        {"hash": 3409330187, "name": "Computer Name", "type": 1},
+        {"hash": 1792443391, "name": "Action Statuses", "type": 1},
+        {"hash": 0, "name": "Count", "type": 3}
+    ], "filtered_row_count": 1, "filtered_row_count_machines": 1, "row_count": 1, "row_count_machines": 1,
+     "item_count": 1, "rows": [
+        {"id": 1051765658, "cid": 9065264, "data": [[{"text": "EC2AMAZ-KGMRO60"}],
+                                                    [{"text": "350385:Completed."}],
+                                                    [{"text": "1"}]]}]}], "id": "350385"}},
+
+    "action_output": [{"ID": "350385", "now": "2022/01/18 09:20:54 GMT-0000", "max_available_age": "", "result_sets": [
+    {"age": 0, "id": 957912, "report_count": 7, "saved_question_id": 57824, "question_id": 957912,
+     "archived_question_id": 0, "seconds_since_issued": 3176, "issue_seconds": 0, "expire_seconds": 3660, "tested": 2,
+     "passed": 2, "mr_tested": 2, "mr_passed": 2, "estimated_total": 2, "select_count": 2, "error_count": 0,
+     "no_results_count": 0, "columns": [
+        {"hash": 3409330187, "name": "Computer Name", "type": 1},
+        {"hash": 1792443391, "name": "Action Statuses", "type": 1},
+        {"hash": 0, "name": "Count", "type": 3}
+    ], "filtered_row_count": 1, "filtered_row_count_machines": 1, "row_count": 1, "row_count_machines": 1,
+     "item_count": 1, "rows": [
+        {"id": 1051765658, "cid": 9065264, "data": [[{"text": "EC2AMAZ-KGMRO60"}],
+                                                    [{"text": "350385:Completed."}],
+                                                    [{"text": "1"}]]}]}], "id": "350385"}],
+  "action_output_res": {"Tanium.ActionResult(val.ID && val.ID === obj.ID)":
+  [{"now": "2022/01/18 09:20:54 GMT-0000", "result_sets": [{"age": 0, "id": 957912, "report_count": 7, "saved_question_id": 57824, "question_id": 957912, "archived_question_id": 0, "seconds_since_issued": 3176, "issue_seconds": 0, "expire_seconds": 3660, "tested": 2, "passed": 2, "mr_tested": 2, "mr_passed": 2, "estimated_total": 2, "select_count": 2, "error_count": 0, "no_results_count": 0, "columns": [{"hash": 3409330187, "name": "Computer Name", "type": 1}, {"hash": 1792443391, "name": "Action Statuses", "type": 1}, {"hash": 0, "name": "Count", "type": 3}], "filtered_row_count": 1, "filtered_row_count_machines": 1, "row_count": 1, "row_count_machines": 1, "item_count": 1, "rows": [{"id": 1051765658, "cid": 9065264, "data": [[{"text": "EC2AMAZ-KGMRO60"}], [{"text": "350385:Completed."}], [{"text": "1"}]]}]}], "id": "350385", "ID": "350385"}]}
+}

@@ -1,0 +1,16 @@
+commonfields:
+  id: CommonD2
+  version: -1
+name: CommonD2
+script: ''
+type: javascript
+tags:
+- infra
+- agent
+comment: Common code that will be merged into each D2 agent script when it runs
+scripttarget: 1
+dependson: {}
+timeout: 0s
+fromversion: 5.0.0
+tests:
+- no test

@@ -6,3 +6,6 @@ ignore=BA101
 
 [file:classifier-mapper-incoming-MicrosoftCloudAppSecurity.json]
 ignore=BA101
+
+[file:MicrosoftCloudAppSecurity.yml]
+ignore=IN145

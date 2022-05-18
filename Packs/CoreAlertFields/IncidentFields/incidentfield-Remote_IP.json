@@ -1,0 +1,84 @@
+{
+    "associatedToAll": true,
+    "caseInsensitive": true,
+    "cliName": "remoteip",
+    "closeForm": false,
+    "description": "The remote IP address of a network operation that triggered the alert.",
+    "content": true,
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_remoteip",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Remote IP",
+    "neverSetAsRequired": false,
+    "openEnded": true,
+    "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "multiSelect",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.5.0",
+    "x2_fields": "action_remote_ip",
+    "Aliases": [
+        {
+            "cliName": "digitalguardiandestinationaddress",
+            "type": "shortText",
+            "name": "Digital Guardian Destination Address"
+        },
+        {
+            "cliName": "f5silverlinetranslateddestip",
+            "type": "shortText",
+            "name": "F5 Silverline Translated Dest IP"
+        },
+        {
+            "cliName": "irondefensedstip",
+            "type": "shortText",
+            "name": "IronDefense Dst IP"
+        },
+        {
+            "cliName": "destinationip",
+            "type": "shortText",
+            "name": "Destination IP"
+        },
+        {
+            "cliName": "destinationipoffense",
+            "type": "multiSelect",
+            "name": "Destination IP - Offense"
+        },
+        {
+            "cliName": "fireeyenxeventattackerip",
+            "type": "shortText",
+            "name": "FireEye NX Event Attacker IP"
+        },
+        {
+            "cliName": "dest",
+            "type": "shortText",
+            "name": "Dest"
+        },
+        {
+            "cliName": "destinationips",
+            "type": "multiSelect",
+            "name": "Destination IPs"
+        },
+        {
+            "cliName": "deviceexternalip",
+            "type": "shortText",
+            "name": "Device External IP"
+        },
+        {
+            "cliName": "externaladdresses",
+            "type": "shortText",
+            "name": "External Addresses"
+        }
+    ]
+}

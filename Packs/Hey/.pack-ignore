@@ -3,3 +3,9 @@ ignore=auto-test
 
 [file:playbook-EDL_Performance_Test_-_Concurrency.yml]
 ignore=auto-test
+
+[file:TAXII2_Indicator_Performance_Test.yml]
+ignore=auto-test
+
+[file:TAXII2_Performance_Test_-_Concurrency.yml]
+ignore=auto-test

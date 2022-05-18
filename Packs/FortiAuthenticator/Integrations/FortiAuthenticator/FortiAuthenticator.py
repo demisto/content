@@ -117,6 +117,7 @@ def update_user_command():
 
     if userItems:
         userURI = str(userItems["objects"][0]["resource_uri"])
+<<<<<<< HEAD
         if active == "true":
             userDict = {
                 "active": True
@@ -125,6 +126,12 @@ def update_user_command():
             userDict = {
                 "active": False
             }
+=======
+
+        userDict = {
+            "active": active
+        }
+>>>>>>> ca5de323bb1502d83a2f9b8e331d03d8f7bfb75d
         jsonData = json.dumps(userDict)
 
         res = requests.patch(SERVER + userURI, data=jsonData, auth=(USER_NAME, PASSWORD), verify=USE_SSL)

@@ -1,0 +1,32 @@
+{
+    "associatedToAll": true,
+    "caseInsensitive": true,
+    "cliName": "hostos",
+    "closeForm": false,
+    "content": true,
+    "description": "Action taken by the alert sensor, either Detected or Prevented with action status displayed in parenthesis.",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_hostos",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Host OS",
+    "neverSetAsRequired": false,
+    "openEnded": true,
+    "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": true,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.5.0",
+	"x2_fields": "agent_os_type"
+}

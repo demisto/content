@@ -1,0 +1,24 @@
+commonfields:
+  id: ConvertKeysToTableFieldFormat
+  version: -1
+name: ConvertKeysToTableFieldFormat
+script: ''
+type: javascript
+tags:
+- transformer
+comment: |-
+  Convert object keys to match table keys.
+  Use when mapping object/collection to table (grid) field.
+  (Array of objects/collections is also supported).
+  Example:
+  Input: { "Engine": "val1", "Max Results": 13892378, "Key_With^Special   (characters)": true }
+  Output: { "engine": "val1", "maxresults": 13892378, "keywithspecialcharacters": true }
+enabled: true
+args:
+- name: value
+  required: true
+  description: Object to convert
+scripttarget: 0
+runonce: false
+runas: DBotWeakRole
+fromversion: 5.0.0

@@ -849,6 +849,11 @@ tasks:
             value:
               simple: "true"
           ignorecase: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GetFailedTasks
+            iscontext: true
     view: |-
       {
         "position": {
@@ -988,3 +993,5 @@ outputs: []
 tests:
 - No tests
 fromversion: 6.0.0
+marketplaces:
+  - xsoar

@@ -14,8 +14,7 @@ configuration:
   name: credentials
   required: true
   type: 9
-- additionalinfo: Whether to allow connections without verifying SSL certificates
-    validity.
+- additionalinfo: Whether to allow connections without verifying SSL certificates validity.
   display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -39,6 +38,7 @@ configuration:
   - compromised/breached
   - bp/phishing
   - bp/phishing_kit
+  - bp/domain
   - osi/git_leak
   - osi/public_leak
   - malware/targeted_malware
@@ -51,9 +51,7 @@ configuration:
   name: first_fetch
   required: false
   type: 0
-- additionalinfo: A number of requests per collection that integration sends in one
-    fetch iteration (each request picks up to 200 incidents). If you face some runtime
-    errors, lower the value.
+- additionalinfo: A number of requests per collection that integration sends in one fetch iteration (each request picks up to 200 incidents). If you face some runtime errors, lower the value.
   defaultvalue: '3'
   display: Number of requests per collection
   hidden: false
@@ -70,10 +68,7 @@ configuration:
   name: incidentType
   required: false
   type: 13
-description: "Pack helps to integrate Group-IB Threat Intelligence & Attribution and\
-  \ get incidents directly into Cortex XSOAR. \nThe list of included collections:\n\
-  Compromised Accounts, Compromised Cards, Brand Protection Phishing, Brand Protection\
-  \ Phishing Kit, OSI Git Leak, OSI Public Leak, Targeted Malware."
+description: "Pack helps to integrate Group-IB Threat Intelligence & Attribution and get incidents directly into Cortex XSOAR. \nThe list of included collections:\nCompromised Accounts, Compromised Cards, Brand Protection Phishing, Brand Protection Phishing Kit, OSI Git Leak, OSI Public Leak, Targeted Malware."
 display: Group-IB Threat Intelligence & Attribution
 name: Group-IB Threat Intelligence & Attribution
 script:
@@ -88,8 +83,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Command performs Group IB event lookup in compromised/account collection
-      with provided ID.
+    description: Command performs Group IB event lookup in compromised/account collection with provided ID.
     execution: false
     name: gibtia-get-compromised-account-info
     outputs:
@@ -172,8 +166,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Command performs Group IB event lookup in compromised/card collection
-      with provided ID.
+    description: Command performs Group IB event lookup in compromised/card collection with provided ID.
     execution: false
     name: gibtia-get-compromised-card-info
     outputs:
@@ -250,14 +243,12 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Command performs Group IB event lookup in compromised/mule collection
-      with provided ID.
+    description: Command performs Group IB event lookup in compromised/mule collection with provided ID.
     execution: false
     name: gibtia-get-compromised-mule-info
     outputs:
     - contextPath: GIBTIA.CompromisedMule.account
-      description: Account number (card/phone), which was used by threat actor to
-        cash out
+      description: Account number (card/phone), which was used by threat actor to cash out
       type: String
     - contextPath: GIBTIA.CompromisedMule.cnc.ipv4.asn
       description: CNC ASN
@@ -314,8 +305,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Command performs Group IB event lookup in compromised/imei collection
-      with provided ID.
+    description: Command performs Group IB event lookup in compromised/imei collection with provided ID.
     execution: false
     name: gibtia-get-compromised-imei-info
     outputs:
@@ -386,8 +376,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Command performs Group IB event lookup in compromised/breached collection
-      with provided ID.
+    description: Command performs Group IB event lookup in compromised/breached collection with provided ID.
     execution: false
     name: gibtia-get-compromised-breached-info
     outputs:
@@ -419,8 +408,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Command performs Group IB event lookup in osi/git_leak collection
-      with provided ID.
+    description: Command performs Group IB event lookup in osi/git_leak collection with provided ID.
     execution: false
     name: gibtia-get-osi-git-leak-info
     outputs:
@@ -467,8 +455,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Command performs Group IB event lookup in osi/public_leak collection
-      with provided ID.
+    description: Command performs Group IB event lookup in osi/public_leak collection with provided ID.
     execution: false
     name: gibtia-get-osi-public-leak-info
     outputs:
@@ -519,8 +506,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Command performs Group IB event lookup in osi/vulnerability collection
-      with provided ID.
+    description: Command performs Group IB event lookup in osi/vulnerability collection with provided ID.
     execution: false
     name: gibtia-get-osi-vulnerability-info
     outputs:
@@ -573,8 +559,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Command performs Group IB event lookup in bp/phishing_kit and attacks/phishing_kit
-      collections with provided ID.
+    description: Command performs Group IB event lookup in bp/phishing_kit and attacks/phishing_kit collections with provided ID.
     execution: false
     name: gibtia-get-phishing-kit-info
     outputs:
@@ -627,8 +612,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Command performs Group IB event lookup in bp/phishing and attacks/phishing
-      collections with provided ID.
+    description: Command performs Group IB event lookup in bp/phishing and attacks/phishing collections with provided ID.
     execution: false
     name: gibtia-get-phishing-info
     outputs:
@@ -693,8 +677,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Command performs Group IB event lookup in attacks/ddos collection
-      with provided ID.
+    description: Command performs Group IB event lookup in attacks/ddos collection with provided ID.
     execution: false
     name: gibtia-get-attacks-ddos-info
     outputs:
@@ -759,8 +742,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Command performs Group IB event lookup in attacks/deface collection
-      with provided ID.
+    description: Command performs Group IB event lookup in attacks/deface collection with provided ID.
     execution: false
     name: gibtia-get-attacks-deface-info
     outputs:
@@ -815,8 +797,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Command performs Group IB event lookup in hi/threat (or in apt/threat
-      if the APT flag is true) collection with provided ID.
+    description: Command performs Group IB event lookup in hi/threat (or in apt/threat if the APT flag is true) collection with provided ID.
     execution: false
     name: gibtia-get-threat-info
     outputs:
@@ -946,8 +927,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Command performs Group IB event lookup in hi/threat_actor (or in
-      apt/threat_actor if the APT flag is true) collection with provided ID.
+    description: Command performs Group IB event lookup in hi/threat_actor (or in apt/threat_actor if the APT flag is true) collection with provided ID.
     execution: false
     name: gibtia-get-threat-actor-info
     outputs:
@@ -1018,8 +998,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Command performs Group IB event lookup in suspicious_ip/tor_node
-      collection with provided ID.
+    description: Command performs Group IB event lookup in suspicious_ip/tor_node collection with provided ID.
     execution: false
     name: gibtia-get-suspicious-ip-tor-node-info
     outputs:
@@ -1051,8 +1030,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Command performs Group IB event lookup in suspicious_ip/open_proxy
-      collection with provided ID.
+    description: Command performs Group IB event lookup in suspicious_ip/open_proxy collection with provided ID.
     execution: false
     name: gibtia-get-suspicious-ip-open-proxy-info
     outputs:
@@ -1093,8 +1071,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Command performs Group IB event lookup in suspicious_ip/socks_proxy
-      collection with provided ID.
+    description: Command performs Group IB event lookup in suspicious_ip/socks_proxy collection with provided ID.
     execution: false
     name: gibtia-get-suspicious-ip-socks-proxy-info
     outputs:
@@ -1126,8 +1103,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Command performs Group IB event lookup in malware/targeted_malware
-      collection with provided ID.
+    description: Command performs Group IB event lookup in malware/targeted_malware collection with provided ID.
     execution: false
     name: gibtia-get-malware-targeted-malware-info
     outputs:
@@ -1200,8 +1176,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Command performs Group IB event lookup in malware/cnc collection
-      by provided ID.
+    description: Command performs Group IB event lookup in malware/cnc collection by provided ID.
     execution: false
     name: gibtia-get-malware-cnc-info
     outputs:
@@ -1329,7 +1304,7 @@ script:
     - contextPath: additional_info
       description: Additional info about feed
       type: String
-  dockerimage: demisto/python3:3.9.5.21272
+  dockerimage: demisto/python3:3.10.4.29342
   feed: false
   isfetch: true
   longRunning: false

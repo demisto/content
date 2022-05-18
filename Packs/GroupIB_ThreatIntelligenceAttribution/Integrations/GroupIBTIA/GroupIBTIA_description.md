@@ -11,7 +11,7 @@
 4. Your username is the email that you use to enter in the web interface.
 5. Set classifier and mapper with Group-IB Threat Intelligence & Attribution classifier and mapper or with our own if you want so.
 6. Go to Settings->Integrations->Pre-Processing Rules and set up the pre-processing rule:
-* Set up condition: "gibid Is not empty (General)".
+* Set up conditions: "gibid Is not empty (General)" and "Type Doesn't equal(String) GIB Data Breach".
 * Action: "Run a script".
-* Script: "GIBIncidentUpdate".
-7. Don't forget to contact Group-IB to whitelist your Cortex IP or public IP of a proxy that you are using with Cortex.
+* Script: "GIBIncidentUpdate" (will recreate closed incidents if they get an update, in other cases will update the existing one) or "GIBIncidentUpdateIncludingClosed"(will only update incidents). 
+7. Don't forget to contact Group-IB to add to allow list your Cortex IP or public IP of a proxy that you are using with Cortex.

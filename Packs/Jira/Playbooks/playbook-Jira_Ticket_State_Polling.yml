@@ -1,0 +1,267 @@
+id: Jira Ticket State Polling
+version: -1
+contentitemexportablefields:
+  contentitemfields: {}
+name: Jira Ticket State Polling
+description: |-
+  Use Jira Incident State Polling as a sub-playbook when required to pause the execution of a master playbook until the Jira ticket state is either resolved or closed.
+  This playbook implements polling by continuously running the jira-get-issue command until the state is either resolved or closed.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: d111d99c-ee04-40cf-8fbf-ff3a59e6a3a8
+    type: start
+    task:
+      id: d111d99c-ee04-40cf-8fbf-ff3a59e6a3a8
+      version: -1
+      name: ""
+      description: '-'
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: c63fd684-428a-48c0-801d-334530c39e1a
+    type: regular
+    task:
+      id: c63fd684-428a-48c0-801d-334530c39e1a
+      version: -1
+      name: Schedule Ticket State Polling Task
+      description: Schedule Polling Task
+      scriptName: ScheduleGenericPolling
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      additionalPollingCommandArgNames:
+        complex:
+          root: inputs.AdditionalPollingCommandName
+      additionalPollingCommandArgValues:
+        complex:
+          root: inputs.InstanceName
+      dt:
+        simple: Ticket(val.Status != 'Done').Id
+      ids:
+        complex:
+          root: inputs.TicketId
+      interval:
+        simple: ${inputs.Interval}
+      playbookId:
+        simple: ${currentPlaybookID}
+      pollingCommand:
+        simple: jira-get-issue
+      pollingCommandArgName:
+        simple: issueId
+      timeout:
+        simple: ${inputs.Timeout}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: ef761c9e-c794-4aeb-8668-b2491140fbd4
+    type: condition
+    task:
+      id: ef761c9e-c794-4aeb-8668-b2491140fbd4
+      version: -1
+      name: Waiting for Ticket State Polling to complete (Automated Task)
+      description: This task will complete automatically when polling is complete.
+      tags:
+      - polling
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "YES":
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: b27efd82-c2fd-4d49-8848-f28203897cbe
+    type: regular
+    task:
+      id: b27efd82-c2fd-4d49-8848-f28203897cbe
+      version: -1
+      name: Run Ticket State Polling Command
+      description: RunPollingCommand
+      scriptName: RunPollingCommand
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      additionalPollingCommandArgNames:
+        complex:
+          root: inputs.AdditionalPollingCommandName
+      additionalPollingCommandArgValues:
+        complex:
+          root: inputs.InstanceName
+      ids:
+        complex:
+          root: inputs.TicketId
+      pollingCommand:
+        simple: jira-get-issue
+      pollingCommandArgName:
+        simple: issueId
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: beece1b8-df15-4051-8c1d-e271251f7f6d
+    type: title
+    task:
+      id: beece1b8-df15-4051-8c1d-e271251f7f6d
+      version: -1
+      name: Done
+      description: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -170,
+          "y": 740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: db88081e-a763-43b6-8ce9-0f41663209b6
+    type: regular
+    task:
+      id: db88081e-a763-43b6-8ce9-0f41663209b6
+      version: -1
+      name: Scheduled Task Failed
+      description: Scheduled Task Failed
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: GenericPollingScheduledTask encountered an error.
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 280,
+          "y": 725
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "2_5_YES": 0.48
+    },
+    "paper": {
+      "dimensions": {
+        "height": 770,
+        "width": 830,
+        "x": -170,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: TicketId
+  value: {}
+  required: true
+  description: The Jira TicketId  to poll for its state.
+  playbookInputQuery:
+- key: Interval
+  value: {}
+  required: true
+  description: Frequency that the polling command will run (minutes).
+  playbookInputQuery:
+- key: Timeout
+  value: {}
+  required: true
+  description: Amount of time to poll before declaring a timeout and resuming the
+    playbook (in minutes).
+  playbookInputQuery:
+- key: InstanceName
+  value: {}
+  required: false
+  description: |-
+    Set the Jira Instance that will be used by the polling command.
+    Only relevant when there is more than one Jira instance.
+  playbookInputQuery:
+- key: AdditionalPollingCommandName
+  value: {}
+  required: false
+  description: "Additional polling commands are relevant when using StatePolling,\
+    \ and there is more than one Jira instance. It will specify the polling command\
+    \ to use a specific instance to run on. \nWhen implemented, add \"Using\" to the value.\
+    \ \nThe polling command will then take the instance name as the instance to use. "
+  playbookInputQuery:
+outputs: []
+tests:
+- No test.
+fromversion: 6.0.0

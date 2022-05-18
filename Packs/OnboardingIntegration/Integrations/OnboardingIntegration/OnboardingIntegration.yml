@@ -206,10 +206,10 @@ script:
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested
       type: String
-  dockerimage: demisto/faker:0.1
+  dockerimage: demisto/faker3:1.0.0.17991
   isfetch: true
   runonce: false
-  subtype: python2
+  subtype: python3
 tests:
 - No Tests
 defaultclassifier: OnboardingIntegration

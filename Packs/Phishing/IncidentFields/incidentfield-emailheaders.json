@@ -15,9 +15,7 @@
  "fieldCalcScript": "",
  "neverSetAsRequired": false,
  "isReadOnly": false,
- "selectValues": [
-
- ],
+ "selectValues": [],
  "validationRegex": "",
  "useAsKpi": false,
  "locked": false,
@@ -27,10 +25,13 @@
  "hidden": false,
  "associatedTypes": [
   "Phishing",
+  "Phishing Alerts",
   "Email Communication"
  ],
  "systemAssociatedTypes": [
-  "Email Communication"
+  "Email Communication",
+  "Phishing",
+  "Phishing Alerts"
  ],
  "associatedToAll": false,
  "unmapped": false,

@@ -9,24 +9,20 @@ def main():
         args = demisto.args()
         last_seen_gte = args.get('from')
         last_seen_lte = args.get('to')
-        limit = args.get('limit', '100')
 
-        get_endpoints_args = {'limit': limit}
+        get_endpoints_args = {'status': 'disconnected'}
 
         if last_seen_gte:
             get_endpoints_args['last_seen_gte'] = last_seen_gte
         if last_seen_lte and last_seen_lte != '0001-01-01T00:00:00Z':
             get_endpoints_args['last_seen_lte'] = last_seen_lte
 
-        res = demisto.executeCommand('xdr-get-endpoints', get_endpoints_args)
+        res = demisto.executeCommand('xdr-get-endpoints-by-status', get_endpoints_args)
         if isError(res):
             return_error(f'Error occurred while trying to get XDR endpoints: {get_error(res)}')
-        endpoints = res[0]['Contents']
 
-        disconnected_endpoints = [endpoint for endpoint in endpoints if endpoint.get('endpoint_status') != 'CONNECTED']
-        disconnected_endpoints_num = len(disconnected_endpoints)
-
-        return_results(str(disconnected_endpoints_num))
+        count = list(res[0].get('EntryContext').values())[0].get('count')
+        return_results(count)
     except Exception as ex:
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute XDRDisconnectedEndpoints. Error: {str(ex)}')

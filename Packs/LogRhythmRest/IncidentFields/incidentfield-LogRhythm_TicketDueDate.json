@@ -1,0 +1,30 @@
+{
+ "associatedToAll": false,
+ "caseInsensitive": true,
+ "cliName": "logrhythmticketduedate",
+ "closeForm": false,
+ "content": true,
+ "description": "LogRhythm Ticket Due Date",
+ "editForm": true,
+ "group": 0,
+ "hidden": false,
+ "id": "incident_logrhythmticketduedate",
+ "isReadOnly": false,
+ "locked": false,
+ "name": "LogRhythm Ticket Due Date",
+ "neverSetAsRequired": false,
+ "ownerOnly": false,
+ "required": false,
+ "sla": 0,
+ "system": false,
+ "threshold": 72,
+ "type": "date",
+ "unmapped": false,
+ "unsearchable": false,
+ "useAsKpi": false,
+ "associatedTypes": [
+  "Logrhythm Case"
+ ],
+ "version": -1,
+ "fromVersion": "5.5.0"
+}

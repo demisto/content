@@ -3,3 +3,8 @@ ignore=RM104
 
 [file:playbook-Palo_Alto_Networks_-_Automatic_SLR_(Community).yml]
 ignore=BA111
+
+[file:PaloAltoNetworksAutomaticSLRCommunity.yml]
+ignore=IN145
+[file:pack_metadata.json]
+ignore=PA129
