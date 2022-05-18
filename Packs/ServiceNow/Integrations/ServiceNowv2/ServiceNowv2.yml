@@ -150,6 +150,13 @@ configuration:
   name: incidentFetchInterval
   required: false
   type: 19
+- defaultvalue: 0
+  display: 'Advanced: Minutes to look back when fetching'
+  additionalinfo: Use this parameter to determine how long backward to look in the search for incidents
+    that were created before the last run time and did not match the query when they were created.
+  name: look_back
+  required: false
+  type: 0
 description: Use The ServiceNow IT Service Management (ITSM) solution to modernize
   the way you manage and deliver services to your users.
 display: ServiceNow v2
@@ -2171,7 +2178,7 @@ script:
     - contextPath: ServiceNow.Generic.Response
       description: Generic response to servicenow api
       type: string
-  dockerimage: demisto/python3:3.10.4.27798
+  dockerimage: demisto/python3:3.10.4.29342
   isfetch: true
   ismappable: true
   isremotesyncin: true
