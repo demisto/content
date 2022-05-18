@@ -1,9 +1,9 @@
 commonfields:
-  id: EWS Extension Online Powershell
+  id: EWS Extension Online Powershell v2
   version: -1
 vcShouldKeepItemLegacyProdMachine: false
-name: EWS Extension Online Powershell
-display: EWS Extension Online Powershell
+name: EWS Extension Online Powershell v2
+display: EWS Extension Online Powershell v2
 category: Utilities
 description: Use the EWS Extension Online Powershell v2 integration to get information about mailboxes and users in your organization.  This integration can also retrieve and modify Tenant Allow/Block Lists.
 configuration:
@@ -329,6 +329,54 @@ script:
       - no
       description: Specify whether or not to output results to context.
       defaultValue: no
+    outputs:
+    - contextPath: EWS.NewTenantBlocks.Action
+      description: List type ('Block' or 'Allow')
+      type: string
+    - contextPath: EWS.NewTenantBlocks.EntryValueHash
+      description: Entry Value Hash
+      type: string
+    - contextPath: EWS.NewTenantBlocks.Error
+      description: Error (if any) returned by remote command
+    - contextPath: EWS.NewTenantBlocks.ExpirationDate
+      description: DateTime the entry will expire and be removed
+      type: string
+    - contextPath: EWS.NewTenantBlocks.Identity
+      description: Unique identifier for the entry
+      type: string
+    - contextPath: EWS.NewTenantBlocks.LastModifiedTime
+      description: DateTime of last modification
+      type: string
+    - contextPath: EWS.NewTenantBlocks.ListSubType
+      description: List sub type (Tenant or AdvancedDelivery)
+      type: string
+    - contextPath: EWS.NewTenantBlocks.ModifiedBy
+      description: User / App Registration which last modified this entry
+      type: string
+    - contextPath: EWS.NewTenantBlocks.Notes
+      description: Custom notes added to the entry.
+      type: string
+    - contextPath: EWS.NewTenantBlocks.ObjectState
+      description: State of the object (e.g. New/Modified/Deleted)
+      type: string
+    - contextPath: EWS.NewTenantBlocks.PSComputerName
+      description: Name of Remote Powershell endpoint
+      type: string
+    - contextPath: EWS.NewTenantBlocks.PSShowComputerName
+      description: Flag whether or not remote computer name is shown in PS prompt
+      type: boolean
+    - contextPath: EWS.NewTenantBlocks.RunspaceId
+      description: RunspaceID of the entry
+      type: string
+    - contextPath: EWS.NewTenantBlocks.SubmissionID
+      description: SubmissionID of the entry
+      type: string
+    - contextPath: EWS.NewTenantBlocks.SysManaged
+      description: SysManaged property of the entry
+      type: boolean
+    - contextPath: EWS.NewTenantBlocks.Value
+      description: The value of the new entry created
+      type: string
     description: Add new items to the Tenant Allow/Block Lists.  Uses PowerShell New-TenantAllowBlockListItems cmdlet.
     execution: true
   - name: ews-get-tenant-allow-block-list-items
@@ -373,6 +421,54 @@ script:
       - no
       description: Specify whether or not to output results to context.
       defaultValue: no
+    outputs:
+    - contextPath: EWS.CurrentTenantBlocks.Action
+      description: List type ('Block' or 'Allow')
+      type: string
+    - contextPath: EWS.CurrentTenantBlocks.EntryValueHash
+      description: Entry Value Hash
+      type: string
+    - contextPath: EWS.CurrentTenantBlocks.Error
+      description: Error (if any) returned by remote command
+      type: boolean
+    - contextPath: EWS.CurrentTenantBlocks.ExpirationDate
+      description: DateTime the entry will expire and be removed
+      type: string
+    - contextPath: EWS.CurrentTenantBlocks.Identity
+      description: Unique identifier for the entry
+      type: string
+    - contextPath: EWS.CurrentTenantBlocks.LastModifiedDateTime
+      description: DateTime of last modification
+      type: string
+    - contextPath: EWS.CurrentTenantBlocks.ListSubType
+      description: List sub type (Tenant or AdvancedDelivery)
+      type: string
+    - contextPath: EWS.CurrentTenantBlocks.ModifiedBy
+      description: User / App Registration which last modified this entry
+      type: string
+    - contextPath: EWS.CurrentTenantBlocks.Notes
+      description: Custom notes added to the entry.
+      type: string
+    - contextPath: EWS.CurrentTenantBlocks.ObjectState
+      description: State of the object (e.g. New/Modified/Deleted)
+      type: string
+    - contextPath: EWS.CurrentTenantBlocks.PSComputerName
+      description: Name of Remote Powershell endpoint
+    - contextPath: EWS.CurrentTenantBlocks.PSShowComputerName
+      description: Flag whether or not remote computer name is shown in PS prompt
+      type: boolean
+    - contextPath: EWS.CurrentTenantBlocks.RunspaceId
+      description: RunspaceID of the entry
+      type: string
+    - contextPath: EWS.CurrentTenantBlocks.SubmissionID
+      description: SubmissionID of the entry
+      type: string
+    - contextPath: EWS.CurrentTenantBlocks.SysManaged
+      description: SysManaged property of the entry
+      type: boolean
+    - contextPath: EWS.CurrentTenantBlocks.Value
+      description: The value of the new entry created
+      type: string
     description: Retrieve current Tenant Allow/Block List items.  Uses Get-TenantAllowBlockListItems cmdlet.
   - name: ews-get-tenant-allow-block-list-count
     arguments:
@@ -397,6 +493,16 @@ script:
       - no
       description: Specify whether or not to output results to context.
       defaultValue: no
+    outputs:
+    - contextPath: EWS.CurrentListCount.Count
+      description: Number of entries presently in the specified list
+      type: number
+    - contextPath: EWS.CurrentListCount.ListSubType
+      description: List sub type (Tenant or AdvancedDelivery)
+      type: string
+    - contextPath: EWS.CurrentListCount.ListType
+      description: List type
+      type: string
     description: Retrieve current count of defined Tenant Allow/Block List items.  Uses Get-TenantAllowBlockListItems cmdlet.
   - name: ews-remove-tenant-allow-block-list-items
     arguments:
@@ -427,6 +533,55 @@ script:
       - no
       description: Specify whether or not to output results to context.
       defaultValue: no
+    outputs:
+    - contextPath: EWS.RemovedTenantBlocks.Action
+      description: Action
+      type: string
+    - contextPath: EWS.RemovedTenantBlocks.EntryValueHash
+      description: Null for deleted items.
+      type: string
+    - contextPath: EWS.RemovedTenantBlocks.Error
+      description: Null for deleted items.
+      type: string
+    - contextPath: EWS.RemovedTenantBlocks.ExpirationDate
+      description: Null for deleted items.
+      type: string
+    - contextPath: EWS.RemovedTenantBlocks.Identity
+      description: Blank for deleted items.
+      type: string
+    - contextPath: EWS.RemovedTenantBlocks.LastModifiedDateTime
+      description: Null for deleted items.
+      type: string
+    - contextPath: EWS.RemovedTenantBlocks.ListSubType
+      description: Null for deleted items.
+      type: string
+    - contextPath: EWS.RemovedTenantBlocks.ModifiedBy
+      description: Null for deleted items.
+      type: string
+    - contextPath: EWS.RemovedTenantBlocks.Notes
+      description: Null for deleted items.
+      type: string
+    - contextPath: EWS.RemovedTenantBlocks.ObjectState
+      description: State of the object (Deleted)
+      type: string
+    - contextPath: EWS.RemovedTenantBlocks.PSComputerName
+      description: Name of Remote Powershell endpoint
+      type: string
+    - contextPath: EWS.RemovedTenantBlocks.PSShowComputerName
+      description: Flag whether or not remote computer name is shown in PS prompt
+      type: boolean
+    - contextPath: EWS.RemovedTenantBlocks.RunspaceId
+      description: RunspaceID of the entry
+      type: string
+    - contextPath: EWS.RemovedTenantBlocks.SubmissionID
+      description: SubmissionID of the entry
+      type: string
+    - contextPath: EWS.RemovedTenantBlocks.SysManaged
+      description: SysManaged property of the entry
+      type: boolean
+    - contextPath: EWS.RemovedTenantBlocks.Value
+      description: The value of the entry that was removed
+      type: string
     description: Remove items from the Tenant Allow/Block Lists.   You can delete items by their value or by unique ID.  Uses PowerShell cmdlet Remove-TenantAllowBlockListItems cmdlet.
   dockerimage: demisto/pwsh-exchange:1.0.0.22307
   runonce: false
