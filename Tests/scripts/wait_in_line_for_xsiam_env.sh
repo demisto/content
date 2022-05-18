@@ -1,4 +1,12 @@
 #! /bin/bash
+# Script that locks XSIAM machines for testing.
+# We lock one machine for each job. The lock identifier contains $CI_JOB_ID.
+# We release the lock after the job ends. Other jobs check that the job's status that locking the machine is not `running`.
+# If there is a lock for some machine, and its job status is not running, the lock is removed.
+# If we want to lock specific machine, set $LOCK_MACHINE_NAME=requested_machine_to_lock variable.
+# If we want to lock the machine for the entire pipeline(build) and not only for one job, set the $LOCK_BY_PIPELINE_ID variable.
+# (I am just checking that this var is not empty during the script).
+# Other jobs will check that the pipeline is still running, and not only if the job is running.
 
 #=================================
 #   Consts
@@ -7,7 +15,8 @@
 export GCS_LOCKS_PATH=gs://xsoar-ci-artifacts/content-locks-xsiam
 export LOCK_IDENTIFIER=lock
 export ALLOWED_STATES=running
-export BUILD_STATUS_API=https://code.pan.run/api/v4/projects/2596/jobs   # disable-secrets-detection
+export JOBS_STATUS_API=https://code.pan.run/api/v4/projects/2596/jobs   # disable-secrets-detection # check jobs in content repo
+export PIPELINE_STATUS_API=https://code.pan.run/api/v4/projects/3734/pipelines  # disable-secrets-detection # check pipelines in content-test-conf repo
 export SELF_LOCK_PATTERN=*-$LOCK_IDENTIFIER-$CI_JOB_ID
 
 #=================================
@@ -23,8 +32,19 @@ export QUEUE_SELF_LOCK=$GCS_QUEUE_FILE-$LOCK_IDENTIFIER-$CI_JOB_ID
 #   Functions & helpers
 #==================================
 
-function get_build_job_statuses() {
-	export BUILD_STATUSES=`echo $1 | tr ' ' '\n' | xargs -I {} curl --header "PRIVATE-TOKEN: $GITLAB_STATUS_TOKEN" $BUILD_STATUS_API/{} -s | jq -c '. | .status' | sed 's/"//g' | tr ' ' '\n' | sort | uniq`
+function get_job_statuses() {
+  # check `content` jobs statuses
+	export JOBS_STATUSES=`echo $1 | tr ' ' '\n' | xargs -I {} curl --header "PRIVATE-TOKEN: $GITLAB_STATUS_TOKEN" $JOBS_STATUS_API/{} -s | jq -c '. | .status' | sed 's/"//g' | tr ' ' '\n' | sort | uniq`
+}
+function get_pipelines_statuses() {
+  # check `content-test-conf` builds statuses
+	export PIPELINES_STATUSES=`echo $1 | tr ' ' '\n' | xargs -I {} curl --header "PRIVATE-TOKEN: $GITLAB_STATUS_TOKEN" $PIPELINE_STATUS_API/{} -s | jq -c '. | .status' | sed 's/"//g' | tr ' ' '\n' | sort | uniq`
+}
+function get_build_job_statuses(){
+    TO_SEND=`echo $1 | tr '#' ' '`
+    get_pipelines_statuses "$TO_SEND"
+    get_job_statuses "$TO_SEND"
+    export BUILD_STATUSES=`echo "$PIPELINES_STATUSES $JOBS_STATUSES" | tr ' ' '\n' | sort | uniq`
 }
 
 function is_status_exists() {
@@ -41,11 +61,11 @@ function lock_queue() {
 	do
 		# get all queue locks
 		echo "Getting queue existing locks"
-    export QUEUE_LOCK_BUILDS=`gsutil -m ls $GCS_LOCKS_PATH/$QUEUE_LOCK_PATTERN 2> /dev/null | sed 's/.*-'$LOCK_IDENTIFIER'-//'`
-		if [ ! -z "$QUEUE_LOCK_BUILDS" ]
+    export QUEUE_LOCK_JOBS=`gsutil -m ls $GCS_LOCKS_PATH/$QUEUE_LOCK_PATTERN 2> /dev/null | sed 's/.*-'$LOCK_IDENTIFIER'-//'`
+		if [ ! -z "$QUEUE_LOCK_JOBS" ]
 		then
-			echo -e "The following jobs have locks for queue: \n$QUEUE_LOCK_BUILDS"
-			get_build_job_statuses "$QUEUE_LOCK_BUILDS"
+			echo -e "The following jobs have locks for queue: \n$QUEUE_LOCK_JOBS"
+			get_build_job_statuses "$QUEUE_LOCK_JOBS"
   		is_status_exists "$BUILD_STATUSES" "$ALLOWED_STATES"
 			if [ -z "$EXISTS" ]
 			then
@@ -73,11 +93,21 @@ function release_queue() {
 }
 
 function get_number_in_line() {
-	export NUMBER_IN_LINE=`cat $1 2> /dev/null | grep -n $CI_JOB_ID | cut -d: -f1`
+  # if $LOCK_BY_PIPELINE_ID var is set, line in queue is: job_id#pipeline_id, else only job_id
+  if ! [ -z $LOCK_BY_PIPELINE_ID ]; then
+	  export NUMBER_IN_LINE=`cat $1 2> /dev/null | grep -n "$CI_JOB_ID#$CI_PIPELINE_ID" | cut -d: -f1`
+	else
+	  export NUMBER_IN_LINE=`cat $1 2> /dev/null | grep -n $CI_JOB_ID | cut -d: -f1`
+	fi
 }
 
 function register_in_line() {
-	echo $CI_JOB_ID >> $1
+  # if $LOCK_BY_PIPELINE_ID var is set, line in queue is: job_id#pipeline_id, else only job_id
+  if ! [ -z $LOCK_BY_PIPELINE_ID ]; then
+	  echo "$CI_JOB_ID#$CI_PIPELINE_ID" >> $1
+	else
+	  echo $CI_JOB_ID >> $1
+	fi
 	export LOCK_CHANGED="true"
 }
 
@@ -109,7 +139,12 @@ function get_build_locks() {
 
 function lock_machine() {
         echo "Locking $TEST_MACHINE for testing"
-    	  export MACHINE_LOCK_FILE=$TEST_MACHINE-$LOCK_IDENTIFIER-$CI_JOB_ID
+        # if $LOCK_BY_PIPELINE_ID, lock by $CI_PIPELINE_ID, else lock by $CI_JOB_ID
+        if ! [ -z $LOCK_BY_PIPELINE_ID ]; then
+    	    export MACHINE_LOCK_FILE=$TEST_MACHINE-$LOCK_IDENTIFIER-$CI_PIPELINE_ID
+    	  else
+    	    export MACHINE_LOCK_FILE=$TEST_MACHINE-$LOCK_IDENTIFIER-$CI_JOB_ID
+    	  fi
     		touch $MACHINE_LOCK_FILE
     		gsutil -m cp $MACHINE_LOCK_FILE $GCS_LOCKS_PATH/$MACHINE_LOCK_FILE
     		echo $TEST_MACHINE > ChosenMachine
@@ -127,31 +162,37 @@ function poll_for_env() {
   do
 	# for each machine in machine list do:
 	 cat $TEST_MACHINES_LIST | while read TEST_MACHINE; do
-    export MACHINE_LOCK_PATTERN=$TEST_MACHINE-$LOCK_IDENTIFIER-*	# {machine_name}-lock-*
-    # Get all lock files from GCS and extract their build number
-    echo "Getting Build locks for $TEST_MACHINE"
-    get_build_locks # lists all files that looks like: MACHINE_LOCK_PATTERN, return arg: BUILDS (id of builds)
-		if [ ! -z "$BUILDS" ]	# if BUILDS not empty
-		then
-		  echo -e "The following jobs have locks for $TEST_MACHINE: \n$BUILDS"
-		  # This checks all jobs statuses and eliminates duplicates (we don't care which job has what status, we just need one)
-		  get_build_job_statuses "$BUILDS"
-      echo -e "Job statuses found are: \n $BUILD_STATUSES"
-
-      # We don't want to interfere with running jobs. The rest are ok
-      is_status_exists "$BUILD_STATUSES" "$ALLOWED_STATES"	# ALLOWED_STATES == blocking states, that we cant run if such states exists
-      if [ ! -z "$EXISTS" ]
+	  # if ($LOCK_MACHINE_NAME is not defined) or ($LOCK_MACHINE_NAME is defined and $LOCK_MACHINE_NAME == TEST_MACHINE):
+    if [[ -z "$LOCK_MACHINE_NAME" ]] || [[ "$LOCK_MACHINE_NAME" = "$TEST_MACHINE" ]]
+	  then
+      export MACHINE_LOCK_PATTERN=$TEST_MACHINE-$LOCK_IDENTIFIER-*	# {machine_name}-lock-*
+      # Get all lock files from GCS and extract their build number
+      echo "Getting Build locks for $TEST_MACHINE"
+      get_build_locks # lists all files that looks like: MACHINE_LOCK_PATTERN, return arg: BUILDS (id of builds)
+      if [ ! -z "$BUILDS" ]	# if BUILDS not empty
       then
-        echo "Environment $TEST_MACHINE in use. Trying another..."
+        echo -e "The following jobs have locks for $TEST_MACHINE: \n$BUILDS"
+        # This checks all jobs statuses and eliminates duplicates (we don't care which job has what status, we just need one)
+        get_build_job_statuses "$BUILDS"
+        echo -e "Job statuses found are: \n $BUILD_STATUSES"
+
+        # We don't want to interfere with running jobs. The rest are ok
+        is_status_exists "$BUILD_STATUSES" "$ALLOWED_STATES"	# ALLOWED_STATES == blocking states, that we cant run if such states exists
+        if [ ! -z "$EXISTS" ]
+        then
+          echo "Environment $TEST_MACHINE in use. Trying another..."
+        else
+          echo "Environment $TEST_MACHINE not in use. Removing unnecessary lock files."
+          gsutil rm "gs://xsoar-ci-artifacts/content-locks-xsiam/$TEST_MACHINE-lock-*"
+          lock_machine	# create lock file, writes ChosenMachine file
+          break
+        fi
       else
-    	  lock_machine	# create lock file, writes ChosenMachine file
-      	break
+        echo "No locks were found for $TEST_MACHINE"
+        lock_machine
+        break
       fi
-    else
-		  echo "No locks were found for $TEST_MACHINE"
-		  lock_machine
-		  break
-		fi
+    fi
   done
 
     # Next step test - if we found a machine, carry on. If not, keep polling...
@@ -184,6 +225,19 @@ touch XSIAMEnvVariables
 # copy TestMachines locally for faster perf
 gsutil cp $GCS_LOCKS_PATH/$TEST_MACHINES_LIST $TEST_MACHINES_LIST	# copy file from bucket. 3 machines names.
 export NUM_OF_TEST_MACHINES=`sed -n '$=' $TEST_MACHINES_LIST`	# reads num of lines in file (this is the num of machines)
+
+TEST_MACHINES_LIST_STRING=`cat $TEST_MACHINES_LIST`
+if [[ $TEST_MACHINES_LIST_STRING != *"$LOCK_MACHINE_NAME"* ]];
+then
+  echo "Machine that you trying to lock: '$LOCK_MACHINE_NAME' is not exist in Test Machines List."
+  exit 1
+fi
+
+if ! [ -z $LOCK_BY_PIPELINE_ID ]; then
+  echo "Locking machine by pipeline_id: $CI_PIPELINE_ID, *$LOCK_BY_PIPELINE_ID*"
+else
+  echo "Locking machine by job_id: $CI_JOB_ID, *$LOCK_BY_PIPELINE_ID*"
+fi
 
 echo -e "We have $NUM_OF_TEST_MACHINES machines for testing and a lot more builds to test"
 echo -e "If we want to make sure our product stays amazing, we will have to work together and keep an orderly queue"

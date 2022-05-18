@@ -6,9 +6,9 @@ import traceback
 from typing import Any, Dict
 
 
-def get_entry_context(domains, isSingle) -> Dict[str, Any]:
+def get_entry_context(domains, is_single) -> Dict[str, Any]:
     urls_to_return = []
-    if isSingle:
+    if is_single:
         if domains.startswith('http://') or domains.startswith('https://'):
             urls_to_return.append(domains)
         else:
@@ -18,7 +18,6 @@ def get_entry_context(domains, isSingle) -> Dict[str, Any]:
         for domain in domains:
             if domain.startswith('http://') or domain.startswith('https://'):
                 urls_to_return.append(domain)
-                continue
             else:
                 urls_to_return.append("http://{}".format(domain))
                 urls_to_return.append("https://{}".format(domain))
