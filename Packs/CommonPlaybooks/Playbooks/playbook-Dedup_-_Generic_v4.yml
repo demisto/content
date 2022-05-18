@@ -2,10 +2,10 @@ id: Dedup - Generic v4
 version: -1
 name: Dedup - Generic v4
 description: "This playbook identifies duplicate incidents using the XSOAR machine\
-  \ learning method (script).\nIn this playbook, you can choose how to find similar\
-  \ incidents by using fields and/or indicators to be compared against other incidents\
-  \ in the XSOAR DB.\n\nRemember that the identification of similar incidents is *must*\
-  \ be defined properly in the playbook's inputs. "
+  \ learning method (script).\nIn this playbook, you can choose fields and/or indicators\
+  \ to be compared against other incidents in the Cortex XSOAR database.\
+  \ \n\nNote: To identify similar incidents you must *must* properly define the playbook inputs. "\
+  
 starttaskid: "0"
 tasks:
   "0":
@@ -45,8 +45,8 @@ tasks:
       id: e9020a3c-3576-4970-8733-4ade2184dc25
       version: -1
       name: Find Similar Incidents By Fields
-      description: Find past similar incidents based on incident fields' similarity.
-        Includes an option to also display indicators similarity.
+      description: Find past similar incidents based on similar incident fields.
+        Includes an option to also display indicator similarity.
       scriptName: DBotFindSimilarIncidents
       type: regular
       iscommand: false
@@ -96,7 +96,7 @@ tasks:
       id: 0cde2f9d-a843-4c67-86c4-6c042f4ccc38
       version: -1
       name: Are There Any Similar Incidents?
-      description: Checking if the DBotFindSimilarIncidents tasks returned any output.
+      description: Checks if the DBotFindSimilarIncidents task returned an output.
       type: condition
       iscommand: false
       brand: ""
@@ -786,34 +786,34 @@ inputs:
   value:
     simple: Link
   required: true
-  description: "This input defines how to handle Similar incidents. \nYou may choose\
-    \ between: \"Link\", \"Close\", \"Link and Close\".\nNote: that closing incidents\
-    \ will require you to define \"CloseSimilar\" input as well.\nAlso, note that\
+  description: "This input defines how to handle similar incidents. \nYou can choose\
+    \ between: \"Link\", \"Close\", \"Link and Close\".\nNote: Close incidents\
+    \ requires you to define the \"CloseSimilar\" input as well.\nAlso, note that\
     \ the closer will apply on at least one of the options (indicators or fields)\
     \ which will match the \"closer percentage\" criteria.\nDefault: Link "
   playbookInputQuery:
 - key: fieldExactMatch
   value: {}
   required: false
-  description: "Please select those incident types which you would like to be *equal*\
-    \ on queried incidents. \nFor example - if you put <Type>, the PB will query against\
-    \ the DB for all the incidents with the same type as your current incident.\n\
-    If you are using comma-separated values - please remember that the operator between\
+  description: "Select the incident types you want to be *equal*\
+    \ on queried incidents. \nFor example, if you select <Type>, the PB will query against\
+    \ the database for all incidents with the same type as your current incident.\n\
+    \ Note: If you use comma-separated values, the operator between\
     \ them will be *AND*."
   playbookInputQuery:
 - key: fieldsToDisplay
   value: {}
   required: false
   description: |-
-    Comma-separated list of additional incident fields to display in the context output. Those fields can be used later on for Layouts or other states if needed.
+    A comma-separated list of additional incident fields to display in the context output. These fields can be used later on for layouts or other states if needed.
     (Those which will not be taken into account when computing similarity)
   playbookInputQuery:
 - key: fromDate
   value:
     simple: 1 months ago
   required: false
-  description: The start date by which to filter incidents. Date format will be the
-    same as in the incidents query page, for example, "3 days ago", "1 months ago",
+  description: The start date to filter incidents. Date format is the
+    same as in the incidents query page, for example, "3 days ago", "1 month ago",
     "2019-01-01T00:00:00 +0200").
   playbookInputQuery:
 - key: limit
@@ -829,21 +829,21 @@ inputs:
     simple: "0.2"
   required: true
   description: |-
-    Retain incidents with a similarity score that's higher than the MinimunIncidentSimilarity.
+    Retain incidents with a similarity score greater than the MinimunIncidentSimilarity.
     Default: 0.2
     Value should be between 0 to 1 [0=low similarity, 1=identical]
   playbookInputQuery:
 - key: similarTextField
   value: {}
   required: true
-  description: Comma-separated list of incident text fields to take into account when
+  description: A comma-separated list of incident text fields to take into account when
     computing similarity. For example commandline, URL
   playbookInputQuery:
 - key: CloseSimilar
   value: {}
   required: false
   description: |-
-    Define if you would like to close incidents by a similarity percentage. The percentage will be the bottom border for closing inc.
+    Define if you want to close incidents by a similarity percentage. The percentage will be the bottom border for closing inc.
     This option will close also exact matches as well ( if there are).
     Value should be between 0 to 1 [0=low similarity , 1=identical]
   playbookInputQuery:
@@ -852,7 +852,7 @@ inputs:
     simple: "True"
   required: false
   description: |-
-    Whether to display the similarity score for each of the incident fields that was entered in the "similarTextField".
+    Whether to display the similarity score for each of the incident fields that were entered in the "similarTextField".
     Default: True
   playbookInputQuery:
 - key: query
@@ -867,12 +867,12 @@ inputs:
   value:
     simple: Closed by Dedup Playbook within inc ${incident.id}
   required: false
-  description: Please specify the reason for closing an incident. This information
+  description: Specify the reason for closing the incident. This information
     will be added as a note/comment to the closed incident.
   playbookInputQuery:
 outputs:
 - contextPath: DBotFindSimilarIncidents
-  description: Return all the results from the "DBotFindSimilarIncidents" script
+  description: Return all the results from the "DBotFindSimilarIncidents" script.
   type: string
 tests:
 - Field polling test
