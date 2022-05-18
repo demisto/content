@@ -1771,6 +1771,41 @@ class TestPanoramaCommand:
         assert result[0].serial
         assert result[0].last_commit_all_state_tpl
 
+    def test_push_all(self, mock_topology):
+        """
+        Test the push_all function returns the correct data given combinations of device group and template stack filters.
+        """
+        from Panorama import PanoramaCommand
+
+        # First run a basic test where we don't filter the result at all.
+        PanoramaCommand.get_template_stacks = MagicMock(return_value=mock_templates())
+        PanoramaCommand.get_device_groups = MagicMock(return_value=mock_device_groups())
+
+        result = PanoramaCommand.push_all(mock_topology)
+        assert result
+        assert result[0].commit_type == "devicegroup"
+        assert result[0].name == "test-dg"
+
+        assert result
+        assert result[1].commit_type == "template-stack"
+        assert result[1].name == "test-template"
+
+        assert len(result) == 2
+
+        # Test a push where we filter to only one device group - we should not push any template stacks here
+        result = PanoramaCommand.push_all(mock_topology, device_group_filter=["test-dg"])
+        assert result
+        assert result[0].commit_type == "devicegroup"
+        assert result[0].name == "test-dg"
+        assert len(result) == 1
+
+        # Same as above, but with onl template_stacks
+        result = PanoramaCommand.push_all(mock_topology, template_stack_filter=["test-template"])
+        assert result
+        assert result[0].commit_type == "template-stack"
+        assert result[0].name == "test-template"
+        assert len(result) == 1
+
 
 class TestUniversalCommand:
     """Test all the commands relevant to both Panorama and Firewall devices"""
@@ -1881,6 +1916,21 @@ class TestUniversalCommand:
         result = UniversalCommand.check_system_availability(mock_topology, "fake")
         assert result
         assert not result.up
+
+    def test_commit(self, mock_topology):
+        """
+        Test the commit function returns teh correct data
+        The pan-os-python download software actually doesn't return any output itself unless it errors, so we just check our
+        dataclass is set correctly within the function and retuned.
+        """
+        from Panorama import UniversalCommand
+
+        result = UniversalCommand.commit(mock_topology)
+        # Check all attributes of summary data have values
+        assert result
+        for result_dataclass in result:
+            for value in result_dataclass.__dict__.values():
+                assert value
 
 
 class TestFirewallCommand:
@@ -2297,3 +2347,4 @@ class TestHygieneFunctions:
         assert result
         for value in result[0].__dict__.values():
             assert value
+

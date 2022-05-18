@@ -9607,49 +9607,55 @@ class PanoramaCommand:
         result = []
 
         for device in topology.active_top_level_devices(device_filter_str):
-            # Get the relevent DGs and Templates to push.
-            device_groups = PanoramaCommand.get_device_groups(topology, resolve_host_id(device))
-            device_group_names = set([x.name for x in device_groups])
-            template_stacks = PanoramaCommand.get_template_stacks(topology, resolve_host_id(device))
-            template_stack_names = set([x.name for x in template_stacks])
+            # Get the relevant DGs and Templates to push.
 
-            if device_group_filter:
-                device_group_names = set([x for x in device_group_names if x in device_group_filter])
+            # If the template_stack_filter is provided, we don't want to push device groups.
+            if not template_stack_filter:
+                device_groups = PanoramaCommand.get_device_groups(topology, resolve_host_id(device))
+                device_group_names = set([x.name for x in device_groups])
 
-            if template_stack_filter:
-                template_stack_names = set([x for x in template_stack_names if x in template_stack_filter])
+                if device_group_filter:
+                    device_group_names = set([x for x in device_group_names if x in device_group_filter])
 
-            for dg_name in device_group_names:
-                device_group_commit = PanoramaCommitAll(
-                    style="device group",
-                    name=dg_name
-                )
-                result_job_id = device.commit(cmd=device_group_commit)
-                result.append(PushStatus(
-                    hostid=resolve_host_id(device),
-                    commit_type="devicegroup",
-                    name=dg_name,
-                    job_id=result_job_id,
-                    commit_all_status="Initiated",
-                    device_status="",
-                    device=""
-                ))
+                for dg_name in device_group_names:
+                    device_group_commit = PanoramaCommitAll(
+                        style="device group",
+                        name=dg_name
+                    )
+                    result_job_id = device.commit(cmd=device_group_commit)
+                    result.append(PushStatus(
+                        hostid=resolve_host_id(device),
+                        commit_type="devicegroup",
+                        name=dg_name,
+                        job_id=result_job_id,
+                        commit_all_status="Initiated",
+                        device_status="",
+                        device=""
+                    ))
 
-            for template_name in template_stack_names:
-                template_stack_commit = PanoramaCommitAll(
-                    style="template stack",
-                    name=template_name
-                )
-                result_job_id = device.commit(cmd=template_stack_commit)
-                result.append(PushStatus(
-                    hostid=resolve_host_id(device),
-                    commit_type="template-stack",
-                    name=template_name,
-                    job_id=result_job_id,
-                    commit_all_status="Initiated",
-                    device_status="",
-                    device=""
-                ))
+            # If the device_group_filter is provided, we don't want to push template_stacks
+            if not device_group_filter:
+                template_stacks = PanoramaCommand.get_template_stacks(topology, resolve_host_id(device))
+                template_stack_names = set([x.name for x in template_stacks])
+
+                if template_stack_filter:
+                    template_stack_names = set([x for x in template_stack_names if x in template_stack_filter])
+
+                for template_name in template_stack_names:
+                    template_stack_commit = PanoramaCommitAll(
+                        style="template stack",
+                        name=template_name
+                    )
+                    result_job_id = device.commit(cmd=template_stack_commit)
+                    result.append(PushStatus(
+                        hostid=resolve_host_id(device),
+                        commit_type="template-stack",
+                        name=template_name,
+                        job_id=result_job_id,
+                        commit_all_status="Initiated",
+                        device_status="",
+                        device=""
+                    ))
 
         return result
 
