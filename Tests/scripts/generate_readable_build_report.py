@@ -43,10 +43,12 @@ def generate_error_msg_for_servers(failing_test_data):
            f'The error as it appears in the logs: {failing_test_data.get("error", "")}'
 
 
-def build_summary_report(logging_manager, create_instances_summary, server_6_1_summary,
+def build_summary_report(logging_manager,
+                         validate_summary,
+                         unit_tests_summary,
+                         create_instances_summary,
                          server_6_2_summary,
-                         server_master_summary,
-                         output_file):
+                         server_master_summary, output_file):
 
     create_test_cases = []
     for failing_pack, failing_pack_data in create_instances_summary.items():
@@ -57,29 +59,22 @@ def build_summary_report(logging_manager, create_instances_summary, server_6_1_s
         create_test_cases.append(test_case)
     create_ts = TestSuite("Create Instances", create_test_cases)
 
-    test_cases_6_1 = []
-    for failing_test, failing_test_data in server_6_1_summary.items():
-        test_case = TestCase(f'6_1.{failing_test}', 'Server 6.1')
-        test_case.add_failure_info(message=generate_error_msg_for_servers(failing_test_data[0]))
-        test_cases_6_1.append(test_case)
-    ts_6_1 = TestSuite("Server 6.1", test_cases_6_1)
-
     test_cases_6_2 = []
     for failing_test, failing_test_data in server_6_2_summary.items():
         test_case = TestCase(f'6_2.{failing_test}', 'Server 6.2')
         test_case.add_failure_info(message=generate_error_msg_for_servers(failing_test_data[0]))
         test_cases_6_2.append(test_case)
-    ts_6_2 = TestSuite("Server 6.1", test_cases_6_2)
+    ts_6_2 = TestSuite("Server 6.2", test_cases_6_2)
 
     test_cases_server_master = []
-    for failing_test, failing_test_data in server_6_1_summary.items():
+    for failing_test, failing_test_data in server_master_summary.items():
         test_case = TestCase(f'master.{failing_test}', 'Server Master')
         test_case.add_failure_info(message=generate_error_msg_for_servers(failing_test_data[0]))
         test_cases_server_master.append(test_case)
     ts_master = TestSuite("Server Master", test_cases_server_master)
 
     with open(output_file, 'a') as f:
-        to_xml_report_file(f, [create_ts, ts_6_1, ts_6_2, ts_master], prettyprint=False)
+        to_xml_report_file(f, [create_ts, ts_6_2, ts_master], prettyprint=False)
 
 
 def get_failing_ut():
@@ -91,6 +86,19 @@ def get_failing_ut():
     else:
         pr_message = 'No failing unit tests in this push!\n'
     return pr_message, failed_ut
+
+
+def get_failing_lint():
+    failing_lints = get_file_data(os.path.join(ARTIFACTS_FOLDER, 'lint_outputs.json'))
+    if failing_lints:
+        test_cases_server_master = []
+        for failing_test in failing_lints:
+
+            test_case = TestCase(f'master.{failing_test}', 'Server Master')
+            test_case.add_failure_info(message=generate_error_msg_for_servers(failing_test_data[0]))
+            test_cases_server_master.append(test_case)
+        ts = TestSuite("Server Master", test_cases_server_master)
+    return ts
 
 
 def get_failing_validations():
@@ -118,8 +126,8 @@ def get_failing_create_instances():
     return 'pr_message', create_instances_summary
 
 
-def get_failing_server_6_1():
-    failing_6_1 = get_file_data(os.path.join(f'{ARTIFACTS_FOLDER}/xsoar', 'test_playbooks_report_Server 6.1.json'))
+def get_failing_server_6_2():
+    failing_6_1 = get_file_data(os.path.join(f'{ARTIFACTS_FOLDER}/xsoar', 'test_playbooks_report_Server 6.2.json'))
     # file = open('validate_outputs.json', 'r')
     # failed_validations = json.load(file)
     return 'pr_message', failing_6_1
@@ -137,15 +145,14 @@ def generate_build_report(logging_manager, output_file):
     validate_pr_comment, validate_summary = get_failing_validations()
     unit_tests_pr_comment, unit_tests_summary = get_failing_ut()
     create_instances_pr_comment, create_instances_summary = get_failing_create_instances()
-    server_6_1_pr_comment, server_6_1_summary = get_failing_server_6_1()
+    server_6_2_pr_comment, server_6_2_summary = get_failing_server_6_2()
     pr_comment = create_pr_comment(validate_pr_comment, unit_tests_pr_comment)
     _add_pr_comment(pr_comment, logging_manager, 'here is a link to the full report')
     build_summary_report(logging_manager,
                          validate_summary,
                          unit_tests_summary,
                          create_instances_summary,
-                         server_6_1_summary,
-                         server_6_2_summary={},
+                         server_6_2_summary,
                          server_master_summary={}, output_file=output_file)
 
 
