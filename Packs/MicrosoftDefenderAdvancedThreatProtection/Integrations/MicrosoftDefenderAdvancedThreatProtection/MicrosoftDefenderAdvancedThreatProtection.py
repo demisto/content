@@ -14,8 +14,6 @@ from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 from dateutil.parser import parse
 from requests import Response
 
-register_module_line('Microsoft Defender Advanced Threat Protection', 'start', __line__())
-
 
 # Disable insecure warnings
 urllib3.disable_warnings()
