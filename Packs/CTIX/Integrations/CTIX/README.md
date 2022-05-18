@@ -969,13 +969,13 @@ Get Indicator Details
 ```json
 {"aliases": null, "analyst_description": null, "analyst_score": null, 
  "analyst_tlp": null, "asn": null, "attribute_field": "value", 
- "attribute_value": "172.86.75.158", "base_type": "sdo", "confidence_score": 
+ "attribute_value": "8.8.8.8", "base_type": "sdo", "confidence_score": 
  18, "confidence_type": "CTIX", "country": "Netherlands", "created": 
  1651648700, "ctix_created": 1651648700, "ctix_modified": 1652113922, 
  "ctix_score": 18, "ctix_tlp": null, "defang_analyst_description": null, 
  "description": null, "fang_analyst_description": null, "first_seen": null, 
- "last_seen": null, "modified": 1651648700, "name": "172.86.75.158", 
- "pattern": "[ipv4-addr:value = 172.86.75.158]", "pattern_type": "stix", 
+ "last_seen": null, "modified": 1651648700, "name": "8.8.8.8", 
+ "pattern": "[ipv4-addr:value = 8.8.8.8]", "pattern_type": "stix", 
  "pattern_version": "2.1", "sources": [{"id": 
  "e941f6fb-387b-452c-b77d-b5b05c5e9df2", "name": "CrowdStrike", 
  "source_type": "API_FEEDS"}], "sub_type": "ipv4-addr", "tld": "", "tlp": 
@@ -1030,7 +1030,7 @@ Get Indicator Tags
     "is_revoked": false,
     "ctix_created": 1651648700,
     "is_false_positive": false,
-    "name": "172.86.75.158",
+    "name": "8.8.8.8",
     "is_reviewed": false,
     "is_whitelisted": false,
     "is_under_review": false,
@@ -1180,7 +1180,7 @@ Get Indicator Observations
 				"pattern_version": "2.1",
 				"confidence": "LOW",
 				"valid_from": 1644335851,
-				"pattern": "[ipv4-addr:value = '172.86.75.158']",
+				"pattern": "[ipv4-addr:value = '8.8.8.8']",
 				"fang_description": null,
 				"defang_description": null,
 				"spec_version": "2.1",

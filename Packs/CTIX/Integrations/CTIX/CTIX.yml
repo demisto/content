@@ -1,13 +1,11 @@
 commonfields:
   id: CTIX
   version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: CTIX
 display: CTIX
 category: Data Enrichment & Threat Intelligence
 image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAAAyCAYAAACXpx/YAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAjNSURBVHgB7VxPbNvWGf89knLcpV1VYCiQJsukoD70VGtA17hoEWoFeq2bXZYdGtlNhtxs79YBi+gCuzbSTsU2x+xl66lLbjsMkYr9cbpDYx+7DBGbtMutVtB2cyyRb98nkhFNSY5EkXKw8Qc8WHx6fHx6v/d97/vzaCBFihQpUjyiEDgA3K01cvaUXKen6xKwJJyV4y89ewUpYoeCA0ArYxtMLn+mFZZToKw3ajeySBE7DoRgoSinQlVZNfPEPFLEjokSvAxXSoWEFf5OSGldwEYOKWLFxAg+j+tLX2GncQ4bOqRY4b3X/046TvW7r8zUWxC1t3B9PSU6PiRuZHUIhXKJaJx1a+TqbzFn3N1o5Fote1ZRVOvYy/lNJpUJ5j3ZG5rRxlTVRKGJFJGRGMFMWBtinT7qXlXdI7c+6J4S3aPxH4gyX7OUq0T0r/Hi+0gRCbETzPvs19hdItdnWUBkJSRJoLK8NgJJTLQKGHT/Wb5mojOQxfcwZyHFSIiV4PPYKDnAJZ9Y6rzaxnQlqppdpP6or7Kvtolok4heTYkeHrER/BY2TF/iCPU25IIZExGLuE7aAEtMNEuzoL73U/UpuohM8O1Pb8+rqvq64zj3tIxWeTtvQYPyB1BUKonJ99U2O1RrOLlw588NXdFw1rHte1pLrRwp0gBS9CASwZ//4/OSEB0Dyu/F2v1qt5Av5Cdi8d7+2z/nlc5ieoCmel8UUpJ7EckPJnKX9lRI5NTD6sQiUYpUlkJVWfuQk0bC+kBDFAhk2eIJQhXqNiYEIWRThpSPlIgSy9apPE/lKe+af8MWOi5dBzl03bxhYAXuLQXq6953PMb5PvX9UBrQ70iIRLCUskoG1aVuBSzFVrbO4eMyqQQrCb/Vdb/uk38srzq2UxVqQGNINDVFMYfvrUNaGYPJs6isUOEtZx3Dw0SXiOB9C9533N/ZwHMtKvk+/ZRC9/drMxQiqehjM8cqRPICCZHpSKdK5BZXn7PoG2k4kOY5XK+dx99nEQOYWF44HObsXEIuc1gTjijQVmGSO1ZVFdp/54bef3mCa9hfMnNUNpEMmOxm4DkGep9dDlyvYrCUPxSRrWgm8DAyViXg48bpt4YDJl5/VRuHDN+v5jY72KEy3RzS185RuQE8UOd8TxVdqXu+0607oUWvfSnUR3DyOYe9Fbje9Oq84T6AL8E+jEA/PIYCuiRyO9/d5LrI0suITDBLKTpSIItht2hcojkxQZrACBBr2nR/2K/2x6BB5ofs20R38hg8eVafdjkMlpr9iBulHS80X8vxonjDe24j0IaJH0uTRDOyHoLLmDPpD6nqDYOMobNEdIni0iXKFBFRh1Ze/XF7VhO0gjnpL8ARL/M/32irf72yM0vt12lmcsJde3WOX6/F51cHyTUxmMRB9XGC9/ia95ntCZ3KpcD3JmLYJhJNF3LWiCSvSGq26lXpr52xdU2hH+ad6KB1niULeHn6sTb7tbon9XVXM5wsxhg00UPXB53AqMPdHnzw7/cl2oK7946NxPPBrFbX8NIyhS7zHGIkJ7bctyER/sJrmc0EiPWRC10nZUSNAgNdbZEdUD8WJpbwZ6KZNCEx0Lp+/Dv27ARjzI9CnpnH8FGojhdebNrlIM5kDZxYTaoNTA6PwiG/HPbaBQwWgGXEhIkT7HT34zCajlQ/QnIIL6wcDh61AZ95GxvLPfIxcYJ3p6Yq0nURfDeC/27DkStnPihYSA710PVBx64NdBcZa67T6JLM2uUyYsDECV4wC82f/O6F7ztSnKYo2CrFPVd2/q2dOPPBD0wkC5bgeuCaExb9pEQg+bNq/NxwtIrHtxio0xGDqh7HD5ZAOOUwPGq/b9EPEqfIst76TeSDdZJUutjmSNaQN/BE6t5nlpJrXt1ncCeY9z+OZr2OmFTkAFwLfDbRNaosbzw++fz3KvYGP0ZCJILvbjRQfvXejzLtneyueKzZ+OMN5IsFRICOiO4Aj6Et5SpZ5eCgSHl3qDHUqVTQlYwcRksmxIEl7N3/w/4uj+9NuAvMV9VFRMTIKvpurbOYSr/407c/ebv+9C3j2pPvwgspTgr+GKjcovIlOpMw9Bg4gsST2k8D+XX7pT4lhtNe/drl4EqlX98vkeCrar/NKYyhqqNIcM6Wct3fpKSQJS3z+D3EaNqPNAbBs0BjmHqC1awx5P3cjiVFh6uWj1Ph32DBTR7sFwQJ7pP1EdvxIvxZoN4ccC+3P429SZFIGJlgO2PrPYKvKLxnTYxgO8OnN0J2kOgc+DMwPHjSrqCb/RkW5hjtNjF8BG3UcfXFyARTHtgKm5hCisZ5/IWmPANK9iMpXMAGWrS4pHQ2BdSeMSBFD0begznZ7jiOCX+PkLRfSVY7gi2cEmWQBBMRJyjvS6nBj/mBbHi8YbzyZc8YVGWPSkzhIZIffPzlZxekbf8QjrPY+pY4we8WSWiXKYfLFuknTASlBmMh+qcusXxmymhT3wIOW5Xz4TGMcKLj/wqR/eDOsZkAOARJ7spFKrO2a92aRMw7lJRvUHYIo+JcZ3EI3g3mv8b9d4WbI6Yu5Ts2pur9xpCiF7El/ENJ/je9JD/nd39F0lxRiZw++3OPq8HqmAhl21iny4ukFXThtqtRynHRTF9bGQmJhOS8txDK3qsswntLcJWS/+9nyER6D3O4IDqvi5L1LT5bky92LEbeZw9j6qlvcP8iPKuc7m1QtGsxfVUlGhKNubpEi2veKQ3hn836+adHrcxUJm+3bJ3i0U1N0a48M/OM5NOTgbcSt1n6+VQIUkRGoskG9zTHyROkZhddSUSJ3ByOzMw7beeWEOKyqqgf0vWHd27eATrqWDxJbSs2pk+k5I6PpLMmD1BCLatheplfJ/3lzadrwN6THWSkFY2Zf2XJSm6m6jg+TIzgIL64+QXHesOx4/mjM0evIkWsOJB/o0RBivCpjm2lrWwhRexI5Fz0w9Cealcyrcz3aL89RckKiyNhR547YiFFihQpUqRIkeJ/BP8F8zZHW6qxcxgAAAAASUVORK5CYII=
-description: This is Cyware Threat Intelligence eXhange(CTIX) integration which enriches
-  IP/Domain/URL/File Data.
+description: This is Cyware Threat Intelligence eXhange(CTIX) integration which enriches IP/Domain/URL/File Data.
 detaileddescription: |-
   ### Partner Contributed Integration
   #### Integration Author: Cyware Labs
@@ -57,7 +55,7 @@ configuration:
   required: false
 - display: Incidents Fetch Interval
   name: incidentFetchInterval
-  defaultvalue: "1"
+  defaultvalue: '1'
   type: 19
   required: false
 - display: Incident type
@@ -68,7 +66,24 @@ script:
   script: |
     # Uncomment while development
     import demistomock as demisto
-    from CommonServerPython import *
+    from CommonServerPython import (
+        Common,
+        urlRegex,
+        re,
+        regexFlags,
+        hashRegex,
+        BaseClient,
+        DemistoException,
+        CommandResults,
+        List,
+        tableToMarkdown,
+        argToList,
+        return_warning,
+        handle_proxy,
+        return_results,
+        traceback,
+        return_error,
+    )
 
     """IMPORTS"""
 
@@ -1368,7 +1383,7 @@ script:
       description: New tag's name
     - name: color_code
       required: true
-      description: 'New tag''s hex colour code e.g #111111'
+      description: "New tag's hex colour code e.g #111111"
     outputs:
     - contextPath: CTIX.Tag.name
       description: Name of the tag
@@ -1393,10 +1408,10 @@ script:
     arguments:
     - name: page
       description: Page number for pagination
-      defaultValue: "1"
+      defaultValue: '1'
     - name: page_size
       description: Page size for pagination
-      defaultValue: "10"
+      defaultValue: '10'
     - name: q
       description: search query parameter
     outputs:
@@ -1475,10 +1490,10 @@ script:
     arguments:
     - name: page
       description: 'Page number '
-      defaultValue: "1"
+      defaultValue: '1'
     - name: page_size
       description: Page size
-      defaultValue: "10"
+      defaultValue: '10'
     - name: q
       description: query param for searching
     outputs:
@@ -1486,12 +1501,10 @@ script:
       description: ID of the object
       type: string
     - contextPath: CTIX.IOC.include_emails
-      description: If enabled then the emails to the corresponding emails will be
-        whitelisted
+      description: If enabled then the emails to the corresponding emails will be whitelisted
       type: boolean
     - contextPath: CTIX.IOC.include_sub_domains
-      description: If enabled then the emails to the corresponding sub domains will
-        be whitelisted
+      description: If enabled then the emails to the corresponding sub domains will be whitelisted
       type: boolean
     - contextPath: CTIX.IOC.include_urls
       description: If enabled then the emails to the corresponding urls will be whitelisted
@@ -1526,10 +1539,10 @@ script:
       description: Query statement for the thread data, please refer to the documentation
     - name: page
       description: page
-      defaultValue: "1"
+      defaultValue: '1'
     - name: page_size
       description: size of page
-      defaultValue: "1"
+      defaultValue: '1'
     outputs:
     - contextPath: CTIX.ThreatData.confidence_score
       description: Confidence Score of the IOC
@@ -1608,37 +1621,46 @@ script:
   - name: get_saved_searches
     arguments:
     - name: page
-      description: page
+      description: page from where to start
     - name: page_size
-      description: page size
+      description: page size of the result
     outputs:
     - contextPath: CTIX.SavedSearch.id
       description: ID of the object
       type: string
     - contextPath: CTIX.SavedSearch.editable
+      description: editable object details
       type: boolean
-    - contextPath: CTIX.SavedSearch. is_threat_data_search
+    - contextPath: CTIX.SavedSearch.is_threat_data_search
+      description: is threat data search
       type: boolean
     - contextPath: CTIX.SavedSearch.name
+      description: name of the IOC
       type: string
     - contextPath: CTIX.SavedSearch.order
+      description: order details
       type: number
     - contextPath: CTIX.SavedSearch.pinned
+      description: Pinned details
       type: boolean
     - contextPath: CTIX.SavedSearch.query
+      description: CQL used
       type: string
     - contextPath: CTIX.SavedSearch.shared_type
+      description: shared type
       type: string
     - contextPath: CTIX.SavedSearch.type
+      description: type of the object
       type: string
     - contextPath: CTIX.SavedSearch.meta_data
+      description: meta data of the object
     description: Saved Search listing api with pagination
   - name: get_server_collections
     arguments:
     - name: page
-      description: page
+      description: page of the result
     - name: page_size
-      description: page size
+      description: page size of the result
     outputs:
     - contextPath: CTIX.ServerCollection.name
       description: Name of the server
@@ -1659,7 +1681,7 @@ script:
       description: Object polling is enabled or not
       type: boolean
     - contextPath: CTIX.ServerCollection.type
-      description: 'Object type '
+      description: 'Object type'
       type: string
     - contextPath: CTIX.ServerCollection.description
       description: description of the object
@@ -1671,13 +1693,13 @@ script:
   - name: get_actions
     arguments:
     - name: page
-      description: page
+      description: page of the result
     - name: page_size
-      description: page size
+      description: page size of the result
     - name: object_type
-      description: object type
+      description: object type of the indicator
     - name: action_type
-      description: action type
+      description: action type of the indicator
     outputs:
     - contextPath: CTIX.Action.action_name
       description: Name of the Action
@@ -1688,10 +1710,10 @@ script:
       description: 'Timestamp of when the action was taken '
       type: number
     - contextPath: CTIX.Action.app_name
-      description: Name of the app for the action
+      description: Name of the app for the action in CTIX
       type: string
     - contextPath: CTIX.app_type
-      description: 'Type of the app '
+      description: 'Type of the app'
       type: string
     - contextPath: CTIX.Action.id
       description: ID of the action
@@ -1701,6 +1723,7 @@ script:
       type: string
     description: Enrichment tools listing API
   - name: add_indicator_as_false_positive
+    description: Add indicators as false positive in CTIX
     arguments:
     - name: object_ids
       required: true
@@ -1855,11 +1878,11 @@ script:
     arguments:
     - name: page
       description: page
-      defaultValue: "1"
+      defaultValue: '1'
     - name: page_size
       default: true
       description: page size
-      defaultValue: "10"
+      defaultValue: '10'
     - name: label_name
       description: label name
     - name: query
@@ -1932,7 +1955,7 @@ script:
       description: Name of the indicator
       type: string
     - contextPath: CTIX.SavedResultSet.null
-      description: "null"
+      description: 'null'
     - contextPath: CTIX.SavedResultSet.primary_attribute
       description: Primary attribute of the IOC
       type: string
@@ -1969,11 +1992,11 @@ script:
     arguments:
     - name: page
       description: page from where data will be taken
-      defaultValue: "1"
+      defaultValue: '1'
     - name: page_size
       default: true
       description: total number of results to be fetched
-      defaultValue: "10"
+      defaultValue: '10'
     - name: q
       description: query
     - name: object_id
@@ -1991,11 +2014,11 @@ script:
     arguments:
     - name: page
       description: which page to bring the data from
-      defaultValue: "1"
+      defaultValue: '1'
     - name: page_size
       default: true
       description: number of pages to bring data from
-      defaultValue: "10"
+      defaultValue: '10'
     - name: q
       description: query
     - name: object_id
@@ -2013,11 +2036,11 @@ script:
     arguments:
     - name: page
       description: number of page from where data needs to brought
-      defaultValue: "1"
+      defaultValue: '1'
     - name: page_size
       default: true
       description: size of the result
-      defaultValue: "10"
+      defaultValue: '10'
     - name: q
       description: query
     outputs:
@@ -2047,11 +2070,11 @@ script:
     arguments:
     - name: page
       description: from where data has to be brought
-      defaultValue: "1"
+      defaultValue: '1'
     - name: page_size
       default: true
       description: total number of results
-      defaultValue: "10"
+      defaultValue: '10'
     - name: object_id
       description: object id
     - name: object_type
@@ -2167,10 +2190,10 @@ script:
     - name: page
       default: true
       description: page
-      defaultValue: "1"
+      defaultValue: '1'
     - name: page_size
       description: page size
-      defaultValue: "10"
+      defaultValue: '10'
     outputs:
     - contextPath: CTIX.Result.notes
       description: Notes on the indicator's tag
@@ -2213,10 +2236,10 @@ script:
     arguments:
     - name: page
       description: page
-      defaultValue: "1"
+      defaultValue: '1'
     - name: page_size
       description: page size
-      defaultValue: "10"
+      defaultValue: '10'
     - name: object_id
       description: object id
     - name: object_type
@@ -2305,13 +2328,14 @@ script:
       description: Collection details of the indicator
     description: Get Indicator Observations
   - name: get_conversion_feed_source
+    description: Get Conversion feed source
     arguments:
     - name: page
       description: page
-      defaultValue: "1"
+      defaultValue: '1'
     - name: page_size
       description: page size
-      defaultValue: "10"
+      defaultValue: '10'
     - name: object_id
       description: object id
     - name: object_type
@@ -2334,12 +2358,11 @@ script:
     - name: object_type
       description: object type
     - name: object_names
-      description: 'Will contain the SDO values. Example: If you need to get the object_ids
-        of indicator 127.0.0.1 then the value will be 127.0.0.1'
+      description: 'Will contain the SDO values. Example: If you need to get the object_ids of indicator 127.0.0.1 then the value will be 127.0.0.1'
       isArray: true
     - name: page_size
       description: size of the page
-      defaultValue: "10"
+      defaultValue: '10'
     outputs:
     - contextPath: CTIX.ThreatDataLookup.analyst_score
       description: Analyst score of the indicator
@@ -2408,7 +2431,7 @@ script:
       description: name of the indicator
       type: string
     - contextPath: CTIX.ThreatDataLookup.null
-      description: "null"
+      description: 'null'
     - contextPath: CTIX.ThreatDataLookup.primary_attribute
       description: Primary Attribute
       type: string
@@ -2447,8 +2470,10 @@ script:
       description: Timestamp till when the indicator was valid
       type: number
     description: Lookup to get threat data
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.4.29342
   isfetch: true
   runonce: false
   subtype: python3
-sourcemoduleid: CTIX
+fromversion: 6.2.0
+tests:
+- No tests (auto formatted)

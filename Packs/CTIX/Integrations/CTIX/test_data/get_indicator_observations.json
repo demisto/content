@@ -14,7 +14,7 @@
 				"pattern_version": "2.1",
 				"confidence": "LOW",
 				"valid_from": 1644335851,
-				"pattern": "[ipv4-addr:value = '172.86.75.158']",
+				"pattern": "[ipv4-addr:value = '8.8.8.8']",
 				"fang_description": null,
 				"defang_description": null,
 				"spec_version": "2.1",
