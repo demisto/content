@@ -9,13 +9,13 @@ configuration:
   required: true
   type: 0
 - defaultvalue: jira
-  additionalinfo: "For the dataset name for example: <vendor name>_<product name>_raw"
+  additionalinfo: "For the dataset name for example: jira"
   display: Vendor name
   name: vendor
   required: true
   type: 0
 - defaultvalue: jira
-  additionalinfo: "For the dataset name for example: <vendor name>_<product name>_raw"
+  additionalinfo: "For the dataset name for example: jira"
   display: Product name
   name: product
   required: true
@@ -68,7 +68,7 @@ script:
   isfetchevents: true
   type: python
   subtype: python3
-  dockerimage: demisto/fastapi:1.0.0.29535
+  dockerimage: demisto/fastapi:1.0.0.29740
 marketplaces:
 - marketplacev2
 fromversion: 6.5.0
