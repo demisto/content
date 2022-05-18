@@ -1,0 +1,63 @@
+category: Analytics & SIEM
+commonfields:
+  id: SaasSecurityEventCollector
+  version: -1
+configuration:
+- additionalinfo: 'The instance configuration URL based on the server location: <br/>US:
+    https://api.aperture.paloaltonetworks.com<br/> EU: https://api.aperture-eu.paloaltonetworks.com<br/>
+    APAC: https://api.aperture-apac.paloaltonetworks.com'
+  defaultvalue: https://api.aperture.paloaltonetworks.com
+  display: Your server URL
+  name: url
+  required: true
+  type: 0
+- display: Client ID
+  displaypassword: Client Secret
+  name: credentials
+  type: 9
+  required: true
+  additionalinfo: The SaaS Security Client ID and Client Secret.
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Palo Alto Saas Security Event Collector integration for XSIAM.
+display: Saas Security Event Collector
+name: SaasSecurityEventCollector
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: '[Enter a description of the argument, including any important
+        information users need to know, for example, default values.]'
+      isArray: false
+      name: dummy
+      required: true
+      secret: false
+    deprecated: false
+    description: '[Enter a description of the command, including any important information
+      users need to know, for example required permissions.]'
+    execution: false
+    name: baseintegration-dummy
+    outputs:
+    - contextPath: BaseIntegration.Output
+      description: '[Enter a description of the data returned in this output.]'
+      type: String
+  dockerimage: demisto/python3:3.9.8.24399
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- No tests (auto formatted)
+marketplaces:
+- marketplacev2
+fromversion: 6.8.0
