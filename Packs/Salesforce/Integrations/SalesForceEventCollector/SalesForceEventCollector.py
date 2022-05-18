@@ -124,6 +124,8 @@ class SalesforceGetEvents(IntegrationGetEvents):
         temp_dir = tempfile.TemporaryDirectory()
         log_files = self.pull_log_files()
 
+        # save the last file to get the recent file id and the date we fetched
+        # to filter the only the new files in the next run
         if log_files:
             self.last_file = log_files[-1]
 
@@ -140,7 +142,7 @@ class SalesforceGetEvents(IntegrationGetEvents):
 
     def get_last_run(self) -> dict:
         """
-        Get the info from the last run, it returns the time to query from and a list of ids to prevent duplications
+        Get the log time and the file id to prevent duplications in the next run
         """
         last_file = self.last_file
 
@@ -173,12 +175,14 @@ def main():
     demisto_params['client_id'] = demisto_params['client_id']['password']
     demisto_params['client_secret'] = demisto_params['client_secret']['password']
     demisto_params['password'] = demisto_params['password']['password']
-
     events_to_add_per_request = int(demisto_params.get('events_to_add_per_request'))
     files_limit = int(demisto_params.get('files_limit'))
 
+    demisto_params['method'] = Method.POST
+
     request = IntegrationHTTPRequest(**demisto_params)
 
+    # add the params to the url in order to make the request without decoding the params
     url = urljoin(demisto_params.get("url"), 'services/oauth2/token')
     request.url = f'{url}?grant_type=password&' \
                   f'client_id={demisto_params.get("client_id")}&' \
@@ -211,7 +215,7 @@ def main():
 
             elif command == 'salesforce-get-events':
                 command_results = CommandResults(
-                    readable_output=tableToMarkdown('salesforce Logs', events, headerTransform=pascalToSpace),
+                    readable_output=tableToMarkdown('salesforce audit Logs', events, headerTransform=pascalToSpace),
                     outputs_prefix='salesforce.Logs',
                     outputs_key_field='timestamp',
                     outputs=events,
