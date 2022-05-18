@@ -4847,11 +4847,6 @@ def main():
         return_error(str(err))
 
 
-### GENERATED CODE ###: from MicrosoftApiModule import *  # noqa: E402
-# This code was inserted in place of an API module.
-register_module_line('MicrosoftApiModule', 'start', __line__(), wrapper=-3)
-
-
 class Scopes:
     graph = 'https://graph.microsoft.com/.default'
     security_center = 'https://api.securitycenter.windows.com/.default'
@@ -5482,7 +5477,6 @@ class NotFoundError(Exception):
         self.message = message
 
 
-register_module_line('MicrosoftApiModule', 'end', __line__(), wrapper=1)
 ### END GENERATED CODE ###
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
