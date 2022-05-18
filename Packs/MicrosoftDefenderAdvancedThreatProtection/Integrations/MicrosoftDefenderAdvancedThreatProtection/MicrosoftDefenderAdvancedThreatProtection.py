@@ -5477,9 +5477,5 @@ class NotFoundError(Exception):
         self.message = message
 
 
-### END GENERATED CODE ###
-
 if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
-
-register_module_line('Microsoft Defender Advanced Threat Protection', 'end', __line__())
