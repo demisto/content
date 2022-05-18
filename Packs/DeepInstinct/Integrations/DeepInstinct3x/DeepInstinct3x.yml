@@ -18,7 +18,7 @@ configuration:
   type: 0
   required: false
 - name: max_fetch
-  display: Maximum number of indicators per fetch
+  display: Maximum number of indicators per fetch, max is 1000.
   required: false
   type: 0
   defaultvalue: '50'
