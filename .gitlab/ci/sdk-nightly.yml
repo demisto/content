@@ -104,11 +104,17 @@ demisto-sdk-nightly:create-instance:
 
 demisto-sdk-nightly:run-commands-against-instance:
   tags:
-    - gke
+    - gce # can't run docker in docker on gke
   extends:
     - .default-job-settings
     - .sdk-nightly-schedule-rule-always
+  services:  # needed for running lint
+    - name: docker.art.code.pan.run/build-tools--image-dind:20.10.12-dind
+      alias: docker
   variables:
+    DOCKER_HOST: tcp://docker:2375
+    DOCKER_DRIVER: overlay2
+    DOCKER_TLS_CERTDIR: ""
     INSTANCE_ROLE: "Server Master"
   stage: run-instances
   script:
