@@ -34,7 +34,7 @@ configuration:
   required: false
   type: 0
 - display: Fetch time field
-  additionalinfo: Will be used for determining the time of each row.
+  additionalinfo: Will be used for determining the time-specifying field of each row. Default is CreationTime.
   name: fetch_time_field
   required: false
   type: 0
