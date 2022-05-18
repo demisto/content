@@ -7,6 +7,7 @@ import requests
 import json
 import re
 import zipfile
+from StringIO import StringIO
 from datetime import datetime, timedelta
 
 # disable insecure warnings
