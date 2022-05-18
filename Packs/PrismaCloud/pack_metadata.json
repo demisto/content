@@ -50,22 +50,6 @@
             "mandatory": false,
             "display_name": "AWS - IAM"
         },
-        "Azure-AKS": {
-            "mandatory": false,
-            "display_name": "Azure - AKS"
-        },
-        "Azure-SQL": {
-            "mandatory": false,
-            "display_name": "Azure - SQL"
-        },
-        "Azure-Network": {
-            "mandatory": false,
-            "display_name": "Azure - Network"
-        },
-        "Azure-Storage": {
-            "mandatory": false,
-            "display_name": "Azure - Storage"
-        },
         "GoogleKubernetesEngine": {
             "mandatory": false,
             "display_name": "Google Kubernetes Engine"

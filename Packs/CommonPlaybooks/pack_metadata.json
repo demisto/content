@@ -32,10 +32,6 @@
             "mandatory": false,
             "display_name": "McAfee ePO"
         },
-        "McAfee ePO v2": {
-            "mandatory": false,
-            "display_name": "McAfee ePO v2"
-        },
         "CheckpointFirewall": {
             "mandatory": false,
             "display_name": "Check Point Firewall"
