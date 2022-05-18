@@ -1811,6 +1811,7 @@ class TestUniversalCommand:
     """Test all the commands relevant to both Panorama and Firewall devices"""
     SHOW_SYSTEM_INFO_XML = "test_data/show_system_info.xml"
     SHOW_JOB_XML = "test_data/show_jobs_all.xml"
+    SHOW_COMMIT_JOB_XML = "test_data/show_commit_jobs_all.xml"
 
     @patch("Panorama.run_op_command")
     def test_get_system_info(self, patched_run_op_command, mock_topology):
@@ -1929,6 +1930,21 @@ class TestUniversalCommand:
         # Check all attributes of summary data have values
         assert result
         for result_dataclass in result:
+            for value in result_dataclass.__dict__.values():
+                assert value
+
+    @patch("Panorama.run_op_command")
+    def test_get_commit_job_status(self, patched_run_op_command, mock_topology):
+        """Checks that we can get the commit status from the devices using the show jobs command"""
+        from Panorama import UniversalCommand
+        patched_run_op_command.return_value = load_xml_root_from_test_file(TestUniversalCommand.SHOW_COMMIT_JOB_XML)
+
+        result = UniversalCommand.get_commit_job_status(mock_topology)
+        # Check all attributes of result data have values
+
+        assert result
+        for result_dataclass in result:
+            assert result_dataclass.commit_type == "Commit"
             for value in result_dataclass.__dict__.values():
                 assert value
 
