@@ -1,227 +1,185 @@
 # pylint: disable=no-name-in-module
 # pylint: disable=no-self-argument
+import json
 
-import dateparser
-import secrets
-import jwt
 import urllib3
-from cryptography import exceptions
-from cryptography.hazmat.backends import default_backend
-from cryptography.hazmat.primitives.serialization import load_pem_private_key
-from pydantic import Field, parse_obj_as
+from pydantic import parse_obj_as
+import dateparser
 
 from SiemApiModule import *  # noqa: E402
 
 urllib3.disable_warnings()
+DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
 
-class Claims(BaseModel):
-    iss: str = Field(alias='client_id')
-    sub: str = Field(alias='id', description='user id or enterprise id')
-    box_sub_type = 'enterprise'
-    aud: AnyUrl
-    jti: str = secrets.token_hex(64)
-    exp: int = round(time.time()) + 45
+# class DropboxEventsData(BaseModel):
+#     start_time: str
 
 
-class AppAuth(BaseModel):
-    publicKeyID: str
-    privateKey: str
-    passphrase: str
+class DropboxEventsRequestConfig(IntegrationHTTPRequest):
+    # Endpoint: https://api.dropboxapi.com/2/team_log/get_events
+    url = parse_obj_as(AnyUrl, 'https://api.dropboxapi.com/2/team_log/get_events')
+    method = Method.POST
+    headers = {'Content-Type': 'application/json'}
+    data: str
+    verify = False
 
 
-class BoxAppSettings(BaseModel):
-    clientID: str
-    clientSecret: str
-    appAuth: AppAuth
-
-    class Config:
-        arbitrary_types_allowed = True
-
-
-class BoxCredentials(BaseModel):
-    enterpriseID: str
-    boxAppSettings: BoxAppSettings
-
-    class MyConfig:
-        validate_assignment = True
-
-
-def get_box_events_timestamp_format(value):
-    """Converting int(epoch), str(3 days) or datetime to Box's api time"""
-    timestamp: Optional[datetime]
-    if isinstance(value, int):
-        value = str(value)
-    if not isinstance(value, datetime):
-        timestamp = dateparser.parse(value)
-    if timestamp is None:
-        raise TypeError(f'after is not a valid time {value}')
-    return timestamp.isoformat('T', 'seconds')
-
-
-class BoxEventsParams(BaseModel):
-    event_type: Optional[str] = None
-    limit: int = Field(500, alias='page_size', gt=0, le=500)
-    stream_position: Optional[str]
-    stream_type = 'admin_logs'
-    created_after: Optional[str]
-    # validators
-    _normalize_after = validator('created_after', pre=True, allow_reuse=True)(
-        get_box_events_timestamp_format
-    )
-
-    class Config:
-        validate_assignment = True
-
-
-class BoxEventsRequestConfig(IntegrationHTTPRequest):
-    # Endpoint: https://developer.box.com/reference/get-events/
-    url = parse_obj_as(AnyUrl, 'https://api.box.com/2.0/events')
-    method = Method.GET
-    params: BoxEventsParams
-
-
-class BoxEventsClient(IntegrationEventsClient):
-    request: BoxEventsRequestConfig
+class DropboxEventsClient(IntegrationEventsClient):
+    request: DropboxEventsRequestConfig
     options: IntegrationOptions
-    authorization_url = parse_obj_as(AnyUrl, 'https://api.box.com/oauth2/token')
+    credentials: Credentials
 
     def __init__(
         self,
-        request: BoxEventsRequestConfig,
+        request: DropboxEventsRequestConfig,
         options: IntegrationOptions,
-        box_credentials: BoxCredentials,
+        credentials: Credentials,
         session: Optional[requests.Session] = None,
     ) -> None:
+        self.credentials = credentials
+        self.refresh_token = demisto.getIntegrationContext().get('refresh_token')
         if session is None:
             session = requests.Session()
-        self.box_credentials = box_credentials
         super().__init__(request, options, session)
 
-    def set_request_filter(self, after: str):
-        self.request.params.stream_position = after
+    def set_request_filter(self, cursor: str):
+        if 'continue' not in self.request.url:
+            self.request.url += '/continue'
+        self.request.data = json.dumps({'cursor': cursor})
 
-    def authenticate(self):
+    def get_access_token(self):
         request = IntegrationHTTPRequest(
             method=Method.POST,
-            url=self.authorization_url,
-            data=self._create_authorization_body(),
+            url=parse_obj_as(AnyUrl, 'https://api.dropboxapi.com/oauth2/token'),
+            data={'grant_type': 'refresh_token', 'refresh_token': f'{self.refresh_token}'},
+            auth=HTTPBasicAuth(self.credentials.identifier, self.credentials.password),
             verify=self.request.verify,
         )
-
         response = self.call(request)
-        self.access_token = response.json()['access_token']
-        self.request.headers = {'Authorization': f'Bearer {self.access_token}'}
-
-    def _create_authorization_body(self):
-        claims = Claims(
-            client_id=self.box_credentials.boxAppSettings.clientID,
-            id=self.box_credentials.enterpriseID,
-            aud=self.authorization_url
-        )
-
-        decrypted_private_key = _decrypt_private_key(
-            self.box_credentials.boxAppSettings.appAuth
-        )
-        assertion = jwt.encode(
-            payload=claims.dict(),
-            key=decrypted_private_key,
-            algorithm='RS512',
-            headers={
-                'kid': self.box_credentials.boxAppSettings.appAuth.publicKeyID
-            },
-        )
-        body = {
-            'grant_type': 'urn:ietf:params:oauth:grant-type:jwt-bearer',
-            'assertion': assertion,
-            'client_id': self.box_credentials.boxAppSettings.clientID,
-            'client_secret': self.box_credentials.boxAppSettings.clientSecret,
-        }
-        return body
+        self.request.headers['Authorization'] = f'Bearer {response.json()["access_token"]}'
 
 
-class BoxEventsGetter(IntegrationGetEvents):
-    client: BoxEventsClient
+class DropboxEventsGetter(IntegrationGetEvents):
+    client: DropboxEventsClient
 
-    def get_last_run(self: Any) -> dict:  # type: ignore
-        demisto.debug(f'getting {self.client.request.params.stream_position=}')
-        return {'stream_position': self.client.request.params.stream_position}
+    def get_last_run(self: Any, events: list[dict]) -> dict:  # type: ignore
+        last_datetime = max([datetime.strptime(event.get('timestamp'), DATETIME_FORMAT) for event in events])
+        return {'start_time': datetime.strftime(last_datetime, DATETIME_FORMAT)}
 
     def _iter_events(self):
-        self.client.authenticate()
-        demisto.debug('authenticated successfully')
+        self.client.get_access_token()
         # region First Call
-        events = self.client.call(self.client.request).json()
+        results = self.client.call(self.client.request).json()
         # endregion
+
         # region Yield Response
-        while True:  # Run as long there are logs
-            self.client.set_request_filter(events['next_stream_position'])
-            # The next stream position points to where new messages will arrive.
-            demisto.debug(
-                f'setting the next request filter {events["next_stream_position"]=}'
-            )
-            if not events['entries']:
+        while events := results.get('events'):  # Run as long there are logs
+            yield events
+
+            if results.get('has_more'):
+                self.client.set_request_filter(results.get('cursor'))
+                demisto.debug(
+                    f'Setting the next request filter {results.get("cursor")}'
+                )
+                results = self.client.call(self.client.request).json()
+            else:
                 break
-            yield events['entries']
-            # endregion
-            # region Do next call
-            events = self.client.call(self.client.request).json()
-            # endregion
 
 
-def _decrypt_private_key(app_auth: AppAuth):
-    """
-    Attempts to load the private key as given in the integration configuration.
+def start_auth_command(app_key: str) -> CommandResults:
+    message = f"""### Authorization instructions
+1. To sign in, use a web browser to open the page [https://www.dropbox.com/oauth2/authorize?client_id={app_key}&token_access_type=offline&response_type=code](https://www.dropbox.com/oauth2/authorize?client_id={app_key}&token_access_type=offline&response_type=code)
+2. Run the **auth-complete** command with the code returned from Dropbox in the War Room."""
+    return CommandResults(readable_output=message)
 
-    :return: an initialized Private key object.
-    """
-    try:
-        key = load_pem_private_key(
-            data=app_auth.privateKey.encode('utf8'),
-            password=app_auth.passphrase.encode('utf8'),
-            backend=default_backend(),
-        )
-    except (
-        TypeError,
-        ValueError,
-        exceptions.UnsupportedAlgorithm,
-    ) as exception:
-        raise DemistoException(
-            'An error occurred while loading the private key.', exception
-        )
-    return key
+
+def complete_auth_command(code: str, credentials: Credentials) -> CommandResults:
+    data = {
+        'grant_type': 'authorization_code',
+        'code': code,
+    }
+    auth = (credentials.identifier, credentials.password)
+
+    response = requests.post('https://api.dropbox.com/oauth2/token', data=data, auth=auth, verify=False)
+    if response.ok:
+        demisto.setIntegrationContext({'refresh_token': response.json()['refresh_token']})
+    else:
+        return CommandResults(readable_output=f'❌ Authorization completed failed. {response.text}')
+
+    return CommandResults(readable_output='✅ Authorization completed successfully.')
+
+
+def reset_auth_command() -> CommandResults:
+    set_integration_context({})
+    message = 'Authorization was reset successfully. Run **!dropbox-auth-start** to start the authentication process.'
+    return CommandResults(readable_output=message)
+
+
+def test_connection(refresh_token: str, credentials: Credentials) -> CommandResults:
+    data = {
+        'grant_type': 'refresh_token',
+        'refresh_token': f'{refresh_token}',
+    }
+    auth = (credentials.identifier, credentials.password)
+
+    response = requests.post('https://api.dropbox.com/oauth2/token', data=data, auth=auth, verify=False)
+
+    if response.ok and response.json().get('access_token'):
+        return CommandResults(readable_output='✅ Success.')
 
 
 def main(command: str, demisto_params: dict):
-    box_credentials = BoxCredentials.parse_raw(
-        demisto_params['credentials_json']['password']
-    )
-    request = BoxEventsRequestConfig(
-        params=BoxEventsParams.parse_obj(demisto_params),
-        **demisto_params,
-    )
-    options = IntegrationOptions.parse_obj(demisto_params)
-    client = BoxEventsClient(request, options, box_credentials)
-    get_events = BoxEventsGetter(client, options)
-    if command == 'test-module':
-        get_events.client.request.params.limit = 1
-        get_events.run()
-        demisto.results('ok')
-        return
-    demisto.debug('not in test module, running box-get-events')
-    events = get_events.run()
-    demisto.debug(f'got {len(events)=} from api')
-    if command == 'box-get-events':
-        demisto.debug('box-get-events, publishing events to incident')
-        return_results(CommandResults('BoxEvents', 'event_id', events))
-    else:
-        demisto.debug('in event collection')
-        if events:
-            demisto.debug('publishing events')
-            demisto.setLastRun(get_events.get_last_run())
-            send_events_to_xsiam(events, 'box', 'box')
-        else:
-            demisto.debug('no events found, finishing script.')
+    if not demisto_params.get('start_time'):  # in the first fetch
+        first_fetch = datetime.strftime(dateparser.parse(demisto_params.get('fetch_from', '7 days')), DATETIME_FORMAT)
+        demisto_params['start_time'] = first_fetch
+    # data = DropboxEventsData(**demisto_params)
+    request = DropboxEventsRequestConfig(data=json.dumps({'time': {'start_time': demisto_params.get('start_time')}}), **demisto_params)
+    credentials = Credentials(**demisto_params.get('credentials', {}))
+    options = IntegrationOptions(**demisto_params)
+    client = DropboxEventsClient(request, options, credentials)
+    get_events = DropboxEventsGetter(client, options)
+
+    try:
+        if command == 'dropbox-auth-start':
+            return_results(start_auth_command(credentials.identifier))
+
+        elif command == 'dropbox-auth-complete':
+            return_results(complete_auth_command(demisto_params.get('code'), credentials))
+
+        elif not demisto.getIntegrationContext().get('refresh_token'):
+            return_results(CommandResults(readable_output='Please run the **dropbox-auth-start** command first'))
+
+        elif command == 'dropbox-auth-reset':
+            return_results(reset_auth_command())
+
+        elif command == 'dropbox-auth-test':
+            return_results(test_connection(demisto.getIntegrationContext().get('refresh_token'), credentials))
+
+        elif command == 'test-module':
+            test_connection(demisto.getIntegrationContext().get('refresh_token'), credentials)
+            return_results('ok')
+
+        elif command in ('fetch-events', 'dropbox-get-events'):
+            events = get_events.run()
+            send_events_to_xsiam(events, vendor='Dropbox', product='Dropbox')
+
+            if events:
+                last_run = get_events.get_last_run(events)
+                demisto.debug(f'Set last run to {last_run}')
+                demisto.setLastRun(last_run)
+
+            if command == 'dropbox-get-events':
+                command_results = CommandResults(
+                    readable_output=tableToMarkdown(
+                        'Dropbox logs', events, removeNull=True, headerTransform=pascalToSpace
+                    ),
+                    raw_response=events,
+                )
+                return_results(command_results)
+
+    except Exception as e:
+        return_error(str(e))
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
