@@ -2444,7 +2444,7 @@ script:
       the exclusion list for the host with the specified agent ID.
     execution: false
     name: rsa-nw-endpoint-isolation-remove
-  dockerimage: demisto/python3:3.10.1.26972
+  dockerimage: demisto/python3:3.10.4.29342
   feed: false
   isfetch: true
   longRunning: false
