@@ -594,7 +594,7 @@ def main():
         client = Client(url, proxies, verify_certificate, tags, tlp_color)
         client.initialise()
         log = logging.getLogger('taxii2client.v20')
-        logging.basicConfig(stream=sys.stdout, level=logging.WARNING, force=True)
+        log.addHandler(DemistoHandler)
 
         if demisto.command() == 'mitre-get-indicators':
             get_indicators_command(client, args)
