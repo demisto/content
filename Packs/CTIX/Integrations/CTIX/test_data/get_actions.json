@@ -7,7 +7,7 @@
 		"action_name": "Update Analyst Score",
 		"action_type": "manual",
 		"actioned_by": {
-		  "email": "test.dummy@cyware.com",
+		  "email": "dummy.email@test.com",
 		  "first_name": "test",
 		  "id":"40ab0f84-fb39-4444-95b2-cd155f574aa2",
 		  "last_name": "singh"
