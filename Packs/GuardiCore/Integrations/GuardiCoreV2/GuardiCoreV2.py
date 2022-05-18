@@ -1,6 +1,6 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+
 
 import requests
 import traceback
@@ -19,6 +19,7 @@ INCIDENT_COLUMNS = ['id', 'incident_type', 'severity', 'start_time', 'end_time',
                     'ended', 'affected_assets']
 ASSET_COLUMNS = ['asset_id', 'name', 'status', 'last_seen', 'ip_addresses',
                  'tenant_name']
+ADDITIONAL_DATA = ['vm_id', 'labels']
 ''' CLIENT CLASS '''
 
 INTEGRATION_CONTEXT_NAME = 'Guardicore'
@@ -133,6 +134,24 @@ class Client(BaseClient):
         )
         return data
 
+    def get_agents(self, url_params: dict):
+        data = self._http_request(
+            method='GET',
+            url_suffix='/agents',
+            params=url_params,
+            timeout=GLOBAL_TIMEOUT
+        )
+        return data
+
+    def modify_label(self, post_data: dict, label_key: str, label_value: str):
+        output = self._http_request(
+            method='POST',
+            url_suffix=f'/assets/labels/{label_key}/{label_value}',
+            json_data=post_data
+        )
+
+        return output
+
 
 ''' HELPER FUNCTIONS '''
 
@@ -200,14 +219,10 @@ def map_guardicore_os(os: int) -> str:
 def test_module(client: Client, is_fetch: bool = False) -> str:
     message: str = ''
     try:
-        one_day = parse("1 days")
-        assert one_day is not None
         from_time = int(
-            one_day.replace(tzinfo=utc).timestamp()) * 1000
-        now = parse("now")
-        assert now is not None
+            parse("1 days").replace(tzinfo=utc).timestamp()) * 1000
         to_time = int(
-            now.replace(tzinfo=utc).timestamp()) * 1000
+            parse("now").replace(tzinfo=utc).timestamp()) * 1000
         client.get_incidents({"from_time": from_time, "to_time": to_time})
 
         if is_fetch:
@@ -238,16 +253,12 @@ def get_incidents(client: Client, args: Dict[str, Any]):
     try:
         from_time = date_to_timestamp(from_time, DATE_FORMAT)
     except ValueError:
-        from_time_date = parse(from_time)
-        assert from_time_date is not None
-        from_time = int(from_time_date.replace(tzinfo=utc).timestamp()) * 1000
+        from_time = int(parse(from_time).replace(tzinfo=utc).timestamp()) * 1000
 
     try:
         to_time = date_to_timestamp(to_time, DATE_FORMAT)
     except ValueError:
-        to_time_date = parse(to_time)
-        assert to_time_date is not None
-        to_time = int(to_time_date.replace(tzinfo=utc).timestamp()) * 1000
+        to_time = int(parse(to_time).replace(tzinfo=utc).timestamp()) * 1000
 
     limit = int(args.get('limit', 50))
     offset = int(args.get('offset', 0))
@@ -406,7 +417,7 @@ def get_assets(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     for res in results.get("objects"):
         hostname = res.get("guest_agent_details", {}).get("hostname", "")
 
-        res = filter_human_readable(res, human_columns=ASSET_COLUMNS)
+        res = filter_human_readable(res, human_columns=ASSET_COLUMNS+ADDITIONAL_DATA)
         md = tableToMarkdown(f'{INTEGRATION_NAME} - Asset: {hostname}',
                              res, headers=ASSET_COLUMNS)
 
@@ -470,6 +481,87 @@ def endpoint_command(client: Client, args: Dict[str, Any]) -> \
     return endpoints
 
 
+def get_agent_by_filter(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
+
+    gc_filter = args.get("filter", None)
+    display_status = args.get("display_status", "UP")
+    limit = args.get("limit", 10)
+    offset = args.get("offset", 0)
+    sort = args.get("sort", "agent_version")
+
+    params = {}
+    params['gc_filter'] = gc_filter
+    params['display_status'] = display_status
+    params['limit'] = limit
+    params['offset'] = offset
+    params['sort'] = sort
+
+    results = client.get_agents(params)
+
+    if "objects" not in results or results['total_count'] < 1:
+        return_error(message=f"Agent {gc_filter} not Found")
+
+    agents = []
+
+    for res in results.get("objects"):
+
+        agents.append(res)
+
+    md = tableToMarkdown(f'{INTEGRATION_NAME} - Agent: {agents[0]["display_name"]}',
+                         {"Asset ID": agents[0]["asset_id"],
+                          "Hostname": agents[0]["hostname"],
+                          "OS": agents[0]["os"],
+                          "Status": agents[0]["status"]})
+
+    return(CommandResults(
+        readable_output=results,
+        outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.Agents',
+        outputs=agents,
+        raw_response=results,
+        outputs_key_field="asset_id",
+
+    ))
+
+
+def set_label(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
+
+    label_key = args.get("label", None)
+    label_value = args.get("keyvalue", None)
+    asset_id = args.get("asset_id", None)
+
+    post_data = {
+        "vms": [asset_id]
+    }
+
+    result = client.modify_label(post_data=post_data, label_key=label_key, label_value=label_value)
+
+    return(CommandResults(
+        readable_output=f"Label: {label_key}:{label_value} set for asset: {asset_id}",
+        raw_response=result,
+
+    ))
+
+
+def delete_label(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
+
+    label_key = args.get("label", None)
+    label_value = args.get("keyvalue", None)
+    asset_id = args.get("asset_id", None)
+
+    post_data = {
+        "delete": True,
+        "vms": [asset_id]
+    }
+
+    result = client.modify_label(post_data=post_data, label_key=label_key, label_value=label_value)
+
+    return(CommandResults(
+        readable_output=f"Label: {label_key}:{label_value} deleted for asset: {asset_id}",
+        raw_response=result,
+
+    ))
+
+
 def main() -> None:
     global GLOBAL_TIMEOUT
     params = demisto.params()
@@ -521,6 +613,12 @@ def main() -> None:
             return_results(get_assets(client, args))
         elif command == 'endpoint':
             return_results(endpoint_command(client, args))
+        elif command == 'guardicore-get-agent-by-filter':
+            return_results(get_agent_by_filter(client, args))
+        elif command == 'guardicore-set-label':
+            return_results(set_label(client, args))
+        elif command == 'guardicore-delete-label':
+            return_results(delete_label(client, args))
         else:
             raise NotImplementedError(
                 f'Command {command} is not implemented.')

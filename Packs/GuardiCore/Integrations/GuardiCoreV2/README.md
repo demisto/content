@@ -1314,3 +1314,107 @@ This is a new version, old version of the API is deprecated (by GuardiCore).
 
 ## Additional Considerations for this version
 
+
+### guardicore-get-agent-by-filter
+***
+description
+
+
+#### Base Command
+
+`guardicore-get-agent-by-filter`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!guardicore-get-agent-by-filter filter=""```
+#### Context Example
+```json
+{
+    "Guardicore": {
+        "Agents": [
+            
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>{
+>  "current_page": 1,
+>  "db_query_time": "0.006 seconds",
+>  "dict_mapping_time": "0.001 seconds",
+>  "filter": {
+>    "display_status": "UP"
+>  },
+>  "from": 0,
+>  "is_count_exact": true,
+>  "objects": [
+>    
+>  ],
+>  "objects_cleanup_time": "0.0 seconds",
+>  "objects_mapping_time": "0.008 seconds",
+>  "results_in_page": 10,
+>  "sort": [
+>    "agent_version"
+>  ],
+>  "to": 10,
+>  "total_count": 11
+>}
+### guardicore-set-label
+***
+description
+
+
+#### Base Command
+
+`guardicore-set-label`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| label | description. | Required | 
+| keyvalue | description. | Required | 
+| asset_id | description. | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!guardicore-set-label label="label" keyvalue="value" asset_id="c2acca07-e9bf-4d63-9a26-ff6c749d24d2"```
+#### Human Readable Output
+
+>Label: label:value set for asset: c2acca07-e9bf-4d63-9a26-ff6c749d24d2
+### guardicore-delete-label
+***
+description
+
+
+#### Base Command
+
+`guardicore-delete-label`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| label | description. | Required | 
+| keyvalue | description. | Required | 
+| asset_id | description. | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!guardicore-delete-label label="LABEL" keyvalue="VALUE" asset_id="c2acca07-e9bf-4d63-9a26-ff6c749d24d2"```
+#### Human Readable Output
+
+>Label: LABEL:VALUE deleted for asset: c2acca07-e9bf-4d63-9a26-ff6c749d24d2
