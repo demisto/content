@@ -354,7 +354,7 @@ def make_pcap_by_type(pcap_type: str, pcap_bytes: bytes) -> bytes:
         if pcap_type != 'auto':
             raise ValueError('Invalid packet in CDL format')
 
-    if pcap_type in ('auto', 'pyshark'):
+    if pcap_type in ('auto', 'libpcap'):
         return pcap_bytes
 
     else:

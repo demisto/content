@@ -9,7 +9,7 @@ args:
   name: pcap_type
   predefined:
   - auto
-  - pyshark
+  - libpcap
   - cdl-pcap
 - auto: PREDEFINED
   defaultValue: text-based-protocol
