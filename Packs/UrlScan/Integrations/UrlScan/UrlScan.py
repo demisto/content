@@ -85,13 +85,20 @@ def schedule_polling(items_to_schedule):
         items_to_schedule: List of items to schedule.
     """
  # Prepare scheduled url entries
-    demisto.args()['url'] = items_to_schedule
+    args = demisto.args()
+    polling_args = {}
+    for arg in args:
+        if arg != 'url':
+            polling_args[arg] = args[arg]
+    polling_args['url'] = items_to_schedule
+    polling_args['polling'] = True
     scheduled_items = ScheduledCommand(
         command=demisto.command(),
-        args=demisto.args(),
+        args=polling_args,
         items_remaining=len(items_to_schedule),
         next_run_in_seconds=60
     )
+    demisto.info("Polling args are: {}".format(polling_args))
     return CommandResults(scheduled_command=scheduled_items)
 
 
@@ -138,8 +145,9 @@ def http_request(client, method, url_suffix, json=None, wait=0, retries=0):
             demisto.results(blacklisted_message)
             return response_json, MetricTypes.GENERAL_ERROR
 
-        return_error('Error in API call to URLScan.io [%d] - %s: %s' % (r.status_code, r.reason, error_description))
-
+        response_json['is_error'] = True
+        demisto.results('Error in API call to URLScan.io [%d] - %s: %s' % (r.status_code, r.reason, error_description))
+        return response_json, MetricTypes.GENERAL_ERROR
     return r.json(), MetricTypes.SUCCESS
 
 
@@ -285,7 +293,7 @@ def format_results(client, uuid):
     # Scan Lists sometimes returns empty
     num_of_attempts = 0
     relationships = []
-    response = urlscan_submit_request(client, uuid)
+    response, metric_results = urlscan_submit_request(client, uuid)
     scan_lists = response.get('lists')
     while scan_lists is None:
         try:
@@ -528,24 +536,30 @@ def urlscan_submit_command(client):
     execution_metrics = ExecutionMetrics()
     command_results = []
     items_to_schedule = []
+    calling_context = demisto.callingContext.get('context', {})
+    sm = get_schedule_metadata(context=calling_context)
 
     urls = argToList(demisto.args().get('url'))
     for url in urls:
         demisto.args()['url'] = url
         response, metrics = urlscan_submit_url(client, url)
-        if response.get('url_is_blacklisted'):
+        if response.get('url_is_blacklisted') or response.get('is_error'):
             execution_metrics.general_error += 1
             continue
         if metrics == MetricTypes.QUOTA_ERROR:
-            execution_metrics.quota_error += 1
+            if not sm.get('is_polling'):
+                execution_metrics.quota_error += 1
+                continue
             items_to_schedule.append(url)
             continue
         uuid = response.get('uuid')
         get_urlscan_submit_results_polling(client, uuid)
         execution_metrics.success += 1
     if supports_polling():
-        command_results.append(schedule_polling(items_to_schedule))
+        if len(items_to_schedule) > 0:
+            command_results.append(schedule_polling(items_to_schedule))
     if execution_metrics.metrics is not None:
+        demisto.info("Adding metrics to this run.")
         command_results.append(execution_metrics.metrics)
     return command_results
 

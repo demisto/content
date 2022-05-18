@@ -8,6 +8,7 @@ from typing import Callable
 
 from dateparser import parse
 
+import demistomock
 from CommonServerPython import *
 
 INTEGRATION_NAME = "VirusTotal"
@@ -799,10 +800,10 @@ class ScoreCalculator:
         """
         self.logs.append(f'Basic analyzing of "{indicator}"')
         data = raw_response.get('data', {})
-        attributes = data['attributes']
+        attributes = data.get('attributes', {})
         popularity_ranks = attributes.get('popularity_ranks')
-        last_analysis_results = attributes['last_analysis_results']
-        last_analysis_stats = attributes['last_analysis_stats']
+        last_analysis_results = attributes.get('last_analysis_results')
+        last_analysis_stats = attributes.get('last_analysis_stats')
         if self.is_good_by_popularity_ranks(popularity_ranks):
             return Common.DBotScore.GOOD
         if self.is_preferred_vendors_pass_malicious(last_analysis_results):
@@ -1542,7 +1543,7 @@ def ip_command(client: Client, score_calculator: ScoreCalculator, args: dict, re
             raw_response = client.ip(ip, relationships)
             if raw_response.get('error', {}).get('code') == "QuotaExceededError":
                 execution_metrics.quota_error += 1
-                raise DemistoException(f"Could not process IP: '{ip}'\n {raw_response.get('error', {})}")
+                continue
         except Exception as exception:
             # If anything happens, just keep going
             execution_metrics.general_error += 1
@@ -1550,9 +1551,12 @@ def ip_command(client: Client, score_calculator: ScoreCalculator, args: dict, re
             continue
         execution_metrics.success += 1
         results.append(
-            build_ip_output(client, score_calculator, ip, raw_response, argToBoolean(args.get('extended_data')))
+            build_ip_output(client, score_calculator, ip, raw_response, argToBoolean(args.get('extended_data'))).to_context()
         )
-    results.append(CommandResults(execution_metrics=execution_metrics.metrics))
+    if len(results) == 0:
+        results.append(CommandResults(readable_output='No results found'))
+        return results
+    results.append(execution_metrics.metrics.to_context())
     return results
 
 
@@ -1572,13 +1576,17 @@ def file_command(client: Client, score_calculator: ScoreCalculator, args: dict, 
             if raw_response.get('error', {}).get('code') == "QuotaExceededError":
                 execution_metrics.quota_error += 1
                 continue
-            results.append(build_file_output(client, score_calculator, file, raw_response, extended_data))
+            results.append(build_file_output(client, score_calculator, file, raw_response, extended_data).to_context())
             execution_metrics.success += 1
         except Exception as exc:
             # If anything happens, just keep going
             execution_metrics.general_error += 1
             results.append(CommandResults(readable_output=f'Could not process file: "{file}"\n {str(exc)}'))
-    results.append(CommandResults(execution_metrics=execution_metrics.metrics))
+    if len(results) == 0:
+        results.append(CommandResults(readable_output='No results found'))
+        return results
+    results.append(execution_metrics.metrics.to_context())
+    demisto.info("Got here")
     return results
 
 
@@ -1606,8 +1614,12 @@ def url_command(client: Client, score_calculator: ScoreCalculator, args: dict, r
             execution_metrics.general_error += 1
             continue
         execution_metrics.success += 1
-        results.append(build_url_output(client, score_calculator, url, raw_response, extended_data))
-    results.append(CommandResults(execution_metrics=execution_metrics.metrics))
+        results.append(build_url_output(client, score_calculator, url, raw_response, extended_data).to_context())
+    if len(results) == 0:
+        results.append(CommandResults(readable_output='No results found.'))
+        return results
+    results.append(execution_metrics.metrics.to_context())
+    demisto.info("Got here")
     return results
 
 
@@ -1619,11 +1631,15 @@ def domain_command(client: Client, score_calculator: ScoreCalculator, args: dict
     execution_metrics = ExecutionMetrics()
     domains = argToList(args['domain'])
     results: List[CommandResults] = list()
+    demisto.debug(f'Domains: {domains}')
     for domain in domains:
         try:
             raw_response = client.domain(domain, relationships)
             if raw_response.get('error', {}).get('code') == "QuotaExceededError":
                 execution_metrics.quota_error += 1
+                result = CommandResults(readable_output=f'Quota exceeded for domain: {domain}').to_context()
+                results.append(result)
+                demisto.debug(f'Quota exceeded for domain: {domain}')
                 continue
         except Exception as exception:
             # If anything happens, just keep going
@@ -1631,10 +1647,16 @@ def domain_command(client: Client, score_calculator: ScoreCalculator, args: dict
             execution_metrics.general_error += 1
             continue
         execution_metrics.success += 1
-        results.append(
-            build_domain_output(client, score_calculator, domain, raw_response, argToBoolean(args.get('extended_data')))
-        )
-    results.append(CommandResults(execution_metrics=execution_metrics.metrics))
+        demisto.info(f'Reporting success for domain: {domain}')
+        result = build_domain_output(client, score_calculator, domain, raw_response, argToBoolean(args.get('extended_data'))).to_context()
+        results.append(result)
+    demisto.debug(f'Results: {results}')
+    if len(results) == 0:
+        result = CommandResults(readable_output='No domains were found.').to_context()
+        results.append(result)
+        # return results
+    results.append(execution_metrics.metrics.to_context())
+    demisto.info(f'Results: {results}')
     return results
 
 
@@ -2139,6 +2161,7 @@ def main(params: dict, args: dict, command: str):
         results = get_analysis_command(client, args)
     else:
         raise NotImplementedError(f'Command {command} not implemented')
+    demisto.info(results)
     return_results(results)
 
 

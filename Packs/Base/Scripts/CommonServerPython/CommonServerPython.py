@@ -6243,7 +6243,7 @@ class CommandResults:
         if self.execution_metrics:
             return_entry['Type'] = EntryType.EXECUTION_METRICS
             return_entry['Contents'] = 'Metrics reported successfully.'
-            return_entry['ExecutionMetrics'] = self.execution_metrics
+            return_entry['APIExecutionMetrics'] = self.execution_metrics
 
         return return_entry
 
@@ -6536,14 +6536,14 @@ class ExecutionMetrics(object):
     def update_metrics(self, metric_type, metric_value):
         if metric_value > 0:
             if len(self._metrics) == 0:
-                self._metrics.append({'MetricType': metric_type, 'ApiCalls': metric_value})
+                self._metrics.append({'Type': metric_type, 'APICallsCount': metric_value})
             else:
                 for metric in self._metrics:
                     if metric['MetricType'] == metric_type:
                         metric['ApiCalls'] = metric_value
                         break
                 else:
-                    self._metrics.append({'MetricType': metric_type, 'ApiCalls': metric_value})
+                    self._metrics.append({'Type': metric_type, 'APICallsCount': metric_value})
             self.metrics = CommandResults(execution_metrics=self._metrics)
 
 
