@@ -79,7 +79,6 @@ def generate_jwt_times():   # pragma: no cover
 
 
 def api_call(uri, method='post', headers={}, body={}, params={}, accept_404=False, access_token=''):   # pragma: no cover
-
     """
     Makes an API call to the server URL with the supplied uri, method, headers, body and params
     """
@@ -1318,12 +1317,12 @@ def get_policy_details():
         outputs_prefix='Cylance.Policy',
         outputs_key_field='policy_id',
         readable_output=tableToMarkdown(title, contents)
-                        + tableToMarkdown(title_filetype_actions_suspicious, filetype_actions_suspicious_contents)
-                        + tableToMarkdown(title_filetype_actions_threat, filetype_actions_threat_contents)
-                        + tableToMarkdown(title_safelist, safelist_contents)
-                        + tableToMarkdown(title_memory_exclusion, policy_details.get('memory_exclusion_list'))
-                        + tableToMarkdown(title_memory_violation, memory_violations_content)
-                        + tableToMarkdown(title_additional_settings, memory_violations_content),
+        + tableToMarkdown(title_filetype_actions_suspicious, filetype_actions_suspicious_contents)
+        + tableToMarkdown(title_filetype_actions_threat, filetype_actions_threat_contents)
+        + tableToMarkdown(title_safelist, safelist_contents)
+        + tableToMarkdown(title_memory_exclusion, policy_details.get('memory_exclusion_list'))
+        + tableToMarkdown(title_memory_violation, memory_violations_content)
+        + tableToMarkdown(title_additional_settings, memory_violations_content),
         raw_response=policy_details
     )
     return_results(results)
@@ -1418,8 +1417,8 @@ def get_instaquery_result():
 
 
 def list_instaquery():
-    page = demisto.args().get('page')
-    page_size = demisto.args().get('page_size')
+    page = demisto.args().get('page', '1')
+    page_size = demisto.args().get('page_size', '20')
 
     # Create request
     access_token = get_authentication_token([SCOPE_OPTICS_LIST, SCOPE_OPTICS_GET])
