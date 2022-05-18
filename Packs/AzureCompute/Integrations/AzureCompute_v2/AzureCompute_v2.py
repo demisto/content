@@ -300,7 +300,7 @@ def create_nic_parameters(args, subscription_id):
         network_security_group_id = f"/subscriptions/{subscription_id}/resourceGroups/"
         network_security_group_id += f"{resource_group}/providers/Microsoft.Network/networkSecurityGroups/" \
                                      f"{network_security_group}"
-        nic['properties']['networkSecurityGroup']['id'] = private_ip_address
+        nic['properties']['networkSecurityGroup']['id'] = network_security_group_id
 
     return nic
 
