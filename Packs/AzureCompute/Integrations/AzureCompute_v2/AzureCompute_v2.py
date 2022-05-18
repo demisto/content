@@ -297,9 +297,8 @@ def create_nic_parameters(args, subscription_id):
         nic['properties']['ipConfigurations'][0]['properties']['privateIPAddress'] = private_ip_address
 
     if network_security_group:
-        network_security_group_id = f"/subscriptions/{subscription_id}/resourceGroups/"
-        network_security_group_id += f"{resource_group}/providers/Microsoft.Network/networkSecurityGroups/" \
-                                     f"{network_security_group}"
+        network_security_group_id = f"/subscriptions/{subscription_id}/resourceGroups/{resource_group}/providers/" \
+                                    f"Microsoft.Network/networkSecurityGroups/{network_security_group}"
         nic['properties']['networkSecurityGroup']['id'] = network_security_group_id
 
     return nic
@@ -767,6 +766,18 @@ def poweroff_vm_command(client: MsGraphClient, args: dict):
 
 
 def get_network_interface_command(client: MsGraphClient, args: dict):
+    """
+    Get the properties of a specified Network Interface
+
+    demisto parameter: (string) resource_group
+        Resource Group to which the network interface belongs
+
+    demisto parameter: (string) nic_name
+        Name of the network interface you wish to view the details of
+
+    returns:
+        Network Interface Object
+    """
     resource_group = args.get('resource_group')
     interface_name = args.get('nic_name')
     response = client.get_network_interface(resource_group, interface_name)
@@ -815,6 +826,18 @@ def get_network_interface_command(client: MsGraphClient, args: dict):
 
 
 def get_public_ip_details_command(client: MsGraphClient, args: dict):
+    """
+    Get the properties of a specified Public IP Address
+
+    demisto parameter: (string) resource_group
+        Resource Group to which the public IP address belongs
+
+    demisto parameter: (string) address_name
+        Name of the public ip address you wish to view the details of
+
+    returns:
+        Public IP Address Object
+    """
     resource_group = args.get('resource_group')
     address_name = args.get('address_name')
     response = client.get_public_ip_details(resource_group, address_name)
@@ -835,7 +858,7 @@ def get_public_ip_details_command(client: MsGraphClient, args: dict):
         'PublicConfigName': config_name,
         'Location': location,
         'PublicConfigID': config_id,
-        'ResourceGroup': args.get('resource_group'),
+        'ResourceGroup': resource_group,
         'PublicIPAddress': ip_address,
         'PublicIPAddressVersion': ip_address_version,
         'PublicIPAddressAllocationMethod': ip_address_allocation_method,
@@ -851,7 +874,39 @@ def get_public_ip_details_command(client: MsGraphClient, args: dict):
 
 
 def create_nic_command(client: MsGraphClient, args: dict):
+    """
+    Create a Network Interface with the specified interface parameters
 
+    demisto parameter: (string) resource_group
+        The resource group to which the new network interface will belong.
+
+    demisto parameter: (string) nic_name
+        The network interface name.
+
+    demisto parameter: (string) nic_location
+        The location in which to create the network interface.
+
+    demisto parameter: (string) vnet_name
+        The virtual network name of the inteface.
+
+    demisto parameter: (string) subnet_name
+        The subnet name of the inteface.
+
+    demisto parameter: (string) address_assignment_method
+         The address assignment method, the default is Dynamic.
+
+    demisto parameter: (string) private_ip_address
+        The private ip address of the interface incase you chose to use the static assignment method.
+
+    demisto parameter: (string) ip_config_name
+        The ip address config name.
+
+    demisto parameter: (string) network_security_group
+        The network security group of the interface.
+
+    returns:
+        Network Interface Object
+    """
     response = client.create_nic(args)
 
     # Retrieve relevant properties to return to context
@@ -863,6 +918,7 @@ def create_nic_command(client: MsGraphClient, args: dict):
     provisioning_state = properties.get('provisioningState', "NA")
     ip_configurations = properties.get('ipConfigurations', [])
     dns_suffix = properties.get('dnsSettings', {}).get('internalDomainNameSuffix')
+    resource_group = args.get('resource_group')
 
     ip_configs = []
     for ip_configuration in ip_configurations:
@@ -880,7 +936,7 @@ def create_nic_command(client: MsGraphClient, args: dict):
         'IPConfigurations': ip_configs,
         'ProvisioningState': provisioning_state,
         'Location': location,
-        'ResourceGroup': args.get('resource_group'),
+        'ResourceGroup': resource_group,
         'NetworkSecurityGroup': network_security_group,
         'DNSSuffix': dns_suffix
     }
