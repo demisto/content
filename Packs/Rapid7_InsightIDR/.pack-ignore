@@ -6,4 +6,8 @@ ignore=RM104
 
 
 [file:Rapid7_InsightIDR.yml]
-ignore=BA108,BA109
+ignore=BA108,BA109,IN145
+
+
+[file:Rapid7_InsightIDR_image.png]
+ignore=IM111

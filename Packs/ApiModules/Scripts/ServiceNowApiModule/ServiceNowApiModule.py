@@ -32,12 +32,16 @@ class ServiceNowClient(BaseClient):
             self.password = credentials.get('password')
             self.auth = (self.username, self.password)
 
+        if '@' in client_id:  # for use in OAuth test-playbook
+            self.client_id, refresh_token = client_id.split('@')
+            set_integration_context({'refresh_token': refresh_token})
+
         self.base_url = url
         super().__init__(base_url=self.base_url, verify=verify, proxy=proxy, headers=headers, auth=self.auth)  # type
         # : ignore[misc]
 
     def http_request(self, method, url_suffix, full_url=None, headers=None, json_data=None, params=None, data=None,
-                     files=None, return_empty_response=False, auth=None):
+                     files=None, return_empty_response=False, auth=None, timeout=None):
         ok_codes = (200, 201, 401)  # includes responses that are ok (200) and error responses that should be
         # handled by the client and not in the BaseClient
         try:
@@ -48,7 +52,8 @@ class ServiceNowClient(BaseClient):
                 })
             res = super()._http_request(method=method, url_suffix=url_suffix, full_url=full_url, resp_type='response',
                                         headers=headers, json_data=json_data, params=params, data=data, files=files,
-                                        ok_codes=ok_codes, return_empty_response=return_empty_response, auth=auth)
+                                        ok_codes=ok_codes, return_empty_response=return_empty_response, auth=auth,
+                                        timeout=timeout)
             if res.status_code in [200, 201]:
                 try:
                     return res.json()

@@ -10,6 +10,7 @@ Query Indicators of Compromise in AlienVault OTX.
     | Server address |  | True |
     | API Token |  | False |
     | Indicator Threshold. The minimum number of pulses to consider the indicator as malicious. |  | False |
+    | Maximum number of relationships for indicators | If not provided, no relationships will be added. | False |
     | Source Reliability | Reliability of the source providing the intelligence data. | True |
     | Create relationships | Create relationships between indicators as part of Enrichment. | False |
     | Trust any certificate (not secure) |  | False |
@@ -119,6 +120,27 @@ Queries an IP address in AlienVault OTX.
                 "EntityB": "T1071 - Application Layer Protocol",
                 "EntityBType": "Attack Pattern",
                 "Relationship": "indicator-of"
+            },
+            {
+                "EntityA": "98.136.103.23",
+                "EntityAType": "IP",
+                "entityB": "mojorojorestaurante.com",
+                "entityBType": "URL",
+                "Relationship": "indicator-of"
+            },
+            {
+                "EntityA": "98.136.103.23",
+                "EntityAType": "IP",
+                "entityB": "nguyenhoangai-4g.xyz",
+                "entityBType": "Domain",
+                "Relationship": "indicator-of"
+            },
+            {
+                "EntityA": "98.136.103.23",
+                "EntityAType": "IP",
+                "entityB": "0b4d4a7c35a185680bc5102bdd98218297e2cdf0a552bde10e377345f3622c1c",
+                "entityBType": "File",
+                "Relationship": "indicator-of"
             }
         ]
     }
@@ -188,7 +210,37 @@ Queries a domain in AlienVault OTX.
         "Vendor": "AlienVault OTX v2"
     },
     "Domain": {
-        "Name": "ahnlab.myfw.us"
+        "Name": "ahnlab.myfw.us",
+        "Relationships":[
+            {
+                "EntityA": "ahnlab.myfw.us",
+                "EntityAType": "Domain",
+                "EntityB": "b3558ad9f46b72a0319f11889870457dfd611cc4020dbc63945a92869581f774",
+                "EntityBType": "File",
+                "Relationship": "indicator-of"
+            },
+            {
+                "EntityA": "ahnlab.myfw.us",
+                "EntityAType": "Domain",
+                "EntityB": "219c6da3c6555bba5a3c1138180351dd6d39bc14d3cb491e93a46bff6c5ca271",
+                "EntityBType": "File",
+                "Relationship": "indicator-of",
+            },
+            {
+                "EntityA": "ahnlab.myfw.us",
+                "EntityAType": "Domain",
+                "EntityB": "98.136.103.23",
+                "EntityBType": "IP",
+                "Relationship": "indicator-of"
+            },
+            {
+                "EntityA": "ahnlab.myfw.us",
+                "EntityAType": "Domain",
+                "EntityB": "ahnlab.myfw.us",
+                "EntityBType": "IP",
+                "Relationship": "indicator-of"
+            }
+        ]
     }
 }
 ```
@@ -974,3 +1026,17 @@ Queries a URL in AlienVault OTX.
 >|---|---|---|---|---|
 >| http://www.alexa.com/siteinfo/fotoidea.com | fotoidea.com | www.fotoidea.com | http://www.fotoidea.com/sport/4x4_san_ponso/slides/IMG_0068.html/url_list | http://whois.domaintools.com/fotoidea.com |
 
+
+## Additional Information
+ - AlienVault considers non lowercased URL protocol as invalid, e.g, HTTP://www.google.com. Hence such submissions will be lowercased to ensure a seamless usage of the integration.
+
+
+## Dbot score calculation method
+In case AlienVault OTX API response contains `accepted` under the `false_positive.assessment` key, the DbotScore will be set to **Good**.
+
+Otherwise, if the response includes one validation, DbotScore will be set to **SUSPICIOUS**, if there's no validation in the response then the DbotScore will be set by the `pulse_info` length in the following manner:
+   - **Bad** - If the length of is greater or equal to the default threshold given by the user.
+   - **SUSPICIOUS** - If the length is shorter than the default threshold.
+   - **None** - If the length is zero.
+
+In any other case, the DbotScore will be set to **Good**.

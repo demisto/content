@@ -39,7 +39,7 @@ tasks:
     task:
       id: dfcce3a7-d1d3-4e2f-8842-04dba4c9b377
       version: -1
-      name: Add ip to blacklist
+      name: Add ip to block list
       script: '|||sigsci-blacklist-add-ip'
       type: regular
       iscommand: true
@@ -49,7 +49,7 @@ tasks:
       - "4"
     scriptarguments:
       ip:
-        simple: 8.3.3.3
+        simple: 8.3.3.3,8.2.2.2
       note:
         simple: test blacklist
       siteName:
@@ -76,7 +76,7 @@ tasks:
     task:
       id: 50a5122a-9632-43e1-8ea2-57e854d433ab
       version: -1
-      name: Get blacklist
+      name: Get block list
       script: '|||sigsci-get-blacklist'
       type: regular
       iscommand: true
@@ -109,7 +109,7 @@ tasks:
     task:
       id: 1a80e9bd-3889-4355-8982-72b175a4f40f
       version: -1
-      name: Remove IP from blacklist
+      name: Remove IP from block list
       script: '|||sigsci-blacklist-remove-ip'
       type: regular
       iscommand: true
@@ -144,7 +144,7 @@ tasks:
     task:
       id: e7042dbe-6891-4943-87f8-82830f622e65
       version: -1
-      name: Add ip to whitelist
+      name: Add ip to allow list
       script: '|||sigsci-whitelist-add-ip'
       type: regular
       iscommand: true
@@ -156,7 +156,7 @@ tasks:
       ip:
         simple: 8.3.3.3
       note:
-        simple: test adding ip to whitelist
+        simple: test adding ip to allow list
       siteName:
         simple: node_goat
     separatecontext: false
@@ -181,7 +181,7 @@ tasks:
     task:
       id: 55798587-f4e8-45b9-86e7-7398b77b04ce
       version: -1
-      name: Get whitelist
+      name: Get allow list
       script: '|||sigsci-get-whitelist'
       type: regular
       iscommand: true
@@ -214,7 +214,7 @@ tasks:
     task:
       id: df33e137-bd62-4559-8d59-d37c15c55b94
       version: -1
-      name: Remove IP from whitelist
+      name: Remove IP from allow list
       script: '|||sigsci-whitelist-remove-ip'
       type: regular
       iscommand: true
@@ -522,7 +522,7 @@ tasks:
     task:
       id: d351128f-8013-40da-8a8a-00f0017b71f8
       version: -1
-      name: Test blacklist and whitelist
+      name: Test block list and allow list
       type: title
       iscommand: false
       brand: ""
@@ -1228,7 +1228,7 @@ tasks:
     task:
       id: 6e65cab2-69ea-41b3-837e-bbc95874fb0e
       version: -1
-      name: Verify IP was added to blacklist
+      name: Verify IP was added to block list
       type: condition
       iscommand: false
       brand: ""
@@ -1268,7 +1268,7 @@ tasks:
     task:
       id: 1cc6bd51-ef37-4ed6-8c6c-77a1f9481dfb
       version: -1
-      name: Get blacklist
+      name: Get block list
       script: '|||sigsci-get-blacklist'
       type: regular
       iscommand: true
@@ -1336,7 +1336,7 @@ tasks:
     task:
       id: 52e27bc4-d0ec-4297-868d-1b6891e8f1e7
       version: -1
-      name: Verify IP was deleted from blacklist (blacklist is empty)
+      name: Verify IP was deleted from block list (block list is empty)
       type: condition
       iscommand: false
       brand: ""
@@ -1408,7 +1408,7 @@ tasks:
     task:
       id: 00e460f6-38bb-4958-8daa-ce780253f289
       version: -1
-      name: Get whitelist
+      name: Get allow list
       script: '|||sigsci-get-whitelist'
       type: regular
       iscommand: true
@@ -1467,7 +1467,7 @@ tasks:
     task:
       id: b45004c0-702c-4996-8817-ffa3c54f7969
       version: -1
-      name: Verify IP was deleted from whitelist (whitelist is empty)
+      name: Verify IP was deleted from allow list (allow list is empty)
       type: condition
       iscommand: false
       brand: ""
@@ -1504,7 +1504,7 @@ tasks:
     task:
       id: 58b69ce7-9e79-47e3-80ab-a3b1c6057741
       version: -1
-      name: Verify IP was added to whitelist
+      name: Verify IP was added to allow list
       type: condition
       iscommand: false
       brand: ""

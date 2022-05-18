@@ -1,11 +1,11 @@
-Fetches indicators from a iDefense feed. You can filter returned indicators by indicator type, indicator severity, threat type, confidence, and malware family (each of these are an integration parameter).
+Fetches indicators from an Accenture CTI feed. You can filter returned indicators by indicator type, indicator severity, threat type, confidence, and malware family (each of these are an integration parameter).
 Ingesting the indicator is being done in an incremental manner.
-This feed integration was integrated and tested with version v2.61.1 of iDefense.
+This feed integration was integrated and tested with version v2.61.1 of ACTI.
 
-## Configure iDefense Feed on Cortex XSOAR
+## Configure ACTI Feed on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for iDefense Feed.
+2. Search for ACTI Feed.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Description** | **Required** |

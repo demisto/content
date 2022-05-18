@@ -1,0 +1,12 @@
+{
+	"regex": "",
+	"details": "DevSecOps IaC Scan Alert",
+	"disabled": false,
+    "shouldPublish": true,
+    "shouldCommit": true,
+    "expiration": 0,
+    "version": -1,
+    "fromVersion": "6.0.0",
+    "system": false,
+	"id": "DevSecOps IaC Scan Alert"
+}

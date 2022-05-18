@@ -1,0 +1,18 @@
+{
+    "id": "Flashpoint Indicator",
+    "version": -1,
+    "modified": "2021-06-23T20:08:22.314428194+05:30",
+    "shouldCommit": false,
+    "regex": "",
+    "details": "Flashpoint Indicator",
+    "prevDetails": "Flashpoint Indicator",
+    "system": false,
+    "locked": false,
+    "disabled": false,
+    "file": false,
+    "updateAfter": 0,
+    "mergeContext": false,
+    "expiration": 0,
+    "layout": "Flashpoint Indicator",
+    "fromVersion": "6.0.0"
+}

@@ -1,0 +1,17 @@
+commonfields:
+  id: CommonServer
+  version: -1
+name: CommonServer
+script: ''
+type: javascript
+tags:
+- infra
+- server
+comment: Common code that will be merged into each server script when it runs
+system: true
+scripttarget: 0
+dependson: {}
+timeout: 0s
+tests:
+- 'Test CommonServer'
+fromversion: 5.0.0

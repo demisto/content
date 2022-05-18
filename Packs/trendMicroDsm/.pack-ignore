@@ -1,4 +1,4 @@
-[file:integration-trendMicroDsm.yml]
+[file:TrendMicro.yml]
 ignore=IN126
 
 [file:README.md]
@@ -6,3 +6,6 @@ ignore=RM104
 
 [file:playbook-TrendMicro_Malware_Alert.yml]
 ignore=BA110
+
+[file:TrendMicro_image.png]
+ignore=IM111

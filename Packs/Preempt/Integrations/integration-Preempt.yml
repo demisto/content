@@ -40,12 +40,10 @@ configuration:
   required: true
 - display: Trust any certificate (not secure)
   name: insecure
-  defaultvalue: ""
   type: 8
   required: false
 - display: Use system proxy settings
   name: proxy
-  defaultvalue: ""
   type: 8
   required: false
 script:
@@ -517,5 +515,5 @@ script:
       description: Cursor of last retrieved activity for pagination
     description: Get the alerts generated according to given arguments
   isfetch: true
-  dockerimage: demisto/python:2.7.18.15765
+  dockerimage: demisto/python:2.7.18.27799
 fromversion: 5.0.0

@@ -1,0 +1,213 @@
+{
+	"id": "Lacework - Incoming Mapper",
+	"name": "Lacework - Incoming Mapper",
+	"type": "mapping-incoming",
+	"description": "Lacework Mapper for incidents",
+	"version": -1,
+	"defaultIncidentType": "Lacework Event",
+	"fromVersion": "6.0.0",
+	"mapping": {
+		"Lacework Event": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Lacework Event Actor": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "EVENT_ACTOR",
+						"transformers": []
+					},
+					"simple": ""
+				},
+				"Lacework Event ID": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "EVENT_ID",
+						"transformers": []
+					},
+					"simple": ""
+				},
+				"Lacework Event Model": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "EVENT_MODEL",
+						"transformers": []
+					},
+					"simple": ""
+				},
+				"Lacework Event Type": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "EVENT_TYPE",
+						"transformers": []
+					},
+					"simple": ""
+				},
+				"Lacework Recommendation Account Alias": {
+					"complex": {
+						"accessor": "ACCOUNT_ALIAS",
+						"filters": [],
+						"root": "ENTITY_MAP.RecId",
+						"transformers": []
+					},
+					"simple": ""
+				},
+				"Lacework Recommendation Account ID": {
+					"complex": {
+						"accessor": "ACCOUNT_ID",
+						"filters": [],
+						"root": "ENTITY_MAP.RecId",
+						"transformers": []
+					},
+					"simple": ""
+				},
+				"Lacework Recommendation ID": {
+					"complex": {
+						"accessor": "REC_ID",
+						"filters": [],
+						"root": "ENTITY_MAP.RecId",
+						"transformers": []
+					},
+					"simple": ""
+				},
+				"Lacework Recommendation Title": {
+					"complex": {
+						"accessor": "TITLE",
+						"filters": [],
+						"root": "ENTITY_MAP.RecId",
+						"transformers": []
+					},
+					"simple": ""
+				},
+				"severity": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "SEVERITY",
+						"transformers": [
+							{
+								"args": {
+									"limit": {
+										"isContext": false,
+										"value": null
+									},
+									"replaceWith": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "Critical"
+										}
+									},
+									"toReplace": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "1"
+										}
+									}
+								},
+								"operator": "replace"
+							},
+							{
+								"args": {
+									"limit": {
+										"isContext": false,
+										"value": null
+									},
+									"replaceWith": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "High"
+										}
+									},
+									"toReplace": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "2"
+										}
+									}
+								},
+								"operator": "replace"
+							},
+							{
+								"args": {
+									"limit": {
+										"isContext": false,
+										"value": null
+									},
+									"replaceWith": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "Medium"
+										}
+									},
+									"toReplace": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "3"
+										}
+									}
+								},
+								"operator": "replace"
+							},
+							{
+								"args": {
+									"limit": {
+										"isContext": false,
+										"value": null
+									},
+									"replaceWith": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "Low"
+										}
+									},
+									"toReplace": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "4"
+										}
+									}
+								},
+								"operator": "replace"
+							},
+							{
+								"args": {
+									"limit": {
+										"isContext": false,
+										"value": null
+									},
+									"replaceWith": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "Informational"
+										}
+									},
+									"toReplace": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "5"
+										}
+									}
+								},
+								"operator": "replace"
+							}
+						]
+					},
+					"simple": ""
+				}
+			}
+		}
+	}
+}

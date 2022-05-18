@@ -713,7 +713,8 @@ inputs:
     registrant is the company or entity  that owns the domain.
   playbookInputQuery: null
 - key: RegistrantListDelimiter
-  value: {}
+  value:
+    simple: ','
   required: false
   description: |-
     A one-character string used to delimit fields. This must match the value that you defined in the list separator server configuration.

@@ -1,0 +1,33 @@
+commonfields:
+  id: D2O365ComplianceSearch
+  version: -1
+name: D2O365ComplianceSearch
+script: ''
+type: javascript
+tags:
+- email
+- office365
+comment: Assign a 'Mailbox Import Export' management role to a user. This script runs
+  through the agent on a Windows machine, pulls and executes a  PowerShell script
+  - which talks to the Exchange server.
+system: true
+args:
+- name: username
+  required: true
+  default: true
+  description: Admin user to use for compliance search
+- name: password
+  required: true
+  secret: true
+  description: Password for the specified user
+- name: query
+  required: true
+  description: Query to use for finding mails
+- name: timeout
+  description: in seconds. Default is 5 mins. Max is 2 hours.
+scripttarget: 1
+dependson: {}
+timeout: 7.2µs
+fromversion: 5.0.0
+tests:
+- no test

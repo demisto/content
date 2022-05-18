@@ -2,7 +2,7 @@
 !azure-ad-identity-protection-risks-list
 !azure-ad-identity-protection-risky-user-list
 !azure-ad-identity-protection-risky-user-history-list user_id="3fa9f28b-eb0e-463a-ba7b-8089fe9991e2"
-!azure-ad-identity-protection-risky-user-confirm-compromised user_ids="3fa9f28b-eb0e-463a-ba7b-8089fe9991e3"
+!azure-ad-identity-protection-risky-user-confirm-compromised user_ids="9fa9f99b-eb0e-999a-ba9b-9999fe9999e9"
 !azure-ad-identity-protection-risky-user-dismiss user_ids="3fa9f28b-eb0e-463a-ba7b-8089fe9991e2"
 !azure-ad-auth-reset
 !azure-ad-auth-start

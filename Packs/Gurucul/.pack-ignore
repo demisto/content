@@ -1,14 +1,5 @@
 [file:GuruculGRA.yml]
-ignore=IN136
+ignore=IN136,IN145
 
 [file:README.md]
 ignore=RM102
-
-[file:classifier-mapper-Gurucul-GRACases.json]
-ignore=BA101
-
-[file:classifier-mapper-Gurucul-HighRiskUsers.json]
-ignore=BA101
-
-[file:incidentfield-Gra_Case_Id.json]
-ignore=IF100

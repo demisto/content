@@ -1,6 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-
+from CommonServerUserPython import *  # noqa: F401
 import json
 import urllib3
 import traceback
@@ -55,6 +55,15 @@ class Client:
     def send_raw_event(self, job_id, severity, title, raw_body):
         url_suffix = 'api/v1/events/'
         raw = json.loads(raw_body)
+        body = self.map_to_arcanna_raw_event(job_id, raw, severity, title)
+
+        raw_response = requests.post(url=self.base_url + url_suffix, headers=self.get_headers(), verify=self.verify,
+                                     json=body)
+        if raw_response.status_code != 201:
+            raise Exception(f"Error HttpCode={raw_response.status_code} text={raw_response.text}")
+        return raw_response.json()
+
+    def map_to_arcanna_raw_event(self, job_id, raw, severity, title):
         body = {
             "job_id": job_id,
             "title": title,
@@ -62,12 +71,7 @@ class Client:
         }
         if severity is not None:
             body["severity"] = severity
-
-        raw_response = requests.post(url=self.base_url + url_suffix, headers=self.get_headers(), verify=self.verify,
-                                     json=body)
-        if raw_response.status_code != 201:
-            raise Exception(f"Error HttpCode={raw_response.status_code} text={raw_response.text}")
-        return raw_response.json()
+        return body
 
     def get_event_status(self, job_id, event_id):
         url_suffix = f"api/v1/events/{job_id}/{event_id}"
@@ -76,11 +80,49 @@ class Client:
             raise Exception(f"Error HttpCode={raw_response.status_code}")
         return raw_response.json()
 
+    def send_feedback(self, job_id, event_id, username, arcanna_label, closing_notes, indicators):
+        url_suffix = f"api/v1/events/{job_id}/{event_id}/feedback"
+        body = self.map_to_arcanna_label(arcanna_label, closing_notes, username)
+        if indicators:
+            body["indicators"] = json.loads(indicators)
+        raw_response = requests.put(url=self.base_url + url_suffix, headers=self.get_headers(), verify=self.verify,
+                                    json=body)
+
+        if raw_response.status_code != 200:
+            raise Exception(f"Arcanna Error HttpCode={raw_response.status_code} body={raw_response.text}")
+        return raw_response.json()
+
+    @staticmethod
+    def map_to_arcanna_label(arcanna_label, closing_notes, username):
+        body = {
+            "cortex_user": username,
+            "feedback": arcanna_label,
+            "closing_notes": closing_notes
+        }
+        return body
+
+    def send_bulk(self, job_id, events):
+        url_suffix = f"api/v1/bulk/{job_id}"
+        body = {
+            "count": len(events),
+            "events": events
+        }
+        raw_response = requests.post(url=self.base_url + url_suffix, headers=self.get_headers(), verify=self.verify,
+                                     json=body)
+
+        if raw_response.status_code != 201:
+            raise Exception(f"Arcanna Error HttpCode={raw_response.status_code} body={raw_response.text}")
+        return raw_response.json()
+
 
 ''' COMMAND FUNCTIONS '''
 
 
-def test_module(client: Client) -> str:
+def test_module(client: Client, feature_mapping_field: str) -> str:
+    result = parse_mappings(feature_mapping_field)
+    if len(result) < 2:
+        return "Arcanna Mapping Error. Please check your feature_mapping field"
+
     try:
         response = client.test_arcanna()
         demisto.info(f'test_module response={response}')
@@ -156,6 +198,17 @@ def get_default_job_id(client: Client) -> CommandResults:
     )
 
 
+def get_feedback_field(params: Dict[str, Any]) -> CommandResults:
+    response = params.get("closing_reason_field")
+    readable_output = f' ## Get feedback returned results: {response}'
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='Arcanna.FeedbackField',
+        outputs=response
+    )
+
+
 def set_default_job_id(client: Client, args: Dict[str, Any]) -> CommandResults:
     job_id = args.get("job_id")
     client.set_default_job_id(job_id)
@@ -163,6 +216,75 @@ def set_default_job_id(client: Client, args: Dict[str, Any]) -> CommandResults:
 
 
 ''' MAIN FUNCTION '''
+
+
+def send_event_feedback(client: Client, feature_mapping_field: str, args: Dict[str, Any]) -> CommandResults:
+    job_id = args.get("job_id", None)
+    if not job_id:
+        job_id = client.get_default_job_id()
+    event_id = args.get("event_id")
+    mappings = parse_mappings(feature_mapping_field)
+
+    username = args.get("username")
+    label = args.get("label")
+    closing_notes = args.get("closing_notes", "")
+    indicators = args.get("indicators", None)
+    arcanna_label = mappings.get(label, None)
+    if arcanna_label is None:
+        raise Exception(f"Error in arcanna-send-feedback.Wrong label={label}")
+
+    response = client.send_feedback(job_id, event_id, username, arcanna_label, closing_notes, indicators)
+    readable_output = f' ## Arcanna send event feedback results: {response}'
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='Arcanna.Event',
+        outputs_key_field='feedback_status',
+        outputs=response
+    )
+
+
+def send_bulk_events(client: Client, feature_mapping_field: str, args: Dict[str, Any]) -> CommandResults:
+    job_id = args.get("job_id")
+    events = argToList(args.get("events"))
+    mappings = parse_mappings(feature_mapping_field)
+    mapped_events = []
+    for event in events:
+        closing_status = event.get("closingReason")
+        closing_notes = event.get("closeNotes")
+        closing_user = event.get("closeUser")
+        arcanna_label = mappings.get(closing_status)
+        title = event.get("name")
+        severity = event.get("severity")
+
+        body = client.map_to_arcanna_raw_event(job_id, event, severity, title)
+        body["label"] = client.map_to_arcanna_label(arcanna_label, closing_notes, closing_user)
+
+        mapped_events.append(body)
+
+    response = client.send_bulk(job_id, mapped_events)
+    readable_output = f' ## Arcanna send bulk results: {response}'
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='Arcanna.Bulk',
+        outputs_key_field='status',
+        outputs=response
+    )
+
+
+def parse_mappings(mapping: str) -> dict:
+    result = {}
+    pairs = mapping.split(",")
+    for pair in pairs:
+        parts = pair.split("=")
+        if len(parts) != 2:
+            raise BaseException("Arcanna: Error while parsing mapping fields")
+        demisto_closing_reason = parts[0].strip().replace("\"", "")
+        arcanna_label = parts[1].strip().replace("\"", "")
+        result[demisto_closing_reason] = arcanna_label
+
+    return result
 
 
 def main() -> None:
@@ -177,6 +299,7 @@ def main() -> None:
     # get the service API url
     base_url = urljoin(demisto.params()['url'])
     verify_certificate = not demisto.params().get('insecure', False)
+    feature_mapping = demisto.params().get('feature_mapping')
     proxy = demisto.params().get('proxy', False)
 
     default_job_id = demisto.params().get('default_job_id', -1)
@@ -193,7 +316,7 @@ def main() -> None:
 
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
-            result_test = test_module(client)
+            result_test = test_module(client, feature_mapping)
             return_results(result_test)
         elif demisto.command() == "arcanna-get-jobs":
             result_get_jobs = get_jobs(client)
@@ -210,7 +333,15 @@ def main() -> None:
         elif demisto.command() == "arcanna-set-default-job-id":
             result_set_default_id = set_default_job_id(client, demisto.args())
             return_results(result_set_default_id)
-
+        elif demisto.command() == "arcanna-send-event-feedback":
+            result_send_feedback = send_event_feedback(client, feature_mapping, demisto.args())
+            return_results(result_send_feedback)
+        elif demisto.command() == "arcanna-send-bulk-events":
+            result_bulk = send_bulk_events(client, feature_mapping, demisto.args())
+            return_results(result_bulk)
+        elif demisto.command() == "arcanna-get-feedback-field":
+            result_feedback_field = get_feedback_field(demisto.params())
+            return_results(result_feedback_field)
     # Log exceptions and return errors
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback

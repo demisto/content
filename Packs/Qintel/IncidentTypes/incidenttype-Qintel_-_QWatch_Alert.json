@@ -1,0 +1,36 @@
+{
+  "autorun": false,
+  "color": "#3a5278",
+  "days": 0,
+  "daysR": 0,
+  "default": false,
+  "detached": false,
+  "disabled": false,
+  "extractSettings": {
+    "fieldCliNameToExtractSettings": {
+      "qintelqwatchexposures": {
+        "extractAsIsIndicatorTypeId": "",
+        "extractIndicatorTypesIDs": [
+          "emailRep"
+        ],
+        "isExtractingAllIndicatorTypes": false
+      }
+    },
+    "mode": "Specific"
+  },
+  "hours": 0,
+  "hoursR": 0,
+  "id": "Qintel - QWatch Alert",
+  "layout": "Qintel - QWatch Alert",
+  "locked": false,
+  "name": "Qintel - QWatch Alert",
+  "onChangeRepAlg": 0,
+  "playbookId": "Process QWatch Alert - Qintel",
+  "readonly": false,
+  "reputationCalc": 0,
+  "system": false,
+  "version": -1,
+  "weeks": 0,
+  "weeksR": 0,
+  "fromVersion": "6.0.0"
+}

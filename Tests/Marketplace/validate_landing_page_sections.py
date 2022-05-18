@@ -1,11 +1,11 @@
 import argparse
 import json
-import logging
 import os
 import sys
 from glob import glob
 
 from Tests.scripts.utils.log_util import install_logging
+from Tests.scripts.utils import logging_wrapper as logging
 
 LANDING_PAGE_SECTIONS_PAGE_PATH = 'Tests/Marketplace/landingPage_sections.json'
 
@@ -67,5 +67,5 @@ def parse_landing_page_sections_to_json():
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
-    install_logging('ValidateLandingPageSections.log')
+    install_logging('ValidateLandingPageSections.log', logger=logging)
     main()

@@ -27,7 +27,7 @@ This playbook does not use any scripts.
 
 | **Name** | **Description** | **Required** |
 | --- | --- | --- |
-| URLBlacklistMiner | The name of the URL blacklist Miner in Minemeld. | Optional |
+| URLBlacklistMiner | The name of the URL block list Miner in Minemeld. | Optional |
 | URL | The array of malicious URLs to block. | Optional |
 
 ## Playbook Outputs

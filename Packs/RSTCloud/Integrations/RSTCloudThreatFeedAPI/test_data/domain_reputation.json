@@ -1,5 +1,5 @@
 {
-   "ioc_value":"thec0de-22249.portmap.io",
+   "ioc_value":"malicious-domain.local",
    "fseen":1603584000,
    "lseen":1604966400,
    "collect":1605052800,
@@ -14,7 +14,7 @@
    "resolved":{
       "ip":{
          "a":[
-            "193.161.193.99"
+            "1.2.3.4"
          ],
          "alias":[
 
@@ -47,6 +47,6 @@
       "njrat_rat"
    ],
    "id":"a0966302-16b5-3f0d-a6b0-c77e6cba8164",
-   "title":"RST Threat feed. IOC: thec0de-22249.portmap.io",
+   "title":"RST Threat feed. IOC: malicious-domain.local",
    "description":"IOC with tags: c2. Related threats: njrat_rat"
 }

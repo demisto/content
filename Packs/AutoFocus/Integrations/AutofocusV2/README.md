@@ -40,6 +40,7 @@ For more information on activating the license see [Activating AutoFocus License
    | Override default credentials | Whether to override the default AutoFocus API key given by the Cortex XSOAR platform. | False |   
    | Trust any certificate (not secure) | When selected, certificates are not checked. | N/A |
    | Use System Proxy Settings | Runs the integration instance using the proxy server (HTTP or HTTPS) that you defined in the server configuration. |  N/A | 
+   | handle_error | Suppress errors for non found indicators. | N/A |
 
 
 4. Click **Test** to validate the URLs, token, and connection.
@@ -1621,3 +1622,30 @@ Returns the reputation of a domain.
 |Indicatortype|Indicatorvalue|Latestpanverdicts|Seenby|Whoisadmincountry|Whoisadminemail|Whoisadminname|Whoisdomaincreationdate|Whoisdomainexpiredate|Whoisdomainupdatedate|Whoisregistrant|Whoisregistrar|Whoisregistrarurl|Wildfirerelatedsampleverdictcounts|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | DOMAIN | google.com | PAN_DB: BENIGN |  |  |  |  | 1997-09-15 | 2020-09-14 | 2018-02-21 |  | markdownguide Inc. | http:/<span></span>/ww<span></span>w.<span></span>markdownguide.org |  |
+
+
+### autofocus-get-export-list-indicators
+***
+Gets export list indicators from AutoFocus.
+
+
+#### Base Command
+
+`autofocus-get-export-list-indicators`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| label | The label of the exported list. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AutoFocus.ExportListIndicator.Type | String | The indicator type in the export list.  | 
+| AutoFocus.ExportListIndicator.Value | String | The value of the indicator in the export list. | 
+| IP.Address | String | The IP address. | 
+| URL.Data | String | The URL address. | 
+| File.SHA256 | String | The SHA256 hash of the file. | 
+| Domain.Name | String | The domain name. | 

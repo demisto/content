@@ -9,6 +9,7 @@ requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
 ''' CONSTANTS '''
 INTEGRATION_NAME = 'Carbon Black EDR'
+DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
 ''' PARSING PROCESS EVENT COMPLEX FIELDS CLASS'''
 
@@ -267,9 +268,24 @@ def _create_query_string(params: dict, allow_empty_params: bool = False) -> str:
     return current_query
 
 
+def _add_to_current_query(current_query: str = '', params: dict = None) -> str:
+    new_query = ''
+    if not params:
+        return current_query
+    if current_query:
+        new_query += f'({current_query}) AND '
+    current_query_params = [f"{query_field}:{params[query_field]}" for query_field in params]
+    new_query += ' AND '.join(current_query_params)
+    return new_query
+
+
 def _get_sensor_isolation_change_body(client: Client, sensor_id: str, new_isolation: bool) -> dict:
-    new_sensor_data = client.get_sensors(sensor_id)[1][0]  # returns (length, [sensor_data])
-    new_sensor_data['network_isolation_enabled'] = new_isolation
+    sensor_data = client.get_sensors(sensor_id)[1][0]  # returns (length, [sensor_data])
+    new_sensor_data = {
+        'network_isolation_enabled': new_isolation,
+        'group_id': sensor_data.get('group_id')
+    }
+
     return new_sensor_data
 
 
@@ -689,46 +705,71 @@ def endpoint_command(client: Client, id: str = None, ip: str = None, hostname: s
     if not id and not ip and not hostname:
         raise Exception(f'{INTEGRATION_NAME} - In order to run this command, please provide valid id, ip or hostname')
 
-    try:
-        ips = argToList(ip)
-        res = []
-        if ips:
-            for current_ip in ips:
-                res += client.get_sensors(id=id, ipaddr=current_ip, hostname=hostname)[1]
-        else:
-            res += client.get_sensors(id=id, hostname=hostname)[1]
-        endpoints = []
-        command_results = []
-        for sensor in res:
-            is_isolated = _get_isolation_status_field(sensor['network_isolation_enabled'],
-                                                      sensor['is_isolating'])
-            endpoint = Common.Endpoint(
-                id=sensor.get('id'),
-                hostname=sensor.get('computer_name'),
-                ip_address=_parse_field(sensor.get('network_adapters', ''), index_after_split=0, chars_to_remove='|'),
-                mac_address=_parse_field(sensor.get('network_adapters', ''), index_after_split=1, chars_to_remove='|'),
-                os_version=sensor.get('os_environment_display_string'),
-                memory=sensor.get('physical_memory_size'),
-                status='Online' if sensor.get('status') else 'Offline',
-                is_isolated=is_isolated,
-                vendor='Carbon Black Response')
-            endpoints.append(endpoint)
+    # If multiple filters were given, we want to retrieve all results that match any filter ('OR', not 'AND')
+    # issue https://github.com/demisto/etc/issues/46353. Therefore, we make an API query for every filter separately.
+    ips = argToList(ip)
+    hostnames = argToList(hostname)
+    ids = argToList(id)
+    exceptions = []
+    res = []
+    if ips:
+        for current_ip in ips:
+            # Carbon Black returns an error in various scenarios (no results matching the query, etc.), wrapping with
+            # `try-except` to handle these exceptions here.
+            try:
+                res += client.get_sensors(ipaddr=current_ip)[1]
+            except Exception as e:
+                exceptions.append({'Query': f'ip: {current_ip}', 'Exception': str(e)})
+    if hostnames:
+        for current_hostname in hostnames:
+            try:
+                res += client.get_sensors(hostname=current_hostname)[1]
+            except Exception as e:
+                exceptions.append({'Query': f'hostname: {current_hostname}', 'Exception': str(e)})
+    if ids:
+        for current_id in ids:
+            try:
+                res += client.get_sensors(id=current_id)[1]
+            except Exception as e:
+                exceptions.append({'Query': f'id: {current_id}', 'Exception': str(e)})
 
-            endpoint_context = endpoint.to_context().get(Common.Endpoint.CONTEXT_PATH)
-            md = tableToMarkdown(f'{INTEGRATION_NAME} -  Endpoint: {sensor.get("id")}', endpoint_context)
+    # Remove duplicates by taking entries with unique `id`:
+    if res:
+        res = list({v['id']: v for v in res}.values())
 
-            command_results.append(CommandResults(
-                readable_output=md,
-                raw_response=res,
-                indicator=endpoint
-            ))
-        return command_results
-    except Exception as e:
-        return CommandResults(readable_output=f'{INTEGRATION_NAME} - Could not get endpoint (error- {e}')
+    endpoints = []
+    command_results = []
+    for sensor in res:
+        is_isolated = _get_isolation_status_field(sensor['network_isolation_enabled'],
+                                                  sensor['is_isolating'])
+        endpoint = Common.Endpoint(
+            id=sensor.get('id'),
+            hostname=sensor.get('computer_name'),
+            ip_address=_parse_field(sensor.get('network_adapters', ''), index_after_split=0, chars_to_remove='|'),
+            mac_address=_parse_field(sensor.get('network_adapters', ''), index_after_split=1, chars_to_remove='|'),
+            os_version=sensor.get('os_environment_display_string'),
+            memory=sensor.get('physical_memory_size'),
+            status='Online' if sensor.get('status') else 'Offline',
+            is_isolated=is_isolated,
+            vendor='Carbon Black Response')
+        endpoints.append(endpoint)
+
+        endpoint_context = endpoint.to_context().get(Common.Endpoint.CONTEXT_PATH)
+        md = tableToMarkdown(f'{INTEGRATION_NAME} -  Endpoint: {sensor.get("id")}', endpoint_context)
+
+        command_results.append(CommandResults(
+            readable_output=md,
+            raw_response=res,
+            indicator=endpoint
+        ))
+    if exceptions:
+        md = tableToMarkdown('The following queries resulted in an error: ', exceptions, headers=['Query', 'Exception'])
+        command_results.append(CommandResults(readable_output=md))
+    return command_results
 
 
 def fetch_incidents(client: Client, max_results: int, last_run: dict, first_fetch_time: str, status: str = None,
-                    feedname: str = None, query: str = None):
+                    feedname: str = None, query: str = ''):
     if (status or feedname) and query:
         raise Exception(f'{INTEGRATION_NAME} - Search is not permitted with both query and filter parameters.')
 
@@ -736,41 +777,53 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict, first_fetc
 
     # How much time before the first fetch to retrieve incidents
     first_fetch_time = dateparser.parse(first_fetch_time)
-    first_fetch_timestamp_ms = int(first_fetch_time.timestamp()) if first_fetch_time else None
-    last_fetch = last_run.get('last_fetch', None)
+    last_fetch = last_run.get('last_fetch', None)  # {last_fetch: timestamp}
+    demisto.debug(f'{INTEGRATION_NAME} - last fetch: {last_fetch}')
+
     # Handle first fetch time
     if last_fetch is None:
-        last_fetch = first_fetch_timestamp_ms
+        last_fetch = first_fetch_time
     else:
-        last_fetch = int(last_fetch)
+        last_fetch = datetime.fromtimestamp(last_fetch)
 
-    latest_created_time = last_fetch
-    demisto.debug(f'{INTEGRATION_NAME} - last fetch: {last_fetch}')
+    latest_created_time = last_fetch.timestamp()
+
+    date_range = f'[{last_fetch.strftime("%Y-%m-%dT%H:%M:%S")} TO *]'
+
     incidents: List[Dict[str, Any]] = []
+
+    alerts = []
 
     # multiple statuses are not supported by api. If multiple statuses provided, gets the incidents for each status.
     # Otherwise will run without status.
-    alerts = []
+    query_params = {'created_time': date_range}
+    if feedname:
+        query_params['feedname'] = feedname
+
     if status:
         for current_status in argToList(status):
             demisto.debug(f'{INTEGRATION_NAME} - Fetching incident from Server with status: {current_status}')
-            res = client.get_alerts(status=current_status, feedname=feedname)
+            query_params['status'] = current_status
+            # we create a new query containing params since we do not allow both query and params.
+            res = client.get_alerts(query=_create_query_string(query_params), limit=max_results)
             alerts += res.get('results', [])
             demisto.debug(f'{INTEGRATION_NAME} - fetched {len(alerts)} so far.')
     else:
+        query = _add_to_current_query(query, query_params)
         demisto.debug(f'{INTEGRATION_NAME} - Fetching incident from Server with status: {status}')
-        res = client.get_alerts(feedname=feedname, query=query)
+        res = client.get_alerts(query=query, limit=max_results)
         alerts += res.get('results', [])
 
     demisto.debug(f'{INTEGRATION_NAME} - Got total of {len(alerts)} alerts from CB server.')
-    for alert in alerts[:max_results]:
+    for alert in alerts:
         incident_created_time = dateparser.parse(alert.get('created_time'))
-        incident_created_time_ms = int(incident_created_time.timestamp()) if incident_created_time else '0'
+        assert incident_created_time is not None
+        incident_created_time_ms = incident_created_time.timestamp()
 
         # to prevent duplicates, adding incidents with creation_time > last fetched incident
         if last_fetch:
-            if incident_created_time_ms <= last_fetch:
-                demisto.debug(f'{INTEGRATION_NAME} - alert {str(alert)} created at {incident_created_time_ms}.'
+            if incident_created_time_ms <= last_fetch.timestamp():
+                demisto.debug(f'{INTEGRATION_NAME} - alert {str(alert)} was created at {incident_created_time_ms}.'
                               f' Skipping.')
                 continue
 

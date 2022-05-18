@@ -14,6 +14,7 @@ urllib3.disable_warnings()
 ''' CONSTANTS '''
 
 MAX_INCIDENTS_TO_FETCH = 25
+API_DATE_FORMAT = '%Y-%m-%d %H:%M:%S'
 
 ''' CLIENT CLASS '''
 
@@ -111,33 +112,28 @@ def fetch_post_records(client: Client, url_suffix, prefix, key, params, post_url
 
 
 def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int],
-                    first_fetch_time: Optional[int], command_type: str
+                    first_fetch_time: Optional[int]
                     ) -> Tuple[Dict[str, int], List[dict]]:
-    if command_type == 'GraCases':
-        return_data = fetch_incidents_open_cases(client, max_results, last_run, first_fetch_time)
-    else:
-        return_data = fetch_incidents_high_risk_users(client, max_results, last_run, first_fetch_time)
-    return return_data
-
-
-def fetch_incidents_open_cases(client: Client, max_results: int, last_run: Dict[str, int],
-                               first_fetch_time: Optional[int]
-                               ) -> Tuple[Dict[str, int], List[dict]]:
     last_fetch = last_run.get('last_fetch', None)
-    case_anomaly = demisto.params().get('fetch_incident_cases') or 'Case Per Anomaly'
-
+    case_status = 'OPEN'
+    url_access_time = datetime.now().timestamp()
+    endDate = (datetime.fromtimestamp(cast(int, url_access_time)).strftime(API_DATE_FORMAT))
+    case_url = '/cases/opendate'
     if last_fetch is None:
         last_fetch = first_fetch_time
+        startDate = (
+            datetime.fromtimestamp(cast(int, last_fetch)).replace(microsecond=0, second=0).strftime(API_DATE_FORMAT))
     else:
         last_fetch = int(last_fetch)
+        startDate = (datetime.fromtimestamp(cast(int, last_fetch) + 1).strftime(API_DATE_FORMAT))
 
-    case_url = '/cases/OPEN/opendate/' + (datetime.fromtimestamp(cast(int, last_fetch)).strftime('%Y-%m-%d'))
-    latest_created_time = cast(int, last_fetch)
     incidents: List[Dict[str, Any]] = []
     page = 1
     isContinue = True
+
     while isContinue:
-        params = {'page': page, 'max': max_results}
+        params = {'page': page, 'max': max_results, 'timezone': 'UTC', 'status': case_status, 'startDate': startDate,
+                  'endDate': endDate}
         case_data = client.fetch_command_result(case_url, params, None)
         if len(case_data) < max_results:
             isContinue = False
@@ -147,88 +143,15 @@ def fetch_incidents_open_cases(client: Client, max_results: int, last_run: Dict[
             incident_created_time = datetime.now().timestamp()
             incident_created_time_ms = incident_created_time * 1000
             record['incidentType'] = 'GRACase'
-            anomalies = record.get('anomalies')
             if record.get('caseId') is not None:
-                if case_anomaly == 'Case Per Anomaly':
-                    for anomaly in anomalies:
-                        record2 = {
-                            'entityId': record.get('entityId'),
-                            'entity': record.get('entity'),
-                            'entityTypeId': record.get('entityTypeId'),
-                            'caseId': record.get('caseId'),
-                            'openDate': record.get('openDate'),
-                            'ownerId': record.get('ownerId'),
-                            'ownerType': record.get('ownerType'),
-                            'ownerName': record.get('ownerName'),
-                            'riskDate': record.get('riskDate'),
-                            'status': record.get('status'),
-                            'anomalyName': anomaly.get('anomalyName'),
-                            'anomalyResourceName': anomaly.get('resourceName'),
-                            'assignee': anomaly.get('assignee'),
-                            'assigneeType': anomaly.get('assigneeType'),
-                            'riskAcceptedDate': anomaly.get('riskAcceptedDate'),
-                            'anomalyRiskScore': anomaly.get('riskScore'),
-                            'anomalyStatus': anomaly.get('status')
-                        }
-                        inc = {
-                            'name': record.get('entity'),
-                            'occurred': timestamp_to_datestring(incident_created_time_ms),
-                            'rawJSON': json.dumps(record2)
-                        }
-                        incidents.append(inc)
+                inc = {
+                    'name': record.get('entity'),
+                    'occurred': timestamp_to_datestring(incident_created_time_ms),
+                    'rawJSON': json.dumps(record)
+                }
+                incidents.append(inc)
 
-                else:
-                    inc = {
-                        'name': record.get('entity'),
-                        'occurred': timestamp_to_datestring(incident_created_time_ms),
-                        'rawJSON': json.dumps(record)
-                    }
-                    incidents.append(inc)
-            if incident_created_time > latest_created_time:
-                latest_created_time = int(incident_created_time)
-
-        next_run = {'last_fetch': latest_created_time}
-    return next_run, incidents
-
-
-def fetch_incidents_high_risk_users(client: Client, max_results: int, last_run: Dict[str, int],
-                                    first_fetch_time: Optional[int]
-                                    ) -> Tuple[Dict[str, int], List[dict]]:
-    last_fetch = last_run.get('last_fetch', None)
-    if last_fetch is None:
-        last_fetch = first_fetch_time
-    else:
-        last_fetch = int(last_fetch)
-
-    high_risk_user_url = '/users/highrisk/modifieddate/' \
-                         + (datetime.fromtimestamp(cast(int, last_fetch)).strftime('%Y-%m-%d'))
-
-    latest_created_time = cast(int, last_fetch)
-    incidents: List[Dict[str, Any]] = []
-    page = 1
-    isContinue = True
-    while isContinue:
-        params = {'page': page, 'max': max_results}
-        users_data = client.fetch_command_result(high_risk_user_url, params, None)
-        if len(users_data) < max_results:
-            isContinue = False
-        else:
-            page += 1
-        for record1 in users_data:
-            incident_created_time = datetime.now().timestamp()
-            incident_created_time_ms = incident_created_time * 1000
-            record1['incidentType'] = 'HighRiskUser'
-            inc1 = {
-                'name': record1.get('employeeId'),
-                'occurred': timestamp_to_datestring(incident_created_time_ms),
-                'rawJSON': json.dumps(record1)
-            }
-            if record1.get('employeeId') is not None:
-                incidents.append(inc1)
-            if incident_created_time > latest_created_time:
-                latest_created_time = int(incident_created_time)
-
-        next_run = {'last_fetch': latest_created_time}
+        next_run = {'last_fetch': int(url_access_time)}
     return next_run, incidents
 
 
@@ -277,8 +200,6 @@ def main() -> None:
             return_results(result)
 
         elif demisto.command() == 'fetch-incidents':
-            # Set and define the fetch incidents command to run after activated via integration settings.
-            fetch_incident_command = demisto.params().get('fetch_incident_command')
 
             max_results = arg_to_int(
                 arg=demisto.params().get('max_fetch'),
@@ -292,8 +213,7 @@ def main() -> None:
                 client=client,
                 max_results=max_results,
                 last_run=demisto.getLastRun(),  # getLastRun() gets the last run dict
-                first_fetch_time=first_fetch_time,
-                command_type=fetch_incident_command
+                first_fetch_time=first_fetch_time
             )
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
@@ -399,6 +319,18 @@ def main() -> None:
             else:
                 investigateAnomaly_url = '/investigateAnomaly/anomalySummary/' + modelName
             fetch_records(client, investigateAnomaly_url, 'Gra.Investigate.Anomaly.Summary', 'modelId', params)
+
+        elif demisto.command() == 'gra-analytical-features-entity-value':
+            fromDate = arguments.get('fromDate')
+            toDate = arguments.get('toDate')
+            modelName = arguments.get('modelName')
+            entityValue = arguments.get('entityValue')
+            if fromDate is not None and toDate is not None:
+                analyticalFeatures_url = 'profile/analyticalFeatures/' + entityValue + '?fromDate=' + fromDate \
+                                         + ' 00:00:00&toDate=' + toDate + ' 23:59:59&modelName=' + modelName
+            else:
+                analyticalFeatures_url = 'profile/analyticalFeatures/' + entityValue + '?modelName=' + modelName
+            fetch_records(client, analyticalFeatures_url, 'Gra.Analytical.Features.Entity.Value', 'entityID', params)
 
     # Log exceptions and return errors
     except Exception as e:

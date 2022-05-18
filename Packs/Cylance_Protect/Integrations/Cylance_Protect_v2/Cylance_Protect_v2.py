@@ -1,3 +1,4 @@
+import demistomock as demisto
 from CommonServerPython import *
 
 import jwt
@@ -42,7 +43,7 @@ SCOPE_GLOBAL_LIST_DELETE = 'globallist:delete'
 
 
 # PREREQUISITES
-def load_server_url():
+def load_server_url():   # pragma: no cover
     """ Cleans and loads the server url from the configuration """
     url = demisto.params()['server']
     url = re.sub('/[\/]+$/', '', url)
@@ -51,16 +52,16 @@ def load_server_url():
 
 
 # GLOBALS
-APP_ID = demisto.params()['app_id']
-APP_SECRET = demisto.params()['app_secret']
-TID = demisto.params()['tid']
-SERVER_URL = load_server_url()
-FILE_THRESHOLD = demisto.params()['file_threshold']
-USE_SSL = not demisto.params().get('unsecure', False)
+APP_ID = ''
+APP_SECRET = ''
+TID = ''
+SERVER_URL = ''
+FILE_THRESHOLD = ''
+USE_SSL = False
 
 
 # HELPERS
-def generate_jwt_times():
+def generate_jwt_times():   # pragma: no cover
     """
     Generates the epoch time window in which the token will be valid
     Returns the current timestamp and the timeout timestamp (in that order)
@@ -72,10 +73,17 @@ def generate_jwt_times():
     return epoch_time, epoch_timeout
 
 
-def api_call(uri, method='post', headers={}, body={}, params={}, accept_404=False):
+def api_call(uri, method='post', headers={}, body={}, params={}, accept_404=False, access_token=''):   # pragma: no cover
+
     """
     Makes an API call to the server URL with the supplied uri, method, headers, body and params
     """
+    if not headers:
+        headers = {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + access_token
+        }
+
     url = '%s/%s' % (SERVER_URL, uri)
     res = requests.request(method, url, headers=headers, data=json.dumps(body), params=params, verify=USE_SSL)
     if res.status_code < 200 or res.status_code >= 300:
@@ -139,14 +147,14 @@ def threat_to_incident(threat):
     return incident
 
 
-def normalize_score(score):
+def normalize_score(score):   # pragma: no cover
     """
     Translates API raw float (-1 to 1) score to UI score (-100 to 100)
     """
     return score * 100
 
 
-def translate_score(score, threshold):
+def translate_score(score, threshold):   # pragma: no cover
     if score > 0:
         dbot_score = 1
     elif threshold <= score:
@@ -157,7 +165,7 @@ def translate_score(score, threshold):
 
 
 # FUNCTIONS
-def test():
+def test():   # pragma: no cover
     access_token = get_authentication_token()
     if not access_token:
         raise Exception('Unable to get access token')
@@ -220,19 +228,15 @@ def get_devices():
     demisto.results(entry)
 
 
-def get_devices_request(page=None, page_size=None):
+def get_devices_request(page=None, page_size=None):  # pragma: no cover
     access_token = get_authentication_token(scope=SCOPE_DEVICE_LIST)
-    headers = {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + access_token
-    }
 
     params = {}
     if page:
         params['page'] = page
     if page_size:
         params['page_size'] = page_size
-    res = api_call(uri=URI_DEVICES, method='get', headers=headers, params=params)
+    res = api_call(uri=URI_DEVICES, method='get', params=params, access_token=access_token)
     return res
 
 
@@ -301,14 +305,11 @@ def get_device():
     demisto.results(entry)
 
 
-def get_device_request(device_id):
+def get_device_request(device_id):  # pragma: no cover
     access_token = get_authentication_token(scope=SCOPE_DEVICE_READ)
-    headers = {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + access_token
-    }
+
     uri = '%s/%s' % (URI_DEVICES, device_id)
-    res = api_call(uri=uri, method='get', headers=headers)
+    res = api_call(uri=uri, method='get', access_token=access_token)
     return res
 
 
@@ -377,14 +378,12 @@ def get_device_by_hostname():
     demisto.results(entry)
 
 
-def get_hostname_request(hostname):
+def get_hostname_request(hostname):  # pragma: no cover
+
     access_token = get_authentication_token(scope=SCOPE_DEVICE_READ)
-    headers = {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + access_token
-    }
+
     uri = '%s/%s' % (URI_HOSTNAME, hostname)
-    res = api_call(uri=uri, method='get', headers=headers)
+    res = api_call(uri=uri, method='get', access_token=access_token)
     if not res:
         return None
     return res[0]
@@ -426,12 +425,8 @@ def update_device():
     demisto.results(entry)
 
 
-def update_device_request(device_id, name=None, policy_id=None, add_zones=None, remove_zones=None):
+def update_device_request(device_id, name=None, policy_id=None, add_zones=None, remove_zones=None):  # pragma: no cover
     access_token = get_authentication_token(scope=SCOPE_DEVICE_UPDATE)
-    headers = {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + access_token
-    }
 
     body = {}
     if name:
@@ -448,7 +443,7 @@ def update_device_request(device_id, name=None, policy_id=None, add_zones=None, 
         raise Exception('No changes detected')
 
     uri = '%s/%s' % (URI_DEVICES, device_id)
-    res = api_call(uri=uri, method='put', headers=headers, body=body)
+    res = api_call(uri=uri, method='put', access_token=access_token, body=body)
     return res
 
 
@@ -467,19 +462,17 @@ def get_device_threats():
             threat['cylance_score'] = normalize_score(threat['cylance_score'])
             threshold = demisto.args().get('threshold', FILE_THRESHOLD)
             dbot_score = translate_score(threat['cylance_score'], int(threshold))
-        dbot_score_array.append({
-            'Indicator': threat.get('sha256'),
-            'Type': 'file',
-            'Vendor': 'Cylance Protect',
-            'Score': dbot_score
-        })
+        dbot_score_array.append(create_dbot_score_entry(threat, dbot_score).to_context())
     if device_threats:
+        dbot_score_dict = {Common.DBotScore.get_context_path(): []}  # type: Dict[str, List[Dict[str, str]]]
+        for dbot_score_entry in dbot_score_array:
+            for key, value in dbot_score_entry.items():
+                dbot_score_dict[Common.DBotScore.get_context_path()].append(value)
+
         threats_context = createContext(data=device_threats, keyTransform=underscoreToCamelCase)
         threats_context = add_capitalized_hash_to_context(threats_context)
-        ec = {
-            'File': threats_context,
-            'DBotScore': dbot_score_array
-        }
+        ec = {'File': threats_context}
+        ec.update(dbot_score_dict)
 
         title = 'Cylance Protect Device Threat ' + device_id
         demisto.results({
@@ -494,12 +487,8 @@ def get_device_threats():
         demisto.results('No threats found.')
 
 
-def get_device_threats_request(device_id, page=None, page_size=None):
+def get_device_threats_request(device_id, page=None, page_size=None):  # pragma: no cover
     access_token = get_authentication_token(scope=SCOPE_DEVICE_THREAT_LIST)
-    headers = {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + access_token
-    }
 
     params = {}
     if page:
@@ -507,7 +496,7 @@ def get_device_threats_request(device_id, page=None, page_size=None):
     if page_size:
         params['page_size'] = page_size
     uri = '%s/%s/threats' % (URI_DEVICES, device_id)
-    res = api_call(uri=uri, method='get', headers=headers, params=params)
+    res = api_call(uri=uri, method='get', access_token=access_token, params=params)
     return res
 
 
@@ -535,12 +524,8 @@ def get_policies():
     demisto.results(entry)
 
 
-def get_policies_request(page=None, page_size=None):
+def get_policies_request(page=None, page_size=None):  # pragma: no cover
     access_token = get_authentication_token(scope=SCOPE_POLICY_LIST)
-    headers = {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + access_token
-    }
 
     params = {}
     if page:
@@ -548,7 +533,7 @@ def get_policies_request(page=None, page_size=None):
     if page_size:
         params['page_size'] = page_size
 
-    res = api_call(uri=URI_POLICIES, method='get', headers=headers, params=params)
+    res = api_call(uri=URI_POLICIES, method='get', access_token=access_token, params=params)
     return res
 
 
@@ -569,18 +554,15 @@ def create_zone():
     })
 
 
-def create_zone_request(name, policy_id, criticality):
+def create_zone_request(name, policy_id, criticality):  # pragma: no cover
     access_token = get_authentication_token(scope=SCOPE_ZONE_CREATE)
-    headers = {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + access_token
-    }
+
     body = {
         'name': name,
         'policy_id': policy_id,
         'criticality': criticality
     }
-    res = api_call(uri=URI_ZONES, method='post', headers=headers, body=body)
+    res = api_call(uri=URI_ZONES, method='post', access_token=access_token, body=body)
     return res
 
 
@@ -606,12 +588,8 @@ def get_zones():
     })
 
 
-def get_zones_request(page=None, page_size=None):
+def get_zones_request(page=None, page_size=None):  # pragma: no cover
     access_token = get_authentication_token(scope=SCOPE_ZONE_LIST)
-    headers = {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + access_token
-    }
 
     params = {}
     if page:
@@ -619,7 +597,7 @@ def get_zones_request(page=None, page_size=None):
     if page_size:
         params['page_size'] = page_size
 
-    res = api_call(uri=URI_ZONES, method='get', headers=headers, params=params)
+    res = api_call(uri=URI_ZONES, method='get', access_token=access_token, params=params)
     return res
 
 
@@ -643,14 +621,11 @@ def get_zone():
     })
 
 
-def get_zone_request(zone_id):
+def get_zone_request(zone_id):  # pragma: no cover
     access_token = get_authentication_token(scope=SCOPE_ZONE_READ)
-    headers = {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + access_token
-    }
+
     uri = '%s/%s' % (URI_ZONES, zone_id)
-    res = api_call(uri=uri, method='get', headers=headers)
+    res = api_call(uri=uri, method='get', access_token=access_token)
     return res
 
 
@@ -683,12 +658,8 @@ def update_zone():
     })
 
 
-def update_zone_request(zone_id, name, policy_id, criticality):
+def update_zone_request(zone_id, name, policy_id, criticality):  # pragma: no cover
     access_token = get_authentication_token(scope=SCOPE_ZONE_UPDATE)
-    headers = {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + access_token
-    }
 
     body = {}
     if name:
@@ -703,7 +674,7 @@ def update_zone_request(zone_id, name, policy_id, criticality):
         raise Exception('No changes detected')
 
     uri = '%s/%s' % (URI_ZONES, zone_id)
-    res = api_call(uri=uri, method='put', headers=headers, body=body)
+    res = api_call(uri=uri, method='put', access_token=access_token, body=body)
     return res
 
 
@@ -719,15 +690,9 @@ def get_threat():
             dbot_score = translate_score(threat['cylance_score'], int(threshold))
         context_threat = createContext(data=threat, keyTransform=underscoreToCamelCase, removeNull=True)
         context_threat = add_capitalized_hash_to_context(context_threat)
-        ec = {
-            'File': context_threat,
-            'DBotScore': {
-                'Indicator': sha256,
-                'Type': 'file',
-                'Vendor': 'Cylance Protect',
-                'Score': dbot_score
-            }
-        }
+        ec = {'File': context_threat}
+        ec.update(create_dbot_score_entry(threat, dbot_score).to_context())
+
         title = 'Cylance Protect Threat ' + sha256
 
         demisto.results({
@@ -742,15 +707,21 @@ def get_threat():
         demisto.results('Threat was not found.')
 
 
-def get_threat_request(sha256):
+def get_threat_request(sha256):  # pragma: no cover
     access_token = get_authentication_token(scope=SCOPE_THREAT_READ)
-    headers = {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + access_token
-    }
+
     uri = '%s/%s' % (URI_THREATS, sha256)
-    res = api_call(uri=uri, method='get', headers=headers, body={}, params={}, accept_404=False)
+    res = api_call(uri=uri, method='get', access_token=access_token, body={}, params={}, accept_404=False)
     return res
+
+
+def create_dbot_score_entry(threat, dbot_score):
+    dbot_score_entry = Common.DBotScore(
+        threat.get('sha256'),
+        DBotScoreType.FILE,
+        integration_name='Cylance Protect',
+        score=dbot_score)
+    return dbot_score_entry
 
 
 def get_threats():
@@ -766,19 +737,17 @@ def get_threats():
             threat['cylance_score'] = normalize_score(threat['cylance_score'])
             threshold = demisto.args().get('threshold', FILE_THRESHOLD)
             dbot_score = translate_score(threat['cylance_score'], int(threshold))
-        dbot_score_array.append({
-            'Indicator': threat.get('sha256'),
-            'Type': 'file',
-            'Vendor': 'Cylance Protect',
-            'Score': dbot_score
-        })
+        dbot_score_array.append(create_dbot_score_entry(threat, dbot_score).to_context())
+
+    dbot_score_dict = {Common.DBotScore.get_context_path(): []}  # type: Dict[str, List[Dict[str, str]]]
+    for dbot_score_entry in dbot_score_array:
+        for key, value in dbot_score_entry.items():
+            dbot_score_dict[Common.DBotScore.get_context_path()].append(value)
+
     context_threat = createContext(data=threats, keyTransform=underscoreToCamelCase, removeNull=True)
     context_threat = add_capitalized_hash_to_context(context_threat)
-    ec = {
-        'File': context_threat,
-        'DBotScore': dbot_score_array
-    }
-
+    ec = {'File': context_threat}
+    ec.update(dbot_score_dict)
     title = 'Cylance Protect Threats'
     demisto.results({
         'Type': entryTypes['note'],
@@ -790,12 +759,8 @@ def get_threats():
     })
 
 
-def get_threats_request(page=None, page_size=None):
+def get_threats_request(page=None, page_size=None):  # pragma: no cover
     access_token = get_authentication_token(scope=SCOPE_THREAT_LIST)
-    headers = {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + access_token
-    }
 
     params = {}
     if page in demisto.args():
@@ -803,7 +768,7 @@ def get_threats_request(page=None, page_size=None):
     if page_size in demisto.args():
         params['page_size'] = demisto.args()['pageSize']
 
-    res = api_call(uri=URI_THREATS, method='get', headers=headers, params=params)
+    res = api_call(uri=URI_THREATS, method='get', access_token=access_token, params=params)
     return res
 
 
@@ -876,12 +841,8 @@ def get_threat_devices():
         demisto.results('No devices found on given threat.')
 
 
-def get_threat_devices_request(threat_hash, page=None, page_size=None):
+def get_threat_devices_request(threat_hash, page=None, page_size=None):  # pragma: no cover
     access_token = get_authentication_token(scope=SCOPE_THREAT_DEVICE_LIST)
-    headers = {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + access_token
-    }
 
     params = {}
     if page:
@@ -890,7 +851,7 @@ def get_threat_devices_request(threat_hash, page=None, page_size=None):
         params['page_size'] = page_size
 
     uri = '%s/%s/devices' % (URI_THREATS, threat_hash)
-    res = api_call(uri=uri, method='get', headers=headers, params=params)
+    res = api_call(uri=uri, method='get', access_token=access_token, params=params)
     return res
 
 
@@ -907,19 +868,17 @@ def get_list():
             threat['cylance_score'] = normalize_score(threat['cylance_score'])
             threshold = demisto.args().get('threshold', FILE_THRESHOLD)
             dbot_score = translate_score(threat['cylance_score'], int(threshold))
-        dbot_score_array.append({
-            'Indicator': threat['sha256'],
-            'Type': 'file',
-            'Vendor': 'Cylance Protect',
-            'Score': dbot_score
-        })
+        dbot_score_array.append(create_dbot_score_entry(threat, dbot_score).to_context())
     if lst:
+        dbot_score_dict = {Common.DBotScore.get_context_path(): []}  # type: Dict[str, List[Dict[str, str]]]
+        for dbot_score_entry in dbot_score_array:
+            for key, value in dbot_score_entry.items():
+                dbot_score_dict[Common.DBotScore.get_context_path()].append(value)
+
         context_list = createContext(data=lst, keyTransform=underscoreToCamelCase, removeNull=True)
-        context_list = add_capitalized_hash_to_context((context_list))
-        ec = {
-            'File': context_list,
-            'DBotScore': dbot_score_array
-        }
+        context_list = add_capitalized_hash_to_context(context_list)
+        ec = {'File': context_list}
+        ec.update(dbot_score_dict)
 
         title = 'Cylance Protect Global List'
         demisto.results({
@@ -934,12 +893,8 @@ def get_list():
         demisto.results('No list of this type was found.')
 
 
-def get_list_request(list_type_id, page=None, page_size=None):
+def get_list_request(list_type_id, page=None, page_size=None):  # pragma: no cover
     access_token = get_authentication_token(scope=SCOPE_GLOBAL_LIST)
-    headers = {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + access_token
-    }
 
     params = {}
     if list_type_id == 'GlobalQuarantine':
@@ -950,7 +905,7 @@ def get_list_request(list_type_id, page=None, page_size=None):
         params['page'] = page
     if page_size:
         params['page_size'] = page_size
-    res = api_call(uri=URI_LISTS, method='get', headers=headers, params=params)
+    res = api_call(uri=URI_LISTS, method='get', access_token=access_token, params=params)
     return res
 
 
@@ -996,14 +951,15 @@ def get_list_entry_by_hash(sha256=None, list_type_id=None):
         return found_hash
 
 
-def get_indicators_report():
+def get_indicators_report():  # pragma: no cover
+
     url = 'https://protect.cylance.com/Reports/ThreatDataReportV1/indicators/' + demisto.args()['token']
     res = requests.request('GET', url, verify=USE_SSL)
     filename = 'Indicators_Report.csv'
     demisto.results(fileResult(filename, res.content))
 
 
-def update_device_threats():
+def update_device_threats():  # pragma: no cover
     device_id = demisto.args()['device_id']
     threat_id = demisto.args()['threat_id']
     event = demisto.args()['event']
@@ -1011,12 +967,8 @@ def update_device_threats():
     demisto.results('Device threat was updated successfully.')
 
 
-def update_device_threats_request(device_id, threat_id, event):
+def update_device_threats_request(device_id, threat_id, event):  # pragma: no cover
     access_token = get_authentication_token(scope=SCOPE_THREAT_UPDATE)
-    headers = {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + access_token
-    }
 
     body = {
         'threat_id': threat_id,
@@ -1024,7 +976,7 @@ def update_device_threats_request(device_id, threat_id, event):
     }
 
     uri = '%s/%s/threats' % (URI_DEVICES, device_id)
-    res = api_call(uri=uri, method='post', headers=headers, body=body)
+    res = api_call(uri=uri, method='post', access_token=access_token, body=body)
 
     return res
 
@@ -1101,14 +1053,11 @@ def download_threat():
     })
 
 
-def download_threat_request(hash):
+def download_threat_request(hash):  # pragma: no cover
     access_token = get_authentication_token(scope=SCOPE_THREAT_READ)
-    headers = {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + access_token
-    }
+
     uri = '%s/%s/%s' % (URI_THREATS, "download", hash)
-    res = api_call(uri=uri, method='get', headers=headers)
+    res = api_call(uri=uri, method='get', access_token=access_token)
     if not res['url']:
         return_error('No url was found')
     return res['url']
@@ -1155,12 +1104,8 @@ def add_hash_to_list():
     })
 
 
-def add_hash_to_list_request(sha256, list_type, reason, category=None):
+def add_hash_to_list_request(sha256, list_type, reason, category=None):  # pragma: no cover
     access_token = get_authentication_token(scope=SCOPE_GLOBAL_LIST_CREATE)
-    headers = {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + access_token
-    }
 
     body = {
         'sha256': sha256,
@@ -1169,7 +1114,7 @@ def add_hash_to_list_request(sha256, list_type, reason, category=None):
     }
     if category:
         body['category'] = category.replace(" ", "")
-    res = api_call(uri=URI_LISTS, method='post', headers=headers, body=body)
+    res = api_call(uri=URI_LISTS, method='post', access_token=access_token, body=body)
     return res
 
 
@@ -1203,18 +1148,14 @@ def delete_hash_from_lists():
     })
 
 
-def delete_hash_from_lists_request(sha256, list_type):
+def delete_hash_from_lists_request(sha256, list_type):  # pragma: no cover
     access_token = get_authentication_token(scope=SCOPE_GLOBAL_LIST_DELETE)
-    headers = {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + access_token
-    }
 
     body = {
         'sha256': sha256,
         'list_type': list_type
     }
-    res = api_call(uri=URI_LISTS, method='delete', headers=headers, body=body)
+    res = api_call(uri=URI_LISTS, method='delete', access_token=access_token, body=body)
     return res
 
 
@@ -1263,17 +1204,14 @@ def delete_devices():
     })
 
 
-def delete_devices_request(device_ids):
+def delete_devices_request(device_ids):  # pragma: no cover
     access_token = get_authentication_token()
-    headers = {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + access_token
-    }
+
     body = {
         'device_ids': device_ids
     }
 
-    res = api_call(uri=URI_DEVICES, method='delete', headers=headers, body=body)
+    res = api_call(uri=URI_DEVICES, method='delete', access_token=access_token, body=body)
     if not res or not res.get('request_id'):
         return_error('Delete response does not contain request id')
 
@@ -1395,15 +1333,11 @@ def get_policy_details():
     })
 
 
-def get_policy_details_request(policy_id):
+def get_policy_details_request(policy_id):  # pragma: no cover
     access_token = get_authentication_token(scope=SCOPE_POLICY_READ)
-    headers = {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + access_token
-    }
 
     uri = '%s/%s' % (URI_POLICIES, policy_id)
-    res = api_call(uri=uri, method='get', headers=headers)
+    res = api_call(uri=uri, method='get', access_token=access_token)
     return res
 
 
@@ -1431,7 +1365,7 @@ def fetch_incidents():
     demisto.setLastRun({'time': current_run.isoformat().split('.')[0]})
 
 
-def add_capitalized_hash_to_context(threats_context):
+def add_capitalized_hash_to_context(threats_context):  # pragma: no cover
     """Add capitalized hash keys to the context such as SHA256 and MD5,
     the keys are redundant since they are used for avoiding BC issues.
 
@@ -1456,93 +1390,112 @@ def add_capitalized_hash_to_context(threats_context):
 
 
 # EXECUTION
-LOG('command is %s' % (demisto.command(),))
-try:
-    handle_proxy()
-    if demisto.command() == 'test-module':
-        test()
+def main():    # pragma: no cover
+    global APP_ID
+    APP_ID = demisto.params()['app_id']
+    global APP_SECRET
+    APP_SECRET = demisto.params()['app_secret']
+    global TID
+    TID = demisto.params()['tid']
+    global SERVER_URL
+    SERVER_URL = load_server_url()
+    global FILE_THRESHOLD
+    FILE_THRESHOLD = demisto.params()['file_threshold']
+    global USE_SSL
+    USE_SSL = not demisto.params().get('unsecure', False)
+    command = demisto.command()
 
-    if demisto.command() == 'fetch-incidents':
-        fetch_incidents()
+    LOG('Command being called is {command}'.format(command=command))
+    try:
+        handle_proxy()
+        if demisto.command() == 'test-module':
+            test()
 
-    elif demisto.command() == 'cylance-protect-get-devices':
-        get_devices()
+        if demisto.command() == 'fetch-incidents':
+            fetch_incidents()
 
-    elif demisto.command() == 'cylance-protect-get-device':
-        get_device()
+        elif demisto.command() == 'cylance-protect-get-devices':
+            get_devices()
 
-    elif demisto.command() == 'cylance-protect-get-device-by-hostname':
-        get_device_by_hostname()
+        elif demisto.command() == 'cylance-protect-get-device':
+            get_device()
 
-    elif demisto.command() == 'cylance-protect-update-device':
-        update_device()
+        elif demisto.command() == 'cylance-protect-get-device-by-hostname':
+            get_device_by_hostname()
 
-    elif demisto.command() == 'cylance-protect-get-device-threats':
-        get_device_threats()
+        elif demisto.command() == 'cylance-protect-update-device':
+            update_device()
 
-    elif demisto.command() == 'cylance-protect-get-policies':
-        get_policies()
+        elif demisto.command() == 'cylance-protect-get-device-threats':
+            get_device_threats()
 
-    elif demisto.command() == 'cylance-protect-create-zone':
-        create_zone()
+        elif demisto.command() == 'cylance-protect-get-policies':
+            get_policies()
 
-    elif demisto.command() == 'cylance-protect-get-zones':
-        get_zones()
+        elif demisto.command() == 'cylance-protect-create-zone':
+            create_zone()
 
-    elif demisto.command() == 'cylance-protect-get-zone':
-        get_zone()
+        elif demisto.command() == 'cylance-protect-get-zones':
+            get_zones()
 
-    elif demisto.command() == 'cylance-protect-update-zone':
-        update_zone()
+        elif demisto.command() == 'cylance-protect-get-zone':
+            get_zone()
 
-    elif demisto.command() == 'cylance-protect-get-threat':
-        get_threat()
+        elif demisto.command() == 'cylance-protect-update-zone':
+            update_zone()
 
-    elif demisto.command() == 'cylance-protect-get-threats':
-        get_threats()
+        elif demisto.command() == 'cylance-protect-get-threat':
+            get_threat()
 
-    elif demisto.command() == 'cylance-protect-get-threat-devices':
-        get_threat_devices()
+        elif demisto.command() == 'cylance-protect-get-threats':
+            get_threats()
 
-    elif demisto.command() == 'cylance-protect-get-indicators-report':
-        get_indicators_report()
+        elif demisto.command() == 'cylance-protect-get-threat-devices':
+            get_threat_devices()
 
-    elif demisto.command() == 'cylance-protect-update-device-threats':
-        update_device_threats()
+        elif demisto.command() == 'cylance-protect-get-indicators-report':
+            get_indicators_report()
 
-    elif demisto.command() == 'cylance-protect-get-list':
-        get_list()
+        elif demisto.command() == 'cylance-protect-update-device-threats':
+            update_device_threats()
 
-    elif demisto.command() == 'cylance-protect-get-list-entry':
-        get_list_entry_by_hash()
+        elif demisto.command() == 'cylance-protect-get-list':
+            get_list()
 
-    # new commands
-    elif demisto.command() == 'cylance-protect-download-threat':
-        download_threat()
+        elif demisto.command() == 'cylance-protect-get-list-entry':
+            get_list_entry_by_hash()
 
-    elif demisto.command() == 'cylance-protect-add-hash-to-list':
-        add_hash_to_list()
+        # new commands
+        elif demisto.command() == 'cylance-protect-download-threat':
+            download_threat()
 
-    elif demisto.command() == 'cylance-protect-delete-hash-from-lists':
-        delete_hash_from_lists()
+        elif demisto.command() == 'cylance-protect-add-hash-to-list':
+            add_hash_to_list()
 
-    elif demisto.command() == 'cylance-protect-delete-devices':
-        delete_devices()
+        elif demisto.command() == 'cylance-protect-delete-hash-from-lists':
+            delete_hash_from_lists()
 
-    elif demisto.command() == 'cylance-protect-get-policy-details':
-        get_policy_details()
+        elif demisto.command() == 'cylance-protect-delete-devices':
+            delete_devices()
 
-except Warning as w:
-    demisto.results({
-        'Type': 11,
-        'Contents': str(w),
-        'ContentsFormat': formats['text']
-    })
+        elif demisto.command() == 'cylance-protect-get-policy-details':
+            get_policy_details()
 
-except Exception as e:
-    demisto.error('#### error in Cylance Protect v2: ' + str(e))
-    if demisto.command() == 'fetch-incidents':
-        LOG.print_log()
-        raise
-    else:
-        return_error(str(e))
+    except Warning as w:
+        demisto.results({
+            'Type': 11,
+            'Contents': str(w),
+            'ContentsFormat': formats['text']
+        })
+
+    except Exception as e:
+        demisto.error('#### error in Cylance Protect v2: ' + str(e))
+        if demisto.command() == 'fetch-incidents':
+            LOG.print_log()
+            raise
+        else:
+            return_error(str(e))
+
+
+if __name__ in ('__builtin__', 'builtins', '__main__'):
+    main()

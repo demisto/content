@@ -1,5 +1,8 @@
 !darktrace-get-breach pbid=95
 !darktrace-get-comments pbid=46
+!darktrace-get-breach-details pbid=111
+!darktrace-get-model uuid="80010119-6d7f-0000-0305-5e0000000325"
+!darktrace-get-component cid="254036"
 !darktrace-acknowledge pbid=111
 !darktrace-unacknowledge pbid=111
 !darktrace-list-similar-devices did=1 max_results=2

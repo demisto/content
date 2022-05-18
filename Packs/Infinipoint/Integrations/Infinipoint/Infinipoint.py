@@ -309,7 +309,7 @@ def fetch_incidents(client, last_run: Dict[str, int], first_fetch_time: Optional
         'offset': last_fetch
     }
 
-    alerts = infinipoint_command(client, args, COMMANDS_CONFIG['infinipoint-get-events'])
+    alerts = infinipoint_command(client, args, COMMANDS_CONFIG['infinipoint-get-non-compliance'])
 
     if alerts:
         for alert in alerts.outputs:
@@ -407,7 +407,7 @@ def run_queries_command(client: Client, args: Dict, optional_args=None):
     target = args.get('target')
     node = {'id': args.get('id')}
     if target:
-        node['target'] = {'ids': args.get('target')}
+        node['target'] = {'ids': argToList(args.get('target'))}
     res = client.call_api(route=optional_args['route'], rules=node, pagination=False)
     if res:
         command_results = CommandResults(

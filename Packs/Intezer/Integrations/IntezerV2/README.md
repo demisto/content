@@ -65,6 +65,52 @@ Analysis created successfully: 59e2f081-45f3-4822-bf45-407670dcb4d7
 ```
 
 
+#### intezer-analyze-url
+***
+Checks file reputation of the given URL
+
+
+#### Base Command
+`intezer-analyze-url`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+|-------------------| --- | --- |
+| Url               | Url to query. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Intezer.Analysis.ID | string | Intezer analysis id | 
+| Intezer.Analysis.Status | string | status of the analysis | 
+| Intezer.Analysis.Type | string | type of the analysis | 
+
+
+#### Command Example
+``` 
+!intezer-analyze-url url="<url>"
+```
+
+#### Context Example
+```
+{
+    "Intezer.Analysis": {
+        "Status": "Created", 
+        "type": "Url", 
+        "ID": "59e2f081-45f3-4822-bf45-407670dcb4d7"
+    }
+}
+```
+
+#### Human Readable Output
+```
+Analysis created successfully: 59e2f081-45f3-4822-bf45-407670dcb4d7
+```
+
+
 ### intezer-get-latest-report
 ***
 Checks file reputation of the given hash, supports SHA256, SHA1 and MD5 by looking at the latest available report
@@ -205,26 +251,31 @@ Check the analysis status and get analysis result, support file and endpoint ana
 `intezer-get-analysis-result`
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| analysis_id | The analysis ID we want to get results for. | Optional | 
-| analysis_type | The type of the analysis. Possible values are: File, Endpoint. Default is File. | Optional | 
-| indicator_name | indicator to classify. | Optional | 
+| **Argument Name** | **Description**                                                                      | **Required** |
+| --- |--------------------------------------------------------------------------------------| --- |
+| analysis_id | The analysis ID we want to get results for.                                          | Optional | 
+| analysis_type | The type of the analysis. Possible values are: File, Endpoint, Url. Default is File. | Optional | 
+| indicator_name | indicator to classify.                                                               | Optional | 
 
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| File.SHA256 | string | Hash SHA256 | 
+| **Path**             | **Type** | **Description** |
+|----------------------| --- | --- |
+| DBotScore.Indicator  | string | The indicator we tested | 
+| DBotScore.Type       | string | The type of the indicator | 
+| DBotScore.Vendor     | string | Vendor used to calculate the score | 
+| DBotScore.Score      | number | The actual score |
+| File.SHA256          | string | Hash SHA256 | 
 | File.Malicious.Vendor | string | For malicious files, the vendor that made the decision | 
-| DBotScore.Indicator | string | The indicator we tested | 
-| DBotScore.Type | string | The type of the indicator | 
-| DBotScore.Vendor | string | Vendor used to calculate the score | 
-| DBotScore.Score | number | The actual score | 
-| File.Metadata | Unknown | Metadata returned from Intezer analysis \(analysis id, analysis url, family, family type, sha256, verdict, sub_verdict\). Metedata will be retuned only for supported files. | 
-| Endpoint.Metadata | Unknown | Metadata returned from Intezer analysis \(endpoint analysis id, endpoint analysis url, families,  verdict, host_name\) | 
-| File.ExistsInIntezer | Boolean | Does the file exists on intezer genome database | 
+| File.Metadata        | Unknown | Metadata returned from Intezer analysis \(analysis id, analysis url, family, family type, sha256, verdict, sub_verdict\). Metedata will be retuned only for supported files. | 
+| File.ExistsInIntezer | Boolean | Does the file exists on intezer genome database |
+| Url.URL              | string | The submitted Url | 
+| Url.Malicious.Vendor | string | For malicious Url, the vendor that made the decision | 
+| Url.Metadata        | Unknown | Metadata returned from Intezer analysis | 
+| Url.ExistsInIntezer | Boolean | Does the url exists on intezer |
+| Endpoint.Metadata    | Unknown | Metadata returned from Intezer analysis \(endpoint analysis id, endpoint analysis url, families,  verdict, host_name\) | 
+
 
 
 #### Command Example
@@ -254,6 +305,60 @@ intezer-get-analysis-result analysis_id="9e3acdc3-b7ea-412b-88ae-7103eebc9398"
             "sha256": "<some sha256>",
             "is_private": true, 
             "analysis_time": "Wed, 19 Jun 2019 07:48:12 GMT"
+        }
+    },
+    "Url: {
+        "ExistsInIntezer": true,
+        "URL": "foo.com",
+        "Metadata": {
+        "analysis_id": "70d09f68-c7a3-43a3-a8de-07ec31fbf4ed",
+        "domain_info": {
+            "creation_date": "1997-08-13 04:00:00.000000",
+            "domain_name": "foo.com",
+            "registrar": "TUCOWS, INC."
+        },
+        "indicators": [
+        {
+            "classification": "informative",
+            "text": "URL is accessible"
+        },
+        {
+            "classification": "informative",
+            "text": "Assigned IPv4 domain"
+        },
+        {
+            "classification": "informative",
+            "text": "Vaild IPv4 domain"
+        }
+        ],
+        "ip": "34.206.39.153",
+        "redirect_chain": [
+        {
+            "response_status": 301,
+            "url": "https://foo.com/"
+        },
+        {
+            "response_status": 200,
+            "url": "http://www.foo.com/"
+        }
+        ],
+        "scanned_url": "http://www.foo.com/",
+        "submitted_url": "foo.com",
+        "downloaded_file": {
+            "analysis_id": "8db9a401-a142-41be-9a31-8e5f3642db62",
+            "analysis_summary": {
+               "verdict_description": "This file contains code from malicious software, therefore it's very likely that it's malicious.",
+               "verdict_name": "malicious",
+               "verdict_title": "Malicious",
+               "verdict_type": "malicious"
+            },
+            "sha256": "4293c1d8574dc87c58360d6bac3daa182f64f7785c9d41da5e0741d2b1817fc7"
+         },
+        "summary": {
+            "description": "No suspicious activity was detected for this URL",
+            "title": "No Threats",
+            "verdict_name": "no_threats",
+            "verdict_type": "no_threats"
         }
     }
 }

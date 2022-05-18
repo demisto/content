@@ -42,7 +42,7 @@ def check_md_file(spellchecker, md_data, unknown_words):
 
 
 def spell_checker(path, is_md=False):
-    unknown_words = set([])
+    unknown_words: set = set([])
     spellchecker = SpellChecker()
     spellchecker.word_frequency.load_text_file('Tests/known_words.txt')
 

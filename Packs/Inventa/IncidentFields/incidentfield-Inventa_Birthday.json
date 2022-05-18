@@ -1,0 +1,30 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "iDSAR"
+    ],
+    "caseInsensitive": true,
+    "cliName": "inventabirthday",
+    "closeForm": false,
+    "content": true,
+    "description": "Birthday of a PII. Used to form a [full_name+birthday] or [given_name+surname+birthday] constraint",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_inventabirthday",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Inventa Birthday",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

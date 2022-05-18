@@ -50,6 +50,7 @@ class Client(BaseClient):
             "method": method,
             "verbose": 1,
             "params": [{
+                "option": "object member",
                 "url": url
             }],
         }

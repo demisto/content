@@ -12,7 +12,6 @@
     "neverSetAsRequired": false,
     "isReadOnly": false,
     "selectValues": [
-        "",
         "ransomware",
         "darknet market",
         "bitcoin tumbler",

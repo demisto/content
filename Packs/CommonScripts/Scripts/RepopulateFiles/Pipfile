@@ -9,8 +9,15 @@ pytest = "*"
 pytest-mock = "*"
 requests-mock = "*"
 pytest-asyncio = "*"
+pytest-xdist = "*"
+pytest-datadir-ng = "*"
+freezegun = "*"
+pytest-json = "*"
+vcrpy = "*"
+pytest-cov = "*"
+hypothesis = "*"
 
 [packages]
 
 [requires]
-python_version = "2.7"
+python_version = "3.9"

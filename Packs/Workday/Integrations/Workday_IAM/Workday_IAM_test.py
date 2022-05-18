@@ -4,7 +4,8 @@ import json
 import pytest
 
 from Workday_IAM import Client, fetch_incidents, LAST_DAY_OF_WORK_FIELD, EMPLOYMENT_STATUS_FIELD, \
-    PREHIRE_FLAG_FIELD, REHIRED_EMPLOYEE_FIELD, AD_ACCOUNT_STATUS_FIELD, HIRE_DATE_FIELD
+    PREHIRE_FLAG_FIELD, REHIRED_EMPLOYEE_FIELD, AD_ACCOUNT_STATUS_FIELD, HIRE_DATE_FIELD, TERMINATION_TRIGGER_FIELD, \
+    CONVERSION_HIRE_FIELD, EMAIL_ADDRESS_FIELD, EMPLOYEE_ID_FIELD, REHIRE_USER_EVENT_TYPE, SOURCE_PRIORITY_FIELD
 from test_data.event_results import events_result
 
 EVENT_RESULTS = events_result
@@ -260,6 +261,31 @@ def test_is_ad_activation_event(demisto_user, workday_user, days_before_hire_to_
 
 
 @pytest.mark.parametrize(
+    'demisto_user, workday_user, days_before_hire_to_enable_ad, source_priority, expected_result',
+    [
+        # source priority field is different than Workday's (conversion hire) - should return False
+        ({AD_ACCOUNT_STATUS_FIELD: 'Enabled', SOURCE_PRIORITY_FIELD: 2}, {HIRE_DATE_FIELD: "12/12/2035"}, 2, 1, False),
+
+        # A conversion hire field is True - should return False
+        ({AD_ACCOUNT_STATUS_FIELD: 'Enabled', CONVERSION_HIRE_FIELD: True, SOURCE_PRIORITY_FIELD: 1},
+         {HIRE_DATE_FIELD: "12/12/2035"}, 2, 1, False),
+
+        # Active AD account and hire date did not exceed threshold date - should return True
+        ({AD_ACCOUNT_STATUS_FIELD: 'Enabled', SOURCE_PRIORITY_FIELD: 1}, {HIRE_DATE_FIELD: "12/12/2035"}, 2, 1, True),
+
+        # Active AD account, past hire date - should return False
+        ({AD_ACCOUNT_STATUS_FIELD: 'Enabled', SOURCE_PRIORITY_FIELD: 1}, {HIRE_DATE_FIELD: "12/12/2020"}, 2, 1, False),
+
+        # Non active AD account - should return False
+        ({AD_ACCOUNT_STATUS_FIELD: 'Pending', SOURCE_PRIORITY_FIELD: 1}, {HIRE_DATE_FIELD: "12/12/2035"}, 2, 1, False)
+    ]
+)
+def test_is_ad_deactivation_event(demisto_user, workday_user, days_before_hire_to_enable_ad, source_priority, expected_result):
+    from Workday_IAM import is_ad_deactivation_event
+    assert is_ad_deactivation_event(demisto_user, workday_user, days_before_hire_to_enable_ad, source_priority) == expected_result
+
+
+@pytest.mark.parametrize(
     'workday_user, changed_fields, expected_result',
     [
         # a non terminated workday_user with changed fields (hasn't been synced to XSOAR yet) - should return True
@@ -275,3 +301,81 @@ def test_is_ad_activation_event(demisto_user, workday_user, days_before_hire_to_
 def test_is_update_event(workday_user, changed_fields, expected_result):
     from Workday_IAM import is_update_event
     assert is_update_event(workday_user, changed_fields) == expected_result
+
+
+@pytest.mark.parametrize(
+    'demisto_user, expected_result',
+    [
+        (None, False),
+        ({TERMINATION_TRIGGER_FIELD: 'TUFE'}, True),
+        ({TERMINATION_TRIGGER_FIELD: 'Workday IAM'}, False)
+    ]
+)
+def test_is_tufe_user(demisto_user, expected_result):
+    from Workday_IAM import is_tufe_user
+    assert is_tufe_user(demisto_user) == expected_result
+
+
+@pytest.mark.parametrize(
+    'workday_user, demisto_user, expected_event_type',
+    [
+        # case 1: non-rehired TUFE user
+        (
+            {
+                EMAIL_ADDRESS_FIELD: 'test@example.com',
+                EMPLOYEE_ID_FIELD: '123',
+                HIRE_DATE_FIELD: '02/02/2040'
+            },
+            {
+                EMAIL_ADDRESS_FIELD: 'test@example.com',
+                EMPLOYEE_ID_FIELD: '123',
+                HIRE_DATE_FIELD: '02/02/2040',
+                AD_ACCOUNT_STATUS_FIELD: 'Enabled'
+            },
+            None
+        ),
+
+        # case 2: a rehired tufe user
+        (
+            {
+                EMAIL_ADDRESS_FIELD: 'test@example.com',
+                EMPLOYEE_ID_FIELD: '123',
+                HIRE_DATE_FIELD: 'mock_date_field',
+                PREHIRE_FLAG_FIELD: 'True',
+                REHIRED_EMPLOYEE_FIELD: 'Yes'
+            },
+            {
+                EMAIL_ADDRESS_FIELD: 'test@example.com',
+                EMPLOYEE_ID_FIELD: '123',
+                HIRE_DATE_FIELD: 'mock_date_field',
+                AD_ACCOUNT_STATUS_FIELD: 'Disabled'
+            },
+            REHIRE_USER_EVENT_TYPE
+        ),
+    ]
+)
+def test_get_event_details__tufe_user(workday_user, demisto_user, expected_event_type):
+    """
+    Given
+    - A TUFE user event process.
+    When
+    - Calling get_event_details() method.
+    Then
+    - Ensure None is returned, unless a rehire event is detected.
+    """
+    from Workday_IAM import get_event_details
+
+    event = get_event_details(
+        entry={},
+        workday_user=workday_user,
+        demisto_user=demisto_user,
+        days_before_hire_to_sync=None,
+        days_before_hire_to_enable_ad=None,
+        deactivation_date_field=LAST_DAY_OF_WORK_FIELD,
+        display_name_to_user_profile={},
+        email_to_user_profile={},
+        employee_id_to_user_profile={},
+        source_priority=1
+    )
+    event_type = event.get('type') if isinstance(event, dict) else None
+    assert event_type is expected_event_type

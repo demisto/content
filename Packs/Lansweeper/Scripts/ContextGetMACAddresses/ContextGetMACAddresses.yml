@@ -1,0 +1,18 @@
+args:
+- description: MAC addresses to exclude (separated by commas)
+  name: excludedMACAddress
+comment: Gets all MAC addresses in context, excluding ones given.
+commonfields:
+  id: ContextGetMACAddresses
+  version: -1
+enabled: true
+name: ContextGetMACAddresses
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+tags: []
+type: javascript
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

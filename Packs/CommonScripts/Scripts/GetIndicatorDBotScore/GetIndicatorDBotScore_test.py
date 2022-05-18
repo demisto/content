@@ -20,9 +20,9 @@ def handle_calling_context(mocker):
         ('test_indicator', 'CVE', 'cve'),
         ('test_indicator', 'IP', 'ip'),
         ('test_indicator', 'Email', 'email'),
-        ('test_indicator', 'Url', 'url')
+        ('test_indicator', 'Url', 'url'),
+        ('test_indicator', 'IPv6', 'ip')
     ]
-
 )
 def test_validate_indicator_type(indicator, indicator_type, expected):
     """

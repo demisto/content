@@ -1,0 +1,20 @@
+comment: Gets all currently enabled integration instances.
+commonfields:
+  id: GetEnabledInstances
+  version: -1
+dockerimage: demisto/python3:3.9.8.24399
+enabled: true
+name: GetEnabledInstances
+outputs:
+- contextPath: EnabledInstances
+  description: A list of integration instance names that are currently enabled.
+runas: DBotRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

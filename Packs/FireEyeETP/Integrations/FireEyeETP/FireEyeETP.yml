@@ -18,12 +18,10 @@ configuration:
   required: true
 - display: Trust any certificate (not secure)
   name: unsecure
-  defaultvalue: ""
   type: 8
   required: false
 - display: Use system proxy settings
   name: proxy
-  defaultvalue: ""
   type: 8
   required: false
 - display: Fetch incidents
@@ -284,7 +282,7 @@ script:
   isfetch: true
   runonce: false
   subtype: python2
-  dockerimage: demisto/python:2.7.18.20958
+  dockerimage: demisto/python:2.7.18.27799
 tests:
 - No Test
 

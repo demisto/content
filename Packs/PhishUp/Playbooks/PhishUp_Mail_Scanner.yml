@@ -1,0 +1,806 @@
+id: PhishUp Mail Scanner
+version: -1
+name: PhishUp Mail Scanner
+description: Extracts URLs from mail body and checks URLs with PhishUp. Takes action
+  based on PhishUp results.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 628939c7-0e11-4b8a-85ce-e501d32b2a6c
+    type: start
+    task:
+      id: 628939c7-0e11-4b8a-85ce-e501d32b2a6c
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": -130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: fbfebd3b-becd-4f59-84ed-e7636bc2b4eb
+    type: regular
+    task:
+      id: fbfebd3b-becd-4f59-84ed-e7636bc2b4eb
+      version: -1
+      name: Extracting URLs from Email
+      description: commands.local.cmd.extract.indicators
+      script: Builtin|||extractIndicators
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      text:
+        simple: ${inputs.EmailBodyHtml}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 0
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 60132afa-2828-4548-899f-62a0313f06ed
+    type: regular
+    task:
+      id: 60132afa-2828-4548-899f-62a0313f06ed
+      version: -1
+      name: Sending URLs to PhishUp
+      description: Single url investigation
+      script: '|||url'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      url:
+        simple: ${ExtractedIndicators.URL}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 675e02ba-3abe-4bc2-8c5d-df682eae0d8a
+    type: condition
+    task:
+      id: 675e02ba-3abe-4bc2-8c5d-df682eae0d8a
+      version: -1
+      name: Check Evaluation
+      description: Evaluate PhishUp Service Result
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      Clean:
+      - "4"
+      Phish:
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: Phish
+      condition:
+      - - operator: inList
+          left:
+            value:
+              simple: PhishUp.Evaluation
+            iscontext: true
+          right:
+            value:
+              simple: Phish
+    - label: Clean
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: PhishUp.Evaluation
+            iscontext: true
+          right:
+            value:
+              simple: Clean
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: ccb9371a-6d78-4c30-8e69-9efb19c830cd
+    type: title
+    task:
+      id: ccb9371a-6d78-4c30-8e69-9efb19c830cd
+      version: -1
+      name: Clean URLs
+      type: title
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: ea0734ac-6c94-4c7c-8e59-d14c6cbeadc9
+    type: title
+    task:
+      id: ea0734ac-6c94-4c7c-8e59-d14c6cbeadc9
+      version: -1
+      name: End Of Playbook
+      type: title
+      iscommand: false
+      brand: ""
+      description: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: f6612bfc-cf2d-4f35-8268-7db53049c5f4
+    type: title
+    task:
+      id: f6612bfc-cf2d-4f35-8268-7db53049c5f4
+      version: -1
+      name: PhishUp Actions
+      type: title
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -430,
+          "y": 880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 9774d2de-5f2b-4d2f-8b26-931d985e88cc
+    type: condition
+    task:
+      id: 9774d2de-5f2b-4d2f-8b26-931d985e88cc
+      version: -1
+      name: Detect Mail's Source Brand
+      description: Detect Mail's Source Brand
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "19"
+      Gmail:
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: Gmail
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: incident.sourceBrand
+            iscontext: true
+          right:
+            value:
+              simple: Gmail
+    view: |-
+      {
+        "position": {
+          "x": -730,
+          "y": 1360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 818df99f-ee44-4d6a-8c5c-d7b8dc7aac76
+    type: regular
+    task:
+      id: 818df99f-ee44-4d6a-8c5c-d7b8dc7aac76
+      version: -1
+      name: Gmail Delete Mail
+      description: Deletes an email in the user's mailbox.
+      script: Gmail|||gmail-delete-mail
+      type: regular
+      iscommand: true
+      brand: Gmail
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      message-id:
+        simple: ${inputs.GmailMessageID}
+      permanent:
+        simple: "False"
+      user-id:
+        simple: ${inputs.GmailUserID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1030,
+          "y": 1850
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: d5ca6712-b8ea-45ea-8db0-f6bb6bd49990
+    type: condition
+    task:
+      id: d5ca6712-b8ea-45ea-8db0-f6bb6bd49990
+      version: -1
+      name: Is Any URL found?
+      description: Checking if mail has any url in body?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      No URL:
+      - "24"
+    separatecontext: false
+    conditions:
+    - label: No URL
+      condition:
+      - - operator: isEmpty
+          left:
+            value:
+              complex:
+                root: ExtractedIndicators
+                accessor: URL
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: d123bcfc-9f9b-4ea6-88a1-5792745d2da2
+    type: condition
+    task:
+      id: d123bcfc-9f9b-4ea6-88a1-5792745d2da2
+      version: -1
+      name: Should PhishUp Action Work?
+      description: Should PhishUp Action Work?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "21"
+      "False":
+      - "6"
+      "True":
+      - "25"
+    separatecontext: false
+    conditions:
+    - label: "True"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.ShouldPhishUpActionWork
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+    - label: "False"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.ShouldPhishUpActionWork
+            iscontext: true
+          right:
+            value:
+              simple: "False"
+    view: |-
+      {
+        "position": {
+          "x": -430,
+          "y": 1010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 7076e7be-93c3-4fd2-8709-1e4ee1f773e0
+    type: regular
+    task:
+      id: 7076e7be-93c3-4fd2-8709-1e4ee1f773e0
+      version: -1
+      name: Get PhishUp Action From Instance
+      description: Get chosen PhishUp action option from instance
+      script: '|||phishup-get-chosen-action'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -720,
+          "y": 1510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: dd209e4d-1533-47e6-8e63-d12ed2ec9abf
+    type: condition
+    task:
+      id: dd209e4d-1533-47e6-8e63-d12ed2ec9abf
+      version: -1
+      name: Execute PhishUp Action
+      description: Execute PhishUp Action
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "19"
+      Delete:
+      - "9"
+      Move to Spam:
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: Delete
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: PhishUp.Action
+            iscontext: true
+          right:
+            value:
+              simple: Delete Mail
+    - label: Move to Spam
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: PhishUp.Action
+            iscontext: true
+          right:
+            value:
+              simple: Move to SPAM
+    view: |-
+      {
+        "position": {
+          "x": -730,
+          "y": 1670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: c1a66707-91ed-405e-8ded-992b7f5cc935
+    type: regular
+    task:
+      id: c1a66707-91ed-405e-8ded-992b7f5cc935
+      version: -1
+      name: Move Mail to Spam Folder
+      description: Moves an email to a different folder.
+      script: '|||gmail-move-mail'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      add-labels:
+        simple: SPAM
+      message-id:
+        simple: ${inputs.GmailMessageID}
+      remove-labels:
+        simple: INBOX
+      user-id:
+        simple: ${inputs.GmailUserID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -430,
+          "y": 1850
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: b95c1bf2-b0ac-4532-877d-2fc1fb038b7e
+    type: title
+    task:
+      id: b95c1bf2-b0ac-4532-877d-2fc1fb038b7e
+      version: -1
+      name: Finish Action
+      type: title
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1390,
+          "y": 2420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: f2e9c82c-0410-4e2f-8697-c7879db780fa
+    type: title
+    task:
+      id: f2e9c82c-0410-4e2f-8697-c7879db780fa
+      version: -1
+      name: No action
+      type: title
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -140,
+          "y": 1295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 45d85e8b-4c99-40e5-893c-afa0c606a2b2
+    type: regular
+    task:
+      id: 45d85e8b-4c99-40e5-893c-afa0c606a2b2
+      version: -1
+      name: Evaluate PhishUp Response for Mail
+      description: Evaluation PhishUp URLs Response
+      script: '|||phishup-evaluate-response'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      URLs:
+        simple: ${PhishUp.URLs}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: ed436d52-2d8b-4f79-8cf5-f38bb58b9c18
+    type: regular
+    task:
+      id: ed436d52-2d8b-4f79-8cf5-f38bb58b9c18
+      version: -1
+      name: Clean Mail Close Investigation
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      closeNotes:
+        simple: The is no Phishing Url in Email
+      closeReason:
+        simple: The is no Phishing Url in Email
+      id:
+        complex:
+          root: incident
+          accessor: id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1035
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 44d63ddd-5d2f-4048-8f98-2ec931d2afa7
+    type: regular
+    task:
+      id: 44d63ddd-5d2f-4048-8f98-2ec931d2afa7
+      version: -1
+      name: If extract-indicator function does not find any URL
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      closeNotes:
+        simple: The is no Url in Email
+      closeReason:
+        simple: The is no Url in Email
+      id:
+        complex:
+          root: incident
+          accessor: id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 660,
+          "y": 820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: f893eb01-3369-4ac6-8a5d-b77018f5ac1a
+    type: regular
+    task:
+      id: f893eb01-3369-4ac6-8a5d-b77018f5ac1a
+      version: -1
+      name: Set Incident Severity to Critical
+      description: Optionally increases the incident severity to the new value if
+        it is greater than the existing severity.
+      scriptName: IncreaseIncidentSeverity
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      severity:
+        simple: Critical
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -730,
+          "y": 1200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "12_2_#default#": 0.84
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2815,
+        "width": 2430,
+        "x": -1390,
+        "y": -130
+      }
+    }
+  }
+inputs:
+- key: EmailBodyHtml
+  value:
+    simple: ${incident.emailbodyhtml}
+  required: true
+  description: Email Mail Body for extracting URLs. Default Value is "${incident.emailbodyhtml}"
+  playbookInputQuery: null
+- key: ShouldPhishUpActionWork
+  value:
+    simple: "True"
+  required: true
+  description: If you do not want actions such as deleting mail and moving to spam
+    in PhishUp playbook, you should set the value False. Default value is True
+  playbookInputQuery: null
+- key: GmailMessageID
+  value:
+    simple: ${incident.emailmessageid}
+  required: true
+  description: Identify mail for deleting and moving funcitons. Defaultly it comes
+    from incident which is setted from PhishUp Gmail Mapper
+  playbookInputQuery: null
+- key: GmailUserID
+  value:
+    simple: ${incident.emailto}
+  required: true
+  description: Identify user for deleting and moving funcitons. Defaultly it comes
+    from incident which is setted from PhishUp Gmail Mapper
+  playbookInputQuery: null
+outputs:
+- contextPath: PhishUp.Evaluation
+  description: Phishing Result for URLs inside the HTML (Clean, Phish)
+  type: string
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

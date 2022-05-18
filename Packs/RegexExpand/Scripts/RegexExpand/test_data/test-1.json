@@ -1,0 +1,125 @@
+[
+  {
+    "value": ["(CVE-2021-0001)", "(CVE-2021-0002)", "(CVE-2021-0003)"],
+    "regex": null,
+    "text": "xxx CVE-2021-0001 yyy CVE-2021-0003 zzz",
+    "template": "\\1",
+    "template_type": "text",
+    "value_takes": "regex",
+    "flags": "",
+    "search_limit": 0,
+    "result": [
+      "CVE-2021-0001",
+      "CVE-2021-0003"
+    ]
+  },
+  {
+    "value": ["(CVE-2021-0001)", "(CVE-2021-0002)"],
+    "regex": "(CVE-2021-0003)",
+    "text": "xxx CVE-2021-0001 yyy CVE-2021-0003 zzz CVE-2021-0002",
+    "template": "\\1",
+    "template_type": "text",
+    "value_takes": "regex",
+    "flags": "",
+    "search_limit": 0,
+    "result": [
+      "CVE-2021-0001",
+      "CVE-2021-0002",
+      "CVE-2021-0003"
+    ]
+  },
+  {
+    "value": ["xxx CVE-2021-0001 yyy CVE-2021-0003 zzz"],
+    "regex": ["(CVE-2021-\\d+)", "user=([^ ]+)"],
+    "text": ["xxx user=aaa yyy user=bbb zzz"],
+    "template": "\\1",
+    "template_type": "text",
+    "value_takes": "text",
+    "flags": "",
+    "search_limit": 0,
+    "result": [
+      "CVE-2021-0001",
+      "CVE-2021-0003",
+      "aaa",
+      "bbb"
+    ]
+  },
+  {
+    "value": ["xxx CVE-2021-0001 yyy CVE-2021-0003 zzz"],
+    "regex": "(CVE-\\d+-\\d+)",
+    "text": null,
+    "template": "{\"CVE\": \"\\\\1\"}",
+    "template_type": "json",
+    "value_takes": "text",
+    "flags": "",
+    "search_limit": 0,
+    "result": [
+      {
+        "CVE": "CVE-2021-0001"
+      },
+      {
+        "CVE": "CVE-2021-0003"
+      }
+    ]
+  },
+  {
+    "value": ["xxx CVE-2021-0001 yyy CVE-2021-0003 zzz"],
+    "regex": "CVE-(\\d+)-(\\d+)",
+    "text": null,
+    "template": "\\1,\\2",
+    "template_type": "list",
+    "value_takes": "text",
+    "flags": "",
+    "search_limit": 0,
+    "result": [
+      "2021",
+      "0001",
+      "2021",
+      "0003"
+    ]
+  },
+  {
+    "value": ["xxx CVE-2021-0001 yyy CVE-2021-0003 zzz"],
+    "regex": "(CVE-\\d+-\\d+)",
+    "text": null,
+    "template": "{\"CVE\": \"\\\\1\"}",
+    "template_type": "json",
+    "value_takes": "text",
+    "flags": "",
+    "search_limit": 1,
+    "result": [
+      {
+        "CVE": "CVE-2021-0001"
+      }
+    ]
+  },
+  {
+    "value": ["xxx CVE-2021-0001 yyy CVE-2021-0003 zzz"],
+    "regex": "cve-(\\d+)-(\\d+)",
+    "text": null,
+    "template": "\\1,\\2",
+    "template_type": "list",
+    "value_takes": "text",
+    "flags": "i",
+    "search_limit": 0,
+    "result": [
+      "2021",
+      "0001",
+      "2021",
+      "0003"
+    ]
+  },
+  {
+    "value": [],
+    "regex": ".*",
+    "text": 1,
+    "template": "\\0",
+    "template_type": "text",
+    "value_takes": "text",
+    "flags": "i",
+    "search_limit": 0,
+    "result": [
+      "1"
+    ]
+  }
+]

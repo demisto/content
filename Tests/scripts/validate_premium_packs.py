@@ -3,6 +3,8 @@
 Check the server configured on master.
 Validate the pack id's in the index file are present on the server and the prices match.
 """
+from typing import Tuple
+
 import demisto_client
 import argparse
 import logging
@@ -11,7 +13,7 @@ import sys
 import os
 
 from Tests.scripts.validate_index import log_message_if_statement, get_index_json_data
-from Tests.configure_and_test_integration_instances import Build, Server
+from Tests.configure_and_test_integration_instances import XSOARBuild, XSOARServer
 from Tests.Marketplace.marketplace_services import load_json
 from Tests.Marketplace.marketplace_constants import GCPConfig
 from Tests.scripts.utils.log_util import install_logging
@@ -42,7 +44,7 @@ def options_handler():
 def get_paid_packs_page(client: demisto_client,
                         page: int = 0,
                         size: int = DEFAULT_PAGE_SIZE,
-                        request_timeout: int = 999999) -> (dict, int):
+                        request_timeout: int = 999999) -> Tuple[list, int]:
     """Get premium packs from client.
 
     Trigger an API request to demisto server.
@@ -55,8 +57,8 @@ def get_paid_packs_page(client: demisto_client,
         request_timeout: Timeout of API request
 
     Returns:
-        (Dict: premium packs as found in the server, int: Total premium packs that exist)
-        (None, 0) if no premium packs were found.
+        (list: premium packs as found in the server, int: Total premium packs that exist)
+        ([], 0) if no premium packs were found.
     """
     request_data = {
         'page': page,
@@ -80,7 +82,7 @@ def get_paid_packs_page(client: demisto_client,
                                                                             _request_timeout=request_timeout)
     except Exception as exception:
         logging.error(f"Error trying to communicate with demisto server: {exception}")
-        return None, 0
+        return [], 0
 
     logging.debug(f"Got response data {pformat(response_data)}")
     response = ast.literal_eval(response_data)
@@ -90,10 +92,10 @@ def get_paid_packs_page(client: demisto_client,
 
     message = response.get('message', '')
     logging.error(f"Failed to retrieve premium packs - with status code {status_code}\n{message}\n")
-    return None, 0
+    return [], 0
 
 
-def get_premium_packs(client: demisto_client, request_timeout: int = 999999) -> dict:
+def get_premium_packs(client: demisto_client, request_timeout: int = 999999) -> list:
     """Get premium packs from client.
 
     Handle the pagination.
@@ -103,7 +105,7 @@ def get_premium_packs(client: demisto_client, request_timeout: int = 999999) -> 
         request_timeout: Timeout of each API request
 
     Returns:
-        Dict of premium packs as found in the server.
+        list of premium packs as found in the server.
         Return None if no premium packs were found.
     """
     server_packs, total = get_paid_packs_page(client=client,
@@ -122,7 +124,7 @@ def get_premium_packs(client: demisto_client, request_timeout: int = 999999) -> 
                                                    page=page,
                                                    size=DEFAULT_PAGE_SIZE,
                                                    request_timeout=request_timeout)
-        server_packs.update(next_server_packs)
+        server_packs.extend(next_server_packs)
     return server_packs
 
 
@@ -203,7 +205,7 @@ def verify_server_paid_packs_by_index(server_paid_packs: list, index_data_packs:
     return all([all_index_packs_in_server, all_server_packs_in_index])
 
 
-def extract_credentials_from_secret(secret_path: str) -> (str, str):
+def extract_credentials_from_secret(secret_path: str) -> Tuple[str, str]:
     """Extract Credentials from secret file.
 
     Args:
@@ -228,10 +230,10 @@ def main():
     )
 
     # Get the first host by the ami env
-    hosts, _ = Build.get_servers(ami_env=options.ami_env)
+    hosts, _ = XSOARBuild.get_servers(ami_env=options.ami_env)
     internal_ip, tunnel_port = list(hosts.items())[0]
     username, password = extract_credentials_from_secret(options.secret)
-    server = Server(internal_ip=internal_ip, port=tunnel_port, user_name=username, password=password)
+    server = XSOARServer(internal_ip=internal_ip, port=tunnel_port, user_name=username, password=password)
 
     # Verify premium packs in the server
     paid_packs = get_premium_packs(client=server.client)

@@ -1,0 +1,5 @@
+[file:Alexa.yml]
+ignore=IN144
+
+[file:Alexa_image.png]
+ignore=IM111

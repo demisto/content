@@ -18,12 +18,10 @@ configuration:
   required: true
 - display: Use system proxy settings
   name: proxy
-  defaultvalue: ""
   type: 8
   required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  defaultvalue: ""
   type: 8
   required: false
 - display: Service Version
@@ -107,7 +105,7 @@ script:
       type: string
     description: Check IP reputation (when information is available, returns a JSON with details). Uses all configured Threat Intelligence feeds
   runonce: false
-  dockerimage: demisto/python:2.7.18.20958
+  dockerimage: demisto/python:2.7.18.27799
 tests:
 - MaxMind Test
 fromversion: 5.0.0

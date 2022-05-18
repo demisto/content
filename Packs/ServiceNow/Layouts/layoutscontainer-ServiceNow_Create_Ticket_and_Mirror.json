@@ -111,6 +111,15 @@
         "index": 6,
         "sectionItemType": "field",
         "startCol": 0
+       },
+       {
+           "endCol": 2,
+           "fieldId": "servicenowticketid",
+           "height": 22,
+           "id": "3adb34f0-34a7-11ec-909f-631d034070e5",
+           "index": 7,
+           "sectionItemType": "field",
+           "startCol": 0
        }
       ],
       "maxH": null,

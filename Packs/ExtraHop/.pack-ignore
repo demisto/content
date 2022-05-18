@@ -17,7 +17,7 @@ ignore=IF107
 ignore=PA116
 
 [file:ExtraHop_v2.yml]
-ignore=BA108,BA109
+ignore=BA108,BA109,IN145
 
 [file:README.md]
 ignore=RM106

@@ -1279,9 +1279,8 @@ tasks:
     task:
       id: 5aff0009-233a-4263-825c-bb3c0540d3e9
       version: -1
-      name: Did the user login from whitelisted IP addresses?
-      description: Checks whether both user login events originated from whitelisted
-        IP addresses.
+      name: Did the user login from IP addresses on allow list?
+      description: Checks whether both user login events originated from IP addresses on allow list.
       type: condition
       iscommand: false
       brand: ""
@@ -1353,8 +1352,8 @@ tasks:
     task:
       id: e6335721-25ca-4a6b-8173-d10b03b301a3
       version: -1
-      name: Are there whitelisted IPs configured?
-      description: Checks whether whitelisted IPs were configured.
+      name: Are there IPs configured on allow list?
+      description: Checks whether allow list IPs were configured.
       type: condition
       iscommand: false
       brand: ""
@@ -1393,7 +1392,7 @@ tasks:
       version: -1
       name: Update incident details and set severity
       description: Updates the incident details to say that the user is a legitimate
-        traveler because the login events originated from whitelisted IP addresses,
+        traveler because the login events originated from IP addresses on allow list,
         and sets the incident severity to low.
       script: Builtin|||setIncident
       type: regular
@@ -1471,7 +1470,7 @@ tasks:
       destntdomain: {}
       details:
         simple: A user has logged in from multiple geographical locations in a short
-          amount of time. However, they logged in from whitelisted IP addresses, so
+          amount of time. However, they logged in from IP addresses on allow list, so
           the login was considered legitimate.
       detectedusers: {}
       detectorid: {}

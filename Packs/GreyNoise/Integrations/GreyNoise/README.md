@@ -80,15 +80,25 @@ Runs reputation on IPs.
 
 
 #### Command Example
-``` !ip "71.6.135.131" ```
+``` !ip "66.249.68.82" ```
 
 #### Human Readable Output
 
-### IP: 71.6.135.131 found with Reputation: Good
-### IP Context
-|IP|Classification|Actor|CVE|Spoofable|VPN|First Seen|Last Seen|
-|---|---|---|---|---|---|---|---|
-| [71.6.135.131](https://viz.greynoise.io/ip/71.6.135.131) | benign | Shodan.io | CVE-1999-0526,<br/>CVE-2013-6117,<br/>CVE-2019-0708 | false | false | 2017-09-20 | 2021-02-03 |
+###IP: 66.249.68.82 found with Noise Reputation: Good
+###GreyNoise Context IP Lookup
+
+|IP|Classification|Actor|Tags|Spoofable|VPN|BOT|Tor|First Seen|Last Seen|
+|---|---|---|---|---|---|---|---|---|---|
+| [66.249.68.82](https://www.greynoise.io/viz/ip/66.249.68.82) | benign | GoogleBot | TLS/SSL Crawler, Web Crawler | false | false | false | false | 2021-05-30 | 2021-09-16 |
+
+###IP: 66.249.68.82 found with RIOT Reputation: Good
+###Belongs to Common Business Service: Google
+###GreyNoise RIOT IP Lookup
+
+|IP|Category|Name|Trust Level|Description|Last Updated|
+|---|---|---|---|---|---|
+| [66.249.68.82](https://www.greynoise.io/viz/riot/66.249.68.82) | software | Google | 	1 - Reasonably Ignore | 	Google LLC is an American multinational technology company that specializes in Internet-related services and products, which include online advertising technologies, a search engine, cloud computing, software, and hardware. | 2021-09-16T17:53:00Z|
+
 
 ### greynoise-ip-quick-check
 ***
@@ -111,7 +121,8 @@ Check whether a given IP address is "Internet background noise", or has been obs
 | --- | --- | --- |
 | GreyNoise.IP.address | string | The IP address of the scanning device IP. | 
 | GreyNoise.IP.noise | boolean | Whether the IP is internet background noise or attacking. | 
-| GreyNoise.IP.code | string | Code which correlates to why GreyNoise labeled the IP as noise. | 
+| GreyNoise.IP.riot | string | Whether the IP is a common business service. | 
+| GreyNoise.IP.code | string | Code which correlates to why GreyNoise labeled the IP as noise. |
 | GreyNoise.IP.code_value | string | Message which correlates to why GreyNoise labeled the IP as noise. | 
 
 
@@ -343,15 +354,86 @@ Identify IPs from known benign services and organizations that commonly cause fa
 ``` !greynoise-riot ip="8.8.8.8" ```
 
 #### Human Readable Output
-### Benign IP
-|IP|RIOT|Category|Name|Description|Last Updated|
+### GreyNoise: IP Belongs to Common Business Service
+|IP|Category|Name|Trust Level|Description|Last Updated|
 |---|---|---|---|---|---|
-| [8.8.8.8](https://viz.greynoise.io/riot/8.8.8.8) | true | public_dns | Google Public DNS | Google's global domain name system (DNS) resolution service.|2021-04-12T05:55:35Z|
+| [8.8.8.8](https://viz.greynoise.io/riot/8.8.8.8)  | public_dns | Google Public DNS | 	1 - Reasonably Ignore | Google's global domain name system (DNS) resolution service.|2021-04-12T05:55:35Z|
 
 ``` !greynoise-riot ip="114.119.130.178" ```
 
 #### Human Readable Output
-### Potentially Harmful IP
+### GreyNoise: IP Not Found in RIOT
 |IP|RIOT|
 |---|---|
-| [114.119.130.178](https://viz.greynoise.io/riot/114.119.130.178) | false |
+| 114.119.130.178| false |
+
+
+### greynoise-context
+***
+Identify IPs that are mass-scanning the internet and identify what they are scanning for. 
+
+#### Base Command
+
+`greynoise-context`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ip | The IP address to be checked if it is mass-scanning the internet | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GreyNoise.IP.address | string | The IP address of the scanning device IP. | 
+| GreyNoise.IP.first_seen | date | The date the device was first observed by GreyNoise. Format is ISO8601. | 
+| GreyNoise.IP.last_seen | date | The date the device was last observed by GreyNoise. Format is ISO8601. | 
+| GreyNoise.IP.seen | boolean | IP is in record with GreyNoise. | 
+| GreyNoise.IP.tags | array | A list of the tags the device has been assigned over the past 90 days. | 
+| GreyNoise.IP.actor | string | The overt actor the device has been associated with. | 
+| GreyNoise.IP.spoofable | boolean | Boolean indicates if IP is spoofable. | 
+| GreyNoise.IP.classification | string | Whether the device has been categorized as unknown, benign, or malicious. | 
+| GreyNoise.IP.cve | array | CVEs associated with IP. | 
+| GreyNoise.IP.vpn | boolean | Whether the device is VPN endpoint or not. | 
+| GreyNoise.IP.vpn_service | string | The name of the VPN service provider of the device. | 
+| GreyNoise.IP.bot | boolean | Whether belongs to common bot activity. | 
+| GreyNoise.IP.metadata.asn | string | The autonomous system identification number. | 
+| GreyNoise.IP.metadata.city | string | The city the device is geographically located in. | 
+| GreyNoise.IP.metadata.region | string | The full name of the region the device is geographically located in. | 
+| GreyNoise.IP.metadata.country | string | The full name of the country. | 
+| GreyNoise.IP.metadata.country_code | string | The two-character country code of the country. | 
+| GreyNoise.IP.metadata.organization | string | The organization that owns the network that the IP address belongs to. | 
+| GreyNoise.IP.metadata.category | string | Whether the device belongs to a business, isp, hosting, education, or mobile network. | 
+| GreyNoise.IP.metadata.tor | boolean | Whether or not the device is a known Tor exit node. | 
+| GreyNoise.IP.metadata.rdns | string | Reverse DNS lookup of the IP address. | 
+| GreyNoise.IP.metadata.os | string | The name of the operating system of the device. | 
+| GreyNoise.IP.raw_data.scan.port | number | The port number\(s\) the devices has been observed scanning. | 
+| GreyNoise.IP.raw_data.scan.protocol | string | The protocol of the port the device has been observed scanning. | 
+| GreyNoise.IP.raw_data.web.paths | array | Any HTTP paths the device has been observed crawling the Internet for. | 
+| GreyNoise.IP.raw_data.web.useragents | array | Any HTTP user-agents the device has been observed using while crawling the Internet. | 
+| GreyNoise.IP.raw_data.ja3.fingerprint | string | The JA3 TLS/SSL fingerprint. | 
+| GreyNoise.IP.raw_data.ja3.port | number | The corresponding TCP port for the given JA3 fingerprint. | 
+| GreyNoise.IP.raw_data.hassh.fingerprint | string | HASSH hash fingerprint string. | 
+| GreyNoise.IP.raw_data.hassh.port | number | TCP port connection where the HASSH hash was identified. | 
+
+#### Command Example
+``` !greynoise-context ip="66.249.68.82" ```
+
+#### Human Readable Output
+### Benign IP
+IP: 66.249.68.82 found with Noise Reputation: Good
+
+|IP|Classification|Actor|Tags|Spoofable|VPN|BOT|Tor|First Seen|Last Seen|
+|---|---|---|---|---|---|---|---|---|---|
+| [66.249.68.82](https://www.greynoise.io/viz/ip/66.249.68.82) | 66.249.68.82 | GoogleBot | TLS/SSL Crawler, Web Crawler | false | false | false | false | 2021-05-30 | 2021-09-16 |
+
+``` !greynoise-context ip="114.119.130.178" ```
+
+#### Human Readable Output
+### Unidentified IP
+IP: 103.21.244.0 No Mass-Internet Scanning Noise Found
+
+|IP|Seen|
+|---|---|
+| 103.21.244.0 | false |

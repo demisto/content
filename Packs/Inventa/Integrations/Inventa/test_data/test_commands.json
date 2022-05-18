@@ -1,0 +1,231 @@
+{
+    "inventa-get-datasubjects": {
+        "dataSubjects":[
+            {
+                "id":"619257ea5287e1298b13d776",
+                "piis":[
+                    {"action":null,"id":null,"piiEntityType":"CC_TYPE","piiEntityValue":"discover","piiEntityValueNew":null},
+                    {"action":null,"id":null,"piiEntityType":"CC_TYPE","piiEntityValue":"american express","piiEntityValueNew":null},
+                    {"action":null,"id":null,"piiEntityType":"DOMAIN","piiEntityValue":"minagory.com","piiEntityValueNew":null},
+                    {"action":null,"id":null,"piiEntityType":"DOMAIN","piiEntityValue":"gcfac.com","piiEntityValueNew":null},
+                    {"action":null,"id":null,"piiEntityType":"ZIP_CODE","piiEntityValue":"50322","piiEntityValueNew":null},
+                    {"action":null,"id":null,"piiEntityType":"ZIP_CODE","piiEntityValue":"80936","piiEntityValueNew":null},
+                    {"action":null,"id":null,"piiEntityType":"CC_EXPIRES","piiEntityValue":"2/2019","piiEntityValueNew":null},
+                    {"action":null,"id":null,"piiEntityType":"CC_EXPIRES","piiEntityValue":"2/2023","piiEntityValueNew":null},
+                    {"action":null,"id":null,"piiEntityType":"MIDDLE_INITIAL","piiEntityValue":"u","piiEntityValueNew":null},
+                    {"action":null,"id":null,"piiEntityType":"STATE","piiEntityValue":"iowa","piiEntityValueNew":null},
+                    {"action":null,"id":null,"piiEntityType":"STATE","piiEntityValue":"alaska","piiEntityValueNew":null},
+                    {"action":null,"id":null,"piiEntityType":"VEHICLE_NUMBER","piiEntityValue":"66x8628","piiEntityValueNew":null},
+                    {"action":null,"id":null,"piiEntityType":"VEHICLE_NUMBER","piiEntityValue":"xly515","piiEntityValueNew":null},
+                    {"action":null,"id":null,"piiEntityType":"EMAIL_ADDRESS","piiEntityValue":"<test.email.1>","piiEntityValueNew":null},
+                    {"action":null,"id":null,"piiEntityType":"EMAIL_ADDRESS","piiEntityValue":"<test.email.2>","piiEntityValueNew":null},
+                    {"action":null,"id":null,"piiEntityType":"NATIONAL_ID","piiEntityValue":"480728626","piiEntityValueNew":null},
+                    {"action":null,"id":null,"piiEntityType":"NATIONAL_ID","piiEntityValue":"324259004","piiEntityValueNew":null},
+                    {"action":null,"id":null,"piiEntityType":"COUNTRY","piiEntityValue":"united states","piiEntityValueNew":null},
+                    {"action":null,"id":null,"piiEntityType":"CC_CVV","piiEntityValue":"685","piiEntityValueNew":null},
+                    {"action":null,"id":null,"piiEntityType":"CC_CVV","piiEntityValue":"171","piiEntityValueNew":null},
+                    {"action":null,"id":null,"piiEntityType":"PASSPORT_NUMBER","piiEntityValue":"336342840","piiEntityValueNew":null},
+                    {"action":null,"id":null,"piiEntityType":"USERNAME","piiEntityValue":"43cowie0","piiEntityValueNew":null},
+                    {"action":null,"id":null,"piiEntityType":"USERNAME","piiEntityValue":"wareat78","piiEntityValueNew":null},
+                    {"action":null,"id":null,"piiEntityType":"BIRTHDAY","piiEntityValue":"19/11/71","piiEntityValueNew":null},
+                    {"action":null,"id":null,"piiEntityType":"BIRTHDAY","piiEntityValue":"11/19/71","piiEntityValueNew":null},
+                    {"action":null,"id":null,"piiEntityType":"BIRTHDAY","piiEntityValue":"05/28/95","piiEntityValueNew":null},
+                    {"action":null,"id":null,"piiEntityType":"SURNAME","piiEntityValue":"szigethy","piiEntityValueNew":null},
+                    {"action":null,"id":null,"piiEntityType":"SURNAME","piiEntityValue":"westerhof","piiEntityValueNew":null},
+                    {"action":null,"id":null,"piiEntityType":"GIVEN_NAME","piiEntityValue":"jacobien","piiEntityValueNew":null},
+                    {"action":null,"id":null,"piiEntityType":"GIVEN_NAME","piiEntityValue":"lucas","piiEntityValueNew":null},
+                    {"action":null,"id":null,"piiEntityType":"BROWSER_USER_AGENT","piiEntityValue":"mozilla/5.0 (macintosh; intel mac os x 10_12_6) applewebkit/537.36 (khtml, like gecko) chrome/63.0.3239.132 safari/537.36","piiEntityValueNew":null},
+                    {"action":null,"id":null,"piiEntityType":"GUID","piiEntityValue":"288418d0-edec-45be-be77-1b68d64d096b","piiEntityValueNew":null},
+                    {"action":null,"id":null,"piiEntityType":"GUID","piiEntityValue":"76953b91-3f81-4e54-a12e-4b01bfcf9e6d","piiEntityValueNew":null},
+                    {"action":null,"id":null,"piiEntityType":"DRIVER_LICENSE","piiEntityValue":"x643895803450","piiEntityValueNew":null},
+                    {"action":null,"id":null,"piiEntityType":"VEHICLE_MODEL","piiEntityValue":"daihatsu sirion","piiEntityValueNew":null},
+                    {"action":null,"id":null,"piiEntityType":"VEHICLE_MODEL","piiEntityValue":"peugeot 406","piiEntityValueNew":null},
+                    {"action":null,"id":null,"piiEntityType":"COMPANY","piiEntityValue":"future plan","piiEntityValueNew":null},
+                    {"action":null,"id":null,"piiEntityType":"CITY","piiEntityValue":"shemya","piiEntityValueNew":null},
+                    {"action":null,"id":null,"piiEntityType":"CITY","piiEntityValue":"urbandale","piiEntityValueNew":null},
+                    {"action":null,"id":null,"piiEntityType":"RELIGION","piiEntityValue":"jewish","piiEntityValueNew":null},
+                    {"action":null,"id":null,"piiEntityType":"RACE","piiEntityValue":"caucasian","piiEntityValueNew":null},
+                    {"action":null,"id":null,"piiEntityType":"VEHICLE_YEAR","piiEntityValue":"1998","piiEntityValueNew":null},
+                    {"action":null,"id":null,"piiEntityType":"VEHICLE_YEAR","piiEntityValue":"2006","piiEntityValueNew":null},
+                    {"action":null,"id":null,"piiEntityType":"OCCUPATION","piiEntityValue":"copy editor","piiEntityValueNew":null},
+                    {"action":null,"id":null,"piiEntityType":"OCCUPATION","piiEntityValue":"accounting clerk","piiEntityValueNew":null},
+                    {"action":null,"id":null,"piiEntityType":"TITLE","piiEntityValue":"mr.","piiEntityValueNew":null},
+                    {"action":null,"id":null,"piiEntityType":"TITLE","piiEntityValue":"ms.","piiEntityValueNew":null},
+                    {"action":null,"id":null,"piiEntityType":"POLITICAL_OPINION","piiEntityValue":"communist","piiEntityValueNew":null},
+                    {"action":null,"id":null,"piiEntityType":"STREET_ADDRESS","piiEntityValue":"3064 park boulevard","piiEntityValueNew":null},
+                    {"action":null,"id":null,"piiEntityType":"STREET_ADDRESS","piiEntityValue":"6355 williams mine road","piiEntityValueNew":null},
+                    {"action":null,"id":null,"piiEntityType":"PHONE_NUMBER","piiEntityValue":"1527564666","piiEntityValueNew":null},
+                    {"action":null,"id":null,"piiEntityType":"PHONE_NUMBER","piiEntityValue":"6417811277","piiEntityValueNew":null},
+                    {"action":null,"id":null,"piiEntityType":"COUNTRY_CODE","piiEntityValue":"usa","piiEntityValueNew":null}
+                ]
+            }
+        ],
+        "total":1
+    },
+   
+    "inventa-get-datasubject-id": {
+        "datasubject_id": "619257ea5287e1298b13d776"
+    },
+    "inventa-create-ticket": {
+		"ticket_id": "305"
+	},
+    "inventa-get-datasubject-details": {
+        "email": "<test.email.1>",
+        "name": "jacobien szigethy"
+    },
+    "inventa-get-dsar-piis": {
+        "piis": [
+            "CITY",
+            "DRIVER_LICENSE",
+            "BROWSER_USER_AGENT",
+            "COUNTRY",
+            "GUID",
+            "COUNTRY_CODE",
+            "CC_CVV",
+            "RELIGION",
+            "TITLE",
+            "BIRTHDAY",
+            "EMAIL_ADDRESS",
+            "CC_EXPIRES",
+            "STREET_ADDRESS",
+            "STATE",
+            "VEHICLE_NUMBER",
+            "DOMAIN",
+            "CC_TYPE",
+            "USERNAME",
+            "RACE",
+            "NATIONAL_ID",
+            "OCCUPATION",
+            "PHONE_NUMBER",
+            "MIDDLE_INITIAL",
+            "VEHICLE_MODEL",
+            "COMPANY",
+            "GIVEN_NAME",
+            "ZIP_CODE",
+            "SURNAME",
+            "POLITICAL_OPINION",
+            "VEHICLE_YEAR",
+            "PASSPORT_NUMBER"
+        ]
+    },
+    "inventa-get-dsar-transactions": {
+        "transactions": [{}]
+    },
+    "inventa-get-dsar-files": {
+        "files": [
+          {
+            "entityTypes": "USERNAME, DRIVER_LICENSE, DOMAIN, BIRTHDAY, ZIP_CODE, GUID, RELIGION, STREET_ADDRESS, CITY, VEHICLE_NUMBER, CC_TYPE, OCCUPATION, VEHICLE_MODEL, EMAIL_ADDRESS, COUNTRY_CODE, VEHICLE_YEAR, CC_CVV, PASSPORT_NUMBER, NATIONAL_ID, COUNTRY, STATE, TITLE, PHONE_NUMBER, POLITICAL_OPINION, RACE, BROWSER_USER_AGENT, SURNAME, GIVEN_NAME",
+            "id": 573,
+            "name": "AK-50KAK-50K",
+            "path": "/AK-50KAK-50K.xlsx",
+            "size": 17768910,
+            "timestamp": null,
+            "url": "nfs://<test.ip>//crawlershare"
+          },
+          {
+            "entityTypes": "USERNAME, DRIVER_LICENSE, DOMAIN, BIRTHDAY, ZIP_CODE, GUID, RELIGION, STREET_ADDRESS, CITY, VEHICLE_NUMBER, CC_TYPE, OCCUPATION, VEHICLE_MODEL, EMAIL_ADDRESS, COUNTRY_CODE, VEHICLE_YEAR, CC_CVV, PASSPORT_NUMBER, NATIONAL_ID, COUNTRY, STATE, TITLE, PHONE_NUMBER, POLITICAL_OPINION, RACE, BROWSER_USER_AGENT, SURNAME, GIVEN_NAME",
+            "id": 574,
+            "name": "AK-110K",
+            "path": "!\\AK-110K.xlsx",
+            "size": 38712273,
+            "timestamp": "06 Aug 2020 11:41:17",
+            "url": "smb://qa-server2016.1touch.co/vip"
+          },
+          {
+            "entityTypes": "USERNAME, DRIVER_LICENSE, DOMAIN, BIRTHDAY, ZIP_CODE, GUID, RELIGION, CC_EXPIRES, STREET_ADDRESS, CITY, VEHICLE_NUMBER, CC_TYPE, OCCUPATION, VEHICLE_MODEL, EMAIL_ADDRESS, COUNTRY_CODE, VEHICLE_YEAR, CC_CVV, PASSPORT_NUMBER, NATIONAL_ID, COUNTRY, STATE, TITLE, PHONE_NUMBER, POLITICAL_OPINION, RACE, BROWSER_USER_AGENT, SURNAME, GIVEN_NAME",
+            "id": 575,
+            "name": "CSV-100000-(1)_short",
+            "path": "New folder\\CSV-100000-(1)_short.csv",
+            "size": 49771766,
+            "timestamp": "01 Nov 2021 16:08:35",
+            "url": "smb://qa-server2016.1touch.co/dfs_yuri2016"
+          },
+          {
+            "entityTypes": "USERNAME, DRIVER_LICENSE, DOMAIN, BIRTHDAY, ZIP_CODE, GUID, RELIGION, CC_EXPIRES, STREET_ADDRESS, CITY, VEHICLE_NUMBER, CC_TYPE, OCCUPATION, VEHICLE_MODEL, EMAIL_ADDRESS, COUNTRY_CODE, VEHICLE_YEAR, CC_CVV, PASSPORT_NUMBER, NATIONAL_ID, COUNTRY, STATE, TITLE, PHONE_NUMBER, POLITICAL_OPINION, RACE, BROWSER_USER_AGENT, SURNAME, GIVEN_NAME",
+            "id": 576,
+            "name": "CSV-100000-(1)_short",
+            "path": "New folder\\CSV-100000-(1)_short.csv",
+            "size": 49771766,
+            "timestamp": "01 Nov 2021 16:08:35",
+            "url": "smb://qa-server2016.1touch.co/yuri"
+          },
+          {
+            "entityTypes": "USERNAME, DRIVER_LICENSE, DOMAIN, BIRTHDAY, ZIP_CODE, GUID, RELIGION, CC_EXPIRES, STREET_ADDRESS, CITY, VEHICLE_NUMBER, CC_TYPE, OCCUPATION, VEHICLE_MODEL, EMAIL_ADDRESS, COUNTRY_CODE, VEHICLE_YEAR, CC_CVV, PASSPORT_NUMBER, NATIONAL_ID, COUNTRY, STATE, TITLE, PHONE_NUMBER, POLITICAL_OPINION, RACE, BROWSER_USER_AGENT, SURNAME, GIVEN_NAME",
+            "id": 577,
+            "name": "CSV-100000-(1)_short",
+            "path": "New folder\\CSV-100000-(1)_short.csv",
+            "size": 49771766,
+            "timestamp": "01 Nov 2021 16:08:35",
+            "url": "smb://qa-server2016.1touch.co/new_dfs_share"
+          },
+          {
+            "entityTypes": "USERNAME, COMPANY, DOMAIN, BIRTHDAY, ZIP_CODE, GUID, RELIGION, CC_EXPIRES, STREET_ADDRESS, CITY, VEHICLE_NUMBER, CC_TYPE, OCCUPATION, VEHICLE_MODEL, EMAIL_ADDRESS, COUNTRY_CODE, VEHICLE_YEAR, CC_CVV, PASSPORT_NUMBER, NATIONAL_ID, COUNTRY, STATE, MIDDLE_INITIAL, TITLE, PHONE_NUMBER, POLITICAL_OPINION, RACE, SURNAME, GIVEN_NAME",
+            "id": 578,
+            "name": "QA-CSV",
+            "path": "QA-CSV.csv",
+            "size": 4674711,
+            "timestamp": "04 Oct 2021 16:25:50",
+            "url": "smb://qa-server2016.1touch.co/demo10k"
+          },
+          {
+            "entityTypes": "USERNAME, DRIVER_LICENSE, DOMAIN, BIRTHDAY, ZIP_CODE, GUID, RELIGION, STREET_ADDRESS, CITY, VEHICLE_NUMBER, CC_TYPE, OCCUPATION, VEHICLE_MODEL, EMAIL_ADDRESS, COUNTRY_CODE, VEHICLE_YEAR, CC_CVV, PASSPORT_NUMBER, NATIONAL_ID, COUNTRY, STATE, TITLE, PHONE_NUMBER, POLITICAL_OPINION, RACE, BROWSER_USER_AGENT, SURNAME, GIVEN_NAME",
+            "id": 579,
+            "name": "AK-110K.xlsAK-110K",
+            "path": "/AK-110K.xlsAK-110K.xlsx",
+            "size": 38712273,
+            "timestamp": null,
+            "url": "nfs://<test.ip>//crawlershare"
+          }
+        ]
+      },
+    "inventa-get-dsar-databases": {
+        "databases": [
+            {
+                "database": "flat_1t_40_full",
+                "entityTypes": "EMAIL_ADDRESS, BROWSER_USER_AGENT, DOMAIN, USERNAME, OCCUPATION, GUID, PASSPORT_NUMBER",
+                "id": 0,
+                "name": "flat_500t_100K_short.AK_100K_1_5"
+            },
+            {
+                "database": "flat_1t_40_full",
+                "entityTypes": "CITY, STATE, BIRTHDAY, VEHICLE_NUMBER, BROWSER_USER_AGENT, OCCUPATION, PASSPORT_NUMBER",
+                "id": 0,
+                "name": "flat_200000t_250PII_short.AK_250PII_single_152_5"
+            }
+        ]
+    },
+    "inventa-get-dsar-dataassets": {
+        "dataAssets": [
+            {
+                "description": "AK-50k",
+                "id": 358,
+                "name": "AK-50k",
+                "piis": "None",
+                "reasonsOfProcessing": "1"
+            },
+            {
+                "description": null,
+                "id": 359,
+                "name": "Default",
+                "piis": "None",
+                "reasonsOfProcessing": "None"
+            }
+        ]
+    },
+    "inventa-get-datasubject-id-from-ticket": {
+        "datasubject_id": "619257ea5287e1298b13d776"
+    },
+    "inventa-get-entities": {
+        "entities":[
+            "BIRTHDAY","BROWSER_USER_AGENT","GUID","ACCOUNT_NUMBER","CC_CVV","CC_EXPIRES",
+            "CC_NUMBER","CC_TYPE","RACE","VEHICLE_NUMBER","VEHICLE_YEAR","VEHICLE_MODEL",
+            "VEHICLE_TYPE","RELIGION","COMPANY","DOMAIN","OCCUPATION","TITLE","USERNAME",
+            "DRIVER_LICENSE","NATIONAL_ID","PASSPORT_NUMBER","TAX_ID","POLITICAL_OPINION",
+            "CITY","COUNTRY","COUNTRY_CODE","EMAIL_ADDRESS","PHONE_NUMBER","STATE",
+            "STREET_ADDRESS","UPS","ZIP_CODE","POSTCODE","FULL_NAME","GIVEN_NAME",
+            "MIDDLE_INITIAL","MOTHERS_MAIDEN","SURNAME"
+        ]
+    }
+
+
+}

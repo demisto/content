@@ -1,0 +1,31 @@
+{
+    "id": "incident_hackeronereportassigneeid",
+    "version": -1,
+    "modified": "2021-08-26T19:21:13.290126085+05:30",
+    "name": "HackerOne Report Assignee ID",
+    "ownerOnly": false,
+    "description": "The unique ID of the assignee.",
+    "cliName": "hackeronereportassigneeid",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "HackerOne Report"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.0.0"
+}

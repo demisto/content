@@ -7,19 +7,19 @@ This integration was integrated and tested with Azure Compute API Version: 2017-
 For more details about the authentication used in this integration, see <a href="https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication">Microsoft Integrations - Authentication</a>.
 
 <ul>
-<li>After authorizing the Demisto app, you will get an ID, Token, and Key, which should be inserted in the integration instance configuration's corresponding fields. After giving consent, the application has to have a role assigned so it can access the relevant resources per subscription. </li>
+<li>After authorizing the Demisto App or the Self-Deployed Application , you will get an ID, Token, and Key, which should be inserted in the integration instance configuration's corresponding fields. After giving consent, the application has to have a role assigned so it can access the relevant resources per subscription. </li>
 <li>In order to assign a role to the application after consent was given: 
   <ul>
     <li>Go to the Azure Portal UI.</li>
     <li>Go to Subscriptions, and then Access Control (IAM).</li>
-    <li>Click Add.</li>
-    <li>Select a role that includes the following permissions:
+    <li>Click "Add role assignment".</li>
+    <li>Create a new role or select a role that includes the following permissions:
     <ul>
       <li>Microsoft.Compute/virtualMachines/*</li>
       <li>Microsoft.Network/networkInterfaces/read</li>
       <li>Microsoft.Resources/subscriptions/resourceGroups/read</li>
     </ul> </li>
-    <li>Select the Azure Compute application.</li>
+    <li>Select the Azure Compute application. By default, Azure AD applications aren't displayed in the available options. To find your application, search for the name and select it.</li>
   </ul>
 </li>
 </ul>
@@ -36,6 +36,8 @@ For more details about the authentication used in this integration, see <a href=
    <li><strong>ID (received from the admin consent - see Detailed Instructions (?)</strong></li>
    <li><strong>Token (received from the admin consent - see Detailed Instructions (?) section)</strong></li>
    <li><strong>Key (received from the admin consent - see Detailed Instructions (?)</strong></li>
+   <li><strong>Certificate Thumbprint</strong></li>
+   <li><strong>Private Key</strong></li>
    <li><strong>Default Subscription ID</strong></li>
    <li><strong>Use system proxy</strong></li>
    <li><strong>Trust any certificate (not secure)</strong></li>

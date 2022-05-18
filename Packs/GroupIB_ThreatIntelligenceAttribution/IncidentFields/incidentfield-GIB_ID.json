@@ -8,13 +8,14 @@
         "GIB OSI Git Leak",
         "GIB OSI Public Leak",
         "GIB Targeted Malware",
-        "GIB Data Breach"
+        "GIB Data Breach",
+        "GIB Brand Protection Domain"
     ],
     "caseInsensitive": false,
     "cliName": "gibid",
     "closeForm": false,
     "content": true,
-    "description": "ID of event in GIB TI&A",
+    "description": "ID of event in GIB TIA",
     "editForm": true,
     "group": 0,
     "hidden": false,

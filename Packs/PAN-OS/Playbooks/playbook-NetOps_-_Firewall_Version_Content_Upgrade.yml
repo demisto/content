@@ -40,7 +40,7 @@ tasks:
       version: -1
       name: Download the latest content update
       description: Downloads the latest content update.
-      script: Panorama|||panorama-download-latest-content-update
+      script: Panorama|||pan-os-download-latest-content-update
       type: regular
       iscommand: true
       brand: Panorama
@@ -70,7 +70,7 @@ tasks:
       version: -1
       name: Check on the content download status
       description: Checks content update download status.
-      script: Panorama|||panorama-content-update-download-status
+      script: Panorama|||pan-os-content-update-download-status
       type: regular
       iscommand: true
       brand: Panorama
@@ -104,7 +104,7 @@ tasks:
       version: -1
       name: Install the latest content update
       description: Installs the latest content update.
-      script: Panorama|||panorama-install-latest-content-update
+      script: Panorama|||pan-os-install-latest-content-update
       type: regular
       iscommand: true
       brand: Panorama
@@ -134,7 +134,7 @@ tasks:
       version: -1
       name: Check on the content installation status
       description: Checks on the content update install status.
-      script: Panorama|||panorama-content-update-install-status
+      script: Panorama|||pan-os-content-update-install-status
       type: regular
       iscommand: true
       brand: Panorama
@@ -168,7 +168,7 @@ tasks:
       version: -1
       name: Check for the latest PAN-OS software
       description: Checks the PAN-OS software version from the repository.
-      script: Panorama|||panorama-check-latest-panos-software
+      script: Panorama|||pan-os-check-latest-panos-software
       type: regular
       iscommand: true
       brand: Panorama
@@ -197,7 +197,7 @@ tasks:
       version: -1
       name: Download the latest PAN-OS software update
       description: Downloads target PAN-OS version to be installed.
-      script: Panorama|||panorama-download-panos-version
+      script: Panorama|||pan-os-download-panos-version
       type: regular
       iscommand: true
       brand: Panorama
@@ -229,7 +229,7 @@ tasks:
       version: -1
       name: Install the latest PAN-OS software update
       description: Installs the target PAN-OS version.
-      script: Panorama|||panorama-install-panos-version
+      script: Panorama|||pan-os-install-panos-version
       type: regular
       iscommand: true
       brand: Panorama
@@ -261,7 +261,7 @@ tasks:
       version: -1
       name: Check on the PAN-OS software installation status
       description: Checks the PAN-OS installation status.
-      script: Panorama|||panorama-install-panos-status
+      script: Panorama|||pan-os-install-panos-status
       type: regular
       iscommand: true
       brand: Panorama
@@ -294,7 +294,7 @@ tasks:
       version: -1
       name: Reboot the firewall
       description: Reboots the Firewall device.
-      script: Panorama|||panorama-device-reboot
+      script: Panorama|||pan-os-device-reboot
       type: regular
       iscommand: true
       brand: Panorama
@@ -346,7 +346,7 @@ tasks:
       PollingCommandArgName:
         simple: job_id
       PollingCommandName:
-        simple: panorama-content-update-download-status
+        simple: pan-os-content-update-download-status
       Timeout:
         simple: "10"
       dt:
@@ -401,7 +401,7 @@ tasks:
       PollingCommandArgName:
         simple: job_id
       PollingCommandName:
-        simple: panorama-content-update-install-status
+        simple: pan-os-content-update-install-status
       Timeout:
         simple: "10"
       dt:
@@ -431,7 +431,7 @@ tasks:
       version: -1
       name: Download PAN-OS Status
       description: PAN-OS download status
-      script: Panorama|||panorama-download-panos-status
+      script: Panorama|||pan-os-download-panos-status
       type: regular
       iscommand: true
       brand: Panorama
@@ -490,7 +490,7 @@ tasks:
       PollingCommandArgName:
         simple: job_id
       PollingCommandName:
-        simple: panorama-download-panos-status
+        simple: pan-os-download-panos-status
       Timeout:
         simple: "20"
       dt:
@@ -546,7 +546,7 @@ tasks:
       PollingCommandArgName:
         simple: job_id
       PollingCommandName:
-        simple: panorama-install-panos-status
+        simple: pan-os-install-panos-status
       Timeout:
         simple: "20"
       dt:

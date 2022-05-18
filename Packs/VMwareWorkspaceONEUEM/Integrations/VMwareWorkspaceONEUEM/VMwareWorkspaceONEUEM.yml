@@ -657,7 +657,7 @@ script:
     - contextPath: VMwareWorkspaceONEUEM.OSUpdate.OSUpdateList.Uuid
       description: The universally unique identifier of the OS update.
       type: String
-  dockerimage: demisto/python3:3.9.6.22912
+  dockerimage: demisto/python3:3.9.8.24399
   feed: false
   isfetch: false
   longRunning: false

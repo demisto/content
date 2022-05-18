@@ -1,0 +1,31 @@
+{
+ "associatedToAll": false,
+ "associatedTypes": [
+  "Policy Optimizer"
+ ],
+ "caseInsensitive": true,
+ "cliName": "panosruleswithunusedapplications",
+ "closeForm": false,
+ "content": true,
+ "description": "PAN-OS firewall rules with unused applications found by PAN-OS Policy Optimizer.",
+ "editForm": true,
+ "group": 0,
+ "hidden": false,
+ "id": "incident_panosruleswithunusedapplications",
+ "isReadOnly": false,
+ "locked": false,
+ "name": "PAN-OS Rules with Unused Applications",
+ "neverSetAsRequired": false,
+ "openEnded": false,
+ "ownerOnly": false,
+ "required": false,
+ "sla": 0,
+ "system": false,
+ "threshold": 72,
+ "type": "markdown",
+ "unmapped": false,
+ "unsearchable": true,
+ "useAsKpi": false,
+ "version": -1,
+ "fromVersion": "6.0.0"
+}

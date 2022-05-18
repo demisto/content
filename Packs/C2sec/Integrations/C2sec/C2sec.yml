@@ -24,7 +24,6 @@ configuration:
   required: true
 - display: Trust any certificate (not secure)
   name: unsecure
-  defaultvalue: ""
   type: 8
   required: false
 - display: Use system proxy settings
@@ -193,4 +192,4 @@ script:
       type: string
     description: Query Data for specific component for companies in the portfolio
   runonce: false
-  dockerimage: demisto/python3:3.9.5.22665
+  dockerimage: demisto/python3:3.9.8.24399

@@ -8,6 +8,24 @@ from CommonServerPython import *
 # disable insecure warnings
 urllib3.disable_warnings()
 INTEGRATION_NAME = 'Office 365'
+ALL_REGIONS_LIST = ['Worldwide', 'China', 'Germany', 'USGovDoD', 'USGovGCCHigh']
+
+
+def build_region_list(config_region_list: list) -> list:
+    """Builds the region list for the feed.
+    If the config_region_list includes 'All',
+    it will add all the known regions to the list, and remove the string all.
+
+    Args:
+        config_region_list: list of regions provided by integration configuration
+
+    Returns:
+        list of regions
+    """
+    if 'All' in config_region_list:
+        config_region_list.remove('All')
+        return list(set(config_region_list + ALL_REGIONS_LIST))
+    return config_region_list
 
 
 def build_urls_dict(regions_list: list, services_list: list, unique_id) -> List[Dict[str, Any]]:
@@ -95,8 +113,7 @@ class Client:
                 raise Exception(f'Connection error in the API call to {INTEGRATION_NAME}.\n'
                                 f'Check your Server URL parameter.\n\n{err}')
             except requests.exceptions.HTTPError as err:
-                demisto.debug(str(err))
-                raise Exception(f'Connection error in the API call to {INTEGRATION_NAME}.\n')
+                demisto.debug(f'Got an error from {feed_url} while fetching indicators {(str(err))} ')
             except ValueError as err:
                 demisto.debug(str(err))
                 raise ValueError(f'Could not parse returned data to Json. \n\nError massage: {err}')
@@ -236,7 +253,7 @@ def main():
     """
     params = demisto.params()
     unique_id = str(uuid.uuid4())
-    regions_list = argToList(params.get('regions'))
+    regions_list = build_region_list(argToList(params.get('regions')))
     services_list = argToList(params.get('services'))
     urls_list = build_urls_dict(regions_list, services_list, unique_id)
     use_ssl = not params.get('insecure', False)

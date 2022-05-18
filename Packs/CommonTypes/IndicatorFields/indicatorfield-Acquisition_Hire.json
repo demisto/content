@@ -1,0 +1,31 @@
+{
+    "id": "indicator_acquisitionhire",
+    "version": -1,
+    "modified": "2021-10-17T13:36:57.499719173Z",
+    "name": "Acquisition Hire",
+    "ownerOnly": false,
+    "description": "Whether the employee is an acquisition hire.",
+    "cliName": "acquisitionhire",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": true,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 2,
+    "hidden": false,
+    "associatedTypes": [
+        "User Profile"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "5.5.0"
+}

@@ -39,11 +39,11 @@ tasks:
     nexttasks:
       '#default#':
       - '13'
-      yes:
+      'yes':
       - '15'
     separatecontext: false
     conditions:
-    - label: yes
+    - label: 'yes'
       condition:
       - - operator: startWith
           left:
@@ -145,12 +145,12 @@ tasks:
     nexttasks:
       '#default#':
       - '19'
-      yes:
+      'yes':
       - '12'
       - '16'
     separatecontext: false
     conditions:
-    - label: yes
+    - label: 'yes'
       condition:
       - - operator: isNotEmpty
           left:
@@ -284,11 +284,11 @@ tasks:
     nexttasks:
       '#default#':
       - '7'
-      yes:
+      'yes':
       - '14'
     separatecontext: false
     conditions:
-    - label: yes
+    - label: 'yes'
       condition:
       - - operator: isEqualString
           left:
@@ -318,11 +318,11 @@ tasks:
     nexttasks:
       '#default#':
       - '18'
-      yes:
+      'yes':
       - '5'
     separatecontext: false
     conditions:
-    - label: yes
+    - label: 'yes'
       condition:
       - - operator: isNotEmpty
           left:
@@ -390,11 +390,11 @@ tasks:
     nexttasks:
       '#default#':
       - '19'
-      yes:
+      'yes':
       - '2'
     separatecontext: false
     conditions:
-    - label: yes
+    - label: 'yes'
       condition:
       - - operator: isExists
           left:

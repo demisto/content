@@ -1,0 +1,30 @@
+args:
+- isArray: true
+  name: value
+  description: "Input list"
+comment: "This transformer will invert every two items in an array.\nExample:  \n\
+  [\"A\", \"B\", \"C\", \"D\"]\nResult:\n[\"B\", \"A\", \"D\", \"C\"]\n\nIf the total\
+  \ of items in the array is an odd number the last item will be removed\nExample:\n\
+  [\"A\", \"B\", \"C\", \"D\", \"E\"]\nResult:\n[\"B\", \"A\", \"D\", \"C\"]\n\nIf\
+  \ the item is not an array the output will be same passed object."
+commonfields:
+  id: InvertEveryTwoItems
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+dockerimage: demisto/python3:3.9.7.24076
+enabled: true
+name: InvertEveryTwoItems
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- transformer
+- list
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

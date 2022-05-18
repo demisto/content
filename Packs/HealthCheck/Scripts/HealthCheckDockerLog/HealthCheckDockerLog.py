@@ -5,8 +5,7 @@ from CommonServerPython import *  # noqa: F401
 import re
 
 DESCRIPTION = [
-    "Container {0} was last updated {1}, consider updating it",
-    "Container {0} version {1} was last updated {2}, consider updating it",
+    "Too many running containers: There are {} containers running on the server",
     "There are {} containers that are running with over 10% CPU Usage - Please check docker.log",
     "There are {} containers that are running with over 10% RAM Usage - Please check docker.log",
 ]
@@ -30,17 +29,12 @@ def container_analytics(containers):
 
 def image_analytics(images):
     lres = []
-    for image in images:
-        if "month" in image['last_update']:
-            lres.append({"category": "Docker", "severity": "Medium",
-                         "description": DESCRIPTION[0].format(image['image'], image['last_update']),
-                         "resolution": RESOLUTION,
-                         })
-        elif "years" in image['last_update']:
-            lres.append({"category": "Docker", "severity": "High",
-                         "description": DESCRIPTION[1].format(image['image'], image['version'], image['last_update']),
-                         "resolution": RESOLUTION,
-                         })
+    numberContainers = len(images)
+    if numberContainers > 200:
+        lres.append({"category": "Docker", "severity": "Medium",
+                     "description": DESCRIPTION[0].format(numberContainers),
+                     "resolution": RESOLUTION,
+                     })
     return lres
 
 
@@ -80,13 +74,13 @@ def main(args):
         if len(item) == 11:
             container_array.append({"containerid": item[0], "name": item[1], 'cpu_usage': item[2],
                                     'mem_used': item[3], 'mem_limit': item[4],
-                                    'mem_percent': item[5], 'net_in': item[6],
+                                    'mem_usage': item[5], 'net_in': item[6],
                                     'net_out': item[7], 'block_in': item[8],
                                     'block_out': item[9], 'pids': item[10],
                                     })
 
     return_outputs(readable_output=tableToMarkdown("Containers", container_array,
-                                                   ['containerid', 'name', 'cpu_usage', 'mem_percent']))
+                                                   ['containerid', 'name', 'cpu_usage', 'mem_usage']))
     return_outputs(readable_output=tableToMarkdown("Images", image_array, [
         'imageid', 'image', 'version', 'last_update', 'size']))
 
@@ -108,15 +102,13 @@ def main(args):
 
     if countCPU:
         res.append({"category": "Docker", "severity": "Medium",
-                    "description": DESCRIPTION[2].format(countCPU)})
+                    "description": DESCRIPTION[1].format(countCPU)})
     if countMEM:
         res.append({"category": "Docker", "severity": "Medium",
-                    "description": DESCRIPTION[3].format(countMEM)})
+                    "description": DESCRIPTION[2].format(countMEM)})
 
     res = res + image_analytics(image_array)
     res = res + container_analytics(container_array)
-
-    demisto.executeCommand("setIncident", {'DockerStatsSettings': dataset})
 
     if 'Operating System' in dataset:
         demisto.executeCommand("setIncident", {
@@ -127,7 +119,9 @@ def main(args):
             'healthcheckdockerrunning': dataset['Running'],
             'healthcheckdockerpaused': dataset['Paused'],
             'healthcheckdockerstop': dataset['Stopped'],
-            'healthcheckdockerversion': dataset['Server Version']
+            'healthcheckdockerversion': dataset['Server Version'],
+            'healthcheckdockercontainersstats': container_array,
+            'healthcheckdockerimages': image_array
         })
 
     return CommandResults(

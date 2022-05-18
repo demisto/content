@@ -1,0 +1,2 @@
+!ali-instance image_id=ubuntu_20_04_x64_20G_alibase_20210420.vhd instance_type=ecs.n4.small vswitch_id=vsw-bp1aclhyjkdy98ujfzspt host_name=testserver security_groups=sg-bp1fy1o431n7m0hta5tt 
+!ali-instance-info 

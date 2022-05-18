@@ -1,0 +1,20 @@
+{
+  "assets": [
+    {
+      "type": "HOST",
+      "name": "riskiq.app",
+      "firstSeen": "2018-05-11 20:40:17",
+      "lastSeen": "2021-09-16 13:57:16"
+    },
+    {
+      "type": "HOST",
+      "name": "www.riskiq.app",
+      "firstSeen": "2018-06-30 00:03:32",
+      "lastSeen": ""
+    }
+  ],
+  "cveId": "CVE-2021-23017",
+  "totalCount": 124,
+  "totalPages": 62,
+  "nextPage": null
+}

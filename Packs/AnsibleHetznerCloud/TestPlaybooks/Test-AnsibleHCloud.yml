@@ -1,0 +1,1929 @@
+id: 7d8ac1af-2d1e-4ed9-875c-d3257d2c6830
+version: -1
+vcShouldKeepItemLegacyProdMachine: false
+name: Test-AnsibleHCloud
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: b9824fa4-7aa0-4d4b-8d41-80f49c40308b
+    type: start
+    task:
+      id: b9824fa4-7aa0-4d4b-8d41-80f49c40308b
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "61"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 58b419af-0712-4fd0-81f5-3edb88a0db27
+    type: regular
+    task:
+      id: 58b419af-0712-4fd0-81f5-3edb88a0db27
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+      - "8"
+      - "19"
+      - "33"
+      - "40"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 4ec08492-a047-49f0-8b10-8e30d2d77d10
+    type: title
+    task:
+      id: 4ec08492-a047-49f0-8b10-8e30d2d77d10
+      version: -1
+      name: Server
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 1090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: da23d269-b111-4dde-89c3-8853096e93dd
+    type: title
+    task:
+      id: da23d269-b111-4dde-89c3-8853096e93dd
+      version: -1
+      name: General Info
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 539b90ef-7acd-41db-8403-7ffefab6d2fd
+    type: regular
+    task:
+      id: 539b90ef-7acd-41db-8403-7ffefab6d2fd
+      version: -1
+      name: 'hcloud-datacenter-info '
+      description: |-
+        Gather info about the Hetzner Cloud datacenters.
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/hcloud_datacenter_info_module.html
+      script: '|||hcloud-datacenter-info'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      id: {}
+      name: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 582a979d-cf48-437c-813c-d4b79c3a8159
+    type: condition
+    task:
+      id: 582a979d-cf48-437c-813c-d4b79c3a8159
+      version: -1
+      name: 'check hcloud-datacenter-info '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Hcloud.HcloudDatacenterInfo.[0]
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 6f82877f-64b6-4e1e-8bdc-4232290b6e73
+    type: regular
+    task:
+      id: 6f82877f-64b6-4e1e-8bdc-4232290b6e73
+      version: -1
+      name: hcloud-floating-ip-info
+      description: |-
+        Gather infos about the Hetzner Cloud Floating IPs.
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/hcloud_floating_ip_info_module.html
+      script: '|||hcloud-floating-ip-info'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      id: {}
+      label_selector: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 115248ed-8d19-4082-8bbd-a6361df6e5f5
+    type: condition
+    task:
+      id: 115248ed-8d19-4082-8bbd-a6361df6e5f5
+      version: -1
+      name: check hcloud-floating-ip-info
+      description: Until a Ansible module is written to manage floating IPs, this
+        command will return a empty list
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Hcloud.HcloudFloatingIpInfo.[0]
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: 81bc90d0-949b-4764-8b91-3a104fb2dbcb
+    type: regular
+    task:
+      id: 81bc90d0-949b-4764-8b91-3a104fb2dbcb
+      version: -1
+      name: hcloud-image-info
+      description: |-
+        Gather infos about your Hetzner Cloud images.
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/hcloud_image_info_module.html
+      script: '|||hcloud-image-info'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      id: {}
+      label_selector: {}
+      name: {}
+      type: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1915
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: f3e5386c-e3d0-4d50-8b8d-1496a0926fb5
+    type: condition
+    task:
+      id: f3e5386c-e3d0-4d50-8b8d-1496a0926fb5
+      version: -1
+      name: check hcloud-image-info
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Hcloud.HcloudImageInfo.[0]
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: e863befb-a38c-40f5-8510-a71252e7c89f
+    type: regular
+    task:
+      id: e863befb-a38c-40f5-8510-a71252e7c89f
+      version: -1
+      name: hcloud-location-info
+      description: |-
+        Gather infos about your Hetzner Cloud locations.
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/hcloud_location_info_module.html
+      script: '|||hcloud-location-info'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      id: {}
+      name: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: 0087f21f-a993-40a8-8eda-45a042aadfb5
+    type: condition
+    task:
+      id: 0087f21f-a993-40a8-8eda-45a042aadfb5
+      version: -1
+      name: check hcloud-location-info
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Hcloud.HcloudLocationInfo.[0]
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: 74cdf985-fa3f-46a6-832d-572b37ec6ac0
+    type: regular
+    task:
+      id: 74cdf985-fa3f-46a6-832d-572b37ec6ac0
+      version: -1
+      name: hcloud-server-type-info
+      description: |-
+        Gather infos about the Hetzner Cloud server types.
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/hcloud_server_type_info_module.html
+      script: '|||hcloud-server-type-info'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      id: {}
+      name: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2725
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: fce3da3f-fb9a-4c53-8ba5-1c5b6a11dd67
+    type: condition
+    task:
+      id: fce3da3f-fb9a-4c53-8ba5-1c5b6a11dd67
+      version: -1
+      name: check hcloud-server-type-info
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "54"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Hcloud.HcloudServerTypeInfo.[0]
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: 418f5259-4900-4ad6-8837-7bf5308b1f62
+    type: title
+    task:
+      id: 418f5259-4900-4ad6-8837-7bf5308b1f62
+      version: -1
+      name: Network
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 580,
+          "y": 1090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: 1a77f8bc-6880-4d8f-82dd-599be2c2312c
+    type: regular
+    task:
+      id: 1a77f8bc-6880-4d8f-82dd-599be2c2312c
+      version: -1
+      name: hcloud-network
+      description: |-
+        Create and manage cloud Networks on the Hetzner Cloud.
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/hcloud_network_module.html
+      script: '|||hcloud-network'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      id: {}
+      ip_range:
+        simple: 10.0.0.0/8
+      labels: {}
+      name:
+        simple: my-network
+      state: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 570,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
+    taskid: d99b2b08-6e3c-420e-83a6-4a6f102fe48d
+    type: condition
+    task:
+      id: d99b2b08-6e3c-420e-83a6-4a6f102fe48d
+      version: -1
+      name: check hcloud-network
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "22"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Hcloud.HcloudNetwork.[0].status
+            iscontext: true
+          right:
+            value:
+              simple: CHANGED
+    view: |-
+      {
+        "position": {
+          "x": 570,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: 5bd7da75-0346-44ec-8f07-a3c2814cd692
+    type: regular
+    task:
+      id: 5bd7da75-0346-44ec-8f07-a3c2814cd692
+      version: -1
+      name: 'hcloud-network-info '
+      description: |-
+        Gather info about your Hetzner Cloud networks.
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/hcloud_network_info_module.html
+      script: '|||hcloud-network-info'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      id: {}
+      label_selector: {}
+      name: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 570,
+          "y": 1565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "23":
+    id: "23"
+    taskid: ee45e6a6-d97f-4087-8f8a-925e2c870164
+    type: condition
+    task:
+      id: ee45e6a6-d97f-4087-8f8a-925e2c870164
+      version: -1
+      name: check hcloud-network-info
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "24"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Hcloud.HcloudNetworkInfo.[0]
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 570,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "24":
+    id: "24"
+    taskid: d0d6e338-eab5-488f-861d-9a694c6f0a63
+    type: regular
+    task:
+      id: d0d6e338-eab5-488f-861d-9a694c6f0a63
+      version: -1
+      name: hcloud-route
+      description: |-
+        Create and delete cloud routes on the Hetzner Cloud.
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/hcloud_route_module.html
+      script: '|||hcloud-route'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      destination:
+        simple: 10.100.1.0/24
+      gateway:
+        simple: 10.0.1.1
+      network:
+        simple: my-network
+      state: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 570,
+          "y": 1915
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "25":
+    id: "25"
+    taskid: 04a1179e-1efe-47d8-87e3-11b4c7a60d57
+    type: condition
+    task:
+      id: 04a1179e-1efe-47d8-87e3-11b4c7a60d57
+      version: -1
+      name: check hcloud-route
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "38"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Hcloud.HcloudRoute.[0].status
+            iscontext: true
+          right:
+            value:
+              simple: CHANGED
+    view: |-
+      {
+        "position": {
+          "x": 570,
+          "y": 2080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "26":
+    id: "26"
+    taskid: 6a521476-1d9c-4029-87a3-6bd24afd202c
+    type: regular
+    task:
+      id: 6a521476-1d9c-4029-87a3-6bd24afd202c
+      version: -1
+      name: hcloud-server
+      description: |-
+        Create and manage cloud servers on the Hetzner Cloud.
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/hcloud_server_module.html
+      script: '|||hcloud-server'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      backups: {}
+      datacenter: {}
+      force_upgrade: {}
+      id: {}
+      image:
+        simple: ubuntu-18.04
+      labels: {}
+      location: {}
+      name:
+        simple: my-server
+      rescue_mode: {}
+      server_type:
+        simple: cx11
+      ssh_keys: {}
+      state: {}
+      upgrade_disk: {}
+      user_data: {}
+      volumes: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "27":
+    id: "27"
+    taskid: 5d2c08cd-bc3a-4bc1-8dce-351043f2df08
+    type: condition
+    task:
+      id: 5d2c08cd-bc3a-4bc1-8dce-351043f2df08
+      version: -1
+      name: check hcloud-server
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "28"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Hcloud.HcloudServer.[0].status
+            iscontext: true
+          right:
+            value:
+              simple: CHANGED
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "28":
+    id: "28"
+    taskid: 77bff8e0-7189-481f-807a-2da96b1a40df
+    type: regular
+    task:
+      id: 77bff8e0-7189-481f-807a-2da96b1a40df
+      version: -1
+      name: hcloud-server-info
+      description: |-
+        Gather infos about your Hetzner Cloud servers.
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/hcloud_server_info_module.html
+      script: '|||hcloud-server-info'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      id: {}
+      label_selector: {}
+      name:
+        simple: my-server
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 1565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "29":
+    id: "29"
+    taskid: 259ed2b7-f5b2-461b-8814-e31cb8b950b0
+    type: condition
+    task:
+      id: 259ed2b7-f5b2-461b-8814-e31cb8b950b0
+      version: -1
+      name: 'check hcloud-server-info '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "30"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Hcloud.HcloudServerInfo.[0].status
+            iscontext: true
+          right:
+            value:
+              simple: running
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Hcloud.HcloudServerInfo.[0].[0]
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "30":
+    id: "30"
+    taskid: e40b13cb-d3c9-4aa7-847a-69877f50ccf2
+    type: regular
+    task:
+      id: e40b13cb-d3c9-4aa7-847a-69877f50ccf2
+      version: -1
+      name: hcloud-rdns
+      description: |-
+        Create and manage reverse DNS entries on the Hetzner Cloud.
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/hcloud_rdns_module.html
+      script: '|||hcloud-rdns'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      dns_ptr:
+        simple: example.com
+      ip_address:
+        simple: ${hcloud.hcloudServer.[0].ipv4_address}
+      server:
+        simple: my-server
+      state: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 1915
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "31":
+    id: "31"
+    taskid: 3613cf82-3189-42f5-8ebc-4d0ee2a885ee
+    type: condition
+    task:
+      id: 3613cf82-3189-42f5-8ebc-4d0ee2a885ee
+      version: -1
+      name: check hcloud-rdns
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "50"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Hcloud.HcloudRdns.[0].status
+            iscontext: true
+          right:
+            value:
+              simple: CHANGED
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 2090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "32":
+    id: "32"
+    taskid: 608e46e9-69ac-4639-886e-c7322c1bb896
+    type: regular
+    task:
+      id: 608e46e9-69ac-4639-886e-c7322c1bb896
+      version: -1
+      name: hcloud-server-network
+      description: |-
+        Manage the relationship between Hetzner Cloud Networks and servers
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/hcloud_server_network_module.html
+      script: '|||hcloud-server-network'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "45"
+    scriptarguments:
+      alias_ips: {}
+      ip: {}
+      network:
+        simple: my-network
+      server:
+        simple: my-server
+      state: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 2805
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "33":
+    id: "33"
+    taskid: 95a9cc82-82ae-4814-8911-f13e66996fc1
+    type: title
+    task:
+      id: 95a9cc82-82ae-4814-8911-f13e66996fc1
+      version: -1
+      name: SSH Key
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1580,
+          "y": 1090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "34":
+    id: "34"
+    taskid: 1b31b7b0-6924-4a54-8258-6c6b2a4cabe8
+    type: regular
+    task:
+      id: 1b31b7b0-6924-4a54-8258-6c6b2a4cabe8
+      version: -1
+      name: hcloud-ssh-key
+      description: |-
+        Create and manage ssh keys on the Hetzner Cloud.
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/hcloud_ssh_key_module.html
+      script: '|||hcloud-ssh-key'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      fingerprint: {}
+      id: {}
+      labels: {}
+      name:
+        simple: my-ssh-key
+      public_key:
+        simple: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDGZkpkqr1WI0IQ45oy0KdGyGFJMxeBvOg47kdFx8s5ie17GY4GMiFAIV8GISt24DD73USBGtaVhHQFSLW47A2/Vla6j3pd4Ny9hFZw9dNp5p0opX1Mk9/WW1dl7nKUbDqT6fJHwvwja2iYD7wcdWtcltmw0ahDNiHgXeuhqDiPkG36zZ9605MLDaM5Jwz23TDGDteIa+LvqQ9QU96j+XCLnj14w1O0DL4PR2tTGQvEe2P7VU7HOgkaT7Ypg/3qUpZRDziVvgyjBgltcm/WtbDbwmJmpIDikufYc/qCKFttu74uUXlGnkM/5zZWHe3y5eTDVTdVYKmuM6toD+VJZRSB1mBsEuMmQeg/IxFiedWSGVTjDyb4FCCKcJcMVNwdgH/rSQWR3WDcXHNeTUev/ehn2ztCsq7Jdd0GOuQskgHCwwoQFLXw/dvIDz3n+c5ug2d8ItxotujsJIJccnYI73UfcAubmYX/VYbrOjVZU3RKHZyoiQEH9O2lBV/xjZJQOJs=
+      state: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1585,
+          "y": 1260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "35":
+    id: "35"
+    taskid: 4029e898-e144-4c48-8127-9d02a00a37df
+    type: condition
+    task:
+      id: 4029e898-e144-4c48-8127-9d02a00a37df
+      version: -1
+      name: check hcloud-ssh-key
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "36"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Hcloud.HcloudSshKey.[0].status
+            iscontext: true
+          right:
+            value:
+              simple: CHANGED
+    view: |-
+      {
+        "position": {
+          "x": 1585,
+          "y": 1435
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "36":
+    id: "36"
+    taskid: fd3bd56b-cab3-4361-8b44-2d1b1162facd
+    type: regular
+    task:
+      id: fd3bd56b-cab3-4361-8b44-2d1b1162facd
+      version: -1
+      name: hcloud-ssh-key-info
+      description: |-
+        Gather infos about your Hetzner Cloud ssh_keys.
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/hcloud_ssh_key_info_module.html
+      script: '|||hcloud-ssh-key-info'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "37"
+    scriptarguments:
+      fingerprint: {}
+      id: {}
+      label_selector: {}
+      name: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1585,
+          "y": 1610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "37":
+    id: "37"
+    taskid: 59f14e23-4945-4771-8f3e-7fb2c88e171f
+    type: condition
+    task:
+      id: 59f14e23-4945-4771-8f3e-7fb2c88e171f
+      version: -1
+      name: check hcloud-ssh-key-info
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "53"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Hcloud.HcloudSshKeyInfo.[0].[0]
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1585,
+          "y": 1785
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "38":
+    id: "38"
+    taskid: 0f9115f4-483d-470f-8b89-4c46801611c4
+    type: regular
+    task:
+      id: 0f9115f4-483d-470f-8b89-4c46801611c4
+      version: -1
+      name: hcloud-subnetwork
+      description: |-
+        Manage cloud subnetworks on the Hetzner Cloud.
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/hcloud_subnetwork_module.html
+      script: '|||hcloud-subnetwork'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "39"
+    scriptarguments:
+      ip_range:
+        simple: 10.0.0.0/16
+      network:
+        simple: my-network
+      network_zone:
+        simple: eu-central
+      state: {}
+      type:
+        simple: server
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 570,
+          "y": 2250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "39":
+    id: "39"
+    taskid: 176e97c8-1518-4831-8f67-a85c591f3c0b
+    type: condition
+    task:
+      id: 176e97c8-1518-4831-8f67-a85c591f3c0b
+      version: -1
+      name: check hcloud-subnetwork
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "50"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Hcloud.HcloudSubnetwork.[0].status
+            iscontext: true
+          right:
+            value:
+              simple: CHANGED
+    view: |-
+      {
+        "position": {
+          "x": 570,
+          "y": 2415
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "40":
+    id: "40"
+    taskid: 40d3aadf-89f7-4c52-8678-b4b7b4242b09
+    type: title
+    task:
+      id: 40d3aadf-89f7-4c52-8678-b4b7b4242b09
+      version: -1
+      name: Volume
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "41"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2080,
+          "y": 1090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "41":
+    id: "41"
+    taskid: fd553e10-eb97-4aa2-818f-7c327f779f34
+    type: regular
+    task:
+      id: fd553e10-eb97-4aa2-818f-7c327f779f34
+      version: -1
+      name: hcloud-volume
+      description: |-
+        Create and manage block volumes on the Hetzner Cloud.
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/hcloud_volume_module.html
+      script: '|||hcloud-volume'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "42"
+    scriptarguments:
+      automount: {}
+      format: {}
+      id: {}
+      labels: {}
+      location:
+        simple: fsn1
+      name:
+        simple: my-volume
+      server: {}
+      size:
+        simple: "100"
+      state: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2080,
+          "y": 1270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "42":
+    id: "42"
+    taskid: 03239807-929c-436f-885c-8f9cc5c3b25f
+    type: condition
+    task:
+      id: 03239807-929c-436f-885c-8f9cc5c3b25f
+      version: -1
+      name: check hcloud-volume
+      description: |-
+        Create and manage block volumes on the Hetzner Cloud.
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/hcloud_volume_module.html
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "43"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Hcloud.HcloudVolume.[0].status
+            iscontext: true
+          right:
+            value:
+              simple: CHANGED
+    view: |-
+      {
+        "position": {
+          "x": 2080,
+          "y": 1445
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "43":
+    id: "43"
+    taskid: 12c1522e-d610-48a1-8647-7969d83f2768
+    type: regular
+    task:
+      id: 12c1522e-d610-48a1-8647-7969d83f2768
+      version: -1
+      name: 'hcloud-volume-info '
+      description: |-
+        Gather infos about your Hetzner Cloud volumes.
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/hcloud_volume_info_module.html
+      script: '|||hcloud-volume-info'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "44"
+    scriptarguments:
+      id: {}
+      label_selector: {}
+      name: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2080,
+          "y": 1620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "44":
+    id: "44"
+    taskid: 22b5a4e5-1f13-41bf-825e-772de396e0da
+    type: condition
+    task:
+      id: 22b5a4e5-1f13-41bf-825e-772de396e0da
+      version: -1
+      name: 'check hcloud-volume-info '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "53"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Hcloud.HcloudVolumeInfo.[0].[0]
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 2080,
+          "y": 1795
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "45":
+    id: "45"
+    taskid: 8486e234-e20f-4363-84f7-90acaf8a2068
+    type: condition
+    task:
+      id: 8486e234-e20f-4363-84f7-90acaf8a2068
+      version: -1
+      name: check hcloud-server-network
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "53"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Hcloud.HcloudServerNetwork.[0].status
+            iscontext: true
+          right:
+            value:
+              simple: CHANGED
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 2980
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "50":
+    id: "50"
+    taskid: 65bcb33e-617d-451e-82e5-0436d2472453
+    type: title
+    task:
+      id: 65bcb33e-617d-451e-82e5-0436d2472453
+      version: -1
+      name: Server+Networking
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "32"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 2605
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "52":
+    id: "52"
+    taskid: 5523f5ca-c51b-4b4f-8f03-6c2037dafe43
+    type: regular
+    task:
+      id: 5523f5ca-c51b-4b4f-8f03-6c2037dafe43
+      version: -1
+      name: hcloud-server (absent)
+      description: |-
+        Create and manage cloud servers on the Hetzner Cloud.
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/hcloud_server_module.html
+      script: '|||hcloud-server'
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      backups: {}
+      datacenter: {}
+      force_upgrade: {}
+      id: {}
+      image:
+        simple: ubuntu-18.04
+      labels: {}
+      location: {}
+      name:
+        simple: my-server
+      rescue_mode: {}
+      server_type:
+        simple: cx11
+      ssh_keys: {}
+      state:
+        simple: absent
+      upgrade_disk: {}
+      user_data: {}
+      volumes: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1495,
+          "y": 3880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "53":
+    id: "53"
+    taskid: 2509db65-455d-4c9c-8e7f-a2321da4ef16
+    type: title
+    task:
+      id: 2509db65-455d-4c9c-8e7f-a2321da4ef16
+      version: -1
+      name: Cleanup
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "55"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1495,
+          "y": 3195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "54":
+    id: "54"
+    taskid: 8f171817-6f68-45b7-8f28-b253af618878
+    type: title
+    task:
+      id: 8f171817-6f68-45b7-8f28-b253af618878
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3155
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "55":
+    id: "55"
+    taskid: 993b3d4d-cc3f-424e-8701-bd9059dda64a
+    type: regular
+    task:
+      id: 993b3d4d-cc3f-424e-8701-bd9059dda64a
+      version: -1
+      name: hcloud-ssh-key (absent)
+      description: |-
+        Create and manage ssh keys on the Hetzner Cloud.
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/hcloud_ssh_key_module.html
+      script: '|||hcloud-ssh-key'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "56"
+    scriptarguments:
+      fingerprint: {}
+      id: {}
+      labels: {}
+      name:
+        simple: my-ssh-key
+      public_key:
+        simple: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDGZkpkqr1WI0IQ45oy0KdGyGFJMxeBvOg47kdFx8s5ie17GY4GMiFAIV8GISt24DD73USBGtaVhHQFSLW47A2/Vla6j3pd4Ny9hFZw9dNp5p0opX1Mk9/WW1dl7nKUbDqT6fJHwvwja2iYD7wcdWtcltmw0ahDNiHgXeuhqDiPkG36zZ9605MLDaM5Jwz23TDGDteIa+LvqQ9QU96j+XCLnj14w1O0DL4PR2tTGQvEe2P7VU7HOgkaT7Ypg/3qUpZRDziVvgyjBgltcm/WtbDbwmJmpIDikufYc/qCKFttu74uUXlGnkM/5zZWHe3y5eTDVTdVYKmuM6toD+VJZRSB1mBsEuMmQeg/IxFiedWSGVTjDyb4FCCKcJcMVNwdgH/rSQWR3WDcXHNeTUev/ehn2ztCsq7Jdd0GOuQskgHCwwoQFLXw/dvIDz3n+c5ug2d8ItxotujsJIJccnYI73UfcAubmYX/VYbrOjVZU3RKHZyoiQEH9O2lBV/xjZJQOJs=
+      state:
+        simple: absent
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1495,
+          "y": 3355
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "56":
+    id: "56"
+    taskid: 9d808bda-bd07-4e8d-8fac-89f2c618de5e
+    type: regular
+    task:
+      id: 9d808bda-bd07-4e8d-8fac-89f2c618de5e
+      version: -1
+      name: hcloud-volume (absent)
+      description: |-
+        Create and manage block volumes on the Hetzner Cloud.
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/hcloud_volume_module.html
+      script: '|||hcloud-volume'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "57"
+    scriptarguments:
+      automount: {}
+      format: {}
+      id: {}
+      labels: {}
+      location:
+        simple: fsn1
+      name:
+        simple: my-volume
+      server: {}
+      size:
+        simple: "100"
+      state:
+        simple: absent
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1495,
+          "y": 3530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "57":
+    id: "57"
+    taskid: 554c0a12-333e-4548-8d0a-84886487ca6e
+    type: regular
+    task:
+      id: 554c0a12-333e-4548-8d0a-84886487ca6e
+      version: -1
+      name: hcloud-network (absent)
+      description: |-
+        Create and manage cloud Networks on the Hetzner Cloud.
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/hcloud_network_module.html
+      script: '|||hcloud-network'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "52"
+    scriptarguments:
+      id: {}
+      ip_range:
+        simple: 10.0.0.0/8
+      labels: {}
+      name:
+        simple: my-network
+      state:
+        simple: absent
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1495,
+          "y": 3695
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "58":
+    id: "58"
+    taskid: 23a6ae85-fd7e-4ef8-8428-d380bcbd2eb8
+    type: regular
+    task:
+      id: 23a6ae85-fd7e-4ef8-8428-d380bcbd2eb8
+      version: -1
+      name: hcloud-server (absent)
+      description: |-
+        Create and manage cloud servers on the Hetzner Cloud.
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/hcloud_server_module.html
+      script: '|||hcloud-server'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "59"
+    scriptarguments:
+      backups: {}
+      datacenter: {}
+      force_upgrade: {}
+      id: {}
+      image:
+        simple: ubuntu-18.04
+      labels: {}
+      location: {}
+      name:
+        simple: my-server
+      rescue_mode: {}
+      server_type:
+        simple: cx11
+      ssh_keys: {}
+      state:
+        simple: absent
+      upgrade_disk: {}
+      user_data: {}
+      volumes: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "59":
+    id: "59"
+    taskid: 6fd60091-340d-456b-8147-6fa7eb61ce27
+    type: regular
+    task:
+      id: 6fd60091-340d-456b-8147-6fa7eb61ce27
+      version: -1
+      name: hcloud-ssh-key (absent)
+      description: |-
+        Create and manage ssh keys on the Hetzner Cloud.
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/hcloud_ssh_key_module.html
+      script: '|||hcloud-ssh-key'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "60"
+    scriptarguments:
+      fingerprint: {}
+      id: {}
+      labels: {}
+      name:
+        simple: my-ssh-key
+      public_key:
+        simple: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDGZkpkqr1WI0IQ45oy0KdGyGFJMxeBvOg47kdFx8s5ie17GY4GMiFAIV8GISt24DD73USBGtaVhHQFSLW47A2/Vla6j3pd4Ny9hFZw9dNp5p0opX1Mk9/WW1dl7nKUbDqT6fJHwvwja2iYD7wcdWtcltmw0ahDNiHgXeuhqDiPkG36zZ9605MLDaM5Jwz23TDGDteIa+LvqQ9QU96j+XCLnj14w1O0DL4PR2tTGQvEe2P7VU7HOgkaT7Ypg/3qUpZRDziVvgyjBgltcm/WtbDbwmJmpIDikufYc/qCKFttu74uUXlGnkM/5zZWHe3y5eTDVTdVYKmuM6toD+VJZRSB1mBsEuMmQeg/IxFiedWSGVTjDyb4FCCKcJcMVNwdgH/rSQWR3WDcXHNeTUev/ehn2ztCsq7Jdd0GOuQskgHCwwoQFLXw/dvIDz3n+c5ug2d8ItxotujsJIJccnYI73UfcAubmYX/VYbrOjVZU3RKHZyoiQEH9O2lBV/xjZJQOJs=
+      state:
+        simple: absent
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "60":
+    id: "60"
+    taskid: 6870c3db-772b-4429-88e6-0e09d834576c
+    type: regular
+    task:
+      id: 6870c3db-772b-4429-88e6-0e09d834576c
+      version: -1
+      name: hcloud-volume (absent)
+      description: |-
+        Create and manage block volumes on the Hetzner Cloud.
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/hcloud_volume_module.html
+      script: '|||hcloud-volume'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      automount: {}
+      format: {}
+      id: {}
+      labels: {}
+      location:
+        simple: fsn1
+      name:
+        simple: my-volume
+      server: {}
+      size:
+        simple: "100"
+      state:
+        simple: absent
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "61":
+    id: "61"
+    taskid: 98343abb-00dd-46a0-86c3-49024c8b9419
+    type: regular
+    task:
+      id: 98343abb-00dd-46a0-86c3-49024c8b9419
+      version: -1
+      name: hcloud-network (absent)
+      description: |-
+        Create and manage cloud Networks on the Hetzner Cloud.
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/hcloud_network_module.html
+      script: '|||hcloud-network'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "58"
+    scriptarguments:
+      id: {}
+      ip_range:
+        simple: 10.0.0.0/8
+      labels: {}
+      name:
+        simple: my-network
+      state:
+        simple: absent
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 3925,
+        "width": 2410,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+sourceplaybookid: a60ae34e-7a00-4a06-81ca-2ca6ea1d58ba
+fromversion: 6.0.0

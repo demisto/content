@@ -851,14 +851,14 @@ script:
     - contextPath: GoogleVault.Matter.Export.Results.To
       description: The address the message was sent to
       type: string
-  dockerimage: demisto/gvault:1.0.0.18527
+  dockerimage: demisto/gvault:1.0.0.24033
   feed: false
   isfetch: false
   longRunning: false
   longRunningPort: false
   runonce: false
   script: '-'
-  subtype: python3
+  subtype: python2
   type: python
 tests:
 - Google-Vault-Generic-Test

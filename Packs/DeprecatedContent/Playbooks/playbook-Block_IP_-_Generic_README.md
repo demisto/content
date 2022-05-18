@@ -27,7 +27,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 | **Name** | **Description** | **Required** |
 | --- | --- | --- |
-| IPBlacklistMiner | The name of the IP address blacklist Miner in Minemeld. | Optional |
+| IPBlacklistMiner | The name of the IP address block list Miner in Minemeld. | Optional |
 | IP | The array of malicious IP addresses to block. | Optional |
 
 ## Playbook Outputs

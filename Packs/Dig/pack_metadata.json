@@ -2,7 +2,7 @@
     "name": "Dig",
     "description": "Run Dig automation to get 'A' and 'PTR' records.",
     "support": "community",
-    "currentVersion": "1.0.0",
+    "currentVersion": "1.1.0",
     "author": "Anil Agrawal",
     "url": "",
     "email": "",
@@ -13,5 +13,9 @@
     "keywords": [],
     "githubUser": [
         "anilagr"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
     ]
 }

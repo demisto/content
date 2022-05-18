@@ -1,0 +1,30 @@
+commonfields:
+  id: IsGreaterThan
+  version: -1
+name: IsGreaterThan
+script: ''
+type: javascript
+tags:
+- Utility
+- Condition
+comment: |-
+  Checks if one number(float) as bigger than the other(float)
+  Returns yes: if first > second
+  Returns no: if first <= second
+  Returns exception if one of the inputs is not a number
+enabled: true
+args:
+- name: first
+  description: First argument to compare.
+  required: true
+  default: true
+- name: second
+  description: Second argument to compare.
+  required: true
+outputs:
+- contextPath: "yes"
+  description: if first > second
+- contextPath: "no"
+  description: if first <= second
+scripttarget: 0
+fromversion: 5.0.0

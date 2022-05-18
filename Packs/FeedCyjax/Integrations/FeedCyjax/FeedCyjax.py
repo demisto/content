@@ -262,6 +262,7 @@ def convert_cyjax_indicator(cyjax_indicator: dict, score: Optional[int] = None, 
         tags = []
 
     indicator_date = dateparser.parse(cyjax_indicator['discovered_at'])
+    assert indicator_date is not None
 
     indicator = {
         'value': cyjax_indicator['value'],
@@ -279,7 +280,7 @@ def convert_cyjax_indicator(cyjax_indicator: dict, score: Optional[int] = None, 
         fields['trafficlightprotocol'] = tlp
 
     if tags:
-        fields['tags'] = tags
+        fields['tags'] = tags  # type: ignore
 
     if 'description' in cyjax_indicator:
         fields['description'] = cyjax_indicator['description']
@@ -368,6 +369,7 @@ def fetch_indicators_command(client: Client, last_fetch_date: datetime, reputati
 
     for cyjax_indicator in cyjax_indicators:
         indicator_date = dateparser.parse(cyjax_indicator.get('discovered_at'))
+        assert indicator_date is not None
         indicator_timestamp = int(indicator_date.timestamp())
 
         indicators.append(convert_cyjax_indicator(cyjax_indicator, indicators_score, tlp, tags))

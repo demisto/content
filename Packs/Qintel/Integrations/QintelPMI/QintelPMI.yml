@@ -1,0 +1,80 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: QintelPMI
+  version: -1
+configuration:
+- display: PMI API URL (optional)
+  name: remote
+  required: false
+  type: 0
+- display: Qintel Credentials
+  name: credentials
+  required: true
+  type: 9
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: 'Qintel’s Patch Management Intelligence (PMI) product simplifies the
+  vulnerability management process by providing vital context around reported Common
+  Vulnerabilities and Exposures. With this integration, users can query PMI to surface
+  CVEs that are known by Qintel to be leveraged by eCrime and Nation State adversaries.'
+display: Qintel PMI
+name: QintelPMI
+script:
+  commands:
+  - arguments:
+    - default: true
+      description: List of CVEs.
+      isArray: true
+      name: cve
+      required: true
+      secret: false
+    deprecated: false
+    description: Queries Qintel for CVE intelligence
+    execution: false
+    name: cve
+    outputs:
+    - contextPath: CVE.ID
+      description: 'The ID of the CVE, for example: CVE-2015-1653'
+      type: String
+    - contextPath: CVE.CVSS
+      description: 'The CVSS of the CVE, for example: 10.0'
+      type: String
+    - contextPath: CVE.Published
+      description: The timestamp of when the CVE was published.
+      type: Date
+    - contextPath: CVE.Modified
+      description: The timestamp of when the CVE was last modified.
+      type: Date
+    - contextPath: CVE.Description
+      description: A description of the CVE.
+      type: String
+    - contextPath: Qintel.CVE.ID
+      description: The ID of the CVE
+      type: string
+    - contextPath: Qintel.CVE.AffectedSystem
+      description: Systems affected by the CVE
+      type: string
+    - contextPath: Qintel.CVE.AffectedVersions
+      description: Systems affected by the CVE
+      type: string
+    - contextPath: Qintel.CVE.LastObserved
+      description: Last threat actor observation time
+      type: string
+    - contextPath: Qintel.CVE.Observations
+      description: List of observations
+      type: array
+  isfetch: false
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.9.8.24399
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

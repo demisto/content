@@ -1,0 +1,89 @@
+commonfields:
+  id: GoogleSafeBrowsing
+  version: -1
+name: GoogleSafeBrowsing
+display: Google Safe Browsing (Deprecated)
+category: Data Enrichment & Threat Intelligence
+description: Deprecated. Use Google Safe Browsing v2 instead.
+deprecated: true
+configuration:
+- display: API Key
+  name: apiKey
+  defaultvalue: ""
+  type: 4
+  required: true
+- display: Client ID
+  name: clientId
+  defaultvalue: Demisto
+  type: 0
+  required: true
+- display: Client Version
+  name: clientVer
+  defaultvalue: "1.0"
+  type: 0
+  required: true
+- display: Base URL
+  name: url
+  defaultvalue: https://safebrowsing.googleapis.com/v4/threatMatches:find
+  type: 0
+  required: true
+- additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: B - Usually reliable
+  display: Source Reliability
+  name: integrationReliability
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: true
+  type: 15
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  defaultvalue: ""
+  type: 8
+  required: false
+script:
+  script: ''
+  type: javascript
+  commands:
+  - name: url
+    arguments:
+    - name: url
+      required: true
+      default: true
+      description: URL to check
+    outputs:
+    - contextPath: URL.Data
+      description: Bad URLs found
+    - contextPath: URL.Malicious.Vendor
+      description: For malicious URLs, the vendor that made the decision
+    - contextPath: URL.Malicious.Description
+      description: For malicious URLs, the reason for the vendor to make the decision
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
+    description: Check URL Reputation
+hidden: false
+system: true
+fromversion: 5.0.0

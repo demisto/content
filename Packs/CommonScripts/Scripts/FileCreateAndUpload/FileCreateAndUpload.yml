@@ -1,0 +1,22 @@
+commonfields:
+  id: FileCreateAndUpload
+  version: -1
+name: FileCreateAndUpload
+script: ''
+type: javascript
+tags:
+- Utility
+comment: |
+  Will create a file (using the given data input or entry ID) and upload it to current investigation war room.
+enabled: true
+args:
+- name: filename
+  default: true
+  required: true
+  description: The name of the file to be created.
+- name: data
+  description: Input data to write to file.
+- name: entryId
+  description: Entry ID contents to write into file.
+scripttarget: 0
+fromversion: 5.0.0

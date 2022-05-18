@@ -1,0 +1,15 @@
+commonfields:
+  id: ActiveUsersD2
+  version: -1
+name: ActiveUsersD2
+script: ''
+type: javascript
+tags:
+- endpoint
+- agent
+comment: Get active users from a D2 agent and parsed them into context
+system: true
+scripttarget: 0
+tests:
+- No test
+fromversion: 5.0.0

@@ -1,0 +1,89 @@
+[
+  {
+    "id": "fin7",
+    "title": "FIN7",
+    "link": "https://community.pt.com/intel-profiles/fin7",
+    "osintIndicatorsCount": 1842,
+    "riskIqIndicatorsCount": 229,
+    "indicators": "https://api.pt.net/pt/v2/intel-profiles/fin7/indicators",
+    "aliases": [
+      "Anurak",
+      "Carbanak",
+      "CarbonSpider",
+      "Navigator Group",
+      "Gold Niagra"
+    ],
+    "tags": [
+      {
+        "label": "Crime",
+        "countryCode": "us"
+      },
+      {
+        "label": "Espionage"
+      },
+      {
+        "label": "Windows"
+      },
+      {
+        "label": "Linux"
+      },
+      {
+        "label": "Mac"
+      },
+      {
+        "label": "Point of Sale"
+      },
+      {
+        "label": "Financial"
+      },
+      {
+        "label": "Telecommunications"
+      },
+      {
+        "label": "Restaurant"
+      },
+      {
+        "label": "Retail"
+      },
+      {
+        "label": "Hospitality"
+      },
+      {
+        "label": "Transportation"
+      },
+      {
+        "label": "Electronics"
+      },
+      {
+        "label": "Education"
+      },
+      {
+        "label": "IT Services"
+      },
+      {
+        "label": "Casino/Gaming"
+      },
+      {
+        "label": "Marketing/PR"
+      },
+      {
+        "label": "Agriculture"
+      },
+      {
+        "label": "Biotechnology"
+      },
+      {
+        "label": "Logistics"
+      },
+      {
+        "label": "Utilities"
+      },
+      {
+        "label": "Government"
+      },
+      {
+        "label": "Global"
+      }
+    ]
+  }
+]

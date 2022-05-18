@@ -1,0 +1,30 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "iDSAR"
+    ],
+    "caseInsensitive": true,
+    "cliName": "inventadsarinventaticket",
+    "closeForm": false,
+    "content": true,
+    "description": "ID of a DSAR ticket within Inventa",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_inventadsarinventaticket",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Inventa DSAR Inventa Ticket",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

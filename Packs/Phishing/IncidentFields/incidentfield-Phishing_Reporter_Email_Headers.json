@@ -1,0 +1,45 @@
+{
+    "id": "incident_phishingreporteremailheaders",
+    "version": -1,
+    "modified": "2021-09-22T22:00:56.93721224Z",
+    "name": "Phishing Reporter Email Headers",
+    "ownerOnly": false,
+    "cliName": "phishingreporteremailheaders",
+    "type": "grid",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Phishing"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "columns": [
+        {
+            "key": "headername",
+            "displayName": "headername",
+            "type": "shortText",
+            "required": false,
+            "script": "",
+            "width": 150,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        }
+    ],
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.0.0"
+}

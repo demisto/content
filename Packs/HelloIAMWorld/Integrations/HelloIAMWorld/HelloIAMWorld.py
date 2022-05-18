@@ -3,9 +3,9 @@ from CommonServerPython import *
 from IAMApiModule import *
 import traceback
 import urllib3
+
 # Disable insecure warnings
 urllib3.disable_warnings()
-
 
 ERROR_CODES_TO_SKIP = [
     404
@@ -20,21 +20,24 @@ class Client(BaseClient):
     def test(self):
         """ Tests connectivity with the application. """
 
-        uri = '/test'                                 # TODO: replace to a valid test API endpoint
+        uri = '/test'  # TODO: replace to a valid test API endpoint
         self._http_request(method='GET', url_suffix=uri)
 
-    def get_user(self, email: str) -> Optional[IAMUserAppData]:
+    def get_user(self, filter_name: str, filter_value: str) -> Optional[IAMUserAppData]:
         """ Queries the user in the application using REST API by its email, and returns an IAMUserAppData object
         that holds the user_id, username, is_active and app_data attributes given in the query response.
 
-        :type email: ``str``
-        :param email: Email address of the user
+        :type filter_name: ``str``
+        :param filter_name: Filter name to filter the needed user by. E.g, 'email', 'username'.
+
+        :type filter_value: ``str``
+        :param filter_value: Value of the filter.
 
         :return: An IAMUserAppData object if user exists, None otherwise.
         :rtype: ``Optional[IAMUserAppData]``
         """
-        uri = '/users'                               # TODO: replace to the correct GET User API endpoint
-        query_params = {'email': email}              # TODO: make sure you pass the correct query parameters
+        uri = '/users'  # TODO: replace to the correct GET User API endpoint
+        query_params = {filter_name: filter_value}  # TODO: make sure you pass the correct query parameters
 
         res = self._http_request(
             method='GET',
@@ -43,7 +46,7 @@ class Client(BaseClient):
         )
 
         if res and len(res.get('result', [])) == 1:  # TODO: make sure you verify a single result was retrieved
-            user_app_data = res.get('result')[0]     # TODO: get the user_id, username, is_active and user_app_data
+            user_app_data = res.get('result')[0]  # TODO: get the user_id, username, is_active and user_app_data
 
             user_id = user_app_data.get('user_id')
             is_active = user_app_data.get('active')
@@ -61,13 +64,13 @@ class Client(BaseClient):
         :return: An IAMUserAppData object that contains the data of the created user in the application.
         :rtype: ``IAMUserAppData``
         """
-        uri = '/users'                              # TODO: replace to the correct CREATE User API endpoint
+        uri = '/users'  # TODO: replace to the correct CREATE User API endpoint
         res = self._http_request(
             method='POST',
             url_suffix=uri,
             json_data=user_data
         )
-        user_app_data = res.get('result')           # TODO: get the user_id, username, is_active and user_app_data
+        user_app_data = res.get('result')  # TODO: get the user_id, username, is_active and user_app_data
         user_id = user_app_data.get('user_id')
         is_active = user_app_data.get('active')
         username = user_app_data.get('user_name')
@@ -86,7 +89,7 @@ class Client(BaseClient):
         :return: An IAMUserAppData object that contains the data of the updated user in the application.
         :rtype: ``IAMUserAppData``
         """
-        uri = f'/users/{user_id}'                   # TODO: replace to the correct UPDATE User API endpoint
+        uri = f'/users/{user_id}'  # TODO: replace to the correct UPDATE User API endpoint
         res = self._http_request(
             method='PATCH',
             url_suffix=uri,
@@ -113,7 +116,7 @@ class Client(BaseClient):
         # In this example, we use the same endpoint as in update_user() method,
         # But other APIs might have a unique endpoint for this request.
 
-        user_data = {'active': True}                # TODO: make sure you pass the correct query parameters
+        user_data = {'active': True}  # TODO: make sure you pass the correct query parameters
         return self.update_user(user_id, user_data)
 
     def disable_user(self, user_id: str) -> IAMUserAppData:
@@ -129,7 +132,7 @@ class Client(BaseClient):
         # In this example, we use the same endpoint as in update_user() method,
         # But other APIs might have a unique endpoint for this request.
 
-        user_data = {'active': False}               # TODO: make sure you pass the correct query parameters
+        user_data = {'active': False}  # TODO: make sure you pass the correct query parameters
         return self.update_user(user_id, user_data)
 
     def get_app_fields(self) -> Dict[str, Any]:
@@ -139,7 +142,7 @@ class Client(BaseClient):
         :rtype: ``Dict[str, str]``
         """
 
-        uri = '/schema'                             # TODO: replace to the correct GET Schema API endpoint
+        uri = '/schema'  # TODO: replace to the correct GET Schema API endpoint
         res = self._http_request(
             method='GET',
             url_suffix=uri
@@ -212,7 +215,7 @@ def get_error_details(res: Dict[str, Any]) -> str:
     :return: The parsed error details.
     :rtype: ``str``
     """
-    message = res.get('error', {}).get('message')   # TODO: make sure you parse the error details correctly
+    message = res.get('error', {}).get('message')  # TODO: make sure you parse the error details correctly
     details = res.get('error', {}).get('detail')
     return f'{message}: {details}'
 
@@ -262,7 +265,9 @@ def main():
     create_if_not_exists = params.get("create_if_not_exists")
 
     iam_command = IAMCommand(is_create_enabled, is_enable_enabled, is_disable_enabled, is_update_enabled,
-                             create_if_not_exists, mapper_in, mapper_out)
+                             create_if_not_exists, mapper_in, mapper_out,
+                             get_user_iam_attrs=['id', 'username',
+                                                 'email'])  # TODO: fill here the app attributes to search users by
 
     headers = {
         'Content-Type': 'application/json',

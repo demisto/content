@@ -1,0 +1,22 @@
+[
+  {
+    "IncidentId": "test_incident_id",
+    "ID": "test_entity_name_1",
+    "Kind": "Account",
+    "Properties": {
+      "accountName": "test_1",
+      "displayName": "Test User 1",
+      "friendlyName": "Test User 1"
+    }
+  },
+  {
+    "IncidentId": "test_incident_id",
+    "ID": "test_entity_name_2",
+    "Kind": "Account",
+    "Properties": {
+      "accountName": "test_2",
+      "displayName": "Test User 2",
+      "friendlyName": "Test User 2"
+    }
+  }
+]

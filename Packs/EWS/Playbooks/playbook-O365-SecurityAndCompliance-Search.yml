@@ -7,81 +7,93 @@ description: |-
   5. Gets the preview results, if specified.
 id: O365 - Security And Compliance - Search
 inputs:
-- description: The name of the compliance search.
-  key: search_name
-  playbookInputQuery:
-  required: false
+- key: search_name
   value: {}
-- description: 'If false, use the existing search without modifying any search parameters.
+  required: false
+  description: The name of the compliance search.
+  playbookInputQuery:
+- key: force
+  value:
+    simple: "false"
+  required: true
+  description: 'If false, use the existing search without modifying any search parameters.
     If true, overwrite the existing search. Possible values are: "true" and "false".'
-  key: force
   playbookInputQuery:
-  required: true
+- key: preview
   value:
     simple: "false"
-- description: 'Whether to preview results using the search action. Possible values
+  required: true
+  description: 'Whether to preview results using the search action. Possible values
     are: "true" and "false".'
-  key: preview
   playbookInputQuery:
-  required: true
-  value:
-    simple: "false"
-- description: The name of a Core eDiscovery case to associate with the new compliance
+- key: case
+  value: {}
+  required: false
+  description: The name of a Core eDiscovery case to associate with the new compliance
     search.
-  key: case
   playbookInputQuery:
-  required: false
+- key: kql
   value: {}
-- description: Text search string or a query that is formatted using the Keyword Query
+  required: false
+  description: Text search string or a query that is formatted using the Keyword Query
     Language (KQL).
-  key: kql
   playbookInputQuery:
-  required: false
+- key: description
   value: {}
-- description: Description of the compliance search.
-  key: description
-  playbookInputQuery:
   required: false
-  value: {}
-- description: 'Whether to include mailboxes other than regular user mailboxes in
-    the compliance search. Possible values are: "true" and "false".'
-  key: allow_not_found_exchange_locations
+  description: Description of the compliance search.
   playbookInputQuery:
-  required: false
+- key: allow_not_found_exchange_locations
   value:
     simple: "true"
-- description: Comma-separated list of mailboxes/distribution groups to include, or
-    use the value "All" to include all.
-  key: exchange_location
+  required: false
+  description: 'Whether to include mailboxes other than regular user mailboxes in
+    the compliance search. Possible values are: "true" and "false".'
   playbookInputQuery:
-  required: true
+- key: exchange_location
   value:
     simple: All
-- description: Comma-separated list of mailboxes/distribution groups to exclude when
+  required: true
+  description: Comma-separated list of mailboxes/distribution groups to include, or
+    use the value "All" to include all.
+  playbookInputQuery:
+- key: ' exchange_location_exclusion'
+  value: {}
+  required: false
+  description: Comma-separated list of mailboxes/distribution groups to exclude when
     you use the value "All" for the exchange_location parameter.
-  key: ' exchange_location_exclusion'
   playbookInputQuery:
-  required: false
+- key: public_folder_location
   value: {}
-- description: Comma-separated list of public folders to include, or use the value
+  required: false
+  description: Comma-separated list of public folders to include, or use the value
     "All" to include all.
-  key: public_folder_location
   playbookInputQuery:
-  required: false
+- key: share_point_location
   value: {}
-- description: Comma-separated list of SharePoint online sites to include. You can
+  required: false
+  description: Comma-separated list of SharePoint online sites to include. You can
     identify the sites by their URL value, or use the value "All" to include all sites.
-  key: share_point_location
   playbookInputQuery:
-  required: false
+- key: share_point_location_exclusion
   value: {}
-- description: Comma-separated list of SharePoint online sites to exclude when you
+  required: false
+  description: Comma-separated list of SharePoint online sites to exclude when you
     use the value "All" for the share_point_location argument. You can identify the
     sites by their URL value.
-  key: share_point_location_exclusion
   playbookInputQuery:
+- key: polling_interval
+  value:
+    simple: "3"
   required: false
-  value: {}
+  description: Compliance search polling interval
+  playbookInputQuery:
+- key: polling_timeout
+  value:
+    simple: "45"
+  required: false
+  description: Compliance search polling timeout.
+  playbookInputQuery:
 name: O365 - Security And Compliance - Search
 outputs:
 - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.AllowNotFoundExchangeLocationsEnabled
@@ -280,7 +292,6 @@ outputs:
 - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.TenantId
   description: Security and compliance search action Tenant ID.
   type: String
-sourceplaybookid: O365 - Security And Compliance - Search Start
 starttaskid: "0"
 tasks:
   "0":
@@ -293,7 +304,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ""
+      description: ''
     nexttasks:
       '#none#':
       - "17"
@@ -312,10 +323,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: 773d2beb-d212-48b7-8f46-81ac7b5a7dd8
+    taskid: 3571cba9-c9d6-4d8c-875a-a5b9186d45e1
     type: playbook
     task:
-      id: 773d2beb-d212-48b7-8f46-81ac7b5a7dd8
+      id: 3571cba9-c9d6-4d8c-875a-a5b9186d45e1
       version: -1
       name: Waiting for the compliance search to complete.
       description: |-
@@ -339,13 +350,13 @@ tasks:
           root: O365.SecurityAndCompliance.ContentSearch.Search
           accessor: Name
       Interval:
-        simple: "1"
+        simple: ${inputs.polling_interval}
       PollingCommandArgName:
         simple: search_name
       PollingCommandName:
         simple: o365-sc-get-search
       Timeout:
-        simple: "10"
+        simple: ${inputs.polling_timeout}
       dt:
         simple: O365.SecurityAndCompliance.ContentSearch.Search(val.Status && val.Status
           == "InProgress" || val.Status == "Starting").Name
@@ -358,7 +369,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 250,
+          "x": 242.5,
           "y": 1825
         }
       }
