@@ -9,6 +9,7 @@ import re
 import zipfile
 from StringIO import StringIO
 from datetime import datetime, timedelta
+
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
@@ -47,7 +48,7 @@ SCOPE_OPTICS_GET = 'opticssurvey:read'  # Read a InstaQuery
 
 
 # PREREQUISITES
-def load_server_url():   # pragma: no cover
+def load_server_url():  # pragma: no cover
     """ Cleans and loads the server url from the configuration """
     url = demisto.params()['server']
     url = re.sub('/[\/]+$/', '', url)
@@ -65,7 +66,7 @@ USE_SSL = False
 
 
 # HELPERS
-def generate_jwt_times():   # pragma: no cover
+def generate_jwt_times():  # pragma: no cover
     """
     Generates the epoch time window in which the token will be valid
     Returns the current timestamp and the timeout timestamp (in that order)
@@ -77,7 +78,7 @@ def generate_jwt_times():   # pragma: no cover
     return epoch_time, epoch_timeout
 
 
-def api_call(uri, method='post', headers={}, body={}, params={}, accept_404=False, access_token=''):   # pragma: no cover
+def api_call(uri, method='post', headers={}, body={}, params={}, accept_404=False, access_token=''):  # pragma: no cover
 
     """
     Makes an API call to the server URL with the supplied uri, method, headers, body and params
@@ -151,14 +152,14 @@ def threat_to_incident(threat):
     return incident
 
 
-def normalize_score(score):   # pragma: no cover
+def normalize_score(score):  # pragma: no cover
     """
     Translates API raw float (-1 to 1) score to UI score (-100 to 100)
     """
     return score * 100
 
 
-def translate_score(score, threshold):   # pragma: no cover
+def translate_score(score, threshold):  # pragma: no cover
     if score > 0:
         dbot_score = 1
     elif threshold <= score:
@@ -169,7 +170,7 @@ def translate_score(score, threshold):   # pragma: no cover
 
 
 # FUNCTIONS
-def test():   # pragma: no cover
+def test():  # pragma: no cover
     access_token = get_authentication_token()
     if not access_token:
         raise Exception('Unable to get access token')
@@ -1238,10 +1239,10 @@ def get_policy_details():
     title_memory_violation = 'Memory Violation Settings: '
     title_additional_settings = 'Cylance Policy Details - Policy Settings. \n' + \
                                 'Various policy settings are contained within this section.'
-    
+
     policy_details = get_policy_details_request(policy_id)
     memory_violations_content = []
-    
+
     if policy_details:
         title = 'Cylance Policy Details for: ' + policy_id
         date_time = ''
@@ -1252,16 +1253,16 @@ def get_policy_details():
             if reg:
                 ts = float(reg.group())
                 date_time = datetime.fromtimestamp(ts / 1000).strftime('%Y-%m-%dT%H:%M:%S.%f+00:00')
-    
+
         context = {
             'Cylance.Policy(val.ID && val.ID == obj.ID)': policy_details
         }
-    
+
         contents = {
             'Policy Name': policy_details.get('policy_name'),
             'Policy Created At': date_time
         }
-    
+
         suspicious_files = policy_details.get('filetype_actions').get('suspicious_files')
         if suspicious_files:
             suspicious_files_list = []
@@ -1270,7 +1271,7 @@ def get_policy_details():
                     'Actions': file.get('actions'),
                     'File Type': file.get('file_type')
                 })
-    
+
         threat_files = policy_details.get('filetype_actions').get('threat_files')
         if threat_files:
             threat_files_list = []
@@ -1279,7 +1280,7 @@ def get_policy_details():
                     'Actions': file.get('actions'),
                     'File Type': file.get('file_type')
                 })
-    
+
         filetype_actions_suspicious_contents = suspicious_files_list
         filetype_actions_threat_contents = threat_files_list
         safelist = policy_details.get('file_exclusions')
@@ -1299,16 +1300,16 @@ def get_policy_details():
                     'Category Id': file_exclusion.get('category_id'),
                     'MD5': file_exclusion.get('md5')
                 })
-    
+
             safelist_contents = file_exclusions_list
-    
+
         memory_violations = policy_details.get('memoryviolation_actions').get('memory_violations')
         for memory_violation in memory_violations:
             memory_violations_content.append({
                 'Action': memory_violation.get('action'),
                 'Violation Type': memory_violation.get('violation_type')
             })
-    
+
         additional_settings = policy_details.get('policy')
         additional_settings_content = []
         for additional_setting in additional_settings:
@@ -1370,7 +1371,7 @@ def create_instaquery():
         "zones": zone_list
     }
 
-    access_token = get_authentication_token([SCOPE_OPTICS_CREATE,SCOPE_OPTICS_GET])
+    access_token = get_authentication_token([SCOPE_OPTICS_CREATE, SCOPE_OPTICS_GET])
     headers = {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + access_token
@@ -1391,7 +1392,7 @@ def get_instaquery_result():
     query_id = demisto.args().get('query_id')
 
     # Create request
-    access_token = get_authentication_token([SCOPE_OPTICS_GET,SCOPE_OPTICS_CREATE])
+    access_token = get_authentication_token([SCOPE_OPTICS_GET, SCOPE_OPTICS_CREATE])
     headers = {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + access_token
@@ -1404,19 +1405,19 @@ def get_instaquery_result():
         result_title = str(results_count) + " results found, find more details in context. Here is the 1st result:" \
             if results_count > 1 else "1 result found:"
         readable_results = tableToMarkdown(
-            result_title, 
+            result_title,
             json.loads(res['result'][0]['Result']).get('Properties')
-            )
-    else: 
+        )
+    else:
         readable_results = "### No result found"
-    
+
     # Return results to context and war room
     results = CommandResults(
         outputs=res,
         outputs_prefix='InstaQuery.Results',
         outputs_key_field='id',
         readable_output=readable_results
-        )
+    )
     return_results(results)
 
 
@@ -1425,7 +1426,7 @@ def list_instaquery():
     page_size = demisto.args().get('page_size')
 
     # Create request
-    access_token = get_authentication_token([SCOPE_OPTICS_LIST,SCOPE_OPTICS_GET])
+    access_token = get_authentication_token([SCOPE_OPTICS_LIST, SCOPE_OPTICS_GET])
     headers = {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + access_token
@@ -1491,7 +1492,7 @@ def add_capitalized_hash_to_context(threats_context):  # pragma: no cover
 
 
 # EXECUTION
-def main():    # pragma: no cover
+def main():  # pragma: no cover
     global APP_ID
     APP_ID = demisto.params()['app_id']
     global APP_SECRET
@@ -1581,7 +1582,7 @@ def main():    # pragma: no cover
 
         elif demisto.command() == 'cylance-protect-get-policy-details':
             get_policy_details()
-        
+
         # Optics InstaQuery command
         elif demisto.command() == 'cylance-optics-create-instaquery':
             create_instaquery()
