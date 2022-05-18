@@ -112,7 +112,7 @@ create-instances:
         echo "Skipping - not running in INSTANCE_TESTS build"
       else
         [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
-        python3 ./Tests/scripts/collect_tests_and_content_packs.py -n $IS_NIGHTLY --marketplace "xsoar"
+        python3 ./Tests/scripts/collect_tests_and_content_packs.py -n $IS_NIGHTLY --marketplace "xsoar" --service_account $GCS_MARKET_KEY
       fi
     - section_end "Collect Tests and Content Packs"
 
@@ -169,7 +169,7 @@ prepare-testing-bucket-mpv2:
     - section_start "Collect Tests and Content Packs"
     - |
       [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
-      python3 ./Tests/scripts/collect_tests_and_content_packs.py -n $IS_NIGHTLY --marketplace "marketplacev2"
+      python3 ./Tests/scripts/collect_tests_and_content_packs.py -n $IS_NIGHTLY --marketplace "marketplacev2" --service_account $GCS_MARKET_KEY
     - section_end "Collect Tests and Content Packs"
 
     - section_start "Prepare Content Packs for Testing"
@@ -234,15 +234,6 @@ prepare-testing-bucket-mpv2:
       fi
       python3 ./Tests/scripts/destroy_instances.py $ARTIFACTS_FOLDER $ARTIFACTS_FOLDER/env_results.json "$INSTANCE_ROLE" "$TIME_TO_LIVE" || EXIT_CODE=$?
     - exit $EXIT_CODE
-
-
-xsoar_server_6_1:
-  extends: .test_content_on_xsoar_server_instances_base
-  #  No need to trigger in case of release branch
-  rules:
-    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/ && $CI_COMMIT_BRANCH !~ /^[0-9]{2}\.[0-9]{1,2}\.[0-9]$/'
-  variables:
-    INSTANCE_ROLE: "Server 6.1"
 
 
 xsoar_server_6_2:

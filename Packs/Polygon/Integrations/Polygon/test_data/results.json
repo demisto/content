@@ -127,7 +127,11 @@
             "Malicious": {
                 "Vendor": "Group-IB THF Polygon",
                 "Description": "Verdict probability: 68.0%, iocs: JS:Trojan.Agent.DQBF"
-            }
+            },
+            "Hashes": [
+                {"type":  "MD5", "value": "9b52c8a74353d82ef1ebca42c9a7358c"},
+                {"type": "SHA1", "value": "eb57446af5846faa28a726a8b7d43ce5a7fcbd55"},
+                {"type": "SHA256", "value": "34ce805b7131eda3cec905dfd4e2708ab07dd3f038345b2ba9df51eb8fc915eb"}]
         },
         "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": {
             "Indicator": "9b52c8a74353d82ef1ebca42c9a7358c",
@@ -142,7 +146,11 @@
             "MD5": "9b52c8a74353d82ef1ebca42c9a7358c",
             "SHA1": "eb57446af5846faa28a726a8b7d43ce5a7fcbd55",
             "SHA256": "34ce805b7131eda3cec905dfd4e2708ab07dd3f038345b2ba9df51eb8fc915eb",
-            "Type": "ASCII text, with no line terminators"
+            "Type": "ASCII text, with no line terminators",
+            "Hashes": [
+                {"type":  "MD5", "value": "9b52c8a74353d82ef1ebca42c9a7358c"},
+                {"type": "SHA1", "value": "eb57446af5846faa28a726a8b7d43ce5a7fcbd55"},
+                {"type": "SHA256", "value": "34ce805b7131eda3cec905dfd4e2708ab07dd3f038345b2ba9df51eb8fc915eb"}]
         }],
         "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": [{
             "Indicator": "eb57446af5846faa28a726a8b7d43ce5a7fcbd55",
@@ -156,7 +164,11 @@
             "MD5": "9b52c8a74353d82ef1ebca42c9a7358c",
             "SHA1": "eb57446af5846faa28a726a8b7d43ce5a7fcbd55",
             "SHA256": "34ce805b7131eda3cec905dfd4e2708ab07dd3f038345b2ba9df51eb8fc915eb",
-            "Type": "ASCII text, with no line terminators"
+            "Type": "ASCII text, with no line terminators",
+          "Hashes": [
+                {"type":  "MD5", "value": "9b52c8a74353d82ef1ebca42c9a7358c"},
+                {"type": "SHA1", "value": "eb57446af5846faa28a726a8b7d43ce5a7fcbd55"},
+                {"type": "SHA256", "value": "34ce805b7131eda3cec905dfd4e2708ab07dd3f038345b2ba9df51eb8fc915eb"}]
         }],
         "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": [{
             "Indicator": "eb57446af5846faa28a726a8b7d43ce5a7fcbd55",
@@ -313,7 +325,10 @@
                     "Malicious": {
                         "Vendor": "Group-IB THF Polygon",
                         "Description": "THF Polygon score: 21.0, Trojan"
-                    }
+                    },
+                    "Hashes": [
+                        {"type": "SHA1", "value": "44b3f79dfd7c5861501a19a3bac89f544c7ff815"}
+                    ]
                 }],
             "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": [{
                 "Indicator": "44b3f79dfd7c5861501a19a3bac89f544c7ff815",
