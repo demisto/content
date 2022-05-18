@@ -3,6 +3,7 @@
   "rasterize",
   "DemistoRESTAPI",
   "DemistoLocking",
+  "Malware",
   "ImageOCR",
   "AutoFocus",
   "UrlScan",
