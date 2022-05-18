@@ -1,7 +1,7 @@
 This playbook identifies duplicate incidents using the Cortex XSOAR machine learning method (script).
 In this playbook, you can choose fields and/or indicators to be compared against other incidents in the Cortex XSOAR database. 
 
-Note: To identify similar incidents you must *must* properly define the playbook inputs. 
+Note: To identify similar incidents you must properly define the playbook inputs. 
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -27,7 +27,7 @@ This playbook does not use any integrations.
 | --- | --- | --- | --- |
 | method | Choose the way you want to identify similar incidents. Choose between "Indicators" / "Fields" / "Fields and Indicators". | Fields and Indicators | Required |
 | handleSimilar | This input defines how to handle similar incidents. <br/>Possible values: "Link " \(default\), "Close", and "Link and Close".<br/>Note: Close incidents requires you to define the "CloseSimilar" input as well.<br/>Also, the incidents found by similar indicators or fields will be closed if their similarity score is above the CloseSimilar value. | Link | Required |
-| fieldExactMatch | Select the incident field name you want the script to query.  <br/>For example, if you select &amp;lt;Type&amp;gt;, the playbook will query against the database for all incidents with the same type as your current incident.<br/> Note: If you use comma-separated values, the operator between them will be \*AND\*. |  | Optional |
+| fieldExactMatch | Select the incident field name you want the script to query.  <br/>For example, if you select <Type>, the playbook will query against the database for all incidents with the same type as your current incident.<br/> Note: If you use comma-separated values, the operator between them will be \*AND\*. |  | Optional |
 | fieldsToDisplay | A comma-separated list of additional incident fields to display in the context output. These fields can be used later on for layouts or other states if needed.<br/>\(Those which will not be taken into account when computing similarity\) |  | Optional |
 | fromDate | The start date to filter incidents. Date format is the same as in the incidents query page, for example, "3 days ago", "1 month ago", "2019-01-01T00:00:00 \+0200"\). | 1 months ago | Optional |
 | limit | The maximum number of incidents to query and set to context data.<br/>Default is: 200 | 200 | Optional |
