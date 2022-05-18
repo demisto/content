@@ -10,7 +10,10 @@ import panos.errors
 from panos.base import PanDevice, VersionedPanObject, Root, ENTRY, VersionedParamPath  # type: ignore
 from panos.panorama import Panorama, DeviceGroup, Template, PanoramaCommitAll
 from panos.policies import Rulebase, PreRulebase, PostRulebase, SecurityRule
-from panos.objects import LogForwardingProfile, LogForwardingProfileMatchList
+from panos.objects import (
+    LogForwardingProfile, LogForwardingProfileMatchList, AddressObject, AddressGroup, ServiceObject, ServiceGroup,
+    ApplicationObject, ApplicationGroup, SecurityProfileGroup
+)
 from panos.firewall import Firewall
 from panos.device import Vsys
 from panos.network import Zone
@@ -8896,6 +8899,7 @@ class HygieneRemediation:
 
         return result
 
+
 class ObjectGetter:
     """Retrieves objects from the PAN-OS configuration"""
 
@@ -8908,7 +8912,17 @@ class ObjectGetter:
             object_name: str = None,
             use_regex: str = None
     ) -> list[PanosObjectReference]:
-        """Given a string object type, returns all the matching objects by reference."""
+        """
+        Given a string object type, returns all the matching objects by reference. The object type matches a pan-os-python
+        object exactly. Note this ONLY returns the "pointer" to the objects, that is, it's location in the config, not all the
+        object attributes.
+
+        :param topology: `Topology` instance
+        :param device_filter_string: String to filter the devices we search for objects within.
+        :param container_filter: Container we look for objects in, such as a device group or template-stack
+        :param object_name: The name of the object to find; can be regex if use_regex is set
+        :param use_regex: Whether we should use regex matching for the object_name
+        """
         object_class = globals().get(object_type, None)
         if object_class is None:
             raise DemistoException(f"Object type {object_type} is not gettable with this integration.")
@@ -8954,8 +8968,9 @@ class ObjectGetter:
                                     hostid=resolve_host_id(device)
                                 )
                             )
+                    # Regex compilation errors should raise if the regex flag is chosen
                     except re.error:
-                        pass
+                        raise DemistoException(f"Invalid regex; {object_name}")
 
         return object_references
 
@@ -10759,7 +10774,8 @@ def get_object(
     )
     return result
 
-def get_device_state(topology: Topology, hostid: str) -> FileInfoResult:
+
+def get_device_state(topology: Topology, hostid: str) -> fileResult:
     """
     Get the device state from the provided device.
     :param topology: `Topology` instance !no-auto-argument

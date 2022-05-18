@@ -8272,14 +8272,12 @@ script:
       required: true
       secret: false
     - default: false
-      defaultValue: null
       description: If provided, only objects from the given device are returned.
       isArray: false
       name: device_filter_string
       required: false
       secret: false
     - default: false
-      defaultValue: null
       description: The name of the object refernce to return if looking for a specific
         object. Supports regex if "use_regex" is set.
       isArray: false
@@ -8287,7 +8285,6 @@ script:
       required: false
       secret: false
     - default: false
-      defaultValue: null
       description: The parent vsys or device group to search. if not provided, all
         will be returned.
       isArray: false
@@ -8295,7 +8292,6 @@ script:
       required: false
       secret: false
     - default: false
-      defaultValue: null
       description: Enables regex matching on object name.
       isArray: false
       name: use_regex

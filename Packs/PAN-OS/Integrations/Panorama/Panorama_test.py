@@ -1300,6 +1300,16 @@ def mock_vsys():
     return [mock_vsys]
 
 
+def mock_address_objects():
+    from Panorama import AddressObject
+    mock_object_1 = MagicMock(spec=AddressObject)
+    mock_object_1.name = "test-address-1"
+
+    mock_object_2 = MagicMock(spec=AddressObject)
+    mock_object_2.name = "test-address-2"
+    return [mock_object_1, mock_object_2]
+
+
 def mock_good_log_fowarding_profile():
     good_log_forwarding_profile = LogForwardingProfile()
     good_log_forwarding_profile.enhanced_logging = True
@@ -1551,6 +1561,19 @@ def mock_topology(mock_panorama, mock_firewall):
     }
     topology.ha_pair_serials = {
         MOCK_FIREWALL_1_SERIAL: MOCK_FIREWALL_2_SERIAL,
+    }
+    return topology
+
+
+@pytest.fixture
+def mock_single_device_topology(mock_panorama):
+    from Panorama import Topology
+    topology = Topology()
+    topology.panorama_objects = {
+        MOCK_PANORAMA_SERIAL: mock_panorama,
+    }
+    topology.ha_active_devices = {
+        MOCK_PANORAMA_SERIAL: mock_panorama,
     }
     return topology
 
@@ -1935,13 +1958,12 @@ class TestUniversalCommand:
 
     @patch("Panorama.run_op_command")
     def test_get_commit_job_status(self, patched_run_op_command, mock_topology):
-        """Checks that we can get the commit status from the devices using the show jobs command"""
+        """Checks that we can get the commit status from the devices using the show jobs command
+        This should only return the commit jobs, nothing else"""
         from Panorama import UniversalCommand
         patched_run_op_command.return_value = load_xml_root_from_test_file(TestUniversalCommand.SHOW_COMMIT_JOB_XML)
 
         result = UniversalCommand.get_commit_job_status(mock_topology)
-        # Check all attributes of result data have values
-
         assert result
         for result_dataclass in result:
             assert result_dataclass.commit_type == "Commit"
@@ -2364,3 +2386,41 @@ class TestHygieneFunctions:
         for value in result[0].__dict__.values():
             assert value
 
+
+class TestObjectFunctions:
+    @patch("Panorama.Template.refreshall", return_value=[])
+    @patch("Panorama.Vsys.refreshall", return_value=[])
+    @patch("Panorama.DeviceGroup.refreshall", return_value=mock_device_groups())
+    def test_get_objects(self, _, __, ___, mock_single_device_topology):
+        """
+        Tests that we can get various object types and the filtering logic, by object type and name, works correctly.
+        """
+        from Panorama import ObjectGetter, AddressObject
+
+        # Use side effects so that objects are only returned from one container
+        AddressObject.refreshall = MagicMock(side_effect=[mock_address_objects(), []])
+
+        # Test with no filter first
+        result = ObjectGetter.get_object_reference(mock_single_device_topology, "AddressObject")
+        assert "test-address-1" in [x.name for x in result]
+        assert "test-address-2" in [x.name for x in result]
+
+        # Same as above but with a filter on object name
+        AddressObject.refreshall = MagicMock(side_effect=[mock_address_objects(), []])
+        result = ObjectGetter.get_object_reference(mock_single_device_topology, "AddressObject", object_name="test-address-1")
+        assert "test-address-1" in [x.name for x in result]
+        assert "test-address-2" not in [x.name for x in result]
+
+        # Same as above but include a regex filter
+        AddressObject.refreshall = MagicMock(side_effect=[mock_address_objects(), []])
+        result = ObjectGetter.get_object_reference(mock_single_device_topology, "AddressObject", object_name="test-address-\d+",
+                                                   use_regex="true")
+        assert "test-address-1" in [x.name for x in result]
+        assert "test-address-2" in [x.name for x in result]
+
+        # Test broken regex
+        AddressObject.refreshall = MagicMock(side_effect=[mock_address_objects(), []])
+        with pytest.raises(DemistoException):
+            result = ObjectGetter.get_object_reference(mock_single_device_topology, "AddressObject", object_name="test-address-(\d+",
+                                                       use_regex="true")
+            assert not result
