@@ -1,5 +1,6 @@
 from collections import defaultdict
 from dataclasses import dataclass, fields
+import enum
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
@@ -8895,6 +8896,69 @@ class HygieneRemediation:
 
         return result
 
+class ObjectGetter:
+    """Retrieves objects from the PAN-OS configuration"""
+
+    @staticmethod
+    def get_object_reference(
+            topology: Topology,
+            object_type: str,
+            device_filter_string: str = None,
+            container_filter: str = None,
+            object_name: str = None,
+            use_regex: str = None
+    ) -> list[PanosObjectReference]:
+        """Given a string object type, returns all the matching objects by reference."""
+        object_class = globals().get(object_type, None)
+        if object_class is None:
+            raise DemistoException(f"Object type {object_type} is not gettable with this integration.")
+
+        object_references = []
+        for device, container in topology.get_all_object_containers(
+                device_filter_string,
+                container_name=container_filter
+        ):
+            unfiltered_objects = []
+            # If the object class is a security rule we need to handle it specially
+            if object_class in ["SecurityRule", "NatRule"]:
+                firewall_rulebase = Rulebase()
+                pre_rulebase = PreRulebase()
+                post_rulebase = PostRulebase()
+                container.add(pre_rulebase)
+                container.add(post_rulebase)
+                container.add(firewall_rulebase)
+                unfiltered_objects = object_class.refreshall(firewall_rulebase)
+                unfiltered_objects += object_class.refreshall(pre_rulebase)
+                unfiltered_objects += object_class.refreshall(post_rulebase)
+            else:
+                unfiltered_objects = object_class.refreshall(container)
+
+            for panos_object in unfiltered_objects:
+                if panos_object.name == object_name or not object_name:
+                    object_references.append(
+                        PanosObjectReference(
+                            object_type=object_type,
+                            container_name=resolve_container_name(container),
+                            name=panos_object.name,
+                            hostid=resolve_host_id(device)
+                        )
+                    )
+                elif use_regex:
+                    try:
+                        if re.match(object_name, panos_object.name):
+                            object_references.append(
+                                PanosObjectReference(
+                                    object_type=object_type,
+                                    container_name=resolve_container_name(container),
+                                    name=panos_object.name,
+                                    hostid=resolve_host_id(device)
+                                )
+                            )
+                    except re.error:
+                        pass
+
+        return object_references
+
 
 class HygieneCheckRegister:
     """Stores all the hygiene checks this integration is capable of and their associated details."""
@@ -10584,6 +10648,124 @@ def fix_security_rule_security_profile_group(
     )
 
 
+class ObjectTypeEnum(enum.Enum):
+    ADDRESS = "AddressObject"
+    ADDRESS_GROUP = "AddressGroup"
+    SERVICE_GROUP = "ServiceGroup"
+    SERVICE = "ServiceObject"
+    APPLICATION = "ApplicationObject"
+    APPLICATION_GROUP = "ApplicationGroup"
+    LOG_FORWARDING_PROFILE = "LogForwardingProfile"
+    SECURITY_PROFILE_GROUP = "SecurityProfileGroup"
+
+
+def commit(topology: Topology, device_filter_string: str = None) -> list[CommitStatus]:
+    """
+    Commit the configuration for the entire topology. Note this only commits the configuration - it does
+    not push the configuration in the case of Panorama.
+
+    :param topology: `Topology` instance !no-auto-argument
+    :param device_filter_string: String to filter to only check given device
+    """
+    result: list[CommitStatus] = UniversalCommand.commit(topology, device_filter_string)
+
+    return result
+
+
+def push_all(
+        topology: Topology,
+        device_filter_string: str = None,
+        device_group_filter: list[str] = None,
+        template_stack_filter: list[str] = None
+) -> list[PushStatus]:
+    """
+    Push the configuration to all the device groups and template-stacks in the environment.
+
+    :param device_filter_string: String to filter to only check given device
+    :param topology: `Topology` instance !no-auto-argument
+    :param device_group_filter: List of device group names to push configuration to.
+    :param template_stack_filter: List of template stack names to pushconfiguration to.
+    """
+    result: list[PushStatus] = PanoramaCommand.push_all(
+        topology,
+        device_filter_string,
+        device_group_filter=device_group_filter,
+        template_stack_filter=template_stack_filter
+    )
+
+    return result
+
+
+def get_commit_status(topology: Topology, match_job_id: list[str] = None) -> list[CommitStatus]:
+    """
+    Returns the status of the commit operation on all devices. If an ID is given, only that id will be returned.
+
+    :param topology: `Topology` instance !no-auto-argument
+    :param match_job_id: job ID or list of Job IDs to return.
+    """
+    result: list[CommitStatus] = UniversalCommand.get_commit_job_status(topology, match_job_id)
+
+    return result
+
+
+def get_push_status(
+        topology: Topology,
+        match_job_id: list[str] = None,
+
+) -> list[PushStatus]:
+    """
+    Returns the status of the push (commit-all) jobs from Panorama.
+
+    :param topology: `Topology` instance !no-auto-argument
+    :param match_job_id: job ID or list of Job IDs to return.
+    """
+    result: list[PushStatus] = PanoramaCommand.get_push_status(topology, match_job_id)
+
+    return result
+
+
+def get_object(
+        topology: Topology,
+        object_type: ObjectTypeEnum,
+        device_filter_string: str = None,
+        object_name: str = None,
+        parent: str = None,
+        use_regex: str = None
+) -> list[PanosObjectReference]:
+    """Searches and returns a reference for the given object type and name. If no name is provided, all
+    objects of the given type are returned. Note this only returns a reference, and not the complete object
+    information.
+    :param topology: `Topology` instance !no-auto-argument
+    :param object_name: The name of the object refernce to return if looking for a specific object. Supports regex if "use_regex" is set.
+    :param object_type: The type of object to search; see https://pandevice.readthedocs.io/en/latest/module-objects.html
+    :param device_filter_string: If provided, only objects from the given device are returned.
+    :param parent: The parent vsys or device group to search. if not provided, all will be returned.
+    :param use_regex: Enables regex matching on object name.
+    """
+    result: list[PanosObjectReference] = ObjectGetter.get_object_reference(
+        topology=topology,
+        device_filter_string=device_filter_string,
+        object_name=object_name,
+        # Fixing the ignore below would rfequire adding union handling to code generation script.
+        object_type=object_type,  # type: ignore
+        container_filter=parent,
+        use_regex=use_regex
+    )
+    return result
+
+def get_device_state(topology: Topology, hostid: str) -> FileInfoResult:
+    """
+    Get the device state from the provided device.
+    :param topology: `Topology` instance !no-auto-argument
+    :param hostid: String to filter to only show specific hostnames or serial numbers.
+    """
+    result_file_data = FirewallCommand.get_device_state(topology, hostid)
+    return fileResult(
+        filename=f"{hostid}_device_state.tar.gz",
+        data=result_file_data,
+        file_type=EntryType.ENTRY_INFO_FILE
+    )
+
 def get_topology() -> Topology:
     """
     Builds and returns the Topology instance
@@ -11285,6 +11467,46 @@ def main():
                 dataclasses_to_command_results(
                     fix_security_rule_security_profile_group(topology, **demisto.args()),
                     empty_result_message="Nothing to fix."
+                )
+            )
+        elif command == 'pan-os-config-commit':
+            topology = get_topology()
+            return_results(
+                dataclasses_to_command_results(
+                    commit(topology, **demisto.args()),
+                    empty_result_message="No commits were required."
+                )
+            )
+        elif command == 'pan-os-config-push-all':
+            topology = get_topology()
+            return_results(
+                dataclasses_to_command_results(
+                    push_all(topology, **demisto.args()),
+                    empty_result_message="No push was required."
+                )
+            )
+        elif command == 'pan-os-config-get-commit-status':
+            topology = get_topology()
+            return_results(
+                dataclasses_to_command_results(
+                    get_commit_status(topology, **demisto.args()),
+                    empty_result_message="No active commit jobs."
+                )
+            )
+        elif command == 'pan-os-config-get-object':
+            topology = get_topology()
+            return_results(
+                dataclasses_to_command_results(
+                    get_object(topology, **demisto.args()),
+                    empty_result_message="No objects found."
+                )
+            )
+        elif command == 'pan-os-platform-get-device-state':
+            topology = get_topology()
+            return_results(
+                dataclasses_to_command_results(
+                    get_device_state(topology, **demisto.args()),
+                    empty_result_message="No objects found."
                 )
             )
         else:

@@ -8117,6 +8117,234 @@ script:
     - contextPath: PANOS.ConfigurationHygieneFix.name
       description: The affected object name.
       type: String
+  - arguments:
+    - default: false
+      defaultValue: null
+      description: String to filter to only check given device
+      isArray: false
+      name: device_filter_string
+      required: false
+      secret: false
+    deprecated: false
+    description: Commit the configuration for the entire topology. Note this only
+      commits the configuration - it does
+    name: pan-os-config-commit
+    outputs:
+    - contextPath: PANOS.CommitStatus.hostid
+      description: Host ID
+      type: String
+    - contextPath: PANOS.CommitStatus.job_id
+      description: The ID of the commit job. May be empty on first run.,
+      type: String
+    - contextPath: PANOS.CommitStatus.commit_type
+      description: The type of commit operation.
+      type: String
+    - contextPath: PANOS.CommitStatus.status
+      description: The current status of the commit operation.
+      type: String
+    - contextPath: PANOS.CommitStatus.device_type
+      description: The type of device; can be either "Panorama" or "Firewall"
+      type: String
+  - arguments:
+    - default: false
+      defaultValue: null
+      description: String to filter to only check given device
+      isArray: false
+      name: device_filter_string
+      required: false
+      secret: false
+    - default: false
+      defaultValue: null
+      description: List of device group names to push configuration to.
+      isArray: false
+      name: device_group_filter
+      required: false
+      secret: false
+    - default: false
+      defaultValue: null
+      description: List of template stack names to pushconfiguration to.
+      isArray: false
+      name: template_stack_filter
+      required: false
+      secret: false
+    deprecated: false
+    description: Push the configuration to all the device groups and template-stacks
+      in the environment.
+    name: pan-os-config-push-all
+    outputs:
+    - contextPath: PANOS.PushStatus.hostid
+      description: Host ID
+      type: String
+    - contextPath: PANOS.PushStatus.job_id
+      description: The ID of the push job.
+      type: String
+    - contextPath: PANOS.PushStatus.commit_type
+      description: The name of the device group or template being pushed.
+      type: String
+    - contextPath: PANOS.PushStatus.commit_all_status
+      description: The current status of the commit all operation on Panorama.
+      type: String
+    - contextPath: PANOS.PushStatus.device_status
+      description: The status of the actual commit operation on the device itself
+      type: String
+    - contextPath: PANOS.PushStatus.name
+      description: The name of the device group or template being pushed.
+      type: String
+    - contextPath: PANOS.PushStatus.device
+      description: The device currently being pushed to - None when first initiated.
+      type: String
+  - arguments:
+    - default: false
+      defaultValue: null
+      description: job ID or list of Job IDs to return.
+      isArray: false
+      name: match_job_id
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns the status of the commit operation on all devices. If an
+      ID is given, only that id will be returned.
+    name: pan-os-config-get-commit-status
+    outputs:
+    - contextPath: PANOS.CommitStatus.hostid
+      description: Host ID
+      type: String
+    - contextPath: PANOS.CommitStatus.job_id
+      description: The ID of the commit job. May be empty on first run.,
+      type: String
+    - contextPath: PANOS.CommitStatus.commit_type
+      description: The type of commit operation.
+      type: String
+    - contextPath: PANOS.CommitStatus.status
+      description: The current status of the commit operation.
+      type: String
+    - contextPath: PANOS.CommitStatus.device_type
+      description: The type of device; can be either "Panorama" or "Firewall"
+      type: String
+  - arguments:
+    - default: false
+      defaultValue: null
+      description: job ID or list of Job IDs to return.
+      isArray: false
+      name: match_job_id
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns the status of the push (commit-all) jobs from Panorama.
+    name: pan-os-config-get-push-status
+    outputs:
+    - contextPath: PANOS.PushStatus.hostid
+      description: Host ID
+      type: String
+    - contextPath: PANOS.PushStatus.job_id
+      description: The ID of the push job.
+      type: String
+    - contextPath: PANOS.PushStatus.commit_type
+      description: The name of the device group or template being pushed.
+      type: String
+    - contextPath: PANOS.PushStatus.commit_all_status
+      description: The current status of the commit all operation on Panorama.
+      type: String
+    - contextPath: PANOS.PushStatus.device_status
+      description: The status of the actual commit operation on the device itself
+      type: String
+    - contextPath: PANOS.PushStatus.name
+      description: The name of the device group or template being pushed.
+      type: String
+    - contextPath: PANOS.PushStatus.device
+      description: The device currently being pushed to - None when first initiated.
+      type: String
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: The type of object to search; see https://pandevice.readthedocs.io/en/latest/module-objects.html
+      isArray: false
+      name: object_type
+      predefined:
+      - AddressObject
+      - AddressGroup
+      - ServiceGroup
+      - ServiceObject
+      - ApplicationObject
+      - ApplicationGroup
+      - LogForwardingProfile
+      - SecurityProfileGroup
+      required: true
+      secret: false
+    - default: false
+      defaultValue: null
+      description: If provided, only objects from the given device are returned.
+      isArray: false
+      name: device_filter_string
+      required: false
+      secret: false
+    - default: false
+      defaultValue: null
+      description: The name of the object refernce to return if looking for a specific
+        object. Supports regex if "use_regex" is set.
+      isArray: false
+      name: object_name
+      required: false
+      secret: false
+    - default: false
+      defaultValue: null
+      description: The parent vsys or device group to search. if not provided, all
+        will be returned.
+      isArray: false
+      name: parent
+      required: false
+      secret: false
+    - default: false
+      defaultValue: null
+      description: Enables regex matching on object name.
+      isArray: false
+      name: use_regex
+      required: false
+      secret: false
+    deprecated: false
+    description: Searches and returns a reference for the given object type and name.
+      If no name is provided, all
+    name: pan-os-config-get-object
+    outputs:
+    - contextPath: PANOS.PanosObject.hostid
+      description: Host ID
+      type: String
+    - contextPath: PANOS.PanosObject.container_name
+      description: What parent container (DG, Template, VSYS) this object belongs
+        to.
+      type: String
+    - contextPath: PANOS.PanosObject.name
+      description: The PAN-OS object name
+      type: String
+    - contextPath: PANOS.PanosObject.object_type
+      description: The PAN-OS-Python object type
+      type: String
+  - arguments:
+    - default: false
+      description: String to filter to only show specific hostnames or serial numbers.
+      isArray: false
+      name: hostid
+      required: true
+      secret: false
+    deprecated: false
+    description: Get the device state from the provided device.
+    name: pan-os-platform-get-device-state
+    outputs:
+    - contextPath: InfoFile.Name
+      description: Filename
+      type: String
+    - contextPath: InfoFile.EntryID
+      description: Entry ID
+      type: String
+    - contextPath: InfoFile.Size
+      description: Size of file
+      type: String
+    - contextPath: InfoFile.Type
+      description: Type of file
+      type: String
+    - contextPath: InfoFile.Info
+      description: Basic information of file
+      type: String
   dockerimage: demisto/pan-os-python:1.0.0.29113
   feed: false
   isfetch: false
