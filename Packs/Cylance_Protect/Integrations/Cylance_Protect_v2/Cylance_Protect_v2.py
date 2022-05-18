@@ -593,7 +593,7 @@ def get_zones():
     })
 
 
-def get_zones_request(page=None, page_size=None):   # pragma: no cover
+def get_zones_request(page=None, page_size=None):  # pragma: no cover
     access_token = get_authentication_token(scope=SCOPE_ZONE_LIST)
 
     params = {}
@@ -712,7 +712,7 @@ def get_threat():
         demisto.results('Threat was not found.')
 
 
-def get_threat_request(sha256):   # pragma: no cover
+def get_threat_request(sha256):  # pragma: no cover
     access_token = get_authentication_token(scope=SCOPE_THREAT_READ)
 
     uri = '%s/%s' % (URI_THREATS, sha256)
