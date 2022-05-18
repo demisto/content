@@ -137,7 +137,7 @@ class GetEvents:
 
 def main():  # pragma: no cover
     try:
-        demisto_params = demisto.params() | demisto.args()
+        demisto_params = demisto.params() #| demisto.args()
         events_limit = int(demisto_params.get('limit', 2000))
         after = dateparser.parse(demisto_params['after'].strip())
         api_key = demisto_params['api_key']['credentials']['password']
