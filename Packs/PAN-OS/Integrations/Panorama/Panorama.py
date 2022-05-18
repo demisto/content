@@ -10777,7 +10777,7 @@ def get_object(
     return result
 
 
-def get_device_state(topology: Topology, target: str) -> fileResult:
+def get_device_state(topology: Topology, target: str) -> dict:
     """
     Get the device state from the provided device target (serial number). Note that this will attempt to connect directly to the
     firewall as there is no way to get the device state for a firewall via Panorama.

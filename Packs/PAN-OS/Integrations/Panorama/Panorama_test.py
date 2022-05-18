@@ -2421,6 +2421,7 @@ class TestObjectFunctions:
         # Test broken regex
         AddressObject.refreshall = MagicMock(side_effect=[mock_address_objects(), []])
         with pytest.raises(DemistoException):
-            result = ObjectGetter.get_object_reference(mock_single_device_topology, "AddressObject", object_name="test-address-(\d+",
+            result = ObjectGetter.get_object_reference(mock_single_device_topology, "AddressObject",
+                                                       object_name="test-address-(\d+",
                                                        use_regex="true")
             assert not result

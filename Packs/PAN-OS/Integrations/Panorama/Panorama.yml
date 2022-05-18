@@ -8119,7 +8119,6 @@ script:
       type: String
   - arguments:
     - default: false
-      defaultValue: null
       description: String to filter to only check given device
       isArray: false
       name: device_filter_string
@@ -8147,21 +8146,18 @@ script:
       type: String
   - arguments:
     - default: false
-      defaultValue: null
       description: String to filter to only check given device
       isArray: false
       name: device_filter_string
       required: false
       secret: false
     - default: false
-      defaultValue: null
       description: List of device group names to push configuration to.
       isArray: false
       name: device_group_filter
       required: false
       secret: false
     - default: false
-      defaultValue: null
       description: List of template stack names to pushconfiguration to.
       isArray: false
       name: template_stack_filter
@@ -8195,7 +8191,6 @@ script:
       type: String
   - arguments:
     - default: false
-      defaultValue: null
       description: job ID or list of Job IDs to return.
       isArray: false
       name: match_job_id
@@ -8223,7 +8218,6 @@ script:
       type: String
   - arguments:
     - default: false
-      defaultValue: null
       description: job ID or list of Job IDs to return.
       isArray: false
       name: match_job_id
@@ -8299,7 +8293,7 @@ script:
       secret: false
     deprecated: false
     description: Searches and returns a reference for the given object type and name.
-      If no name is provided, all
+      If no name is provided, all objects of the given type will be returned.
     name: pan-os-config-get-object
     outputs:
     - contextPath: PANOS.PanosObject.hostid
