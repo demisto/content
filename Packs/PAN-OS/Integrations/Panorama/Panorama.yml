@@ -8126,9 +8126,9 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Commit the configuration for the entire topology. Note this only
-      commits the configuration - it does
-    name: pan-os-config-commit
+    description: Commit the configuration for the entire topology. This will commit to all 'active' devices in the topology at
+      the same time unless device_filter_string is provided.
+    name: pan-os-config-commit-to-all
     outputs:
     - contextPath: PANOS.CommitStatus.hostid
       description: Host ID
@@ -8319,11 +8319,13 @@ script:
     - default: false
       description: String to filter to only show specific hostnames or serial numbers.
       isArray: false
-      name: hostid
+      name: target
       required: true
       secret: false
     deprecated: false
-    description: Get the device state from the provided device.
+    description: Get the device state from the provided device. Note; This will attempt to connect directly to the provided
+      target to get the device state - if the IP address, as reported in 'show system info' is unreachable, this command will
+      fail.
     name: pan-os-platform-get-device-state
     outputs:
     - contextPath: InfoFile.Name

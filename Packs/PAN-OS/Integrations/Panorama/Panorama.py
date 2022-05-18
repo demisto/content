@@ -10064,15 +10064,17 @@ class FirewallCommand:
         )
 
     @staticmethod
-    def get_device_state(topology: Topology, device_filter_str: str):
+    def get_device_state(topology: Topology, target: str):
         """
-        Returns an exported device state, as binary data
+        Returns an exported device state, as binary data. Note that this will attempt to connect directly to the target
+        firewall, as it cannot be exported via the Panorama proxy. If there are network issues that prevent that, this command
+        will time out.
         :param topology: `Topology` instance.
-        :param device_filter_str: If provided, filters this command to only the devices specified.
+        :param target: The target serial number to retrieve the device state from.
         """
-        for firewall in topology.firewalls(filter_string=device_filter_str):
+        for firewall in topology.firewalls(target=target):
             # Connect directly to the firewall
-            direct_firewall_connection: Firewall = topology.get_direct_device(firewall)
+            direct_firewall_connection = topology.get_direct_device(firewall)
             direct_firewall_connection.xapi.export(category="device-state")
             return direct_firewall_connection.xapi.export_result.get("content")
 
@@ -10775,18 +10777,21 @@ def get_object(
     return result
 
 
-def get_device_state(topology: Topology, hostid: str) -> fileResult:
+def get_device_state(topology: Topology, target: str) -> fileResult:
     """
-    Get the device state from the provided device.
+    Get the device state from the provided device target (serial number). Note that this will attempt to connect directly to the
+    firewall as there is no way to get the device state for a firewall via Panorama.
+
     :param topology: `Topology` instance !no-auto-argument
-    :param hostid: String to filter to only show specific hostnames or serial numbers.
+    :param target: String to filter to only show specific hostnames or serial numbers.
     """
-    result_file_data = FirewallCommand.get_device_state(topology, hostid)
+    result_file_data = FirewallCommand.get_device_state(topology, target)
     return fileResult(
-        filename=f"{hostid}_device_state.tar.gz",
+        filename=f"{target}_device_state.tar.gz",
         data=result_file_data,
         file_type=EntryType.ENTRY_INFO_FILE
     )
+
 
 def get_topology() -> Topology:
     """
@@ -11491,7 +11496,7 @@ def main():
                     empty_result_message="Nothing to fix."
                 )
             )
-        elif command == 'pan-os-config-commit':
+        elif command == 'pan-os-config-commit-to-all':
             topology = get_topology()
             return_results(
                 dataclasses_to_command_results(
