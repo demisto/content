@@ -6,9 +6,7 @@ import json
 import requests
 from stix2 import TAXIICollectionSource, Filter
 from taxii2client.v20 import Server, Collection, ApiRoot
-
 import logging
-import sys
 
 ''' CONSTANT VARIABLES '''
 
@@ -369,13 +367,13 @@ def handle_multiple_dates_in_one_field(field_name: str, field_value: str):
     else:
         return f"{max(dates_as_datetime).strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3]}Z"
 
-#
-# def test_module(client):
-#     try:
-#         client.build_iterator(limit=1)
-#         demisto.results('ok')
-#     except DemistoException:
-#         return_error('Could not connect to server')
+
+def test_module(client):
+    try:
+        client.build_iterator(limit=1)
+        demisto.results('ok')
+    except DemistoException:
+        return_error('Could not connect to server')
 
 
 def fetch_indicators(client, create_relationships):
@@ -539,7 +537,6 @@ def attack_pattern_reputation_command(client, args):
     return command_results
 
 
-
 def get_mitre_value_from_id(client, args):
     attack_ids = argToList(args.get('attack_ids', []))
 
@@ -594,7 +591,7 @@ def main():
         client = Client(url, proxies, verify_certificate, tags, tlp_color)
         client.initialise()
         log = logging.getLogger('taxii2client.v20')
-        log.addHandler(DemistoHandler)
+        log.addHandler(DemistoHandler())
 
         if demisto.command() == 'mitre-get-indicators':
             get_indicators_command(client, args)
@@ -607,9 +604,9 @@ def main():
 
         elif demisto.command() == 'attack-pattern':
             return_results(attack_pattern_reputation_command(client, args))
-        #
-        # elif demisto.command() == 'test-module':
-        #     test_module(client)
+
+        elif demisto.command() == 'test-module':
+            test_module(client)
 
         elif demisto.command() == 'fetch-indicators':
             indicators = fetch_indicators(client, create_relationships)
