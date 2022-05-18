@@ -13,7 +13,7 @@ def main():
     try:
         args = demisto.args()
         input_text = args["text"]
-        input_output_key = args.get("contextKey")
+        input_output_key = args.get("contextKey")  # maybe add a default value
         input_only_md = argToBoolean(args.get("convertOnlyMarkdown"))
         input_prettify = argToBoolean(args.get("prettifyHTML"))
 
