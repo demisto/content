@@ -143,6 +143,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 46. endpoint
 47. microsoft-atp-indicator-batch-update
 48. microsoft-atp-get-alert-by-id
+49. microsoft-atp-offboard-machine
 
 ### 1. microsoft-atp-isolate-machine
 ---
@@ -5841,3 +5842,93 @@ Alert.ReadWrite.All
 >|ID|Title|Description|IncidentID|Severity|Status|Classification|Category|ThreatFamilyName|MachineID|
 >|---|---|---|---|---|---|---|---|---|---|
 >| da637472900382838869_1364969609 | Low-reputation arbitrary code executed by signed executable | Binaries signed by Microsoft can be used to run low-reputation arbitrary code. This technique hides the execution of malicious code within a trusted process. As a result, the trusted process might exhibit suspicious behaviors, such as opening a listening port or connecting to a command-and-control (C&C) server. | 1126093 | Low | New |  | Execution |  | 111e6dd8c833c8a052ea231ec1b19adaf497b625 |
+
+### microsoft-atp-offboard-machine
+---
+Isolates a machine from accessing external network.
+
+##### Required Permissions
+Machine.Offboard	
+
+##### Base Command
+
+`microsoft-atp-offboard-machine`
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| machine_id | A comma-separated list of machine IDs to be used for isolation. e.g., 0a3250e0693a109f1affc9217be9459028aa8426,0a3250e0693a109f1affc9217be9459028aa8424. | Required | 
+| comment | A comment to associate with the action. | Required | 
+| isolation_type | Full isolation or selective isolation. (Restrict only limited set of applications from accessing the network). Possible values are: Full, Selective. | Required | 
+
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MicrosoftATP.MachineAction.ID | String | The machine action ID. | 
+| MicrosoftATP.MachineAction.Type | String | Type of the machine action. | 
+| MicrosoftATP.MachineAction.Scope | Unknown | Scope of the action. | 
+| MicrosoftATP.MachineAction.Requestor | String | The ID of the user that executed the action. | 
+| MicrosoftATP.MachineAction.RequestorComment | String | Comment that was written when issuing the action. | 
+| MicrosoftATP.MachineAction.Status | String | The current status of the command. | 
+| MicrosoftATP.MachineAction.MachineID | String | The machine ID on which the action was executed. | 
+| MicrosoftATP.MachineAction.ComputerDNSName | String | The machine DNS name on which the action was executed. | 
+| MicrosoftATP.MachineAction.CreationDateTimeUtc | Date | The date and time when the action was created. | 
+| MicrosoftATP.MachineAction.LastUpdateTimeUtc | Date | The last date and time when the action status was updated. | 
+| MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifier | String | The file identifier. | 
+| MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifierType | String | The type of the file identifier. Possible values: "SHA1" ,"SHA256", and "MD5". | 
+
+##### Command example
+```!microsoft-atp-offboard-machine comment=offboard_test_3 machine_id="12342c13fef,12342c13fef8f06606"```
+##### Context Example
+```json
+{
+    "MicrosoftATP": {
+        "MachineAction": [
+            {
+                "ComputerDNSName": "desktop-s2455r8",
+                "CreationDateTimeUtc": "2022-01-25T14:25:52.6227941Z",
+                "ID": "1f3098e20464",
+                "LastUpdateTimeUtc": null,
+                "MachineID": "12342c13fef",
+                "RelatedFileInfo": {
+                    "FileIdentifier": null,
+                    "FileIdentifierType": null
+                },
+                "Requestor": "2f48b784-5da5-4e61-9957-012d2630f1e4",
+                "RequestorComment": "offboard_test_3",
+                "Scope": "Full",
+                "Status": "Pending",
+                "Type": "Offboard"
+            },
+            {
+                "ComputerDNSName": "desktop-s2455r9",
+                "CreationDateTimeUtc": "2022-01-25T14:25:53.2395007Z",
+                "ID": "6d39a3da0744",
+                "LastUpdateTimeUtc": null,
+                "MachineID": "12342c13fef8f06606",
+                "RelatedFileInfo": {
+                    "FileIdentifier": null,
+                    "FileIdentifierType": null
+                },
+                "Requestor": "2f48b784-5da5-4e61-9957-012d2630f1e4",
+                "RequestorComment": "offboard_test_3",
+                "Scope": "Full",
+                "Status": "Pending",
+                "Type": "Offboard"
+            }
+        ]
+    }
+}
+```
+
+##### Human Readable Output
+
+>##### The isolation request has been submitted successfully:
+>|ID|Type|Requestor|RequestorComment|Status|MachineID|ComputerDNSName|
+>|---|---|---|---|---|---|---|
+>| 1f3098e20464 | Offboard | 2f48b784-5da5-4e61-9957-012d2630f1e4 | offboard_test_3 | Pending | 12342c13fef | desktop-s2455r8 |
+>| 6d39a3da0744 | Offboard | 2f48b784-5da5-4e61-9957-012d2630f1e4 | ofboard_test_3 | Pending | 12342c13fef8f06606 | desktop-s2455r9 |
+
+
