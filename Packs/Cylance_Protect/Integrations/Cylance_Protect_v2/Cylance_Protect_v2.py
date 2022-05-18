@@ -48,7 +48,7 @@ SCOPE_OPTICS_GET = 'opticssurvey:read'  # Read a InstaQuery
 
 
 # PREREQUISITES
-def load_server_url():  # pragma: no cover
+def load_server_url():   # pragma: no cover
     """ Cleans and loads the server url from the configuration """
     url = demisto.params()['server']
     url = re.sub('/[\/]+$/', '', url)
@@ -66,7 +66,7 @@ USE_SSL = False
 
 
 # HELPERS
-def generate_jwt_times():  # pragma: no cover
+def generate_jwt_times():   # pragma: no cover
     """
     Generates the epoch time window in which the token will be valid
     Returns the current timestamp and the timeout timestamp (in that order)
@@ -78,7 +78,7 @@ def generate_jwt_times():  # pragma: no cover
     return epoch_time, epoch_timeout
 
 
-def api_call(uri, method='post', headers={}, body={}, params={}, accept_404=False, access_token=''):  # pragma: no cover
+def api_call(uri, method='post', headers={}, body={}, params={}, accept_404=False, access_token=''):   # pragma: no cover
 
     """
     Makes an API call to the server URL with the supplied uri, method, headers, body and params
@@ -152,14 +152,14 @@ def threat_to_incident(threat):
     return incident
 
 
-def normalize_score(score):  # pragma: no cover
+def normalize_score(score):   # pragma: no cover
     """
     Translates API raw float (-1 to 1) score to UI score (-100 to 100)
     """
     return score * 100
 
 
-def translate_score(score, threshold):  # pragma: no cover
+def translate_score(score, threshold):   # pragma: no cover
     if score > 0:
         dbot_score = 1
     elif threshold <= score:
@@ -170,7 +170,7 @@ def translate_score(score, threshold):  # pragma: no cover
 
 
 # FUNCTIONS
-def test():  # pragma: no cover
+def test():   # pragma: no cover
     access_token = get_authentication_token()
     if not access_token:
         raise Exception('Unable to get access token')
@@ -233,7 +233,7 @@ def get_devices():
     demisto.results(entry)
 
 
-def get_devices_request(page=None, page_size=None):  # pragma: no cover
+def get_devices_request(page=None, page_size=None):   # pragma: no cover
     access_token = get_authentication_token(scope=SCOPE_DEVICE_LIST)
 
     params = {}
@@ -310,7 +310,7 @@ def get_device():
     demisto.results(entry)
 
 
-def get_device_request(device_id):  # pragma: no cover
+def get_device_request(device_id):   # pragma: no cover
     access_token = get_authentication_token(scope=SCOPE_DEVICE_READ)
 
     uri = '%s/%s' % (URI_DEVICES, device_id)
@@ -383,7 +383,7 @@ def get_device_by_hostname():
     demisto.results(entry)
 
 
-def get_hostname_request(hostname):  # pragma: no cover
+def get_hostname_request(hostname):   # pragma: no cover
 
     access_token = get_authentication_token(scope=SCOPE_DEVICE_READ)
 
@@ -430,7 +430,7 @@ def update_device():
     demisto.results(entry)
 
 
-def update_device_request(device_id, name=None, policy_id=None, add_zones=None, remove_zones=None):  # pragma: no cover
+def update_device_request(device_id, name=None, policy_id=None, add_zones=None, remove_zones=None):   # pragma: no cover
     access_token = get_authentication_token(scope=SCOPE_DEVICE_UPDATE)
 
     body = {}
@@ -492,7 +492,7 @@ def get_device_threats():
         demisto.results('No threats found.')
 
 
-def get_device_threats_request(device_id, page=None, page_size=None):  # pragma: no cover
+def get_device_threats_request(device_id, page=None, page_size=None):   # pragma: no cover
     access_token = get_authentication_token(scope=SCOPE_DEVICE_THREAT_LIST)
 
     params = {}
@@ -529,7 +529,7 @@ def get_policies():
     demisto.results(entry)
 
 
-def get_policies_request(page=None, page_size=None):  # pragma: no cover
+def get_policies_request(page=None, page_size=None):   # pragma: no cover
     access_token = get_authentication_token(scope=SCOPE_POLICY_LIST)
 
     params = {}
@@ -559,7 +559,7 @@ def create_zone():
     })
 
 
-def create_zone_request(name, policy_id, criticality):  # pragma: no cover
+def create_zone_request(name, policy_id, criticality):   # pragma: no cover
     access_token = get_authentication_token(scope=SCOPE_ZONE_CREATE)
 
     body = {
@@ -593,7 +593,7 @@ def get_zones():
     })
 
 
-def get_zones_request(page=None, page_size=None):  # pragma: no cover
+def get_zones_request(page=None, page_size=None):   # pragma: no cover
     access_token = get_authentication_token(scope=SCOPE_ZONE_LIST)
 
     params = {}
@@ -626,7 +626,7 @@ def get_zone():
     })
 
 
-def get_zone_request(zone_id):  # pragma: no cover
+def get_zone_request(zone_id):   # pragma: no cover
     access_token = get_authentication_token(scope=SCOPE_ZONE_READ)
 
     uri = '%s/%s' % (URI_ZONES, zone_id)
@@ -663,7 +663,7 @@ def update_zone():
     })
 
 
-def update_zone_request(zone_id, name, policy_id, criticality):  # pragma: no cover
+def update_zone_request(zone_id, name, policy_id, criticality):   # pragma: no cover
     access_token = get_authentication_token(scope=SCOPE_ZONE_UPDATE)
 
     body = {}
@@ -712,7 +712,7 @@ def get_threat():
         demisto.results('Threat was not found.')
 
 
-def get_threat_request(sha256):  # pragma: no cover
+def get_threat_request(sha256):   # pragma: no cover
     access_token = get_authentication_token(scope=SCOPE_THREAT_READ)
 
     uri = '%s/%s' % (URI_THREATS, sha256)
@@ -764,7 +764,7 @@ def get_threats():
     })
 
 
-def get_threats_request(page=None, page_size=None):  # pragma: no cover
+def get_threats_request(page=None, page_size=None):   # pragma: no cover
     access_token = get_authentication_token(scope=SCOPE_THREAT_LIST)
 
     params = {}
@@ -846,7 +846,7 @@ def get_threat_devices():
         demisto.results('No devices found on given threat.')
 
 
-def get_threat_devices_request(threat_hash, page=None, page_size=None):  # pragma: no cover
+def get_threat_devices_request(threat_hash, page=None, page_size=None):   # pragma: no cover
     access_token = get_authentication_token(scope=SCOPE_THREAT_DEVICE_LIST)
 
     params = {}
@@ -898,7 +898,7 @@ def get_list():
         demisto.results('No list of this type was found.')
 
 
-def get_list_request(list_type_id, page=None, page_size=None):  # pragma: no cover
+def get_list_request(list_type_id, page=None, page_size=None):   # pragma: no cover
     access_token = get_authentication_token(scope=SCOPE_GLOBAL_LIST)
 
     params = {}
@@ -956,7 +956,7 @@ def get_list_entry_by_hash(sha256=None, list_type_id=None):
         return found_hash
 
 
-def get_indicators_report():  # pragma: no cover
+def get_indicators_report():   # pragma: no cover
 
     url = 'https://protect.cylance.com/Reports/ThreatDataReportV1/indicators/' + demisto.args()['token']
     res = requests.request('GET', url, verify=USE_SSL)
@@ -964,7 +964,7 @@ def get_indicators_report():  # pragma: no cover
     demisto.results(fileResult(filename, res.content))
 
 
-def update_device_threats():  # pragma: no cover
+def update_device_threats():   # pragma: no cover
     device_id = demisto.args()['device_id']
     threat_id = demisto.args()['threat_id']
     event = demisto.args()['event']
@@ -972,7 +972,7 @@ def update_device_threats():  # pragma: no cover
     demisto.results('Device threat was updated successfully.')
 
 
-def update_device_threats_request(device_id, threat_id, event):  # pragma: no cover
+def update_device_threats_request(device_id, threat_id, event):   # pragma: no cover
     access_token = get_authentication_token(scope=SCOPE_THREAT_UPDATE)
 
     body = {
@@ -1058,7 +1058,7 @@ def download_threat():
     })
 
 
-def download_threat_request(hash):  # pragma: no cover
+def download_threat_request(hash):   # pragma: no cover
     access_token = get_authentication_token(scope=SCOPE_THREAT_READ)
 
     uri = '%s/%s/%s' % (URI_THREATS, "download", hash)
@@ -1109,7 +1109,7 @@ def add_hash_to_list():
     })
 
 
-def add_hash_to_list_request(sha256, list_type, reason, category=None):  # pragma: no cover
+def add_hash_to_list_request(sha256, list_type, reason, category=None):   # pragma: no cover
     access_token = get_authentication_token(scope=SCOPE_GLOBAL_LIST_CREATE)
 
     body = {
@@ -1153,7 +1153,7 @@ def delete_hash_from_lists():
     })
 
 
-def delete_hash_from_lists_request(sha256, list_type):  # pragma: no cover
+def delete_hash_from_lists_request(sha256, list_type):   # pragma: no cover
     access_token = get_authentication_token(scope=SCOPE_GLOBAL_LIST_DELETE)
 
     body = {
@@ -1209,7 +1209,7 @@ def delete_devices():
     })
 
 
-def delete_devices_request(device_ids):  # pragma: no cover
+def delete_devices_request(device_ids):   # pragma: no cover
     access_token = get_authentication_token()
 
     body = {
@@ -1253,10 +1253,6 @@ def get_policy_details():
             if reg:
                 ts = float(reg.group())
                 date_time = datetime.fromtimestamp(ts / 1000).strftime('%Y-%m-%dT%H:%M:%S.%f+00:00')
-
-        context = {
-            'Cylance.Policy(val.ID && val.ID == obj.ID)': policy_details
-        }
 
         contents = {
             'Policy Name': policy_details.get('policy_name'),
@@ -1333,7 +1329,7 @@ def get_policy_details():
     return_results(results)
 
 
-def get_policy_details_request(policy_id):  # pragma: no cover
+def get_policy_details_request(policy_id):   # pragma: no cover
     access_token = get_authentication_token(scope=SCOPE_POLICY_READ)
 
     uri = '%s/%s' % (URI_POLICIES, policy_id)
@@ -1467,7 +1463,7 @@ def fetch_incidents():
     demisto.setLastRun({'time': current_run.isoformat().split('.')[0]})
 
 
-def add_capitalized_hash_to_context(threats_context):  # pragma: no cover
+def add_capitalized_hash_to_context(threats_context):   # pragma: no cover
     """Add capitalized hash keys to the context such as SHA256 and MD5,
     the keys are redundant since they are used for avoiding BC issues.
 
@@ -1492,7 +1488,7 @@ def add_capitalized_hash_to_context(threats_context):  # pragma: no cover
 
 
 # EXECUTION
-def main():  # pragma: no cover
+def main():   # pragma: no cover
     global APP_ID
     APP_ID = demisto.params()['app_id']
     global APP_SECRET
