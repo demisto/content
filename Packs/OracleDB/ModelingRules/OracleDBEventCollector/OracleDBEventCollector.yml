@@ -1,0 +1,4 @@
+name: MySQLEventCollector
+id: MySQLEventCollector
+fromversion: 3.3.0
+rules: ''
