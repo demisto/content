@@ -25,7 +25,7 @@ if not text:
     option1 = demisto.args().get('option1')
     option2 = demisto.args().get('option2')
     text += 'Please reply with either ' + option1 + ' or ' + option2
-    additional_options = demisto.args().get('additionalOptions')
+    additional_options = args.get('additionalOptions')
     if additional_options:
         additional_options_list = additional_options.split(',')
         text += ' or '
