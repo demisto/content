@@ -267,9 +267,8 @@ def create_nic_parameters(args, subscription_id):
     vnet_name = args.get('vnet_name')
     subnet_name = args.get('subnet_name')
     ip_config_name = args.get('ip_config_name')
-    subnet_id = f"/subscriptions/{subscription_id}/resourceGroups/"
-    subnet_id += f"{resource_group}/providers/Microsoft.Network/virtualNetworks/" \
-                 f"{vnet_name}/subnets/{subnet_name}"
+    subnet_id = (f"/subscriptions/{subscription_id}/resourceGroups/{resource_group}/providers/Microsoft.Network/"
+                 f"virtualNetworks/{vnet_name}/subnets/{subnet_name}")
 
     # Construct NIC object
     nic = {
@@ -297,8 +296,8 @@ def create_nic_parameters(args, subscription_id):
         nic['properties']['ipConfigurations'][0]['properties']['privateIPAddress'] = private_ip_address
 
     if network_security_group:
-        network_security_group_id = f"/subscriptions/{subscription_id}/resourceGroups/{resource_group}/providers/" \
-                                    f"Microsoft.Network/networkSecurityGroups/{network_security_group}"
+        network_security_group_id = (f"/subscriptions/{subscription_id}/resourceGroups/{resource_group}/providers"
+                                     f"/Microsoft.Network/networkSecurityGroups/{network_security_group}")
         nic['properties']['networkSecurityGroup']['id'] = network_security_group_id
 
     return nic
