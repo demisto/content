@@ -23,8 +23,9 @@ configuration:
 - display: Alert severities to fetch when fetching incidents
   name: alert_severity
   options:
+  - Critical
   - High
-  - Medium
+  - Moderate
   - Low
   required: false
   type: 16
@@ -787,7 +788,7 @@ script:
     - contextPath: Code42.DepartingEmployee.DepartureDate
       description: The departure date for the Departing Employee.
       type: Unknown
-  dockerimage: demisto/py42:1.0.0.23290
+  dockerimage: demisto/py42:1.0.0.29662
   feed: false
   isfetch: true
   longRunning: false
@@ -797,3 +798,7 @@ script:
   subtype: python3
   type: python
 fromversion: 5.0.0
+defaultclassifier: Code42 - Classifier
+defaultmapperin: Code42 - Mapping
+tests:
+- No tests (auto formatted)

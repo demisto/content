@@ -76,7 +76,7 @@ CODE42_ALERT_CONTEXT_FIELD_MAPPER = {
     "name": "Name",
     "state": "State",
     "type": "Type",
-    "severity": "Severity",
+    "riskSeverity": "Severity",
 }
 
 FILE_CONTEXT_FIELD_MAPPER = {
