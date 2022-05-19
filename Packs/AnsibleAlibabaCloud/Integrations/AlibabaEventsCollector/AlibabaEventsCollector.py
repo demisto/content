@@ -1,6 +1,6 @@
 import demistomock as demisto
 from CommonServerPython import *
-from SiemApiModule import Method, IntegrationHTTPRequest, IntegrationEventsClient, IntegrationGetEvents, IntegrationOptions
+from SiemApiModule import *
 from datetime import datetime
 from typing import Any
 import six
@@ -9,23 +9,9 @@ import hashlib
 import base64
 import urllib3
 
-
 API_VERSION = '0.6.0'
 
-# class ReqParams(BaseModel):
-#     """
-#     A class that stores the request query params
-#     """
-#     from_: str = Field(alias='from')
-#     to: int
-#     type: str = 'log'
-#     offset: int = 0
-#     reverse: str = 'false'
-#     powerSql: bool = False
-#     query: str
-
-class AlibabaRequestConfig(IntegrationHTTPRequest):
-    params: dict
+urllib3.disable_warnings()
 
 
 class AlibabaEventsClient(IntegrationEventsClient):
@@ -37,10 +23,6 @@ class AlibabaEventsClient(IntegrationEventsClient):
         super().__init__(request=request, options=options)
 
     def set_request_filter(self, after: Any):
-        # from_date = datetime.utcfromtimestamp(int(after)) + timedelta(seconds =-10)
-        #
-        # from_time = int(time.mktime(from_date.timetuple()))
-
         from_time = int(after)
 
         self.request.params['from'] = from_time + 1
@@ -112,6 +94,7 @@ def canonicalized_resource(resource, params):
 
     return resource
 
+
 def base64_encodestring(s):
     if six.PY2:
         return base64.encodestring(s)
@@ -119,6 +102,7 @@ def base64_encodestring(s):
         if isinstance(s, str):
             s = s.encode('utf8')
         return base64.encodebytes(s).decode('utf8')
+
 
 def hmac_sha1(content, key):
     if isinstance(content, six.text_type):  # hmac.new accept 8-bit str
@@ -132,16 +116,22 @@ def hmac_sha1(content, key):
 
 def get_request_authorization(resource, key, req_params, req_headers):
     """ :return bytes (PY2) or string (PY2) """
-
-    method = 'GET'
-
-    content = method + "\n"
-    content += '\n'
-    content += "\n"
+    content = 'GET\n\n\n'
     content += req_headers['Date'] + "\n"
     content += canonicalized_log_headers(req_headers)
     content += canonicalized_resource(resource, req_params)
     return hmac_sha1(content, key)
+
+
+def get_alibaba_timestamp_format(value):
+    timestamp: Optional[datetime]
+    if isinstance(value, int):
+        return value
+    if not isinstance(value, datetime):
+        timestamp = dateparser.parse(value)
+    if timestamp is None:
+        raise TypeError(f'after is not a valid time {value}')
+    return int(time.mktime(timestamp.timetuple()))
 
 
 def main():
@@ -153,9 +143,9 @@ def main():
     logstore_name = demisto_params.get('logstore_name')
     access_key = demisto_params.get('access_key').get('password')
     access_key_id = demisto_params.get('access_key_id').get('password')
-    from_ = int(demisto_params.get('from'))
     query = demisto_params.get('query')
     events_to_add_per_request = int(demisto_params.get('events_to_add_per_request'))
+    from_ = get_alibaba_timestamp_format(demisto_params.get('from'))
 
     headers = {'Content-Length': '0',
                'x-log-bodyrawsize': '0',
@@ -163,9 +153,6 @@ def main():
                'x-log-signaturemethod': 'hmac-sha1',
                'Host': f'{project_name}.{endpoint}',
                'x-log-date': ''}
-
-
-    # params = ReqParams(**demisto_params)
 
     params = {'from': from_,
               'to': from_ + 3600,
@@ -182,7 +169,7 @@ def main():
 
     request = AlibabaRequestConfig(**demisto_params)
 
-    options = IntegrationOptions(limit=2000)
+    options = IntegrationOptions.parse_obj(demisto_params)
 
     client = AlibabaEventsClient(request, options, access_key=access_key,
                                  access_key_id=access_key_id, logstore_name=logstore_name)
@@ -191,29 +178,34 @@ def main():
 
     command = demisto.command()
     try:
-        urllib3.disable_warnings()
-
         if command == 'test-module':
+            get_events.client.options.limit = 1
             get_events.run()
             return_results('ok')
-        elif command == 'alibaba-get-events' or command == 'fetch-events':
+        elif command in ('alibaba-get-events', 'fetch-events'):
             events = get_events.run()
 
             if command == 'fetch-events':
                 if events:
                     demisto.setLastRun(AlibabaGetEvents.get_last_run(events))
-                while len(events) > 0:
-                    send_events_to_xsiam(events[:events_to_add_per_request], 'alibaba', 'action trail')
-                    events = events[events_to_add_per_request:]
+                else:
+                    send_events_to_xsiam([], 'alibaba', demisto_params.get('product'))
+
             elif command == 'alibaba-get-events':
                 command_results = CommandResults(
                     readable_output=tableToMarkdown('alibaba Logs', events, headerTransform=pascalToSpace),
                     outputs_prefix='alibaba.Logs',
-                    outputs_key_field='@timestamp',
+                    outputs_key_field='event.eventid',
                     outputs=events,
                     raw_response=events,
                 )
                 return_results(command_results)
+
+            while len(events) > 0:
+                send_events_to_xsiam(events[:events_to_add_per_request], 'alibaba',
+                                     demisto_params.get('product'))
+                events = events[events_to_add_per_request:]
+
     except Exception as e:
         return_error(str(e))
 
