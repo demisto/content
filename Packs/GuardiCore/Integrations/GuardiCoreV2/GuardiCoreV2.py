@@ -417,7 +417,7 @@ def get_assets(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     for res in results.get("objects"):
         hostname = res.get("guest_agent_details", {}).get("hostname", "")
 
-        res = filter_human_readable(res, human_columns=ASSET_COLUMNS+ADDITIONAL_DATA)
+        res = filter_human_readable(res, human_columns=ASSET_COLUMNS + ADDITIONAL_DATA)
         md = tableToMarkdown(f'{INTEGRATION_NAME} - Asset: {hostname}',
                              res, headers=ASSET_COLUMNS)
 
