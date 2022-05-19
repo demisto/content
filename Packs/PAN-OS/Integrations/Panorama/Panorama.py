@@ -11511,6 +11511,14 @@ def main():
                     empty_result_message="No active commit jobs."
                 )
             )
+        elif command == 'pan-os-config-get-push-status':
+            topology = get_topology()
+            return_results(
+                dataclasses_to_command_results(
+                    get_push_status(topology, **demisto.args()),
+                    empty_result_message="No active push jobs."
+                )
+            )
         elif command == 'pan-os-config-get-object':
             topology = get_topology()
             return_results(
