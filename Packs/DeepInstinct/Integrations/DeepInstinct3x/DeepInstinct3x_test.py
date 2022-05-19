@@ -198,7 +198,7 @@ def test_get_all_policies(requests_mock, mocker):
 def test_get_events(requests_mock, mocker):
     mocker.patch.object(demisto, 'params', return_value=params)
     mocker.patch.object(demisto, 'args', return_value={'first_event_id': 0})
-    requests_mock.get(f"{params['base_url']}/api/v1/events/?after_id=0", json=mock_events)
+    requests_mock.get(f"{params['base_url']}/api/v1/events?after_event_id=0", json=mock_events)
     mocker.patch.object(demisto, 'results')
     DeepInstinct3x.get_events()
     result = demisto.results.call_args[0][0]
@@ -209,8 +209,8 @@ def test_fetch_incidents(requests_mock, mocker):
     mocker.patch.object(demisto, 'params', return_value=params)
     mocker.patch.object(demisto, 'args', return_value={'first_fetch': 0})
     mocker.patch.object(demisto, 'getLastRun', return_value={'last_id': 0})
-    requests_mock.get("{0}/api/v1/events/?after_id=0".format(params['base_url']), json=mock_events)
-    requests_mock.get("{0}/api/v1/events/?after_id=2".format(params['base_url']), json={})
+    requests_mock.get("{0}/api/v1/events?after_event_id=0".format(params['base_url']), json=mock_events)
+    requests_mock.get("{0}/api/v1/events?after_event_id=2".format(params['base_url']), json={})
     mocker.patch.object(demisto, "incidents")
     DeepInstinct3x.fetch_incidents()
     incidents = demisto.incidents.call_args[0][0]

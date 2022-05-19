@@ -212,14 +212,15 @@ def close_events():
 
 def fetch_incidents():
     incidents = []
-    last_id = demisto.params().get('first_fetch')
+    last_id = arg_to_number(demisto.params().get('first_fetch', 0))
+    max_fetch = arg_to_number(demisto.params().get('max_fetch', 50))
 
     last_run = demisto.getLastRun()
     if last_run and last_run.get('last_id') is not None:
         last_id = last_run.get('last_id')
 
     events = http_request('GET', '/events?after_event_id=' + str(last_id))
-    while events and events['events']:
+    while events and events['events'] and len(incidents) < max_fetch:
         for event in events['events']:
             incident = {
                 'name': "DeepInstinct_" + str(event['id']),  # name is required field, must be set
@@ -227,6 +228,9 @@ def fetch_incidents():
                 'rawJSON': json.dumps(event)
             }
             incidents.append(incident)
+            if len(incidents) >= max_fetch:
+                demisto.setLastRun({'last_id': event['id']})
+                break
 
         demisto.setLastRun({'last_id': events['last_id']})
         events = http_request('GET', '/events?after_event_id=' + str(events['last_id']))
