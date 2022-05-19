@@ -485,19 +485,19 @@ Gets the properties of a given network interface.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.NetworkInterfaces.AttachedVirtualMachine | String | The attached virtual machine to this interface. | 
-| Azure.NetworkInterfaces.IsPrimaryInterface | String | True if this interface is a primary interface of the attached VM. | 
-| Azure.NetworkInterfaces.NICType | String | The interface type. | 
-| Azure.NetworkInterfaces.IPConfigurations.ConfigID | String | The interface ipconfig id. | 
-| Azure.NetworkInterfaces.IPConfigurations.ConfigName | String | The interface ipconfig name. | 
-| Azure.NetworkInterfaces.IPConfigurations.PrivateIPAddress | String | The interface private ip addresse. | 
-| Azure.NetworkInterfaces.IPConfigurations.PublicIPAddressID | Unknown | The interface public ip address id. | 
-| Azure.NetworkInterfaces.MACAddress | String | The interface mac address. | 
-| Azure.NetworkInterfaces.Name | String | The interface name. | 
-| Azure.NetworkInterfaces.ResourceGroup | String | The interface resource group. | 
-| Azure.NetworkInterfaces.NetworkSecurityGroup.id | String | The interface network security group id. | 
-| Azure.NetworkInterfaces.Location | String | The interface location. | 
-| Azure.NetworkInterfaces.ID | String | The interface id. | 
+| Azure.Network.Interfaces.AttachedVirtualMachine | String | The attached virtual machine to this interface. | 
+| Azure.Network.Interfaces.IsPrimaryInterface | String | True if this interface is a primary interface of the attached VM. | 
+| Azure.Network.Interfaces.NICType | String | The interface type. | 
+| Azure.Network.Interfaces.IPConfigurations.ConfigID | String | The interface ipconfig id. | 
+| Azure.Network.Interfaces.IPConfigurations.ConfigName | String | The interface ipconfig name. | 
+| Azure.Network.Interfaces.IPConfigurations.PrivateIPAddress | String | The interface private ip addresse. | 
+| Azure.Network.Interfaces.IPConfigurations.PublicIPAddressID | Unknown | The interface public ip address id. | 
+| Azure.Network.Interfaces.MACAddress | String | The interface mac address. | 
+| Azure.Network.Interfaces.Name | String | The interface name. | 
+| Azure.Network.Interfaces.ResourceGroup | String | The interface resource group. | 
+| Azure.Network.Interfaces.NetworkSecurityGroup.id | String | The interface network security group id. | 
+| Azure.Network.Interfaces.Location | String | The interface location. | 
+| Azure.Network.Interfaces.ID | String | The interface id. | 
 
 #### Command example
 ```!azure-vm-get-nic-details resource_group=Compute-Labs nic_name=webserver729```
@@ -505,17 +505,18 @@ Gets the properties of a given network interface.
 ```json
 {
     "Azure": {
-        "NetworkInterfaces": {
+        "Network":{
+          "Interfaces": {
             "AttachedVirtualMachine": "/subscriptions/xxxxxxxxx-xxxxx-xxxxx-xxxxx-xxxxxxxxxxxxx/resourceGroups/Compute-Labs/providers/Microsoft.Compute/virtualMachines/webserver",
             "DNSSuffix": "test.bx.internal.cloudapp.net",
             "ID": "/subscriptions/xxxxxxxxx-xxxxx-xxxxx-xxxxx-xxxxxxxxxxxxx/resourceGroups/Compute-Labs/providers/Microsoft.Network/networkInterfaces/webserver729",
             "IPConfigurations": [
-                {
-                    "ConfigID": "/subscriptions/xxxxxxxxx-xxxxx-xxxxx-xxxxx-xxxxxxxxxxxxx/resourceGroups/Compute-Labs/providers/Microsoft.Network/networkInterfaces/webserver729/ipConfigurations/ipconfig1",
-                    "ConfigName": "ipconfig1",
-                    "PrivateIPAddress": "10.0.0.4",
-                    "PublicIPAddressID": "/subscriptions/xxxxxxxxx-xxxxx-xxxxx-xxxxx-xxxxxxxxxxxxx/resourceGroups/Compute-Labs/providers/Microsoft.Network/publicIPAddresses/webserver-ip"
-                }
+              {
+                "ConfigID": "/subscriptions/xxxxxxxxx-xxxxx-xxxxx-xxxxx-xxxxxxxxxxxxx/resourceGroups/Compute-Labs/providers/Microsoft.Network/networkInterfaces/webserver729/ipConfigurations/ipconfig1",
+                "ConfigName": "ipconfig1",
+                "PrivateIPAddress": "10.0.0.4",
+                "PublicIPAddressID": "/subscriptions/xxxxxxxxx-xxxxx-xxxxx-xxxxx-xxxxxxxxxxxxx/resourceGroups/Compute-Labs/providers/Microsoft.Network/publicIPAddresses/webserver-ip"
+              }
             ],
             "IsPrimaryInterface": true,
             "Location": "eastus",
@@ -523,9 +524,10 @@ Gets the properties of a given network interface.
             "NICType": "NA",
             "Name": "webserver729",
             "NetworkSecurityGroup": {
-                "id": "/subscriptions/xxxxxxxxx-xxxxx-xxxxx-xxxxx-xxxxxxxxxxxxx/resourceGroups/Compute-Labs/providers/Microsoft.Network/networkSecurityGroups/webserver-nsg"
+              "id": "/subscriptions/xxxxxxxxx-xxxxx-xxxxx-xxxxx-xxxxxxxxxxxxx/resourceGroups/Compute-Labs/providers/Microsoft.Network/networkSecurityGroups/webserver-nsg"
             },
             "ResourceGroup": "Compute-Labs"
+          }
         }
     }
 }
@@ -559,16 +561,16 @@ Gets the properties of a given public ip address.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.NetworkInterfaces.IPConfigurations.PublicIPAddress | String | The public ip address. | 
-| Azure.NetworkInterfaces.IPConfigurations.PublicIPAddressFQDN | String | The address FQDN. | 
-| Azure.NetworkInterfaces.IPConfigurations.PublicIPAddressAllocationMethod | String | The address allocation methond. | 
-| Azure.NetworkInterfaces.IPConfigurations.PublicConfigID | String | The address configuration id. | 
-| Azure.NetworkInterfaces.IPConfigurations.ResourceGroup | String | The address resource group. | 
-| Azure.NetworkInterfaces.IPConfigurations.PublicIPAddressDomainName | String | The address domain name. | 
-| Azure.NetworkInterfaces.IPConfigurations.PublicIPAddressVersion | String | The address version. | 
-| Azure.NetworkInterfaces.IPConfigurations.Location | String | The address location. | 
-| Azure.NetworkInterfaces.IPConfigurations.PublicConfigName | String | The address config name. | 
-| Azure.NetworkInterfaces.IPConfigurations.PublicIPAddressID | String | The address id. | 
+| Azure.Network.IPConfigurations.PublicIPAddress | String | The public ip address. | 
+| Azure.Network.IPConfigurations.PublicIPAddressFQDN | String | The address FQDN. | 
+| Azure.Network.IPConfigurations.PublicIPAddressAllocationMethod | String | The address allocation methond. | 
+| Azure.Network.IPConfigurations.PublicConfigID | String | The address configuration id. | 
+| Azure.Network.IPConfigurations.ResourceGroup | String | The address resource group. | 
+| Azure.Network.IPConfigurations.PublicIPAddressDomainName | String | The address domain name. | 
+| Azure.Network.IPConfigurations.PublicIPAddressVersion | String | The address version. | 
+| Azure.Network.IPConfigurations.Location | String | The address location. | 
+| Azure.Network.IPConfigurations.PublicConfigName | String | The address config name. | 
+| Azure.Network.IPConfigurations.PublicIPAddressID | String | The address id. | 
 
 #### Command example
 ```!azure-vm-get-public-ip-details resource_group=Compute-Labs address_name=webserver-ip```
@@ -576,7 +578,7 @@ Gets the properties of a given public ip address.
 ```json
 {
     "Azure": {
-        "NetworkInterfaces": {
+        "Network": {
             "IPConfigurations": {
                 "Location": "eastus",
                 "PublicConfigID": "/subscriptions/xxxxxxxxx-xxxxx-xxxxx-xxxxx-xxxxxxxxxxxxx/resourceGroups/Compute-Labs/providers/Microsoft.Network/networkInterfaces/webserver729/ipConfigurations/ipconfig1",
@@ -627,17 +629,17 @@ Creates a virtual machine network interface. the specified OS image.
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Azure.NetworkInterfaces.IPConfigurations.ConfigID | String | The interface ipconfig id. | 
-| Azure.NetworkInterfaces.IPConfigurations.ConfigName | String | The interface ipconfig name. | 
-| Azure.NetworkInterfaces.IPConfigurations.PrivateIPAddress | String | The interface private ip addresse. | 
-| Azure.NetworkInterfaces.IPConfigurations.PublicIPAddressID | Unknown | The interface public ip address id. | 
-| Azure.NetworkInterfaces.Name | String | The interface name. | 
-| Azure.NetworkInterfaces.ResourceGroup | String | The interface resource group. | 
-| Azure.NetworkInterfaces.NetworkSecurityGroup.id | String | The interface network security group id. | 
-| Azure.NetworkInterfaces.Location | String | The interface location. | 
-| Azure.NetworkInterfaces.ID | String | The interface id. | 
+| **Path**                                                   | **Type** | **Description** |
+|------------------------------------------------------------| --- | --- |
+| Azure.Network.Interfaces.IPConfigurations.ConfigID         | String | The interface ipconfig id. | 
+| Azure.Network.Interfaces.IPConfigurations.ConfigName       | String | The interface ipconfig name. | 
+| Azure.Network.Interfaces.IPConfigurations.PrivateIPAddress  | String | The interface private ip addresse. | 
+| Azure.Network.Interfaces.IPConfigurations.PublicIPAddressID | Unknown | The interface public ip address id. | 
+| Azure.Network.Interfaces.Name                               | String | The interface name. | 
+| Azure.Network.Interfaces.ResourceGroup                      | String | The interface resource group. | 
+| Azure.Network.Interfaces.NetworkSecurityGroup.id            | String | The interface network security group id. | 
+| Azure.Network.Interfaces.Location                           | String | The interface location. | 
+| Azure.Network.Interfaces.ID                                 | String | The interface id. | 
 
 #### Command example
 ```!azure-vm-create-nic nic_location=eastus nic_name=test_nic2 resource_group=Compute-Labs subnet_name=default vnet_name=Compute-Labs-vnet ip_config_name=ipconfigtest```
@@ -645,23 +647,25 @@ Creates a virtual machine network interface. the specified OS image.
 ```json
 {
     "Azure": {
-        "NetworkInterfaces": {
+        "Network":{
+          "Interfaces": {
             "DNSSuffix": "test.bx.internal.cloudapp.net",
             "ID": "/subscriptions/xxxxxxxxx-xxxxx-xxxxx-xxxxx-xxxxxxxxxxxxx/resourceGroups/Compute-Labs/providers/Microsoft.Network/networkInterfaces/test_nic2",
             "IPConfigurations": [
-                {
-                    "ConfigID": "/subscriptions/xxxxxxxxx-xxxxx-xxxxx-xxxxx-xxxxxxxxxxxxx/resourceGroups/Compute-Labs/providers/Microsoft.Network/networkInterfaces/test_nic2/ipConfigurations/ipconfigtest",
-                    "ConfigName": "ipconfigtest",
-                    "PrivateIPAddress": "10.0.0.13",
-                    "PublicIPAddressID": "NA",
-                    "SubNet": "/subscriptions/xxxxxxxxx-xxxxx-xxxxx-xxxxx-xxxxxxxxxxxxx/resourceGroups/Compute-Labs/providers/Microsoft.Network/virtualNetworks/Compute-Labs-vnet/subnets/default"
-                }
+              {
+                "ConfigID": "/subscriptions/xxxxxxxxx-xxxxx-xxxxx-xxxxx-xxxxxxxxxxxxx/resourceGroups/Compute-Labs/providers/Microsoft.Network/networkInterfaces/test_nic2/ipConfigurations/ipconfigtest",
+                "ConfigName": "ipconfigtest",
+                "PrivateIPAddress": "10.0.0.13",
+                "PublicIPAddressID": "NA",
+                "SubNet": "/subscriptions/xxxxxxxxx-xxxxx-xxxxx-xxxxx-xxxxxxxxxxxxx/resourceGroups/Compute-Labs/providers/Microsoft.Network/virtualNetworks/Compute-Labs-vnet/subnets/default"
+              }
             ],
             "Location": "eastus",
             "Name": "test_nic2",
             "NetworkSecurityGroup": "NA",
             "ProvisioningState": "Succeeded",
             "ResourceGroup": "Compute-Labs"
+          }
         }
     }
 }

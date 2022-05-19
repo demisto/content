@@ -478,43 +478,43 @@ script:
     execution: false
     name: azure-vm-get-nic-details
     outputs:
-    - contextPath: Azure.NetworkInterfaces.AttachedVirtualMachine
+    - contextPath: Azure.Network.Interfaces.AttachedVirtualMachine
       description: The attached virtual machine to this interface.
       type: String
-    - contextPath: Azure.NetworkInterfaces.IsPrimaryInterface
+    - contextPath: Azure.Network.Interfaces.IsPrimaryInterface
       description: True if this interface is a primary interface of the attached VM.
       type: String
-    - contextPath: Azure.NetworkInterfaces.NICType
+    - contextPath: Azure.Network.Interfaces.NICType
       description: The interface type.
       type: String
-    - contextPath: Azure.NetworkInterfaces.IPConfigurations.ConfigID
+    - contextPath: Azure.Network.Interfaces.IPConfigurations.ConfigID
       description: The interface ipconfig id.
       type: String
-    - contextPath: Azure.NetworkInterfaces.IPConfigurations.ConfigName
+    - contextPath: Azure.Network.Interfaces.IPConfigurations.ConfigName
       description: The interface ipconfig name.
       type: String
-    - contextPath: Azure.NetworkInterfaces.IPConfigurations.PrivateIPAddress
+    - contextPath: Azure.Network.Interfaces.IPConfigurations.PrivateIPAddress
       description: The interface private ip addresse.
       type: String
-    - contextPath: Azure.NetworkInterfaces.IPConfigurations.PublicIPAddressID
+    - contextPath: Azure.Network.Interfaces.IPConfigurations.PublicIPAddressID
       description: The interface public ip address id.
       type: Unknown
-    - contextPath: Azure.NetworkInterfaces.MACAddress
+    - contextPath: Azure.Network.Interfaces.MACAddress
       description: The interface mac address.
       type: String
-    - contextPath: Azure.NetworkInterfaces.Name
+    - contextPath: Azure.Network.Interfaces.Name
       description: The interface name.
       type: String
-    - contextPath: Azure.NetworkInterfaces.ResourceGroup
+    - contextPath: Azure.Network.Interfaces.ResourceGroup
       description: The interface resource group.
       type: String
-    - contextPath: Azure.NetworkInterfaces.NetworkSecurityGroup.id
+    - contextPath: Azure.Network.Interfaces.NetworkSecurityGroup.id
       description: The interface network security group id.
       type: String
-    - contextPath: Azure.NetworkInterfaces.Location
+    - contextPath: Azure.Network.Interfaces.Location
       description: The interface location.
       type: String
-    - contextPath: Azure.NetworkInterfaces.ID
+    - contextPath: Azure.Network.Interfaces.ID
       description: The interface id.
       type: String
   - arguments:
@@ -538,34 +538,34 @@ script:
     execution: false
     name: azure-vm-get-public-ip-details
     outputs:
-    - contextPath: Azure.NetworkInterfaces.IPConfigurations.PublicIPAddress
+    - contextPath: Azure.Network.IPConfigurations.PublicIPAddress
       description: The public ip address.
       type: String
-    - contextPath: Azure.NetworkInterfaces.IPConfigurations.PublicIPAddressFQDN
+    - contextPath: Azure.Network.IPConfigurations.PublicIPAddressFQDN
       description: The address FQDN.
       type: String
-    - contextPath: Azure.NetworkInterfaces.IPConfigurations.PublicIPAddressAllocationMethod
+    - contextPath: Azure.Network.IPConfigurations.PublicIPAddressAllocationMethod
       description: The address allocation methond.
       type: String
-    - contextPath: Azure.NetworkInterfaces.IPConfigurations.PublicConfigID
+    - contextPath: Azure.Network.IPConfigurations.PublicConfigID
       description: The address configuration id.
       type: String
-    - contextPath: Azure.NetworkInterfaces.IPConfigurations.ResourceGroup
+    - contextPath: Azure.Network.IPConfigurations.ResourceGroup
       description: The address resource group.
       type: String
-    - contextPath: Azure.NetworkInterfaces.IPConfigurations.PublicIPAddressDomainName
+    - contextPath: Azure.Network.IPConfigurations.PublicIPAddressDomainName
       description: The address domain name.
       type: String
-    - contextPath: Azure.NetworkInterfaces.IPConfigurations.PublicIPAddressVersion
+    - contextPath: Azure.Network.IPConfigurations.PublicIPAddressVersion
       description: The address version.
       type: String
-    - contextPath: Azure.NetworkInterfaces.IPConfigurations.Location
+    - contextPath: Azure.Network.IPConfigurations.Location
       description: The address location.
       type: String
-    - contextPath: Azure.NetworkInterfaces.IPConfigurations.PublicConfigName
+    - contextPath: Azure.Network.IPConfigurations.PublicConfigName
       description: The address config name.
       type: String
-    - contextPath: Azure.NetworkInterfaces.IPConfigurations.PublicIPAddressID
+    - contextPath: Azure.Network.IPConfigurations.PublicIPAddressID
       description: The address id.
       type: String
   - arguments:
@@ -670,31 +670,31 @@ script:
     execution: false
     name: azure-vm-create-nic
     outputs:
-    - contextPath: Azure.NetworkInterfaces.IPConfigurations.ConfigID
+    - contextPath: Azure.Network.Interfaces.IPConfigurations.ConfigID
       description: The interface ipconfig id.
       type: String
-    - contextPath: Azure.NetworkInterfaces.IPConfigurations.ConfigName
+    - contextPath: Azure.Network.Interfaces.IPConfigurations.ConfigName
       description: The interface ipconfig name.
       type: String
-    - contextPath: Azure.NetworkInterfaces.IPConfigurations.PrivateIPAddress
+    - contextPath: Azure.Network.Interfaces.IPConfigurations.PrivateIPAddress
       description: The interface private ip addresse.
       type: String
-    - contextPath: Azure.NetworkInterfaces.IPConfigurations.PublicIPAddressID
+    - contextPath: Azure.Network.Interfaces.IPConfigurations.PublicIPAddressID
       description: The interface public ip address id.
       type: Unknown
-    - contextPath: Azure.NetworkInterfaces.Name
+    - contextPath: Azure.Network.Interfaces.Name
       description: The interface name.
       type: String
-    - contextPath: Azure.NetworkInterfaces.ResourceGroup
+    - contextPath: Azure.Network.Interfaces.ResourceGroup
       description: The interface resource group.
       type: String
-    - contextPath: Azure.NetworkInterfaces.NetworkSecurityGroup.id
+    - contextPath: Azure.Network.Interfaces.NetworkSecurityGroup.id
       description: The interface network security group id.
       type: String
-    - contextPath: Azure.NetworkInterfaces.Location
+    - contextPath: Azure.Network.Interfaces.Location
       description: The interface location.
       type: String
-    - contextPath: Azure.NetworkInterfaces.ID
+    - contextPath: Azure.Network.Interfaces.ID
       description: The interface id.
       type: String
   dockerimage: demisto/crypto:1.0.0.28507

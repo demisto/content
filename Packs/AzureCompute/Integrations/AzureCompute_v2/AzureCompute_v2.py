@@ -820,7 +820,7 @@ def get_network_interface_command(client: MsGraphClient, args: dict):
     title = 'Properties of Network Interface "{}"'.format(interface_name)
     table_headers = ['Name', 'ID', 'MACAddress', 'NetworkSecurityGroup', 'NICType', 'DNSSuffix', 'IPConfigurations']
     human_readable = tableToMarkdown(title, network_config, headers=table_headers, removeNull=True)
-    entry_context = {'Azure.NetworkInterfaces(val.ID === obj.ID)': network_config}
+    entry_context = {'Azure.Network.Interfaces(val.ID === obj.ID)': network_config}
     return human_readable, entry_context, response
 
 
@@ -867,7 +867,7 @@ def get_public_ip_details_command(client: MsGraphClient, args: dict):
     title = 'Properties of Public Address "{}"'.format(address_name)
     table_headers = ['Name', 'PublicIPAddressID', 'PublicIPAddress', 'PublicIPAddressFQDN', 'ConfigName']
     human_readable = tableToMarkdown(title, ip_config, headers=table_headers, removeNull=True)
-    entry_context = {'Azure.NetworkInterfaces.IPConfigurations(val.PublicIPAddressID === '
+    entry_context = {'Azure.Network.IPConfigurations(val.PublicIPAddressID === '
                      'obj.PublicIPAddressID)': ip_config}
     return human_readable, entry_context, response
 
@@ -942,7 +942,7 @@ def create_nic_command(client: MsGraphClient, args: dict):
 
     title = f'Created Network Interface "{nic_name}"'
     human_readable = tableToMarkdown(title, nic, removeNull=True)
-    entry_context = {'Azure.NetworkInterfaces(val.ID && val.Name === obj.ID)': nic}
+    entry_context = {'Azure.Network.Interfaces(val.ID && val.Name === obj.ID)': nic}
     return human_readable, entry_context, response
 
 

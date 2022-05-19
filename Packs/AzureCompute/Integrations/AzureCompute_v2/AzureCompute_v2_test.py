@@ -72,7 +72,7 @@ VM_LIST_EC = {'Azure.Compute(val.Name && val.Name === obj.Name)': [
      'ProvisioningState': 'Succeeded', 'ResourceGroup': 'resource_group'}]}
 
 INTERFACE_EC = {
-    'Azure.NetworkInterfaces(val.ID === obj.ID)':
+    'Azure.Network.Interfaces(val.ID === obj.ID)':
         {
             'Name': 'nic_name',
             'ID': 'nic_id',
@@ -94,7 +94,7 @@ INTERFACE_EC = {
 }
 
 PUBLIC_IP_EC = {
-    'Azure.NetworkInterfaces.IPConfigurations(val.PublicIPAddressID === obj.PublicIPAddressID)':
+    'Azure.Network.IPConfigurations(val.PublicIPAddressID === obj.PublicIPAddressID)':
         {
             'PublicIPAddressID': 'ip_id',
             'PublicConfigName': 'webserver-ip',
@@ -110,7 +110,7 @@ PUBLIC_IP_EC = {
 }
 
 CREATE_NIC_EC = {
-    'Azure.NetworkInterfaces(val.ID && val.Name === obj.ID)':
+    'Azure.Network.Interfaces(val.ID && val.Name === obj.ID)':
         {
             'Name': 'test-nic100',
             'ID': 'nic_id',
