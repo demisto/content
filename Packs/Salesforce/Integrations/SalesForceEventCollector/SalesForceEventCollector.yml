@@ -58,7 +58,7 @@ configuration:
 - display: The product corresponding to the integration that originated the events.
   name: product
   type: 0
-  defaultvalue: 'salesforce-event-audit'
+  defaultvalue: 'event-audit'
   required: true
 - display: Use system proxy settings
   name: proxy
