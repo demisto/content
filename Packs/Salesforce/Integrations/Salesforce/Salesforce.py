@@ -267,25 +267,26 @@ def searchToEntry(client, searchRecords):
     get_org = []
 
     for record in searchRecords:
-        if record.get('attributes').get('type') == 'CaseComment':
+        _type = record.get('attributes', {}).get('type')
+        if _type == 'CaseComment':
             case_comment.append(item.get('Id'))
             break
-        elif record.get('attributes').get('type') == 'getOrgName':
+        elif _type == 'getOrgName':
             get_org.append(item.get('Id'))
             break
-        elif record.get('attributes').get('type') == 'Case':
+        elif _type == 'Case':
             case_ids.append(item.get('Id'))
             break
-        elif record.get('attributes').get('type') == 'Contact':
+        elif _type == 'Contact':
             contact_ids.append(item.Id)
             break
-        elif record.get('attributes').get('type') == 'Lead':
+        elif _type== 'Lead':
             lead_ids.append(item.get('Id'))
             break
-        elif record.get('attributes').get('type') == 'Task':
+        elif _type == 'Task':
             task_ids.append(item.get('Id'))
             break
-        elif record.get('attributes').get('type') == 'User':
+        elif _type == 'User':
             user_ids.append(item.get('Id'))
             break
         else:
