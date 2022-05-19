@@ -32,7 +32,7 @@ if not text:
         text += (' or ').join(additional_options_list)
 text += '\n\nDemistoID: ' + comment_suffix
 
-oid = demisto.args().get('oid')
+oid = args.get('oid')
 
 comment = demisto.executeCommand('salesforce-push-comment', {'oid': oid, 'text': text})
 demisto.results(comment)
