@@ -22,7 +22,7 @@ if task:
 
 text = args.get('text') or ''
 if not text:
-    option1 = demisto.args().get('option1')
+    option1 = args.get('option1')
     option2 = demisto.args().get('option2')
     text += 'Please reply with either ' + option1 + ' or ' + option2
     additional_options = args.get('additionalOptions')
