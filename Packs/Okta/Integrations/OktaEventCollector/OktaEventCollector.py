@@ -39,7 +39,7 @@ class Request(BaseModel):
     data: Optional[str] = None
 
     @validator('url')
-    def add_api_url(cls, v):  # noqa: E213
+    def add_api_url(cls, v):  # noqa: E0213
         return v + '/api/v1/logs'
 
 
