@@ -372,7 +372,7 @@ def commentToEntry(raw_info, title, userMapping):
                 'OwnerId')] if userMapping[raw_info[i].get('OwnerId')] else raw_info[i].get('OwnerId')
 
     results = CommandResults(
-        outputs_prefix='SalesForce.CaseComment(val.ID && val.ID == obj.ID)',
+        outputs_prefix='SalesForce.CaseComment',
         outputs_key_field='ID',
         readable_output=tableToMarkdown(title, raw_info),
         outputs=raw_info)
