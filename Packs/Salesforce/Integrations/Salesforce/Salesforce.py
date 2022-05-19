@@ -629,9 +629,7 @@ def delete_case_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
 def push_comment_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
-    results = client.pushComment(args.get('oid'), args.get('text'), args.get('linkUrl'))
-
-    return results
+    return client.pushComment(args.get('oid'), args.get('text'), args.get('linkUrl'))
 
 
 def push_comment_thread_command(client: Client, args: Dict[str, Any]) -> CommandResults:
