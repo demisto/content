@@ -11,7 +11,7 @@ configuration:
   type: 0
   required: true
 - display:  key
-  name: api_key
+  name: apiKey
   type: 9
   required: true
 - display: Number of incidents to fetch per fetch

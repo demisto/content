@@ -140,7 +140,7 @@ def main():  # pragma: no cover
         demisto_params = demisto.params() | demisto.args()
         events_limit = int(demisto_params.get('limit', 2000))
         after = dateparser.parse(demisto_params['after'].strip())
-        api_key = demisto_params['api_key']['credentials']['password']
+        api_key = demisto_params['apiKey']['credentials']['password']
         demisto_params['headers'] = {"Accept": "application/json", "Content-Type": "application/json",
                                      "Authorization": f"SSWS {api_key}"}
         last_run = demisto.getLastRun()
