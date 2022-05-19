@@ -22,14 +22,14 @@ This integration was integrated and tested with version 3.3.x of DeepInstinct v3
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
-### deepinstinct-get-device
+### deepinstinctv3-get-device
 ***
 Get device information from its ID
 
 
 #### Base Command
 
-`deepinstinct-get-device`
+`deepinstinctv3-get-device`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -41,45 +41,45 @@ Get device information from its ID
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DeepInstinct.devices.ID | number | Device ID | 
-| DeepInstinct.devices.os | string | Device OS | 
-| DeepInstinct.devices.osv | string | Device OS version | 
-| DeepInstinct.devices.ip_address | string | Device IP address | 
-| DeepInstinct.devices.email | sting | Device email ip_address | 
-| DeepInstinct.devices.mac_address | string | Device mac address | 
-| DeepInstinct.devices.hostname | string | Device hostname | 
-| DeepInstinct.devices.domain | string | Device domain | 
-| DeepInstinct.devices.scanned_files | number | Num of device scanned files | 
-| DeepInstinct.devices.comment | string | Device comment | 
-| DeepInstinct.devices.tag | string | Device tag | 
-| DeepInstinct.devices.connectivity_status | string | Device connectivity status | 
-| DeepInstinct.devices.deployment_status | string | Device deployment status | 
-| DeepInstinct.devices.deployment_status_last_update | string | Device last client version update | 
-| DeepInstinct.devices.license_status | string | Device license status | 
-| DeepInstinct.devices.last_registration | string | Device last registration datetime | 
-| DeepInstinct.devices.last_contact | string | Device last contact datetime | 
-| DeepInstinct.devices.distinguished_name | string | Device distinguished name | 
-| DeepInstinct.devices.group_name | string | Device group name | 
-| DeepInstinct.devices.group_id | number | Device group ID | 
-| DeepInstinct.devices.policy_name | string | Device policy name | 
-| DeepInstinct.devices.policy_id | number | Device policy ID | 
-| DeepInstinct.devices.log_status | string | Device log status | 
-| DeepInstinct.devices.agent_version | string | Device agent version | 
-| DeepInstinct.devices.brain_version | string | Device brain version | 
-| DeepInstinct.devices.logged_in_users | string | Device logged in user\(s\) | 
-| DeepInstinct.devices.msp_name | string | Device msp name | 
-| DeepInstinct.devices.msp_id | number | Device msp ID | 
-| DeepInstinct.devices.tenant_name | string | Device tenant name | 
-| DeepInstinct.devices.tenant_id | number | Device tenant ID | 
+| deepinstinctv3.devices.ID | number | Device ID | 
+| deepinstinctv3.devices.os | string | Device OS | 
+| deepinstinctv3.devices.osv | string | Device OS version | 
+| deepinstinctv3.devices.ip_address | string | Device IP address | 
+| deepinstinctv3.devices.email | sting | Device email ip_address | 
+| deepinstinctv3.devices.mac_address | string | Device mac address | 
+| deepinstinctv3.devices.hostname | string | Device hostname | 
+| deepinstinctv3.devices.domain | string | Device domain | 
+| deepinstinctv3.devices.scanned_files | number | Num of device scanned files | 
+| deepinstinctv3.devices.comment | string | Device comment | 
+| deepinstinctv3.devices.tag | string | Device tag | 
+| deepinstinctv3.devices.connectivity_status | string | Device connectivity status | 
+| deepinstinctv3.devices.deployment_status | string | Device deployment status | 
+| deepinstinctv3.devices.deployment_status_last_update | string | Device last client version update | 
+| deepinstinctv3.devices.license_status | string | Device license status | 
+| deepinstinctv3.devices.last_registration | string | Device last registration datetime | 
+| deepinstinctv3.devices.last_contact | string | Device last contact datetime | 
+| deepinstinctv3.devices.distinguished_name | string | Device distinguished name | 
+| deepinstinctv3.devices.group_name | string | Device group name | 
+| deepinstinctv3.devices.group_id | number | Device group ID | 
+| deepinstinctv3.devices.policy_name | string | Device policy name | 
+| deepinstinctv3.devices.policy_id | number | Device policy ID | 
+| deepinstinctv3.devices.log_status | string | Device log status | 
+| deepinstinctv3.devices.agent_version | string | Device agent version | 
+| deepinstinctv3.devices.brain_version | string | Device brain version | 
+| deepinstinctv3.devices.logged_in_users | string | Device logged in user\(s\) | 
+| deepinstinctv3.devices.msp_name | string | Device msp name | 
+| deepinstinctv3.devices.msp_id | number | Device msp ID | 
+| deepinstinctv3.devices.tenant_name | string | Device tenant name | 
+| deepinstinctv3.devices.tenant_id | number | Device tenant ID | 
 
-### deepinstinct-get-events
+### deepinstinctv3-get-events
 ***
 Get all events after given event ID
 
 
 #### Base Command
 
-`deepinstinct-get-events`
+`deepinstinctv3-get-events`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -91,45 +91,45 @@ Get all events after given event ID
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DeepInstinct.Events.events.id | number | event ID | 
-| DeepInstinct.Events.events.device_id | number | event device ID | 
-| DeepInstinct.Events.events.timestamp | string | event timestamp from device | 
-| DeepInstinct.Events.events.insertion_timestamp | string | event timestamp from console | 
-| DeepInstinct.Events.events.close_timestamp | string | event closed timestamp | 
-| DeepInstinct.Events.events.last_action | string | event last last_action | 
-| DeepInstinct.Events.events.status | string | event status | 
-| DeepInstinct.Events.events.comment | string | event comment | 
-| DeepInstinct.Events.events.recorded_device_info | unknown | event device information | 
-| DeepInstinct.Events.events.msp_name | string | event msp name | 
-| DeepInstinct.Events.events.msp_id | number | event msp id | 
-| DeepInstinct.Events.events.tenant_name | string | event tenant name | 
-| DeepInstinct.Events.events.tenant_id | number | event tenant id | 
-| DeepInstinct.Events.events.mitre_classifications | unknown | event MITRE classification | 
-| DeepInstinct.Events.events.type | string | event type | 
-| DeepInstinct.Events.events.trigger | string | event trigger | 
-| DeepInstinct.Events.events.action | string | event action | 
-| DeepInstinct.Events.events.close_trigger | string | event close trigger | 
-| DeepInstinct.Events.events.reoccurrence_count | number | event reoccurrence_count | 
-| DeepInstinct.Events.events.file_type | string | event file type | 
-| DeepInstinct.Events.events.file_hash | string | event file hash | 
-| DeepInstinct.Events.events.file_archive_hash | string | event file archive hash | 
-| DeepInstinct.Events.events.path | unknown | event file path | 
-| DeepInstinct.Events.events.file_size | number | event file size | 
-| DeepInstinct.Events.events.threat_severity | string | event threat severity | 
-| DeepInstinct.Events.events.certificate_thumbprint | string | event certificate certificate thumbprint | 
-| DeepInstinct.Events.events.certificate_vendor_name | string | event certificate certificate vendor name | 
-| DeepInstinct.Events.events.deep_classification | string | Deep Instinct classification | 
-| DeepInstinct.Events.events.file_status | string | event file status | 
-| DeepInstinct.Events.events.sandbox_status | string | event sandbox status | 
+| deepinstinctv3.Events.events.id | number | event ID | 
+| deepinstinctv3.Events.events.device_id | number | event device ID | 
+| deepinstinctv3.Events.events.timestamp | string | event timestamp from device | 
+| deepinstinctv3.Events.events.insertion_timestamp | string | event timestamp from console | 
+| deepinstinctv3.Events.events.close_timestamp | string | event closed timestamp | 
+| deepinstinctv3.Events.events.last_action | string | event last last_action | 
+| deepinstinctv3.Events.events.status | string | event status | 
+| deepinstinctv3.Events.events.comment | string | event comment | 
+| deepinstinctv3.Events.events.recorded_device_info | unknown | event device information | 
+| deepinstinctv3.Events.events.msp_name | string | event msp name | 
+| deepinstinctv3.Events.events.msp_id | number | event msp id | 
+| deepinstinctv3.Events.events.tenant_name | string | event tenant name | 
+| deepinstinctv3.Events.events.tenant_id | number | event tenant id | 
+| deepinstinctv3.Events.events.mitre_classifications | unknown | event MITRE classification | 
+| deepinstinctv3.Events.events.type | string | event type | 
+| deepinstinctv3.Events.events.trigger | string | event trigger | 
+| deepinstinctv3.Events.events.action | string | event action | 
+| deepinstinctv3.Events.events.close_trigger | string | event close trigger | 
+| deepinstinctv3.Events.events.reoccurrence_count | number | event reoccurrence_count | 
+| deepinstinctv3.Events.events.file_type | string | event file type | 
+| deepinstinctv3.Events.events.file_hash | string | event file hash | 
+| deepinstinctv3.Events.events.file_archive_hash | string | event file archive hash | 
+| deepinstinctv3.Events.events.path | unknown | event file path | 
+| deepinstinctv3.Events.events.file_size | number | event file size | 
+| deepinstinctv3.Events.events.threat_severity | string | event threat severity | 
+| deepinstinctv3.Events.events.certificate_thumbprint | string | event certificate certificate thumbprint | 
+| deepinstinctv3.Events.events.certificate_vendor_name | string | event certificate certificate vendor name | 
+| deepinstinctv3.Events.events.deep_classification | string | Deep Instinct classification | 
+| deepinstinctv3.Events.events.file_status | string | event file status | 
+| deepinstinctv3.Events.events.sandbox_status | string | event sandbox status | 
 
-### deepinstinct-get-suspicious-events
+### deepinstinctv3-get-suspicious-events
 ***
 Get all suspicious events after given event ID
 
 
 #### Base Command
 
-`deepinstinct-get-suspicious-events`
+`deepinstinctv3-get-suspicious-events`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -141,35 +141,35 @@ Get all suspicious events after given event ID
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DeepInstinct.Suspicious-Events.events.ID | number | event ID | 
-| DeepInstinct.Suspicious-Events.events.device_id | number | event device ID | 
-| DeepInstinct.Suspicious-Events.events.timestamp | string | event timestamp from device | 
-| DeepInstinct.Suspicious-Events.events.insertion_timestamp | string | event timestamp from console | 
-| DeepInstinct.Suspicious-Events.events.status | string | event status | 
-| DeepInstinct.Suspicious-Events.events.recorded_device_info | unkown | event device info | 
-| DeepInstinct.Suspicious-Events.events.msp_name | string | event msp name | 
-| DeepInstinct.Suspicious-Events.events.msp_id | number | event msp id | 
-| DeepInstinct.Suspicious-Events.events.tenant_name | string | event tenant name | 
-| DeepInstinct.Suspicious-Events.events.tenant_id | number | event tenant id | 
-| DeepInstinct.Suspicious-Events.events.mitre_classifications | unknown | event MITRE classification | 
-| DeepInstinct.Suspicious-Events.events.type | string | event type | 
-| DeepInstinct.Suspicious-Events.events.trigger | string | event trigger | 
-| DeepInstinct.Suspicious-Events.events.action | string | event action | 
-| DeepInstinct.Suspicious-Events.events.close_trigger | string | event close trigger | 
-| DeepInstinct.Suspicious-Events.events.file_type | string | event file type | 
-| DeepInstinct.Suspicious-Events.events.rule_trigger | string | event rule trigger | 
-| DeepInstinct.Suspicious-Events.events.file_archive_hash | string | event file archive hash | 
-| DeepInstinct.Suspicious-Events.events.remediation | unknown | event remediation | 
-| DeepInstinct.Suspicious-Events.events.path | unknown | event file path | 
+| deepinstinctv3.Suspicious-Events.events.ID | number | event ID | 
+| deepinstinctv3.Suspicious-Events.events.device_id | number | event device ID | 
+| deepinstinctv3.Suspicious-Events.events.timestamp | string | event timestamp from device | 
+| deepinstinctv3.Suspicious-Events.events.insertion_timestamp | string | event timestamp from console | 
+| deepinstinctv3.Suspicious-Events.events.status | string | event status | 
+| deepinstinctv3.Suspicious-Events.events.recorded_device_info | unkown | event device info | 
+| deepinstinctv3.Suspicious-Events.events.msp_name | string | event msp name | 
+| deepinstinctv3.Suspicious-Events.events.msp_id | number | event msp id | 
+| deepinstinctv3.Suspicious-Events.events.tenant_name | string | event tenant name | 
+| deepinstinctv3.Suspicious-Events.events.tenant_id | number | event tenant id | 
+| deepinstinctv3.Suspicious-Events.events.mitre_classifications | unknown | event MITRE classification | 
+| deepinstinctv3.Suspicious-Events.events.type | string | event type | 
+| deepinstinctv3.Suspicious-Events.events.trigger | string | event trigger | 
+| deepinstinctv3.Suspicious-Events.events.action | string | event action | 
+| deepinstinctv3.Suspicious-Events.events.close_trigger | string | event close trigger | 
+| deepinstinctv3.Suspicious-Events.events.file_type | string | event file type | 
+| deepinstinctv3.Suspicious-Events.events.rule_trigger | string | event rule trigger | 
+| deepinstinctv3.Suspicious-Events.events.file_archive_hash | string | event file archive hash | 
+| deepinstinctv3.Suspicious-Events.events.remediation | unknown | event remediation | 
+| deepinstinctv3.Suspicious-Events.events.path | unknown | event file path | 
 
-### deepinstinct-get-all-groups
+### deepinstinctv3-get-all-groups
 ***
 Get all groups
 
 
 #### Base Command
 
-`deepinstinct-get-all-groups`
+`deepinstinctv3-get-all-groups`
 #### Input
 
 There are no input arguments for this command.
@@ -178,21 +178,21 @@ There are no input arguments for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DeepInstinct.Groups.ID | number | group id | 
-| DeepInstinct.Groups.is_default_group | boolean | True if group is a default group, false otherwise | 
-| DeepInstinct.Groups.msp_id | number | msp ID | 
-| DeepInstinct.Groups.name | string | group name | 
-| DeepInstinct.Groups.os | string | group operation system | 
-| DeepInstinct.Groups.policy_id | number | group policy ID | 
+| deepinstinctv3.Groups.ID | number | group id | 
+| deepinstinctv3.Groups.is_default_group | boolean | True if group is a default group, false otherwise | 
+| deepinstinctv3.Groups.msp_id | number | msp ID | 
+| deepinstinctv3.Groups.name | string | group name | 
+| deepinstinctv3.Groups.os | string | group operation system | 
+| deepinstinctv3.Groups.policy_id | number | group policy ID | 
 
-### deepinstinct-get-all-policies
+### deepinstinctv3-get-all-policies
 ***
 Get list of all policies
 
 
 #### Base Command
 
-`deepinstinct-get-all-policies`
+`deepinstinctv3-get-all-policies`
 #### Input
 
 There are no input arguments for this command.
@@ -201,21 +201,21 @@ There are no input arguments for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DeepInstinct.Policies.ID | number | policy ID | 
-| DeepInstinct.Policies.name | string | policy name | 
-| DeepInstinct.Policies.os | string | policy operating system | 
-| DeepInstinct.Policies.is_default_policy | boolean | True if policy is a default policy, False otherwise | 
-| DeepInstinct.Policies.msp_id | number | msp ID | 
-| DeepInstinct.Policies.msp_name | string | msp name | 
+| deepinstinctv3.Policies.ID | number | policy ID | 
+| deepinstinctv3.Policies.name | string | policy name | 
+| deepinstinctv3.Policies.os | string | policy operating system | 
+| deepinstinctv3.Policies.is_default_policy | boolean | True if policy is a default policy, False otherwise | 
+| deepinstinctv3.Policies.msp_id | number | msp ID | 
+| deepinstinctv3.Policies.msp_name | string | msp name | 
 
-### deepinstinct-add-hash-to-deny-list
+### deepinstinctv3-add-hash-to-deny-list
 ***
 Add file hash to Deny List
 
 
 #### Base Command
 
-`deepinstinct-add-hash-to-deny-list`
+`deepinstinctv3-add-hash-to-deny-list`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -228,14 +228,14 @@ Add file hash to Deny List
 #### Context Output
 
 There is no context output for this command.
-### deepinstinct-add-hash-to-allow-list
+### deepinstinctv3-add-hash-to-allow-list
 ***
 Add file hash to Allow List
 
 
 #### Base Command
 
-`deepinstinct-add-hash-to-allow-list`
+`deepinstinctv3-add-hash-to-allow-list`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -248,14 +248,14 @@ Add file hash to Allow List
 #### Context Output
 
 There is no context output for this command.
-### deepinstinct-remove-hash-from-deny-list
+### deepinstinctv3-remove-hash-from-deny-list
 ***
 Remove hash from Deny List
 
 
 #### Base Command
 
-`deepinstinct-remove-hash-from-deny-list`
+`deepinstinctv3-remove-hash-from-deny-list`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -267,14 +267,14 @@ Remove hash from Deny List
 #### Context Output
 
 There is no context output for this command.
-### deepinstinct-remove-hash-from-allow-list
+### deepinstinctv3-remove-hash-from-allow-list
 ***
 Remove hash from Allow List
 
 
 #### Base Command
 
-`deepinstinct-remove-hash-from-allow-list`
+`deepinstinctv3-remove-hash-from-allow-list`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -286,14 +286,14 @@ Remove hash from Allow List
 #### Context Output
 
 There is no context output for this command.
-### deepinstinct-add-devices-to-group
+### deepinstinctv3-add-devices-to-group
 ***
 Add multiple devices to a group
 
 
 #### Base Command
 
-`deepinstinct-add-devices-to-group`
+`deepinstinctv3-add-devices-to-group`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -305,14 +305,14 @@ Add multiple devices to a group
 #### Context Output
 
 There is no context output for this command.
-### deepinstinct-remove-devices-from-group
+### deepinstinctv3-remove-devices-from-group
 ***
 Remove list of devices from groups
 
 
 #### Base Command
 
-`deepinstinct-remove-devices-from-group`
+`deepinstinctv3-remove-devices-from-group`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -324,14 +324,14 @@ Remove list of devices from groups
 #### Context Output
 
 There is no context output for this command.
-### deepinstinct-delete-files-remotely
+### deepinstinctv3-delete-files-remotely
 ***
 Delete multiple files remotely
 
 
 #### Base Command
 
-`deepinstinct-delete-files-remotely`
+`deepinstinctv3-delete-files-remotely`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -342,14 +342,14 @@ Delete multiple files remotely
 #### Context Output
 
 There is no context output for this command.
-### deepinstinct-terminate-processes
+### deepinstinctv3-terminate-processes
 ***
 Terminate list of processes
 
 
 #### Base Command
 
-`deepinstinct-terminate-processes`
+`deepinstinctv3-terminate-processes`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -360,14 +360,14 @@ Terminate list of processes
 #### Context Output
 
 There is no context output for this command.
-### deepinstinct-close-events
+### deepinstinctv3-close-events
 ***
 Close list of events
 
 
 #### Base Command
 
-`deepinstinct-close-events`
+`deepinstinctv3-close-events`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -378,14 +378,14 @@ Close list of events
 #### Context Output
 
 There is no context output for this command.
-### deepinstinct-disable-device
+### deepinstinctv3-disable-device
 ***
 Disable device at next check-in
 
 
 #### Base Command
 
-`deepinstinct-disable-device`
+`deepinstinctv3-disable-device`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -396,14 +396,14 @@ Disable device at next check-in
 #### Context Output
 
 There is no context output for this command.
-### deepinstinct-enable-device
+### deepinstinctv3-enable-device
 ***
 Enable device at next check-in
 
 
 #### Base Command
 
-`deepinstinct-enable-device`
+`deepinstinctv3-enable-device`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -414,14 +414,14 @@ Enable device at next check-in
 #### Context Output
 
 There is no context output for this command.
-### deepinstinct-isolate-from-network
+### deepinstinctv3-isolate-from-network
 ***
 Isolate device(s) from Network
 
 
 #### Base Command
 
-`deepinstinct-isolate-from-network`
+`deepinstinctv3-isolate-from-network`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -432,14 +432,14 @@ Isolate device(s) from Network
 #### Context Output
 
 There is no context output for this command.
-### deepinstinct-release-from-isolation
+### deepinstinctv3-release-from-isolation
 ***
 Release device(s) from isolation
 
 
 #### Base Command
 
-`deepinstinct-release-from-isolation`
+`deepinstinctv3-release-from-isolation`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -450,14 +450,14 @@ Release device(s) from isolation
 #### Context Output
 
 There is no context output for this command.
-### deepinstinct-remote-file-upload
+### deepinstinctv3-remote-file-upload
 ***
 Upload file associated with given event id at next check-in
 
 
 #### Base Command
 
-`deepinstinct-remote-file-upload`
+`deepinstinctv3-remote-file-upload`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -468,14 +468,14 @@ Upload file associated with given event id at next check-in
 #### Context Output
 
 There is no context output for this command.
-### deepinstinct-upload-logs
+### deepinstinctv3-upload-logs
 ***
 Upload device logs from given device at next check-in
 
 
 #### Base Command
 
-`deepinstinct-upload-logs`
+`deepinstinctv3-upload-logs`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -486,14 +486,14 @@ Upload device logs from given device at next check-in
 #### Context Output
 
 There is no context output for this command.
-### deepinstinct-remove-device
+### deepinstinctv3-remove-device
 ***
 Remove agent from device at next check-in
 
 
 #### Base Command
 
-`deepinstinct-remove-device`
+`deepinstinctv3-remove-device`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |

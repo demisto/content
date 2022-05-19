@@ -357,70 +357,70 @@ def main():  # pragma: no cover
         if command == 'test-module':
             test_module()
 
-        elif command == 'deepinstinct-get-device':
-            get_specific_device()
+        # elif command == 'deepinstinctv3-get-device':
+        #     get_specific_device()
 
-        elif command == 'deepinstinct-get-events':
-            get_events()
+        # elif command == 'deepinstinctv3-get-events':
+        #     get_events()
 
-        elif command == 'deepinstinct-get-suspicious-events':
-            get_suspicious_events()
+        # elif command == 'deepinstinctv3-get-suspicious-events':
+        #     get_suspicious_events()
 
-        elif command == 'deepinstinct-get-all-groups':
-            get_all_groups()
+        # elif command == 'deepinstinctv3-get-all-groups':
+        #     get_all_groups()
 
-        elif command == 'deepinstinct-get-all-policies':
-            get_all_policies()
+        # elif command == 'deepinstinctv3-get-all-policies':
+        #     get_all_policies()
 
-        elif command == 'deepinstinct-add-hash-to-deny-list':
-            add_hash_to_denylist()
+        # elif command == 'deepinstinctv3-add-hash-to-deny-list':
+        #     add_hash_to_denylist()
 
-        elif command == 'deepinstinct-add-hash-to-allow-list':
-            add_hash_to_allowlist()
+        # elif command == 'deepinstinctv3-add-hash-to-allow-list':
+        #     add_hash_to_allowlist()
 
-        elif command == 'deepinstinct-remove-hash-from-deny-list':
-            remove_hash_from_denylist()
+        # elif command == 'deepinstinctv3-remove-hash-from-deny-list':
+        #     remove_hash_from_denylist()
+        #
+        # elif command == 'deepinstinctv3-remove-hash-from-allow-list':
+        #     remove_hash_from_allowlist()
 
-        elif command == 'deepinstinct-remove-hash-from-allow-list':
-            remove_hash_from_allowlist()
+        # elif command == 'deepinstinctv3-add-devices-to-group':
+        #     add_devices_to_group()
 
-        elif command == 'deepinstinct-add-devices-to-group':
-            add_devices_to_group()
-
-        elif command == 'deepinstinct-remove-devices-from-group':
+        elif command == 'deepinstinctv3-remove-devices-from-group':
             remove_devices_from_group()
 
-        elif command == 'deepinstinct-delete-files-remotely':
+        elif command == 'deepinstinctv3-delete-files-remotely':
             delete_files_remotely()
 
-        elif command == 'deepinstinct-terminate-processes':
+        elif command == 'deepinstinctv3-terminate-processes':
             terminate_remote_processes()
 
-        elif command == 'deepinstinct-close-events':
+        elif command == 'deepinstinctv3-close-events':
             close_events()
 
-        elif command == 'fetch-incidents':
-            fetch_incidents()
+        # elif command == 'fetch-incidents':
+        #     fetch_incidents()
 
-        elif command == 'deepinstinct-isolate-from-network':
+        elif command == 'deepinstinctv3-isolate-from-network':
             isolate_from_network()
 
-        elif command == 'deepinstinct-release-from-isolation':
+        elif command == 'deepinstinctv3-release-from-isolation':
             release_from_isolation()
 
-        elif command == 'deepinstinct-remote-file-upload':
+        elif command == 'deepinstinctv3-remote-file-upload':
             remote_file_upload()
 
-        elif command == 'deepinstinct-disable-device':
+        elif command == 'deepinstinctv3-disable-device':
             disable_device()
 
-        elif command == 'deepinstinct-enable-device':
+        elif command == 'deepinstinctv3-enable-device':
             enable_device()
 
-        elif command == 'deepinstinct-remove-device':
+        elif command == 'deepinstinctv3-remove-device':
             remove_device()
 
-        elif command == 'deepinstinct-upload-logs':
+        elif command == 'deepinstinctv3-upload-logs':
             upload_logs()
     except Exception as e:
         return_error(f'Failed to execute {command} command. Error: {e}', error=traceback.format_exc())
