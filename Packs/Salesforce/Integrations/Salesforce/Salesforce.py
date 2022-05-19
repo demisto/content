@@ -155,9 +155,7 @@ class Client(BaseClient):
 
     def deleteObject(self, path):
 
-        response = self.sendRequestInSession('DELETE', 'sobjects/' + path)
-
-        return response
+        return self.sendRequestInSession('DELETE', 'sobjects/' + path)
 
     # Add the capability to get all comment in specific case
 
