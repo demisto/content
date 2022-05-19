@@ -128,7 +128,7 @@ class Client(BaseClient):
     def queryObjects(self, fields, table, condition=None):
 
         query = f"SELECT {','.join(fields)} FROM {table}"
-        if condition is not None:
+        if condition:
             query += f" WHERE {condition}"
 
         return self.queryRaw(query)
