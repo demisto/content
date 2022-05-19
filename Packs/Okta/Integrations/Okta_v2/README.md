@@ -2295,3 +2295,23 @@ Lists users in your organization.
 >|---|---|---|---|---|---|---|
 >| Dbot | XXXXX |  | XSOAR | dbot@xsoar.com |  | STAGED |
 > 
+### okta-create-zone
+***
+Creates a Zone with the specified name
+
+
+#### Base Command
+
+`okta-create-zone`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | Zone name. | Required | 
+| gateway_ips | Update Gateway IP addresses: CIDR range (1.1.0.0/16) or single IP address (2.2.2.2). | Optional | 
+| proxies | Update Proxy IP addresses: CIDR range (1.1.0.0/16) or single IP address (2.2.2.2). | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
