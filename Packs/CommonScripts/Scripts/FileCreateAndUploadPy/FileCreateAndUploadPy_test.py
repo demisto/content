@@ -1,6 +1,7 @@
 import demistomock as demisto
 import json
 
+
 def test_main(mocker):
     from FileCreateAndUploadPy import main
 
