@@ -57,7 +57,7 @@ script:
     - description: The name of the product.
       isArray: false
       name: product
-  dockerimage: demisto/fastapi:1.0.0.29406
+  dockerimage: demisto/fastapi:1.0.0.29740
   runonce: false
   isfetchevents: true
   subtype: python3
