@@ -896,14 +896,13 @@ class MsGraphClient:
         """Returning all mails from given user
 
         Args:
-            user_id (str):
             search (str):
             odata (str):
 
         Returns:
             dict or list:
         """
-        no_folder = f'/users/{self._mailbox_to_fetch}/messages'
+        suffix = f'/users/{self._mailbox_to_fetch}/messages'
         pages_to_pull = demisto.args().get('pages_to_pull', 1)
         page_size = demisto.args().get('page_size', 20)
         odata = f'{odata}&$top={page_size}' if odata else f'$top={page_size}'
@@ -913,7 +912,6 @@ class MsGraphClient:
             # we should escape it.
             search = search.replace('"', '\\"')
             odata = f'{odata}&$search="{quote(search)}"'
-        suffix = no_folder
         if odata:
             suffix += f'?{odata}'
         demisto.debug(f"URL suffix is {suffix}")
