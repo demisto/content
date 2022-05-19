@@ -153,8 +153,7 @@ references:
         poetry config virtualenvs.in-project true
         if [ ! -e ".venv" ]; then
           echo "installing venv"
-          poetry install
-          npm ci --cache .npm --prefer-offline
+          NO_HOOKS=1 .hooks/bootstrap
           source ./.venv/bin/activate
         else
           echo "venv exists (from cache). activating"
