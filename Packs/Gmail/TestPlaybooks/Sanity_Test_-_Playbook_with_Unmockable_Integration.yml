@@ -63,7 +63,7 @@ tasks:
       subject: {}
       to: {}
       user-id:
-        simple: admin@test.com
+        simple: admin@demistodev.com
     separatecontext: false
     view: |-
       {

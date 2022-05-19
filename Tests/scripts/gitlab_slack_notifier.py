@@ -16,7 +16,7 @@ DEMISTO_GREY_ICON = 'https://3xqz5p387rui1hjtdv1up7lw-wpengine.netdna-ssl.com/wp
 ROOT_ARTIFACTS_FOLDER = os.getenv('ARTIFACTS_FOLDER', './artifacts')
 ARTIFACTS_FOLDER_XSOAR = os.getenv('ARTIFACTS_FOLDER_XSOAR', './artifacts/xsoar')
 ARTIFACTS_FOLDER_MPV2 = os.getenv('ARTIFACTS_FOLDER_MPV2', './artifacts/marketplacev2')
-CONTENT_CHANNEL = 'dmst-slack-notifier-test'
+CONTENT_CHANNEL = 'dmst-content-team'
 GITLAB_PROJECT_ID = os.getenv('CI_PROJECT_ID') or 2596  # the default is the id of the content repo in code.pan.run
 GITLAB_SERVER_URL = os.getenv('CI_SERVER_URL', 'https://code.pan.run')  # disable-secrets-detection
 CONTENT_NIGHTLY = 'Content Nightly'
@@ -256,11 +256,11 @@ def main():
         channel=slack_channel, as_user=False, attachments=slack_msg_data, username=SLACK_USERNAME
     )
 
-    # if pipeline_failed_jobs and slack_channel == CONTENT_CHANNEL:
-    #     # Return all failures for investigation to channel dmst-build.
-    #     slack_client.chat_postMessage(
-    #         channel=BUILD_NOTIFICATIONS_CHANNEL, as_user=False, attachments=slack_msg_data, username=SLACK_USERNAME
-    #     )
+    if pipeline_failed_jobs and slack_channel == CONTENT_CHANNEL:
+        # Return all failures for investigation to channel dmst-build.
+        slack_client.chat_postMessage(
+            channel=BUILD_NOTIFICATIONS_CHANNEL, as_user=False, attachments=slack_msg_data, username=SLACK_USERNAME
+        )
 
 
 if __name__ == '__main__':
