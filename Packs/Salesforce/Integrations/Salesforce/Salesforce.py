@@ -743,7 +743,7 @@ def update_remote_system_command(client: Client, args: Dict[str, Any], params: D
         for entry in entries:
             demisto.debug(f'Sending entry {entry.get("id")}, type: {entry.get("type")}')
             # Mirroring files as entries
-            if entry.get('type') != 3:
+            if entry.get('type', 0) != 3:
                 # Mirroring comment and work notes as entries
                 tags = entry.get('tags', [])
                 key = ''
