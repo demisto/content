@@ -577,3 +577,5 @@ script:
   runonce: false
   subtype: python3
 sourcemoduleid: Microsoft Graph Mail Single User
+defaultclassifier: Microsoft Graph Mail Single User
+defaultmapperin: Microsoft Graph Mail Single User-mapper
