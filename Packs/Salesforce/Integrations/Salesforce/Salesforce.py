@@ -942,9 +942,10 @@ def main() -> None:
     """
 
     # get the service API url
-    base_url = demisto.params()['InstanceURL']
-    verify_certificate = not demisto.params().get('insecure', False)
-    proxy = demisto.params().get('proxy', False)
+    params = demisto.params()
+    base_url = params.get('InstanceURL')
+    verify_certificate = params.get('insecure', False)
+    proxy = params.get('proxy', False)
 
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
