@@ -1,0 +1,12 @@
+[{
+    "filename": "test.dat",
+    "data": "obLD",
+    "data_encoding": "base64",
+    "ok": true
+  }, {
+    "filename": "test.dat",
+    "data": "obLD",
+    "data_encoding": "raw",
+    "ok": true
+  }
+]

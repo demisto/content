@@ -1,0 +1,35 @@
+commonfields:
+  id: FileCreateAndUploadPy
+  version: -1
+name: FileCreateAndUploadPy
+script: ''
+type: python
+tags:
+- Utility
+comment: |
+  Will create a file (using the given data input or entry ID) and upload it to current investigation war room.
+enabled: true
+args:
+- name: filename
+  required: true
+  default: true
+  description: The name of the file to be created.
+- name: data
+  description: Input data to write to file.
+- name: entryId
+  description: Entry ID contents to write into file.
+- name: data_encoding
+  auto: PREDEFINED
+  predefined:
+  - raw
+  - base64
+  description: Encoding type of the input data or contents.
+  defaultValue: raw
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.10.4.29342
+runas: DBotWeakRole
+fromversion: 6.2.0
+tests:
+- No tests (auto formatted)
