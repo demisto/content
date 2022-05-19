@@ -151,9 +151,7 @@ class Client(BaseClient):
 
     def updateObject(self, path, json_obj):
 
-        response = self.sendRequestInSession('PATCH', 'sobjects/' + path, json_obj)
-
-        return response
+        return self.sendRequestInSession('PATCH', 'sobjects/' + path, json_obj)
 
     def deleteObject(self, path):
 
