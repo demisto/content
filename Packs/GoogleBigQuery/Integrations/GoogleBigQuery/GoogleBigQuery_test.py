@@ -23,7 +23,15 @@ def test_convert_to_string_if_datetime():
 def test_remove_outdated_incident_ids_keep_equal():
     """
     Given:
-    -
+    - Several incidents with different occurrence times.
+    - A start time that is equal to the occurrence time of one of the incidents.
+
+    When:
+    - Using the remove_outdated_incident_ids function to remove outdated incidents.
+
+    Then:
+    - Incidents that date before the start time will be removed.
+    - Incidents that date after it will remain.
     """
     from GoogleBigQuery import remove_outdated_incident_ids
     found_incidents_ids = {
@@ -42,7 +50,14 @@ def test_remove_outdated_incident_ids_keep_equal():
 def test_remove_outdated_incident_ids_keep_equal_one_incident():
     """
     Given:
-    -
+    - A start time of the current run.
+    - One incident with a more recent occurrence time.
+
+    When:
+    - Using the remove_outdated_incident_ids function to remove outdated incidents.
+
+    Then:
+    - The incident will remain in the result.
     """
     from GoogleBigQuery import remove_outdated_incident_ids
     found_incidents_ids = {
@@ -57,7 +72,14 @@ def test_remove_outdated_incident_ids_keep_equal_one_incident():
 def test_remove_outdated_incident_ids_keep_equal_no_incidents():
     """
     Given:
-    -
+    - A start time of the current run.
+    - An empty list of incidents
+
+    When:
+    - Using the remove_outdated_incident_ids function to remove outdated incidents.
+
+    Then:
+    - The function will work as expected and will successfully handle the case.
     """
     from GoogleBigQuery import remove_outdated_incident_ids
     found_incidents_ids = {}
@@ -68,6 +90,16 @@ def test_remove_outdated_incident_ids_keep_equal_no_incidents():
 
 
 def test_verify_params_all_existing(mocker):
+    """
+    Given:
+    - Demisto params that include the first_fetch_time, fetch_query and fetch_time_field params.
+
+    When:
+    - Activating the verify_params function.
+
+    Then:
+    - No error will be returned.
+    """
     from GoogleBigQuery import verify_params
     mock_params = {
         'first_fetch_time': "1 days",
@@ -84,6 +116,16 @@ def test_verify_params_all_existing(mocker):
 
 
 def test_verify_params_first_fetch_time_missing(mocker):
+    """
+    Given:
+    - Demisto params that don't include the first_fetch_time param.
+
+    When:
+    - Activating the verify_params function.
+
+    Then:
+    - An error will be returned.
+    """
     from GoogleBigQuery import verify_params
 
     mock_params = {
@@ -110,6 +152,16 @@ def test_verify_params_first_fetch_time_missing(mocker):
 
 
 def test_verify_params_fetch_query_missing(mocker):
+    """
+    Given:
+    - Demisto params that don't include the fetch_query param.
+
+    When:
+    - Activating the verify_params function.
+
+    Then:
+    - An error will be returned.
+    """
     from GoogleBigQuery import verify_params
 
     mock_params = {
@@ -136,6 +188,16 @@ def test_verify_params_fetch_query_missing(mocker):
 
 
 def test_verify_params_fetch_time_field_missing(mocker):
+    """
+    Given:
+    - Demisto params that don't include the fetch_time_field param.
+
+    When:
+    - Activating the verify_params function.
+
+    Then:
+    - An error will be returned.
+    """
     from GoogleBigQuery import verify_params
 
     mock_params = {
@@ -162,6 +224,16 @@ def test_verify_params_fetch_time_field_missing(mocker):
 
 
 def test_get_max_incident_time_single_incident():
+    """
+    Given:
+    - Several incidents with different occurrence times.
+
+    When:
+    - Activating the get_max_incident_time function.
+
+    Then:
+    - The time of the incident with the maximal time will be returned.
+    """
     from GoogleBigQuery import get_max_incident_time
 
     incident = {
@@ -177,6 +249,16 @@ def test_get_max_incident_time_single_incident():
 
 
 def test_get_max_incident_time_several_incidents():
+    """
+    Given:
+    - One incident with an occurrence time.
+
+    When:
+    - Activating the get_max_incident_time function.
+
+    Then:
+    - The case will be handled successfully.
+    """
     from GoogleBigQuery import get_max_incident_time
 
     incident_a = {

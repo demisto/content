@@ -37,6 +37,7 @@ configuration:
   additionalinfo: Will be used for determining the time-specifying field of each row. Default is CreationTime.
   name: fetch_time_field
   required: false
+  defaultvalue: 'CreationTime'
   type: 0
 script:
   script: ''
