@@ -389,5 +389,3 @@ def test_malformed_pack_id():
 
 def test_get_pack_id_from_error_with_gcp_path():
     assert script.get_pack_id_from_error_with_gcp_path(GCP_TIMEOUT_EXCEPTION_RESPONSE_BODY) == 'pack2'
-
-
