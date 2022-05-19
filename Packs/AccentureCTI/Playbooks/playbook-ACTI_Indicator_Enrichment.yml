@@ -290,19 +290,19 @@ view: |-
 inputs:
 - key: IP_Pre_Enrich
   value:
-    simple: ${ExtractedIndicators.IP}
+    simple: ${IP.Address}
   required: false
   description: ""
   playbookInputQuery:
 - key: Domain_Pre_Enrich
   value:
-    simple: ${ExtractedIndicators.Domain}
+    simple: ${Domain.Name}
   required: false
   description: ""
   playbookInputQuery:
 - key: URL_Pre_Enrich
   value:
-    simple: ${ExtractedIndicators.URL}
+    simple: ${URL.Data}
   required: false
   description: ""
   playbookInputQuery:
