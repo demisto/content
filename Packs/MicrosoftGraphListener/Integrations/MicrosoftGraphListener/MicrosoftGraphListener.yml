@@ -382,9 +382,86 @@ script:
       description: The number of pages of emails to return (maximum is 10 emails per page).
       defaultValue: '1'
     outputs:
-    - contextPath: MSGraphMail
-      description: TMP
-      type: json
+    - contextPath: MSGraphMail.ID
+      description: The ID of the email.
+      type: String
+    - contextPath: MSGraphMail.Created
+      description: The time the email was created.
+      type: Date
+    - contextPath: MSGraphMail.LastModifiedTime
+      description: The time the email was last modified.
+      type: Date
+    - contextPath: MSGraphMail.ReceivedTime
+      description: The time the email was received.
+      type: Date
+    - contextPath: MSGraphMail.SendTime
+      description: The time the email was sent.
+      type: Date
+    - contextPath: MSGraphMail.Categories
+      description: Categories of the email.
+      type: String
+    - contextPath: MSGraphMail.HasAttachments
+      description: Whether the email has attachments.
+      type: Boolean
+    - contextPath: MSGraphMail.Subject
+      description: The subject of email.
+      type: String
+    - contextPath: MSGraphMail.IsDraft
+      description: Whether the email is a draft.
+      type: Boolean
+    - contextPath: MSGraphMail.Body
+      description: The content (body) of the email.
+      type: String
+    - contextPath: MSGraphMail.Sender.Name
+      description: The name of sender.
+      type: String
+    - contextPath: MSGraphMail.Sender.Address
+      description: The email address of the sender.
+      type: String
+    - contextPath: MSGraphMail.From.Name
+      description: The name of the user in the 'from' field of the email.
+      type: String
+    - contextPath: MSGraphMail.From.Address
+      description: The email address of the user in the 'from' field of the email
+      type: String
+    - contextPath: MSGraphMail.CCRecipients.Name
+      description: The names of the CC recipients.
+      type: String
+    - contextPath: MSGraphMail.CCRecipients.Address
+      description: The email address of the user in the 'cc' field of the email.
+      type: String
+    - contextPath: MSGraphMail.BCCRecipients.Name
+      description: The names of the users in the 'bcc' field of the email.
+      type: String
+    - contextPath: MSGraphMail.BCCRecipients.Address
+      description: The email address of the user in the 'bcc' field of the email.
+      type: String
+    - contextPath: MSGraphMail.ReplyTo.Name
+      description: The name in the 'replyTo' field of the email.
+      type: String
+    - contextPath: MSGraphMail.ReplyTo.Address
+      description: The email address in the 'replyTo' field of the email.
+      type: String
+    - contextPath: MSGraphMail.UserID
+      description: The ID of the user.
+      type: String
+    - contextPath: MSGraphMail.ConversationID
+      description: The ID of the conversation.
+      type: String
+    - contextPath: MSGraphMail.InternetMessageID
+      description: Internet Message ID of the message
+      type: String
+    - contextPath: MSGraphMail.Recipients.Name
+      description: The name of the user in the 'toRecipients' field of the email.
+      type: String
+    - contextPath: MSGraphMail.Recipients.Address
+      description: The email address of the user in the 'toRecipients' field of the
+        email.
+      type: String
+    - contextPath: MSGraphMail.NextPage
+      description: A token to pass to the next list command to retrieve additional
+        results.
+      type: String
     description: Gets the properties of returned emails. Typically shows partial results, use the "page_size" and "pages_to_pull" arguments to get all results.
   - name: msgraph-mail-get-attachment
     arguments:
@@ -397,26 +474,35 @@ script:
     - name: folder_id
     outputs:
     - contextPath: File.Size
-      description: ''
-      type: number
+      description: The size of the file.
+      type: Number
     - contextPath: File.SHA1
-      type: string
+      description: The SHA1 hash of the file.
+      type: String
     - contextPath: File.SHA256
-      type: string
+      description: The SHA256 hash of the file.
+      type: String
     - contextPath: File.Name
-      type: string
+      description: The name of the file.
+      type: String
     - contextPath: File.SSDeep
-      type: string
+      description: The SSDeep hash of the file.
+      type: String
     - contextPath: File.EntryID
-      type: string
+      description: The entry ID of the file.
+      type: String
     - contextPath: File.Info
-      type: string
+      description: File information.
+      type: String
     - contextPath: File.Type
-      type: string
+      description: The file type.
+      type: String
     - contextPath: File.MD5
-      type: string
+      description: The MD5 hash of the file.
+      type: String
     - contextPath: File.Extension
-      type: string
+      description: The file extension.
+      type: String
     description: Get email attachment
   - name: msgraph-mail-list-attachments
     arguments:
@@ -427,15 +513,20 @@ script:
     - name: folder_id
     outputs:
     - contextPath: MSGraphMailAttachment.ID
-      type: string
+      description: The email ID.
+      type: String
     - contextPath: MSGraphMailAttachment.Attachment.ID
-      type: string
+      description: The ID of the attachment.
+      type: String
     - contextPath: MSGraphMailAttachment.Attachment.Name
-      type: string
+      description: The name of the attachment.
+      type: String
     - contextPath: MSGraphMailAttachment.Attachment.Type
-      type: string
+      description: The attachment type.
+      type: String
     - contextPath: MSGraphMailAttachment.UserID
-      type: string
+      description: The ID of the user.
+      type: String
     description: Lists all of the attachments of given email
   - name: msgraph-mail-get-email-as-eml
     arguments:
@@ -448,27 +539,38 @@ script:
       description: The unique ID of the mail. You cannot use the the 'MessageID' key in the form '<message-id>'.
     outputs:
     - contextPath: File.Size
-      type: string
+      description: The size of the file.
+      type: String
     - contextPath: File.SHA1
-      type: string
+      description: The SHA1 hash of the file.
+      type: String
     - contextPath: File.SHA256
-      type: string
+      description: The SHA256 hash of the file.
+      type: String
     - contextPath: File.SHA512
-      type: string
+      description: The SHA512 hash of the file.
+      type: String
     - contextPath: File.Name
-      type: string
+      description: The name of the file.
+      type: String
     - contextPath: File.SSDeep
-      type: string
+      description: The SSDeep hash of the file.
+      type: String
     - contextPath: File.EntryID
-      type: string
+      description: The EntryID of the file.
+      type: String
     - contextPath: File.Info
-      type: string
+      description: Information about the file.
+      type: String
     - contextPath: File.Type
-      type: string
+      description: The file type.
+      type: String
     - contextPath: File.MD5
-      type: string
+      description: The MD5 hash of the file.
+      type: String
     - contextPath: File.Extension
-      type: string
+      description: The extension of the file.
+      type: String
     description: Retrieves an email message by message ID and uploads the content as an EML file.
   dockerimage: demisto/crypto:1.0.0.27590
   isfetch: true
