@@ -16,7 +16,7 @@ for i in xrange(retries):
     break
 
 comment_suffix = ' - #{0} {1}'.format(demisto.incidents()[0]['id'], entitlement)
-task = demisto.args().get('task')
+task = args.get('task')
 if task:
     comment_suffix += ' #{}'.format(task)
 
