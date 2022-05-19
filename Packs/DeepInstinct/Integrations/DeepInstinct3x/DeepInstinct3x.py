@@ -357,35 +357,35 @@ def main():  # pragma: no cover
         if command == 'test-module':
             test_module()
 
-        # elif command == 'deepinstinctv3-get-device':
-        #     get_specific_device()
+        elif command == 'deepinstinctv3-get-device':
+            get_specific_device()
 
-        # elif command == 'deepinstinctv3-get-events':
-        #     get_events()
+        elif command == 'deepinstinctv3-get-events':
+            get_events()
 
-        # elif command == 'deepinstinctv3-get-suspicious-events':
-        #     get_suspicious_events()
+        elif command == 'deepinstinctv3-get-suspicious-events':
+            get_suspicious_events()
 
-        # elif command == 'deepinstinctv3-get-all-groups':
-        #     get_all_groups()
+        elif command == 'deepinstinctv3-get-all-groups':
+            get_all_groups()
 
-        # elif command == 'deepinstinctv3-get-all-policies':
-        #     get_all_policies()
+        elif command == 'deepinstinctv3-get-all-policies':
+            get_all_policies()
 
-        # elif command == 'deepinstinctv3-add-hash-to-deny-list':
-        #     add_hash_to_denylist()
+        elif command == 'deepinstinctv3-add-hash-to-deny-list':
+            add_hash_to_denylist()
 
-        # elif command == 'deepinstinctv3-add-hash-to-allow-list':
-        #     add_hash_to_allowlist()
+        elif command == 'deepinstinctv3-add-hash-to-allow-list':
+            add_hash_to_allowlist()
 
-        # elif command == 'deepinstinctv3-remove-hash-from-deny-list':
-        #     remove_hash_from_denylist()
-        #
-        # elif command == 'deepinstinctv3-remove-hash-from-allow-list':
-        #     remove_hash_from_allowlist()
+        elif command == 'deepinstinctv3-remove-hash-from-deny-list':
+            remove_hash_from_denylist()
 
-        # elif command == 'deepinstinctv3-add-devices-to-group':
-        #     add_devices_to_group()
+        elif command == 'deepinstinctv3-remove-hash-from-allow-list':
+            remove_hash_from_allowlist()
+
+        elif command == 'deepinstinctv3-add-devices-to-group':
+            add_devices_to_group()
 
         elif command == 'deepinstinctv3-remove-devices-from-group':
             remove_devices_from_group()
@@ -399,8 +399,8 @@ def main():  # pragma: no cover
         elif command == 'deepinstinctv3-close-events':
             close_events()
 
-        # elif command == 'fetch-incidents':
-        #     fetch_incidents()
+        elif command == 'fetch-incidents':
+            fetch_incidents()
 
         elif command == 'deepinstinctv3-isolate-from-network':
             isolate_from_network()
