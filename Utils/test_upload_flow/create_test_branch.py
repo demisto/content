@@ -3,8 +3,6 @@ import shutil
 from git import GitCommandError, Repo, Head
 from pathlib import Path
 import subprocess
-from shutil import rmtree
-import os
 import json
 
 changed_packs = set()
@@ -73,7 +71,7 @@ def change_image(pack: Path):
 def update_existing_release_notes(pack: Path, relese_note: str):
     path = pack / 'ReleaseNotes' / relese_note
     if not path.exists():
-        raise Exception(f"path is not valid release note")
+        raise Exception("path is not valid release note")
 
     with path.open('a') as f:
         f.write('\n#### Upload flow\n - Test\n')
@@ -179,7 +177,7 @@ if __name__ == "__main__":
         for p in changed_packs:
             repo.git.add(f"{p}/*")
 
-        repo.git.commit(m=f"Added Test file")
+        repo.git.commit(m="Added Test file")
         repo.git.push('--set-upstream', 'https://code.pan.run/xsoar/content.git', branch)
 
     except GitCommandError as e:

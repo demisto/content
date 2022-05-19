@@ -1,6 +1,6 @@
-import demistomock as demisto
+from typing import Dict
 from CommonServerPython import *
-class Client(BaseClient):
+class Client(BaseClient): # type: ignore
     pass
 
 def test_module(client: Client) -> str:
@@ -20,7 +20,7 @@ def test_module(client: Client) -> str:
     message: str = ''
     try:
         message = 'ok'
-    except DemistoException as e:
+    except DemistoException as e: # type: ignore
         if 'Forbidden' in str(e) or 'Authorization' in str(e):
             message = 'Authorization Error: make sure API Key is correctly set'
         else:
@@ -38,7 +38,7 @@ def main() -> None:
     # api_key = demisto.params().get('credentials', {}).get('password')
 
     # get the service API url
-    base_url = urljoin(demisto.params()['url'], '/api/v1')
+    base_url = urljoin(demisto.params()['url'], '/api/v1') # type: ignore
 
     # if your Client class inherits from BaseClient, SSL verification is
     # handled out of the box by it, just pass ``verify_certificate`` to
@@ -64,10 +64,10 @@ def main() -> None:
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
             result = test_module(client)
-            return_results(result)
+            return_results(result) # type: ignore
 
         elif demisto.command() == 'hello':
-            return_results(CommandResults(
+            return_results(CommandResults( # type: ignore
                 outputs_prefix='TestUploadFlow',
                 outputs_key_field='',
                 outputs="hello",
@@ -75,8 +75,7 @@ def main() -> None:
 
     # Log exceptions and return errors
     except Exception as e:
-        demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}') # type: ignore
 
 
 ''' ENTRY POINT '''
