@@ -1,0 +1,96 @@
+{
+    "name": "Code42 - Mapping",
+    "type": "mapping-incoming",
+    "id": "Code42 - Mapping",
+    "description": "Maps Code42 Alert fields to Incident",
+    "mapping": {
+        "Code42 Security Alert": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Code42 Alert Type": {
+                    "complex": {
+                        "filters": [],
+                        "root": "type",
+                        "transformers": []
+                    }
+                },
+                "Code42 File Events": {
+                    "complex": {
+                        "filters": [],
+                        "root": "fileevents",
+                        "transformers": [
+                            {
+                                "operator": "ConvertKeysToTableFieldFormat"
+                            }
+                        ]
+                    }
+                },
+                "Code42 SecurityAlert Description": {
+                    "complex": {
+                        "filters": [],
+                        "root": "description",
+                        "transformers": []
+                    }
+                },
+                "Code42 SecurityAlert ID": {
+                    "complex": {
+                        "filters": [],
+                        "root": "id",
+                        "transformers": []
+                    }
+                },
+                "Code42 SecurityAlert Name": {
+                    "complex": {
+                        "filters": [],
+                        "root": "name",
+                        "transformers": []
+                    }
+                },
+                "Code42 SecurityAlert State": {
+                    "complex": {
+                        "filters": [],
+                        "root": "state",
+                        "transformers": []
+                    }
+                },
+                "Code42 SecurityAlert Timestamp": {
+                    "complex": {
+                        "filters": [],
+                        "root": "createdAt",
+                        "transformers": []
+                    }
+                },
+                "Code42 Severity": {
+                    "complex": {
+                        "filters": [],
+                        "root": "riskSeverity",
+                        "transformers": []
+                    }
+                },
+                "Code42 Username": {
+                    "complex": {
+                        "filters": [],
+                        "root": "actor",
+                        "transformers": []
+                    }
+                },
+                "name": {
+                    "complex": {
+                        "filters": [],
+                        "root": "name",
+                        "transformers": []
+                    }
+                },
+                "severity": {
+                    "complex": {
+                        "filters": [],
+                        "root": "riskSeverity",
+                        "transformers": []
+                    }
+                }
+            }
+        }
+    },
+    "version": -1,
+    "fromVersion": "6.2.0"
+}
