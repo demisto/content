@@ -8911,7 +8911,7 @@ class ObjectGetter:
             container_filter: str = None,
             object_name: str = None,
             use_regex: str = None
-    ) -> list[PanosObjectReference]:
+    ) -> List[PanosObjectReference]:
         """
         Given a string object type, returns all the matching objects by reference. The object type matches a pan-os-python
         object exactly. Note this ONLY returns the "pointer" to the objects, that is, it's location in the config, not all the
@@ -10682,7 +10682,7 @@ class ObjectTypeEnum(enum.Enum):
     SECURITY_PROFILE_GROUP = "SecurityProfileGroup"
 
 
-def commit(topology: Topology, device_filter_string: str = None) -> list[CommitStatus]:
+def commit(topology: Topology, device_filter_string: str = None) -> List[CommitStatus]:
     """
     Commit the configuration for the entire topology. Note this only commits the configuration - it does
     not push the configuration in the case of Panorama.
@@ -10690,17 +10690,15 @@ def commit(topology: Topology, device_filter_string: str = None) -> list[CommitS
     :param topology: `Topology` instance !no-auto-argument
     :param device_filter_string: String to filter to only check given device
     """
-    result: list[CommitStatus] = UniversalCommand.commit(topology, device_filter_string)
-
-    return result
+    return UniversalCommand.commit(topology, device_filter_string)
 
 
 def push_all(
         topology: Topology,
         device_filter_string: str = None,
-        device_group_filter: list[str] = None,
-        template_stack_filter: list[str] = None
-) -> list[PushStatus]:
+        device_group_filter: List[str] = None,
+        template_stack_filter: List[str] = None
+) -> List[PushStatus]:
     """
     Push the configuration to all the device groups and template-stacks in the environment.
 
@@ -10709,42 +10707,36 @@ def push_all(
     :param device_group_filter: List of device group names to push configuration to.
     :param template_stack_filter: List of template stack names to pushconfiguration to.
     """
-    result: list[PushStatus] = PanoramaCommand.push_all(
+    return PanoramaCommand.push_all(
         topology,
         device_filter_string,
         device_group_filter=device_group_filter,
         template_stack_filter=template_stack_filter
     )
 
-    return result
 
-
-def get_commit_status(topology: Topology, match_job_id: list[str] = None) -> list[CommitStatus]:
+def get_commit_status(topology: Topology, match_job_id: List[str] = None) -> List[CommitStatus]:
     """
     Returns the status of the commit operation on all devices. If an ID is given, only that id will be returned.
 
     :param topology: `Topology` instance !no-auto-argument
     :param match_job_id: job ID or list of Job IDs to return.
     """
-    result: list[CommitStatus] = UniversalCommand.get_commit_job_status(topology, match_job_id)
-
-    return result
+    return UniversalCommand.get_commit_job_status(topology, match_job_id)
 
 
 def get_push_status(
         topology: Topology,
-        match_job_id: list[str] = None,
+        match_job_id: List[str] = None,
 
-) -> list[PushStatus]:
+) -> List[PushStatus]:
     """
     Returns the status of the push (commit-all) jobs from Panorama.
 
     :param topology: `Topology` instance !no-auto-argument
     :param match_job_id: job ID or list of Job IDs to return.
     """
-    result: list[PushStatus] = PanoramaCommand.get_push_status(topology, match_job_id)
-
-    return result
+    return PanoramaCommand.get_push_status(topology, match_job_id)
 
 
 def get_object(
@@ -10754,7 +10746,7 @@ def get_object(
         object_name: str = None,
         parent: str = None,
         use_regex: str = None
-) -> list[PanosObjectReference]:
+) -> List[PanosObjectReference]:
     """Searches and returns a reference for the given object type and name. If no name is provided, all
     objects of the given type are returned. Note this only returns a reference, and not the complete object
     information.
@@ -10765,7 +10757,7 @@ def get_object(
     :param parent: The parent vsys or device group to search. if not provided, all will be returned.
     :param use_regex: Enables regex matching on object name.
     """
-    result: list[PanosObjectReference] = ObjectGetter.get_object_reference(
+    return ObjectGetter.get_object_reference(
         topology=topology,
         device_filter_string=device_filter_string,
         object_name=object_name,
@@ -10774,7 +10766,6 @@ def get_object(
         container_filter=parent,
         use_regex=use_regex
     )
-    return result
 
 
 def get_device_state(topology: Topology, target: str) -> dict:
