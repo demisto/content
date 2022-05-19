@@ -1615,7 +1615,7 @@ def create_filter_from_args(args: dict) -> dict:
             # relative time frame
             else:
                 search_type = 'RELATIVE_TIMESTAMP'
-                search_value = convert_time_to_epoch(arg_value)
+                search_value = dateparser.parse(arg_value).strftime("%Y-%m-%dT%H:%M:%S")
 
             and_operator_list.append({
                 'SEARCH_FIELD': arg_properties.search_field,
@@ -3314,6 +3314,8 @@ def get_alerts_by_filter_command(client: CoreClient, args: Dict) -> CommandResul
     filter_data = request_data['filter_data']
     sort_field = args.pop('sort_field', 'source_insert_ts')
     sort_order = args.pop('sort_order', 'DESC')
+    prefix = args.pop("integration_context_brand", "CoreApiModule")
+    args.pop("integration_name")
     filter_data['sort'] = [{
         'FIELD': sort_field,
         'ORDER': sort_order
@@ -3362,7 +3364,7 @@ def get_alerts_by_filter_command(client: CoreClient, args: Dict) -> CommandResul
     } for alert in context]
 
     return CommandResults(
-        outputs_prefix=f'{args.get("integration_context_brand", "CoreApiModule")}.Alert',
+        outputs_prefix=f'{prefix}.Alert',
         outputs_key_field='internal_id',
         outputs=context,
         readable_output=tableToMarkdown('Alerts', human_readable),
