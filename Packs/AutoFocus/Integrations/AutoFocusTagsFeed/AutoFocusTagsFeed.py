@@ -32,6 +32,7 @@ MAP_RELATIONSHIPS = {
             ThreatIntel.ObjectsNames.CAMPAIGN: 'used-by',
             ThreatIntel.ObjectsNames.ATTACK_PATTERN: 'used-by'
         },
+
     ThreatIntel.ObjectsNames.THREAT_ACTOR:
         {
             ThreatIntel.ObjectsNames.MALWARE: 'uses',
