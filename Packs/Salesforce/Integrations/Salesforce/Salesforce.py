@@ -147,9 +147,7 @@ class Client(BaseClient):
 
     def createObject(self, path, json_obj):
 
-        response = self.sendRequestInSession('POST', 'sobjects/' + path, json_obj)
-
-        return response
+        return self.sendRequestInSession('POST', 'sobjects/' + path, json_obj)
 
     def updateObject(self, path, json_obj):
 
