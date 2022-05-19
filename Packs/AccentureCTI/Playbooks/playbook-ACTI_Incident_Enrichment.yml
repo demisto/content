@@ -47,7 +47,7 @@ tasks:
       description: 'Enrich Indicator using ACTI integrations'
     nexttasks:
       '#none#':
-      - "9"
+      - "15"
     separatecontext: false
     view: |-
       {
@@ -65,10 +65,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: f3758ee6-8dc4-4064-87b8-4448eaec2098
+    taskid: 1b69c9c9-36b0-4bec-843b-aaf6d1163952
     type: regular
     task:
-      id: f3758ee6-8dc4-4064-87b8-4448eaec2098
+      id: 1b69c9c9-36b0-4bec-843b-aaf6d1163952
       version: -1
       name: Extracting indicators from incident
       description: Extract all indicators according to server indicators configuration
@@ -82,6 +82,7 @@ tasks:
     scriptarguments:
       text:
         simple: ${incident}
+    reputationcalc: 1
     separatecontext: false
     view: |-
       {
@@ -115,49 +116,6 @@ tasks:
         "position": {
           "x": 50,
           "y": 1390
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "9":
-    id: "9"
-    taskid: d094d918-daf9-47c9-861f-ee02e481fa93
-    type: playbook
-    task:
-      id: d094d918-daf9-47c9-861f-ee02e481fa93
-      version: -1
-      name: ACTI Indicator Enrichment
-      playbookName: ACTI Indicator Enrichment
-      type: playbook
-      iscommand: false
-      brand: ""
-      description: 'ACTI Indicator Enrichment is a sub-playbook used to enrich indicators using ACTI Indicator Query integration'
-    nexttasks:
-      '#none#':
-      - "10"
-    scriptarguments:
-      Domain_Pre_Enrich:
-        simple: ${ExtractedIndicators.Domain}
-      IP_Pre_Enrich:
-        simple: ${ExtractedIndicators.IP}
-      URL_Pre_Enrich:
-        simple: ${ExtractedIndicators.URL}
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 515
         }
       }
     note: false
@@ -350,6 +308,37 @@ tasks:
         "position": {
           "x": 50,
           "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 0b8d63bb-f26c-4f24-8c3f-4d75221f66bf
+    type: playbook
+    task:
+      id: 0b8d63bb-f26c-4f24-8c3f-4d75221f66bf
+      version: -1
+      name: ACTI Indicator Enrichment
+      playbookName: ACTI Indicator Enrichment
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: 'ACTI Indicator Enrichment is a sub-playbook used to enrich indicators using ACTI Indicator Query integration'
+    nexttasks:
+      '#none#':
+      - "10"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 515
         }
       }
     note: false
