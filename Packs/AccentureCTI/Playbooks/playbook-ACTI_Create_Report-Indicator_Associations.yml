@@ -510,22 +510,6 @@ tasks:
       - - operator: inList
           left:
             value:
-              simple: ACTI Indicator Query
-          right:
-            value:
-              complex:
-                root: DBotScore
-                accessor: Vendor
-                transformers:
-                - operator: join
-                  args:
-                    separator:
-                      value:
-                        simple: ','
-            iscontext: true
-      - - operator: inList
-          left:
-            value:
               simple: ip
           right:
             value:
