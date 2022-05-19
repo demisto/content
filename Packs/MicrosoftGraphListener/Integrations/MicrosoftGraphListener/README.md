@@ -8,6 +8,17 @@
 <h2>Fetch Incidents</h2>
 <p>The integration imports email messages from the destination folder in the target mailbox as incidents. If the message contains any attachments, they are uploaded to the War Room as files. If the attachment is an email (item attachment), Cortex XSOAR fetches information about the attached email and downloads all of its attachments (if there are any) as files. To use Fetch incidents, configure a new instance and select the Fetches incidents option in the instance settings.</p>
 
+<h2>OData Usage</h2>
+<p>The OData parameter can be used to create different queries for the <strong><em>msgraph-mail-list-emails</em></strong> and <strong><em>msgraph-mail-get-email</em></strong> commands. Please see <a href="https://docs.microsoft.com/en-us/graph/query-parameters">OData Docs</a> for detailed information.
+Examples:</p>
+<ul>
+<li><code>!msgraph-mail-list-emails odata=&quot;$select=from&quot;</code></li>
+<li><code>!msgraph-mail-list-emails odata=&quot;$filter=from/emailAddress/address eq &#39;azure-noreply@microsoft.com&#39;&quot;</code></li>
+<li><code>!msgraph-mail-list-emails odata=&quot;$filter=sentDateTime gt 2020-03-25T09:35:23Z and sentDateTime lt 2020-03-25T12:04:47Z&quot;</code></li>
+</ul>
+<p><strong>NOTE:</strong>
+The query parameter <code>$filter</code> is not supported when using the <code>search</code> parameter.</p>
+
 <h2>Authentication</h2>
 For more details about the authentication used in this integration, see <a href="https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication">Microsoft Integrations - Authentication</a>.
 
