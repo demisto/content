@@ -1,9 +1,16 @@
 import demistomock as demisto
 import json
+import sys
+
+
+def side_effect_sys_exit(code):
+    pass
 
 
 def test_main(mocker):
     from FileCreateAndUploadPy import main
+
+    mocker.patch.object(sys, 'exit', side_effect=side_effect_sys_exit)
 
     with open('./test_data/test-1.json', 'r') as f:
         test_list = json.load(f)

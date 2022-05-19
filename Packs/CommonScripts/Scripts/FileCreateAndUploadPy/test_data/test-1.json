@@ -5,6 +5,11 @@
     "ok": true
   }, {
     "filename": "test.dat",
+    "data": "A",
+    "data_encoding": "base64",
+    "ok": false
+  }, {
+    "filename": "test.dat",
     "data": "obLD",
     "data_encoding": "raw",
     "ok": true
