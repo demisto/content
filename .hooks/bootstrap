@@ -90,12 +90,15 @@ else
             echo "ERROR: python2 is missing. Please make sure you have Python 2 installed on your system" 1>&2
             exit 1
         fi
+        if ! command -v virtualenv >/dev/null 2>&1; then
+            echo "ERROR: virtualenv is missing. Please install using: pip install virtualenv" 1>&2
+            exit 1
+        fi
+        virtualenv -p python2 venv-py2
     fi
     echo "Installing dependencies..."
     if [ "$SETUP_PY2" == "yes" ]; then
-        curl https://bootstrap.pypa.io/pip/2.7/get-pip.py --output get-pip.py
-        python2 get-pip.py
-        python2 -m pip install -r dev-requirements-py2.txt
+        venv-py2/bin/pip2 install -r dev-requirements-py2.txt
     fi
     poetry install
     if [ "$INCLUDE_PY2_NOTE" == "yes" ]; then
