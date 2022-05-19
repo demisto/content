@@ -4,7 +4,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 retries = int(demisto.args().get('retries'))
-persistent = True if demisto.args().get('persistent') == 'true' else False
+persistent = argToBoolean(args.get('persistent'))
 for i in xrange(retries):
     res = demisto.executeCommand('addEntitlement', {'persistent': persistent})
     if isError((res[0])):
