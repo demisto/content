@@ -15,7 +15,7 @@ urllib3.disable_warnings()
 
 
 class AlibabaEventsClient(IntegrationEventsClient):
-    def __init__(self, request: AlibabaRequestConfig, options: IntegrationOptions, access_key: str,
+    def __init__(self, request: IntegrationHTTPRequest, options: IntegrationOptions, access_key: str,
                  access_key_id: str, logstore_name: str):
         self.access_key = access_key
         self.access_key_id = access_key_id
@@ -167,7 +167,7 @@ def main():
     demisto_params['headers'] = headers
     demisto_params['params'] = params
 
-    request = AlibabaRequestConfig(**demisto_params)
+    request = IntegrationHTTPRequest(**demisto_params)
 
     options = IntegrationOptions.parse_obj(demisto_params)
 
