@@ -9,26 +9,27 @@ text_color = '#000000'
 text_content = 'Pending Update'
 try:
     for value in picklistValues:
-        if salesforcestatus == value.get('label'):
-            if 'New' in value.get('label'):
+        label = value.get('label) or ''
+        if salesforcestatus == label:
+            if 'New' in label:
                 text_color = '#00CD33'
-                text_content = value.get('label')
+                text_content = label
 
-            elif 'Hold' in value.get('label'):
+            elif 'Hold' in label:
                 text_color = '#FF9000'
-                text_content = value.get('label')
+                text_content = label
 
-            elif 'Close' in value.get('label'):
+            elif 'Close' in label:
                 text_color = '#9AA0A3'
-                text_content = value.get('label')
+                text_content = label
 
-            elif 'Progress' in value.get('label'):
+            elif 'Progress' in label):
                 text_color = '#7995D4'
-                text_content = value.get('label')
+                text_content = label
 
-            elif 'Pending' in value.get('label'):
+            elif 'Pending' in label:
                 text_color = '#FF9000'
-                text_content = value.get('label')
+                text_content = label
             else:
                 text_color = '#51414F'
                 text_content = salesforcestatus
