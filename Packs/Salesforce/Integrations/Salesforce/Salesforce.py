@@ -238,9 +238,7 @@ class Client(BaseClient):
             }
         }
 
-        response = self.sendRequestInSession('POST', f'chatter/feed-elements/{id}/capabilities/comments/items', data)
-
-        return response
+        return self.sendRequestInSession('POST', f'chatter/feed-elements/{id}/capabilities/comments/items', data)
 
 
 ''' HELPER FUNCTIONS '''
