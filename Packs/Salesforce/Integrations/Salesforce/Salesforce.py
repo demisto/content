@@ -109,7 +109,7 @@ class Client(BaseClient):
         if len(response) > 0:
             for item in response:
                 if item.get('keyPrefix'):
-                    sobjects[item['keyPrefix']] = item['label']
+                    sobjects[item['keyPrefix']] = item.get('label')
             # set the integration object with object prefix
             demisto.setIntegrationContext({'sobjects': sobjects})
 
