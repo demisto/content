@@ -1615,7 +1615,8 @@ def create_filter_from_args(args: dict) -> dict:
             # relative time frame
             else:
                 search_type = 'RELATIVE_TIMESTAMP'
-                search_value = dateparser.parse(arg_value).strftime("%Y-%m-%dT%H:%M:%S")
+                date = dateparser.parse(arg_value)
+                search_value = date.strftime("%Y-%m-%dT%H:%M:%S") if date else None
 
             and_operator_list.append({
                 'SEARCH_FIELD': arg_properties.search_field,
