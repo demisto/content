@@ -350,77 +350,77 @@ def upload_logs():
     return_results('ok')
 
 
-def main():
+def main():  # pragma: no cover
     try:
         # Commands
         command = demisto.command()
         if command == 'test-module':
             test_module()
 
-        if command == 'deepinstinct-get-device':
+        elif command == 'deepinstinct-get-device':
             get_specific_device()
 
-        if command == 'deepinstinct-get-events':
+        elif command == 'deepinstinct-get-events':
             get_events()
 
-        if command == 'deepinstinct-get-suspicious-events':
+        elif command == 'deepinstinct-get-suspicious-events':
             get_suspicious_events()
 
-        if command == 'deepinstinct-get-all-groups':
+        elif command == 'deepinstinct-get-all-groups':
             get_all_groups()
 
-        if command == 'deepinstinct-get-all-policies':
+        elif command == 'deepinstinct-get-all-policies':
             get_all_policies()
 
-        if command == 'deepinstinct-add-hash-to-deny-list':
+        elif command == 'deepinstinct-add-hash-to-deny-list':
             add_hash_to_denylist()
 
-        if command == 'deepinstinct-add-hash-to-allow-list':
+        elif command == 'deepinstinct-add-hash-to-allow-list':
             add_hash_to_allowlist()
 
-        if command == 'deepinstinct-remove-hash-from-deny-list':
+        elif command == 'deepinstinct-remove-hash-from-deny-list':
             remove_hash_from_denylist()
 
-        if command == 'deepinstinct-remove-hash-from-allow-list':
+        elif command == 'deepinstinct-remove-hash-from-allow-list':
             remove_hash_from_allowlist()
 
-        if command == 'deepinstinct-add-devices-to-group':
+        elif command == 'deepinstinct-add-devices-to-group':
             add_devices_to_group()
 
-        if command == 'deepinstinct-remove-devices-from-group':
+        elif command == 'deepinstinct-remove-devices-from-group':
             remove_devices_from_group()
 
-        if command == 'deepinstinct-delete-files-remotely':
+        elif command == 'deepinstinct-delete-files-remotely':
             delete_files_remotely()
 
-        if command == 'deepinstinct-terminate-processes':
+        elif command == 'deepinstinct-terminate-processes':
             terminate_remote_processes()
 
-        if command == 'deepinstinct-close-events':
+        elif command == 'deepinstinct-close-events':
             close_events()
 
-        if command == 'fetch-incidents':
+        elif command == 'fetch-incidents':
             fetch_incidents()
 
-        if command == 'deepinstinct-isolate-from-network':
+        elif command == 'deepinstinct-isolate-from-network':
             isolate_from_network()
 
-        if command == 'deepinstinct-release-from-isolation':
+        elif command == 'deepinstinct-release-from-isolation':
             release_from_isolation()
 
-        if command == 'deepinstinct-remote-file-upload':
+        elif command == 'deepinstinct-remote-file-upload':
             remote_file_upload()
 
-        if command == 'deepinstinct-disable-device':
+        elif command == 'deepinstinct-disable-device':
             disable_device()
 
-        if command == 'deepinstinct-enable-device':
+        elif command == 'deepinstinct-enable-device':
             enable_device()
 
-        if command == 'deepinstinct-remove-device':
+        elif command == 'deepinstinct-remove-device':
             remove_device()
 
-        if command == 'deepinstinct-upload-logs':
+        elif command == 'deepinstinct-upload-logs':
             upload_logs()
     except Exception as e:
         return_error(f'Failed to execute {command} command. Error: {e}', error=traceback.format_exc())
