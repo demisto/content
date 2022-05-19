@@ -108,7 +108,7 @@ class Client(BaseClient):
 
         if len(response) > 0:
             for item in response:
-                if item['keyPrefix'] is not None:
+                if item.get('keyPrefix'):
                     sobjects[item['keyPrefix']] = item['label']
             # set the integration object with object prefix
             demisto.setIntegrationContext({'sobjects': sobjects})
