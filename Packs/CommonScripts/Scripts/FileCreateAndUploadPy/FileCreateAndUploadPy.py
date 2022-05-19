@@ -24,10 +24,7 @@ def main():
         if data_encoding == 'raw':
             pass
         elif data_encoding == 'base64':
-            try:
-                data = base64.b64decode(data)
-            except binascii.Error:
-                raise ValueError('Invalid base64 encoding value.')
+            data = base64.b64decode(data)
         else:
             raise ValueError(f'Invalid data encoding name: {data_encoding}')
 
