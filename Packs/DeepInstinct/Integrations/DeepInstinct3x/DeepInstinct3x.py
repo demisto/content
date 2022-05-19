@@ -54,11 +54,11 @@ def get_specific_device():
     result = http_request('GET', "/devices/%s" % str(device_id))
     ec = {'DeepInstinct.Devices(val.id && val.id == obj.id)': result}
 
-    return_outputs(
+    return_results(CommandResults(
         readable_output=tableToMarkdown('Device', result),
         outputs=ec,
         raw_response=result
-    )
+    ))
 
 
 def get_events():
@@ -72,11 +72,11 @@ def get_events():
         events = result['events']
     ec = {'DeepInstinct.Events(val.id && val.id == obj.id)': events}
 
-    return_outputs(
+    return_results(CommandResults(
         readable_output=tableToMarkdown('Events', events),
         outputs=ec,
         raw_response=events
-    )
+    ))
 
 
 def get_all_groups():
@@ -87,11 +87,11 @@ def get_all_groups():
     result = http_request('GET', "/groups")
     ec = {'DeepInstinct.Groups(val.id && val.id == obj.id)': result}
 
-    return_outputs(
+    return_results(CommandResults(
         readable_output=tableToMarkdown('Groups', result),
         outputs=ec,
         raw_response=result
-    )
+    ))
 
 
 def get_all_policies():
@@ -102,11 +102,11 @@ def get_all_policies():
     result = http_request('GET', "/policies")
     ec = {'DeepInstinct.Policies(val.id && val.id == obj.id)': result}
 
-    return_outputs(
+    return_results(CommandResults(
         readable_output=tableToMarkdown('Policies', result),
         outputs=ec,
         raw_response=result
-    )
+    ))
 
 
 def add_hash_to_denylist():
@@ -117,7 +117,7 @@ def add_hash_to_denylist():
     file_hash = demisto.args().get('file_hash')
     comment = demisto.args().get('comment') or ""
     http_request('POST', '/policies/%s/deny-list/hashes/%s' % (str(policy_id), file_hash), json={"comment": comment})
-    demisto.results('ok')
+    return_results('ok')
 
 
 def add_hash_to_allowlist():
@@ -128,7 +128,7 @@ def add_hash_to_allowlist():
     file_hash = demisto.args().get('file_hash')
     comment = demisto.args().get('comment') or ""
     http_request('POST', '/policies/%s/allow-list/hashes/%s' % (str(policy_id), file_hash), json={"comment": comment})
-    demisto.results('ok')
+    return_results('ok')
 
 
 def remove_hash_from_denylist():
@@ -141,7 +141,7 @@ def remove_hash_from_denylist():
     item_list = [{'item': file_hash}]
 
     http_request('DELETE', '/policies/%s/deny-list/hashes' % (str(policy_id)), json={"items": item_list})
-    demisto.results('ok')
+    return_results('ok')
 
 
 def remove_hash_from_allowlist():
@@ -154,7 +154,7 @@ def remove_hash_from_allowlist():
     item_list = [{'item': file_hash}]
 
     http_request('DELETE', '/policies/%s/allow-list/hashes' % (str(policy_id)), json={"items": item_list})
-    demisto.results('ok')
+    return_results('ok')
 
 
 def add_devices_to_group():
@@ -165,7 +165,7 @@ def add_devices_to_group():
     device_ids_input = demisto.args().get('device_ids')
     device_ids = [int(num) for num in device_ids_input.split(",")]
     http_request('POST', '/groups/%s/add-devices' % str(group_id), json={"devices": device_ids})
-    demisto.results('ok')
+    return_results('ok')
 
 
 def remove_devices_from_group():
@@ -177,7 +177,7 @@ def remove_devices_from_group():
     device_ids = [int(num) for num in device_ids_input.split(",")]
 
     http_request('POST', '/groups/%s/remove-devices' % str(group_id), json={"devices": device_ids})
-    demisto.results('ok')
+    return_results('ok')
 
 
 def delete_files_remotely():
@@ -187,7 +187,7 @@ def delete_files_remotely():
     event_ids_input = demisto.args().get('event_ids')
     event_ids = [int(num) for num in event_ids_input.split(",")]
     http_request('POST', '/devices/actions/delete-remote-files', json={"ids": event_ids})
-    demisto.results('ok')
+    return_results('ok')
 
 
 def terminate_remote_processes():
@@ -197,7 +197,7 @@ def terminate_remote_processes():
     event_ids_input = demisto.args().get('event_ids')
     event_ids = [int(num) for num in event_ids_input.split(",")]
     http_request('POST', '/devices/actions/terminate-remote-process', json={"ids": event_ids})
-    demisto.results('ok')
+    return_results('ok')
 
 
 def close_events():
@@ -207,13 +207,13 @@ def close_events():
     event_ids_input = demisto.args().get('event_ids')
     event_ids = [int(num) for num in event_ids_input.split(",")]
     http_request('POST', '/events/actions/close', json={"ids": event_ids})
-    demisto.results('ok')
+    return_results('ok')
 
 
 def fetch_incidents():
-    incidents = []
+    incidents: list = []
     last_id = arg_to_number(demisto.params().get('first_fetch', 0))
-    max_fetch = arg_to_number(demisto.params().get('max_fetch', 50))
+    max_fetch = arg_to_number(demisto.params().get('max_fetch')) or 50
 
     last_run = demisto.getLastRun()
     if last_run and last_run.get('last_id') is not None:
@@ -278,11 +278,11 @@ def get_suspicious_events():
         events = result['events']
     ec = {'DeepInstinct.Suspicious-Events(val.id && val.id == obj.id)': events}
 
-    return_outputs(
+    return_results(CommandResults(
         readable_output=tableToMarkdown('Events', events),
         outputs=ec,
         raw_response=events
-    )
+    ))
 
 
 def isolate_from_network():
@@ -292,7 +292,7 @@ def isolate_from_network():
     device_ids_input = demisto.args().get('device_ids')
     device_ids = [int(num) for num in device_ids_input.split(",")]
     http_request('POST', '/devices/actions/isolate-from-network', json={"ids": device_ids})
-    demisto.results('ok')
+    return_results('ok')
 
 
 def release_from_isolation():
@@ -302,7 +302,7 @@ def release_from_isolation():
     device_ids_input = demisto.args().get('device_ids')
     device_ids = [int(num) for num in device_ids_input.split(",")]
     http_request('POST', '/devices/actions/release-from-isolation', json={"ids": device_ids})
-    demisto.results('ok')
+    return_results('ok')
 
 
 def remote_file_upload():
@@ -311,7 +311,7 @@ def remote_file_upload():
     """
     event_id = demisto.args().get('event_id')
     http_request('POST', '/devices/actions/request-remote-file-upload/%s' % (str(event_id)))
-    demisto.results('ok')
+    return_results('ok')
 
 
 def disable_device():
@@ -320,7 +320,7 @@ def disable_device():
     """
     device_id = demisto.args().get('device_id')
     http_request('POST', '/devices/%s/actions/disable' % (str(device_id)))
-    demisto.results('ok')
+    return_results('ok')
 
 
 def enable_device():
@@ -329,7 +329,7 @@ def enable_device():
     """
     device_id = demisto.args().get('device_id')
     http_request('POST', '/devices/%s/actions/enable' % (str(device_id)))
-    demisto.results('ok')
+    return_results('ok')
 
 
 def remove_device():
@@ -338,7 +338,7 @@ def remove_device():
     """
     device_id = demisto.args().get('device_id')
     http_request('POST', '/devices/%s/actions/remove' % (str(device_id)))
-    demisto.results('ok')
+    return_results('ok')
 
 
 def upload_logs():
@@ -347,79 +347,83 @@ def upload_logs():
     """
     device_id = demisto.args().get('device_id')
     http_request('POST', '/devices/%s/actions/upload-logs' % (str(device_id)))
-    demisto.results('ok')
+    return_results('ok')
 
 
 def main():
-    # Commands
-    if demisto.command() == 'test-module':
-        test_module()
+    try:
+        # Commands
+        command = demisto.command()
+        if command == 'test-module':
+            test_module()
 
-    if demisto.command() == 'deepinstinct-get-device':
-        get_specific_device()
+        if command == 'deepinstinct-get-device':
+            get_specific_device()
 
-    if demisto.command() == 'deepinstinct-get-events':
-        get_events()
+        if command == 'deepinstinct-get-events':
+            get_events()
 
-    if demisto.command() == 'deepinstinct-get-suspicious-events':
-        get_suspicious_events()
+        if command == 'deepinstinct-get-suspicious-events':
+            get_suspicious_events()
 
-    if demisto.command() == 'deepinstinct-get-all-groups':
-        get_all_groups()
+        if command == 'deepinstinct-get-all-groups':
+            get_all_groups()
 
-    if demisto.command() == 'deepinstinct-get-all-policies':
-        get_all_policies()
+        if command == 'deepinstinct-get-all-policies':
+            get_all_policies()
 
-    if demisto.command() == 'deepinstinct-add-hash-to-deny-list':
-        add_hash_to_denylist()
+        if command == 'deepinstinct-add-hash-to-deny-list':
+            add_hash_to_denylist()
 
-    if demisto.command() == 'deepinstinct-add-hash-to-allow-list':
-        add_hash_to_allowlist()
+        if command == 'deepinstinct-add-hash-to-allow-list':
+            add_hash_to_allowlist()
 
-    if demisto.command() == 'deepinstinct-remove-hash-from-deny-list':
-        remove_hash_from_denylist()
+        if command == 'deepinstinct-remove-hash-from-deny-list':
+            remove_hash_from_denylist()
 
-    if demisto.command() == 'deepinstinct-remove-hash-from-allow-list':
-        remove_hash_from_allowlist()
+        if command == 'deepinstinct-remove-hash-from-allow-list':
+            remove_hash_from_allowlist()
 
-    if demisto.command() == 'deepinstinct-add-devices-to-group':
-        add_devices_to_group()
+        if command == 'deepinstinct-add-devices-to-group':
+            add_devices_to_group()
 
-    if demisto.command() == 'deepinstinct-remove-devices-from-group':
-        remove_devices_from_group()
+        if command == 'deepinstinct-remove-devices-from-group':
+            remove_devices_from_group()
 
-    if demisto.command() == 'deepinstinct-delete-files-remotely':
-        delete_files_remotely()
+        if command == 'deepinstinct-delete-files-remotely':
+            delete_files_remotely()
 
-    if demisto.command() == 'deepinstinct-terminate-processes':
-        terminate_remote_processes()
+        if command == 'deepinstinct-terminate-processes':
+            terminate_remote_processes()
 
-    if demisto.command() == 'deepinstinct-close-events':
-        close_events()
+        if command == 'deepinstinct-close-events':
+            close_events()
 
-    if demisto.command() == 'fetch-incidents':
-        fetch_incidents()
+        if command == 'fetch-incidents':
+            fetch_incidents()
 
-    if demisto.command() == 'deepinstinct-isolate-from-network':
-        isolate_from_network()
+        if command == 'deepinstinct-isolate-from-network':
+            isolate_from_network()
 
-    if demisto.command() == 'deepinstinct-release-from-isolation':
-        release_from_isolation()
+        if command == 'deepinstinct-release-from-isolation':
+            release_from_isolation()
 
-    if demisto.command() == 'deepinstinct-remote-file-upload':
-        remote_file_upload()
+        if command == 'deepinstinct-remote-file-upload':
+            remote_file_upload()
 
-    if demisto.command() == 'deepinstinct-disable-device':
-        disable_device()
+        if command == 'deepinstinct-disable-device':
+            disable_device()
 
-    if demisto.command() == 'deepinstinct-enable-device':
-        enable_device()
+        if command == 'deepinstinct-enable-device':
+            enable_device()
 
-    if demisto.command() == 'deepinstinct-remove-device':
-        remove_device()
+        if command == 'deepinstinct-remove-device':
+            remove_device()
 
-    if demisto.command() == 'deepinstinct-upload-logs':
-        upload_logs()
+        if command == 'deepinstinct-upload-logs':
+            upload_logs()
+    except Exception as e:
+        return_error(f'Failed to execute {command} command. Error: {e}', error=traceback.format_exc())
 
 
 if __name__ in ('__builtin__', 'builtins'):
