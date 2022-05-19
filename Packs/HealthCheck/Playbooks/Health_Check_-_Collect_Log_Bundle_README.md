@@ -60,7 +60,7 @@ This playbook does not use any integrations.
 * HealthCheckUnpack
 
 ### Commands
-* xsoar-api-download
+* demisto-api-download
 
 ## Playbook Inputs
 ---
