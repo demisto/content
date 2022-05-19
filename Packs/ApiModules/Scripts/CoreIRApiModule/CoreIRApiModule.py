@@ -3315,7 +3315,7 @@ def get_alerts_by_filter_command(client: CoreClient, args: Dict) -> CommandResul
     sort_field = args.pop('sort_field', 'source_insert_ts')
     sort_order = args.pop('sort_order', 'DESC')
     prefix = args.pop("integration_context_brand", "CoreApiModule")
-    args.pop("integration_name")
+    args.pop("integration_name", None)
     filter_data['sort'] = [{
         'FIELD': sort_field,
         'ORDER': sort_order
