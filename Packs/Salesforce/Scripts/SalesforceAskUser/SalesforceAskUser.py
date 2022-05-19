@@ -20,7 +20,7 @@ task = demisto.args().get('task')
 if task:
     comment_suffix += ' #{}'.format(task)
 
-text = demisto.args().get('text', '')
+text = args.get('text') or ''
 if not text:
     option1 = demisto.args().get('option1')
     option2 = demisto.args().get('option2')
