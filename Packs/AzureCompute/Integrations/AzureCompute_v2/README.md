@@ -536,9 +536,9 @@ Gets the properties of a given network interface.
 #### Human Readable Output
 
 >### Properties of Network Interface "webserver729"
->|Name|ID|MACAddress|NetworkSecurityGroup|NICType|DNSSuffix|IPConfigurations|
->|---|---|---|---|---|---|---|
->| webserver729 | /subscriptions/xxxxxxxxx-xxxxx-xxxxx-xxxxx-xxxxxxxxxxxxx/resourceGroups/Compute-Labs/providers/Microsoft.Network/networkInterfaces/webserver729 | 00-22-48-1C-73-AF | id: /subscriptions/xxxxxxxxx-xxxxx-xxxxx-xxxxx-xxxxxxxxxxxxx/resourceGroups/Compute-Labs/providers/Microsoft.Network/networkSecurityGroups/webserver-nsg | NA | test.bx.internal.cloudapp.net | {'ConfigName': 'ipconfig1', 'ConfigID': '/subscriptions/xxxxxxxxx-xxxxx-xxxxx-xxxxx-xxxxxxxxxxxxx/resourceGroups/Compute-Labs/providers/Microsoft.Network/networkInterfaces/webserver729/ipConfigurations/ipconfig1', 'PrivateIPAddress': '10.0.0.4', 'PublicIPAddressID': '/subscriptions/xxxxxxxxx-xxxxx-xxxxx-xxxxx-xxxxxxxxxxxxx/resourceGroups/Compute-Labs/providers/Microsoft.Network/publicIPAddresses/webserver-ip'} |
+>|Name|ID|MACAddress|NetworkSecurityGroup|NICType|PrivateIPAddresses|
+>|---|---|---|---|---|---|
+>| webserver729 | /subscriptions/xxxxxxxxx-xxxxx-xxxxx-xxxxx-xxxxxxxxxxxxx/resourceGroups/Compute-Labs/providers/Microsoft.Network/networkInterfaces/webserver729 | 00-22-48-1C-73-AF | id: /subscriptions/xxxxxxxxx-xxxxx-xxxxx-xxxxx-xxxxxxxxxxxxx/resourceGroups/Compute-Labs/providers/Microsoft.Network/networkSecurityGroups/webserver-nsg | NA | 10.0.0.4|
 
 
 ### azure-vm-get-public-ip-details
@@ -599,9 +599,9 @@ Gets the properties of a given public ip address.
 #### Human Readable Output
 
 >### Properties of Public Address "webserver-ip"
->|PublicIPAddressID| PublicIPAddress | PublicIPAddressFQDN            |
->|-----------------|--------------------------------|---|
->| /subscriptions/xxxxxxxxx-xxxxx-xxxxx-xxxxx-xxxxxxxxxxxxx/resourceGroups/Compute-Labs/providers/Microsoft.Network/publicIPAddresses/webserver-ip | xx.xx.xx.xx     | test.eastus.cloudapp.azure.com |
+>|PublicConfigName|PublicIPAddress| Location |PublicIPAddressVersion|PublicIPAddressAllocationMethod|
+>|-----------|--------|---|------|--------|
+>| test-publicip1|xx.xx.xx.xx| ukwest | IPv4|Static|
 
 
 ### azure-vm-create-nic
@@ -674,6 +674,6 @@ Creates a virtual machine network interface. the specified OS image.
 #### Human Readable Output
 
 >### Created Network Interface "test_nic2"
->|DNSSuffix|ID|IPConfigurations|Location|Name|NetworkSecurityGroup|ProvisioningState|ResourceGroup|
->|---|---|---|---|---|---|---|---|
->| test.bx.internal.cloudapp.net | /subscriptions/xxxxxxxxx-xxxxx-xxxxx-xxxxx-xxxxxxxxxxxxx/resourceGroups/Compute-Labs/providers/Microsoft.Network/networkInterfaces/test_nic2 | {'ConfigName': 'ipconfigtest', 'ConfigID': '/subscriptions/xxxxxxxxx-xxxxx-xxxxx-xxxxx-xxxxxxxxxxxxx/resourceGroups/Compute-Labs/providers/Microsoft.Network/networkInterfaces/test_nic2/ipConfigurations/ipconfigtest', 'PrivateIPAddress': '10.0.0.13', 'PublicIPAddressID': 'NA', 'SubNet': '/subscriptions/xxxxxxxxx-xxxxx-xxxxx-xxxxx-xxxxxxxxxxxxx/resourceGroups/Compute-Labs/providers/Microsoft.Network/virtualNetworks/Compute-Labs-vnet/subnets/default'} | eastus | test_nic2 | NA | Succeeded | Compute-Labs |
+>|ID|PrivateIPAddresses|Location|Name|NetworkSecurityGroup|
+>|---|---|---|---|---|
+>| /subscriptions/xxxxxxxxx-xxxxx-xxxxx-xxxxx-xxxxxxxxxxxxx/resourceGroups/Compute-Labs/providers/Microsoft.Network/networkInterfaces/test_nic2 | 10.0.0.13 | eastus | test_nic2 | NA |

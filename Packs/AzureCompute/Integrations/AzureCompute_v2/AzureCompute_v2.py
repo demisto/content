@@ -817,9 +817,19 @@ def get_network_interface_command(client: MsGraphClient, args: dict):
         'IPConfigurations': ip_configs
     }
 
+    human_readable_network_config = {
+        'Name': interface_name,
+        'ID': interface_id,
+        'MACAddress': mac_address,
+        'PrivateIPAddresses': [ip.get("PrivateIPAddress") for ip in ip_configs],
+        'NetworkSecurityGroup': network_security_group,
+        'Location': location,
+        'NICType': nic_type,
+    }
+
     title = 'Properties of Network Interface "{}"'.format(interface_name)
-    table_headers = ['Name', 'ID', 'MACAddress', 'NetworkSecurityGroup', 'NICType', 'DNSSuffix', 'IPConfigurations']
-    human_readable = tableToMarkdown(title, network_config, headers=table_headers, removeNull=True)
+    table_headers = ['Name', 'ID', 'MACAddress', 'PrivateIPAddresses', 'NetworkSecurityGroup', 'Location', 'NICType']
+    human_readable = tableToMarkdown(title, human_readable_network_config, headers=table_headers, removeNull=True)
     entry_context = {'Azure.Network.Interfaces(val.ID === obj.ID)': network_config}
     return human_readable, entry_context, response
 
@@ -864,9 +874,19 @@ def get_public_ip_details_command(client: MsGraphClient, args: dict):
         'PublicIPAddressDomainName': address_domain_name,
         'PublicIPAddressFQDN': address_fqdn
     }
+
+    human_readable_ip_config = {
+        'PublicConfigName': config_name,
+        'Location': location,
+        'PublicIPAddress': ip_address,
+        'PublicIPAddressVersion': ip_address_version,
+        'PublicIPAddressAllocationMethod': ip_address_allocation_method
+    }
+
     title = 'Properties of Public Address "{}"'.format(address_name)
-    table_headers = ['Name', 'PublicIPAddressID', 'PublicIPAddress', 'PublicIPAddressFQDN', 'ConfigName']
-    human_readable = tableToMarkdown(title, ip_config, headers=table_headers, removeNull=True)
+    table_headers = ['PublicConfigName', 'Location', 'PublicIPAddress', 'PublicIPAddressVersion',
+                     'PublicIPAddressAllocationMethod']
+    human_readable = tableToMarkdown(title, human_readable_ip_config, headers=table_headers, removeNull=True)
     entry_context = {'Azure.Network.IPConfigurations(val.PublicIPAddressID === '
                      'obj.PublicIPAddressID)': ip_config}
     return human_readable, entry_context, response
@@ -940,8 +960,17 @@ def create_nic_command(client: MsGraphClient, args: dict):
         'DNSSuffix': dns_suffix
     }
 
+    human_readable_nic = {
+        'Name': nic_name,
+        'ID': nic_id,
+        'PrivateIPAddresses': [ip.get("PrivateIPAddress") for ip in ip_configs],
+        'NetworkSecurityGroup': network_security_group,
+        'Location': location
+    }
+
     title = f'Created Network Interface "{nic_name}"'
-    human_readable = tableToMarkdown(title, nic, removeNull=True)
+    table_headers = ['Name', 'ID', 'PrivateIPAddresses', 'NetworkSecurityGroup', 'Location']
+    human_readable = tableToMarkdown(title, human_readable_nic, headers=table_headers, removeNull=True)
     entry_context = {'Azure.Network.Interfaces(val.ID && val.Name === obj.ID)': nic}
     return human_readable, entry_context, response
 
