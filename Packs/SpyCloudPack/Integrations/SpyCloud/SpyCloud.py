@@ -13,7 +13,6 @@ headers = {
 
 """MAIN FUNCTIONS"""
 
-
 def download_data(URL_SUFFIX, cursor=' '):
     """ General download function for Spycloud breach data. Cannot be used for catalog """
 
