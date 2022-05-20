@@ -8337,7 +8337,7 @@ script:
     - contextPath: InfoFile.Info
       description: Basic information of file
       type: String
-  dockerimage: demisto/pan-os-python:1.0.0.29113
+  dockerimage: demisto/pan-os-python:1.0.0.29756
   feed: false
   isfetch: false
   longRunning: false
