@@ -1163,7 +1163,7 @@ class ExtFilter:
                     lhs = copy.deepcopy(root)
                 else:
                     lhs = self.parse_and_extract_conds_json(lhs, root)
-                
+
                 lconds = self.parse_conds_json(lconds)
                 if not isinstance(lconds, (dict, list)):
                     exit_error(f"Invalid conditions: {lconds}")
