@@ -274,26 +274,10 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "employeedisplayname",
-                                "height": 55,
-                                "id": "9e36d450-5984-11ea-b904-997d555669cb",
-                                "index": 3,
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "employeeemail",
+                                "fieldId": "code42username",
                                 "height": 55,
                                 "id": "a3608bb0-5984-11ea-b904-997d555669cb",
                                 "index": 4,
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "employeemanageremail",
-                                "height": 55,
-                                "id": "a4bc7230-5984-11ea-b904-997d555669cb",
-                                "index": 5,
                                 "startCol": 0
                             }
                         ],
@@ -313,7 +297,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 6,
-                                "fieldId": "exfiltratedfiles",
+                                "fieldId": "code42fileevents",
                                 "height": 110,
                                 "id": "d857da20-5985-11ea-b904-997d555669cb",
                                 "index": 0,
