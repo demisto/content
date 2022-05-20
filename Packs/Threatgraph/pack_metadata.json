@@ -1,0 +1,17 @@
+{
+    "name": "Threatgraph",
+    "description": "ThreatGraph : this is created from scratch to address the issue of threatgraph being deprecated by CS but there being no replacement",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Neil Walker",
+    "url": "",
+    "email": "",
+    "created": "2022-05-20T14:16:22Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "UmarA"
+    ]
+}
