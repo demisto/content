@@ -8049,6 +8049,7 @@ If `if` condition is not given or returns any value, `then` operation is execute
 | if | expressions | (Optional) `if` condition |
 | then | expressions | Conditions to execute if `if` condition is not given or returns any value. |
 | else | expressions | (Optional) Conditions to execute if `if` returns `null`. |
+| lhs | expressions | (Optional) The value used on the left hand side instead of using the current element. |
 
 
 #### Example 1
@@ -8173,6 +8174,36 @@ If `if` condition is not given or returns any value, `then` operation is execute
       10,
       10,
       10
+    ]
+
+#### Example 4
+##### Input
+    [
+      "a.dat",
+      "b.exe",
+      "c.txt"
+    ]
+
+##### Filter
+> **Operator**: if-then-else
+
+> **Path**: 
+
+> **Filter**:
+
+    {
+      "if": {
+        "is": "empty"
+      },
+      "else": {
+        "ends with": ".exe"
+      },
+      "lhs": ".exe"
+    }
+
+##### Output
+    [
+      "b.exe"
     ]
 
 </details>
