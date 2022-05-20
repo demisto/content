@@ -252,7 +252,7 @@ def transform(spydata, key):
     return transformed_data
 
 
-def test_mod():
+def test_module():
     """Simple test function to verify it works from the BYOI screen"""
     URL_SUFFIX = BASE_URL + "breach/data/domains/google.com/"
     resp = requests.get(URL_SUFFIX, headers=headers, timeout=30)
@@ -262,19 +262,22 @@ def test_mod():
         demisto.results('not ok')
 
 
-""" EXECUTION """
-try:
-    if demisto.command() == 'spycloud-list-breaches':
-        return_results(list_breaches())
-    elif demisto.command() == 'spycloud-domain-data':
-        return_results(get_domain_data())
-    elif demisto.command() == 'spycloud-get-breach-data':
-        return_results(get_breach_data())
-    elif demisto.command() == 'spycloud-email-data':
-        return_results(get_email_data())
-    elif demisto.command() == 'spycloud-watchlist-data':
-        return_results(get_watchlist_data())
-    elif demisto.command() == 'test-module':
-        test_mod()
-except Exception as e:
-    demisto.debug(e)
+def main():
+  """ EXECUTION """
+  try:
+      if demisto.command() == 'spycloud-list-breaches':
+          return_results(list_breaches())
+      elif demisto.command() == 'spycloud-domain-data':
+          return_results(get_domain_data())
+      elif demisto.command() == 'spycloud-get-breach-data':
+          return_results(get_breach_data())
+      elif demisto.command() == 'spycloud-email-data':
+          return_results(get_email_data())
+      elif demisto.command() == 'spycloud-watchlist-data':
+          return_results(get_watchlist_data())
+      elif demisto.command() == 'test-module':
+          test_module()
+  except Exception as e:
+      demisto.debug(e)
+if __name__ in ('__main__', '__builtin__', 'builtins'):
+    main()

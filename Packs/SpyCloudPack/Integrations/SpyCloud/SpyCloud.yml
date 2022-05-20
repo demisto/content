@@ -136,7 +136,7 @@ script:
     - contextPath: SpyCloud.Domain.source_id
       description: 'breach source ID'
       type: String
-    - contextPath: SpyCloud.Results.password_plaintext
+    - contextPath: SpyCloud.Domain.password_plaintext
       description: 'Plaintext password identified'
       type: String
   - arguments:
