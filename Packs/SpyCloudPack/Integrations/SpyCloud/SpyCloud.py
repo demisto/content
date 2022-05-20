@@ -263,19 +263,22 @@ def test_module():
         demisto.results('not ok')
 
 
-""" EXECUTION """
-try:
-    if demisto.command() == 'spycloud-list-breaches':
-        return_results(list_breaches())
-    elif demisto.command() == 'spycloud-domain-data':
-        return_results(get_domain_data())
-    elif demisto.command() == 'spycloud-get-breach-data':
-        return_results(get_breach_data())
-    elif demisto.command() == 'spycloud-email-data':
-        return_results(get_email_data())
-    elif demisto.command() == 'spycloud-watchlist-data':
-        return_results(get_watchlist_data())
-    elif demisto.command() == 'test-module':
-        test_mod()
-except Exception as e:
-    demisto.debug(e)
+def main():
+  """ EXECUTION """
+  try:
+      if demisto.command() == 'spycloud-list-breaches':
+          return_results(list_breaches())
+      elif demisto.command() == 'spycloud-domain-data':
+          return_results(get_domain_data())
+      elif demisto.command() == 'spycloud-get-breach-data':
+          return_results(get_breach_data())
+      elif demisto.command() == 'spycloud-email-data':
+          return_results(get_email_data())
+      elif demisto.command() == 'spycloud-watchlist-data':
+          return_results(get_watchlist_data())
+      elif demisto.command() == 'test-module':
+          test_module()
+  except Exception as e:
+      demisto.debug(e)
+if __name__ in ('__main__', '__builtin__', 'builtins'):
+    main()
