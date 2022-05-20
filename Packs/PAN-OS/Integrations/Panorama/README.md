@@ -6933,4 +6933,425 @@ Fixed security rules that have incorrect log settings by adding a log forwarding
     ]
   }    
 }
+```### pan-os-config-commit-to-all
+***
+Commit the configuration for the entire topology. This will commit to all 'active' devices in the topology at the same time unless device_filter_string is provided.
+
+
+#### Base Command
+
+`pan-os-config-commit-to-all`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| device_filter_string | String to filter to only check given device. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PANOS.CommitStatus.hostid | String | Host ID | 
+| PANOS.CommitStatus.job_id | String | The ID of the commit job. May be empty on first run., | 
+| PANOS.CommitStatus.commit_type | String | The type of commit operation. | 
+| PANOS.CommitStatus.status | String | The current status of the commit operation. | 
+| PANOS.CommitStatus.device_type | String | The type of device; can be either "Panorama" or "Firewall" | 
+
+#### Command example
+```!pan-os-config-commit-to-all```
+#### Context Example
+```json
+{
+    "PANOS": {
+        "CommitStatus": [
+            {
+                "commit_type": "Commit",
+                "device_type": "Panorama",
+                "hostid": "192.168.1.145",
+                "job_id": null,
+                "status": "started"
+            }
+        ]
+    }
+}
 ```
+
+#### Human Readable Output
+
+>### PAN-OS Commit Job
+>|commit_type|device_type|hostid|status|
+>|---|---|---|---|
+>| Commit | Panorama | 192.168.1.145 | started |
+
+
+### pan-os-config-push-all
+***
+Push the configuration to all the device groups and template-stacks in the environment.
+
+
+#### Base Command
+
+`pan-os-config-push-all`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| device_filter_string | String to filter to only check given device. | Optional | 
+| device_group_filter | List of device group names to push configuration to. | Optional | 
+| template_stack_filter | List of template stack names to pushconfiguration to. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PANOS.PushStatus.hostid | String | Host ID | 
+| PANOS.PushStatus.job_id | String | The ID of the push job. | 
+| PANOS.PushStatus.commit_type | String | The name of the device group or template being pushed. | 
+| PANOS.PushStatus.commit_all_status | String | The current status of the commit all operation on Panorama. | 
+| PANOS.PushStatus.device_status | String | The status of the actual commit operation on the device itself | 
+| PANOS.PushStatus.name | String | The name of the device group or template being pushed. | 
+| PANOS.PushStatus.device | String | The device currently being pushed to - None when first initiated. | 
+
+#### Command example
+```!pan-os-config-push-all```
+#### Context Example
+```json
+{
+    "PANOS": {
+        "PushStatus": [
+            {
+                "commit_all_status": "Initiated",
+                "commit_type": "devicegroup",
+                "device": "",
+                "device_status": "",
+                "hostid": "192.168.1.145",
+                "job_id": "540",
+                "name": "LAB"
+            },
+            {
+                "commit_all_status": "Initiated",
+                "commit_type": "template-stack",
+                "device": "",
+                "device_status": "",
+                "hostid": "192.168.1.145",
+                "job_id": "541",
+                "name": "LAB-STACK"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### PAN-OS Push Job
+>|commit_all_status|commit_type|hostid|job_id|name|
+>|---|---|---|---|---|
+>| Initiated | devicegroup | 192.168.1.145 | 540 | LAB |
+>| Initiated | template-stack | 192.168.1.145 | 541 | LAB-STACK |
+
+
+### pan-os-config-get-commit-status
+***
+Returns the status of the commit operation on all devices. If an ID is given, only that id will be returned.
+
+
+#### Base Command
+
+`pan-os-config-get-commit-status`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| match_job_id | job ID or list of Job IDs to return. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PANOS.CommitStatus.hostid | String | Host ID | 
+| PANOS.CommitStatus.job_id | String | The ID of the commit job. May be empty on first run., | 
+| PANOS.CommitStatus.commit_type | String | The type of commit operation. | 
+| PANOS.CommitStatus.status | String | The current status of the commit operation. | 
+| PANOS.CommitStatus.device_type | String | The type of device; can be either "Panorama" or "Firewall" | 
+
+#### Command example
+```!pan-os-config-get-commit-status```
+#### Context Example
+```json
+{
+    "PANOS": {
+        "CommitStatus": [
+            {
+                "commit_type": "CommitAll",
+                "device_type": "Panorama",
+                "hostid": "192.168.1.145",
+                "job_id": "541",
+                "status": "FIN"
+            },
+            {
+                "commit_type": "CommitAll",
+                "device_type": "Panorama",
+                "hostid": "192.168.1.145",
+                "job_id": "540",
+                "status": "FIN"
+            },
+            {
+                "commit_type": "CommitAll",
+                "device_type": "Panorama",
+                "hostid": "192.168.1.145",
+                "job_id": "532",
+                "status": "FIN"
+            },
+            {
+                "commit_type": "CommitAll",
+                "device_type": "Panorama",
+                "hostid": "192.168.1.145",
+                "job_id": "531",
+                "status": "FIN"
+            },
+            {
+                "commit_type": "Commit",
+                "device_type": "Panorama",
+                "hostid": "192.168.1.145",
+                "job_id": "530",
+                "status": "FIN"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### PAN-OS Commit Job
+>|commit_type|device_type|hostid|job_id|status|
+>|---|---|---|---|---|
+>| CommitAll | Panorama | 192.168.1.145 | 541 | FIN |
+>| CommitAll | Panorama | 192.168.1.145 | 540 | FIN |
+>| CommitAll | Panorama | 192.168.1.145 | 532 | FIN |
+>| CommitAll | Panorama | 192.168.1.145 | 531 | FIN |
+>| Commit | Panorama | 192.168.1.145 | 530 | FIN |
+
+
+### pan-os-config-get-push-status
+***
+Returns the status of the push (commit-all) jobs from Panorama.
+
+
+#### Base Command
+
+`pan-os-config-get-push-status`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| match_job_id | job ID or list of Job IDs to return. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PANOS.PushStatus.hostid | String | Host ID | 
+| PANOS.PushStatus.job_id | String | The ID of the push job. | 
+| PANOS.PushStatus.commit_type | String | The name of the device group or template being pushed. | 
+| PANOS.PushStatus.commit_all_status | String | The current status of the commit all operation on Panorama. | 
+| PANOS.PushStatus.device_status | String | The status of the actual commit operation on the device itself | 
+| PANOS.PushStatus.name | String | The name of the device group or template being pushed. | 
+| PANOS.PushStatus.device | String | The device currently being pushed to - None when first initiated. | 
+
+#### Command example
+```!pan-os-config-get-push-status```
+#### Context Example
+```json
+{
+    "PANOS": {
+        "PushStatus": [
+            {
+                "commit_all_status": "FIN",
+                "commit_type": "CommitAll",
+                "device": "222222222222222",
+                "device_status": "FAIL",
+                "hostid": "192.168.1.145",
+                "job_id": "541",
+                "name": ""
+            },
+            {
+                "commit_all_status": "FIN",
+                "commit_type": "CommitAll",
+                "device": "1111111111111111",
+                "device_status": "FAIL",
+                "hostid": "192.168.1.145",
+                "job_id": "541",
+                "name": ""
+            },
+            {
+                "commit_all_status": "FIN",
+                "commit_type": "CommitAll",
+                "device": "222222222222222",
+                "device_status": "FAIL",
+                "hostid": "192.168.1.145",
+                "job_id": "540",
+                "name": ""
+            },
+            {
+                "commit_all_status": "FIN",
+                "commit_type": "CommitAll",
+                "device": "1111111111111111",
+                "device_status": "FAIL",
+                "hostid": "192.168.1.145",
+                "job_id": "540",
+                "name": ""
+            },
+            {
+                "commit_all_status": "FIN",
+                "commit_type": "CommitAll",
+                "device": "222222222222222",
+                "device_status": "FAIL",
+                "hostid": "192.168.1.145",
+                "job_id": "532",
+                "name": ""
+            },
+            {
+                "commit_all_status": "FIN",
+                "commit_type": "CommitAll",
+                "device": "1111111111111111",
+                "device_status": "FAIL",
+                "hostid": "192.168.1.145",
+                "job_id": "532",
+                "name": ""
+            },
+            {
+                "commit_all_status": "FIN",
+                "commit_type": "CommitAll",
+                "device": "222222222222222",
+                "device_status": "FAIL",
+                "hostid": "192.168.1.145",
+                "job_id": "531",
+                "name": ""
+            },
+            {
+                "commit_all_status": "FIN",
+                "commit_type": "CommitAll",
+                "device": "1111111111111111",
+                "device_status": "FAIL",
+                "hostid": "192.168.1.145",
+                "job_id": "531",
+                "name": ""
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### PAN-OS Push Job
+>|commit_all_status|commit_type|device|device_status|hostid|job_id|
+>|---|---|---|---|---|---|
+>| FIN | CommitAll | 222222222222222 | FAIL | 192.168.1.145 | 541 |
+>| FIN | CommitAll | 1111111111111111 | FAIL | 192.168.1.145 | 541 |
+>| FIN | CommitAll | 222222222222222 | FAIL | 192.168.1.145 | 540 |
+>| FIN | CommitAll | 1111111111111111 | FAIL | 192.168.1.145 | 540 |
+>| FIN | CommitAll | 222222222222222 | FAIL | 192.168.1.145 | 532 |
+>| FIN | CommitAll | 1111111111111111 | FAIL | 192.168.1.145 | 532 |
+>| FIN | CommitAll | 222222222222222 | FAIL | 192.168.1.145 | 531 |
+>| FIN | CommitAll | 1111111111111111 | FAIL | 192.168.1.145 | 531 |
+
+
+### pan-os-config-get-object
+***
+Searches and returns a reference for the given object type and name. If no name is provided, all objects of the given type will be returned.
+
+
+#### Base Command
+
+`pan-os-config-get-object`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| object_type | The type of object to search; see https://pandevice.readthedocs.io/en/latest/module-objects.html. Possible values are: AddressObject, AddressGroup, ServiceGroup, ServiceObject, ApplicationObject, ApplicationGroup, LogForwardingProfile, SecurityProfileGroup. | Required | 
+| device_filter_string | If provided, only objects from the given device are returned. | Optional | 
+| object_name | The name of the object refernce to return if looking for a specific object. Supports regex if "use_regex" is set. | Optional | 
+| parent | The parent vsys or device group to search. if not provided, all will be returned. | Optional | 
+| use_regex | Enables regex matching on object name. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PANOS.PanosObject.hostid | String | Host ID | 
+| PANOS.PanosObject.container_name | String | What parent container \(DG, Template, VSYS\) this object belongs to. | 
+| PANOS.PanosObject.name | String | The PAN-OS object name | 
+| PANOS.PanosObject.object_type | String | The PAN-OS-Python object type | 
+
+#### Command example
+```!pan-os-config-get-object object_type="AddressObject"```
+#### Context Example
+```json
+{
+    "PANOS": {
+        "PanosObject": [
+            {
+                "container_name": "shared",
+                "hostid": "192.168.1.145",
+                "name": "Sinkhole-IPv4",
+                "object_type": "AddressObject"
+            },
+            {
+                "container_name": "shared",
+                "hostid": "192.168.1.145",
+                "name": "Sinkhole-IPv6",
+                "object_type": "AddressObject"
+            },
+            {
+                "container_name": "shared",
+                "hostid": "192.168.1.145",
+                "name": "test-shared",
+                "object_type": "AddressObject"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### PAN-OS Objects
+>|container_name|hostid|name|object_type|
+>|---|---|---|---|
+>| shared | 192.168.1.145 | Sinkhole-IPv4 | AddressObject |
+>| shared | 192.168.1.145 | Sinkhole-IPv6 | AddressObject |
+>| shared | 192.168.1.145 | test-shared | AddressObject |
+
+
+### pan-os-platform-get-device-state
+***
+Get the device state from the provided device. Note; This will attempt to connect directly to the provided target to get the device state - if the IP address, as reported in 'show system info' is unreachable, this command will fail.
+
+
+#### Base Command
+
+`pan-os-platform-get-device-state`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| target | String to filter to only show specific hostnames or serial numbers. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| InfoFile.Name | String | Filename | 
+| InfoFile.EntryID | String | Entry ID | 
+| InfoFile.Size | String | Size of file | 
+| InfoFile.Type | String | Type of file | 
+| InfoFile.Info | String | Basic information of file | 
