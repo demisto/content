@@ -3,8 +3,8 @@
     "description": "Cyware Threat Intelligence eXchange",
     "support": "partner",
     "currentVersion": "2.0.0",
-    "author": "Cortex XSOAR",
-    "url": "https://www.paloaltonetworks.com/cortex",
+    "author": "Cyware Labs",
+    "url": "https://cyware.com/",
     "email": "connector-dev@cyware.com",
     "created": "2022-05-09T00:00:00Z",
     "categories": [
