@@ -253,7 +253,7 @@ def transform(spydata, key):
     return transformed_data
 
 
-def test_mod():
+def test_module():
     """Simple test function to verify it works from the BYOI screen"""
     URL_SUFFIX = BASE_URL + "breach/data/domains/google.com/"
     resp = requests.get(URL_SUFFIX, headers=headers, timeout=30)
