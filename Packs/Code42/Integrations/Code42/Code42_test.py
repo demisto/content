@@ -448,6 +448,7 @@ MOCK_ALERT_DETAILS_RESPONSE = """{
       "actorId": "912098363086307495",
       "target": "N/A",
       "severity": "HIGH",
+      "riskSeverity": "CRITICAL",
       "ruleId": "4576576e-13cb-4f88-be3a-ee77739de649",
       "ruleSource": "Alerting",
       "id": "36fb8ca5-0533-4d25-9763-e09d35d60610",
@@ -623,6 +624,42 @@ MOCK_ALERT_DETAILS_RESPONSE = """{
           }
         }
       ]
+    },
+    {
+      "type$": "ALERT_DETAILS",
+      "tenantId": "1d71796f-af5b-4231-9d8e-df6434da4663",
+      "type": "FED_CLOUD_SHARE_PERMISSIONS",
+      "name": "High-Risk Employee Alert",
+      "description": "Cortex XSOAR is 2cool.",
+      "actor": "user2@example.com",
+      "actorId": "912098363086307495",
+      "target": "N/A",
+      "severity": "MEDIUM",
+      "riskSeverity": "MODERATE",
+      "ruleId": "4576576e-13cb-4f88-be3a-ee77739de649",
+      "ruleSource": "Alerting",
+      "id": "18ac641d-7d9c-4d37-a48f-c89396c07d03",
+      "createdAt": "2019-10-02T17:02:24.2071980Z",
+      "state": "OPEN",
+      "observations": []
+    },
+    {
+      "type$": "ALERT_DETAILS",
+      "tenantId": "1d71796f-af5b-4231-9d8e-df6434da4663",
+      "type": "FED_ENDPOINT_EXFILTRATION",
+      "name": "Custom Alert 1",
+      "description": "Cortex XSOAR is 3cool.",
+      "actor": "user3@example.com",
+      "actorId": "912098363086307495",
+      "target": "N/A",
+      "severity": "LOW",
+      "riskSeverity": "LOW",
+      "ruleId": "4576576e-13cb-4f88-be3a-ee77739de649",
+      "ruleSource": "Alerting",
+      "id": "3137ff1b-b824-42e4-a476-22bccdd8ddb8",
+      "createdAt": "2019-10-02T17:03:28.2885720Z",
+      "state": "OPEN",
+      "observations": []
     }
   ]
 }"""
@@ -633,7 +670,7 @@ MOCK_CODE42_ALERT_CONTEXT = [
         "Name": "Departing Employee Alert",
         "Description": "Cortex XSOAR is cool.",
         "Occurred": "2019-10-02T17:02:23.5867670Z",
-        "Severity": "HIGH",
+        "Severity": "CRITICAL",
         "State": "OPEN",
         "Type": "FED_ENDPOINT_EXFILTRATION",
         "Username": "user1@example.com",
@@ -641,8 +678,9 @@ MOCK_CODE42_ALERT_CONTEXT = [
     {
         "ID": "18ac641d-7d9c-4d37-a48f-c89396c07d03",
         "Name": "High-Risk Employee Alert",
+        "Description": "Cortex XSOAR is 2cool.",
         "Occurred": "2019-10-02T17:02:24.2071980Z",
-        "Severity": "MEDIUM",
+        "Severity": "MODERATE",
         "State": "OPEN",
         "Type": "FED_CLOUD_SHARE_PERMISSIONS",
         "Username": "user2@example.com",
@@ -650,6 +688,7 @@ MOCK_CODE42_ALERT_CONTEXT = [
     {
         "ID": "3137ff1b-b824-42e4-a476-22bccdd8ddb8",
         "Name": "Custom Alert 1",
+        "Description": "Cortex XSOAR is 3cool.",
         "Occurred": "2019-10-02T17:03:28.2885720Z",
         "Severity": "LOW",
         "State": "OPEN",
