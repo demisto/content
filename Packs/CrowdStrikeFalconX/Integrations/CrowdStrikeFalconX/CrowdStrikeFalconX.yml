@@ -103,13 +103,13 @@ script:
       secret: false
     - auto: PREDEFINED
       default:
-      defaultValue: "no"
+      defaultValue: no
       description: Whether to submit the given file to the sandbox. Can be "yes" or "no". Default is "no".
       isArray: false
       name: submit_file
       predefined:
-      - 'no'
-      - 'yes'
+      - no
+      - yes
       required: false
       secret: false
     deprecated: false
@@ -435,7 +435,7 @@ script:
     execution: false
     name: cs-fx-submit-uploaded-file
     outputs:
-    - contextPath: 'csfalconx.resource.uploaded_id'
+    - contextPath: csfalconx.resource.uploaded_id
       description: Analysis ID received after uploading the file.
       type: String
     - contextPath: csfalconx.resource.file_name
@@ -1388,7 +1388,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'SHA256 hashes to search for. Overridden by the *filter* argument (if provided)'
+      description: SHA256 hashes to search for. Overridden by the *filter* argument (if provided)
       isArray: true
       name: hashes
       required: false
@@ -1437,7 +1437,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Maximum number of report IDs to return. Maximum is 5000.'
+      description: Maximum number of report IDs to return. Maximum is 5000.
       isArray: false
       name: limit
       required: false
@@ -1583,7 +1583,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: 'Whether the sandbox analysis routes network traffic via TOR. Can be "true" or "false". If true, sandbox analysis routes network traffic via TOR. Default is false.'
+      description: Whether the sandbox analysis routes network traffic via TOR. Can be "true" or "false". If true, sandbox analysis routes network traffic via TOR. Default is false.
       isArray: false
       name: enable_tor
       predefined:
