@@ -1607,7 +1607,7 @@ def create_filter_from_args(args: dict) -> dict:
                 start_time = convert_time_to_epoch(start_time)
                 end_time = convert_time_to_epoch(end_time)
                 search_type = 'RANGE'
-                search_value: Union[dict, str] = {
+                search_value: Union[dict, Optional[str]] = {
                     'from': start_time,
                     'to': end_time
                 }
