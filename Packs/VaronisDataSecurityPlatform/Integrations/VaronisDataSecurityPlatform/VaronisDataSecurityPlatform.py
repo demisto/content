@@ -169,7 +169,19 @@ class Client(BaseClient):
     For this HelloWorld implementation, no special attributes defined
     """
 
-    def varonis_authenticate(self, username: str, password: str) -> Dict[str, Any]:
+    def varonis_get_auth_url(self) -> str:
+        """Get varonis authentication configuration
+
+        :return: Authentication url
+        :rtype: ``str``
+        """
+        response = self._http_request('GET', '/auth/configuration')
+
+        demisto.debug(f'Auth configuration {response}')
+
+        return response['authEndpoint']
+
+    def varonis_authenticate(self, username: str, password: str, url: str) -> Dict[str, Any]:
         """Gets the authentication token using the '/auth/win' API endpoint and ntlm authentication
 
         :type username: ``str``
@@ -178,11 +190,14 @@ class Client(BaseClient):
         :type password: ``str``
         :param password: Password
 
+        :type url: ``str``
+        :param url: Auth url
+
         :return: Dict containing the authentication token, token type, expiration time (sec)
         :rtype: ``Dict[str, Any]``
         """
         ntlm = HttpNtlmAuth(username, password)
-        response = self._http_request('POST', '/auth/win', auth=ntlm, data='grant_type=client_credentials')
+        response = self._http_request('POST', full_url=url, auth=ntlm, data='grant_type=client_credentials')
         token = response['access_token']
         token_type = response['token_type']
         self._expires_in = response['expires_in']
@@ -1100,7 +1115,7 @@ def main() -> None:
     password = params.get('credentials', {}).get('password')
 
     # get the service API url
-    base_url = urljoin(params['url'], '/DatAdvantage')
+    base_url = params['url']
 
     # if your Client class inherits from BaseClient, SSL verification is
     # handled out of the box by it, just pass ``verify_certificate`` to
@@ -1120,7 +1135,8 @@ def main() -> None:
             proxy=proxy
         )
 
-        client.varonis_authenticate(username, password)
+        auth_url = client.varonis_get_auth_url()
+        client.varonis_authenticate(username, password, auth_url)
         args = demisto.args()
 
         if demisto.command() == 'test-module':
