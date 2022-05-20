@@ -7881,7 +7881,8 @@ class Topology:
         return PanDevice.create_from_device(
             hostname=ip_address,
             api_username=self.username,
-            api_password=self.password
+            api_password=self.password,
+            api_key=self.api_key
         )
 
     def get_all_object_containers(
@@ -11529,12 +11530,8 @@ def main():
             )
         elif command == 'pan-os-platform-get-device-state':
             topology = get_topology()
-            return_results(
-                dataclasses_to_command_results(
-                    get_device_state(topology, **demisto.args()),
-                    empty_result_message="No objects found."
-                )
-            )
+            # This just returns a fileResult object directly.
+            return_results(get_device_state(topology, **demisto.args()))
         else:
             raise NotImplementedError(f'Command {command} is not implemented.')
     except Exception as err:
