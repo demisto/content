@@ -35,31 +35,31 @@ script:
     name: spycloud-list-breaches
     outputs:
     - contextPath: SpyCloud.Breaches.uuid
-      description: ''
+      description: 'unique ID'
       type: String
     - contextPath: SpyCloud.Breaches.title
-      description: ''
+      description: 'Breach title'
       type: String
     - contextPath: SpyCloud.Breaches.type
-      description: ''
+      description: 'Type of breach'
       type: String
     - contextPath: SpyCloud.Breaches.description
-      description: ''
+      description: 'Summary of the breach/threat'
       type: String
     - contextPath: SpyCloud.Breaches.acquisition_date
-      description: ''
+      description: 'When the breach data was acquired'
       type: Date
     - contextPath: SpyCloud.Breaches.site
-      description: ''
+      description: 'The website that was breached'
       type: String
     - contextPath: SpyCloud.Breaches.spycloud_publish_date
-      description: ''
+      description: 'Publication date'
       type: Date
     - contextPath: SpyCloud.Breaches.num_records
-      description: ''
+      description: 'Number of records in the breach'
       type: Number
     - contextPath: SpyCloud.Breaches.id
-      description: ''
+      description: 'Unique breach ID'
       type: Number
   - arguments:
     - name: id
@@ -70,31 +70,31 @@ script:
     name: spycloud-get-breach-data
     outputs:
     - contextPath: SpyCloud.Breaches.uuid
-      description: ''
+      description: 'Unique ID'
       type: String
     - contextPath: SpyCloud.Breaches.title
-      description: ''
+      description: 'Breach title'
       type: String
     - contextPath: SpyCloud.Breaches.type
-      description: ''
+      description: 'Type of breach'
       type: String
     - contextPath: SpyCloud.Breaches.description
-      description: ''
+      description: 'Summary of the breach'
       type: String
     - contextPath: SpyCloud.Breaches.acquisition_date
-      description: ''
+      description: 'Acquired date'
       type: Date
     - contextPath: SpyCloud.Breaches.site
-      description: ''
+      description: 'Title of the breach'
       type: String
     - contextPath: SpyCloud.Breaches.spycloud_publish_date
-      description: ''
+      description: 'Publication date'
       type: Date
     - contextPath: SpyCloud.Breaches.num_records
-      description: ''
+      description: 'Number of records in breach'
       type: Number
     - contextPath: SpyCloud.Breaches.id
-      description: ''
+      description: 'Unique breach ID'
       type: Number
   - arguments:
     - name: domain
@@ -115,25 +115,25 @@ script:
       that relates with it. Can be scoped by domain, type and severity
     name: spycloud-domain-data
     outputs:
-    - contextPath: SpyCloud.Results.document_id
+    - contextPath: SpyCloud.Domain.document_id
       description: 'The unique ID of the identified record'
       type: String
-    - contextPath: SpyCloud.Results.spycloud_publish_date
+    - contextPath: SpyCloud.Domain.spycloud_publish_date
       description: 'The date SpyCloud has found the data record'
       type: Date
-    - contextPath: SpyCloud.Results.username
+    - contextPath: SpyCloud.Domain.username
       description: 'The username that was found in the breach dataset'
       type: String
-    - contextPath: SpyCloud.Results.email
+    - contextPath: SpyCloud.Domain.email
       description: 'The email that was found in the breach dataset'
       type: String
-    - contextPath: SpyCloud.Results.infected_time
+    - contextPath: SpyCloud.Domain.infected_time
       description: 'The date the user got infected'
       type: String
-    - contextPath: SpyCloud.Results.target_url
+    - contextPath: SpyCloud.Domain.target_url
       description: 'Which URL the credentials are for'
       type: String
-    - contextPath: SpyCloud.Results.source_id
+    - contextPath: SpyCloud.Domain.source_id
       description: 'breach source ID'
       type: String
     - contextPath: SpyCloud.Results.password_plaintext
