@@ -444,6 +444,7 @@ inputs:
   description: Considers Domain(s) which have severity 5 or more
   playbookInputQuery:
 outputs: []
-tests: No test
+tests:
+- No tests (auto formatted)
 fromversion: 6.0.0
 deprecated: true

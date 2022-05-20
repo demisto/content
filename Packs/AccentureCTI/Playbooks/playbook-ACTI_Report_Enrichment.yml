@@ -160,6 +160,7 @@ outputs:
 - contextPath: URL
   type: unknown
   description: ''
-tests: No test
+tests:
+- No tests (auto formatted)
 fromversion: 6.0.0
 deprecated: true
