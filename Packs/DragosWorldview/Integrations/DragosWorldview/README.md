@@ -1,5 +1,5 @@
 Custom integration designed to pull in reports from the Dragos Worldview API as incidents 
-This integration was integrated and tested with version xx of Dragos Worldview 
+This integration was integrated and tested with version 1.0 of Dragos Worldview 
 
 ## Configure Dragos Worldview  on Cortex XSOAR
 
