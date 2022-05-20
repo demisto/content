@@ -46,9 +46,15 @@
 /Packs/ContentManagement/* @adi88d
 
 # Important Scripts
-/Packs/CommonScripts/Scripts/SetGridField/* @yaakovi @David-BMS
+/Packs/CommonScripts/Scripts/SetGridField/* @yaakovi @David-BMS @altmannyarden
 /Packs/CommonScripts/Scripts/SearchIncidentsV2/* @demisto/content-leaders
 /Packs/CommonScripts/Scripts/ParseEmailFiles/* @moishce
+
+# Common Packs
+/Packs/CommonTypes/* @michalgold @altmannyarden @idovandijk
+/Packs/CommonPlaybooks/* @michalgold @altmannyarden @idovandijk
+/Packs/CommonDashboards/* @michalgold @altmannyarden @idovandijk
+
 
 # Build related
 .circleci/config.yml @esharf
