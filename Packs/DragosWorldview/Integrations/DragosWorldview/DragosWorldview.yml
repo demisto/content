@@ -57,15 +57,6 @@ configuration:
   name: max_fetch
   required: false
   type: 0
-contentitemexportablefields:
-  contentitemfields:
-    definitionid: ""
-    fromServerVersion: ""
-    itemVersion: ""
-    packID: 42e85590-bb21-4c89-8900-e2a15a2beb5b
-    propagationLabels:
-    - all
-    toServerVersion: ""
 description: 'Custom integration designed to pull in reports from the Dragos Worldview
   API as incidents '
 display: 'Dragos Worldview '
@@ -103,4 +94,3 @@ script:
   script: ''
   subtype: python3
   type: python
-sourcemoduleid: Dragos Worldview Feed
