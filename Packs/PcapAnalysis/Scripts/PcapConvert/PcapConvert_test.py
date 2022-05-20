@@ -3,6 +3,16 @@ import json
 
 
 def test_main(mocker):
+    """
+    Given:
+    - PCAP values are given with control parameters
+
+    When:
+    - Running PcapConvert
+
+    Then:
+    - Validate results output that returned to CortexSOAR
+    """
     from PcapConvert import main
 
     with open('./test_data/test-1.json', 'r') as f:

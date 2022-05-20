@@ -7,6 +7,16 @@ def side_effect_demisto_getFilePath(entry_id):
 
 
 def test_main(mocker):
+    """
+    Given:
+    - PCAP files are given with control parameters
+
+    When:
+    - Running PcapFileExtractStreams
+
+    Then:
+    - Validate results output that returned to CortexSOAR
+    """
     from PcapFileExtractStreams import main
 
     mocker.patch.object(demisto, 'getFilePath', side_effect=side_effect_demisto_getFilePath)
@@ -31,7 +41,9 @@ def test_main(mocker):
 
         results = demisto.results.call_args[0][0]
         contents = results['Contents']
+        """
         if json.dumps(contents) != json.dumps(t['contents']):
             print(json.dumps(t['contents']))
             print(json.dumps(contents))
+        """
         assert json.dumps(contents) == json.dumps(t['contents'])

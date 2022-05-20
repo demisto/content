@@ -3,6 +3,16 @@ import json
 
 
 def test_main(mocker):
+    """
+    Given:
+    - PCAP values are given with control parameters
+
+    When:
+    - Running PcapExtractStreams
+
+    Then:
+    - Validate results output that returned to CortexSOAR
+    """
     from PcapExtractStreams import main
 
     with open('./test_data/test-1.json', 'r') as f:
@@ -25,7 +35,9 @@ def test_main(mocker):
         main()
         assert demisto.results.call_count == 1
         results = demisto.results.call_args[0][0]
+        """
         if json.dumps(results) != json.dumps(t['result']):
             print(json.dumps(t['result']))
             print(json.dumps(results))
+        """
         assert json.dumps(results) == json.dumps(t['result'])
