@@ -2,7 +2,7 @@ import traceback
 from typing import Any, Dict
 
 import demistomock as demisto  # noqa: F401
-import markdown
+import markdown  # type: ignore
 from bs4 import BeautifulSoup
 from CommonServerPython import *  # noqa: F401
 
