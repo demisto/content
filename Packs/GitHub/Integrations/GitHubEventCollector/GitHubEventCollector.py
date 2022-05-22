@@ -114,11 +114,8 @@ def main():
             events = get_events.run()
 
             if command == 'fetch-events':
-                if events:
-                    send_events_to_xsiam(events, 'github', demisto_params.get('product'))
-                    demisto.setLastRun(GithubGetEvents.get_last_run(events))
-                else:
-                    send_events_to_xsiam([], 'github', demisto_params.get('product'))
+                send_events_to_xsiam(events, 'github', demisto_params.get('product'))
+                demisto.setLastRun(GithubGetEvents.get_last_run(events))
 
             elif command == 'github-get-events':
                 command_results = CommandResults(
