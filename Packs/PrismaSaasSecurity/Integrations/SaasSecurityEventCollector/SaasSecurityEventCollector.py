@@ -100,7 +100,7 @@ class Client(BaseClient):
 
     def get_events_request(self):
         url_suffix = '/api/v1/log_events'
-        return self.http_request('GET', url_suffix=url_suffix)
+        return self.http_request('GET', url_suffix=url_suffix, resp_type='response')
 
 
 ''' HELPER FUNCTIONS '''
@@ -128,7 +128,7 @@ def test_module(client):
         return 'ok'
 
 
-def get_events_command(client: Client):
+def get_events_command(client: Client) -> list:
     events = []
     res = client.get_events_request()
     if res.status_code == 200:
@@ -140,17 +140,14 @@ def get_events_command(client: Client):
             if response.status_code == 200:
                 events.append(response.json())
                 break
-    if events:
-        return events
-    else:
-        return []
+    return events
 
 
 def main() -> None:
     params = demisto.params()
-    client_id: str = params['credentials']['identifier']
-    client_secret: str = params['credentials']['password']
-    base_url: str = params['url'].rstrip('/')
+    client_id: str = params.get('credentials', {}).get('identifier', '')
+    client_secret: str = params.get('credentials', {}).get('password', '')
+    base_url: str = params.get('url', '').rstrip('/')
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
 

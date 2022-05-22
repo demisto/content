@@ -34,9 +34,45 @@ script:
     execution: false
     name: saas-security-get-events
     outputs:
-    - contextPath: BaseIntegration.Output
-      description: '[Enter a description of the data returned in this output.]'
+    - contextPath: SaasSecurity.Event.log_type
+      description: Event type.
       type: String
+    - contextPath: SaasSecurity.Event.item_type
+      description: Item type (File, Folder, or User).
+      type: String
+    - contextPath: SaasSecurity.Event.item_name
+      description: Name of the file, folder, or user associated with the event.
+      type: String
+    - contextPath: SaasSecurity.Event.item_unique_id
+      description: Unique ID number for an asset’s related asset.
+      type: String
+    - contextPath: SaasSecurity.Event.user
+      description: Cloud app user that performed the action.
+      type: String
+    - contextPath: SaasSecurity.Event.source_ip
+      description: Original session source IP address.
+      type: String
+    - contextPath: SaasSecurity.Event.location
+      description: Location of the cloud app user that performed the event.
+      type: String
+    - contextPath: SaasSecurity.Event.action
+      description: Action performed.
+      type: String
+    - contextPath: SaasSecurity.Event.target_name
+      description: Target name.
+      type: String
+    - contextPath: SaasSecurity.Event.target_type
+      description: Target type.
+      type: String
+    - contextPath: SaasSecurity.Event.serial
+      description: Serial number of the organization using the service (tenant).
+      type: String
+    - contextPath: SaasSecurity.Event.cloud_app_instance
+      description: Cloud app name (not cloud app type).
+      type: String
+    - contextPath: SaasSecurity.Event.timestamp
+      description: ISO8601 timestamp to show when the event occurred.
+      type: Date
   dockerimage: demisto/python3:3.9.8.24399
   feed: false
   isfetch: false
