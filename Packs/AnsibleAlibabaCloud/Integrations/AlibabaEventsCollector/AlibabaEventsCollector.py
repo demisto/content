@@ -144,8 +144,8 @@ def main():
     access_key = demisto_params.get('access_key').get('password')
     access_key_id = demisto_params.get('access_key_id').get('password')
     query = demisto_params.get('query')
-    events_to_add_per_request = int(demisto_params.get('events_to_add_per_request'))
     from_ = get_alibaba_timestamp_format(demisto_params.get('from'))
+    should_push_events = argToBoolean(demisto_params.get('should_push_events', 'false'))
 
     headers = {'Content-Length': '0',
                'x-log-bodyrawsize': '0',
@@ -186,10 +186,8 @@ def main():
             events = get_events.run()
 
             if command == 'fetch-events':
-                if events:
-                    demisto.setLastRun(AlibabaGetEvents.get_last_run(events))
-                else:
-                    send_events_to_xsiam([], 'alibaba', demisto_params.get('product'))
+                send_events_to_xsiam(events, 'alibaba', demisto_params.get('product'))
+                demisto.setLastRun(AlibabaGetEvents.get_last_run(events))
 
             elif command == 'alibaba-get-events':
                 command_results = CommandResults(
@@ -201,10 +199,8 @@ def main():
                 )
                 return_results(command_results)
 
-            while len(events) > 0:
-                send_events_to_xsiam(events[:events_to_add_per_request], 'alibaba',
-                                     demisto_params.get('product'))
-                events = events[events_to_add_per_request:]
+                if should_push_events:
+                    send_events_to_xsiam(events, 'alibaba', demisto_params.get('product'))
 
     except Exception as e:
         return_error(str(e))
