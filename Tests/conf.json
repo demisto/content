@@ -1019,7 +1019,7 @@
         },
         {
             "integrations": "Panorama",
-            "instance_names": "palo_alto_firewall_9.0",
+            "instance_names": "palo_alto_firewall_9.1",
             "playbookID": "palo_alto_firewall_test_pb",
             "fromversion": "6.1.0",
             "timeout": 1000
@@ -1033,21 +1033,21 @@
         },
         {
             "integrations": "Panorama",
-            "instance_names": "palo_alto_panorama_9.0",
+            "instance_names": "palo_alto_panorama_9.1",
             "playbookID": "PAN-OS-panorama-topology-test-pb",
             "fromversion": "6.1.0",
             "timeout": 1000
         },
         {
             "integrations": "Panorama",
-            "instance_names": "palo_alto_firewall_9.0",
+            "instance_names": "palo_alto_firewall_9.1",
             "playbookID": "PAN-OS-firewall-topology-test-pb",
             "fromversion": "6.1.0",
             "timeout": 1000
         },
         {
             "integrations": "Panorama",
-            "instance_names": "palo_alto_panorama_9.0",
+            "instance_names": "palo_alto_panorama_9.1",
             "playbookID": "palo_alto_panorama_test_pb",
             "fromversion": "6.1.0",
             "timeout": 2400
@@ -1829,10 +1829,6 @@
         {
             "integrations": "remedy_sr_beta",
             "playbookID": "remedy_sr_test_pb"
-        },
-        {
-            "integrations": "Netskope",
-            "playbookID": "Netskope Test"
         },
         {
             "integrations": "Cylance Protect v2",
@@ -4408,7 +4404,7 @@
         {
             "playbookID": "CrowdStrike_FalconX_Test",
             "fromversion": "6.1.0",
-            "memory_threshold": 80,
+            "memory_threshold": 90,
             "integrations": [
                 "CrowdStrike Falcon X"
             ]
@@ -5012,7 +5008,8 @@
         {
             "integrations": "MalwareBazaar",
             "playbookID": "MalwareBazaar_Test",
-            "fromversion": "6.0.0"
+            "fromversion": "6.0.0",
+            "memory_threshold": 90
         },
         {
             "integrations": "OpsGenieV3",
@@ -5053,6 +5050,10 @@
         },
         {
             "playbookID": "IPToHost - Test"
+        },
+        {
+            "playbookID": "NetskopeAPIv1 Test",
+            "integrations": "NetskopeAPIv1"
         },
         {
             "playbookID": "Grafana-Test",
@@ -5231,7 +5232,6 @@
         "MicrosoftGraphMail-Test_prod": "Issue 40125",
         "Detonate URL - WildFire v2.1 - Test": "Issue 40834",
         "Domain Enrichment - Generic v2 - Test": "Issue 40862",
-        "palo_alto_panorama_test_pb": "Issue 34371",
         "TestIPQualityScorePlaybook": "Issue 40915",
         "VerifyOOBV2Predictions-Test": "Issue 37947",
         "HybridAnalysis-Test": "Issue 26599",
@@ -5309,6 +5309,7 @@
         "Atlassian Confluence Cloud": "No instance - developed by Crest",
         "SOCRadarIncidents": "No instance - developed by partner",
         "SOCRadarThreatFusion": "No instance - developed by partner",
+        "NetskopeAPIv1": "No instance - developed by Qmasters",
         "trustwave secure email gateway": "No instance - developed by Qmasters",
         "Azure Storage Table": "No instance - developed by Qmasters",
         "Azure Storage Queue": "No instance - developed by Qmasters",
@@ -5356,7 +5357,6 @@
         "ArcSight ESM v2": "Issue #18328",
         "AlienVault USM Anywhere": "Issue #18273",
         "Dell Secureworks": "No instance",
-        "Netskope": "instance is down",
         "Service Manager": "Expired license",
         "carbonblackprotection": "License expired",
         "icebrg": "Issue 14312",
@@ -5631,6 +5631,9 @@
             },
             "demisto/googleapi-python3": {
                 "memory_threshold": 200
+            },
+            "demisto/python3:3.10.4.29342": {
+                "memory_threshold": 85
             }
         }
     },
