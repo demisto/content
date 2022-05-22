@@ -149,7 +149,6 @@ references:
         chmod +x ./Tests/Marketplace/*
 
         # configure poetry to save virtual environment in the project
-        python3 -m pip install --upgrade pip virtualenv
         poetry config virtualenvs.in-project true
         if [ ! -e ".venv" ]; then
           echo "installing venv"
