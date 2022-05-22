@@ -4,7 +4,20 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 
-def port_listen_check(port: int, host: str):
+def port_listen_check(port: int, host: str) -> CommandResults:
+    """
+    When given a port and host, this function will attempt to connect to the host on the given port and if successful,
+    return a CommandResults object indicating success
+
+    :type port: ``int``
+    :param port: The port of which to connect on.
+
+    :type host: ``str``
+    :param host: The host to test the connection on.
+
+    :rtype CommandResults: ``CommandResults``
+    :return: CommandResults object with the result of the connection test.
+    """
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     result = sock.connect_ex((host, port))
     open_port = False
@@ -18,6 +31,9 @@ def port_listen_check(port: int, host: str):
 
 
 def main():
+    """
+    Main entry point for the script.
+    """
     port = int(demisto.args().get("port"))
     host = demisto.args().get("host")
     try:
