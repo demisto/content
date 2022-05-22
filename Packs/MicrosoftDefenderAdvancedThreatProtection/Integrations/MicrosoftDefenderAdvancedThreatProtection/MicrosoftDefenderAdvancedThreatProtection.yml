@@ -5680,7 +5680,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The machine ID, could be retrieved from running the command (microsoft-atp-get-machines).
+      description: The machine ID. Can be retrieved by running the 'microsoft-atp-get-machines' command.
       isArray: false
       name: machine_id
       required: true
@@ -5698,7 +5698,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Action ID to retrieve status and data for. Retreived from the get-machine-investigation-package command
+      description: Action ID to retrieve status and data for. Retrieved from the 'get-machine-investigation-package' command
       isArray: false
       name: machine_action_id
       required: false
