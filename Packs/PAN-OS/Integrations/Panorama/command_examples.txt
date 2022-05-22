@@ -115,3 +115,4 @@ not_running_this!panorama-get-ssl-decryption-rules
 !pan-os-platform-get-ha-state
 !pan-os-platform-get-jobs
 !pan-os-platform-download-software version=9.1.0
+!pan-os-apply-dns-signature-policy action=allow anti_spyware_profile_name=Test_antiSpyWare dns_signature_source=Test_EDL packet_capture="single-packet"

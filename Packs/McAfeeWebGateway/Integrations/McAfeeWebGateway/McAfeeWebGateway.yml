@@ -23,12 +23,10 @@ configuration:
   required: true
 - display: Trust any certificate (not secure)
   name: insecure
-  defaultvalue: ""
   type: 8
   required: false
 - display: Use system proxy settings
   name: useproxy
-  defaultvalue: ""
   type: 8
   required: false
 script:
@@ -38,8 +36,10 @@ script:
   - name: mwg-get-available-lists
     arguments: []
     outputs:
-    - contextPath: MWG.Lists.ID
-      description: List ID
+    - contextPath: MWG.Lists.Name
+      description: List Name
+    - contextPath: MWG.Lists.McAfeeID
+      description: McAfee internal List ID.
     - contextPath: MWG.Lists.Index
       description: List Index
     description: Get all available lists
