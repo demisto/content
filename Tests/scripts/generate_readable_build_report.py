@@ -212,7 +212,7 @@ def build_summary_report(logging_manager,
     test_cases_lint = get_failing_lint()
 
     with open(output_file, 'a') as f:
-        to_xml_report_file(f, [create_ts, ts_6_2, ts_master, test_cases_lint, None], prettyprint=False)
+        to_xml_report_file(f, [create_ts, ts_6_2, ts_master, test_cases_lint], prettyprint=False)
 
 
 def get_failing_ut():
