@@ -8,8 +8,8 @@ MAKE SURE YOU REVIEW/REPLACE ALL THE COMMENTS MARKED AS "TODO"
 
 """
 
-import json
 import io
+import json
 
 
 def util_load_json(path):
