@@ -89,11 +89,8 @@ class GithubGetEvents(IntegrationGetEvents):
 def main():
     # Args is always stronger. Get last run even stronger
     demisto_params = demisto.params() | demisto.args() | demisto.getLastRun()
-    events_to_add_per_request = demisto_params.get('events_to_add_per_request', 1000)
-    try:
-        events_to_add_per_request = int(events_to_add_per_request)
-    except ValueError:
-        events_to_add_per_request = 1000
+
+    should_push_events = argToBoolean(demisto_params.get('should_push_events', 'false'))
 
     headers = {'Authorization': f"Bearer {demisto_params['auth_credendtials']['password']}",
                'Accept': 'application/vnd.github.v3+json'}
@@ -118,6 +115,7 @@ def main():
 
             if command == 'fetch-events':
                 if events:
+                    send_events_to_xsiam(events, 'github', demisto_params.get('product'))
                     demisto.setLastRun(GithubGetEvents.get_last_run(events))
                 else:
                     send_events_to_xsiam([], 'github', demisto_params.get('product'))
@@ -131,11 +129,8 @@ def main():
                     raw_response=events,
                 )
                 return_results(command_results)
-
-            while len(events) > 0:
-                send_events_to_xsiam(events[:events_to_add_per_request], 'github',
-                                     demisto_params.get('product'))
-                events = events[events_to_add_per_request:]
+                if should_push_events:
+                    send_events_to_xsiam(events, 'github', demisto_params.get('product'))
 
     except Exception as e:
         return_error(str(e))
