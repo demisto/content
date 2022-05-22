@@ -366,3 +366,5 @@ xsiam_server_master:
     INSTANCE_ROLE: "XSIAM Master"
     GCS_QUEUE_FILE: "queue-master"
     TEST_MACHINES_LIST: "test-machines-master"
+    LOCK_BY_PIPELINE_ID: "true"
+    REQUESTED_MACHINES: "qa2-test-9997461765391"
