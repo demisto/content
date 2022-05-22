@@ -26,23 +26,70 @@ detect_os() {
 # Globals:
 #   None
 # Arguments:
-#   dependencies: array of dependencies
+#   $1: array of dependencies
+#   $2: The OS
 #######################################
 check_dependencies(){
 
 	dependencies=$1
+	os=$2
 
 	for d in "${dependencies[@]}"; 
 	do
-		if ! command -v "$d" &> /dev/null
+		if ! command -v "$d" &> /dev/null 
 		then
-			echo "'$d' could not be found. Please install it, reload the shell and try again. Exiting..."
-			exit 1
+			echo "✗ $d was not found in the system or in the PATH."
+
+			# If git not found and running on a Mac
+			if [ "$d" == "git" ] && [ "$os" == "Mac OS" ]
+			then
+				echo "Install git by visiting https://git-scm.com/download/mac"
+
+			# If git not found and running on Linux
+			elif [ "$d" == "git" ] && [ "$os" == "Linux" ]
+			then
+				echo "Install git by visiting https://git-scm.com/download/linux"
+			
+
+			# If Python was not found on Mac OS
+			elif [ "$d" == "python" ] && [ "$os" == "Mac OS" ]
+			then
+				echo "Install Python by visiting https://www.python.org/downloads/macos/"
+
+			# If Python was not found on Linux
+			elif [ "$d" == "python" ] && [ "$os" == "Linux" ]
+			then
+				echo "Install Python by visiting https://www.python.org/downloads/source/"
+
+			# If Demisto SDK was not found, install it
+			elif [ "$d" == "demisto-sdk" ]
+			then
+				echo "Installing $d..."
+				install_sdk
+			fi
+
 		else
 			echo "✓ Dependency '$d' found."
 		fi
 	done
 
+}
+
+#######################################
+# Install demisto-sdk
+# Globals:
+#   None
+# Arguments:
+#   None
+#######################################
+install_sdk(){
+	
+	if pip3 install demisto-sdk &> /dev/null
+	then
+		echo "✓ demisto-sdk installed successfully."
+	else
+		echo "✗ Error installing demisto-sdk. Scroll up to see error message. If you have a problem installing it, report it https://github.com/demisto/demisto-sdk/issues"
+	fi					
 }
 
 #######################################
@@ -59,7 +106,7 @@ get_repo_root(){
 		echo "$repo_root"
 	else
 		echo "✗ git repo cannot be found in current work tree."
-		echo "Make sure that you're running this script from within the content repository path"
+		echo "Make sure that you're running this script from within the Content repository path"
 		exit 1
 	fi
 }
@@ -166,7 +213,6 @@ push(){
 reset_to_master(){
 	# Check that we're on master/main
 	# If on master/main, create new adopt branch
-	# If not, see if there are any untracked files and attempt to checkout master/main if none
 	branch=$1
 	if [ "$branch" != "master" ] && [ "$branch" != "main" ]; then
 		echo "✗ Not on master/main branch.";
@@ -181,7 +227,7 @@ reset_to_master(){
 			echo "Please run 'git stash/revert/reset' and rerun."
 			exit 1
 		else
-			echo "No untracked changes done, attempting to change to master/main branch..."
+			echo "No untracked changes done, attempting to checkout to master/main branch..."
 			if git show-ref --quiet refs/heads/master; then
 				echo "Checking out master branch..."
 				git checkout master
@@ -352,6 +398,7 @@ adopt() {
 	echo "✓ Release note '$release_note_name' updated."
 
 	# Add message to README
+	# TODO when completion is selected, need to create an interactive prompt to fill out pack_metadata
 	if [[ "$option" == "start" ]]; then
 		message="Note: Support for this Pack will be moved to Partner starting $(get_move_date)."
 	else
@@ -369,7 +416,7 @@ adopt() {
 	echo "✓ Branch pushed upstream."
 
 	echo "All done here!"
-	echo "Please visit $pr_url and fill out the Pull Request to complete the process"
+	echo "Please visit $pr_url and fill out the Pull Request details to complete the adoption process"
 
 }
 

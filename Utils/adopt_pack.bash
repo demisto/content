@@ -20,8 +20,8 @@ main(){
 	os=$(detect_os)
 	echo "✓ Detected OS '$os'."
 
-	dependencies=("git" "demisto-sdk")
-	check_dependencies "${dependencies[@]}"
+	dependencies=("git" "python3" "demisto-sdk")
+	check_dependencies "${dependencies[@]}" "$os"
 	echo "✓ All dependencies met."
 
 
@@ -36,8 +36,8 @@ main(){
 
 	branch=$(get_branch "$pack_name" "$option")
 	create_adopt_branch "$branch"
-
 	echo "✓ Branch created."
+
 	adopt "$option" "$pack_path" "$branch"
 
 	reset_env "$init_branch" "$init_wd"
