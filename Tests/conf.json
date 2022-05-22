@@ -1019,7 +1019,7 @@
         },
         {
             "integrations": "Panorama",
-            "instance_names": "palo_alto_firewall_9.0",
+            "instance_names": "palo_alto_firewall_9.1",
             "playbookID": "palo_alto_firewall_test_pb",
             "fromversion": "6.1.0",
             "timeout": 1000
@@ -1033,21 +1033,21 @@
         },
         {
             "integrations": "Panorama",
-            "instance_names": "palo_alto_panorama_9.0",
+            "instance_names": "palo_alto_panorama_9.1",
             "playbookID": "PAN-OS-panorama-topology-test-pb",
             "fromversion": "6.1.0",
             "timeout": 1000
         },
         {
             "integrations": "Panorama",
-            "instance_names": "palo_alto_firewall_9.0",
+            "instance_names": "palo_alto_firewall_9.1",
             "playbookID": "PAN-OS-firewall-topology-test-pb",
             "fromversion": "6.1.0",
             "timeout": 1000
         },
         {
             "integrations": "Panorama",
-            "instance_names": "palo_alto_panorama_9.0",
+            "instance_names": "palo_alto_panorama_9.1",
             "playbookID": "palo_alto_panorama_test_pb",
             "fromversion": "6.1.0",
             "timeout": 2400
@@ -5232,7 +5232,6 @@
         "MicrosoftGraphMail-Test_prod": "Issue 40125",
         "Detonate URL - WildFire v2.1 - Test": "Issue 40834",
         "Domain Enrichment - Generic v2 - Test": "Issue 40862",
-        "palo_alto_panorama_test_pb": "Issue 34371",
         "TestIPQualityScorePlaybook": "Issue 40915",
         "VerifyOOBV2Predictions-Test": "Issue 37947",
         "HybridAnalysis-Test": "Issue 26599",
@@ -5632,6 +5631,9 @@
             },
             "demisto/googleapi-python3": {
                 "memory_threshold": 200
+            },
+            "demisto/python3:3.10.4.29342": {
+                "memory_threshold": 85
             }
         }
     },
