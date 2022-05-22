@@ -5698,7 +5698,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Action ID to retrieve status and data for. Retrieved from the 'get-machine-investigation-package' command
+      description: Action ID to retrieve status and data for. Retrieved from the 'get-machine-investigation-package' command.
       isArray: false
       name: machine_action_id
       required: false
