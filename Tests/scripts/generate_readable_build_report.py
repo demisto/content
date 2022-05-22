@@ -73,8 +73,10 @@ def build_summary_report(logging_manager,
         test_cases_server_master.append(test_case)
     ts_master = TestSuite("Server Master", test_cases_server_master)
 
+    test_cases_lint = get_failing_lint()
+
     with open(output_file, 'a') as f:
-        to_xml_report_file(f, [create_ts, ts_6_2, ts_master], prettyprint=False)
+        to_xml_report_file(f, [create_ts, ts_6_2, ts_master, test_cases_lint, None], prettyprint=False)
 
 
 def get_failing_ut():
@@ -91,14 +93,16 @@ def get_failing_ut():
 def get_failing_lint():
     failing_lints = get_file_data(os.path.join(ARTIFACTS_FOLDER, 'lint_outputs.json'))
     if failing_lints:
-        test_cases_server_master = []
+        test_cases_lint = []
         for failing_test in failing_lints:
-
-            test_case = TestCase(f'master.{failing_test}', 'Server Master')
-            test_case.add_failure_info(message=generate_error_msg_for_servers(failing_test_data[0]))
-            test_cases_server_master.append(test_case)
-        ts = TestSuite("Server Master", test_cases_server_master)
-    return ts
+            if failing_test.get('severity') == 'error':
+                name = failing_test.get('filePath', '') + " " + failing_test.get('Row', '')
+                test_case = TestCase(f'lint.{name}', 'Lint')
+                test_case.add_failure_info(message=failing_test(failing_test.get('message')))
+                test_cases_lint.append(test_case)
+        ts = TestSuite("Lint", test_cases_lint)
+        return ts
+    return None
 
 
 def get_failing_validations():
