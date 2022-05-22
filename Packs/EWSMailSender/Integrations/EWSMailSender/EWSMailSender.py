@@ -225,18 +225,17 @@ def collect_manual_attachments(manualAttachObj):
     return attachments
 
 
-def get_none_empty_addresses(addresses_str):
-    demisto.debug(addresses_str)
-    return list(filter(None, addresses_str.split(",")))
+def get_none_empty_addresses(addresses_ls):
+    return [adress for adress in addresses_ls if adress]
 
 
 def send_email(to, subject, body="", bcc=None, cc=None, replyTo=None, htmlBody=None,
                attachIDs="", attachCIDs="", attachNames="", from_mailbox=None, manualAttachObj=None,
                raw_message=None, from_address=None):
     account = get_account(from_mailbox or ACCOUNT_EMAIL)
-    bcc: List[str] = argToList(bcc)
-    cc: List[str] = argToList(cc)
-    to: List[str] = argToList(to)
+    bcc: List[str] = get_none_empty_addresses(argToList(bcc))
+    cc: List[str] = get_none_empty_addresses(argToList(cc))
+    to: List[str] = get_none_empty_addresses(argToList(to))
     reply_to: List[str] = argToList(replyTo)
     manualAttachObj = manualAttachObj if manualAttachObj is not None else []
     subject = subject[:252] + '...' if len(subject) > 255 else subject
