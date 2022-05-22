@@ -5152,6 +5152,13 @@
             ],
             "playbookID": "Github Event Collector-test",
             "fromversion": "6.6.0"
+        },
+        {
+            "integrations": [
+                "Alibaba Action Trail Event Collector"
+            ],
+            "playbookID": "Alibaba Event Collector-test",
+            "fromversion": "6.8.0"
         }
     ],
     "skipped_tests": {
