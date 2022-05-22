@@ -1,3 +1,6 @@
+import time
+
+import requests
 
 import demistomock as demisto
 import urllib3
@@ -49,7 +52,7 @@ class Client(BaseClient):
             'Authorization': f'Bearer {token}',
             'Content-Type': 'application/json',
         }
-        return super()._http_request(*args, headers=headers, **kwargs)
+        return super()._http_request(*args, headers=headers, retries=5, status_list_to_retry=[204], **kwargs)
 
     def get_access_token(self):
         """
@@ -119,13 +122,29 @@ def get_passed_mins(start_time, end_time_str, tz=None):
 ''' COMMAND FUNCTIONS '''
 
 
-def get_events_command(client: Client) -> CommandResults:
-
+def test_module(client):
     response = client.get_events_request()
+    if response.status_code in (200, 204):
+        return 'ok'
 
 
+def get_events_command(client: Client):
+    events = []
+    res = client.get_events_request()
+    if res.status_code == 200:
+        events.append(res.json())
+    else:
+        while res.status_code == 204:
+            response = client.get_events_request()
+            demisto.debug(f'This is the response status code - {response.status_code}')
+            if response.status_code == 200:
+                events.append(response.json())
+                break
+    if events:
+        return events
+    else:
+        return []
 
-''' MAIN FUNCTION '''
 
 def main() -> None:
     params = demisto.params()
@@ -146,13 +165,23 @@ def main() -> None:
             proxy=proxy,
         )
 
-        if demisto.command() == 'fetch-events':
-            events, last_run = fetch_events_command(client)
-            # we submit the indicators in batches
-            send_events_to_xsiam(events=events, vendor='MyVendor', product='MyProduct')
-        else:
-            results = get_events_command(client)
-            return_results(results)
+        if command == "test-module":
+            results = test_module(client)
+            return_outputs(results)
+
+        elif command in ('saas-security-get-events', 'fetch-events'):
+            events = get_events_command(client)
+            if command == 'saas-security-get-events':
+                if events:
+                    command_results = CommandResults(
+                        readable_output=tableToMarkdown('SaaS Security Logs', events, headerTransform=pascalToSpace),
+                        raw_response=events,
+                    )
+                else:
+                    command_results = 'No logs were found.'
+                return_results(command_results)
+
+            send_events_to_xsiam(events=events, vendor='Palo Alto', product='saas-security')
     except Exception as e:
         raise Exception(f'Error in Palo Alto Saas Security Event Collector Integration [{e}]')
 

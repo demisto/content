@@ -11,12 +11,11 @@ configuration:
   name: url
   required: true
   type: 0
-- display: Client ID
-  displaypassword: Client Secret
+- additionalinfo: The SaaS Security Client ID and Client Secret.
+  display: Client ID
   name: credentials
-  type: 9
   required: true
-  additionalinfo: The SaaS Security Client ID and Client Secret.
+  type: 9
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -30,19 +29,10 @@ display: Saas Security Event Collector
 name: SaasSecurityEventCollector
 script:
   commands:
-  - arguments:
-    - default: false
-      description: '[Enter a description of the argument, including any important
-        information users need to know, for example, default values.]'
-      isArray: false
-      name: dummy
-      required: true
-      secret: false
-    deprecated: false
-    description: '[Enter a description of the command, including any important information
-      users need to know, for example required permissions.]'
+  - deprecated: false
+    description: Manual command to fetch events and display them.
     execution: false
-    name: baseintegration-dummy
+    name: saas-security-get-events
     outputs:
     - contextPath: BaseIntegration.Output
       description: '[Enter a description of the data returned in this output.]'
