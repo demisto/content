@@ -1506,7 +1506,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       defaultValue: 'true'
-      description: Access global list? (Same as `tenant` flag in API docs)
+      description: Access global list (Same as `tenant` flag in API docs)
       name: global
       predefined:
       - 'true'

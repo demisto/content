@@ -1354,12 +1354,6 @@ Sends an uninstall command to all agents that match the input filter.
 | query | A free-text search term, will match applicable attributes (sub-string match). Note: A device's physical addresses will only be matched if they start with the search term  (not if they contain the search term). | Optional | 
 | agent_id | A comma-separated list of agents IDs to shutdown. | Optional | 
 | group_id | The ID of the network group. | Optional | 
-
-
-#### Context Output
-
-There is no context output for this command.
-
 ### sentinelone-get-blocklist
 ***
 Add a hash to the blocklist ("blacklist" in SentinelOne documentation). If the `global` flag is `true`, then group_ids, site_ids, and account_ids are ignored.
@@ -1372,7 +1366,7 @@ Add a hash to the blocklist ("blacklist" in SentinelOne documentation). If the `
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| global | Access global list? (Same as `tenant` flag in API docs). Possible values are: true, false. Default is true. | Optional | 
+| global | Access global list (Same as `tenant` flag in API docs). Possible values are: true, false. Default is true. | Optional | 
 | group_ids | Comma separated list of group IDs to filter by. | Optional | 
 | site_ids | Comma separated list of siteIDs to filter by. | Optional | 
 | account_ids | Comma separated list of account IDs to filter by. | Optional | 
@@ -1383,6 +1377,9 @@ Add a hash to the blocklist ("blacklist" in SentinelOne documentation). If the `
 #### Context Output
 
 There is no context output for this command.
+
+#### Command Example
+```!sentinelone-get-blocklist account_ids=ACCOUNT_ID global=true offset=0 limit=1```
 ### sentinelone-add-hash-to-blocklist
 ***
 Add a hash to the Global blocklist in SentinelOne
@@ -1407,6 +1404,9 @@ Add a hash to the Global blocklist in SentinelOne
 | --- | --- | --- |
 | SentinelOne.AddHashToBlocklist.hash | unknown | Hash of file | 
 | SentinelOne.AddHashToBlocklist.status | unknown | Status of addition action | 
+
+#### Command Example
+```!sentinelone-add-hash-to-blocklist os_type=windows description="EICAR Test File" sha1=3395856ce81f2b7382dee72602f798b642f14140 source=XSOAR```
 ### sentinelone-remove-hash-from-blocklist
 ***
 Remove a hash from the Global blocklist in SentinelOne
@@ -1429,6 +1429,9 @@ Remove a hash from the Global blocklist in SentinelOne
 | --- | --- | --- |
 | SentinelOne.RemoveHashFromBlocklist.hash | unknown | Hash of file | 
 | SentinelOne.RemoveHashFromBlocklist.status | unknown | Status of removal action | 
+
+#### Command Example
+```!sentinelone-remove-hash-from-blocklist os_type=windows sha1=3395856ce81f2b7382dee72602f798b642f14140```
 ### sentinelone-fetch-file
 ***
 Invokes a fetch files command against an agent endpoint
@@ -1449,6 +1452,9 @@ Invokes a fetch files command against an agent endpoint
 #### Context Output
 
 There is no context output for this command.
+
+#### Command Example
+```!sentinelone-fetch-file agent_id=AGENT_ID file_path="C:\Test\Path\To\File.txt" password=PossiblyInfected0987&*()```
 ### sentinelone-download-fetched-file
 ***
 Download a file fetched using sentinelone-fetch-file to submit the request and sentinelone-get-activities to get the download path
@@ -1469,3 +1475,6 @@ Download a file fetched using sentinelone-fetch-file to submit the request and s
 #### Context Output
 
 There is no context output for this command.
+
+#### Command Example
+```!sentinelone-download-fetched-file activity_id=ACTIVITY_ID agent_id=AGENT_ID password=PossiblyInfected0987&*()```
