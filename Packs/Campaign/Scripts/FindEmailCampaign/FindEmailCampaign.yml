@@ -131,11 +131,11 @@ args:
   description: Include the current incident in EmailCampaign path in context.
   isArray: false
   name: includeSelf
+  required: false
+  secret: false
   predefined:
   - 'true'
   - 'false'
-  required: false
-  secret: false
 - auto: PREDEFINED
   default: false
   defaultValue: 'false'
@@ -218,7 +218,7 @@ tags:
 - phishing
 timeout: '0'
 type: python
-dockerimage: demisto/sklearn:1.0.0.23593
+dockerimage: demisto/sklearn:1.0.0.29944
 tests:
 - No tests (auto formatted)
 runonce: true
