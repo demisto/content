@@ -369,9 +369,6 @@ def main():  # pragma: no cover
         elif command == 'core-get-cloud-original-alerts':
             return_results(get_original_alerts_command(client, args))
 
-        elif command == 'xdr-get-alerts':
-            return_results(get_alerts_by_filter_command(client, args))
-
         elif command == 'core-get-dynamic-analysis':
             return_results(get_dynamic_analysis_command(client, args))
 
