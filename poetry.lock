@@ -179,6 +179,38 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 six = "*"
 
 [[package]]
+name = "boto3"
+version = "1.23.5"
+description = "The AWS SDK for Python"
+category = "main"
+optional = false
+python-versions = ">= 3.6"
+
+[package.dependencies]
+botocore = ">=1.26.5,<1.27.0"
+jmespath = ">=0.7.1,<2.0.0"
+s3transfer = ">=0.5.0,<0.6.0"
+
+[package.extras]
+crt = ["botocore[crt] (>=1.21.0,<2.0a0)"]
+
+[[package]]
+name = "botocore"
+version = "1.26.5"
+description = "Low-level, data-driven core of boto 3."
+category = "main"
+optional = false
+python-versions = ">= 3.6"
+
+[package.dependencies]
+jmespath = ">=0.7.1,<2.0.0"
+python-dateutil = ">=2.1,<3.0.0"
+urllib3 = ">=1.25.4,<1.27"
+
+[package.extras]
+crt = ["awscrt (==0.13.8)"]
+
+[[package]]
 name = "bracex"
 version = "2.2.1"
 description = "Bash style brace expander."
@@ -469,8 +501,8 @@ build = ["gsutil (==5.8)"]
 [package.source]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
-reference = "b2e120f5241f9fb583ab50fcd12495fc128e20f9"
-resolved_reference = "b2e120f5241f9fb583ab50fcd12495fc128e20f9"
+reference = "bed7c1c4862c11dee363b7543e8978a37c406092"
+resolved_reference = "bed7c1c4862c11dee363b7543e8978a37c406092"
 
 [[package]]
 name = "deprecated"
@@ -904,6 +936,14 @@ MarkupSafe = ">=2.0"
 
 [package.extras]
 i18n = ["Babel (>=2.7)"]
+
+[[package]]
+name = "jmespath"
+version = "1.0.0"
+description = "JSON Matching Expressions"
+category = "main"
+optional = false
+python-versions = ">=3.7"
 
 [[package]]
 name = "joblib"
@@ -1674,6 +1714,20 @@ optional = false
 python-versions = ">=3.5"
 
 [[package]]
+name = "s3transfer"
+version = "0.5.2"
+description = "An Amazon S3 Transfer Manager"
+category = "main"
+optional = false
+python-versions = ">= 3.6"
+
+[package.dependencies]
+botocore = ">=1.12.36,<2.0a.0"
+
+[package.extras]
+crt = ["botocore[crt] (>=1.20.29,<2.0a.0)"]
+
+[[package]]
 name = "sendgrid"
 version = "6.9.7"
 description = "Twilio SendGrid library for Python"
@@ -2114,7 +2168,7 @@ testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8,<3.11"
-content-hash = "a7085ac400386ee516c1aff7e6cadf5161ca7259e2882d337ecdb23a5185f1b8"
+content-hash = "e4f7fd64ae1d2537d4c3e8fb8370506df4ba7418ea0cf2a5be38aaf41b209728"
 
 [metadata.files]
 aiohttp = [
@@ -2266,6 +2320,14 @@ blessings = [
     {file = "blessings-1.7-py2-none-any.whl", hash = "sha256:caad5211e7ba5afe04367cdd4cfc68fa886e2e08f6f35e76b7387d2109ccea6e"},
     {file = "blessings-1.7-py3-none-any.whl", hash = "sha256:b1fdd7e7a675295630f9ae71527a8ebc10bfefa236b3d6aa4932ee4462c17ba3"},
     {file = "blessings-1.7.tar.gz", hash = "sha256:98e5854d805f50a5b58ac2333411b0482516a8210f23f43308baeb58d77c157d"},
+]
+boto3 = [
+    {file = "boto3-1.23.5-py3-none-any.whl", hash = "sha256:5cbbd985171b1e278b722dca48f71455b4938378962734828daeb76f73be6fba"},
+    {file = "boto3-1.23.5.tar.gz", hash = "sha256:73a0d092aaea1649150f43fb3f41451d5a0883940549a64d72781a23ce6b2d44"},
+]
+botocore = [
+    {file = "botocore-1.26.5-py3-none-any.whl", hash = "sha256:805db3ecf85ff89edfb6788f862b87426f990e3e6383ef3fca3076f7659a5454"},
+    {file = "botocore-1.26.5.tar.gz", hash = "sha256:32541873924e3ff0ad95f02dc331e9f278721a3b864a4e2a8d514346b2598ce5"},
 ]
 bracex = [
     {file = "bracex-2.2.1-py3-none-any.whl", hash = "sha256:096c4b788bf492f7af4e90ef8b5bcbfb99759ae3415ea1b83c9d29a5ed8f9a94"},
@@ -2727,6 +2789,10 @@ isort = [
 jinja2 = [
     {file = "Jinja2-3.1.2-py3-none-any.whl", hash = "sha256:6088930bfe239f0e6710546ab9c19c9ef35e29792895fed6e6e31a023a182a61"},
     {file = "Jinja2-3.1.2.tar.gz", hash = "sha256:31351a702a408a9e7595a8fc6150fc3f43bb6bf7e319770cbc0db9df9437e852"},
+]
+jmespath = [
+    {file = "jmespath-1.0.0-py3-none-any.whl", hash = "sha256:e8dcd576ed616f14ec02eed0005c85973b5890083313860136657e24784e4c04"},
+    {file = "jmespath-1.0.0.tar.gz", hash = "sha256:a490e280edd1f57d6de88636992d05b71e97d69a26a19f058ecf7d304474bf5e"},
 ]
 joblib = [
     {file = "joblib-1.1.0-py2.py3-none-any.whl", hash = "sha256:f21f109b3c7ff9d95f8387f752d0d9c34a02aa2f7060c2135f465da0e5160ff6"},
@@ -3410,6 +3476,10 @@ rsa = [
     {file = "ruamel.yaml.clib-0.2.6-cp39-cp39-win32.whl", hash = "sha256:3fb9575a5acd13031c57a62cc7823e5d2ff8bc3835ba4d94b921b4e6ee664104"},
     {file = "ruamel.yaml.clib-0.2.6-cp39-cp39-win_amd64.whl", hash = "sha256:825d5fccef6da42f3c8eccd4281af399f21c02b32d98e113dbc631ea6a6ecbc7"},
     {file = "ruamel.yaml.clib-0.2.6.tar.gz", hash = "sha256:4ff604ce439abb20794f05613c374759ce10e3595d1867764dd1ae675b85acbd"},
+]
+s3transfer = [
+    {file = "s3transfer-0.5.2-py3-none-any.whl", hash = "sha256:7a6f4c4d1fdb9a2b640244008e142cbc2cd3ae34b386584ef044dd0f27101971"},
+    {file = "s3transfer-0.5.2.tar.gz", hash = "sha256:95c58c194ce657a5f4fb0b9e60a84968c808888aed628cd98ab8771fe1db98ed"},
 ]
 sendgrid = [
     {file = "sendgrid-6.9.7-py3-none-any.whl", hash = "sha256:ba8d3d39e1f392b9434365d53983b2fc6a458ae0496d2d9e103c15e1743ab66b"},
