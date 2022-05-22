@@ -35,23 +35,6 @@ _fix_getpass = FixGetPass()
 
 warnings.filterwarnings("ignore")
 
-# LOGGING
-log_stream = None
-log_handler = None
-
-
-def start_logging():
-    logging.raiseExceptions = False
-    global log_stream
-    global log_handler
-    if log_stream is None:
-        log_stream = StringIO()
-        log_handler = logging.StreamHandler(stream=log_stream)
-        log_handler.setFormatter(logging.Formatter(logging.BASIC_FORMAT))
-        logger = logging.getLogger()
-        logger.addHandler(log_handler)
-        logger.setLevel(logging.DEBUG)
-
 
 import exchangelib  # noqa: E402
 from exchangelib.protocol import BaseProtocol, NoVerifyHTTPAdapter  # noqa: E402
@@ -84,6 +67,25 @@ VERSIONS = {
     '2013': EXCHANGE_2013,
     '2016': EXCHANGE_2016
 }
+
+
+config = None  # type: ignore
+# LOGGING
+log_stream = None
+log_handler = None
+
+
+def start_logging():
+    logging.raiseExceptions = False
+    global log_stream
+    global log_handler
+    if log_stream is None:
+        log_stream = StringIO()
+        log_handler = logging.StreamHandler(stream=log_stream)
+        log_handler.setFormatter(logging.Formatter(logging.BASIC_FORMAT))
+        logger = logging.getLogger()
+        logger.addHandler(log_handler)
+        logger.setLevel(logging.DEBUG)
 
 
 # NOTE: Same method used in EWSv2
@@ -382,9 +384,6 @@ def test_module():
     BaseProtocol.TIMEOUT = 20
     get_account(ACCOUNT_EMAIL).root
     demisto.results('ok')
-
-
-config = None  # type: ignore
 
 
 def main():
