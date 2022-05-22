@@ -2,7 +2,7 @@ from enum import Enum
 from pydantic import BaseModel, AnyUrl, Json, validator  # pylint: disable=no-name-in-module
 from CommonServerPython import *
 
-
+# TODO: add if push to see if we should activate the send events function
 class Method(str, Enum):
     """
     A list that represent the types of http request available
