@@ -4,7 +4,6 @@ import os
 from junit_xml import TestSuite, TestCase, to_xml_report_file
 from demisto_sdk.commands.test_content.execute_test_content import _add_pr_comment
 from demisto_sdk.commands.test_content.execute_test_content import ParallelLoggingManager
-import re
 
 ARTIFACTS_FOLDER = os.getenv('ARTIFACTS_FOLDER', './artifacts')
 JOB_ID = os.environ.get('CI_JOB_ID')
