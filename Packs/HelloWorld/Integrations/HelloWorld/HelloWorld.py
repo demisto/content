@@ -1359,6 +1359,7 @@ def main() -> None:
     :return:
     :rtype:
     """
+    demisto.debug('Test Darya')
 
     api_key = demisto.params().get('apikey')
 
