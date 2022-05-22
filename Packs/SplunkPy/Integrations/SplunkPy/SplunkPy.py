@@ -1746,7 +1746,7 @@ def rawToDict(raw):
     try:
         result = json.loads(raw)
     except ValueError:
-        if 'message' in raw:
+        if '"message"' in raw:
             raw = raw.replace('"', '').strip('{').strip('}')
             key_val_arr = raw.split(",")
             for key_val in key_val_arr:
