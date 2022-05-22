@@ -161,11 +161,16 @@ def main() -> None:  # pragma: no cover
 
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')
-    request = IntegrationHTTPRequest(**demisto_params)
-
+    headers = {'PRIVATE-TOKEN': demisto_params.get('token')}
+    request_object = {
+        'method': Method.GET,
+        'url': demisto_params.get('url'),
+        'headers': headers,
+    }
     options = IntegrationOptions.parse_obj(demisto_params)
+    request = IntegrationHTTPRequest(**request_object)
 
-    client =
+    # client =
     try:
         client = Client(
             base_url=base_url,
