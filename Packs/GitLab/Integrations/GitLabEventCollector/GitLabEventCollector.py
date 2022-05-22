@@ -2,7 +2,7 @@ import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 
 from typing import Any, Dict, List, Tuple
-
+from SiemApiModule import *
 
 def dedup_events(events: list, previous_fetched_events: list):
     for seen_event in previous_fetched_events:
@@ -151,17 +151,21 @@ def fetch_events(client: Client, last_run: dict, group_ids: list, project_ids: l
 
 
 def main() -> None:  # pragma: no cover
-    params = demisto.params()
-    base_url = urljoin(params['url'], '/api/v4')
-    api_key = params.get('credentials', {}).get('password')
-    group_ids = argToList(params.get('group_ids'))
-    project_ids = argToList(params.get('project_ids'))
-    verify_certificate = not params.get('insecure', False)
-    proxy = params.get('proxy', False)
+    demisto_params = demisto.params() #| demisto.args()
+    base_url = urljoin(demisto_params['url'], '/api/v4')
+    api_key = demisto_params.get('credentials', {}).get('password')
+    group_ids = argToList(demisto_params.get('group_ids'))
+    project_ids = argToList(demisto_params.get('project_ids'))
+    verify_certificate = not demisto_params.get('insecure', False)
+    proxy = demisto_params.get('proxy', False)
 
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')
+    request = IntegrationHTTPRequest(**demisto_params)
 
+    options = IntegrationOptions.parse_obj(demisto_params)
+
+    client =
     try:
         client = Client(
             base_url=base_url,
