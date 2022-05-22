@@ -175,7 +175,7 @@ references:
 
   restore_cache: &restore_cache
     restore_cache:
-      key: virtualenv-venv-{{ checksum "dev-requirements-py2.txt" }}-{{ checksum "poetry.lock" }}-{{ checksum ".circleci/build-requirements.txt" }}-{{ checksum "package-lock.json" }}
+      key: virtualenv-venv-{{ checksum "poetry.lock" }}-{{ checksum "package-lock.json" }}
 
   remote_docker: &remote_docker
     setup_remote_docker:
@@ -332,7 +332,7 @@ jobs:
           paths:
             - .venv
             - node_modules
-          key: virtualenv-venv-{{ checksum "dev-requirements-py2.txt" }}-{{ checksum "poetry.lock" }}-{{ checksum ".circleci/build-requirements.txt" }}-{{ checksum "package-lock.json" }}
+          key: virtualenv-venv-{{ checksum "poetry.lock" }}-{{ checksum "package-lock.json" }}
       - *get_contribution_pack
       - *add_ssh_keys
       - *persist_to_workspace
