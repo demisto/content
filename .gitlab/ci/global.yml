@@ -139,7 +139,6 @@
     - rm -rf $ARTIFACTS_FOLDER/logs
     - mkdir -p $ARTIFACTS_FOLDER/logs
     - section_end "Creating new clean logs folder"
-    - poetry config virtualenvs.in-project true
     - *install_node_modules
     - *install_venv
     - *get_contribution_pack

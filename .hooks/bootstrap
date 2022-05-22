@@ -49,6 +49,9 @@ if ! command -v poetry >/dev/null 2>&1; then
     echo "ERROR: poetry is missing. Please install using: brew install poetry" 1>&2
     exit 1
 fi
+echo "Configure poetry to install virutal enviroment in the project repo (will be availible in $(.venv)"
+poetry config virtualenvs.in-project true
+
 echo "Installing dependencies..."
 poetry install
 echo "=========================="

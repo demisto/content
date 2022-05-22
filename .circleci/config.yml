@@ -148,8 +148,6 @@ references:
         chmod +x ./Tests/scripts/*
         chmod +x ./Tests/Marketplace/*
 
-        # configure poetry to save virtual environment in the project
-        poetry config virtualenvs.in-project true
         if [ ! -e ".venv" ]; then
           echo "installing venv"
           NO_HOOKS=1 .hooks/bootstrap
