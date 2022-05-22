@@ -2068,3 +2068,72 @@ Returns dynamic analysis of each alert ID.
 | Core.DynamicAnalysis.osSpawnerImagePath | String |  | 
 | Core.DynamicAnalysis.osSpawnerCmdline | String |  | 
 | Core.DynamicAnalysis.osSpawnerSigner | String |  | 
+
+
+### xdr-get-alerts
+***
+Returns a list of alerts and their meta-data, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. 
+Multiple filter arguments will be concatenated using AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value.
+
+
+#### Base Command
+
+`xdr-get-alerts`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| alert_id | The unique ID of the alert. | Optional | 
+| severity | The severity of the alert. Possible values are: low, meduim, high. | Optional | 
+| custom_filter | a custom filter, when using this argument, other filter arguments are not relevant. example: <br/>`{<br/>                "OR": [<br/>                    {<br/>                        "SEARCH_FIELD": "actor_process_command_line",<br/>                        "SEARCH_TYPE": "EQ",<br/>                        "SEARCH_VALUE": "path_to_file"<br/>                    }<br/>                ]<br/>            }`. | Optional | 
+| Identity_type | Account type. Possible values are: ANONYMOUS,  APPLICATION,  COMPUTE,  FEDERATED_IDENTITY,  SERVICE,  SERVICE_ACCOUNT,  TEMPORARY_CREDENTIALS,  TOKEN,  UNKNOWN,  USER. | Optional | 
+| agent_id | A unique identifier per agent. | Optional | 
+| action_external_hostname | The hostname to connect to. In case of a proxy connection, this value will differ from action_remote_ip. | Optional | 
+| rule_id | A string identifying the user rule. | Optional | 
+| rule_name | The name of the user rule. | Optional | 
+| alert_name | The alert name. | Optional | 
+| alert_source | The alert source. | Optional | 
+| time_frame | Supports relative times or “custom” time option. If you choose the "custom" option, you should use start_time and end_time arguments. Possible values are: 60 minutes, 3 hours, 12 hours, 24 hours, 2 days, 7 days, 14 days, 30 days, custom. | Optional | 
+| user_name | The name assigned to the user_id during agent runtime. | Optional | 
+| actor_process_image_name | The file name of the binary file. | Optional | 
+| causality_actor_process_image_command_line | CGO CMD. | Optional | 
+| actor_process_image_command_line | Trimmed to 128 unicode chars during event serialization.<br/>Full value reported as part of the original process event. | Optional | 
+| action_process_image_command_line | The command line of the process created. | Optional | 
+| actor_process_image_sha256 | SHA256 of the binary file. | Optional | 
+| causality_actor_process_image_sha256 | SHA256 of the binary file. | Optional | 
+| action_process_image_sha256 | SHA256 of the binary file. | Optional | 
+| action_file_image_sha256 | SHA256 of the file related to the event. | Optional | 
+| action_registry_name | The name of the registry. | Optional | 
+| action_registry_key_data | The key data of the registry. | Optional | 
+| host_ip | The host IP. | Optional | 
+| action_local_ip | The local IP address for the connection. | Optional | 
+| action_remote_ip | Remote IP address for the connection. | Optional | 
+| action_local_port | The local IP address for the connection. | Optional | 
+| action_remote_port | The remote port for the connection. | Optional | 
+| dst_action_external_hostname | The hostname we connect to. In case of a proxy connection, this value will differ from action_remote_ip. | Optional | 
+| sort_field | The field by which we will sort the results. Default is source_insert_ts. | Optional | 
+| sort_order | The order in which we sort the results. Possible values are: DESC, ASC. | Optional | 
+| offset | The first page from which we bring the alerts. Default is 0. | Optional | 
+| limit | The last page from which we bring the alerts. Default is 50. | Optional | 
+| start_time | Relevant when "time_frame" argument is "custom". Supports Epoch timestamp and simplified extended ISO format (YYYY-MM-DDThh:mm:ss.000Z). | Optional | 
+| end_time | Relevant when "time_frame" argument is "custom". Supports Epoch timestamp and simplified extended ISO format (YYYY-MM-DDThh:mm:ss.000Z). | Optional | 
+| starred | Whether the alert is starred or not. Possible values are: true, false. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Core.Alert.internal_id | String | The unique ID of the alert. | 
+| Core.Alert.source_insert_ts | Number | The detection timestam | 
+| Core.Alert.alert_name | String | The name of the alert. | 
+| Core.Alert.severity | String | The severity of the alert. | 
+| Core.Alert.alert_category | String | The category of the alert. | 
+| Core.Alert.alert_action_status | String | The alert action. | 
+| Core.Alert.alert_name | String | The alert name. | 
+| Core.Alert.alert_description | String | The alert description. | 
+| Core.Alert.agent_ip_addresses | String | The host IP | 
+| Core.Alert.agent_hostmae | String | The host name | 
+| Core.Alert.mitre_tactic_id_and_name | String | The MITRE attack tactic. | 
+| Core.Alert.mitre_technique_id_and_name | String | The MITRE attack technique. | 
+| Core.Alert.starred | Boolean | Whether the alert is starred or not. | 
