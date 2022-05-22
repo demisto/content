@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 #######################################
 # Check if we're running supported OS (darwin || linux)
 # Globals:
@@ -14,7 +16,7 @@ detect_os() {
 	elif [ "$os" == "Linux" ]; then
 		echo "$os"
 	else
-		echo "✗ Unsupported OS. Terminating"
+		echo "✗ Unsupported OS. Only Unix operating systems are supported. Terminating..."
 		exit 1
 	fi
 
@@ -26,17 +28,20 @@ detect_os() {
 # Globals:
 #   None
 # Arguments:
-#   $1: array of dependencies
-#   $2: The OS
+#   $1: The OS
+#   $2: array of dependencies
+
 #######################################
 check_dependencies(){
 
-	dependencies=$1
-	os=$2
+	os=$1
+	shift
+
+	dependencies=("$@")
 
 	for d in "${dependencies[@]}"; 
 	do
-		if ! command -v "$d" &> /dev/null 
+		if ! command -v "$d" &> /dev/null
 		then
 			echo "✗ $d was not found in the system or in the PATH."
 
@@ -44,30 +49,28 @@ check_dependencies(){
 			if [ "$d" == "git" ] && [ "$os" == "Mac OS" ]
 			then
 				echo "Install git by visiting https://git-scm.com/download/mac"
-
+				exit 1
 			# If git not found and running on Linux
 			elif [ "$d" == "git" ] && [ "$os" == "Linux" ]
 			then
 				echo "Install git by visiting https://git-scm.com/download/linux"
-			
-
+				exit 1
 			# If Python was not found on Mac OS
-			elif [ "$d" == "python" ] && [ "$os" == "Mac OS" ]
+			elif [ "$d" == "python3" ] && [ "$os" == "Mac OS" ]
 			then
 				echo "Install Python by visiting https://www.python.org/downloads/macos/"
-
+				exit 1
 			# If Python was not found on Linux
-			elif [ "$d" == "python" ] && [ "$os" == "Linux" ]
+			elif [ "$d" == "python3" ] && [ "$os" == "Linux" ]
 			then
 				echo "Install Python by visiting https://www.python.org/downloads/source/"
-
+				exit 1
 			# If Demisto SDK was not found, install it
 			elif [ "$d" == "demisto-sdk" ]
 			then
 				echo "Installing $d..."
 				install_sdk
 			fi
-
 		else
 			echo "✓ Dependency '$d' found."
 		fi
@@ -307,16 +310,20 @@ add_msg_to_readme(){
 # Arguments:
 #	$1: the option to add as release note
 #   $2: the path to the Pack release nope
+#   $3: OS
 #######################################
 add_msg_to_rn(){
 	opt=$1
 	rn=$2
+	os=$3
 
 	if [[ "$opt" == "complete" ]]; then
 		message="- Completed Adoption process."
 	else
 		message="- Started Adoption process."
 	fi
+
+	echo "$message, $os, $rn"
 
 	if [ "$os" == "Mac OS" ] 
 	then
@@ -371,11 +378,13 @@ get_pack_version(){
 #   $1: Whether to start or complete adoption process
 #   $2: Path to Pack
 #   $3: Git branch that will hold all changes
+#   $4: OS
 #######################################
 adopt() {
 	option=$1
 	dir=$2
 	branch=$3
+	os=$4
 
 	readme="$dir/README.md"
 	pack_metadata="$dir/pack_metadata.json"
@@ -393,7 +402,7 @@ adopt() {
 	echo "✓ Release note created in '$release_note'"
 
 	# Add release note to second line (replacing documentation bullet)
-	add_msg_to_rn "$option" "$release_note"
+	add_msg_to_rn "$option" "$release_note" "$os"
 	release_note_name=$(basename "$release_note")
 	echo "✓ Release note '$release_note_name' updated."
 
