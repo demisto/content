@@ -1,8 +1,8 @@
 commonfields:
-  id: Alibaba Event Collector
+  id: Alibaba Action Trail Event Collector
   version: -1
-name: Alibaba Event Collector
-display: Alibaba Event Collector
+name: Alibaba Action Trail Event Collector
+display: Alibaba Action Trail Event Collector
 category: Analytics & SIEM
 description: Alibaba logs event collector integration for XSIAM.
 configuration:
@@ -75,7 +75,7 @@ script:
       defaultValue: "1"
     - auto: PREDEFINED
       defaultValue: 'False'
-      description: Set this argument to True in orfer to create events, otherwise the command will only display them.
+      description: Set this argument to True in order to create events, otherwise the command will only display them.
       isArray: false
       name: should_push_events
       predefined:
@@ -89,3 +89,5 @@ script:
 marketplaces:
 - marketplacev2
 fromversion: 6.8.0
+tests:
+  - Alibaba Event Collector-test

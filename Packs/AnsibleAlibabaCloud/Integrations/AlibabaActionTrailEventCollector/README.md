@@ -1,10 +1,10 @@
 Alibaba logs event collector integration for XSIAM.
 This integration was integrated and tested with API version 0.6 of Alicloud Log Service.
 
-## Configure Alibaba Event Collector on Cortex XSOAR
+## Configure Alibaba Action Trail Event Collector on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Alibaba Event Collector.
+2. Search for Alibaba Action Trail Event Collector.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Required** |
@@ -18,7 +18,6 @@ This integration was integrated and tested with API version 0.6 of Alicloud Log 
     | Number of incidents to fetch per fetch. | False |
     | First fetch time interval | False |
     | The product corresponding to the integration that originated the events. | True |
-    | XSIAM update limit per request | False |
     | Use system proxy settings | False |
     | Use Secured Connection | False |
 
@@ -38,7 +37,9 @@ Manual command to fetch events and display them.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| from | The date after which to search for logs in in Unix epoch Example: 1652617222. | Optional | 
+| from | The date after which to search for logs in seconds Example: 1652617222. | Optional | 
+| limit | Number of events to fetch. Default is 1. | Required | 
+| should_push_events | Set this argument to True in order to create events, otherwise the command will only display them. Possible values are: True, False. Default is False. | Required | 
 
 
 #### Context Output
