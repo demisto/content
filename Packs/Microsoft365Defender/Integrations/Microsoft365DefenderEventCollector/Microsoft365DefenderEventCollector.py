@@ -254,6 +254,8 @@ class DefenderClient(IntegrationEventsClient):
             '$filter': f'{ALERT_CREATION_TIME}+gt+{after}',
             '$orderby': f'{ALERT_CREATION_TIME}+asc',
             '$top': limit,
+            '$expand': 'evidence',
+
         }
         demisto.debug(f'setting the request filter to be: {self.request.params}')
 
