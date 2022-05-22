@@ -1,29 +1,18 @@
 args:
-- description: path and name object passed by the "GetFilePathPreProcessing" pre-processing
-    script
+- description: path and name object passed by the "GetFilePathPreProcessing" pre-processing script
   isArray: true
   name: object
   required: true
-comment: This automation is being executed by the "GetFilePathPreProcessing" pre-processing
-  script that collects the paths and names of attachments of an incoming incident,
-  then passes it to this automation that reads the files and creates them in an existing
-  incident
+comment: This automation is being executed by the "GetFilePathPreProcessing" pre-processing script that collects the paths and names of attachments of an incoming incident, then passes it to this automation that reads the files and creates them in an existing incident
 commonfields:
-  id: 236451eb-de96-4465-8940-4ea7f774708c
+  id: CreateFileFromPathObject
   version: -1
 contentitemexportablefields:
   contentitemfields:
-    fromServerVersion: ""
-    itemVersion: ""
-    packID: 11a4dd1c-f5b3-4553-8782-c5d0592c64d7
-    propagationLabels:
-    - all
-    toServerVersion: ""
+    fromServerVersion: ''
 dockerimage: demisto/python3:3.10.1.26972
 enabled: true
-engineinfo: {}
 name: CreateFileFromPathObject
-pswd: ""
 runas: DBotWeakRole
 runonce: false
 script: ''
@@ -31,3 +20,6 @@ scripttarget: 0
 subtype: python3
 tags: []
 type: python
+fromversion: 6.2.0
+tests:
+- No tests (auto formatted)
