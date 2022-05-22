@@ -97,7 +97,7 @@ def get_failing_lint():
             if failing_test.get('severity') == 'error':
                 name = failing_test.get('filePath', '') + " " + failing_test.get('Row', '')
                 test_case = TestCase(f'lint.{name}', 'Lint')
-                test_case.add_failure_info(message=failing_test(failing_test.get('message')))
+                test_case.add_failure_info(message=failing_test.get('message'))
                 test_cases_lint.append(test_case)
         ts = TestSuite("Lint", test_cases_lint)
         return ts
