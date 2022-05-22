@@ -16,11 +16,10 @@ detect_os() {
 	elif [ "$os" == "Linux" ]; then
 		echo "$os"
 	else
-		echo "✗ Unsupported OS. Only Unix operating systems are supported. Terminating..."
+		echo "✗ '$os' OS is not supported by this automation."
+		echo "To complete your pack adoption please follow the steps detailed in the following article: https://xsoar.pan.dev/docs/partners/adopt#process"
 		exit 1
 	fi
-
-
 }
 
 #######################################
