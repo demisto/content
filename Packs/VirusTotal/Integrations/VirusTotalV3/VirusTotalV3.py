@@ -22,6 +22,7 @@ INDICATOR_TYPE = {
     'url': FeedIndicatorType.URL
 }
 
+
 """ RELATIONSHIP TYPE"""
 RELATIONSHIP_TYPE = {
     'file': {
@@ -1089,8 +1090,7 @@ def create_relationships(entity_a: str, entity_a_type: str, relationships_respon
                         entity_b = dict_safe_get(relation, ['context_attributes', 'url'])
                     relationships_list.append(
                         EntityRelationship(entity_a=entity_a, entity_a_type=entity_a_type, name=name,
-                                           entity_b=entity_b, entity_b_type=entity_b_type,
-                                           source_reliability=reliability,
+                                           entity_b=entity_b, entity_b_type=entity_b_type, source_reliability=reliability,
                                            brand=INTEGRATION_NAME))
                 else:
                     demisto.info(
@@ -1541,14 +1541,12 @@ def merge_two_dicts(dict_a, dict_b):
     merged_dict.update(dict_b)
     return merged_dict
 
-
 # endregion
 
 # region Reputation commands
 
 
-def ip_command(client: Client, score_calculator: ScoreCalculator, args: dict, relationships: str) -> List[
-    CommandResults]:
+def ip_command(client: Client, score_calculator: ScoreCalculator, args: dict, relationships: str) -> List[CommandResults]:
     """
     1 API Call for regular
     1-4 API Calls for premium subscriptions
@@ -1569,8 +1567,7 @@ def ip_command(client: Client, score_calculator: ScoreCalculator, args: dict, re
     return results
 
 
-def file_command(client: Client, score_calculator: ScoreCalculator, args: dict, relationships: str) -> List[
-    CommandResults]:
+def file_command(client: Client, score_calculator: ScoreCalculator, args: dict, relationships: str) -> List[CommandResults]:
     """
     1 API Call
     """
@@ -1589,8 +1586,7 @@ def file_command(client: Client, score_calculator: ScoreCalculator, args: dict, 
     return results
 
 
-def url_command(client: Client, score_calculator: ScoreCalculator, args: dict, relationships: str) -> List[
-    CommandResults]:
+def url_command(client: Client, score_calculator: ScoreCalculator, args: dict, relationships: str) -> List[CommandResults]:
     """
     1 API Call for regular
     1-4 API Calls for premium subscriptions
@@ -1611,8 +1607,7 @@ def url_command(client: Client, score_calculator: ScoreCalculator, args: dict, r
     return results
 
 
-def domain_command(client: Client, score_calculator: ScoreCalculator, args: dict, relationships: str) -> List[
-    CommandResults]:
+def domain_command(client: Client, score_calculator: ScoreCalculator, args: dict, relationships: str) -> List[CommandResults]:
     """
     1 API Call for regular
     1-4 API Calls for premium subscriptions
@@ -2152,8 +2147,7 @@ def main(params: dict, args: dict, command: str):
     elif command == 'url':
         results = url_command(client, score_calculator, args, url_relationships)
     elif command == 'domain':
-        for i in range(0, 500):
-            results = domain_command(client, score_calculator, args, domain_relationships)
+        results = domain_command(client, score_calculator, args, domain_relationships)
     elif command == f'{COMMAND_PREFIX}-file-sandbox-report':
         results = file_sandbox_report_command(client, args)
     elif command == f'{COMMAND_PREFIX}-passive-dns-data':
