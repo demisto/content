@@ -787,10 +787,10 @@ def get_mapping_fields_command() -> GetMappingFieldsResponse:
         incident_type_scheme.add_field(field)
     mapping_response.add_scheme_type(incident_type_scheme)
 
-    request_type_scheme  = SchemeTypeMapping(type_name="GLPI Request")
+    request_type_scheme = SchemeTypeMapping(type_name="GLPI Request")
     for field in GLPI_ARGS:
-        request_type_scheme .add_field(field)
-    mapping_response.add_scheme_type(request_type_scheme )
+        request_type_scheme.add_field(field)
+    mapping_response.add_scheme_type(request_type_scheme)
 
     return mapping_response
 
