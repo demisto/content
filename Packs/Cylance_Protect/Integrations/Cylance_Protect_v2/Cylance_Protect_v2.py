@@ -1336,6 +1336,28 @@ def get_policy_details_request(policy_id):   # pragma: no cover
     return res
 
 
+def create_instaquery_request(name, description, artifact, value_type, match_values, match_type, zone_list):
+    # Create request
+    data = {
+        "name": name,
+        "description": description,
+        "artifact": artifact,
+        "match_value_type": value_type,
+        "match_values": match_values,
+        "case_sensitive": False,
+        "match_type": match_type,
+        "zones": zone_list
+    }
+
+    access_token = get_authentication_token([SCOPE_OPTICS_CREATE,SCOPE_OPTICS_GET])
+    headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + access_token
+    }
+    uri = URI_OPTICS
+    res = api_call(uri=uri, method='post', body=data, headers=headers)
+    return res
+
 def create_instaquery():
     query_args = demisto.args()
     name = query_args.get('name')
@@ -1354,25 +1376,8 @@ def create_instaquery():
         demisto.error('The value type is not suitable with the selected artifact')
 
     # Create request
+    res = create_instaquery_request(name, description, artifact, value_type, match_values, match_type, zone_list)
 
-    data = {
-        "name": name,
-        "description": description,
-        "artifact": artifact,
-        "match_value_type": value_type,
-        "match_values": match_values,
-        "case_sensitive": False,
-        "match_type": match_type,
-        "zones": zone_list
-    }
-
-    access_token = get_authentication_token([SCOPE_OPTICS_CREATE, SCOPE_OPTICS_GET])
-    headers = {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + access_token
-    }
-    uri = URI_OPTICS
-    res = api_call(uri=uri, method='post', body=data, headers=headers)
     if res:
         # Return results to context and war room
         results = CommandResults(
@@ -1383,11 +1388,9 @@ def create_instaquery():
         return_results(results)
 
 
-def get_instaquery_result():
-    query_id = demisto.args().get('query_id')
-
+def get_instaquery_result_request(query_id):
     # Create request
-    access_token = get_authentication_token([SCOPE_OPTICS_GET, SCOPE_OPTICS_CREATE])
+    access_token = get_authentication_token([SCOPE_OPTICS_GET,SCOPE_OPTICS_CREATE])
     headers = {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + access_token
@@ -1395,33 +1398,37 @@ def get_instaquery_result():
     # Endpoint format /instaqueries/v2/{queryID}/results
     uri = URI_OPTICS + "/" + query_id + "/results"
     res = api_call(uri=uri, method='get', headers=headers)
+    return res
+
+
+def get_instaquery_result():
+    query_id = demisto.args().get('query_id')
+    res = get_instaquery_result_request(query_id)
+
     if res['result']:
         results_count = len(res.get('result'))
         result_title = str(results_count) + " results found, find more details in context. Here is the 1st result:" \
             if results_count > 1 else "1 result found:"
         readable_results = tableToMarkdown(
-            result_title,
+            result_title, 
             json.loads(res['result'][0]['Result']).get('Properties')
-        )
-    else:
+            )
+    else: 
         readable_results = "### No result found"
-
+    
     # Return results to context and war room
     results = CommandResults(
         outputs=res,
         outputs_prefix='InstaQuery.Results',
         outputs_key_field='id',
         readable_output=readable_results
-    )
+        )
     return_results(results)
 
 
-def list_instaquery():
-    page = demisto.args().get('page', '1')
-    page_size = demisto.args().get('page_size', '20')
-
+def list_instaquery_request(page, page_size):
     # Create request
-    access_token = get_authentication_token([SCOPE_OPTICS_LIST, SCOPE_OPTICS_GET])
+    access_token = get_authentication_token([SCOPE_OPTICS_LIST,SCOPE_OPTICS_GET])
     headers = {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + access_token
@@ -1429,6 +1436,13 @@ def list_instaquery():
     # Endpoint format /instaqueries/v2/{queryID}/results
     uri = URI_OPTICS + "?page=" + page + "&page_size=" + page_size
     res = api_call(uri=uri, method='get', headers=headers)
+    return res
+
+
+def list_instaquery():
+    page = demisto.args().get('page')
+    page_size = demisto.args().get('page_size')
+    res = list_instaquery_request(page,page_size)
     if res:
         # Return results to context and war room
         results = CommandResults(
