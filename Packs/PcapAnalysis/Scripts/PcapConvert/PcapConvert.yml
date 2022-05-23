@@ -1,7 +1,7 @@
 args:
-- description: The value to be converted from
+- description: The value to be converted from.
   name: value
-- description: The context path to the pcap
+- description: The context path to the pcap.
   name: path
 - auto: PREDEFINED
   defaultValue: auto
@@ -12,13 +12,13 @@ args:
   - cdl-pcap
 - auto: PREDEFINED
   defaultValue: abort
-  description: The action on error to parsing pcap. abort (by default), ignore and keep.
+  description: The action on error to parsing pcap. 
   name: error_action
   predefined:
   - abort
   - ignore
   - keep
-comment: Convert packet data to the standard PCAP. Currently it only supports CDL(NGFW) pcap from which to convert.
+comment: Convert packet data to the standard pcap. Currently it only supports CDL(NGFW) pcap from which to convert.
 commonfields:
   id: PcapConvert
   version: -1
