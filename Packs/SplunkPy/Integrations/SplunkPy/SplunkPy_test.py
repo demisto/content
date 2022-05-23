@@ -11,13 +11,24 @@ from collections import namedtuple
 
 RETURN_ERROR_TARGET = 'SplunkPy.return_error'
 
-DICT_RAW_RESPONSE = '"1528755951, search_name="NG_SIEM_UC25- High number of hits against ' \
+DICT_RAW_RESPONSE = '"1528755951, url="https://test.url.com", search_name="NG_SIEM_UC25- High number of hits against ' \
                     'unknown website from same subnet", action="allowed", dest="bb.bbb.bb.bbb , cc.ccc.ccc.cc , ' \
                     'xx.xx.xxx.xx , yyy.yy.yyy.yy , zz.zzz.zz.zzz , aa.aa.aaa.aaa", distinct_hosts="5", ' \
                     'first_3_octets="1.1.1", first_time="06/11/18 17:34:07 , 06/11/18 17:37:55 , 06/11/18 17:41:28 , ' \
                     '06/11/18 17:42:05 , 06/11/18 17:42:38", info_max_time="+Infinity", info_min_time="0.000", ' \
                     'src="xx.xx.xxx.xx , yyy.yy.yyy.yy , zz.zzz.zz.zzz , aa.aa.aaa.aaa", u_category="unknown", ' \
                     'user="xyz\\a1234 , xyz\\b5678 , xyz\\c91011 , xyz\\d121314 , unknown", website="2.2.2.2""'
+
+DICT_RAW_RESPONSE_WITH_MESSAGE_ID = '"1528755951, message-id="1", url="https://test.url.com", ' \
+                                    'search_name="NG_SIEM_UC25- High number of hits against ' \
+                                    'unknown website from same subnet", action="allowed", dest="bb.bbb.bb.bbb , ' \
+                                    'cc.ccc.ccc.cc , xx.xx.xxx.xx , yyy.yy.yyy.yy , zz.zzz.zz.zzz , aa.aa.aaa.aaa", ' \
+                                    'distinct_hosts="5", ' \
+                                    'first_3_octets="1.1.1", first_time="06/11/18 17:34:07 , ' \
+                                    '06/11/18 17:37:55 , 06/11/18 17:41:28 , ' \
+                                    '06/11/18 17:42:05 , 06/11/18 17:42:38", info_max_time="+Infinity", info_min_time="0.000", ' \
+                                    'src="xx.xx.xxx.xx , yyy.yy.yyy.yy , zz.zzz.zz.zzz , aa.aa.aaa.aaa", u_category="unknown", ' \
+                                    'user="xyz\\a1234 , xyz\\b5678 , xyz\\c91011 , xyz\\d121314 , unknown", website="2.2.2.2""'
 
 LIST_RAW = 'Feb 13 09:02:55 1,2020/02/13 09:02:55,001606001116,THREAT,url,' \
            '1,2020/02/13 09:02:55,10.1.1.1,1.2.3.4,0.0.0.0,0.0.0.0,rule1,jordy,,web-browsing,vsys1,trust,untrust,' \
@@ -145,7 +156,25 @@ EXPECTED = {
     "src": "xx.xx.xxx.xx , yyy.yy.yyy.yy , zz.zzz.zz.zzz , aa.aa.aaa.aaa",
     "u_category": "unknown",
     "user": "xyz\\a1234 , xyz\\b5678 , xyz\\c91011 , xyz\\d121314 , unknown",
-    "website": "2.2.2.2"
+    "website": "2.2.2.2",
+    "url": "https://test.url.com"
+}
+
+EXPECTED_WITH_MESSAGE_ID = {
+    "message-id": "1",
+    "action": "allowed",
+    "dest": "bb.bbb.bb.bbb , cc.ccc.ccc.cc , xx.xx.xxx.xx , yyy.yy.yyy.yy , zz.zzz.zz.zzz , aa.aa.aaa.aaa",
+    "distinct_hosts": '5',
+    "first_3_octets": "1.1.1",
+    "first_time": "06/11/18 17:34:07 , 06/11/18 17:37:55 , 06/11/18 17:41:28 , 06/11/18 17:42:05 , 06/11/18 17:42:38",
+    "info_max_time": "+Infinity",
+    "info_min_time": '0.000',
+    "search_name": "NG_SIEM_UC25- High number of hits against unknown website from same subnet",
+    "src": "xx.xx.xxx.xx , yyy.yy.yyy.yy , zz.zzz.zz.zzz , aa.aa.aaa.aaa",
+    "u_category": "unknown",
+    "user": "xyz\\a1234 , xyz\\b5678 , xyz\\c91011 , xyz\\d121314 , unknown",
+    "website": "2.2.2.2",
+    "url": "https://test.url.com"
 }
 
 URL_TESTING_IN = '"url="https://test.com?key=val"'
@@ -194,6 +223,7 @@ class Service:
 def test_raw_to_dict():
     actual_raw = DICT_RAW_RESPONSE
     response = splunk.rawToDict(actual_raw)
+    response_with_message = splunk.rawToDict(DICT_RAW_RESPONSE_WITH_MESSAGE_ID)
     list_response = splunk.rawToDict(LIST_RAW)
     raw_message = splunk.rawToDict(RAW_WITH_MESSAGE)
     empty = splunk.rawToDict('')
@@ -201,6 +231,7 @@ def test_raw_to_dict():
     character_check = splunk.rawToDict(RESPONSE)
 
     assert EXPECTED == response
+    assert EXPECTED_WITH_MESSAGE_ID == response_with_message
     assert {} == list_response
     assert raw_message.get('SCOPE[29]') == 'autopay\/events\/payroll\/v1\/earning-configuration.configuration-tags' \
                                            '.modify'
