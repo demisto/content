@@ -108,6 +108,18 @@ script:
       name: Alert_Status
       required: false
       secret: false
+    - default: false
+      description: List of required alerts severity
+      isArray: true
+      name: alert_severity
+      required: false
+      secret: false
+    - default: false
+      description: List of required alerts device name
+      isArray: true
+      name: device_name
+      required: false
+      secret: false
     - default: true
       defaultValue: '1'
       description: Page number

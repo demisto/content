@@ -21,6 +21,7 @@ SEARCH_RESULT_RETRIES = 10
 BACKOFF_FACTOR = 5
 THREAT_MODEL_ENUM_ID = 5821
 ALERT_STATUSES = {'Open': 1, 'Under Investigation': 2, 'Closed': 3}
+ALERT_SEVERITIES = {'High': 0, 'Medium': 1, 'Low': 2}
 CLOSE_REASONS = {
     'None': 0,
     'Resolved': 1,
@@ -525,6 +526,52 @@ class SearchAlertsQueryBuilder(SearchQueryBuilder):
         }
         self._filters.append(filter_obj)
 
+    def create_alert_severity_filter(self, severities: List[str]):
+        """Add alert severities filter to the search query
+
+        :type severities: ``List[str]``
+        :param severities: A list of severities
+        """
+        severity_enum = ALERT_SEVERITIES
+        filter_obj: Dict[str, Any] = {
+            'path': 'Alert.Rule.Severity.ID',
+            'operator': 'In',
+            'values': []
+        }
+
+        for severity_name in severities:
+            severity_id = severity_enum.get(severity_name, None)
+            if severity_id is None:
+                raise ValueError(f'There is no alert severity with name {severity_name}.')
+
+            severity_object = {
+                'Alert.Rule.Severity.ID': severity_id,
+                'displayValue': severity_name
+            }
+            filter_obj['values'].append(severity_object)
+        self._filters.append(filter_obj)
+
+    def create_alert_device_name_filter(self, device_names: List[str]):
+        """Add alert device names filter to the search query
+
+        :type device_names: ``List[str]``
+        :param device_names: A list of device names
+        """
+
+        filter_obj: Dict[str, Any] = {
+            'path': 'Alert.Device.HostName',
+            'operator': 'In',
+            'values': []
+        }
+
+        for device_name in device_names:
+            device_object = {
+                'Alert.Device.HostName': device_name,
+                'displayValue': device_name
+            }
+            filter_obj['values'].append(device_object)
+        self._filters.append(filter_obj)
+
     def create_alert_status_filter(self, statuses: List[str]):
         """Add alert statuses filter to the search query
 
@@ -686,7 +733,9 @@ def varonis_get_alerts(
         end: Optional[datetime],
         count: int,
         page: int,
-        alert_guids: Optional[List[str]]
+        alert_guids: Optional[List[str]],
+        severities: Optional[List[str]],
+        device_names: Optional[List[str]],
 ) -> Dict[str, Any]:
     """Searches and retrieves alerts
 
@@ -714,6 +763,12 @@ def varonis_get_alerts(
     :type alert_guids: ``Optional[List[str]]``
     :param alert_guids: List alert guids to search
 
+    :type severities: ``Optional[List[str]]``
+    :param severities: A list of severities
+
+    :type device_names: ``Optional[List[str]]``
+    :param device_names: A list of device names
+
     :return: Alerts
     :rtype: ``Dict[str, Any]``
     """
@@ -727,6 +782,10 @@ def varonis_get_alerts(
         builder.create_time_interval_filter(start, end)
     if alert_guids and len(alert_guids) > 0:
         builder.create_alert_id_filter(alert_guids)
+    if severities and any(severities):
+        builder.create_alert_severity_filter(severities)
+    if device_names and any(device_names):
+        builder.create_alert_device_name_filter(device_names)
     builder.create_ordering('Alert.Time', 'Asc')
 
     query = builder.build()
@@ -939,6 +998,8 @@ def varonis_get_alerts_command(client: Client, args: Dict[str, Any]) -> CommandR
         ``args['Start_time']`` Start time of the range of alerts
         ``args['End_time']`` End time of the range of alerts
         ``args['Alert_Status']`` List of required alerts status
+        ``args['alert_severity']`` List of alerts severity
+        ``args['device_name']`` List of device names
 
     :return:
         A ``CommandResults`` object
@@ -950,8 +1011,12 @@ def varonis_get_alerts_command(client: Client, args: Dict[str, Any]) -> CommandR
     start_time = args.get('Start_time', None)
     end_time = args.get('End_time', None)
     alert_statuses = args.get('Alert_Status', None)
+    alert_severities = args.get('alert_severity', None)
+    device_names = args.get('device_name', None)
     page = args.get('page', '1')
 
+    alert_severities = try_convert(alert_severities, lambda x: argToList(x))
+    device_names = try_convert(device_names, lambda x: argToList(x))
     threat_model_names = try_convert(threat_model_names, lambda x: argToList(x))
     max_results = try_convert(
         max_results,
@@ -976,7 +1041,8 @@ def varonis_get_alerts_command(client: Client, args: Dict[str, Any]) -> CommandR
         ValueError(f'page should be integer, but it is {page}.')
     )
 
-    result = varonis_get_alerts(client, alert_statuses, threat_model_names, start_time, end_time, max_results, page, None)
+    result = varonis_get_alerts(client, alert_statuses, threat_model_names, start_time, end_time,
+                                max_results, page, None, alert_severities, device_names)
     outputs = create_output(ALERT_OUTPUT, result['rows'])
     page_size = result['rowsCount']
     alerts = []

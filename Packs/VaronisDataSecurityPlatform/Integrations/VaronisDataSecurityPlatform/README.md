@@ -43,6 +43,8 @@ Get alerts from Varonis DA
 | Start_time | Start time of alert range. | Optional | 
 | End_time | End time of alert range. | Optional | 
 | Alert_Status | List of required alerts status. | Optional | 
+| alert_severity | List of required alerts severity. | Optional | 
+| device_name | List of required alerts device name. | Optional | 
 | page | Page number. Default is 1. | Optional | 
 
 
