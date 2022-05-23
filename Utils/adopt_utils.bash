@@ -361,6 +361,24 @@ set_pack_email(){
 }
 
 #######################################
+# Set author
+# Globals:
+#   None
+# Arguments:
+#   $1: Path to pack_metadata
+#######################################
+set_pack_author(){
+
+	pack_metadata="$1"
+	echo -n "Enter your organization's name: "
+	read -r org_name
+
+	jq ". | select(.author) .author=\"$org_name\"" "$pack_metadata" > "${pack_metadata}.bak" && rm "$pack_metadata" && mv "${pack_metadata}.bak" "$pack_metadata" &> /dev/null
+	echo "✓ Author field set in pack_metadata.json."
+
+}
+
+#######################################
 # Get Author Image
 # Globals:
 #   None
@@ -457,6 +475,7 @@ adopt() {
 	if [[ "$option" == "start" ]]; then
 		message="Note: Support for this Pack will be moved to Partner starting $(get_move_date)."
 	else
+		set_pack_author "$pack_metadata"
 		set_url "$pack_metadata"
 		set_pack_email "$pack_metadata"
 		support_email=$(get_pack_email "$pack_metadata")
