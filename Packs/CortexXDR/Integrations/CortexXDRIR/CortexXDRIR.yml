@@ -58,24 +58,6 @@ configuration:
   name: max_fetch
   required: false
   type: 0
-- additionalinfo: 'The statuses of the incidents that will be fetched. If no status
-    is provided, incidents of all the statuses will be fetched. Note: An incident
-    whose status was changed to a filtered status after its creation time will not
-    be fetched.'
-  display: Incident Statuses to Fetch
-  hidden: false
-  name: status
-  options:
-  - new
-  - under_investigation
-  - resolved_known_issue
-  - resolved_false_positive
-  - resolved_true_positive
-  - resolved_security_testing
-  - resolved_other
-  - resolved_auto
-  required: false
-  type: 16
 - display: Only fetch starred incidents
   hidden: false
   name: starred
