@@ -475,10 +475,10 @@ Gets the properties of a given network interface.
 `azure-vm-get-nic-details`
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
+| **Argument Name** | **Description**                                                                                                                                                                                                                                             | **Required** |
+| --- |-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
 | resource_group | The resource group to which the network interface belongs. To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command. If none are present, navigate to the Azure Web Portal to create resource groups. | Required | 
-| nic_name | The name of the network interface you want to view the details o. | Required | 
+| nic_name | The name of the network interface you want to view the details of.                                                                                                                                                                                          | Required | 
 
 
 #### Context Output
@@ -606,7 +606,7 @@ Gets the properties of a given public ip address.
 
 ### azure-vm-create-nic
 ***
-Creates a virtual machine network interface. the specified OS image.
+Creates a virtual machine network interface.
 
 
 #### Base Command

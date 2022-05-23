@@ -21,12 +21,14 @@ configuration:
   name: enc_key
   required: false
   type: 4
-- additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
+- additionalinfo: Used for certificate authentication. As appears in the "Certificates
+    & secrets" page of the app.
   display: Certificate Thumbprint
   name: certificate_thumbprint
   required: false
   type: 4
-- additionalinfo: Used for certificate authentication. The private key of the registered certificate.
+- additionalinfo: Used for certificate authentication. The private key of the registered
+    certificate.
   display: Private Key
   name: private_key
   required: false
@@ -468,7 +470,7 @@ script:
       secret: false
     - default: false
       description: The name of the network interface you want to view the details
-        o
+        of.
       isArray: false
       name: nic_name
       required: true
@@ -482,7 +484,8 @@ script:
       description: The attached virtual machine to this interface.
       type: String
     - contextPath: Azure.Network.Interfaces.IsPrimaryInterface
-      description: True if this interface is a primary interface of the attached virtual machine.
+      description: True if this interface is a primary interface of the attached virtual
+        machine.
       type: String
     - contextPath: Azure.Network.Interfaces.NICType
       description: The interface type.
@@ -647,8 +650,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: The private IP address of the interface if you chose 
-        the static assignment method.
+      description: The private IP address of the interface if you chose the static
+        assignment method.
       isArray: false
       name: private_ip_address
       required: false
@@ -666,7 +669,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Creates a virtual machine network interface. the specified OS image.
+    description: Creates a virtual machine network interface.
     execution: false
     name: azure-vm-create-nic
     outputs:
