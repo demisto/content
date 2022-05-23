@@ -398,7 +398,7 @@ script:
   - arguments:
     - default: false
       description: Subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions
-        command. If not specified, the default subscripton ID will be used.
+        command. If not specified, the default subscription ID will be used.
       isArray: false
       name: subscription_id
       required: false
@@ -482,25 +482,25 @@ script:
       description: The attached virtual machine to this interface.
       type: String
     - contextPath: Azure.Network.Interfaces.IsPrimaryInterface
-      description: True if this interface is a primary interface of the attached VM.
+      description: True if this interface is a primary interface of the attached virtual machine.
       type: String
     - contextPath: Azure.Network.Interfaces.NICType
       description: The interface type.
       type: String
     - contextPath: Azure.Network.Interfaces.IPConfigurations.ConfigID
-      description: The interface ipconfig id.
+      description: The interface IP configuration ID.
       type: String
     - contextPath: Azure.Network.Interfaces.IPConfigurations.ConfigName
-      description: The interface ipconfig name.
+      description: The interface IP configuration name.
       type: String
     - contextPath: Azure.Network.Interfaces.IPConfigurations.PrivateIPAddress
-      description: The interface private ip addresse.
+      description: The interface private IP address.
       type: String
     - contextPath: Azure.Network.Interfaces.IPConfigurations.PublicIPAddressID
-      description: The interface public ip address id.
+      description: The interface public IP address ID.
       type: Unknown
     - contextPath: Azure.Network.Interfaces.MACAddress
-      description: The interface mac address.
+      description: The interface MAC address.
       type: String
     - contextPath: Azure.Network.Interfaces.Name
       description: The interface name.
@@ -509,17 +509,17 @@ script:
       description: The interface resource group.
       type: String
     - contextPath: Azure.Network.Interfaces.NetworkSecurityGroup.id
-      description: The interface network security group id.
+      description: The interface network security group ID.
       type: String
     - contextPath: Azure.Network.Interfaces.Location
       description: The interface location.
       type: String
     - contextPath: Azure.Network.Interfaces.ID
-      description: The interface id.
+      description: The interface ID.
       type: String
   - arguments:
     - default: false
-      description: The resource group to which the ip address belongs. To see all
+      description: The resource group to which the IP address belongs. To see all
         the resource groups associated with your subscription, run the `azure-list-resource-groups`
         command. If none are present, navigate to the Azure Web Portal to create resource
         groups.
@@ -528,27 +528,27 @@ script:
       required: true
       secret: false
     - default: false
-      description: The ip address name.
+      description: The IP address name.
       isArray: false
       name: address_name
       required: true
       secret: false
     deprecated: false
-    description: Gets the properties of a given public ip address.
+    description: Gets the properties of a given public IP address.
     execution: false
     name: azure-vm-get-public-ip-details
     outputs:
     - contextPath: Azure.Network.IPConfigurations.PublicIPAddress
-      description: The public ip address.
+      description: The public IP address.
       type: String
     - contextPath: Azure.Network.IPConfigurations.PublicIPAddressFQDN
-      description: The address FQDN.
+      description: The address fully-qualified domain name (FQDN).
       type: String
     - contextPath: Azure.Network.IPConfigurations.PublicIPAddressAllocationMethod
-      description: The address allocation methond.
+      description: The address allocation method.
       type: String
     - contextPath: Azure.Network.IPConfigurations.PublicConfigID
-      description: The address configuration id.
+      description: The address configuration ID.
       type: String
     - contextPath: Azure.Network.IPConfigurations.ResourceGroup
       description: The address resource group.
@@ -563,10 +563,10 @@ script:
       description: The address location.
       type: String
     - contextPath: Azure.Network.IPConfigurations.PublicConfigName
-      description: The address config name.
+      description: The address configuration name.
       type: String
     - contextPath: Azure.Network.IPConfigurations.PublicIPAddressID
-      description: The address id.
+      description: The address ID.
       type: String
   - arguments:
     - default: false
@@ -624,13 +624,13 @@ script:
       required: true
       secret: false
     - default: false
-      description: The virtual network name of the inteface.
+      description: The virtual network name of the interface.
       isArray: false
       name: vnet_name
       required: true
       secret: false
     - default: false
-      description: The subnet name of the inteface.
+      description: The subnet name of the interface.
       isArray: false
       name: subnet_name
       required: true
@@ -638,7 +638,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: Dynamic
-      description: The address assignment method, the default is Dynamic.
+      description: The address assignment method.
       isArray: false
       name: address_assignment_method
       predefined:
@@ -647,14 +647,14 @@ script:
       required: false
       secret: false
     - default: false
-      description: The private ip address of the interface incase you chose to use
+      description: The private IP address of the interface if you chose 
         the static assignment method.
       isArray: false
       name: private_ip_address
       required: false
       secret: false
     - default: false
-      description: The ip address config name.
+      description: The IP address configuration name.
       isArray: false
       name: ip_config_name
       required: true
@@ -671,16 +671,16 @@ script:
     name: azure-vm-create-nic
     outputs:
     - contextPath: Azure.Network.Interfaces.IPConfigurations.ConfigID
-      description: The interface ipconfig id.
+      description: The interface IP configuration ID.
       type: String
     - contextPath: Azure.Network.Interfaces.IPConfigurations.ConfigName
-      description: The interface ipconfig name.
+      description: The interface IP configuration name.
       type: String
     - contextPath: Azure.Network.Interfaces.IPConfigurations.PrivateIPAddress
-      description: The interface private ip addresse.
+      description: The interface private IP address.
       type: String
     - contextPath: Azure.Network.Interfaces.IPConfigurations.PublicIPAddressID
-      description: The interface public ip address id.
+      description: The interface public IP address ID.
       type: Unknown
     - contextPath: Azure.Network.Interfaces.Name
       description: The interface name.
@@ -689,13 +689,13 @@ script:
       description: The interface resource group.
       type: String
     - contextPath: Azure.Network.Interfaces.NetworkSecurityGroup.id
-      description: The interface network security group id.
+      description: The interface network security group ID.
       type: String
     - contextPath: Azure.Network.Interfaces.Location
       description: The interface location.
       type: String
     - contextPath: Azure.Network.Interfaces.ID
-      description: The interface id.
+      description: The interface ID.
       type: String
   dockerimage: demisto/crypto:1.0.0.28507
   feed: false
