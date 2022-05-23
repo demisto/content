@@ -1,0 +1,51 @@
+{
+  "response": [
+    {
+      "isCaseSensitive": false,
+      "naturalId": "PH_DYNLIST_ACCT_LOCKOUT",
+      "displayName": "Accounts Locked",
+      "description": "Accounts that lock out frequently",
+      "valuePattern": null,
+      "ageOut": "1w",
+      "topGroup": false,
+      "entries": null,
+      "dataCreationType": null,
+      "valueType": "STRING",
+      "custId": 0,
+      "name": "PH_DYNLIST_ACCT_LOCKOUT",
+      "id": 111
+    },
+    {
+      "isCaseSensitive": false,
+      "naturalId": "PH_DYNLIST_PORT_SCANNER",
+      "displayName": "Port Scanners",
+      "description": "Internal hosts that scan multiple hosts or multiple ports on the same machine",
+      "valuePattern": null,
+      "ageOut": "1d",
+      "topGroup": false,
+      "entries": [
+        {
+          "naturalId": "192.168.10.88_1638780090000",
+          "firstSeen": 1637655030000,
+          "count": 2,
+          "triggeringRules": "Heavy TCP Port Scan: Single Destination",
+          "description": null,
+          "entryValue": "192.168.1.1",
+          "expiredTime": 1638866490000,
+          "ageOut": "1d",
+          "lastSeen": 1638780090000,
+          "dataCreationType": null,
+          "custId": 1,
+          "id": 55555,
+          "state": "Enabled"
+        }
+      ],
+      "dataCreationType": null,
+      "valueType": "IP",
+      "custId": 0,
+      "name": "PH_DYNLIST_PORT_SCANNER",
+      "id": 112
+    }
+  ],
+  "status": "Success"
+}

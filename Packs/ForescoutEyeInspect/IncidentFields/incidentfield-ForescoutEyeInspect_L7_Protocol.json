@@ -1,0 +1,30 @@
+{
+    "id": "incident_forescouteyeinspectl7protocol",
+    "version": -1,
+    "modified": "2022-03-23T09:22:35.338716988+02:00",
+    "name": "Forescout EyeInspect L7 Protocol",
+    "ownerOnly": false,
+    "cliName": "forescouteyeinspectl7protocol",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "Forescout EyeInspect"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.1.0"
+}

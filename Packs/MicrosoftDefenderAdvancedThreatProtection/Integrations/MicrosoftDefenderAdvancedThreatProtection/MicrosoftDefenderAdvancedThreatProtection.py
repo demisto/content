@@ -49,6 +49,7 @@ INDICATOR_TYPE_TO_DBOT_TYPE = {
     'Url': DBotScoreType.URL,
     'DomainName': DBotScoreType.DOMAIN,
     'IpAddress': DBotScoreType.IP,
+    'CertificateThumbprint': None,
 }
 
 HEALTH_STATUS_TO_ENDPOINT_STATUS = {
@@ -703,7 +704,7 @@ class HuntingQueryBuilder:
 
     class NetworkConnections:
         """QUERY PREFIX"""
-        EXTERNAL_ADDRESSES_QUERY_PREFIX = 'DeviceNetworkEvents | where (RemoteIP !startswith "172.16" or RemoteIP !startswith "192.168" or RemoteIP !startswith "10.") and'  # noqa: E501
+        EXTERNAL_ADDRESSES_QUERY_PREFIX = 'DeviceNetworkEvents | where not(RemoteIP matches regex "(^10\\\\.)|(^172\\\\.1[6-9]\\\\.)|(^172\\\\.2[0-9]\\\\.)|(^172\\\\.3[0-1]\\\\.)|(^192\\\\.168\\\\.)") and'  # noqa: E501
         DNS_QUERY_PREFIX = 'DeviceNetworkEvents | where RemotePort == 53 and'
         ENCODED_COMMANDS_QUERY_PREFIX = 'DeviceProcessEvents | where FileName in ("powershell.exe","powershell_ise.exe") and ProcessCommandLine contains "-encoded" and'  # noqa: E501
 
@@ -1897,6 +1898,40 @@ class MsClient:
     def cancel_action(self, action_id, request_body):
         cmd_url = f'machineactions/{action_id}/cancel'
         response = self.ms_client.http_request(method='POST', url_suffix=cmd_url, json_data=request_body)
+        return response
+
+    def get_machine_users(self, machine_id):
+        """Retrieves a collection of users related to a given machine ID (logon users).
+        https://docs.microsoft.com/en-us/microsoft-365/security/defender-endpoint/get-machine-log-on-users?view=o365-worldwide
+
+        Args:
+            machine_id (str): The machine ID
+
+        Returns:
+            dict. User entities
+        """
+        cmd_url = f"/machines/{machine_id}/logonusers"
+        try:
+            response = self.ms_client.http_request(method="GET", url_suffix=cmd_url)
+        except Exception:
+            raise Exception(f"Machine {machine_id} was not found")
+        return response
+
+    def get_machine_alerts(self, machine_id):
+        """Retrieves a collection of alerts related to a given machine ID.
+        https://docs.microsoft.com/en-us/microsoft-365/security/defender-endpoint/get-machine-related-alerts?view=o365-worldwide
+
+        Args:
+            machine_id (str): The machine ID
+
+        Returns:
+            dict. Alert entities
+        """
+        cmd_url = f"/machines/{machine_id}/alerts"
+        try:
+            response = self.ms_client.http_request(method="GET", url_suffix=cmd_url)
+        except Exception:
+            raise Exception(f"Machine {machine_id} not found")
         return response
 
 
@@ -4097,11 +4132,14 @@ def get_dbot_indicator(dbot_type, dbot_score, value):
 
 
 def get_indicator_dbot_object(indicator):
-    indicator_type = INDICATOR_TYPE_TO_DBOT_TYPE[indicator.get('indicatorType')]
-    indicator_value = indicator.get('indicatorValue')
-    dbot = Common.DBotScore(indicator=indicator_value, indicator_type=indicator_type,
-                            score=Common.DBotScore.NONE)  # type:ignore
-    return get_dbot_indicator(indicator_type, dbot, indicator_value)
+    indicator_type = INDICATOR_TYPE_TO_DBOT_TYPE.get(indicator.get('indicatorType'))
+    if indicator_type:
+        indicator_value = indicator.get('indicatorValue')
+        dbot = Common.DBotScore(indicator=indicator_value, indicator_type=indicator_type,
+                                score=Common.DBotScore.NONE)  # type:ignore
+        return get_dbot_indicator(indicator_type, dbot, indicator_value)
+    else:
+        return None
 
 
 def list_machines_by_vulnerability_command(client: MsClient, args: dict) -> CommandResults:
@@ -4310,6 +4348,67 @@ def endpoint_command(client: MsClient, args: dict) -> List[CommandResults]:
             raw_response=machines_response,
         ))
     return machines_outputs
+
+
+def get_machine_users_command(client: MsClient, args: dict) -> CommandResults:
+    """Retrieves a collection of logon users on a given machine
+
+    Returns:
+        CommandResults.
+    """
+    headers = ["ID", "AccountName", "AccountDomain", "FirstSeen", "LastSeen", "LogonTypes", "DomainAdmin", "NetworkUser"]
+    machine_id = args.get("machine_id")
+    response = client.get_machine_users(machine_id)
+    users_list = [dict(**get_user_data(r), MachineID=machine_id) for r in response.get("value", [])]
+
+    return CommandResults(
+        outputs=users_list,
+        outputs_key_field=["ID", "MachineID"],
+        outputs_prefix="MicrosoftATP.MachineUser",
+        readable_output=tableToMarkdown(
+            f"Microsoft Defender ATP logon users for machine {machine_id}:",
+            users_list,
+            headers=headers,
+            removeNull=True,
+        ),
+        raw_response=response,
+    )
+
+
+def get_machine_alerts_command(client: MsClient, args: dict) -> CommandResults:
+    """Retrieves a collection of alerts related to specific device.
+
+    Returns:
+        CommandResults.
+    """
+    headers = [
+        "ID",
+        "Title",
+        "Description",
+        "IncidentID",
+        "Severity",
+        "Status",
+        "Classification",
+        "Category",
+        "ThreatFamilyName",
+        "MachineID"
+    ]
+    machine_id = args.get("machine_id")
+    alerts_response = client.get_machine_alerts(machine_id)
+    alert_list = get_alerts_list(alerts_response)
+
+    return CommandResults(
+        outputs=alert_list,
+        outputs_key_field=["ID", "MachineID"],
+        outputs_prefix="MicrosoftATP.MachineAlerts",
+        readable_output=tableToMarkdown(
+            f"Alerts that are related to machine {machine_id}:",
+            alert_list,
+            headers=headers,
+            removeNull=True,
+        ),
+        raw_response=alerts_response,
+    )
 
 
 ''' EXECUTION CODE '''
@@ -4813,6 +4912,10 @@ def main():  # pragma: no cover
             return_results(tampering_command(client, args))
         elif command == 'microsoft-atp-advanced-hunting-cover-up':
             return_results(cover_up_command(client, args))
+        elif command == 'microsoft-atp-get-machine-users':
+            return_results(get_machine_users_command(client, args))
+        elif command == 'microsoft-atp-get-machine-alerts':
+            return_results(get_machine_alerts_command(client, args))
     except Exception as err:
         return_error(str(err))
 

@@ -50,6 +50,9 @@ Every command and playbook that runs in QRadar v2 also runs in QRadar v3. No adj
 - ***qradar-searches-list***
 - ***qradar-geolocations-for-ip***
 - ***qradar-log-sources-list***
+- ***qradar-upload-indicators***
+- ***get-modified-remote-data***
+
 ### Command name changes
 | QRadar v2 command | QRadar V3 command | Notes
 | --- | --- | --- |
@@ -72,6 +75,8 @@ Every command and playbook that runs in QRadar v2 also runs in QRadar v3. No adj
 | qradar-delete-reference-set-value |  qradar-reference-set-value-delete | | 
 | qradar-get-domains | qradar-domains-list |  | 
 | qradar-domains-list | qradar-get-domain-by-id | Specify the *domain_id* argument in the command. |  |
+
+
 ## Mirroring
 This integration supports in mirroring from QRadar offenses to XSOAR.
 * When a field of an offense is updated in QRadar services, it is mirrored in XSOAR.

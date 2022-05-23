@@ -569,7 +569,7 @@ def fetch_incidents(
     params = {
         "sort by": "last time org assigned",
         "last time org assigned": f"{start_time_iso}&{now_iso}",
-        "incident status": ["open"],
+        "incident status": ["open", "reviewing"],
         "assigned organization": org_psa_id,
         "limit": max_fetch,
     }

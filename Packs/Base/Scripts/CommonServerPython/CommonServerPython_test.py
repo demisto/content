@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import dateparser
 import gzip
 import demistomock as demisto
 import copy
@@ -1840,7 +1841,7 @@ class TestCommandResults:
     def test_dbot_score_is_in_to_context_url(self):
         """
         Given
-        - domain indicator
+        - url indicator
 
         When
         - Creating a reputation
@@ -1869,6 +1870,56 @@ class TestCommandResults:
         ).to_context()['EntryContext']
         assert Common.DBotScore.CONTEXT_PATH in entry_context
         assert Common.URL.CONTEXT_PATH in entry_context
+
+    def test_hashes_array_is_in_to_context_file(self):
+        """
+        Given
+        - A File indicator.
+
+        When
+        - Creating a reputation with all existing hashes.
+
+        Then
+        - Verify that the hashes array exists in the entry context and includes all the hashes types and values.
+        """
+        from CommonServerPython import Common, DBotScoreType, CommandResults
+        indicator_id = '63347f5d946164a23faca26b78a91e1c'
+        raw_response = {'id': indicator_id}
+        indicator = Common.File(
+            md5=indicator_id,
+            sha1='test_sha1',
+            sha256='test_sha256',
+            sha512='test_sha512',
+            ssdeep='test_ssdeep',
+            imphash='test_imphash',
+            hashes= [Common.Hash('test_type1', 'test_value1'), Common.Hash('test_type2', 'test_value2')],
+            dbot_score=Common.DBotScore(
+                indicator_id,
+                DBotScoreType.FILE,
+                'Indicator',
+                score=Common.DBotScore.BAD,
+                malicious_description='malicious!'
+            )
+        )
+        entry_context = CommandResults(
+            indicator=indicator,
+            readable_output='output!',
+            outputs={'Indicator': raw_response},
+            raw_response=raw_response
+        ).to_context()['EntryContext']
+
+        expected_hashes_array = [
+            {'type': 'test_type1', 'value': 'test_value1'},
+            {'type': 'test_type2', 'value': 'test_value2'},
+            {'type': 'MD5', 'value': '63347f5d946164a23faca26b78a91e1c'},
+            {'type': 'SHA1', 'value': 'test_sha1'},
+            {'type': 'SHA256', 'value': 'test_sha256'},
+            {'type': 'SHA512', 'value': 'test_sha512'},
+            {'type': 'SSDeep', 'value': 'test_ssdeep'},
+            {'type': 'Imphash', 'value': 'test_imphash'}
+        ]
+
+        assert entry_context[Common.File.CONTEXT_PATH][0].get('Hashes') == expected_hashes_array
 
     def test_multiple_outputs_keys(self):
         """
@@ -5000,7 +5051,150 @@ def test_get_schedule_metadata():
 
 
 class TestCommonTypes:
+    def test_create_ip(self):
+        """
+            Given:
+                - A single IP indicator entry
+            When
+               - Creating a Common.IP object
+           Then
+               - The context created matches the data entry
+       """
+        from CommonServerPython import CommandResults, Common, EntryType, EntryFormat, DBotScoreType
+
+        dbot_score = Common.DBotScore(
+            indicator='8.8.8.8',
+            integration_name='Test',
+            indicator_type=DBotScoreType.IP,
+            score=Common.DBotScore.GOOD
+        )
+
+        ip = Common.IP(
+            ip='8.8.8.8',
+            dbot_score=dbot_score,
+            asn='some asn',
+            hostname='test.com',
+            geo_country='geo_country',
+            geo_description='geo_description',
+            geo_latitude='geo_latitude',
+            geo_longitude='geo_longitude',
+            positive_engines=5,
+            detection_engines=10,
+            as_owner=None,
+            region='region',
+            port='port',
+            internal=None,
+            updated_date=None,
+            registrar_abuse_name='Mr Registrar',
+            registrar_abuse_address='Registrar Address',
+            registrar_abuse_country='Registrar Country',
+            registrar_abuse_network='Registrar Network',
+            registrar_abuse_phone=None,
+            registrar_abuse_email='registrar@test.com',
+            campaign='campaign',
+            traffic_light_protocol='traffic_light_protocol',
+            threat_types=[Common.ThreatTypes(threat_category='threat_category',
+                                             threat_category_confidence='threat_category_confidence')],
+            community_notes=[Common.CommunityNotes(note='note', timestamp='2019-01-01T00:00:00')],
+            publications=[Common.Publications(title='title', source='source', timestamp='2019-01-01T00:00:00',
+                                              link='link')],
+            organization_name='Some Organization',
+            organization_type='Organization type',
+            feed_related_indicators=None,
+            tags=['tag1', 'tag2'],
+            malware_family=['malware_family1', 'malware_family2'],
+            relationships=None,
+            blocked=False,
+            description='description test',
+            stix_id='stix_id',
+            whois_records=[Common.WhoisRecord('test_key', 'test_value', 'test_date')],
+        )
+
+        results = CommandResults(
+            outputs_key_field=None,
+            outputs_prefix=None,
+            outputs=None,
+            indicators=[ip]
+        )
+
+        assert results.to_context() == {
+            'Type': 1,
+            'ContentsFormat': 'json',
+            'Contents': None,
+            'HumanReadable': None,
+            'EntryContext': {
+                'IP(val.Address && val.Address == obj.Address)': [
+                    {'Address': '8.8.8.8',
+                     'ASN': 'some asn',
+                     'Region': 'region',
+                     'Port': 'port',
+                     'STIXID': 'stix_id',
+                     'Registrar': {
+                         'Abuse': {
+                             'Name': 'Mr Registrar',
+                             'Address': 'Registrar Address',
+                             'Country': 'Registrar Country',
+                             'Network': 'Registrar Network',
+                             'Email': 'registrar@test.com'
+                         }
+                     },
+                     'Campaign': 'campaign',
+                     'Description': 'description test',
+                     'TrafficLightProtocol': 'traffic_light_protocol',
+                     'CommunityNotes': [{'note': 'note', 'timestamp': '2019-01-01T00:00:00'}],
+                     'Publications': [
+                         {
+                             'source': 'source',
+                             'title': 'title',
+                             'link': 'link',
+                             'timestamp': '2019-01-01T00:00:00'
+                         }
+                     ],
+                     'ThreatTypes': [
+                         {'threatcategory': 'threat_category',
+                          'threatcategoryconfidence': 'threat_category_confidence'}
+                     ],
+                     'WhoisRecords': [{'key': 'test_key', 'value': 'test_value', 'date': 'test_date'}],
+                     'Hostname': 'test.com',
+                     'Geo': {
+                         'Location': 'geo_latitude:geo_longitude',
+                         'Country': 'geo_country',
+                         'Description': 'geo_description'
+                     },
+                     'Organization': {
+                         'Name': 'Some Organization',
+                         'Type': 'Organization type'
+                     },
+                     'DetectionEngines': 10,
+                     'PositiveDetections': 5,
+                     'Tags': ['tag1', 'tag2'],
+                     'MalwareFamily': ['malware_family1', 'malware_family2']
+                     }
+                ],
+                'DBotScore(val.Indicator && val.Indicator == obj.Indicator && '
+                'val.Vendor == obj.Vendor && val.Type == obj.Type)': [
+                    {'Indicator': '8.8.8.8',
+                     'Type': 'ip',
+                     'Vendor': 'Test',
+                     'Score': 1
+                     }
+                ]
+            },
+            'IndicatorTimeline': [],
+            'IgnoreAutoExtract': False,
+            'Note': False,
+            'Relationships': []
+        }
+
     def test_create_domain(self):
+        """
+            Given:
+                - A single Domain indicator entry
+            When
+               - Creating a Common.Domain object
+           Then
+               - The context created matches the data entry
+       """
         from CommonServerPython import CommandResults, Common, EntryType, EntryFormat, DBotScoreType
 
         dbot_score = Common.DBotScore(
@@ -5062,7 +5256,13 @@ class TestCommonTypes:
             tech_name='tech_name',
             tech_organization='tech_organization',
             tech_email='tech_email',
-            billing='billing'
+            billing='billing',
+            whois_records=[Common.WhoisRecord('test_key', 'test_value', 'test_date')],
+            description='test_description',
+            stix_id='test_stix_id',
+            blocked=True,
+            certificates=[Common.Certificates('test_issuedto', 'test_issuedby', 'test_validfrom', 'test_validto')],
+            dns_records=[Common.DNSRecord('test_type', 'test_ttl', 'test_data')]
         )
 
         results = CommandResults(
@@ -5080,114 +5280,468 @@ class TestCommonTypes:
             'EntryContext': {
                 'Domain(val.Name && val.Name == obj.Name)': [
                     {
-                        "Name": "somedomain.com",
-                        "DNS": "dns.somedomain",
-                        "DetectionEngines": 10,
-                        "PositiveDetections": 5,
-                        "Registrar": {
-                            "Name": "Mr Registrar",
-                            "AbuseEmail": "registrar@test.com",
-                            "AbusePhone": None
+                        'Name': 'somedomain.com',
+                        'DNS': 'dns.somedomain',
+                        'DetectionEngines': 10,
+                        'PositiveDetections': 5,
+                        'Registrar': {'Name': 'Mr Registrar', 'AbuseEmail': 'registrar@test.com', 'AbusePhone': None},
+                        'Registrant': {'Name': 'Mr Registrant', 'Email': None, 'Phone': None, 'Country': None},
+                        'Admin': {'Name': None, 'Email': 'admin@test.com', 'Phone': '18000000', 'Country': None},
+                        'Organization': 'Some Organization',
+                        'Subdomains': ['sub-domain1.somedomain.com', 'sub-domain2.somedomain.com',
+                                       'sub-domain3.somedomain.com'], 'DomainStatus': 'ACTIVE',
+                        'CreationDate': '2019-01-01T00:00:00',
+                        'UpdatedDate': '2019-01-02T00:00:00',
+                        'NameServers': ['PNS31.CLOUDNS.NET', 'PNS32.CLOUDNS.NET'],
+                        'Tags': ['tag1', 'tag2'],
+                        'FeedRelatedIndicators': [{'value': '8.8.8.8', 'type': 'IP', 'description': 'test'}],
+                        'WhoisRecords': [{'key': 'test_key', 'value': 'test_value', 'date': 'test_date'}],
+                        'MalwareFamily': ['malware_family1', 'malware_family2'], 'DomainIDNName': 'domain_idn_name',
+                        'Port': 'port',
+                        'Internal': 'False',
+                        'Category': 'category',
+                        'Campaign': 'campaign',
+                        'TrafficLightProtocol': 'traffic_light_protocol',
+                        'ThreatTypes': [{'threatcategory': 'threat_category',
+                                         'threatcategoryconfidence': 'threat_category_confidence'}],
+                        'CommunityNotes': [{'note': 'note', 'timestamp': '2019-01-01T00:00:00'}],
+                        'Publications': [{'source': 'source', 'title': 'title', 'link': 'link',
+                                          'timestamp': '2019-01-01T00:00:00'}],
+                        'Geo': {'Location': 'geo_location', 'Country': 'geo_country', 'Description': 'geo_description'},
+                        'Tech': {'Country': 'tech_country', 'Name': 'tech_name', 'Organization': 'tech_organization',
+                                 'Email': 'tech_email'},
+                        'Billing': 'billing',
+                        'WHOIS': {
+                            'Registrar': {'Name': 'Mr Registrar', 'AbuseEmail': 'registrar@test.com',
+                                          'AbusePhone': None},
+                            'Registrant': {'Name': 'Mr Registrant', 'Email': None, 'Phone': None, 'Country': None},
+                            'Admin': {'Name': None, 'Email': 'admin@test.com', 'Phone': '18000000', 'Country': None},
+                            'DomainStatus': 'ACTIVE',
+                            'CreationDate': '2019-01-01T00:00:00',
+                            'UpdatedDate': '2019-01-02T00:00:00',
+                            'NameServers': ['PNS31.CLOUDNS.NET', 'PNS32.CLOUDNS.NET']
                         },
-                        "Registrant": {
-                            "Name": "Mr Registrant",
-                            "Email": None,
-                            "Phone": None,
-                            "Country": None
-                        },
-                        "Admin": {
-                            "Name": None,
-                            "Email": "admin@test.com",
-                            "Phone": "18000000",
-                            "Country": None
-                        },
-                        "Organization": "Some Organization",
-                        "Subdomains": [
-                            "sub-domain1.somedomain.com",
-                            "sub-domain2.somedomain.com",
-                            "sub-domain3.somedomain.com"
-                        ],
-                        "DomainStatus": "ACTIVE",
-                        "CreationDate": "2019-01-01T00:00:00",
-                        "UpdatedDate": "2019-01-02T00:00:00",
-                        "NameServers": [
-                            "PNS31.CLOUDNS.NET",
-                            "PNS32.CLOUDNS.NET"
-                        ],
-                        "Tags": ["tag1", "tag2"],
-                        "FeedRelatedIndicators": [{"value": "8.8.8.8", "type": "IP", "description": "test"}],
-                        "MalwareFamily": ["malware_family1", "malware_family2"],
-                        "DomainIDNName": "domain_idn_name",
-                        "Port": "port",
-                        "Internal": "False",
-                        "Category": "category",
-                        "Campaign": "campaign",
-                        "TrafficLightProtocol": "traffic_light_protocol",
-                        "ThreatTypes": [{
-                            "threatcategory": "threat_category",
-                            "threatcategoryconfidence": "threat_category_confidence"
-                        }],
-                        "CommunityNotes": [{
-                            "note": "note",
-                            "timestamp": "2019-01-01T00:00:00"
-                        }],
-                        "Publications": [{
-                            "source": "source",
-                            "title": "title",
-                            "link": "link",
-                            "timestamp": "2019-01-01T00:00:00"
-                        }],
-                        "Geo": {
-                            "Location": "geo_location",
-                            "Country": "geo_country",
-                            "Description": "geo_description"
-                        },
-                        "Tech": {
-                            "Country": "tech_country",
-                            "Name": "tech_name",
-                            "Organization": "tech_organization",
-                            "Email": "tech_email"
-                        },
-                        "Billing": "billing",
-                        "WHOIS": {
-                            "Registrar": {
-                                "Name": "Mr Registrar",
-                                "AbuseEmail": "registrar@test.com",
-                                "AbusePhone": None
-                            },
-                            "Registrant": {
-                                "Name": "Mr Registrant",
-                                "Email": None,
-                                "Phone": None,
-                                "Country": None
-                            },
-                            "Admin": {
-                                "Name": None,
-                                "Email": "admin@test.com",
-                                "Phone": "18000000",
-                                "Country": None
-                            },
-                            "DomainStatus": "ACTIVE",
-                            "CreationDate": "2019-01-01T00:00:00",
-                            "UpdatedDate": "2019-01-02T00:00:00",
-                            "NameServers": [
-                                "PNS31.CLOUDNS.NET",
-                                "PNS32.CLOUDNS.NET"
-                            ]
-                        }
+                        'DNSRecords': [{'type': 'test_type', 'ttl': 'test_ttl', 'data': 'test_data'}],
+                        'STIXID': 'test_stix_id',
+                        'Description': 'test_description',
+                        'Blocked': True,
+                        'Certificates': [{'issuedto': 'test_issuedto', 'issuedby': 'test_issuedby',
+                                          'validfrom': 'test_validfrom','validto': 'test_validto'}]
                     }
                 ],
-                'DBotScore(val.Indicator && val.Indicator == obj.Indicator && '
-                'val.Vendor == obj.Vendor && val.Type == obj.Type)': [
+                'DBotScore(val.Indicator && val.Indicator == obj.Indicator &&'
+                ' val.Vendor == obj.Vendor && val.Type == obj.Type)': [
+                    {'Indicator': 'somedomain.com', 'Type': 'domain', 'Vendor': 'Test', 'Score': 1}
+                ]
+            },
+            'IndicatorTimeline': [],
+            'IgnoreAutoExtract': False,
+            'Note': False,
+            'Relationships': []
+        }
+
+    def test_create_url(self):
+        """
+            Given:
+                - A single URL indicator entry
+            When
+               - Creating a Common.URL object
+           Then
+               - The context created matches the data entry
+       """
+        from CommonServerPython import CommandResults, Common, EntryType, EntryFormat, DBotScoreType
+
+        dbot_score = Common.DBotScore(
+            indicator='https://somedomain.com',
+            integration_name='Test',
+            indicator_type=DBotScoreType.URL,
+            score=Common.DBotScore.GOOD
+        )
+
+        url = Common.URL(
+            url='https://somedomain.com',
+            dbot_score=dbot_score,
+            positive_detections=5,
+            detection_engines=10,
+            category='test_category',
+            feed_related_indicators=None,
+            tags=['tag1', 'tag2'],
+            malware_family=['malware_family1', 'malware_family2'],
+            port='port',
+            internal=None,
+            campaign='test_campaign',
+            traffic_light_protocol='test_traffic_light_protocol',
+            threat_types=[Common.ThreatTypes(threat_category='threat_category',
+                                             threat_category_confidence='threat_category_confidence')],
+            asn='test_asn',
+            as_owner='test_as_owner',
+            geo_country='test_geo_country',
+            organization='test_organization',
+            community_notes=[Common.CommunityNotes(note='note', timestamp='2019-01-01T00:00:00')],
+            publications=[Common.Publications(title='title', source='source', timestamp='2019-01-01T00:00:00',
+                                              link='link')],
+            relationships=None,
+            blocked=True,
+            certificates=None,
+            description='description test',
+            stix_id='stix_id',
+        )
+
+        results = CommandResults(
+            outputs_key_field=None,
+            outputs_prefix=None,
+            outputs=None,
+            indicators=[url]
+        )
+
+        assert results.to_context() == {
+            'Type': 1,
+            'ContentsFormat': 'json',
+            'Contents': None,
+            'HumanReadable': None,
+            'EntryContext': {
+                'URL(val.Data && val.Data == obj.Data)': [
                     {
-                        'Indicator': 'somedomain.com',
-                        'Type': 'domain',
+                        'Data': 'https://somedomain.com',
+                        'Blocked': True,
+                        'Description': 'description test',
+                        'STIXID': 'stix_id',
+                        'DetectionEngines': 10,
+                        'PositiveDetections': 5,
+                        'Category': 'test_category',
+                        'Tags': ['tag1', 'tag2'],
+                        'MalwareFamily': ['malware_family1', 'malware_family2'],
+                        'Port': 'port',
+                        'Campaign': 'test_campaign',
+                        'TrafficLightProtocol': 'test_traffic_light_protocol',
+                        'ThreatTypes': [
+                            {
+                                'threatcategory': 'threat_category',
+                                'threatcategoryconfidence': 'threat_category_confidence'
+                            }
+                        ],
+                        'ASN': 'test_asn',
+                        'ASOwner': 'test_as_owner',
+                        'Geo': {'Country': 'test_geo_country'},
+                        'Organization': 'test_organization',
+                        'CommunityNotes': [{'note': 'note', 'timestamp': '2019-01-01T00:00:00'}],
+                        'Publications': [
+                            {'source': 'source',
+                             'title': 'title',
+                             'link': 'link',
+                             'timestamp': '2019-01-01T00:00:00'
+                             }
+                        ]
+                    }
+                ],
+                'DBotScore(val.Indicator && val.Indicator == obj.Indicator &&'
+                ' val.Vendor == obj.Vendor && val.Type == obj.Type)': [
+                    {
+                        'Indicator': 'https://somedomain.com',
+                        'Type': 'url',
                         'Vendor': 'Test',
                         'Score': 1
                     }
                 ]
             },
             'IndicatorTimeline': [],
+            'IgnoreAutoExtract': False,
+            'Note': False,
+            'Relationships': []
+        }
+
+    def test_create_file(self):
+        """
+            Given:
+                - A single File indicator entry
+            When
+               - Creating a Common.File object
+           Then
+               - The context created matches the data entry
+       """
+        from CommonServerPython import CommandResults, Common, EntryType, EntryFormat, DBotScoreType
+
+        indicator_id = '63347f5d946164a23faca26b78a91e1c'
+
+        dbot_score = Common.DBotScore(
+            indicator=indicator_id,
+            integration_name='Test',
+            indicator_type=DBotScoreType.FILE,
+            score=Common.DBotScore.BAD,
+            malicious_description='malicious!'
+        )
+
+        file = Common.File(
+            md5=indicator_id,
+            sha1='test_sha1',
+            sha256='test_sha256',
+            sha512='test_sha512',
+            ssdeep='test_ssdeep',
+            imphash='test_imphash',
+            name='test_name',
+            entry_id='test_entry_id',
+            size=1000,
+            dbot_score=dbot_score,
+            extension='test_extension',
+            file_type='test_file_type',
+            hostname='test_hostname',
+            path=None,
+            company=None,
+            product_name=None,
+            digital_signature__publisher=None,
+            signature=None,
+            actor='test_actor',
+            tags=['tag1', 'tag2'],
+            feed_related_indicators=None,
+            malware_family=['malware_family1', 'malware_family2'],
+            quarantined=None,
+            campaign='test_campaign',
+            associated_file_names=None,
+            traffic_light_protocol='traffic_light_protocol',
+            organization='test_organization',
+            community_notes=[Common.CommunityNotes(note='note', timestamp='2019-01-01T00:00:00')],
+            publications=[Common.Publications(title='title', source='source', timestamp='2019-01-01T00:00:00',
+                                              link='link')],
+            threat_types=[Common.ThreatTypes(threat_category='threat_category',
+                                             threat_category_confidence='threat_category_confidence')],
+            behaviors=None,
+            relationships=None,
+            creation_date='test_creation_date',
+            description='test_description',
+            hashes=None,
+            stix_id='test_stix_id'
+        )
+
+        results = CommandResults(
+            outputs_key_field=None,
+            outputs_prefix=None,
+            outputs=None,
+            indicators=[file]
+        )
+
+        assert results.to_context() == {
+            'Type': 1,
+            'ContentsFormat': 'json',
+            'Contents': None,
+            'HumanReadable': None,
+            'EntryContext': {
+                'File(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 || val.SHA256 &&'
+                ' val.SHA256 == obj.SHA256 || val.SHA512 && val.SHA512 == obj.SHA512 || val.CRC32 &&'
+                ' val.CRC32 == obj.CRC32 || val.CTPH && val.CTPH == obj.CTPH || val.SSDeep &&'
+                ' val.SSDeep == obj.SSDeep)': [
+                    {'Hashes': [{'type': 'MD5', 'value': '63347f5d946164a23faca26b78a91e1c'},
+                                {'type': 'SHA1', 'value': 'test_sha1'}, {'type': 'SHA256', 'value': 'test_sha256'},
+                                {'type': 'SHA512', 'value': 'test_sha512'}, {'type': 'SSDeep', 'value': 'test_ssdeep'},
+                                {'type': 'Imphash', 'value': 'test_imphash'}],
+                     'Name': 'test_name',
+                     'EntryID': 'test_entry_id',
+                     'Size': 1000,
+                     'MD5': '63347f5d946164a23faca26b78a91e1c',
+                     'SHA1': 'test_sha1',
+                     'SHA256': 'test_sha256',
+                     'SHA512': 'test_sha512',
+                     'SSDeep': 'test_ssdeep',
+                     'Extension': 'test_extension',
+                     'Type': 'test_file_type',
+                     'Hostname': 'test_hostname',
+                     'Actor': 'test_actor',
+                     'Tags': ['tag1', 'tag2'],
+                     'MalwareFamily': ['malware_family1', 'malware_family2'],
+                     'Campaign': 'test_campaign',
+                     'TrafficLightProtocol': 'traffic_light_protocol',
+                     'CommunityNotes': [{'note': 'note', 'timestamp': '2019-01-01T00:00:00'}], 'Publications': [
+                        {'source': 'source', 'title': 'title', 'link': 'link', 'timestamp': '2019-01-01T00:00:00'}],
+                     'ThreatTypes': [{'threatcategory': 'threat_category',
+                                      'threatcategoryconfidence': 'threat_category_confidence'}],
+                     'Imphash': 'test_imphash',
+                     'Organization': 'test_organization',
+                     'Malicious': {'Vendor': 'Test', 'Description': 'malicious!'}
+                     }
+                ],
+                'DBotScore(val.Indicator && val.Indicator == obj.Indicator &&'
+                ' val.Vendor == obj.Vendor && val.Type == obj.Type)': [
+                    {'Indicator': '63347f5d946164a23faca26b78a91e1c',
+                     'Type': 'file',
+                     'Vendor': 'Test',
+                     'Score': 3}
+                ]
+            },
+             'IndicatorTimeline': [],
+            'IgnoreAutoExtract': False,
+            'Note': False,
+            'Relationships': []
+        }
+
+    def test_create_cve(self):
+        """
+            Given:
+                - A single CVE indicator entry
+            When
+               - Creating a Common.CVE object
+           Then
+               - The context created matches the data entry
+       """
+        from CommonServerPython import CommandResults, Common, EntryType, EntryFormat
+
+        cve = Common.CVE(
+            id='CVE-2015-1653',
+            cvss='10.0',
+            published='2022-04-28T13:16:54+00:00',
+            modified='2022-04-31T13:16:54+00:00',
+            description='test_description',
+            relationships=None,
+            stix_id='test_stix_id',
+            cvss_version='test_cvss_version',
+            cvss_score=10,
+            cvss_vector='test_cvss_vector',
+            cvss_table='test_cvss_table',
+            community_notes=[Common.CommunityNotes(note='note', timestamp='2019-01-01T00:00:00')],
+            tags=['tag1', 'tag2'],
+            traffic_light_protocol='traffic_light_protocol'
+        )
+
+        results = CommandResults(
+            outputs_key_field=None,
+            outputs_prefix=None,
+            outputs=None,
+            indicators=[cve]
+        )
+
+        assert results.to_context() == {
+            'Type': 1,
+            'ContentsFormat': 'json',
+            'Contents': None,
+            'HumanReadable': None,
+            'EntryContext': {
+                'CVE(val.ID && val.ID == obj.ID)': [
+                    {
+                        'ID': 'CVE-2015-1653',
+                        'CVSS': {
+                            'Score': '10.0',
+                            'Version': 'test_cvss_version',
+                            'Vector': 'test_cvss_vector',
+                            'Table': 'test_cvss_table'
+                        },
+                        'Published': '2022-04-28T13:16:54+00:00',
+                        'Modified': '2022-04-31T13:16:54+00:00',
+                        'Description': 'test_description',
+                        'STIXID': 'test_stix_id',
+                        'CommunityNotes': [{'note': 'note', 'timestamp': '2019-01-01T00:00:00'}],
+                        'Tags': ['tag1', 'tag2'],
+                        'TrafficLightProtocol': 'traffic_light_protocol'
+                    }
+                ],
+                'DBotScore(val.Indicator && val.Indicator == obj.Indicator &&'
+                ' val.Vendor == obj.Vendor && val.Type == obj.Type)': [
+                    {'Indicator': 'CVE-2015-1653',
+                     'Type': 'cve',
+                     'Vendor': None,
+                     'Score': 0
+                     }
+                ]
+            },
+            'IndicatorTimeline': [],
+            'IgnoreAutoExtract': False,
+            'Note': False,
+            'Relationships': []
+        }
+
+    def test_create_account(self):
+        """
+            Given:
+                - A single Account indicator entry
+            When
+               - Creating a Common.Account object
+           Then
+               - The context created matches the data entry
+       """
+        from CommonServerPython import CommandResults, Common, EntryType, EntryFormat
+
+        dbot_score = Common.DBotScore(
+            indicator='test_account_id',
+            integration_name='Test',
+            indicator_type=DBotScoreType.ACCOUNT,
+            score=Common.DBotScore.GOOD
+        )
+
+        account = Common.Account(
+            id='test_account_id',
+            type='test_account_type',
+            username='test_username',
+            display_name='test_display_name',
+            groups=None,
+            domain=None,
+            email_address='user@test.com',
+            telephone_number=None,
+            office='test_office',
+            job_title='test_job_title',
+            department='test_department',
+            country='test_country',
+            state='test_state',
+            city='test_city',
+            street='test_street',
+            is_enabled=None,
+            dbot_score=dbot_score,
+            relationships=None,
+            blocked=True,
+            community_notes=[Common.CommunityNotes(note='note', timestamp='2019-01-01T00:00:00')],
+            creation_date='test_creation_date',
+            description='test_description',
+            stix_id='test_stix_id',
+            tags=['tag1', 'tag2'],
+            traffic_light_protocol='traffic_light_protocol',
+            user_id='test_user_id'
+        )
+
+        results = CommandResults(
+            outputs_key_field=None,
+            outputs_prefix=None,
+            outputs=None,
+            indicators=[account]
+        )
+
+        assert results.to_context() == {
+            'Type': 1,
+            'ContentsFormat': 'json',
+            'Contents': None,
+            'HumanReadable': None,
+            'EntryContext': {
+                'Account(val.id && val.id == obj.id)': [
+                    {'Id': 'test_account_id',
+                     'Type': 'test_account_type',
+                     'Blocked': True,
+                     'CreationDate': 'test_creation_date',
+                     'City': 'test_city',
+                     'CommunityNotes': [{'note': 'note', 'timestamp': '2019-01-01T00:00:00'}],
+                     'Country': 'test_country',
+                     'Department': 'test_department',
+                     'Description': 'test_description',
+                     'DisplayName': 'test_display_name',
+                     'Email': {
+                         'Address': 'user@test.com'
+                     },
+                     'JobTitle': 'test_job_title',
+                     'Office': 'test_office',
+                     'State': 'test_state',
+                     'StixId': 'test_stix_id',
+                     'Street': 'test_street',
+                     'Tags': ['tag1', 'tag2'],
+                     'TrafficLightProtocol': 'traffic_light_protocol',
+                     'UserId': 'test_user_id',
+                     'Username': 'test_username'
+                     }
+                ],
+                'DBotScore(val.Indicator && val.Indicator == obj.Indicator &&'
+                ' val.Vendor == obj.Vendor && val.Type == obj.Type)': [
+                    {
+                        'Indicator': 'test_account_id',
+                        'Type': 'account',
+                        'Vendor': 'Test',
+                        'Score': 1
+                    }
+                ]
+            },
+             'IndicatorTimeline': [],
             'IgnoreAutoExtract': False,
             'Note': False,
             'Relationships': []
@@ -5597,6 +6151,196 @@ class TestCommonTypes:
             'Note': False
         }
 
+    def test_create_external_reference(self):
+        """
+            Given:
+                - A single ExternalReference object
+            When
+               - Running 'to_context' function
+           Then
+               - Verify that the context is as expected
+       """
+        from CommonServerPython import Common
+
+        external_reference = Common.ExternalReference(
+            source_name='test_source_name',
+            source_id='test_source_id'
+        )
+
+        assert external_reference.to_context() == {
+            'sourcename' : 'test_source_name',
+            'sourceid' : 'test_source_id'
+        }
+
+    def test_create_attack_pattern(self):
+        """
+            Given:
+                - A single AttackPattern indicator entry
+            When
+               - Creating a Common.AttackPattern object
+           Then
+               - The context created matches the data entry
+       """
+        from CommonServerPython import CommandResults, Common, EntryType, EntryFormat
+
+        dbot_score = Common.DBotScore(
+            indicator='test_stix_id',
+            integration_name='Test',
+            indicator_type=DBotScoreType.ATTACKPATTERN,
+            score=Common.DBotScore.GOOD
+        )
+
+        attack_pattern = Common.AttackPattern(
+            stix_id='test_stix_id',
+            kill_chain_phases='test_kill_chain_phases',
+            first_seen_by_source=None,
+            description='test_description',
+            operating_system_refs=None,
+            publications='test_publications',
+            mitre_id='test_mitre_id',
+            tags=['tag1', 'tag2'],
+            traffic_light_protocol='test_traffic_light_protocol',
+            dbot_score=dbot_score,
+            community_notes=[Common.CommunityNotes(note='note', timestamp='2019-01-01T00:00:00')],
+            external_references=None
+        )
+
+        results = CommandResults(
+            outputs_key_field=None,
+            outputs_prefix=None,
+            outputs=None,
+            indicators=[attack_pattern]
+        )
+
+        assert results.to_context() == {
+            'Type': 1,
+            'ContentsFormat': 'json',
+            'Contents': None,
+            'HumanReadable': None,
+            'EntryContext': {
+                'AttackPattern(val.value && val.value == obj.value)': [
+                    {
+                        'STIXID': 'test_stix_id',
+                        'KillChainPhases': 'test_kill_chain_phases',
+                        'FirstSeenBySource': None,
+                        'OperatingSystemRefs': None,
+                        'Publications': 'test_publications',
+                        'MITREID': 'test_mitre_id',
+                        'Tags': ['tag1', 'tag2'],
+                        'Description': 'test_description',
+                        'TrafficLightProtocol': 'test_traffic_light_protocol'
+                    }
+                ],
+                'DBotScore(val.Indicator && val.Indicator == obj.Indicator &&'
+                ' val.Vendor == obj.Vendor && val.Type == obj.Type)': [
+                    {
+                        'Indicator': 'test_stix_id',
+                        'Type': 'attackpattern',
+                        'Vendor': 'Test',
+                        'Score': 1
+                    }
+                ]
+            },
+            'IndicatorTimeline': [],
+            'IgnoreAutoExtract': False,
+            'Note': False,
+            'Relationships': []
+        }
+
+    def test_create_certificates(self):
+        """
+            Given:
+                - A Certificates object
+            When
+               - Running 'to_context' function
+           Then
+               - Verify that the context is as expected
+       """
+        from CommonServerPython import Common
+
+        certificates = Common.Certificates(
+            issued_to='test_issued_to',
+            issued_by='test_issued_by',
+            valid_from='test_valid_from',
+            valid_to='test_valid_to'
+        )
+
+        assert certificates.to_context() == {
+            'issuedto': 'test_issued_to',
+            'issuedby': 'test_issued_by',
+            'validfrom': 'test_valid_from',
+            'validto': 'test_valid_to'
+        }
+
+    def test_create_hash(self):
+        """
+            Given:
+                - A single Hash object
+            When
+               - Running 'to_context' function
+           Then
+               - Verify that the context is as expected
+       """
+        from CommonServerPython import Common
+
+        hash_object = Common.Hash(
+            hash_type='test_hash_type',
+            hash_value='test_hash_value'
+        )
+
+        assert hash_object.to_context() == {
+                'type': 'test_hash_type',
+                'value': 'test_hash_value',
+            }
+
+    def test_create_whois_record(self):
+        """
+            Given:
+                - A single WhoisRecord object
+            When
+               - Running 'to_context' function
+           Then
+               - Verify that the context is as expected
+       """
+        from CommonServerPython import Common
+
+        whois_record = Common.WhoisRecord(
+            whois_record_type='test_whois_record_type',
+            whois_record_value='test_whois_record_value',
+            whois_record_date='test_whois_record_date',
+
+        )
+
+        assert whois_record.to_context() == {
+            'key': 'test_whois_record_type',
+            'value': 'test_whois_record_value',
+            'date': 'test_whois_record_date'
+        }
+
+    def test_create_dns_record(self):
+        """
+            Given:
+                - A single DNSRecord object
+            When
+               - Running 'to_context' function
+           Then
+               - Verify that the context is as expected
+       """
+        from CommonServerPython import Common
+
+        dns_record = Common.DNSRecord(
+            dns_record_type='test_dns_record_type',
+            dns_ttl='test_dns_ttl',
+            dns_record_data='test_dns_record_data',
+
+        )
+
+        assert dns_record.to_context() == {
+            'type': 'test_dns_record_type',
+            'ttl': 'test_dns_ttl',
+            'data': 'test_dns_record_data'
+        }
+
     def test_email_indicator_type(self, mocker):
         """
         Given:
@@ -5623,10 +6367,63 @@ class TestCommonTypes:
         email_context = Common.EMAIL(
             domain='example.com',
             address='user@example.com',
-            dbot_score=dbot_score
+            dbot_score=dbot_score,
+            description='test',
+            internal=True,
+            stix_id='stix_id_test',
+            tags=['tag1', 'tag2'],
+            traffic_light_protocol='traffic_light_protocol_test'
         )
-        assert email_context.to_context()[email_context.CONTEXT_PATH] == {'Address': 'user@example.com',
-                                                                          'Domain': 'example.com'}
+        assert email_context.to_context()[email_context.CONTEXT_PATH] == \
+               {'Address': 'user@example.com',
+                'Domain': 'example.com',
+                'Description': 'test',
+                'Internal': True,
+                'STIXID': 'stix_id_test',
+                'Tags': ['tag1', 'tag2'],
+                'TrafficLightProtocol':'traffic_light_protocol_test'}
+
+    @pytest.mark.parametrize('item', [
+        'CommunityNotes', 'Publications', 'ThreatTypes'
+    ])
+    def test_common_indicator_create_context_table(self, item):
+        """
+        Tests the functionality of the 'create_context_table' function.
+            Given:
+                Case a: A list containing CommunityNotes items.
+                Case b: A list containing Publications items.
+                Case c: A list containing ThreatTypes items.
+
+            When:
+                Running the 'create_context_table' function.
+
+            Then:
+                Case a: Verify that the output is a list of CommunityNotes context items as expected.
+                Case b: Verify that the output is a list of Publications context items as expected.
+                Case c: Verify that the output is a list of ThreatTypes context items as expected.
+        """
+        if item == 'CommunityNotes':
+            community_notes1 = Common.CommunityNotes(note='note1', timestamp='time1')
+            community_notes2 = Common.CommunityNotes(note='note2', timestamp='time2')
+            items = [community_notes1, community_notes2]
+            expected_output = [{'note': 'note1', 'timestamp': 'time1'}, {'note': 'note2', 'timestamp': 'time2'}]
+
+        elif item == 'Publications':
+            publications1 = Common.Publications(source='source1', title='title1', link='link1', timestamp='time1')
+            publications2 = Common.Publications(source='source2', title='title2', link='link2', timestamp='time2')
+            items = [publications1, publications2]
+            expected_output = [{'source': 'source1', 'title': 'title1', 'link': 'link1', 'timestamp': 'time1'},
+                               {'source': 'source2', 'title': 'title2', 'link': 'link2', 'timestamp': 'time2'}]
+
+        elif item == 'ThreatTypes':
+            threat_types1 = Common.ThreatTypes(threat_category='test1', threat_category_confidence='10')
+            threat_types2 = Common.ThreatTypes(threat_category='test2', threat_category_confidence='20')
+            items = [threat_types1, threat_types2]
+            expected_output = [{'threatcategory': 'test1', 'threatcategoryconfidence': '10'},
+                               {'threatcategory': 'test2', 'threatcategoryconfidence': '20'}]
+
+        table = Common.Indicator.create_context_table(items)
+        assert table == expected_output
 
 
 class TestIndicatorsSearcher:
@@ -6664,38 +7461,38 @@ class TestFetchWithLookBack:
     INCIDENTS = [
         {
             'incident_id': 1,
-            'created': (datetime.utcnow() - timedelta(hours=3)).strftime('%Y-%m-%dT%H:%M:%S')
+            'created': '2022-04-01T08:00:00'
         },
         {
             'incident_id': 2,
-            'created': (datetime.utcnow() - timedelta(hours=1)).strftime('%Y-%m-%dT%H:%M:%S')
+            'created': '2022-04-01T10:00:00'
         },
         {
             'incident_id': 3,
-            'created': (datetime.utcnow() - timedelta(minutes=29)).strftime('%Y-%m-%dT%H:%M:%S')
+            'created': '2022-04-01T10:31:00'
         },
         {
             'incident_id': 4,
-            'created': (datetime.utcnow() - timedelta(minutes=19)).strftime('%Y-%m-%dT%H:%M:%S')
+            'created': '2022-04-01T10:41:00'
         },
         {
             'incident_id': 5,
-            'created': (datetime.utcnow() - timedelta(minutes=9)).strftime('%Y-%m-%dT%H:%M:%S')
+            'created': '2022-04-01T10:51:00'
         }
     ]
 
     NEW_INCIDENTS = [
         {
             'incident_id': 6,
-            'created': (datetime.utcnow() - timedelta(minutes=49)).strftime('%Y-%m-%dT%H:%M:%S')
+            'created': '2022-04-01T10:11:00'
         },
         {
             'incident_id': 7,
-            'created': (datetime.utcnow() - timedelta(minutes=25)).strftime('%Y-%m-%dT%H:%M:%S')
+            'created': '2022-04-01T10:35:00'
         },
         {
             'incident_id': 8,
-            'created': (datetime.utcnow() - timedelta(minutes=23)).strftime('%Y-%m-%dT%H:%M:%S')
+            'created': '2022-04-01T10:37:00'
         }
     ]
 
@@ -6776,6 +7573,7 @@ class TestFetchWithLookBack:
 
         self.LAST_RUN = {}
 
+        mocker.patch.object(dateparser, 'parse', side_effect=self.mock_dateparser)
         mocker.patch.object(demisto, 'params', return_value=params)
         mocker.patch.object(demisto, 'getLastRun', return_value=self.LAST_RUN)
         mocker.patch.object(demisto, 'setLastRun', side_effect=self.set_last_run)
@@ -6791,6 +7589,13 @@ class TestFetchWithLookBack:
         incidents_phase2 = self.example_fetch_incidents()
 
         assert incidents_phase2 == result_phase2
+
+    def mock_dateparser(self, date_string, settings):
+        date_arr = date_string.split(' ')
+        if len(date_arr) > 1 and date_arr[0].isdigit():
+            return datetime(2022, 4, 1, 11, 0, 0) - timedelta(minutes=int(date_arr[0])) if date_arr[1] == 'minutes' \
+                else datetime(2022, 4, 1, 11, 0, 0) - timedelta(hours=int(date_arr[0]))
+        return datetime(2022, 4, 1, 11, 0, 0) - (datetime(2022, 4, 1, 11, 0, 0) - datetime.strptime(date_string, '%Y-%m-%dT%H:%M:%S'))
 
     @pytest.mark.parametrize('params, result_phase1, result_phase2, result_phase3, expected_last_run_phase1, expected_last_run_phase2, new_incidents, index', [
         (
@@ -6834,6 +7639,8 @@ class TestFetchWithLookBack:
         self.LAST_RUN = {}
         incidents = self.INCIDENTS[:]
 
+        mocker.patch.object(CommonServerPython, 'get_current_time', return_value=datetime(2022, 4, 1, 11, 0, 0))
+        mocker.patch.object(dateparser, 'parse', side_effect=self.mock_dateparser)
         mocker.patch.object(demisto, 'params', return_value=params)
         mocker.patch.object(demisto, 'getLastRun', return_value=self.LAST_RUN)
         mocker.patch.object(demisto, 'setLastRun', side_effect=self.set_last_run)
@@ -7176,7 +7983,7 @@ class TestSendEventsToXSIAMTest:
             return "url"
 
     @pytest.mark.parametrize('events_use_case', [
-        'json_events', 'text_list_events', 'text_events', 'cef_events'
+        'json_events', 'text_list_events', 'text_events', 'cef_events', 'json_zero_events'
     ])
     def test_send_events_to_xsiam_positive(self, mocker, events_use_case):
         """
@@ -7186,39 +7993,60 @@ class TestSendEventsToXSIAMTest:
             Case b: a list containing strings representing events.
             Case c: a string representing events (separated by a new line).
             Case d: a string representing events (separated by a new line).
+            Case e: an empty list of events.
 
         When:
             Case a: Calling the send_events_to_xsiam function with no explicit data format specified.
             Case b: Calling the send_events_to_xsiam function with no explicit data format specified.
             Case c: Calling the send_events_to_xsiam function with no explicit data format specified.
             Case d: Calling the send_events_to_xsiam function with a cef data format specification.
+            Case e: Calling the send_events_to_xsiam function with no explicit data format specified.
 
-        Then:
-            Case a: Ensure the events data was compressed correctly and that the data format was automatically identified
-            as json.
-            Case b: Ensure the events data was compressed correctly and that the data format was automatically identified
-            as text.
-            Case c: Ensure the events data was compressed correctly and that the data format was automatically identified
-            as text.
-            Case c: Ensure the events data was compressed correctly and that the data format remined as cef.
+        Then ensure that:
+            Case a:
+                - The events data was compressed correctly
+                - The data format was automatically identified as json.
+                - The number of events reported to the module health equals to number of events sent to XSIAM - 2
+            Case b:
+                - The events data was compressed correctly
+                - The data format was automatically identified as text.
+                - The number of events reported to the module health equals to number of events sent to XSIAM - 2
+            Case c:
+                - The events data was compressed correctly
+                - The data format was automatically identified as text.
+                - The number of events reported to the module health equals to number of events sent to XSIAM - 2
+            Case d:
+                - The events data was compressed correctly
+                - The data format remained as cef.
+                - The number of events reported to the module health equals to number of events sent to XSIAM - 2
+            Case e:
+                - No request to XSIAM API was made.
+                - The number of events reported to the module health - 0
         """
         if not IS_PY3:
             return
 
         from CommonServerPython import BaseClient
         mocker.patch.object(demisto, 'getLicenseCustomField', side_effect=self.get_license_custom_field_mock)
+        mocker.patch.object(demisto, 'updateModuleHealth')
         _http_request_mock = mocker.patch.object(BaseClient, '_http_request', return_value={'error': 'false'})
 
         events = self.test_data[events_use_case]['events']
+        number_of_events = self.test_data[events_use_case]['number_of_events']
         data_format = self.test_data[events_use_case].get('format')
 
         send_events_to_xsiam(events=events, vendor='some vendor', product='some product', data_format=data_format)
 
-        expected_format = self.test_data[events_use_case]['expected_format']
-        expected_data = self.test_data[events_use_case]['expected_data']
+        if number_of_events:
+            expected_format = self.test_data[events_use_case]['expected_format']
+            expected_data = self.test_data[events_use_case]['expected_data']
+            arguments_called = _http_request_mock.call_args[1]
+            decompressed_data = gzip.decompress(arguments_called['data']).decode("utf-8")
 
-        arguments_called = _http_request_mock.call_args[1]
-        decompressed_data = gzip.decompress(arguments_called['data']).decode("utf-8")
+            assert arguments_called['headers']['format'] == expected_format
+            assert decompressed_data == expected_data
+        else:
+            assert _http_request_mock.call_count == 0
 
-        assert arguments_called['headers']['format'] == expected_format
-        assert decompressed_data == expected_data
+        demisto.updateModuleHealth.assert_called_with({'eventsPulled': number_of_events})
+

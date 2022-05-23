@@ -833,7 +833,7 @@ def format_domain_data(domains: List[Dict[str, Any]]) -> List[CommandResults]:
                 updated_date=whois.get('updatedDate'),
                 expiration_date=whois.get('registryExpiryDate'),
                 name_servers=whois.get('nameServers'),
-                domain_status=domain_statuses[0],
+                domain_status=domain_statuses[0] if domain_statuses else [],
                 organization=admin.get('organization'),
                 admin_name=admin.get('name'),
                 admin_email=admin.get('emailAddress'),
