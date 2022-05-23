@@ -24,7 +24,7 @@ def main():
         elif data_encoding != 'raw':
             raise ValueError(f'Invalid data encoding name: {data_encoding}')
 
-        return_results(fileResult(filename, data))  # noqa
+        return_results(fileResult(filename, data))
     except Exception as e:
         return_error(str(e) + "\n\nTrace:\n" + traceback.format_exc())
 

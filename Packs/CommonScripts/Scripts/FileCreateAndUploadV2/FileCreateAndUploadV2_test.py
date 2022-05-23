@@ -8,7 +8,7 @@ def side_effect_sys_exit(code):
 
 
 def test_main(mocker):
-    from FileCreateAndUploadPy import main
+    from FileCreateAndUploadV2 import main
 
     mocker.patch.object(sys, 'exit', side_effect=side_effect_sys_exit)
 
