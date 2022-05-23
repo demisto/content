@@ -41,9 +41,4 @@ def test_main(mocker):
 
         results = demisto.results.call_args[0][0]
         contents = results['Contents']
-        """
-        if json.dumps(contents) != json.dumps(t['contents']):
-            print(json.dumps(t['contents']))
-            print(json.dumps(contents))
-        """
         assert json.dumps(contents) == json.dumps(t['contents'])
