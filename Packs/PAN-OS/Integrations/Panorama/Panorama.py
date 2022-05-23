@@ -10701,9 +10701,9 @@ def commit(topology: Topology, device_filter_string: Optional[str] = None) -> Li
 
 def push_all(
         topology: Topology,
-        device_filter_string: str = None,
-        device_group_filter: List[str] = None,
-        template_stack_filter: List[str] = None
+        device_filter_string: Optional[str] = None,
+        device_group_filter: Optional[str] = None,
+        template_stack_filter: Optional[str] = None
 ) -> List[PushStatus]:
     """
     Push the configuration to all the device groups and template-stacks in the environment.
@@ -10716,8 +10716,8 @@ def push_all(
     return PanoramaCommand.push_all(
         topology,
         device_filter_string,
-        device_group_filter=device_group_filter,
-        template_stack_filter=template_stack_filter
+        device_group_filter=argToList(device_group_filter),
+        template_stack_filter=argToList(template_stack_filter)
     )
 
 
