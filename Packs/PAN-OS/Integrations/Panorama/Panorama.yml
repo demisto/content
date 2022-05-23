@@ -8152,13 +8152,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: List of device group names to push configuration to.
+      description: List of device group names to push configuration to. If specified, only these device groups will be pushed.
       isArray: true
       name: device_group_filter
       required: false
       secret: false
     - default: false
-      description: List of template stack names to push configuration to.
+      description: List of template stack names to push configuration to. If specified, only these templates will be pushed.
       isArray: true
       name: template_stack_filter
       required: false

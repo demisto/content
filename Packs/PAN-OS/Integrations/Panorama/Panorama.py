@@ -8818,7 +8818,7 @@ class HygieneRemediation:
 
     @staticmethod
     def get_all_rules_in_container(container: Union[Panorama, Firewall, DeviceGroup, Template, Vsys],
-                                   object_class: object):
+                                   object_class: Any):
         firewall_rulebase = Rulebase()
         pre_rulebase = PreRulebase()
         post_rulebase = PostRulebase()
@@ -9624,7 +9624,8 @@ class PanoramaCommand:
         """
         result = []
         if style == "device group":
-            commit_groups = PanoramaCommand.get_device_groups(topology, resolve_host_id(device))
+            commit_groups: Union[List[DeviceGroupInformation], List[TemplateStackInformation]] = \
+                PanoramaCommand.get_device_groups(topology, resolve_host_id(device))
             commit_group_names = set([x.name for x in commit_groups])
         elif style == "template stack":
             commit_groups = PanoramaCommand.get_template_stacks(topology, resolve_host_id(device))

@@ -1810,7 +1810,7 @@ class TestPanoramaCommand:
         assert result[0].name == "test-dg"
 
         assert result
-        assert result[1].commit_type == "template-stack"
+        assert result[1].commit_type == "templatestack"
         assert result[1].name == "test-template"
 
         assert len(result) == 2
@@ -1825,7 +1825,7 @@ class TestPanoramaCommand:
         # Same as above, but with onl template_stacks
         result = PanoramaCommand.push_all(mock_topology, template_stack_filter=["test-template"])
         assert result
-        assert result[0].commit_type == "template-stack"
+        assert result[0].commit_type == "templatestack"
         assert result[0].name == "test-template"
         assert len(result) == 1
 
