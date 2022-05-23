@@ -49,4 +49,6 @@ Packs/**/report_pytest.json
 # coverage related
 /coverage_report
 .coverage
-Packs/CloudflareWAF/Integrations/CloudflareWAF/command_example.txt
+
+# devcontainer folders
+.devcontainer
