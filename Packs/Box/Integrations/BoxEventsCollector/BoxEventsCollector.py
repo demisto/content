@@ -193,7 +193,6 @@ def _decrypt_private_key(app_auth: AppAuth):
 
 
 def main(command: str, demisto_params: dict):
-    demisto.debug('Test Darya')
     box_credentials = BoxCredentials.parse_raw(
         demisto_params['credentials_json']['password']
     )
