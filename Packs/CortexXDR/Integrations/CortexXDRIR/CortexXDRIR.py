@@ -191,7 +191,6 @@ class Client(CoreClient):
 
         return filtered_incidents
 
-
     def get_incidents(self, incident_id_list=None, lte_modification_time=None, gte_modification_time=None,
                       lte_creation_time=None, gte_creation_time=None, status=None, starred=None,
                       starred_incidents_fetch_window=None, sort_by_modification_time=None, sort_by_creation_time=None,
@@ -1234,7 +1233,8 @@ class Client(CoreClient):
 
     @logger
     def run_script(self,
-                   script_uid: str, endpoint_ids: list, parameters: Dict[str, Any], timeout: int, incident_id: Optional[int],
+                   script_uid: str, endpoint_ids: list, parameters: Dict[str, Any], timeout: int,
+                   incident_id: Optional[int],
                    ) -> Dict[str, Any]:
         filters: list = [{
             'field': 'endpoint_id_list',
@@ -1995,7 +1995,8 @@ def get_endpoints_by_status_command(client: Client, args: Dict) -> CommandResult
         arg_name='last_seen_lte'
     )
 
-    endpoints_count, raw_res = client.get_endpoints_by_status(status, last_seen_gte=last_seen_gte, last_seen_lte=last_seen_lte)
+    endpoints_count, raw_res = client.get_endpoints_by_status(status, last_seen_gte=last_seen_gte,
+                                                              last_seen_lte=last_seen_lte)
 
     ec = {'status': status, 'count': endpoints_count}
 
