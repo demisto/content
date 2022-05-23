@@ -799,7 +799,9 @@ class XSIAMBuild(Build):
             with open(output_file, "w") as outfile:
                 subprocess.run(cmd.split(), stdout=outfile, stderr=outfile)
             try:
-                response_data, response_code, _ = demisto_client.generic_request_func(
+                # We are syncing marketplace since we are copying custom bucket to existing bucket and if new packs
+                # was added, they will not appear on XSIAM marketplace without sync.
+                _ = demisto_client.generic_request_func(
                     self=server.client, method='POST',
                     path='/contentpacks/marketplace/sync')
             except Exception as e:
