@@ -27,6 +27,7 @@ import string
 from apiclient import discovery
 from oauth2client import service_account
 import itertools as it
+import concurrent.futures
 
 ''' GLOBAL VARS '''
 ADMIN_EMAIL = None
@@ -1175,8 +1176,15 @@ def search(user_id, subject='', _from='', to='', before='', after='', filename='
             result = {}
         else:
             raise
+    entries = []
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        futures = []
+        for mail in result.get('messages', []):
+            futures.append(executor.submit(get_mail, user_id=user_id, _id=mail['id'], _format='full'))
 
-    return [get_mail(user_id, mail['id'], 'full') for mail in result.get('messages', [])], q
+        entries = [future.result() for future in concurrent.futures.as_completed(futures)]
+
+    return entries, q
 
 
 def get_mail_command():
