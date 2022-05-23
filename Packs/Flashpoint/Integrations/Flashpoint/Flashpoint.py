@@ -10,7 +10,7 @@ from typing import Dict, Tuple, List, Any
 requests.packages.urllib3.disable_warnings()
 
 """ CONSTANTS """
-INTEGRATION_VERSION = "v1.2.0"
+INTEGRATION_VERSION = "v1.3.2"
 INTEGRATION_PLATFORM = "XSOAR Cortex"
 FIRST_FETCH = "3 days"
 MAX_FETCH = 15
@@ -31,7 +31,7 @@ FILTER_DATE_VALUES = ['created_at', 'first_observed_at']
 DATE_OBSERVED = "Date Observed (UTC)"
 STRING_FORMAT = "[{}]({})"
 TIME_OBSERVED = "Observed time (UTC)"
-QUERY = r'+type:("ip-src","ip-dst") +value.\*:"'
+QUERY = r'+type:("ip-src","ip-dst","ip-dst|port") +value.\*:"'
 HR_TITLE = '### Flashpoint IP address reputation for '
 REPUTATION_MALICIOUS = 'Reputation: Malicious\n\n'
 TABLE_TITLE = 'Events in which this IOC observed'
@@ -995,7 +995,8 @@ def ip_lookup_command(client, ip):
                               [DATE_OBSERVED, 'Name', 'Tags'])
 
         # Constructing FP Deeplink
-        fp_link = client.url + '/home/search/iocs?group=indicator&ioc_type=ip-dst%2Cip-src&ioc_value=' + ip
+        fp_link = \
+            client.url + '/home/search/iocs?group=indicator&ioc_type=ip-dst%2Cip-src%2Cip-dst%7Cport&ioc_value=' + ip
         hr += ALL_DETAILS_LINK.format(fp_link, fp_link)
         dbot_score = Common.DBotScore(
             indicator=ip,
@@ -1241,8 +1242,8 @@ def filename_lookup_command(client, filename):
         hr += tableToMarkdown(TABLE_TITLE, events_details['events'],
                               [DATE_OBSERVED, 'Name', 'Tags'])
 
-        fp_link = client.url + '/home/search/iocs?group=indicator&ioc_type=filename&ioc_value=' + urllib.parse.quote(
-            filename.replace('\\', '\\\\').encode('utf8'))
+        fp_link = client.url + '/home/search/iocs?query_i18n=en&query=%22' + urllib.parse.quote(
+            filename.replace('\\', '\\\\').encode('utf8')) + '%22'
         hr += ALL_DETAILS_LINK.format(fp_link, fp_link)
 
         dbot_context = {
@@ -1310,7 +1311,7 @@ def url_lookup_command(client, url):
     """
     encoded_url = urllib.parse.quote(url.encode('utf8'))
 
-    query = r'+type:("url") +value.\*.keyword:"' + url + '"'
+    query = r'+type:("url") +value.\*:"' + url + '"'
     resp = client.http_request("GET", url_suffix=get_url_suffix(query))
 
     if isinstance(resp, list):
@@ -1328,7 +1329,7 @@ def url_lookup_command(client, url):
         hr += tableToMarkdown(TABLE_TITLE, events_details['events'],
                               [DATE_OBSERVED, 'Name', 'Tags'])
 
-        fp_link = client.url + '/home/search/iocs?group=indicator&ioc_type=url&ioc_value=' + encoded_url
+        fp_link = client.url + '/home/search/iocs?query_i18n=en&query=%22' + encoded_url + '%22'
         hr += ALL_DETAILS_LINK.format(fp_link, fp_link)
 
         dbot_score = Common.DBotScore(
@@ -1542,8 +1543,8 @@ def email_lookup_command(client, email):
         hr += tableToMarkdown(TABLE_TITLE, events_details['events'],
                               [DATE_OBSERVED, 'Name', 'Tags'])
 
-        fp_link = client.url + '/home/search/iocs?group=indicator&ioc_type=email-dst%2Cemail-src%2Cemail-src' \
-                               '-display-name%2Cemail-subject&ioc_value=' + urllib.parse.quote(email.encode('utf8'))
+        fp_link = \
+            client.url + '/home/search/iocs?query_i18n=en&query=%22' + urllib.parse.quote(email.encode('utf8')) + '%22'
         hr += ALL_DETAILS_LINK.format(fp_link, fp_link)
 
         email_context = {
@@ -1638,7 +1639,7 @@ def common_lookup_command(client, indicator_value):
         hr += tableToMarkdown(TABLE_TITLE, events_details['events'],
                               [DATE_OBSERVED, 'Name', 'Tags'])
 
-        fp_link = client.url + '/home/search/iocs?group=indicator&ioc_value=' + encoded_value
+        fp_link = client.url + '/home/search/iocs?query_i18n=en&query=%22' + encoded_value + '%22'
         hr += ALL_DETAILS_LINK.format(fp_link, fp_link)
 
         ec = {'DBotScore': {
