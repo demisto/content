@@ -77,6 +77,13 @@ FIND_SANDBOX_REPORTS_HASH_CONTEXT = {
     }
 }
 
+FIND_SANDBOX_REPORTS_NOT_FOUND_HASH_CONTEXT = {
+    'csfalconx.resource(val.id && val.id == obj.id)': {
+        'resources': [],
+        'FindReport': [{'sha256': 'hash1', 'reportIds': []}]
+    }
+}
+
 FIND_SUBMISSION_ID_CONTEXT = {
     'csfalconx.resource(val.id && val.id == obj.id)':
         {

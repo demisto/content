@@ -119,8 +119,13 @@ class Pack(object):
 
     @property
     def name(self):
-        """ str: pack root folder name.
+        """ str: pack name.
         """
+        return self._pack_name
+
+    def id(self):
+        """ str: pack root folder name.
+                """
         return self._pack_name
 
     @property
@@ -661,6 +666,8 @@ class Pack(object):
               Case 2: The dependency is missing from the index.zip since it is a new pack. In this case, handle missing
                 dependency - This means we mark this pack as 'missing dependency', and once the new index.zip is
                 created, and therefore it contains the new pack, we call this function again, and hitting case 1.
+              Case 3: The dependency is of a pack that is not a part of this marketplace. In this case, we ignore this
+              dependency.
         Args:
             index_folder_path (str): full path to download index folder.
             packs_dict (dict): dict of all packs relevant for current marketplace, as {pack_id: pack_object}.
@@ -682,12 +689,16 @@ class Pack(object):
                 with open(dependency_metadata_path, 'r') as metadata_file:
                     dependency_metadata = json.load(metadata_file)
                     dependencies_metadata_result[dependency_pack_id] = dependency_metadata
-            else:
+            elif dependency_pack_id in packs_dict:
                 # Case 2: the dependency is not in the index since it is a new pack
                 self._is_missing_dependencies = True
                 logging.warning(f"{self._pack_name} pack dependency with id {dependency_pack_id} "
                                 f"was not found in index, marking it as missing dependencies - to be resolved in "
                                 f"next iteration over packs")
+            else:
+                # Case 3: the dependency is not a part of this marketplace
+                logging.warning(f"{self._pack_name} pack dependency with id {dependency_pack_id} "
+                                f"is not part of this marketplace, ignoring this dependency")
 
         return dependencies_metadata_result, self._is_missing_dependencies
 
@@ -2038,7 +2049,7 @@ class Pack(object):
             build_number (str): circleCI build number.
             commit_hash (str): current commit hash.
             statistics_handler (StatisticsHandler): The marketplace statistics handler
-            packs_dict (dict): dict of all packs relevant for current marketplace, as {pack_id: pack_object}.
+            packs_dict (dict): dict of all packs relevant for current marketplace, as {pack_name: pack_object}.
             marketplace (str): Marketplace of current upload.
             format_dependencies_only (bool): Indicates whether the metadata formation is just for formatting the
              dependencies or not.
