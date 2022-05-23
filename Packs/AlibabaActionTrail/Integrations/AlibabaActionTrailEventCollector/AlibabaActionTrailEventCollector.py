@@ -14,6 +14,16 @@ API_VERSION = '0.6.0'
 urllib3.disable_warnings()
 
 
+class AlibabaParams(BaseModel):
+    from_: str = Field(alias='from')
+    to: int
+    type: str = 'log'
+    offset: int = 0
+    reverse: bool = False
+    powerSql: bool = False
+    query: str
+
+
 class AlibabaEventsClient(IntegrationEventsClient):
     def __init__(self, request: IntegrationHTTPRequest, options: IntegrationOptions, access_key: str,
                  access_key_id: str, logstore_name: str):
@@ -25,8 +35,18 @@ class AlibabaEventsClient(IntegrationEventsClient):
     def set_request_filter(self, after: Any):
         from_time = int(after)
 
-        self.request.params['from'] = from_time + 1
-        self.request.params['to'] = from_time + 3600
+        self.request.params.from_ = from_time + 1
+        self.request.params.to = from_time + 3600
+
+    def call(self, request: IntegrationHTTPRequest) -> requests.Response:
+        try:
+            response = self.session.request(**self.request.dict(by_alias=True))
+            response.raise_for_status()
+            return response
+        except Exception as exc:
+            msg = f'something went wrong with the http call {exc}'
+            demisto.debug(msg)
+            raise DemistoException(msg) from exc
 
     def prepare_request(self):
         headers = self.request.headers
@@ -34,7 +54,7 @@ class AlibabaEventsClient(IntegrationEventsClient):
         del headers['x-log-date']
         headers['Date'] = datetime.utcnow().strftime('%a, %d %b %Y %H:%M:%S GMT')
 
-        signature = get_request_authorization(f'/logstores/{self.logstore_name}', self.access_key, self.request.params,
+        signature = get_request_authorization(f'/logstores/{self.logstore_name}', self.access_key, self.request.params.dict(by_alias=True),
                                               headers)
         headers['Authorization'] = "LOG " + self.access_key_id + ':' + signature
         headers['x-log-date'] = headers['Date']
@@ -156,18 +176,14 @@ def main():
 
     params = {'from': from_,
               'to': from_ + 3600,
-              'type': 'log',
-              'offset': 0,
-              'reverse': False,
-              'powerSql': False,
               'query': query}
 
     demisto_params['method'] = Method.GET
     demisto_params['url'] = f'http://{project_name}.{endpoint}:80/logstores/{logstore_name}'
     demisto_params['headers'] = headers
-    demisto_params['params'] = params
 
     request = IntegrationHTTPRequest(**demisto_params)
+    request.params = AlibabaParams.parse_obj(params)
 
     options = IntegrationOptions.parse_obj(demisto_params)
 
