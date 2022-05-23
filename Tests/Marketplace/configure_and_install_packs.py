@@ -16,7 +16,7 @@ def options_handler():
     # disable-secrets-detection-start
     parser = argparse.ArgumentParser(description='Utility for instantiating integration instances')
     parser.add_argument('--ami_env', help='The AMI environment for the current run. Options are '
-                                          '"Server 6.1", "Server 6.2", "Server Master", "XSIAM Master"'
+                                          '"Server 6.2", "Server Master", "XSIAM Master"'
                                           'The server url is determined by the AMI environment.',
                         default="Server Master")
     parser.add_argument('-s', '--secret', help='Path to secret conf file')
@@ -154,7 +154,9 @@ def main():
         elif options.override_all_packs:
             xsoar_configure_and_install_all_packs(options, branch_name, build_number)
         else:
-            xsoar_configure_and_install_flow(options, branch_name, build_number)
+            # Hot Fix: Upload flow failed when trying to install packs that has fromversion above 6.2
+            # CIAC-2626 issue in jira
+            xsoar_configure_and_install_all_packs(options, branch_name, build_number)
 
     except Exception as e:
         logging.error(f'Failed to configure and install packs: {e}')
