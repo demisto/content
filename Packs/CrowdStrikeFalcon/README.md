@@ -1,5 +1,6 @@
 CrowdStrike Falcon is one of the leaders in the Endpoint Protection Platform (EPP) market.
-This SaaS platform provides a holistic solution for protecting enterprise assets ( Such as servers and endpoints) and stopping different types of attacks/threats aiming to impact your organization. Moreover, the platform provides real-time response actions, vulnerability assessment, and other security-wise features.
+This SaaS platform provides a holistic solution for protecting enterprise assets (such as servers and endpoints) and stopping different types of attacks/threats aiming to impact your organization. Moreover, the platform provides real-time response actions, vulnerability assessment, and other security-wise features.
+
 
 ## What does this pack do?
 - Enable incident mirroring between Cortex XSOAR incidents and CrowdStrike Falcon incidents or detections
