@@ -24,7 +24,6 @@ main(){
 	check_dependencies "$os" "${dependencies[@]}"
 	echo "✓ All dependencies met."
 
-
 	root_repo=$(get_repo_root)
 	echo "✓ Found git repository in '$root_repo'."
 
@@ -38,8 +37,6 @@ main(){
 	create_adopt_branch "$branch"
 	echo "✓ Branch created."
 
-
-	echo "$option" "$pack_path" "$branch" "$os"
 	adopt "$option" "$pack_path" "$branch" "$os"
 
 	reset_env "$init_branch" "$init_wd"

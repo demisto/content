@@ -91,6 +91,7 @@ install_sdk(){
 		echo "✓ demisto-sdk installed successfully."
 	else
 		echo "✗ Error installing demisto-sdk. Scroll up to see error message. If you have a problem installing it, report it https://github.com/demisto/demisto-sdk/issues"
+		exit 1
 	fi					
 }
 
@@ -170,18 +171,12 @@ get_branch(){
 # Globals:
 #   None
 # Arguments:
-#   $1: Path to Pack README
-#   $2: Path to Pack release note
-#   $3: Path to Pack metadata
+#   $1: Option
 #######################################
 commit(){
 
-	readme=$1
-	release_note=$2
-	pack_metadata=$3
-
-	git add "$readme" "$release_note" "$pack_metadata" &> /dev/null
-	git commit -m "$pack_name adoption started" &> /dev/null
+	git add . &> /dev/null
+	git commit -m "$pack_name adoption $1" &> /dev/null
 
 }
 
@@ -322,8 +317,6 @@ add_msg_to_rn(){
 		message="- Started Adoption process."
 	fi
 
-	echo "$message, $os, $rn"
-
 	if [ "$os" == "Mac OS" ] 
 	then
 		sed -i '' "2s/.*/$message/" "$rn"
@@ -339,15 +332,52 @@ add_msg_to_rn(){
 # Globals:
 #   None
 # Arguments:
-#   $1: Pack path
+#   $1: Path to pack_metadata
 #######################################
 get_pack_email(){
-
-	pack_metadata="$1"
-	email=$(jq -r '.email' "$pack_metadata")
+	
+	email=$(jq -r '.email' "$1")
 
 	echo "$email"
 
+}
+
+#######################################
+# Set Pack email
+# Globals:
+#   None
+# Arguments:
+#   $1: Path to pack_metadata
+#######################################
+set_pack_email(){
+
+	pack_metadata="$1"
+	echo -n "Enter the email to your support site: "
+	read -r email
+
+	jq ". | select(.email) .email=\"$email\"" "$pack_metadata" > "${pack_metadata}.bak" && rm "$pack_metadata" && mv "${pack_metadata}.bak" "$pack_metadata" &> /dev/null
+	echo "✓ Email field set in pack_metadata.json."
+
+}
+
+#######################################
+# Get Author Image
+# Globals:
+#   None
+# Arguments:
+#   $1: Pack path
+#######################################
+get_author_image(){
+
+	pack_dir="$1"
+	echo -n "Enter a URL to download the author image. If you do not have a URL, just press enter and make sure to add it manually according to https://xsoar.pan.dev/docs/packs/packs-format#author_imagepng: "
+	read -r author_image_url
+	if [ -n "$author_image_url" ] 
+	then
+		echo "Attempting to download image from $author_image_url..."
+		wget --no-check-certificate --quiet -O "$pack_dir/Author_image.png" "$author_image_url"
+		echo "✓ Author image downloaded to '$pack_dir/Author_image.png'"
+	fi
 }
 
 #######################################
@@ -363,6 +393,24 @@ get_pack_version(){
 	version=$(jq '.currentVersion' "$pack_metadata")
 
 	echo "$version"
+
+}
+
+#######################################
+# Set URL to pack_metadata
+# Globals:
+#   None
+# Arguments:
+#   $1: Path to pack_metadata
+#######################################
+set_url(){
+
+	pack_metadata="$1"
+	echo -n "Enter a URL to your support site: "
+	read -r url
+
+	jq ". | select(.url) .url=\"$url\"" "$pack_metadata" > "${pack_metadata}.bak" && rm "$pack_metadata" && mv "${pack_metadata}.bak" "$pack_metadata" &> /dev/null
+	echo "✓ URL field set in pack_metadata.json."
 
 }
 
@@ -406,18 +454,20 @@ adopt() {
 	echo "✓ Release note '$release_note_name' updated."
 
 	# Add message to README
-	# TODO when completion is selected, need to create an interactive prompt to fill out pack_metadata
 	if [[ "$option" == "start" ]]; then
 		message="Note: Support for this Pack will be moved to Partner starting $(get_move_date)."
 	else
+		set_url "$pack_metadata"
+		set_pack_email "$pack_metadata"
 		support_email=$(get_pack_email "$pack_metadata")
+		get_author_image "$dir"
 		message="Note: Support for this Pack was moved to Partner starting $(get_today_date). In case of any issues arise, please contact the Partner directly at $support_email."
 	fi
 
 	add_msg_to_readme "$readme" "$message"
 	echo "✓ Adoption $option message added to README.md"
 
-	commit "$readme" "$release_note" "$pack_metadata"
+	commit "$option"
 	echo "✓ Changes committed."
 
 	pr_url=$(push "$branch")
