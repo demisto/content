@@ -321,7 +321,7 @@ class Client(BaseClient):
             users.append(user)
         return users
 
-   @staticmethod
+    @staticmethod
     def get_apps_context(raw_apps):
         apps = []
         raw_apps = raw_apps if isinstance(raw_apps, list) else [raw_apps]
@@ -1214,7 +1214,7 @@ def assign_group_to_app_command(client, args):
     if not group_id:
         group_id = client.get_group_id(args.get('groupName'))
         if group_id is None:
-            raise Exception("Either group name not found or multiple groups include this name.")
+            raise ValueError('Either group name not found or multiple groups include this name.')
     app_id = client.get_app_id(args.get('appName'))
     raw_response = client.assign_group_to_app(group_id, app_id)
     readable_output = f"Group: {args.get('groupName')} added to PA App successfully"
@@ -1227,8 +1227,6 @@ def assign_group_to_app_command(client, args):
 
 def create_group_command(client, args):
 
-    if not (args.get('name')):
-        raise Exception("You must supply a group name")
     profile = client.build_group_profile(args)
     raw_response = client.create_group(profile)
     group_context = client.get_groups_context(raw_response)
