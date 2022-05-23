@@ -1,9 +1,9 @@
 commonfields:
-  id: CTIX
+  id: CTIXv3
   version: -1
 fromversion: 5.0.0
-name: CTIX
-display: CTIX
+name: CTIXv3
+display: CTIXv3
 category: Data Enrichment & Threat Intelligence
 description: This is Cyware Threat Intelligence eXhange(CTIX) integration which enriches IP/Domain/URL/File Data.
 detaileddescription: |-
