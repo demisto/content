@@ -141,7 +141,9 @@ To setup the mirroring follow these instructions:
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### xdr-get-incidents
+
 ***
 Returns a list of incidents, which you can filter by a list of incident IDs (max. 100), the time the incident was last modified, and the time the incident was created.
 If you pass multiple filtering arguments, they will be concatenated using the AND condition. The OR condition is not supported.
