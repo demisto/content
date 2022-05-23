@@ -11,9 +11,11 @@ you are implementing with your integration
 """
 
 import pytest
+from freezegun import freeze_time
+from datetime import datetime
 import json
 import io
-from SaasSecurityEventCollector import Client
+from SaasSecurityEventCollector import Client, SAAS_SECURITY_DATE_FORMAT
 
 
 @pytest.fixture
@@ -54,3 +56,24 @@ def test_module(mocker, mock_client, mocked_response):
     from SaasSecurityEventCollector import test_module
     mocker.patch.object(Client, 'http_request', return_value=mocked_response)
     assert test_module(client=mock_client) == 'ok'
+
+
+def test_get_events_command():
+    pass
+
+
+def start_freeze_time(timestamp):
+    _start_freeze_time = freeze_time(timestamp)
+    _start_freeze_time.start()
+    return datetime.now()
+
+
+class TestFetchEvents:
+
+    LAST_RUN = {}
+
+    def set_last_run(self, new_last_run):
+        self.LAST_RUN = new_last_run
+
+    def test_fetch_events(self):
+        pass
