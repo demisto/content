@@ -8818,7 +8818,16 @@ class HygieneRemediation:
 
     @staticmethod
     def get_all_rules_in_container(container: Union[Panorama, Firewall, DeviceGroup, Template, Vsys],
-                                   object_class: Any):
+                                   object_class: Union[SecurityRule, NatRule]):
+        """
+        Given a container (DG/template) and the class representing a type of rule object in pan-os-python, gets all the
+        associated objects.
+        :param container: Device group or template
+        :param object_class: The pan-os-python class of objects to retrieve
+        """
+        if object_class not in [SecurityRule, NatRule]:
+            raise ValueError(f"Given class {object_class} cannot be retrieved by this function.")
+
         firewall_rulebase = Rulebase()
         pre_rulebase = PreRulebase()
         post_rulebase = PostRulebase()
@@ -8908,6 +8917,18 @@ class HygieneRemediation:
 class ObjectGetter:
     """Retrieves objects from the PAN-OS configuration"""
 
+    supported_object_types = {
+        "AddressObject": AddressObject,
+        "AddressGroup": AddressGroup,
+        "ServiceObject": ServiceObject,
+        "ServiceGroup": ServiceGroup,
+        "ApplicationObject": ApplicationObject,
+        "ApplicationGroup": ApplicationGroup,
+        "SecurityProfileGroup": SecurityProfileGroup,
+        "SecurityRule": SecurityRule,
+        "NatRule": NatRule,
+    }
+
     @staticmethod
     def get_object_reference(
             topology: Topology,
@@ -8928,18 +8949,8 @@ class ObjectGetter:
         :param object_name: The name of the object to find; can be regex if use_regex is set
         :param use_regex: Whether we should use regex matching for the object_name
         """
-        supported_object_types = {
-            "AddressObject": AddressObject,
-            "AddressGroup": AddressGroup,
-            "ServiceObject": ServiceObject,
-            "ServiceGroup": ServiceGroup,
-            "ApplicationObject": ApplicationObject,
-            "ApplicationGroup": ApplicationGroup,
-            "SecurityProfileGroup": SecurityProfileGroup,
-            "SecurityRule": SecurityRule,
-            "NatRule": NatRule,
-        }
-        object_class = supported_object_types.get(object_type, None)
+
+        object_class = ObjectGetter.supported_object_types.get(object_type)
         if not object_class:
             raise DemistoException(f"Object type {object_type} is not gettable with this integration.")
 
