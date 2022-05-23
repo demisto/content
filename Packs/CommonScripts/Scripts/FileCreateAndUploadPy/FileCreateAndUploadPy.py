@@ -6,9 +6,9 @@ from CommonServerPython import *  # noqa: F401
 
 def main():
     args = demisto.args()
-    filename = args.get('filename') or ''
-    data = args.get('data') or ''
-    data_encoding = args.get('data_encoding') or 'raw'
+    filename = args.get('filename', '')
+    data = args.get('data', '')
+    data_encoding = args.get('data_encoding', 'raw')
     entdy_id = args.get('entryId')
 
     try:
