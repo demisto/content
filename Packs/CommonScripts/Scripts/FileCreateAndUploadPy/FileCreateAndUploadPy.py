@@ -15,19 +15,16 @@ def main():
         if entdy_id:
             res = demisto.executeCommand('getEntry', {'id': entdy_id})
             if is_error(res):
-                demisto.results(res)  # noqa
-                sys.exit(0)
+                raise DemistoException(get_error(res))
 
             data = demisto.get(res[0], 'Contents')
 
-        if data_encoding == 'raw':
-            pass
-        elif data_encoding == 'base64':
+        if data_encoding == 'base64':
             data = base64.b64decode(data)
-        else:
+        elif data_encoding != 'raw':
             raise ValueError(f'Invalid data encoding name: {data_encoding}')
 
-        demisto.results(fileResult(filename, data))  # noqa
+        return_results(fileResult(filename, data))  # noqa
     except Exception as e:
         return_error(str(e) + "\n\nTrace:\n" + traceback.format_exc())
 

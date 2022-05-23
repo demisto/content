@@ -1,7 +1,7 @@
 commonfields:
-  id: FileCreateAndUploadPy
+  id: FileCreateAndUploadV2
   version: -1
-name: FileCreateAndUploadPy
+name: FileCreateAndUploadV2
 script: ''
 type: python
 tags:
