@@ -1,6 +1,6 @@
 {
-    "name": "MySQL Enterprise",
-    "description": "MySQL Enterprise Pack",
+    "name": "DaryaSQL Enterprise",
+    "description": "DaryaSQL Enterprise Pack",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
