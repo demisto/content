@@ -8,7 +8,3 @@ ignore=RM106
 [file:AzureCompute_v2_image.png]
 ignore=IM111
 
-[known_words]
-azure-vm-get-nic-details
-azure-vm-get-public-ip-details
-azure-vm-create-nic
