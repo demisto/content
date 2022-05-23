@@ -12,3 +12,7 @@ If you are using the integration to rasterize un-trusted URLs or HTML content, s
 ```
 --disable-auto-reload,[--disable-dev-shm-usage]
 ```
+
+
+---
+[View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/rasterize)

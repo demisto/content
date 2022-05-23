@@ -1,21 +1,25 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
-
-from selenium import webdriver
-from selenium.common.exceptions import NoSuchElementException, InvalidArgumentException, TimeoutException
-from PyPDF2 import PdfFileReader
-from pdf2image import convert_from_path
-import numpy as np
-from PIL import Image
-import tempfile
-from io import BytesIO
 import base64
-import time
-import subprocess
-import traceback
-import re
 import os
+import re
+import subprocess
+import tempfile
+import time
+import traceback
+from io import BytesIO
+
+import demistomock as demisto  # noqa: F401
+import numpy as np
+from CommonServerPython import *  # noqa: F401
+from pdf2image import convert_from_path
+from PIL import Image
+from PyPDF2 import PdfFileReader
+from selenium import webdriver
+from selenium.common.exceptions import (InvalidArgumentException,
+                                        NoSuchElementException,
+                                        TimeoutException)
+
+register_module_line('Rasterize', 'start', __line__())
+
 
 # Chrome respects proxy env params
 handle_proxy()
@@ -155,7 +159,7 @@ def quit_driver_and_reap_children(driver):
 
 
 def rasterize(path: str, width: int, height: int, r_type: str = 'png', wait_time: int = 0,
-              offline_mode: bool = False, max_page_load_time: int = 180):
+              offline_mode: bool = False, max_page_load_time: int = 180, full_screen: bool = False):
     """
     Capturing a snapshot of a path (url/file), using Chrome Driver
     :param offline_mode: when set to True, will block any outgoing communication
@@ -182,10 +186,10 @@ def rasterize(path: str, width: int, height: int, r_type: str = 'png', wait_time
         elif r_type.lower() == 'json':
             html = driver.page_source
             url = driver.current_url
-            output = {'image_b64': base64.b64encode(get_image(driver, width, height)).decode('utf8'),
+            output = {'image_b64': base64.b64encode(get_image(driver, width, height, full_screen)).decode('utf8'),
                       'html': html, 'current_url': url}
         else:
-            output = get_image(driver, width, height)
+            output = get_image(driver, width, height, full_screen)
 
         return output
 
@@ -205,7 +209,7 @@ def rasterize(path: str, width: int, height: int, r_type: str = 'png', wait_time
         quit_driver_and_reap_children(driver)
 
 
-def get_image(driver, width: int, height: int):
+def get_image(driver, width: int, height: int, full_screen: bool):
     """
     Uses the Chrome driver to generate an image out of a currently loaded path
     :return: .png file of the loaded path
@@ -215,7 +219,15 @@ def get_image(driver, width: int, height: int):
     # Set windows size
     driver.set_window_size(width, height)
 
-    image = driver.get_screenshot_as_png()
+    if full_screen:
+        calc_width = driver.execute_script('return document.body.parentNode.scrollWidth')
+        calc_height = driver.execute_script('return document.body.parentNode.scrollHeight')
+        driver.set_window_size(calc_width, calc_height)
+        image = driver.find_element_by_tag_name('html').screenshot_as_png
+        driver.set_window_size(width, height)
+    else:
+        image = driver.get_screenshot_as_png()
+
     driver.quit()
 
     demisto.debug('Capturing screenshot - COMPLETED')
@@ -307,12 +319,14 @@ def rasterize_command():
     wait_time = int(demisto.args().get('wait_time', 0))
     page_load = int(demisto.args().get('max_page_load_time', DEFAULT_PAGE_LOAD_TIME))
     file_name = demisto.args().get('file_name', 'url')
+    full_screen = argToBoolean(demisto.args().get('full_screen', False))
 
     if not (url.startswith('http')):
         url = f'http://{url}'
     file_name = f'{file_name}.{"pdf" if r_type == "pdf" else "png"}'  # type: ignore
 
-    output = rasterize(path=url, r_type=r_type, width=w, height=h, wait_time=wait_time, max_page_load_time=page_load)
+    output = rasterize(path=url, r_type=r_type, width=w, height=h, wait_time=wait_time,
+                       max_page_load_time=page_load, full_screen=full_screen)
     if r_type == 'json':
         return_results(CommandResults(raw_response=output, readable_output="Successfully load image for url: " + url))
         return
@@ -330,12 +344,13 @@ def rasterize_image_command():
     w = args.get('width', DEFAULT_W).rstrip('px')
     h = args.get('height', DEFAULT_H).rstrip('px')
     file_name = args.get('file_name', entry_id)
+    full_screen = argToBoolean(demisto.args().get('full_screen', False))
 
     file_path = demisto.getFilePath(entry_id).get('path')
     file_name = f'{file_name}.pdf'
 
     with open(file_path, 'rb') as f:
-        output = rasterize(path=f'file://{os.path.realpath(f.name)}', width=w, height=h, r_type='pdf')
+        output = rasterize(path=f'file://{os.path.realpath(f.name)}', width=w, height=h, r_type='pdf', full_screen=full_screen)
         res = fileResult(filename=file_name, data=output, file_type=entryTypes['entryInfoFile'])
         demisto.results(res)
 
@@ -348,13 +363,15 @@ def rasterize_email_command():
     r_type = demisto.args().get('type', 'png')
     file_name = demisto.args().get('file_name', 'email')
     html_load = int(demisto.args().get('max_page_load_time', DEFAULT_PAGE_LOAD_TIME))
+    full_screen = argToBoolean(demisto.args().get('full_screen', False))
 
     file_name = f'{file_name}.{"pdf" if r_type.lower() == "pdf" else "png"}'  # type: ignore
     with open('htmlBody.html', 'w') as f:
         f.write(f'<html style="background:white";>{html_body}</html>')
     path = f'file://{os.path.realpath(f.name)}'
 
-    output = rasterize(path=path, r_type=r_type, width=w, height=h, offline_mode=offline, max_page_load_time=html_load)
+    output = rasterize(path=path, r_type=r_type, width=w, height=h, offline_mode=offline,
+                       max_page_load_time=html_load, full_screen=full_screen)
     res = fileResult(filename=file_name, data=output)
     if r_type == 'png':
         res['Type'] = entryTypes['image']
@@ -432,3 +449,5 @@ def main():
 
 if __name__ in ["__builtin__", "builtins", '__main__']:
     main()
+
+register_module_line('Rasterize', 'end', __line__())
