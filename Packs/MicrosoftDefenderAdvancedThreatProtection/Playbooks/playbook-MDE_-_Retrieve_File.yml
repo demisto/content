@@ -1,0 +1,267 @@
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ""
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 8dfc4c78-6835-4e51-8aaa-ce7852cc8049
+    propagationLabels:
+    - all
+    toServerVersion: ""
+description: This playbook uses the Live Response feature in order to retrieve a file
+  from an endpoint.
+id: 30dc7ee1-0b30-4643-8955-f35cf0a8fe65
+inputs:
+- description: File paths to be provided
+  key: paths
+  playbookInputQuery: null
+  required: false
+  value: {}
+name: MDE - Retrieve File
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 94cc3210-9c2d-4a3b-8959-b1f377dccbb0
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 94cc3210-9c2d-4a3b-8959-b1f377dccbb0
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": -140
+        }
+      }
+  "1":
+    continueonerror: true
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      comment:
+        simple: Retrieving file - XSOAR PB ${incident.id}
+      machine_id:
+        simple: ${Endpoint.ID}
+      path:
+        simple: ${inputs.paths}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: 'Collect file from a device. NOTE: Backslashes in path must be
+        escaped.'
+      id: 3a524860-88b6-411d-82b8-dfc9ae5263d8
+      iscommand: true
+      name: Retrieve File From MSDE Live Response
+      script: '|||microsoft-atp-live-response-get-file'
+      type: regular
+      version: -1
+    taskid: 3a524860-88b6-411d-82b8-dfc9ae5263d8
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -60,
+          "y": 185
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 8a7e0229-c76b-4de6-8166-2f693b1ff2c2
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: 8a7e0229-c76b-4de6-8166-2f693b1ff2c2
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 720
+        }
+      }
+  "3":
+    evidencedata:
+      customfields: {}
+      description:
+        simple: Retrieved Files
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      entryID:
+        complex:
+          accessor: EntryID
+          filters:
+          - - ignorecase: true
+              left:
+                iscontext: true
+                value:
+                  simple: File.Info
+              operator: isEqualString
+              right:
+                value:
+                  simple: gz
+          root: File
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Unzip a file using fileName or entryID to specify a file. Unzipped
+        files will be loaded to the War Room and names will be put into the context.
+      id: 466943ee-d1f6-4264-80a4-d5b3c858d5e2
+      iscommand: false
+      name: Unzip results
+      scriptName: UnzipFile
+      type: regular
+      version: -1
+    taskid: 466943ee-d1f6-4264-80a4-d5b3c858d5e2
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -300,
+          "y": 550
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      "no":
+      - "3"
+      "yes":
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      entryId:
+        simple: ${lastCompletedTaskEntries}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
+        to check the previous task entries. If array is provided, will return yes
+        if one of the entries returned an error.
+      id: 801e51fe-c520-4660-8dc9-65dc9d5b3721
+      iscommand: false
+      name: Any errors from the retrieval?
+      scriptName: isError
+      type: condition
+      version: -1
+    taskid: 801e51fe-c520-4660-8dc9-65dc9d5b3721
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": -60,
+          "y": 350
+        }
+      }
+  "5":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.paths
+          operator: isNotEmpty
+          right:
+            value: {}
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.paths
+          operator: match
+          right:
+            value:
+              simple: ^[a-zA-Z]:(\\[\w_\d-])*([\\]|[.]*[a-zA-Z0-9_-])*?$
+      label: "yes"
+    id: "5"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: a66a2c43-ae65-4fa9-8ac9-15625a06dc2b
+      iscommand: false
+      name: File Path was provided?
+      type: condition
+      version: -1
+    taskid: a66a2c43-ae65-4fa9-8ac9-15625a06dc2b
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 10
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 925,
+        "width": 842.5,
+        "x": -300,
+        "y": -140
+      }
+    }
+  }
