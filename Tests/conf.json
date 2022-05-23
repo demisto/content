@@ -5285,7 +5285,8 @@
         "Git_Integration-Test": "Issue 37800",
         "RecordedFutureFeed - Test": "Issue 43923",
         "RedLockTest": "Issue 24600",
-        "SymantecEndpointProtection_Test": "Issue 30157"
+        "SymantecEndpointProtection_Test": "Issue 30157",
+        "RSANetWitnessv115-Test": "Issue XDRSUP-12553"
     },
     "skipped_integrations": {
         "_comment1": "~~~ NO INSTANCE ~~~",
