@@ -6451,6 +6451,12 @@ class ExecutionMetrics(object):
         self.ssl_error = ssl_error
         self.timeout_error = timeout_error
 
+    @staticmethod
+    def is_supported():
+        if is_demisto_version_ge('7.0.0'):
+            return True
+        return False
+
 
     @property
     def success(self):
@@ -6539,8 +6545,8 @@ class ExecutionMetrics(object):
                 self._metrics.append({'Type': metric_type, 'APICallsCount': metric_value})
             else:
                 for metric in self._metrics:
-                    if metric['MetricType'] == metric_type:
-                        metric['ApiCalls'] = metric_value
+                    if metric['Type'] == metric_type:
+                        metric['APICallsCount'] = metric_value
                         break
                 else:
                     self._metrics.append({'Type': metric_type, 'APICallsCount': metric_value})

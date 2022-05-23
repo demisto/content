@@ -1543,20 +1543,23 @@ def ip_command(client: Client, score_calculator: ScoreCalculator, args: dict, re
             raw_response = client.ip(ip, relationships)
             if raw_response.get('error', {}).get('code') == "QuotaExceededError":
                 execution_metrics.quota_error += 1
+                result = CommandResults(readable_output=f'Quota exceeded for IP: {ip}').to_context()
+                results.append(result)
                 continue
         except Exception as exception:
             # If anything happens, just keep going
-            execution_metrics.general_error += 1
             demisto.debug(f'Could not process IP: "{ip}"\n {str(exception)}')
+            execution_metrics.general_error += 1
             continue
         execution_metrics.success += 1
         results.append(
             build_ip_output(client, score_calculator, ip, raw_response, argToBoolean(args.get('extended_data'))).to_context()
         )
     if len(results) == 0:
-        results.append(CommandResults(readable_output='No results found'))
-        return results
-    results.append(execution_metrics.metrics.to_context())
+        result = CommandResults(readable_output='No IPs were found.').to_context()
+        results.append(result)
+    if execution_metrics.is_supported():
+        results.append(execution_metrics.metrics.to_context())
     return results
 
 
@@ -1575,18 +1578,21 @@ def file_command(client: Client, score_calculator: ScoreCalculator, args: dict, 
             raw_response = client.file(file, relationships)
             if raw_response.get('error', {}).get('code') == "QuotaExceededError":
                 execution_metrics.quota_error += 1
+                result = CommandResults(readable_output=f'Quota exceeded for file: {file}').to_context()
+                results.append(result)
                 continue
             results.append(build_file_output(client, score_calculator, file, raw_response, extended_data).to_context())
             execution_metrics.success += 1
         except Exception as exc:
             # If anything happens, just keep going
+            demisto.debug(f'Could not process file: "{file}"\n {str(exc)}')
             execution_metrics.general_error += 1
-            results.append(CommandResults(readable_output=f'Could not process file: "{file}"\n {str(exc)}'))
+            continue
     if len(results) == 0:
-        results.append(CommandResults(readable_output='No results found'))
-        return results
-    results.append(execution_metrics.metrics.to_context())
-    demisto.info("Got here")
+        result = CommandResults(readable_output='No files were found.').to_context()
+        results.append(result)
+    if execution_metrics.is_supported():
+        results.append(execution_metrics.metrics.to_context())
     return results
 
 
@@ -1607,6 +1613,8 @@ def url_command(client: Client, score_calculator: ScoreCalculator, args: dict, r
             demisto.results(raw_response)
             if raw_response.get('error', {}).get('code') == "QuotaExceededError":
                 execution_metrics.quota_error += 1
+                result = CommandResults(readable_output=f'Quota exceeded for url: {url}').to_context()
+                results.append(result)
                 continue
         except Exception as exception:
             # If anything happens, just keep going
@@ -1616,10 +1624,10 @@ def url_command(client: Client, score_calculator: ScoreCalculator, args: dict, r
         execution_metrics.success += 1
         results.append(build_url_output(client, score_calculator, url, raw_response, extended_data).to_context())
     if len(results) == 0:
-        results.append(CommandResults(readable_output='No results found.'))
-        return results
-    results.append(execution_metrics.metrics.to_context())
-    demisto.info("Got here")
+        result = CommandResults(readable_output='No domains were found.').to_context()
+        results.append(result)
+    if execution_metrics.is_supported():
+        results.append(execution_metrics.metrics.to_context())
     return results
 
 
@@ -1639,7 +1647,6 @@ def domain_command(client: Client, score_calculator: ScoreCalculator, args: dict
                 execution_metrics.quota_error += 1
                 result = CommandResults(readable_output=f'Quota exceeded for domain: {domain}').to_context()
                 results.append(result)
-                demisto.debug(f'Quota exceeded for domain: {domain}')
                 continue
         except Exception as exception:
             # If anything happens, just keep going
@@ -1647,16 +1654,13 @@ def domain_command(client: Client, score_calculator: ScoreCalculator, args: dict
             execution_metrics.general_error += 1
             continue
         execution_metrics.success += 1
-        demisto.info(f'Reporting success for domain: {domain}')
         result = build_domain_output(client, score_calculator, domain, raw_response, argToBoolean(args.get('extended_data'))).to_context()
         results.append(result)
-    demisto.debug(f'Results: {results}')
     if len(results) == 0:
         result = CommandResults(readable_output='No domains were found.').to_context()
         results.append(result)
-        # return results
-    results.append(execution_metrics.metrics.to_context())
-    demisto.info(f'Results: {results}')
+    if execution_metrics.is_supported():
+        results.append(execution_metrics.metrics.to_context())
     return results
 
 

@@ -558,8 +558,7 @@ def urlscan_submit_command(client):
     if supports_polling():
         if len(items_to_schedule) > 0:
             command_results.append(schedule_polling(items_to_schedule))
-    if execution_metrics.metrics is not None:
-        demisto.info("Adding metrics to this run.")
+    if execution_metrics.metrics is not None and execution_metrics.is_supported():
         command_results.append(execution_metrics.metrics)
     return command_results
 
