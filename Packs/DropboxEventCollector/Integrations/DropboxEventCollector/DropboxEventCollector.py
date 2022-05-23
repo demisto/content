@@ -88,8 +88,9 @@ class DropboxEventsGetter(IntegrationGetEvents):
 
 
 def start_auth_command(app_key: str) -> CommandResults:
+    url = f'https://www.dropbox.com/oauth2/authorize?client_id={app_key}&token_access_type=offline&response_type=code'
     message = f"""### Authorization instructions
-1. To sign in, use a web browser to open the page [https://www.dropbox.com/oauth2/authorize?client_id={app_key}&token_access_type=offline&response_type=code](https://www.dropbox.com/oauth2/authorize?client_id={app_key}&token_access_type=offline&response_type=code)
+1. To sign in, use a web browser to open the page [{url}]({url})
 2. Run the **auth-complete** command with the code returned from Dropbox in the War Room."""
     return CommandResults(readable_output=message)
 
@@ -130,17 +131,16 @@ def test_connection(refresh_token: str, credentials: Credentials) -> CommandResu
 
 
 def main(command: str, demisto_params: dict):
-    if not demisto_params.get('start_time'):  # in the first fetch
-        first_fetch = datetime.strftime(dateparser.parse(demisto_params.get('fetch_from', '7 days')), DATETIME_FORMAT)
-        demisto_params['start_time'] = first_fetch
-    # data = DropboxEventsData(**demisto_params)
-    request = DropboxEventsRequestConfig(data=json.dumps({'time': {'start_time': demisto_params.get('start_time')}}), **demisto_params)
+    first_fetch = datetime.strftime(dateparser.parse(demisto_params.get('fetch_from', '7 days')), DATETIME_FORMAT)
+    start_time = demisto_params.get('start_time', first_fetch)
+    request = DropboxEventsRequestConfig(data=json.dumps({'time': {'start_time': start_time}}), **demisto_params)
     credentials = Credentials(**demisto_params.get('credentials', {}))
     options = IntegrationOptions(**demisto_params)
     client = DropboxEventsClient(request, options, credentials)
     get_events = DropboxEventsGetter(client, options)
 
     try:
+        # ----- Authentication Commands ----- #
         if command == 'dropbox-auth-start':
             return_results(start_auth_command(credentials.identifier))
 
@@ -156,9 +156,10 @@ def main(command: str, demisto_params: dict):
         elif command == 'dropbox-auth-test':
             return_results(test_connection(demisto.getIntegrationContext().get('refresh_token'), credentials))
 
-        elif command == 'test-module':
-            test_connection(demisto.getIntegrationContext().get('refresh_token'), credentials)
-            return_results('ok')
+        # ----- Fetch Commands ----- #
+        # elif command == 'test-module':
+        #     test_connection(demisto.getIntegrationContext().get('refresh_token'), credentials)
+        #     return_results('ok')
 
         elif command in ('fetch-events', 'dropbox-get-events'):
             events = get_events.run()
