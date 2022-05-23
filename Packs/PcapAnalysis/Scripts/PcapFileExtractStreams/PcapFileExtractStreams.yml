@@ -1,10 +1,10 @@
 args:
-- description: The entry_id of the PCAP file to extract streams.
+- description: The entry_id of the PCAP file from which to extract streams.
   name: entry_id
   required: true
 - auto: PREDEFINED
   defaultValue: text-based-protocol
-  description: The mode of how to convert the binary to text
+  description: The mode of how to convert the binary to text.
   name: bin2txt_mode
   predefined:
   - text-based-protocol
@@ -15,7 +15,7 @@ args:
   name: rsa_decrypt_key_entry_id
 - description: The WPA password. By providing the password you will be able to decrypt encrypted traffic data.
   name: wpa_password
-- description: Keys of output items to filter them
+- description: Keys of output items by which to filter them.
   name: filter_keys
   type: unknown
 - auto: PREDEFINED
@@ -27,9 +27,9 @@ args:
   - 'false'
   type: unknown
 - defaultValue: 1-49151
-  description: Default server port numbers to decide the direction.
+  description: Default server port numbers by which to decide the direction.
   name: server_ports
-comment: Extract payloads of each stream from a pcap file
+comment: Extract payloads of each stream from a pcap file.
 commonfields:
   id: PcapFileExtractStreams
   version: -1
@@ -41,46 +41,46 @@ enabled: true
 name: PcapFileExtractStreams
 outputs:
 - contextPath: PCAPStream.protocol
-  description: Protocol
+  description: Protocol.
   type: string
 - contextPath: PCAPStream.client_ip
-  description: Client IP Address
+  description: Client IP address.
   type: string
 - contextPath: PCAPStream.client_port
-  description: Client Port Number
+  description: Client port number.
   type: number
 - contextPath: PCAPStream.server_ip
-  description: Server IP Address
+  description: Server IP address.
   type: string
 - contextPath: PCAPStream.server_poprt
-  description: Server Port Number
+  description: Server port number.
   type: number
 - contextPath: PCAPStream.stream_size
-  description: Size of the stream data in byte
+  description: Size of the stream data in bytes.
   type: number
 - contextPath: PCAPStream.stream_text
-  description: The data stream in text
+  description: The data stream in text.
   type: string
 - contextPath: PCAPStream.stream_base64
-  description: The data stream in base64
+  description: The data stream in base64.
   type: string
 - contextPath: PCAPStream.outgoing_size
-  description: Size of the outgoing data in byte
+  description: Size of the outgoing data in bytes.
   type: number
 - contextPath: PCAPStream.outgoing_text
-  description: The outgoing data stream in text
+  description: The outgoing data stream in text.
   type: string
 - contextPath: PCAPStream.outgoing_base64
-  description: The outgoing data stream in base64
+  description: The outgoing data stream in base64.
   type: string
 - contextPath: PCAPStream.incoming_size
-  description: Size of the incoming data in byte
+  description: Size of the incoming data in bytes.
   type: number
 - contextPath: PCAPStream.incoming_text
-  description: The incoming data stream in text
+  description: The incoming data stream in text.
   type: string
 - contextPath: PCAPStream.incoming_base64
-  description: The incoming data stream in base64
+  description: The incoming data stream in base64.
   type: string
 runas: DBotWeakRole
 runonce: false
