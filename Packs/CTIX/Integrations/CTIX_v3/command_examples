@@ -1,0 +1,25 @@
+!get_indicator_details object_id=20067ec2-8ad1-470e-b0bb-3c4a72b15883 object_type=indicator
+!get_indicator_observations object_id=20067ec2-8ad1-470e-b0bb-3c4a72b15883 object_type=indicator
+!get_conversion_feed_source object_id=20067ec2-8ad1-470e-b0bb-3c4a72b15883 object_type=indicator
+!get_indicator_relations object_id=20067ec2-8ad1-470e-b0bb-3c4a72b15883 object_type=indicator
+!get_indicator_tags object_id=20067ec2-8ad1-470e-b0bb-3c4a72b15883 object_type=indicator
+!get_saved_searches
+!get_server_collections
+!get_threat_data query=type=indicator
+!get_whitelist_iocs q=type=indicator
+!add_analyst_score data={"analyst_score":10} object_id=19176d96-716d-48aa-af15-dfeff22e72e2 object_type=indicator
+!add_analyst_tlp object_id=19176d96-716d-48aa-af15-dfeff22e72e2 object_type=indicator data={\"analyst_tlp\":\"GREEN\"}
+!add_indicator_as_false_positive object_ids=19176d96-716d-48aa-af15-dfeff22e72e2,531e47a6-d7cd-47be-ae21-a3260518d4a5 object_type=indicator
+!add_tag_indicator object_id=19176d96-716d-48aa-af15-dfeff22e72e2 object_type=indicator tag_id=fb35000b-82e7-4440-8f18-8b63bba5b372
+!remove_tag_from_indicator object_id=19176d96-716d-48aa-af15-dfeff22e72e2 object_type=indicator tag_id=fb35000b-82e7-4440-8f18-8b63bba5b372
+!create_tag tag_name=demisto_test_trial color_code=#95A1B1 
+!search_for_tag q=demisto_test_trial
+!delete_tag tag_name=demisto_test_trial
+!get_tags
+!deprecate_ioc object_ids=f3064a83-304e-4801-bec2-2f26a432bfd2,0aced40d-9a83-46cd-a92b-0c776c92594c object_type=indicator
+!ioc_manual_review object_ids=f3064a83-304e-4801-bec2-2f26a432bfd2,0aced40d-9a83-46cd-a92b-0c776c92594c object_type=indicator
+!remove_whitelist_ioc ids=7a33a7ac-ab54-412f-a725-f35c208a54ea
+!get_lookup_threat_data object_names=carroll.com, bailey.com, perez.biz object_type=indicator
+!get_actions action_type=manual object_type=indicator
+!saved_result_set label_name=test query=type=indicator
+!whitelist_iocs reason=test type="ipv4-addr" values=127.0.0.1,127.0.0.2

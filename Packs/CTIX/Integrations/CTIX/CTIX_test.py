@@ -1,34 +1,7 @@
 import io
 import json
-from CTIX import (
-    Client,
-    create_tag_command,
-    get_tags_command,
-    delete_tag_command,
-    whitelist_iocs_command,
-    get_whitelist_iocs_command,
-    remove_whitelisted_ioc_command,
-    get_threat_data_command,
-    get_saved_searches_command,
-    get_server_collections_command,
-    get_actions_command,
-    add_indicator_as_false_positive_command,
-    add_ioc_manual_review_command,
-    deprecate_ioc_command,
-    add_analyst_tlp_command,
-    add_analyst_score_command,
-    saved_result_set_command,
-    tag_indicator_updation_command,
-    search_for_tag_command,
-    get_indicator_details_command,
-    get_indicator_tags_command,
-    get_indicator_relations_command,
-    get_indicator_observations_command,
-    get_conversion_feed_source_command,
-    get_lookup_threat_data_command,
-)
 
-"""CONSTANTS"""
+'''CONSTANTS'''
 
 BASE_URL = "http://test.com/"
 ACCESS_ID = "access_id"
@@ -36,728 +9,273 @@ SECRET_KEY = "secret_key"
 
 
 def util_load_json(path):
-    with io.open(path, mode="r", encoding="utf-8") as f:
+    with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
 
 
-def test_create_tag(requests_mock):
-    mock_response = util_load_json("test_data/create_tag.json")
-    requests_mock.post(f"{BASE_URL}ingestion/tags/", json=mock_response)
+def test_ip(requests_mock):
+    from CTIX import Client, ip_details_command
+    from CommonServerPython import Common
+
+    ip_to_check = '6.7.8.9'
+    mock_response = util_load_json('test_data/ip_details.json')
+    requests_mock.get(f'http://test.com/objects/indicator/?q={ip_to_check}',
+                      json=mock_response)
 
     client = Client(
         base_url=BASE_URL,
         access_id=ACCESS_ID,
         secret_key=SECRET_KEY,
         verify=False,
-        proxies={},
+        proxies={}
     )
 
-    args = {"name": "demisto_test_temp", "color_code": "#95A1B1"}
+    args = {
+        'ip': ip_to_check,
+        'enhanced': False
+    }
 
-    response = create_tag_command(client, args)
+    response = ip_details_command(client, args)
 
-    assert response.outputs == mock_response
-    assert response.outputs_prefix == "CTIX.Tag"
-    assert response.outputs_key_field == "name"
-
-    assert isinstance(response.raw_response, dict)
-    assert len(response.raw_response) == 8
-
-
-def test_create_tag_command_already_exists(requests_mock):
-    requests_mock.post(f"{BASE_URL}ingestion/tags/", json=[])
-
-    client = Client(
-        base_url=BASE_URL,
-        access_id=ACCESS_ID,
-        secret_key=SECRET_KEY,
-        verify=False,
-        proxies={},
-    )
-
-    args = {"name": "demisto_test_temp", "color_code": "#95A1B1"}
-    response = create_tag_command(client, args)
-
-    assert response.outputs == []
-
-
-def test_get_tags(requests_mock):
-    mock_response = util_load_json("test_data/get_tags.json")
-    requests_mock.get(f"{BASE_URL}ingestion/tags/", json=mock_response)
-
-    client = Client(
-        base_url=BASE_URL,
-        access_id=ACCESS_ID,
-        secret_key=SECRET_KEY,
-        verify=False,
-        proxies={},
-    )
-
-    args = {"page": 1, "page_size": 1}
-
-    response = get_tags_command(client, args)
     assert response[0].outputs == mock_response["results"][0]
-    assert response[0].outputs_prefix == "CTIX.Tag"
-    assert response[0].outputs_key_field == "name"
+    assert response[0].outputs_prefix == 'CTIX.IP'
+    assert response[0].outputs_key_field == 'name2'
 
     assert isinstance(response, list)
     assert len(response) == 1
+    assert isinstance(response[0].indicator, Common.IP)
+    assert response[0].indicator.ip == ip_to_check
 
 
-def test_get_tags_not_found(requests_mock):
-    requests_mock.get(f"{BASE_URL}ingestion/tags/", json={})
+def test_ip_not_found(requests_mock):
+    from CTIX import Client, ip_details_command
 
-    client = Client(
-        base_url=BASE_URL,
-        access_id=ACCESS_ID,
-        secret_key=SECRET_KEY,
-        verify=False,
-        proxies={},
-    )
-
-    args = {"page": 1, "page_size": 1}
-
-    response = get_tags_command(client, args)
-    assert response == []
-
-
-def test_delete_tag(requests_mock):
-    mock_response = util_load_json("test_data/delete_tag.json")
-    mock_response_get_tags = util_load_json("test_data/get_tags.json")
-    requests_mock.get(f"{BASE_URL}ingestion/tags/", json=mock_response_get_tags)
-    requests_mock.post(f"{BASE_URL}ingestion/tags/bulk-actions/", json=mock_response)
+    ip_to_check = '1.1.1.1'
+    mock_response = {"results": []}
+    requests_mock.get(f'http://test.com/objects/indicator/?q={ip_to_check}',
+                      json=mock_response)
 
     client = Client(
         base_url=BASE_URL,
         access_id=ACCESS_ID,
         secret_key=SECRET_KEY,
         verify=False,
-        proxies={},
-    )
-
-    args = {"tag_name": "test, test1"}
-
-    response = delete_tag_command(client, args)
-    assert response.outputs[0] == mock_response
-    assert response.outputs_prefix == "CTIX.Result"
-    assert response.outputs_key_field == "result"
-
-    assert isinstance(response.raw_response, list)
-    assert len(response.raw_response) == 2
-
-
-def test_delete_tags_no_input(requests_mock):
-    mock_response = util_load_json("test_data/delete_tag.json")
-    mock_response_get_tags = util_load_json("test_data/get_tags.json")
-    requests_mock.get(f"{BASE_URL}ingestion/tags/", json=mock_response_get_tags)
-    requests_mock.post(f"{BASE_URL}ingestion/tags/bulk-actions/", json=mock_response)
-
-    client = Client(
-        base_url=BASE_URL,
-        access_id=ACCESS_ID,
-        secret_key=SECRET_KEY,
-        verify=False,
-        proxies={},
-    )
-
-    args = {}
-    response = delete_tag_command(client, args)
-    assert response.outputs == []
-    assert response.outputs_prefix == "CTIX.Result"
-    assert response.outputs_key_field == "result"
-
-    assert isinstance(response.raw_response, list)
-    assert len(response.raw_response) == 0
-
-
-def test_whitelist_iocs_command(requests_mock):
-    mock_response = util_load_json("test_data/whitelist_iocs.json")
-    requests_mock.post(f"{BASE_URL}conversion/whitelist/", json=mock_response)
-
-    client = Client(
-        base_url=BASE_URL,
-        access_id=ACCESS_ID,
-        secret_key=SECRET_KEY,
-        verify=False,
-        proxies={},
-    )
-
-    args = {"type": "indicator", "values": "127.0.0.1, 127.0.0.2", "reason": "test"}
-
-    resp = whitelist_iocs_command(client, args)
-    response = resp.raw_response
-
-    assert response == mock_response["details"]
-    assert resp.outputs_prefix == "CTIX.Detail"
-
-    assert isinstance(response, dict)
-    assert len(response) == 3
-
-
-def test_get_whitelist_iocs_command(requests_mock):
-    mock_response = util_load_json("test_data/get_whitelist_iocs.json")
-    requests_mock.get(f"{BASE_URL}conversion/whitelist/", json=mock_response)
-
-    client = Client(
-        base_url=BASE_URL,
-        access_id=ACCESS_ID,
-        secret_key=SECRET_KEY,
-        verify=False,
-        proxies={},
-    )
-
-    args = {"page": 1, "page_size": 1}
-
-    resp = get_whitelist_iocs_command(client, args)
-    response = resp[0].raw_response
-
-    assert response == mock_response["results"][0]
-    assert resp[0].outputs_prefix == "CTIX.IOC"
-
-    assert isinstance(response, dict)
-    assert len(response) == 11
-
-
-def test_remove_whitelisted_ioc_command(requests_mock):
-    mock_response = util_load_json("test_data/remove_whitelist_ioc.json")
-    requests_mock.post(
-        f"{BASE_URL}conversion/whitelist/bulk-actions/", json=mock_response
-    )
-
-    client = Client(
-        base_url=BASE_URL,
-        access_id=ACCESS_ID,
-        secret_key=SECRET_KEY,
-        verify=False,
-        proxies={},
-    )
-
-    args = {"ids": "a,b,c"}
-
-    response = remove_whitelisted_ioc_command(client, args)
-
-    assert response.outputs == mock_response
-    assert response.outputs_prefix == "CTIX.Detail"
-
-    assert isinstance(response.raw_response, dict)
-    assert len(response.raw_response) == 1
-
-
-def test_get_threat_data_command(requests_mock):
-    mock_response = util_load_json("test_data/get_threat_data.json")
-    requests_mock.post(f"{BASE_URL}ingestion/threat-data/list/", json=mock_response)
-
-    client = Client(
-        base_url=BASE_URL,
-        access_id=ACCESS_ID,
-        secret_key=SECRET_KEY,
-        verify=False,
-        proxies={},
+        proxies={}
     )
 
     args = {
-        "page": 1,
-        "page_size": 1,
+        'ip': ip_to_check,
+        'enhanced': False
     }
 
-    response = get_threat_data_command(client, args)
+    response = ip_details_command(client, args)
 
-    assert response.outputs == mock_response["results"]
-    assert response.outputs_prefix == "CTIX.ThreatData"
-
-    assert isinstance(response.raw_response, list)
-    assert len(response.raw_response) == 1
+    assert response[0].outputs == []
+    assert response[0].readable_output == f"No matches found for IP {ip_to_check}"
 
 
-def test_get_saved_searches_command(requests_mock):
-    mock_response = util_load_json("test_data/get_threat_data.json")
-    requests_mock.get(f"{BASE_URL}ingestion/saved-searches/", json=mock_response)
+def test_domain(requests_mock):
+    from CTIX import Client, domain_details_command
+    from CommonServerPython import Common
+
+    domain_to_check = 'testing.com'
+    mock_response = util_load_json('test_data/domain_details.json')
+    requests_mock.get(f'http://test.com/objects/indicator/?q={domain_to_check}',
+                      json=mock_response)
 
     client = Client(
         base_url=BASE_URL,
         access_id=ACCESS_ID,
         secret_key=SECRET_KEY,
         verify=False,
-        proxies={},
+        proxies={}
     )
 
     args = {
-        "page": 1,
-        "page_size": 1,
+        'domain': domain_to_check,
+        'enhanced': False
     }
 
-    response = get_saved_searches_command(client, args)
+    response = domain_details_command(client, args)
 
-    assert response.outputs == mock_response["results"]
-    assert response.outputs_prefix == "CTIX.SavedSearch"
+    assert response[0].outputs == mock_response["results"][0]
+    assert response[0].outputs_prefix == 'CTIX.Domain'
+    assert response[0].outputs_key_field == 'name2'
 
-    assert isinstance(response.raw_response, list)
-    assert len(response.raw_response) == 1
+    assert isinstance(response, list)
+    assert len(response) == 1
+    assert isinstance(response[0].indicator, Common.Domain)
+    assert response[0].indicator.domain == domain_to_check
 
 
-def test_get_server_collections_command(requests_mock):
-    mock_response = util_load_json("test_data/get_threat_data.json")
-    requests_mock.get(f"{BASE_URL}publishing/collection/", json=mock_response)
+def test_domain_not_found(requests_mock):
+    from CTIX import Client, domain_details_command
+
+    domain_to_check = 'abc.com'
+    mock_response = {"results": []}
+    requests_mock.get(f'http://test.com/objects/indicator/?q={domain_to_check}',
+                      json=mock_response)
 
     client = Client(
         base_url=BASE_URL,
         access_id=ACCESS_ID,
         secret_key=SECRET_KEY,
         verify=False,
-        proxies={},
+        proxies={}
     )
 
     args = {
-        "page": 1,
-        "page_size": 1,
+        'domain': domain_to_check,
+        'enhanced': False
     }
 
-    response = get_server_collections_command(client, args)
+    response = domain_details_command(client, args)
 
-    assert response.outputs == mock_response["results"]
-    assert response.outputs_prefix == "CTIX.ServerCollection"
-
-    assert isinstance(response.raw_response, list)
-    assert len(response.raw_response) == 1
+    assert response[0].outputs == []
+    assert response[0].readable_output == f"No matches found for Domain {domain_to_check}"
 
 
-def test_get_actions_command(requests_mock):
-    mock_response = util_load_json("test_data/get_actions.json")
-    requests_mock.get(f"{BASE_URL}ingestion/actions/", json=mock_response)
+def test_url(requests_mock):
+    from CTIX import Client, url_details_command
+    from CommonServerPython import Common
+
+    url_to_check = 'https://www.ibm.com/support/mynotifications/'
+    mock_response = util_load_json('test_data/url_details.json')
+    requests_mock.get(f'http://test.com/objects/indicator/?q={url_to_check}',
+                      json=mock_response)
 
     client = Client(
         base_url=BASE_URL,
         access_id=ACCESS_ID,
         secret_key=SECRET_KEY,
         verify=False,
-        proxies={},
+        proxies={}
     )
 
     args = {
-        "page": 1,
-        "page_size": 1,
-        "actions_type": "manual",
-        "object_type": "indicator",
+        'url': url_to_check,
+        'enhanced': False
     }
 
-    response = get_actions_command(client, args)
+    response = url_details_command(client, args)
 
-    assert response.outputs == mock_response["results"]
-    assert response.outputs_prefix == "CTIX.Action"
+    assert response[0].outputs == mock_response["results"][0]
+    assert response[0].outputs_prefix == 'CTIX.URL'
+    assert response[0].outputs_key_field == 'name2'
 
-    assert isinstance(response.raw_response, list)
-    assert len(response.raw_response) == 1
-
-
-def test_add_indicator_as_false_positive_command(requests_mock):
-    mock_response = util_load_json("test_data/add_indicator_as_false_positive.json")
-    requests_mock.post(
-        f"{BASE_URL}ingestion/threat-data/bulk-action/false_positive/",
-        json=mock_response,
-    )
-
-    client = Client(
-        base_url=BASE_URL,
-        access_id=ACCESS_ID,
-        secret_key=SECRET_KEY,
-        verify=False,
-        proxies={},
-    )
-
-    args = {"object_ids": "foo", "object_type": "indicator"}
-
-    response = add_indicator_as_false_positive_command(client, args)
-
-    assert response.outputs["result"] == mock_response
-    assert response.outputs_prefix == "CTIX.Result"
-
-    assert isinstance(response.raw_response, dict)
-    assert len(response.raw_response) == 1
+    assert isinstance(response, list)
+    assert len(response) == 1
+    assert isinstance(response[0].indicator, Common.URL)
+    assert response[0].indicator.url == url_to_check
 
 
-def test_add_ioc_manual_review_command(requests_mock):
-    mock_response = util_load_json("test_data/ioc_manual_review.json")
-    requests_mock.post(
-        f"{BASE_URL}ingestion/threat-data/bulk-action/manual_review/",
-        json=mock_response,
-    )
+def test_url_not_found(requests_mock):
+    from CTIX import Client, url_details_command
+
+    url_to_check = 'https://abc.com'
+    mock_response = {"results": []}
+    requests_mock.get(f'http://test.com/objects/indicator/?q={url_to_check}',
+                      json=mock_response)
 
     client = Client(
         base_url=BASE_URL,
         access_id=ACCESS_ID,
         secret_key=SECRET_KEY,
         verify=False,
-        proxies={},
-    )
-
-    args = {"object_ids": "foo", "object_type": "indicator"}
-
-    response = add_ioc_manual_review_command(client, args)
-
-    assert response.outputs["result"] == mock_response
-    assert response.outputs_prefix == "CTIX.Result"
-
-    assert isinstance(response.raw_response, dict)
-    assert len(response.raw_response) == 1
-
-
-def test_deprecate_ioc_command(requests_mock):
-    mock_response = util_load_json("test_data/deprecate_ioc.json")
-    requests_mock.post(
-        f"{BASE_URL}ingestion/threat-data/bulk-action/deprecate/", json=mock_response
-    )
-
-    client = Client(
-        base_url=BASE_URL,
-        access_id=ACCESS_ID,
-        secret_key=SECRET_KEY,
-        verify=False,
-        proxies={},
-    )
-
-    args = {"object_ids": "foo", "object_type": "indicator"}
-
-    response = deprecate_ioc_command(client, args)
-
-    assert response.outputs["result"] == mock_response
-    assert response.outputs_prefix == "CTIX.Result"
-
-    assert isinstance(response.raw_response, dict)
-    assert len(response.raw_response) == 1
-
-
-def test_add_analyst_tlp_command(requests_mock):
-    mock_response = util_load_json("test_data/add_analyst_tlp.json")
-    requests_mock.post(
-        f"{BASE_URL}ingestion/threat-data/action/analyst_tlp/", json=mock_response
-    )
-
-    client = Client(
-        base_url=BASE_URL,
-        access_id=ACCESS_ID,
-        secret_key=SECRET_KEY,
-        verify=False,
-        proxies={},
+        proxies={}
     )
 
     args = {
-        "object_ids": "foo",
-        "object_type": "indicator",
-        "data": '{"analyst_tlp":"GREEN"}',
+        'url': url_to_check,
+        'enhanced': False
     }
 
-    response = add_analyst_tlp_command(client, args)
+    response = url_details_command(client, args)
 
-    assert response.outputs["result"] == mock_response
-    assert response.outputs_prefix == "CTIX.Result"
-
-    assert isinstance(response.raw_response, dict)
-    assert len(response.raw_response) == 1
+    assert response[0].outputs == []
+    assert response[0].readable_output == f"No matches found for URL {url_to_check}"
 
 
-def test_add_analyst_score_command(requests_mock):
-    mock_response = util_load_json("test_data/add_analyst_score.json")
-    requests_mock.post(
-        f"{BASE_URL}ingestion/threat-data/action/analyst_score/", json=mock_response
-    )
+def test_file(requests_mock):
+    from CTIX import Client, file_details_command
+    from CommonServerPython import Common
+
+    file_to_check = '4d552241543b8176a3189864a16b6052f9d163a124291ec9552e1b77'
+    mock_response = util_load_json('test_data/file_details.json')
+    requests_mock.get(f'http://test.com/objects/indicator/?q={file_to_check}',
+                      json=mock_response)
 
     client = Client(
         base_url=BASE_URL,
         access_id=ACCESS_ID,
         secret_key=SECRET_KEY,
         verify=False,
-        proxies={},
+        proxies={}
     )
 
     args = {
-        "object_ids": "foo",
-        "object_type": "indicator",
-        "data": '{"analyst_score":10}',
+        'file': file_to_check,
+        'enhanced': False
     }
 
-    response = add_analyst_score_command(client, args)
+    response = file_details_command(client, args)
 
-    assert response.outputs["result"] == mock_response
-    assert response.outputs_prefix == "CTIX.Result"
+    assert response[0].outputs == mock_response["results"][0]
+    assert response[0].outputs_prefix == 'CTIX.File'
+    assert response[0].outputs_key_field == 'name2'
 
-    assert isinstance(response.raw_response, dict)
-    assert len(response.raw_response) == 1
-
-
-def test_saved_result_set_command(requests_mock):
-    mock_response = util_load_json("test_data/saved_result_set.json")
-    requests_mock.post(f"{BASE_URL}ingestion/threat-data/list/", json=mock_response)
-
-    client = Client(
-        base_url=BASE_URL,
-        access_id=ACCESS_ID,
-        secret_key=SECRET_KEY,
-        verify=False,
-        proxies={},
-    )
-
-    args = {"page": 1, "page_size": 1, "label_name": "test", "query": "type=indicator"}
-
-    response = saved_result_set_command(client, args)
-
-    assert response.outputs == mock_response["results"]
-    assert response.outputs_prefix == "CTIX.SavedResultSet"
-
-    assert isinstance(response.raw_response, list)
-    assert len(response.raw_response) == 1
+    assert isinstance(response, list)
+    assert len(response) == 1
+    assert isinstance(response[0].indicator, Common.File)
+    assert response[0].indicator.name == file_to_check
 
 
-def test_add_tag_indicator_updation_command(requests_mock):
-    mock_response = util_load_json("test_data/add_tag_indicator.json")
-    mock_response_get = util_load_json("test_data/get_indicator_tags.json")
-    requests_mock.get(
-        f"{BASE_URL}ingestion/threat-data/indicator/foo/quick-actions/",
-        json=mock_response_get,
-    )
-    requests_mock.post(
-        f"{BASE_URL}ingestion/threat-data/action/add_tag/", json=mock_response
-    )
+def test_file_not_found(requests_mock):
+    from CTIX import Client, file_details_command
+
+    file_to_check = '6AD8334857B3F054A9F93BA380B5555B'
+    mock_response = {"results": []}
+    requests_mock.get(f'http://test.com/objects/indicator/?q={file_to_check}',
+                      json=mock_response)
 
     client = Client(
         base_url=BASE_URL,
         access_id=ACCESS_ID,
         secret_key=SECRET_KEY,
         verify=False,
-        proxies={},
+        proxies={}
     )
 
     args = {
-        "page": 1,
-        "page_size": 1,
-        "object_id": "foo",
-        "object_type": "indicator",
-        "tag_id": "foo, bar",
-        "q": "",
+        'file': file_to_check,
+        'enhanced': False
     }
 
-    response = tag_indicator_updation_command(
-        client, args, operation="add_tag_indicator"
-    )
+    response = file_details_command(client, args)
 
-    assert response.outputs["result"] == mock_response
-    assert response.outputs_prefix == "CTIX.Result"
-
-    assert isinstance(response.raw_response, dict)
-    assert len(response.raw_response) == 1
+    assert response[0].outputs == []
+    assert response[0].readable_output == f"No matches found for FILE {file_to_check}"
 
 
-def test_remove_tag_indicator_updation_command(requests_mock):
-    mock_response = util_load_json("test_data/add_tag_indicator.json")
-    mock_response_get = util_load_json("test_data/get_indicator_tags.json")
-    requests_mock.get(
-        f"{BASE_URL}ingestion/threat-data/indicator/foo/quick-actions/",
-        json=mock_response_get,
-    )
-    requests_mock.post(
-        f"{BASE_URL}ingestion/threat-data/action/add_tag/", json=mock_response
-    )
+def test_create_intel(requests_mock):
+    from CTIX import Client, create_intel_command
+
+    mock_response = util_load_json('test_data/create_intel.json')
+    requests_mock.post('http://test.com/create-intel/', json=mock_response)
 
     client = Client(
         base_url=BASE_URL,
         access_id=ACCESS_ID,
         secret_key=SECRET_KEY,
         verify=False,
-        proxies={},
+        proxies={}
     )
-
-    args = {
-        "page": 1,
-        "page_size": 1,
-        "object_id": "foo",
-        "object_type": "indicator",
-        "tag_id": "foo,bar",
-        "q": "",
+    post_data = {
+        "ips": "1.2.3.4,3.45.56.78",
+        "urls": "https://abc_test.com,https://test_abc.com"
     }
+    response = create_intel_command(client, post_data)
 
-    response = tag_indicator_updation_command(
-        client, args, operation="remove_tag_from_indicator"
-    )
-
-    assert response.outputs["result"] == mock_response
-    assert response.outputs_prefix == "CTIX.Result"
-
-    assert isinstance(response.raw_response, dict)
-    assert len(response.raw_response) == 1
-
-
-def test_search_for_tag_command(requests_mock):
-    mock_response = util_load_json("test_data/search_for_tag.json")
-    requests_mock.get(f"{BASE_URL}ingestion/tags/", json=mock_response)
-
-    client = Client(
-        base_url=BASE_URL,
-        access_id=ACCESS_ID,
-        secret_key=SECRET_KEY,
-        verify=False,
-        proxies={},
-    )
-
-    args = {
-        "page": 1,
-        "page_size": 1,
-    }
-
-    response = search_for_tag_command(client, args)
-
-    assert response.outputs["result"] == mock_response
-    assert response.outputs_prefix == "CTIX.Result"
-
-    assert isinstance(response.raw_response, dict)
-    assert len(response.raw_response) == 1
-
-
-def test_get_indicator_details_command(requests_mock):
-    mock_response = util_load_json("test_data/get_indicator_details.json")
-    requests_mock.get(
-        f"{BASE_URL}ingestion/threat-data/indicator/foo/basic/", json=mock_response
-    )
-
-    client = Client(
-        base_url=BASE_URL,
-        access_id=ACCESS_ID,
-        secret_key=SECRET_KEY,
-        verify=False,
-        proxies={},
-    )
-
-    args = {"page": 1, "page_size": 1, "object_type": "indicator", "object_id": "foo"}
-
-    response = get_indicator_details_command(client, args)
-
-    assert response.outputs["result"] == mock_response
-    assert response.outputs_prefix == "CTIX.Result"
-
-    assert isinstance(response.raw_response, dict)
-    assert len(response.raw_response) == 1
-
-
-def test_get_indicator_tags_command(requests_mock):
-    mock_response = util_load_json("test_data/get_indicator_tags.json")
-    requests_mock.get(
-        f"{BASE_URL}ingestion/threat-data/indicator/foo/quick-actions/",
-        json=mock_response,
-    )
-
-    client = Client(
-        base_url=BASE_URL,
-        access_id=ACCESS_ID,
-        secret_key=SECRET_KEY,
-        verify=False,
-        proxies={},
-    )
-
-    args = {"page": 1, "page_size": 1, "object_type": "indicator", "object_id": "foo"}
-
-    response = get_indicator_tags_command(client, args)
-
-    assert response.outputs["result"] == mock_response
-    assert response.outputs_prefix == "CTIX.Result"
-
-    assert isinstance(response.raw_response, dict)
-    assert len(response.raw_response) == 1
-
-
-def test_get_indicator_relations_command(requests_mock):
-    mock_response = util_load_json("test_data/get_indicator_relations.json")
-    requests_mock.get(
-        f"{BASE_URL}ingestion/threat-data/indicator/foo/relations/", json=mock_response
-    )
-
-    client = Client(
-        base_url=BASE_URL,
-        access_id=ACCESS_ID,
-        secret_key=SECRET_KEY,
-        verify=False,
-        proxies={},
-    )
-
-    args = {"page": 1, "page_size": 1, "object_type": "indicator", "object_id": "foo"}
-
-    response = get_indicator_relations_command(client, args)
-
-    assert response.outputs["result"] == mock_response
-    assert response.outputs_prefix == "CTIX.Result"
-
-    assert isinstance(response.raw_response, dict)
-    assert len(response.raw_response) == 1
-
-
-def test_get_indicator_observations_command(requests_mock):
-    mock_response = util_load_json("test_data/get_indicator_observations.json")
-    requests_mock.get(
-        f"{BASE_URL}ingestion/threat-data/source-references/", json=mock_response
-    )
-
-    client = Client(
-        base_url=BASE_URL,
-        access_id=ACCESS_ID,
-        secret_key=SECRET_KEY,
-        verify=False,
-        proxies={},
-    )
-
-    args = {"page": 1, "page_size": 1, "object_type": "indicator", "object_id": "foo"}
-
-    response = get_indicator_observations_command(client, args)
-
-    assert response.outputs["result"] == mock_response
-    assert response.outputs_prefix == "CTIX.Result"
-
-    assert isinstance(response.raw_response, dict)
-    assert len(response.raw_response) == 1
-
-
-def test_get_conversion_feed_source_command(requests_mock):
-    mock_response = util_load_json("test_data/get_conversion_feed_source.json")
-    requests_mock.get(f"{BASE_URL}conversion/feed-sources/", json=mock_response)
-
-    client = Client(
-        base_url=BASE_URL,
-        access_id=ACCESS_ID,
-        secret_key=SECRET_KEY,
-        verify=False,
-        proxies={},
-    )
-
-    args = {"page": 1, "page_size": 1, "object_type": "indicator", "object_id": "foo"}
-
-    response = get_conversion_feed_source_command(client, args)
-
-    assert response.outputs["result"] == mock_response
-    assert response.outputs_prefix == "CTIX.Result"
-
-    assert isinstance(response.raw_response, dict)
-    assert len(response.raw_response) == 1
-
-
-def test_get_lookup_threat_data_command(requests_mock):
-    mock_response = util_load_json("test_data/get_lookup_threat_data.json")
-    requests_mock.post(f"{BASE_URL}ingestion/threat-data/list/", json=mock_response)
-
-    client = Client(
-        base_url=BASE_URL,
-        access_id=ACCESS_ID,
-        secret_key=SECRET_KEY,
-        verify=False,
-        proxies={},
-    )
-
-    args = {
-        "page": 1,
-        "page_size": 1,
-        "object_type": "indicator",
-        "object_names": "foo,bar",
-    }
-
-    response = get_lookup_threat_data_command(client, args)
-
-    assert response.outputs == mock_response["results"]
-    assert response.outputs_prefix == "CTIX.ThreatDataLookup"
-
-    assert isinstance(response.raw_response, list)
-    assert len(response.raw_response) == 1
+    assert 'data', 'status' in response['CTIX']['Intel']['response']
+    assert 'status' in response['CTIX']['Intel']
+    assert response['CTIX']['Intel']['response']['status'] == 201
