@@ -3,6 +3,11 @@ commonfields:
   id: CloudflareWAF
   version: -1
 configuration:
+- display: Server URL (e.g. https://api.cloudflare.com/client/v4/)
+  name: server
+  defaultvalue: https://api.cloudflare.com/client/v4/
+  type: 0
+  required: false
 - name: credentials
   display: The API user Token.
   displaypassword: User Token
@@ -10,18 +15,15 @@ configuration:
   type: 9
   hiddenusername: true
 - name: account_id
-  displaypassword: Account ID
+  display: Account ID
   required: true
-  type: 9
+  type: 0
   additionalinfo: Account identifier.
-  hiddenusername: true
 - name: zone_id
-  displaypassword: zone_id
   display: Default Zone ID
   required: false
-  type: 9
+  type: 0
   additionalinfo: The domain identifier. Zone ID can be override when executing commands.The domain identifier. Zone ID can be override when executing commands.
-  hiddenusername: true
 - name: proxy
   display: Use system proxy settings
   required: false
@@ -636,7 +638,7 @@ script:
       name: id
       required: true
     deprecated: false
-    description: Delete IP-list by the specified list ID.
+    description: Delete IP-list by the specified list ID. Note that IP-list that assigned to a firewall rule can not be delete, only after unassign the list.
     execution: false
     name: cloudflare-waf-ip-list-delete
     outputs: []

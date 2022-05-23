@@ -7,10 +7,10 @@ from typing import Any, Dict, Callable, Tuple
 class Client(BaseClient):
     """Client class to interact with CloudFlare WAF API."""
 
-    def __init__(self, credentials: str, account_id: str, proxy: bool, insecure: bool, zone_id: str = None):
+    def __init__(self, credentials: str, account_id: str, proxy: bool, insecure: bool, base_url: str, zone_id: str = None):
         self.account_id = account_id
         self.zone_id = zone_id
-        self.base_url = 'https://api.cloudflare.com/client/v4/'
+        self.base_url = base_url
         headers = {'Authorization': f'Bearer {credentials}', 'Content-Type': 'application/json'}
         super().__init__(base_url=self.base_url, headers=headers, proxy=proxy, verify=insecure)
 
@@ -968,14 +968,11 @@ def cloudflare_waf_ip_list_item_create_command(client: Client, args: Dict[str, A
     items = [{'ip': item} for item in argToList(args.get('items'))]
 
     response = client.cloudflare_waf_ip_list_item_create_request(list_id, items)
-
     output = response['result']
 
     return CommandResults(
-        readable_output=f'Adding items to the ip-list {list_id} is executing',
-        outputs=output,
-        raw_response=response
-    )
+        readable_output=f'Adding items to the ip-list {list_id} is executing'
+    ), output
 
 
 def cloudflare_waf_ip_list_item_update_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -998,10 +995,8 @@ def cloudflare_waf_ip_list_item_update_command(client: Client, args: Dict[str, A
     output = response['result']
 
     return CommandResults(
-        readable_output=f'Replacing items in the IP List {list_id} is executing',
-        outputs=output,
-        raw_response=response
-    )
+        readable_output=f'Replacing items in the IP List {list_id} is executing'
+    ), output
 
 
 def cloudflare_waf_ip_list_item_delete_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -1023,10 +1018,8 @@ def cloudflare_waf_ip_list_item_delete_command(client: Client, args: Dict[str, A
     output = response['result']
 
     return CommandResults(
-        readable_output=f'Deleting items from ip-list {list_id} is executing',
-        outputs=output,
-        raw_response=response
-    )
+        readable_output=f'Deleting items from ip-list {list_id} is executing'
+    ), output
 
 
 def cloudflare_waf_ip_list_item_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -1150,16 +1143,12 @@ def run_polling_command(client: Client, cmd: str, command_function: Callable, ar
     timeout = arg_to_number(args.get('timeout', 60))
 
     if 'operation_id' not in args:
-        command_results = command_function(client, args)
-        outputs = command_results.outputs
-        operation_id = outputs.get('operation_id')
-
-        if outputs.get('status') != 'completed':
-            scheduled_command = scheduled_commands(operation_id, interval, timeout, cmd, args)
-            command_results.scheduled_command = scheduled_command
-            return command_results
-        else:
-            args['operation_id'] = operation_id
+        command_results, output = command_function(client, args)
+        operation_id = output['operation_id']
+        args['operation_id'] = operation_id
+        scheduled_command = scheduled_commands(operation_id, interval, timeout, cmd, args)
+        command_results.scheduled_command = scheduled_command
+        return command_results
 
     operation_id = args.get('operation_id')
     command_results = cloudflare_waf_get_operation_command(client, operation_id)
@@ -1174,9 +1163,11 @@ def main() -> None:
     params: Dict[str, Any] = demisto.params()
     args: Dict[str, Any] = demisto.args()
 
-    credentials = params.get('credentials', {}).get('identifier')
-    account_id = params.get('account_id', {}).get('identifier')
-    zone_id = params.get('zone_id', {}).get('identifier')
+    credentials = params.get('credentials', {}).get('password')
+
+    base_url = params.get('server')
+    account_id = params.get('account_id')
+    zone_id = params.get('zone_id')
     proxy = argToBoolean(params.get('proxy', False))
     insecure = argToBoolean(params.get('insecure', True))
 
@@ -1202,7 +1193,7 @@ def main() -> None:
         'cloudflare-waf-ip-list-item-list': cloudflare_waf_ip_list_item_list_command
     }
     try:
-        client: Client = Client(credentials, account_id, proxy, insecure, zone_id)
+        client: Client = Client(credentials, account_id, proxy, insecure, base_url, zone_id)
 
         if command == 'test-module':
             return_results(test_module(client))
