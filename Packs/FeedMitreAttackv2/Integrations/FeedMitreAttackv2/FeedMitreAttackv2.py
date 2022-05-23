@@ -607,7 +607,7 @@ def main():
         client.initialise()
         log = logging.getLogger('taxii2client.v20')
         log.addHandler(TaxiiLogHandler())
-        log.propagate = 0
+        log.propagate = False
 
         if demisto.command() == 'mitre-get-indicators':
             get_indicators_command(client, args)
