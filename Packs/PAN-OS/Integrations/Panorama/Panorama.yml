@@ -8295,7 +8295,8 @@ script:
       secret: false
     deprecated: false
     description: Searches and returns a reference for the given object type and name.
-      If no name is provided, all objects of the given type will be returned.
+      If no name is provided, all objects of the given type will be returned. Note this ONLY returns
+      the object name and it's location in the configuration hierachy, not the entire object.
     name: pan-os-config-get-object
     outputs:
     - contextPath: PANOS.PanosObject.hostid

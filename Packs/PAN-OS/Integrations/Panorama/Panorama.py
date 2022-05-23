@@ -9613,6 +9613,47 @@ class PanoramaCommand:
         return result
 
     @staticmethod
+    def push_style(topology: Topology, device: Union[Firewall, Panorama], style: str, filter: Optional[List[str]] = None):
+        """
+        Given a pan-os-python push style, a device and the topology object, work out what DGs and templates we need to push,
+        then push them.
+        :param topology: `Topology` instance
+        :param device: The device to push to - will always be a Panorama instance
+        :param style: The pan-os-python commit style; can be 'device group' or 'template stack'
+        :param filter: Optionally only push the following named device-groups or template stacks.
+        """
+        result = []
+        if style == "device group":
+            commit_groups = PanoramaCommand.get_device_groups(topology, resolve_host_id(device))
+            commit_group_names = set([x.name for x in commit_groups])
+        elif style == "template stack":
+            commit_groups = PanoramaCommand.get_template_stacks(topology, resolve_host_id(device))
+            commit_group_names = set([x.name for x in commit_groups])
+        else:
+            raise DemistoException(f"Provided push style {style} is invalid. Please specify `device group` or `template stack`")
+
+        if filter:
+            commit_group_names = set([x for x in commit_group_names if x in filter])
+
+        for commit_group_name in commit_group_names:
+            commit_command = PanoramaCommitAll(
+                style=style,
+                name=commit_group_name
+            )
+            result_job_id = device.commit(cmd=commit_command)
+            result.append(PushStatus(
+                hostid=resolve_host_id(device),
+                commit_type=style.replace(" ", ""),
+                name=commit_group_name,
+                job_id=result_job_id,
+                commit_all_status="Initiated",
+                device_status="",
+                device=""
+            ))
+
+        return result
+
+    @staticmethod
     def push_all(
         topology: Topology,
         device_filter_str: str = None,
@@ -9634,51 +9675,11 @@ class PanoramaCommand:
 
             # If the template_stack_filter is provided, we don't want to push device groups.
             if not template_stack_filter:
-                device_groups = PanoramaCommand.get_device_groups(topology, resolve_host_id(device))
-                device_group_names = set([x.name for x in device_groups])
-
-                if device_group_filter:
-                    device_group_names = set([x for x in device_group_names if x in device_group_filter])
-
-                for dg_name in device_group_names:
-                    device_group_commit = PanoramaCommitAll(
-                        style="device group",
-                        name=dg_name
-                    )
-                    result_job_id = device.commit(cmd=device_group_commit)
-                    result.append(PushStatus(
-                        hostid=resolve_host_id(device),
-                        commit_type="devicegroup",
-                        name=dg_name,
-                        job_id=result_job_id,
-                        commit_all_status="Initiated",
-                        device_status="",
-                        device=""
-                    ))
+                result += PanoramaCommand.push_style(topology, device, style="device group", filter=device_group_filter)
 
             # If the device_group_filter is provided, we don't want to push template_stacks
             if not device_group_filter:
-                template_stacks = PanoramaCommand.get_template_stacks(topology, resolve_host_id(device))
-                template_stack_names = set([x.name for x in template_stacks])
-
-                if template_stack_filter:
-                    template_stack_names = set([x for x in template_stack_names if x in template_stack_filter])
-
-                for template_name in template_stack_names:
-                    template_stack_commit = PanoramaCommitAll(
-                        style="template stack",
-                        name=template_name
-                    )
-                    result_job_id = device.commit(cmd=template_stack_commit)
-                    result.append(PushStatus(
-                        hostid=resolve_host_id(device),
-                        commit_type="template-stack",
-                        name=template_name,
-                        job_id=result_job_id,
-                        commit_all_status="Initiated",
-                        device_status="",
-                        device=""
-                    ))
+                result += PanoramaCommand.push_style(topology, device, style="template stack", filter=template_stack_filter)
 
         return result
 
