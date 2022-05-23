@@ -1,5 +1,4 @@
 import traceback
-from typing import Any, Dict
 
 import demistomock as demisto  # noqa: F401
 import markdown  # type: ignore
@@ -18,7 +17,7 @@ def main():
         input_prettify = argToBoolean(args.get("prettifyHTML"))
 
         data = markdown.markdown(input_text)
-        if input_only_md == False:
+        if not input_only_md:
             data = f"<!doctype html><html><head><meta charset=\"utf-8\"></head><body>{data}</body></html>"
 
         if input_prettify:
@@ -26,7 +25,7 @@ def main():
             data = soup.prettify()
 
         res = CommandResults(readable_output=data)
-        if input_output_key != None:
+        if input_output_key:
             res = CommandResults(readable_output=data, outputs={input_output_key: data})
         return_results(res)
     except Exception as ex:

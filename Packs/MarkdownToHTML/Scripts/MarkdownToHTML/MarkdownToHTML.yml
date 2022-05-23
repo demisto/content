@@ -7,39 +7,30 @@ args:
   name: contextKey
   type: textArea
 - auto: PREDEFINED
-  defaultValue: "True"
+  defaultValue: 'True'
   description: Full HTML structure or only the text converted
   name: convertOnlyMarkdown
   predefined:
-  - "True"
-  - "False"
+  - 'True'
+  - 'False'
   required: true
 - auto: PREDEFINED
-  defaultValue: "False"
+  defaultValue: 'False'
   name: prettifyHTML
   predefined:
-  - "True"
-  - "False"
+  - 'True'
+  - 'False'
   required: true
 comment: Converts Markdown to HTML.
 commonfields:
-  id: 81f2109a-81d7-40db-8dcd-8284fdec5f54
+  id: MarkdownToHTML
   version: -1
 contentitemexportablefields:
   contentitemfields:
-    definitionid: ""
-    fromServerVersion: ""
-    itemVersion: ""
-    packID: 6aa16f69-6f04-47c4-808d-071b4adc002f
-    propagationLabels:
-    - all
-    toServerVersion: ""
-dockerimage: devdemisto/py3-tools:0.0.1.29826
+    fromServerVersion: ''
+dockerimage: devdemisto/bs4-py3:1.0.0.29950
 enabled: true
-engineinfo: {}
-mainengineinfo: {}
 name: MarkdownToHTML
-pswd: ""
 runas: DBotWeakRole
 runonce: false
 script: ''
@@ -49,3 +40,6 @@ tags:
 - markdown
 - HTML
 type: python
+fromversion: 6.2.0
+tests:
+- No tests (auto formatted)
