@@ -3,6 +3,7 @@ from pydantic import BaseModel, AnyUrl, Json, validator  # pylint: disable=no-na
 from CommonServerPython import *
 
 # TODO: add if push to see if we should activate the send events function
+# TODO: add another param for vendor so there will be one for product and vendor
 class Method(str, Enum):
     """
     A list that represent the types of http request available
@@ -37,10 +38,6 @@ class Request(BaseModel):
     params: Optional[ReqParams]
     verify = True
     data: Optional[str] = None
-
-    @validator('url')
-    def add_api_url(cls, v):  # noqa: E213
-        return v + '/api/v1/logs'
 
 
 class Client:
@@ -138,12 +135,13 @@ class GetEvents:
 
 def main():  # pragma: no cover
     try:
-        demisto_params = demisto.params() | demisto.args()
+        demisto_params = demisto.params() #| demisto.args()
         events_limit = int(demisto_params.get('limit', 2000))
         after = dateparser.parse(demisto_params['after'].strip())
         api_key = demisto_params['apiKey']['credentials']['password']
         demisto_params['headers'] = {"Accept": "application/json", "Content-Type": "application/json",
                                      "Authorization": f"SSWS {api_key}"}
+        demisto_params['url'] = demisto_params['url'] + '/api/v1/logs'
         last_run = demisto.getLastRun()
         last_object_ids = last_run.get('ids')
         if 'after' not in last_run:
