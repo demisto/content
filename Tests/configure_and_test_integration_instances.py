@@ -799,14 +799,15 @@ class XSIAMBuild(Build):
             with open(output_file, "w") as outfile:
                 subprocess.run(cmd.split(), stdout=outfile, stderr=outfile)
             try:
-                response_data, response_code, _ = demisto_client.generic_request_func(self=server.client, method='POST',
-                                                                                  path='/contentpacks/marketplace/sync')
+                response_data, response_code, _ = demisto_client.generic_request_func(
+                    self=server.client, method='POST',
+                    path='/contentpacks/marketplace/sync')
             except Exception as e:
                 logging.error(f'Filed to sync marketplace. Error: {e}')
         logging.info('Finished copying successfully.')
 
     def concurrently_run_function_on_servers(self, function=None, pack_path=None, service_account=None):
-        # no need to run this cuncurrently since we have only one server
+        # no need to run this concurrently since we have only one server
         pass
 
 
