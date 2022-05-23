@@ -13,10 +13,10 @@ This playbook does not use any sub-playbooks.
 This playbook does not use any scripts.
 
 ### Commands
-* setIncident
-* endpoint
 * cs-falcon-search-detection
+* endpoint
 * cs-falcon-list-incident-summaries
+* setIncident
 * cs-falcon-get-detections-for-incident
 
 ## Playbook Inputs
@@ -28,7 +28,7 @@ This playbook does not use any scripts.
 | SIEMincidentFieldForID | The name of the incident field that contains the detection or incident ID. Default value is incident.externalid | ${incident.externalsystemid} | Optional |
 | ScaleToSetSeverity | The severity scale as represented in the EDR<br/>For example in CrowdStrike uses values from 0 to 100<br/>So the scale can be divided in ranges such as<br/>0-20,21-40,41-60,61-80,81-100 | 0-20,21-40,41-60,61-80,81-100 | Optional |
 | SeverityValuesMapping | This will provide the mapping to XSOAR severity for the ScaleToSetSeverity inputs<br/>For example<br/>0.5, 1, 2, 3,4<br/>Possible values to use are 0,0.5, 1, 2, 3,4<br/>Which represent Unknown, Informational, Low, Medium, High, Critical | 0.5, 1, 2, 3,4 | Optional |
-| SetSeverity | Indicates if to set the severity according to the  ScaleToSetSeverity and SeverityValuesMapping settings \(True\) or keep the original severity as mapped by the SIEM \(False\) <br/>True/False | False | Optional |
+| OverrideSIEMSeverity | Indicates if to set the severity according to the  ScaleToSetSeverity and SeverityValuesMapping settings \(True\) or keep the original severity as mapped by the SIEM \(False\) <br/>True/False | False | Optional |
 
 ## Playbook Outputs
 ---
@@ -56,4 +56,4 @@ This playbook does not use any scripts.
 
 ## Playbook Image
 ---
-![Crowdstrike SIEM ingestion](../doc_files/Crowdstrike_SIEM_ingestion.png)
+![CrowdStrike Falcon - SIEM ingestion Get Incident Data](../doc_files/CrowdStrike_Falcon_-_SIEM_ingestion_-_Get_Incident_Data.png)

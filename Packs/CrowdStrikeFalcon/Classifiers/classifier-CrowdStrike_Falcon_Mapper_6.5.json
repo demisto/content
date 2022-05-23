@@ -750,5 +750,5 @@
     "name": "CrowdStrike Falcon Mapper",
     "type": "mapping-incoming",
     "version": -1,
-    "fromVersion": "6.2.0"
+    "fromVersion": "6.5.0"
 }
