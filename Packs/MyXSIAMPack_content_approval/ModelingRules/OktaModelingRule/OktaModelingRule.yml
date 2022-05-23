@@ -3,3 +3,17 @@ id: _okta_mapping_to_dataset
 fromversion: 3.3.0
 tags: a
 rules: ''
+schema:
+  {
+    "okta_sso_raw": {
+      "client_ip": {
+        "type": "string",
+        "is_array": false
+      },
+      "os": {
+        "type": "string",
+        "is_array": false
+      },
+    }
+  }
+

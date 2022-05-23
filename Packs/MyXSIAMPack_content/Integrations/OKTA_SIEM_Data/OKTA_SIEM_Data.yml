@@ -64,7 +64,7 @@ script:
     - contextPath: BaseIntegration.Output
       description: '[Enter a description of the data returned in this output.]'
       type: String
-  isFetchEvents: true
+  isfetchevents: true
   runonce: false
   script: '-'
   type: python
