@@ -8924,7 +8924,16 @@ class ObjectGetter:
         :param object_name: The name of the object to find; can be regex if use_regex is set
         :param use_regex: Whether we should use regex matching for the object_name
         """
-        object_class = globals().get(object_type, None)
+        supported_object_types = {
+            "AddressObject": AddressObject,
+            "AddressGroup": AddressGroup,
+            "ServiceObject": ServiceObject,
+            "ServiceGroup": ServiceGroup,
+            "ApplicationObject": ApplicationObject,
+            "ApplicationGroup": ApplicationGroup,
+            "SecurityProfileGroup": SecurityProfileGroup,
+        }
+        object_class = supported_object_types.get(object_type, None)
         if object_class is None:
             raise DemistoException(f"Object type {object_type} is not gettable with this integration.")
 
