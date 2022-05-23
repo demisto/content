@@ -379,8 +379,8 @@ def get_ticket_docs_helper(client, ticket_id):
     files = []
     if docs:
         for doc in docs:
-            doc_name = client.get_item('Document', doc['documents_id']).get('filename')
-            file = client.download_document(doc['documents_id'], filename=doc_name)
+            display_name = client.get_item('Document', doc['documents_id']).get('filename')
+            file = client.download_document(doc['documents_id'], filename=display_name)
             filename = os.path.split(file)[1]
             f = open(file, 'rb')
             data = f.read()
@@ -410,6 +410,11 @@ def output_format(res, output_type=None, readable=None):
     if res:
         if isinstance(res, list):
             keys = res[0].keys()
+        elif isinstance(res, str):
+            return CommandResults(outputs_prefix='GLPI.' + output_type,
+                                  outputs_key_field="id",
+                                  outputs=res,
+                                  raw_response=res)
         else:
             keys = res.keys()
         key_list = [key for key in keys]
@@ -724,7 +729,6 @@ def fetch_incidents(client, last_run, max_results, first_fetch_time):
     incidents = []
     demisto.info(f'Fetching GLPI tickets since: {str(search_date)}')
     items = client.list_incidents(search_date)
-    count_incidents = 0
     for item in items:
         ticket_id = item.get('2')
         ticket = client.get_ticket(ticket_id)
@@ -755,13 +759,12 @@ def fetch_incidents(client, last_run, max_results, first_fetch_time):
             'rawJSON': json.dumps(ticket)
         }
         incidents.append(incident)
-        count_incidents += 1
 
         # Update last run and add incident if the incident is newer than last fetch
         if incident_created_time > latest_created_time:  # type: ignore[operator]
             latest_created_time = incident_created_time
 
-        if count_incidents >= max_results:
+        if len(incidents) >= max_results:
             demisto.debug('max_results reached')
             break
 
@@ -784,10 +787,10 @@ def get_mapping_fields_command() -> GetMappingFieldsResponse:
         incident_type_scheme.add_field(field)
     mapping_response.add_scheme_type(incident_type_scheme)
 
-    incident_type_scheme = SchemeTypeMapping(type_name="GLPI Request")
+    request_type_scheme  = SchemeTypeMapping(type_name="GLPI Request")
     for field in GLPI_ARGS:
-        incident_type_scheme.add_field(field)
-    mapping_response.add_scheme_type(incident_type_scheme)
+        request_type_scheme .add_field(field)
+    mapping_response.add_scheme_type(request_type_scheme )
 
     return mapping_response
 
