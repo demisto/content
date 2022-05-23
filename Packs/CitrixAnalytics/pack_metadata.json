@@ -1,0 +1,22 @@
+{
+    "name": "Citrix Analytics",
+    "description": "<coming soon>",
+    "support": "partner",
+    "currentVersion": "1.0.0",
+    "author": "Citrix Systems Inc.",
+    "url": "https://www.citrix.com/support",
+    "email": "",
+    "categories": [
+        "Identity and Access Management"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "jayaraj.muthukumarasamy@citrix.com"
+    ]
+}

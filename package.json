@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "mdx-parse.js",
+  "type": "module",
   "directories": {
     "doc": "docs"
   },
@@ -20,9 +21,12 @@
   },
   "homepage": "https://github.com/demisto/content#readme",
   "dependencies": {
-    "@mdx-js/mdx": "^1.6.22",
+    "@mdx-js/mdx": "^2.1.1",
+    "@mdx-js/node-loader": "^2.1.1",
     "commander": "^5.1.0",
     "fs-extra": "^8.1.0",
-    "jsdoc-to-markdown": "^5.0.3"
+    "jsdoc-to-markdown": "^7.1.1",
+    "node-fetch": "^2.6.7",
+    "require": "^0.4.4"
   }
 }

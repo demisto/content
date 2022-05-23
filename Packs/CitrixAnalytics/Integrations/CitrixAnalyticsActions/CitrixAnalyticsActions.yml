@@ -1,0 +1,61 @@
+category: Identity and Access Management
+commonfields:
+  id: CitrixAnalyticsActions
+  version: -1
+configuration:
+- display: Citrix Cloud Token URL
+  defaultvalue: https://api-us.cloud.com/cctrustoauth2/root/tokens/clients
+  name: cc_token_url
+  required: true
+  type: 0
+- display: Citrix Cloud Client ID
+  name: cc_client_id
+  required: true
+  type: 0
+- display: Citrix Cloud Client Secret
+  name: cc_client_secret
+  required: true
+  type: 4
+- display: Citrix Analytics Actions API URL
+  name: cas_action_api_end_point
+  required: true
+  type: 0
+- display: Citrix Cloud Customer ID
+  name: cc_customer_id
+  required: true
+  type: 0
+description: '[This integration is used to execute Actions like LogOff User, Start Session Recording, Disable User, etc in Citrix Virtual Apps & Desktop.]'
+display: Citrix Analytics Actions
+name: CitrixAnalyticsActions
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: CAS User ID. This can be samAccountName, email address, etc
+      isArray: false
+      name: cas_user_id
+      required: true
+      secret: false
+    - default: false
+      description: Reason for executing Action in CAS
+      isArray: false
+      name: action_reason
+      required: true
+      secret: false
+    deprecated: false
+    description: Executes an Action in Citrix Analytics
+    execution: false
+    name: baseintegration-executeCASAction
+    outputs:
+    - contextPath: BaseIntegration.Output
+      description: '[Enter a description of the data returned in this output.]'
+      type: String
+  isfetch: false
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.10.4.29342
+fromversion: 6.2.0
+tests:
+- No tests (auto formatted)
