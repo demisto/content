@@ -8936,6 +8936,8 @@ class ObjectGetter:
             "ApplicationObject": ApplicationObject,
             "ApplicationGroup": ApplicationGroup,
             "SecurityProfileGroup": SecurityProfileGroup,
+            "SecurityRule": SecurityRule,
+            "NatRule": NatRule,
         }
         object_class = supported_object_types.get(object_type, None)
         if not object_class:

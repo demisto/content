@@ -8263,6 +8263,8 @@ script:
       - ApplicationGroup
       - LogForwardingProfile
       - SecurityProfileGroup
+      - SecurityRule
+      - NatRule
       required: true
       secret: false
     - default: false
