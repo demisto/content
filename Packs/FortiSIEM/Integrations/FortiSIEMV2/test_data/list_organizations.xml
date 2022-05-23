@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<response requestId="0" timestamp="1638778913885">
+    <result>
+        <domains>
+            <domain entityVersion="1" creationTime="1637650729781" custId="0" id="500003" lastModified="1637650741807" ownerId="0" xmlId="Domain$Super">
+                <collectors>
+                    <collector>EventCollector$null</collector>
+                </collectors>
+                <custProperties/>
+                <disabled>false</disabled>
+                <domainId>1</domainId>
+                <initialized>true</initialized>
+                <name>Super</name>
+            </domain>
+        </domains>
+        <eventForwardingRules></eventForwardingRules>
+    </result>
+</response>

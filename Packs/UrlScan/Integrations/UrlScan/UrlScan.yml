@@ -144,7 +144,6 @@ script:
       required: false
       secret: false
     - auto: PREDEFINED
-      defaultValue: 'public'
       description: The submission visibility. If specified, overrides the 'public' parameter.
       predefined:
         - public
@@ -269,7 +268,6 @@ script:
       required: true
       secret: false
     - auto: PREDEFINED
-      defaultValue: 'public'
       description: The submission visibility. If specified, overrides the 'public' parameter.
       predefined:
         - public

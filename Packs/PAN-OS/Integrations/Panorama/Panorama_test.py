@@ -1,5 +1,5 @@
 import json
-
+import io
 import pytest
 
 import demistomock as demisto
@@ -8,7 +8,8 @@ from unittest.mock import patch, MagicMock
 from panos.device import Vsys
 from panos.panorama import Panorama, DeviceGroup, Template
 from panos.firewall import Firewall
-from CommonServerPython import DemistoException
+from CommonServerPython import DemistoException, CommandResults
+from panos.objects import LogForwardingProfile, LogForwardingProfileMatchList
 
 integration_params = {
     'port': '443',
@@ -21,6 +22,11 @@ mock_demisto_args = {
     'threat_id': "11111",
     'vulnerability_profile': "mock_vuln_profile"
 }
+
+
+def load_json(path):
+    with io.open(path, mode='r', encoding='utf-8') as f:
+        return json.loads(f.read())
 
 
 @pytest.fixture(autouse=True)
@@ -719,6 +725,142 @@ def test_prettify_rule():
     assert prettify_rule == expected_prettify_rule
 
 
+class TestPcap:
+
+    @staticmethod
+    def test_list_pcaps_flow_with_no_existing_pcaps(mocker):
+        """
+        Given -
+            a response which indicates there are no pcap files on the firewall.
+
+        When -
+            listing all the available pcap files.
+
+        Then -
+            make sure that a message which indicates there are no Pcaps is printed out.
+        """
+        from Panorama import panorama_list_pcaps_command
+        no_pcaps_response = MockedResponse(
+            text='<?xml version="1.0"?>\n<response status="success">\n  '
+                 '<result>\n    <dir-listing/>\n  </result>\n</response>\n',
+            status_code=200,
+        )
+
+        mocker.patch('Panorama.http_request', return_value=no_pcaps_response)
+        results_mocker = mocker.patch.object(demisto, "results")
+        panorama_list_pcaps_command({'pcapType': 'filter-pcap'})
+        assert results_mocker.called
+        assert results_mocker.call_args.args[0] == 'PAN-OS has no Pcaps of type: filter-pcap.'
+
+    @staticmethod
+    @pytest.mark.parametrize(
+        'api_response, expected_context, expected_markdown_table', [
+            (
+                '<?xml version="1.0"?>\n<response status="success">\n  <result>\n    <dir-listing>\n      '
+                '<file>/pcap</file>\n      <file>/pcap_test</file>\n    </dir-listing>\n  </result>\n</response>\n',
+                ['pcap', 'pcap_test'],
+                '### List of Pcaps:\n|Pcap name|\n|---|\n| pcap |\n| pcap_test |\n'
+            ),
+            (
+                '<?xml version="1.0"?>\n<response status="success">\n  <result>\n    <dir-listing>\n      '
+                '<file>/pcap_test</file>\n    </dir-listing>\n  </result>\n</response>\n',
+                ['pcap_test'],
+                '### List of Pcaps:\n|Pcap name|\n|---|\n| pcap_test |\n'
+            )
+        ]
+    )
+    def test_list_pcaps_flow(mocker, api_response, expected_context, expected_markdown_table):
+        """
+        Given
+            - a response which indicates there are two pcaps in the firewall.
+            - a response which indicates there is only one pcap in the firewall.
+
+        When -
+            listing all the available pcap files.
+
+        Then -
+            make sure the response is parsed correctly.
+        """
+        from Panorama import panorama_list_pcaps_command
+        pcaps_response = MockedResponse(text=api_response, status_code=200)
+        mocker.patch('Panorama.http_request', return_value=pcaps_response)
+        results_mocker = mocker.patch.object(demisto, "results")
+        panorama_list_pcaps_command({'pcapType': 'filter-pcap'})
+        called_args = results_mocker.call_args[0][0]
+        assert list(*called_args['EntryContext'].values()) == expected_context
+        assert called_args['HumanReadable'] == expected_markdown_table
+
+    @staticmethod
+    def test_get_specific_pcap_flow_which_does_not_exist(mocker):
+        """
+        Given -
+           a response which indicates there are no pcap files on the firewall.
+
+        When -
+           trying to download a pcap file.
+
+        Then -
+           make sure that the error message from the api is actually returned.
+        """
+        from Panorama import panorama_get_pcap_command
+        no_pcaps_response = MockedResponse(
+            text='<?xml version="1.0"?>\n<response status="error">\n  <msg>\n    '
+                 '<line>test.pcap not present</line>\n  </msg>\n</response>\n',
+            status_code=200,
+            headers={'Content-Type': 'application/xml'}
+        )
+        mocker.patch('Panorama.http_request', return_value=no_pcaps_response)
+        with pytest.raises(Exception, match='line: test.pcap not present'):
+            panorama_get_pcap_command({'pcapType': 'filter-pcap', 'from': 'test'})
+
+    @staticmethod
+    def test_get_filter_pcap_without_from_argument(mocker):
+        """
+        Given -
+           a filter-pcap type without 'from' argument
+
+        When -
+           trying to download a filter pcap file.
+
+        Then -
+           make sure that the error message which states that the 'from' argument should be returned is presented.
+        """
+        from Panorama import panorama_get_pcap_command
+        no_pcaps_response = MockedResponse(
+            text='<?xml version="1.0"?>\n<response status="error">\n  <msg>\n    '
+                 '<line>test.pcap not present</line>\n  </msg>\n</response>\n',
+            status_code=200,
+            headers={'Content-Type': 'application/xml'}
+        )
+        mocker.patch('Panorama.http_request', return_value=no_pcaps_response)
+        with pytest.raises(Exception, match='cannot download filter-pcap without the from argument'):
+            panorama_get_pcap_command({'pcapType': 'filter-pcap'})
+
+
+@pytest.mark.parametrize('panorama_version', [8, 9])
+def test_panorama_list_applications_command(mocker, panorama_version):
+    """
+    Given
+       - http response of the list of applications.
+       - panorama version 8 & 9.
+
+    When
+       - getting a list of all the applications in panorama 8/9.
+
+    Then
+       - a valid context output is returned.
+    """
+    from Panorama import panorama_list_applications_command
+    mocker.patch('Panorama.http_request', return_value=load_json('test_data/list_applications_response.json'))
+    mocker.patch('Panorama.get_pan_os_major_version', return_value=panorama_version)
+    res = mocker.patch('demistomock.results')
+    panorama_list_applications_command(predefined='false')
+    assert res.call_args.args[0]['Contents'] == {
+        '@name': 'test-playbook-app', '@loc': 'Lab-Devices', 'subcategory': 'infrastructure', 'category': 'networking',
+        'technology': 'client-server', 'description': 'test-playbook-application-do-not-delete', 'risk': '1'
+    }
+
+
 class TestPanoramaEditRuleCommand:
     EDIT_SUCCESS_RESPONSE = {'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}}
 
@@ -782,12 +924,64 @@ class TestPanoramaEditRuleCommand:
         with pytest.raises(DemistoException):
             Panorama.panorama_edit_rule_command(args)
 
+    @staticmethod
+    def test_edit_rule_to_disabled_flow(mocker):
+        """
+        Given -
+            arguments to change a pre-rule to 'disabled'
+
+        When -
+            running panorama_edit_rule_command function.
+
+        Then -
+            make sure the entire command flow succeeds.
+        """
+        from Panorama import panorama_edit_rule_command
+        args = {
+            "rulename": "test",
+            "element_to_change": "disabled",
+            "element_value": "yes",
+            "behaviour": "replace",
+            "pre_post": "pre-rulebase"
+        }
+        mocker.patch("Panorama.http_request", return_value=TestPanoramaEditRuleCommand.EDIT_SUCCESS_RESPONSE)
+        results_mocker = mocker.patch.object(demisto, "results")
+        panorama_edit_rule_command(args)
+        assert results_mocker.called
+
+    @staticmethod
+    def test_edit_rule_to_disabled_with_no_element_value(mocker):
+        """
+        Given -
+            arguments to change a pre-rule to 'disabled' when the element value should be set to 'no'
+
+        When -
+            running panorama_edit_rule_command function.
+
+        Then -
+            make sure that the `params['element']` contains the 'no' element value.
+        """
+        from Panorama import panorama_edit_rule_command
+        args = {
+            "rulename": "test",
+            "element_to_change": "disabled",
+            "element_value": "no",
+            "behaviour": "replace",
+            "pre_post": "pre-rulebase"
+        }
+        http_req_mocker = mocker.patch(
+            "Panorama.http_request", return_value=TestPanoramaEditRuleCommand.EDIT_SUCCESS_RESPONSE
+        )
+        panorama_edit_rule_command(args)
+        assert http_req_mocker.call_args.kwargs.get('body').get('element') == '<disabled>no</disabled>'
+
 
 class MockedResponse:
-    def __init__(self, text, status_code, reason):
+    def __init__(self, text, status_code, reason='', headers=None):
         self.status_code = status_code
         self.text = text
         self.reason = reason
+        self.headers = headers
 
 
 @pytest.mark.parametrize('args, expected_request_params, request_result, expected_demisto_result',
@@ -1040,12 +1234,42 @@ MOCK_FIREWALL_2_SERIAL = "222222222222222"
 MOCK_FIREWALL_3_SERIAL = "333333333333333"
 
 
+def mock_software_object():
+    """Mocks PanDevice.software"""
+
+    class MockSoftwareObject:
+        versions = {
+            "9.1.0": {
+                "version": "9.1.0",
+                "filename": "Pan-9.1.0",
+                "size": 150,
+                "size_kb": 150000,
+                "release_notes": "https://releasenotes.paloaltonetworks.com",
+                "downloaded": True,
+                "current": True,
+                "latest": True,
+                "uploaded": True
+            }
+        }
+
+        def check(self):
+            pass
+
+        def download(self, *args, **kwargs):
+            pass
+
+        def install(self, *args, **kwargs):
+            pass
+
+    return MockSoftwareObject()
+
+
 @pytest.fixture
 def mock_firewall():
     mock_firewall = MagicMock(spec=Firewall)
     mock_firewall.serial = MOCK_FIREWALL_1_SERIAL
     mock_firewall.hostname = None
-
+    mock_firewall.software = mock_software_object()
     return mock_firewall
 
 
@@ -1054,6 +1278,7 @@ def mock_panorama():
     mock_panorama = MagicMock(spec=Panorama)
     mock_panorama.serial = MOCK_PANORAMA_SERIAL
     mock_panorama.hostname = None
+    mock_panorama.software = mock_software_object()
     return mock_panorama
 
 
@@ -1075,6 +1300,241 @@ def mock_vsys():
     return [mock_vsys]
 
 
+def mock_good_log_fowarding_profile():
+    good_log_forwarding_profile = LogForwardingProfile()
+    good_log_forwarding_profile.enhanced_logging = True
+    return [good_log_forwarding_profile]
+
+
+def mock_bad_log_fowarding_profile():
+    bad_Log_forwarding_profile = LogForwardingProfile()
+    bad_Log_forwarding_profile.enhanced_logging = False
+    bad_Log_forwarding_profile.name = "test-bad"
+    return [bad_Log_forwarding_profile]
+
+
+def mock_good_log_forwarding_profile_match_list():
+    return [
+        LogForwardingProfileMatchList(
+            log_type="traffic"
+        ),
+        LogForwardingProfileMatchList(
+            log_type="threat"
+        ),
+    ]
+
+
+def mock_good_vulnerability_profile():
+    from Panorama import VulnerabilityProfile, VulnerabilityProfileRule
+    vulnerability_profile = VulnerabilityProfile()
+    vulnerability_profile.children = [
+        VulnerabilityProfileRule(
+            severity=["critical"],
+            is_reset_both=True
+        ),
+        VulnerabilityProfileRule(
+            severity=["high"],
+            is_reset_both=True
+        ),
+        VulnerabilityProfileRule(
+            severity=["medium"],
+            is_alert=True
+        ),
+        VulnerabilityProfileRule(
+            severity=["low"],
+            is_alert=True
+        ),
+    ]
+
+    return vulnerability_profile
+
+
+def mock_bad_vulnerability_profile():
+    from Panorama import VulnerabilityProfile, VulnerabilityProfileRule
+    vulnerability_profile = VulnerabilityProfile()
+    vulnerability_profile.children = [
+        VulnerabilityProfileRule(
+            severity=["critical"],
+            is_reset_both=True
+        ),
+        VulnerabilityProfileRule(
+            severity=["high"],
+            is_reset_both=True
+        ),
+        VulnerabilityProfileRule(
+            severity=["medium"],
+            is_alert=True
+        ),
+    ]
+
+    return vulnerability_profile
+
+
+def mock_good_spyware_profile():
+    from Panorama import AntiSpywareProfile, AntiSpywareProfileRule
+    antispyware_profile = AntiSpywareProfile()
+    antispyware_profile.children = [
+        AntiSpywareProfileRule(
+            severity=["critical"],
+            is_reset_both=True
+        ),
+        AntiSpywareProfileRule(
+            severity=["high"],
+            is_reset_both=True
+        ),
+        AntiSpywareProfileRule(
+            severity=["medium"],
+            is_alert=True
+        ),
+        AntiSpywareProfileRule(
+            severity=["low"],
+            is_alert=True
+        ),
+    ]
+
+    return antispyware_profile
+
+
+def mock_bad_spyware_profile():
+    from Panorama import AntiSpywareProfile, AntiSpywareProfileRule
+    antispyware_profile = AntiSpywareProfile()
+    antispyware_profile.children = [
+        AntiSpywareProfileRule(
+            severity=["critical"],
+            is_reset_both=True
+        ),
+        AntiSpywareProfileRule(
+            severity=["high"],
+            is_reset_both=True
+        ),
+        AntiSpywareProfileRule(
+            severity=["medium"],
+            is_alert=True
+        )
+    ]
+
+    return antispyware_profile
+
+
+def mock_good_security_zones():
+    from Panorama import Zone
+    zone = Zone()
+    zone.log_setting = "example-log-setting"
+    return [
+        Zone(log_setting="example"),
+        Zone(log_setting="second_example")
+    ]
+
+
+def mock_bad_security_zones():
+    from Panorama import Zone
+    zone = Zone()
+    zone.log_setting = "example-log-setting"
+    return [
+        Zone(name="test-bad"),
+        Zone(log_setting="second_example")
+    ]
+
+
+def mock_good_security_rules():
+    from Panorama import SecurityRule
+    return [
+        SecurityRule(
+            group="spg",
+            log_setting="example",
+            log_end=True
+        )
+    ]
+
+
+def mock_bad_security_rules():
+    from Panorama import SecurityRule
+    return [
+        # Missing SPG
+        SecurityRule(
+            name="test-bad",
+            log_setting="example",
+            log_end=True
+        ),
+        # Missing log profile
+        SecurityRule(
+            name="test-bad-no-lfp",
+            group="spg",
+            log_end=True
+        ),
+        # Missing log at session end
+        SecurityRule(
+            name="test-bad-no-spg",
+            group="spg",
+            log_setting="example",
+        )
+    ]
+
+
+def mock_good_url_filtering_profile():
+    from Panorama import URLFilteringProfile, BestPractices
+    url_filtering_profile = URLFilteringProfile()
+    url_filtering_profile.block = BestPractices.URL_BLOCK_CATEGORIES
+    return url_filtering_profile
+
+
+def mock_bad_url_filtering_profile():
+    from Panorama import URLFilteringProfile
+    url_filtering_profile = URLFilteringProfile()
+    url_filtering_profile.block = ["hacking"]
+    return url_filtering_profile
+
+
+def mock_issue_with_underscores():
+    return {
+        "container_name": "test-dg",
+        "issue_code": "BP-V-1",
+        "description": "Log forwarding profile is missing enhanced application logging",
+        "name": "test-bad",
+        "hostid": MOCK_FIREWALL_1_SERIAL
+    }
+
+
+def mock_enhanced_log_forwarding_issue_dict():
+    return {
+        "containername": "test-dg",
+        "issuecode": "BP-V-1",
+        "description": "Log forwarding profile is missing enhanced application logging",
+        "name": "test-bad",
+        "hostid": MOCK_FIREWALL_1_SERIAL
+    }
+
+
+def mock_security_zone_no_log_setting_issue_dict():
+    return {
+        "containername": "test-dg",
+        "issuecode": "BP-V-7",
+        "description": "Security zone has no log forwarding setting",
+        "name": "test-bad",
+        "hostid": MOCK_FIREWALL_1_SERIAL
+    }
+
+
+def mock_security_rule_log_settings_issue_dict():
+    return {
+        "containername": "test-dg",
+        "issuecode": "BP-V-8",
+        "description": "Security rule has no log setting",
+        "name": "test-bad-no-lfp",
+        "hostid": MOCK_FIREWALL_1_SERIAL
+    }
+
+
+def mock_security_rule_security_profile_group_issue_dict():
+    return {
+        "containername": "test-dg",
+        "issuecode": "BP-V-10",
+        "description": "Security rule has no security profile group",
+        "name": "test-bad-no-spg",
+        "hostid": MOCK_FIREWALL_1_SERIAL
+    }
+
+
 @pytest.fixture
 def mock_topology(mock_panorama, mock_firewall):
     from Panorama import Topology
@@ -1088,6 +1548,9 @@ def mock_topology(mock_panorama, mock_firewall):
     topology.ha_active_devices = {
         MOCK_PANORAMA_SERIAL: mock_panorama,
         MOCK_FIREWALL_1_SERIAL: mock_firewall
+    }
+    topology.ha_pair_serials = {
+        MOCK_FIREWALL_1_SERIAL: MOCK_FIREWALL_2_SERIAL,
     }
     return topology
 
@@ -1251,6 +1714,26 @@ class TestUtilityFunctions:
         device_group = mock_device_groups()[0]
         assert resolve_container_name(device_group) == "test-dg"
 
+    def test_dataclass_to_command_results(self):
+        """Given a list of dataclasses, check that this function correctly converts it to a commandResults object."""
+        from Panorama import dataclasses_to_command_results, PanosObjectReference
+        test_dataclass = PanosObjectReference(
+            hostid=MOCK_FIREWALL_1_SERIAL,
+            container_name="test",
+            object_type="TestObject",
+            name="test_name"
+        )
+        results = dataclasses_to_command_results(test_dataclass)
+        # Check we get the right table headers when no additional arguments are given
+        assert "container_name|hostid|name|object_type" in results.readable_output
+        assert "### PAN-OS Object" in results.readable_output
+
+        results = dataclasses_to_command_results(
+            test_dataclass, override_table_name="Test Table", override_table_headers=["hostid", "name", "container_name"])
+        # When we provide overrides, check they are rendered correctly in the readable output
+        assert "hostid|name|container_name" in results.readable_output
+        assert "### Test Table" in results.readable_output
+
 
 class TestPanoramaCommand:
     """
@@ -1292,6 +1775,7 @@ class TestPanoramaCommand:
 class TestUniversalCommand:
     """Test all the commands relevant to both Panorama and Firewall devices"""
     SHOW_SYSTEM_INFO_XML = "test_data/show_system_info.xml"
+    SHOW_JOB_XML = "test_data/show_jobs_all.xml"
 
     @patch("Panorama.run_op_command")
     def test_get_system_info(self, patched_run_op_command, mock_topology):
@@ -1310,6 +1794,94 @@ class TestUniversalCommand:
             for value in result_dataclass.__dict__.values():
                 assert value
 
+    def test_get_available_software(self, mock_topology):
+        """
+        Test we can convert result from PanDevice.software.check() into the correct dataclasses
+        This does not use patching, but instead the mock objects themselves from mock_topology
+        """
+        from Panorama import UniversalCommand
+
+        result = UniversalCommand.get_available_software(mock_topology)
+        # Check all attributes of summary data have values
+        for result_dataclass in result.summary_data:
+            for value in result_dataclass.__dict__.values():
+                assert value
+
+    @patch("Panorama.run_op_command")
+    def test_get_jobs(self, patched_run_op_command, mock_topology):
+        """Given the output XML for show jobs all assert it is parsed into the dataclasses correctly."""
+        from Panorama import UniversalCommand
+        patched_run_op_command.return_value = load_xml_root_from_test_file(TestUniversalCommand.SHOW_JOB_XML)
+
+        result = UniversalCommand.show_jobs(mock_topology)
+        # Check all attributes of result data have values
+        for result_dataclass in result:
+            for key, value in result_dataclass.__dict__.items():
+                # Nullable Values
+                if key not in ["description", "user"]:
+                    assert value
+
+    def test_download_software(self, mock_topology):
+        """
+        Test the download software function returns the correct data.
+        The pan-os-python download software actually doesn't return any output itself unless it errors, so we just check our
+        dataclass is set correctly within the function and retuned.
+        """
+        from Panorama import UniversalCommand
+
+        result = UniversalCommand.download_software(mock_topology, "9.1.0")
+        # Check all attributes of summary data have values
+        for result_dataclass in result.summary_data:
+            for value in result_dataclass.__dict__.values():
+                assert value
+
+    def test_reboot(self, mock_topology):
+        """
+        Test the reboot function returns the corect data
+        The pan-os-python reboot method actually doesn't return any output itself unless it errors, so we just check our
+        dataclass is set correctly within the function and returned by this function.
+        """
+        from Panorama import UniversalCommand
+
+        result = UniversalCommand.reboot(mock_topology, MOCK_PANORAMA_SERIAL)
+        # Check all attributes of summary data have values
+        for result_dataclass in result.summary_data:
+            for value in result_dataclass.__dict__.values():
+                assert value
+
+        # We also want to check that if an empty string is passed, an error is returned
+        with pytest.raises(
+            DemistoException,
+            match="filter_str  is not the exact ID of a host in this topology; use a more specific filter string."
+        ):
+            UniversalCommand.reboot(mock_topology, "")
+
+        # Lets also check that if an invalid hostid is given, we also raise.
+        with pytest.raises(
+            DemistoException,
+            match="filter_str badserialnumber is not the exact ID of "
+                  "a host in this topology; use a more specific filter string."
+        ):
+            UniversalCommand.reboot(mock_topology, "badserialnumber")
+
+    @patch("Panorama.run_op_command")
+    def test_system_status(self, patched_run_op_command, mock_topology):
+        """
+        Given a topology object with a mixture of systems in it, assert that check_system_availability returns the correct status
+        based on whether devices are connected or not.
+        """
+        from Panorama import UniversalCommand
+
+        patched_run_op_command.return_value = load_xml_root_from_test_file(TestUniversalCommand.SHOW_SYSTEM_INFO_XML)
+        # Check a normal, up device
+        result = UniversalCommand.check_system_availability(mock_topology, MOCK_PANORAMA_SERIAL)
+        assert result.up
+
+        # Check a device that isn't in the topology
+        result = UniversalCommand.check_system_availability(mock_topology, "fake")
+        assert result
+        assert not result.up
+
 
 class TestFirewallCommand:
     """Test all the commands relevant only to Firewall instances"""
@@ -1317,6 +1889,9 @@ class TestFirewallCommand:
     SHOW_ARP_XML = "test_data/show_arp_all.xml"
     SHOW_ROUTING_SUMMARY_XML = "test_data/show_routing_summary.xml"
     SHOW_ROUTING_ROUTE_XML = "test_data/show_routing_route.xml"
+    SHOW_GLOBAL_COUNTERS_XML = "test_data/show_counter_global.xml"
+    SHOW_BGP_PEERS_XML = "test_data/show_routing_protocol_bgp_peer.xml"
+    SHOW_HA_STATE_XML = "test_data/show_ha_state_enabled.xml"
 
     @patch("Panorama.run_op_command")
     def test_get_arp_table(self, patched_run_op_command, mock_topology):
@@ -1366,3 +1941,359 @@ class TestFirewallCommand:
         for result_dataclass in result.summary_data:
             for value in result_dataclass.__dict__.values():
                 assert value
+
+    @patch("Panorama.run_op_command")
+    def test_get_counters(self, patched_run_op_command, mock_topology):
+        """Given the output XML for show counters, assert it is parsed into the dataclasses correctly."""
+        from Panorama import FirewallCommand
+        patched_run_op_command.return_value = load_xml_root_from_test_file(TestFirewallCommand.SHOW_GLOBAL_COUNTERS_XML)
+        result = FirewallCommand.get_counter_global(mock_topology)
+        # Check all attributes of result data have values
+        for result_dataclass in result.result_data:
+            for value in result_dataclass.__dict__.values():
+                # Attribute may be int 0
+                assert value is not None
+
+        # Check all attributes of summary data have values
+        for result_dataclass in result.summary_data:
+            for value in result_dataclass.__dict__.values():
+                assert value
+
+    @patch("Panorama.run_op_command")
+    def test_get_bgp_peers(self, patched_run_op_command, mock_topology):
+        """
+        Given the output XML for show routing protocol bgp peers,
+        assert it is parsed into the dataclasses correctly.
+        """
+        from Panorama import FirewallCommand
+        patched_run_op_command.return_value = load_xml_root_from_test_file(TestFirewallCommand.SHOW_BGP_PEERS_XML)
+        result = FirewallCommand.get_bgp_peers(mock_topology)
+        # Check all attributes of result data have values
+        for result_dataclass in result.result_data:
+            for value in result_dataclass.__dict__.values():
+                # Attribute may be int 0
+                assert value is not None
+
+        # Check all attributes of summary data have values
+        for result_dataclass in result.summary_data:
+            for value in result_dataclass.__dict__.values():
+                # Attribute may be int 0
+                assert value is not None
+
+    @patch("Panorama.run_op_command")
+    def test_get_ha_status(self, patched_run_op_command, mock_topology):
+        """Given the XML output for a HA firewall, ensure the dataclasses are parsed correctly"""
+        from Panorama import FirewallCommand
+        patched_run_op_command.return_value = load_xml_root_from_test_file(TestFirewallCommand.SHOW_HA_STATE_XML)
+        result = FirewallCommand.get_ha_status(mock_topology)
+        # Check all attributes of result data have values
+        for result_dataclass in result:
+            for value in result_dataclass.__dict__.values():
+                # Attribute may be int 0
+                assert value is not None
+
+    @patch("Panorama.run_op_command")
+    def test_update_ha_state(self, patched_run_op_command, mock_topology):
+        """
+        Test the HA Update command returns the correct data
+        """
+        from Panorama import FirewallCommand
+
+        result_dataclass = FirewallCommand.change_status(mock_topology, MOCK_FIREWALL_1_SERIAL, "operational")
+        # Check all attributes of summary data have values
+        for value in result_dataclass.__dict__.values():
+            assert value
+
+
+@pytest.mark.parametrize('args, expected_request_params, request_result, expected_demisto_result',
+                         [pytest.param({'anti_spyware_profile_name': 'fake_profile_name',
+                                        'dns_signature_source': 'edl_name', 'action': 'allow'},
+                                       {
+                                           'action': 'set',
+                                           'type': 'config',
+                                           'xpath': "/config/devices/entry[@name='localhost.localdomain']"
+                                                    "/device-group/entry[@name='fakeDeviceGroup']"
+                                                    "/profiles/spyware/entry[@name='fake_profile_name']",
+                                           'key': 'fakeAPIKEY!',
+                                           'element': '<botnet-domains>'
+                                                      '<lists>'
+                                                      '<entry name="edl_name"><packet-capture>disable</packet-capture>'
+                                                      '<action><allow/></action></entry>'
+                                                      '</lists>'
+                                                      '</botnet-domains>'},
+                                       MockedResponse(text='<response status="success" code="20"><msg>'
+                                                           'command succeeded</msg></response>', status_code=200,
+                                                      reason=''),
+                                       '**success**',
+                                       ),
+                          ])
+def test_panorama_apply_dns_command(mocker, args, expected_request_params, request_result, expected_demisto_result):
+    """
+    Given:
+        - command args
+        - request result
+    When:
+        - Running panorama-apply-dns
+    Then:
+        - Assert the request url is as expected
+        - Assert Command results contains the relevant result information
+    """
+    import Panorama
+    import requests
+    from Panorama import apply_dns_signature_policy_command
+
+    Panorama.API_KEY = 'fakeAPIKEY!'
+    Panorama.DEVICE_GROUP = 'fakeDeviceGroup'
+    request_mock = mocker.patch.object(requests, 'request', return_value=request_result)
+    command_result: CommandResults = apply_dns_signature_policy_command(args)
+
+    called_request_params = request_mock.call_args.kwargs['params']  # The body part of the request
+    assert called_request_params == expected_request_params
+    assert command_result.readable_output == expected_demisto_result
+
+
+class TestHygieneFunctions:
+    @patch("Panorama.Template.refreshall", return_value=[])
+    @patch("Panorama.Vsys.refreshall", return_value=[])
+    @patch("Panorama.DeviceGroup.refreshall", return_value=mock_device_groups())
+    def test_check_log_forwarding(self, _, __, ___, mock_topology):
+        """
+        Test the Hygiene Configuration lookups can validate the log forwarding settings of a device
+        """
+        from Panorama import HygieneLookups, LogForwardingProfile, LogForwardingProfileMatchList
+        # First, test that a correctly configured LFP and match list don't return a failure
+        LogForwardingProfile.refreshall = MagicMock(return_value=mock_good_log_fowarding_profile())
+        LogForwardingProfileMatchList.refreshall = MagicMock(return_value=mock_good_log_forwarding_profile_match_list())
+        result = HygieneLookups.check_log_forwarding_profiles(mock_topology)
+        assert len(result.result_data) == 0
+
+        # Trim the "threat" log type and cause a missing log type error
+        LogForwardingProfileMatchList.refreshall = MagicMock(return_value=[mock_good_log_forwarding_profile_match_list()[0]])
+        result = HygieneLookups.check_log_forwarding_profiles(mock_topology)
+        # Note; because we mock the topology with multiple devices, it appears that the same LFP is missing in each Container.
+        # This is expected.
+        assert len(result.result_data) == 3
+        assert result.result_data[0].description == "Log forwarding profile missing log type 'threat'."
+
+    @patch("Panorama.Template.refreshall", return_value=[])
+    @patch("Panorama.Vsys.refreshall", return_value=[])
+    @patch("Panorama.DeviceGroup.refreshall", return_value=mock_device_groups())
+    def test_check_vulnerability_profiles(self, _, __, ___, mock_topology):
+        """
+        Test the Hygiene Configuration lookups can validate the vulnerability profiles
+        """
+        from Panorama import HygieneLookups, VulnerabilityProfile, BestPractices
+        # First, test that we can get the conforming threat profile, of which there should be one
+        result = HygieneLookups.get_conforming_threat_profiles(
+            [mock_good_vulnerability_profile(), mock_bad_vulnerability_profile()],
+            minimum_block_severities=BestPractices.VULNERABILITY_BLOCK_SEVERITIES,
+            minimum_alert_severities=BestPractices.VULNERABILITY_ALERT_THRESHOLD
+        )
+        assert len(result) == 1
+
+        VulnerabilityProfile.refreshall = MagicMock(
+            return_value=[mock_good_vulnerability_profile(), mock_bad_vulnerability_profile()]
+        )
+
+        result = HygieneLookups.check_vulnerability_profiles(mock_topology)
+        # Should return no results, as at least one vulnerability profile matches.
+        assert len(result.result_data) == 0
+
+        VulnerabilityProfile.refreshall = MagicMock(
+            return_value=[mock_bad_vulnerability_profile()]
+        )
+
+        result = HygieneLookups.check_vulnerability_profiles(mock_topology)
+        # Should return one issue, as no Vulnerability profile matches.
+        assert len(result.result_data) == 1
+
+    @patch("Panorama.Template.refreshall", return_value=[])
+    @patch("Panorama.Vsys.refreshall", return_value=[])
+    @patch("Panorama.DeviceGroup.refreshall", return_value=mock_device_groups())
+    def test_check_spyware_profiles(self, _, __, ___, mock_topology):
+        """
+        Test the Hygiene Configuration lookups can validate the Spyware profiles given combinations of good and bad profile
+        objects.
+        """
+        from Panorama import HygieneLookups, AntiSpywareProfile
+        AntiSpywareProfile.refreshall = MagicMock(
+            return_value=[mock_good_spyware_profile(), mock_bad_spyware_profile()]
+        )
+
+        # Check when at least one good profile exists - should return no results
+        result = HygieneLookups.check_spyware_profiles(mock_topology)
+        assert not result.result_data
+
+    @patch("Panorama.Template.refreshall", return_value=[])
+    @patch("Panorama.Vsys.refreshall", return_value=[])
+    @patch("Panorama.DeviceGroup.refreshall", return_value=mock_device_groups())
+    def test_check_url_filtering_profiles(self, _, __, ___, mock_topology):
+        """
+        Test the Hygiene Configuration lookups can validate the URL filtering profiles given combinations of good and bad
+        profiles.
+        """
+        from Panorama import HygieneLookups, URLFilteringProfile
+        URLFilteringProfile.refreshall = MagicMock(
+            return_value=[mock_good_url_filtering_profile()]
+        )
+
+        # Check when a good profile exists - should return no results
+        result = HygieneLookups.check_url_filtering_profiles(mock_topology)
+        assert not result.result_data
+
+        # When there's only bad, should return a result
+        URLFilteringProfile.refreshall = MagicMock(
+            return_value=[mock_bad_url_filtering_profile()]
+        )
+
+        # Check when a good profile exists - should return no results
+        result = HygieneLookups.check_url_filtering_profiles(mock_topology)
+        assert result.result_data
+
+    @patch("Panorama.Template.refreshall", return_value=mock_templates())
+    @patch("Panorama.Vsys.refreshall", return_value=[])
+    @patch("Panorama.DeviceGroup.refreshall", return_value=[])
+    def test_check_security_zones(self, _, __, ___, mock_topology):
+        """
+        Test the Hygiene Configuration lookups can validate security zones given a comination of good and bad zones.
+        """
+        from Panorama import HygieneLookups, Zone
+        Zone.refreshall = MagicMock(
+            return_value=mock_good_security_zones()
+        )
+
+        result = HygieneLookups.check_security_zones(mock_topology)
+        # Result data should be empty as there are only good zones
+        assert not result.result_data
+
+        Zone.refreshall = MagicMock(
+            return_value=mock_bad_security_zones()
+        )
+
+        result = HygieneLookups.check_security_zones(mock_topology)
+        # Result data should have one issue as there is a misconfigured security zone
+        assert result.result_data
+        assert "BP-V-7" in [x.issue_code for x in result.result_data]
+
+    @patch("Panorama.Template.refreshall", return_value=[])
+    @patch("Panorama.Vsys.refreshall", return_value=[])
+    @patch("Panorama.DeviceGroup.refreshall", return_value=mock_device_groups())
+    def test_check_security_rules(self, _, __, ___, mock_topology):
+        """
+        Test the Hygiene Configuration lookups can validate security zones given a comination of good and bad zones.
+        """
+        from Panorama import HygieneLookups, SecurityRule
+        SecurityRule.refreshall = MagicMock(
+            return_value=mock_good_security_rules()
+        )
+
+        result = HygieneLookups.check_security_rules(mock_topology)
+        # Should not raise any issues
+        assert not result.result_data
+
+        SecurityRule.refreshall = MagicMock(
+            return_value=mock_bad_security_rules()
+        )
+
+        result = HygieneLookups.check_security_rules(mock_topology)
+        # Should raise issues for each issue type
+        assert result.result_data
+        assert "BP-V-8" in [x.issue_code for x in result.result_data]
+        assert "BP-V-9" in [x.issue_code for x in result.result_data]
+        assert "BP-V-10" in [x.issue_code for x in result.result_data]
+
+    def test_hygiene_issue_dict_to_object(self):
+        """
+        Tests the function can convert a given dictionary of an issue, returned by a hygiene lookup, back into the relevent
+        object. This is to allow the check commands to pass their results directly into the fix commands via XSOAR.
+        """
+        from Panorama import hygiene_issue_dict_to_object, ConfigurationHygieneIssue
+        result = hygiene_issue_dict_to_object(mock_enhanced_log_forwarding_issue_dict())
+        assert isinstance(result[0], ConfigurationHygieneIssue)
+        assert len(result) == 1
+        for value in result[0].__dict__.values():
+            assert value
+
+        # If the issue is passed directly from the other command make sure this function works also
+        result = hygiene_issue_dict_to_object(mock_issue_with_underscores())
+        assert isinstance(result[0], ConfigurationHygieneIssue)
+        assert len(result) == 1
+        for value in result[0].__dict__.values():
+            assert value
+
+    @patch("Panorama.Template.refreshall", return_value=[])
+    @patch("Panorama.Vsys.refreshall", return_value=[])
+    @patch("Panorama.DeviceGroup.refreshall", return_value=mock_device_groups())
+    def test_fix_log_forwarding_profile_enhanced_logging(self, _, __, ___, mock_topology):
+        """
+        Tests wthe fix function for enabling enhanced application logging on log forwarding profiles, given an issue referring
+        to a bad log forwarding profile.
+        """
+        from Panorama import hygiene_issue_dict_to_object, LogForwardingProfile, HygieneRemediation
+        issues = hygiene_issue_dict_to_object(mock_enhanced_log_forwarding_issue_dict())
+
+        LogForwardingProfile.refreshall = MagicMock(return_value=mock_bad_log_fowarding_profile())
+        LogForwardingProfile.apply = MagicMock()
+
+        result = HygieneRemediation.fix_log_forwarding_profile_enhanced_logging(mock_topology, issues)
+        # Should be at least one result
+        assert result
+        for value in result[0].__dict__.values():
+            assert value
+
+    @patch("Panorama.Template.refreshall", return_value=[])
+    @patch("Panorama.Vsys.refreshall", return_value=[])
+    @patch("Panorama.DeviceGroup.refreshall", return_value=mock_device_groups())
+    def test_fix_security_zone_no_log_setting(self, _, __, ___, mock_topology):
+        """
+        Tests wthe fix function for setting a log forwarding profile on security zones when none is currently set
+        """
+        from Panorama import hygiene_issue_dict_to_object, Zone, HygieneRemediation
+        issues = hygiene_issue_dict_to_object(mock_security_zone_no_log_setting_issue_dict())
+
+        Zone.refreshall = MagicMock(return_value=mock_bad_security_zones())
+        Zone.apply = MagicMock()
+
+        result = HygieneRemediation.fix_security_zone_no_log_setting(mock_topology, issues, "test")
+        # Should be at least one result, as we provided an issue.
+        assert result
+        for value in result[0].__dict__.values():
+            assert value
+
+    @patch("Panorama.Template.refreshall", return_value=[])
+    @patch("Panorama.Vsys.refreshall", return_value=[])
+    @patch("Panorama.DeviceGroup.refreshall", return_value=mock_device_groups())
+    def test_fix_security_rule_log_settings(self, _, __, ___, mock_topology):
+        """
+        Tests the function that adds a log forwarding profile to a security rule when one isn't present.
+        """
+        from Panorama import hygiene_issue_dict_to_object, SecurityRule, HygieneRemediation
+        issues = hygiene_issue_dict_to_object(mock_security_rule_log_settings_issue_dict())
+
+        SecurityRule.refreshall = MagicMock(return_value=mock_bad_security_rules())
+        SecurityRule.apply = MagicMock()
+
+        result = HygieneRemediation.fix_secuity_rule_log_settings(mock_topology, issues, "test")
+        # Should be at least one result, as we provided an issue.
+        assert result
+        for value in result[0].__dict__.values():
+            assert value
+
+    @patch("Panorama.Template.refreshall", return_value=[])
+    @patch("Panorama.Vsys.refreshall", return_value=[])
+    @patch("Panorama.DeviceGroup.refreshall", return_value=mock_device_groups())
+    def test_fix_security_rule_profile_settings(self, _, __, ___, mock_topology):
+        """
+        Tests the function that adds sets the security profile group when no SPG is currently provided
+        """
+        from Panorama import hygiene_issue_dict_to_object, SecurityRule, HygieneRemediation
+        issues = hygiene_issue_dict_to_object(mock_security_rule_log_settings_issue_dict())
+
+        SecurityRule.refreshall = MagicMock(return_value=mock_bad_security_rules())
+        SecurityRule.apply = MagicMock()
+
+        result = HygieneRemediation.fix_security_rule_security_profile_group(mock_topology, issues, "test")
+        # Should be at least one result, as we provided an issue.
+        assert result
+        for value in result[0].__dict__.values():
+            assert value

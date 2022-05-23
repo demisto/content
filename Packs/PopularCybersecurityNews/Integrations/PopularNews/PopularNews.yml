@@ -3,8 +3,7 @@ commonfields:
   id: Popular News
   version: -1
 configuration:
-- defaultvalue: ""
-  display: "Trust any certificate (not secure)"
+- display: "Trust any certificate (not secure)"
   name: insecure
   required: false
   type: 8

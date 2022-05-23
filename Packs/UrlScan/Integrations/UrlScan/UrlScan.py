@@ -42,9 +42,11 @@ RELATIONSHIP_TYPE = {
 
 
 class Client:
-    def __init__(self, api_key='', scan_visibility='public', threshold=None, use_ssl=False, reliability=DBotScoreReliability.C):
+    def __init__(self, api_key='', user_agent='', scan_visibility=None, threshold=None, use_ssl=False,
+                 reliability=DBotScoreReliability.C):
         self.base_url = 'https://urlscan.io/api/v1/'
         self.api_key = api_key
+        self.user_agent = user_agent
         self.threshold = threshold
         self.scan_visibility = scan_visibility
         self.use_ssl = use_ssl
@@ -105,6 +107,8 @@ def schedule_polling(items_to_schedule):
 def http_request(client, method, url_suffix, json=None, wait=0, retries=0):
     headers = {'API-Key': client.api_key,
                'Accept': 'application/json'}
+    if client.user_agent:
+        headers['User-Agent'] = client.user_agent
     if method == 'POST':
         headers.update({'Content-Type': 'application/json'})
     demisto.debug(
@@ -166,8 +170,11 @@ def polling(client, uuid):
     TIMEOUT = int(demisto.args().get('timeout', 60))
     uri = client.base_url + 'result/{}'.format(uuid)
 
+    headers = {'API-Key': client.api_key}
+    if client.user_agent:
+        headers['User-Agent'] = client.user_agent
     ready = poll(
-        lambda: requests.get(uri, headers={'API-Key': client.api_key}, verify=client.use_ssl).status_code == 200,
+        lambda: requests.get(uri, headers=headers, verify=client.use_ssl).status_code == 200,
         step=5,
         ignore_exceptions=(requests.exceptions.ConnectionError),
         timeout=int(TIMEOUT)
@@ -767,8 +774,12 @@ def main():
     else:
         Exception("Please provide a valid value for the Source Reliability parameter.")
 
+    demisto_version = get_demisto_version_as_str()
+    pack_version = get_pack_version()
+
     client = Client(
         api_key=api_key,
+        user_agent='xsoar-{}/urlscan-{}'.format(demisto_version, pack_version),
         scan_visibility=scan_visibility,
         threshold=threshold,
         use_ssl=use_ssl,

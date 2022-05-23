@@ -38,10 +38,12 @@ section_start() {
     start_time=$(date +%s)
     start="$(echo "$start" | sed -e "s/the_time/$start_time/" -e "s/section_id/$section_id/" -e "s/section_header/$section_header/")"
     echo -e "$start"
+    date +"[%Y-%m-%dT%H:%M:%S.%3N] section start"
 }
 
 section_end() {
     local section_id end
+    date +"[%Y-%m-%dT%H:%M:%S.%3N] section end"
     end="$SECTION_END"
     if [[ "$#" -eq 1 ]]; then
         section_id="$(echo "$1" | tr -c '[:alnum:]\n\r' '_')"

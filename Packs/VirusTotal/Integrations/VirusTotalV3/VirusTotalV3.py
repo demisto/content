@@ -100,7 +100,10 @@ class Client(BaseClient):
             'https://www.virustotal.com/api/v3/',
             verify=not argToBoolean(params.get('insecure')),
             proxy=argToBoolean(params.get('proxy')),
-            headers={'x-apikey': params['credentials']['password']}
+            headers={
+                'x-apikey': params['credentials']['password'],
+                'x-tool': 'CortexVirusTotalV3'
+            }
         )
 
     # region Reputation calls
@@ -363,6 +366,16 @@ class Client(BaseClient):
         return self._http_request(
             'GET',
             f'/analyses/{analysis_id}'
+        )
+
+    def get_file_sigma_analysis(self, file_hash: str) -> dict:
+        """
+        See Also:
+            https://developers.virustotal.com/reference/files#relationships
+        """
+        return self._http_request(
+            'GET',
+            f'files/{file_hash}/sigma_analysis',
         )
 
     # region Premium commands
@@ -1524,6 +1537,11 @@ def encode_url_to_base64(url: str) -> str:
     return base64.urlsafe_b64encode(url.encode()).decode().strip('=')
 
 
+def merge_two_dicts(dict_a, dict_b):
+    merged_dict = dict_a.copy()
+    merged_dict.update(dict_b)
+    return merged_dict
+
 # endregion
 
 # region Reputation commands
@@ -2117,6 +2135,52 @@ def delete_comment(client: Client, args: dict) -> CommandResults:
     return CommandResults(readable_output=f'Comment {id_} has been deleted!')
 
 
+def file_sigma_analysis_command(client: Client, args: dict) -> CommandResults:
+    """Get last sigma analysis for a given file"""
+    file_hash = args['file']
+    only_stats = argToBoolean(args['only_stats'])
+    raw_response = client.get_file_sigma_analysis(file_hash)
+    data = raw_response['data']
+
+    if only_stats:
+        formatted_data = []
+        total = data['attributes']['severity_stats']
+
+        for key, value in data['attributes']['source_severity_stats'].items():
+            formatted_data.append(merge_two_dicts(value, {'name': key}))
+        formatted_data.append(merge_two_dicts(total, {'name': 'TOTAL'}))
+        return CommandResults(
+            f'{INTEGRATION_ENTRY_CONTEXT}.SigmaAnalysis',
+            'id',
+            readable_output=tableToMarkdown(
+                f'Summary of the last Sigma analysis for file {file_hash}:',
+                formatted_data,
+                headers=['name', 'critical', 'high', 'medium', 'low'],
+                removeNull=True,
+                headerTransform=underscoreToCamelCase,
+            ),
+            outputs=data,
+            raw_response=raw_response,
+        )
+    else:
+        return CommandResults(
+            f'{INTEGRATION_ENTRY_CONTEXT}.SigmaAnalysis',
+            'id',
+            readable_output=tableToMarkdown(
+                f'Matched rules for file {file_hash} in the last Sigma analysis:',
+                data['attributes']['rule_matches'],
+                headers=[
+                    'match_context', 'rule_level', 'rule_description',
+                    'rule_source', 'rule_title', 'rule_id', 'rule_author'
+                ],
+                removeNull=True,
+                headerTransform=underscoreToCamelCase,
+            ),
+            outputs=data,
+            raw_response=raw_response,
+        )
+
+
 def main(params: dict, args: dict, command: str):
     results: Union[CommandResults, str, List[CommandResults]]
     handle_proxy()
@@ -2163,6 +2227,8 @@ def main(params: dict, args: dict, command: str):
         results = search_command(client, args)
     elif command == f'{COMMAND_PREFIX}-analysis-get':
         results = get_analysis_command(client, args)
+    elif command == f'{COMMAND_PREFIX}-file-sigma-analysis':
+        results = file_sigma_analysis_command(client, args)
     else:
         raise NotImplementedError(f'Command {command} not implemented')
     demisto.info(results)

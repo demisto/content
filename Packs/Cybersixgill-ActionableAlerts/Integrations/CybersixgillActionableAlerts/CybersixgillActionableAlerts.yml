@@ -11,8 +11,8 @@ configuration:
   name: client_secret
   required: true
   type: 4
-- defaultvalue: '50'
-  display: Maximum number of incidents to fetch - maximum is 100
+- defaultvalue: '25'
+  display: Maximum number of incidents to fetch - maximum is 25
   name: max_fetch
   required: false
   type: 0
@@ -81,7 +81,17 @@ script:
     description: updates the existing actionable alert status
     execution: false
     name: cybersixgill-update-alert-status
-  dockerimage: demisto/sixgill:1.0.0.26756
+    arguments:
+    - required: true
+      description: The alert id to update.
+      name: alert_id
+    - required: true
+      description: The new status.
+      name: alert_status
+    - required: false
+      description: The aggregate alert id.
+      name: aggregate_alert_id
+  dockerimage: demisto/sixgill:1.0.0.28665
   feed: false
   isfetch: true
   longRunning: false

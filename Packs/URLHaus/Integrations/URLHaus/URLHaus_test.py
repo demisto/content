@@ -19,16 +19,16 @@ def util_load_json(path: str) -> Any:
 
 
 url_command_test = [
-    ('ok', ['test_tag1', 'test_tag2']),
-    ('ok', []),
-    ('no_results', ['test_tag1', 'test_tag2']),
-    ('no_results', []),
-    ('invalid_url', ['test_tag1', 'test_tag2']),
+    ('www.test_url.com', 'ok', ['test_tag1', 'test_tag2']),
+    ('www.test_url.com', 'ok', []),
+    ('www.test_url.com', 'no_results', ['test_tag1', 'test_tag2']),
+    ('www.test_url.com', 'no_results', []),
+    ('www.testurl.com', 'invalid_url', ['test_tag1', 'test_tag2']),
 ]
 
 
-@pytest.mark.parametrize('query_status,tags', url_command_test)
-def test_url_command(requests_mock, query_status: str, tags: List[str]):
+@pytest.mark.parametrize('url_to_check, query_status,tags', url_command_test)
+def test_url_command(requests_mock, url_to_check, query_status: str, tags: List[str]):
     """
         Given
         - A URL.
@@ -44,7 +44,6 @@ def test_url_command(requests_mock, query_status: str, tags: List[str]):
     """
     from URLHaus import run_url_command
 
-    url_to_check = 'www.test_url.com'
     mock_response = util_load_json('test_data/url_command.json')
     mock_response['query_status'] = query_status
     mock_response['tags'] = tags

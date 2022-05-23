@@ -1,0 +1,86 @@
+{
+    "name": "add_ticket",
+    "execute": "response_raw = CimTrak.add_ticket_command(client,{'title':'test','priority':1,'autoPromote':'False','requiresAcknowledgement':'False','requiresAssessment':'False','requiresConfirmation':'False','assignedToUserId':'0','assignedToGroupId':'0'})\n\nresponse = response_raw[0].outputs\nif len(response_raw) > 1:\n\tret_results: List[Dict[str, Any]] = response_raw[1].outputs\n\tresponse['results'] = list()\n\tresponse_raw[1].outputs\n\tresponse['results'].append(ret_results)\n",
+    "posts": [
+        {
+            "url": "https://test.com/CimTrakRestAPI/v1/Client.addTicket",
+            "reply": {
+                "status": "success",
+                "errorCode": "",
+                "errorDescription": "",
+                "errorDetails": [
+                    {
+                        "username": "admin"
+                    }
+                ],
+                "results": [
+                    {
+                        "id": 265,
+                        "ticketNumber": "CT-00000265",
+                        "sentiment": null,
+                        "sentimenttypeid": null,
+                        "title": "test",
+                        "description": null,
+                        "priority": 1,
+                        "disposition": "OPEN",
+                        "creationDate": "2022-03-12 13:17:13",
+                        "createdByUser": "admin",
+                        "modificationDate": "2022-03-12 13:17:13",
+                        "modifiedByUser": "admin",
+                        "requiresAcknowledgement": false,
+                        "requiresConfirmation": false,
+                        "requiresAssessment": false,
+                        "startDate": null,
+                        "endDate": null,
+                        "autoPromote": false,
+                        "assignedToUserId": 0,
+                        "assignedToUser": null,
+                        "assignedToGroupId": 0,
+                        "assignedToGroup": "Administrators",
+                        "externalTicketNumber": null,
+                        "externalTicketType": null,
+                        "tasks": null,
+                        "comments": null,
+                        "events": null
+                    }
+                ]
+            }
+        }
+    ],
+    "response": {
+        "status": "success",
+        "errorCode": "",
+        "errorDescription": "",
+        "results": [
+            {
+                "id": 265,
+                "ticketNumber": "CT-00000265",
+                "sentiment": null,
+                "sentimenttypeid": null,
+                "title": "test",
+                "description": null,
+                "priority": 1,
+                "disposition": "OPEN",
+                "creationDate": "2022-03-12 13:17:13",
+                "createdByUser": "admin",
+                "modificationDate": "2022-03-12 13:17:13",
+                "modifiedByUser": "admin",
+                "requiresAcknowledgement": false,
+                "requiresConfirmation": false,
+                "requiresAssessment": false,
+                "startDate": null,
+                "endDate": null,
+                "autoPromote": false,
+                "assignedToUserId": 0,
+                "assignedToUser": null,
+                "assignedToGroupId": 0,
+                "assignedToGroup": "Administrators",
+                "externalTicketNumber": null,
+                "externalTicketType": null,
+                "tasks": null,
+                "comments": null,
+                "events": null
+            }
+        ]
+    }
+}
