@@ -8128,14 +8128,16 @@
         "operation": "if-then-else",
         "filter": {
             "if": {
-                "is": "empty"
+                "===": true
             },
-            "else": {
+            "then": {
                 "ends with": ".exe"
             },
-            "lhs": ".exe"
+            "lhs": "${enable_filter}"
         },
-        "ctx_demisto": null,
+        "ctx_demisto": {
+          "enable_filter": true
+        },
         "ctx_inputs": null,
         "ctx_lists": null,
         "ctx_incident": null,
@@ -8149,14 +8151,14 @@
         "operation": "if-then-else",
         "filter": {
             "if": {
-                "is": "empty"
+                "===": true
             },
-            "else": {
+            "then": {
                 "ends with": ".exe"
             },
-            "lhs": ""
+            "lhs": "${enable_filter}"
         },
-        "ctx_demisto": null,
+        "ctx_demisto": {},
         "ctx_inputs": null,
         "ctx_lists": null,
         "ctx_incident": null,

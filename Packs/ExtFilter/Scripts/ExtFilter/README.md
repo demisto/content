@@ -8189,16 +8189,22 @@ If `if` condition is not given or returns any value, `then` operation is execute
 
 > **Path**: 
 
+> **ctx_demisto**: (in dictionaly, not string)
+
+    {
+      "enable_filter": true
+    }
+
 > **Filter**:
 
     {
       "if": {
-        "is": "empty"
+        "===": true
       },
-      "else": {
+      "then": {
         "ends with": ".exe"
       },
-      "lhs": ".exe"
+      "lhs": "${enable_filter}"
     }
 
 ##### Output
