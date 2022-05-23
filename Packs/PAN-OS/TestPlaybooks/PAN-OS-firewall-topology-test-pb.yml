@@ -447,7 +447,7 @@ tasks:
       {
         "position": {
           "x": 470,
-          "y": 8215
+          "y": 7585
         }
       }
   '15':
@@ -1518,7 +1518,7 @@ tasks:
     isoversize: false
     nexttasks:
       '#none#':
-      - '42'
+      - '43'
     note: false
     quietmode: 0
     separatecontext: false
@@ -1542,58 +1542,6 @@ tasks:
           "y": 6210
         }
       }
-  '42':
-    conditions:
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              simple: PANOS.PanosObject.hostid
-          operator: isNotEmpty
-      - - left:
-            iscontext: true
-            value:
-              simple: PANOS.PanosObject.container_name
-          operator: isNotEmpty
-      - - left:
-            iscontext: true
-            value:
-              simple: PANOS.PanosObject.name
-          operator: isNotEmpty
-      - - left:
-            iscontext: true
-            value:
-              simple: PANOS.PanosObject.object_type
-          operator: isNotEmpty
-      label: yes
-    id: '42'
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
-    nexttasks:
-      yes:
-      - '43'
-    note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ''
-      id: 19c69475-f9a5-445e-89c7-f9bf7aa8d92c
-      iscommand: false
-      name: Verify Outputs
-      type: condition
-      version: -1
-    taskid: 19c69475-f9a5-445e-89c7-f9bf7aa8d92c
-    timertriggers: []
-    type: condition
-    view: |-
-      {
-        "position": {
-          "x": 470,
-          "y": 6410
-        }
-      }
   '43':
     id: '43'
     ignoreworker: false
@@ -1601,7 +1549,7 @@ tasks:
     isoversize: false
     nexttasks:
       '#none#':
-      - '44'
+      - '45'
     note: false
     quietmode: 0
     separatecontext: false
@@ -1622,59 +1570,7 @@ tasks:
       {
         "position": {
           "x": 470,
-          "y": 6610
-        }
-      }
-  '44':
-    conditions:
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              simple: PANOS.PanosObject.hostid
-          operator: isNotEmpty
-      - - left:
-            iscontext: true
-            value:
-              simple: PANOS.PanosObject.container_name
-          operator: isNotEmpty
-      - - left:
-            iscontext: true
-            value:
-              simple: PANOS.PanosObject.name
-          operator: isNotEmpty
-      - - left:
-            iscontext: true
-            value:
-              simple: PANOS.PanosObject.object_type
-          operator: isNotEmpty
-      label: yes
-    id: '44'
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
-    nexttasks:
-      yes:
-      - '45'
-    note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ''
-      id: 4063a93a-e18d-4a4e-8c13-2305344679aa
-      iscommand: false
-      name: Verify Outputs
-      type: condition
-      version: -1
-    taskid: 4063a93a-e18d-4a4e-8c13-2305344679aa
-    timertriggers: []
-    type: condition
-    view: |-
-      {
-        "position": {
-          "x": 470,
-          "y": 6810
+          "y": 6390
         }
       }
   '45':
@@ -1684,7 +1580,7 @@ tasks:
     isoversize: false
     nexttasks:
       '#none#':
-      - '46'
+      - '47'
     note: false
     quietmode: 0
     separatecontext: false
@@ -1705,59 +1601,7 @@ tasks:
       {
         "position": {
           "x": 470,
-          "y": 7010
-        }
-      }
-  '46':
-    conditions:
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              simple: PANOS.PanosObject.hostid
-          operator: isNotEmpty
-      - - left:
-            iscontext: true
-            value:
-              simple: PANOS.PanosObject.container_name
-          operator: isNotEmpty
-      - - left:
-            iscontext: true
-            value:
-              simple: PANOS.PanosObject.name
-          operator: isNotEmpty
-      - - left:
-            iscontext: true
-            value:
-              simple: PANOS.PanosObject.object_type
-          operator: isNotEmpty
-      label: yes
-    id: '46'
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
-    nexttasks:
-      yes:
-      - '47'
-    note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ''
-      id: 4c0c8eac-5b08-467b-83ac-8736b7989547
-      iscommand: false
-      name: Verify Outputs
-      type: condition
-      version: -1
-    taskid: 4c0c8eac-5b08-467b-83ac-8736b7989547
-    timertriggers: []
-    type: condition
-    view: |-
-      {
-        "position": {
-          "x": 470,
-          "y": 7210
+          "y": 6580
         }
       }
   '47':
@@ -1788,7 +1632,7 @@ tasks:
       {
         "position": {
           "x": 470,
-          "y": 7410
+          "y": 6770
         }
       }
   '48':
@@ -1865,7 +1709,7 @@ tasks:
       {
         "position": {
           "x": 470,
-          "y": 7610
+          "y": 6950
         }
       }
   '49':
@@ -1896,7 +1740,7 @@ tasks:
       {
         "position": {
           "x": 470,
-          "y": 7810
+          "y": 7160
         }
       }
   '50':
@@ -1973,7 +1817,7 @@ tasks:
       {
         "position": {
           "x": 470,
-          "y": 8010
+          "y": 7360
         }
       }
 version: -1
@@ -1982,7 +1826,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 8230,
+        "height": 7600,
         "width": 400,
         "x": 450,
         "y": 50
