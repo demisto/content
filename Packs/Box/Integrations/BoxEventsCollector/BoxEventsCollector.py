@@ -84,7 +84,7 @@ def not_gate(v):
     insecure == True, verify is False.
     """
     v_ = parse_obj_as(bool, False if v is None else v)
-    return not v_ if isinstance(v_, bool) else True
+    return not v_
 
 
 class BoxEventsRequestConfig(IntegrationHTTPRequest):
