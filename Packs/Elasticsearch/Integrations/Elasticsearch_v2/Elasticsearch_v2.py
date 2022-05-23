@@ -566,7 +566,7 @@ def results_to_incidents_datetime(response, last_fetch):
 
                 incidents.append(inc)
 
-    return incidents, format_to_iso(last_fetch.isoformat())
+    return incidents, last_fetch.isoformat()
 
 
 def format_to_iso(date_string):
