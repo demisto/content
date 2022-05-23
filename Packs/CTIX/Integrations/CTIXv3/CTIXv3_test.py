@@ -1,6 +1,6 @@
 import io
 import json
-from CTIX import (
+from CTIXv3 import (
     Client,
     create_tag_command,
     get_tags_command,
