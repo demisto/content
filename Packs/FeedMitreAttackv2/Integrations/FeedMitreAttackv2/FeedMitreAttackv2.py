@@ -6,7 +6,6 @@ import json
 import requests
 from stix2 import TAXIICollectionSource, Filter
 from taxii2client.v20 import Server, Collection, ApiRoot
-import logging
 
 ''' CONSTANT VARIABLES '''
 
@@ -575,21 +574,6 @@ def get_mitre_value_from_id(client, args):
                                           f'No Attack Patterns found for {attack_ids}.')
 
 
-class TaxiiLogHandler(logging.Handler):
-    """
-        Handler to route logging messages demisto.debug.
-    """
-    def __init__(self):
-        logging.Handler.__init__(self)
-
-    def emit(self, record):
-        msg = self.format(record)
-        try:
-            demisto.debug(msg)
-        except:  # noqa: disable=broad-except
-            pass
-
-
 def main():
     params = demisto.params()
     args = demisto.args()
@@ -605,9 +589,6 @@ def main():
     try:
         client = Client(url, proxies, verify_certificate, tags, tlp_color)
         client.initialise()
-        log = logging.getLogger('taxii2client.v20')
-        log.addHandler(TaxiiLogHandler())
-        log.propagate = False
 
         if demisto.command() == 'mitre-get-indicators':
             get_indicators_command(client, args)
