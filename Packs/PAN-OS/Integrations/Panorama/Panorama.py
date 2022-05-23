@@ -9,7 +9,7 @@ import panos.errors
 
 from panos.base import PanDevice, VersionedPanObject, Root, ENTRY, VersionedParamPath  # type: ignore
 from panos.panorama import Panorama, DeviceGroup, Template, PanoramaCommitAll
-from panos.policies import Rulebase, PreRulebase, PostRulebase, SecurityRule
+from panos.policies import Rulebase, PreRulebase, PostRulebase, SecurityRule, NatRule
 from panos.objects import (
     LogForwardingProfile, LogForwardingProfileMatchList, AddressObject, AddressGroup, ServiceObject, ServiceGroup,
     ApplicationObject, ApplicationGroup, SecurityProfileGroup
@@ -8817,24 +8817,28 @@ class HygieneRemediation:
         return result
 
     @staticmethod
-    def get_all_security_rules_in_container(container: Union[Panorama, Firewall, DeviceGroup, Template, Vsys]
-                                            ) -> List[SecurityRule]:
-        """
-        Gets all the security rule objects from the given VSYS or device group and return them.
-        :param container: The object to search for the rules in, as passed to pan-os-python
-        """
+    def get_all_rules_in_container(container: Union[Panorama, Firewall, DeviceGroup, Template, Vsys],
+                                   object_class: object):
         firewall_rulebase = Rulebase()
         pre_rulebase = PreRulebase()
         post_rulebase = PostRulebase()
         container.add(pre_rulebase)
         container.add(post_rulebase)
         container.add(firewall_rulebase)
-        security_rules: List[SecurityRule] = SecurityRule.refreshall(firewall_rulebase)
-        pre_security_rules: List[SecurityRule] = SecurityRule.refreshall(pre_rulebase)
-        post_security_rules: List[SecurityRule] = SecurityRule.refreshall(post_rulebase)
-        security_rules = security_rules + pre_security_rules + post_security_rules
+        objects = object_class.refreshall(firewall_rulebase)
+        objects += object_class.refreshall(pre_rulebase)
+        objects += object_class.refreshall(post_rulebase)
 
-        return security_rules
+        return objects
+
+    @staticmethod
+    def get_all_security_rules_in_container(container: Union[Panorama, Firewall, DeviceGroup, Template, Vsys]
+                                            ) -> List[SecurityRule]:
+        """
+        Gets all the security rule objects from the given VSYS or device group and return them.
+        :param container: The object to search for the rules in, as passed to pan-os-python
+        """
+        return HygieneRemediation.get_all_rules_in_container(container, SecurityRule)
 
     @staticmethod
     def fix_secuity_rule_log_settings(topology: Topology,
@@ -8944,16 +8948,8 @@ class ObjectGetter:
         ):
             unfiltered_objects = []
             # If the object class is a security rule we need to handle it specially
-            if object_class in ["SecurityRule", "NatRule"]:
-                firewall_rulebase = Rulebase()
-                pre_rulebase = PreRulebase()
-                post_rulebase = PostRulebase()
-                container.add(pre_rulebase)
-                container.add(post_rulebase)
-                container.add(firewall_rulebase)
-                unfiltered_objects = object_class.refreshall(firewall_rulebase)
-                unfiltered_objects += object_class.refreshall(pre_rulebase)
-                unfiltered_objects += object_class.refreshall(post_rulebase)
+            if object_class in [SecurityRule, NatRule]:
+                unfiltered_objects = HygieneRemediation.get_all_rules_in_container(container, object_class)
             else:
                 unfiltered_objects = object_class.refreshall(container)
 
