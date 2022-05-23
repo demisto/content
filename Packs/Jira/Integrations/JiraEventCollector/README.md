@@ -9,6 +9,8 @@ This integration was integrated and tested with version 3 of Jira Event Collecto
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
     | Server URL |  | True |
+    | Vendor name | For the dataset name for example: jira | True |
+    | Password | For the dataset name for example: jira | True |
     | User name | The user name. For example, `admin@example.com` | True |
     | Password |  | True |
     | First fetch time |(&lt;number&gt; &lt;time unit&gt;. For example, 12 hours, 1 day, 3 months). Default is 3 days. |  | True |
