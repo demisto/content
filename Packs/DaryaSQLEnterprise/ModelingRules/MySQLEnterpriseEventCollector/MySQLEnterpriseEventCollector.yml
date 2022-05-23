@@ -1,5 +1,0 @@
-name: MySQLEventCollector
-id: MySQLEventCollector
-fromversion: 3.3.0
-tags: a
-rules: ''
