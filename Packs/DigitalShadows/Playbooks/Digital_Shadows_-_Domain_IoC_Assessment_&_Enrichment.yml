@@ -2,26 +2,22 @@ id: Digital Shadows - Domain_IoC Assessment & Enrichment
 version: -1
 name: Digital Shadows - Domain_IoC Assessment & Enrichment
 description: Enrichment of Domain IOC types - sub-playbook for IOC Assessment & Enrichment playbook
-starttaskid: "0"
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: c20c79e4-3ae5-456e-825d-ad4d86ef59ed
+  '0':
+    id: '0'
+    taskid: 6a66398e-1ffc-41fb-8dac-9aa9568a89ae
     type: start
     task:
-      id: c20c79e4-3ae5-456e-825d-ad4d86ef59ed
+      id: 6a66398e-1ffc-41fb-8dac-9aa9568a89ae
       version: -1
-      name: ""
+      name: ''
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "35"
-      - "37"
-      - "39"
-      - "41"
-      - "31"
+      - '41'
     separatecontext: false
     view: |-
       {
@@ -37,24 +33,24 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "13":
-    id: "13"
-    taskid: 0448548c-3b09-42b5-8936-5efc2ad17649
+  '13':
+    id: '13'
+    taskid: d80e472b-673a-4456-83e4-e3bf08f8c6f3
     type: title
     task:
-      id: 0448548c-3b09-42b5-8936-5efc2ad17649
+      id: d80e472b-673a-4456-83e4-e3bf08f8c6f3
       version: -1
       name: End
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 560
+          "y": 1260
         }
       }
     note: false
@@ -64,12 +60,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "31":
-    id: "31"
-    taskid: 01cbd3e0-c7ec-4f9c-85b7-d1fbb9cace38
+  '31':
+    id: '31'
+    taskid: b0170043-9f31-4d1f-8001-0f7d619292bb
     type: regular
     task:
-      id: 01cbd3e0-c7ec-4f9c-85b7-d1fbb9cace38
+      id: b0170043-9f31-4d1f-8001-0f7d619292bb
       version: -1
       name: ds-search - THREAT FEEDS
       description: Perform a textual search against the available record types
@@ -79,7 +75,7 @@ tasks:
       brand: Digital Shadows
     nexttasks:
       '#none#':
-      - "32"
+      - '32'
     scriptarguments:
       extend-context:
         simple: Domain Associated Indicators=content.entity.indicators.title
@@ -94,7 +90,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 195
+          "y": 895
         }
       }
     note: false
@@ -104,33 +100,33 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "32":
-    id: "32"
-    taskid: 8f124d97-500f-49d0-8321-a0b4cadbae02
+  '32':
+    id: '32'
+    taskid: b663c133-c39a-448f-8e0a-af8dc8ecf0d9
     type: condition
     task:
-      id: 8f124d97-500f-49d0-8321-a0b4cadbae02
+      id: b663c133-c39a-448f-8e0a-af8dc8ecf0d9
       version: -1
       name: is Associated Indicators blank?
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
-      "no":
-      - "33"
-      "yes":
-      - "13"
+      no:
+      - '33'
+      yes:
+      - '13'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isEmpty
           left:
             value:
               simple: ${Domain Associated Indicators}
             iscontext: true
-    - label: "no"
+    - label: no
       condition:
       - - operator: isNotEmpty
           left:
@@ -141,7 +137,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 370
+          "y": 1070
         }
       }
     note: false
@@ -151,12 +147,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "33":
-    id: "33"
-    taskid: 6cc41a83-4c0f-4baa-898e-bd497c9185f6
+  '33':
+    id: '33'
+    taskid: c1e9df8c-13b9-44cc-80cc-6d9c65c16bc2
     type: regular
     task:
-      id: 6cc41a83-4c0f-4baa-898e-bd497c9185f6
+      id: c1e9df8c-13b9-44cc-80cc-6d9c65c16bc2
       version: -1
       name: createNewIndicator
       description: Change the properties of an indicator
@@ -166,7 +162,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "34"
+      - '34'
     scriptarguments:
       value:
         simple: ${Domain Associated Indicators}
@@ -175,7 +171,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 545
+          "y": 1245
         }
       }
     note: false
@@ -185,12 +181,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "34":
-    id: "34"
-    taskid: a3fc876a-c379-41c8-8a9a-e29e9dc90cff
+  '34':
+    id: '34'
+    taskid: fb22be53-79e2-4cb3-8a7b-89dbba2f993d
     type: regular
     task:
-      id: a3fc876a-c379-41c8-8a9a-e29e9dc90cff
+      id: fb22be53-79e2-4cb3-8a7b-89dbba2f993d
       version: -1
       name: associateIndicatorsToIncident
       description: Associate one or more indicators to incident. You can specify the indicators by either indicator ID or the value of the indicator
@@ -216,7 +212,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 720
+          "y": 1420
         }
       }
     note: false
@@ -226,12 +222,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "35":
-    id: "35"
-    taskid: 1c2794bd-d440-41ae-863f-6aacf35dc364
+  '35':
+    id: '35'
+    taskid: 97deccab-c9f0-4347-8285-1db52d4cd1a9
     type: regular
     task:
-      id: 1c2794bd-d440-41ae-863f-6aacf35dc364
+      id: 97deccab-c9f0-4347-8285-1db52d4cd1a9
       version: -1
       name: ds-search - INTEL UPDATES
       description: Perform a textual search against the available record types
@@ -241,7 +237,8 @@ tasks:
       brand: Digital Shadows
     nexttasks:
       '#none#':
-      - "36"
+      - '36'
+      - '31'
     scriptarguments:
       extend-context:
         simple: Domain Intel Summary=content.entity.summary
@@ -255,8 +252,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 195
+          "x": 480,
+          "y": 720
         }
       }
     note: false
@@ -266,12 +263,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "36":
-    id: "36"
-    taskid: 823af912-22e9-4078-86ae-aa2dc6b9b826
+  '36':
+    id: '36'
+    taskid: 03228abe-4eae-4c8c-822f-d0d55fa26fcc
     type: regular
     task:
-      id: 823af912-22e9-4078-86ae-aa2dc6b9b826
+      id: 03228abe-4eae-4c8c-822f-d0d55fa26fcc
       version: -1
       name: AddEvidence - INTEL UPDATES
       description: |
@@ -279,7 +276,7 @@ tasks:
       scriptName: AddEvidence
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     scriptarguments:
       desc:
         simple: Summary
@@ -290,7 +287,7 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 370
+          "y": 895
         }
       }
     note: false
@@ -300,12 +297,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "37":
-    id: "37"
-    taskid: 5850b592-bc22-4072-86d1-d956ce8daa6d
+  '37':
+    id: '37'
+    taskid: da7fdc19-5adf-4f8d-803b-4aae3eb72dc2
     type: regular
     task:
-      id: 5850b592-bc22-4072-86d1-d956ce8daa6d
+      id: da7fdc19-5adf-4f8d-803b-4aae3eb72dc2
       version: -1
       name: ds-search - PROFILE INTELLIGENCE
       description: Perform a textual search against the available record types
@@ -315,7 +312,8 @@ tasks:
       brand: Digital Shadows
     nexttasks:
       '#none#':
-      - "38"
+      - '38'
+      - '35'
     scriptarguments:
       extend-context:
         simple: Domain Profile Name=content.entity.primaryTag.name
@@ -329,8 +327,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1125,
-          "y": 195
+          "x": 695,
+          "y": 545
         }
       }
     note: false
@@ -340,12 +338,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "38":
-    id: "38"
-    taskid: 9f810d6e-250e-4a8b-8178-4722889dd1c5
+  '38':
+    id: '38'
+    taskid: 5d49bde6-6a1d-457e-8468-fe0589afb46f
     type: regular
     task:
-      id: 9f810d6e-250e-4a8b-8178-4722889dd1c5
+      id: 5d49bde6-6a1d-457e-8468-fe0589afb46f
       version: -1
       name: AddEvidence - INTEL PROFILES
       description: |
@@ -353,7 +351,7 @@ tasks:
       scriptName: AddEvidence
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     scriptarguments:
       desc:
         simple: Profiles
@@ -363,8 +361,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1125,
-          "y": 370
+          "x": 910,
+          "y": 720
         }
       }
     note: false
@@ -374,12 +372,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "39":
-    id: "39"
-    taskid: aadee9fe-e617-4a93-8ce6-ebfb44f65a1a
+  '39':
+    id: '39'
+    taskid: 9b38a2b8-5dd0-43df-8a2b-21b253b902b0
     type: regular
     task:
-      id: aadee9fe-e617-4a93-8ce6-ebfb44f65a1a
+      id: 9b38a2b8-5dd0-43df-8a2b-21b253b902b0
       version: -1
       name: ds-search - MITRE TECHNIQUES
       description: Perform a textual search against the available record types
@@ -389,7 +387,8 @@ tasks:
       brand: Digital Shadows
     nexttasks:
       '#none#':
-      - "40"
+      - '40'
+      - '37'
     scriptarguments:
       extend-context:
         simple: Domain TTP Profiles=content.entity.primaryTag.name
@@ -403,41 +402,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1555,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "40":
-    id: "40"
-    taskid: 2c477718-9188-4dc6-8190-ee37e038603f
-    type: regular
-    task:
-      id: 2c477718-9188-4dc6-8190-ee37e038603f
-      version: -1
-      name: AddEvidence - MITRE TECHNIQUES
-      description: |
-        Adds provided entries to the incident Evidence Board. In playbook, can be positioned after a task to add the previous task's entries to Evidence Board automatically (with no need to provide arguments)
-      scriptName: AddEvidence
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      desc:
-        simple: Associated TTPs
-      description:
-        simple: ${Domain TTP Profiles}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1555,
+          "x": 910,
           "y": 370
         }
       }
@@ -448,12 +413,46 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "41":
-    id: "41"
-    taskid: 5a88bb1a-0b75-4b0e-850a-2709b58c68a7
+  '40':
+    id: '40'
+    taskid: 58dd8fc9-920d-470a-8648-3bc62344c9fd
     type: regular
     task:
-      id: 5a88bb1a-0b75-4b0e-850a-2709b58c68a7
+      id: 58dd8fc9-920d-470a-8648-3bc62344c9fd
+      version: -1
+      name: AddEvidence - MITRE TECHNIQUES
+      description: |
+        Adds provided entries to the incident Evidence Board. In playbook, can be positioned after a task to add the previous task's entries to Evidence Board automatically (with no need to provide arguments)
+      scriptName: AddEvidence
+      type: regular
+      iscommand: false
+      brand: ''
+    scriptarguments:
+      desc:
+        simple: Associated TTPs
+      description:
+        simple: ${Domain TTP Profiles}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '41':
+    id: '41'
+    taskid: 09bcbb09-efb9-4667-8728-58ea26c60315
+    type: regular
+    task:
+      id: 09bcbb09-efb9-4667-8728-58ea26c60315
       version: -1
       name: ds-search - CONFIRMED ACTIVITY
       description: Perform a textual search against the available record types
@@ -463,7 +462,8 @@ tasks:
       brand: Digital Shadows
     nexttasks:
       '#none#':
-      - "42"
+      - '42'
+      - '39'
     scriptarguments:
       extend-context:
         simple: Domain Confirmed Activity=total
@@ -477,7 +477,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1985,
+          "x": 1125,
           "y": 195
         }
       }
@@ -488,12 +488,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "42":
-    id: "42"
-    taskid: 62229ee0-8fc2-44c0-842f-fcf5a46f88db
+  '42':
+    id: '42'
+    taskid: 86125f76-f0f4-4730-837e-fedf01d0a76a
     type: regular
     task:
-      id: 62229ee0-8fc2-44c0-842f-fcf5a46f88db
+      id: 86125f76-f0f4-4730-837e-fedf01d0a76a
       version: -1
       name: AddEvidence - CONFIRMED ACTIVITY
       description: |
@@ -501,7 +501,7 @@ tasks:
       scriptName: AddEvidence
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     scriptarguments:
       desc:
         simple: Confirmed Malicious Activity Count
@@ -511,7 +511,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1985,
+          "x": 1340,
           "y": 370
         }
       }
@@ -527,8 +527,8 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 765,
-        "width": 2315,
+        "height": 1465,
+        "width": 1670,
         "x": 50,
         "y": 50
       }
@@ -551,7 +551,7 @@ inputs:
       transformers:
       - operator: uniq
   required: false
-  description: The domain name to assess and enrich
+  description: A domain for assessment and enrichment
   playbookInputQuery:
 outputs:
 - contextPath: DBotScore.Indicator
