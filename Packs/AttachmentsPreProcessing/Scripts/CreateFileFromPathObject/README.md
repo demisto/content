@@ -1,4 +1,4 @@
-This automation is being executed by the "GetFilePathPreProcessing" pre-processing script that collects the paths and names of attachments of an incoming incident, then passes it to this automation that reads the files and creates them in an existing incident
+This automation is being executed by the "GetFilePathPreProcessing" pre-processing script that collects the paths and names of attachments of an incoming incident, then passes it to this automation that reads the files and creates them in an existing incident.
 
 ## Script Data
 ---
