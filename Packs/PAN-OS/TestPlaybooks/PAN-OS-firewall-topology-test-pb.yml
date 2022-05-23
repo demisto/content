@@ -447,7 +447,7 @@ tasks:
       {
         "position": {
           "x": 470,
-          "y": 7585
+          "y": 8265
         }
       }
   '15':
@@ -1798,7 +1798,7 @@ tasks:
     isoversize: false
     nexttasks:
       yes:
-      - '14'
+      - '51'
     note: false
     quietmode: 0
     separatecontext: false
@@ -1820,13 +1820,161 @@ tasks:
           "y": 7360
         }
       }
+  '51':
+    id: '51'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '52'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      object_type:
+        simple: AddressGroup
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Searches and returns a reference for the given object type and name. If no name is provided, all objects of the given type will be returned. Note this ONLY returns the object name and it's location in the configuration hierachy, not the entire object.
+      id: 7bf6ad85-f96c-4570-8629-032ec083f239
+      iscommand: true
+      name: pan-os-config-get-object
+      script: '|||pan-os-config-get-object'
+      type: regular
+      version: -1
+    taskid: 7bf6ad85-f96c-4570-8629-032ec083f239
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 7540
+        }
+      }
+  '52':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: PANOS.PanosObject.hostid
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              simple: PANOS.PanosObject.container_name
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              simple: PANOS.PanosObject.name
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              simple: PANOS.PanosObject.object_type
+          operator: isExists
+      label: yes
+    id: '52'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      yes:
+      - '53'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 1f6cfc9f-7b4a-4954-8658-facc79165865
+      iscommand: false
+      name: Verify Outputs
+      type: condition
+      version: -1
+    taskid: 1f6cfc9f-7b4a-4954-8658-facc79165865
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 7720
+        }
+      }
+  '53':
+    id: '53'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '54'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Returns the status of the push (commit-all) jobs from Panorama.
+      id: 19a71628-f575-4f67-83f6-a7ba521621ef
+      iscommand: true
+      name: pan-os-config-get-push-status
+      script: '|||pan-os-config-get-push-status'
+      type: regular
+      version: -1
+    taskid: 19a71628-f575-4f67-83f6-a7ba521621ef
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 7900
+        }
+      }
+  '54':
+    id: '54'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '14'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Returns the status of the commit operation on all devices. If an ID is given, only that id will be returned.
+      id: a337cb9b-9f44-4346-8cbc-b2c0971017ea
+      iscommand: true
+      name: pan-os-config-get-commit-status
+      script: '|||pan-os-config-get-commit-status'
+      type: regular
+      version: -1
+    taskid: a337cb9b-9f44-4346-8cbc-b2c0971017ea
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 8080
+        }
+      }
 version: -1
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 7600,
+        "height": 8280,
         "width": 400,
         "x": 450,
         "y": 50
