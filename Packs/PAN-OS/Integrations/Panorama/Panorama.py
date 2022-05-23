@@ -8908,10 +8908,10 @@ class ObjectGetter:
     def get_object_reference(
             topology: Topology,
             object_type: str,
-            device_filter_string: str = None,
-            container_filter: str = None,
-            object_name: str = None,
-            use_regex: str = None
+            device_filter_string: Optional[str] = None,
+            container_filter: Optional[str] = None,
+            object_name: Optional[str] = None,
+            use_regex: Optional[str] = None
     ) -> List[PanosObjectReference]:
         """
         Given a string object type, returns all the matching objects by reference. The object type matches a pan-os-python
@@ -8934,7 +8934,7 @@ class ObjectGetter:
             "SecurityProfileGroup": SecurityProfileGroup,
         }
         object_class = supported_object_types.get(object_type, None)
-        if object_class is None:
+        if not object_class:
             raise DemistoException(f"Object type {object_type} is not gettable with this integration.")
 
         object_references = []
@@ -10692,7 +10692,7 @@ class ObjectTypeEnum(enum.Enum):
     SECURITY_PROFILE_GROUP = "SecurityProfileGroup"
 
 
-def commit(topology: Topology, device_filter_string: str = None) -> List[CommitStatus]:
+def commit(topology: Topology, device_filter_string: Optional[str] = None) -> List[CommitStatus]:
     """
     Commit the configuration for the entire topology. Note this only commits the configuration - it does
     not push the configuration in the case of Panorama.
@@ -10725,19 +10725,19 @@ def push_all(
     )
 
 
-def get_commit_status(topology: Topology, match_job_id: List[str] = None) -> List[CommitStatus]:
+def get_commit_status(topology: Topology, match_job_id: Optional[str] = None) -> List[CommitStatus]:
     """
     Returns the status of the commit operation on all devices. If an ID is given, only that id will be returned.
 
     :param topology: `Topology` instance !no-auto-argument
     :param match_job_id: job ID or list of Job IDs to return.
     """
-    return UniversalCommand.get_commit_job_status(topology, match_job_id)
+    return UniversalCommand.get_commit_job_status(topology, argToList(match_job_id))
 
 
 def get_push_status(
         topology: Topology,
-        match_job_id: List[str] = None,
+        match_job_id: Optional[List[str]] = None,
 
 ) -> List[PushStatus]:
     """
@@ -10752,10 +10752,10 @@ def get_push_status(
 def get_object(
         topology: Topology,
         object_type: ObjectTypeEnum,
-        device_filter_string: str = None,
-        object_name: str = None,
-        parent: str = None,
-        use_regex: str = None
+        device_filter_string: Optional[str] = None,
+        object_name: Optional[str] = None,
+        parent: Optional[str] = None,
+        use_regex: Optional[str] = None
 ) -> List[PanosObjectReference]:
     """Searches and returns a reference for the given object type and name. If no name is provided, all
     objects of the given type are returned. Note this only returns a reference, and not the complete object
@@ -10786,10 +10786,9 @@ def get_device_state(topology: Topology, target: str) -> dict:
     :param topology: `Topology` instance !no-auto-argument
     :param target: String to filter to only show specific hostnames or serial numbers.
     """
-    result_file_data = FirewallCommand.get_device_state(topology, target)
     return fileResult(
         filename=f"{target}_device_state.tar.gz",
-        data=result_file_data,
+        data=FirewallCommand.get_device_state(topology, target),
         file_type=EntryType.ENTRY_INFO_FILE
     )
 
