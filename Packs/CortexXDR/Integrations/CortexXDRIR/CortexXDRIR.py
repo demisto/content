@@ -340,6 +340,15 @@ class Client(CoreClient):
 
         return incident
 
+    def save_modified_incidents_to_integration_context(self):
+        last_modified_incidents = self.get_incidents(limit=100, sort_by_modification_time='desc')
+        modified_incidents_context = {}
+        for incident in last_modified_incidents:
+            incident_id = incident.get('incident_id')
+            modified_incidents_context[incident_id] = incident.get('modification_time')
+
+        set_integration_context({'modified_incidents': modified_incidents_context})
+
 
 
 def get_incidents_command(client, args):
