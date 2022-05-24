@@ -973,7 +973,7 @@ script:
   - name: cylance-optics-list-instaquery
     arguments:
     - name: page
-      description: number of page to collect
+      description: The page number to collect. If not specified, the default is 1.
       defaultValue: "1"
     - name: page_size
       description: number of items per page to collect
