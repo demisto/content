@@ -8945,6 +8945,7 @@ class ObjectGetter:
 
         :param topology: `Topology` instance
         :param device_filter_string: String to filter the devices we search for objects within.
+        :param object_type: String object type to look for, this matches exactly with Pan-os-python supported objects
         :param container_filter: Container we look for objects in, such as a device group or template-stack
         :param object_name: The name of the object to find; can be regex if use_regex is set
         :param use_regex: Whether we should use regex matching for the object_name
