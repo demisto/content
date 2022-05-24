@@ -976,7 +976,7 @@ script:
       description: The page number to collect. If not specified, the default is 1.
       defaultValue: "1"
     - name: page_size
-      description: number of items per page to collect
+      description: The page size. If not specified, the default is 20.
       defaultValue: "20"
     description: Get a list of InstaQuery
     outputs:
