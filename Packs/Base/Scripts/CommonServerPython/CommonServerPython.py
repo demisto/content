@@ -4834,7 +4834,7 @@ class Common(object):
         :param external_references:  A list of id's and description of the AP via external refs.
 
         :type value: ``str``
-        :param value: The Attack Pattern value (name)
+        :param value: The Attack Pattern value (name) - example: "Plist File Modification"
 
         :return: None
         :rtype: ``None``
