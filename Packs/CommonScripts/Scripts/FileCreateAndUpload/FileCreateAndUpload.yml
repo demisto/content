@@ -7,7 +7,7 @@ type: javascript
 tags:
 - Utility
 comment: |
- Deprecated. Use FileCreateAndUploadV2 instead. Will create a file (using the given data input or entry ID) and upload it to current investigation war room.
+  Deprecated. Use FileCreateAndUploadV2 instead. Will create a file (using the given data input or entry ID) and upload it to current investigation war room.
 enabled: true
 args:
 - name: filename
@@ -19,5 +19,7 @@ args:
 - name: entryId
   description: Entry ID contents to write into file.
 scripttarget: 0
-deprecated: true
 fromversion: 5.0.0
+deprecated: true
+tests:
+- No tests (auto formatted)
