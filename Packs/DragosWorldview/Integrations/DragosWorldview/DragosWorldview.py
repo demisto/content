@@ -3,10 +3,8 @@ from CommonServerPython import *  # noqa: F401
 
 """Dragos Worldview Integration for XSOAR."""
 import json
-import re
 from datetime import datetime, timedelta
-from typing import Any, Dict, List, Tuple
-from urllib import parse
+from typing import Any, Dict, Tuple
 
 import dateparser
 import requests
@@ -74,7 +72,7 @@ def get_indicators(client: Client, args: Dict[str, Any]) -> list:
     if serial:
         api_query = "indicators?serial%5B%5D=" + serial
     else:
-        time = datetime.now() - timedelta(hours=48)
+        max_time = datetime.now() - timedelta(hours=48)
         api_query = "indicators?updated_after="
         api_query = api_query + str(max_time)
         api_query = api_query.replace(":", "%3A")
@@ -121,7 +119,6 @@ def fetch_incidents(client: Client, last_run: dict, first_fetch: str) -> Tuple[l
         last_fetch = dateparser.parse(last_fetch)
 
     max_time = last_fetch
-    last_fetch = last_fetch.strftime('%Y-%m-%d %H:%M:%S')
     #current_time = datetime.strptime(time, '%Y-%m-%dT%H:%M:%S')
     #triggered_time = '[{},)'.format(datetime.strftime(time, '%Y-%m-%d %H:%M:%S'))
 
@@ -137,7 +134,6 @@ def fetch_incidents(client: Client, last_run: dict, first_fetch: str) -> Tuple[l
     for item in items:
         item['updated_at'] = item['updated_at'][:-5]
         incident_time = dateparser.parse(item['updated_at'])
-        formatted_time = incident_time.strftime('%Y-%m-%dT%H:%M:%SZ')
         incident = {
             'name': item['title'],
             'occurred': incident_time.strftime('%Y-%m-%dT%H:%M:%SZ'),
@@ -159,7 +155,6 @@ def main() -> None:
     """Main method used to run actions."""
     try:
         demisto_params = demisto.params()
-        demisto_args = demisto.args()
         base_url = demisto_params.get("url", "").rstrip("/")
         verify_ssl = not demisto_params.get("insecure", False)
         proxy = demisto_params.get("proxy", False)
