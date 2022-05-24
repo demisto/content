@@ -146,9 +146,8 @@ def get_events_from_integration_context(is_fetch_events: bool = False, max_fetch
     context_events = json.loads(integration_context.get('events', '[]'))
     if is_fetch_events:
         fetched_events = context_events[:max_fetch]
-        context_events = context_events[max_fetch:]
-        integration_context['events'] = context_events
-        set_to_integration_context_with_retries(context=context_events, max_retry_times=5)
+        integration_context['events'] = context_events[max_fetch:]
+        set_to_integration_context_with_retries(context=integration_context, max_retry_times=5)
         return fetched_events
     return context_events[:max_fetch]
 
@@ -166,7 +165,7 @@ def saas_security_get_events_command(args) -> Union[str, CommandResults]:
     return 'No events were found.'
 
 
-def fetch_events(max_fetch: Optional[int]) -> List[Dict]:
+def fetch_events(max_fetch: int) -> List[Dict]:
     return get_events_from_integration_context(is_fetch_events=True, max_fetch=max_fetch)
 
 
@@ -174,10 +173,6 @@ def store_events(client: Client):
     """
     Stores events in the integration context.
     """
-    # check if in xsiam there is a limit parameter when fetching events?
-    # what happens if fetching events and store events write to the setIntegration at the same time? is there protection from this?
-    # when setting integration context it overrun the entire object? or only the key i mentioned?
-
     while True:
         try:
             integration_context = demisto.getIntegrationContext()
