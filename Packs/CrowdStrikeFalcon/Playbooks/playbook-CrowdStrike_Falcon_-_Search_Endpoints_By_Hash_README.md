@@ -1,4 +1,4 @@
-This playbook aims to search across the organization for other endpoints that have been associated with the provided Sha256 hash. 
+This playbook searches across the organization for other endpoints associated with a specific SHA256 hash. 
 
 
 ## Dependencies
@@ -8,7 +8,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any sub-playbooks.
 
 ### Integrations
-* CrowdStrikeFalcon
+CrowdStrikeFalcon
 
 ### Scripts
 This playbook does not use any scripts.
