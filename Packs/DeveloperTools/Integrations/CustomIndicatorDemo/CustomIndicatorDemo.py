@@ -37,7 +37,7 @@ class Client(BaseClient):
         return {"dummy": dummy}
 
 
-def test_module() -> str:
+def test_module() -> str:  # pragma: no cover
     """Tests API connectivity and authentication'
 
     Returning 'ok' indicates that the integration works like it is supposed to.
@@ -99,7 +99,7 @@ def custom_indicator_creation(client: Client) -> CommandResults:
 ''' MAIN FUNCTION '''
 
 
-def main() -> None:
+def main() -> None:  # pragma: no cover
     """main function, parses params and runs command functions
 
     :return:
