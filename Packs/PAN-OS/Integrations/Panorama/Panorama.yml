@@ -300,9 +300,10 @@ script:
         description: The push errors.
         type: String
   - arguments:
-      - default: true
+      - default: flase
         description: The Template-stack to push
         name: template-stack
+        required: true
       - auto: PREDEFINED
         defaultValue: 'false'
         description: Pre policy validation.
