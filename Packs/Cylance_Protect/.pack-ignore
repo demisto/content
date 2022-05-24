@@ -16,6 +16,5 @@ ignore=IM111
 
 [known_words]
 Cylance
-cylance-optics-create-instaquery
-cylance-optics-get-instaquery-result
-cylance-optics-list-instaquery
+cylance
+instaquery
