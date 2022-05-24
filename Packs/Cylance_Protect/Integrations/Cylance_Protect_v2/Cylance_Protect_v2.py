@@ -1440,7 +1440,7 @@ def list_instaquery_request(page, page_size):
 
 
 def list_instaquery():
-    page = demisto.args().get('page')
+    page = demisto.args().get('page_number')
     page_size = demisto.args().get('page_size')
     res = list_instaquery_request(page,page_size)
     if res:
