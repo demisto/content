@@ -769,7 +769,6 @@ def panorama_push_to_template_stack(args: dict):
     return result
 
 
-
 def panorama_push_to_device_group_command(args: dict):
     """
     Push Panorama configuration and show message in warroom
@@ -838,11 +837,12 @@ def panorama_push_to_template_stack_command(args: dict):
     """
     Push Panorama Template to it's associated firewalls
     """
+    template_stack = args.get("template-stack")
     result = panorama_push_to_template_stack(args)
     if 'result' in result['response']:
         # commit has been given a jobid
         push_output = {
-            'TemplateStack': TEMPLATE,
+            'TemplateStack': template_stack,
             'JobID': result['response']['result']['job'],
             'Status': 'Pending'
         }
