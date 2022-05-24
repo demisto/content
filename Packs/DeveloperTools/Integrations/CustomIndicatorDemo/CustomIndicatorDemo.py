@@ -84,6 +84,7 @@ def custom_indicator_creation(client: Client) -> CommandResults:
         value=indicator_value,
         data=data,
         context_prefix='custom',
+        relationships=[]
     )
     # Return a CommandResults object containing the CustomIndicator object created
     return CommandResults(
