@@ -1,10 +1,10 @@
-The playbook searches for a given hash in the supported sandboxes. In case the hash is known the playbook will provide the detailed analysis of the sandbox report. Currently supported sandboxes are Falcon X and Wildfire. 
+This playbook searches for a specific hash in the supported sandboxes. If the hash is known the playbook provides a detailed analysis of the sandbox report. Currently supported sandboxes are Falcon X and Wildfire. 
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Extract and Associate MITRE 
+Extract and Associate MITRE 
 
 ### Integrations
 This playbook does not use any integrations.
@@ -31,11 +31,11 @@ This playbook does not use any integrations.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| AttackPattern.MITREID | The MITRE ID of the Attack Pattern. | string |
-| AttackPattern.KillChainPhases | The kill chain phases of the Attack Pattern. | string |
-| NonFoundHashes | List of hashes that are unknown by the sandboxes. | string |
+| AttackPattern.MITREID | The MITRE ID of the attack pattern. | string |
+| AttackPattern.KillChainPhases | The kill chain phases of the attack pattern. | string |
+| NonFoundHashes | A list of hashes that are not found in the sandboxes. | string |
 | WildFire.Report | The results of the Wildfire report. | string |
-| csfalconx.resource.sandbox | The results of the FalconX report. | string |
+| csfalconx.resource.sandbox | The results of the Falcon X report. | string |
 
 ## Playbook Image
 ---
