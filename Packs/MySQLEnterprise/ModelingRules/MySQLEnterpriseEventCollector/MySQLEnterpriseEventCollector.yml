@@ -1,4 +1,4 @@
-name: MySQLEventCollector
-id: MySQLEventCollector
+name: MySQLEnterpriseEventCollector
+id: MySQLEnterpriseEventCollector
 fromversion: 3.3.0
 rules: ''
