@@ -949,7 +949,8 @@ script:
       predefined:
       - Fuzzy
       - Exact
-    description: Create a cylance InstaQuery to search for artifacts in one or multiple zones.
+    description: Create a cylance InstaQuery to search for artifacts in one or multiple
+      zones.
     outputs:
     - contextPath: InstaQuery.New.id
       description: The unique identifier of the created InstaQuery.

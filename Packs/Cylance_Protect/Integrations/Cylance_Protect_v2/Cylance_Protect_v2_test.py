@@ -234,66 +234,66 @@ EXPECTED_POLICY = {'Timestamp': '2020-04-13T10:32:44.507000+00:00',
                    'Name': u'fff'
                    }
 
-INSTAQUERY_OUTPUT= {u'match_type': u'Fuzzy', 
-                    u'name': u'Test Instaquery', 
-                    u'created_at': u'2022-05-23T00:02:37Z', 
-                    u'artifact': u'File', 
-                    u'case_sensitive': False, 
-                    u'zones': [u'6608CA0E88C64647B276271CC5EA4295'], 
-                    u'progress': {}, 
-                    u'match_value_type': u'Path', 
-                    u'results_available': False, 
-                    u'match_values': [u'cyoptics.exe'], 
-                    u'id': u'CBEB9E9C9A9A41D1BD06C87464F5E2CD', 
-                    u'description': u'Test only'}
+INSTAQUERY_OUTPUT = {u'match_type': u'Fuzzy',
+                     u'name': u'Test Instaquery',
+                     u'created_at': u'2022-05-23T00:02:37Z',
+                     u'artifact': u'File',
+                     u'case_sensitive': False,
+                     u'zones': [u'6608CA0E88C64647B276271CC5EA4295'],
+                     u'progress': {},
+                     u'match_value_type': u'Path',
+                     u'results_available': False,
+                     u'match_values': [u'cyoptics.exe'],
+                     u'id': u'CBEB9E9C9A9A41D1BD06C87464F5E2CD',
+                     u'description': u'Test only'}
 
 INSTAQUERY_RESULT_OUTPUT = {
-    u'status': u'done', 
-    u'id': u'CBEB9E9C9A9A41D1BD06C87464F5E2CD', 
+    u'status': u'done',
+    u'id': u'CBEB9E9C9A9A41D1BD06C87464F5E2CD',
     u'result': [
-        {   u'@timestamp': 1653264158.3315804, 
-            u'HostName': u'windows-server-', 
-            u'DeviceId': u'65DB26864E364409B50DDC23291A3511', 
-            u'@version': u'1', 
-            u'CorrelationId': u'CBEB9E9C9A9A41D1BD06C87464F5E2CD', 
+        {u'@timestamp': 1653264158.3315804,
+            u'HostName': u'windows-server-',
+            u'DeviceId': u'65DB26864E364409B50DDC23291A3511',
+            u'@version': u'1',
+            u'CorrelationId': u'CBEB9E9C9A9A41D1BD06C87464F5E2CD',
             u'Result': u'{"FirstObservedTime": "1970-01-01T00:00:00.000Z", "LastObservedTime": "1970-01-01T00:00:00.000Z", "Uid": "dHrtLYQzbt9oJPxO8HaeyA==", "Type": "File", "Properties": {"Path": "c:\\\\program files\\\\cylance\\\\optics\\\\cyoptics.exe", "CreationDateTime": "2021-03-29T22:34:14.000Z", "Md5": "A081D3268531485BF95DC1A15A5BC6B0", "Sha256": "256809AABD3AB57949003B9AFCB556A9973222CDE81929982DAE7D306648E462", "Owner": "NT AUTHORITY\\\\SYSTEM", "SuspectedFileType": "Executable/PE", "FileSignature": "", "Size": "594104", "OwnerUid": "P3p6fdq3FlMsld6Rz95EOA=="}}'
-        }
+         }
     ]
 }
 
 LIST_INSTAQUERY_OUTPUT = {
-    u'page_number': 1, 
+    u'page_number': 1,
     u'page_items': [
         {
-            u'match_type': u'Fuzzy', 
-            u'name': u'Test Insta continue 84', 
-            u'created_at': u'2022-05-23T00:02:37Z', 
-            u'artifact': u'File', u'case_sensitive': False, 
-            u'zones': [u'6608CA0E88C64647B276271CC5EA4295'], 
-            u'progress': {u'queried': 1, u'responded': 1}, 
-            u'match_value_type': u'Path', 
-            u'results_available': True, 
-            u'match_values': [u'cyoptics.exe'], 
-            u'id': u'CBEB9E9C9A9A41D1BD06C87464F5E2CD', 
+            u'match_type': u'Fuzzy',
+            u'name': u'Test Insta continue 84',
+            u'created_at': u'2022-05-23T00:02:37Z',
+            u'artifact': u'File', u'case_sensitive': False,
+            u'zones': [u'6608CA0E88C64647B276271CC5EA4295'],
+            u'progress': {u'queried': 1, u'responded': 1},
+            u'match_value_type': u'Path',
+            u'results_available': True,
+            u'match_values': [u'cyoptics.exe'],
+            u'id': u'CBEB9E9C9A9A41D1BD06C87464F5E2CD',
             u'description': u'Test only'
-        }, 
+        },
         {
-            u'match_type': u'Exact', 
-            u'name': u'CylanceProtectv2InstaQueryTest Test creation 2', 
-            u'created_at': u'2022-05-20T09:15:09Z', 
-            u'artifact': u'File', 
-            u'case_sensitive': True, 
-            u'zones': [u'6608CA0E88C64647B276271CC5EA4295'], 
-            u'progress': {u'queried': 1, u'responded': 1}, 
-            u'match_value_type': u'Path', 
-            u'results_available': False, 
-            u'match_values': [u'exe'], 
-            u'id': u'BC522393DD6E666C9EA9A999767EF5DB', 
+            u'match_type': u'Exact',
+            u'name': u'CylanceProtectv2InstaQueryTest Test creation 2',
+            u'created_at': u'2022-05-20T09:15:09Z',
+            u'artifact': u'File',
+            u'case_sensitive': True,
+            u'zones': [u'6608CA0E88C64647B276271CC5EA4295'],
+            u'progress': {u'queried': 1, u'responded': 1},
+            u'match_value_type': u'Path',
+            u'results_available': False,
+            u'match_values': [u'exe'],
+            u'id': u'BC522393DD6E666C9EA9A999767EF5DB',
             u'description': u'Description here'
         }
-    ], 
-    u'total_pages': 13, 
-    u'total_number_of_items': 26, 
+    ],
+    u'total_pages': 13,
+    u'total_number_of_items': 26,
     u'page_size': 2
 }
 
@@ -462,7 +462,7 @@ def test_get_zones(mocker):
 
     contents = demisto_results.call_args[0][0]
     assert EXPECTED_ZONES.items() <= \
-           contents.get('EntryContext').get('CylanceProtect.Zones(val.Id && val.Id === obj.Id)')[0].items()
+        contents.get('EntryContext').get('CylanceProtect.Zones(val.Id && val.Id === obj.Id)')[0].items()
 
 
 def test_get_zone(mocker):
@@ -718,7 +718,7 @@ def test_get_policy_details(mocker):
     contents = demisto_results.call_args[0][0]
     assert EXPECTED_POLICY.get("ID") == \
         contents.get('EntryContext').get('Cylance.Policy(val.policy_id && val.policy_id == obj.policy_id)').get("policy_id")
-    
+
 
 def test_create_instaquery(mocker):
     """
@@ -765,7 +765,8 @@ def test_get_instaquery_result(mocker):
     get_instaquery_result()
 
     contents = demisto_results.call_args[0][0]
-    assert json.loads(INSTAQUERY_RESULT_OUTPUT['result'][0]['Result']).get('Properties').get('Sha256') in contents.get('HumanReadable')
+    assert json.loads(INSTAQUERY_RESULT_OUTPUT['result'][0]['Result']).get(
+        'Properties').get('Sha256') in contents.get('HumanReadable')
 
 
 def test_list_instaquery(mocker):
