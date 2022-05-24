@@ -7,7 +7,7 @@ type: python
 tags:
 - Utility
 comment: |
-  Will create a file (using the given data input or entry ID) and upload it to current investigation war room.
+  Creates a file (using the given data input or entry ID) and uploads it to the current investigation War Room.
 enabled: true
 args:
 - name: filename
@@ -15,9 +15,9 @@ args:
   default: true
   description: The name of the file to be created.
 - name: data
-  description: Input data to write to file.
+  description: Input data to write to the file.
 - name: entryId
-  description: Entry ID contents to write into file.
+  description: Entry ID contents to write in the file.
 - name: data_encoding
   auto: PREDEFINED
   predefined:
