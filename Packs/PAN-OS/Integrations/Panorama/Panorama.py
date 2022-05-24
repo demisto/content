@@ -708,11 +708,11 @@ def panorama_push_to_template(args: dict):
     Push a single template.
     """
     command: str = ''
-    command += f'<template><name>{TEMPLATE}</name></template>'
+    command += f'<name>{TEMPLATE}</name>'
 
     serial_number = args.get('serial_number')
     if serial_number:
-        command = f'<template><name>{TEMPLATE}</name><device><member>{serial_number}</member></device></template>'
+        command = f'<name>{TEMPLATE}</name><device><member>{serial_number}</member></device>'
 
     if argToBoolean(args.get('validate-only', 'false')):
         command += '<validate-only>yes</validate-only>'
@@ -722,7 +722,7 @@ def panorama_push_to_template(args: dict):
     params = {
         'type': 'commit',
         'action': 'all',
-        'cmd': f'<commit-all>{command}</commit-all>',
+        'cmd': f'<commit-all><template>{command}</template></commit-all>',
         'key': API_KEY
     }
 
@@ -742,11 +742,11 @@ def panorama_push_to_template_stack(args: dict):
     """
     template_stack = args.get("template-stack")
     command: str = ''
-    command += f'<template-stack><name>{template_stack}</name></template-stack>'
+    command += f'<name>{template_stack}</name>'
 
     serial_number = args.get('serial_number')
     if serial_number:
-        command = f'<template-stack><name>{template_stack}</name><device><member>{serial_number}</member></device></template-stack>'
+        command = f'<name>{template_stack}</name><device><member>{serial_number}</member></device>'
 
     if argToBoolean(args.get('validate-only', 'false')):
         command += '<validate-only>yes</validate-only>'
@@ -756,7 +756,7 @@ def panorama_push_to_template_stack(args: dict):
     params = {
         'type': 'commit',
         'action': 'all',
-        'cmd': f'<commit-all>{command}</commit-all>',
+        'cmd': f'<commit-all><template-stack>{command}</template-stack></commit-all>',
         'key': API_KEY
     }
 
