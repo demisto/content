@@ -24,6 +24,11 @@ configuration:
   name: proxy
   required: false
   type: 8
+- display: The maximum number of events per fetch. Default is 10.
+  defaultvalue: 10
+  name: max_fetch
+  required: true
+  type: 0
 description: Palo Alto Saas Security Event Collector integration for XSIAM.
 display: Saas Security Event Collector
 name: SaasSecurityEventCollector
@@ -33,6 +38,10 @@ script:
     description: Manual command to fetch events and display them.
     execution: false
     name: saas-security-get-events
+    arguments:
+      - name: limit
+        description: The number of events to get.Default is 10.
+        defaultValue: 10
     outputs:
     - contextPath: SaasSecurity.Event.log_type
       description: Event type.
@@ -76,7 +85,7 @@ script:
   dockerimage: demisto/python3:3.10.4.29342
   feed: false
   isfetchevents: true
-  longRunning: false
+  longRunning: true
   longRunningPort: false
   runonce: false
   script: '-'

@@ -1,3 +1,4 @@
+import json
 import time
 
 import requests
@@ -17,7 +18,7 @@ urllib3.disable_warnings()  # pylint: disable=no-member
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 SAAS_SECURITY_DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
-TOKEN_LIFE_TIME = 117
+TOKEN_LIFE_TIME = 117  # token expiration in minutes since it was created
 
 ''' CLIENT CLASS '''
 
@@ -47,7 +48,8 @@ class Client(BaseClient):
 
         :return: The http response
         """
-        token = self.get_access_token()
+        # token = self.get_access_token()
+        token = demisto.getIntegrationContext().get('access_token')
         headers = {
             'Authorization': f'Bearer {token}',
             'Content-Type': 'application/json',
@@ -62,7 +64,7 @@ class Client(BaseClient):
        integration context.
 
        :return: Access token that will be added to authorization header.
-       :rtype: str
+       :rtype: dict
        """
         now = datetime.now()
         integration_context = get_integration_context()
@@ -70,13 +72,11 @@ class Client(BaseClient):
         time_issued = integration_context.get('time_issued')
 
         if access_token and get_passed_mins(now, time_issued) < TOKEN_LIFE_TIME:
-            return access_token
+            return {'access_token': access_token, 'time_issued': time_issued}
 
         # there's no token or it is expired
         access_token = self.get_token_request()
-        integration_context = {'access_token': access_token, 'time_issued': date_to_timestamp(now) / 1000}
-        set_integration_context(integration_context)
-        return access_token
+        return {'access_token': access_token, 'time_issued': date_to_timestamp(now) / 1000}
 
     def get_token_request(self):
         """
@@ -128,19 +128,81 @@ def test_module(client):
         return 'ok'
 
 
-def get_events_command(client: Client) -> list:
-    events = []
-    res = client.get_events_request()
-    if res.status_code == 200:
-        events.append(res.json())
-    else:
-        while res.status_code == 204:
+def get_events_from_integration_context(is_fetch_events: bool = False, max_fetch: int = 10) -> List[dict]:
+    """
+    Get the events that were ingested into the integration context by the long running integration.
+
+    When fetching, to avoid from duplicates we want to remove the cached events.
+    When just getting events, we can return them without deleting them from context integration, to avoid losing events.
+
+    Args:
+        is_fetch_events (bool): whether fetch-events was called.
+        max_fetch (int): how many events to fetch each time.
+
+    Returns:
+        List[dict]: The events from the integration context.
+    """
+    integration_context = demisto.getIntegrationContext()
+    context_events = json.loads(integration_context.get('events', '[]'))
+    if is_fetch_events:
+        fetched_events = context_events[:max_fetch]
+        context_events = context_events[max_fetch:]
+        integration_context['events'] = context_events
+        set_to_integration_context_with_retries(context=context_events, max_retry_times=5)
+        return fetched_events
+    return context_events[:max_fetch]
+
+
+def saas_security_get_events_command(args) -> Union[str, CommandResults]:
+    limit = arg_to_number(args.get('limit')) or 10
+    if events := get_events_from_integration_context(max_fetch=limit):
+        return CommandResults(
+            readable_output=tableToMarkdown('SaaS Security Logs', events, headerTransform=pascalToSpace),
+            raw_response=events,
+            outputs=events,
+            outputs_key_field='item_unique_id',
+            outputs_prefix='SaasSecurity.Event'
+        )
+    return 'No events were found.'
+
+
+def fetch_events(max_fetch: Optional[int]) -> List[Dict]:
+    return get_events_from_integration_context(is_fetch_events=True, max_fetch=max_fetch)
+
+
+def store_events(client: Client):
+    """
+    Stores events in the integration context.
+    """
+    # check if in xsiam there is a limit parameter when fetching events?
+    # what happens if fetching events and store events write to the setIntegration at the same time? is there protection from this?
+    # when setting integration context it overrun the entire object? or only the key i mentioned?
+
+    while True:
+        try:
+            integration_context = demisto.getIntegrationContext()
+            demisto.debug(f'start integration context: [{integration_context}]')
+            integration_context.update(client.get_access_token())
+            integration_context_events = json.loads(integration_context.get('events', '[]'))
             response = client.get_events_request()
-            demisto.debug(f'This is the response status code - {response.status_code}')
             if response.status_code == 200:
-                events.append(response.json())
-                break
-    return events
+                events = response.json()
+                demisto.debug(f'Received event(s): {events}')
+                if integration_context_events:  # if events exist in the integration context
+                    if isinstance(events, list):  # 'events' is a list of events
+                        integration_context_events.extend(events)
+                    else:  # 'events' is a single dict (only one event)
+                        integration_context_events.append(events)
+                else:
+                    if isinstance(events, dict):
+                        integration_context_events = [events]
+                    else:
+                        integration_context_events = events
+            integration_context['events'] = integration_context_events
+            demisto.debug(f'end integration context: [{integration_context}]')
+            set_to_integration_context_with_retries(context=integration_context, max_retry_times=5)
+        except Exception as e:
+            demisto.error(f'Error occurred in long running execution: [{e}]')
 
 
 def main() -> None:
@@ -150,6 +212,8 @@ def main() -> None:
     base_url: str = params.get('url', '').rstrip('/')
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
+    max_fetch = arg_to_number(params.get('max_fetch')) or 10
+    args = demisto.args()
 
     command = demisto.command()
     demisto.info(f'Command being called is {command}')
@@ -165,20 +229,14 @@ def main() -> None:
         if command == "test-module":
             results = test_module(client)
             return_outputs(results)
-
-        elif command in ('saas-security-get-events', 'fetch-events'):
-            events = get_events_command(client)
-            if command == 'saas-security-get-events':
-                if events:
-                    command_results = CommandResults(
-                        readable_output=tableToMarkdown('SaaS Security Logs', events, headerTransform=pascalToSpace),
-                        raw_response=events,
-                    )
-                else:
-                    command_results = 'No logs were found.'
-                return_results(command_results)
-
-            send_events_to_xsiam(events=events, vendor='Palo Alto', product='saas-security')
+        elif command == 'long-running-execution':
+            store_events(client)
+        elif command == 'fetch-events':
+            send_events_to_xsiam(events=fetch_events(max_fetch=max_fetch), vendor='Palo Alto', product='saas-security')
+        elif command == 'saas-security-get-events':
+            return_results(saas_security_get_events_command(args=args))
+        else:
+            raise ValueError(f'Command {command} is not implemented in saas-security integration.')
     except Exception as e:
         raise Exception(f'Error in Palo Alto Saas Security Event Collector Integration [{e}]')
 
