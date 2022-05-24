@@ -36,6 +36,6 @@ schema:
       "changedValues": {
         "type": "string",
         "is_array": false
-      },
+      }
     }
   }
