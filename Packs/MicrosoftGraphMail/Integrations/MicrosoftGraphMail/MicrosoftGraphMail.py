@@ -685,7 +685,7 @@ class MsGraphClient:
         # If you add to the select filter the $ sign, The 'internetMessageHeaders' field not contained within the
         # API response, (looks like a bug in graph API).
         params = {
-            "$filter": f"receivedDateTime gt {last_fetch}",
+            "$filter": f"receivedDateTime ge {last_fetch}",
             "$orderby": "receivedDateTime asc",
             "select": "*",
             "$top": len(exclude_ids) + self._emails_fetch_limit  # fetch extra incidents
