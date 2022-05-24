@@ -280,6 +280,9 @@ script:
       - description: The serial number for a virtual system commit. If provided, the
           commit will be a virtual system commit.
         name: serial_number
+      - description: The serial number for a virtual system commit. If provided, the
+          commit will be a virtual system commit.
+        name: serial_number
     description: Pushes the given PAN-OS Template to the given devices or all devices that belong
       to the template.
     name: pan-os-push-to-template

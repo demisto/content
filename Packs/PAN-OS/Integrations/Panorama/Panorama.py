@@ -705,12 +705,12 @@ def panorama_push_to_device_group(args: dict):
 @logger
 def panorama_push_to_template(args: dict):
     command: str = ''
-    command += f'<template><entry name="{TEMPLATE}"/></template>'
+    command += f'<template><name>{TEMPLATE}</name></template>'
 
     serial_number = args.get('serial_number')
     if serial_number:
-        command = f'<dtemplate><entry name="{TEMPLATE}"><devices><entry name="{serial_number}"/>' \
-                  f'</devices></entry></template>'
+        command = f'<template><name>{TEMPLATE}</name><devices><member><entry name="{serial_number}"/>' \
+                  f'</devices></member></template>'
 
     if argToBoolean(args.get('validate-only', 'false')):
         command += '<validate-only>yes</validate-only>'
