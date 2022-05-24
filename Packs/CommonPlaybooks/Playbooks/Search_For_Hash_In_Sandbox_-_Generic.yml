@@ -2,8 +2,8 @@ id: Search For Hash In Sandbox - Generic
 version: -1
 fromversion: 6.5.0
 name: Search For Hash In Sandbox - Generic
-description: 'The playbook searches for a given hash in the supported sandboxes. In
-  case the hash is known the playbook will provide the detailed analysis of the sandbox
+description: 'This playbook searches for a specific hash in the supported sandboxes. If
+  the hash is known, the playbook provides a detailed analysis of the sandbox
   report. Currently supported sandboxes are Falcon X and Wildfire. '
 starttaskid: "0"
 tasks:
@@ -44,8 +44,7 @@ tasks:
       id: c832a0ae-ed29-47e5-8d84-988bbf58285d
       version: -1
       name: Is FalconX enabled?
-      description: Returns 'yes' if integration brand is available. Otherwise returns
-        'no'
+      description: Returns 'yes' if the CrowdStrike Falcon X integration is available. 
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -83,8 +82,7 @@ tasks:
       id: 4e4317f2-e95c-4ab5-831c-7dc38e911ffc
       version: -1
       name: Is WildFire enabled?
-      description: Returns 'yes' if integration brand is available. Otherwise returns
-        'no'
+      description: Returns 'yes' if the WildFire-v2 integration is available. 
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -122,7 +120,7 @@ tasks:
       id: 7bb954a8-b5f5-4051-8472-3c0d52b01561
       version: -1
       name: Search for hash in Wildfire
-      description: Retrieves results for a file hash using WildFire.
+      description: Searches for a specific hash in the WildFire sandbox.
       script: '|||wildfire-report'
       type: regular
       iscommand: true
@@ -264,7 +262,7 @@ tasks:
       id: 747647ca-ea8e-43c6-8994-1e5878f9a3b1
       version: -1
       name: Get full report from FalconX
-      description: Gets a full version of a sandbox report.
+      description: Gets a full report from the Falcon X sandbox.
       script: '|||cs-fx-get-full-report'
       type: regular
       iscommand: true
@@ -360,9 +358,9 @@ tasks:
       version: -1
       name: 'MITRE - Extract and Associate to Incident'
       description: |-
-        The playbook accepts as an input MITRE techniques ID's
-        provides the MITRE technique name and grabs all the technique data using the MITRE integration.
-        After extracting the MITRE data the techniques get associated to the incident.
+        This playbook accepts as an input MITRE technique IDs.
+        It provides the MITRE technique name and all the technique data using the MITRE integration.
+        After extracting the MITRE data, the techniques are associated with the incident.
       playbookName: MITRE - Extract and Associate to Incident
       type: playbook
       iscommand: false
@@ -599,7 +597,7 @@ tasks:
       id: d346e9ac-c1df-4ad8-8009-dd0b0a84affc
       version: -1
       name: Get Wildfire PDF report
-      description: Retrieves results for a file hash using WildFire.
+      description: Gets a PDF report of search results for hashes in the WildFire sandbox.
       script: '|||wildfire-report'
       type: regular
       iscommand: true
@@ -706,19 +704,19 @@ inputs:
   playbookInputQuery:
 outputs:
 - contextPath: AttackPattern.MITREID
-  description: The MITRE ID of the Attack Pattern.
+  description: The MITRE ID of the attack pattern.
   type: string
 - contextPath: AttackPattern.KillChainPhases
-  description: The kill chain phases of the Attack Pattern.
+  description: The kill chain phases of the attack pattern.
   type: string
 - contextPath: NonFoundHashes
-  description: List of hashes that are unknown by the sandboxes.
+  description: A list of hashes that are not found in the sandboxes.
   type: string
 - contextPath: WildFire.Report
   description: The results of the Wildfire report.
   type: string
 - contextPath: csfalconx.resource.sandbox
-  description: The results of the FalconX report.
+  description: The results of the Falcon X report.
   type: string
 tests:
 - No tests (auto formatted)
