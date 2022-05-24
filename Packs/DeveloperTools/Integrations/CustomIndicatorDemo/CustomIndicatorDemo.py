@@ -121,6 +121,8 @@ def main() -> None:
             return_results(result)
         elif demisto.command() == 'test-custom-indicator':
             return_results(custom_indicator_creation(client))
+        else:
+            raise NotImplementedError(f"Command '{demisto.command()}' is not implemented.")
 
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
