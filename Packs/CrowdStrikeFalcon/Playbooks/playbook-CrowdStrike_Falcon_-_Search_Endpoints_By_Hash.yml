@@ -2,8 +2,8 @@ id: CrowdStrike Falcon - Search Endpoints By Hash
 version: -1
 fromversion: 6.5.0
 name: CrowdStrike Falcon - Search Endpoints By Hash
-description: "This playbook aims to search across the organization for other endpoints\
-  \ that have been associated with the provided Sha256 hash. \n"
+description: "This playbook searches across the organization for other endpoints\
+  \ associated with a specific SHA256 hash. \n"
 starttaskid: "0"
 tasks:
   "0":
@@ -43,7 +43,7 @@ tasks:
       id: 9ce410b8-ddde-4690-8625-2cfab080cd83
       version: -1
       name: Search for hash in enviorment
-      description: Returns a list of device IDs on which an indicator ran.
+      description: Returns a list of device IDs an indicator ran on.
       script: '|||cs-falcon-device-ran-on'
       type: regular
       iscommand: true
@@ -249,7 +249,7 @@ inputs:
   playbookInputQuery:
 outputs:
 - contextPath: Endpoint
-  description: Additional Hosts that have the SHA256 present.
+  description: Additional hosts that have the SHA256 present.
   type: string
 - contextPath: CrowdStrike.IOC.DeviceCount
   description: The number of devices the IOC ran on.
