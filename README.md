@@ -34,7 +34,7 @@ You can take your logic and the way you want to work and write your own scripts,
 The services and products you use can be online Cloud-based or on-premises setups, and we have tools to support more complex topologies such as when the product's subnet is firewalled off.
 
 ## Integrations
-Integrations written in Javascript or Python enable the Cortex XSOAR Platform to orchestrate security and IT products. Each integration provides capabilities in the form of commands and each command usually reflects a product capability (API) and returns both a human readable and computer readable response.
+Integrations written in Javascript or Python enable the Cortex XSOAR Platform to orchestrate secdadaurity and IT products. Each integration provides capabilities in the form of commands and each command usually reflects a product capability (API) and returns both a human readable and computer readable response.
 
 ## Docker
 We use docker to run python scripts and integrations in a controlled environment. You can configure an existing docker image from the [Cortex XSOAR Docker Hub Organization](https://hub.docker.com/u/demisto/) or create a new docker image to suite your needs. More information about how to use Docker is available [here](https://demisto.pan.dev/docs/docker). 
