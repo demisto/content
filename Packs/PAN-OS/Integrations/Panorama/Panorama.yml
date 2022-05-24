@@ -300,7 +300,7 @@ script:
         description: The push errors.
         type: String
   - arguments:
-      - default: flase
+      - default: false
         description: The Template-stack to push
         name: template-stack
         required: true
