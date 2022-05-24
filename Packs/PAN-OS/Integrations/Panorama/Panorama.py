@@ -8950,7 +8950,7 @@ class ObjectGetter:
         :param use_regex: Whether we should use regex matching for the object_name
         """
 
-        object_class = ObjectGetter.supported_object_types.get(object_type)
+        object_class = ObjectGetter.SUPPORTED_OBJECT_TYPES.get(object_type)
         if not object_class:
             raise DemistoException(f"Object type {object_type} is not gettable with this integration.")
 
