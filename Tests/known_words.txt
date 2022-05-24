@@ -174,4 +174,8 @@ domainglob
 subdomain
 PDF
 auth
+endpoints
+DNS
+XDR
+CommandRunner
 AttackPattern
