@@ -5,13 +5,6 @@ args:
   name: text
   required: true
   secret: false
-- default: false
-  description: 'The context key to which the HTML result will be written. Note: Leave
-    blank to ignore context.'
-  isArray: false
-  name: contextKey
-  required: false
-  secret: false
 - auto: PREDEFINED
   default: false
   defaultValue: 'True'
@@ -43,9 +36,9 @@ commonfields:
 enabled: true
 name: MarkdownToHTML
 outputs:
-- contextPath: MarkdownToHTML
-  description: The MarkdownToHTML script's results
-  type: Dict
+- contextPath: MarkdownToHTML.HTML
+  description: The HTML converted text.
+  type: String
 script: '-'
 subtype: python3
 system: false
@@ -57,7 +50,7 @@ type: python
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ''
-dockerimage: devdemisto/bs4-py3:1.0.0.30050
+dockerimage: demisto/bs4-py3:1.0.0.300XX
 runas: DBotWeakRole
 runonce: false
 tests:

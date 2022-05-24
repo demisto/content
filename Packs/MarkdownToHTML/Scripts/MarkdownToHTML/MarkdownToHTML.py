@@ -10,7 +10,6 @@ def main():
     try:
         args = demisto.args()
         input_text = args["text"]
-        input_output_key = args.get("contextKey")
         input_only_md = argToBoolean(args.get("convertOnlyMarkdown", True))
         input_prettify = argToBoolean(args.get("prettifyHTML", False))
 
@@ -24,17 +23,12 @@ def main():
             soup = BeautifulSoup(data)
             data = soup.prettify()
 
+        # Output the resulted HTML to the context
         res = CommandResults(
             outputs_prefix='MarkdownToHTML',
             outputs_key_field='',
-            readable_output=data)
-        if input_output_key:
-            # Output the resulted HTML to the context
-            res = CommandResults(
-                outputs_prefix='MarkdownToHTML',
-                outputs_key_field='',
-                readable_output=data,
-                outputs={input_output_key: data})
+            readable_output=data,
+            outputs={'HTML': data})
 
         return_results(res)
 
