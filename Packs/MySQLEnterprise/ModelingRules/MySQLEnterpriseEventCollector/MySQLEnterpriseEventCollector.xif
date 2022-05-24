@@ -1,4 +1,4 @@
-[MODEL: dataset=mysql_enterprise_raw, model=Audit, content_id=***, version=***]
+[MODEL: dataset=mysql_enterprise_raw, model=Audit]
 | alter XDM.Audit.operation.type = json_extract_scalar(_raw_log, ""$.class"")
 | filter XDM.Audit.operation.type = ""audit""
 | alter XDM.Audit.event_timestamp = json_extract_scalar(_raw_log, ""$.timestamp""),
@@ -7,7 +7,7 @@ XDM.Audit.audited_resource.id =  json_extract_scalar(_raw_log, ""$.startup_data.
 XDM.Audit.audited_resource.type =  json_extract_scalar(_raw_log, ""$.startup_data.os_version""),
 XDM.Audit.audited_resource.sub_type =  json_extract_scalar(_raw_log, ""$.startup_data.mysql_version"");
 
-[MODEL: dataset=mysql_enterprise_raw, model=Auth, content_id=***, version=***]
+[MODEL: dataset=mysql_enterprise_raw, model=Auth]
 | alter XDM.Auth.original_event_type = json_extract_scalar(_raw_log, ""$.class"")
 | filter XDM.Auth.original_event_type = ""connection""
 | alter XDM.Auth.event_timestamp = json_extract_scalar(_raw_log, ""$.timestamp""),
@@ -17,7 +17,7 @@ XDM.Auth.Target.user.identifier = json_extract_scalar(_raw_log, ""$.login.user""
 XDM.Auth.Target.host.os = json_extract_scalar(_raw_log, ""$.login.os""),
 XDM.Auth.Target.ipv4 = json_extract_scalar(_raw_log, ""$.login.ip"");
 
-[MODEL: dataset=mysql_enterprise_raw, model=Database, content_id=***, version=***]
+[MODEL: dataset=mysql_enterprise_raw, model=Database]
 | alter XDM.Database.operation = json_extract_scalar(_raw_log, ""$.class"")
 | filter XDM.Database.operation = ""table_access""
 | alter XDM.Database.event_timestamp = json_extract_scalar(_raw_log, ""$.timestamp""),
