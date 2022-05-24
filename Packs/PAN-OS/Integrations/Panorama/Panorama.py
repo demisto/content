@@ -8917,7 +8917,7 @@ class HygieneRemediation:
 class ObjectGetter:
     """Retrieves objects from the PAN-OS configuration"""
 
-    supported_object_types = {
+    SUPPORTED_OBJECT_TYPES = {
         "AddressObject": AddressObject,
         "AddressGroup": AddressGroup,
         "ServiceObject": ServiceObject,
