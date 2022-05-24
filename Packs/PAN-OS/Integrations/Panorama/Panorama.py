@@ -702,6 +702,37 @@ def panorama_push_to_device_group(args: dict):
     return result
 
 
+@logger
+def panorama_push_to_template(args: dict):
+    command: str = ''
+    command += f'<template><entry name="{TEMPLATE}"/></template>'
+
+    serial_number = args.get('serial_number')
+    if serial_number:
+        command = f'<dtemplate><entry name="{TEMPLATE}"><devices><entry name="{serial_number}"/>' \
+                  f'</devices></entry></template>'
+
+    if argToBoolean(args.get('validate-only', 'false')):
+        command += '<validate-only>yes</validate-only>'
+    if description := args.get('description'):
+        command += f'<description>{description}</description>'
+
+    params = {
+        'type': 'commit',
+        'action': 'all',
+        'cmd': f'<commit-all>{command}</commit-all>',
+        'key': API_KEY
+    }
+
+    result = http_request(
+        URL,
+        'POST',
+        body=params
+    )
+
+    return result
+
+
 def panorama_push_to_device_group_command(args: dict):
     """
     Push Panorama configuration and show message in warroom
@@ -724,6 +755,38 @@ def panorama_push_to_device_group_command(args: dict):
             'Contents': result,
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown('Push to Device Group:', push_output, ['JobID', 'Status'],
+                                             removeNull=True),
+            'EntryContext': {
+                "Panorama.Push(val.JobID == obj.JobID)": push_output
+            }
+        })
+    else:
+        # no changes to commit
+        return_results(result['response']['msg']['line'])
+
+
+def panorama_push_to_template_command(args: dict):
+    """
+    Push Panorama configuration and show message in warroom
+    """
+
+    if not TEMPLATE:
+        raise Exception("The 'panorama-push-to-template' command is relevant for a Palo Alto Panorama instance.")
+
+    result = panorama_push_to_template(args)
+    if 'result' in result['response']:
+        # commit has been given a jobid
+        push_output = {
+            'Template': TEMPLATE,
+            'JobID': result['response']['result']['job'],
+            'Status': 'Pending'
+        }
+        return_results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': result,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Push to Template:', push_output, ['JobID', 'Status'],
                                              removeNull=True),
             'EntryContext': {
                 "Panorama.Push(val.JobID == obj.JobID)": push_output
@@ -10922,6 +10985,9 @@ def main():
 
         elif command == 'panorama-push-to-device-group' or command == 'pan-os-push-to-device-group':
             panorama_push_to_device_group_command(args)
+
+        elif command == 'pan-os-push-to-template':
+            panorama_push_to_template_command(args)
 
         elif command == 'panorama-push-status' or command == 'pan-os-push-status':
             panorama_push_status_command(**args)

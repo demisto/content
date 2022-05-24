@@ -265,6 +265,42 @@ script:
       description: The push errors.
       type: String
   - arguments:
+      - default: true
+        description: The Template to push
+        name: device-group
+      - auto: PREDEFINED
+        defaultValue: 'false'
+        description: Pre policy validation.
+        name: validate-only
+        predefined:
+          - 'true'
+          - 'false'
+      - description: The push description.
+        name: description
+      - description: The serial number for a virtual system commit. If provided, the
+          commit will be a virtual system commit.
+        name: serial_number
+    description: Pushes the given PAN-OS Template to the given devices or all devices that belong
+      to the template.
+    deprecated: true
+    name: panorama-push-to-template
+    outputs:
+      - contextPath: Panorama.Push.Template
+        description: The device group in which the policies were pushed.
+        type: String
+      - contextPath: Panorama.Push.JobID
+        description: The job ID of the polices that were pushed.
+        type: Number
+      - contextPath: Panorama.Push.Status
+        description: The push status.
+        type: String
+      - contextPath: Panorama.Push.Warnings
+        description: The push warnings.
+        type: String
+      - contextPath: Panorama.Push.Errors
+        description: The push errors.
+        type: String
+  - arguments:
     - description: The device group for which to return addresses (Panorama instances).
       name: device-group
     - description: The tag for which to filter the list of addresses.
