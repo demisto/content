@@ -217,15 +217,16 @@ def clean_non_existing_packs(index_folder_path: str, private_packs: list, storag
     Returns:
         bool: whether cleanup was skipped or not.
     """
-    if ('CI' not in os.environ) or (
-            os.environ.get('CI_COMMIT_BRANCH') != 'master' and storage_bucket.name == GCPConfig.PRODUCTION_BUCKET) or (
-            os.environ.get('CI_COMMIT_BRANCH') == 'master' and storage_bucket.name not in
-            (GCPConfig.PRODUCTION_BUCKET, GCPConfig.CI_BUILD_BUCKET)):
-        logging.info("Skipping cleanup of packs in gcs.")  # skipping execution of cleanup in gcs bucket
-        return True
+    # if ('CI' not in os.environ) or (
+    #         os.environ.get('CI_COMMIT_BRANCH') != 'master' and storage_bucket.name == GCPConfig.PRODUCTION_BUCKET) or (
+    #         os.environ.get('CI_COMMIT_BRANCH') == 'master' and storage_bucket.name not in
+    #         (GCPConfig.PRODUCTION_BUCKET, GCPConfig.CI_BUILD_BUCKET)):
+    #     logging.info("Skipping cleanup of packs in gcs.")  # skipping execution of cleanup in gcs bucket
+    #     return True
 
     if marketplace == 'xsoar':
-        public_packs_names = {p for p in os.listdir(PACKS_FULL_PATH) if p not in IGNORED_FILES}
+        public_packs_names = {pack_name for pack_name, pack_data in
+                              id_set.get('Packs', {}).items() if 'xsoar' in pack_data.get('marketplaces', [])}
         private_packs_names = {p.get('id', '') for p in private_packs}
         valid_packs_names = public_packs_names.union(private_packs_names)
         # search for invalid packs folder inside index
@@ -1067,10 +1068,15 @@ def main():
                   if os.path.exists(os.path.join(extract_destination_path, pack_name))]
     diff_files_list = content_repo.commit(current_commit_hash).diff(content_repo.commit(previous_commit_hash))
 
-    # taking care of private packs
-    is_private_content_updated, private_packs, updated_private_packs_ids = handle_private_content(
-        index_folder_path, private_bucket_name, extract_destination_path, storage_client, pack_names, storage_base_path
-    )
+    if marketplace == 'xsoar':
+        # taking care of private packs
+        is_private_content_updated, private_packs, updated_private_packs_ids = handle_private_content(
+            index_folder_path, private_bucket_name, extract_destination_path, storage_client, pack_names, storage_base_path
+        )
+    else:
+        is_private_content_updated = False
+        private_packs = []
+        updated_private_packs_ids = []
 
     if not option.override_all_packs:
         check_if_index_is_updated(index_folder_path, content_repo, current_commit_hash, previous_commit_hash,
