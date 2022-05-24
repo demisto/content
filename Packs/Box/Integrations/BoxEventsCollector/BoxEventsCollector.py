@@ -92,10 +92,10 @@ class BoxEventsRequestConfig(IntegrationHTTPRequest):
     url = parse_obj_as(AnyUrl, 'https://api.box.com/2.0/events')
     method = Method.GET
     params: BoxEventsParams
-    verify: bool = Field(True, alias='insecure')
+    verify: Optional[bool] = Field(True, alias='insecure')  # type: ignore[assignment]
 
     # validators
-    _oppsite_verify = validator('verify', pre=True, allow_reuse=True)(not_gate)
+    _oppsite_verify = validator('verify', allow_reuse=True)(not_gate)
 
 
 class BoxIntegrationOptions(IntegrationOptions):
