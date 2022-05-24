@@ -177,3 +177,4 @@ auth
 endpoints
 DNS
 XDR
+CommandRunner
