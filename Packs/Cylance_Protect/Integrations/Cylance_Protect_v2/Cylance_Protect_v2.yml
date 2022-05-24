@@ -949,7 +949,7 @@ script:
       predefined:
       - Fuzzy
       - Exact
-    description: Create a cylance InstaQuery
+    description: Create a cylance InstaQuery to search for artifacts in one or multiple zones.
     outputs:
     - contextPath: InstaQuery.New.id
       description: The unique identifier of the created InstaQuery.
@@ -965,7 +965,7 @@ script:
     - name: query_id
       description: InstaQuery ID
       required: true
-    description: Get a cylance InstaQuery search result
+    description: Get a cylance InstaQuery search result.
     outputs:
     - contextPath: InstaQuery.Results.result
       description: The InstaQuery results.
@@ -978,7 +978,7 @@ script:
     - name: page_size
       description: The page size. If not specified, the default is 20.
       defaultValue: "20"
-    description: Get a list of InstaQuery
+    description: Get a list of all current InstaQueries.
     outputs:
     - contextPath: InstaQuery.List
       description: The list of InstaQuery
