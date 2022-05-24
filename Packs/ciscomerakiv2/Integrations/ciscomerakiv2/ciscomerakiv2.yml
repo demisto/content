@@ -1,0 +1,317 @@
+commonfields:
+  id: Cisco Meraki V2
+  version: -1
+vcShouldKeepItemLegacyProdMachine: false
+name: Cisco Meraki V2
+display: Cisco Meraki V2
+category: IT Services
+description: Cloud controlled WiFi, routing, and security.
+configuration:
+- display: API Key
+  name: apiKey
+  type: 0
+  required: true
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+script:
+  script: ''
+  type: python
+  commands:
+  - name: meraki-fetch-organizations
+    arguments: []
+    outputs:
+    - contextPath: Meraki.Organization.id
+      description: ID of the organization.
+      type: String
+    - contextPath: Meraki.Organization.name
+      description: Name of the organization.
+      type: String
+    - contextPath: Meraki.Organization.url
+      description: URL of the organization.
+      type: String
+    description: List the organizations that the api-key has privileges on.
+  - name: meraki-get-organization-license-state
+    arguments:
+    - name: organizationId
+      required: true
+      description: Organization ID.
+    - name: headers
+      description: Table's headers to be shown by order.
+    outputs:
+    - contextPath: status
+      description: License status.
+      type: String
+    - contextPath: expirationDate
+      description: License expiration date.
+      type: String
+    description: License state for an organization.
+  - name: meraki-fetch-organization-device-inventory
+    arguments:
+    - name: organizationId
+      required: true
+      description: Organization ID.
+    - name: networkIds
+      required: false
+      description: Optional parameter to filter devices by network ids.
+    - name: serials
+      required: false
+      description: Optional parameter to filter devices by serials.
+    - name: statuses
+      required: false
+      description: CSV optional parameter to filter devices by statuses. Valid statuses are "online", "alerting", "offline", "dormant".
+    - name: productTypes
+      required: false
+      description: CSV optional parameter to filter device statuses by product type. Valid types are wireless, appliance, switch, systemsManager, camera, cellularGateway, and sensor.
+    - name: models
+      required: false
+      description: CSV optional parameter to filter devices by models.
+    - name: headers
+      description: Table's headers to be shown by order.
+    outputs:
+    - contextPath: Meraki.Organization.Devices.lanIp
+      description: LAN IP of the device.
+      type: String
+    - contextPath: Meraki.Organization.Devices.ipType
+      description: IP type of the device.
+      type: String
+    - contextPath: Meraki.Organization.Devices.gateway
+      description: Gateway IP of the device.
+      type: String
+    - contextPath: Meraki.Organization.Devices.primaryDns
+      description: Primary DNS of the device.
+      type: String
+    - contextPath: Meraki.Organization.Devices.productType
+      description: Product type of the device.
+      type: String
+    - contextPath: Meraki.Organization.Devices.model
+      description: Model of the device.
+      type: String
+    - contextPath: Meraki.Organization.Devices.networkId
+      description: Network ID of the device.
+      type: String
+    - contextPath: Meraki.Organization.Devices.name
+      description: Name of the device.
+      type: String
+    - contextPath: Meraki.Organization.Devices.mac
+      description: MAC Address of the device.
+      type: String
+    - contextPath: Meraki.Organization.Devices.publicIp
+      description: Public IP of the device.
+      type: String
+    - contextPath: Meraki.Organization.Devices.status
+      description: Status of the device.
+      type: String
+    - contextPath: Meraki.Organization.Devices.serial
+      description: Serial number of the device.
+      type: String
+    - contextPath: Meraki.Organization.Devices.secondaryDns
+      description: Secondary DNS of the device.
+      type: String
+    - contextPath: Meraki.Organization.Devices.components
+      description: Components of the device.
+      type: list
+    - contextPath: Meraki.Organization.Devices.tags
+      description: Tags of the device.
+      type: list
+    - contextPath: Meraki.Organization.Devices.lastReportedAt
+      description: Date and time the device last reported.
+      type: list
+
+    description: List of inventories for an organization.
+  - name: meraki-fetch-networks
+    arguments:
+    - name: organizationId
+      required: true
+      description: Organization ID.
+    - name: headers
+      description: Table's headers to be shown by order.
+    outputs:
+    - contextPath: Network
+      description: List of networks. Each includes ID, Name, Type, OrganizationId, Tags, and TimeZone.
+      type: list
+    description: List the networks in an organization.
+  - name: meraki-fetch-devices
+    arguments:
+    - name: networkId
+      required: true
+      description: Network ID.
+    - name: headers
+      description: Table's headers to be shown by order.
+    outputs:
+    - contextPath: Device
+      description: List of devices. Each includes Serial, Name, Lat, Lng, Model, NetworkId, Tags, MAC, and Address.
+      type: list
+    description: List the devices in a network.
+  - name: meraki-fetch-device-uplink
+    arguments:
+    - name: networkId
+      required: true
+      description: Network ID.
+    - name: serial
+      required: true
+      description: Device serial number.
+    - name: headers
+      description: Table's headers to be shown by order.
+    outputs:
+    - contextPath: Uplink
+      description: List of device uplink. Each includes Status and Interface
+      type: list
+    description: List of uplink information for a device.
+  - name: meraki-fetch-ssids
+    arguments:
+    - name: networkId
+      required: true
+      description: Network ID.
+    - name: headers
+      description: Table's headers to be shown by order.
+    outputs:
+    - contextPath: SSID
+      description: List of SSIDs. Each includes Number, NetworkId, Name, SplashPage, BandSelection, Enabled, AuthMode, and WalledGardenRanges.
+      type: list
+    description: List the SSIDs in a network.
+  - name: meraki-fetch-clients
+    arguments:
+    - name: serial
+      required: true
+      description: Device serial number.
+    - name: timespan
+      required: true
+      description: The timespan (in seconds) during which clients will be fetched. Must be at most one month and in seconds (e.g., 1 day is 86400 seconds).
+    - name: headers
+      description: Table's headers to be shown by order.
+    outputs:
+    - contextPath: Client
+      description: List of clients. Each includes ID, MAC, IP, Description, mDNSName, Hostname, Usage, and VLAN.
+      type: list
+    description: List the clients of a device, up to a maximum of a month ago.
+  - name: meraki-fetch-firewall-rules
+    arguments:
+    - name: networkId
+      required: true
+      description: Network ID.
+    - name: number
+      required: true
+      description: SSID number.
+    - name: headers
+      description: Table's headers to be shown by order.
+    outputs:
+    - contextPath: Firewall
+      description: List of firewalls. Each includes Number, NetworkId, Policy, Protocol, DestPort, DestCidr, and Comment.
+      type: list
+    description: List of L3 firewall rules for an SSID.
+  - name: meraki-remove-device
+    arguments:
+    - name: networkId
+      required: true
+      description: Network ID.
+    - name: serial
+      required: true
+      description: Serial number of the device to remove.
+    description: Remove a single device.
+  - name: meraki-get-device
+    arguments:
+    - name: networkId
+      required: true
+      description: Network ID.
+    - name: serial
+      required: true
+      description: Device serial number.
+    - name: headers
+      description: Table's headers to be shown by order.
+    outputs:
+    - contextPath: Device
+      description: Device which includes Serial, Name, Lat, Lng, Model, NetworkId, Tags, MAC, and Address
+    description: Get a single device.
+  - name: meraki-update-device
+    arguments:
+    - name: networkId
+      required: true
+      description: Network ID.
+    - name: serial
+      required: true
+      description: Serial number of the device to update.
+    - name: name
+      description: New name of the device.
+    - name: tags
+      description: New tags of the device.
+    - name: address
+      description: New address of the device.
+    - name: lat
+      description: New latitude of the device.
+    - name: lng
+      description: New longitude of the device.
+    outputs:
+    - contextPath: Device
+      description: Updated device which includes Serial, Name, Lat, Lng, Model, NetworkId, Tags, MAC, and Address.
+    description: Update the attributes of a device.
+  - name: meraki-claim-device
+    arguments:
+    - name: networkId
+      required: true
+      description: Network ID.
+    - name: serial
+      required: true
+      description: Serial number of the device to claim.
+    description: Claim a device into a network.
+  - name: meraki-update-firewall-rules
+    arguments:
+    - name: networkId
+      required: true
+      description: Network ID.
+    - name: number
+      required: true
+      description: SSID number
+      defaultValue: ' '
+    - name: allowLanAccess
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      description: 'Whether to allow or deny wireless client access to the local LAN. True allows access and false denies access. Possible values: true, false.'
+    - name: policy
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - allow
+      - deny
+      description: 'Whether to allow or deny a protocol. Possible values: "allow" and "deny".'
+    - name: protocol
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - tcp
+      - udp
+      - icmp
+      - any
+      description: 'The type of protocol. Possi ble values: "tcp", "udp", "icmp", and "any".'
+    - name: destPort
+      required: true
+      description: The destination port. Can be "any" or an integer within the range of 1-65535.
+    - name: destCidr
+      required: true
+      description: The destination IP address or subnet in CIDR form. Can also be "any".
+    - name: comment
+      description: A note about the rule.
+    - name: removeOthers
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      description: 'Whether to remove all other rules. True removes all other rules. False only adds the rule. Possible values: "true" and "false".'
+    outputs:
+    - contextPath: Firewall
+      description: List of firewalls. Each includes Number, NetworkId, Policy, Protocol, DestPort, DestCidr, and Comment
+      type: list
+    description: Update rule to L3 firewall rules of an SSID.
+  dockerimage: demisto/python3:3.10.4.29342
+  runonce: false
+  subtype: python3
+sourcemoduleid: Cisco Meraki V2
