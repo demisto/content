@@ -66,7 +66,6 @@ def test_module_command(client, args):
 
 def meraki_fetch_org_command(client, args):
     res = client.fetch_organizations()
-    return_error(res)
     command_results = CommandResults(
         outputs_prefix='Meraki.Organization',
         outputs=res,
@@ -78,12 +77,17 @@ def meraki_fetch_org_command(client, args):
 
 def meraki_fetch_org_dev_inv_command(client, args):
     organization_id = args.get('organizationId')
+    network_ids = args.get('networkIds')
+    serials = args.get('serials')
+    statuses = args.get('statuses').split(",") if args.get('statuses') else args.get('statuses')
+    product_types = args.get('productTypes').split(",") if args.get('productTypes') else args.get('productTypes')
+    models = args.get('productTypes').split(",") if args.get('productTypes') else args.get('productTypes')
     input_params = {
-        'network_ids': args.get('networkIds'),
-        'serials': args.get('serials'),
-        'statuses': args.get('statuses').split(","),
-        'product_types': args.get('productTypes').split(","),
-        'models': args.get('productTypes').split(",")
+        'network_ids': network_ids,
+        'serials': serials,
+        'statuses': statuses,
+        'product_types': product_types,
+        'models': models
     }
     send_params = {k: v for k, v in input_params.items() if v}
     res = client.fetch_org_dev_inv(organization_id=organization_id, params=send_params)
