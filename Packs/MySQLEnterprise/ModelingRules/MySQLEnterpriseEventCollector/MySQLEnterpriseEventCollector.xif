@@ -1,7 +1,7 @@
 [MODEL: dataset=mysql_enterprise_raw, model=Audit, content_id=***, version=***]
 | alter XDM.Audit.operation.type = json_extract_scalar(_raw_log, ""$.class"")
 | filter XDM.Audit.operation.type = ""audit""
-| alter XDM.Database.time = json_extract_scalar(_raw_log, ""$.timestamp""),
+| alter XDM.Audit.event_timestamp = json_extract_scalar(_raw_log, ""$.timestamp""),
 XDM.Audit.operation_sub_type =  json_extract_scalar(_raw_log, ""$.event""),
 XDM.Audit.audited_resource.id =  json_extract_scalar(_raw_log, ""$.startup_data.server_id""),
 XDM.Audit.audited_resource.type =  json_extract_scalar(_raw_log, ""$.startup_data.os_version""),
