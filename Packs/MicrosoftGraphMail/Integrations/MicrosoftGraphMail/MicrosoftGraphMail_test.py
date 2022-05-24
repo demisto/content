@@ -655,6 +655,19 @@ def test_server_to_endpoint(server_url, expected_endpoint):
 
 
 def test_fetch_last_emails(mocker):
+    """
+    Given:
+        - Last fetch fetched until email 2
+        - Next fetch will fetch 5 emails
+        - Exclusion list contains 2/5 emails ids
+        - fetch limit is set to 2
+    When:
+        - Calling fetch_incidents
+    Then:
+        - Fetch 2 emails
+        - Fetch emails after exclude id
+        - Don't fetch emails after limit
+    """
     emails = {'value': [
         {'receivedDateTime': '1', 'id': '1'},
         {'receivedDateTime': '2', 'id': '2'},
@@ -665,7 +678,7 @@ def test_fetch_last_emails(mocker):
     client = oproxy_client()
     client._emails_fetch_limit = 2
     mocker.patch.object(client.ms_client, 'http_request', return_value=emails)
-    res = client._fetch_last_emails('', last_fetch='2', exclude_ids=['1', '2'])
+    res = client._fetch_last_emails('', last_fetch='2', exclude_ids=['2'])
     assert len(res) == 2
     assert res[0] == emails['value'][2]
     assert res[1] == emails['value'][3]
