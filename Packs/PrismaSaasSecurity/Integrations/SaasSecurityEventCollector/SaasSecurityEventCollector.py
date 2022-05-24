@@ -48,7 +48,6 @@ class Client(BaseClient):
 
         :return: The http response
         """
-        # token = self.get_access_token()
         token = demisto.getIntegrationContext().get('access_token')
         headers = {
             'Authorization': f'Bearer {token}',
