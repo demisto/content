@@ -13,10 +13,10 @@ This playbook does not use any sub-playbooks.
 This playbook does not use any scripts.
 
 ### Commands
-* cs-falcon-search-detection
 * endpoint
-* cs-falcon-list-incident-summaries
 * setIncident
+* cs-falcon-search-detection
+* cs-falcon-list-incident-summaries
 * cs-falcon-get-detections-for-incident
 
 ## Playbook Inputs
