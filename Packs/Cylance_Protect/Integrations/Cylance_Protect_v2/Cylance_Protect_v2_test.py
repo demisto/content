@@ -1,3 +1,5 @@
+import json
+
 import demistomock as demisto
 from CommonServerPython import Common
 from Cylance_Protect_v2 import create_dbot_score_entry, translate_score, FILE_THRESHOLD, \
