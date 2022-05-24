@@ -267,7 +267,7 @@ script:
   - arguments:
       - default: true
         description: The Template to push
-        name: device-group
+        name: template
       - auto: PREDEFINED
         defaultValue: 'false'
         description: Pre policy validation.
@@ -282,8 +282,7 @@ script:
         name: serial_number
     description: Pushes the given PAN-OS Template to the given devices or all devices that belong
       to the template.
-    deprecated: true
-    name: panorama-push-to-template
+    name: pan-os-push-to-template
     outputs:
       - contextPath: Panorama.Push.Template
         description: The device group in which the policies were pushed.
