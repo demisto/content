@@ -775,7 +775,7 @@ def test_list_instaquery(mocker):
     Then
         - checks if the number of output items is as expected
     """
-    args = {'page': '1',
+    args = {'page_number': '1',
             'page_size': '2'
             }
     mocker.patch.object(Cylance_Protect_v2, "list_instaquery_request", return_value=LIST_INSTAQUERY_OUTPUT)
