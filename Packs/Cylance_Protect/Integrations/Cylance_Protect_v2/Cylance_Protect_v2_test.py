@@ -5,7 +5,8 @@ from CommonServerPython import Common
 from Cylance_Protect_v2 import create_dbot_score_entry, translate_score, FILE_THRESHOLD, \
     get_device, get_device_by_hostname, update_device, get_device_threats, get_policies, create_zone, get_zones, \
     get_zone, update_zone, get_threat, get_threats, get_threat_devices, get_list, get_list_entry_by_hash, \
-    add_hash_to_list, delete_hash_from_lists, delete_devices, get_policy_details, create_instaquery, list_instaquery, get_instaquery_result
+    add_hash_to_list, delete_hash_from_lists, delete_devices, get_policy_details, create_instaquery, list_instaquery, \
+    get_instaquery_result
 import Cylance_Protect_v2
 
 THREAT_OUTPUT = {u'cylance_score': -1.0, u'name': u'name',
@@ -256,7 +257,13 @@ INSTAQUERY_RESULT_OUTPUT = {
             u'DeviceId': u'65DB26864E364409B50DDC23291A3511',
             u'@version': u'1',
             u'CorrelationId': u'CBEB9E9C9A9A41D1BD06C87464F5E2CD',
-            u'Result': u'{"FirstObservedTime": "1970-01-01T00:00:00.000Z", "LastObservedTime": "1970-01-01T00:00:00.000Z", "Uid": "dHrtLYQzbt9oJPxO8HaeyA==", "Type": "File", "Properties": {"Path": "c:\\\\program files\\\\cylance\\\\optics\\\\cyoptics.exe", "CreationDateTime": "2021-03-29T22:34:14.000Z", "Md5": "A081D3268531485BF95DC1A15A5BC6B0", "Sha256": "256809AABD3AB57949003B9AFCB556A9973222CDE81929982DAE7D306648E462", "Owner": "NT AUTHORITY\\\\SYSTEM", "SuspectedFileType": "Executable/PE", "FileSignature": "", "Size": "594104", "OwnerUid": "P3p6fdq3FlMsld6Rz95EOA=="}}'
+            u'Result': u'{"FirstObservedTime": "1970-01-01T00:00:00.000Z", "LastObservedTime": "1970-01-01T00:00:00.000Z", '
+                       u'"Uid": "dHrtLYQzbt9oJPxO8HaeyA==", "Type": "File", "Properties": {"Path": '
+                       u'"c:\\\\program files\\\\cylance\\\\optics\\\\cyoptics.exe", "CreationDateTime": '
+                       u'"2021-03-29T22:34:14.000Z", "Md5": "A081D3268531485BF95DC1A15A5BC6B0", "Sha256": '
+                       u'"256809AABD3AB57949003B9AFCB556A9973222CDE81929982DAE7D306648E462", "Owner": "NT AUTHORITY\\\\SYSTEM", '
+                       u'"SuspectedFileType": "Executable/PE", "FileSignature": "", "Size": "594104", "OwnerUid": '
+                       u'"P3p6fdq3FlMsld6Rz95EOA=="}}'
          }
     ]
 }
