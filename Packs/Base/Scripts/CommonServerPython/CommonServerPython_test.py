@@ -668,6 +668,7 @@ class TestTableToMarkdown:
         assert 'header_2' not in table
         assert headers == ['header_1', 'header_2']
 
+    # Test fails locally because expected time is in UTC
     @staticmethod
     def test_date_fields_param():
         """
@@ -7166,7 +7167,7 @@ class TestCustomIndicator:
             score=Common.DBotScore.BAD,
             malicious_description='malicious!'
         )
-        indicator = Common.CustomIndicator('test', 'test_value', dbot_score, {'param': 'value'}, 'prefix')
+        indicator = Common.CustomIndicator('test', 'test_value', dbot_score, {'param': 'value'}, 'prefix', relationships=[])
         assert indicator.CONTEXT_PATH == 'prefix(val.value && val.value == obj.value)'
         assert indicator.param == 'value'
         assert indicator.value == 'test_value'
@@ -7186,7 +7187,7 @@ class TestCustomIndicator:
                 score=Common.DBotScore.BAD,
                 malicious_description='malicious!'
             )
-            Common.CustomIndicator('ip', 'test_value', dbot_score, {'param': 'value'}, 'prefix')
+            Common.CustomIndicator('ip', 'test_value', dbot_score, {'param': 'value'}, 'prefix', relationships=[])
 
     def test_custom_indicator_init_no_prefix(self):
         """
@@ -7203,7 +7204,7 @@ class TestCustomIndicator:
                 score=Common.DBotScore.BAD,
                 malicious_description='malicious!'
             )
-            Common.CustomIndicator('test', 'test_value', dbot_score, {'param': 'value'}, None)
+            Common.CustomIndicator('test', 'test_value', dbot_score, {'param': 'value'}, None, relationships=[])
 
     def test_custom_indicator_init_no_dbot_score(self):
         """
@@ -7214,7 +7215,7 @@ class TestCustomIndicator:
         with pytest.raises(ValueError):
             from CommonServerPython import Common
             dbot_score = ''
-            Common.CustomIndicator('test', 'test_value', dbot_score, {'param': 'value'}, 'prefix')
+            Common.CustomIndicator('test', 'test_value', dbot_score, {'param': 'value'}, 'prefix', relationships=[])
 
     def test_custom_indicator_to_context(self):
         """
@@ -7230,7 +7231,7 @@ class TestCustomIndicator:
             score=Common.DBotScore.BAD,
             malicious_description='malicious!'
         )
-        indicator = Common.CustomIndicator('test', 'test_value', dbot_score, {'param': 'value'}, 'prefix')
+        indicator = Common.CustomIndicator('test', 'test_value', dbot_score, {'param': 'value'}, 'prefix', relationships=[])
         context = indicator.to_context()
         assert context['DBotScore(val.Indicator &&'
                        ' val.Indicator == obj.Indicator &&'
@@ -7253,7 +7254,7 @@ class TestCustomIndicator:
                 score=Common.DBotScore.BAD,
                 malicious_description='malicious!'
             )
-            Common.CustomIndicator('test', 'test_value', dbot_score, None, 'prefix')
+            Common.CustomIndicator('test', 'test_value', dbot_score, None, 'prefix', relationships=[])
 
     def test_custom_indicator_no_value(self):
         """
@@ -7270,7 +7271,7 @@ class TestCustomIndicator:
                 score=Common.DBotScore.BAD,
                 malicious_description='malicious!'
             )
-            Common.CustomIndicator('test', None, dbot_score, {'param': 'value'}, 'prefix')
+            Common.CustomIndicator('test', None, dbot_score, {'param': 'value'}, 'prefix', relationships=[])
 
 
 @pytest.mark.parametrize(
