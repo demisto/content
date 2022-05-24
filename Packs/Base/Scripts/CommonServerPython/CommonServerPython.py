@@ -4833,6 +4833,9 @@ class Common(object):
         :type external_references: ``ExternalReference``
         :param external_references:  A list of id's and description of the AP via external refs.
 
+        :type value: ``str``
+        :param value: The Attack Pattern value (name)
+
         :return: None
         :rtype: ``None``
         """
