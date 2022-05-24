@@ -5,7 +5,7 @@ import requests_mock
 
 from CommonServerPython import *
 from MicrosoftGraphMail import MsGraphClient, build_mail_object, assert_pages, build_folders_path, \
-    add_second_to_str_date, list_mails_command, item_result_creator, create_attachment, reply_email_command, \
+    list_mails_command, item_result_creator, create_attachment, reply_email_command, \
     send_email_command, list_attachments_command, main
 from MicrosoftApiModule import MicrosoftClient
 import demistomock as demisto
@@ -335,11 +335,6 @@ def test_fetch_incidents_detect_initial(mocker, client, emails_data):
     mocker_folder_by_path.assert_called_once_with('dummy@mailbox.com', "Phishing")
 
 
-def test_add_second_to_str_date():
-    assert add_second_to_str_date("2019-11-12T15:00:00Z") == "2019-11-12T15:00:01Z"
-    assert add_second_to_str_date("2019-11-12T15:00:00Z", 10) == "2019-11-12T15:00:10Z"
-
-
 @pytest.mark.parametrize('client', [oproxy_client(), self_deployed_client()])
 def test_parse_email_as_label(client):
     assert client._parse_email_as_labels({'ID': 'dummy_id'}) == [{'type': 'Email/ID', 'value': 'dummy_id'}]
@@ -657,3 +652,20 @@ def test_server_to_endpoint(server_url, expected_endpoint):
     from MicrosoftApiModule import GRAPH_BASE_ENDPOINTS
 
     assert GRAPH_BASE_ENDPOINTS[server_url] == expected_endpoint
+
+
+def test_fetch_last_emails(mocker):
+    emails = {'value': [
+        {'receivedDateTime': '1', 'id': '1'},
+        {'receivedDateTime': '2', 'id': '2'},
+        {'receivedDateTime': '3', 'id': '3'},
+        {'receivedDateTime': '4', 'id': '4'},
+        {'receivedDateTime': '5', 'id': '5'},
+    ]}
+    client = oproxy_client()
+    client._emails_fetch_limit = 2
+    mocker.patch.object(client.ms_client, 'http_request', return_value=emails)
+    res = client._fetch_last_emails('', last_fetch='2', exclude_ids=['1', '2'])
+    assert len(res) == 2
+    assert res[0] == emails['value'][2]
+    assert res[1] == emails['value'][3]
