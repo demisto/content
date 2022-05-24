@@ -1,76 +1,72 @@
 contentitemexportablefields:
   contentitemfields:
-    definitionid: ""
-    fromServerVersion: ""
-    itemVersion: ""
-    packID: 8dfc4c78-6835-4e51-8aaa-ce7852cc8049
     propagationLabels:
     - all
-    toServerVersion: ""
-id: ae9483be-d4d5-4c55-89fd-d6dd3fe60e5b
+id: MDE - Host Advanced Hunting
 inputs:
-- description: ""
+- description: ''
   key: FileSha1
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
-- description: ""
+- description: ''
   key: FileSha256
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
-- description: ""
+- description: ''
   key: IP
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
-- description: ""
+- description: ''
   key: DeviceName
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
-- description: ""
+- description: ''
   key: FileName
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
-- description: ""
+- description: ''
   key: DeviceID
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
-- description: ""
+- description: ''
   key: FileMd5
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
 name: MDE - Host Advanced Hunting
 outputs: []
-starttaskid: "0"
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "3"
-      - "9"
-      - "17"
-      - "28"
-      - "13"
-      - "85"
+      - '3'
+      - '9'
+      - '17'
+      - '28'
+      - '13'
+      - '85'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: e1f36156-43d0-496d-8e38-8c3e0b9acd38
       iscommand: false
-      name: ""
+      name: ''
       version: -1
+      description: ''
     taskid: e1f36156-43d0-496d-8e38-8c3e0b9acd38
     timertriggers: []
     type: start
@@ -81,25 +77,26 @@ tasks:
           "y": 60
         }
       }
-  "3":
-    id: "3"
+  '3':
+    id: '3'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "82"
+      - '82'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: 80881684-437d-4f3f-8f5a-08635fc83ec6
       iscommand: false
       name: Network Activity
       type: title
       version: -1
+      description: ''
     taskid: 80881684-437d-4f3f-8f5a-08635fc83ec6
     timertriggers: []
     type: title
@@ -110,26 +107,27 @@ tasks:
           "y": 210
         }
       }
-  "9":
-    id: "9"
+  '9':
+    id: '9'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "26"
-      - "27"
+      - '26'
+      - '27'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: 77275ae0-24c8-4b95-8a3c-2f126e3e28af
       iscommand: false
       name: Privilege Escalation
       type: title
       version: -1
+      description: ''
     taskid: 77275ae0-24c8-4b95-8a3c-2f126e3e28af
     timertriggers: []
     type: title
@@ -140,25 +138,26 @@ tasks:
           "y": 210
         }
       }
-  "13":
-    id: "13"
+  '13':
+    id: '13'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "80"
+      - '80'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: fc4c5cfd-ec21-4e0a-86fa-37e98199aea8
       iscommand: false
       name: File Anlysis
       type: title
       version: -1
+      description: ''
     taskid: fc4c5cfd-ec21-4e0a-86fa-37e98199aea8
     timertriggers: []
     type: title
@@ -169,20 +168,20 @@ tasks:
           "y": 210
         }
       }
-  "17":
-    id: "17"
+  '17':
+    id: '17'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "81"
+      - '81'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: Finds sandbox reports by providing an FQL filter and paging details.
       id: b0532ae0-413b-47ec-866f-ba24eb3ccb6a
       iscommand: false
@@ -199,25 +198,26 @@ tasks:
           "y": 210
         }
       }
-  "26":
-    id: "26"
+  '26':
+    id: '26'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "38"
+      - '38'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: 2a614f24-f7ad-4297-8d4a-42cceb520fe3
       iscommand: false
       name: Mimikatz/Other Lsaas manipulation
       type: title
       version: -1
+      description: ''
     taskid: 2a614f24-f7ad-4297-8d4a-42cceb520fe3
     timertriggers: []
     type: title
@@ -228,25 +228,26 @@ tasks:
           "y": 360
         }
       }
-  "27":
-    id: "27"
+  '27':
+    id: '27'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "37"
+      - '37'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: 76fa906f-09b2-4504-8c7b-fa9b08b11910
       iscommand: false
       name: Is Local Admin was Signed to the device?
       type: title
       version: -1
+      description: ''
     taskid: 76fa906f-09b2-4504-8c7b-fa9b08b11910
     timertriggers: []
     type: title
@@ -257,25 +258,26 @@ tasks:
           "y": 360
         }
       }
-  "28":
-    id: "28"
+  '28':
+    id: '28'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "29"
+      - '29'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: a01ea774-9fa9-4b88-8baa-c75302acab66
       iscommand: false
       name: Defense Evasion
       type: title
       version: -1
+      description: ''
     taskid: a01ea774-9fa9-4b88-8baa-c75302acab66
     timertriggers: []
     type: title
@@ -286,21 +288,20 @@ tasks:
           "y": 210
         }
       }
-  "29":
+  '29':
     evidencedata:
       customfields: {}
       description:
-        simple: Microsoft Defender For Endpoint - Results on Tempering Activity query
-          in Advanced Hunting feature.
+        simple: Microsoft Defender For Endpoint - Results on Tempering Activity query in Advanced Hunting feature.
       tags:
         simple: Tempering Action
-    id: "29"
+    id: '29'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "49"
+      - '49'
     note: false
     quietmode: 0
     scriptarguments:
@@ -309,7 +310,7 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: Detect if there was any evidence of MSDE agent/sensor manipulation.
       id: 9cdcffbf-a41a-4aa1-84be-3749d6507a06
       iscommand: true
@@ -327,21 +328,20 @@ tasks:
           "y": 505
         }
       }
-  "37":
+  '37':
     evidencedata:
       customfields: {}
       description:
-        simple: Microsoft Defender For Endpoint - Results on Local Admin query in
-          Advanced Hunting feature.
+        simple: Microsoft Defender For Endpoint - Results on Local Admin query in Advanced Hunting feature.
       tags:
         simple: Local Admin
-    id: "37"
+    id: '37'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "83"
+      - '83'
     note: false
     quietmode: 0
     scriptarguments:
@@ -354,7 +354,7 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: Is there evidence for privilege escalation.
       id: d586a7ba-cae8-4eb5-87f7-340c05f4880e
       iscommand: true
@@ -372,21 +372,20 @@ tasks:
           "y": 505
         }
       }
-  "38":
+  '38':
     evidencedata:
       customfields: {}
       description:
-        simple: Microsoft Defender For Endpoint - Results on Credential Dump query
-          in Advanced Hunting feature.
+        simple: Microsoft Defender For Endpoint - Results on Credential Dump query in Advanced Hunting feature.
       tags:
         simple: Credential Dump
-    id: "38"
+    id: '38'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "54"
+      - '54'
     note: false
     quietmode: 0
     scriptarguments:
@@ -399,9 +398,8 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
-      description: Is there evidence of attempted lateral movement. By selecting a
-        “query_purpose” argument, a designated query template will be used.
+      brand: ''
+      description: Is there evidence of attempted lateral movement. By selecting a “query_purpose” argument, a designated query template will be used.
       id: d78da24b-058f-4a6d-8527-4c64f52fd4fb
       iscommand: true
       name: Password manipulation
@@ -418,8 +416,8 @@ tasks:
           "y": 505
         }
       }
-  "40":
-    id: "40"
+  '40':
+    id: '40'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
@@ -428,12 +426,13 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: 90714257-1b61-4033-8da6-89bc2ff4b75c
       iscommand: false
       name: Done
       type: title
       version: -1
+      description: ''
     taskid: 90714257-1b61-4033-8da6-89bc2ff4b75c
     timertriggers: []
     type: title
@@ -444,7 +443,7 @@ tasks:
           "y": 1130
         }
       }
-  "49":
+  '49':
     conditions:
     - condition:
       - - left:
@@ -452,25 +451,26 @@ tasks:
             value:
               simple: MicrosoftATP.HuntTampering.Result
           operator: isNotEmpty
-      label: "yes"
-    id: "49"
+      label: yes
+    id: '49'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#default#':
-      - "40"
-      "yes":
-      - "50"
+      - '40'
+      yes:
+      - '50'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: a345ddf4-451f-4946-8e20-66dd8633f39e
       iscommand: false
-      name: Any results
+      name: Any results?
+      description: Any results?
       type: condition
       version: -1
     taskid: a345ddf4-451f-4946-8e20-66dd8633f39e
@@ -483,19 +483,19 @@ tasks:
           "y": 705
         }
       }
-  "50":
-    id: "50"
+  '50':
+    id: '50'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "40"
+      - '40'
     note: false
     quietmode: 0
     scriptarguments:
       appendTags:
-        simple: "true"
+        simple: 'true'
       severity:
         simple: High
       tags:
@@ -521,19 +521,19 @@ tasks:
           "y": 890
         }
       }
-  "53":
-    id: "53"
+  '53':
+    id: '53'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "40"
+      - '40'
     note: false
     quietmode: 0
     scriptarguments:
       appendTags:
-        simple: "true"
+        simple: 'true'
       tags:
         simple: Credential Dump
     separatecontext: false
@@ -557,7 +557,7 @@ tasks:
           "y": 890
         }
       }
-  "54":
+  '54':
     conditions:
     - condition:
       - - left:
@@ -565,25 +565,26 @@ tasks:
             value:
               simple: MicrosoftATP.HuntLateralMovementEvidence.Result.credential_dumping
           operator: isNotEmpty
-      label: "yes"
-    id: "54"
+      label: yes
+    id: '54'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#default#':
-      - "40"
-      "yes":
-      - "53"
+      - '40'
+      yes:
+      - '53'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: bbe36e8f-c213-4478-8246-7b86fc6d9d60
       iscommand: false
       name: Any results?
+      description: Any results?
       type: condition
       version: -1
     taskid: bbe36e8f-c213-4478-8246-7b86fc6d9d60
@@ -596,19 +597,19 @@ tasks:
           "y": 705
         }
       }
-  "80":
-    id: "80"
+  '80':
+    id: '80'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     loop:
-      exitCondition: ""
+      exitCondition: ''
       iscommand: false
       max: 100
       wait: 1
     nexttasks:
       '#none#':
-      - "40"
+      - '40'
     note: false
     quietmode: 0
     scriptarguments:
@@ -629,13 +630,14 @@ tasks:
     separatecontext: true
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: 3a2ccd6d-24af-4fdc-8e90-d7f4098b8a00
       iscommand: false
       name: MDE - Host Advanced Hunting For Powershell Executions
-      playbookId: 23621c27-b05b-4630-8017-d6f1c2b4a15e
+      playbookId: MDE - Host Advanced Hunting For Powershell Executions
       type: playbook
       version: -1
+      description: ''
     taskid: 3a2ccd6d-24af-4fdc-8e90-d7f4098b8a00
     timertriggers: []
     type: playbook
@@ -646,19 +648,19 @@ tasks:
           "y": 505
         }
       }
-  "81":
-    id: "81"
+  '81':
+    id: '81'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     loop:
-      exitCondition: ""
+      exitCondition: ''
       iscommand: false
       max: 100
       wait: 1
     nexttasks:
       '#none#':
-      - "40"
+      - '40'
     note: false
     quietmode: 0
     scriptarguments:
@@ -677,13 +679,14 @@ tasks:
     separatecontext: true
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: d5e78d55-5683-4612-8c26-fa4f9dafdd0d
       iscommand: false
       name: MDE - Host Advanced Hunting For Persistence
-      playbookId: 5a158ad1-7561-43de-8662-87706a82f2ae
+      playbookId: MDE - Host Advanced Hunting For Persistence
       type: playbook
       version: -1
+      description: ''
     taskid: d5e78d55-5683-4612-8c26-fa4f9dafdd0d
     timertriggers: []
     type: playbook
@@ -694,19 +697,19 @@ tasks:
           "y": 505
         }
       }
-  "82":
-    id: "82"
+  '82':
+    id: '82'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     loop:
-      exitCondition: ""
+      exitCondition: ''
       iscommand: false
       max: 100
       wait: 1
     nexttasks:
       '#none#':
-      - "40"
+      - '40'
     note: false
     quietmode: 0
     scriptarguments:
@@ -727,13 +730,14 @@ tasks:
     separatecontext: true
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: f5d3ed39-0b68-4048-86d5-d10ff75bf493
       iscommand: false
       name: MDE - Host Advanced Hunting For Network Activity
-      playbookId: 1da35988-954b-489f-8973-89a62b0cc89c
+      playbookId: MDE - Host Advanced Hunting For Network Activity
       type: playbook
       version: -1
+      description: ''
     taskid: f5d3ed39-0b68-4048-86d5-d10ff75bf493
     timertriggers: []
     type: playbook
@@ -744,7 +748,7 @@ tasks:
           "y": 505
         }
       }
-  "83":
+  '83':
     conditions:
     - condition:
       - - left:
@@ -754,25 +758,26 @@ tasks:
           operator: isNotEmpty
           right:
             value: {}
-      label: "yes"
-    id: "83"
+      label: yes
+    id: '83'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#default#':
-      - "40"
-      "yes":
-      - "84"
+      - '40'
+      yes:
+      - '84'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: 36365547-096f-46be-8279-23c9e6cb0b73
       iscommand: false
       name: Any results?
+      description: Any results?
       type: condition
       version: -1
     taskid: 36365547-096f-46be-8279-23c9e6cb0b73
@@ -785,19 +790,19 @@ tasks:
           "y": 705
         }
       }
-  "84":
-    id: "84"
+  '84':
+    id: '84'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "40"
+      - '40'
     note: false
     quietmode: 0
     scriptarguments:
       appendTags:
-        simple: "true"
+        simple: 'true'
       tags:
         simple: Local Admin
     separatecontext: false
@@ -821,25 +826,26 @@ tasks:
           "y": 890
         }
       }
-  "85":
-    id: "85"
+  '85':
+    id: '85'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "86"
+      - '86'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: 93201884-f8ac-48db-81bb-d350f685faf3
       iscommand: false
       name: File Signature Check
       type: title
       version: -1
+      description: ''
     taskid: 93201884-f8ac-48db-81bb-d350f685faf3
     timertriggers: []
     type: title
@@ -850,20 +856,20 @@ tasks:
           "y": 215
         }
       }
-  "86":
+  '86':
     evidencedata:
       customfields: {}
       description:
         simple: Microsoft Defender For Endpoint - Results on File Information by SHA1
       tags:
         simple: File Information by SHA1
-    id: "86"
+    id: '86'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "87"
+      - '87'
     note: false
     quietmode: 0
     scriptarguments:
@@ -880,9 +886,8 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
-      description: Retrieves file info by a file hash (Sha1 or Sha256). Note, if the
-        given hash is not part of the results, it was not found.
+      brand: ''
+      description: Retrieves file info by a file hash (Sha1 or Sha256). Note, if the given hash is not part of the results, it was not found.
       id: 07cfc5b0-5d48-4604-80c3-d1c511b3b188
       iscommand: true
       name: Get file information
@@ -899,7 +904,7 @@ tasks:
           "y": 505
         }
       }
-  "87":
+  '87':
     conditions:
     - condition:
       - - left:
@@ -907,25 +912,26 @@ tasks:
             value:
               simple: MicrosoftATP.File.Signer
           operator: isNotEmpty
-      label: "yes"
-    id: "87"
+      label: yes
+    id: '87'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#default#':
-      - "40"
-      "yes":
-      - "88"
+      - '40'
+      yes:
+      - '88'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: 659738a8-0c13-41a0-84e2-36c369195b91
       iscommand: false
       name: Any digital signing info?
+      description: Any digital signing info?
       type: condition
       version: -1
     taskid: 659738a8-0c13-41a0-84e2-36c369195b91
@@ -938,19 +944,19 @@ tasks:
           "y": 705
         }
       }
-  "88":
-    id: "88"
+  '88':
+    id: '88'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "40"
+      - '40'
     note: false
     quietmode: 0
     scriptarguments:
       appendTags:
-        simple: "true"
+        simple: 'true'
       signature:
         simple: ${MicrosoftATP.File.Signer}
       tags:
@@ -989,3 +995,7 @@ view: |-
       }
     }
   }
+tests:
+- Microsoft Defender Advanced Threat Protection - Test
+fromversion: 6.2.0
+description: This playbook will use the Microsoft Defender For Endpoint feature - Advanced Hunting - and will hunt for Persistence,network activty,temaring actions,etc.

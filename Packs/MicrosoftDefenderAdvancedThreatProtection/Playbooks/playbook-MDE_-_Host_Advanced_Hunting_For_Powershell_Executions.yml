@@ -1,71 +1,67 @@
 contentitemexportablefields:
   contentitemfields:
-    definitionid: ""
-    fromServerVersion: ""
-    itemVersion: ""
-    packID: 8dfc4c78-6835-4e51-8aaa-ce7852cc8049
     propagationLabels:
     - all
-    toServerVersion: ""
-id: 23621c27-b05b-4630-8017-d6f1c2b4a15e
+id: MDE - Host Advanced Hunting For Powershell Executions
 inputs:
-- description: ""
+- description: ''
   key: IP
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
-- description: ""
+- description: ''
   key: DeviceName
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
-- description: ""
+- description: ''
   key: FileName
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
-- description: ""
+- description: ''
   key: DeviceID
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
-- description: ""
+- description: ''
   key: FileMd5
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
-- description: ""
+- description: ''
   key: FileSha256
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
-- description: ""
+- description: ''
   key: FileSha1
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
 name: MDE - Host Advanced Hunting For Powershell Executions
 outputs: []
-starttaskid: "0"
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "15"
+      - '15'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: 648e2b21-92a4-4d4b-8bbc-7d7ff22f8b9c
       iscommand: false
-      name: ""
+      name: ''
       version: -1
+      description: ''
     taskid: 648e2b21-92a4-4d4b-8bbc-7d7ff22f8b9c
     timertriggers: []
     type: start
@@ -76,25 +72,26 @@ tasks:
           "y": 60
         }
       }
-  "3":
-    id: "3"
+  '3':
+    id: '3'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "4"
+      - '4'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: 562148e8-b2c4-4ee4-8020-0b03dcfa808c
       iscommand: false
       name: Process Analysis
       type: title
       version: -1
+      description: ''
     taskid: 562148e8-b2c4-4ee4-8020-0b03dcfa808c
     timertriggers: []
     type: title
@@ -105,21 +102,20 @@ tasks:
           "y": 375
         }
       }
-  "4":
+  '4':
     evidencedata:
       customfields: {}
       description:
-        simple: Microsoft Defender For Endpoint - Results on Process Details query
-          in Advanced Hunting feature.
+        simple: Microsoft Defender For Endpoint - Results on Process Details query in Advanced Hunting feature.
       tags:
         simple: Process Details
-    id: "4"
+    id: '4'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "5"
+      - '5'
     note: false
     quietmode: 0
     scriptarguments:
@@ -134,9 +130,8 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
-      description: Process investigation. By selecting a “query_purpose” argument,
-        a designated query template will be used.
+      brand: ''
+      description: Process investigation. By selecting a “query_purpose” argument, a designated query template will be used.
       id: 35f0f113-8779-4f42-881f-7238de9f21ff
       iscommand: true
       name: Get process details by hash or filename
@@ -153,7 +148,7 @@ tasks:
           "y": 510
         }
       }
-  "5":
+  '5':
     conditions:
     - condition:
       - - left:
@@ -163,27 +158,28 @@ tasks:
           operator: isNotEmpty
           right:
             value: {}
-      label: "yes"
-    id: "5"
+      label: yes
+    id: '5'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#default#':
-      - "16"
-      "yes":
-      - "6"
-      - "7"
-      - "8"
+      - '16'
+      yes:
+      - '6'
+      - '7'
+      - '8'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: a60df698-069f-494d-8f39-830b4dd976e5
       iscommand: false
       name: Any events of execution or association to process?
+      description: Any events of execution or association to process?
       type: condition
       version: -1
     taskid: a60df698-069f-494d-8f39-830b4dd976e5
@@ -196,21 +192,20 @@ tasks:
           "y": 670
         }
       }
-  "6":
+  '6':
     evidencedata:
       customfields: {}
       description:
-        simple: Microsoft Defender For Endpoint - Results on searching additional
-          devices associated with this File Sha1
+        simple: Microsoft Defender For Endpoint - Results on searching additional devices associated with this File Sha1
       tags:
         simple: Multi Affected Devices
-    id: "6"
+    id: '6'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "18"
+      - '18'
     note: false
     quietmode: 0
     scriptarguments:
@@ -219,7 +214,7 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: Get a collection of machines related to a given file SHA1 hash.
       id: 18b15d86-3087-44c3-8b15-8b8a606fc4d7
       iscommand: true
@@ -237,21 +232,20 @@ tasks:
           "y": 860
         }
       }
-  "7":
+  '7':
     evidencedata:
       customfields: {}
       description:
-        simple: Microsoft Defender For Endpoint - Results on Unsigned Powershell query
-          in Advanced Hunting feature.
+        simple: Microsoft Defender For Endpoint - Results on Unsigned Powershell query in Advanced Hunting feature.
       tags:
         simple: cmd###powershell
-    id: "7"
+    id: '7'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "14"
+      - '14'
     note: false
     quietmode: 0
     scriptarguments:
@@ -270,9 +264,8 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
-      description: Process investigation. By selecting a “query_purpose” argument,
-        a designated query template will be used.
+      brand: ''
+      description: Process investigation. By selecting a “query_purpose” argument, a designated query template will be used.
       id: 0a74529c-7aa3-4021-8cfe-a2b7e9a7d070
       iscommand: true
       name: Check for any unsigned executions by Powershell?
@@ -289,21 +282,20 @@ tasks:
           "y": 860
         }
       }
-  "8":
+  '8':
     evidencedata:
       customfields: {}
       description:
-        simple: Microsoft Defender For Endpoint - Results on Powershell Execution
-          query in Advanced Hunting feature.
+        simple: Microsoft Defender For Endpoint - Results on Powershell Execution query in Advanced Hunting feature.
       tags:
         simple: powershell###cmd
-    id: "8"
+    id: '8'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "20"
+      - '20'
     note: false
     quietmode: 0
     scriptarguments:
@@ -325,9 +317,8 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
-      description: Process investigation. By selecting a “query_purpose” argument,
-        a designated query template will be used.
+      brand: ''
+      description: Process investigation. By selecting a “query_purpose” argument, a designated query template will be used.
       id: af5b02bc-6d1a-425b-82a8-1ab3764b5046
       iscommand: true
       name: Check for any Powershell Execution
@@ -344,14 +335,14 @@ tasks:
           "y": 860
         }
       }
-  "9":
-    id: "9"
+  '9':
+    id: '9'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "14"
+      - '14'
     note: false
     quietmode: 0
     scriptarguments:
@@ -364,9 +355,8 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
-      description: Detects network connections. By selecting a “query_purpose” argument,
-        a designated query template will be used.
+      brand: ''
+      description: Detects network connections. By selecting a “query_purpose” argument, a designated query template will be used.
       id: bb544534-ae2f-4666-8933-eceaa7a095b8
       iscommand: true
       name: Was there PowerShell with Encoded command?
@@ -383,7 +373,7 @@ tasks:
           "y": 1210
         }
       }
-  "14":
+  '14':
     conditions:
     - condition:
       - - left:
@@ -396,25 +386,26 @@ tasks:
             value:
               simple: MicrosoftATP.HuntProcessDetails.Result.process_excecution_powershell
           operator: isNotEmpty
-      label: "yes"
-    id: "14"
+      label: yes
+    id: '14'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#default#':
-      - "16"
-      "yes":
-      - "23"
+      - '16'
+      yes:
+      - '23'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: c6c4e4fd-8b70-4eed-8a54-6ce435114fdd
       iscommand: false
       name: Any results?
+      description: Any results?
       type: condition
       version: -1
     taskid: c6c4e4fd-8b70-4eed-8a54-6ce435114fdd
@@ -427,7 +418,7 @@ tasks:
           "y": 1380
         }
       }
-  "15":
+  '15':
     conditions:
     - condition:
       - - left:
@@ -442,25 +433,26 @@ tasks:
             value:
               simple: inputs.FileSha1
           operator: isNotEmpty
-      label: "yes"
-    id: "15"
+      label: yes
+    id: '15'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#default#':
-      - "16"
-      "yes":
-      - "3"
+      - '16'
+      yes:
+      - '3'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: 47dea48f-7acf-4215-8b27-bb5649f647fb
       iscommand: false
       name: Is file exist?
+      description: Is file exist?
       type: condition
       version: -1
     taskid: 47dea48f-7acf-4215-8b27-bb5649f647fb
@@ -473,8 +465,8 @@ tasks:
           "y": 205
         }
       }
-  "16":
-    id: "16"
+  '16':
+    id: '16'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
@@ -483,12 +475,13 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: 1af5254e-94d5-4d08-8788-4d15c735765a
       iscommand: false
       name: Done
       type: title
       version: -1
+      description: ''
     taskid: 1af5254e-94d5-4d08-8788-4d15c735765a
     timertriggers: []
     type: title
@@ -499,19 +492,19 @@ tasks:
           "y": 1920
         }
       }
-  "17":
-    id: "17"
+  '17':
+    id: '17'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "16"
+      - '16'
     note: false
     quietmode: 0
     scriptarguments:
       appendTags:
-        simple: "true"
+        simple: 'true'
       tags:
         complex:
           root: CommandlineVerdict
@@ -536,7 +529,7 @@ tasks:
           "y": 1730
         }
       }
-  "18":
+  '18':
     conditions:
     - condition:
       - - left:
@@ -548,25 +541,26 @@ tasks:
             iscontext: true
             value:
               simple: inputs.DeviceID
-      label: "yes"
-    id: "18"
+      label: yes
+    id: '18'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#default#':
-      - "16"
-      "yes":
-      - "19"
+      - '16'
+      yes:
+      - '19'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: eb9661f8-947d-458f-8729-576a3f61cc05
       iscommand: false
       name: Are there any more affected devices?
+      description: Is file exist?
       type: condition
       version: -1
     taskid: eb9661f8-947d-458f-8729-576a3f61cc05
@@ -579,19 +573,19 @@ tasks:
           "y": 1030
         }
       }
-  "19":
-    id: "19"
+  '19':
+    id: '19'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "16"
+      - '16'
     note: false
     quietmode: 0
     scriptarguments:
       appendTags:
-        simple: "true"
+        simple: 'true'
       tags:
         simple: Multi affected Devices
     separatecontext: false
@@ -615,7 +609,7 @@ tasks:
           "y": 1220
         }
       }
-  "20":
+  '20':
     conditions:
     - condition:
       - - left:
@@ -623,25 +617,26 @@ tasks:
             value:
               simple: MicrosoftATP.HuntProcessDetails.Result.process_excecution_powershell
           operator: isNotEmpty
-      label: "yes"
-    id: "20"
+      label: yes
+    id: '20'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#default#':
-      - "14"
-      "yes":
-      - "9"
+      - '14'
+      yes:
+      - '9'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: c83fdfc4-ed42-4c2f-8e8a-a1a1807e9664
       iscommand: false
       name: Any PowerShell executions?
+      description: Any PowerShell executions?
       type: condition
       version: -1
     taskid: c83fdfc4-ed42-4c2f-8e8a-a1a1807e9664
@@ -654,20 +649,20 @@ tasks:
           "y": 1020
         }
       }
-  "23":
-    id: "23"
+  '23':
+    id: '23'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     loop:
-      exitCondition: ""
+      exitCondition: ''
       forEach: true
       iscommand: false
       max: 100
       wait: 1
     nexttasks:
       '#none#':
-      - "17"
+      - '17'
     note: false
     quietmode: 0
     scriptarguments:
@@ -678,14 +673,8 @@ tasks:
     separatecontext: true
     skipunavailable: false
     task:
-      brand: ""
-      description: "This playbook takes the command line from the alert and performs
-        the following actions:\n- Checks for base64 string and decodes if exists\n-
-        Extracts and enriches indicators from the command line\n- Checks specific
-        arguments for malicious usage \n\nAt the end of the playbook, it sets a possible
-        verdict for the command line, based on the finding:\n1. Indicators found in
-        the command line\n2. Found AMSI techniques\n3. Found suspicious parameters\n4.
-        Usage of malicious tools\n5. Indication of network activity"
+      brand: ''
+      description: "This playbook takes the command line from the alert and performs the following actions:\n- Checks for base64 string and decodes if exists\n- Extracts and enriches indicators from the command line\n- Checks specific arguments for malicious usage \n\nAt the end of the playbook, it sets a possible verdict for the command line, based on the finding:\n1. Indicators found in the command line\n2. Found AMSI techniques\n3. Found suspicious parameters\n4. Usage of malicious tools\n5. Indication of network activity"
       id: 72f197cb-9a5a-4ed5-8b11-4e9885a3d3c2
       iscommand: false
       name: Command-Line Analysis
@@ -723,3 +712,7 @@ view: |-
       }
     }
   }
+tests:
+- No tests (auto formatted)
+fromversion: 6.2.0
+description: This playbook will use the Microsoft Defender For Endpoint feature - Advanced Hunting - and will hunt for host powershell executions.

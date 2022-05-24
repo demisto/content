@@ -1,74 +1,70 @@
 contentitemexportablefields:
   contentitemfields:
-    definitionid: ""
-    fromServerVersion: ""
-    itemVersion: ""
-    packID: 8dfc4c78-6835-4e51-8aaa-ce7852cc8049
     propagationLabels:
     - all
-    toServerVersion: ""
-id: 5a158ad1-7561-43de-8662-87706a82f2ae
+id: MDE - Host Advanced Hunting For Persistence
 inputs:
-- description: ""
+- description: ''
   key: FileSha256
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
-- description: ""
+- description: ''
   key: FileSha1
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
-- description: ""
+- description: ''
   key: FileMd5
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
-- description: ""
+- description: ''
   key: IP
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
-- description: ""
+- description: ''
   key: DeviceName
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
-- description: ""
+- description: ''
   key: FileName
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
-- description: ""
+- description: ''
   key: DeviceID
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
 name: MDE - Host Advanced Hunting For Persistence
 outputs: []
-starttaskid: "0"
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "9"
-      - "1"
-      - "2"
-      - "7"
+      - '9'
+      - '1'
+      - '2'
+      - '7'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: 24940e01-e9da-47ee-822a-5cd70d3072d3
       iscommand: false
-      name: ""
+      name: ''
       version: -1
+      description: ''
     taskid: 24940e01-e9da-47ee-822a-5cd70d3072d3
     timertriggers: []
     type: start
@@ -79,25 +75,26 @@ tasks:
           "y": 410
         }
       }
-  "1":
-    id: "1"
+  '1':
+    id: '1'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "3"
+      - '3'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: d24e08b0-bd1d-4306-82e4-db6d1df8c714
       iscommand: false
       name: Scheduled Tasks
       type: title
       version: -1
+      description: ''
     taskid: d24e08b0-bd1d-4306-82e4-db6d1df8c714
     timertriggers: []
     type: title
@@ -108,25 +105,26 @@ tasks:
           "y": 560
         }
       }
-  "2":
-    id: "2"
+  '2':
+    id: '2'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "11"
+      - '11'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: 83a60811-47a6-4387-894a-4563b6f0c1a4
       iscommand: false
       name: Registry modification
       type: title
       version: -1
+      description: ''
     taskid: 83a60811-47a6-4387-894a-4563b6f0c1a4
     timertriggers: []
     type: title
@@ -137,21 +135,20 @@ tasks:
           "y": 560
         }
       }
-  "3":
+  '3':
     evidencedata:
       customfields: {}
       description:
-        simple: Advanced Hunting Query - Checking if there were any created scheduled
-          tasks on the investigated device.
+        simple: Advanced Hunting Query - Checking if there were any created scheduled tasks on the investigated device.
       tags:
         simple: Created Scheduled Tasks
-    id: "3"
+    id: '3'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "32"
+      - '32'
     note: false
     quietmode: 0
     scriptarguments:
@@ -166,9 +163,8 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
-      description: Is there evidence of persistence. By selecting a “query_purpose”
-        argument, a designated query template will be used.
+      brand: ''
+      description: Is there evidence of persistence. By selecting a “query_purpose” argument, a designated query template will be used.
       id: e3374fdd-88b7-402c-8be2-73812e2b0178
       iscommand: true
       name: Is the file created any Scheduled Tasks?
@@ -185,21 +181,20 @@ tasks:
           "y": 705
         }
       }
-  "4":
+  '4':
     evidencedata:
       customfields: {}
       description:
-        simple: Microsoft Defender For Endpoint - Results on Startup User Creation
-          query in Advanced Hunting feature.
+        simple: Microsoft Defender For Endpoint - Results on Startup User Creation query in Advanced Hunting feature.
       tags:
         simple: User Creation
-    id: "4"
+    id: '4'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "23"
+      - '23'
     note: false
     quietmode: 0
     scriptarguments:
@@ -212,9 +207,8 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
-      description: Is there evidence of persistence. By selecting a “query_purpose”
-        argument, a designated query template will be used.
+      brand: ''
+      description: Is there evidence of persistence. By selecting a “query_purpose” argument, a designated query template will be used.
       id: bcc66ee2-d143-45af-8926-1d49b3de1ec7
       iscommand: true
       name: A new user was created on the system?
@@ -231,21 +225,20 @@ tasks:
           "y": 705
         }
       }
-  "5":
+  '5':
     evidencedata:
       customfields: {}
       description:
-        simple: Microsoft Defender For Endpoint - Results on User's Group Modification
-          query in Advanced Hunting feature.
+        simple: Microsoft Defender For Endpoint - Results on User's Group Modification query in Advanced Hunting feature.
       tags:
         simple: User's Group Modification
-    id: "5"
+    id: '5'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "12"
+      - '12'
     note: false
     quietmode: 0
     scriptarguments:
@@ -258,9 +251,8 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
-      description: Is there evidence of persistence. By selecting a “query_purpose”
-        argument, a designated query template will be used.
+      brand: ''
+      description: Is there evidence of persistence. By selecting a “query_purpose” argument, a designated query template will be used.
       id: 47877086-f011-47bb-89c9-b383dd13552b
       iscommand: true
       name: Object (User or Group) Was Added To A Group?
@@ -277,21 +269,20 @@ tasks:
           "y": 705
         }
       }
-  "6":
+  '6':
     evidencedata:
       customfields: {}
       description:
-        simple: Microsoft Defender For Endpoint - Results on Local Group Creation
-          query in Advanced Hunting feature.
+        simple: Microsoft Defender For Endpoint - Results on Local Group Creation query in Advanced Hunting feature.
       tags:
         simple: Local Group Creation
-    id: "6"
+    id: '6'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "20"
+      - '20'
     note: false
     quietmode: 0
     scriptarguments:
@@ -304,9 +295,8 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
-      description: Is there evidence of persistence. By selecting a “query_purpose”
-        argument, a designated query template will be used.
+      brand: ''
+      description: Is there evidence of persistence. By selecting a “query_purpose” argument, a designated query template will be used.
       id: 480d3d03-048b-4d46-8981-f11ded805547
       iscommand: true
       name: Local Group Was Created?
@@ -323,27 +313,28 @@ tasks:
           "y": 705
         }
       }
-  "7":
-    id: "7"
+  '7':
+    id: '7'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "5"
-      - "6"
-      - "4"
+      - '5'
+      - '6'
+      - '4'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: a41e366f-9ae5-46cb-89ae-c76c8ed01786
       iscommand: false
       name: New/Exisiting Users
       type: title
       version: -1
+      description: ''
     taskid: a41e366f-9ae5-46cb-89ae-c76c8ed01786
     timertriggers: []
     type: title
@@ -354,25 +345,26 @@ tasks:
           "y": 560
         }
       }
-  "9":
-    id: "9"
+  '9':
+    id: '9'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "10"
+      - '10'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: 864d7d3c-6440-4865-8796-b000321b3be2
       iscommand: false
       name: Startup Folder
       type: title
       version: -1
+      description: ''
     taskid: 864d7d3c-6440-4865-8796-b000321b3be2
     timertriggers: []
     type: title
@@ -383,21 +375,20 @@ tasks:
           "y": 560
         }
       }
-  "10":
+  '10':
     evidencedata:
       customfields: {}
       description:
-        simple: Microsoft Defender For Endpoint - Results on Startup Folder Modification
-          query in Advanced Hunting feature.
+        simple: Microsoft Defender For Endpoint - Results on Startup Folder Modification query in Advanced Hunting feature.
       tags:
         simple: Startup Folder Modification
-    id: "10"
+    id: '10'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "29"
+      - '29'
     note: false
     quietmode: 0
     scriptarguments:
@@ -412,9 +403,8 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
-      description: Is there evidence of persistence. By selecting a “query_purpose”
-        argument, a designated query template will be used.
+      brand: ''
+      description: Is there evidence of persistence. By selecting a “query_purpose” argument, a designated query template will be used.
       id: 316e0b7f-9a15-41c6-8da9-e4ba6f269a9b
       iscommand: true
       name: Startup Folder Modification
@@ -431,21 +421,20 @@ tasks:
           "y": 705
         }
       }
-  "11":
+  '11':
     evidencedata:
       customfields: {}
       description:
-        simple: Advanced Hunting Query - Checking if there any registry modifications
-          on the investigated device.
+        simple: Advanced Hunting Query - Checking if there any registry modifications on the investigated device.
       tags:
         simple: Registry Modification
-    id: "11"
+    id: '11'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "26"
+      - '26'
     note: false
     quietmode: 0
     scriptarguments:
@@ -462,9 +451,8 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
-      description: Is there evidence of persistence. By selecting a “query_purpose”
-        argument, a designated query template will be used.
+      brand: ''
+      description: Is there evidence of persistence. By selecting a “query_purpose” argument, a designated query template will be used.
       id: 3df4ea06-4253-4ff6-89f6-b8dbd2c3343a
       iscommand: true
       name: 'Check If Any Registry Values Were Modified '
@@ -481,7 +469,7 @@ tasks:
           "y": 705
         }
       }
-  "12":
+  '12':
     conditions:
     - condition:
       - - left:
@@ -489,25 +477,26 @@ tasks:
             value:
               simple: MicrosoftATP.HuntPersistenceEvidence.Result
           operator: isNotEmpty
-      label: "yes"
-    id: "12"
+      label: yes
+    id: '12'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#default#':
-      - "18"
-      "yes":
-      - "13"
+      - '18'
+      yes:
+      - '13'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: 4f5eea92-9709-4b28-8bb6-7e440d4a1904
       iscommand: false
       name: Any results?
+      description: Any results?
       type: condition
       version: -1
     taskid: 4f5eea92-9709-4b28-8bb6-7e440d4a1904
@@ -520,19 +509,19 @@ tasks:
           "y": 870
         }
       }
-  "13":
-    id: "13"
+  '13':
+    id: '13'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "18"
+      - '18'
     note: false
     quietmode: 0
     scriptarguments:
       appendTags:
-        simple: "true"
+        simple: 'true'
       severity:
         simple: High
       tags:
@@ -558,8 +547,8 @@ tasks:
           "y": 1050
         }
       }
-  "18":
-    id: "18"
+  '18':
+    id: '18'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
@@ -568,12 +557,13 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: b3a3d8fc-b4a7-4454-8d71-11949c98c554
       iscommand: false
       name: Done
       type: title
       version: -1
+      description: ''
     taskid: b3a3d8fc-b4a7-4454-8d71-11949c98c554
     timertriggers: []
     type: title
@@ -584,7 +574,7 @@ tasks:
           "y": 1240
         }
       }
-  "20":
+  '20':
     conditions:
     - condition:
       - - left:
@@ -592,25 +582,26 @@ tasks:
             value:
               simple: MicrosoftATP.HuntPersistenceEvidence.Result
           operator: isNotEmpty
-      label: "yes"
-    id: "20"
+      label: yes
+    id: '20'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#default#':
-      - "22"
-      "yes":
-      - "21"
+      - '22'
+      yes:
+      - '21'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: 8f07be5b-7f67-441f-8257-1f3e4448b03e
       iscommand: false
       name: Any results?
+      description: Any results?
       type: condition
       version: -1
     taskid: 8f07be5b-7f67-441f-8257-1f3e4448b03e
@@ -623,19 +614,19 @@ tasks:
           "y": 870
         }
       }
-  "21":
-    id: "21"
+  '21':
+    id: '21'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "22"
+      - '22'
     note: false
     quietmode: 0
     scriptarguments:
       appendTags:
-        simple: "true"
+        simple: 'true'
       severity:
         simple: High
       tags:
@@ -661,8 +652,8 @@ tasks:
           "y": 1050
         }
       }
-  "22":
-    id: "22"
+  '22':
+    id: '22'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
@@ -671,12 +662,13 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: cd98dfd1-bf9a-4b09-8365-1c3e81fc585b
       iscommand: false
       name: Done
       type: title
       version: -1
+      description: ''
     taskid: cd98dfd1-bf9a-4b09-8365-1c3e81fc585b
     timertriggers: []
     type: title
@@ -687,7 +679,7 @@ tasks:
           "y": 1240
         }
       }
-  "23":
+  '23':
     conditions:
     - condition:
       - - left:
@@ -695,25 +687,26 @@ tasks:
             value:
               simple: MicrosoftATP.HuntPersistenceEvidence.Result
           operator: isNotEmpty
-      label: "yes"
-    id: "23"
+      label: yes
+    id: '23'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#default#':
-      - "25"
-      "yes":
-      - "24"
+      - '25'
+      yes:
+      - '24'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: ea2caf96-1c19-4904-8362-ec84ebe2fcf3
       iscommand: false
       name: Any results?
+      description: Any results?
       type: condition
       version: -1
     taskid: ea2caf96-1c19-4904-8362-ec84ebe2fcf3
@@ -726,19 +719,19 @@ tasks:
           "y": 870
         }
       }
-  "24":
-    id: "24"
+  '24':
+    id: '24'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "25"
+      - '25'
     note: false
     quietmode: 0
     scriptarguments:
       appendTags:
-        simple: "true"
+        simple: 'true'
       severity:
         simple: High
       tags:
@@ -764,8 +757,8 @@ tasks:
           "y": 1050
         }
       }
-  "25":
-    id: "25"
+  '25':
+    id: '25'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
@@ -774,12 +767,13 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: a15f7a25-eb71-4521-89f2-ff0185283d85
       iscommand: false
       name: Done
       type: title
       version: -1
+      description: ''
     taskid: a15f7a25-eb71-4521-89f2-ff0185283d85
     timertriggers: []
     type: title
@@ -790,7 +784,7 @@ tasks:
           "y": 1240
         }
       }
-  "26":
+  '26':
     conditions:
     - condition:
       - - left:
@@ -798,25 +792,26 @@ tasks:
             value:
               simple: MicrosoftATP.HuntPersistenceEvidence.Result
           operator: isNotEmpty
-      label: "yes"
-    id: "26"
+      label: yes
+    id: '26'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#default#':
-      - "28"
-      "yes":
-      - "27"
+      - '28'
+      yes:
+      - '27'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: 2e76dccd-4904-480e-8519-c896511ec74e
       iscommand: false
       name: Any results?
+      description: Any results?
       type: condition
       version: -1
     taskid: 2e76dccd-4904-480e-8519-c896511ec74e
@@ -829,19 +824,19 @@ tasks:
           "y": 870
         }
       }
-  "27":
-    id: "27"
+  '27':
+    id: '27'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "28"
+      - '28'
     note: false
     quietmode: 0
     scriptarguments:
       appendTags:
-        simple: "true"
+        simple: 'true'
       severity:
         simple: High
       tags:
@@ -867,8 +862,8 @@ tasks:
           "y": 1050
         }
       }
-  "28":
-    id: "28"
+  '28':
+    id: '28'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
@@ -877,12 +872,13 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: de2ba71f-e4a7-434d-8de2-62299f069fb5
       iscommand: false
       name: Done
       type: title
       version: -1
+      description: ''
     taskid: de2ba71f-e4a7-434d-8de2-62299f069fb5
     timertriggers: []
     type: title
@@ -893,7 +889,7 @@ tasks:
           "y": 1240
         }
       }
-  "29":
+  '29':
     conditions:
     - condition:
       - - left:
@@ -901,25 +897,26 @@ tasks:
             value:
               simple: MicrosoftATP.HuntPersistenceEvidence.Result
           operator: isNotEmpty
-      label: "yes"
-    id: "29"
+      label: yes
+    id: '29'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#default#':
-      - "31"
-      "yes":
-      - "30"
+      - '31'
+      yes:
+      - '30'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: 490798c5-5b94-4b55-8f5e-51c7c02a980c
       iscommand: false
       name: Any results?
+      description: Any results?
       type: condition
       version: -1
     taskid: 490798c5-5b94-4b55-8f5e-51c7c02a980c
@@ -932,19 +929,19 @@ tasks:
           "y": 870
         }
       }
-  "30":
-    id: "30"
+  '30':
+    id: '30'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "31"
+      - '31'
     note: false
     quietmode: 0
     scriptarguments:
       appendTags:
-        simple: "true"
+        simple: 'true'
       severity:
         simple: High
       tags:
@@ -970,8 +967,8 @@ tasks:
           "y": 1050
         }
       }
-  "31":
-    id: "31"
+  '31':
+    id: '31'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
@@ -980,12 +977,13 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: fa542469-cf3c-4d5d-81f7-60522c4b0e68
       iscommand: false
       name: Done
       type: title
       version: -1
+      description: ''
     taskid: fa542469-cf3c-4d5d-81f7-60522c4b0e68
     timertriggers: []
     type: title
@@ -996,7 +994,7 @@ tasks:
           "y": 1240
         }
       }
-  "32":
+  '32':
     conditions:
     - condition:
       - - left:
@@ -1004,25 +1002,26 @@ tasks:
             value:
               simple: MicrosoftATP.HuntPersistenceEvidence.Result
           operator: isNotEmpty
-      label: "yes"
-    id: "32"
+      label: yes
+    id: '32'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#default#':
-      - "34"
-      "yes":
-      - "33"
+      - '34'
+      yes:
+      - '33'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: 43bf110c-a961-4fc8-87aa-d7278e598154
       iscommand: false
       name: Any results?
+      description: Any results?
       type: condition
       version: -1
     taskid: 43bf110c-a961-4fc8-87aa-d7278e598154
@@ -1035,19 +1034,19 @@ tasks:
           "y": 870
         }
       }
-  "33":
-    id: "33"
+  '33':
+    id: '33'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "34"
+      - '34'
     note: false
     quietmode: 0
     scriptarguments:
       appendTags:
-        simple: "true"
+        simple: 'true'
       severity:
         simple: High
       tags:
@@ -1073,8 +1072,8 @@ tasks:
           "y": 1050
         }
       }
-  "34":
-    id: "34"
+  '34':
+    id: '34'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
@@ -1083,12 +1082,13 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: 35bbe118-5033-432b-81e8-ae3127a0354f
       iscommand: false
       name: Done
       type: title
       version: -1
+      description: ''
     taskid: 35bbe118-5033-432b-81e8-ae3127a0354f
     timertriggers: []
     type: title
@@ -1112,3 +1112,7 @@ view: |-
       }
     }
   }
+tests:
+- No tests (auto formatted)
+fromversion: 6.2.0
+description: This playbook will use the Microsoft Defender For Endpoint feature - Advanced Hunting - and will hunt for host persistence evidence.

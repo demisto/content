@@ -1,18 +1,13 @@
 contentitemexportablefields:
   contentitemfields:
-    definitionid: ""
-    fromServerVersion: ""
-    itemVersion: ""
-    packID: 8dfc4c78-6835-4e51-8aaa-ce7852cc8049
     propagationLabels:
     - all
-    toServerVersion: ""
 description: |
   This playbook support 3 different actions for the analyst:
   - Run Full AV scan for spesific enpoint
   - Request Investigation Package (zip file that contains forensic data - with a size of ~ 15MB) from an endpoint.
   - Request to run Automatic Investigation on an endpoint.
-id: a62b206f-01f5-4e17-8594-e190523e5723
+id: MDE - Pro-Active Actions
 inputs:
 - description: |-
     Option for input ( can be entered as comma-separated values):
@@ -20,55 +15,55 @@ inputs:
     `Collect Investigation Package` - Collect investigation package from endpoint/s (only for supported devices)
     `Automated Investigation` - Run Automated Investigation on the provided endpoint
   key: Task
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
-- description: Provide a list of endpoints for the Scan and Collection of investigation
-    Package to be run on.
+- description: Provide a list of endpoints for the Scan and Collection of investigation Package to be run on.
   key: Endpoints ID
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
 - description: True/Fasle
   key: AutoCollectinvestigationPackege
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value:
-    simple: "False"
+    simple: 'False'
 - description: True/Fasle
   key: AutoAVScan
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value:
-    simple: "False"
+    simple: 'False'
 - description: True/Fasle
   key: AutoAutomatedInvestigation
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value:
-    simple: "False"
+    simple: 'False'
 name: MDE - Pro-Active Actions
 outputs: []
-starttaskid: "0"
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "15"
+      - '15'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: 641855f1-2102-4197-86db-cfd629424fc5
       iscommand: false
-      name: ""
+      name: ''
       version: -1
+      description: ''
     taskid: 641855f1-2102-4197-86db-cfd629424fc5
     timertriggers: []
     type: start
@@ -79,25 +74,26 @@ tasks:
           "y": -550
         }
       }
-  "1":
-    id: "1"
+  '1':
+    id: '1'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: 5bae2e08-bc22-4dd0-8ef9-d989c1fb044c
       iscommand: false
       name: AV Scan
       type: title
       version: -1
+      description: ''
     taskid: 5bae2e08-bc22-4dd0-8ef9-d989c1fb044c
     timertriggers: []
     type: title
@@ -108,7 +104,7 @@ tasks:
           "y": 195
         }
       }
-  "2":
+  '2':
     conditions:
     - condition:
       - - ignorecase: true
@@ -119,27 +115,28 @@ tasks:
           operator: isEqualString
           right:
             value:
-              simple: "True"
-      label: "yes"
-    id: "2"
+              simple: 'True'
+      label: yes
+    id: '2'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#default#':
-      - "4"
-      "yes":
-      - "3"
+      - '4'
+      yes:
+      - '3'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: b6c5cea1-1aa7-4f16-8630-ab3c6a80f5e3
       iscommand: false
       name: Auto full AV Scan process?
       type: condition
+      description: Check if autorun AV-Scan is requested
       version: -1
     taskid: b6c5cea1-1aa7-4f16-8630-ab3c6a80f5e3
     timertriggers: []
@@ -151,14 +148,14 @@ tasks:
           "y": 320
         }
       }
-  "3":
-    id: "3"
+  '3':
+    id: '3'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "5"
+      - '5'
     note: false
     quietmode: 0
     scriptarguments:
@@ -171,7 +168,7 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: Initiate a Microsoft Defender Antivirus scan on a machine.
       id: d774cd98-67f1-4ba9-8ad0-cd7b65cae454
       iscommand: true
@@ -189,44 +186,45 @@ tasks:
           "y": 675
         }
       }
-  "4":
-    id: "4"
+  '4':
+    id: '4'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     message:
-      bcc: null
+      bcc:
       body:
         simple: Approve AV Scan
-      cc: null
-      format: ""
+      cc:
+      format: ''
       methods: []
       replyOptions:
-      - "Yes"
-      - "No"
-      subject: null
+      - Yes
+      - No
+      subject:
       timings:
         completeafterreplies: 1
         completeaftersla: false
         completeafterv2: false
         retriescount: 2
         retriesinterval: 360
-      to: null
+      to:
     nexttasks:
-      "No":
-      - "5"
-      "Yes":
-      - "3"
+      No:
+      - '5'
+      Yes:
+      - '3'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: e6f4f5fa-e3cb-439f-8478-02c76c24273f
       iscommand: false
       name: Approve AV Scan
       type: condition
+      description: Ask for manual approval on AV-Scan
       version: -1
     taskid: e6f4f5fa-e3cb-439f-8478-02c76c24273f
     timertriggers: []
@@ -238,25 +236,26 @@ tasks:
           "y": 490
         }
       }
-  "5":
-    id: "5"
+  '5':
+    id: '5'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "13"
+      - '13'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: 9813c91c-f4bb-49d1-8c93-e39affdbc77f
       iscommand: false
       name: AV Scan done
       type: title
       version: -1
+      description: ''
     taskid: 9813c91c-f4bb-49d1-8c93-e39affdbc77f
     timertriggers: []
     type: title
@@ -267,25 +266,26 @@ tasks:
           "y": 840
         }
       }
-  "6":
-    id: "6"
+  '6':
+    id: '6'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "7"
+      - '7'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: a9e675ba-2f18-434a-8097-6576d611ff2d
       iscommand: false
       name: Collect investigation package
       type: title
       version: -1
+      description: ''
     taskid: a9e675ba-2f18-434a-8097-6576d611ff2d
     timertriggers: []
     type: title
@@ -296,7 +296,7 @@ tasks:
           "y": 195
         }
       }
-  "7":
+  '7':
     conditions:
     - condition:
       - - ignorecase: true
@@ -307,27 +307,28 @@ tasks:
           operator: isEqualString
           right:
             value:
-              simple: "True"
-      label: "yes"
-    id: "7"
+              simple: 'True'
+      label: yes
+    id: '7'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#default#':
-      - "9"
-      "yes":
-      - "18"
+      - '9'
+      yes:
+      - '18'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: 1b1f18da-f29a-4752-8fe0-b41ff0e180b8
       iscommand: false
       name: Auto collect investigation package from the Endpoint?
       type: condition
+      description: Check if auto-collect investigation package from endpoint is requested
       version: -1
     taskid: 1b1f18da-f29a-4752-8fe0-b41ff0e180b8
     timertriggers: []
@@ -339,43 +340,44 @@ tasks:
           "y": 320
         }
       }
-  "9":
-    id: "9"
+  '9':
+    id: '9'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     message:
-      bcc: null
+      bcc:
       body:
         simple: Approve Investigation package collection
-      cc: null
-      format: ""
+      cc:
+      format: ''
       methods: []
       replyOptions:
-      - "Yes"
-      - "No"
-      subject: null
+      - Yes
+      - No
+      subject:
       timings:
         completeafterreplies: 1
         completeaftersla: false
         completeafterv2: false
         retriescount: 2
         retriesinterval: 360
-      to: null
+      to:
     nexttasks:
-      "No":
-      - "10"
-      "Yes":
-      - "18"
+      No:
+      - '10'
+      Yes:
+      - '18'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: 47e0164b-4b8e-4171-895a-5ab49f628db7
       iscommand: false
       name: Approve Investigation package collection
+      description: Manual approve Investigation Package collection.
       type: condition
       version: -1
     taskid: 47e0164b-4b8e-4171-895a-5ab49f628db7
@@ -388,25 +390,26 @@ tasks:
           "y": 490
         }
       }
-  "10":
-    id: "10"
+  '10':
+    id: '10'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "13"
+      - '13'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: 0e5ab7c2-48b6-4620-817b-ee8d576122e4
       iscommand: false
       name: Investigation Package Collection Done
       type: title
       version: -1
+      description: ''
     taskid: 0e5ab7c2-48b6-4620-817b-ee8d576122e4
     timertriggers: []
     type: title
@@ -417,8 +420,8 @@ tasks:
           "y": 840
         }
       }
-  "13":
-    id: "13"
+  '13':
+    id: '13'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
@@ -427,12 +430,13 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: c8e6bcd9-6058-44ce-8bef-8146826a361a
       iscommand: false
       name: Done
       type: title
       version: -1
+      description: ''
     taskid: c8e6bcd9-6058-44ce-8bef-8146826a361a
     timertriggers: []
     type: title
@@ -443,16 +447,16 @@ tasks:
           "y": 990
         }
       }
-  "14":
+  '14':
     form:
-      description: ""
+      description: ''
       expired: false
       questions:
       - defaultrows: []
-        fieldassociated: ""
+        fieldassociated: ''
         gridcolumns: []
-        id: "0"
-        label: ""
+        id: '0'
+        label: ''
         labelarg:
           simple: 'What type of actions would you like to '
         options: []
@@ -460,23 +464,23 @@ tasks:
         - simple: Full Scan
         - simple: Collect Investigation Package
         - simple: Automated Investigation
-        placeholder: ""
+        placeholder: ''
         readonly: false
         required: false
-        tooltip: ""
+        tooltip: ''
         type: multiSelect
-      sender: ""
+      sender: ''
       title: What Type of actions would you like to preform
       totalanswers: 0
-    id: "14"
+    id: '14'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     message:
-      bcc: null
-      body: null
-      cc: null
-      format: ""
+      bcc:
+      body:
+      cc:
+      format: ''
       methods: []
       subject:
         simple: asdasdasd
@@ -490,18 +494,19 @@ tasks:
         simple: Administrator,Read-Only,Analyst
     nexttasks:
       '#none#':
-      - "17"
-      - "26"
-      - "27"
+      - '17'
+      - '26'
+      - '27'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: df719033-bd04-4e4b-89f6-76c344c9501f
       iscommand: false
       name: Define Additional Actions
+      description: Manual define the path that you would like to go through
       type: collection
       version: -1
     taskid: df719033-bd04-4e4b-89f6-76c344c9501f
@@ -514,7 +519,7 @@ tasks:
           "y": -220
         }
       }
-  "15":
+  '15':
     conditions:
     - condition:
       - - left:
@@ -523,26 +528,27 @@ tasks:
               simple: inputs.Task
           operator: isNotEmpty
       label: Input
-    id: "15"
+    id: '15'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#default#':
-      - "14"
+      - '14'
       Input:
-      - "27"
-      - "26"
-      - "17"
+      - '27'
+      - '26'
+      - '17'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: fff1aca9-3fa5-42e9-837d-d1829ddccfad
       iscommand: false
       name: Check Auto Tasks
+      description: Check if there are any pre-defined actions for this playbook
       type: condition
       version: -1
     taskid: fff1aca9-3fa5-42e9-837d-d1829ddccfad
@@ -555,7 +561,7 @@ tasks:
           "y": -420
         }
       }
-  "17":
+  '17':
     conditions:
     - condition:
       - - ignorecase: true
@@ -577,24 +583,25 @@ tasks:
             value:
               simple: Automated Investigation
       label: Automated Investigation
-    id: "17"
+    id: '17'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#default#':
-      - "28"
+      - '28'
       Automated Investigation:
-      - "20"
+      - '20'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: 261af7d9-9aa1-41c5-8bdc-b49aed8a94a8
       iscommand: false
       name: Check Auto Tasks
+      description: Check if the automated-investigation is selected
       type: condition
       version: -1
     taskid: 261af7d9-9aa1-41c5-8bdc-b49aed8a94a8
@@ -607,40 +614,34 @@ tasks:
           "y": 0
         }
       }
-  "18":
-    id: "18"
+  '18':
+    id: '18'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     loop:
-      exitCondition: ""
+      exitCondition: ''
       iscommand: false
       max: 100
       wait: 1
     nexttasks:
       '#none#':
-      - "10"
+      - '10'
     note: false
     quietmode: 0
     scriptarguments:
       AutoCollectinvestigationPackege:
-        simple: "True"
+        simple: 'True'
       MachineIDs:
         simple: ${inputs.Endpoints ID}
     separatecontext: true
     skipunavailable: false
     task:
-      brand: ""
-      description: "This playbook aims to simplify the collection of investigation
-        package retrieval into XSOAR from only supported machines (according to the
-        article -  https://docs.microsoft.com/en-us/microsoft-365/security/defender-endpoint/collect-investigation-package?view=o365-worldwide).
-        \n\nThe playbook receives information regarding the target devices (by hostnames,
-        IPs, device ids), validates that those devices exist, and retrieves the collection
-        package from those machines into the XSOAR console. Note that this action
-        may time and the average size of such a package is around ~15 MB."
+      brand: ''
+      description: "This playbook aims to simplify the collection of investigation package retrieval into XSOAR from only supported machines (according to the article -  https://docs.microsoft.com/en-us/microsoft-365/security/defender-endpoint/collect-investigation-package?view=o365-worldwide). \n\nThe playbook receives information regarding the target devices (by hostnames, IPs, device ids), validates that those devices exist, and retrieves the collection package from those machines into the XSOAR console. Note that this action may time and the average size of such a package is around ~15 MB."
       id: 97e4ec58-ea1c-4455-8e0d-61a88f894fa4
       iscommand: false
-      name: MDE - Collect Investigation Package
+      name: 8d6603be-227b-48fb-8f77-0b0ff3d572db
       playbookId: 8d6603be-227b-48fb-8f77-0b0ff3d572db
       type: playbook
       version: -1
@@ -654,25 +655,26 @@ tasks:
           "y": 675
         }
       }
-  "20":
-    id: "20"
+  '20':
+    id: '20'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "24"
+      - '24'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: 12024a80-2d99-458c-8851-a3df9917cbbd
       iscommand: false
       name: Automated Investigation
       type: title
       version: -1
+      description: ''
     taskid: 12024a80-2d99-458c-8851-a3df9917cbbd
     timertriggers: []
     type: title
@@ -683,43 +685,44 @@ tasks:
           "y": 195
         }
       }
-  "22":
-    id: "22"
+  '22':
+    id: '22'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     message:
-      bcc: null
+      bcc:
       body:
         simple: Approve Automated Investigation
-      cc: null
-      format: ""
+      cc:
+      format: ''
       methods: []
       replyOptions:
-      - "Yes"
-      - "No"
-      subject: null
+      - Yes
+      - No
+      subject:
       timings:
         completeafterreplies: 1
         completeaftersla: false
         completeafterv2: false
         retriescount: 2
         retriesinterval: 360
-      to: null
+      to:
     nexttasks:
-      "No":
-      - "23"
-      "Yes":
-      - "25"
+      No:
+      - '23'
+      Yes:
+      - '25'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: 8aa96727-5391-4daa-8056-f4ecced156a4
       iscommand: false
       name: Approve Automated Investigation
+      description: Manual approve automated invesitgation task request
       type: condition
       version: -1
     taskid: 8aa96727-5391-4daa-8056-f4ecced156a4
@@ -732,25 +735,26 @@ tasks:
           "y": 490
         }
       }
-  "23":
-    id: "23"
+  '23':
+    id: '23'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "13"
+      - '13'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: 1b2239a1-55f9-439d-8125-779117cb9bfe
       iscommand: false
       name: AV Scan done
       type: title
       version: -1
+      description: ''
     taskid: 1b2239a1-55f9-439d-8125-779117cb9bfe
     timertriggers: []
     type: title
@@ -761,7 +765,7 @@ tasks:
           "y": 840
         }
       }
-  "24":
+  '24':
     conditions:
     - condition:
       - - ignorecase: true
@@ -772,25 +776,27 @@ tasks:
           operator: isEqualString
           right:
             value:
-              simple: "True"
-      label: "yes"
-    id: "24"
+              simple: 'True'
+      label: yes
+    id: '24'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
-      "yes":
-      - "22"
-      - "25"
+      '#default#':
+      - '22'
+      yes:
+      - '25'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: f409110d-e845-41f3-80a1-e5d7be84e100
       iscommand: false
       name: Auto-run automated investigation?
+      description: Check if the auto-run automated investigation request is enabled
       type: condition
       version: -1
     taskid: f409110d-e845-41f3-80a1-e5d7be84e100
@@ -803,14 +809,14 @@ tasks:
           "y": 320
         }
       }
-  "25":
-    id: "25"
+  '25':
+    id: '25'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "23"
+      - '23'
     note: false
     quietmode: 0
     scriptarguments:
@@ -821,7 +827,7 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: Starts an automated investigation on a machine.
       id: a3df0212-aab3-4e19-8620-d2e3bb24b900
       iscommand: true
@@ -839,7 +845,7 @@ tasks:
           "y": 675
         }
       }
-  "26":
+  '26':
     conditions:
     - condition:
       - - ignorecase: true
@@ -861,24 +867,25 @@ tasks:
             value:
               simple: Full Scan
       label: Scan
-    id: "26"
+    id: '26'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#default#':
-      - "28"
+      - '28'
       Scan:
-      - "1"
+      - '1'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: a969bf39-f8b4-4834-8d5a-d745b1846972
       iscommand: false
       name: Check Auto Tasks
+      description: Check if AV-scan requested by the input
       type: condition
       version: -1
     taskid: a969bf39-f8b4-4834-8d5a-d745b1846972
@@ -891,7 +898,7 @@ tasks:
           "y": 0
         }
       }
-  "27":
+  '27':
     conditions:
     - condition:
       - - ignorecase: true
@@ -913,25 +920,26 @@ tasks:
             value:
               simple: Collect Investigation Package
       label: package
-    id: "27"
+    id: '27'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#default#':
-      - "28"
+      - '28'
       package:
-      - "6"
+      - '6'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: ab94b92a-08c7-45cf-85f7-e4a990e188bc
       iscommand: false
       name: Check Auto Tasks
       type: condition
+      description: Check if Collect Investigation Package is requeted by input.
       version: -1
     taskid: ab94b92a-08c7-45cf-85f7-e4a990e188bc
     timertriggers: []
@@ -943,25 +951,26 @@ tasks:
           "y": 0
         }
       }
-  "28":
-    id: "28"
+  '28':
+    id: '28'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "13"
+      - '13'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: db5610d6-43a5-4879-8a91-dd064828ffd2
       iscommand: false
       name: Done
       type: title
       version: -1
+      description: ''
     taskid: db5610d6-43a5-4879-8a91-dd064828ffd2
     timertriggers: []
     type: title
@@ -987,3 +996,6 @@ view: |-
       }
     }
   }
+tests:
+- Microsoft Defender Advanced Threat Protection - Test
+fromversion: 6.2.0

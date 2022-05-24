@@ -1,43 +1,38 @@
 contentitemexportablefields:
   contentitemfields:
-    definitionid: ""
-    fromServerVersion: ""
-    itemVersion: ""
-    packID: 8dfc4c78-6835-4e51-8aaa-ce7852cc8049
     propagationLabels:
     - all
-    toServerVersion: ""
-description: This playbook uses the Live Response feature in order to retrieve a file
-  from an endpoint.
-id: 30dc7ee1-0b30-4643-8955-f35cf0a8fe65
+description: This playbook uses the Live Response feature in order to retrieve a file from an endpoint.
+id: MDE - Retrieve File
 inputs:
 - description: File paths to be provided
   key: paths
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
 name: MDE - Retrieve File
 outputs: []
-starttaskid: "0"
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "5"
+      - '5'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: 94cc3210-9c2d-4a3b-8959-b1f377dccbb0
       iscommand: false
-      name: ""
+      name: ''
       version: -1
+      description: ''
     taskid: 94cc3210-9c2d-4a3b-8959-b1f377dccbb0
     timertriggers: []
     type: start
@@ -48,15 +43,15 @@ tasks:
           "y": -140
         }
       }
-  "1":
+  '1':
     continueonerror: true
-    id: "1"
+    id: '1'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "4"
+      - '4'
     note: false
     quietmode: 0
     scriptarguments:
@@ -69,9 +64,8 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
-      description: 'Collect file from a device. NOTE: Backslashes in path must be
-        escaped.'
+      brand: ''
+      description: 'Collect file from a device. NOTE: Backslashes in path must be escaped.'
       id: 3a524860-88b6-411d-82b8-dfc9ae5263d8
       iscommand: true
       name: Retrieve File From MSDE Live Response
@@ -88,8 +82,8 @@ tasks:
           "y": 185
         }
       }
-  "2":
-    id: "2"
+  '2':
+    id: '2'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
@@ -98,12 +92,13 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: 8a7e0229-c76b-4de6-8166-2f693b1ff2c2
       iscommand: false
       name: Done
       type: title
       version: -1
+      description: ''
     taskid: 8a7e0229-c76b-4de6-8166-2f693b1ff2c2
     timertriggers: []
     type: title
@@ -114,18 +109,18 @@ tasks:
           "y": 720
         }
       }
-  "3":
+  '3':
     evidencedata:
       customfields: {}
       description:
         simple: Retrieved Files
-    id: "3"
+    id: '3'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
     note: false
     quietmode: 0
     scriptarguments:
@@ -146,9 +141,8 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
-      description: Unzip a file using fileName or entryID to specify a file. Unzipped
-        files will be loaded to the War Room and names will be put into the context.
+      brand: ''
+      description: Unzip a file using fileName or entryID to specify a file. Unzipped files will be loaded to the War Room and names will be put into the context.
       id: 466943ee-d1f6-4264-80a4-d5b3c858d5e2
       iscommand: false
       name: Unzip results
@@ -165,16 +159,16 @@ tasks:
           "y": 550
         }
       }
-  "4":
-    id: "4"
+  '4':
+    id: '4'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
-      "no":
-      - "3"
-      "yes":
-      - "2"
+      no:
+      - '3'
+      yes:
+      - '2'
     note: false
     quietmode: 0
     scriptarguments:
@@ -183,10 +177,8 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
-      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
-        to check the previous task entries. If array is provided, will return yes
-        if one of the entries returned an error.
+      brand: ''
+      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries} to check the previous task entries. If array is provided, will return yes if one of the entries returned an error.
       id: 801e51fe-c520-4660-8dc9-65dc9d5b3721
       iscommand: false
       name: Any errors from the retrieval?
@@ -203,7 +195,7 @@ tasks:
           "y": 350
         }
       }
-  "5":
+  '5':
     conditions:
     - condition:
       - - left:
@@ -221,25 +213,26 @@ tasks:
           right:
             value:
               simple: ^[a-zA-Z]:(\\[\w_\d-])*([\\]|[.]*[a-zA-Z0-9_-])*?$
-      label: "yes"
-    id: "5"
+      label: yes
+    id: '5'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#default#':
-      - "2"
-      "yes":
-      - "1"
+      - '2'
+      yes:
+      - '1'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: a66a2c43-ae65-4fa9-8ac9-15625a06dc2b
       iscommand: false
       name: File Path was provided?
+      description: File Path was provided?
       type: condition
       version: -1
     taskid: a66a2c43-ae65-4fa9-8ac9-15625a06dc2b
@@ -265,3 +258,6 @@ view: |-
       }
     }
   }
+tests:
+- No tests (auto formatted)
+fromversion: 6.2.0

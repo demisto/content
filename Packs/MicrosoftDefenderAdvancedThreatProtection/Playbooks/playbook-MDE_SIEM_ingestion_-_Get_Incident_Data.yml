@@ -1,22 +1,13 @@
 contentitemexportablefields:
   contentitemfields:
-    definitionid: ""
-    fromServerVersion: ""
-    itemVersion: ""
-    packID: 8dfc4c78-6835-4e51-8aaa-ce7852cc8049
     propagationLabels:
     - all
-    toServerVersion: ""
-description: The playbook handles when the incident ingestion was done from the SIEM.
-  The user provides which incident fields contain the alert ID. In addition, it also
-  allows changing the severity according to a user-defined scale to override the default
-  assigned severity.
-id: 308a9a14-2964-4408-84ef-86fe86850493
+description: The playbook handles when the incident ingestion was done from the SIEM. The user provides which incident fields contain the alert ID. In addition, it also allows changing the severity according to a user-defined scale to override the default assigned severity.
+id: MDE SIEM ingestion - Get Incident Data
 inputs:
-- description: The name of the incident field that contains the detection or incident
-    ID. Default value is incident.externalid
+- description: The name of the incident field that contains the detection or incident ID. Default value is incident.externalid
   key: SIEMincidentFieldForID
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value:
     simple: ${incident.externalsystemid}
@@ -24,7 +15,7 @@ inputs:
     The severity scale as represented in the EDR
     For example in Microsoft defender for endpoint the severity scale is Informational,Low,Medium,High
   key: ScaleToSetSeverity
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value:
     simple: Informational,Low,Medium,High
@@ -35,18 +26,16 @@ inputs:
     Possible values to use are 0,0.5, 1, 2, 3,4
     Which represent Unknown, Informational, Low, Medium, High, Critical
   key: SeverityValuesMapping
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value:
     simple: 0.5, 1, 2, 3
-- description: "Indicates if to set the severity according to the  ScaleToSetSeverity
-    and SeverityValuesMapping settings (True) or keep the original severity as mapped
-    by the SIEM (False) \nTrue/False"
+- description: "Indicates if to set the severity according to the  ScaleToSetSeverity and SeverityValuesMapping settings (True) or keep the original severity as mapped by the SIEM (False) \nTrue/False"
   key: OverrideSIEMSeverity
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value:
-    simple: "False"
+    simple: 'False'
 name: MDE SIEM ingestion - Get Incident Data
 outputs:
 - contextPath: CrowdStrike.Detection.Behavior.FileName
@@ -103,27 +92,27 @@ outputs:
 - contextPath: Endpoint
   description: The details of the endpoint.
   type: string
-sourceplaybookid: 66a8ffcd-539b-4ba3-8832-4580d5a65f9a
-starttaskid: "0"
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "20"
+      - '20'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: 52e83efb-9923-48db-8890-154683292a27
       iscommand: false
-      name: ""
+      name: ''
       version: -1
+      description: ''
     taskid: 52e83efb-9923-48db-8890-154683292a27
     timertriggers: []
     type: start
@@ -134,14 +123,14 @@ tasks:
           "y": 80
         }
       }
-  "5":
-    id: "5"
+  '5':
+    id: '5'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "12"
+      - '12'
     note: false
     quietmode: 0
     scriptarguments:
@@ -181,8 +170,8 @@ tasks:
           "y": 710
         }
       }
-  "12":
-    id: "12"
+  '12':
+    id: '12'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
@@ -191,12 +180,13 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: abfe1ac1-44d2-462b-8a34-4990fae8643d
       iscommand: false
       name: Done
       type: title
       version: -1
+      description: ''
     taskid: abfe1ac1-44d2-462b-8a34-4990fae8643d
     timertriggers: []
     type: title
@@ -207,7 +197,7 @@ tasks:
           "y": 880
         }
       }
-  "20":
+  '20':
     fieldMapping:
     - incidentfield: URLs
       output:
@@ -299,13 +289,13 @@ tasks:
     - incidentfield: Description
       output:
         simple: ${MicrosoftATP.Alert.Description}
-    id: "20"
+    id: '20'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "23"
+      - '23'
     note: false
     quietmode: 0
     scriptarguments:
@@ -314,9 +304,8 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
-      description: Retrieves specific alert by the given alert ID. Note, if the given
-        alert ID is not part of the results, it was not found.
+      brand: ''
+      description: Retrieves specific alert by the given alert ID. Note, if the given alert ID is not part of the results, it was not found.
       id: 415bbef6-e4c5-4d7c-8774-916f395d7ba9
       iscommand: true
       name: Get full alert details
@@ -333,7 +322,7 @@ tasks:
           "y": 230
         }
       }
-  "22":
+  '22':
     conditions:
     - condition:
       - - ignorecase: true
@@ -344,7 +333,7 @@ tasks:
           operator: isEqualString
           right:
             value:
-              simple: "true"
+              simple: 'true'
       - - left:
             iscontext: true
             value:
@@ -356,24 +345,25 @@ tasks:
               simple: inputs.SeverityValuesMapping
           operator: isNotEmpty
       label: Override
-    id: "22"
+    id: '22'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#default#':
-      - "12"
+      - '12'
       Override:
-      - "5"
+      - '5'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: e5e4cdd0-04b3-49e8-8278-95600c0dc574
       iscommand: false
       name: Is override SIEM severity enabled?
+      description: Is override SIEM severity enabled?
       type: condition
       version: -1
     taskid: e5e4cdd0-04b3-49e8-8278-95600c0dc574
@@ -386,25 +376,26 @@ tasks:
           "y": 540
         }
       }
-  "23":
-    id: "23"
+  '23':
+    id: '23'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "22"
+      - '22'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: a83d69bf-8a57-42b1-84eb-6c310a20cb15
       iscommand: false
       name: Override Severity
       type: title
       version: -1
+      description: ''
     taskid: a83d69bf-8a57-42b1-84eb-6c310a20cb15
     timertriggers: []
     type: title
@@ -430,3 +421,6 @@ view: |-
       }
     }
   }
+tests:
+- No tests (auto formatted)
+fromversion: 6.2.0
