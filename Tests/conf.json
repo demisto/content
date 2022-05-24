@@ -1486,10 +1486,14 @@
             "playbookID": "GetIndicatorDBotScore Test"
         },
         {
-            "integrations": "EWS Mail Sender",
+            "integrations": [
+                "EWS Mail Sender",
+                "EWSO365"
+            ],
             "playbookID": "EWS Mail Sender Test",
             "instance_names": [
-                "ews_mail_sender_labdemisto"
+                "ews_mail_sender_labdemisto",
+                "ewso365_dev_team"
             ]
         },
         {
