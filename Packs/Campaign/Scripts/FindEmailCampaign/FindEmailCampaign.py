@@ -36,7 +36,7 @@ RECIPIENTS_COLUMNS = [EMAIL_TO_FIELD, EMAIL_CC_FIELD, EMAIL_BCC_FIELD]
 MIN_CAMPAIGN_SIZE = int(demisto.args().get("minIncidentsForCampaign", 3))
 MIN_UNIQUE_RECIPIENTS = int(demisto.args().get("minUniqueRecipients", 2))
 DUPLICATE_SENTENCE_THRESHOLD = 0.95
-TO_PLOT_CANVAS = demisto.args().get("plotCanvas", 'true') == 'true'
+TO_PLOT_CANVAS = demisto.args().get("plotCanvas", 'false') == 'true'
 MAX_INCIDENTS_FOR_CANVAS_PLOTTING = 6
 MAX_INDICATORS_FOR_CANVAS_PLOTTING = 10
 KEYWORDS = ['#1', '100%', 'access', 'accordance', 'account', 'act', 'action', 'activate', 'ad', 'affordable', 'amazed',
