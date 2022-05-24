@@ -1,0 +1,5 @@
+name:  Jamf Modeling Rule
+id: jamf_modeling_rule
+fromversion: 3.3.0
+tags: jamf
+rules: ''
