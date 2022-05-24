@@ -1093,7 +1093,11 @@ def search_all_mailboxes():
         result = service.users().list(**command_args).execute()
         next_page_token = result.get('nextPageToken')
 
-        entries = [search_command(user['primaryEmail']) for user in result['users']]
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            futures = []
+            for user in result['users']:
+                futures.append(executor.submit(search_command, mailbox=user['primaryEmail']))
+            entries = [future.result() for future in concurrent.futures.as_completed(futures)]
 
         # if these are the final result push - return them
         if next_page_token is None:
@@ -1176,7 +1180,7 @@ def search(user_id, subject='', _from='', to='', before='', after='', filename='
             result = {}
         else:
             raise
-    entries = []
+
     with concurrent.futures.ThreadPoolExecutor() as executor:
         futures = []
         for mail in result.get('messages', []):
