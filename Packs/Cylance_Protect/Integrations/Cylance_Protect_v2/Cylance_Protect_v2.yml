@@ -972,7 +972,7 @@ script:
       type: string
   - name: cylance-optics-list-instaquery
     arguments:
-    - name: page
+    - name: page_number
       description: The page number to collect. If not specified, the default is 1.
       defaultValue: "1"
     - name: page_size
