@@ -24,7 +24,7 @@ This playbook does not use any integrations.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| FileSha256 |  | ebb031c3945e884e695dbc63c52a5efcd075375046c49729980073585ee13c52 | Optional |
+| FileSha256 | The SHA256 hash to search for. |  | Optional |
 
 ## Playbook Outputs
 ---

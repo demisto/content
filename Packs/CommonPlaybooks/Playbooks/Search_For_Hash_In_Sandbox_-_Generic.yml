@@ -700,10 +700,9 @@ view: |-
   }
 inputs:
 - key: FileSha256
-  value:
-    simple: ebb031c3945e884e695dbc63c52a5efcd075375046c49729980073585ee13c52
+  value: {}
   required: false
-  description: ""
+  description: 'The SHA256 hash to search for.'
   playbookInputQuery:
 outputs:
 - contextPath: AttackPattern.MITREID
