@@ -1225,6 +1225,7 @@ def delete_devices_request(device_ids):  # pragma: no cover
 def get_policy_details():
     policy_id = demisto.args()['policyID']
     contents = {}  # type: Dict
+    context = {}  # type: Dict
     title = 'Could not find policy details for that ID'
     filetype_actions_threat_contents = []  # type: list
     filetype_actions_suspicious_contents = []  # type: list
@@ -1252,6 +1253,12 @@ def get_policy_details():
             if reg:
                 ts = float(reg.group())
                 date_time = datetime.fromtimestamp(ts / 1000).strftime('%Y-%m-%dT%H:%M:%S.%f+00:00')
+
+        context = {
+            'ID': policy_details.get('policy_id'),
+            'Name': policy_details.get('policy_name'),
+            'Timestamp': date_time
+        }
 
         contents = {
             'Policy Name': policy_details.get('policy_name'),
@@ -1312,8 +1319,10 @@ def get_policy_details():
                 'Name': additional_setting.get('name'),
                 'Value': additional_setting.get('value')
             })
+
+    context.update(policy_details)
     results = CommandResults(
-        outputs=policy_details,
+        outputs=context,
         outputs_prefix='Cylance.Policy',
         outputs_key_field='policy_id',
         readable_output=tableToMarkdown(title, contents)
