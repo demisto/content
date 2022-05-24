@@ -7027,3 +7027,103 @@ Get the device state from the provided device. Note; This will attempt to connec
 | InfoFile.Size | String | Size of file | 
 | InfoFile.Type | String | Type of file | 
 | InfoFile.Info | String | Basic information of file | 
+### pan-os-push-to-template
+***
+Pushes the given PAN-OS Template to the given devices or all devices that belong to the template.
+
+
+#### Base Command
+
+`pan-os-push-to-template`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| template | The Template to push. | Optional | 
+| validate-only | Pre policy validation. Possible values are: true, false. Default is false. | Optional | 
+| description | The push description. | Optional | 
+| serial_number | The serial number for a virtual system commit. If provided, the commit will be a virtual system commit. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Panorama.Push.Template | String | The device group in which the policies were pushed. | 
+| Panorama.Push.JobID | Number | The job ID of the polices that were pushed. | 
+| Panorama.Push.Status | String | The push status. | 
+| Panorama.Push.Warnings | String | The push warnings. | 
+| Panorama.Push.Errors | String | The push errors. | 
+
+#### Command example
+```!pan-os-push-to-template template=LAB```
+#### Context Example
+```json
+{
+    "Panorama": {
+        "Push": {
+            "JobID": "564",
+            "Status": "Pending",
+            "Template": "LAB"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Push to Template:
+>|JobID|Status|
+>|---|---|
+>| 564 | Pending |
+
+
+### pan-os-push-to-template-stack
+***
+Pushes the given PAN-OS Template-stack to the given devices or all devices that belong to the template stack.
+
+
+#### Base Command
+
+`pan-os-push-to-template-stack`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| template-stack | The Template-stack to push. | Required | 
+| validate-only | Pre policy validation. Possible values are: true, false. Default is false. | Optional | 
+| description | The push description. | Optional | 
+| serial_number | The serial number for a virtual system commit. If provided, the commit will be a virtual system commit. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Panorama.Push.TemplateStack | String | The device group in which the policies were pushed. | 
+| Panorama.Push.JobID | Number | The job ID of the polices that were pushed. | 
+| Panorama.Push.Status | String | The push status. | 
+| Panorama.Push.Warnings | String | The push warnings. | 
+| Panorama.Push.Errors | String | The push errors. | 
+
+#### Command example
+```!pan-os-push-to-template-stack template-stack=LAB-STACK```
+#### Context Example
+```json
+{
+    "Panorama": {
+        "Push": {
+            "JobID": "565",
+            "Status": "Pending",
+            "TemplateStack": "LAB-STACK"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Push to Template:
+>|JobID|Status|
+>|---|---|
+>| 565 | Pending |
