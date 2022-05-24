@@ -19,6 +19,7 @@ urllib3.disable_warnings()  # pylint: disable=no-member
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 SAAS_SECURITY_DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
 TOKEN_LIFE_TIME = 117  # token expiration in minutes since it was created
+SET_INTEGRATION_CONTEXT_RETRIES = 5
 
 ''' CLIENT CLASS '''
 
@@ -143,11 +144,15 @@ def get_events_from_integration_context(is_fetch_events: bool = False, max_fetch
     """
     integration_context = demisto.getIntegrationContext()
     context_events = json.loads(integration_context.get('events', '[]'))
+
     if is_fetch_events:
         fetched_events = context_events[:max_fetch]
         integration_context['events'] = context_events[max_fetch:]
-        set_to_integration_context_with_retries(context=integration_context, max_retry_times=5)
+        set_to_integration_context_with_retries(
+            context=integration_context, max_retry_times=SET_INTEGRATION_CONTEXT_RETRIES
+        )
         return fetched_events
+
     return context_events[:max_fetch]
 
 
@@ -194,8 +199,11 @@ def store_events(client: Client):
                         integration_context_events = events
             integration_context['events'] = integration_context_events
             demisto.debug(f'end integration context: [{integration_context}]')
-            set_to_integration_context_with_retries(context=integration_context, max_retry_times=5)
+            set_to_integration_context_with_retries(
+                context=integration_context, max_retry_times=SET_INTEGRATION_CONTEXT_RETRIES
+            )
         except Exception as e:
+            demisto.error(traceback.format_exc())
             demisto.error(f'Error occurred in long running execution: [{e}]')
 
 
@@ -232,6 +240,7 @@ def main() -> None:
         else:
             raise ValueError(f'Command {command} is not implemented in saas-security integration.')
     except Exception as e:
+        demisto.error(traceback.format_exc())
         raise Exception(f'Error in Palo Alto Saas Security Event Collector Integration [{e}]')
 
 
