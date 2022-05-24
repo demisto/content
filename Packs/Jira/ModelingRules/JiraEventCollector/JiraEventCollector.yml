@@ -30,24 +30,12 @@ schema:
         "is_array": false
       },
       "objectItem": {
-        "id": {
-          "type": "string",
-          "is_array": false
-        },
-        "name": {
-          "type": "string",
-          "is_array": false
-        },
-        "typeName": {
-          "type": "string",
-          "is_array": false
-        }
+        "type": "string",
+        "is_array": false
       },
       "changedValues": {
-        "changedTo": {
-          "type": "string",
-          "is_array": false
-        }
+        "type": "string",
+        "is_array": false
       },
     }
   }
