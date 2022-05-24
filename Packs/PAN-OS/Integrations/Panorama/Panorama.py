@@ -9793,79 +9793,6 @@ class PanoramaCommand:
 
         return result
 
-    @staticmethod
-    def push_all(
-        topology: Topology,
-        device_filter_str: str = None,
-        device_group_filter: Optional[List[str]] = None,
-        template_stack_filter: Optional[List[str]] = None
-    ) -> List[PushStatus]:
-        """
-        Pushes the pending configuration from Panorama to the firewalls. This is an async function,
-        and will only push if there is config pending.
-        :param topology: `Topology` instance.
-        :param device_filter_str: If provided, filters this command to only the devices specified.
-        :param device_group_filter: If provided, only the given named device groups will be pushed to devices
-        :param template_stack_filter: If provided, only the given named template-stacks will be pushed to devices
-        """
-        result = []
-
-        for device in topology.active_top_level_devices(device_filter_str):
-            # Get the relevant DGs and Templates to push.
-
-            # If the template_stack_filter is provided, we don't want to push device groups.
-            if not template_stack_filter:
-                result += PanoramaCommand.push_style(topology, device, style="device group", filter=device_group_filter)
-
-            # If the device_group_filter is provided, we don't want to push template_stacks
-            if not device_group_filter:
-                result += PanoramaCommand.push_style(topology, device, style="template stack", filter=template_stack_filter)
-
-        return result
-
-    @staticmethod
-    def get_push_status(topology: Topology, match_job_ids: Optional[List[str]] = None) -> List[PushStatus]:
-        """
-        Retrieves the status of a Panorama Push, using the given job ids.
-        :param topology: `Topology` instance.
-        :param match_job_ids: If provided, only returns the jobs with the given ID.
-        """
-        result: List[PushStatus] = []
-        for device in topology.active_top_level_devices():
-            response = run_op_command(device, UniversalCommand.SHOW_JOBS_COMMAND)
-            for job in response.findall("./result/job"):
-                commit_type = find_text_in_element(job, "./type")
-                if commit_type in ["CommitAll"]:
-                    commit_all_status = find_text_in_element(job, "./status")
-                    job_id = find_text_in_element(job, "./id")
-                    commit_type = find_text_in_element(job, "./type")
-                    dg_name_xml = job.find("./dgname")
-                    tpl_name_xml = job.find("./tplname")
-                    name = ""
-                    if hasattr(dg_name_xml, "text") and dg_name_xml:
-                        name = dg_name_xml.text  # type: ignore
-
-                    if hasattr(tpl_name_xml, "text") and tpl_name_xml:
-                        name = tpl_name_xml.text  # type: ignore
-
-                    for device_xml in job.findall("./devices/entry"):
-                        serial = find_text_in_element(device_xml, "./serial-no")
-                        device_status = find_text_in_element(device_xml, "./result")
-                        result.append(PushStatus(
-                            hostid=resolve_host_id(device),
-                            job_id=job_id,
-                            commit_type=commit_type,
-                            commit_all_status=commit_all_status,
-                            device_status=device_status,
-                            name=name,
-                            device=serial
-                        ))
-
-        if match_job_ids:
-            return [x for x in result if x.job_id in match_job_ids]
-
-        return result
-
 
 class UniversalCommand:
     """Command list for commands that are consistent between PANORAMA and NGFW"""
@@ -9981,66 +9908,6 @@ class UniversalCommand:
         ))
 
         return RestartSystemCommandResult(summary_data=result)
-
-    @staticmethod
-    def commit(topology: Topology, device_filter_string: Optional[str] = None) -> List[CommitStatus]:
-        """
-        Commits the configuration
-
-        :param topology: `Topology` instance.
-        :param device_filter_string: If provided, filters this command to only the devices specified.
-        """
-        result = []
-        for device in topology.active_devices(device_filter_string):
-            job_id = device.commit()
-            if isinstance(device, Panorama):
-                device_type = "Panorama"
-            else:
-                device_type = "Firewall"
-
-            result.append(CommitStatus(
-                hostid=resolve_host_id(device),
-                job_id=job_id,
-                commit_type="Commit",
-                status="started",
-                device_type=device_type
-            ))
-
-        return result
-
-    @staticmethod
-    def get_commit_job_status(topology: Topology, match_job_ids: Optional[List[str]] = None) -> List[CommitStatus]:
-        """
-        Gets the status of all the commit jobs on the device.
-
-        :param topology: `Topology` instance.
-        :param match_job_ids: List of IDs to return
-        """
-        result: List[CommitStatus] = []
-        for device in topology.active_devices():
-            response = run_op_command(device, UniversalCommand.SHOW_JOBS_COMMAND)
-            for job in response.findall("./result/job"):
-                commit_type = find_text_in_element(job, "./type")
-                if commit_type in ["Commit", "CommitAll"]:
-                    status = find_text_in_element(job, "./status")
-                    job_id = find_text_in_element(job, "./id")
-                    commit_type = find_text_in_element(job, "./type")
-                    if isinstance(device, Panorama):
-                        device_type = "Panorama"
-                    else:
-                        device_type = "Firewall"
-                    result.append(CommitStatus(
-                        hostid=resolve_host_id(device),
-                        job_id=job_id,
-                        commit_type=commit_type,
-                        status=status,
-                        device_type=device_type
-                    ))
-
-        if match_job_ids:
-            return [job for job in result if job.job_id in match_job_ids]
-
-        return result
 
     @staticmethod
     def check_system_availability(topology: Topology, hostid: str) -> CheckSystemStatus:
@@ -10831,63 +10698,6 @@ class ObjectTypeEnum(enum.Enum):
     SECURITY_PROFILE_GROUP = "SecurityProfileGroup"
 
 
-def commit(topology: Topology, device_filter_string: Optional[str] = None) -> List[CommitStatus]:
-    """
-    Commit the configuration for the entire topology. Note this only commits the configuration - it does
-    not push the configuration in the case of Panorama.
-
-    :param topology: `Topology` instance !no-auto-argument
-    :param device_filter_string: String to filter to only check given device
-    """
-    return UniversalCommand.commit(topology, device_filter_string)
-
-
-def push_all(
-        topology: Topology,
-        device_filter_string: Optional[str] = None,
-        device_group_filter: Optional[str] = None,
-        template_stack_filter: Optional[str] = None
-) -> List[PushStatus]:
-    """
-    Push the configuration to all the device groups and template-stacks in the environment.
-
-    :param device_filter_string: String to filter to only check given device
-    :param topology: `Topology` instance !no-auto-argument
-    :param device_group_filter: List of device group names to push configuration to.
-    :param template_stack_filter: List of template stack names to pushconfiguration to.
-    """
-    return PanoramaCommand.push_all(
-        topology,
-        device_filter_string,
-        device_group_filter=argToList(device_group_filter),
-        template_stack_filter=argToList(template_stack_filter)
-    )
-
-
-def get_commit_status(topology: Topology, match_job_id: Optional[str] = None) -> List[CommitStatus]:
-    """
-    Returns the status of the commit operation on all devices. If an ID is given, only that id will be returned.
-
-    :param topology: `Topology` instance !no-auto-argument
-    :param match_job_id: job ID or list of Job IDs to return.
-    """
-    return UniversalCommand.get_commit_job_status(topology, argToList(match_job_id))
-
-
-def get_push_status(
-        topology: Topology,
-        match_job_id: Optional[List[str]] = None,
-
-) -> List[PushStatus]:
-    """
-    Returns the status of the push (commit-all) jobs from Panorama.
-
-    :param topology: `Topology` instance !no-auto-argument
-    :param match_job_id: job ID or list of Job IDs to return.
-    """
-    return PanoramaCommand.get_push_status(topology, match_job_id)
-
-
 def get_object(
         topology: Topology,
         object_type: ObjectTypeEnum,
@@ -11636,38 +11446,6 @@ def main():
                 dataclasses_to_command_results(
                     fix_security_rule_security_profile_group(topology, **demisto.args()),
                     empty_result_message="Nothing to fix."
-                )
-            )
-        elif command == 'pan-os-config-commit-to-all':
-            topology = get_topology()
-            return_results(
-                dataclasses_to_command_results(
-                    commit(topology, **demisto.args()),
-                    empty_result_message="No commits were required."
-                )
-            )
-        elif command == 'pan-os-config-push-all':
-            topology = get_topology()
-            return_results(
-                dataclasses_to_command_results(
-                    push_all(topology, **demisto.args()),
-                    empty_result_message="No push was required."
-                )
-            )
-        elif command == 'pan-os-config-get-commit-status':
-            topology = get_topology()
-            return_results(
-                dataclasses_to_command_results(
-                    get_commit_status(topology, **demisto.args()),
-                    empty_result_message="No active commit jobs."
-                )
-            )
-        elif command == 'pan-os-config-get-push-status':
-            topology = get_topology()
-            return_results(
-                dataclasses_to_command_results(
-                    get_push_status(topology, **demisto.args()),
-                    empty_result_message="No active push jobs."
                 )
             )
         elif command == 'pan-os-config-get-object':
