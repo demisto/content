@@ -2,10 +2,7 @@
 # v1.1.1 fix bugs where multiple items not working
 # v1.1.0 Threatgraph api for the deprecated Crowdstrike Threatgraph
 # as soon as Crowdstrike create a replacement then this integration can be removed
-import json
 import logging
-import os
-import time
 
 import demistomock as demisto  # noqa: F401
 import requests
@@ -22,11 +19,11 @@ def get_tree(args):
     sensor_ids = str(args["sensor_ids"])
     process_ids = str(args["process_ids"])
 
-    if isinstance(sensor_ids, str):
+    if isinstance(sensor_ids, List[str]):
         sensor_ids = sensor_ids.replace('[', '').replace(']', '').replace("'", "").replace('"', '')
         sensor_ids = sensor_ids.split(",")
 
-    if isinstance(process_ids, str):
+    if isinstance(process_ids, List[str]):
         process_ids = process_ids.replace('[', '').replace(']', '').replace("'", "").replace('"', '')
         process_ids = process_ids.split(",")
 
@@ -44,7 +41,7 @@ def get_tree(args):
             json_response = main_process.json()
             for vertex in json_response["resources"]:
                 if vertex["vertex_type"] == "process":
-                    #results["main_process"] = {"sensor_id": sensor_id, "process_id": process_id, "properties": vertex["properties"], "indicators": parse_indicators(json_response["resources"][0])}
+                    # results["main_process"] = {"sensor_id": sensor_id, "process_id": process_id, "properties": vertex["properties"], "indicators": parse_indicators(json_response["resources"][0])}
                     results["main_process"] = {"sensor_id": sensor_id,
                                                "process_id": process_id, "properties": vertex["properties"]}
                     ips, sources, destinations = parse_indicators(json_response["resources"][0])
@@ -57,7 +54,7 @@ def get_tree(args):
                                                         vertex["edges"][edge][0]["object_id"])
                             if parent_data.status_code == 200:
                                 parent_json = parent_data.json()
-                                #results["parent_process"] = {"device_id": vertex["edges"][edge][0]["device_id"], "process_id": vertex["edges"][edge][0]["object_id"], "properties": parent_json["resources"][0]["properties"], "indicators": parse_indicators(parent_json["resources"][0])}
+                                # results["parent_process"] = {"device_id": vertex["edges"][edge][0]["device_id"], "process_id": vertex["edges"][edge][0]["object_id"], "properties": parent_json["resources"][0]["properties"], "indicators": parse_indicators(parent_json["resources"][0])}
                                 results["parent_process"] = {"device_id": vertex["edges"][edge][0]["device_id"], "process_id": vertex["edges"]
                                                              [edge][0]["object_id"], "properties": parent_json["resources"][0]["properties"]}
                                 ips, sources, destinations = parse_indicators(parent_json["resources"][0])
@@ -73,7 +70,7 @@ def get_tree(args):
                                 child_data = query_process(child["device_id"], child["object_id"])
                                 child_json = child_data.json()
                                 if child_data.status_code == 200:
-                                    #results["child_processes"].append({"device_id": child["device_id"], "process_id": child["object_id"], "properties": child_json["resources"][0]["properties"], "indicators": parse_indicators(child_json["resources"][0])})
+                                    # results["child_processes"].append({"device_id": child["device_id"], "process_id": child["object_id"], "properties": child_json["resources"][0]["properties"], "indicators": parse_indicators(child_json["resources"][0])})
                                     results["child_processes"].append(
                                         {"device_id": child["device_id"], "process_id": child["object_id"], "properties": child_json["resources"][0]["properties"]})
                                     ips, sources, destinations = parse_indicators(child_json["resources"][0])
@@ -101,7 +98,6 @@ def get_tree(args):
     ec = {
         'ThreatGraph_data(val.Id && val.Id === obj.Id)': result_incident
     }
-    title = 'Crowdstrike Threatgraph Results'
     entry = {
         'Type': entryTypes['note'],
         'Contents': result_incident,
@@ -134,14 +130,6 @@ def parse_indicators(resources):
                 indicators.add(ip["properties"]["LocalAddressIP4"])
                 destination.add(ip["properties"]["RemoteAddressIP4"])
                 indicators.add(ip["properties"]["RemoteAddressIP4"])
-        # if edge == "NewScriptWritten":
-        #    indicators["script_written"] = []
-        #    for script in resources["edges"][edge]:
-        #        indicators["script_written"].append(script["properties"])
-        # if edge == "NewExecutableWritten":
-        #    indicators["executable_written"] = []
-        #    for exe in resources["edges"][edge]:
-        #        indicators["executable_written"].append(exe["properties"])
 
     return indicators, source, destination
 
@@ -155,13 +143,13 @@ def test():
             return_results('ok')
         else:
             return_results("Failed to login with error: " + str(r.status_code))
-    except e as Exception:
+    except Exception as e:
         return_results(e)
 
 
 def main():
     integration_logger = logging.getLogger('threatgraph')
-    integration_logger.propogate = False
+    integration_logger.propagate = False
     LOG(f'Command is {demisto.command}')
     try:
         args = demisto.args()
