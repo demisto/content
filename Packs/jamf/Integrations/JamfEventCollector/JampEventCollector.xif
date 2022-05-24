@@ -101,3 +101,20 @@ XDM.Audit.TriggeredBy.identity.uuid = json_extract_scalar(Event, "$.patchPolicyI
 XDM.Audit.outcome = coalesce(json_extract_scalar(Event, "$.successful"),
 json_extract_scalar(Event, "$.operationSuccessful")),
 XDM.Audit.operation_type = json_extract_scalar(Event, "$.restAPIOperationType")
+
+
+[MODEL: dataset=jamf_pro_raw, model=Asset, content_id=***, version=***]
+XDM.Asset.host.mac_addresses = coalesce(json_extract_scalar(Event, "$.wifiMacAddress"),
+json_extract_scalar(Event, "$.macAddress"),
+json_extract_scalar(Event, "$.computer.macAddress"),
+json_extract_scalar(Event, "$.targetDevice.wifiMacAddress")),
+XDM.Asset.host.device_id = coalesce(json_extract_scalar(Event, "$.serialNumber"),
+json_extract_scalar(Event, "$.computer.serialNumber"),
+json_extract_scalar(Event, "$.targetDevice.serialNumber"),
+json_extract_scalar(Event, "$.groupAddedDevices.serialNumber"),
+json_extract_scalar(Event, "$.groupRemovedDevices.serialNumber")),
+XDM.Asset.host.hardware_uuid = coalesce(json_extract_scalar(Event, "$.udid"),
+json_extract_scalar(Event, "$.computer.udid"),
+json_extract_scalar(Event, "$.groupAddedDevices.udid"),
+json_extract_scalar(Event, "$.targetDevice.udid"),
+json_extract_scalar(Event, "$.groupRemovedDevices.udid"))
