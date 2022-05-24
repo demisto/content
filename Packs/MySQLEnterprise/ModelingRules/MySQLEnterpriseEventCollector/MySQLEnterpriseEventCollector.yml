@@ -2,3 +2,12 @@ name: MySQLEnterpriseEventCollector
 id: MySQLEnterpriseEventCollector
 fromversion: 3.3.0
 rules: ''
+schema:
+  {
+    "mysql_enterprise_raw": {
+      "_raw_log": {
+          "type": "string", 
+          "is_array": false
+      }
+    }
+  }
