@@ -1,4 +1,4 @@
-Will create a file (using the given data input or entry ID) and upload it to current investigation war room.
+Creates a file (using the given data input or entry ID) and uploads it to the current investigation War Room.
 
 
 ## Script Data
@@ -16,8 +16,8 @@ Will create a file (using the given data input or entry ID) and upload it to cur
 | **Argument Name** | **Description** |
 | --- | --- |
 | filename | The name of the file to be created. |
-| data | Input data to write to file. |
-| entryId | Entry ID contents to write into file. |
+| data | Input data to write to the file. |
+| entryId | Entry ID contents to write in the file. |
 | data_encoding | Encoding type of the input data or contents. |
 
 ## Outputs
