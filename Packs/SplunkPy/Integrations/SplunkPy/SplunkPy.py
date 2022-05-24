@@ -415,6 +415,7 @@ def fetch_notables(service, mapper, cache_object=None, enrich_notables=False):
 
 def fetch_incidents(service, mapper):
     if ENABLED_ENRICHMENTS:
+        demisto.debug("fetch incidents------------------------ enabled enrichment is set")
         integration_context = get_integration_context()
         if not demisto.getLastRun() and integration_context:
             # In "Pull from instance" in Classification & Mapping the last run object is empty, integration context
@@ -424,6 +425,7 @@ def fetch_incidents(service, mapper):
         else:
             run_enrichment_mechanism(service, integration_context, mapper)
     else:
+        demisto.debug("fetch incidents------------------------ enabled enrichment is not set")
         fetch_notables(service=service, enrich_notables=False, mapper=mapper)
 
 
@@ -1737,6 +1739,7 @@ def quote_group(text):
     # Sometimes there aren't any quotes in the string so we can just append it
     if len(groups) == 0:
         groups.append(clean(text))
+    demisto.debug("{quote_group} text output is" + text)
 
     return groups
 
@@ -1744,9 +1747,12 @@ def quote_group(text):
 def rawToDict(raw):
     result = {}  # type: Dict[str, str]
     try:
+        demisto.debug("{RawToDict} Trying to load json from raw")
         result = json.loads(raw)
     except ValueError:
+        demisto.debug("{RawToDict} Exception was caught")
         if '"message"' in raw:
+            demisto.debug("{RawToDict} message in raw")
             raw = raw.replace('"', '').strip('{').strip('}')
             key_val_arr = raw.split(",")
             for key_val in key_val_arr:
@@ -1763,6 +1769,7 @@ def rawToDict(raw):
                         result[key] = val
 
         else:
+            demisto.debug("{RawToDict} entering to quate_group")
             # search for the pattern: `key="value", `
             # (the double quotes are optional)
             # we append `, ` to the end of the string to catch the last value
@@ -1778,6 +1785,7 @@ def rawToDict(raw):
 
     if REPLACE_FLAG:
         result = replace_keys(result)
+    demisto.debug("============= "+str(result))
     return result
 
 
