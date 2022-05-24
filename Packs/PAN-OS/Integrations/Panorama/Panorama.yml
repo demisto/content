@@ -280,14 +280,46 @@ script:
       - description: The serial number for a virtual system commit. If provided, the
           commit will be a virtual system commit.
         name: serial_number
-      - description: The serial number for a virtual system commit. If provided, the
-          commit will be a virtual system commit.
-        name: serial_number
     description: Pushes the given PAN-OS Template to the given devices or all devices that belong
       to the template.
     name: pan-os-push-to-template
     outputs:
       - contextPath: Panorama.Push.Template
+        description: The device group in which the policies were pushed.
+        type: String
+      - contextPath: Panorama.Push.JobID
+        description: The job ID of the polices that were pushed.
+        type: Number
+      - contextPath: Panorama.Push.Status
+        description: The push status.
+        type: String
+      - contextPath: Panorama.Push.Warnings
+        description: The push warnings.
+        type: String
+      - contextPath: Panorama.Push.Errors
+        description: The push errors.
+        type: String
+  - arguments:
+      - default: true
+        description: The Template-stack to push
+        name: template-stack
+      - auto: PREDEFINED
+        defaultValue: 'false'
+        description: Pre policy validation.
+        name: validate-only
+        predefined:
+          - 'true'
+          - 'false'
+      - description: The push description.
+        name: description
+      - description: The serial number for a virtual system commit. If provided, the
+          commit will be a virtual system commit.
+        name: serial_number
+    description: Pushes the given PAN-OS Template-stack to the given devices or all devices that belong
+      to the template stack.
+    name: pan-os-push-to-template-stack
+    outputs:
+      - contextPath: Panorama.Push.TemplateStack
         description: The device group in which the policies were pushed.
         type: String
       - contextPath: Panorama.Push.JobID

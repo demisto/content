@@ -704,6 +704,9 @@ def panorama_push_to_device_group(args: dict):
 
 @logger
 def panorama_push_to_template(args: dict):
+    """
+    Push a single template.
+    """
     command: str = ''
     command += f'<template><name>{TEMPLATE}</name></template>'
 
@@ -731,6 +734,42 @@ def panorama_push_to_template(args: dict):
     )
 
     return result
+
+
+@logger
+def panorama_push_to_template_stack(args: dict):
+    """
+    Push a single template-stack
+    """
+    template_stack = args.get("template-stack")
+    command: str = ''
+    command += f'<template-stack><name>{template_stack}</name></template-stack>'
+
+    serial_number = args.get('serial_number')
+    if serial_number:
+        command = f'<template-stack><name>{template_stack}</name><devices><member><entry name="{serial_number}"/>' \
+                  f'</devices></member></template-stack>'
+
+    if argToBoolean(args.get('validate-only', 'false')):
+        command += '<validate-only>yes</validate-only>'
+    if description := args.get('description'):
+        command += f'<description>{description}</description>'
+
+    params = {
+        'type': 'commit',
+        'action': 'all',
+        'cmd': f'<commit-all>{command}</commit-all>',
+        'key': API_KEY
+    }
+
+    result = http_request(
+        URL,
+        'POST',
+        body=params
+    )
+
+    return result
+
 
 
 def panorama_push_to_device_group_command(args: dict):
@@ -767,7 +806,7 @@ def panorama_push_to_device_group_command(args: dict):
 
 def panorama_push_to_template_command(args: dict):
     """
-    Push Panorama configuration and show message in warroom
+    Push Panorama Template to it's associated firewalls
     """
 
     if not TEMPLATE:
@@ -796,6 +835,33 @@ def panorama_push_to_template_command(args: dict):
         # no changes to commit
         return_results(result['response']['msg']['line'])
 
+
+def panorama_push_to_template_stack_command(args: dict):
+    """
+    Push Panorama Template to it's associated firewalls
+    """
+    result = panorama_push_to_template_stack(args)
+    if 'result' in result['response']:
+        # commit has been given a jobid
+        push_output = {
+            'TemplateStack': TEMPLATE,
+            'JobID': result['response']['result']['job'],
+            'Status': 'Pending'
+        }
+        return_results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': result,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Push to Template:', push_output, ['JobID', 'Status'],
+                                             removeNull=True),
+            'EntryContext': {
+                "Panorama.Push(val.JobID == obj.JobID)": push_output
+            }
+        })
+    else:
+        # no changes to commit
+        return_results(result['response']['msg']['line'])
 
 @logger
 def panorama_push_status(job_id: str):
@@ -10985,10 +11051,10 @@ def main():
 
         elif command == 'panorama-push-to-device-group' or command == 'pan-os-push-to-device-group':
             panorama_push_to_device_group_command(args)
-
         elif command == 'pan-os-push-to-template':
             panorama_push_to_template_command(args)
-
+        elif command == 'pan-os-push-to-template-stack':
+            panorama_push_to_template_command(args)
         elif command == 'panorama-push-status' or command == 'pan-os-push-status':
             panorama_push_status_command(**args)
 
