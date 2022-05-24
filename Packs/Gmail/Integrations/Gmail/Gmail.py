@@ -147,7 +147,7 @@ def get_service(serviceName, version, additional_scopes=None, delegated_user=Non
     if PROXY or DISABLE_SSL:
         http_client = credentials.authorize(get_http_client_with_proxy(proxies))
         return discovery.build(serviceName, version, http=http_client)
-    return discovery.build(serviceName, version, credentials=credentials)
+    return discovery.build(serviceName, version, cache_discovery=False ,credentials=credentials)
 
 
 def parse_mail_parts(parts):
