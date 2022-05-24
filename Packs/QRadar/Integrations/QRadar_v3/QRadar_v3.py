@@ -3335,9 +3335,14 @@ def add_modified_remote_offenses(client: Client,
 
     if mirror_options == MIRROR_OFFENSE_AND_EVENTS:
         print_mirror_events_stats(new_context_data, "Get Modified Remote Data - Before update")
-        mirrored_offenses = merge_lists(original_list=context_data.get(MIRRORED_OFFENSES_CTX_KEY, []),
-                                        updated_list=offenses,
-                                        key='id')
+        # mirrored_offenses = merge_lists(original_list=context_data.get(MIRRORED_OFFENSES_CTX_KEY, []),
+        #                                 updated_list=offenses,
+        #                                 key='id')
+        for offense in offenses:
+            client.search_create()
+        mirrored_offenses = context_data.get(MIRRORED_OFFENSES_CTX_KEY, []) | offenses
+        enrich_offense_with_events()
+        client.search_status_get('')
         # queue: {offense_id: query_id}
         # finished: {offensed_id: query_id}
         new_context_data.update({MIRRORED_OFFENSES_CTX_KEY: mirrored_offenses})
