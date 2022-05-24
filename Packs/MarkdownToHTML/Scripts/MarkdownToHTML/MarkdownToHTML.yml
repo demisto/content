@@ -50,7 +50,7 @@ type: python
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ''
-dockerimage: demisto/bs4-py3:1.0.0.300XX
+dockerimage: demisto/bs4-py3:1.0.0.30051
 runas: DBotWeakRole
 runonce: false
 tests:
