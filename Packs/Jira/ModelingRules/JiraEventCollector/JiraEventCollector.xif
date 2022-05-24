@@ -3,7 +3,7 @@
 XDM.Audit.TriggeredBy.ipv4 = remoteAddress,
 XDM.Audit.TriggeredBy.identity.name = authorKey,
 XDM.Audit.TriggeredBy.identity.uuid = authorAccountId,
-XDM.Audit.time = created,
+XDM.Audit.event_timestamp = created,
 XDM.Audit.operation_type = category,
 XDM.Audit.project = eventSource,
 XDM.Audit.identity.uuid = json_extract_scalar(objectItem, "$.id"),
