@@ -712,8 +712,7 @@ def panorama_push_to_template(args: dict):
 
     serial_number = args.get('serial_number')
     if serial_number:
-        command = f'<template><name>{TEMPLATE}</name><devices><member><entry name="{serial_number}"/>' \
-                  f'</devices></member></template>'
+        command = f'<template><name>{TEMPLATE}</name><device><member>{serial_number}</member></device></template>'
 
     if argToBoolean(args.get('validate-only', 'false')):
         command += '<validate-only>yes</validate-only>'
@@ -747,8 +746,7 @@ def panorama_push_to_template_stack(args: dict):
 
     serial_number = args.get('serial_number')
     if serial_number:
-        command = f'<template-stack><name>{template_stack}</name><devices><member><entry name="{serial_number}"/>' \
-                  f'</devices></member></template-stack>'
+        command = f'<template-stack><name>{template_stack}</name><device><member>{serial_number}</member></device></template-stack>'
 
     if argToBoolean(args.get('validate-only', 'false')):
         command += '<validate-only>yes</validate-only>'
@@ -11054,7 +11052,7 @@ def main():
         elif command == 'pan-os-push-to-template':
             panorama_push_to_template_command(args)
         elif command == 'pan-os-push-to-template-stack':
-            panorama_push_to_template_command(args)
+            panorama_push_to_template_stack_command(args)
         elif command == 'panorama-push-status' or command == 'pan-os-push-status':
             panorama_push_status_command(**args)
 
