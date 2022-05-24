@@ -1,4 +1,5 @@
 import copy
+from freezegun import freeze_time
 import json
 import os
 import zipfile
@@ -52,6 +53,16 @@ def get_incident_extra_data_by_status(incident_id, alerts_limit):
 
 
 ''' TESTS FUNCTIONS '''
+
+
+# Note this test will fail when run locally (in pycharm/vscode) as it assumes the machine (docker image) has UTC timezone set
+
+@pytest.mark.parametrize(argnames='time_to_convert, expected_value',
+                         argvalues=[('1322683200000', 1322683200000),
+                                    ('2018-11-06T08:56:41', 1541494601000)])
+def test_convert_time_to_epoch(time_to_convert, expected_value):
+    from CoreIRApiModule import convert_time_to_epoch
+    assert convert_time_to_epoch(time_to_convert) == expected_value
 
 
 def return_extra_data_result(*args):
@@ -2671,3 +2682,64 @@ def test_parse_get_script_execution_results():
                      'retention_date': None, 'command_executed': ['command_output'], 'command': 'command_executed',
                      'command_output': ['command_output']}]
     assert res == expected_res
+
+
+class TestGetAlertByFilter:
+
+    @freeze_time("2022-05-03 11:00:00 GMT")
+    def test_get_alert_by_filter(self, requests_mock, mocker):
+        from CoreIRApiModule import get_alerts_by_filter_command, CoreClient
+        api_response = load_test_data('./test_data/get_alerts_by_filter_results.json')
+        requests_mock.post(f'{Core_URL}/public_api/v1/alerts/get_alerts_by_filter_data/', json=api_response)
+        request_data_log = mocker.patch.object(demisto, 'debug')
+        client = CoreClient(
+            base_url=f'{Core_URL}/public_api/v1', headers={}
+        )
+        args = {
+            'time_frame': "custom",
+            'start_time': '2018-11-06T08:56:41',
+            'end_time': '2018-11-06T08:56:41',
+            "limit": '2',
+        }
+        response = get_alerts_by_filter_command(client, args)
+        assert response.outputs[0].get('internal_id', {}) == 33333
+        assert "{'filter_data': {'sort': [{'FIELD': 'source_insert_ts', 'ORDER': 'DESC'}], 'paging': {'from': 0, " \
+               "'to': 2}, 'filter': {'AND': [{'SEARCH_FIELD': 'source_insert_ts', 'SEARCH_TYPE': 'RANGE', 'SEARCH_VALUE': " \
+               "{'from': 1541494601000, 'to': 1541494601000}}]}}}" in request_data_log.call_args[0][0]
+
+    def test_get_alert_by_filter_command_multiple_values_in_same_arg(self, requests_mock, mocker):
+        from CoreIRApiModule import get_alerts_by_filter_command, CoreClient
+        api_response = load_test_data('./test_data/get_alerts_by_filter_results.json')
+        requests_mock.post(f'{Core_URL}/public_api/v1/alerts/get_alerts_by_filter_data/', json=api_response)
+        request_data_log = mocker.patch.object(demisto, 'debug')
+        client = CoreClient(
+            base_url=f'{Core_URL}/public_api/v1', headers={}
+        )
+        args = {
+            'alert_source': "first,second",
+        }
+        response = get_alerts_by_filter_command(client, args)
+        assert response.outputs[0].get('internal_id', {}) == 33333
+        assert "{'filter_data': {'sort': [{'FIELD': 'source_insert_ts', 'ORDER': 'DESC'}], 'paging': {'from': 0, " \
+               "'to': 50}, 'filter': {'AND': [{'OR': [{'SEARCH_FIELD': 'alert_source', 'SEARCH_TYPE': 'CONTAINS', " \
+               "'SEARCH_VALUE': 'first'}, {'SEARCH_FIELD': 'alert_source', 'SEARCH_TYPE': 'CONTAINS', 'SEARCH_VALUE': " \
+               "'second'}]}]}}}" in request_data_log.call_args[0][0]
+
+    def test_get_alert_by_filter_command_multiple_args(self, requests_mock, mocker):
+        from CoreIRApiModule import get_alerts_by_filter_command, CoreClient
+        api_response = load_test_data('./test_data/get_alerts_by_filter_results.json')
+        requests_mock.post(f'{Core_URL}/public_api/v1/alerts/get_alerts_by_filter_data/', json=api_response)
+        request_data_log = mocker.patch.object(demisto, 'debug')
+        client = CoreClient(
+            base_url=f'{Core_URL}/public_api/v1', headers={}
+        )
+        args = {
+            'alert_source': "first,second",
+            'user_name': 'N/A'
+        }
+        response = get_alerts_by_filter_command(client, args)
+        assert response.outputs[0].get('internal_id', {}) == 33333
+        assert "{'AND': [{'OR': [{'SEARCH_FIELD': 'alert_source', 'SEARCH_TYPE': 'CONTAINS', " \
+               "'SEARCH_VALUE': 'first'}, {'SEARCH_FIELD': 'alert_source', 'SEARCH_TYPE': 'CONTAINS', 'SEARCH_VALUE': " \
+               "'second'}]}, {'OR': [{'SEARCH_FIELD': 'actor_effective_username', 'SEARCH_TYPE': 'CONTAINS', " \
+               "'SEARCH_VALUE': 'N/A'}]}]}" in request_data_log.call_args[0][0]
