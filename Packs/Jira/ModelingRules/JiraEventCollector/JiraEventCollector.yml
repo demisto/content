@@ -2,3 +2,52 @@ name: JiraEventCollector
 id: JiraEventCollector
 fromversion: 3.3.0
 rules: ''
+schema:
+  {
+    "jira_jira_raw": {
+      "summary": {
+        "type": "string",
+        "is_array": false
+      },
+      "remoteAddress": {
+        "type": "string",
+        "is_array": false
+      },
+      "authorKey": {
+        "type": "string",
+        "is_array": false
+      },
+      "authorAccountId": {
+        "type": "string",
+        "is_array": false
+      },
+      "created": {
+        "type": "string",
+        "is_array": false
+      },
+      "category": {
+        "type": "string",
+        "is_array": false
+      },
+      "objectItem": {
+        "id": {
+          "type": "string",
+          "is_array": false
+        },
+        "name": {
+          "type": "string",
+          "is_array": false
+        },
+        "typeName": {
+          "type": "string",
+          "is_array": false
+        }
+      },
+      "changedValues": {
+        "changedTo": {
+          "type": "string",
+          "is_array": false
+        }
+      },
+    }
+  }
