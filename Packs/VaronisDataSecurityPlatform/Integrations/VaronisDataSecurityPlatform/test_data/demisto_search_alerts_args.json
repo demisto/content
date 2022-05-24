@@ -1,7 +1,7 @@
 {
     "threat_model_name": "DNS, DNS - Copy(2)",
-    "Alert_Status": "Open,Closed",
-    "End_time": "2022-02-16T13:59:00+02:00",
-    "Start_time": "2022-02-16T13:00:00+02:00",
+    "alert_status": "Open,Closed",
+    "end_time": "2022-02-16T13:59:00+02:00",
+    "start_time": "2022-02-16T13:00:00+02:00",
     "max_results": "1"
 }

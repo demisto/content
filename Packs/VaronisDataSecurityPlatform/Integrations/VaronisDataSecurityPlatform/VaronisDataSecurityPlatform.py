@@ -995,9 +995,9 @@ def varonis_get_alerts_command(client: Client, args: Dict[str, Any]) -> CommandR
         ``args['threat_model_name']`` List of requested threat models to retrieve
         ``args['page']`` Page number (default 1)
         ``args['max_results']`` The max number of alerts to retrieve (up to 50)
-        ``args['Start_time']`` Start time of the range of alerts
-        ``args['End_time']`` End time of the range of alerts
-        ``args['Alert_Status']`` List of required alerts status
+        ``args['start_time']`` Start time of the range of alerts
+        ``args['end_time']`` End time of the range of alerts
+        ``args['alert_status']`` List of required alerts status
         ``args['alert_severity']`` List of alerts severity
         ``args['device_name']`` List of device names
 
@@ -1008,9 +1008,9 @@ def varonis_get_alerts_command(client: Client, args: Dict[str, Any]) -> CommandR
     """
     threat_model_names = args.get('threat_model_name', None)
     max_results = args.get('max_results', None)
-    start_time = args.get('Start_time', None)
-    end_time = args.get('End_time', None)
-    alert_statuses = args.get('Alert_Status', None)
+    start_time = args.get('start_time', None)
+    end_time = args.get('end_time', None)
+    alert_statuses = args.get('alert_status', None)
     alert_severities = args.get('alert_severity', None)
     device_names = args.get('device_name', None)
     page = args.get('page', '1')
@@ -1072,21 +1072,21 @@ def varonis_update_alert_status_command(client: Client, args: Dict[str, Any]) ->
     :type args: ``Dict[str, Any]``
     :param args:
         all command arguments, usually passed from ``demisto.args()``.
-        ``args['Status']`` Alert's new status
-        ``args['Alert_id']`` Array of alert ids to be updated
+        ``args['status']`` Alert's new status
+        ``args['alert_id']`` Array of alert ids to be updated
 
     :return: Result of execution
     :rtype: ``bool``
 
     """
-    status = args.get('Status', None)
+    status = args.get('status', None)
     statuses = list(filter(lambda name: name != 'Closed', ALERT_STATUSES.keys()))
     if status not in statuses:
         raise ValueError(f'status must be one of {statuses}.')
 
     status_id = ALERT_STATUSES[status]
 
-    return varonis_update_alert(client, CLOSE_REASONS['None'], status_id, argToList(args.get('Alert_id')))
+    return varonis_update_alert(client, CLOSE_REASONS['None'], status_id, argToList(args.get('alert_id')))
 
 
 def varonis_close_alert_command(client: Client, args: Dict[str, Any]) -> bool:
@@ -1098,21 +1098,21 @@ def varonis_close_alert_command(client: Client, args: Dict[str, Any]) -> bool:
     :type args: ``Dict[str, Any]``
     :param args:
         all command arguments, usually passed from ``demisto.args()``.
-        ``args['Close_Reason']`` Alert's close reason
-        ``args['Alert_id']`` Array of alert ids to be closed
+        ``args['close_reason']`` Alert's close reason
+        ``args['alert_id']`` Array of alert ids to be closed
 
     :return: Result of execution
     :rtype: ``bool``
 
     """
-    close_reason = args.get('Close_Reason', None)
+    close_reason = args.get('close_reason', None)
     close_reasons = list(filter(lambda name: name != 'None', CLOSE_REASONS.keys()))
     if close_reason not in close_reasons:
         raise ValueError(f'close reason must be one of {close_reasons}')
 
     close_reason_id = CLOSE_REASONS[close_reason]
 
-    return varonis_update_alert(client, close_reason_id, ALERT_STATUSES['Closed'], argToList(args.get('Alert_id')))
+    return varonis_update_alert(client, close_reason_id, ALERT_STATUSES['Closed'], argToList(args.get('alert_id')))
 
 
 def varonis_get_alerted_events_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -1124,7 +1124,7 @@ def varonis_get_alerted_events_command(client: Client, args: Dict[str, Any]) -> 
     :type args: ``Dict[str, Any]``
     :param args:
         all command arguments, usually passed from ``demisto.args()``.
-        ``args['Alert_id']`` List of alert ids
+        ``args['alert_id']`` List of alert ids
         ``args['page']`` Page number (default 1)
         ``args['max_results']`` The max number of alerts to retrieve (up to 5k)
 
@@ -1133,7 +1133,7 @@ def varonis_get_alerted_events_command(client: Client, args: Dict[str, Any]) -> 
 
     :rtype: ``CommandResults``
     """
-    alerts = args.get('Alert_id', None)
+    alerts = args.get('alert_id', None)
     page = args.get('page', '1')
     max_results = args.get('max_results', '5000')
 

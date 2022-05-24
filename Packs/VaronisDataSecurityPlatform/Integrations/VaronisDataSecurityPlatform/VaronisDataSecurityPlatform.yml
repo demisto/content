@@ -93,19 +93,19 @@ script:
     - default: false
       description: Start time of alert range
       isArray: false
-      name: Start_time
+      name: start_time
       required: false
       secret: false
     - default: false
       description: End time of alert range
       isArray: false
-      name: End_time
+      name: end_time
       required: false
       secret: false
     - default: false
       description: List of required alerts status
       isArray: true
-      name: Alert_Status
+      name: alert_status
       required: false
       secret: false
     - default: false
@@ -238,7 +238,7 @@ script:
     - default: false
       description: Requested alerts
       isArray: true
-      name: Alert_id
+      name: alert_id
       required: true
       secret: false
     - auto: PREDEFINED
@@ -248,7 +248,7 @@ script:
       default: false
       description: Alert new status
       isArray: false
-      name: Status
+      name: status
       required: true
       secret: false
     deprecated: false
@@ -259,7 +259,7 @@ script:
     - default: false
       description: Requested alerts
       isArray: true
-      name: Alert_id
+      name: alert_id
       required: true
       secret: false
     - auto: PREDEFINED
@@ -273,7 +273,7 @@ script:
       - Legitimate activity
       - Other
       isArray: false
-      name: Close_Reason
+      name: close_reason
       required: true
       secret: false
     deprecated: false
@@ -284,7 +284,7 @@ script:
     - default: false
       description: List of alert IDs
       isArray: true
-      name: Alert_id
+      name: alert_id
       required: true
       secret: false
     - default: false

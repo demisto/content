@@ -40,9 +40,9 @@ Get alerts from Varonis DA
 | --- | --- | --- |
 | threat_model_name | List of requested threat models to retrieve. | Optional | 
 | max_results | The max number of alerts to retrieve (up to 50). Default is 50. | Optional | 
-| Start_time | Start time of alert range. | Optional | 
-| End_time | End time of alert range. | Optional | 
-| Alert_Status | List of required alerts status. | Optional | 
+| start_time | Start time of alert range. | Optional | 
+| end_time | End time of alert range. | Optional | 
+| alert_status | List of required alerts status. | Optional | 
 | alert_severity | List of required alerts severity. | Optional | 
 | device_name | List of required alerts device name. | Optional | 
 | page | Page number. Default is 1. | Optional | 
@@ -80,7 +80,7 @@ Get alerts from Varonis DA
 | Varonis.Pagination.PageSize | Number | Number of records on the page | 
 
 #### Command example
-```!varonis-get-alerts page=1 Alert_Status=Open max_results=1 Start_time=2022-02-16T13:00:00+02:00```
+```!varonis-get-alerts page=1 alert_status=Open max_results=1 start_time=2022-02-16T13:00:00+02:00```
 #### Context Example
 ```json
 {
@@ -147,15 +147,15 @@ Update alert status
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| Alert_id | Requested alerts. | Required | 
-| Status | Alert new status. Possible values are: Open, Under Investigation. | Required | 
+| alert_id | Requested alerts. | Required | 
+| status | Alert new status. Possible values are: Open, Under Investigation. | Required | 
 
 
 #### Context Output
 
 There is no context output for this command.
 #### Command example
-```!varonis-update-alert-status Alert_id=72D0D925-0937-4111-AB4A-FFFD4A529A3C Status="Under Investigation"```
+```!varonis-update-alert-status alert_id=72D0D925-0937-4111-AB4A-FFFD4A529A3C status="Under Investigation"```
 #### Human Readable Output
 
 >True
@@ -172,15 +172,15 @@ Close the alert
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| Alert_id | Requested alerts. | Required | 
-| Close_Reason | The reason the alert was closed. Possible values are: Resolved, Misconfiguration, Threat model disabled or deleted, Account misclassification, Legitimate activity, Other. | Required | 
+| alert_id | Requested alerts. | Required | 
+| close_reason | The reason the alert was closed. Possible values are: Resolved, Misconfiguration, Threat model disabled or deleted, Account misclassification, Legitimate activity, Other. | Required | 
 
 
 #### Context Output
 
 There is no context output for this command.
 #### Command example
-```!varonis-close-alert Alert_id=72D0D925-0937-4111-AB4A-FFFD4A529A3C,0D9D657A-A51F-4674-B49A-FFB1EDD35D51 Close_Reason=Resolved```
+```!varonis-close-alert alert_id=72D0D925-0937-4111-AB4A-FFFD4A529A3C,0D9D657A-A51F-4674-B49A-FFB1EDD35D51 close_reason=Resolved```
 #### Human Readable Output
 
 >True
@@ -197,7 +197,7 @@ Get events applied to specific alerts
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| Alert_id | List of alert IDs. | Required | 
+| alert_id | List of alert IDs. | Required | 
 | max_results | Maximum number of alerts to retrieve (up to 5k). | Optional | 
 | page | Page number. Default is 1. | Optional | 
 
@@ -240,7 +240,7 @@ Get events applied to specific alerts
 | Varonis.Pagination.PageSize | Number | Number of records on the page | 
 
 #### Command example
-```!varonis-get-alerted-events page=1 Alert_id=72D0D925-0937-4111-AB4A-FFFD4A529A3C max_results=1```
+```!varonis-get-alerted-events page=1 alert_id=72D0D925-0937-4111-AB4A-FFFD4A529A3C max_results=1```
 #### Context Example
 ```json
 {

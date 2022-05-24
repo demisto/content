@@ -78,8 +78,8 @@ def test_varonis_update_alert_status_command(requests_mock):
     )
 
     args = {
-        'Status': 'Under Investigation',
-        'Alert_id': "C8CF4194-133F-4F5A-ACB1-FFFB00573468, F8F608A7-0256-42E0-A527-FFF4749C1A8B"
+        'status': 'Under Investigation',
+        'alert_id': "C8CF4194-133F-4F5A-ACB1-FFFB00573468, F8F608A7-0256-42E0-A527-FFF4749C1A8B"
     }
 
     resp = varonis_update_alert_status_command(client, args)
@@ -99,8 +99,8 @@ def test_varonis_close_alert_command(requests_mock):
     )
 
     args = {
-        'Close_Reason': 'Account misclassification',
-        'Alert_id': "C8CF4194-133F-4F5A-ACB1-FFFB00573468, F8F608A7-0256-42E0-A527-FFF4749C1A8B"
+        'close_reason': 'Account misclassification',
+        'alert_id': "C8CF4194-133F-4F5A-ACB1-FFFB00573468, F8F608A7-0256-42E0-A527-FFF4749C1A8B"
     }
 
     resp = varonis_close_alert_command(client, args)
