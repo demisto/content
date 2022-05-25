@@ -2,22 +2,22 @@ contentitemexportablefields:
   contentitemfields:
     propagationLabels:
     - all
-description: 'This Playbook handles a false-positive incident closure for Microsoft defender for endpoint '
+description: 'This playbook handles false positive incident closure for Microsoft Defender for Endpoint. '
 id: MDE - False Positive Incident Handling
 inputs:
-- description: 'XSOAR Investigation IDs to be closed '
+- description: 'Duplicate Cortex XSOAR investigation IDs to close. '
   key: DupAlertIDsToBeClosed
   playbookInputQuery:
   required: false
   value: {}
-- description: Add comment to close an incident on the Microsoft Defender For Endpoint side
+- description: Add a comment to close an incident on the Microsoft Defender for Endpoint side.
   key: Comment
   playbookInputQuery:
   required: false
   value:
     simple: 'XSOAR Incident #${incident.id}'
 - description: |-
-    Provide a reason for closing the incident. Please choose on of the following suggestions:
+    Provide a reason for closing the incident. Choose one of the following:
     "NotAvailable"/"Apt,Malware"/"SecurityPersonnel"/"SecurityTesting"/"UnwantedSoftware"/"Other"
   key: Reason
   playbookInputQuery:
@@ -28,23 +28,22 @@ inputs:
   playbookInputQuery:
   required: false
   value: {}
-- description: Specify the approving tag name for found indicators.
+- description: Specify the tag name for allowed indicators that are found.
   key: AllowTag
   playbookInputQuery:
   required: false
   value:
     simple: AllowTag
 - description: |-
-    Indicates if automatic un-isolation is allowed
-        True/False
+    Whether automatic un-isolation is allowed.
   key: AutoUnisolation
   playbookInputQuery:
   required: false
   value:
     simple: 'False'
 - description: |-
-    Determine if the duplicate incidents should be closed as well in Microsoft Defender Instance.
-    The playbook will look for the world "Close" in this input.
+    Whether the duplicate incidents should be closed as well in the Microsoft Defender for Endpoint instance.
+    The playbook looks for the world "Close" in this input.
   key: CloseDuplicate
   playbookInputQuery:
   required: false
@@ -55,7 +54,7 @@ inputs:
   required: false
   value:
     simple: ${incident.deviceid}
-- description: Enter the File Sha256 you would like to block.
+- description: Enter the File SHA256 you would like to block.
   key: FileSha256
   playbookInputQuery:
   required: false
@@ -113,14 +112,14 @@ tasks:
     task:
       brand: ''
       description: |-
-        Searches Demisto incidents.
+        Searches Cortex XSOAR incidents.
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
         https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
       id: 6fd207d1-791f-4b90-850b-a28c922534b3
       iscommand: false
-      name: Retrieve MSDE alerts ID based on XSOAR investigation
+      name: Retrieve MDE alert ID based on Cortex XSOAR investigation
       scriptName: SearchIncidentsV2
       type: regular
       version: -1
@@ -171,7 +170,7 @@ tasks:
       description: Update the properties of an alert entity.
       id: 5d72a24f-10c7-482a-816b-2fcda6abc292
       iscommand: true
-      name: Resolve MSDE Alert
+      name: Resolve MDE Alert
       script: '|||microsoft-atp-update-alert'
       type: regular
       version: -1
@@ -323,7 +322,7 @@ tasks:
       description: commands.local.cmd.close.inv
       id: e02da1ef-4f9b-48f0-85e3-b035227d72c2
       iscommand: true
-      name: Close  XSOAR incident
+      name: Close  Cortex XSOAR incident
       script: Builtin|||closeInvestigation
       type: regular
       version: -1
@@ -489,7 +488,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: Choose the marked IOC to be added to approve list
+      description: Choose the marked IOC to be added to the approve list.
       id: c2afa666-c2e5-496f-8588-312b3639a81f
       iscommand: false
       name: Choose the marked IOC to be added to approve list
@@ -711,10 +710,10 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: Should close duplicated alerts?
+      description: Close duplicated alerts?
       id: db6d6e3d-aa13-4252-82c5-6218b14189ef
       iscommand: false
-      name: Should close duplicated alerts?
+      name: Close duplicated alerts?
       type: condition
       version: -1
     taskid: db6d6e3d-aa13-4252-82c5-6218b14189ef

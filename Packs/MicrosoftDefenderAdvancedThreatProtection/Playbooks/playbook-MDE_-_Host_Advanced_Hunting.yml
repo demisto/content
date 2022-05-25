@@ -2,40 +2,40 @@ contentitemexportablefields:
   contentitemfields:
     propagationLabels:
     - all
-description: This playbook will use the Microsoft Defender For Endpoint feature - Advanced Hunting. The hunt will be done based on provided inputs.
+description: This playbook uses the Microsoft Defender For Endpoint Advanced Hunting feature. The hunt is executed based on the provided inputs.
 id: MDE - Host Advanced Hunting
 inputs:
-- description: Enter File Sha1 to hunt on. Can be a comma-separated list.
+- description: A comma-separated list of file SHA1 hashes to hunt.
   key: FileSha1
   playbookInputQuery:
   required: false
   value: {}
-- description: Enter File Sha256 to hunt on. Can be a comma-separated list.
+- description: A comma-separated list of file Sha256 hashes to hunt.
   key: FileSha256
   playbookInputQuery:
   required: false
   value: {}
-- description: Enter an IP to hunt on.  Can be a comma-separated list.
+- description: A comma-separated list of IPs to hunt.
   key: IP
   playbookInputQuery:
   required: false
   value: {}
-- description: Enter a Hostname to hunt on.  Can be a comma-separated list.
+- description: A comma-separated list of host names to hunt.
   key: DeviceName
   playbookInputQuery:
   required: false
   value: {}
-- description: Enter a File name to hunt on.  Can be a comma-separated list.
+- description: A comma-separated list of file names to hunt.
   key: FileName
   playbookInputQuery:
   required: false
   value: {}
-- description: Enter a device ID to hunt on.  Can be a comma-separated list.
+- description: A comma-separated list of device ID to hunt.
   key: DeviceID
   playbookInputQuery:
   required: false
   value: {}
-- description: Enter File MD5 to hunt on. Can be a comma-separated list.
+- description: A comma-separated list of file MD5 hashes to hunt.
   key: FileMd5
   playbookInputQuery:
   required: false
@@ -245,7 +245,7 @@ tasks:
       brand: ''
       id: 76fa906f-09b2-4504-8c7b-fa9b08b11910
       iscommand: false
-      name: Is Local Admin was Signed to the device?
+      name: Is the Local Admin Signed to the Device?
       type: title
       version: -1
       description: ''
@@ -312,7 +312,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: Detect if there was any evidence of MSDE agent/sensor manipulation.
+      description: Detects any evidence of MDE agent/sensor manipulation.
       id: 9cdcffbf-a41a-4aa1-84be-3749d6507a06
       iscommand: true
       name: Is there an attempt to disable MS?
@@ -356,7 +356,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: Is there evidence for privilege escalation.
+      description: Is there evidence for privilege escalation?
       id: d586a7ba-cae8-4eb5-87f7-340c05f4880e
       iscommand: true
       name: Local Admin user was logged in?
@@ -400,7 +400,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: Is there evidence of attempted lateral movement. By selecting a “query_purpose” argument, a designated query template will be used.
+      description: Is there evidence of attempted lateral movement? By selecting a “query_purpose” argument, a designated query template will be used.
       id: d78da24b-058f-4a6d-8527-4c64f52fd4fb
       iscommand: true
       name: Password manipulation
@@ -510,7 +510,7 @@ tasks:
       description: commands.local.cmd.set.incident
       id: 6a4a3f16-815d-42bb-8fb2-350acde766aa
       iscommand: true
-      name: Raise the severity of the incident and add "Tempering Action" tag
+      name: Raise the severity of the incident and add the "Tempering Action" tag.
       script: Builtin|||setIncident
       type: regular
       version: -1
@@ -685,7 +685,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: This playbook will use the Microsoft Defender For Endpoint feature - Advanced Hunting - and will hunt for host persistence evidence.
+      description: This playbook uses the Microsoft Defender for Endpoint Advanced Hunting feature and hunts for host persistence evidence.
       id: 0ede68b1-a86f-444b-8e24-67554d08d6c9
       iscommand: false
       name: 5a158ad1-7561-43de-8662-87706a82f2ae
@@ -895,7 +895,7 @@ tasks:
       description: Retrieves file info by a file hash (Sha1 or Sha256). Note, if the given hash is not part of the results, it was not found.
       id: 07cfc5b0-5d48-4604-80c3-d1c511b3b188
       iscommand: true
-      name: Get file information
+      name: Gets file information.
       script: '|||microsoft-atp-get-file-info'
       type: regular
       version: -1
@@ -975,7 +975,7 @@ tasks:
       description: commands.local.cmd.set.incident
       id: 09efc76c-787c-4434-826e-fa6d4445aa76
       iscommand: true
-      name: Update the "Signed File" tag + Set the signature incident field
+      name: Updates the "Signed File" tag and sets the signature incident field.
       script: Builtin|||setIncident
       type: regular
       version: -1
