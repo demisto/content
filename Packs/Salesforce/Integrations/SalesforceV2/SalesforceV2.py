@@ -3,9 +3,9 @@ import traceback
 from typing import Any, Dict, List, Optional, Tuple, Union, cast
 
 import dateparser
-import demistomock as demisto  # noqa: F401
+#import demistomock as demisto  # noqa: F401
 import urllib3
-from CommonServerPython import *  # noqa: F401
+#from CommonServerPython import *  # noqa: F401
 from dateparser import parse
 
 # Disable insecure warnings
@@ -93,13 +93,18 @@ class Client(BaseClient):
 
     def getCaseFileById(self, caseNumber, caseFileId):
 
+        found = False
         caseFiles = self.getCaseFiles(None, caseNumber).get('fileInfo')
         for cf in caseFiles:
             if cf.get('id') == caseFileId:
+                found = True
                 response = requests.get(cf.get('url')).content
                 return fileResult(cf.get('fileName'), response)
 
-        return_error(f"Cannot find {caseFileId} in {caseNumber}")
+        if not found:
+            return f"Cannot find {caseFileId} in {caseNumber}"
+
+
 
     def getObjectTypes(self):
 
@@ -667,15 +672,18 @@ def get_case_file_by_id_command(client: Client, args: Dict[str, Any]) -> Command
 
 def describe_sobject_field_command(client: Client, args: Dict[str, Any]):
 
+    found = False
     response = client.sendRequestInSession('GET', 'sobjects/Case/describe/')
 
     if args.get("field"):
         fields = response.get('fields')
         for field in fields:
             if field['name'] == args.get("field"):
+                found = True
                 return field
 
-    return_error("Field cannot be found in the sobject. Perhaps wrong field name or object name?")
+    if not Found:
+        raise Exception("Field cannot be found in the sobject. Perhaps wrong field name or object name?")
 
 
 def get_mapping_fields_command(client):
@@ -842,14 +850,14 @@ def get_remote_data_command(client, args):
         )
 
 
-def fetchIncident(client):
-    fetchType = demisto.params().get("fetchType")
+def fetchIncident(client, params):
+    fetchType = params.get("fetchType")
 
     lastRun = demisto.getLastRun()
     if not lastRun.get("last_case_time"):
         lastRun = {}
         current_time = datetime.now().isoformat().split(".")[0]
-        first_fetch_time = demisto.params().get('firstFetchTime', '3 days').strip()
+        first_fetch_time = params.get('firstFetchTime', '3 days').strip()
         lastRun['last_case_time'] = parse(f'{first_fetch_time} UTC').isoformat().split("+")[0].split(".")[0] + "Z"
         demisto.setLastRun(lastRun)
 
@@ -857,14 +865,14 @@ def fetchIncident(client):
     properties = ''
     incidents = []
 
-    if len(demisto.params().get('fetchFields', [])) > 1:
-        properties = demisto.params().get('fetchFields', []).split(",")
+    if len(params.get('fetchFields', [])) > 1:
+        properties = params.get('fetchFields', []).split(",")
     else:
         properties = []
 
     if fetchType == 'cases':
         # query cases from last time
-        condition = f"CreatedDate>{lastRun.get('last_case_time')} {demisto.params().get('condition','')} ORDER BY CreatedDate DESC"
+        condition = f"CreatedDate>{lastRun.get('last_case_time')} {params.get('condition','')} ORDER BY CreatedDate DESC"
         properties += ['Id', 'CaseNumber', 'Subject', 'Description', 'CreatedDate',
                        'ClosedDate', 'OwnerId', 'Priority', 'Origin', 'Status',
                        'Reason', 'LastModifiedDate', 'MilestoneStatus', 'isEscalated']
@@ -886,8 +894,8 @@ def fetchIncident(client):
                     "owner": cases[index]['OwnerDetails'].get("Email"),
                     "occurred": parse(item.get('CreatedDate')).isoformat().split("+")[0].split(".")[0] + "Z",
                     "rawJSON": json.dumps(item),
-                    'mirror_direction': MIRROR_DIRECTION.get(demisto.params().get('mirror_direction')),
-                    'mirror_tags': [demisto.params().get('comment_tag'), demisto.params().get('file_tag')],
+                    'mirror_direction': MIRROR_DIRECTION.get(params.get('mirror_direction')),
+                    'mirror_tags': [params.get('comment_tag'), demisto.params().get('file_tag')],
                     'mirror_instance': demisto.integrationInstance()
                 })
 
@@ -929,6 +937,11 @@ def fetchIncident(client):
     return incidents
 
 
+def test_module(client):
+    token = client.getNewToken()
+    if token.get("access_token"):
+        return 'ok'
+
 ''' MAIN FUNCTION '''
 
 
@@ -962,11 +975,10 @@ def main() -> None:
 
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
-            token = client.getNewToken()
-            if token.get("access_token"):
-                demisto.results('ok')
+            return_results(test_module(client))
+
         elif demisto.command() == 'fetch-incidents':
-            incidents = fetchIncident(client)
+            incidents = fetchIncident(client, demisto.params())
             demisto.incidents(incidents)
         elif demisto.command() == 'salesforce-search':
             return_results(search_command(client, demisto.args()))
