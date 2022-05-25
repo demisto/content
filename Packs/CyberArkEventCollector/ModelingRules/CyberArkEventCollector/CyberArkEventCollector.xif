@@ -42,7 +42,6 @@
         XDM.Audit.audited_resource.name=ImpersonateTargetName,
         XDM.Audit.TriggeredBy.identity.name=EmailAddress,
         XDM.Auth.session_context_id=Session,
-        Missing=ChallengeId,
         XDM.Auth.outcome=MfaResult,
         XDM.Auth.reason=MfaReason,
         Missing (looks like app id according to logs)=ProfileId,
