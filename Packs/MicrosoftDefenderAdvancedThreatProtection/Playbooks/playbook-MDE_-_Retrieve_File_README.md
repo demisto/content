@@ -29,4 +29,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![MDE - Retrieve File](Insert the link to your image here)
+![MDE - Retrieve File](../doc_files/MDE_-_Retrieve_File.png)

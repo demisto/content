@@ -2,39 +2,40 @@ contentitemexportablefields:
   contentitemfields:
     propagationLabels:
     - all
+description: This playbook will use the Microsoft Defender For Endpoint feature - Advanced Hunting. The hunt will be done based on provided inputs.
 id: MDE - Host Advanced Hunting
 inputs:
-- description: ''
+- description: Enter File Sha1 to hunt on. Can be a comma-separated list.
   key: FileSha1
   playbookInputQuery:
   required: false
   value: {}
-- description: ''
+- description: Enter File Sha256 to hunt on. Can be a comma-separated list.
   key: FileSha256
   playbookInputQuery:
   required: false
   value: {}
-- description: ''
+- description: Enter an IP to hunt on.  Can be a comma-separated list.
   key: IP
   playbookInputQuery:
   required: false
   value: {}
-- description: ''
+- description: Enter a Hostname to hunt on.  Can be a comma-separated list.
   key: DeviceName
   playbookInputQuery:
   required: false
   value: {}
-- description: ''
+- description: Enter a File name to hunt on.  Can be a comma-separated list.
   key: FileName
   playbookInputQuery:
   required: false
   value: {}
-- description: ''
+- description: Enter a device ID to hunt on.  Can be a comma-separated list.
   key: DeviceID
   playbookInputQuery:
   required: false
   value: {}
-- description: ''
+- description: Enter File MD5 to hunt on. Can be a comma-separated list.
   key: FileMd5
   playbookInputQuery:
   required: false
@@ -451,6 +452,8 @@ tasks:
             value:
               simple: MicrosoftATP.HuntTampering.Result
           operator: isNotEmpty
+          right:
+            value: {}
       label: yes
     id: '49'
     ignoreworker: false
@@ -467,13 +470,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: a345ddf4-451f-4946-8e20-66dd8633f39e
+      description: Any results
+      id: 98aff37a-37d5-49df-8e7c-66face7cc480
       iscommand: false
       name: Any results?
-      description: Any results?
       type: condition
       version: -1
-    taskid: a345ddf4-451f-4946-8e20-66dd8633f39e
+    taskid: 98aff37a-37d5-49df-8e7c-66face7cc480
     timertriggers: []
     type: condition
     view: |-
@@ -565,6 +568,8 @@ tasks:
             value:
               simple: MicrosoftATP.HuntLateralMovementEvidence.Result.credential_dumping
           operator: isNotEmpty
+          right:
+            value: {}
       label: yes
     id: '54'
     ignoreworker: false
@@ -581,13 +586,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: bbe36e8f-c213-4478-8246-7b86fc6d9d60
+      description: Any results?
+      id: 22bb1d45-e100-44bc-82ee-7b203b41fda7
       iscommand: false
       name: Any results?
-      description: Any results?
       type: condition
       version: -1
-    taskid: bbe36e8f-c213-4478-8246-7b86fc6d9d60
+    taskid: 22bb1d45-e100-44bc-82ee-7b203b41fda7
     timertriggers: []
     type: condition
     view: |-
@@ -633,7 +638,7 @@ tasks:
       brand: ''
       id: 3a2ccd6d-24af-4fdc-8e90-d7f4098b8a00
       iscommand: false
-      name: MDE - Host Advanced Hunting For Powershell Executions
+      name: 23621c27-b05b-4630-8017-d6f1c2b4a15e
       playbookId: MDE - Host Advanced Hunting For Powershell Executions
       type: playbook
       version: -1
@@ -680,14 +685,14 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: d5e78d55-5683-4612-8c26-fa4f9dafdd0d
+      description: This playbook will use the Microsoft Defender For Endpoint feature - Advanced Hunting - and will hunt for host persistence evidence.
+      id: 0ede68b1-a86f-444b-8e24-67554d08d6c9
       iscommand: false
-      name: MDE - Host Advanced Hunting For Persistence
+      name: 5a158ad1-7561-43de-8662-87706a82f2ae
       playbookId: MDE - Host Advanced Hunting For Persistence
       type: playbook
       version: -1
-      description: ''
-    taskid: d5e78d55-5683-4612-8c26-fa4f9dafdd0d
+    taskid: 0ede68b1-a86f-444b-8e24-67554d08d6c9
     timertriggers: []
     type: playbook
     view: |-
@@ -733,7 +738,7 @@ tasks:
       brand: ''
       id: f5d3ed39-0b68-4048-86d5-d10ff75bf493
       iscommand: false
-      name: MDE - Host Advanced Hunting For Network Activity
+      name: 1da35988-954b-489f-8973-89a62b0cc89c
       playbookId: MDE - Host Advanced Hunting For Network Activity
       type: playbook
       version: -1
@@ -774,13 +779,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: 36365547-096f-46be-8279-23c9e6cb0b73
+      description: Any results?
+      id: 9f356086-d122-4912-8b9d-cc8f985b8c89
       iscommand: false
       name: Any results?
-      description: Any results?
       type: condition
       version: -1
-    taskid: 36365547-096f-46be-8279-23c9e6cb0b73
+    taskid: 9f356086-d122-4912-8b9d-cc8f985b8c89
     timertriggers: []
     type: condition
     view: |-
@@ -912,6 +917,8 @@ tasks:
             value:
               simple: MicrosoftATP.File.Signer
           operator: isNotEmpty
+          right:
+            value: {}
       label: yes
     id: '87'
     ignoreworker: false
@@ -928,13 +935,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: 659738a8-0c13-41a0-84e2-36c369195b91
+      description: Any digital signing info?
+      id: c5c560ec-0485-4d28-8c0f-91156eeaa22b
       iscommand: false
       name: Any digital signing info?
-      description: Any digital signing info?
       type: condition
       version: -1
-    taskid: 659738a8-0c13-41a0-84e2-36c369195b91
+    taskid: c5c560ec-0485-4d28-8c0f-91156eeaa22b
     timertriggers: []
     type: condition
     view: |-
@@ -998,4 +1005,3 @@ view: |-
 tests:
 - Microsoft Defender Advanced Threat Protection - Test
 fromversion: 6.2.0
-description: This playbook will use the Microsoft Defender For Endpoint feature - Advanced Hunting - and will hunt for Persistence,network activty,temaring actions,etc.

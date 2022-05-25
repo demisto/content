@@ -32,14 +32,16 @@ inputs:
   key: AllowTag
   playbookInputQuery:
   required: false
-  value: {}
+  value:
+    simple: AllowTag
 - description: |-
     Indicates if automatic un-isolation is allowed
         True/False
   key: AutoUnisolation
   playbookInputQuery:
   required: false
-  value: {}
+  value:
+    simple: 'False'
 - description: |-
     Determine if the duplicate incidents should be closed as well in Microsoft Defender Instance.
     The playbook will look for the world "Close" in this input.
@@ -47,6 +49,18 @@ inputs:
   playbookInputQuery:
   required: false
   value: {}
+- description: The ID of the host for running an un-isolation process.
+  key: HostID
+  playbookInputQuery:
+  required: false
+  value:
+    simple: ${incident.deviceid}
+- description: Enter the File Sha256 you would like to block.
+  key: FileSha256
+  playbookInputQuery:
+  required: false
+  value:
+    simple: ${incident.filesha256}
 name: MDE - False Positive Incident Handling
 outputs: []
 starttaskid: '0'
@@ -247,7 +261,7 @@ tasks:
       timings:
         completeafterreplies: 1
         completeaftersla: false
-        completeafterv2: false
+        completeafterv2: true
         retriescount: 2
         retriesinterval: 360
       to:
@@ -262,13 +276,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: 82c575e9-5484-4d95-8728-6cd14c71d448
+      description: Approve unisolation
+      id: df0acaa3-f731-44bd-89bc-95e63182e29f
       iscommand: false
       name: Approve unisolation
-      description: Approve unisolation
       type: condition
       version: -1
-    taskid: 82c575e9-5484-4d95-8728-6cd14c71d448
+    taskid: df0acaa3-f731-44bd-89bc-95e63182e29f
     timertriggers: []
     type: condition
     view: |-
@@ -403,19 +417,19 @@ tasks:
     quietmode: 0
     scriptarguments:
       Device_id:
-        simple: ${Endpoint.ID}
+        simple: ${inputs.HostID}
     separatecontext: true
     skipunavailable: false
     task:
       brand: ''
-      description: This playbook will auto unisolate endpoints through Microsoft Defender For Endpoint by using Hostname, IP, or Device ID associated with the asset you wish to block.
-      id: 91c35cf4-1226-47e9-8c89-037e4055280f
+      description: This playbook accepts an endpoint ID, IP, or host name and unisolates it using the Microsoft Defender For Endpoint integration.
+      id: 691dd509-b56a-4056-8207-96f6f3f57c18
       iscommand: false
       name: Microsoft Defender For Endpoint - Unisolate Endpoint
       playbookId: Microsoft Defender For Endpoint - Unisolate Endpoint
       type: playbook
       version: -1
-    taskid: 91c35cf4-1226-47e9-8c89-037e4055280f
+    taskid: 691dd509-b56a-4056-8207-96f6f3f57c18
     timertriggers: []
     type: playbook
     view: |-
@@ -439,7 +453,7 @@ tasks:
           simple: Mark IOCs to be approved
         options: []
         optionsarg:
-        - simple: ${incident.filesha256}
+        - simple: ${inputs.FileSha256}
         placeholder: ''
         readonly: false
         required: false
@@ -475,13 +489,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: c45a1727-d309-446d-850b-b9fffb2dfc1e
+      description: Choose the marked IOC to be added to approve list
+      id: c2afa666-c2e5-496f-8588-312b3639a81f
       iscommand: false
       name: Choose the marked IOC to be added to approve list
-      description: Choose the needed hashes (sh256) to be approved on your EDR and will be tagged in TI.
       type: collection
       version: -1
-    taskid: c45a1727-d309-446d-850b-b9fffb2dfc1e
+    taskid: c2afa666-c2e5-496f-8588-312b3639a81f
     timertriggers: []
     type: collection
     view: |-
@@ -544,7 +558,6 @@ tasks:
       id: 6950430d-209b-4dee-8c7c-7c9aa063e2fa
       iscommand: false
       name: Done approving indicators
-
       type: title
       version: -1
       description: ''
@@ -586,13 +599,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: ca3c5d6a-47b9-4786-82b6-e420527a5487
+      description: Auto-Unisolate?
+      id: 2f7127d1-e825-4d31-893c-32e578f5bef5
       iscommand: false
       name: Auto-Unisolate?
-      description: Check if auto-unisolation is spesified.
       type: condition
       version: -1
-    taskid: ca3c5d6a-47b9-4786-82b6-e420527a5487
+    taskid: 2f7127d1-e825-4d31-893c-32e578f5bef5
     timertriggers: []
     type: condition
     view: |-
@@ -698,13 +711,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: a8771130-3ba3-4816-8c39-445bc9a7460a
+      description: Should close duplicated alerts?
+      id: db6d6e3d-aa13-4252-82c5-6218b14189ef
       iscommand: false
-      name: Close duplicated alerts?
-      description: Checks if you have duplicated alerts that have been closed in
+      name: Should close duplicated alerts?
       type: condition
       version: -1
-    taskid: a8771130-3ba3-4816-8c39-445bc9a7460a
+    taskid: db6d6e3d-aa13-4252-82c5-6218b14189ef
     timertriggers: []
     type: condition
     view: |-
@@ -766,6 +779,8 @@ tasks:
             value:
               simple: Indicators to Allow.Answers.0
           operator: isNotEmpty
+          right:
+            value: {}
       label: yes
     id: '68'
     ignoreworker: false
@@ -783,13 +798,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: 93fa13d7-eb94-4160-83bf-a25b92905f20
+      description: Was any hash selected?
+      id: 6701cbe9-799e-4330-81a2-fc567e2c96bf
       iscommand: false
       name: Was any hash selected?
-      description: Check if there was any selected item from communication task.
       type: condition
       version: -1
-    taskid: 93fa13d7-eb94-4160-83bf-a25b92905f20
+    taskid: 6701cbe9-799e-4330-81a2-fc567e2c96bf
     timertriggers: []
     type: condition
     view: |-
@@ -813,6 +828,5 @@ view: |-
     }
   }
 tests:
-- Microsoft Defender Advanced Threat Protection - Test
-- Microsoft Defender - ATP - Indicators SC Test
+  - No tests
 fromversion: 6.2.0

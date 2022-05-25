@@ -52,4 +52,4 @@ This playbook does not use any scripts.
 
 ## Playbook Image
 ---
-![MDE SIEM ingestion - Get Incident Data](Insert the link to your image here)
+![MDE SIEM ingestion - Get Incident Data](../doc_files/MDE_SIEM_ingestion_-_Get_Incident_Data.png)

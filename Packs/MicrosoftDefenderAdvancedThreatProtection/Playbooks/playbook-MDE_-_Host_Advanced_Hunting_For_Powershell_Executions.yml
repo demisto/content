@@ -2,43 +2,79 @@ contentitemexportablefields:
   contentitemfields:
     propagationLabels:
     - all
+description: This playbook will use the Microsoft Defender For Endpoint feature - Advanced Hunting - and will hunt for host PowerShell executions.
 id: MDE - Host Advanced Hunting For Powershell Executions
 inputs:
-- description: ''
+- description: Enter IP to hunt on. Can be a comma-separated list.
   key: IP
   playbookInputQuery:
   required: false
-  value: {}
-- description: ''
+  value:
+    complex:
+      accessor: detectedips
+      root: incident
+      transformers:
+      - operator: uniq
+- description: Enter a hostname to hunt on. Can be a comma-separated list.
   key: DeviceName
   playbookInputQuery:
   required: false
-  value: {}
-- description: ''
+  value:
+    complex:
+      accessor: hostnames
+      root: incident
+      transformers:
+      - operator: uniq
+- description: Enter file name to hunt on. Can be a comma-separated list.
   key: FileName
   playbookInputQuery:
   required: false
-  value: {}
-- description: ''
+  value:
+    complex:
+      accessor: filenames
+      root: incident
+      transformers:
+      - operator: uniq
+- description: Enter device ID to hunt on. Can be a comma-separated list.
   key: DeviceID
   playbookInputQuery:
   required: false
-  value: {}
-- description: ''
+  value:
+    complex:
+      accessor: agentsid
+      root: incident
+      transformers:
+      - operator: uniq
+- description: Enter file MD5 to hunt on. Can be a comma-separated list.
   key: FileMd5
   playbookInputQuery:
   required: false
-  value: {}
-- description: ''
+  value:
+    complex:
+      accessor: filemd5
+      root: incident
+      transformers:
+      - operator: uniq
+- description: Enter file SHA256 to hunt on. Can be a comma-separated list.
   key: FileSha256
   playbookInputQuery:
   required: false
-  value: {}
-- description: ''
+  value:
+    complex:
+      accessor: filesha256
+      root: incident
+      transformers:
+      - operator: uniq
+- description: Enter file SHA1 to hunt on. Can be a comma-separated list.
   key: FileSha1
   playbookInputQuery:
   required: false
-  value: {}
+  value:
+    complex:
+      accessor: filesha1
+      root: incident
+      transformers:
+      - operator: uniq
 name: MDE - Host Advanced Hunting For Powershell Executions
 outputs: []
 starttaskid: '0'
@@ -121,6 +157,8 @@ tasks:
     scriptarguments:
       file_name:
         simple: ${inputs.FileName}
+      md5:
+        simple: ${inputs.FileMd5}
       query_purpose:
         simple: process_details
       sha1:
@@ -132,13 +170,13 @@ tasks:
     task:
       brand: ''
       description: Process investigation. By selecting a “query_purpose” argument, a designated query template will be used.
-      id: 35f0f113-8779-4f42-881f-7238de9f21ff
+      id: febdef0b-ad0e-4a96-8bd8-b17bc4c7fae0
       iscommand: true
       name: Get process details by hash or filename
       script: '|||microsoft-atp-advanced-hunting-process-details'
       type: regular
       version: -1
-    taskid: 35f0f113-8779-4f42-881f-7238de9f21ff
+    taskid: febdef0b-ad0e-4a96-8bd8-b17bc4c7fae0
     timertriggers: []
     type: regular
     view: |-
@@ -176,13 +214,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: a60df698-069f-494d-8f39-830b4dd976e5
+      description: Any events of execution or association to process?
+      id: 7325dc6a-9cb6-4733-8d33-8e034885cbab
       iscommand: false
       name: Any events of execution or association to process?
-      description: Any events of execution or association to process?
       type: condition
       version: -1
-    taskid: a60df698-069f-494d-8f39-830b4dd976e5
+    taskid: 7325dc6a-9cb6-4733-8d33-8e034885cbab
     timertriggers: []
     type: condition
     view: |-
@@ -304,6 +342,8 @@ tasks:
           root: inputs.DeviceID
           transformers:
           - operator: uniq
+      md5:
+        simple: ${inputs.FileMd5}
       query_purpose:
         simple: process_excecution_powershell
       sha1:
@@ -319,13 +359,13 @@ tasks:
     task:
       brand: ''
       description: Process investigation. By selecting a “query_purpose” argument, a designated query template will be used.
-      id: af5b02bc-6d1a-425b-82a8-1ab3764b5046
+      id: 78fa6e53-39a8-4d0e-889b-6296c84a22a5
       iscommand: true
       name: Check for any Powershell Execution
       script: '|||microsoft-atp-advanced-hunting-process-details'
       type: regular
       version: -1
-    taskid: af5b02bc-6d1a-425b-82a8-1ab3764b5046
+    taskid: 78fa6e53-39a8-4d0e-889b-6296c84a22a5
     timertriggers: []
     type: regular
     view: |-
@@ -357,13 +397,13 @@ tasks:
     task:
       brand: ''
       description: Detects network connections. By selecting a “query_purpose” argument, a designated query template will be used.
-      id: bb544534-ae2f-4666-8933-eceaa7a095b8
+      id: f67435e5-3de5-447d-815e-3b9e909690d3
       iscommand: true
       name: Was there PowerShell with Encoded command?
       script: '|||microsoft-atp-advanced-hunting-network-connections'
       type: regular
       version: -1
-    taskid: bb544534-ae2f-4666-8933-eceaa7a095b8
+    taskid: f67435e5-3de5-447d-815e-3b9e909690d3
     timertriggers: []
     type: regular
     view: |-
@@ -402,13 +442,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: c6c4e4fd-8b70-4eed-8a54-6ce435114fdd
+      description: Any results?
+      id: 728dd51d-1e4c-4c23-8b74-9f9302ad8a88
       iscommand: false
       name: Any results?
-      description: Any results?
       type: condition
       version: -1
-    taskid: c6c4e4fd-8b70-4eed-8a54-6ce435114fdd
+    taskid: 728dd51d-1e4c-4c23-8b74-9f9302ad8a88
     timertriggers: []
     type: condition
     view: |-
@@ -433,6 +473,11 @@ tasks:
             value:
               simple: inputs.FileSha1
           operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.FileMd5
+          operator: isNotEmpty
       label: yes
     id: '15'
     ignoreworker: false
@@ -449,13 +494,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: 47dea48f-7acf-4215-8b27-bb5649f647fb
+      description: Is a file exist?
+      id: 93a9e716-b58b-4506-8b3d-2b17cfaf5fd3
       iscommand: false
-      name: Is file exist?
-      description: Is file exist?
+      name: Is a file exist?
       type: condition
       version: -1
-    taskid: 47dea48f-7acf-4215-8b27-bb5649f647fb
+    taskid: 93a9e716-b58b-4506-8b3d-2b17cfaf5fd3
     timertriggers: []
     type: condition
     view: |-
@@ -557,13 +602,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: eb9661f8-947d-458f-8729-576a3f61cc05
+      description: Are there any more affected devices?
+      id: 976fe52b-0fb8-4955-8f70-4abd043c0091
       iscommand: false
       name: Are there any more affected devices?
-      description: Is file exist?
       type: condition
       version: -1
-    taskid: eb9661f8-947d-458f-8729-576a3f61cc05
+    taskid: 976fe52b-0fb8-4955-8f70-4abd043c0091
     timertriggers: []
     type: condition
     view: |-
@@ -617,6 +662,8 @@ tasks:
             value:
               simple: MicrosoftATP.HuntProcessDetails.Result.process_excecution_powershell
           operator: isNotEmpty
+          right:
+            value: {}
       label: yes
     id: '20'
     ignoreworker: false
@@ -633,13 +680,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: c83fdfc4-ed42-4c2f-8e8a-a1a1807e9664
+      description: Any PowerShell executions?
+      id: 0d997203-e321-4dd0-8a7a-092b496f8de4
       iscommand: false
       name: Any PowerShell executions?
-      description: Any PowerShell executions?
       type: condition
       version: -1
-    taskid: c83fdfc4-ed42-4c2f-8e8a-a1a1807e9664
+    taskid: 0d997203-e321-4dd0-8a7a-092b496f8de4
     timertriggers: []
     type: condition
     view: |-
@@ -715,4 +762,3 @@ view: |-
 tests:
 - No tests (auto formatted)
 fromversion: 6.2.0
-description: This playbook will use the Microsoft Defender For Endpoint feature - Advanced Hunting - and will hunt for host powershell executions.

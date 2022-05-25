@@ -2,43 +2,79 @@ contentitemexportablefields:
   contentitemfields:
     propagationLabels:
     - all
+description: This playbook will use the Microsoft Defender For Endpoint feature - Advanced Hunting - and will hunt for host persistence evidence.
 id: MDE - Host Advanced Hunting For Persistence
 inputs:
-- description: ''
+- description: Enter File Sha256 to hunt on. Can be a comma-separated list.
   key: FileSha256
   playbookInputQuery:
   required: false
-  value: {}
-- description: ''
+  value:
+    complex:
+      accessor: filesha256
+      root: incident
+      transformers:
+      - operator: uniq
+- description: Enter File Sha1 to hunt on. Can be a comma-separated list.
   key: FileSha1
   playbookInputQuery:
   required: false
-  value: {}
-- description: ''
+  value:
+    complex:
+      accessor: filesha1
+      root: incident
+      transformers:
+      - operator: uniq
+- description: Enter File MD5 to hunt on. Can be a comma-separated list.
   key: FileMd5
   playbookInputQuery:
   required: false
-  value: {}
-- description: ''
+  value:
+    complex:
+      accessor: filemd5
+      root: incident
+      transformers:
+      - operator: uniq
+- description: Enter an IP to hunt on.  Can be a comma-separated list.
   key: IP
   playbookInputQuery:
   required: false
-  value: {}
-- description: ''
+  value:
+    complex:
+      accessor: detectedips
+      root: incident
+      transformers:
+      - operator: uniq
+- description: Enter a Hostname to hunt on.  Can be a comma-separated list.
   key: DeviceName
   playbookInputQuery:
   required: false
-  value: {}
-- description: ''
+  value:
+    complex:
+      accessor: hostnames
+      root: incident
+      transformers:
+      - operator: uniq
+- description: Enter a File name to hunt on.  Can be a comma-separated list.
   key: FileName
   playbookInputQuery:
   required: false
-  value: {}
-- description: ''
+  value:
+    complex:
+      accessor: filenames
+      root: incident
+      transformers:
+      - operator: uniq
+- description: Enter a device ID to hunt on.  Can be a comma-separated list.
   key: DeviceID
   playbookInputQuery:
   required: false
-  value: {}
+  value:
+    complex:
+      accessor: agentsid
+      root: incident
+      transformers:
+      - operator: uniq
 name: MDE - Host Advanced Hunting For Persistence
 outputs: []
 starttaskid: '0'
@@ -477,6 +513,8 @@ tasks:
             value:
               simple: MicrosoftATP.HuntPersistenceEvidence.Result
           operator: isNotEmpty
+          right:
+            value: {}
       label: yes
     id: '12'
     ignoreworker: false
@@ -493,13 +531,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: 4f5eea92-9709-4b28-8bb6-7e440d4a1904
+      description: Any results?
+      id: eb473d36-4c0c-455e-86a1-c574554cfefa
       iscommand: false
       name: Any results?
-      description: Any results?
       type: condition
       version: -1
-    taskid: 4f5eea92-9709-4b28-8bb6-7e440d4a1904
+    taskid: eb473d36-4c0c-455e-86a1-c574554cfefa
     timertriggers: []
     type: condition
     view: |-
@@ -582,6 +620,8 @@ tasks:
             value:
               simple: MicrosoftATP.HuntPersistenceEvidence.Result
           operator: isNotEmpty
+          right:
+            value: {}
       label: yes
     id: '20'
     ignoreworker: false
@@ -598,13 +638,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: 8f07be5b-7f67-441f-8257-1f3e4448b03e
+      description: Any results?
+      id: 6b2908e3-b71b-4149-8526-3aacc02e313a
       iscommand: false
       name: Any results?
-      description: Any results?
       type: condition
       version: -1
-    taskid: 8f07be5b-7f67-441f-8257-1f3e4448b03e
+    taskid: 6b2908e3-b71b-4149-8526-3aacc02e313a
     timertriggers: []
     type: condition
     view: |-
@@ -687,6 +727,8 @@ tasks:
             value:
               simple: MicrosoftATP.HuntPersistenceEvidence.Result
           operator: isNotEmpty
+          right:
+            value: {}
       label: yes
     id: '23'
     ignoreworker: false
@@ -703,13 +745,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: ea2caf96-1c19-4904-8362-ec84ebe2fcf3
+      description: Any results?
+      id: 06eee70f-4a15-4510-863a-8dc29613fe3d
       iscommand: false
       name: Any results?
-      description: Any results?
       type: condition
       version: -1
-    taskid: ea2caf96-1c19-4904-8362-ec84ebe2fcf3
+    taskid: 06eee70f-4a15-4510-863a-8dc29613fe3d
     timertriggers: []
     type: condition
     view: |-
@@ -792,6 +834,8 @@ tasks:
             value:
               simple: MicrosoftATP.HuntPersistenceEvidence.Result
           operator: isNotEmpty
+          right:
+            value: {}
       label: yes
     id: '26'
     ignoreworker: false
@@ -808,13 +852,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: 2e76dccd-4904-480e-8519-c896511ec74e
+      description: Any results?
+      id: 80f5dab1-5c7b-45a1-8be6-7440d8ac0459
       iscommand: false
       name: Any results?
-      description: Any results?
       type: condition
       version: -1
-    taskid: 2e76dccd-4904-480e-8519-c896511ec74e
+    taskid: 80f5dab1-5c7b-45a1-8be6-7440d8ac0459
     timertriggers: []
     type: condition
     view: |-
@@ -897,6 +941,8 @@ tasks:
             value:
               simple: MicrosoftATP.HuntPersistenceEvidence.Result
           operator: isNotEmpty
+          right:
+            value: {}
       label: yes
     id: '29'
     ignoreworker: false
@@ -913,13 +959,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: 490798c5-5b94-4b55-8f5e-51c7c02a980c
+      description: Any results?
+      id: ab08cf70-e437-4ef5-8f24-87956b96ef9e
       iscommand: false
       name: Any results?
-      description: Any results?
       type: condition
       version: -1
-    taskid: 490798c5-5b94-4b55-8f5e-51c7c02a980c
+    taskid: ab08cf70-e437-4ef5-8f24-87956b96ef9e
     timertriggers: []
     type: condition
     view: |-
@@ -1002,6 +1048,8 @@ tasks:
             value:
               simple: MicrosoftATP.HuntPersistenceEvidence.Result
           operator: isNotEmpty
+          right:
+            value: {}
       label: yes
     id: '32'
     ignoreworker: false
@@ -1018,13 +1066,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: 43bf110c-a961-4fc8-87aa-d7278e598154
+      description: Any results?
+      id: 31d216f7-1d35-44e6-8150-a593001c76ee
       iscommand: false
       name: Any results?
-      description: Any results?
       type: condition
       version: -1
-    taskid: 43bf110c-a961-4fc8-87aa-d7278e598154
+    taskid: 31d216f7-1d35-44e6-8150-a593001c76ee
     timertriggers: []
     type: condition
     view: |-
@@ -1115,4 +1163,3 @@ view: |-
 tests:
 - No tests (auto formatted)
 fromversion: 6.2.0
-description: This playbook will use the Microsoft Defender For Endpoint feature - Advanced Hunting - and will hunt for host persistence evidence.

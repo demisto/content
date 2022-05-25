@@ -19,7 +19,7 @@ inputs:
   required: false
   value: {}
 - description: Provide a list of endpoints for the Scan and Collection of investigation Package to be run on.
-  key: Endpoints ID
+  key: EndpointsID
   playbookInputQuery:
   required: false
   value: {}
@@ -28,19 +28,19 @@ inputs:
   playbookInputQuery:
   required: false
   value:
-    simple: 'False'
+    simple: 'True'
 - description: True/Fasle
   key: AutoAVScan
   playbookInputQuery:
   required: false
   value:
-    simple: 'False'
+    simple: 'True'
 - description: True/Fasle
   key: AutoAutomatedInvestigation
   playbookInputQuery:
   required: false
   value:
-    simple: 'False'
+    simple: 'True'
 name: MDE - Pro-Active Actions
 outputs: []
 starttaskid: '0'
@@ -132,13 +132,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: b6c5cea1-1aa7-4f16-8630-ab3c6a80f5e3
+      description: Auto full AV Scan process?
+      id: 146ff7a9-5009-44d8-84ec-7d003da747a0
       iscommand: false
       name: Auto full AV Scan process?
       type: condition
-      description: Check if autorun AV-Scan is requested
       version: -1
-    taskid: b6c5cea1-1aa7-4f16-8630-ab3c6a80f5e3
+    taskid: 146ff7a9-5009-44d8-84ec-7d003da747a0
     timertriggers: []
     type: condition
     view: |-
@@ -162,7 +162,7 @@ tasks:
       comment:
         simple: XSAOR - Playbook MSDE Enhanced Actions ${incident.id}
       machine_id:
-        simple: ${inputs.Endpoints ID}
+        simple: ${inputs.EndpointsID}
       scan_type:
         simple: Full
     separatecontext: false
@@ -170,13 +170,13 @@ tasks:
     task:
       brand: ''
       description: Initiate a Microsoft Defender Antivirus scan on a machine.
-      id: d774cd98-67f1-4ba9-8ad0-cd7b65cae454
+      id: 0ef1901c-a8bf-4f72-84ab-a6f6f8a6d17c
       iscommand: true
       name: Full Av Scan
       script: '|||microsoft-atp-run-antivirus-scan'
       type: regular
       version: -1
-    taskid: d774cd98-67f1-4ba9-8ad0-cd7b65cae454
+    taskid: 0ef1901c-a8bf-4f72-84ab-a6f6f8a6d17c
     timertriggers: []
     type: regular
     view: |-
@@ -205,7 +205,7 @@ tasks:
       timings:
         completeafterreplies: 1
         completeaftersla: false
-        completeafterv2: false
+        completeafterv2: true
         retriescount: 2
         retriesinterval: 360
       to:
@@ -220,13 +220,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: e6f4f5fa-e3cb-439f-8478-02c76c24273f
+      description: Approve AV Scan
+      id: 57aef234-6830-435b-8f3c-2dc3ec492d71
       iscommand: false
       name: Approve AV Scan
       type: condition
-      description: Ask for manual approval on AV-Scan
       version: -1
-    taskid: e6f4f5fa-e3cb-439f-8478-02c76c24273f
+    taskid: 57aef234-6830-435b-8f3c-2dc3ec492d71
     timertriggers: []
     type: condition
     view: |-
@@ -324,13 +324,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: 1b1f18da-f29a-4752-8fe0-b41ff0e180b8
+      description: Auto collect investigation package from the Endpoint?
+      id: 60bed7b5-4233-4000-84ff-5724f1c9e763
       iscommand: false
       name: Auto collect investigation package from the Endpoint?
       type: condition
-      description: Check if auto-collect investigation package from endpoint is requested
       version: -1
-    taskid: 1b1f18da-f29a-4752-8fe0-b41ff0e180b8
+    taskid: 60bed7b5-4233-4000-84ff-5724f1c9e763
     timertriggers: []
     type: condition
     view: |-
@@ -359,7 +359,7 @@ tasks:
       timings:
         completeafterreplies: 1
         completeaftersla: false
-        completeafterv2: false
+        completeafterv2: true
         retriescount: 2
         retriesinterval: 360
       to:
@@ -374,13 +374,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: 47e0164b-4b8e-4171-895a-5ab49f628db7
+      description: Approve Investigation package collection
+      id: 3571d8b0-e922-49c9-861b-c3531039d68f
       iscommand: false
       name: Approve Investigation package collection
-      description: Manual approve Investigation Package collection.
       type: condition
       version: -1
-    taskid: 47e0164b-4b8e-4171-895a-5ab49f628db7
+    taskid: 3571d8b0-e922-49c9-861b-c3531039d68f
     timertriggers: []
     type: condition
     view: |-
@@ -503,13 +503,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: df719033-bd04-4e4b-89f6-76c344c9501f
+      description: Define Additional Actions
+      id: 62086f36-514e-4377-8359-b1093e27d579
       iscommand: false
       name: Define Additional Actions
-      description: Manual define the path that you would like to go through
       type: collection
       version: -1
-    taskid: df719033-bd04-4e4b-89f6-76c344c9501f
+    taskid: 62086f36-514e-4377-8359-b1093e27d579
     timertriggers: []
     type: collection
     view: |-
@@ -527,6 +527,8 @@ tasks:
             value:
               simple: inputs.Task
           operator: isNotEmpty
+          right:
+            value: {}
       label: Input
     id: '15'
     ignoreworker: false
@@ -545,13 +547,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: fff1aca9-3fa5-42e9-837d-d1829ddccfad
+      description: Check Auto Tasks
+      id: 670dbea3-d90f-4594-8a7e-26cddcdc9375
       iscommand: false
       name: Check Auto Tasks
-      description: Check if there are any pre-defined actions for this playbook
       type: condition
       version: -1
-    taskid: fff1aca9-3fa5-42e9-837d-d1829ddccfad
+    taskid: 670dbea3-d90f-4594-8a7e-26cddcdc9375
     timertriggers: []
     type: condition
     view: |-
@@ -598,13 +600,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: 261af7d9-9aa1-41c5-8bdc-b49aed8a94a8
+      description: Check Auto Tasks
+      id: 011719ce-2328-464e-8b37-bba2cb302c96
       iscommand: false
       name: Check Auto Tasks
-      description: Check if the automated-investigation is selected
       type: condition
       version: -1
-    taskid: 261af7d9-9aa1-41c5-8bdc-b49aed8a94a8
+    taskid: 011719ce-2328-464e-8b37-bba2cb302c96
     timertriggers: []
     type: condition
     view: |-
@@ -633,19 +635,19 @@ tasks:
       AutoCollectinvestigationPackege:
         simple: 'True'
       MachineIDs:
-        simple: ${inputs.Endpoints ID}
+        simple: ${inputs.EndpointsID}
     separatecontext: true
     skipunavailable: false
     task:
       brand: ''
       description: "This playbook aims to simplify the collection of investigation package retrieval into XSOAR from only supported machines (according to the article -  https://docs.microsoft.com/en-us/microsoft-365/security/defender-endpoint/collect-investigation-package?view=o365-worldwide). \n\nThe playbook receives information regarding the target devices (by hostnames, IPs, device ids), validates that those devices exist, and retrieves the collection package from those machines into the XSOAR console. Note that this action may time and the average size of such a package is around ~15 MB."
-      id: 97e4ec58-ea1c-4455-8e0d-61a88f894fa4
+      id: 2bd6599b-2d54-4fa3-80b7-576dfdb582dd
       iscommand: false
       name: 8d6603be-227b-48fb-8f77-0b0ff3d572db
       playbookId: 8d6603be-227b-48fb-8f77-0b0ff3d572db
       type: playbook
       version: -1
-    taskid: 97e4ec58-ea1c-4455-8e0d-61a88f894fa4
+    taskid: 2bd6599b-2d54-4fa3-80b7-576dfdb582dd
     timertriggers: []
     type: playbook
     view: |-
@@ -704,7 +706,7 @@ tasks:
       timings:
         completeafterreplies: 1
         completeaftersla: false
-        completeafterv2: false
+        completeafterv2: true
         retriescount: 2
         retriesinterval: 360
       to:
@@ -719,13 +721,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: 8aa96727-5391-4daa-8056-f4ecced156a4
+      description: Approve Automated Investigation
+      id: eaabaf25-1745-4eab-8654-1456a81a5878
       iscommand: false
       name: Approve Automated Investigation
-      description: Manual approve automated invesitgation task request
       type: condition
       version: -1
-    taskid: 8aa96727-5391-4daa-8056-f4ecced156a4
+    taskid: eaabaf25-1745-4eab-8654-1456a81a5878
     timertriggers: []
     type: condition
     view: |-
@@ -793,13 +795,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: f409110d-e845-41f3-80a1-e5d7be84e100
+      description: Auto-run automated investigation?
+      id: f90b6e8d-118a-4063-8923-bb5284950c19
       iscommand: false
       name: Auto-run automated investigation?
-      description: Check if the auto-run automated investigation request is enabled
       type: condition
       version: -1
-    taskid: f409110d-e845-41f3-80a1-e5d7be84e100
+    taskid: f90b6e8d-118a-4063-8923-bb5284950c19
     timertriggers: []
     type: condition
     view: |-
@@ -823,19 +825,19 @@ tasks:
       comment:
         simple: 'XSOAR MSDE Investigation playbook - Incident # ${incident.id}'
       machine_id:
-        simple: ${Endpoint.ID}
+        simple: ${inputs.EndpointsID}
     separatecontext: false
     skipunavailable: false
     task:
       brand: ''
       description: Starts an automated investigation on a machine.
-      id: a3df0212-aab3-4e19-8620-d2e3bb24b900
+      id: 2ffeffb2-59a4-4a0d-89fe-89f611207b74
       iscommand: true
       name: Start Automated Investigation On Endpoint
       script: '|||microsoft-atp-start-investigation'
       type: regular
       version: -1
-    taskid: a3df0212-aab3-4e19-8620-d2e3bb24b900
+    taskid: 2ffeffb2-59a4-4a0d-89fe-89f611207b74
     timertriggers: []
     type: regular
     view: |-
@@ -882,13 +884,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: a969bf39-f8b4-4834-8d5a-d745b1846972
+      description: Check Auto Tasks
+      id: 7961044f-b955-40e1-8dff-28b9187d7ae4
       iscommand: false
       name: Check Auto Tasks
-      description: Check if AV-scan requested by the input
       type: condition
       version: -1
-    taskid: a969bf39-f8b4-4834-8d5a-d745b1846972
+    taskid: 7961044f-b955-40e1-8dff-28b9187d7ae4
     timertriggers: []
     type: condition
     view: |-
@@ -935,13 +937,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: ab94b92a-08c7-45cf-85f7-e4a990e188bc
+      description: Check Auto Tasks
+      id: 61bd37a7-3faa-4872-88f1-2fc38f03efcf
       iscommand: false
       name: Check Auto Tasks
       type: condition
-      description: Check if Collect Investigation Package is requeted by input.
       version: -1
-    taskid: ab94b92a-08c7-45cf-85f7-e4a990e188bc
+    taskid: 61bd37a7-3faa-4872-88f1-2fc38f03efcf
     timertriggers: []
     type: condition
     view: |-
