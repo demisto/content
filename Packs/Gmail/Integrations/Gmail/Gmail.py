@@ -146,8 +146,8 @@ def get_service(serviceName, version, additional_scopes=None, delegated_user=Non
     proxies = handle_proxy()
     if PROXY or DISABLE_SSL:
         http_client = credentials.authorize(get_http_client_with_proxy(proxies))
-        return discovery.build(serviceName, version, http=http_client)
-    return discovery.build(serviceName, version, cache_discovery=False ,credentials=credentials)
+        return discovery.build(serviceName, version, cache_discovery=False, http=http_client)
+    return discovery.build(serviceName, version, cache_discovery=False, credentials=credentials)
 
 
 def parse_mail_parts(parts):
@@ -1081,17 +1081,21 @@ def get_user_tokens(user_id):
 
 
 def search_all_mailboxes():
-    next_page_token = None
+    """
+    Searches and returns all email information (including content) of all users,
+    Supports search by specific queries.
+    """
+    users_next_page_token = None
     service = get_service('admin', 'directory_v1')
     while True:
         command_args = {
             'maxResults': 100,
             'domain': ADMIN_EMAIL.split('@')[1],  # type: ignore
-            'pageToken': next_page_token
+            'pageToken': users_next_page_token
         }
 
         result = service.users().list(**command_args).execute()
-        next_page_token = result.get('nextPageToken')
+        users_next_page_token = result.get('nextPageToken')
 
         with concurrent.futures.ThreadPoolExecutor() as executor:
             futures = []
@@ -1100,7 +1104,7 @@ def search_all_mailboxes():
             entries = [future.result() for future in concurrent.futures.as_completed(futures)]
 
         # if these are the final result push - return them
-        if next_page_token is None:
+        if users_next_page_token is None:
             entries.append("Search completed")
             return entries
 
@@ -1109,6 +1113,9 @@ def search_all_mailboxes():
 
 
 def search_command(mailbox=None):
+    """
+    Searches for Gmail records of a specified Google user.
+    """
     args = demisto.args()
 
     user_id = args.get('user-id') if mailbox is None else mailbox
