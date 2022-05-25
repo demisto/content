@@ -90,5 +90,3 @@ Manual command to fetch events and display them.
 >|Action|CloudAppInstance|ItemName|ItemType|ItemUniqueId|Location|LogType|Serial|Severity|SourceIp|TargetName|TargetType|Timestamp|User|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| login | Box 1 | test | user | 1234 | Tel Aviv, Central District, Israel | activity_monitoring |  | 1.0 | 1.1.1.1 |  |  | 2022-05-25T08:32:43Z | test@gmail.com |
->| login | Box 1 | test | user | 1234 | Tel Aviv, Central District, Israel | activity_monitoring |  | 1.0 | 1.1.1.1 |  |  | 2022-05-25T08:32:08Z |  test@gmail.com |
-
