@@ -254,7 +254,9 @@ class EntryType(object):
     IMAGE = 7
     PLAYGROUND_ERROR = 8
     ENTRY_INFO_FILE = 9
+    VIDEO_FILE = 10
     WARNING = 11
+    STATIC_VIDEO_FILE = 12
     MAP_ENTRY_TYPE = 15
     WIDGET = 17
 
@@ -2714,6 +2716,19 @@ class Common(object):
         def to_context(self):
             pass
 
+        @staticmethod
+        def create_context_table(data):
+            """
+            Gets a list of items of a specific class (such as CommunityNotes, Publications etc) and returns a context
+            list.
+            """
+            table = []
+
+            for item in data:
+                table.append(item.to_context())
+
+            return table
+
     class DBotScore(object):
         """
         DBotScore class
@@ -2979,12 +2994,25 @@ class Common(object):
         :type relationships: ``list of EntityRelationship``
         :param relationships: List of relationships of the indicator.
 
+        :type blocked: ``boolean``
+        :param blocked: Is the indicator blocked.
+
+        :type description: ``str``
+        :param description: A general description of the indicator
+
+        :type stix_id: ``str``
+        :param stix_id: The STIX id representing the indicator
+
+        :type whois_records: ``WhoisRecord``
+        :param whois_records: List of whois records
+
         :type dbot_score: ``DBotScore``
         :param dbot_score: If IP has a score then create and set a DBotScore object.
 
         :return: None
         :rtype: ``None``
         """
+
         CONTEXT_PATH = 'IP(val.Address && val.Address == obj.Address)'
 
         def __init__(self, ip, dbot_score, asn=None, as_owner=None, region=None, port=None, internal=None,
@@ -2995,13 +3023,30 @@ class Common(object):
                      hostname=None, geo_latitude=None, geo_longitude=None,
                      geo_country=None, geo_description=None, detection_engines=None, positive_engines=None,
                      organization_name=None, organization_type=None, feed_related_indicators=None, tags=None,
-                     malware_family=None, relationships=None):
+                     malware_family=None, relationships=None, blocked=None, description=None, stix_id=None,
+                     whois_records=None):
+
+            # Main value of the indicator
             self.ip = ip
+
+            # Core custom fields - IP
+            self.blocked = blocked
+            self.community_notes = community_notes
+            self.description = description
+            self.tags = tags
+            self.geo_country = geo_country
+            self.geo_latitude = geo_latitude
+            self.geo_longitude = geo_longitude
+            self.internal = internal
+            self.stix_id = stix_id
+            self.traffic_light_protocol = traffic_light_protocol
+            self.whois_records = whois_records
+
+            # Other custom fields
             self.asn = asn
             self.as_owner = as_owner
             self.region = region
             self.port = port
-            self.internal = internal
             self.updated_date = updated_date
             self.registrar_abuse_name = registrar_abuse_name
             self.registrar_abuse_address = registrar_abuse_address
@@ -3010,21 +3055,15 @@ class Common(object):
             self.registrar_abuse_phone = registrar_abuse_phone
             self.registrar_abuse_email = registrar_abuse_email
             self.campaign = campaign
-            self.traffic_light_protocol = traffic_light_protocol
-            self.community_notes = community_notes
             self.publications = publications
             self.threat_types = threat_types
             self.hostname = hostname
-            self.geo_latitude = geo_latitude
-            self.geo_longitude = geo_longitude
-            self.geo_country = geo_country
             self.geo_description = geo_description
             self.detection_engines = detection_engines
             self.positive_engines = positive_engines
             self.organization_name = organization_name
             self.organization_type = organization_type
             self.feed_related_indicators = feed_related_indicators
-            self.tags = tags
             self.malware_family = malware_family
             self.relationships = relationships
 
@@ -3037,6 +3076,9 @@ class Common(object):
             ip_context = {
                 'Address': self.ip
             }
+
+            if self.blocked:
+                ip_context['Blocked'] = self.blocked
 
             if self.asn:
                 ip_context['ASN'] = self.asn
@@ -3052,6 +3094,9 @@ class Common(object):
 
             if self.internal:
                 ip_context['Internal'] = self.internal
+
+            if self.stix_id:
+                ip_context['STIXID'] = self.stix_id
 
             if self.updated_date:
                 ip_context['UpdatedDate'] = self.updated_date
@@ -3075,26 +3120,23 @@ class Common(object):
             if self.campaign:
                 ip_context['Campaign'] = self.campaign
 
+            if self.description:
+                ip_context['Description'] = self.description
+
             if self.traffic_light_protocol:
                 ip_context['TrafficLightProtocol'] = self.traffic_light_protocol
 
             if self.community_notes:
-                community_notes = []
-                for community_note in self.community_notes:
-                    community_notes.append(community_note.to_context())
-                ip_context['CommunityNotes'] = community_notes
+                ip_context['CommunityNotes'] = self.create_context_table(self.community_notes)
 
             if self.publications:
-                publications = []
-                for publication in self.publications:
-                    publications.append(publication.to_context())
-                ip_context['Publications'] = publications
+                ip_context['Publications'] = self.create_context_table(self.publications)
 
             if self.threat_types:
-                threat_types = []
-                for threat_type in self.threat_types:
-                    threat_types.append(threat_type.to_context())
-                ip_context['ThreatTypes'] = threat_types
+                ip_context['ThreatTypes'] = self.create_context_table(self.threat_types)
+
+            if self.whois_records:
+                ip_context['WhoisRecords'] = self.create_context_table(self.whois_records)
 
             if self.hostname:
                 ip_context['Hostname'] = self.hostname
@@ -3127,10 +3169,7 @@ class Common(object):
                 ip_context['PositiveDetections'] = self.positive_engines
 
             if self.feed_related_indicators:
-                feed_related_indicators = []
-                for feed_related_indicator in self.feed_related_indicators:
-                    feed_related_indicators.append(feed_related_indicator.to_context())
-                ip_context['FeedRelatedIndicators'] = feed_related_indicators
+                ip_context['FeedRelatedIndicators'] = self.create_context_table(self.feed_related_indicators)
 
             if self.tags:
                 ip_context['Tags'] = self.tags
@@ -3223,6 +3262,91 @@ class Common(object):
                 'value': self.value,
                 'type': self.indicator_type,
                 'description': self.description
+            }
+
+    class ExternalReference(object):
+        """
+        ExternalReference class
+        Class to represent a single instance of an external reference for an indicator type.
+
+        :type source_name: ``str``
+        :param source_name: The name of the source referenced.
+
+        :type source_id: ``str``
+        :param source_id: The ID of the object in the external source.
+
+        :return: None
+        :rtype: ``None``
+        """
+
+        def __init__(self, source_name=None, source_id=None):
+            self.source_name = source_name
+            self.source_id = source_id
+
+        def to_context(self):
+            return {
+                'sourcename': self.source_name,
+                'sourceid': self.source_id,
+            }
+
+    class Certificates(object):
+        """
+        Certificates class
+        Class to represent a single instance of a certificate for an indicator type.
+
+        :type issued_to: ``str``
+        :param issued_to: Who was the certificated issued to
+
+        :type issued_by: ``str``
+        :param issued_by: Who issued the certificate
+
+        :type valid_from: ``str``
+        :param valid_from: Since when is the certificate valid
+
+        :type valid_to: ``str``
+        :param valid_to: Till when is the certificate valid
+
+        :return: None
+        :rtype: ``None``
+        """
+
+        def __init__(self, issued_to=None, issued_by=None, valid_from=None, valid_to=None):
+            self.issued_to = issued_to
+            self.issued_by = issued_by
+            self.valid_from = valid_from
+            self.valid_to = valid_to
+
+        def to_context(self):
+            return {
+                'issuedto': self.issued_to,
+                'issuedby': self.issued_by,
+                'validfrom': self.valid_from,
+                'validto': self.valid_to
+            }
+
+    class Hash(object):
+        """
+        Hash class
+        Class to represent a single instance of a hash for an indicator type.
+
+        :type hash_type: ``str``
+        :param hash_type: The type of the hash.
+
+        :type hash_value: ``str``
+        :param hash_value: The value of the hash.
+
+        :return: None
+        :rtype: ``None``
+        """
+
+        def __init__(self, hash_type=None, hash_value=None):
+            self.hash_type = hash_type
+            self.hash_value = hash_value
+
+        def to_context(self):
+            return {
+                'type': self.hash_type,
+                'value': self.hash_value,
             }
 
     class CommunityNotes(object):
@@ -3339,6 +3463,66 @@ class Common(object):
                 'threatcategoryconfidence': self.threat_category_confidence,
             }
 
+    class WhoisRecord(object):
+        """
+        WhoisRecord class
+        Class to represent a single instance of a record for an indicator type.
+
+        :type whois_record_type: ``str``
+        :param whois_record_type: The type of the whois record.
+
+        :type whois_record_value: ``str``
+        :param whois_record_value: The value of the whois record.
+
+        :type whois_record_date: ``Timestamp``
+        :param whois_record_date: when was the whois record fetched
+
+        :return: None
+        :rtype: ``None``
+        """
+
+        def __init__(self, whois_record_type=None, whois_record_value=None, whois_record_date=None):
+            self.whois_record_type = whois_record_type
+            self.whois_record_value = whois_record_value
+            self.whois_record_date = whois_record_date
+
+        def to_context(self):
+            return {
+                'key': self.whois_record_type,
+                'value': self.whois_record_value,
+                'date': self.whois_record_date
+            }
+
+    class DNSRecord(object):
+        """
+        DNSRecord class
+        Class to represent a single instance of a record for an indicator type.
+
+        :type dns_record_type: ``str``
+        :param dns_record_type: The type of the DNS record.
+
+        :type dns_record_data: ``str``
+        :param dns_record_data: The value of the whois record.
+
+        :type dns_ttl: ``str``
+        :param dns_ttl: The record TTL
+
+        :return: None
+        :rtype: ``None``
+        """
+
+        def __init__(self, dns_record_type=None, dns_ttl=None, dns_record_data=None):
+            self.dns_record_type = dns_record_type
+            self.dns_ttl = dns_ttl
+            self.dns_record_data = dns_record_data
+
+        def to_context(self):
+            return {
+                'type': self.dns_record_type,
+                'ttl': self.dns_ttl,
+                'data': self.dns_record_data
+            }
+
     class File(Indicator):
         """
         File indicator class - https://xsoar.pan.dev/docs/integrations/context-standards-mandatory#file
@@ -3438,6 +3622,18 @@ class Common(object):
         :type dbot_score: ``DBotScore``
         :param dbot_score: If file has a score then create and set a DBotScore object
 
+        :type creation_date: ``str``
+        :param creation_date: The date the file was created.
+
+        :type description: ``str``
+        :param description: File description.
+
+        :type hashes: ``Hash``
+        :param hashes: List of hashes associated with the file.
+
+        :type stix_id: ``str``
+        :param stix_id: File assigned STIX ID.
+
         :rtype: ``None``
         :return: None
         """
@@ -3451,125 +3647,162 @@ class Common(object):
                      product_name=None, digital_signature__publisher=None, signature=None, actor=None, tags=None,
                      feed_related_indicators=None, malware_family=None, imphash=None, quarantined=None, campaign=None,
                      associated_file_names=None, traffic_light_protocol=None, organization=None, community_notes=None,
-                     publications=None, threat_types=None, behaviors=None, relationships=None):
+                     publications=None, threat_types=None, behaviors=None, relationships=None,
+                     creation_date=None, description=None, hashes=None, stix_id=None):
 
-            self.name = name
-            self.entry_id = entry_id
-            self.size = size
+            # Main value of a file (Hashes)
             self.md5 = md5
+            self.imphash = imphash
             self.sha1 = sha1
             self.sha256 = sha256
             self.sha512 = sha512
             self.ssdeep = ssdeep
+            self.hashes = hashes
+
+            # Core custom fields for File type
+            self.associated_file_names = associated_file_names
+            self.community_notes = community_notes
+            self.creation_date = creation_date
+            self.description = description
             self.extension = extension
             self.file_type = file_type
-            self.hostname = hostname
             self.path = path
+            self.quarantined = quarantined
+            self.size = size
+            self.stix_id = stix_id
+            self.tags = tags
+            self.traffic_light_protocol = traffic_light_protocol
+
+            # Other custom fields
+            self.name = name
+            self.entry_id = entry_id
+            self.hostname = hostname
             self.company = company
             self.product_name = product_name
             self.digital_signature__publisher = digital_signature__publisher
             self.signature = signature
             self.actor = actor
-            self.tags = tags
+            self.organization = organization
             self.feed_related_indicators = feed_related_indicators
             self.malware_family = malware_family
             self.campaign = campaign
-            self.traffic_light_protocol = traffic_light_protocol
-            self.community_notes = community_notes
             self.publications = publications
             self.threat_types = threat_types
-            self.imphash = imphash
-            self.quarantined = quarantined
-            self.organization = organization
-            self.associated_file_names = associated_file_names
             self.behaviors = behaviors
-            self.relationships = relationships
 
+            # XSOAR Fields
+            self.relationships = relationships
             self.dbot_score = dbot_score
 
         def to_context(self):
-            file_context = {}
+            file_context = {'Hashes': []}  # type: dict
 
             if self.name:
                 file_context['Name'] = self.name
+
+            if self.hashes:
+                file_context['Hashes'] = self.create_context_table(self.hashes)
+
             if self.entry_id:
                 file_context['EntryID'] = self.entry_id
+
             if self.size:
                 file_context['Size'] = self.size
+
             if self.md5:
                 file_context['MD5'] = self.md5
+                file_context['Hashes'].append({'type': 'MD5',
+                                               'value': self.md5})
+
             if self.sha1:
                 file_context['SHA1'] = self.sha1
+                file_context['Hashes'].append({'type': 'SHA1',
+                                               'value': self.sha1})
+
             if self.sha256:
                 file_context['SHA256'] = self.sha256
+                file_context['Hashes'].append({'type': 'SHA256',
+                                               'value': self.sha256})
+
             if self.sha512:
                 file_context['SHA512'] = self.sha512
+                file_context['Hashes'].append({'type': 'SHA512',
+                                               'value': self.sha512})
+
             if self.ssdeep:
                 file_context['SSDeep'] = self.ssdeep
+                file_context['Hashes'].append({'type': 'SSDeep',
+                                               'value': self.ssdeep})
+
             if self.extension:
                 file_context['Extension'] = self.extension
+
             if self.file_type:
                 file_context['Type'] = self.file_type
+
             if self.hostname:
                 file_context['Hostname'] = self.hostname
+
             if self.path:
                 file_context['Path'] = self.path
+
             if self.company:
                 file_context['Company'] = self.company
+
             if self.product_name:
                 file_context['ProductName'] = self.product_name
+
             if self.digital_signature__publisher:
                 file_context['DigitalSignature'] = {
                     'Published': self.digital_signature__publisher
                 }
+
             if self.signature:
                 file_context['Signature'] = self.signature.to_context()
+
             if self.actor:
                 file_context['Actor'] = self.actor
+
             if self.tags:
                 file_context['Tags'] = self.tags
 
             if self.feed_related_indicators:
-                feed_related_indicators = []
-                for feed_related_indicator in self.feed_related_indicators:
-                    feed_related_indicators.append(feed_related_indicator.to_context())
-                file_context['FeedRelatedIndicators'] = feed_related_indicators
+                file_context['FeedRelatedIndicators'] = self.create_context_table(self.feed_related_indicators)
 
             if self.malware_family:
                 file_context['MalwareFamily'] = self.malware_family
 
             if self.campaign:
                 file_context['Campaign'] = self.campaign
+
             if self.traffic_light_protocol:
                 file_context['TrafficLightProtocol'] = self.traffic_light_protocol
+
             if self.community_notes:
-                community_notes = []
-                for community_note in self.community_notes:
-                    community_notes.append(community_note.to_context())
-                file_context['CommunityNotes'] = community_notes
+                file_context['CommunityNotes'] = self.create_context_table(self.community_notes)
+
             if self.publications:
-                publications = []
-                for publication in self.publications:
-                    publications.append(publication.to_context())
-                file_context['Publications'] = publications
+                file_context['Publications'] = self.create_context_table(self.publications)
+
             if self.threat_types:
-                threat_types = []
-                for threat_type in self.threat_types:
-                    threat_types.append(threat_type.to_context())
-                file_context['ThreatTypes'] = threat_types
+                file_context['ThreatTypes'] = self.create_context_table(self.threat_types)
+
             if self.imphash:
                 file_context['Imphash'] = self.imphash
+                file_context['Hashes'].append({'type': 'Imphash',
+                                               'value': self.imphash})
+
             if self.quarantined:
                 file_context['Quarantined'] = self.quarantined
+
             if self.organization:
                 file_context['Organization'] = self.organization
+
             if self.associated_file_names:
                 file_context['AssociatedFileNames'] = self.associated_file_names
+
             if self.behaviors:
-                behaviors = []
-                for behavior in self.behaviors:
-                    behaviors.append(behavior.to_context())
-                file_context['Behavior'] = behaviors
+                file_context['Behavior'] = self.create_context_table(self.behaviors)
 
             if self.dbot_score and self.dbot_score.score == Common.DBotScore.BAD:
                 file_context['Malicious'] = {
@@ -3596,44 +3829,102 @@ class Common(object):
         CVE indicator class - https://xsoar.pan.dev/docs/integrations/context-standards-mandatory#cve
         :type id: ``str``
         :param id: The ID of the CVE, for example: "CVE-2015-1653".
+
         :type cvss: ``str``
         :param cvss: The CVSS of the CVE, for example: "10.0".
+
         :type published: ``str``
         :param published: The timestamp of when the CVE was published.
+
         :type modified: ``str``
         :param modified: The timestamp of when the CVE was last modified.
+
         :type description: ``str``
         :param description: A description of the CVE.
+
         :type relationships: ``list of EntityRelationship``
         :param relationships: List of relationships of the indicator.
+
+        :type stix_id: ``str``
+        :param stix_id: CVE sitx id.
+
+        :type cvss_version: ``str``
+        :param cvss_version: The CVE CVSS version used.
+
+        :type cvss_score: ``str``
+        :param cvss_score: The CVE CVSS Score.
+
+        :type cvss_vector: ``str``
+        :param cvss_vector: CVE full cvss vector.
+
+        :type cvss_table: ``str``
+        :param cvss_table: CVE CVSS Table used to fill the different parts of the vector.
+
+        :type community_notes: ``str``
+        :param community_notes: Community notes about the CVE.
+
+        :type tags: ``str``
+        :param tags: Tags attached to the CVE.
+
+        :type traffic_light_protocol: ``str``
+        :param traffic_light_protocol: The CVE tlp color.
+
         :return: None
         :rtype: ``None``
         """
         CONTEXT_PATH = 'CVE(val.ID && val.ID == obj.ID)'
 
-        def __init__(self, id, cvss, published, modified, description, relationships=None):
+        def __init__(self, id, cvss, published, modified, description, relationships=None, stix_id=None,
+                     cvss_version=None, cvss_score=None, cvss_vector=None, cvss_table=None, community_notes=None,
+                     tags=None, traffic_light_protocol=None):
             # type (str, str, str, str, str) -> None
 
+            # Main indicator value
             self.id = id
+
+            # Core custom fields
+            self.community_notes = community_notes
             self.cvss = cvss
-            self.published = published
-            self.modified = modified
+            self.cvss_version = cvss_version
+            self.cvss_score = cvss_score
+            self.cvss_vector = cvss_vector
+            self.cvss_table = cvss_table
             self.description = description
+            self.modified = modified
+            self.published = published
+            self.stix_id = stix_id
+            self.tags = tags
+            self.traffic_light_protocol = traffic_light_protocol
+
+            # XSOAR Fields
+            self.relationships = relationships
             self.dbot_score = Common.DBotScore(
                 indicator=id,
                 indicator_type=DBotScoreType.CVE,
                 integration_name=None,
                 score=Common.DBotScore.NONE
             )
-            self.relationships = relationships
 
         def to_context(self):
             cve_context = {
-                'ID': self.id
+                'ID': self.id,
+                'CVSS': {},
             }
 
             if self.cvss:
-                cve_context['CVSS'] = self.cvss
+                cve_context['CVSS']['Score'] = self.cvss
+
+            elif self.cvss_score:
+                cve_context['CVSS']['Score'] = self.cvss_score
+
+            if self.cvss_version:
+                cve_context['CVSS']['Version'] = self.cvss_version
+
+            if self.cvss_vector:
+                cve_context['CVSS']['Vector'] = self.cvss_vector
+
+            if self.cvss_table:
+                cve_context['CVSS']['Table'] = self.cvss_table
 
             if self.published:
                 cve_context['Published'] = self.published
@@ -3644,10 +3935,22 @@ class Common(object):
             if self.description:
                 cve_context['Description'] = self.description
 
+            if self.stix_id:
+                cve_context['STIXID'] = self.stix_id
+
             if self.relationships:
                 relationships_context = [relationship.to_context() for relationship in self.relationships if
                                          relationship.to_context()]
                 cve_context['Relationships'] = relationships_context
+
+            if self.community_notes:
+                cve_context['CommunityNotes'] = self.create_context_table(self.community_notes)
+
+            if self.tags:
+                cve_context['Tags'] = self.tags
+
+            if self.traffic_light_protocol:
+                cve_context['TrafficLightProtocol'] = self.traffic_light_protocol
 
             ret_value = {
                 Common.CVE.CONTEXT_PATH: cve_context
@@ -3661,24 +3964,58 @@ class Common(object):
     class EMAIL(Indicator):
         """
         EMAIL indicator class
+
         :type address ``str``
         :param address: The email's address.
+
         :type domain: ``str``
         :param domain: The domain of the Email.
+
         :type blocked: ``bool``
         :param blocked: Whether the email address is blocked.
+
         :type relationships: ``list of EntityRelationship``
         :param relationships: List of relationships of the indicator.
+
+        :type description: ``str``
+        :param description: Description of the email address.
+
+        :type internal: ``bool``
+        :param internal: Is the email an internal address.
+
+        :type stix_id: ``str``
+        :param stix_id: The email assigned STIX ID.
+
+        :type tags: ``str``
+        :param tags: tags relevant to the email.
+
+        :type traffic_light_protocol: ``str``
+        :param traffic_light_protocol: The email address tlp color.
+
         :return: None
         :rtype: ``None``
         """
         CONTEXT_PATH = 'Email(val.Address && val.Address == obj.Address)'
 
-        def __init__(self, address, dbot_score, domain=None, blocked=None, relationships=None):
+        def __init__(self, address, dbot_score, domain=None, blocked=None, relationships=None, description=None,
+                     internal=None, stix_id=None, tags=None, traffic_light_protocol=None):
             # type (str, str, bool) -> None
+
+            # Main indicator value
             self.address = address
-            self.domain = domain
+
+            # Core custom fields
             self.blocked = blocked
+            self.description = description
+            self.internal = internal
+            self.stix_id = stix_id
+            self.tags = tags
+            self.traffic_light_protocol = traffic_light_protocol
+
+            # Deprecated
+            self.domain = domain
+
+            # XSOAR Fields
             self.dbot_score = dbot_score
             self.relationships = relationships
 
@@ -3686,10 +4023,27 @@ class Common(object):
             email_context = {
                 'Address': self.address
             }
-            if self.domain:
-                email_context['Domain'] = self.domain
+
             if self.blocked:
                 email_context['Blocked'] = self.blocked
+
+            if self.domain:
+                email_context['Domain'] = self.domain
+
+            if self.description:
+                email_context['Description'] = self.description
+
+            if self.internal:
+                email_context['Internal'] = self.internal
+
+            if self.stix_id:
+                email_context['STIXID'] = self.stix_id
+
+            if self.tags:
+                email_context['Tags'] = self.tags
+
+            if self.traffic_light_protocol:
+                email_context['TrafficLightProtocol'] = self.traffic_light_protocol
 
             if self.relationships:
                 relationships_context = [relationship.to_context() for relationship in self.relationships if
@@ -3766,6 +4120,18 @@ class Common(object):
         :type dbot_score: ``DBotScore``
         :param dbot_score: If URL has reputation then create DBotScore object
 
+        :type blocked: ``bool``
+        :param blocked: Is the URL blocked.
+
+        :type certificates: ``Certificates``
+        :param certificates: A list of certificates associated with the url.
+
+        :type description: ``str``
+        :param description: A description of the URL.
+
+        :type stix_id: ``str``
+        :param stix_id: The URL STIX ID.
+
         :return: None
         :rtype: ``None``
         """
@@ -3774,33 +4140,57 @@ class Common(object):
         def __init__(self, url, dbot_score, detection_engines=None, positive_detections=None, category=None,
                      feed_related_indicators=None, tags=None, malware_family=None, port=None, internal=None,
                      campaign=None, traffic_light_protocol=None, threat_types=None, asn=None, as_owner=None,
-                     geo_country=None, organization=None, community_notes=None, publications=None, relationships=None):
+                     geo_country=None, organization=None, community_notes=None, publications=None, relationships=None,
+                     blocked=None, certificates=None, description=None, stix_id=None):
+
+            # Main indicator value
             self.url = url
+
+            # Core custom fields
+            self.blocked = blocked
+            self.certificates = certificates
+            self.community_notes = community_notes
+            self.description = description
+            self.internal = internal
+            self.stix_id = stix_id
+            self.tags = tags
+            self.traffic_light_protocol = traffic_light_protocol
+
+            # Additional custom fields
             self.detection_engines = detection_engines
             self.positive_detections = positive_detections
             self.category = category
             self.feed_related_indicators = feed_related_indicators
-            self.tags = tags
             self.malware_family = malware_family
             self.port = port
-            self.internal = internal
             self.campaign = campaign
-            self.traffic_light_protocol = traffic_light_protocol
             self.threat_types = threat_types
             self.asn = asn
             self.as_owner = as_owner
             self.geo_country = geo_country
             self.organization = organization
-            self.community_notes = community_notes
             self.publications = publications
-            self.relationships = relationships
 
+            # XSOAR Fields
+            self.relationships = relationships
             self.dbot_score = dbot_score
 
         def to_context(self):
             url_context = {
                 'Data': self.url
             }
+
+            if self.blocked:
+                url_context['Blocked'] = self.blocked
+
+            if self.certificates:
+                url_context['Certificates'] = self.create_context_table(self.certificates)
+
+            if self.description:
+                url_context['Description'] = self.description
+
+            if self.stix_id:
+                url_context['STIXID'] = self.stix_id
 
             if self.detection_engines is not None:
                 url_context['DetectionEngines'] = self.detection_engines
@@ -3812,10 +4202,7 @@ class Common(object):
                 url_context['Category'] = self.category
 
             if self.feed_related_indicators:
-                feed_related_indicators = []
-                for feed_related_indicator in self.feed_related_indicators:
-                    feed_related_indicators.append(feed_related_indicator.to_context())
-                url_context['FeedRelatedIndicators'] = feed_related_indicators
+                url_context['FeedRelatedIndicators'] = self.create_context_table(self.feed_related_indicators)
 
             if self.tags:
                 url_context['Tags'] = self.tags
@@ -3825,35 +4212,36 @@ class Common(object):
 
             if self.port:
                 url_context['Port'] = self.port
+
             if self.internal:
                 url_context['Internal'] = self.internal
+
             if self.campaign:
                 url_context['Campaign'] = self.campaign
+
             if self.traffic_light_protocol:
                 url_context['TrafficLightProtocol'] = self.traffic_light_protocol
+
             if self.threat_types:
-                threat_types = []
-                for threat_type in self.threat_types:
-                    threat_types.append(threat_type.to_context())
-                url_context['ThreatTypes'] = threat_types
+                url_context['ThreatTypes'] = self.create_context_table(self.threat_types)
+
             if self.asn:
                 url_context['ASN'] = self.asn
+
             if self.as_owner:
                 url_context['ASOwner'] = self.as_owner
+
             if self.geo_country:
                 url_context['Geo'] = {'Country': self.geo_country}
+
             if self.organization:
                 url_context['Organization'] = self.organization
+
             if self.community_notes:
-                community_notes = []
-                for community_note in self.community_notes:
-                    community_notes.append(community_note.to_context())
-                url_context['CommunityNotes'] = community_notes
+                url_context['CommunityNotes'] = self.create_context_table(self.community_notes)
+
             if self.publications:
-                publications = []
-                for publication in self.publications:
-                    publications.append(publication.to_context())
-                url_context['Publications'] = publications
+                url_context['Publications'] = self.create_context_table(self.publications)
 
             if self.dbot_score and self.dbot_score.score == Common.DBotScore.BAD:
                 url_context['Malicious'] = {
@@ -3878,6 +4266,24 @@ class Common(object):
     class Domain(Indicator):
         """ ignore docstring
         Domain indicator - https://xsoar.pan.dev/docs/integrations/context-standards-mandatory#domain
+
+        :type whois_records: ``WhoisRecord``
+        :param whois_records: List of whois records
+
+        :type description: ``str``
+        :param description: A description of the Domain.
+
+        :type stix_id: ``str``
+        :param stix_id: The domain STIX ID.
+
+        :type blocked: ``bool``
+        :param blocked: Is the domain blocked.
+
+        :type certificates: ``Certificates``
+        :param certificates: The certificates belonging to the domain.
+
+        :type dns_records: ``DNSRecord``
+        :param dns_records: A list of DNS records for the domain.
         """
         CONTEXT_PATH = 'Domain(val.Name && val.Name == obj.Name)'
 
@@ -3889,20 +4295,37 @@ class Common(object):
                      admin_name=None, admin_email=None, admin_phone=None, admin_country=None, tags=None,
                      domain_idn_name=None, port=None,
                      internal=None, category=None, campaign=None, traffic_light_protocol=None, threat_types=None,
-                     community_notes=None, publications=None, geo_location=None, geo_country=None,
-                     geo_description=None, tech_country=None, tech_name=None, tech_email=None, tech_organization=None,
-                     billing=None, relationships=None):
+                     community_notes=None, publications=None, geo_location=None, geo_country=None, geo_description=None,
+                     tech_country=None, tech_name=None, tech_email=None, tech_organization=None, billing=None,
+                     whois_records=None, relationships=None, description=None, stix_id=None, blocked=None,
+                     certificates=None, dns_records=None,):
 
+            # Main indicator value
             self.domain = domain
+
+            # Core custom fields
+            self.blocked = blocked
+            self.certificates = certificates
+            self.community_notes = community_notes
+            self.creation_date = creation_date
+            self.description = description
+            self.dns_records = dns_records
+            self.expiration_date = expiration_date
+            self.internal = internal
+            self.stix_id = stix_id
+            self.tags = tags
+            self.traffic_light_protocol = traffic_light_protocol
+            self.whois_records = whois_records
+
+            # Additional custom fields
             self.dns = dns
             self.detection_engines = detection_engines
             self.positive_detections = positive_detections
             self.organization = organization
             self.sub_domains = sub_domains
-            self.creation_date = creation_date
             self.updated_date = updated_date
-            self.expiration_date = expiration_date
 
+            # Whois related records - Registrar
             self.registrar_name = registrar_name
             self.registrar_abuse_email = registrar_abuse_email
             self.registrar_abuse_phone = registrar_abuse_phone
@@ -3916,31 +4339,30 @@ class Common(object):
             self.admin_email = admin_email
             self.admin_phone = admin_phone
             self.admin_country = admin_country
-            self.tags = tags
 
+            self.tech_country = tech_country
+            self.tech_name = tech_name
+            self.tech_organization = tech_organization
+            self.tech_email = tech_email
+            self.billing = billing
+
+            # Additional custom records (none core)
             self.domain_status = domain_status
             self.name_servers = name_servers
             self.feed_related_indicators = feed_related_indicators
             self.malware_family = malware_family
             self.domain_idn_name = domain_idn_name
             self.port = port
-            self.internal = internal
             self.category = category
             self.campaign = campaign
-            self.traffic_light_protocol = traffic_light_protocol
             self.threat_types = threat_types
-            self.community_notes = community_notes
             self.publications = publications
             self.geo_location = geo_location
             self.geo_country = geo_country
             self.geo_description = geo_description
-            self.tech_country = tech_country
-            self.tech_name = tech_name
-            self.tech_organization = tech_organization
-            self.tech_email = tech_email
-            self.billing = billing
-            self.relationships = relationships
 
+            # XSOAR Fields
+            self.relationships = relationships
             self.dbot_score = dbot_score
 
         def to_context(self):
@@ -4014,10 +4436,10 @@ class Common(object):
                 domain_context['Tags'] = self.tags
 
             if self.feed_related_indicators:
-                feed_related_indicators = []
-                for feed_related_indicator in self.feed_related_indicators:
-                    feed_related_indicators.append(feed_related_indicator.to_context())
-                domain_context['FeedRelatedIndicators'] = feed_related_indicators
+                domain_context['FeedRelatedIndicators'] = self.create_context_table(self.feed_related_indicators)
+
+            if self.whois_records:
+                domain_context['WhoisRecords'] = self.create_context_table(self.whois_records)
 
             if self.malware_family:
                 domain_context['MalwareFamily'] = self.malware_family
@@ -4027,33 +4449,34 @@ class Common(object):
                     'Vendor': self.dbot_score.integration_name,
                     'Description': self.dbot_score.malicious_description
                 }
+
             if self.domain_idn_name:
                 domain_context['DomainIDNName'] = self.domain_idn_name
+
             if self.port:
                 domain_context['Port'] = self.port
+
             if self.internal:
                 domain_context['Internal'] = self.internal
+
             if self.category:
                 domain_context['Category'] = self.category
+
             if self.campaign:
                 domain_context['Campaign'] = self.campaign
+
             if self.traffic_light_protocol:
                 domain_context['TrafficLightProtocol'] = self.traffic_light_protocol
+
             if self.threat_types:
-                threat_types = []
-                for threat_type in self.threat_types:
-                    threat_types.append(threat_type.to_context())
-                domain_context['ThreatTypes'] = threat_types
+                domain_context['ThreatTypes'] = self.create_context_table(self.threat_types)
+
             if self.community_notes:
-                community_notes = []
-                for community_note in self.community_notes:
-                    community_notes.append(community_note.to_context())
-                domain_context['CommunityNotes'] = community_notes
+                domain_context['CommunityNotes'] = self.create_context_table(self.community_notes)
+
             if self.publications:
-                publications = []
-                for publication in self.publications:
-                    publications.append(publication.to_context())
-                domain_context['Publications'] = publications
+                domain_context['Publications'] = self.create_context_table(self.publications)
+
             if self.geo_location or self.geo_country or self.geo_description:
                 domain_context['Geo'] = {}
                 if self.geo_location:
@@ -4062,6 +4485,7 @@ class Common(object):
                     domain_context['Geo']['Country'] = self.geo_country
                 if self.geo_description:
                     domain_context['Geo']['Description'] = self.geo_description
+
             if self.tech_country or self.tech_name or self.tech_organization or self.tech_email:
                 domain_context['Tech'] = {}
                 if self.tech_country:
@@ -4072,6 +4496,7 @@ class Common(object):
                     domain_context['Tech']['Organization'] = self.tech_organization
                 if self.tech_email:
                     domain_context['Tech']['Email'] = self.tech_email
+
             if self.billing:
                 domain_context['Billing'] = self.billing
 
@@ -4089,6 +4514,21 @@ class Common(object):
 
             if self.dbot_score:
                 ret_value.update(self.dbot_score.to_context())
+
+            if self.dns_records:
+                domain_context['DNSRecords'] = self.create_context_table(self.dns_records)
+
+            if self.stix_id:
+                domain_context['STIXID'] = self.stix_id
+
+            if self.description:
+                domain_context['Description'] = self.description
+
+            if self.stix_id:
+                domain_context['Blocked'] = self.blocked
+
+            if self.certificates:
+                domain_context['Certificates'] = self.create_context_table(self.certificates)
 
             return ret_value
 
@@ -4190,8 +4630,32 @@ class Common(object):
         """
         Account indicator - https://xsoar.pan.dev/docs/integrations/context-standards-recommended#account
 
+        :type blocked: ``boolean``
+        :param blocked: Is the indicator blocked.
+
+        :type community_notes: ``CommunityNotes``
+        :param community_notes: Notes on the Account that were given by the community.
+
         :type dbot_score: ``DBotScore``
         :param dbot_score: If account has reputation then create DBotScore object
+
+        :type creation_date: ``str``
+        :param creation_date: The date the account was created
+
+        :type description: ``str``
+        :param description: Description of the account
+
+        :type stix_id: ``str``
+        :param stix_id: STIX ID for the account
+
+        :type tags: ``str``
+        :param tags: List of tags related to the account.
+
+        :type traffic_light_protocol: ``str``
+        :param traffic_light_protocol: The account indicator tlp color
+
+        :type user_id: ``str``
+        :param user_id: The account associated user id.
 
         :return: None
         :rtype: ``None``
@@ -4201,9 +4665,16 @@ class Common(object):
         def __init__(self, id, type=None, username=None, display_name=None, groups=None,
                      domain=None, email_address=None, telephone_number=None, office=None, job_title=None,
                      department=None, country=None, state=None, city=None, street=None, is_enabled=None,
-                     dbot_score=None, relationships=None):
+                     dbot_score=None, relationships=None, blocked=None, community_notes=None, creation_date=None,
+                     description=None, stix_id=None, tags=None, traffic_light_protocol=None, user_id=None):
+
             self.id = id
             self.type = type
+            self.blocked = blocked
+            self.community_notes = community_notes
+            self.creation_date = creation_date
+            self.description = description
+            self.stix_id = stix_id
             self.username = username
             self.display_name = display_name
             self.groups = groups
@@ -4218,6 +4689,9 @@ class Common(object):
             self.city = city
             self.street = street
             self.is_enabled = is_enabled
+            self.tags = tags
+            self.traffic_light_protocol = traffic_light_protocol
+            self.user_id = user_id
             self.relationships = relationships
 
             if not isinstance(dbot_score, Common.DBotScore):
@@ -4233,8 +4707,15 @@ class Common(object):
             if self.type:
                 account_context['Type'] = self.type
 
-            irrelevent = ['CONTEXT_PATH', 'to_context', 'dbot_score', 'Id']
+            if self.blocked:
+                account_context['Blocked'] = self.blocked
+
+            if self.creation_date:
+                account_context['CreationDate'] = self.creation_date
+
+            irrelevent = ['CONTEXT_PATH', 'to_context', 'dbot_score', 'Id', 'create_context_table']
             details = [detail for detail in dir(self) if not detail.startswith('__') and detail not in irrelevent]
+
             for detail in details:
                 if self.__getattribute__(detail):
                     if detail == 'email_address':
@@ -4255,6 +4736,9 @@ class Common(object):
                 relationships_context = [relationship.to_context() for relationship in self.relationships if
                                          relationship.to_context()]
                 account_context['Relationships'] = relationships_context
+
+            if self.community_notes:
+                account_context['CommunityNotes'] = self.create_context_table(self.community_notes)
 
             ret_value = {
                 Common.Account.CONTEXT_PATH: account_context
@@ -4312,39 +4796,63 @@ class Common(object):
     class AttackPattern(Indicator):
         """
         Attack Pattern indicator
+
         :type stix_id: ``str``
         :param stix_id: The Attack Pattern STIX ID
+
         :type kill_chain_phases: ``str``
         :param kill_chain_phases: The Attack Pattern kill chain phases.
+
         :type first_seen_by_source: ``str``
         :param first_seen_by_source: The Attack Pattern first seen by source
+
         :type description: ``str``
         :param description: The Attack Pattern description
+
         :type operating_system_refs: ``str``
         :param operating_system_refs: The operating system refs of the Attack Pattern.
+
         :type publications: ``str``
         :param publications: The Attack Pattern publications
+
         :type mitre_id: ``str``
         :param mitre_id: The Attack Pattern kill mitre id.
+
         :type tags: ``str``
         :param tags: The Attack Pattern kill tags.
+
         :type dbot_score: ``DBotScore``
         :param dbot_score:  If the address has reputation then create DBotScore object.
+
+        :type traffic_light_protocol: ``str``
+        :param traffic_light_protocol: The Traffic Light Protocol (TLP) color that is suitable for the AP.
+
+        :type community_notes: ``CommunityNotes``
+        :param community_notes:  A list of community notes for the AP.
+
+        :type external_references: ``ExternalReference``
+        :param external_references:  A list of id's and description of the AP via external refs.
+
         :return: None
         :rtype: ``None``
         """
         CONTEXT_PATH = 'AttackPattern(val.value && val.value == obj.value)'
 
-        def __init__(self, stix_id, kill_chain_phases, first_seen_by_source, description,
-                     operating_system_refs, publications, mitre_id, tags, dbot_score):
-            self.stix_id = stix_id
-            self.kill_chain_phases = kill_chain_phases
-            self.first_seen_by_source = first_seen_by_source
+        def __init__(self, stix_id, kill_chain_phases=None, first_seen_by_source=None, description=None,
+                     operating_system_refs=None, publications=None, mitre_id=None, tags=None,
+                     traffic_light_protocol=None, dbot_score=None, community_notes=None, external_references=None):
+
+            self.community_notes = community_notes
             self.description = description
+            self.external_references = external_references
+            self.first_seen_by_source = first_seen_by_source
+            self.kill_chain_phases = kill_chain_phases
+            self.mitre_id = mitre_id
             self.operating_system_refs = operating_system_refs
             self.publications = publications
-            self.mitre_id = mitre_id
+            self.stix_id = stix_id
             self.tags = tags
+            self.traffic_light_protocol = traffic_light_protocol
 
             self.dbot_score = dbot_score
 
@@ -4359,6 +4867,12 @@ class Common(object):
                 "Tags": self.tags,
                 "Description": self.description
             }
+
+            if self.external_references:
+                attack_pattern_context['ExternalReferences'] = self.create_context_table(self.external_references)
+
+            if self.traffic_light_protocol:
+                attack_pattern_context['TrafficLightProtocol'] = self.traffic_light_protocol
 
             if self.dbot_score and self.dbot_score.score == Common.DBotScore.BAD:
                 attack_pattern_context['Malicious'] = {
@@ -6539,12 +7053,15 @@ class CommandRunner:
         results, errors = [], []
         for command, args in zip(command.commands, command.args_lst):
             try:
+                demisto.debug(' '.join(('calling', command, 'with args=', ','.join(args))))
                 execute_command_results = demisto.executeCommand(command, args)
                 for res in execute_command_results:
                     brand_name = res.get('Brand', 'Unknown') if isinstance(res, dict) else 'Unknown'
                     module_name = res.get('ModuleName', 'Unknown') if isinstance(res, dict) else 'Unknown'
                     if is_error(res):
-                        errors.append(CommandRunner.Result(command, args, brand_name, module_name, get_error(res)))
+                        error = get_error(res)
+                        demisto.debug('error: ' + error)
+                        errors.append(CommandRunner.Result(command, args, brand_name, module_name, error))
                     else:
                         if extract_contents:
                             res = res.get('Contents', {})
@@ -9446,13 +9963,14 @@ def create_indicator_result_with_dbotscore_unknown(indicator, indicator_type, re
 
 def get_fetch_run_time_range(last_run, first_fetch, look_back=0, timezone=0, date_format='%Y-%m-%dT%H:%M:%S'):
     """
-    Gets the time range for fetch
+    Calculates the time range for fetch depending the look_back argument and the previous fetch start time
+    given from the last_run object.
 
     :type last_run: ``dict``
     :param last_run: The LastRun object
 
     :type first_fetch: ``str``
-    :param first_fetch: The first time to fetch, used in the first fetch
+    :param first_fetch: The first time to fetch, used in the first fetch of an instance
 
     :type look_back: ``int``
     :param look_back: The time to look back in fetch in minutes
@@ -9463,7 +9981,7 @@ def get_fetch_run_time_range(last_run, first_fetch, look_back=0, timezone=0, dat
     :type date_format: ``str``
     :param date_format: The date format
 
-    :return: The time range of the creation date for the incidents to fetch in the current run.
+    :return: The time range (start_time, end_time) of the creation date for the incidents to fetch in the current run.
     :rtype: ``Tuple``
     """
     last_run_time = last_run and 'time' in last_run and last_run['time']
@@ -9495,10 +10013,13 @@ def get_current_time(time_zone=0):
 
 def filter_incidents_by_duplicates_and_limit(incidents_res, last_run, fetch_limit, id_field):
     """
-    Remove duplicate incidents from response and returns the incidents till limit
+    Removes duplicate incidents from response and returns the incidents till limit.
+    The function should be called after getting the get-incidents API response,
+    and by passing the id_field it will filter out the incidents that were already fetched
+    by checking the incident IDs that are saved from the previous fetch in the last run object
 
     :type incidents_res: ``list``
-    :param incidents_res: The incidents from response
+    :param incidents_res: The incidents from the API response
 
     :type last_run: ``dict``
     :param last_run: The LastRun object
@@ -9509,7 +10030,7 @@ def filter_incidents_by_duplicates_and_limit(incidents_res, last_run, fetch_limi
     :type id_field: ``str``
     :param id_field: The incident id field
 
-    :return: The incidents till limit after filtering duplicates
+    :return: List of incidents after filtering duplicates when len(incidents) <= limit
     :rtype: ``list``
     """
     found_incidents = last_run.get('found_incident_ids', {})
@@ -9557,13 +10078,13 @@ def get_latest_incident_created_time(incidents, created_time_field, date_format=
 
 def remove_old_incidents_ids(found_incidents_ids, current_time, look_back):
     """
-    Removes old incident ids
+    Removes old incident ids from the last run object to avoid overloading.
 
     :type found_incidents_ids: ``dict``
     :param found_incidents_ids: Dict of incidents ids
 
     :type current_time: ``int``
-    :param current_time: The current epoch time
+    :param current_time: The current epoch time to compare with the existing IDs added time
 
     :type look_back: ``int``
     :param look_back: The look back time in minutes
@@ -9585,13 +10106,13 @@ def remove_old_incidents_ids(found_incidents_ids, current_time, look_back):
 
 def get_found_incident_ids(last_run, incidents, look_back, id_field):
     """
-    Gets the found incident ids
+    Gets the found incident ids from the last run object and adds the new fetched incident IDs.
 
     :type last_run: ``dict``
     :param last_run: The LastRun object
 
     :type incidents: ``list``
-    :param incidents: List of incidents
+    :param incidents: List of incidents to add
 
     :type look_back: ``int``
     :param look_back: The look back time in minutes
@@ -9599,7 +10120,7 @@ def get_found_incident_ids(last_run, incidents, look_back, id_field):
     :type id_field: ``str``
     :param id_field: The incident id field
 
-    :return: The new incidents ids
+    :return: The new incident ids.
     :rtype: ``dict``
     """
 
@@ -9617,13 +10138,14 @@ def get_found_incident_ids(last_run, incidents, look_back, id_field):
 def create_updated_last_run_object(last_run, incidents, fetch_limit, look_back, start_fetch_time, end_fetch_time,
                                    created_time_field, date_format='%Y-%m-%dT%H:%M:%S', increase_last_run_time=False):
     """
-    Creates an updated LastRun object
+    Calculates the next fetch time and limit depending the incidents result and creates an updated LastRun object
+    with the new time and limit.
 
     :type last_run: ``dict``
     :param last_run: The LastRun object
 
     :type incidents: ``list``
-    :param incidents: List of incidents
+    :param incidents: List of the incidents result
 
     :type fetch_limit: ``int``
     :param fetch_limit: The fetch limit
@@ -9632,10 +10154,10 @@ def create_updated_last_run_object(last_run, incidents, fetch_limit, look_back, 
     :param look_back: The time to look back in fetch in minutes
 
     :type start_fetch_time: ``str``
-    :param start_fetch_time: The start time to fetch
+    :param start_fetch_time: The time the fetch started to fetch from
 
     :type end_fetch_time: ``str``
-    :param end_fetch_time: The end time to fetch
+    :param end_fetch_time: The end time in which the fetch incidents ended
 
     :type created_time_field: ``str``
     :param created_time_field: The incident created time field
@@ -9646,7 +10168,7 @@ def create_updated_last_run_object(last_run, incidents, fetch_limit, look_back, 
     :type increase_last_run_time: ``bool``
     :param increase_last_run_time: Whether to increase the last run time with one millisecond
 
-    :return: The updated LastRun object
+    :return: The new LastRun object
     :rtype: ``Dict``
     """
 
@@ -9674,22 +10196,22 @@ def create_updated_last_run_object(last_run, incidents, fetch_limit, look_back, 
 def update_last_run_object(last_run, incidents, fetch_limit, start_fetch_time, end_fetch_time, look_back,
                            created_time_field, id_field, date_format='%Y-%m-%dT%H:%M:%S', increase_last_run_time=False):
     """
-    Updates the LastRun object
+    Updates the LastRun object with the next fetch time and limit and with the new fetched incident IDs.
 
     :type last_run: ``dict``
     :param last_run: The LastRun object
 
     :type incidents: ``list``
-    :param incidents: List of incidents
+    :param incidents: List of the incidents result
 
     :type fetch_limit: ``int``
     :param fetch_limit: The fetch limit
 
     :type start_fetch_time: ``str``
-    :param start_fetch_time: The start time to fetch
+    :param start_fetch_time: The time the fetch started to fetch from
 
     :type end_fetch_time: ``str``
-    :param end_fetch_time: The end time to fetch
+    :param end_fetch_time: The end time in which the fetch incidents ended
 
     :type look_back: ``int``
     :param look_back: The time to look back in fetch in minutes
@@ -9706,7 +10228,7 @@ def update_last_run_object(last_run, incidents, fetch_limit, start_fetch_time, e
     :type increase_last_run_time: ``bool``
     :param increase_last_run_time: Whether to increase the last run time with one millisecond
 
-    :return: The new last run object and list of incidents
+    :return: The updated LastRun object
     :rtype: ``Dict``
     """
 
@@ -9875,6 +10397,13 @@ def send_events_to_xsiam(events, vendor, product, data_format=None):
     """
     data = events
     amount_of_events = 0
+
+    if not events:
+        demisto.debug('send_events_to_xsiam function received no events, skipping the API call to send events to XSIAM')
+        demisto.updateModuleHealth({'eventsPulled': amount_of_events})
+        return
+
+    # only in case we have events data to send to XSIAM we continue with this flow.
     # Correspond to case 1: List of strings or dicts where each string or dict represents an event.
     if isinstance(events, list):
         amount_of_events = len(events)
@@ -9890,8 +10419,7 @@ def send_events_to_xsiam(events, vendor, product, data_format=None):
 
     else:
         raise DemistoException(('Unsupported type: {type_events} for the "events" parameter. Should be a string or '
-                                'dict.').format(type_events=type(events)))
-
+                                'list.').format(type_events=type(events)))
     if not data_format:
         data_format = 'text'
 

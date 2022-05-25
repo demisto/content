@@ -7,8 +7,6 @@
         },
         [
             {
-                "value": "3765123456411567",
-                "type": "GIB Compromised Mule",
                 "rawJSON": {
                     "value": "3765123456411567",
                     "type": "GIB Compromised Mule",
@@ -19,22 +17,14 @@
                     "gibmalwarename": "Anubis",
                     "gibthreatactorid": "d7ff75c35f93dce6f5410bba9a6c206bdff66555",
                     "gibthreatactorisapt": false,
-                    "gibthreatactorname": "FRK48"
-                },
-                "fields": {
-                    "creationdate": "2020-11-11T16:09:00Z",
-                    "source": "Botnet",
-                    "gibcollection": "compromised/mule",
-                    "gibid": "50a3b4abbfca5dcbec9c8b3a110598f61ba93r33",
-                    "gibmalwarename": "Anubis",
-                    "gibthreatactorid": "d7ff75c35f93dce6f5410bba9a6c206bdff66555",
-                    "gibthreatactorisapt": false,
-                    "gibthreatactorname": "FRK48"
+                    "gibthreatactorname": "FRK48",
+                    "gibreliability": 100,
+                    "gibcredibility": 80,
+                    "gibadmiraltycode": "A2",
+                    "gibseverity": "red"
                 }
             },
             {
-                "value": "http://some.ru",
-                "type": "URL",
                 "rawJSON": {
                     "value": "http://some.ru",
                     "type": "URL",
@@ -43,20 +33,14 @@
                     "gibmalwarename": "Anubis",
                     "gibthreatactorid": "d7ff75c35f93dce6f5410bba9a6c206bdff66555",
                     "gibthreatactorisapt": false,
-                    "gibthreatactorname": "FRK48"
-                },
-                "fields": {
-                    "gibcollection": "compromised/mule",
-                    "gibid": "50a3b4abbfca5dcbec9c8b3a110598f61ba93r33",
-                    "gibmalwarename": "Anubis",
-                    "gibthreatactorid": "d7ff75c35f93dce6f5410bba9a6c206bdff66555",
-                    "gibthreatactorisapt": false,
-                    "gibthreatactorname": "FRK48"
+                    "gibthreatactorname": "FRK48",
+                    "gibreliability": 100,
+                    "gibcredibility": 80,
+                    "gibadmiraltycode": "A2",
+                    "gibseverity": "red"
                 }
             },
             {
-                "value": "worus.space",
-                "type": "Domain",
                 "rawJSON": {
                     "value": "worus.space",
                     "type": "Domain",
@@ -65,20 +49,14 @@
                     "gibmalwarename": "Anubis",
                     "gibthreatactorid": "d7ff75c35f93dce6f5410bba9a6c206bdff66555",
                     "gibthreatactorisapt": false,
-                    "gibthreatactorname": "FRK48"
-                },
-                "fields": {
-                    "gibcollection": "compromised/mule",
-                    "gibid": "50a3b4abbfca5dcbec9c8b3a110598f61ba93r33",
-                    "gibmalwarename": "Anubis",
-                    "gibthreatactorid": "d7ff75c35f93dce6f5410bba9a6c206bdff66555",
-                    "gibthreatactorisapt": false,
-                    "gibthreatactorname": "FRK48"
+                    "gibthreatactorname": "FRK48",
+                    "gibreliability": 100,
+                    "gibcredibility": 80,
+                    "gibadmiraltycode": "A2",
+                    "gibseverity": "red"
                 }
             },
             {
-                "value": "11.11.11.11",
-                "type": "IP",
                 "rawJSON": {
                     "value": "11.11.11.11",
                     "type": "IP",
@@ -87,15 +65,11 @@
                     "gibmalwarename": "Anubis",
                     "gibthreatactorid": "d7ff75c35f93dce6f5410bba9a6c206bdff66555",
                     "gibthreatactorisapt": false,
-                    "gibthreatactorname": "FRK48"
-                },
-                "fields": {
-                    "gibcollection": "compromised/mule",
-                    "gibid": "50a3b4abbfca5dcbec9c8b3a110598f61ba93r33",
-                    "gibmalwarename": "Anubis",
-                    "gibthreatactorid": "d7ff75c35f93dce6f5410bba9a6c206bdff66555",
-                    "gibthreatactorisapt": false,
-                    "gibthreatactorname": "FRK48"
+                    "gibthreatactorname": "FRK48",
+                    "gibreliability": 100,
+                    "gibcredibility": 80,
+                    "gibadmiraltycode": "A2",
+                    "gibseverity": "red"
                 }
             }
         ]
@@ -108,8 +82,6 @@
         },
         [
             {
-                "value": "http://some.ru",
-                "type": "URL",
                 "rawJSON": {
                     "value": "http://some.ru",
                     "type": "URL",
@@ -118,20 +90,14 @@
                     "gibmalwarename": "FlexNet",
                     "gibthreatactorid": "d7ff75c35f93dce6f5410bba9a6c206bdff66555",
                     "gibthreatactorisapt": false,
-                    "gibthreatactorname": "FRK48"
-                },
-                "fields": {
-                    "gibcollection": "compromised/imei",
-                    "gibid": "0c1426048474df19ada9d0089ef8b3efce906556",
-                    "gibmalwarename": "FlexNet",
-                    "gibthreatactorid": "d7ff75c35f93dce6f5410bba9a6c206bdff66555",
-                    "gibthreatactorisapt": false,
-                    "gibthreatactorname": "FRK48"
+                    "gibthreatactorname": "FRK48",
+                    "gibreliability": 100,
+                    "gibcredibility": 80,
+                    "gibadmiraltycode": "A2",
+                    "gibseverity": "red"
                 }
             },
             {
-                "value": "some.ru",
-                "type": "Domain",
                 "rawJSON": {
                     "value": "some.ru",
                     "type": "Domain",
@@ -140,20 +106,14 @@
                     "gibmalwarename": "FlexNet",
                     "gibthreatactorid": "d7ff75c35f93dce6f5410bba9a6c206bdff66555",
                     "gibthreatactorisapt": false,
-                    "gibthreatactorname": "FRK48"
-                },
-                "fields": {
-                    "gibcollection": "compromised/imei",
-                    "gibid": "0c1426048474df19ada9d0089ef8b3efce906556",
-                    "gibmalwarename": "FlexNet",
-                    "gibthreatactorid": "d7ff75c35f93dce6f5410bba9a6c206bdff66555",
-                    "gibthreatactorisapt": false,
-                    "gibthreatactorname": "FRK48"
+                    "gibthreatactorname": "FRK48",
+                    "gibreliability": 100,
+                    "gibcredibility": 80,
+                    "gibadmiraltycode": "A2",
+                    "gibseverity": "red"
                 }
             },
             {
-                "value": "11.11.11.11",
-                "type": "IP",
                 "rawJSON": {
                     "value": "11.11.11.11",
                     "type": "IP",
@@ -164,22 +124,14 @@
                     "gibmalwarename": "FlexNet",
                     "gibthreatactorid": "d7ff75c35f93dce6f5410bba9a6c206bdff66555",
                     "gibthreatactorisapt": false,
-                    "gibthreatactorname": "FRK48"
-                },
-                "fields": {
-                    "asn": "AS16276 OVH SAS",
-                    "geocountry": "France",
-                    "gibcollection": "compromised/imei",
-                    "gibid": "0c1426048474df19ada9d0089ef8b3efce906556",
-                    "gibmalwarename": "FlexNet",
-                    "gibthreatactorid": "d7ff75c35f93dce6f5410bba9a6c206bdff66555",
-                    "gibthreatactorisapt": false,
-                    "gibthreatactorname": "FRK48"
+                    "gibthreatactorname": "FRK48",
+                    "gibreliability": 100,
+                    "gibcredibility": 80,
+                    "gibadmiraltycode": "A2",
+                    "gibseverity": "red"
                 }
             },
             {
-                "value": "359223056231009",
-                "type": "GIB Compromised IMEI",
                 "rawJSON": {
                     "value": "359223056231009",
                     "type": "GIB Compromised IMEI",
@@ -193,20 +145,11 @@
                     "gibmalwarename": "FlexNet",
                     "gibthreatactorid": "d7ff75c35f93dce6f5410bba9a6c206bdff66555",
                     "gibthreatactorisapt": false,
-                    "gibthreatactorname": "FRK48"
-                },
-                "fields": {
-                    "creationdate": "2018-01-11T01:18:43Z",
-                    "devicemodel": "Nexus S/2.3.7 ($$$Flexnet v.5.5)",
-                    "asn": "AS22222 Some Company",
-                    "geocountry": "Netherlands",
-                    "ipaddress": "11.11.11.11",
-                    "gibcollection": "compromised/imei",
-                    "gibid": "0c1426048474df19ada9d0089ef8b3efce906556",
-                    "gibmalwarename": "FlexNet",
-                    "gibthreatactorid": "d7ff75c35f93dce6f5410bba9a6c206bdff66555",
-                    "gibthreatactorisapt": false,
-                    "gibthreatactorname": "FRK48"
+                    "gibthreatactorname": "FRK48",
+                    "gibreliability": 100,
+                    "gibcredibility": 80,
+                    "gibadmiraltycode": "A2",
+                    "gibseverity": "red"
                 }
             }
         ]
@@ -219,22 +162,18 @@
         },
         [
             {
-                "value": "isc.org",
-                "type": "Domain",
                 "rawJSON": {
                     "value": "isc.org",
                     "type": "Domain",
                     "gibcollection": "attacks/ddos",
-                    "gibid": "26a05baa4025edff367b058b13c6b43e820538a5"
-                },
-                "fields": {
-                    "gibcollection": "attacks/ddos",
-                    "gibid": "26a05baa4025edff367b058b13c6b43e820538a5"
+                    "gibid": "26a05baa4025edff367b058b13c6b43e820538a5",
+                    "gibreliability": 90,
+                    "gibcredibility": 90,
+                    "gibadmiraltycode": "A2",
+                    "gibseverity": "red"
                 }
             },
             {
-                "value": "11.11.11.11",
-                "type": "IP",
                 "rawJSON": {
                     "value": "11.11.11.11",
                     "type": "IP",
@@ -242,19 +181,14 @@
                     "geocountry": "United States",
                     "geolocation": "California",
                     "gibcollection": "attacks/ddos",
-                    "gibid": "26a05baa4025edff367b058b13c6b43e820538a5"
-                },
-                "fields": {
-                    "asn": "AS1280 Internet Systems Consortium, Inc.",
-                    "geocountry": "United States",
-                    "geolocation": "California",
-                    "gibcollection": "attacks/ddos",
-                    "gibid": "26a05baa4025edff367b058b13c6b43e820538a5"
+                    "gibid": "26a05baa4025edff367b058b13c6b43e820538a5",
+                    "gibreliability": 90,
+                    "gibcredibility": 90,
+                    "gibadmiraltycode": "A2",
+                    "gibseverity": "red"
                 }
             },
             {
-                "value": "11.11.11.11",
-                "type": "GIB Victim IP",
                 "rawJSON": {
                     "value": "11.11.11.11",
                     "type": "GIB Victim IP",
@@ -264,16 +198,11 @@
                     "gibcollection": "attacks/ddos",
                     "gibid": "26a05baa4025edff367b058b13c6b43e820538a5",
                     "firstseenbysource": "2020-10-16T02:58:53Z", 
-                    "lastseenbysource": "2020-10-16T02:58:55Z"
-                },
-                "fields": {
-                    "asn": "AS1298 Comcast Cable Communications",
-                    "geocountry": "United States",
-                    "geolocation": "Washington",
-                    "gibcollection": "attacks/ddos",
-                    "gibid": "26a05baa4025edff367b058b13c6b43e820538a5",
-                    "firstseenbysource": "2020-10-16T02:58:53Z", 
-                    "lastseenbysource": "2020-10-16T02:58:55Z"
+                    "lastseenbysource": "2020-10-16T02:58:55Z",
+                    "gibreliability": 90,
+                    "gibcredibility": 90,
+                    "gibadmiraltycode": "A2",
+                    "gibseverity": "red"
                 }
             }
         ]
@@ -286,13 +215,6 @@
         },
         [
             {
-                "fields": {
-                    "gibcollection": "attacks/deface",
-                    "gibid": "6009637a1135cd001ef46e21",
-                    "gibthreatactorid": "d7ff75c35f93dce6f5410bba9a6c206bdff66555",
-                    "gibthreatactorisapt": false,
-                    "gibthreatactorname": "FRK48"
-                },
                 "rawJSON": {
                     "gibcollection": "attacks/deface",
                     "gibid": "6009637a1135cd001ef46e21",
@@ -300,19 +222,14 @@
                     "value": "sadas.sadd.ee",
                     "gibthreatactorid": "d7ff75c35f93dce6f5410bba9a6c206bdff66555",
                     "gibthreatactorisapt": false,
-                    "gibthreatactorname": "FRK48"
-                },
-                "type": "URL",
-                "value": "sadas.sadd.ee"
+                    "gibthreatactorname": "FRK48",
+                    "gibreliability": 80,
+                    "gibcredibility": 80,
+                    "gibadmiraltycode": "B2",
+                    "gibseverity": "orange"
+                }
             },
             {
-                "fields": {
-                    "gibcollection": "attacks/deface",
-                    "gibid": "6009637a1135cd001ef46e21",
-                    "gibthreatactorid": "d7ff75c35f93dce6f5410bba9a6c206bdff66555",
-                    "gibthreatactorisapt": false,
-                    "gibthreatactorname": "FRK48"
-                },
                 "rawJSON": {
                     "gibcollection": "attacks/deface",
                     "gibid": "6009637a1135cd001ef46e21",
@@ -320,20 +237,14 @@
                     "value": "sadas.sadd.ee",
                     "gibthreatactorid": "d7ff75c35f93dce6f5410bba9a6c206bdff66555",
                     "gibthreatactorisapt": false,
-                    "gibthreatactorname": "FRK48"
-                },
-                "type": "Domain",
-                "value": "sadas.sadd.ee"
+                    "gibthreatactorname": "FRK48",
+                    "gibreliability": 80,
+                    "gibcredibility": 80,
+                    "gibadmiraltycode": "B2",
+                    "gibseverity": "orange"
+                }
             },
             {
-                "fields": {
-                    "geocountry": "Indonesia",
-                    "gibcollection": "attacks/deface",
-                    "gibid": "6009637a1135cd001ef46e21",
-                    "gibthreatactorid": "d7ff75c35f93dce6f5410bba9a6c206bdff66555",
-                    "gibthreatactorisapt": false,
-                    "gibthreatactorname": "FRK48"
-                },
                 "rawJSON": {
                     "geocountry": "Indonesia",
                     "gibcollection": "attacks/deface",
@@ -342,10 +253,12 @@
                     "value": "11.11.11.11",
                     "gibthreatactorid": "d7ff75c35f93dce6f5410bba9a6c206bdff66555",
                     "gibthreatactorisapt": false,
-                    "gibthreatactorname": "FRK48"
-                },
-                "type": "IP",
-                "value": "11.11.11.11"
+                    "gibthreatactorname": "FRK48",
+                    "gibreliability": 80,
+                    "gibcredibility": 80,
+                    "gibadmiraltycode": "B2",
+                    "gibseverity": "orange"
+                }
             }
         ]
     ],
@@ -357,31 +270,19 @@
         },
         [
             {
-                "fields": {
-                    "gibcollection": "attacks/phishing",
-                    "gibid": "fce7f92d0b64946cf890842d083953649b259952"
-                },
                 "rawJSON": {
                     "gibcollection": "attacks/phishing",
                     "gibid": "fce7f92d0b64946cf890842d083953649b259952",
                     "type": "URL",
-                    "value": "https://some.ru"
-                },
-                "type": "URL",
-                "value": "https://some.ru"
+                    "value": "https://some.ru",
+                    "gibphishingtype": "Phishing",
+                    "gibreliability": 90,
+                    "gibcredibility": 80,
+                    "gibadmiraltycode": "A2",
+                    "gibseverity": "red"
+                }
             },
             {
-                "fields": {
-                    "creationdate": "2013-11-15T13:41:30Z",
-                    "firstseenbysource": "2021-01-14T11:21:34Z",
-                    "gibcollection": "attacks/phishing",
-                    "gibid": "fce7f92d0b64946cf890842d083953649b259952",
-                    "gibphishingtitle": "",
-                    "gibtargetbrand": "Some brand",
-                    "gibtargetcategory": "Finance > Banking",
-                    "gibtargetdomain": "some.ru",
-                    "registrarname": "Some"
-                },
                 "rawJSON": {
                     "creationdate": "2013-11-15T13:41:30Z",
                     "firstseenbysource": "2021-01-14T11:21:34Z",
@@ -393,27 +294,28 @@
                     "gibtargetdomain": "some.ru",
                     "registrarname": "Some",
                     "type": "Domain",
-                    "value": "some.ru"
-                },
-                "type": "Domain",
-                "value": "some.ru"
+                    "value": "some.ru",
+                    "gibphishingtype": "Phishing",
+                    "gibreliability": 90,
+                    "gibcredibility": 80,
+                    "gibadmiraltycode": "A2",
+                    "gibseverity": "red"
+                }
             },
             {
-                "fields": {
-                    "geocountry": "Canada",
-                    "geolocation": "NA",
-                    "gibcollection": "attacks/phishing",
-                    "gibid": "fce7f92d0b64946cf890842d083953649b259952"},
                 "rawJSON": {
                     "geocountry": "Canada",
                     "geolocation": "NA",
                     "gibcollection": "attacks/phishing",
                     "gibid": "fce7f92d0b64946cf890842d083953649b259952",
                     "type": "IP",
-                    "value": "11.11.11.11"
-                },
-                "type": "IP",
-                "value": "11.11.11.11"
+                    "value": "11.11.11.11",
+                    "gibphishingtype": "Phishing",
+                    "gibreliability": 90,
+                    "gibcredibility": 80,
+                    "gibadmiraltycode": "A2",
+                    "gibseverity": "red"
+                }
             }
         ]
     ],
@@ -426,14 +328,6 @@
         },
         [
             {
-                "fields": {
-                    "gibcollection": "apt/threat",
-                    "gibid": "1b09d389d016121afbffe481a14b30ea995876e4",
-                    "gibmalwarename": "",
-                    "gibthreatactorid": "5e9f20fdcf5876b5772b3d09b432f4080711ac5f",
-                    "gibthreatactorisapt": true,
-                    "gibthreatactorname": "Lazarus"
-                },
                 "rawJSON": {
                     "gibcollection": "apt/threat",
                     "gibid": "1b09d389d016121afbffe481a14b30ea995876e4",
@@ -442,20 +336,14 @@
                     "gibmalwarename": "",
                     "gibthreatactorid": "5e9f20fdcf5876b5772b3d09b432f4080711ac5f",
                     "gibthreatactorisapt": true,
-                    "gibthreatactorname": "Lazarus"
-                },
-                "type": "IP",
-                "value": "11.11.11.11"
+                    "gibthreatactorname": "Lazarus",
+                    "gibreliability": 80,
+                    "gibcredibility": 100,
+                    "gibadmiraltycode": "B1",
+                    "gibseverity": "orange"
+                }
             },
             {
-                "fields": {
-                    "gibcollection": "apt/threat",
-                    "gibid": "1b09d389d016121afbffe481a14b30ea995876e4",
-                    "gibmalwarename": "",
-                    "gibthreatactorid": "5e9f20fdcf5876b5772b3d09b432f4080711ac5f",
-                    "gibthreatactorisapt": true,
-                    "gibthreatactorname": "Lazarus"
-                },
                 "rawJSON": {
                     "gibcollection": "apt/threat",
                     "gibid": "1b09d389d016121afbffe481a14b30ea995876e4",
@@ -464,20 +352,14 @@
                     "gibmalwarename": "",
                     "gibthreatactorid": "5e9f20fdcf5876b5772b3d09b432f4080711ac5f",
                     "gibthreatactorisapt": true,
-                    "gibthreatactorname": "Lazarus"
-                },
-                "type": "IP",
-                "value": "11.11.11.11"
+                    "gibthreatactorname": "Lazarus",
+                    "gibreliability": 80,
+                    "gibcredibility": 100,
+                    "gibadmiraltycode": "B1",
+                    "gibseverity": "orange"
+                }
             },
             {
-                "fields": {
-                    "gibcollection": "apt/threat",
-                    "gibid": "1b09d389d016121afbffe481a14b30ea995876e4",
-                    "gibmalwarename": "",
-                    "gibthreatactorid": "5e9f20fdcf5876b5772b3d09b432f4080711ac5f",
-                    "gibthreatactorisapt": true,
-                    "gibthreatactorname": "Lazarus"
-                },
                 "rawJSON": {
                     "gibcollection": "apt/threat",
                     "gibid": "1b09d389d016121afbffe481a14b30ea995876e4",
@@ -486,20 +368,14 @@
                     "gibmalwarename": "",
                     "gibthreatactorid": "5e9f20fdcf5876b5772b3d09b432f4080711ac5f",
                     "gibthreatactorisapt": true,
-                    "gibthreatactorname": "Lazarus"
-                },
-                "type": "Domain",
-                "value": "some.ru"
+                    "gibthreatactorname": "Lazarus",
+                    "gibreliability": 80,
+                    "gibcredibility": 100,
+                    "gibadmiraltycode": "B1",
+                    "gibseverity": "orange"
+                }
             },
             {
-                "fields": {
-                    "gibcollection": "apt/threat",
-                    "gibid": "1b09d389d016121afbffe481a14b30ea995876e4",
-                    "gibmalwarename": "",
-                    "gibthreatactorid": "5e9f20fdcf5876b5772b3d09b432f4080711ac5f",
-                    "gibthreatactorisapt": true,
-                    "gibthreatactorname": "Lazarus"
-                },
                 "rawJSON": {
                     "gibcollection": "apt/threat",
                     "gibid": "1b09d389d016121afbffe481a14b30ea995876e4",
@@ -508,24 +384,14 @@
                     "gibmalwarename": "",
                     "gibthreatactorid": "5e9f20fdcf5876b5772b3d09b432f4080711ac5f",
                     "gibthreatactorisapt": true,
-                    "gibthreatactorname": "Lazarus"
-                },
-                "type": "URL",
-                "value": "https://some.ru"
+                    "gibthreatactorname": "Lazarus",
+                    "gibreliability": 80,
+                    "gibcredibility": 100,
+                    "gibadmiraltycode": "B1",
+                    "gibseverity": "orange"
+                }
             },
             {
-                "fields": {
-                    "gibcollection": "apt/threat",
-                    "gibfilename": "5d43baf1c9e9e3a939e5defd8f8fbd8d",
-                    "gibid": "1b09d389d016121afbffe481a14b30ea995876e4",
-                    "md5": "5d43baf1c9e9e3a939e5defd8f8fbd8d",
-                    "sha1": "d5ff73c043f3bb75dd749636307500b60a436550",
-                    "sha256": "867c8b49d29ae1f6e4a7cd31b6fe7e278753a1ba03d4be338ed11fd1efc7dd36",
-                    "gibmalwarename": "",
-                    "gibthreatactorid": "5e9f20fdcf5876b5772b3d09b432f4080711ac5f",
-                    "gibthreatactorisapt": true,
-                    "gibthreatactorname": "Lazarus"
-                },
                 "rawJSON": {
                     "gibcollection": "apt/threat",
                     "gibfilename": "5d43baf1c9e9e3a939e5defd8f8fbd8d",
@@ -538,10 +404,12 @@
                     "gibmalwarename": "",
                     "gibthreatactorid": "5e9f20fdcf5876b5772b3d09b432f4080711ac5f",
                     "gibthreatactorisapt": true,
-                    "gibthreatactorname": "Lazarus"
-                },
-                "type": "File",
-                "value": "5d43baf1c9e9e3a939e5defd8f8fbd8d"
+                    "gibthreatactorname": "Lazarus",
+                    "gibreliability": 80,
+                    "gibcredibility": 100,
+                    "gibadmiraltycode": "B1",
+                    "gibseverity": "orange"
+                }
             }
         ]
     ],
@@ -553,22 +421,18 @@
         },
         [
             {
-                "fields": {
-                    "gibcollection": "suspicious_ip/tor_node",
-                    "gibid": "11.11.11.11",
-                    "firstseenbysource": "2020-09-03T14:15:25Z", 
-                    "lastseenbysource": "2021-01-20T22:07:33Z"
-                },
                 "rawJSON": {
                     "gibcollection": "suspicious_ip/tor_node",
                     "gibid": "11.11.11.11",
                     "type": "IP",
                     "value": "11.11.11.11",
                     "firstseenbysource": "2020-09-03T14:15:25Z", 
-                    "lastseenbysource": "2021-01-20T22:07:33Z"
-                },
-                "type": "IP",
-                "value": "11.11.11.11"
+                    "lastseenbysource": "2021-01-20T22:07:33Z",
+                    "gibreliability": 90,
+                    "gibcredibility": 90,
+                    "gibadmiraltycode": "A1",
+                    "gibseverity": "green"
+                }
             }
         ]
     ],
@@ -580,16 +444,6 @@
         },
         [
             {
-                "fields": {
-                    "geocountry": "Czech Republic",
-                    "gibcollection": "suspicious_ip/open_proxy",
-                    "gibid": "cc6a2856da2806b03839f81aa214f22dbcfd7369",
-                    "gibproxyanonymous": "High anonymous / Elite proxy",
-                    "gibproxyport": 80,
-                    "source": "free-proxy-list.net",
-                    "firstseenbysource": "2020-03-19T23:01:01Z", 
-                    "lastseenbysource": "2021-01-21T11:01:02Z"
-                },
                 "rawJSON": {
                     "geocountry": "Czech Republic",
                     "gibcollection": "suspicious_ip/open_proxy",
@@ -600,10 +454,12 @@
                     "type": "IP",
                     "value": "11.11.11.11",
                     "firstseenbysource": "2020-03-19T23:01:01Z", 
-                    "lastseenbysource": "2021-01-21T11:01:02Z"
-                },
-                "type": "IP",
-                "value": "11.11.11.11"
+                    "lastseenbysource": "2021-01-21T11:01:02Z",
+                    "gibreliability": 50,
+                    "gibcredibility": 50,
+                    "gibadmiraltycode": "C3",
+                    "gibseverity": "green"
+                }
             }
         ]
     ],
@@ -615,14 +471,6 @@
         },
         [
             {
-                "fields": {
-                    "asn": "AS60999 Libatech SAL",
-                    "geocountry": "Lebanon",
-                    "gibcollection": "suspicious_ip/socks_proxy",
-                    "gibid": "02e385600dfc5bf9b3b3656df8e0e20f5fc5c86e",
-                    "firstseenbysource": "2021-01-19T07:41:11Z", 
-                    "lastseenbysource": "2021-01-21T08:35:46Z"
-                },
                 "rawJSON": {
                     "asn": "AS60999 Libatech SAL",
                     "geocountry": "Lebanon",
@@ -631,10 +479,12 @@
                     "type": "IP",
                     "value": "11.11.11.11",
                     "firstseenbysource": "2021-01-19T07:41:11Z", 
-                    "lastseenbysource": "2021-01-21T08:35:46Z"
-                },
-                "type": "IP",
-                "value": "11.11.11.11"
+                    "lastseenbysource": "2021-01-21T08:35:46Z",
+                    "gibreliability": 90,
+                    "gibcredibility": 100,
+                    "gibadmiraltycode": "A1",
+                    "gibseverity": "green"
+                }
             }
         ]
     ],
@@ -646,13 +496,6 @@
         },
         [
             {
-                "fields": {
-                    "gibcollection": "malware/cnc",
-                    "gibid": "aeed277396e27e375d030a91533aa232444d0089",
-                    "gibmalwarename": "JS Sniffer - Poter",
-                    "firstseenbysource": "2021-01-21T10:35:21Z", 
-                    "lastseenbysource": "2021-01-21T10:35:21Z"
-                },
                 "rawJSON": {
                     "gibcollection": "malware/cnc",
                     "gibid": "aeed277396e27e375d030a91533aa232444d0089",
@@ -661,18 +504,9 @@
                     "gibmalwarename": "JS Sniffer - Poter",
                     "firstseenbysource": "2021-01-21T10:35:21Z", 
                     "lastseenbysource": "2021-01-21T10:35:21Z"
-                },
-                "type": "URL",
-                "value": "https://some.ru"
+                }
             },
             {
-                "fields": {
-                    "gibcollection": "malware/cnc",
-                    "gibid": "aeed277396e27e375d030a91533aa232444d0089",
-                    "gibmalwarename": "JS Sniffer - Poter",
-                    "firstseenbysource": "2021-01-21T10:35:21Z", 
-                    "lastseenbysource": "2021-01-21T10:35:21Z"
-                },
                 "rawJSON": {
                     "gibcollection": "malware/cnc",
                     "gibid": "aeed277396e27e375d030a91533aa232444d0089",
@@ -681,20 +515,9 @@
                     "gibmalwarename": "JS Sniffer - Poter",
                     "firstseenbysource": "2021-01-21T10:35:21Z", 
                     "lastseenbysource": "2021-01-21T10:35:21Z"
-                },
-                "type": "Domain",
-                "value": "some.ru"
+                }
             },
             {
-                "fields": {
-                    "asn": "AS3356 Level 3 Communications, Inc.",
-                    "geocountry": "United States",
-                    "gibcollection": "malware/cnc",
-                    "gibid": "aeed277396e27e375d030a91533aa232444d0089",
-                    "gibmalwarename": "JS Sniffer - Poter",
-                    "firstseenbysource": "2021-01-21T10:35:21Z", 
-                    "lastseenbysource": "2021-01-21T10:35:21Z"
-                },
                 "rawJSON": {
                     "asn": "AS3356 Level 3 Communications, Inc.",
                     "geocountry": "United States",
@@ -705,9 +528,7 @@
                     "gibmalwarename": "JS Sniffer - Poter",
                     "firstseenbysource": "2021-01-21T10:35:21Z", 
                     "lastseenbysource": "2021-01-21T10:35:21Z"
-                },
-                "type": "IP",
-                "value": "11.11.11.11"
+                }
             }
         ]
     ],
@@ -719,15 +540,6 @@
         },
         [
             {
-                "fields": {
-                    "cvedescription": "An issue was discovered on FiberHome HG6245D devices through RP2613. The web daemon contains the hardcoded awnfibre / fibre@dm!n credentials for an ISP.",
-                    "cvemodified": "2021-02-11T00:45:00+03:00",
-                    "cvss": 7.5,
-                    "gibcollection": "osi/vulnerability",
-                    "gibcvssvector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
-                    "gibid": "CVE-2021-27152",
-                    "published": "2021-02-10T19:15:00+03:00"
-                },
                 "rawJSON": {
                     "cvedescription": "An issue was discovered on FiberHome HG6245D devices through RP2613. The web daemon contains the hardcoded awnfibre / fibre@dm!n credentials for an ISP.",
                     "cvemodified": "2021-02-11T00:45:00+03:00",
@@ -737,10 +549,12 @@
                     "gibid": "CVE-2021-27152",
                     "published": "2021-02-10T19:15:00+03:00",
                     "type": "CVE",
-                    "value": "CVE-2021-27152"
-                },
-                "type": "CVE",
-                "value": "CVE-2021-27152"
+                    "value": "CVE-2021-27152",
+                    "gibreliability": 100,
+                    "gibcredibility": 100,
+                    "gibadmiraltycode": "A1",
+                    "gibseverity": "green"
+                }
             }
         ]
     ]
