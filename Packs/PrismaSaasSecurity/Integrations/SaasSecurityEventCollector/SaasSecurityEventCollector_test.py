@@ -98,7 +98,6 @@ def test_saas_security_get_events(mocker, args, integration_context_mock):
 
     limit = int(args.get("limit"))
     mocker.patch.object(demisto, 'getIntegrationContext', return_value=integration_context_mock)
-
     set_context_mocker = mocker.patch.object(SaasSecurityEventCollector, 'set_to_integration_context_with_retries')
 
     expected_events = json.loads(integration_context_mock['events'])
@@ -174,5 +173,5 @@ def test_fetch_events(mocker, limit, integration_context_mock):
 
     expected_integration_context['events'] = expected_integration_context['events'][limit:]
     assert set_context_mocker.called
-    # make sure the new context will be saved without the already fetched events
+    # make sure the new integration context will be saved without the already fetched events
     assert expected_integration_context == set_context_mocker.call_args.kwargs['context']
