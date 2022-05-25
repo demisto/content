@@ -522,7 +522,7 @@ class SearchAlertsQueryBuilder(SearchQueryBuilder):
             filter_obj['values'].append(threat_object)
         self._filters.append(filter_obj)
 
-    def create_time_interval_filter(self, start: datetime, end: datetime):
+    def create_time_interval_filter(self, start: datetime, end: Optional[datetime]):
         """Add time interval to the search query
 
         :type start: ``datetime``
@@ -531,6 +531,13 @@ class SearchAlertsQueryBuilder(SearchQueryBuilder):
         :type end: ``datetime``
         :param end: End time
         """
+        if not end:
+            future = datetime.now() + timedelta(days=7)
+            if start > future:
+                end = start + timedelta(days=7)
+            else:
+                end = future
+
         if start > end:
             raise ValueError(f'start_time should be greater or equal than end_time, {start} > {end}.')
 
@@ -842,7 +849,7 @@ def varonis_get_alerts(
         builder.create_alert_status_filter(statuses)
     if threats and any(threats):
         builder.create_threat_model_filter(threats)
-    if start and end:
+    if start:
         builder.create_time_interval_filter(start, end)
     if alert_guids and len(alert_guids) > 0:
         builder.create_alert_id_filter(alert_guids)
