@@ -704,7 +704,7 @@ class HuntingQueryBuilder:
 
     class NetworkConnections:
         """QUERY PREFIX"""
-        EXTERNAL_ADDRESSES_QUERY_PREFIX = 'DeviceNetworkEvents | where (RemoteIP !startswith "172.16" or RemoteIP !startswith "192.168" or RemoteIP !startswith "10.") and'  # noqa: E501
+        EXTERNAL_ADDRESSES_QUERY_PREFIX = 'DeviceNetworkEvents | where not(RemoteIP matches regex "(^10\\\\.)|(^172\\\\.1[6-9]\\\\.)|(^172\\\\.2[0-9]\\\\.)|(^172\\\\.3[0-1]\\\\.)|(^192\\\\.168\\\\.)") and'  # noqa: E501
         DNS_QUERY_PREFIX = 'DeviceNetworkEvents | where RemotePort == 53 and'
         ENCODED_COMMANDS_QUERY_PREFIX = 'DeviceProcessEvents | where FileName in ("powershell.exe","powershell_ise.exe") and ProcessCommandLine contains "-encoded" and'  # noqa: E501
 
