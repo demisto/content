@@ -159,12 +159,9 @@ def create_api_call(host: str, integration_key: str, secrete_key: str):  # pragm
         host=host,
         ca_certs='DISABLE'
     )
-    try:
-        client._make_request = lambda method, uri, body, headers: override_make_request(client, method, uri, body,
+
+    client._make_request = lambda method, uri, body, headers: override_make_request(client, method, uri, body,
                                                                                         headers)
-    except Exception as e:
-        demisto.error("Error making request - failed to create client: {}".format(e))
-        raise Exception
 
     return client
 
