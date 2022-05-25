@@ -155,7 +155,7 @@ tasks:
       brand: ''
       id: fc4c5cfd-ec21-4e0a-86fa-37e98199aea8
       iscommand: false
-      name: File Anlysis
+      name: PowerShell Analysis
       type: title
       version: -1
       description: ''
