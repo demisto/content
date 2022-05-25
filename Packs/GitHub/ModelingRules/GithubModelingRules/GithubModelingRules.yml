@@ -3,7 +3,7 @@ id: github_modeling_rule
 fromversion: 3.3.0
 tags: github
 rules: ''
-schema:
+schema: |-
   {
     "github_github_audit_raw": {
       "actor_location": {
