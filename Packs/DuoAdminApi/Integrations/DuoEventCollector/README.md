@@ -17,16 +17,3 @@ Log collecting from Duo
 
 
 4. Click **Test** to validate the URLs, tokens, and connection.
-## Commands
-You can execute these commands in a playbook.
-#### test-module
-***
-Integration command for testing.
-
-#### fetch-events
-***
-Command that is activated by the engine to fetch event.
-
-####$ duo-get-events
-***
-Manual command to fetch events and display them.

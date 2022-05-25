@@ -19,10 +19,3 @@ id3 = {'username': 'c', 'eventtype': 'c', 'timestamp': 'c'}
 def test_remove_duplicates(events, ids, result):
     assert get_events.remove_duplicates(events, ids) == result
 
-
-def test_rotate_request_order():
-    get_events.rotate_request_order()
-    assert get_events.request_order == [LogType.ADMINISTRATION, LogType.TELEPHONY, LogType.AUTHENTICATION]
-    get_events.rotate_request_order()
-    get_events.rotate_request_order()
-    assert get_events.request_order == [LogType.AUTHENTICATION, LogType.ADMINISTRATION, LogType.TELEPHONY]

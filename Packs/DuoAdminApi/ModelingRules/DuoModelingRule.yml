@@ -1,0 +1,14 @@
+name: DuoModelingRule
+id: duo_modeling_rule_id
+fromversion: 3.8.0
+tags: []
+rules: ''
+schema: |-
+  {
+    "my_ds": {
+      "my_field": {
+        "type": "string",
+        "is_array": false
+      },
+    }
+  }

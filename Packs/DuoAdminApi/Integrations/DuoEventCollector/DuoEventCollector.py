@@ -71,18 +71,13 @@ class GetEvents:
         self.client = client
         self.request_order = request_order
 
-    def rotate_request_order(self) -> None:
-        temp = deque(self.request_order)
-        temp.rotate(-1)
-        self.request_order = list(temp)
-
     def make_sdk_call(self, last_object_ids: list):  # pragma: no cover
         events: list = self.client.call(self.request_order)  # type: ignore
         if last_object_ids:
             events = GetEvents.remove_duplicates(events, last_object_ids)
         events = sorted(events, key=lambda e: e['timestamp'])
         events = events[: int(self.client.params.limit)]
-        self.rotate_request_order()
+        self.request_order = self.request_order[::-1]
         return events
 
     def _iter_events(self, last_object_ids: list) -> None:  # pragma: no cover  type: ignore
@@ -147,13 +142,14 @@ def override_make_request(self, method: str, uri: str, body: dict, headers: dict
     The reason for it is that the API creates a bad uri address for the GET requests.
 
     """
-
-    conn = self._connect()
-    conn.request(method, uri, body, headers)
-    response = conn.getresponse()
-    data = response.read()
-    self._disconnect(conn)
-    return response, data
+    try:
+        conn = self._connect()
+        conn.request(method, uri, body, headers)
+        response = conn.getresponse()
+        data = response.read()
+        return response, data
+    finally:
+        self._disconnect(conn)
 
 
 def create_api_call(host: str, integration_key: str, secrete_key: str):  # pragma: no cover
@@ -177,18 +173,18 @@ def main():  # pragma: no cover
     try:
         demisto_params = demisto.params() | demisto.args()
         last_run = demisto.getLastRun()
+        request_order = last_run.get('request_order',
+                                     [LogType.AUTHENTICATION, LogType.ADMINISTRATION, LogType.TELEPHONY])
         last_object_ids = last_run.get('ids')
         if 'after' not in last_run:
             after = dateparser.parse(demisto_params['after'].strip())
             last_run = after.timestamp()
-            last_run = {LogType[LogType.AUTHENTICATION]: last_run,
-                        LogType[LogType.ADMINISTRATION]: last_run,
-                        LogType[LogType.TELEPHONY]: last_run}
+            last_run = {LogType.AUTHENTICATION.value: last_run,
+                        LogType.ADMINISTRATION.value: last_run,
+                        LogType.TELEPHONY.value: last_run}
 
         else:
             last_run = last_run['after']
-        request_order = last_run.get('request_order',
-                                     [LogType.AUTHENTICATION, LogType.ADMINISTRATION, LogType.TELEPHONY])
         demisto_params['params'] = Params(**demisto_params, mintime=last_run)
         client = Client(demisto_params)
 
@@ -198,8 +194,8 @@ def main():  # pragma: no cover
 
         if command == 'test-module':
             get_events.aggregated_results()
-            demisto.results('ok')
-        elif command == 'duo-get-events' or command == 'fetch-events':
+            return_results('ok')
+        elif command in ('duo-get-events', 'fetch-events'):
             events = get_events.aggregated_results(last_object_ids=last_object_ids)
             demisto.setLastRun(get_events.get_last_run(events))
             send_events_to_xsiam(events, 'duo', 'duo')

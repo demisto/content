@@ -4,26 +4,18 @@ commonfields:
 name: Duo Event Collector
 display: Duo Event Collector
 category: Analytics & SIEM
-description: Duo logs event collector integration for XSIAM.
+description: Collects Auth and Audit events for Duo using the API(https://duo.com/docs/adminapi#logs).
 configuration:
 - display: Server Host
   name: host
   type: 0
   required: true
-- display: First fetch from api time
+- display: First fetch timestamp (<number> <time unit>, for example, 12 hours, 7 days,
+    3 months, 1 year)
   name: after
-  type: 15
+  type: 0
   required: true
   defaultvalue: 1 day
-  options:
-  - 1 minute
-  - 1 hour
-  - 1 day
-  - 3 day
-  - 5 day
-  - 1 week
-  - 1 month
-  - 1 year
 - display: Integration key
   name: integration_key
   type: 0
