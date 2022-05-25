@@ -1,0 +1,5 @@
+name: Microsoft 365 Defender Modeling Rule
+id: microsoft_365_defender_modeling_rule
+fromversion: 3.3.0
+tags: Microsoft 365 Defender
+rules: ''
