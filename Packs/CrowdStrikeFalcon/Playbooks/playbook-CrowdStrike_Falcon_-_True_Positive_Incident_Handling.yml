@@ -1146,36 +1146,33 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '49':
-    id: '49'
-    taskid: bea75fc0-ea15-4515-80d9-d8b09c67948e
+  "49":
+    id: "49"
+    taskid: ccfab030-433a-4a88-8d24-03426552b06b
     type: condition
     task:
-      id: bea75fc0-ea15-4515-80d9-d8b09c67948e
+      id: ccfab030-433a-4a88-8d24-03426552b06b
       version: -1
-      name: Were are values provided?
+      name: Were any values provided?
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#default#':
-      - '10'
-      yes:
-      - '41'
-      - '9'
+      - "10"
+      "yes":
+      - "41"
+      - "9"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
-      - - operator: isEqualString
+      - - operator: isNotEmpty
           left:
             value:
-              simple: '1'
+              simple: Indicators to block.Answers.0
             iscontext: true
-          right:
-            value:
-              simple: '1'
     view: |-
       {
         "position": {
@@ -1189,7 +1186,7 @@ tasks:
     skipunavailable: false
     quietmode: 0
     isoversize: false
-    isautoswitchedtoquietmode: false
+    isautoswitchedtoquietmode: false  
   '50':
     id: '50'
     taskid: 4bfee436-6d61-427f-8c34-e17faa6ea6ba
@@ -1197,7 +1194,7 @@ tasks:
     task:
       id: 4bfee436-6d61-427f-8c34-e17faa6ea6ba
       version: -1
-      name: Were are values provided?
+      name: Were any values provided?
       type: condition
       iscommand: false
       brand: ''
