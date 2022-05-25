@@ -532,29 +532,42 @@ def fundamental_uuid_command(client: Client, args: dict, reliability: DBotScoreR
             analysis_info["Analysis"] = analysis
 
         result_link = ''
-
+        filtered_relationship = None
+        relationships = res.get('links', '')
         if indicator_type.lower() == 'malware_family':
             dbot = Common.DBotScore(indicator_value, DBotScoreType.CUSTOM, 'ACTI Indicator Query', dbot_score, desc, reliability)
             indicator = Common.CustomIndicator('ACTI Malware Family', indicator_value, dbot, analysis_info, 'ACTI_MalwareFamily')
+            if relationships:
+                filtered_relationship = acti_create_relationship(indicator_value, 'Malware Family', relationships)
+                indicator.to_context()["relationships"] = filtered_relationship
             result_link = MALWARE_FAMILY_URL + res.get('uuid', '')
         elif indicator_type.lower() == 'threat_group':
             dbot = Common.DBotScore(indicator_value, DBotScoreType.CUSTOM, 'ACTI Indicator Query', dbot_score, desc, reliability)
             indicator = Common.CustomIndicator('ACTI Threat Group', indicator_value, dbot, analysis_info, 'ACTI_ThreatGroup')
+            if relationships:
+                filtered_relationship = acti_create_relationship(indicator_value, 'Threat Group', relationships)
+                indicator.to_context()["relationships"] = filtered_relationship
             result_link = THREAT_GROUP_URL + res.get('uuid', '')
         elif indicator_type.lower() == 'threat_actor':
             dbot = Common.DBotScore(indicator_value, DBotScoreType.CUSTOM, 'ACTI Indicator Query', dbot_score, desc, reliability)
             indicator = Common.CustomIndicator('ACTI Threat Actor', indicator_value, dbot, analysis_info, 'ACTI_ThreatActor')
+            if relationships:
+                filtered_relationship = acti_create_relationship(indicator_value, 'Threat Actor', relationships)
+                indicator.to_context()["relationships"] = filtered_relationship
             result_link = THREAT_ACTOR_URL + res.get('uuid', '')
         elif indicator_type.lower() == 'threat_campaign':
             dbot = Common.DBotScore(indicator_value, DBotScoreType.CUSTOM, 'ACTI Indicator Query', dbot_score, desc, reliability)
             indicator = Common.CustomIndicator('ACTI Threat Campaign', indicator_value, dbot, analysis_info,
                                                'ACTI_ThreatCampaign')
+            if relationships:
+                filtered_relationship = acti_create_relationship(indicator_value, 'Threat Campaign', relationships)
+                indicator.to_context()["relationships"] = filtered_relationship
             result_link = THREAT_CAMPAIGN_URL + res.get('uuid', '')
-
     return CommandResults(indicator=indicator,
                           raw_response=res,
                           readable_output=tableToMarkdown(f'{display_name}', readableOutput,
-                                                          metadata=f'For more insight click: {result_link}'))
+                                                          metadata=f'For more insight click: {result_link}'),
+                          relationships=filtered_relationship)
 
 
 def _enrich_analysis_result_with_intelligence(analysis_info, doc_search_client, indicatorTypeHash: bool = False):
@@ -753,6 +766,50 @@ def _ia_ir_extract(Res: dict, reliability: DBotScoreReliability):
     custom_indicator = Common.CustomIndicator(indicator_type=indicatortype, dbot_score=dbot_score,
                                               value=uuid, data=context, context_prefix='IAIR')
     return custom_indicator, iair_link
+
+
+def acti_create_relationship(indicator_value: str, indicator_type_a: str, relationships: list):
+    indicator_types = {
+        'ip': 'IP',
+        'url': 'URL',
+        'domain': 'Domain',
+        'intelligence_alert': 'Report',
+        'intelligence_report': 'Report',
+        'malware_family': 'Malware Family',
+        'threat_actor': 'Threat Actor',
+        'threat_group': 'Threat Group',
+        'threat_campaign': 'Threat Campaign',
+        'file': 'File',
+        'vulnerability': 'CVE',
+        'account': 'Account',
+        'malicious_event': 'Malicious Event',
+        'country': 'Country',
+        'region': 'Region',
+        'vertical': 'Vertical'
+    }
+    relationship_list = []
+    relationship = {}
+    for relationship in relationships:
+        indicator_type_b = relationship.get('type')
+        if indicator_type_b in ['ip', 'url', 'domain', 'malicious_event', 'country', 'region', 'vertical', 'account']:
+            entity_b_value = relationship.get('display_text', '')
+        elif indicator_type_b == 'vulnerability':
+            entity_b_value = relationship.get('key', '')
+        elif indicator_type_b in ['malware_family', 'threat_actor', 'threat_campaign', 'file', 'threat_group']:
+            entity_b_value = relationship.get('uuid', '')
+        else:
+            continue
+
+        relationship_list.append(EntityRelationship(
+            name='related-to',
+            entity_a=indicator_value,
+            entity_a_type=indicator_types.get(indicator_type_a, ''),
+            entity_b=entity_b_value,
+            entity_b_type=indicator_types.get(indicator_type_b, ''),
+            reverse_name='attachment-of',
+            source_reliability='B - Usually reliable',
+            brand='ACTI Indicator Query'))
+    return relationship_list
 
 
 def main():
