@@ -1,0 +1,18 @@
+name: Gitlab Mapping Rule
+id: _gitlab_mapping_to_dataset
+fromversion: 3.8.0
+tags: []
+rules: ''
+schema: |-
+  {
+    "okta_sso_raw": {
+      "client_ip": {
+        "type": "string",
+        "is_array": false
+      },
+      "os": {
+        "type": "string",
+        "is_array": false
+      },
+    }
+  }

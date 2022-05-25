@@ -1,6 +1,6 @@
 {
     "name": "GitLab",
-    "description": "",
+    "description": "Pack for handling gitlab operations",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",

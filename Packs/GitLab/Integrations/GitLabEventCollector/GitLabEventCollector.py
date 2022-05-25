@@ -1,205 +1,116 @@
-import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
-
-from typing import Any, Dict, List, Tuple
-from SiemApiModule import *
-
-def dedup_events(events: list, previous_fetched_events: list):
-    for seen_event in previous_fetched_events:
-        try:
-            events.remove(seen_event)
-        except ValueError:
-            # seen_event not in events
-            pass
+from SiemApiModule import *  # noqa # pylint: disable=unused-wildcard-import
 
 
-''' CLIENT CLASS '''
+class Client(IntegrationEventsClient):
+
+    def __init__(self, request: IntegrationHTTPRequest, options: IntegrationOptions, last_run: str):  # pragma: no cover
+        super().__init__(request=request, options=options)
+        self.last_run = last_run
+        self.page = 1
+        self.event_type = ''
+
+    def set_request_filter(self, after: Any):  # pragma: no cover
+        self.page += 1
+
+    def prepare_request(self):
+        self.request.url = f'{self.request.url.split("?")[0]}?created_after={self.last_run}&per_page=100&page={self.page}'
 
 
-class Client(BaseClient):
-    PAGE_SIZE = 100
-    def _get_events(self, end_point: str, created_after: str, page: int) -> List[Dict[str, str]]:
-        return self._http_request(
-            'GET',
-            end_point,
-            params={
-                'created_after': created_after,
-                'page': page,
-                'per_page': self.PAGE_SIZE,
-                'sort': 'asc',
-            }
-        )
+class GetEvents(IntegrationGetEvents):
+    @staticmethod
+    def get_last_run(events: list) -> dict:
+        groups = [event for event in events if event['entity_type'] == 'Group']
+        groups.sort(key=lambda k: k.get('id'))
+        projects = [event for event in events if event['entity_type'] == 'Project']
+        projects.sort(key=lambda k: k.get('id'))
 
-    def _get_events_with_pagination(
-        self,
-        end_point: str,
-        created_after: str,
-        previous_fetched_events: list,
-        page: int,
-        limit: int = 1000,
-    ) -> Tuple[List[Dict[str, str]], List[Dict[str, str]], int]:
+        return {'groups': groups[-1]['created_at'], 'projects': projects[-1]['created_at']}
 
-        events = []
+    def _iter_events(self):  # pragma: no cover
+        self.client.prepare_request()
+        response = self.call()
+        events: list = response.json()
+        events.sort(key=lambda k: k.get('created_at'))
+        if not events:
+            return []
 
-        last_page_events = current_events = self._get_events(end_point, created_after, page)
-        events.extend(current_events)
-        dedup_events(events, previous_fetched_events)
+        while True:
+            yield events
 
-        while len(events) < limit and len(current_events) == self.PAGE_SIZE:
-            page += 1
-            last_page_events = current_events
-            current_events = self._get_events(end_point, created_after, page)
-            events.extend(current_events)
-
-        return events[:limit], last_page_events, page
-
-    def get_audit_events(self, created_after: str, page: int) -> Dict[str, str]:
-        return self._get_events('/audit_events', created_after, page)
-
-    def get_group_events(
-        self,
-        group_id: str,
-        created_after: str,
-        previous_fetched_events: list,
-        limit: int = 1000,
-        page: int = 1
-    ) -> List[Dict[str, str]]:
-
-        return self._get_events_with_pagination(
-            f'/groups/{group_id}',
-            created_after,
-            previous_fetched_events,
-            page,
-            limit=limit,
-        )
-
-    def get_project_events(
-        self,
-        project_id: str,
-        created_after: str,
-        previous_fetched_events: list,
-        limit: int = 1000,
-        page: int = 1
-    ) -> List[Dict[str, str]]:
-
-        return self._get_events_with_pagination(
-            f'/projects/{project_id}',
-            created_after,
-            previous_fetched_events,
-            page,
-            limit=limit,
-        )
-
-
-''' COMMAND FUNCTIONS '''
-
-
-def test_module(client: Client) -> str:
-    """Tests API connectivity and authentication'
-
-    :type client: ``Client``
-    :param Client: client to use
-
-    :return: 'ok' if test passed, anything else will fail the test.
-    :rtype: ``str``
-    """
-
-    try:
-        client.get_audit_events(1)
-        result = CommandResults(raw_response='ok')
-    except DemistoException as e:
-        if 'Forbidden' in str(e) or 'Authorization' in str(e):
-            result = CommandResults(raw_response='Authorization Error: make sure API Key is correctly set.')
-        else:
-            raise
-
-    return result
-
-
-def get_events_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    limit = int(args.get('limit'))
-    event_type = args.get('event_type')
-
-    if event_type == 'Audit':
-        events = client.get_audit_events(limit)
-    if event_type == 'Group':
-        events = client.get_group_events(limit)
-    if event_type == 'Project':
-        events = client.get_project_events(limit)
-    else:
-        raise DemistoException(f'Invalid event_type. Expected one of "Audit", "Group", "Project". Recieved: {event_type}.')
-
-    return CommandResults(
-        readable_output=tableToMarkdown('Events', events),
-        raw_response=events,
-    )
-
-
-def fetch_events(client: Client, last_run: dict, group_ids: list, project_ids: list):
-    events = []
-
-    for group_id in group_ids:
-        events.extend(client.get_group_events(group_id, last_run['groups'][group_id]['created_after']))
-
-    for project_id in project_ids:
-        events.extend(client.get_project_events(project_id, last_run['projects'][group_id]['created_after']))
-
-    return events
-
-
-''' MAIN FUNCTION '''
+            last = events[-1]
+            self.client.set_request_filter(last['created_at'])
+            self.client.prepare_request()
+            response = self.call()
+            events = response.json()
+            events.sort(key=lambda k: k.get('created_at'))
+            if not events:
+                break
 
 
 def main() -> None:  # pragma: no cover
-    demisto_params = demisto.params() #| demisto.args()
-    base_url = urljoin(demisto_params['url'], '/api/v4')
-    api_key = demisto_params.get('credentials', {}).get('password')
-    group_ids = argToList(demisto_params.get('group_ids'))
-    project_ids = argToList(demisto_params.get('project_ids'))
-    verify_certificate = not demisto_params.get('insecure', False)
-    proxy = demisto_params.get('proxy', False)
+    demisto_params = demisto.params()
+    url = urljoin(demisto_params['url'], '/api/v4/')
+    events_collection_management = {
+        'groups_ids': argToList(demisto_params.get('group_ids', '')),
+        'projects_ids': argToList(demisto_params.get('project_ids', '')),
+        'event_types': ['groups', 'projects']
+    }
 
-    command = demisto.command()
-    demisto.debug(f'Command being called is {command}')
-    headers = {'PRIVATE-TOKEN': demisto_params.get('token')}
+    headers = {'PRIVATE-TOKEN': demisto_params.get('api_key', {}).get('credentials', {}).get('password')}
     request_object = {
         'method': Method.GET,
-        'url': demisto_params.get('url'),
+        'url': url,
         'headers': headers,
     }
+    last_run = demisto.getLastRun()
+    if ('groups', 'projects') not in last_run:
+        last_run = dateparser.parse(demisto_params['after'].strip()).isoformat()
+        last_run = {
+            'groups': last_run,
+            'projects': last_run,
+        }
+    else:
+        last_run = last_run
+
     options = IntegrationOptions.parse_obj(demisto_params)
+
     request = IntegrationHTTPRequest(**request_object)
 
-    # client =
+    client = Client(request, options, last_run)
+
+    get_events = GetEvents(client, options)
+
+    command = demisto.command()
     try:
-        client = Client(
-            base_url=base_url,
-            headers={
-                'PRIVATE-TOKEN': api_key,
-            },
-            verify=verify_certificate,
-            proxy=proxy,
-        )
-
+        events = []
+        for event_type in events_collection_management['event_types']:
+            for obj_id in events_collection_management[f'{event_type}_ids']:
+                call_url_suffix = f'{event_type}/{obj_id}/audit_events'
+                get_events.client.request.url = url + call_url_suffix
+                get_events.client.page = 1
+                get_events.client.event_type = event_type
+                events.extend(get_events.run())
         if command == 'test-module':
-            result = test_module(client)
-            return_results(result)
-
-        elif command == 'gitlab-get-events':
-            result = get_events_command(client, demisto.args())
-            return_results(result)
-
+            return_results('ok')
+            return
+        if command == 'gitlab-get-events':
+            command_results = CommandResults(
+                readable_output=tableToMarkdown('gitlab Logs', events, headerTransform=pascalToSpace),
+                raw_response=events,
+            )
+            return_results(command_results)
         elif command == 'fetch-events':
-            # limit = int(params.get('limit', '1000'))
-            last_run = demisto.getLastRun()
-            events = fetch_events(client, last_run, group_ids, project_ids)
-            send_events_to_xsiam(events, 'gitlab', 'gitlab')
-
+            demisto.setLastRun(get_events.get_last_run(events))
+            demisto_params['push_events'] = True
+        if demisto_params.get('push_events'):
+            send_events_to_xsiam(events, demisto_params.get('vendor', 'gitlab'),
+                                 demisto_params.get('product', 'gitlab'))
+        else:
+            return_error(f'Command not found: {command}')
     except Exception as exc:
+        raise exc
         return_error(f'Failed to execute {command} command.\nError:\n{str(exc)}', error=exc)
-
-
-''' ENTRY POINT '''
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
