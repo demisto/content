@@ -1158,6 +1158,78 @@ def test_panorama_push_to_device_group_command(mocker, args, expected_request_pa
     assert demisto_result_got == expected_demisto_result
 
 
+@pytest.mark.parametrize('args, expected_request_params, request_result, expected_demisto_result',
+                         [pytest.param({},
+                                       {'action': 'all',
+                                        'cmd': '<commit-all><template><name>some_template</name></template></commit-all>',
+                                        'key': 'thisisabogusAPIKEY!',
+                                        'type': 'commit'},
+                                       MockedResponse(text='<response status="success" code="19"><result><msg>'
+                                                           '<line>Commit job enqueued with jobid 19420</line></msg>'
+                                                           '<job>19420</job></result></response>', status_code=200,
+                                                      reason=''),
+                                       {'Panorama.Push(val.JobID == obj.JobID)': {'Template': 'some_template',
+                                                                                  'JobID': '19420',
+                                                                                  'Status': 'Pending'}},
+                                       id='no args'),
+                          pytest.param({"validate-only": "true"},
+                                       {'action': 'all',
+                                        'cmd': '<commit-all><template><name>some_template</name>'
+                                               '<validate-only>yes</validate-only></template></commit-all>',
+                                        'key': 'thisisabogusAPIKEY!',
+                                        'type': 'commit'},
+                                       MockedResponse(text='<response status="success" code="19"><result><msg>'
+                                                           '<line>Commit job enqueued with jobid 19420</line></msg>'
+                                                           '<job>19420</job></result></response>', status_code=200,
+                                                      reason=''),
+                                       {'Panorama.Push(val.JobID == obj.JobID)': {'Template': 'some_template',
+                                                                                  'JobID': '19420',
+                                                                                  'Status': 'Pending'}},
+                                       id='with validate'),
+                          pytest.param({'serial_number': '1337'},
+                                       {'action': 'all',
+                                        'cmd': '<commit-all><template><name>some_template</name><device><member>1337</member>'
+                                               '</device></template></commit-all>',
+                                        'key': 'thisisabogusAPIKEY!',
+                                        'type': 'commit'},
+                                       MockedResponse(text='<response status="success" code="19"><result><msg>'
+                                                           '<line>Commit job enqueued with jobid 19420</line></msg>'
+                                                           '<job>19420</job></result></response>', status_code=200,
+                                                      reason=''),
+                                       {'Panorama.Push(val.JobID == obj.JobID)': {'Template': 'some_template',
+                                                                                  'JobID': '19420',
+                                                                                  'Status': 'Pending'}},
+                                       id='with device'),
+                          ])
+def test_panorama_push_to_template_command(mocker, args, expected_request_params, request_result,
+                                               expected_demisto_result):
+    """
+    Given:
+        - command args
+        - request result
+    When:
+        - Running panorama-push-to-device-group command
+    Then:
+        - Assert the request url is as expected
+        - Assert demisto results contain the relevant result information
+    """
+    import Panorama
+    import requests
+    from Panorama import panorama_push_to_template_command
+
+    return_results_mock = mocker.patch.object(Panorama, 'return_results')
+    request_mock = mocker.patch.object(requests, 'request', return_value=request_result)
+    Panorama.TEMPLATE = 'some_template'
+    Panorama.API_KEY = 'thisisabogusAPIKEY!'
+    panorama_push_to_template_command(args)
+
+    called_request_params = request_mock.call_args.kwargs['data']  # The body part of the request
+    assert called_request_params == expected_request_params
+
+    demisto_result_got = return_results_mock.call_args.args[0]['EntryContext']
+    assert demisto_result_got == expected_demisto_result
+
+
 def test_get_url_category__url_length_gt_1278(mocker):
     """
     Given:
