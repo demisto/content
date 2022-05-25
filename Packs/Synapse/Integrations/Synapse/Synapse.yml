@@ -46,6 +46,10 @@ configuration:
   name: good_tag
   required: false
   type: 0
+- display: Use Synapse Optic
+  name: use_optic
+  required: false
+  type: 8
 description: Synapse intelligence analysis platform.
 display: Synapse
 name: Synapse
