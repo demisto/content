@@ -2,10 +2,10 @@ contentitemexportablefields:
   contentitemfields:
     propagationLabels:
     - all
-description: This playbook will use the Microsoft Defender For Endpoint feature - Advanced Hunting - and will hunt for host persistence evidence.
+description: This playbook uses the Microsoft Defender For Endpoint Advanced Hunting feature to hunt for host persistence evidence.
 id: MDE - Host Advanced Hunting For Persistence
 inputs:
-- description: Enter File Sha256 to hunt on. Can be a comma-separated list.
+- description: A comma-separated list of file SHA256 hashes to hunt.
   key: FileSha256
   playbookInputQuery:
   required: false
@@ -15,7 +15,7 @@ inputs:
       root: incident
       transformers:
       - operator: uniq
-- description: Enter File Sha1 to hunt on. Can be a comma-separated list.
+- description: A comma-separated list of file SHA1 hashes to hunt.
   key: FileSha1
   playbookInputQuery:
   required: false
@@ -25,7 +25,7 @@ inputs:
       root: incident
       transformers:
       - operator: uniq
-- description: Enter File MD5 to hunt on. Can be a comma-separated list.
+- description: A comma-separated list of file MD5 hashes to hunt.
   key: FileMd5
   playbookInputQuery:
   required: false
@@ -35,7 +35,7 @@ inputs:
       root: incident
       transformers:
       - operator: uniq
-- description: Enter an IP to hunt on.  Can be a comma-separated list.
+- description: A comma-separated list of IPs to hunt.
   key: IP
   playbookInputQuery:
   required: false
@@ -45,7 +45,7 @@ inputs:
       root: incident
       transformers:
       - operator: uniq
-- description: Enter a Hostname to hunt on.  Can be a comma-separated list.
+- description: A comma-separated list of host names to hunt.
   key: DeviceName
   playbookInputQuery:
   required: false
@@ -55,7 +55,7 @@ inputs:
       root: incident
       transformers:
       - operator: uniq
-- description: Enter a File name to hunt on.  Can be a comma-separated list.
+- description: A comma-separated list of file names to hunt.
   key: FileName
   playbookInputQuery:
   required: false
@@ -65,7 +65,7 @@ inputs:
       root: incident
       transformers:
       - operator: uniq
-- description: Enter a device ID to hunt on.  Can be a comma-separated list.
+- description: A comma-separated list of a device IDs to hunt.
   key: DeviceID
   playbookInputQuery:
   required: false
@@ -200,7 +200,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: Is there evidence of persistence. By selecting a “query_purpose” argument, a designated query template will be used.
+      description: Is there evidence of persistence? By selecting a “query_purpose” argument, a designated query template will be used.
       id: e3374fdd-88b7-402c-8be2-73812e2b0178
       iscommand: true
       name: Is the file created any Scheduled Tasks?
@@ -244,7 +244,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: Is there evidence of persistence. By selecting a “query_purpose” argument, a designated query template will be used.
+      description: Is there evidence of persistence? By selecting a “query_purpose” argument, a designated query template will be used.
       id: bcc66ee2-d143-45af-8926-1d49b3de1ec7
       iscommand: true
       name: A new user was created on the system?
@@ -288,7 +288,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: Is there evidence of persistence. By selecting a “query_purpose” argument, a designated query template will be used.
+      description: Is there evidence of persistence? By selecting a “query_purpose” argument, a designated query template will be used.
       id: 47877086-f011-47bb-89c9-b383dd13552b
       iscommand: true
       name: Object (User or Group) Was Added To A Group?
@@ -332,7 +332,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: Is there evidence of persistence. By selecting a “query_purpose” argument, a designated query template will be used.
+      description: Is there evidence of persistence? By selecting a “query_purpose” argument, a designated query template will be used.
       id: 480d3d03-048b-4d46-8981-f11ded805547
       iscommand: true
       name: Local Group Was Created?
@@ -440,7 +440,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: Is there evidence of persistence. By selecting a “query_purpose” argument, a designated query template will be used.
+      description: Is there evidence of persistence? By selecting a “query_purpose” argument, a designated query template will be used.
       id: 316e0b7f-9a15-41c6-8da9-e4ba6f269a9b
       iscommand: true
       name: Startup Folder Modification
@@ -488,7 +488,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: Is there evidence of persistence. By selecting a “query_purpose” argument, a designated query template will be used.
+      description: Is there evidence of persistence? By selecting a “query_purpose” argument, a designated query template will be used.
       id: 3df4ea06-4253-4ff6-89f6-b8dbd2c3343a
       iscommand: true
       name: 'Check If Any Registry Values Were Modified '
