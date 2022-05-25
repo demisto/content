@@ -1,5 +1,4 @@
-[MODEL: dataset=microsoft_365_defender_raw, model=Endpoint, content_id=***, version=***]
-dataset = microsoft_365_defender_raw 
+[MODEL: dataset=microsoft_365_defender_raw, model=Endpoint]
 |alter XDM.Endpoint.original_event_id = id,
         XDM.Endpoint.threat.original_alert_id = incidentId,						
         XDM.Endpoint.threat.severity = severity,		
