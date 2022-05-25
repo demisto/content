@@ -8,7 +8,7 @@ import urllib3
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 import traceback
-from typing import Dict, Any
+from typing import Dict
 
 # Disable insecure warnings
 urllib3.disable_warnings()  # pylint: disable=no-member
@@ -16,8 +16,7 @@ urllib3.disable_warnings()  # pylint: disable=no-member
 
 ''' CONSTANTS '''
 
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
-SET_INTEGRATION_CONTEXT_RETRIES = 5
+EVENTS_OBJECT_KEYS = {'events': 'id'}
 
 ''' CLIENT CLASS '''
 
@@ -126,18 +125,23 @@ def get_events_from_integration_context(is_fetch_events: bool = False, max_fetch
         List[dict]: The events from the integration context.
     """
     integration_context = demisto.getIntegrationContext()
+    demisto.log(f'get events context: {integration_context}')
     context_events = json.loads(integration_context.get('events', '[]'))
 
     fetched_events = context_events[:max_fetch]
 
     if is_fetch_events:
         # if we are fetching events, in order to avoid duplicates we must remove events that we are fetching now.
-        integration_context['events'] = context_events[max_fetch:]
+        for i in range(min(max_fetch, len(context_events))):
+            context_events[i]['remove'] = True
+
+        # remove only the the events that were fetched.
         set_to_integration_context_with_retries(
-            context=integration_context, max_retry_times=SET_INTEGRATION_CONTEXT_RETRIES
+            context={'events': context_events[:max_fetch]},
+            object_keys=EVENTS_OBJECT_KEYS
         )
 
-    demisto.debug(f'integration context events len: [{len(context_events)}], content: [{context_events}]')
+    demisto.debug(f'integration context events len: ({len(context_events)}), content: ({context_events})')
     return fetched_events
 
 
@@ -149,10 +153,12 @@ def saas_security_get_events_command(args: Dict) -> Union[str, CommandResults]:
     limit = arg_to_number(args.get('limit')) or 10
     if events := get_events_from_integration_context(max_fetch=limit):
         return CommandResults(
-            readable_output=tableToMarkdown('SaaS Security Logs', events, headerTransform=underscoreToCamelCase),
+            readable_output=tableToMarkdown(
+                'SaaS Security Logs', events, headers=list(events[0].keys()), headerTransform=underscoreToCamelCase
+            ),
             raw_response=events,
             outputs=events,
-            outputs_key_field='item_unique_id',
+            outputs_key_field='id',
             outputs_prefix='SaasSecurity.Event'
         )
     return 'No events were found.'
@@ -170,42 +176,41 @@ def long_running_execution_command(client: Client):
     Stores fetched events in the integration context and in addition make sure the access token is always up to date
     at all points of time.
     """
-    set_to_integration_context_with_retries(
-        context=client.get_access_token(), max_retry_times=SET_INTEGRATION_CONTEXT_RETRIES
-    )
+    # set the access token for the first fetch
+    set_to_integration_context_with_retries(context=client.get_access_token())
+    # there is no unique id for events, hence need to make one of our own.
+    current_event_id = 1
 
     while True:
         try:
-            should_update_integration_context = False
-            integration_context = demisto.getIntegrationContext()
-            demisto.debug(f'existing integration context: ({integration_context})')
+            updated_context = {}
+            demisto.debug(f'context integration: {demisto.getIntegrationContext()}')
 
             response = client.get_events_request()
             if response.status_code == 200:
                 events = response.json()
-                integration_context_events = json.loads(integration_context.get('events', '[]'))
                 demisto.debug(f'Received event(s): {events}')
                 if isinstance(events, list):  # 'events' is a list of events
-                    integration_context_events.extend(events)
+                    for event in events:
+                        event['id'] = current_event_id
+                    updated_context['events'] = events
                 else:  # 'events' is a single dict (only one event)
-                    integration_context_events.append(events)
-                integration_context['events'] = integration_context_events
-                should_update_integration_context = True
+                    events['id'] = current_event_id
+                    updated_context['events'] = [events]
+                current_event_id += 1
             elif response.status_code == 401:
                 demisto.debug(f'Unauthorized: [{response.json()}]')
-                integration_context.update(client.get_access_token())
-                should_update_integration_context = True
+                # update the access token in case its required
+                updated_context.update(client.get_access_token())
             elif response.status_code == 204:
                 demisto.debug(f'204 - No Content when fetching events')
 
-            if should_update_integration_context:
+            if updated_context:
                 # update integration context only in cases where there is anything to update, otherwise avoid
                 # setting the integration context as much as possible
-                current_events = json.loads(integration_context.get('events') or '[]')
-                demisto.debug(f'updated integration context: ({integration_context})')
-                demisto.debug(f'updated integration events length: ({len(current_events)})')
                 set_to_integration_context_with_retries(
-                    context=integration_context, max_retry_times=SET_INTEGRATION_CONTEXT_RETRIES
+                    context=updated_context,
+                    object_keys=EVENTS_OBJECT_KEYS
                 )
         except Exception as e:
             demisto.error(traceback.format_exc())
