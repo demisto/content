@@ -50,6 +50,15 @@ script:
       name: limit
       required: false
       secret: false
+    - description: Set this argument to True in order to create events, otherwise the command will only display them.
+      auto: PREDEFINED
+      defaultValue: 'False'
+      isArray: false
+      name: should_push_events
+      predefined:
+        - 'True'
+        - 'False'
+      required: true
     - description: First fetch time (<number> <time unit>, e.g., 12 hours, 1 day, 3 months). Default is 3 days.
       isArray: true
       name: from

@@ -34,6 +34,7 @@ Returns a list of events
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
+| should_push_events | Set this argument to True in orfer to create events, otherwise the command will only display them. Possible values are: True, False. Default is False. | Required |
 | limit | The maximum number of incidents per fetch. Default is 100. | Optional | 
 | from | First fetch time (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 1 day, 3 months). Default is 3 days. | Optional | 
 
@@ -42,7 +43,7 @@ Returns a list of events
 
 There is no context output for this command.
 #### Command example
-`!cyberark-get-events limit=10 from="3 days"`
+`!cyberark-get-events should_push_events=false limit=10 from="3 days"`
 #### Human Readable Output
 
 >### CyberArkIdentity RedRock records
