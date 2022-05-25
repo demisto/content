@@ -2,7 +2,7 @@ name: JiraEventCollector
 id: JiraEventCollector
 fromversion: 3.3.0
 rules: ''
-schema:
+schema: |-
   {
     "jira_jira_raw": {
       "summary": {
