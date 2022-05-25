@@ -105,7 +105,8 @@ class Client(BaseClient):
 
 def test_module(client: Client):
     # could cause us to lose events, need to check how to handle if possible
-    response = client.get_events_request(retries=1, is_test=True)  # retries 1 to avoid waiting so long for test module
+    # retries = 1 to avoid waiting so long for test module
+    response = client.get_events_request(retries=1, is_test=True)
     if response.status_code in (200, 204):
         return 'ok'
 
@@ -131,13 +132,14 @@ def get_events_from_integration_context(is_fetch_events: bool = False, max_fetch
     fetched_events = context_events[:max_fetch]
 
     if is_fetch_events:
+        events_to_remove = fetched_events.copy()
         # if we are fetching events, in order to avoid duplicates we must remove events that we are fetching now.
-        for i in range(min(max_fetch, len(context_events))):
-            context_events[i]['remove'] = True
+        for event in events_to_remove:
+            event['remove'] = True
 
         # remove only the the events that were fetched.
         set_to_integration_context_with_retries(
-            context={'events': context_events[:max_fetch]},
+            context={'events': events_to_remove},
             object_keys=EVENTS_OBJECT_KEYS
         )
 
@@ -183,7 +185,7 @@ def long_running_execution_command(client: Client):
 
     while True:
         try:
-            updated_context = {}
+            updated_integration_context = {}
             demisto.debug(f'context integration: {demisto.getIntegrationContext()}')
 
             response = client.get_events_request()
@@ -193,23 +195,23 @@ def long_running_execution_command(client: Client):
                 if isinstance(events, list):  # 'events' is a list of events
                     for event in events:
                         event['id'] = current_event_id
-                    updated_context['events'] = events
-                else:  # 'events' is a single dict (only one event)
+                    updated_integration_context['events'] = events
+                elif isinstance(events, dict):  # 'events' is a single dict (only one event)
                     events['id'] = current_event_id
-                    updated_context['events'] = [events]
+                    updated_integration_context['events'] = [events]
                 current_event_id += 1
             elif response.status_code == 401:
                 demisto.debug(f'Unauthorized: [{response.json()}]')
                 # update the access token in case its required
-                updated_context.update(client.get_access_token())
+                updated_integration_context.update(client.get_access_token())
             elif response.status_code == 204:
                 demisto.debug(f'204 - No Content when fetching events')
 
-            if updated_context:
+            if updated_integration_context:
                 # update integration context only in cases where there is anything to update, otherwise avoid
                 # setting the integration context as much as possible
                 set_to_integration_context_with_retries(
-                    context=updated_context,
+                    context=updated_integration_context,
                     object_keys=EVENTS_OBJECT_KEYS
                 )
         except Exception as e:
