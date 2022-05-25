@@ -6138,3 +6138,799 @@ Install the given software version onto the device. Download the software first 
 >| 1111111111111 | true |
 >| 192.168.1.145 | true |
 
+### pan-os-hygiene-check-log-forwarding
+***
+Checks that at least one log forwarding profile is configured according to best practices.
+
+
+#### Base Command
+
+`pan-os-hygiene-check-log-forwarding`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| device_filter_string | String by which to filter so that only the given device is checked. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PANOS.ConfigurationHygiene.Summary.description | String | The description of the hygiene check. | 
+| PANOS.ConfigurationHygiene.Summary.issue_code | String | The shorthand code for this hygiene check. | 
+| PANOS.ConfigurationHygiene.Summary.result | String | Whether the check passed or failed. | 
+| PANOS.ConfigurationHygiene.Summary.issue_count | Number | Total number of matching issues. | 
+| PANOS.ConfigurationHygiene.Result.hostid | String | Host ID. | 
+| PANOS.ConfigurationHygiene.Result.container_name | String | The parent container \(DG, Template, VSYS\) this object belongs to. | 
+| PANOS.ConfigurationHygiene.Result.issue_code | String | The shorthand code for the issue. | 
+| PANOS.ConfigurationHygiene.Result.description | String | Human readable description of the issue. | 
+| PANOS.ConfigurationHygiene.Result.name | String | The affected object name. | 
+
+#### Command example
+```!pan-os-hygiene-check-log-forwarding```
+#### Context Example
+```json
+{
+    "PANOS": {
+        "ConfigurationHygiene": {
+            "Result": [
+                {
+                    "container_name": "LAB",
+                    "description": "Log forwarding profile missing log type 'threat'.",
+                    "hostid": "192.168.1.145",
+                    "issue_code": "BP-V-2",
+                    "name": "test_fwd_profile-1"
+                },
+                {
+                    "container_name": "LAB",
+                    "description": "Log forwarding profile missing log type 'threat'.",
+                    "hostid": "192.168.1.145",
+                    "issue_code": "BP-V-2",
+                    "name": "test_fwd_profile-1-1"
+                },
+                {
+                    "container_name": "shared",
+                    "description": "Log forwarding profile missing log type 'threat'.",
+                    "hostid": "192.168.1.145",
+                    "issue_code": "BP-V-2",
+                    "name": "test_fwd_profile"
+                }
+            ],
+            "Summary": [
+                {
+                    "description": "Fails if there are no valid log forwarding profiles configured.",
+                    "issue_code": "BP-V-1",
+                    "issue_count": 0,
+                    "result": "\u2714\ufe0f"
+                },
+                {
+                    "description": "Fails if the configured log forwarding profile has no match list.",
+                    "issue_code": "BP-V-2",
+                    "issue_count": 3,
+                    "result": "\u274c"
+                },
+                {
+                    "description": "Fails if enhanced application logging is not configured.",
+                    "issue_code": "BP-V-3",
+                    "issue_count": 0,
+                    "result": "\u2714\ufe0f"
+                }
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### PAN-OS Configuration Hygiene Check
+>|description|issue_code|issue_count|result|
+>|---|---|---|---|
+>| Fails if there are no valid log forwarding profiles configured. | BP-V-1 | 0 | ✔️ |
+>| Fails if the configured log forwarding profile has no match list. | BP-V-2 | 3 | ❌ |
+>| Fails if enhanced application logging is not configured. | BP-V-3 | 0 | ✔️ |
+
+
+### pan-os-hygiene-check-vulnerability-profiles
+***
+Checks the configured vulnerability profiles to ensure at least one meets best practices.
+
+
+#### Base Command
+
+`pan-os-hygiene-check-vulnerability-profiles`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| device_filter_string | String by which to filter so that only the given device is checked. | Optional | 
+| minimum_block_severities | Comma-separated list of severities that must be in drop/reset/block-ip mode. Default is critical,high. | Optional | 
+| minimum_alert_severities | Comma-separated list of severities that must be in alert/default or higher mode. Default is medium,low. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PANOS.ConfigurationHygiene.Summary.description | String | The description of the hygiene check. | 
+| PANOS.ConfigurationHygiene.Summary.issue_code | String | The shorthand code for this hygiene check. | 
+| PANOS.ConfigurationHygiene.Summary.result | String | Whether the check passed or failed. | 
+| PANOS.ConfigurationHygiene.Summary.issue_count | Number | Total number of matching issues. | 
+| PANOS.ConfigurationHygiene.Result.hostid | String | Host ID. | 
+| PANOS.ConfigurationHygiene.Result.container_name | String | The parent container \(DG, Template, VSYS\) this object belongs to. | 
+| PANOS.ConfigurationHygiene.Result.issue_code | String | The shorthand code for the issue. | 
+| PANOS.ConfigurationHygiene.Result.description | String | Human readable description of the issue. | 
+| PANOS.ConfigurationHygiene.Result.name | String | The affected object name. | 
+
+#### Command example
+```!pan-os-hygiene-check-vulnerability-profiles```
+#### Context Example
+```json
+{
+    "PANOS": {
+        "ConfigurationHygiene": {
+            "Summary": [
+                {
+                    "description": "Fails if no vulnerability profile is configured for visibility.",
+                    "issue_code": "BP-V-4",
+                    "issue_count": 0,
+                    "result": "\u2714\ufe0f"
+                }
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### PAN-OS Configuration Hygiene Check
+>|description|issue_code|issue_count|result|
+>|---|---|---|---|
+>| Fails if no vulnerability profile is configured for visibility. | BP-V-4 | 0 | ✔️ |
+
+
+### pan-os-hygiene-check-spyware-profiles
+***
+Checks the configured Anti-spyware profiles to ensure at least one meets best practices.
+
+
+#### Base Command
+
+`pan-os-hygiene-check-spyware-profiles`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| device_filter_string | String to filter to only check given devices. | Optional | 
+| minimum_block_severities | csv list of severities that must be in drop/reset/block-ip mode. Default is critical,high. | Optional | 
+| minimum_alert_severities | csv list of severities that must be in alert/default or higher mode. Default is medium,low. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PANOS.ConfigurationHygiene.Summary.description | String | The description of the check | 
+| PANOS.ConfigurationHygiene.Summary.issue_code | String | The shorthand code for this hygiene check | 
+| PANOS.ConfigurationHygiene.Summary.result | String | Whether the check passed or failed | 
+| PANOS.ConfigurationHygiene.Summary.issue_count | String | Total number of matching issues | 
+| PANOS.ConfigurationHygiene.Result.hostid | String | Host ID. | 
+| PANOS.ConfigurationHygiene.Result.container_name | String | What parent container \(DG, Template, VSYS\) this object belongs to. | 
+| PANOS.ConfigurationHygiene.Result.issue_code | String | The shorthand code for the issue | 
+| PANOS.ConfigurationHygiene.Result.description | String | Human readable description of issue | 
+| PANOS.ConfigurationHygiene.Result.name | String | The affected object name | 
+
+#### Command example
+```!pan-os-hygiene-check-spyware-profiles```
+#### Context Example
+```json
+{
+    "PANOS": {
+        "ConfigurationHygiene": {
+            "Summary": [
+                {
+                    "description": "Fails if no spyware profile is configured for visibility.",
+                    "issue_code": "BP-V-5",
+                    "issue_count": 0,
+                    "result": "\u2714\ufe0f"
+                }
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### PAN-OS Configuration Hygiene Check
+>|description|issue_code|issue_count|result|
+>|---|---|---|---|
+>| Fails if no spyware profile is configured for visibility. | BP-V-5 | 0 | ✔️ |
+
+
+### pan-os-hygiene-check-url-filtering-profiles
+***
+Checks the configured URL Filtering profiles to ensure at least one meets best practices.
+
+
+#### Base Command
+
+`pan-os-hygiene-check-url-filtering-profiles`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| device_filter_string | String to filter to only check given device. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PANOS.ConfigurationHygiene.Summary.description | String | The description of the check | 
+| PANOS.ConfigurationHygiene.Summary.issue_code | String | The shorthand code for this hygiene check | 
+| PANOS.ConfigurationHygiene.Summary.result | String | Whether the check passed or failed | 
+| PANOS.ConfigurationHygiene.Summary.issue_count | String | Total number of matching issues | 
+| PANOS.ConfigurationHygiene.Result.hostid | String | Host ID. | 
+| PANOS.ConfigurationHygiene.Result.container_name | String | What parent container \(DG, Template, VSYS\) this object belongs to. | 
+| PANOS.ConfigurationHygiene.Result.issue_code | String | The shorthand code for the issue | 
+| PANOS.ConfigurationHygiene.Result.description | String | Human readable description of issue | 
+| PANOS.ConfigurationHygiene.Result.name | String | The affected object name | 
+
+#### Command example
+```!pan-os-hygiene-check-url-filtering-profiles```
+#### Context Example
+```json
+{
+    "PANOS": {
+        "ConfigurationHygiene": {
+            "Summary": [
+                {
+                    "description": "Fails if no spyware profile is configured for url-filtering",
+                    "issue_code": "BP-V-6",
+                    "issue_count": 0,
+                    "result": "\u2714\ufe0f"
+                }
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### PAN-OS Configuration Hygiene Check
+>|description|issue_code|issue_count|result|
+>|---|---|---|---|
+>| Fails if no spyware profile is configured for url-filtering | BP-V-6 | 0 | ✔️ |
+
+
+### pan-os-hygiene-conforming-url-filtering-profiles
+***
+Returns a list of existing PANOS URL filtering objects that conform to best practices.
+
+
+#### Base Command
+
+`pan-os-hygiene-conforming-url-filtering-profiles`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| device_filter_string | String to filter to only check given device. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PANOS.PanosObject.hostid | String | Host ID. | 
+| PANOS.PanosObject.container_name | String | What parent container \(DG, Template, VSYS\) this object belongs to. | 
+| PANOS.PanosObject.name | String | The PAN-OS object name | 
+| PANOS.PanosObject.object_type | String | The PAN-OS-Python object type | 
+
+#### Command example
+```!pan-os-hygiene-conforming-url-filtering-profiles```
+#### Context Example
+```json
+{
+    "PANOS": {
+        "PanosObject": [
+            {
+                "container_name": "shared",
+                "hostid": "192.168.1.145",
+                "name": "Outbound-URL",
+                "object_type": "URLFilteringProfile"
+            },
+            {
+                "container_name": "shared",
+                "hostid": "192.168.1.145",
+                "name": "Exception-URL",
+                "object_type": "URLFilteringProfile"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### PAN-OS Objects
+>|container_name|hostid|name|object_type|
+>|---|---|---|---|
+>| shared | 192.168.1.145 | Outbound-URL | URLFilteringProfile |
+>| shared | 192.168.1.145 | Exception-URL | URLFilteringProfile |
+
+
+### pan-os-hygiene-conforming-spyware-profiles
+***
+Returns all Anti-spyware profiles that conform to best practices.
+
+
+#### Base Command
+
+`pan-os-hygiene-conforming-spyware-profiles`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| device_filter_string | String to filter to only check given device. | Optional | 
+| minimum_block_severities | csv list of severities that must be in drop/reset/block-ip mode. Default is critical,high. | Optional | 
+| minimum_alert_severities | csv list of severities that must be in alert/default or higher mode. Default is medium,low. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PANOS.PanosObject.hostid | String | Host ID. | 
+| PANOS.PanosObject.container_name | String | What parent container \(DG, Template, VSYS\) this object belongs to. | 
+| PANOS.PanosObject.name | String | The PAN-OS object name | 
+| PANOS.PanosObject.object_type | String | The PAN-OS-Python object type | 
+
+#### Command example
+```!pan-os-hygiene-conforming-spyware-profiles```
+#### Context Example
+```json
+{
+    "PANOS": {
+        "PanosObject": [
+            {
+                "container_name": "shared",
+                "hostid": "192.168.1.145",
+                "name": "Outbound-AS",
+                "object_type": "AntiSpywareProfile"
+            },
+            {
+                "container_name": "shared",
+                "hostid": "192.168.1.145",
+                "name": "Inbound-AS",
+                "object_type": "AntiSpywareProfile"
+            },
+            {
+                "container_name": "shared",
+                "hostid": "192.168.1.145",
+                "name": "Internal-AS",
+                "object_type": "AntiSpywareProfile"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### PAN-OS Objects
+>|container_name|hostid|name|object_type|
+>|---|---|---|---|
+>| shared | 192.168.1.145 | Outbound-AS | AntiSpywareProfile |
+>| shared | 192.168.1.145 | Inbound-AS | AntiSpywareProfile |
+>| shared | 192.168.1.145 | Internal-AS | AntiSpywareProfile |
+
+
+### pan-os-hygiene-conforming-vulnerability-profiles
+***
+Returns all Vulnerability profiles that conform to best practices.
+
+
+#### Base Command
+
+`pan-os-hygiene-conforming-vulnerability-profiles`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| device_filter_string | String to filter to only check given device. | Optional | 
+| minimum_block_severities | csv list of severities that must be in drop/reset/block-ip mode. Default is critical,high. | Optional | 
+| minimum_alert_severities | csv list of severities that must be in alert/default or higher mode. Default is medium,low. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PANOS.PanosObject.hostid | String | Host ID. | 
+| PANOS.PanosObject.container_name | String | What parent container \(DG, Template, VSYS\) this object belongs to. | 
+| PANOS.PanosObject.name | String | The PAN-OS object name | 
+| PANOS.PanosObject.object_type | String | The PAN-OS-Python object type | 
+
+#### Command example
+```!pan-os-hygiene-conforming-vulnerability-profiles```
+#### Context Example
+```json
+{
+    "PANOS": {
+        "PanosObject": [
+            {
+                "container_name": "shared",
+                "hostid": "192.168.1.145",
+                "name": "Outbound-VP",
+                "object_type": "VulnerabilityProfile"
+            },
+            {
+                "container_name": "shared",
+                "hostid": "192.168.1.145",
+                "name": "Inbound-VP",
+                "object_type": "VulnerabilityProfile"
+            },
+            {
+                "container_name": "shared",
+                "hostid": "192.168.1.145",
+                "name": "Internal-VP",
+                "object_type": "VulnerabilityProfile"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### PAN-OS Objects
+>|container_name|hostid|name|object_type|
+>|---|---|---|---|
+>| shared | 192.168.1.145 | Outbound-VP | VulnerabilityProfile |
+>| shared | 192.168.1.145 | Inbound-VP | VulnerabilityProfile |
+>| shared | 192.168.1.145 | Internal-VP | VulnerabilityProfile |
+
+
+### pan-os-hygiene-check-security-zones
+***
+Check configured security zones have correct settings.
+
+
+#### Base Command
+
+`pan-os-hygiene-check-security-zones`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| device_filter_string | String to filter to only check given device. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PANOS.ConfigurationHygiene.Summary.description | String | The description of the check | 
+| PANOS.ConfigurationHygiene.Summary.issue_code | String | The shorthand code for this hygiene check | 
+| PANOS.ConfigurationHygiene.Summary.result | String | Whether the check passed or failed | 
+| PANOS.ConfigurationHygiene.Summary.issue_count | String | Total number of matching issues | 
+| PANOS.ConfigurationHygiene.Result.hostid | String | Host ID. | 
+| PANOS.ConfigurationHygiene.Result.container_name | String | What parent container \(DG, Template, VSYS\) this object belongs to. | 
+| PANOS.ConfigurationHygiene.Result.issue_code | String | The shorthand code for the issue | 
+| PANOS.ConfigurationHygiene.Result.description | String | Human readable description of issue | 
+| PANOS.ConfigurationHygiene.Result.name | String | The affected object name | 
+
+#### Command example
+```!pan-os-hygiene-check-security-zones```
+#### Context Example
+```json
+{
+    "PANOS": {
+        "ConfigurationHygiene": {
+            "Result": [
+                {
+                    "container_name": "LAB",
+                    "description": "Security zone has no log forwarding setting.",
+                    "hostid": "192.168.1.145",
+                    "issue_code": "BP-V-7",
+                    "name": "TEST_ZONE"
+                }
+            ],
+            "Summary": [
+                {
+                    "description": "Fails when a security zone has no log forwarding setting.",
+                    "issue_code": "BP-V-7",
+                    "issue_count": 1,
+                    "result": "\u274c"
+                }
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### PAN-OS Configuration Hygiene Check
+>|description|issue_code|issue_count|result|
+>|---|---|---|---|
+>| Fails when a security zone has no log forwarding setting. | BP-V-7 | 1 | ❌ |
+
+
+### pan-os-hygiene-check-security-rules
+***
+Check security rules are configured correctly.
+
+
+#### Base Command
+
+`pan-os-hygiene-check-security-rules`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| device_filter_string | String to filter to only check given device. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PANOS.ConfigurationHygiene.Summary.description | String | The description of the check | 
+| PANOS.ConfigurationHygiene.Summary.issue_code | String | The shorthand code for this hygiene check | 
+| PANOS.ConfigurationHygiene.Summary.result | String | Whether the check passed or failed | 
+| PANOS.ConfigurationHygiene.Summary.issue_count | String | Total number of matching issues | 
+| PANOS.ConfigurationHygiene.Result.hostid | String | Host ID. | 
+| PANOS.ConfigurationHygiene.Result.container_name | String | What parent container \(DG, Template, VSYS\) this object belongs to. | 
+| PANOS.ConfigurationHygiene.Result.issue_code | String | The shorthand code for the issue | 
+| PANOS.ConfigurationHygiene.Result.description | String | Human readable description of issue | 
+| PANOS.ConfigurationHygiene.Result.name | String | The affected object name | 
+
+#### Command example
+```!pan-os-hygiene-check-security-rules```
+#### Context Example
+```json
+{
+    "PANOS": {
+        "ConfigurationHygiene": {
+            "Result": [
+                {
+                    "container_name": "shared",
+                    "description": "Security rule is not configured to log at session end.",
+                    "hostid": "192.168.1.145",
+                    "issue_code": "BP-V-8",
+                    "name": "Test-webapp-rule"
+                },
+                {
+                    "container_name": "shared",
+                    "description": "Security rule has no log forwarding profile.",
+                    "hostid": "192.168.1.145",
+                    "issue_code": "BP-V-9",
+                    "name": "Test-webapp-rule"
+                },
+                {
+                    "container_name": "shared",
+                    "description": "Security rule has no profile group or configured threat profiles.",
+                    "hostid": "192.168.1.145",
+                    "issue_code": "BP-V-10",
+                    "name": "Test-webapp-rule"
+                }
+            ],
+            "Summary": [
+                {
+                    "description": "Fails when a security rule is not configured to log at session end.",
+                    "issue_code": "BP-V-8",
+                    "issue_count": 1,
+                    "result": "\u274c"
+                },
+                {
+                    "description": "Fails when a security rule has no log forwarding profile configured.",
+                    "issue_code": "BP-V-9",
+                    "issue_count": 1,
+                    "result": "\u274c"
+                },
+                {
+                    "description": "Fails when a security rule has no configured profiles or profile groups.",
+                    "issue_code": "BP-V-10",
+                    "issue_count": 1,
+                    "result": "\u274c"
+                }
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### PAN-OS Configuration Hygiene Check
+>|description|issue_code|issue_count|result|
+>|---|---|---|---|
+>| Fails when a security rule is not configured to log at session end. | BP-V-8 | 1 | ❌ |
+>| Fails when a security rule has no log forwarding profile configured. | BP-V-9 | 1 | ❌ |
+>| Fails when a security rule has no configured profiles or profile groups. | BP-V-10 | 1 | ❌ |
+
+
+### pan-os-hygiene-fix-log-forwarding
+***
+Fix log forwarding issues identified by pan-os-hygiene-check-log-forwarding.
+
+
+#### Base Command
+
+`pan-os-hygiene-fix-log-forwarding`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| issue | Dictionary of Hygiene issue, from a hygiene check command. Can be a list. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PANOS.ConfigurationHygieneFix.hostid | String | Host ID | 
+| PANOS.ConfigurationHygieneFix.container_name | String | What parent container \(DG, Template, VSYS\) this object belongs to. | 
+| PANOS.ConfigurationHygieneFix.issue_code | String | The shorthand code for the issue | 
+| PANOS.ConfigurationHygieneFix.description | String | Human readable description of issue | 
+| PANOS.ConfigurationHygieneFix.name | String | The affected object name | 
+
+#### Command example
+```!pan-os-hygiene-fix-log-forwarding issue=${PANOS.ConfigurationHygiene.Result}```
+#### Context Example
+```json
+{
+  "PANOS": {
+    "ConfigurationHygieneFix": [
+      {
+        "container_name": "LAB",
+        "description": "Enabled Enhanced Application Logging.",
+        "hostid": "192.168.1.145",
+        "issue_code": "BP-V-2",
+        "name": "test_fwd_profile-1"
+      }
+    ]
+  }
+}
+```
+
+### pan-os-hygiene-fix-security-zone-log-settings
+***
+Fixes security zones that are configured without a valid log forwarding profile.
+
+
+#### Base Command
+
+`pan-os-hygiene-fix-security-zone-log-settings`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| issue | Dictionary of Hygiene issue, from a hygiene check command. Can be a list. | Required | 
+| log_forwarding_profile_name | Name of log forwarding profile to set. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PANOS.ConfigurationHygieneFix.hostid | String | Host ID | 
+| PANOS.ConfigurationHygieneFix.container_name | String | What parent container \(DG, Template, VSYS\) this object belongs to. | 
+| PANOS.ConfigurationHygieneFix.issue_code | String | The shorthand code for the issue | 
+| PANOS.ConfigurationHygieneFix.description | String | Human readable description of issue | 
+| PANOS.ConfigurationHygieneFix.name | String | The affected object name | 
+
+#### Command example
+```!pan-os-hygiene-fix-security-zone-log-settings issue=${PANOS.ConfigurationHygiene.Result} log_forwarding_profile_name="test-fwd-profile"```
+#### Context Example
+```json
+{
+  "PANOS": {
+    "ConfigurationHygieneFix": [
+      {
+        "container_name": "LAB",
+        "description": "Set log forwarding profile test-fwd-profile",
+        "hostid": "192.168.1.145",
+        "issue_code": "BP-V-7",
+        "name": "TEST_ZONE"
+      }
+    ]
+  }
+}
+```
+
+### pan-os-hygiene-fix-security-rule-log-settings
+***
+Fixed security rules that have incorrect log settings by adding a log forwarding profile and setting
+
+
+#### Base Command
+
+`pan-os-hygiene-fix-security-rule-log-settings`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| issue | Dictionary of Hygiene issue, from a hygiene check command. Can be list. | Required | 
+| log_forwarding_profile_name | Name of log forwarding profile to use as log setting. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PANOS.ConfigurationHygieneFix.hostid | String | Host ID | 
+| PANOS.ConfigurationHygieneFix.container_name | String | What parent container \(DG, Template, VSYS\) this object belongs to. | 
+| PANOS.ConfigurationHygieneFix.issue_code | String | The shorthand code for the issue | 
+| PANOS.ConfigurationHygieneFix.description | String | Human readable description of issue | 
+| PANOS.ConfigurationHygieneFix.name | String | The affected object name | 
+
+#### Command example
+```!pan-os-hygiene-fix-security-rule-log-settings issue=${PANOS.ConfigurationHygiene.Result.[0]} log_forwarding_profile_name="test-fwd-profile""```
+#### Context Example
+```json
+{
+  "PANOS": {
+    "ConfigurationHygieneFix": [
+      {
+        "container_name": "shared",
+        "description": "Set log forwarding profile to test-fwd-profile-3 andenabled log at session end.",
+        "hostid": "192.168.1.145",
+        "issue_code": "BP-V-8",
+        "name": "Test-webapp-rule"
+      }
+    ]
+  }
+}
+```
+
+### pan-os-hygiene-fix-security-rule-profile-settings
+***
+Fixed security rules that have incorrect log settings by adding a log forwarding profile and setting
+
+
+#### Base Command
+
+`pan-os-hygiene-fix-security-rule-profile-settings`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| issue | Dictionary of Hygiene issue, from a hygiene check command. | Required | 
+| security_profile_group_name | Name of Security profile group to use as log setting. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PANOS.ConfigurationHygieneFix.hostid | String | Host ID | 
+| PANOS.ConfigurationHygieneFix.container_name | String | What parent container \(DG, Template, VSYS\) this object belongs to. | 
+| PANOS.ConfigurationHygieneFix.issue_code | String | The shorthand code for the issue | 
+| PANOS.ConfigurationHygieneFix.description | String | Human readable description of issue | 
+| PANOS.ConfigurationHygieneFix.name | String | The affected object name | 
+
+#### Command example
+```!pan-os-hygiene-fix-security-rule-log-settings issue=${PANOS.ConfigurationHygiene.Result.[0]} log_forwarding_profile_name="test-fwd-profile""```
+#### Context Example
+```json
+{
+  "PANOS": {
+    "ConfigurationHygieneFix": [
+      {
+        "container_name": "shared",
+        "description": "Set security profile group Alert-Only",
+        "hostid": "192.168.1.145",
+        "issue_code": "BP-V-10",
+        "name": "Test-webapp-rule"
+      }
+    ]
+  }    
+}
+```
