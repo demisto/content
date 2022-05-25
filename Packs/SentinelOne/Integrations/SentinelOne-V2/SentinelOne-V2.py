@@ -1333,7 +1333,7 @@ def add_hash_to_blocklist(client: Client, args: dict) -> CommandResults:
 
     try:
         result = client.add_hash_to_blocklist_request(value=sha1, description=args.get('description'),
-                                                      os_type=args.get('os_type'), source=args.get('source'))
+                                                      os_type=args.get('os_type'), source=args.get('source'))                                                      
         status = {
             'hash': sha1,
             'status': "Added to blocklist"
@@ -1358,7 +1358,7 @@ def add_hash_to_blocklist(client: Client, args: dict) -> CommandResults:
             raise e
 
     return CommandResults(
-        readable_output=f"Added {sha1} to blocklist or it was already present.",
+        readable_output=f"{sha1}: {status['status']}.",
         outputs_prefix='SentinelOne.AddHashToBlocklist',
         outputs_key_field='Value',
         # `status` instead of `result` because we modify status based on the error/exception comments above
@@ -1420,7 +1420,7 @@ def remove_hash_from_blocklist(client: Client, args: dict) -> CommandResults:
         }
 
     return CommandResults(
-        readable_output=f"Removed hash {sha1} from the blocklist, or it was already absent",
+        readable_output=f"{sha1}: {status['status']}.",
         outputs_prefix='SentinelOne.RemoveHashFromBlocklist',
         outputs_key_field='Value',
         outputs=status,
