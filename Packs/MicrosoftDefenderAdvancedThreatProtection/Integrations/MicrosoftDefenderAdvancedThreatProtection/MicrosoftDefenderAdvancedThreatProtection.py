@@ -4470,7 +4470,6 @@ def run_polling_command(client: MsClient, args: dict, cmd: str, action_func: Cal
     is_first_run = 'machine_action_id' not in args
     if is_first_run:
         command_results = action_func(client, args)
-        outputs = command_results.outputs
         # schedule next poll
         polling_args = {
             'machine_action_id': command_results.raw_response.get("id"),
