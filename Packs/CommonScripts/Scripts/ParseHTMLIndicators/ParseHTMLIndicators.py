@@ -6,78 +6,77 @@ from bs4 import BeautifulSoup
 from CommonServerPython import *  # noqa: F401
 from tld import get_tld
 
-# Retrieve demisto args
-args = demisto.args()
-blog_url = args.get("url")
-page = requests.get(blog_url)
-exclusionList = argToList(args.get("exclude_indicators"))
-TLDExclusion = argToList(args.get("exclude_TLD"))
-unescapeDomain = args.get("unescape_domain")
-badDomainTLD = []
 
-# parse html content
-soup = BeautifulSoup(page.content, "html.parser")
-for data in soup(['style', 'script', 'header', 'head', 'footer', 'aside', 'a']):
-    # Remove tags
-    data.decompose()
+def strip_HTML_tags(page):
+    # Parse the HTML content
+    soup = BeautifulSoup(page.content, "html.parser")
+    # Strip irrelevant tags
+    for data in soup(['style', 'script', 'header', 'head', 'footer', 'aside', 'a']):
+        data.decompose()
+    return(' '.join(soup.stripped_strings))
 
-page_update = ' '.join(soup.stripped_strings)
 
-# Declare indicators regex
-domain_regex = r"([a-zA-Z0-9]+?\.?[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9]\[\.\][a-zA-Z]{2,}\.?[a-zA-Z]{0,})"
-url_regex = r"([https|ftp|hxxps]+:[//|\\\\]+[\w\d:#@%/;$()~_\+-=\\\[\.\]&]*)"
-ip_regex = r"(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(?:\[\.\]|\.)){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])"
-cve_regex = r"(CVE-\d{4}-\d{4,7})"
+def validate_domains(domains, unescapeDomain, TLDExclusion):
+    # TLD exclusion and validation for domain indicators
+    badDomainTLD = set()
+    for indicator in domains:
+        if unescapeDomain == "True" and not (get_tld(indicator, fail_silently=True)):
+            badDomainTLD.add(indicator)
+            continue
 
-# Allow domain regex replacement between "[.]" and "."
-if unescapeDomain == "True":
-    domain_regex = domain_regex.replace("\[\.\]", "\.")
+        for tld in TLDExclusion:
+            if indicator.endswith(tld):
+                badDomainTLD.add(indicator)
+    return(badDomainTLD)
 
-# Extract indicators using regex
-md5 = md5Regex.findall(page_update)
-sha1 = sha1Regex.findall(page_update)
-sha256 = sha256Regex.findall(page_update)
-domain = re.findall(domain_regex, page_update)
-url = re.findall(url_regex, page_update)
-ip = re.findall(ip_regex, page_update)
-cve = re.findall(cve_regex, page_update, flags=re.IGNORECASE)
 
-# Indicators exclusion
-for ex_indicator in exclusionList:
-    domain[:] = (value for value in domain if value != ex_indicator)
-    url[:] = (value for value in url if value != ex_indicator)
-    ip[:] = (value for value in ip if value != ex_indicator)
-    md5[:] = (value for value in md5 if value != ex_indicator)
-    sha1[:] = (value for value in sha1 if value != ex_indicator)
-    sha256[:] = (value for value in sha256 if value != ex_indicator)
-    cve[:] = (value for value in cve if value != ex_indicator)
+def main():
+    # Retrieve demisto args
+    args = demisto.args()
+    blog_url = args.get("url")
+    try:
+        headers = {'user-agent': 'PANW-XSOAR'}
+        page = requests.get(blog_url, verify=False, headers=headers)
+        page.raise_for_status
+    except requests.HTTPError:
+        raise
 
-# Convert domain indicators to url (match Domain Indicator Type formatting script)
-domain = ["hxxp://" + sub for sub in domain]
+    exclusionList = set(argToList(args.get("exclude_indicators")))
+    TLDExclusion = argToList(args.get("exclude_TLD"))
+    unescapeDomain = args.get("unescape_domain")
 
-# TLD exclusion for domain indicators
-for indicator in domain:
-    for ex_tld in TLDExclusion:
-        if indicator.endswith(ex_tld):
-            badDomainTLD.append(indicator)
+    # Allow domain regex replacement between "[.]" and "."
+    if unescapeDomain == "False":
+        domain_regex = r"([a-zA-Z0-9]+?\[?\.?\]?[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9]\[\.\][a-zA-Z]{2,}\[?\.?\]?[a-zA-Z]{0,})"
+    else:
+        domain_regex = r"([a-zA-Z0-9]+?\[?\.?\]?[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9]\[\.\][a-zA-Z]{2,}\[?\.?\]?[a-zA-Z]{0,})"
+        domain_regex = domain_regex.replace("\[\.\]", "\.")
 
-# TLD validation for domain regex
-if unescapeDomain == "True":
-    for dn in domain:
-        tldCheck = get_tld(dn, fail_silently=True)
-        if not tldCheck:
-            badDomainTLD.append(dn)
+    # Declare indicator regexs
+    url_regex = r"([https|ftp|hxxps]+:[//|\\\\]+[\w\d:#@%/;$()~_\+-=\\\[\.\]&]*)"
+    ip_regex = r"(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(?:\[\.\]|\.)){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])"
+    cve_regex = r"(CVE-\d{4}-\d{4,7})"
 
-# Combine all indicators
-blogIndicators = [*md5, *sha1, *sha256, *domain, *url, *ip, *cve]
+    page_update = strip_HTML_tags(page)
 
-# Remove bad formatted indicators
-for fp_indicator in badDomainTLD:
-    blogIndicators[:] = (value for value in blogIndicators if value != fp_indicator)
+    # Extract indicators using regex
+    md5 = set(md5Regex.findall(page_update))
+    sha1 = set(sha1Regex.findall(page_update))
+    sha256 = set(sha256Regex.findall(page_update))
+    domain = set(re.findall(domain_regex, page_update))
+    url = set(re.findall(url_regex, page_update))
+    ip = set(re.findall(ip_regex, page_update))
+    cve = set(re.findall(cve_regex, page_update, flags=re.IGNORECASE))
 
-# Keep unique values
-blogIndicators = list(dict.fromkeys(blogIndicators))
-blogIndicators = str(blogIndicators)
+    # Validate the domain indicators
+    badDomainTLD = validate_domains(domain, unescapeDomain, TLDExclusion)
 
-return_results(CommandResults(readable_output=blogIndicators, outputs={
-               "http.parsedBlog.indicators": blogIndicators, "http.parsedBlog.sourceLink": blog_url}))
+    # Combine all indicators
+    blogIndicators = (md5 | sha1 | sha256 | domain | url | ip | cve) - exclusionList - badDomainTLD
+
+    return_results(CommandResults(readable_output='\n'.join(blogIndicators), outputs={
+                   "http.parsedBlog.indicators": list(blogIndicators), "http.parsedBlog.sourceLink": blog_url}))
+
+
+if __name__ in ('__builtin__', 'builtins', '__main__'):
+    main()
