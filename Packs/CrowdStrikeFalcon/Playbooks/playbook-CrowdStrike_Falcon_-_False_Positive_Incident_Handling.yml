@@ -230,7 +230,7 @@ tasks:
       platforms:
         simple: mac,windows,linux
       value:
-        simple: ${Provide what which indicator should be added to the allow list.Answers.0}
+        simple: ${Provide the indicator to be added to the allow list.Answers.0}
     separatecontext: false
     view: |-
       {
@@ -370,7 +370,7 @@ tasks:
       - id: "0"
         label: ""
         labelarg:
-          simple: Provide what which indicator should be added to the allow list
+          simple: Provide the indicator to be added to the allow list
         required: false
         gridcolumns: []
         defaultrows: []
@@ -382,7 +382,7 @@ tasks:
         placeholder: ""
         tooltip: ""
         readonly: false
-      title: Provide what which indicator should be added to the allow list
+      title: Provide the indicator to be added to the allow list
       description: ""
       sender: ""
       expired: false
@@ -711,7 +711,7 @@ tasks:
       platforms:
         simple: mac,windows,linux
       value:
-        simple: ${Provide what which indicator should be added to the allow list.Answers.0}
+        simple: ${Provide the indicator to be added to the allow list.Answers.0}
     separatecontext: false
     view: |-
       {
@@ -752,7 +752,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: Provide what which indicator should be added to the allow list.Answers.0
+              simple: Provide the indicator to be added to the allow list.Answers.0
             iscontext: true
           right:
             value: {}
