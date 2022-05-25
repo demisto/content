@@ -15,7 +15,6 @@ Converts Markdown to HTML.
 | **Argument Name** | **Description** |
 | --- | --- |
 | text | Markdown Text to transform. |
-| contextKey | The context key to which the HTML result will be written. Note: Leave blank to ignore context. |
 | convertOnlyMarkdown | If True - The markdown text will be converted to HTML without a Full HTML structure. |
 | prettifyHTML | If True - The resulted HTML will be nicely formatted as a Unicode string, with a separate line for each tag and each string. |
 
