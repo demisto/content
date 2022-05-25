@@ -672,16 +672,16 @@ def test_fetch_last_emails__with_exclude(mocker):
     emails = {'value': [
         {'receivedDateTime': '1', 'id': '1'},
         {'receivedDateTime': '2', 'id': '2'},
-        {'receivedDateTime': '3', 'id': '3'},
+        {'receivedDateTime': '4', 'id': '3'},
         {'receivedDateTime': '4', 'id': '4'},
-        {'receivedDateTime': '5', 'id': '5'},
+        {'receivedDateTime': '4', 'id': '5'},
     ]}
     client = oproxy_client()
     client._emails_fetch_limit = 2
     mocker.patch.object(client.ms_client, 'http_request', return_value=emails)
-    fetched_emails, ids = client._fetch_last_emails('', last_fetch='2', exclude_ids=['2'])
+    fetched_emails, ids = client._fetch_last_emails('', last_fetch='2', exclude_ids=['1', '2'])
     assert len(fetched_emails) == 2
-    assert ids == ['1', '2', '3', '4']
+    assert ids == ['3', '4']
     assert fetched_emails[0] == emails['value'][2]
     assert fetched_emails[1] == emails['value'][3]
 
@@ -710,7 +710,7 @@ def test_fetch_last_emails__no_exclude(mocker):
     assert fetched_emails[0] == emails['value'][0]
 
 
-def test_fetch_last_emails__no_mails(mocker):
+def test_fetch_last_emails__all_mails_in_exclude(mocker):
     """
     Given:
         - Last fetch fetched until email 2
@@ -729,6 +729,6 @@ def test_fetch_last_emails__no_mails(mocker):
     client = oproxy_client()
     client._emails_fetch_limit = 2
     mocker.patch.object(client.ms_client, 'http_request', return_value=emails)
-    fetched_emails, ids = client._fetch_last_emails('', last_fetch='2', exclude_ids=['2'])
+    fetched_emails, ids = client._fetch_last_emails('', last_fetch='2', exclude_ids=['1', '2'])
     assert len(fetched_emails) == 0
     assert ids == ['1', '2']

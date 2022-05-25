@@ -695,22 +695,21 @@ class MsGraphClient:
             'GET', suffix_endpoint, params=params
         ).get('value', [])
 
-        ids_for_nextrun = []
-        if fetched_emails:
-            if exclude_ids and (fetched_emails[0].get('receivedDateTime', '') <= last_fetch):
-                # removing previously fetched emails to prevent duplicate incidents
-                for i, email in enumerate(fetched_emails):
-                    if email.get('id') == exclude_ids[-1]:
-                        ids_for_nextrun = [email.get('id') for email in
-                                           fetched_emails[:i + self._emails_fetch_limit + 1]]
-                        fetched_emails = fetched_emails[i + 1:]
-                        break
-            if not ids_for_nextrun:  # exclusion list not in fetched emails
-                ids_for_nextrun = [email.get('id') for email in fetched_emails[:self._emails_fetch_limit]]
+        execlude_ids_size = len(exclude_ids)
+        if not fetched_emails or execlude_ids_size >= len(fetched_emails):
+            # no new emails
+            return [], exclude_ids
+        new_emails = fetched_emails[execlude_ids_size:execlude_ids_size + self._emails_fetch_limit]
+        last_email_time = new_emails[-1].get('receivedDateTime')
+        if last_email_time == last_fetch:
+            # next fetch will need to skip existing exclude_ids
+            excluded_ids_for_nextrun = exclude_ids + [email.get('id') for email in new_emails]
         else:
-            ids_for_nextrun = exclude_ids
+            # next fetch will need to skip messages the same time as last_email
+            excluded_ids_for_nextrun = [email.get('id') for email in new_emails if
+                                        email.get('receivedDateTime') == last_email_time]
 
-        return fetched_emails[:self._emails_fetch_limit], ids_for_nextrun
+        return new_emails, excluded_ids_for_nextrun
 
     @staticmethod
     def _parse_item_as_dict(email):
