@@ -22,14 +22,14 @@ This integration was integrated and tested with version 22.4 of CyberArk Event C
 ## Commands
 You can execute these commands from the Cortex XSIAM Alerts War Room, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
-### CyberArk-get-events
+### cyberark-get-events
 ***
 Returns a list of events
 
 
 #### Base Command
 
-`CyberArk-get-events`
+`cyberark-get-events`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -42,7 +42,7 @@ Returns a list of events
 
 There is no context output for this command.
 #### Command example
-`!CyberArk-get-events limit=10 from="3 days"`
+`!cyberark-get-events limit=10 from="3 days"`
 #### Human Readable Output
 
 >### CyberArkIdentity RedRock records

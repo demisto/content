@@ -97,6 +97,11 @@ EVENT_FIELDS = [
     'SessionId',
 ]
 
+
+class CyberArkEventsOptions(IntegrationOptions):
+    app_id: str
+
+
 class CyberArkEventsRequest(IntegrationHTTPRequest):
     method = Method.GET
     headers = {'Accept': '*/*', 'Content-Type': 'application/json'}
@@ -104,12 +109,12 @@ class CyberArkEventsRequest(IntegrationHTTPRequest):
 
 class CyberArkEventsClient(IntegrationEventsClient):
     request: IntegrationHTTPRequest
-    options: IntegrationOptions
+    options: CyberArkEventsOptions
 
     def __init__(
         self,
         request: CyberArkEventsRequest,
-        options: IntegrationOptions,
+        options: CyberArkEventsOptions,
         credentials: Credentials,
         session=requests.Session(),
     ) -> None:
@@ -124,15 +129,19 @@ class CyberArkEventsClient(IntegrationEventsClient):
         credentials = base64.b64encode(f'{self.credentials.identifier}:{self.credentials.password}'.encode()).decode()
         request = IntegrationHTTPRequest(
             method=self.request.method,
-            url=f"{demisto.params().get('url', '').removesuffix('/')}/oauth2/token/{demisto.params().get('app_id')}",
+            url=f"{self.request.url.removesuffix('/')}/oauth2/token/{self.options.app_id}",
             headers={'Authorization': f"Basic {credentials}"},
             data={'grant_type': 'client_credentials', 'scope': 'siem'},
             verify=not self.request.verify,
         )
 
         response = self.call(request)
-        self.access_token = response.json()['access_token']
-        self.request.headers['Authorization'] = f'Bearer {self.access_token}'
+        if response.ok:
+            demisto.debug('authenticated successfully')
+            self.access_token = response.json()['access_token']
+            self.request.headers['Authorization'] = f'Bearer {self.access_token}'
+        else:
+            demisto.debug(f'authentication failed: {response.json()}')
 
 
 class CyberArkGetEvents(IntegrationGetEvents):
@@ -154,7 +163,6 @@ class CyberArkGetEvents(IntegrationGetEvents):
 
     def _iter_events(self):
         self.client.authenticate()
-        demisto.debug('authenticated successfully')
 
         result = self.client.call(self.client.request).json()['Result']
 
@@ -180,7 +188,7 @@ def get_request_params(**kwargs: dict) -> dict:
 
 def main(command: str, demisto_params: dict):
     credentials = Credentials(**demisto_params.get('credentials', {}))
-    options = IntegrationOptions(**demisto_params)
+    options = CyberArkEventsOptions(**demisto_params)
     request_params = get_request_params(**demisto_params)
     request = CyberArkEventsRequest(**request_params)
     client = CyberArkEventsClient(request, options, credentials)
@@ -191,16 +199,17 @@ def main(command: str, demisto_params: dict):
             get_events.run()
             demisto.results('ok')
 
-        if command in ('fetch-events', 'CyberArk-get-events'):
+        if command in ('fetch-events', 'cyberark-get-events'):
             events = get_events.run()
-            send_events_to_xsiam(events, vendor='CyberArk', product='Idaptive')
+            if demisto_params.get('should_send_event'):
+                send_events_to_xsiam(events, vendor=demisto_params.get('vendor'), product=demisto_params.get('product'))
 
             if events:
                 last_run = get_events.get_last_run(events)
                 demisto.debug(f'Set last run to {last_run}')
                 demisto.setLastRun(last_run)
 
-            if command == 'CyberArk-get-events':
+            if command == 'cyberark-get-events':
                 command_results = CommandResults(
                     readable_output=tableToMarkdown(
                         'CyberArkIdentity RedRock records', events, removeNull=True, headerTransform=pascalToSpace

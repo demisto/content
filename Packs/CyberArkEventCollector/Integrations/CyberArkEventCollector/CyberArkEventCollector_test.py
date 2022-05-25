@@ -49,7 +49,7 @@ def test_fetch_events_few_events(mocker):
         m.get(f'{URL}RedRock/Query', json=util_load_json('test_data/events.json'))
 
         from CyberArkEventCollector import main
-        main('CyberArk-get-events', params.return_value)
+        main('cyberark-get-events', params.return_value)
 
     events = results.call_args[0][0]['Contents']
     last_run = mock_last_run.call_args[0][0]
@@ -79,7 +79,7 @@ def test_fetch_events_no_events(mocker):
         m.get(f'{URL}RedRock/Query', json={'Result': {}})
 
         from CyberArkEventCollector import main
-        main('CyberArk-get-events', params.return_value)
+        main('cyberark-get-events', params.return_value)
 
     events = results.call_args[0][0]['Contents']
     last_run = mock_last_run.call_args
@@ -110,7 +110,7 @@ def test_fetch_events_limit_set_to_one(mocker):
         m.get(f'{URL}RedRock/Query', json=util_load_json('test_data/events.json'))
 
         from CyberArkEventCollector import main
-        main('CyberArk-get-events', params.return_value)
+        main('cyberark-get-events', params.return_value)
 
     events = results.call_args[0][0]['Contents']
     last_run = mock_last_run.call_args[0][0]

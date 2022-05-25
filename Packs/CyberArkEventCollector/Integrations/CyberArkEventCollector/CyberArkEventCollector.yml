@@ -3,8 +3,7 @@ commonfields:
   id: CyberArk Event Collector
   version: -1
 configuration:
-- defaultvalue: https://example.com/
-  display: Server URL
+- display: Server URL
   name: url
   required: true
   type: 0
@@ -44,7 +43,7 @@ script:
   - deprecated: false
     description: 'Returns a list of events'
     execution: false
-    name: CyberArk-get-events
+    name: cyberark-get-events
     arguments:
     - description: The maximum number of incidents per fetch. Default is 100.
       isArray: true
@@ -64,6 +63,6 @@ script:
   dockerimage: demisto/fastapi:1.0.0.29740
 marketplaces:
 - marketplacev2
-fromversion: 6.5.0
+fromversion: 6.8.0
 tests:
 - No tests (auto formatted)
