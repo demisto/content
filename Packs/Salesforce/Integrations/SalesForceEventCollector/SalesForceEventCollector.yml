@@ -23,7 +23,7 @@ configuration:
   type: 9
   required: true
   hiddenusername: true
-- display: "username"
+- display: "Username"
   displaypassword: Password
   name: credentials
   type: 9
@@ -78,7 +78,7 @@ script:
           - 'True'
           - 'False'
         required: true
-  dockerimage: demisto/fastapi:1.0.0.29535
+  dockerimage: demisto/fastapi:1.0.0.29740
   runonce: false
   isfetchevents: true
   subtype: python3
