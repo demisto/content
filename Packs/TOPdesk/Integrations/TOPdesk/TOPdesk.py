@@ -1295,7 +1295,7 @@ def fetch_incidents(client: Client,
     return {'last_fetch': latest_created_time.strftime(DATE_FORMAT_FULL)}, incidents
 
 
-def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) -> Union[List[Dict[str, Any]], str]:
+def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) -> GetRemoteDataResponse:
     """
     get-remote-data command: Returns an updated incident and entries
     Args:
@@ -1305,7 +1305,7 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
             lastUpdate: when was the last time we retrieved data
 
     Returns:
-        List[Dict[str, Any]]: first entry is the incident (which can be completely empty) and the new entries.
+        GetRemoteDataResponse object, which contain the incident or detection data to update.
     """
 
     ticket_id = args.get('id', '')
@@ -1321,7 +1321,8 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
 
     if not result:
         demisto.debug('Ticket was not found!')
-        return 'Ticket was not found'
+        mirrored_data = {'id': ticket_id, 'in_mirror_error': 'Ticket was not found'}
+        return GetRemoteDataResponse(mirrored_object=mirrored_data, entries=[])
     else:
         demisto.debug('Ticket was found!')
 
@@ -1357,7 +1358,7 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
                 else:
                     name = "Unknown"
 
-                date_time = entry_date.strftime("%d-%m-%Y %H:%M:%S")
+                date_time = entry_date.strftime(DATE_FORMAT)
 
                 entries.append({
                     'Type': EntryType.NOTE,
@@ -1380,13 +1381,13 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
             })
 
     demisto.debug(f'Pull result is {ticket}')
-    return [ticket] + entries
+    return GetRemoteDataResponse(mirrored_object=ticket, entries=entries)
 
 
 def get_modified_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) -> GetModifiedRemoteDataResponse:
     remote_args = GetModifiedRemoteDataArgs(args)
     query_date = dateparser.parse(remote_args.last_update,
-                                  settings={'TIMEZONE': 'UTC'}).strftime('%Y-%m-%dT%H:%M:%SZ')  # type: ignore
+                                  settings={'TIMEZONE': 'UTC'}).strftime(DATE_FORMAT)  # type: ignore
     assert query_date is not None
 
     demisto.debug(f'Running get-modified-remote-data command. Last update is: {query_date}')
@@ -1434,15 +1435,14 @@ def update_remote_system_command(client: Client, args: Dict[str, Any], params: D
             demisto.debug('Close TOPdesk ticket')
             # Close with API call or set field and let mirroring handle it.
             # client.update_incident
-        # TODO: Something with updated delta keys or not?
         # 'processingStatus', 'priority', 'urgency', 'impact'
         update_args = {
             'id': ticket_id
         }
         for key in parsed_args.delta:
-            update_args[key] = parsed_args.delta[key]
+            if key in TOPDESK_ARGS:
+                update_args[key] = parsed_args.delta[key]
 
-        demisto.debug(f'SZU update_args=[{update_args}]')
         client.update_incident(update_args)
 
     entries = parsed_args.entries
@@ -1452,7 +1452,7 @@ def update_remote_system_command(client: Client, args: Dict[str, Any], params: D
         for entry in entries:
             demisto.debug(f'Sending entry {entry.get("id")}, type: {entry.get("type")}')
             # Mirroring files as entries
-            if entry.get('type') == 3:
+            if entry.get('type') == EntryType.FILE:
                 path_res = demisto.getFilePath(entry.get('id'))
                 full_file_name = path_res.get('name')
                 file_name, file_extension = os.path.splitext(full_file_name)
@@ -1465,18 +1465,16 @@ def update_remote_system_command(client: Client, args: Dict[str, Any], params: D
             else:
                 # Mirroring comment and work notes as entries
                 xargs = {
-                    'id': '',
+                    'id': ticket_id,
                     'action': '',
                     'action_invisible_for_caller': False,
                 }
                 tags = entry.get('tags', [])
                 if params.get('work_notes_tag') in tags:
                     xargs['action_invisible_for_caller'] = True
-                elif params.get('comments_tag') in tags:
-                    xargs['action_invisible_for_caller'] = False
                 # Sometimes user is an empty str, not None, therefore nothing is displayed
                 user = entry.get('user', 'dbot')
-                if (user):
+                if user:
                     duser = demisto.findUser(username=user)
                     name = duser['name']
                 else:
@@ -1484,9 +1482,7 @@ def update_remote_system_command(client: Client, args: Dict[str, Any], params: D
 
                 text = f"<i><u>Update from {name}:</u></i><br><br>{str(entry.get('contents', ''))}" \
                     + "<br><br><i>Mirrored from Cortex XSOAR</i>"
-                # client.add_comment(ticket_id, ticket_type, key, text)
 
-                xargs['id'] = ticket_id
                 xargs['action'] = text
                 client.update_incident(xargs)
 
@@ -1626,13 +1622,13 @@ def main() -> None:
             demisto.setLastRun(last_fetch)
             demisto.incidents(incidents)
         elif demisto.command() == 'get-remote-data':
-            return_results(get_remote_data_command(client, demisto.args(), demisto.params()))
+            return_results(get_remote_data_command(client, demisto.args(), demisto_params))
         elif demisto.command() == 'update-remote-system':
-            return_results(update_remote_system_command(client, demisto.args(), demisto.params()))
+            return_results(update_remote_system_command(client, demisto.args(), demisto_params))
         elif demisto.command() == 'get-mapping-fields':
             return_results(get_mapping_fields_command(client))
         elif demisto.command() == 'get-modified-remote-data':
-            return_results(get_modified_remote_data_command(client, demisto.args(), demisto.params()))
+            return_results(get_modified_remote_data_command(client, demisto.args(), demisto_params))
         else:
             raise NotImplementedError(f"command {demisto.command()} does not exist in {INTEGRATION_NAME} integration")
 
