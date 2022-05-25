@@ -136,6 +136,7 @@ def get_events_from_integration_context(is_fetch_events: bool = False, max_fetch
             context=integration_context, max_retry_times=SET_INTEGRATION_CONTEXT_RETRIES
         )
 
+    demisto.debug(f'integration context events len: [{len(context_events)}], content: [{context_events}]')
     return fetched_events
 
 
@@ -147,7 +148,7 @@ def saas_security_get_events_command(args: Dict) -> Union[str, CommandResults]:
     limit = arg_to_number(args.get('limit')) or 10
     if events := get_events_from_integration_context(max_fetch=limit):
         return CommandResults(
-            readable_output=tableToMarkdown(name='SaaS Security Logs', t=events, headerTransform=pascalToSpace),
+            readable_output=tableToMarkdown(name='SaaS Security Logs', t=events, headerTransform=underscoreToCamelCase),
             raw_response=events,
             outputs=events,
             outputs_key_field='item_unique_id',
