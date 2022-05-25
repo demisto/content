@@ -31,7 +31,7 @@ configuration:
   required: false
   type: 0
 - defaultvalue: box
-  display: Vendor Name
+  display: Product Name
   name: product_name
   required: false
   type: 0
