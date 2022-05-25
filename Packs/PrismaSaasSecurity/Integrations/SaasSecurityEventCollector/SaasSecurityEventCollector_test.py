@@ -111,7 +111,6 @@ def test_saas_security_get_events(mocker, args, integration_context_mock):
     assert not set_context_mocker.called
 
 
-
 @pytest.mark.parametrize(
     'limit, integration_context_mock', [
         (
@@ -175,4 +174,5 @@ def test_fetch_events(mocker, limit, integration_context_mock):
 
     expected_integration_context['events'] = expected_integration_context['events'][limit:]
     assert set_context_mocker.called
+    # make sure the new context will be saved without the already fetched events
     assert expected_integration_context == set_context_mocker.call_args.kwargs['context']

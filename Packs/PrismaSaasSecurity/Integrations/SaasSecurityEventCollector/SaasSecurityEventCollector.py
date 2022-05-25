@@ -123,6 +123,7 @@ def get_passed_mins(start_time, end_time_str, tz=None):
 
 
 def test_module(client):
+    # could cause us to lose events, need to check how to handle if possible
     response = client.get_events_request()
     if response.status_code in (200, 204):
         return 'ok'
@@ -145,22 +146,27 @@ def get_events_from_integration_context(is_fetch_events: bool = False, max_fetch
     integration_context = demisto.getIntegrationContext()
     context_events = json.loads(integration_context.get('events', '[]'))
 
+    fetched_events = context_events[:max_fetch]
+
     if is_fetch_events:
-        fetched_events = context_events[:max_fetch]
+        # if we are fetching events, in order to avoid duplicates we must remove events that we are fetching now.
         integration_context['events'] = context_events[max_fetch:]
         set_to_integration_context_with_retries(
             context=integration_context, max_retry_times=SET_INTEGRATION_CONTEXT_RETRIES
         )
-        return fetched_events
 
-    return context_events[:max_fetch]
+    return fetched_events
 
 
-def saas_security_get_events_command(args) -> Union[str, CommandResults]:
+def saas_security_get_events_command(args: Dict) -> Union[str, CommandResults]:
+    """
+    Executes the saas-security-get-events commands.
+    Returns the events that are stored in the context output.
+    """
     limit = arg_to_number(args.get('limit')) or 10
     if events := get_events_from_integration_context(max_fetch=limit):
         return CommandResults(
-            readable_output=tableToMarkdown('SaaS Security Logs', events, headerTransform=pascalToSpace),
+            readable_output=tableToMarkdown(name='SaaS Security Logs', t=events, headerTransform=pascalToSpace),
             raw_response=events,
             outputs=events,
             outputs_key_field='item_unique_id',
@@ -170,38 +176,43 @@ def saas_security_get_events_command(args) -> Union[str, CommandResults]:
 
 
 def fetch_events(max_fetch: int) -> List[Dict]:
+    """
+    Fetches events that are stored in the integration context.
+    """
     return get_events_from_integration_context(is_fetch_events=True, max_fetch=max_fetch)
 
 
-def store_events(client: Client):
+def long_running_execution_command(client: Client):
     """
-    Stores events in the integration context.
+    Stores fetched events in the integration context and in addition make sure the access token is always up to date
+    at all points of time.
     """
     while True:
         try:
-            integration_context = demisto.getIntegrationContext()
-            demisto.debug(f'start integration context: [{integration_context}]')
-            integration_context.update(client.get_access_token())
-            integration_context_events = json.loads(integration_context.get('events', '[]'))
+            existing_integration_context = demisto.getIntegrationContext()
+            updated_integration_context = existing_integration_context.copy()
+            demisto.debug(f'existing integration context: [{existing_integration_context}]')
+
             response = client.get_events_request()
             if response.status_code == 200:
                 events = response.json()
+                integration_context_events = json.loads(existing_integration_context.get('events', '[]'))
                 demisto.debug(f'Received event(s): {events}')
-                if integration_context_events:  # if events exist in the integration context
-                    if isinstance(events, list):  # 'events' is a list of events
-                        integration_context_events.extend(events)
-                    else:  # 'events' is a single dict (only one event)
-                        integration_context_events.append(events)
-                else:
-                    if isinstance(events, dict):
-                        integration_context_events = [events]
-                    else:
-                        integration_context_events = events
-            integration_context['events'] = integration_context_events
-            demisto.debug(f'end integration context: [{integration_context}]')
-            set_to_integration_context_with_retries(
-                context=integration_context, max_retry_times=SET_INTEGRATION_CONTEXT_RETRIES
-            )
+                if isinstance(events, list):  # 'events' is a list of events
+                    integration_context_events.extend(events)
+                else:  # 'events' is a single dict (only one event)
+                    integration_context_events.append(events)
+                updated_integration_context['events'] = integration_context_events
+
+            updated_integration_context.update(client.get_access_token())
+
+            demisto.debug(f'updated integration context: [{updated_integration_context}]')
+            if updated_integration_context != existing_integration_context:
+                # update integration context only in cases where there is anything to update, otherwise avoid
+                # setting the integration context as much as possible
+                set_to_integration_context_with_retries(
+                    context=updated_integration_context, max_retry_times=SET_INTEGRATION_CONTEXT_RETRIES
+                )
         except Exception as e:
             demisto.error(traceback.format_exc())
             demisto.error(f'Error occurred in long running execution: [{e}]')
@@ -232,7 +243,7 @@ def main() -> None:
             results = test_module(client)
             return_outputs(results)
         elif command == 'long-running-execution':
-            store_events(client)
+            long_running_execution_command(client)
         elif command == 'fetch-events':
             send_events_to_xsiam(events=fetch_events(max_fetch=max_fetch), vendor='Palo Alto', product='saas-security')
         elif command == 'saas-security-get-events':
