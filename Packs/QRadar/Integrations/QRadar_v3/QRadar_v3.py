@@ -3163,29 +3163,20 @@ def encode_context_data(context_data: dict, include_id: bool = False) -> dict:
 
 
 @safely_update_context_data
-def remove_offense_from_context_data(context_data: dict, version: Any, offense_id: str,
-                                     offense_to_remove: str) -> Tuple[dict, Any, dict]:
+def remove_offense_from_context_data(context_data: dict, version: Any, offense_id: str) -> Tuple[dict, Any, dict]:
     """Remove an offense from context data UPDATED_MIRRORED_OFFENSES_CTX_KEY and RESUBMITTED_MIRRORED_OFFENSES_CTX_KEY.
 
     Args:
         context_data: The context data to update.
         version: The version of the context data to update.
-        offense_id: The offense id to remove from RESUBMITTED_MIRRORED_OFFENSES_CTX_KEY.
-        offense_to_remove: The offense to remove from UPDATED_MIRRORED_OFFENSES_CTX_KEY.
+        offense_id: The offense id to remove from UPDATED_MIRRORED_OFFENSES_CTX_KEY.
 
     Returns: (The new context_data, The context_data version the change was based on, The new context_data)
     """
-    updated = context_data.get(UPDATED_MIRRORED_OFFENSES_CTX_KEY, [])
-    resubmitted = context_data.get(RESUBMITTED_MIRRORED_OFFENSES_CTX_KEY, [])
-
-    if offense_to_remove and offense_to_remove in updated:
-        updated.remove(offense_to_remove)
-    if offense_id in resubmitted:
-        resubmitted.remove(offense_id)
-
-    context_data[RESUBMITTED_MIRRORED_OFFENSES_CTX_KEY] = resubmitted
-    context_data[UPDATED_MIRRORED_OFFENSES_CTX_KEY] = updated
-
+    finished = context_data.get(UPDATED_MIRRORED_OFFENSES_CTX_KEY, {})
+    if offense_id in finished:
+        del finished[offense_id]
+    context_data[UPDATED_MIRRORED_OFFENSES_CTX_KEY] = finished
     return encode_context_data(context_data), version, context_data
 
 
@@ -3253,41 +3244,12 @@ def get_remote_data_command(client: Client, params: Dict[str, Any], args: Dict) 
 
     failure_message = 'Failed communicating with long running container.'
     if mirror_options == MIRROR_OFFENSE_AND_EVENTS:
-        offenses_waiting_for_update = context_data.get(MIRRORED_OFFENSES_CTX_KEY, [])
-        max_retries = min(MAX_FETCH_EVENT_RETIRES * (len(offenses_waiting_for_update) + 3), 20)
-        offense_to_remove = None
-        is_waiting_to_be_updated = True
-        evented_offense = None
-        retries = 0
-        while ((not evented_offense) or is_waiting_to_be_updated) and retries < max_retries:
-            if retries != 0:
-                time.sleep(FAILURE_SLEEP)
-            raw_context, context_version = get_integration_context_with_version()
-            context_data = extract_context_data(raw_context.copy())
-            print_mirror_events_stats(context_data, f"Get Remote Data Loop for id {offense.get('id')}, retry {retries}")
-            retries += 1
-            offenses_with_updated_events = context_data.get(UPDATED_MIRRORED_OFFENSES_CTX_KEY, [])
-            offenses_waiting_for_update = context_data.get(MIRRORED_OFFENSES_CTX_KEY, [])
-            evented_offense = [evented_offense for evented_offense in offenses_with_updated_events
-                               if str(evented_offense.get('id')) == str(offense.get("id"))]
+        finished_mirrored_offenses = context_data.get(UPDATED_MIRRORED_OFFENSES_CTX_KEY, {})
+        if offense_id in finished_mirrored_offenses:
+            search_results = client.search_results_get(finished_mirrored_offenses[offense_id])
+            offense['events'] = search_results.get('events', [])
 
-            is_waiting_to_be_updated = any([True for waiting_offense in offenses_waiting_for_update
-                                            if str(waiting_offense.get('id')) == str(offense.get("id"))])
-
-        if evented_offense:
-            demisto.debug(f"Mirror Events: Offense {offense.get('id')} events were updated, updating incident.")
-            if evented_offense[0].get('events'):
-                offense['events'] = evented_offense[0].get('events')
-                failure_message = evented_offense[0].get('mirroring_events_message', '')
-                demisto.debug(f"Mirror Events: Offense {offense.get('id')} now has {len(offense.get('events'))} "
-                              f"fetched events. Mirror message: {failure_message}")
-
-            offense_to_remove = evented_offense[0]
-
-        elif is_waiting_to_be_updated:
-            failure_message = 'In queue.'
-
-        new_context_data = remove_offense_from_context_data(offense_id=offense_id, offense_to_remove=offense_to_remove,
+        new_context_data = remove_offense_from_context_data(offense_id=offense_id,
                                                             version=context_version,
                                                             context_data=context_data)
 
@@ -3315,6 +3277,8 @@ def add_modified_remote_offenses(client: Client,
                                  mirror_options: str,
                                  new_modified_records_ids: list,
                                  current_last_update: str,
+                                 event_columns: str,
+                                 events_limit: int,
                                  offenses: list) -> Tuple[dict, str, list]:
     """Add modified remote offenses to context_data and handle exhausted offenses.
 
@@ -3338,31 +3302,39 @@ def add_modified_remote_offenses(client: Client,
         # mirrored_offenses = merge_lists(original_list=context_data.get(MIRRORED_OFFENSES_CTX_KEY, []),
         #                                 updated_list=offenses,
         #                                 key='id')
+        mirrored_offenses_queue = {}
         for offense in offenses:
-            client.search_create()
-        mirrored_offenses = context_data.get(MIRRORED_OFFENSES_CTX_KEY, []) | offenses
-        enrich_offense_with_events()
-        client.search_status_get('')
-        # queue: {offense_id: query_id}
-        # finished: {offensed_id: query_id}
-        new_context_data.update({MIRRORED_OFFENSES_CTX_KEY: mirrored_offenses})
-        remaining_resubmitted_offenses = context_data.get(RESUBMITTED_MIRRORED_OFFENSES_CTX_KEY, []).copy()
-        updated_mirrored_offenses = context_data.get(UPDATED_MIRRORED_OFFENSES_CTX_KEY, [])
-        clean_updates_mirrored_offenses = updated_mirrored_offenses.copy()
-        if remaining_resubmitted_offenses:
-            for offense in updated_mirrored_offenses:
-                if str(offense.get("id")) in remaining_resubmitted_offenses:
-                    print_debug_msg(f"Removing Offense id {offense.get('id')} from processing Mirrored Events "
-                                    f"since its incident is not responding. (It is probably closed)")
-                    clean_updates_mirrored_offenses.remove(offense)
+            offense_id = offense.get('id')
+            offense_start_time = offense['start_time'] - 60 * 1000
+            query_expression = f'SELECT {event_columns} FROM events WHERE INOFFENSE({offense_id}) ' \
+                               f'limit {events_limit} START {offense_start_time}'
+            try:
+                search_response = client.search_create(query_expression)
+                search_id = search_response['search_id']
+                mirrored_offenses_queue[offense_id] = search_id
+            except Exception as e:
+                msg = f'Search of {offense_id} failed: {e}'
+                demisto.debug(msg)
+                mirrored_offenses_queue[offense_id] = -1
 
-            new_context_data.update({UPDATED_MIRRORED_OFFENSES_CTX_KEY: clean_updates_mirrored_offenses})
-            new_context_data.update({RESUBMITTED_MIRRORED_OFFENSES_CTX_KEY: []})
+        mirrored_offenses_queue |= context_data.get(MIRRORED_OFFENSES_CTX_KEY, {})
+        finished_offenses_queue = context_data.get(UPDATED_MIRRORED_OFFENSES_CTX_KEY, {})
+        for offense_id, search_id in mirrored_offenses_queue.items():
+            if search_id == -1:
+                # search again #TODO
+                pass
+            query_status_results = client.search_status_get(search_id)
+            status = query_status_results.get('status')
+            if status in {'CANCELED', 'ERROR'}:
+                demisto.info(f'offense {offense_id} search query {search_id} status is {status}')
+                # search again #TODO
+                pass
+            if status == 'COMPLETED':
+                del mirrored_offenses_queue[offense_id]
+                finished_offenses_queue[offense_id] = search_id
 
-        clean_updates_mirrored_offenses_ids = [str(offense.get('id')) for offense in clean_updates_mirrored_offenses]
-        if clean_updates_mirrored_offenses_ids:
-            new_modified_records_ids = list(set(new_modified_records_ids + clean_updates_mirrored_offenses_ids))
-            new_context_data.update({RESUBMITTED_MIRRORED_OFFENSES_CTX_KEY: clean_updates_mirrored_offenses_ids})
+        new_context_data.update({MIRRORED_OFFENSES_CTX_KEY: mirrored_offenses_queue})
+        new_context_data.update({UPDATED_MIRRORED_OFFENSES_CTX_KEY: finished_offenses_queue})
 
     print_mirror_events_stats(new_context_data, "Get Modified Remote Data - After update")
     return encode_context_data(new_context_data, include_id=False), version, new_modified_records_ids
@@ -3402,6 +3374,8 @@ def get_modified_remote_data_command(client: Client, params: Dict[str, str],
                                                             mirror_options=params.get('mirror_options'),
                                                             new_modified_records_ids=new_modified_records_ids,
                                                             current_last_update=current_last_update,
+                                                            event_columns=params.get('event_columns'),
+                                                            events_limit=params.get('events_limit'),
                                                             offenses=offenses)
 
     return GetModifiedRemoteDataResponse(new_modified_records_ids)
