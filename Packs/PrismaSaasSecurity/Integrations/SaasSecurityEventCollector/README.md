@@ -37,7 +37,7 @@ Manual command to fetch events and display them.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The number of events to get.Default is 10. Default is 10. | Optional | 
+| limit | The number of events to get. Default is 10. | Optional | 
 
 
 #### Context Output

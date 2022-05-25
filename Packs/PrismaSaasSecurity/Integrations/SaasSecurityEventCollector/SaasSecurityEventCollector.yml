@@ -24,7 +24,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-- display: The maximum number of events per fetch. Default is 10.
+- display: The maximum number of events per fetch.
   defaultvalue: 10
   name: max_fetch
   required: true
