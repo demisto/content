@@ -12,6 +12,7 @@ you are implementing with your integration
 import demistomock as demisto
 import pytest
 import json
+import copy
 import io
 from SaasSecurityEventCollector import Client
 
@@ -60,7 +61,7 @@ def test_module(mocker, mock_client, mocked_response):
     'args, integration_context_mock', [
         (
             {"limit": "1"},
-            {'events': '[{"1":"1"},{"2":"2"}]', 'access_token': 'test', 'time_issued': 'test'}
+            {'events': '[{"1":"1"},{"2":"2"}]'}
         ),
         (
             {"limit": "2"},
@@ -110,68 +111,97 @@ def test_saas_security_get_events(mocker, args, integration_context_mock):
     assert not set_context_mocker.called
 
 
-@pytest.mark.parametrize(
-    'limit, integration_context_mock', [
-        (
-            1,
-            {'events': '[{"1":"1"},{"2":"2"}]', 'access_token': 'test', 'time_issued': 'test'}
-        ),
-        (
-            2,
-            {'events': '[{"1":"1"},{"2":"2"},{"3":"3"},{"4":"4"}]', 'access_token': 'test', 'time_issued': 'test'}
-        ),
-        (
-            5,
-            {'events': '[{"1":"1"},{"2":"2"},{"3":"3"}]', 'access_token': 'test', 'time_issued': 'test'}
-        ),
-        (
-            50,
-            {'events': '[{"1":"1"},{"2":"2"}]', 'access_token': 'test', 'time_issued': 'test'}
-        ),
-        (
-            22,
-            {'events': '[]', 'access_token': 'test', 'time_issued': 'test'}
-        ),
-        (
-            3,
-            {'events': '[{"1":"1"},{"2":"2"},{"3":"3"},{"4":"4"}]', 'access_token': 'test', 'time_issued': 'test'}
-        ),
-        (
-            4,
-            {'events': '[{"1":"1"},{"2":"2"},{"3":"3"},{"4":"4"}]', 'access_token': 'test', 'time_issued': 'test'}
-        ),
-        (
-            6,
-            {'events': '[{"1":"1"},{"2":"2"},{"3":"3"},{"4":"4"},{"5":"5"},{"6":"6"},{"7":"7"},{"8":"8"}]',
-             'access_token': 'test', 'time_issued': 'test'}
-        ),
-    ]
-)
-def test_fetch_events(mocker, limit, integration_context_mock):
-    """
-    Given
-       - events in the integration context
-       - limit parameter
+class TestFetchEvents:
 
-    When -
-        executing the fetch-events
+    INTEGRATION_CONTEXT = {}
 
-    Then
-       - make sure the events that are returned the size of the limit or less
-       - make sure the integration context is being overridden with the correct events
-    """
-    import SaasSecurityEventCollector
-    expected_integration_context = integration_context_mock.copy()
+    def set_integration_context(self, **kwargs):
+        from CommonServerPython import merge_lists
+        events = kwargs.get('context').get('events')
+        self.INTEGRATION_CONTEXT['events'] = json.dumps(
+            merge_lists(original_list=json.loads(self.INTEGRATION_CONTEXT['events']), updated_list=events, key='id')
+        )
 
-    mocker.patch.object(demisto, 'getIntegrationContext', return_value=integration_context_mock)
-    set_context_mocker = mocker.patch.object(SaasSecurityEventCollector, 'set_to_integration_context_with_retries')
+    @pytest.mark.parametrize(
+        'limit, expected_integration_context', [
+            (
+                1,
+                {'events': '[{"id":"1"},{"id":"2"},{"id":"3"},{"id":"4"},{"id":"5"},{"id":"6"},{"id":"7"},{"id":"8"}]'}
+            ),
+            (
+                2,
+                {'events': '[{"id":"1"},{"id":"2"},{"id":"3"},{"id":"4"},{"id":"5"},{"id":"6"},{"id":"7"},{"id":"8"}]'}
+            ),
+            (
+                10,
+                {'events': '[{"id":"1"},{"id":"2"},{"id":"3"},{"id":"4"},{"id":"5"},{"id":"6"},{"id":"7"},{"id":"8"}]'}
+            ),
+            (
+               3,
+               {
+                   'events': '[{"id":"1"},{"id":"2"},{"id":"3"},{"id":"4"},{"id":"5"},'
+                             '{"id":"6"},{"id":"7"},{"id":"8"},{"id":"9"},{"id":"10"},'
+                             '{"id":"11"},{"id":"12"},{"id":"13"},{"id":"14"},{"id":"15"},{"id":"16"}]'
+               }
+            ),
+            (
+                15,
+                {
+                    'events': '[{"id":"1"},{"id":"2"},{"id":"3"},{"id":"4"},{"id":"5"},'
+                              '{"id":"6"},{"id":"7"},{"id":"8"},{"id":"9"},{"id":"10"},'
+                              '{"id":"11"},{"id":"12"},{"id":"13"},{"id":"14"},{"id":"15"},{"id":"16"}]'
+                }
+            ),
+            (
+                16,
+                {
+                    'events': '[{"id":"1"},{"id":"2"},{"id":"3"},{"id":"4"},{"id":"5"},'
+                              '{"id":"6"},{"id":"7"},{"id":"8"},{"id":"9"},{"id":"10"},'
+                              '{"id":"11"},{"id":"12"},{"id":"13"},{"id":"14"},{"id":"15"},{"id":"16"}]'
+                }
+            )
+        ]
+    )
+    def test_fetch_events(self, mocker, limit, expected_integration_context):
+        """
+        Given
+           - events in the integration context
+           - limit parameter
 
-    expected_integration_context['events'] = json.loads(expected_integration_context['events'])
+        When -
+            executing the fetch-events command
 
-    actual_events = SaasSecurityEventCollector.fetch_events(max_fetch=limit)
-    assert actual_events == expected_integration_context['events'][:limit]
+        Then
+           - make sure that if limit > len(events) - then all of the events will be returned and all of them will be
+             deleted from the integration context
+           - make sure that if limit < len(events), that the first 'limit' events will be fetched and deleted from
+             the integration context
+           - make sure that when setting the integration context, the events that should be deleted are passed
+           - make sure that every time we call fetch events, then set integration context will be called as well.
 
-    expected_integration_context['events'] = expected_integration_context['events'][limit:]
-    assert set_context_mocker.called
-    # make sure the new integration context will be saved without the already fetched events
-    assert expected_integration_context == set_context_mocker.call_args.kwargs['context']
+        """
+        import SaasSecurityEventCollector
+
+        self.INTEGRATION_CONTEXT = copy.deepcopy(expected_integration_context)
+
+        mocker.patch.object(demisto, 'getIntegrationContext', return_value=self.INTEGRATION_CONTEXT)
+        set_context_mocker = mocker.patch.object(
+            SaasSecurityEventCollector,
+            'set_to_integration_context_with_retries',
+            side_effect=self.set_integration_context
+        )
+
+        expected_integration_context['events'] = json.loads(expected_integration_context['events'])
+        call_count = 1
+
+        while len(json.loads(self.INTEGRATION_CONTEXT['events'])) > 0:
+            actual_events = SaasSecurityEventCollector.fetch_events(max_fetch=limit)
+            assert actual_events == expected_integration_context['events'][:limit]
+
+            assert set_context_mocker.call_count == call_count
+            call_count += 1
+            for event in expected_integration_context['events'][:limit]:
+                event['remove'] = True
+            expected_events_removed = expected_integration_context['events'][:limit]
+            assert {'events': expected_events_removed} == set_context_mocker.call_args.kwargs.get('context')
+            expected_integration_context['events'] = expected_integration_context['events'][limit:]

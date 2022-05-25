@@ -5,6 +5,7 @@ import requests
 
 import demistomock as demisto
 import urllib3
+import copy
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 import traceback
@@ -132,7 +133,7 @@ def get_events_from_integration_context(is_fetch_events: bool = False, max_fetch
     fetched_events = context_events[:max_fetch]
 
     if is_fetch_events:
-        events_to_remove = fetched_events.copy()
+        events_to_remove = copy.deepcopy(fetched_events)
         # if we are fetching events, in order to avoid duplicates we must remove events that we are fetching now.
         for event in events_to_remove:
             event['remove'] = True
