@@ -3,7 +3,7 @@ id: _modeling_rule_id
 fromversion: 3.3.0
 tags: a
 rules: ''
-schena:
+schema: |-
   {
     "my_ds": {
       "my_field": {
