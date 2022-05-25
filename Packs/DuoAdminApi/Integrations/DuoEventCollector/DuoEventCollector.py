@@ -1,4 +1,3 @@
-from collections import deque
 from enum import Enum
 import duo_client
 from pydantic import BaseModel
@@ -161,8 +160,7 @@ def create_api_call(host: str, integration_key: str, secrete_key: str):  # pragm
     )
 
     client._make_request = lambda method, uri, body, headers: override_make_request(client, method, uri, body,
-                                                                                        headers)
-
+                                                                                    headers)
     return client
 
 
