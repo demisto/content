@@ -174,9 +174,10 @@ def main():
 
     demisto_params['client_id'] = demisto_params['client_id']['password']
     demisto_params['client_secret'] = demisto_params['client_secret']['password']
-    demisto_params['password'] = demisto_params['password']['password']
-    events_to_add_per_request = int(demisto_params.get('events_to_add_per_request'))
+    demisto_params['password'] = demisto_params['credentials']['password']
+    demisto_params['username'] = demisto_params['credentials']['identifier']
     files_limit = int(demisto_params.get('files_limit'))
+    should_push_events = argToBoolean(demisto_params.get('should_push_events', 'false'))
 
     demisto_params['method'] = Method.POST
 
@@ -208,10 +209,8 @@ def main():
             events = get_events.run()
 
             if command == 'fetch-events':
-                if events:
-                    demisto.setLastRun(get_events.get_last_run())
-                else:
-                    send_events_to_xsiam([], 'salesforce', demisto_params.get('product'))
+                send_events_to_xsiam(events, 'salesforce', demisto_params.get('product'))
+                demisto.setLastRun(get_events.get_last_run())
 
             elif command == 'salesforce-get-events':
                 command_results = CommandResults(
@@ -222,10 +221,8 @@ def main():
                     raw_response=events,
                 )
                 return_results(command_results)
-
-            while len(events) > 0:
-                send_events_to_xsiam(events[:events_to_add_per_request], 'salesforce', demisto_params.get('product'))
-                events = events[events_to_add_per_request:]
+                if should_push_events:
+                    send_events_to_xsiam(events, 'github', demisto_params.get('product'))
 
     except Exception as e:
         return_error(str(e))
