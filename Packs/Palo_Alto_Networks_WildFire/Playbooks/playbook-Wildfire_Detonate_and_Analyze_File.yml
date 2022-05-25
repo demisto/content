@@ -3,7 +3,7 @@ version: -1
 fromversion: 6.5.0
 name: Wildfire Detonate and Analyze File
 description: |
-  The playbook uploads detonates and analyzes files for Wildfire.
+  This playbook uploads, detonates, and analyzes files for the Wildfire sandbox.
 starttaskid: "0"
 tasks:
   "0":
@@ -70,8 +70,7 @@ tasks:
       id: 906821d8-ce2c-42d6-8446-020eb9190a16
       version: -1
       name: Is WildFire enabled?
-      description: Returns 'yes' if integration brand is available. Otherwise returns
-        'no'
+      description: Returns 'yes' if the WildFire integration is available. 
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -109,7 +108,7 @@ tasks:
       id: 120313a9-69b0-4e9d-8e67-e05f642f6ecc
       version: -1
       name: Is the file type supported?
-      description: Check if file type is supported.
+      description: Checks if the file type is supported.
       type: condition
       iscommand: false
       brand: ""
@@ -182,7 +181,7 @@ tasks:
       id: e2805bfe-ee3b-4768-81cf-f9f781ae9dc1
       version: -1
       name: Set File to context
-      description: Sets a value into the context with the given context key.
+      description: Sets the file into the context with the given context key.
       scriptName: Set
       type: regular
       iscommand: false
@@ -307,7 +306,7 @@ tasks:
       id: aadeceae-8901-4d3b-814a-b53aa4aa9e0f
       version: -1
       name: Wildfire get report PDF
-      description: Retrieves results for a file hash using WildFire.
+      description: Uses WildFire to retrieve a PDF report for a file hash.
       script: '|||wildfire-report'
       type: regular
       iscommand: true
@@ -359,7 +358,7 @@ inputs:
   playbookInputQuery:
 outputs:
 - contextPath: WildFire.Report
-  description: Wildfire findings results.
+  description: The Wildfire findings.
   type: string
 tests:
 - Detonate URL - WildFire v2.1 - Test
