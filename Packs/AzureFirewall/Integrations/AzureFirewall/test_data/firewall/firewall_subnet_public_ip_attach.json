@@ -1,0 +1,37 @@
+{
+  "name": "xsoar-firewall",
+  "id": "/subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/azureFirewalls/xsoar-firewall",
+  "etag": "W/4e34a319-eeed-462d-b071-a34af08990cd",
+  "type": "Microsoft.Network/azureFirewalls",
+  "location": "eastus",
+  "properties": {
+    "provisioningState": "Succeeded",
+    "sku": {
+      "name": "AZFW_VNet",
+      "tier": "Standard"
+    },
+    "threatIntelMode": "Off",
+    "additionalProperties": {},
+    "ipConfigurations": [
+      {
+        "name": "my-poc-ip-conf",
+        "id": "/subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/azureFirewalls/xsoar-firewall-integration/azureFirewallIpConfigurations/my-poc-ip-conf",
+        "etag": "W/4e34a319-eeed-462d-b071-a34af08990cd",
+        "type": "Microsoft.Network/azureFirewalls/azureFirewallIpConfigurations",
+        "properties": {
+          "provisioningState": "Succeeded",
+          "privateIPAllocationMethod": "Dynamic",
+          "publicIPAddress": {
+            "id": "/subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/publicIPAddresses/my-poc-public-ip"
+          },
+          "subnet": {
+            "id": "/subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/virtualNetworks/my-virtual-network-test/subnets/AzureFirewallSubnet"
+          }
+        }
+      }
+    ],
+    "networkRuleCollections": [],
+    "applicationRuleCollections": [],
+    "natRuleCollections": []
+  }
+}
