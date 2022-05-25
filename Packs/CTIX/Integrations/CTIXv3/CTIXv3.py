@@ -1,11 +1,6 @@
 # Uncomment while development
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from CommonServerPython import (BaseClient, CommandResults, Common,
-                                DemistoException, List, argToList,
-                                handle_proxy, hashRegex, re, regexFlags,
-                                return_error, return_results, return_warning,
-                                tableToMarkdown, traceback, urlRegex)
 
 """IMPORTS"""
 
@@ -125,10 +120,8 @@ class Client(BaseClient):
         try:
             resp.raise_for_status()  # Raising an exception for non-200 status code
         except requests.exceptions.HTTPError as e:
-            err_msg = "Error in API call [{}: {}], payload sent: {}, \
-            url tried: {}".format(
-                resp.status_code, resp.reason, resp.request.body, full_url
-            )
+            err_msg = f"Error in API call [{status_code!r}: {resp.reason!r}], \
+            payload sent: {resp.request.body!r}, url tried: {full_url!r}"
             raise DemistoException(err_msg, e)
         json_data = resp.json()
         response = {"data": json_data, "status": status_code}
@@ -158,14 +151,9 @@ class Client(BaseClient):
         try:
             response.raise_for_status()  # Raising an exception for non-200 status code
         except requests.exceptions.HTTPError as e:
-            err_msg = "Error in API call [{}: {}], payload sent: {}, \
-            url tried: {} response body: {}".format(
-                response.status_code,
-                response.reason,
-                response.request.body,
-                full_url,
-                response.text,
-            )
+            err_msg = f"Error in API call [{status_code!r}: {response.reason!r}], \
+                payload sent: {response.request.body!r}, url tried: {full_url!r} \
+                response body: {response.text!r}"
             raise DemistoException(err_msg, e)
         json_data = response.json()
         response = {"data": json_data, "status": status_code}
@@ -233,11 +221,12 @@ class Client(BaseClient):
         client_url = self.base_url + url_suffix
         params = {"page": page, "page_size": page_size}
         if q:
-            params["q"] = q
+            params["q"] = q  # type: ignore
         return self.get_http_request(client_url, params)
 
     def delete_tag(self, tag_id: str):
-        """Deletes a tag from the ctix instance
+        """
+        Deletes a tag from the ctix instance
         :type tag_id: ``str``
         :param name: id of the tag to be deleted
         """
@@ -268,13 +257,16 @@ class Client(BaseClient):
         client_url = self.base_url + url_suffix
         params = {"page": page, "page_size": page_size}
         if q:
-            params["q"] = q
+            params["q"] = q  # type: ignore
         return self.get_http_request(client_url, {}, **params)
 
     def remove_whitelisted_ioc(self, whitelist_id: str):
-        """Removes whitelisted ioc with given `whitelist_id`
+        """
+        Removes whitelisted ioc with given `whitelist_id`
+
         :type whitelist_id: str
         :param whitelist_id: id of the whitelisted ioc to be removed
+
         """
         url_suffix = "conversion/whitelist/bulk-actions/"
         client_url = self.base_url + url_suffix
@@ -559,10 +551,9 @@ class Client(BaseClient):
         '''
         url_suffix = "ingestion/threat-data/list/"
         if len(object_names) == 1:
-            object_names = "('" + object_names[0] + "')"
+            query = f"type={object_type} AND value IN ('{object_names[0]}')"
         else:
-            object_names = tuple([obj_name.replace("'", "") for obj_name in object_names])
-        query = f"type={object_type} AND value IN {object_names}"
+            query = f"type={object_type} AND value IN {tuple(object_names)}"
         payload = {"query": query}
         client_url = self.base_url + url_suffix
         return self.post_http_request(client_url, payload, params)
@@ -585,7 +576,8 @@ def to_dbot_score(ctix_score: int) -> int:
         dbot_score = Common.DBotScore.BAD
     return dbot_score
 
-def no_result_found(data:any):
+
+def no_result_found(data: Any):
     if data in ('', ' ', None, [], {}):
         result = CommandResults(
             readable_output='No results were found',
@@ -595,6 +587,11 @@ def no_result_found(data:any):
     else:
         result = data
     return result
+
+
+def check_for_empty_variable(value: str, default: Any):
+    return value if value not in ('', ' ', None) else default
+
 
 """ COMMAND FUNCTIONS """
 
@@ -612,8 +609,8 @@ def create_tag_command(client: Client, args: Dict[str, str]) -> CommandResults:
     """
     create_tag command: Creates a new tag in the CTIX platform
     """
-    name = args.get("tag_name")
-    color_name = args.get("color")
+    name = args["tag_name"]
+    color_name = args["color"]
 
     color_code = tag_colors[color_name]
 
@@ -637,14 +634,16 @@ def get_tags_command(client: Client, args=Dict[str, Any]) -> List[CommandResults
     """
     get_tags commands: Returns paginated list of tags
     """
-    page = arg_to_number(args.get("page", 1))
-    page_size = arg_to_number(args.get("page_size", 10))
-    query = args.get("q")
+    page = args["page"]
+    page = check_for_empty_variable(page, 1)
+    page_size = args["page_size"]
+    page_size = check_for_empty_variable(page_size, 10)
+    query = args.get("q", '')
     response = client.get_tags(page, page_size, query)
     tags_list = response.get("data", {}).get("results", [])
     tags_list = no_result_found(tags_list)
     if isinstance(tags_list, CommandResults):
-        return tags_list
+        return [tags_list]
     else:
         results = []
         for tag in tags_list:
@@ -721,14 +720,16 @@ def get_whitelist_iocs_command(
     """
     get_tags commands: Returns paginated list of tags
     """
-    page = arg_to_number(args.get("page", 1))
-    page_size = arg_to_number(args.get("page_size", 10))
+    page = args["page"]
+    page = check_for_empty_variable(page, 1)
+    page_size = args["page_size"]
+    page_size = check_for_empty_variable(page_size, 10)
     query = args.get("q")
     response = client.get_whitelist_iocs(page, page_size, query)
     ioc_list = response.get("data", {}).get("results", [])
     ioc_list = no_result_found(ioc_list)
     if isinstance(ioc_list, CommandResults):
-        return ioc_list
+        return [ioc_list]
     else:
         results = []
         for ioc in ioc_list:
@@ -770,8 +771,10 @@ def get_threat_data_command(client: Client, args=Dict[str, Any]) -> CommandResul
     """
     get_threat_data: List thread data and allow query
     """
-    page = arg_to_number(args.get("page", 1))
-    page_size = arg_to_number(args.get("page_size", 1))
+    page = args["page"]
+    page = check_for_empty_variable(page, 1)
+    page_size = args["page_size"]
+    page_size = check_for_empty_variable(page_size, 10)
     query = args.get("query", "type=indicator")
     response = client.get_threat_data(page, page_size, query)
     threat_data_list = response.get("data", {}).get("results", [])
@@ -794,8 +797,10 @@ def get_saved_searches_command(client: Client, args=Dict[str, Any]) -> CommandRe
     """
     get_saved_searches: List saved search data
     """
-    page = arg_to_number(args.get("page", 1))
-    page_size = arg_to_number(args.get("page_size", 10))
+    page = args["page"]
+    page = check_for_empty_variable(page, 1)
+    page_size = args["page_size"]
+    page_size = check_for_empty_variable(page_size, 10)
     response = client.get_saved_searches(page, page_size)
     data_list = response.get("data", {}).get("results", [])
     results = [data for data in data_list]
@@ -819,8 +824,10 @@ def get_server_collections_command(
     """
     get_server_collections: List server collections
     """
-    page = arg_to_number(args.get("page", 1))
-    page_size = arg_to_number(args.get("page_size", 10))
+    page = args["page"]
+    page = check_for_empty_variable(page, 1)
+    page_size = args["page_size"]
+    page_size = check_for_empty_variable(page_size, 10)
     response = client.get_server_collections(page, page_size)
     data_list = response.get("data", {}).get("results", [])
     results = [data for data in data_list]
@@ -842,8 +849,10 @@ def get_actions_command(client: Client, args=Dict[str, Any]) -> CommandResults:
     """
     get_actions: List Actions
     """
-    page = arg_to_number(args.get("page", 1))
-    page_size = arg_to_number(args.get("page_size", 10))
+    page = args["page"]
+    page = check_for_empty_variable(page, 1)
+    page_size = args["page_size"]
+    page_size = check_for_empty_variable(page_size, 10)
     object_type = args.get("object_type")
     action_type = args.get("actions_type")
     params = {}
@@ -931,7 +940,7 @@ def deprecate_ioc_command(client: Client, args: dict) -> CommandResults:
     deprecate_ioc command: Deprecate indicators bulk api
     """
     object_ids = args.get("object_ids")
-    object_type = args.get("object_type")
+    object_type = args["object_type"]
     object_ids = argToList(object_ids)
     response = client.deprecate_ioc(object_ids, object_type)
     data = response.get("data")
@@ -957,9 +966,9 @@ def add_analyst_tlp_command(client: Client, args: dict) -> CommandResults:
     :param Dict[str, str] args: Paramters to be send to in request
     :return CommandResults: XSOAR based result
     '''
-    object_id = args.get("object_id")
-    object_type = args.get("object_type")
-    data = json.loads(args.get("data"))
+    object_id = args["object_id"]
+    object_type = args["object_type"]
+    data = json.loads(args["data"])
 
     analyst_tlp = data.get("analyst_tlp")
     if not analyst_tlp:
@@ -989,7 +998,7 @@ def add_analyst_score_command(client: Client, args: dict) -> CommandResults:
     :param Dict[str, str] args: Paramters to be send to in request
     :return CommandResults: XSOAR based result
     '''
-    object_id = args.get("object_id")
+    object_id = args["object_id"]
     object_type = args.get("object_type")
     data = json.loads(args.get("data", "{}"))
 
@@ -1021,8 +1030,10 @@ def saved_result_set_command(client: Client, args: Dict[str, Any]) -> CommandRes
     :param Dict[str, str] args: Paramters to be send to in request
     :return CommandResults: XSOAR based result
     '''
-    page = arg_to_number(args.get("page", 1))
-    page_size = arg_to_number(args.get("page_size", 10))
+    page = args["page"]
+    page = check_for_empty_variable(page, 1)
+    page_size = args["page_size"]
+    page_size = check_for_empty_variable(page_size, 10)
     label_name = args.get("label_name", "test")
     query = args.get("query", "type=indicator")
     response = client.saved_result_set(page, page_size, label_name, query)
@@ -1148,7 +1159,7 @@ def get_indicator_tags_command(client: Client, args: Dict[str, Any]) -> CommandR
     '''
     page = args.get("page", 1)
     page_size = args.get("page_size", 10)
-    object_id = args.get("object_id")
+    object_id = args["object_id"]
     object_type = args["object_type"]
     params = {"page": page, "page_size": page_size}
 
@@ -1221,7 +1232,7 @@ def get_indicator_observations_command(
     }
 
     response = client.get_indicator_observations(params)
-    data = response.get("data", {}).get('results', {})
+    data = response.get("data", {}).get('result', {})
     data = no_result_found(data)
     if isinstance(data, CommandResults):
         return data
@@ -1232,7 +1243,6 @@ def get_indicator_observations_command(
             outputs=data,
             raw_response=data,
         )
-
         return results
 
 

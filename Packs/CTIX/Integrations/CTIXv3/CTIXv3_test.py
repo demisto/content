@@ -52,7 +52,7 @@ def test_create_tag(requests_mock):
         proxies={},
     )
 
-    args = {"name": "demisto_test_temp", "color": "blue"}
+    args = {"tag_name": "demisto_test_temp", "color": "blue"}
 
     response = create_tag_command(client, args)
 
@@ -75,10 +75,10 @@ def test_create_tag_command_already_exists(requests_mock):
         proxies={},
     )
 
-    args = {"name": "demisto_test_temp", "color": "blue"}
+    args = {"tag_name": "demisto_test_temp", "color": "blue"}
     response = create_tag_command(client, args)
 
-    assert response.outputs == None
+    assert response.outputs is None
 
 
 def test_get_tags(requests_mock):
@@ -118,7 +118,7 @@ def test_get_tags_not_found(requests_mock):
     args = {"page": 1, "page_size": 1}
 
     response = get_tags_command(client, args)
-    assert response[0].outputs == None
+    assert response[0].outputs is None
 
 
 def test_delete_tag(requests_mock):
@@ -162,12 +162,12 @@ def test_delete_tags_no_input(requests_mock):
 
     args = {}
     response = delete_tag_command(client, args)
-    assert response.outputs == None
-    assert response.outputs_prefix == None
-    assert response.outputs_key_field == None
+    assert response.outputs is None
+    assert response.outputs_prefix is None
+    assert response.outputs_key_field is None
 
     assert not isinstance(response.raw_response, list)
-    assert response.raw_response == None
+    assert response.raw_response is None
 
 
 def test_whitelist_iocs_command(requests_mock):
@@ -441,7 +441,7 @@ def test_add_analyst_tlp_command(requests_mock):
     )
 
     args = {
-        "object_ids": "foo",
+        "object_id": "foo",
         "object_type": "indicator",
         "data": '{"analyst_tlp":"GREEN"}',
     }
@@ -470,7 +470,7 @@ def test_add_analyst_score_command(requests_mock):
     )
 
     args = {
-        "object_ids": "foo",
+        "object_id": "foo",
         "object_type": "indicator",
         "data": '{"analyst_score":10}',
     }
