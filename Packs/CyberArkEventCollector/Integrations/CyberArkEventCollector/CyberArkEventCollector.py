@@ -201,13 +201,14 @@ def main(command: str, demisto_params: dict):
 
         if command in ('fetch-events', 'cyberark-get-events'):
             events = get_events.run()
-            if demisto_params.get('should_send_event'):
-                send_events_to_xsiam(events, vendor=demisto_params.get('vendor'), product=demisto_params.get('product'))
 
             if events:
                 last_run = get_events.get_last_run(events)
                 demisto.debug(f'Set last run to {last_run}')
                 demisto.setLastRun(last_run)
+
+            if command == 'fetch-events' or demisto_params.get('should_send_event'):
+                send_events_to_xsiam(events, vendor=demisto_params.get('vendor'), product=demisto_params.get('product'))
 
             if command == 'cyberark-get-events':
                 command_results = CommandResults(
