@@ -61,19 +61,19 @@ def test_module(mocker, mock_client, mocked_response):
     'args, integration_context_mock', [
         (
             {"limit": "1"},
-            {'events': '[{"1":"1"},{"2":"2"}]'}
+            {'events': '[{"id":"1"},{"id":"2"}]'}
         ),
         (
             {"limit": "2"},
-            {'events': '[{"1":"1"},{"2":"2"},{"3":"3"},{"4":"4"}]'}
+            {'events': '[{"id":"1"},{"id":"2"},{"id":"3"},{"id":"4"}]'}
         ),
         (
             {"limit": "5"},
-            {'events': '[{"1":"1"},{"2":"2"},{"3":"3"}]'}
+            {'events': '[{"id":"1"},{"id":"2"},{"id":"3"}]'}
         ),
         (
             {"limit": "50"},
-            {'events': '[{"1":"1"},{"2":"2"}]'}
+            {'events': '[{"id":"1"},{"id":"2"}]'}
         ),
         (
             {"limit": "22"},
