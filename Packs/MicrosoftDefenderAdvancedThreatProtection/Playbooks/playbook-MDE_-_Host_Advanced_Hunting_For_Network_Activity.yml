@@ -2,10 +2,10 @@ contentitemexportablefields:
   contentitemfields:
     propagationLabels:
     - all
-description: This playbook will use the Microsoft Defender For Endpoint feature - Advanced Hunting - and will hunt for host network activity.
+description: This playbook uses the Microsoft Defender For Endpoint Advanced Hunting feature - and hunts for host network activity.
 id: MDE - Host Advanced Hunting For Network Activity
 inputs:
-- description: Enter IP to hunt on. Can be a comma-separated list.
+- description: A comma-separated list of IPs to hunt.
   key: IP
   playbookInputQuery:
   required: false
@@ -15,7 +15,7 @@ inputs:
       root: incident
       transformers:
       - operator: uniq
-- description: Enter a hostname to hunt on. Can be a comma-separated list.
+- description: A comma-separated list of host names to hunt.
   key: DeviceName
   playbookInputQuery:
   required: false
@@ -25,7 +25,7 @@ inputs:
       root: incident
       transformers:
       - operator: uniq
-- description: Enter file name to hunt on. Can be a comma-separated list.
+- description: A comma-separated list of file names to hunt.
   key: FileName
   playbookInputQuery:
   required: false
@@ -35,7 +35,7 @@ inputs:
       root: incident
       transformers:
       - operator: uniq
-- description: Enter device id to hunt on. Can be a comma-separated list.
+- description: A comma-separated list of device IDs to hunt.
   key: DeviceID
   playbookInputQuery:
   required: false
@@ -45,7 +45,7 @@ inputs:
       root: incident
       transformers:
       - operator: uniq
-- description: Enter file md5 id to hunt on. Can be a comma-separated list.
+- description: A comma-separated list of file MD5 hashes to hunt.
   key: FileMd5
   playbookInputQuery:
   required: false
@@ -55,7 +55,7 @@ inputs:
       root: incident
       transformers:
       - operator: uniq
-- description: Enter file SHA256 id to hunt on. Can be a comma-separated list.
+- description: A comma-separated list of file SHA256 hashes to hunt.
   key: FileSha256
   playbookInputQuery:
   required: false
@@ -65,7 +65,7 @@ inputs:
       root: incident
       transformers:
       - operator: uniq
-- description: Enter file SHA1 id to hunt on. Can be a comma-separated list.
+- description: A comma-separated list of file SHA1 hashes to hunt.
   key: FileSha1
   playbookInputQuery:
   required: false
@@ -184,7 +184,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: Is there evidence of attempted lateral movement. By selecting a “query_purpose” argument, a designated query template will be used.
+      description: Is there evidence of attempted lateral movement? By selecting a “query_purpose” argument, a designated query template will be used.
       id: c4d1ddc3-40e5-43b4-8c4b-9a252c81ecdc
       iscommand: true
       name: Any SMB connections from the host?
@@ -215,7 +215,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: Retrieves specific alert by the given alert ID. Note, if the given alert ID is not part of the results, it was not found.
+      description: Retrieves an alert by a specific alert ID. Note - If the alert ID is not part of the results, it was not found.
       id: 092a6b19-e5e5-4c91-8622-cf3e3f7cd671
       iscommand: false
       name: File Network Actions
@@ -290,7 +290,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: Is there evidence of attempted lateral movement. By selecting a “query_purpose” argument, a designated query template will be used.
+      description: Is there evidence of attempted lateral movement? By selecting a “query_purpose” argument, a designated query template will be used.
       id: d9b0c4ac-6fb8-42a8-8cdf-e1a8f1daa555
       iscommand: true
       name: Other RDP atempts?
@@ -378,7 +378,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: Is there evidence of persistence. By selecting a “query_purpose” argument, a designated query template will be used.
+      description: Is there evidence of persistence? By selecting a “query_purpose” argument, a designated query template will be used.
       id: 232738cb-1574-4389-8f40-84f06404dd50
       iscommand: true
       name: hosts File Modification?
@@ -422,7 +422,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: Is there evidence of persistence. By selecting a “query_purpose” argument, a designated query template will be used.
+      description: Is there evidence of persistence? By selecting a “query_purpose” argument, a designated query template will be used.
       id: 611ec49e-e683-4d24-87b6-37e401967b31
       iscommand: true
       name: Any Change in Local FW rules?
@@ -595,7 +595,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: Any suspicious or malicious IPs
+      description: Any suspicious or malicious IPs?
       id: 92e61de8-13b3-47ce-8a68-032af12a7d43
       iscommand: false
       name: Any suspicious or malicious IPs
@@ -662,7 +662,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: 'Collect file from a device. NOTE: Backslashes in path must be escaped.'
+      description: 'Retrieves a file from a device. NOTE: Backslashes in the path must be escaped.'
       id: 7ec060ca-f51d-49e7-8440-3e63721e35b6
       iscommand: true
       name: Retrieve host file
@@ -746,7 +746,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: Unzip a file using fileName or entryID to specify a file. Unzipped files will be loaded to the War Room and names will be put into the context.
+      description: Unzips a file using file name or entry ID for specify a file. Unzipped files are loaded to the War Room and names are put into the context.
       id: f1921faf-86cf-4e09-8e56-fc8276f712ce
       iscommand: false
       name: Unzip the retrieved host file
@@ -1029,7 +1029,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: Any suspicious or malicious DNS
+      description: Any suspicious or malicious DNS?
       id: 19c0e48d-3418-4240-84c0-c080d3d9455a
       iscommand: false
       name: Any suspicious or malicious DNS
