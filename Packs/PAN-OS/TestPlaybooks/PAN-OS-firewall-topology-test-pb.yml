@@ -19,11 +19,11 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: afac1961-f5c8-4dea-84cb-450c246df3f6
+      id: 5ce87c0a-493a-4945-886c-5e2ba3212c0f
       iscommand: false
       name: ''
       version: -1
-    taskid: afac1961-f5c8-4dea-84cb-450c246df3f6
+    taskid: 5ce87c0a-493a-4945-886c-5e2ba3212c0f
     timertriggers: []
     type: start
     view: |-
@@ -48,13 +48,13 @@ tasks:
     task:
       brand: ''
       description: Gets information from all PAN-OS systems in the topology.
-      id: b04f40e7-196f-47bd-81d2-a7a87cc053ad
+      id: 369b136c-52dd-4cb7-8e7f-39f7cb13e20c
       iscommand: true
       name: pan-os-platform-get-system-info
       script: '|||pan-os-platform-get-system-info'
       type: regular
       version: -1
-    taskid: b04f40e7-196f-47bd-81d2-a7a87cc053ad
+    taskid: 369b136c-52dd-4cb7-8e7f-39f7cb13e20c
     timertriggers: []
     type: regular
     view: |-
@@ -87,13 +87,13 @@ tasks:
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
         https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
-      id: 6e8df631-c496-4b79-8b43-5f1c5ded2ac8
+      id: da927c8b-0250-4361-866f-0f78915f1581
       iscommand: false
       name: Delete Context
       script: DeleteContext
       type: regular
       version: -1
-    taskid: 6e8df631-c496-4b79-8b43-5f1c5ded2ac8
+    taskid: da927c8b-0250-4361-866f-0f78915f1581
     timertriggers: []
     type: regular
     view: |-
@@ -145,12 +145,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: 3226d4b1-a862-431b-86f0-79c856636810
+      id: db20855d-5a57-4590-850e-4f7f15f8066d
       iscommand: false
       name: Verify Outputs
       type: condition
       version: -1
-    taskid: 3226d4b1-a862-431b-86f0-79c856636810
+    taskid: db20855d-5a57-4590-850e-4f7f15f8066d
     timertriggers: []
     type: condition
     view: |-
@@ -175,13 +175,13 @@ tasks:
     task:
       brand: ''
       description: Gets all ARP tables from all firewalls in the topology.
-      id: c2873abb-e549-4e3d-8fe7-bb5ccf232fa0
+      id: ef02e7a9-805c-4cc1-8019-75a5c0ece0d6
       iscommand: true
       name: pan-os-platform-get-arp-tables
       script: '|||pan-os-platform-get-arp-tables'
       type: regular
       version: -1
-    taskid: c2873abb-e549-4e3d-8fe7-bb5ccf232fa0
+    taskid: ef02e7a9-805c-4cc1-8019-75a5c0ece0d6
     timertriggers: []
     type: regular
     view: |-
@@ -233,12 +233,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: 52903193-7ba3-4af9-8ea8-2c6707e0398a
+      id: 0214820f-4c29-400a-81a4-e82a2a8d7004
       iscommand: false
       name: Verify Outputs
       type: condition
       version: -1
-    taskid: 52903193-7ba3-4af9-8ea8-2c6707e0398a
+    taskid: 0214820f-4c29-400a-81a4-e82a2a8d7004
     timertriggers: []
     type: condition
     view: |-
@@ -263,13 +263,13 @@ tasks:
     task:
       brand: ''
       description: Pulls all route summary information from the topology.
-      id: 5a1c88ee-0037-4e02-8b59-2a2ec769206c
+      id: f6aafb81-14e5-4212-8b3c-0e26a4f1f5fb
       iscommand: true
       name: pan-os-platform-get-routes
       script: '|||pan-os-platform-get-routes'
       type: regular
       version: -1
-    taskid: 5a1c88ee-0037-4e02-8b59-2a2ec769206c
+    taskid: f6aafb81-14e5-4212-8b3c-0e26a4f1f5fb
     timertriggers: []
     type: regular
     view: |-
@@ -326,12 +326,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: a4827fdb-5faf-4be2-88bd-beea304b64e1
+      id: 0ab5fd10-bb19-42a6-86c2-82720b70e570
       iscommand: false
       name: Verify Outputs
       type: condition
       version: -1
-    taskid: a4827fdb-5faf-4be2-88bd-beea304b64e1
+    taskid: 0ab5fd10-bb19-42a6-86c2-82720b70e570
     timertriggers: []
     type: condition
     view: |-
@@ -356,13 +356,13 @@ tasks:
     task:
       brand: ''
       description: Pulls all route summary information from the topology.
-      id: bb3a43d2-b2e7-4ebf-87e4-b59f7b115692
+      id: 13633863-228c-409a-8ef1-c07617dcd0b4
       iscommand: true
       name: pan-os-platform-get-route-summary
       script: '|||pan-os-platform-get-route-summary'
       type: regular
       version: -1
-    taskid: bb3a43d2-b2e7-4ebf-87e4-b59f7b115692
+    taskid: 13633863-228c-409a-8ef1-c07617dcd0b4
     timertriggers: []
     type: regular
     view: |-
@@ -409,12 +409,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: 668c129a-9fa3-436c-800d-a29555dd66a3
+      id: b00c8ee0-e109-4e12-848f-e20f8ea196db
       iscommand: false
       name: Verify Outputs
       type: condition
       version: -1
-    taskid: 668c129a-9fa3-436c-800d-a29555dd66a3
+    taskid: b00c8ee0-e109-4e12-848f-e20f8ea196db
     timertriggers: []
     type: condition
     view: |-
@@ -435,19 +435,19 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: 228c80ef-71f3-4688-8d82-0e5dd3e8dbd5
+      id: c5ab2726-22c3-4f59-81cb-42dc48d8b172
       iscommand: false
       name: Test Done
       type: title
       version: -1
-    taskid: 228c80ef-71f3-4688-8d82-0e5dd3e8dbd5
+    taskid: c5ab2726-22c3-4f59-81cb-42dc48d8b172
     timertriggers: []
     type: title
     view: |-
       {
         "position": {
-          "x": 460,
-          "y": 4570
+          "x": 470,
+          "y": 7585
         }
       }
   '15':
@@ -465,13 +465,13 @@ tasks:
     task:
       brand: ''
       description: Gets global counter information from all the PAN-OS firewalls in the topology
-      id: c3c0b76c-1c71-4338-882d-ec7c8a150767
+      id: 0a53accc-3720-420c-8e6b-e28e97a479f0
       iscommand: true
       name: pan-os-platform-get-global-counters
       script: '|||pan-os-platform-get-global-counters'
       type: regular
       version: -1
-    taskid: c3c0b76c-1c71-4338-882d-ec7c8a150767
+    taskid: 0a53accc-3720-420c-8e6b-e28e97a479f0
     timertriggers: []
     type: regular
     view: |-
@@ -568,12 +568,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: 1ae005a6-7f59-46f1-84a1-fd3b33b209f5
+      id: 6d98b8b7-f6ad-448f-8270-e9e50c1e0d1b
       iscommand: false
       name: Verify Outputs
       type: condition
       version: -1
-    taskid: 1ae005a6-7f59-46f1-84a1-fd3b33b209f5
+    taskid: 6d98b8b7-f6ad-448f-8270-e9e50c1e0d1b
     timertriggers: []
     type: condition
     view: |-
@@ -598,13 +598,13 @@ tasks:
     task:
       brand: ''
       description: Check the devices for software that is available to be installed.
-      id: 29c9e524-afcf-4ddc-84b2-f86046eedae8
+      id: 878da059-7385-4c18-8eb4-cc548a826a6a
       iscommand: true
       name: pan-os-platform-get-available-software
       script: '|||pan-os-platform-get-available-software'
       type: regular
       version: -1
-    taskid: 29c9e524-afcf-4ddc-84b2-f86046eedae8
+    taskid: 878da059-7385-4c18-8eb4-cc548a826a6a
     timertriggers: []
     type: regular
     view: |-
@@ -681,12 +681,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: c25321e5-a7b6-433c-8cd7-fca4c5d5b7fe
+      id: fd601fa1-efa6-4e65-8715-c3b8762e6fa9
       iscommand: false
       name: Verify Outputs
       type: condition
       version: -1
-    taskid: c25321e5-a7b6-433c-8cd7-fca4c5d5b7fe
+    taskid: fd601fa1-efa6-4e65-8715-c3b8762e6fa9
     timertriggers: []
     type: condition
     view: |-
@@ -711,13 +711,13 @@ tasks:
     task:
       brand: ''
       description: Get the HA state and assocaited details from the given device and any other details.
-      id: f5729f5f-6156-45ff-82ef-22cdbf21be20
+      id: 72d8c6f8-a1f4-489c-88cd-622d6a113747
       iscommand: true
       name: pan-os-platform-get-ha-state
       script: '|||pan-os-platform-get-ha-state'
       type: regular
       version: -1
-    taskid: f5729f5f-6156-45ff-82ef-22cdbf21be20
+    taskid: 72d8c6f8-a1f4-489c-88cd-622d6a113747
     timertriggers: []
     type: regular
     view: |-
@@ -764,12 +764,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: 1c4b3e26-8308-4672-8a5a-bf493f25cbec
+      id: 3c78e256-c1af-4b0c-8061-8ca2b5060eb9
       iscommand: false
       name: Verify Outputs
       type: condition
       version: -1
-    taskid: 1c4b3e26-8308-4672-8a5a-bf493f25cbec
+    taskid: 3c78e256-c1af-4b0c-8061-8ca2b5060eb9
     timertriggers: []
     type: condition
     view: |-
@@ -794,13 +794,13 @@ tasks:
     task:
       brand: ''
       description: Get all the jobs from the devices in the environment, or a single job when ID is specified.
-      id: 866c157c-332c-413b-807f-b50532df6a42
+      id: 2c9ac109-50df-4813-88d3-daf63d970c2e
       iscommand: true
       name: pan-os-platform-get-jobs
       script: '|||pan-os-platform-get-jobs'
       type: regular
       version: -1
-    taskid: 866c157c-332c-413b-807f-b50532df6a42
+    taskid: 2c9ac109-50df-4813-88d3-daf63d970c2e
     timertriggers: []
     type: regular
     view: |-
@@ -877,12 +877,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: aaf09ca8-b9dd-4d58-85d7-c707700f84cd
+      id: 9576f3b7-3128-4521-891b-69166a242b30
       iscommand: false
       name: Verify Outputs
       type: condition
       version: -1
-    taskid: aaf09ca8-b9dd-4d58-85d7-c707700f84cd
+    taskid: 9576f3b7-3128-4521-891b-69166a242b30
     timertriggers: []
     type: condition
     view: |-
@@ -916,13 +916,13 @@ tasks:
     task:
       brand: ''
       description: Checks the status of the given device, checking whether it's up or down and the operational mode normal
-      id: db90d0f8-8b18-4ea0-8913-da27542c3039
+      id: 8dbcf8b5-0a0a-4642-89b1-2606c468416f
       iscommand: true
       name: pan-os-platform-get-system-status
       script: '|||pan-os-platform-get-system-status'
       type: regular
       version: -1
-    taskid: db90d0f8-8b18-4ea0-8913-da27542c3039
+    taskid: 8dbcf8b5-0a0a-4642-89b1-2606c468416f
     timertriggers: []
     type: regular
     view: |-
@@ -959,12 +959,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: 093b9df4-270a-4ad0-899d-3ecec79b06c4
+      id: 4a13654c-b96a-4751-8441-41da35e617d3
       iscommand: false
       name: Verify Outputs
       type: condition
       version: -1
-    taskid: 093b9df4-270a-4ad0-899d-3ecec79b06c4
+    taskid: 4a13654c-b96a-4751-8441-41da35e617d3
     timertriggers: []
     type: condition
     view: |-
@@ -988,13 +988,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: 4fccab2f-dea9-4e1e-84ae-55859aae083d
+      id: 0d391c5b-9bb6-422e-81e2-37a5a978dde8
       iscommand: true
       name: pan-os-hygiene-check-log-forwarding
       script: '|||pan-os-hygiene-check-log-forwarding'
       type: regular
       version: -1
-    taskid: 4fccab2f-dea9-4e1e-84ae-55859aae083d
+    taskid: 0d391c5b-9bb6-422e-81e2-37a5a978dde8
     timertriggers: []
     type: regular
     view: |-
@@ -1056,12 +1056,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: c49110b3-c376-4c55-8188-cf767b121435
+      id: e67ce4c4-df42-49da-8d31-3db636a3fae5
       iscommand: false
       name: Verify Outputs
       type: condition
       version: -1
-    taskid: c49110b3-c376-4c55-8188-cf767b121435
+    taskid: e67ce4c4-df42-49da-8d31-3db636a3fae5
     timertriggers: []
     type: condition
     view: |-
@@ -1086,13 +1086,13 @@ tasks:
     task:
       brand: ''
       description: Checks the configured Vulnerability profiles to ensure at least one meets best practices.
-      id: db6f1725-9a3d-40b1-843f-998aa43eee2a
+      id: 2cb040a5-4803-413d-86ea-96de61fb14fe
       iscommand: true
       name: pan-os-hygiene-check-vulnerability-profiles
       script: '|||pan-os-hygiene-check-vulnerability-profiles'
       type: regular
       version: -1
-    taskid: db6f1725-9a3d-40b1-843f-998aa43eee2a
+    taskid: 2cb040a5-4803-413d-86ea-96de61fb14fe
     timertriggers: []
     type: regular
     view: |-
@@ -1132,19 +1132,19 @@ tasks:
     isoversize: false
     nexttasks:
       yes:
-      - '14'
+      - '33'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
       brand: ''
-      id: e76293fe-5086-4f92-8fe4-2dbe5c6f8e4a
+      id: 7d4c0343-4b31-49e4-8933-4a78071bc605
       iscommand: false
       name: Verify Outputs
       type: condition
       version: -1
-    taskid: e76293fe-5086-4f92-8fe4-2dbe5c6f8e4a
+    taskid: 7d4c0343-4b31-49e4-8933-4a78071bc605
     timertriggers: []
     type: condition
     view: |-
@@ -1154,14 +1154,680 @@ tasks:
           "y": 4370
         }
       }
+  '33':
+    id: '33'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '34'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Checks that at least one log forwarding profile is configured according to best practices.
+      id: ae3efc6d-2b7e-4ae0-8019-3954cd4613cd
+      iscommand: true
+      name: pan-os-hygiene-check-log-forwarding
+      script: '|||pan-os-hygiene-check-log-forwarding'
+      type: regular
+      version: -1
+    taskid: ae3efc6d-2b7e-4ae0-8019-3954cd4613cd
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 4610
+        }
+      }
+  '34':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: PANOS.ConfigurationHygiene.Summary.description
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              simple: PANOS.ConfigurationHygiene.Summary.issue_code
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              simple: PANOS.ConfigurationHygiene.Summary.result
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              simple: PANOS.ConfigurationHygiene.Summary.issue_count
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              simple: PANOS.ConfigurationHygiene.Result.hostid
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              simple: PANOS.ConfigurationHygiene.Result.container_name
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              simple: PANOS.ConfigurationHygiene.Result.issue_code
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              simple: PANOS.ConfigurationHygiene.Result.description
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              simple: PANOS.ConfigurationHygiene.Result.name
+          operator: isExists
+      label: yes
+    id: '34'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      yes:
+      - '35'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: cbbe2bef-de9e-4d97-8c45-e6e2b12cee0f
+      iscommand: false
+      name: Verify Outputs
+      type: condition
+      version: -1
+    taskid: cbbe2bef-de9e-4d97-8c45-e6e2b12cee0f
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 4810
+        }
+      }
+  '35':
+    id: '35'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '36'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Checks the configured vulnerability profiles to ensure at least one meets best practices.
+      id: 6ee0b8b0-52ba-47c9-8fdb-6523cc3a4600
+      iscommand: true
+      name: pan-os-hygiene-check-vulnerability-profiles
+      script: '|||pan-os-hygiene-check-vulnerability-profiles'
+      type: regular
+      version: -1
+    taskid: 6ee0b8b0-52ba-47c9-8fdb-6523cc3a4600
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 5010
+        }
+      }
+  '36':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: PANOS.ConfigurationHygiene.Summary.description
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: PANOS.ConfigurationHygiene.Summary.issue_code
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: PANOS.ConfigurationHygiene.Summary.result
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: PANOS.ConfigurationHygiene.Summary.issue_count
+          operator: isNotEmpty
+      label: yes
+    id: '36'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      yes:
+      - '37'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: c153f727-6245-4870-8d54-dd29b998d51f
+      iscommand: false
+      name: Verify Outputs
+      type: condition
+      version: -1
+    taskid: c153f727-6245-4870-8d54-dd29b998d51f
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 5210
+        }
+      }
+  '37':
+    id: '37'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '38'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Checks the configured Anti-spyware profiles to ensure at least one meets best practices.
+      id: fe965b99-6780-4665-8929-3a64bea800fa
+      iscommand: true
+      name: pan-os-hygiene-check-spyware-profiles
+      script: '|||pan-os-hygiene-check-spyware-profiles'
+      type: regular
+      version: -1
+    taskid: fe965b99-6780-4665-8929-3a64bea800fa
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 5410
+        }
+      }
+  '38':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: PANOS.ConfigurationHygiene.Summary.description
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: PANOS.ConfigurationHygiene.Summary.issue_code
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: PANOS.ConfigurationHygiene.Summary.result
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: PANOS.ConfigurationHygiene.Summary.issue_count
+          operator: isNotEmpty
+      label: yes
+    id: '38'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      yes:
+      - '39'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 902b1266-ba06-442e-899c-85e598de9c15
+      iscommand: false
+      name: Verify Outputs
+      type: condition
+      version: -1
+    taskid: 902b1266-ba06-442e-899c-85e598de9c15
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 5610
+        }
+      }
+  '39':
+    id: '39'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '40'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Checks the configured URL Filtering profiles to ensure at least one meets best practices.
+      id: 60ef5aa0-f29f-46e4-8d2c-c19f314d8933
+      iscommand: true
+      name: pan-os-hygiene-check-url-filtering-profiles
+      script: '|||pan-os-hygiene-check-url-filtering-profiles'
+      type: regular
+      version: -1
+    taskid: 60ef5aa0-f29f-46e4-8d2c-c19f314d8933
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 5810
+        }
+      }
+  '40':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: PANOS.ConfigurationHygiene.Summary.description
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: PANOS.ConfigurationHygiene.Summary.issue_code
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: PANOS.ConfigurationHygiene.Summary.result
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: PANOS.ConfigurationHygiene.Summary.issue_count
+          operator: isNotEmpty
+      label: yes
+    id: '40'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      yes:
+      - '41'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 112cc1a1-c258-4324-807b-5cd01122ac4a
+      iscommand: false
+      name: Verify Outputs
+      type: condition
+      version: -1
+    taskid: 112cc1a1-c258-4324-807b-5cd01122ac4a
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 6010
+        }
+      }
+  '41':
+    id: '41'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '43'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Returns a list of existing PANOS URL filtering objects that conform to best practices.
+      id: 83ab79bc-b94a-4d2d-8b13-c17c15868ab0
+      iscommand: true
+      name: pan-os-hygiene-conforming-url-filtering-profiles
+      script: '|||pan-os-hygiene-conforming-url-filtering-profiles'
+      type: regular
+      version: -1
+    taskid: 83ab79bc-b94a-4d2d-8b13-c17c15868ab0
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 6210
+        }
+      }
+  '43':
+    id: '43'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '45'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Returns all Anti-spyware profiles that conform to best practices.
+      id: 4b506408-b943-42ad-8734-69cb303aee41
+      iscommand: true
+      name: pan-os-hygiene-conforming-spyware-profiles
+      script: '|||pan-os-hygiene-conforming-spyware-profiles'
+      type: regular
+      version: -1
+    taskid: 4b506408-b943-42ad-8734-69cb303aee41
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 6390
+        }
+      }
+  '45':
+    id: '45'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '47'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Returns all Vulnerability profiles that conform to best practices.
+      id: b08dfc5e-2b05-4277-8310-2f4bb585607f
+      iscommand: true
+      name: pan-os-hygiene-conforming-vulnerability-profiles
+      script: '|||pan-os-hygiene-conforming-vulnerability-profiles'
+      type: regular
+      version: -1
+    taskid: b08dfc5e-2b05-4277-8310-2f4bb585607f
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 6580
+        }
+      }
+  '47':
+    id: '47'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '48'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Check configured security zones have correct settings.
+      id: c94e517d-0c4e-4d7c-89e8-6ea9c5473773
+      iscommand: true
+      name: pan-os-hygiene-check-security-zones
+      script: '|||pan-os-hygiene-check-security-zones'
+      type: regular
+      version: -1
+    taskid: c94e517d-0c4e-4d7c-89e8-6ea9c5473773
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 6770
+        }
+      }
+  '48':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: PANOS.ConfigurationHygiene.Summary.description
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: PANOS.ConfigurationHygiene.Summary.issue_code
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: PANOS.ConfigurationHygiene.Summary.result
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: PANOS.ConfigurationHygiene.Summary.issue_count
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: PANOS.ConfigurationHygiene.Result.hostid
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: PANOS.ConfigurationHygiene.Result.container_name
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: PANOS.ConfigurationHygiene.Result.issue_code
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: PANOS.ConfigurationHygiene.Result.description
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: PANOS.ConfigurationHygiene.Result.name
+          operator: isNotEmpty
+      label: yes
+    id: '48'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      yes:
+      - '49'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 2ae52307-6c06-4ca3-828e-e3471ab615e4
+      iscommand: false
+      name: Verify Outputs
+      type: condition
+      version: -1
+    taskid: 2ae52307-6c06-4ca3-828e-e3471ab615e4
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 6950
+        }
+      }
+  '49':
+    id: '49'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '50'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Check security rules are configured correctly.
+      id: 22d5e109-8bda-4ba6-86e6-cdd74bae79b2
+      iscommand: true
+      name: pan-os-hygiene-check-security-rules
+      script: '|||pan-os-hygiene-check-security-rules'
+      type: regular
+      version: -1
+    taskid: 22d5e109-8bda-4ba6-86e6-cdd74bae79b2
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 7160
+        }
+      }
+  '50':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: PANOS.ConfigurationHygiene.Summary.description
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: PANOS.ConfigurationHygiene.Summary.issue_code
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: PANOS.ConfigurationHygiene.Summary.result
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: PANOS.ConfigurationHygiene.Summary.issue_count
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: PANOS.ConfigurationHygiene.Result.hostid
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: PANOS.ConfigurationHygiene.Result.container_name
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: PANOS.ConfigurationHygiene.Result.issue_code
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: PANOS.ConfigurationHygiene.Result.description
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: PANOS.ConfigurationHygiene.Result.name
+          operator: isNotEmpty
+      label: yes
+    id: '50'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      yes:
+      - '14'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: a6859ebc-cf3b-4ac8-86ba-4bd67fc1d0f7
+      iscommand: false
+      name: Verify Outputs
+      type: condition
+      version: -1
+    taskid: a6859ebc-cf3b-4ac8-86ba-4bd67fc1d0f7
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 7360
+        }
+      }
 version: -1
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 4585,
-        "width": 390,
+        "height": 7600,
+        "width": 400,
         "x": 450,
         "y": 50
       }
