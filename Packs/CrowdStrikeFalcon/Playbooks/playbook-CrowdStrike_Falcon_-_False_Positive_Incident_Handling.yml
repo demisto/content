@@ -1,9 +1,9 @@
 id: CrowdStrikeF Falcon - False Positive Incident Handling
 version: -1
 fromversion: 6.5.0
-description: The playbooks allows to handle a CrowdStrike incident that was determined
+description: This playbook handles a CrowdStrike incident that was determined
   to be a false positive by the analyst. Actions include unisolating the host, allowing
-  the indicator by the EDR as well as tagging it.
+  the indicator by the EDR, and tagging it.
 name: CrowdStrikeF Falcon - False Positive Incident Handling
 starttaskid: "0"
 tasks:
@@ -254,7 +254,7 @@ tasks:
       id: 97d3043a-800a-4205-81bd-ae13f2358967
       version: -1
       name: Resolve CS incident
-      description: Resolve incidents.
+      description: Resolves the CrowdStrike incident.
       script: '|||cs-falcon-resolve-incident'
       type: regular
       iscommand: true
@@ -788,8 +788,7 @@ inputs:
     simple: "false"
   required: false
   description: |-
-    Indicates if automatic un-isolation is allowed
-    True/False
+    Whether automatic un-isolation is allowed.
   playbookInputQuery:
 - key: AgentId
   value: {}
@@ -799,27 +798,25 @@ inputs:
 - key: AllowIOCTagName
   value: {}
   required: false
-  description: The name of the tag to apply to allowed indicators.
+  description: The tag name to apply to the allowed indicator.
   playbookInputQuery:
 - key: ApplyAllowIOCGlobally
   value:
     simple: "True"
   required: false
   description: |-
-    Indicates if adding to allow list is globally
-    If specified False provide an input for the AllowHostGroup input with the group name.
-    True/False
+    Whether the indicator is globally added to the allow list.
+    If 'false', specify the group name for the AllowHostGroup input.
   playbookInputQuery:
 - key: AllowHostGroupName
   value: {}
   required: false
-  description: The name of the allow list group to apply in case ApplyAllowIOCGlobally
-    isn't set as True.
+  description: The name of the allow list group to apply if ApplyAllowIOCGlobally is set to 'false'.
   playbookInputQuery:
 - key: CloseNotes
   value: {}
   required: false
-  description: Provide the close notes to be listed in CrowdStrike.
+  description: The close notes to be listed in CrowdStrike.
   playbookInputQuery:
 - key: Sha256
   value: {}
