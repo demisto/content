@@ -54,7 +54,6 @@
         XDM.Audit.identity.name=UserName
         XDM.Audit.identity.name=Target
         XDM.Audit.audited_resource.name=Cname
-        XDM.Audit.audited_resource.name=Cname
         XDM.Audit.audited_resource_before.value=OldState
         XDM.Audit.audited_resource.value=NewState
         XDM.Audit.audited_resource.name=AffectedTenant
