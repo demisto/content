@@ -3321,14 +3321,23 @@ def add_modified_remote_offenses(client: Client,
         finished_offenses_queue = context_data.get(UPDATED_MIRRORED_OFFENSES_CTX_KEY, {})
         for offense_id, search_id in mirrored_offenses_queue.items():
             if search_id == -1:
-                # search again #TODO
-                pass
+                try:
+                    offense_response = client.offenses_list(offense_id=offense_id, fields='start_time')
+                    offense_start_time = offense_response[0]['start_time']
+                    query_expression = f'SELECT {event_columns} FROM events WHERE INOFFENSE({offense_id}) ' \
+                        f'limit {events_limit} START {offense_start_time}'
+                    search_response = client.search_create(query_expression)
+                    search_id = search_response['search_id']
+                    mirrored_offenses_queue[offense_id] = search_id
+
+                except Exception as e:
+                    msg = f'Searching again {offense_id} failed: {e}'
+                    demisto.debug(msg)
+
             query_status_results = client.search_status_get(search_id)
             status = query_status_results.get('status')
             if status in {'CANCELED', 'ERROR'}:
                 demisto.info(f'offense {offense_id} search query {search_id} status is {status}')
-                # search again #TODO
-                pass
             if status == 'COMPLETED':
                 del mirrored_offenses_queue[offense_id]
                 finished_offenses_queue[offense_id] = search_id
