@@ -205,7 +205,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: inputs.DetectedHostID
+                  simple: inputs.HostId
                 iscontext: true
           transformers:
           - operator: uniq
@@ -242,7 +242,7 @@ inputs:
   required: false
   description: The SHA256 file hash to search for.
   playbookInputQuery:
-- key: DetectedHostID
+- key: HostId
   value: {}
   required: false
   description: The ID of the host that originated the detection.

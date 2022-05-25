@@ -24,7 +24,7 @@ This playbook does not use any scripts.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | FileSha256 | The SHA256 file hash to search for. |  | Optional |
-| DetectedHostID | The ID of the host that originated the detection. |  | Optional |
+| HostId | The ID of the host that originated the detection. |  | Optional |
 
 ## Playbook Outputs
 ---
