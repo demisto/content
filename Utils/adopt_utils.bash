@@ -167,6 +167,32 @@ get_branch(){
 
 
 #######################################
+# Check if branch exists and delete if it does
+# Globals:
+#   None
+# Arguments:
+#   $1: Branch name
+#######################################
+check_branch(){
+	
+	if git show-ref --quiet "refs/heads/$1"
+	then
+		printf "\t- Branch '%s' exists, will be deleted and recreated...\n" "$1"
+		if git branch -D --quiet "$1"
+		then
+			printf "\t- ✓ Branch '%s' deleted\n" "$1"
+		else
+			printf "\t- ✗ Error deleting branch '%s'. Terminating..." "$1"
+			exit 1
+		fi
+		
+	else
+		echo "✓ Branch '$1' doesn't exist"
+	fi
+}
+
+
+#######################################
 # Add and Commit changes
 # Globals:
 #   None
@@ -175,9 +201,8 @@ get_branch(){
 #######################################
 commit(){
 
-	git add . 
-	git diff --cached --name-only --diff-filter=A
-	git commit -m "$pack_name adoption $1"
+	git add .
+	git commit -m "$pack_name adoption $1" -q
 
 }
 
@@ -225,15 +250,15 @@ reset_to_master(){
 			echo "Please run 'git stash/revert/reset' and rerun."
 			exit 1
 		else
-			echo "No untracked changes done, attempting to checkout to master/main branch..."
+			printf "\t- No untracked changes done, attempting to checkout to master/main branch...\n"
 			if git show-ref --quiet refs/heads/master; then
-				echo "Checking out master branch..."
-				git checkout master
+				printf "\t- Checking out master branch...\n"
+				git checkout --quiet master
 			elif git show-ref --quiet refs/heads/main; then
-				echo "Checking out main branch..."
-				git checkout main
+				printf "\t- Checking out main branch...\n"
+				git checkout --quiet main
 			else
-				echo "Could not find references to main/master HEAD. Terminating..."
+				printf "\t-Could not find references to main/master HEAD. Terminating...\n"
 				exit 1	
 			fi
 		fi
@@ -415,7 +440,16 @@ set_author_image(){
 	then
 		echo "Attempting to download image from $author_image_url..."
 		wget --no-check-certificate --quiet -O "$pack_dir/Author_image.png" "$author_image_url"
-		echo "✓ Author image downloaded to '$pack_dir/Author_image.png'"
+		exit_code=$?
+
+		if [ $exit_code -eq 4 ]
+		then
+			rm "$pack_dir/Author_image.png"
+			echo "✗ Author image download failed. Check that '$author_image_url' is a valid URL."
+			echo "Make sure to manually add it according to https://xsoar.pan.dev/docs/packs/packs-format#author_imagepng"
+		else
+			echo "✓ Author image downloaded to '$pack_dir/Author_image.png'"
+		fi
 	fi
 }
 
@@ -516,8 +550,8 @@ adopt() {
 	pr_url=$(push "$branch")
 	echo "✓ Branch pushed upstream."
 
-	echo "All done here!"
-	echo "Please visit $pr_url and fill out the Pull Request details to complete the adoption process"
+	printf "\nAll done here!\n\n"
+	echo "Please visit ====> $pr_url <==== and fill out the Pull Request details to complete the adoption process"
 
 }
 
@@ -540,7 +574,7 @@ validate_inputs(){
 		# Verify options
 		if [[ "$option" != "start" ]] && [[ "$option" != "complete" ]];
 		then
-			echo "Expecting either 'start' or 'complete' as input, received '$option'"
+			echo "Error: Expecting either 'start' or 'complete' as input, received '$option'"
 			usage
 		fi
 	fi
