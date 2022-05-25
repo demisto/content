@@ -350,7 +350,6 @@ class Client(CoreClient):
         set_integration_context({'modified_incidents': modified_incidents_context})
 
 
-
 def get_incidents_command(client, args):
     """
     Retrieve a list of incidents from XDR, filtered by some filters.
