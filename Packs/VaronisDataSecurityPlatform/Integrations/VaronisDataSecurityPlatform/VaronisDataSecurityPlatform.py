@@ -16,6 +16,7 @@ requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
 ''' CONSTANTS '''
 
+NON_EXISTENT_SID = -1000
 MAX_INCIDENTS_TO_FETCH = 100
 SEARCH_RESULT_RETRIES = 10
 BACKOFF_FACTOR = 5
@@ -209,6 +210,26 @@ class Client(BaseClient):
             'Authorization': f'{token_type} {token}'
         }
         return response
+
+    def varonis_get_users_by_user_name(self, user_name: str) -> List[Any]:
+        """Search users by user name
+
+        :type user_name: ``str``
+        :param user_name: user name to search by
+
+        :return: The list of users
+        :rtype: ``Dict[str, Any]``
+        """
+        request_params: Dict[str, Any] = {}
+        request_params['columns'] = '[\'ObjName\']'
+        request_params['searchString'] = user_name
+        request_params['limit'] = 1000
+
+        return self._http_request(
+            'GET',
+            'api/userdata/users',
+            params=request_params
+        )['ResultSet']
 
     def varonis_get_enum(self, enum_id: int) -> List[Any]:
         """Gets an enum by enum_id. Usually needs for retrieving object required for a search
@@ -572,6 +593,41 @@ class SearchAlertsQueryBuilder(SearchQueryBuilder):
             filter_obj['values'].append(device_object)
         self._filters.append(filter_obj)
 
+    def create_alert_user_name_filter(self, user_names: List[str], user_domain_name: str):
+        """Add alert user names filter to the search query
+
+        :type user_names: ``List[str]``
+        :param device_names: A list of user names
+
+        :type user_domain_name: ``str``
+        :param user_domain_name: User domain name
+        """
+        sidIds: List[int] = []
+
+        for user_name in user_names:
+            users = self._client.varonis_get_users_by_user_name(user_name)
+
+            for user in users:
+                if user['DisplayName'] == user_name and (not user_domain_name or user['DomainName'] == user_domain_name):
+                    sidIds.append(user['Id'])
+
+        filter_obj: Dict[str, Any] = {
+            'path': 'Alert.User.SidID',
+            'operator': 'In',
+            'values': []
+        }
+
+        if len(sidIds) == 0:
+            sidIds.append(NON_EXISTENT_SID)
+
+        for sidId in sidIds:
+            user_object = {
+                'Alert.User.SidID': sidId,
+            }
+            filter_obj['values'].append(user_object)
+
+        self._filters.append(filter_obj)
+
     def create_alert_status_filter(self, statuses: List[str]):
         """Add alert statuses filter to the search query
 
@@ -736,6 +792,8 @@ def varonis_get_alerts(
         alert_guids: Optional[List[str]],
         severities: Optional[List[str]],
         device_names: Optional[List[str]],
+        user_domain_name: str,
+        user_names: Optional[List[str]]
 ) -> Dict[str, Any]:
     """Searches and retrieves alerts
 
@@ -769,6 +827,12 @@ def varonis_get_alerts(
     :type device_names: ``Optional[List[str]]``
     :param device_names: A list of device names
 
+    :type user_domain_name: ``str``
+    :param user_domain_name: User domain name
+
+    :type user_names: ``str``
+    :param user_names: User names
+
     :return: Alerts
     :rtype: ``Dict[str, Any]``
     """
@@ -786,6 +850,8 @@ def varonis_get_alerts(
         builder.create_alert_severity_filter(severities)
     if device_names and any(device_names):
         builder.create_alert_device_name_filter(device_names)
+    if user_names and any(user_names):
+        builder.create_alert_user_name_filter(user_names, user_domain_name)
     builder.create_ordering('Alert.Time', 'Asc')
 
     query = builder.build()
@@ -1000,6 +1066,8 @@ def varonis_get_alerts_command(client: Client, args: Dict[str, Any]) -> CommandR
         ``args['alert_status']`` List of required alerts status
         ``args['alert_severity']`` List of alerts severity
         ``args['device_name']`` List of device names
+        ``args['user_domain_name']`` User domain name
+        ``args['user_name']`` List of user names
 
     :return:
         A ``CommandResults`` object
@@ -1014,6 +1082,16 @@ def varonis_get_alerts_command(client: Client, args: Dict[str, Any]) -> CommandR
     alert_severities = args.get('alert_severity', None)
     device_names = args.get('device_name', None)
     page = args.get('page', '1')
+    user_domain_name = args.get('user_domain_name', None)
+    user_names = args.get('user_name', None)
+
+    user_names = try_convert(user_names, lambda x: argToList(x))
+
+    if user_domain_name and (not user_names or len(user_names) == 0):
+        raise ValueError('user_domain_name cannot be provided without user_name')
+
+    if user_names and len(user_names) > 5:
+        raise ValueError('cannot provide more then 5 users')
 
     alert_severities = try_convert(alert_severities, lambda x: argToList(x))
     device_names = try_convert(device_names, lambda x: argToList(x))
@@ -1042,7 +1120,7 @@ def varonis_get_alerts_command(client: Client, args: Dict[str, Any]) -> CommandR
     )
 
     result = varonis_get_alerts(client, alert_statuses, threat_model_names, start_time, end_time,
-                                max_results, page, None, alert_severities, device_names)
+                                max_results, page, None, alert_severities, device_names, user_domain_name, user_names)
     outputs = create_output(ALERT_OUTPUT, result['rows'])
     page_size = result['rowsCount']
     alerts = []

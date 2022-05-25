@@ -45,6 +45,8 @@ Get alerts from Varonis DA
 | alert_status | List of required alerts status. | Optional | 
 | alert_severity | List of required alerts severity. | Optional | 
 | device_name | List of required alerts device name. | Optional | 
+| user_name | List of users (up to 5). | Optional |
+| user_domain_name | User domain name (cannot be provided without user_name). | Optional |
 | page | Page number. Default is 1. | Optional | 
 
 

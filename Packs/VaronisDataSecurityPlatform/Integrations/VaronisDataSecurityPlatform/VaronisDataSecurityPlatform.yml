@@ -120,6 +120,18 @@ script:
       name: device_name
       required: false
       secret: false
+    - default: false
+      description: User domain name (cannot be provided without user_name)
+      isArray: false
+      name: user_domain_name
+      required: false
+      secret: false
+    - default: false
+      description: List of users (up to 5)
+      isArray: true
+      name: user_name
+      required: false
+      secret: false
     - default: true
       defaultValue: '1'
       description: Page number
