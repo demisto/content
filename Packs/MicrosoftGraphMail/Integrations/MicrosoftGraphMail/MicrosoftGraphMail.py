@@ -695,11 +695,11 @@ class MsGraphClient:
             'GET', suffix_endpoint, params=params
         ).get('value', [])
 
-        execlude_ids_size = len(exclude_ids)
-        if not fetched_emails or execlude_ids_size >= len(fetched_emails):
+        exclude_ids_size = len(exclude_ids)
+        if not fetched_emails or exclude_ids_size >= len(fetched_emails):
             # no new emails
             return [], exclude_ids
-        new_emails = fetched_emails[execlude_ids_size:execlude_ids_size + self._emails_fetch_limit]
+        new_emails = fetched_emails[exclude_ids_size:exclude_ids_size + self._emails_fetch_limit]
         last_email_time = new_emails[-1].get('receivedDateTime')
         if last_email_time == last_fetch:
             # next fetch will need to skip existing exclude_ids
