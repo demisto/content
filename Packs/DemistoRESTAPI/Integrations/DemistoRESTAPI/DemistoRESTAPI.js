@@ -98,6 +98,35 @@ var sendRequest = function(method, uri, body, raw) {
     }
 };
 
+function reduce_one_entry(data) {
+    var keep_fields = ["id", "name", "type", "severity", "status"];
+    var new_d = {};
+    for (var field_index = 0; (field_index < keep_fields.length); field_index += 1) {
+        var field = keep_fields[field_index];
+        if (data[field]) {
+            new_d[field] = data[field];
+        }
+    }
+    return new_d;
+}
+
+function reduce_data(data) {
+    if ((data instanceof Array)) { // is array
+        var new_data = [];
+        for (var data_index = 0; (data_index < data.length); data_index += 1) {
+            var d = data[data_index];
+            new_data.push(reduce_one_entry(d));
+        }
+        return new_data;
+    }
+    else {
+        if ((data.constructor == Object)) { // is dictionary
+            return [reduce_one_entry(data)];
+        } 
+    }
+    return data;
+}
+
 var deleteIncidents = function(ids_to_delete) {
     var body = {
         ids: ids_to_delete,
@@ -110,8 +139,9 @@ var deleteIncidents = function(ids_to_delete) {
         throw res[0].Contents;
     }
 
-    var response = res['response']
-    var md = tableToMarkdown('Demisto delete incidents', response, ['data', 'total', "notUpdated"]);
+    var response = res['response'];
+    var reduced_response = {'total': response['total'], 'notUpdated': response['notUpdated'], 'data': reduce_data(response['data'])};
+    var md = tableToMarkdown('Demisto delete incidents', reduced_response, ['data', 'total', "notUpdated"]);
 
     return {
         ContentsFormat: formats.json,
