@@ -937,7 +937,7 @@ def test_fetch_incidents(client, requests_mock, topdesk_incidents_override, last
         response_incident['number'] = incident_override['number']
         response_incident['creationDate'] = incident_override['creationDate']
         response_incident['mirror_direction'] = None
-        response_incident['mirror_tags'] = [None, None, None]
+        response_incident['mirror_tags'] = ["comments", "ForServiceNow", "work_notes"]
         response_incident['mirror_instance'] = ""
         mock_topdesk_response.append(response_incident)
         if incident_override['will_be_fetched']:
@@ -982,7 +982,7 @@ def test_get_mapping_fields(client):
     # client = Client(base_url='https://server_url.com/', verify=False, auth=("username","password"))
     res = get_mapping_fields_command(client)
     expected_mapping = {
-        "incident": {
+        "TOPdesk Incident": {
             'processingStatus': "",
             'priority': "",
             'urgency': "",

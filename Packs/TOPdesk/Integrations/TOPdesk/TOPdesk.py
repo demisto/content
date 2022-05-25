@@ -1273,9 +1273,9 @@ def fetch_incidents(client: Client,
         assert incident_created_time is not None
         topdesk_incident['mirror_direction'] = MIRROR_DIRECTION.get(str(demisto_params.get('mirror_direction')))
         topdesk_incident['mirror_tags'] = [
-            demisto_params.get('comment_tag'),
-            demisto_params.get('file_tag'),
-            demisto_params.get('work_notes_tag')
+            demisto_params.get('comment_tag', 'comments'),
+            demisto_params.get('file_tag', 'ForServiceNow'),
+            demisto_params.get('work_notes_tag', 'work_notes')
         ]
         topdesk_incident['mirror_instance'] = demisto.integrationInstance()
         if float(last_fetch_datetime.timestamp()) < float(incident_created_time.timestamp()):
@@ -1309,79 +1309,87 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
     """
 
     ticket_id = args.get('id', '')
-    demisto.debug(f'Getting update for remote {ticket_id}')
     last_update = dateparser.parse(str(args.get('lastUpdate')), settings={'TIMEZONE': 'UTC'})  # type: ignore
     assert last_update is not None
 
-    demisto.debug(f'last_update is {last_update}')
+    try:
+        demisto.debug(f'Performing get-remote-data command with incident or detection id: {ticket_id} '
+                      f'and last_update: {last_update}')
+        _args = {}
+        _args['incident_id'] = ticket_id
+        result = get_incidents_list(client=client, args=_args)
 
-    _args = {}
-    _args['incident_id'] = ticket_id
-    result = get_incidents_list(client=client, args=_args)
+        if not result:
+            demisto.debug('Ticket was not found!')
+            mirrored_data = {'id': ticket_id, 'in_mirror_error': 'Ticket was not found'}
+            return GetRemoteDataResponse(mirrored_object=mirrored_data, entries=[])
+        else:
+            demisto.debug('Ticket was found!')
 
-    if not result:
-        demisto.debug('Ticket was not found!')
-        mirrored_data = {'id': ticket_id, 'in_mirror_error': 'Ticket was not found'}
-        return GetRemoteDataResponse(mirrored_object=mirrored_data, entries=[])
-    else:
-        demisto.debug('Ticket was found!')
+        ticket = result[0]
+        ticket_last_update = dateparser.parse(str(ticket["modificationDate"]), settings={'TIMEZONE': 'UTC'})  # type: ignore
+        assert ticket_last_update is not None
 
-    ticket = result[0]
-    ticket_last_update = dateparser.parse(str(ticket["modificationDate"]), settings={'TIMEZONE': 'UTC'})  # type: ignore
-    assert ticket_last_update is not None
+        if last_update > ticket_last_update:
+            demisto.debug('Nothing new in the ticket')
+        else:
+            demisto.debug('ticket is updated')
 
-    if last_update > ticket_last_update:
-        demisto.debug('Nothing new in the ticket')
-        ticket = {}
-    else:
-        demisto.debug('ticket is updated')
+        entries = []
+        # Get actions
+        # - could be optimized if list_actions would apply filter with last_update timestamp
+        actions = client.list_actions(incident_id=ticket_id, incident_number=None)
 
-    entries = []
-    # Get actions
-    # - could be optimized if list_actions would apply filter with last_update timestamp
-    actions = client.list_actions(incident_id=ticket_id, incident_number=None)
-
-    # Filter actions
-    for action in actions:
-        if 'Mirrored from Cortex XSOAR' not in action['memoText']:
-            entry_date = dateparser.parse(action["entryDate"], settings={'TIMEZONE': 'UTC'})  # type: ignore
-            assert entry_date is not None
-            if last_update > entry_date:
-                demisto.debug('skip entry')
-            else:
-                demisto.debug('mirror entry to xsoar')
-
-                if action["operator"]:
-                    name = action["operator"]["name"]
-                elif action["person"]:
-                    name = action["person"]["name"]
+        # Filter actions
+        for action in actions:
+            if 'Mirrored from Cortex XSOAR' not in action['memoText']:
+                entry_date = dateparser.parse(action["entryDate"], settings={'TIMEZONE': 'UTC'})  # type: ignore
+                assert entry_date is not None
+                if last_update > entry_date:
+                    demisto.debug('skip entry')
                 else:
-                    name = "Unknown"
+                    demisto.debug('mirror entry to xsoar')
 
-                date_time = entry_date.strftime(DATE_FORMAT)
+                    if action["operator"]:
+                        name = action["operator"]["name"]
+                    elif action["person"]:
+                        name = action["person"]["name"]
+                    else:
+                        name = "Unknown"
 
+                    date_time = entry_date.strftime(DATE_FORMAT)
+
+                    entries.append({
+                        'Type': EntryType.NOTE,
+                        'Contents': f'[{date_time}] {name}:\n\n{action["memoText"]}',
+                        'ContentsFormat': EntryFormat.TEXT,
+                        'Tags': ['mirrored'],  # the list of tags to add to the entry
+                        'Note': True  # boolean, True for Note, False otherwise
+                    })
+
+        if ticket.get('closed'):
+            if params.get('close_incident'):
+                demisto.debug(f'ticket is closed: {ticket}')
                 entries.append({
                     'Type': EntryType.NOTE,
-                    'Contents': f'[{date_time}] {name}:\n\n{action["memoText"]}',
-                    'ContentsFormat': EntryFormat.TEXT,
-                    'Tags': ['mirrored'],  # the list of tags to add to the entry
-                    'Note': True  # boolean, True for Note, False otherwise
+                    'Contents': {
+                        'dbotIncidentClose': True,
+                        'closeReason': 'Closed by TOPdesk'
+                    },
+                    'ContentsFormat': EntryFormat.JSON
                 })
 
-    if ticket.get('closed'):
-        if params.get('close_incident'):
-            demisto.debug(f'ticket is closed: {ticket}')
-            entries.append({
-                'Type': EntryType.NOTE,
-                'Contents': {
-                    'dbotIncidentClose': True,
-                    'closeReason': 'Closed by TOPdesk'
-                },
-                'ContentsFormat': EntryFormat.JSON
-            })
+        demisto.debug(f'Pull result is {ticket}')
+        return GetRemoteDataResponse(mirrored_object=ticket, entries=entries)
 
-    demisto.debug(f'Pull result is {ticket}')
-    return GetRemoteDataResponse(mirrored_object=ticket, entries=entries)
+    except Exception as e:
+        demisto.debug(f"Error in TOPdesk incoming mirror for incident or detection: {ticket_id}\n"
+                      f"Error message: {str(e)}")
+        if not ticket:
+            ticket = {'incident_id': ticket_id}
+        ticket['in_mirror_error'] = str(e)
+
+        return GetRemoteDataResponse(mirrored_object=ticket, entries=[])
 
 
 def get_modified_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) -> GetModifiedRemoteDataResponse:
@@ -1430,18 +1438,16 @@ def update_remote_system_command(client: Client, args: Dict[str, Any], params: D
     if parsed_args.incident_changed:
         demisto.debug(f'Incident changed: {parsed_args.incident_changed}')
         # Close ticket if needed
-        if parsed_args.inc_status == IncidentStatus.DONE and params.get('close_ticket'):
-            # Set status TOPdesk ticket to Closed
-            demisto.debug('Close TOPdesk ticket')
-            # Close with API call or set field and let mirroring handle it.
-            # client.update_incident
-        # 'processingStatus', 'priority', 'urgency', 'impact'
         update_args = {
             'id': ticket_id
         }
         for key in parsed_args.delta:
             if key in TOPDESK_ARGS:
                 update_args[key] = parsed_args.delta[key]
+        if parsed_args.inc_status == IncidentStatus.DONE and params.get('close_ticket'):
+            # Set status TOPdesk ticket to Closed
+            demisto.debug('Close TOPdesk ticket')
+            update_args['processingStatus'] = 'Closed'
 
         client.update_incident(update_args)
 
@@ -1499,8 +1505,8 @@ def get_mapping_fields_command(client: Client) -> GetMappingFieldsResponse:
 
     """
 
-    incident_type_scheme = SchemeTypeMapping(type_name=client.ticket_type)
-    demisto.debug(f'Collecting incident mapping for incident type - "{client.ticket_type}"')
+    incident_type_scheme = SchemeTypeMapping(type_name='TOPdesk Incident')
+    demisto.debug('Collecting incident mapping for incident type - "TOPdesk Incident"')
 
     for field in TOPDESK_ARGS:
         incident_type_scheme.add_field(field)
