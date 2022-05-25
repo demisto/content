@@ -50,7 +50,7 @@ Create new tag in the ctix platform
 | CTIX.Tag.modified | number | Modified at timestamp | 
 
 #### Command Example
-```!create_tag tag_name=demisto_test_trial color_code=#95A1B1```
+```!create_tag tag_name=xsoar_test_trial color_code=#95A1B1```
 
 #### Context Example
 ```json
@@ -61,7 +61,7 @@ Create new tag in the ctix platform
     "id": "47662c77-b419-419c-9bcf-420e05b01067",
     "modified": 1652077948,
     "modified_by": "40ab0f84-fb39-4444-95b2-cd155f574aa2",
-    "name": "demisto_test_temp",
+    "name": "xsoar_test_temp",
     "type": "manual"
 }
 ```
@@ -113,7 +113,7 @@ Get paginated list of tags
                               "first_name": "dummy",
                               "id": "40ab0f84-fb39-4444-95b2-cd155f574aa2",
                               "last_name": "account"},
-              "name": "demisto_test_temp",
+              "name": "xsoar_test_temp",
               "type": "manual"}],
  "total": 10}
 ```
@@ -140,7 +140,7 @@ Delete a tag with given tag_name
 | CTIX.Result.result | string | Status | 
 
 #### Command Example
-```!delete_tag tag_name=demisto_test_trial```
+```!delete_tag tag_name=xsoar_test_trial```
 
 #### Context Example
 ```json
@@ -173,15 +173,15 @@ Adds list of same type of iocs to whitelist
 
 
 #### Command Example
-```!whitelist_iocs reason=test type="ipv4-addr" values=127.0.0.1,127.0.0.2```
+```!whitelist_iocs reason=test type="ipv4-addr" values=x.x.x.x,x.x.xx.x```
 
 #### Context Example
 ```json
 {
 		"details":{
 			"already_exists": [
-				"127.0.0.2",
-				"127.0.0.1"
+				"x.x.x.x",
+				"x.x.xx.x"
 			],
 			"invalid": [],
 			"new_created": []
@@ -226,13 +226,13 @@ get paginated list of whitelist iocs
 ```json
 {"next": "whitelist/?page=2&page_size=1", "page_size": 1, "previous": null, 
 	"results": [{"created": 1652084983, "created_by": {"email": 
-	"dumy.account@cyware.com", "first_name": "dumy", "id": 
+	"dumy.account@example.com", "first_name": "dumy", "id": 
 	"40ab0f84-fb39-4444-95b2-cd155f574aa2", "last_name": "account"}, "follow": 
 	true, "id": "2df4a0ad-b1dd-4a4c-bf71-dcdefce0dcf9", "include_emails": false, 
 	"include_subdomains": false, "include_urls": false, "modified": 1652097309, 
-	"modified_by": {"email": "dummt.acount@cyware.com", "first_name": "", "id": 
+	"modified_by": {"email": "dummt.acount@example.com", "first_name": "", "id": 
 	"4a5f744c-800a-4fcd-be06-53f4b1b8f966", "last_name": ""}, "type": 
-	"ipv4-addr", "value": "127.0.0.1"}], "total": 5}
+	"ipv4-addr", "value": "x.x.x.x"}], "total": 5}
 ```
 
 ### remove_whitelist_ioc
@@ -344,16 +344,16 @@ Command for querying and listing threat data
 				 "is_whitelisted": false,
 				 "last_seen": null,
 				 "modified": 1652081902,
-				 "name": "carroll.com",
+				 "name": "example.com",
 				 "null": [],
 				 "primary_attribute": null,
 				 "published_collections": [],
 				 "risk_severity": "UNKNOWN",
 				 "source_collections": [{"id": "1981f5f6-49d4-4cad-97b7-8b2d276d2956",
-										 "name": "Orion"}],
+										 "name": "dummy"}],
 				 "source_confidence": "HIGH",
 				 "sources": [{"id": "48e5966e-5d1b-4cf9-8e79-306aa8702a28",
-							  "name": "Orion",
+							  "name": "dummy",
 							  "source_type": "RSS_FEED"}],
 				 "sub_type": "value",
 				 "subscriber_collections": [],
@@ -409,7 +409,7 @@ Saved Search listing api with pagination
 	"results": [
 	  {
 		"created_by": {
-		  "email": "system.default@cyware.com",
+		  "email": "system.default@example.com",
 		  "first_name": "System",
 		  "id": "e99b5f93-4ae8-4560-a848-a4fbae3f4f26",
 		  "last_name": "Default"
@@ -891,18 +891,18 @@ Search for tag
 | CTIX.Result.type | unknown | type of the tag | 
 
 #### Command Example
-```!search_for_tag q=demisto_test_trial```
+```!search_for_tag q=xsoar_test_trial```
 
 #### Context Example
 ```json
 {"next": "tags/?page=2&page_size=1", "page_size": 1, "previous": null, 
 	"results": [{"colour_code": null, "created": 1652113918, "created_by": 
-	{"email": "dummy.account@cyware.com", "first_name": "dummy", "id": 
+	{"email": "dummy.account@example.com", "first_name": "dummy", "id": 
 	"40ab0f84-fb39-4444-95b2-cd155f574aa2", "last_name": "account"}, "id": 
 	"68981db8-6deb-41f0-9727-74ad81cf47b2", "modified": 1652113918, 
-	"modified_by": {"email": "dummy.account@cyware.com", "first_name": 
+	"modified_by": {"email": "dummy.account@example.com", "first_name": 
 	"dummy", "id": "40ab0f84-fb39-4444-95b2-cd155f574aa2", "last_name": 
-	"account"}, "name": "demisto_test", "type": "manual"}], "total": 39893}
+	"account"}, "name": "xsoar_test", "type": "manual"}], "total": 39893}
 ```
 
 ### get_indicator_details
@@ -969,15 +969,15 @@ Get Indicator Details
 ```json
 {"aliases": null, "analyst_description": null, "analyst_score": null, 
  "analyst_tlp": null, "asn": null, "attribute_field": "value", 
- "attribute_value": "8.8.8.8", "base_type": "sdo", "confidence_score": 
+ "attribute_value": "x.x.x.x", "base_type": "sdo", "confidence_score": 
  18, "confidence_type": "CTIX", "country": "Netherlands", "created": 
  1651648700, "ctix_created": 1651648700, "ctix_modified": 1652113922, 
  "ctix_score": 18, "ctix_tlp": null, "defang_analyst_description": null, 
  "description": null, "fang_analyst_description": null, "first_seen": null, 
- "last_seen": null, "modified": 1651648700, "name": "8.8.8.8", 
- "pattern": "[ipv4-addr:value = 8.8.8.8]", "pattern_type": "stix", 
+ "last_seen": null, "modified": 1651648700, "name": "x.x.x.x", 
+ "pattern": "[ipv4-addr:value = x.x.x.x]", "pattern_type": "stix", 
  "pattern_version": "2.1", "sources": [{"id": 
- "e941f6fb-387b-452c-b77d-b5b05c5e9df2", "name": "CrowdStrike", 
+ "e941f6fb-387b-452c-b77d-b5b05c5e9df2", "name": "Dummy", 
  "source_type": "API_FEEDS"}], "sub_type": "ipv4-addr", "tld": "", "tlp": 
  "WHITE", "type": "indicator", "types": ["anomalous-activity"], "valid_from": 
  1644335851, "valid_until": null}
@@ -1030,7 +1030,7 @@ Get Indicator Tags
     "is_revoked": false,
     "ctix_created": 1651648700,
     "is_false_positive": false,
-    "name": "8.8.8.8",
+    "name": "x.x.x.x",
     "is_reviewed": false,
     "is_whitelisted": false,
     "is_under_review": false,
@@ -1093,7 +1093,7 @@ Get Indicator Relations
             "sources": [
                 {
                     "id": "48e5966e-5d1b-4cf9-8e79-306aa8702a28",
-                    "name": "Orion",
+                    "name": "dummy",
                     "source_type": "RSS_FEED"
                 }
             ],
@@ -1180,7 +1180,7 @@ Get Indicator Observations
 				"pattern_version": "2.1",
 				"confidence": "LOW",
 				"valid_from": 1644335851,
-				"pattern": "[ipv4-addr:value = '8.8.8.8']",
+				"pattern": "[ipv4-addr:value = 'x.x.x.x']",
 				"fang_description": null,
 				"defang_description": null,
 				"spec_version": "2.1",
@@ -1202,7 +1202,7 @@ Get Indicator Observations
 				],
 				"source": {
 					"id": "e941f6fb-387b-452c-b77d-b5b05c5e9df2",
-					"name": "CrowdStrike",
+					"name": "Dummy",
 					"source_type": "API_FEEDS"
 				},
 				"id": "0a11d417-3501-4230-8454-c70e700cf1b8",
@@ -1263,61 +1263,7 @@ Get Indicator Observations
 			{
 				"created": 1651841206,
 				"id": "9c82a682-254f-410d-a1c0-dc3514415f79",
-				"name": "tushar-threatmailbox",
-				"taxii_option": "2.1"
-			},
-			{
-				"created": 1651846905,
-				"id": "e0370b90-5eb9-46c3-8b44-db0d657e6231",
-				"name": "AUTOMATESTIN",
-				"taxii_option": "2.1"
-			},
-			{
-				"created": 1651646468,
-				"id": "3d325184-59a5-4583-966b-e38598cd0e99",
-				"name": "threatmailbox",
-				"taxii_option": "2.1"
-			},
-			{
-				"created": 1651642517,
-				"id": "a9ef983b-3c31-4851-a904-40b8706038e6",
-				"name": "Alien Vault",
-				"taxii_option": "2.1"
-			},
-			{
-				"created": 1651647428,
-				"id": "2aad22e7-2508-4ea8-8396-25fdc9294a0d",
-				"name": "test2x",
-				"taxii_option": "2.1"
-			},
-			{
-				"created": 1652111852,
-				"id": "5968d895-424f-4271-a1d3-2b01041a17bb",
-				"name": "Test12344",
-				"taxii_option": "2.1"
-			},
-			{
-				"created": 1652111837,
-				"id": "5f19babf-ceb4-40d2-b949-ac915744bb7a",
-				"name": "Test",
-				"taxii_option": "2.1"
-			},
-			{
-				"created": 1652111753,
-				"id": "a813f296-6f93-4479-8d6c-6ddf130e1fcd",
-				"name": "TEST_SHA_256",
-				"taxii_option": "2.1"
-			},
-			{
-				"created": 1652111705,
-				"id": "345d605a-638a-40d0-be62-c26ecd05c0b3",
-				"name": "Test_SHA256",
-				"taxii_option": "2.1"
-			},
-			{
-				"created": 1652109550,
-				"id": "d3418720-a130-4e2a-a734-345b8870cf90",
-				"name": "Orion",
+				"name": "dummy-threatmailbox",
 				"taxii_option": "2.1"
 			}
 		],
@@ -1386,7 +1332,7 @@ Lookup to get threat data
 | CTIX.ThreatDataLookup.valid_until | number | Timestamp till when the indicator was valid | 
 
 #### Command Example
-```!get_lookup_threat_data object_names=carroll.com, bailey.com, perez.biz object_type=indicator```
+```!get_lookup_threat_data object_names=example.com, test.com object_type=indicator```
 
 #### Context Example
 ```json
@@ -1414,16 +1360,16 @@ Lookup to get threat data
               "is_whitelisted": false,
               "last_seen": null,
               "modified": 1652081902,
-              "name": "carroll.com",
+              "name": "example.com",
               "null": [],
               "primary_attribute": null,
               "published_collections": [],
               "risk_severity": "UNKNOWN",
               "source_collections": [{"id": "1981f5f6-49d4-4cad-97b7-8b2d276d2956",
-                                      "name": "Orion"}],
+                                      "name": "dummy"}],
               "source_confidence": "HIGH",
               "sources": [{"id": "48e5966e-5d1b-4cf9-8e79-306aa8702a28",
-                           "name": "Orion",
+                           "name": "dummy",
                            "source_type": "RSS_FEED"}],
               "sub_type": "value",
               "subscriber_collections": [],

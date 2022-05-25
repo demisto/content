@@ -53,14 +53,27 @@ script:
   script: ''
   type: python
   commands:
-  - name: create_tag
+  - name: ctix-create-tag
     arguments:
     - name: tag_name
       required: true
       description: New tag's name
-    - name: color_code
+    - name: color
       required: true
-      description: "New tag's hex colour code e.g #111111"
+      auto: PREDEFINED
+      predefined:
+      - blue
+      - purple
+      - orange
+      - red
+      - green
+      - yellow
+      - turquoise
+      - pink
+      - light-red
+      - grey
+      description: New tag's name for the defined colour. If no colour selected, colour
+        grey will be given
     outputs:
     - contextPath: CTIX.Tag.name
       description: Name of the tag
@@ -81,7 +94,7 @@ script:
       description: Modified at timestamp
       type: number
     description: Create new tag in the ctix platform
-  - name: get_tags
+  - name: ctix-get-tags
     arguments:
     - name: page
       description: Page number for pagination
@@ -111,7 +124,7 @@ script:
       description: Modified at timestamp
       type: number
     description: Get paginated list of tags
-  - name: delete_tag
+  - name: ctix-delete-tag
     arguments:
     - name: tag_name
       required: true
@@ -122,7 +135,7 @@ script:
       type: string
     description: Delete a tag with given tag_name
     execution: true
-  - name: whitelist_iocs
+  - name: ctix-whitelist-iocs
     arguments:
     - name: type
       required: true
@@ -163,7 +176,7 @@ script:
       description: List of iocs already existing
     description: Adds list of same type of iocs to whitelist
     execution: true
-  - name: get_whitelist_iocs
+  - name: ctix-get-whitelist-iocs
     arguments:
     - name: page
       description: 'Page number '
@@ -199,7 +212,7 @@ script:
       description: Modified at timestamp
       type: number
     description: get paginated list of whitelist iocs
-  - name: remove_whitelist_ioc
+  - name: ctix-remove-whitelist-ioc
     arguments:
     - name: ids
       required: true
@@ -209,7 +222,7 @@ script:
       description: Operation result
       type: string
     description: Removes a whitelisted ioc with given id
-  - name: get_threat_data
+  - name: ctix-get-threat-data
     arguments:
     - name: query
       required: true
@@ -295,7 +308,7 @@ script:
       description: Date from which IOC is valid
       type: number
     description: Command for querying and listing threat data
-  - name: get_saved_searches
+  - name: ctix-get-saved-searches
     arguments:
     - name: page
       description: page from where to start
@@ -332,7 +345,7 @@ script:
     - contextPath: CTIX.SavedSearch.meta_data
       description: meta data of the object
     description: Saved Search listing api with pagination
-  - name: get_server_collections
+  - name: ctix-get-server-collections
     arguments:
     - name: page
       description: page of the result
@@ -367,7 +380,7 @@ script:
       description: Created timestamp
       type: number
     description: Source Collection listing api with pagination
-  - name: get_actions
+  - name: ctix-get-actions
     arguments:
     - name: page
       description: page of the result
@@ -399,7 +412,7 @@ script:
       description: Type of the action
       type: string
     description: Enrichment tools listing API
-  - name: add_indicator_as_false_positive
+  - name: ctix-add-indicator-as-false-positive
     description: Add indicators as false positive in CTIX
     arguments:
     - name: object_ids
@@ -453,7 +466,7 @@ script:
     - contextPath: CTIX.Result.message
       description: Indicator change result
       type: unknown
-  - name: ioc_manual_review
+  - name: ctix-ioc-manual-review
     arguments:
     - name: object_ids
       required: true
@@ -507,7 +520,7 @@ script:
       description: IOC Manual Review result
       type: unknown
     description: Adds ioc to manual review bulk api
-  - name: deprecate_ioc
+  - name: ctix-deprecate-ioc
     arguments:
     - name: object_ids
       required: true
@@ -520,7 +533,7 @@ script:
     - contextPath: CTIX.Result
       description: Result of the IOC deprecation request
     description: Deprecate ioc bulk api
-  - name: add_analyst_tlp
+  - name: ctix-add-analyst-tlp
     arguments:
     - name: object_id
       required: true
@@ -536,7 +549,7 @@ script:
     - contextPath: CTIX.Result
       description: Result of the addition of analyst TLP
     description: Add Analyst TLP
-  - name: add_analyst_score
+  - name: ctix-add-analyst-score
     arguments:
     - name: object_id
       required: true
@@ -551,7 +564,7 @@ script:
     - contextPath: CTIX.Result
       description: Result of adding analyst score to threat data
     description: Add Analyst Score for a Threat data
-  - name: saved_result_set
+  - name: ctix-saved-result-set
     arguments:
     - name: page
       description: page
@@ -665,7 +678,7 @@ script:
     - contextPath: CTIX.SavedResultSet.valid_until
       description: Timestamp till then the IOC is valid
     description: Saved Result Set
-  - name: add_tag_indicator
+  - name: ctix-add-tag-indicator
     arguments:
     - name: page
       description: page from where data will be taken
@@ -687,7 +700,7 @@ script:
     - contextPath: CTIX.Result.meesage
       description: Result of the add indicator tag request
     description: Adding Tag to Indicator
-  - name: remove_tag_from_indicator
+  - name: ctix-remove-tag-from-indicator
     arguments:
     - name: page
       description: which page to bring the data from
@@ -709,7 +722,7 @@ script:
     - contextPath: CTIX.Result.message
       description: Result of the remove indicator tag request
     description: Remove Tag From Indicator
-  - name: search_for_tag
+  - name: ctix-search-for-tag
     arguments:
     - name: page
       description: number of page from where data needs to brought
@@ -743,7 +756,7 @@ script:
     - contextPath: CTIX.Result.type
       description: type of the tag
     description: Search for tag
-  - name: get_indicator_details
+  - name: ctix-get-indicator-details
     arguments:
     - name: page
       description: from where data has to be brought
@@ -858,7 +871,7 @@ script:
     - contextPath: CTIX.Result.valid_until
       description: 'Timestamp of the indicator till '
     description: Get Indicator Details
-  - name: get_indicator_tags
+  - name: ctix-get-indicator-tags
     arguments:
     - name: object_id
       description: object id
@@ -909,7 +922,7 @@ script:
     - contextPath: CTIX.Result.type
       description: Type of Indicator
     description: Get Indicator Tags
-  - name: get_indicator_relations
+  - name: ctix-get-indicator-relations
     arguments:
     - name: page
       description: page
@@ -929,7 +942,7 @@ script:
     - contextPath: CTIX.Result.target_ref
       description: 'Indicator target reference '
     description: Get Indicator Relations
-  - name: get_indicator_observations
+  - name: ctix-get-indicator-observations
     arguments:
     - name: page
       description: page
@@ -1004,7 +1017,7 @@ script:
     - contextPath: CTIX.Result.collection
       description: Collection details of the indicator
     description: Get Indicator Observations
-  - name: get_conversion_feed_source
+  - name: ctix-get-conversion-feed-source
     description: Get Conversion feed source
     arguments:
     - name: page
@@ -1030,7 +1043,7 @@ script:
     - contextPath: CTIX.Result.taxii_option
       description: TAXII option
       type: string
-  - name: get_lookup_threat_data
+  - name: ctix-get-lookup-threat-data
     arguments:
     - name: object_type
       description: object type
@@ -1150,3 +1163,4 @@ script:
   dockerimage: demisto/python3:3.10.4.29342
   runonce: false
   subtype: python3
+

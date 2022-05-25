@@ -1,5 +1,11 @@
-import demistomock as demisto
-from CommonServerPython import *
+# Uncomment while development
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+from CommonServerPython import (BaseClient, CommandResults, Common,
+                                DemistoException, List, argToList,
+                                handle_proxy, hashRegex, re, regexFlags,
+                                return_error, return_results, return_warning,
+                                tableToMarkdown, traceback, urlRegex)
 
 """IMPORTS"""
 
@@ -7,13 +13,13 @@ from CommonServerPython import *
 import base64
 import hashlib
 import hmac
+import json
 import time
+import urllib.parse
+from typing import Any, Dict
 
 import requests
-import urllib.parse
 import urllib3
-from typing import Any, Dict
-import json
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -27,6 +33,18 @@ domain_regex = (
     "|html)$)(?:[a-z¡-\uffff-]{2,63}|xn--[a-z0-9]{1,59})(?<!-)\\.?$"
     "|localhost)"
 )
+tag_colors = {
+    "blue": "#0068FA",
+    "purple": "#5236E2",
+    "orange": "#EB9C00",
+    "red": "#FF5330",
+    "green": "#27865F",
+    "yellow": "#C4C81D",
+    "turquoise": "#00A2C2",
+    "pink": "#C341E7",
+    "light-red": "#AD6B76",
+    "grey": "#95A1B1"
+}
 
 REGEX_MAP = {
     "url": re.compile(urlRegex, regexFlags),
@@ -73,6 +91,7 @@ class Client(BaseClient):
     def add_common_params(self, params: dict):
         '''
         Add Common Params
+
         :param dict params: Paramters to be added in request
         :return dict: Params dictionary with AccessID, Expires and Signature
         '''
@@ -106,8 +125,8 @@ class Client(BaseClient):
         try:
             resp.raise_for_status()  # Raising an exception for non-200 status code
         except requests.exceptions.HTTPError as e:
-            err_msg = "Error in API call [{!r}: {!r}], payload sent: {!r}, \
-            url tried: {!r}".format(
+            err_msg = "Error in API call [{}: {}], payload sent: {}, \
+            url tried: {}".format(
                 resp.status_code, resp.reason, resp.request.body, full_url
             )
             raise DemistoException(err_msg, e)
@@ -139,8 +158,8 @@ class Client(BaseClient):
         try:
             response.raise_for_status()  # Raising an exception for non-200 status code
         except requests.exceptions.HTTPError as e:
-            err_msg = "Error in API call [{!r}: {!r}], payload sent: {!r}, \
-            url tried: {!r} response body: {!r}".format(
+            err_msg = "Error in API call [{}: {}], payload sent: {}, \
+            url tried: {} response body: {}".format(
                 response.status_code,
                 response.reason,
                 response.request.body,
@@ -212,7 +231,6 @@ class Client(BaseClient):
         """
         url_suffix = "ingestion/tags/"
         client_url = self.base_url + url_suffix
-        params: Dict[str, Any]
         params = {"page": page, "page_size": page_size}
         if q:
             params["q"] = q
@@ -248,7 +266,6 @@ class Client(BaseClient):
         """
         url_suffix = "conversion/whitelist/"
         client_url = self.base_url + url_suffix
-        params: Dict[str, Any]
         params = {"page": page, "page_size": page_size}
         if q:
             params["q"] = q
@@ -541,7 +558,11 @@ class Client(BaseClient):
         :return dict: Returns response for query
         '''
         url_suffix = "ingestion/threat-data/list/"
-        query = f"type={object_type} AND value IN {tuple(object_names)}"
+        if len(object_names) == 1:
+            object_names = "('" + object_names[0] + "')"
+        else:
+            object_names = tuple([obj_name.replace("'", "") for obj_name in object_names])
+        query = f"type={object_type} AND value IN {object_names}"
         payload = {"query": query}
         client_url = self.base_url + url_suffix
         return self.post_http_request(client_url, payload, params)
@@ -564,6 +585,16 @@ def to_dbot_score(ctix_score: int) -> int:
         dbot_score = Common.DBotScore.BAD
     return dbot_score
 
+def no_result_found(data:any):
+    if data in ('', ' ', None, [], {}):
+        result = CommandResults(
+            readable_output='No results were found',
+            outputs=None,
+            raw_response=None,
+        )
+    else:
+        result = data
+    return result
 
 """ COMMAND FUNCTIONS """
 
@@ -581,48 +612,51 @@ def create_tag_command(client: Client, args: Dict[str, str]) -> CommandResults:
     """
     create_tag command: Creates a new tag in the CTIX platform
     """
-    name = str(args.get("tag_name"))
-    color_code = str(args.get("color_code"))
+    name = args.get("tag_name")
+    color_name = args.get("color")
 
-    if color_code is not None:
-        if not color_code.startswith("#") or len(color_code) != 7:
-            return_warning(
-                "Color code is invalid, it should be a hex code: {}".format(color_code)
-            )
+    color_code = tag_colors[color_name]
 
     response = client.create_tag(name, color_code)
     data = response.get("data")
-    results = CommandResults(
-        readable_output=tableToMarkdown("Tag Data", data, removeNull=True),
-        outputs_prefix="CTIX.Tag",
-        outputs_key_field="name",
-        outputs=data,
-        raw_response=data,
-    )
-
-    return results
+    data = no_result_found(data)
+    if isinstance(data, CommandResults):
+        return data
+    else:
+        results = CommandResults(
+            readable_output=tableToMarkdown("Tag Data", data, removeNull=True),
+            outputs_prefix="CTIX.Tag",
+            outputs_key_field="name",
+            outputs=data,
+            raw_response=data,
+        )
+        return results
 
 
 def get_tags_command(client: Client, args=Dict[str, Any]) -> List[CommandResults]:
     """
     get_tags commands: Returns paginated list of tags
     """
-    page = int(args.get("page", 1))
-    page_size = int(args.get("page_size", 10))
+    page = arg_to_number(args.get("page", 1))
+    page_size = arg_to_number(args.get("page_size", 10))
     query = args.get("q")
     response = client.get_tags(page, page_size, query)
     tags_list = response.get("data", {}).get("results", [])
-    results = []
-    for tag in tags_list:
-        results.append(
-            CommandResults(
-                readable_output=tableToMarkdown("Tag Data", tag, removeNull=True),
-                outputs_prefix="CTIX.Tag",
-                outputs_key_field="name",
-                outputs=tag,
+    tags_list = no_result_found(tags_list)
+    if isinstance(tags_list, CommandResults):
+        return tags_list
+    else:
+        results = []
+        for tag in tags_list:
+            results.append(
+                CommandResults(
+                    readable_output=tableToMarkdown("Tag Data", tag, removeNull=True),
+                    outputs_prefix="CTIX.Tag",
+                    outputs_key_field="name",
+                    outputs=tag,
+                )
             )
-        )
-    return results
+        return results
 
 
 def delete_tag_command(client: Client, args: dict) -> CommandResults:
@@ -636,15 +670,18 @@ def delete_tag_command(client: Client, args: dict) -> CommandResults:
         tags = search_result.get("data", {}).get("results", [])
         response = client.delete_tag(tags[0]["id"])
         final_result.append(response.get("data"))
-    data = final_result
-    results = CommandResults(
-        readable_output=tableToMarkdown("Tag Response", data, removeNull=True),
-        outputs_prefix="CTIX.Result",
-        outputs_key_field="result",
-        outputs=data,
-        raw_response=data,
-    )
-    return results
+    final_result = no_result_found(final_result)
+    if isinstance(final_result, CommandResults):
+        return final_result
+    else:
+        results = CommandResults(
+            readable_output=tableToMarkdown("Tag Response", final_result, removeNull=True),
+            outputs_prefix="CTIX.Result",
+            outputs_key_field="result",
+            outputs=final_result,
+            raw_response=final_result,
+        )
+        return results
 
 
 def whitelist_iocs_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -665,13 +702,17 @@ def whitelist_iocs_command(client: Client, args: Dict[str, Any]) -> CommandResul
         .get("data", {})
         .get("details", {})
     )
-    results = CommandResults(
-        readable_output=tableToMarkdown("Whitelist IOC", data, removeNull=True),
-        outputs_prefix="CTIX.Detail",
-        outputs=data,
-        raw_response=data,
-    )
-    return results
+    data = no_result_found(data)
+    if isinstance(data, CommandResults):
+        return data
+    else:
+        results = CommandResults(
+            readable_output=tableToMarkdown("Whitelist IOC", data, removeNull=True),
+            outputs_prefix="CTIX.Detail",
+            outputs=data,
+            raw_response=data,
+        )
+        return results
 
 
 def get_whitelist_iocs_command(
@@ -680,22 +721,26 @@ def get_whitelist_iocs_command(
     """
     get_tags commands: Returns paginated list of tags
     """
-    page = int(args.get("page", 1))
-    page_size = int(args.get("page_size", 10))
+    page = arg_to_number(args.get("page", 1))
+    page_size = arg_to_number(args.get("page_size", 10))
     query = args.get("q")
     response = client.get_whitelist_iocs(page, page_size, query)
     ioc_list = response.get("data", {}).get("results", [])
-    results = []
-    for ioc in ioc_list:
-        results.append(
-            CommandResults(
-                readable_output=tableToMarkdown("Whitelist IOC", ioc, removeNull=True),
-                outputs_prefix="CTIX.IOC",
-                outputs_key_field="value",
-                outputs=ioc,
+    ioc_list = no_result_found(ioc_list)
+    if isinstance(ioc_list, CommandResults):
+        return ioc_list
+    else:
+        results = []
+        for ioc in ioc_list:
+            results.append(
+                CommandResults(
+                    readable_output=tableToMarkdown("Whitelist IOC", ioc, removeNull=True),
+                    outputs_prefix="CTIX.IOC",
+                    outputs_key_field="value",
+                    outputs=ioc,
+                )
             )
-        )
-    return results
+        return results
 
 
 def remove_whitelisted_ioc_command(
@@ -707,53 +752,65 @@ def remove_whitelisted_ioc_command(
     whitelist_id = argToList(args.get("ids"))
     response = client.remove_whitelisted_ioc(whitelist_id)
     data = response.get("data")
-    results = CommandResults(
-        readable_output=tableToMarkdown("Details", data, removeNull=True),
-        outputs_prefix="CTIX.Detail",
-        outputs_key_field="detail",
-        outputs=data,
-        raw_response=data,
-    )
-    return results
+    data = no_result_found(data)
+    if isinstance(data, CommandResults):
+        return data
+    else:
+        results = CommandResults(
+            readable_output=tableToMarkdown("Details", data, removeNull=True),
+            outputs_prefix="CTIX.Detail",
+            outputs_key_field="detail",
+            outputs=data,
+            raw_response=data,
+        )
+        return results
 
 
 def get_threat_data_command(client: Client, args=Dict[str, Any]) -> CommandResults:
     """
     get_threat_data: List thread data and allow query
     """
-    page = int(args.get("page", 1))
-    page_size = int(args.get("page_size", 1))
+    page = arg_to_number(args.get("page", 1))
+    page_size = arg_to_number(args.get("page_size", 1))
     query = args.get("query", "type=indicator")
     response = client.get_threat_data(page, page_size, query)
     threat_data_list = response.get("data", {}).get("results", [])
     results = [data for data in threat_data_list]
-    result = CommandResults(
-        readable_output=tableToMarkdown("Threat Data", results, removeNull=True),
-        outputs_prefix="CTIX.ThreatData",
-        outputs_key_field="id",
-        outputs=results,
-        raw_response=results,
-    )
-    return result
+    results = no_result_found(results)
+    if isinstance(results, CommandResults):
+        return results
+    else:
+        result = CommandResults(
+            readable_output=tableToMarkdown("Threat Data", results, removeNull=True),
+            outputs_prefix="CTIX.ThreatData",
+            outputs_key_field="id",
+            outputs=results,
+            raw_response=results,
+        )
+        return result
 
 
 def get_saved_searches_command(client: Client, args=Dict[str, Any]) -> CommandResults:
     """
     get_saved_searches: List saved search data
     """
-    page = int(args.get("page", 1))
-    page_size = int(args.get("page_size", 10))
+    page = arg_to_number(args.get("page", 1))
+    page_size = arg_to_number(args.get("page_size", 10))
     response = client.get_saved_searches(page, page_size)
     data_list = response.get("data", {}).get("results", [])
     results = [data for data in data_list]
-    result = CommandResults(
-        readable_output=tableToMarkdown("Saved Search", results, removeNull=True),
-        outputs_prefix="CTIX.SavedSearch",
-        outputs_key_field="id",
-        outputs=results,
-        raw_response=results,
-    )
-    return result
+    results = no_result_found(results)
+    if isinstance(results, CommandResults):
+        return results
+    else:
+        result = CommandResults(
+            readable_output=tableToMarkdown("Saved Search", results, removeNull=True),
+            outputs_prefix="CTIX.SavedSearch",
+            outputs_key_field="id",
+            outputs=results,
+            raw_response=results,
+        )
+        return result
 
 
 def get_server_collections_command(
@@ -762,27 +819,31 @@ def get_server_collections_command(
     """
     get_server_collections: List server collections
     """
-    page = int(args.get("page", 1))
-    page_size = int(args.get("page_size", 10))
+    page = arg_to_number(args.get("page", 1))
+    page_size = arg_to_number(args.get("page_size", 10))
     response = client.get_server_collections(page, page_size)
     data_list = response.get("data", {}).get("results", [])
     results = [data for data in data_list]
-    result = CommandResults(
-        readable_output=tableToMarkdown("Server Collection", results, removeNull=True),
-        outputs_prefix="CTIX.ServerCollection",
-        outputs_key_field="id",
-        outputs=results,
-        raw_response=results,
-    )
-    return result
+    results = no_result_found(results)
+    if isinstance(results, CommandResults):
+        return results
+    else:
+        result = CommandResults(
+            readable_output=tableToMarkdown("Server Collection", results, removeNull=True),
+            outputs_prefix="CTIX.ServerCollection",
+            outputs_key_field="id",
+            outputs=results,
+            raw_response=results,
+        )
+        return result
 
 
 def get_actions_command(client: Client, args=Dict[str, Any]) -> CommandResults:
     """
     get_actions: List Actions
     """
-    page = int(args.get("page", 1))
-    page_size = int(args.get("page_size", 10))
+    page = arg_to_number(args.get("page", 1))
+    page_size = arg_to_number(args.get("page_size", 10))
     object_type = args.get("object_type")
     action_type = args.get("actions_type")
     params = {}
@@ -793,14 +854,18 @@ def get_actions_command(client: Client, args=Dict[str, Any]) -> CommandResults:
     response = client.get_actions(page, page_size, params)
     data_list = response.get("data", {}).get("results", [])
     results = [data for data in data_list]
-    result = CommandResults(
-        readable_output=tableToMarkdown("Actions", results, removeNull=True),
-        outputs_prefix="CTIX.Action",
-        outputs_key_field="id",
-        outputs=results,
-        raw_response=results,
-    )
-    return result
+    results = no_result_found(results)
+    if isinstance(results, CommandResults):
+        return results
+    else:
+        result = CommandResults(
+            readable_output=tableToMarkdown("Actions", results, removeNull=True),
+            outputs_prefix="CTIX.Action",
+            outputs_key_field="id",
+            outputs=results,
+            raw_response=results,
+        )
+        return result
 
 
 def add_indicator_as_false_positive_command(
@@ -818,15 +883,18 @@ def add_indicator_as_false_positive_command(
     object_ids = argToList(object_ids)
     response = client.add_indicator_as_false_positive(object_ids, object_type)
     data = response.get("data")
-    data = {"result": data}
-    results = CommandResults(
-        readable_output=tableToMarkdown("Result", data, removeNull=True),
-        outputs_prefix="CTIX.Result",
-        outputs=data,
-        raw_response=data,
-    )
+    data = no_result_found(data)
+    if isinstance(data, CommandResults):
+        return data
+    else:
+        results = CommandResults(
+            readable_output=tableToMarkdown("Result", data, removeNull=True),
+            outputs_prefix="CTIX.Result",
+            outputs=data,
+            raw_response=data,
+        )
 
-    return results
+        return results
 
 
 def add_ioc_manual_review_command(
@@ -844,15 +912,18 @@ def add_ioc_manual_review_command(
     object_ids = argToList(object_ids)
     response = client.add_ioc_to_manual_review(object_ids, object_type)
     data = response.get("data")
-    data = {"result": data}
-    results = CommandResults(
-        readable_output=tableToMarkdown("Result", data, removeNull=True),
-        outputs_prefix="CTIX.Result",
-        outputs=data,
-        raw_response=data,
-    )
+    data = no_result_found(data)
+    if isinstance(data, CommandResults):
+        return data
+    else:
+        results = CommandResults(
+            readable_output=tableToMarkdown("Result", data, removeNull=True),
+            outputs_prefix="CTIX.Result",
+            outputs=data,
+            raw_response=data,
+        )
 
-    return results
+        return results
 
 
 def deprecate_ioc_command(client: Client, args: dict) -> CommandResults:
@@ -860,19 +931,22 @@ def deprecate_ioc_command(client: Client, args: dict) -> CommandResults:
     deprecate_ioc command: Deprecate indicators bulk api
     """
     object_ids = args.get("object_ids")
-    object_type = str(args.get("object_type"))
+    object_type = args.get("object_type")
     object_ids = argToList(object_ids)
     response = client.deprecate_ioc(object_ids, object_type)
     data = response.get("data")
-    data = {"result": data}
-    results = CommandResults(
-        readable_output=tableToMarkdown("Result", data, removeNull=True),
-        outputs_prefix="CTIX.Result",
-        outputs=data,
-        raw_response=data,
-    )
+    data = no_result_found(data)
+    if isinstance(data, CommandResults):
+        return data
+    else:
+        results = CommandResults(
+            readable_output=tableToMarkdown("Result", data, removeNull=True),
+            outputs_prefix="CTIX.Result",
+            outputs=data,
+            raw_response=data,
+        )
 
-    return results
+        return results
 
 
 def add_analyst_tlp_command(client: Client, args: dict) -> CommandResults:
@@ -883,9 +957,9 @@ def add_analyst_tlp_command(client: Client, args: dict) -> CommandResults:
     :param Dict[str, str] args: Paramters to be send to in request
     :return CommandResults: XSOAR based result
     '''
-    object_id = str(args.get("object_id"))
-    object_type = str(args.get("object_type"))
-    data = json.loads(str(args.get("data")))
+    object_id = args.get("object_id")
+    object_type = args.get("object_type")
+    data = json.loads(args.get("data"))
 
     analyst_tlp = data.get("analyst_tlp")
     if not analyst_tlp:
@@ -893,15 +967,18 @@ def add_analyst_tlp_command(client: Client, args: dict) -> CommandResults:
 
     response = client.add_analyst_tlp(object_id, object_type, data)
     data = response.get("data")
-    data = {"result": data}
-    results = CommandResults(
-        readable_output=tableToMarkdown("Result", data, removeNull=True),
-        outputs_prefix="CTIX.Result",
-        outputs=data,
-        raw_response=data,
-    )
+    data = no_result_found(data)
+    if isinstance(data, CommandResults):
+        return data
+    else:
+        results = CommandResults(
+            readable_output=tableToMarkdown("Result", data, removeNull=True),
+            outputs_prefix="CTIX.Result",
+            outputs=data,
+            raw_response=data,
+        )
 
-    return results
+        return results
 
 
 def add_analyst_score_command(client: Client, args: dict) -> CommandResults:
@@ -912,8 +989,8 @@ def add_analyst_score_command(client: Client, args: dict) -> CommandResults:
     :param Dict[str, str] args: Paramters to be send to in request
     :return CommandResults: XSOAR based result
     '''
-    object_id = str(args.get("object_id"))
-    object_type = str(args.get("object_type"))
+    object_id = args.get("object_id")
+    object_type = args.get("object_type")
     data = json.loads(args.get("data", "{}"))
 
     analyst_tlp = data.get("analyst_score")
@@ -922,15 +999,18 @@ def add_analyst_score_command(client: Client, args: dict) -> CommandResults:
 
     response = client.add_analyst_score(object_id, object_type, data)
     data = response.get("data")
-    data = {"result": data}
-    results = CommandResults(
-        readable_output=tableToMarkdown("Result", data, removeNull=True),
-        outputs_prefix="CTIX.Result",
-        outputs=data,
-        raw_response=data,
-    )
+    data = no_result_found(data)
+    if isinstance(data, CommandResults):
+        return data
+    else:
+        results = CommandResults(
+            readable_output=tableToMarkdown("Result", data, removeNull=True),
+            outputs_prefix="CTIX.Result",
+            outputs=data,
+            raw_response=data,
+        )
 
-    return results
+        return results
 
 
 def saved_result_set_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -941,21 +1021,25 @@ def saved_result_set_command(client: Client, args: Dict[str, Any]) -> CommandRes
     :param Dict[str, str] args: Paramters to be send to in request
     :return CommandResults: XSOAR based result
     '''
-    page = int(args.get("page", 1))
-    page_size = int(args.get("page_size", 10))
+    page = arg_to_number(args.get("page", 1))
+    page_size = arg_to_number(args.get("page_size", 10))
     label_name = args.get("label_name", "test")
     query = args.get("query", "type=indicator")
     response = client.saved_result_set(page, page_size, label_name, query)
     data_list = response.get("data", {}).get("results", [])
     results = [data for data in data_list]
-    result = CommandResults(
-        readable_output=tableToMarkdown("SavedResultSet", results, removeNull=True),
-        outputs_prefix="CTIX.SavedResultSet",
-        outputs_key_field="id",
-        outputs=results,
-        raw_response=results,
-    )
-    return result
+    results = no_result_found(results)
+    if isinstance(results, CommandResults):
+        return results
+    else:
+        results = CommandResults(
+            readable_output=tableToMarkdown("SavedResultSet", results, removeNull=True),
+            outputs_prefix="CTIX.SavedResultSet",
+            outputs_key_field="id",
+            outputs=results,
+            raw_response=results,
+        )
+        return results
 
 
 def tag_indicator_updation_command(
@@ -973,21 +1057,24 @@ def tag_indicator_updation_command(
     object_id = args["object_id"]
     object_type = args["object_type"]
     tag_id = args["tag_id"]
-    query = args["q"]
+    query = args.get("q", {})
 
     response = client.tag_indicator_updation(
         query, page, page_size, object_id, object_type, tag_id, operation
     )
     data = response.get("data")
-    data = {"result": data}
-    results = CommandResults(
-        readable_output=tableToMarkdown("Result", data, removeNull=True),
-        outputs_prefix="CTIX.Result",
-        outputs=data,
-        raw_response=data,
-    )
+    data = no_result_found(data)
+    if isinstance(data, CommandResults):
+        return data
+    else:
+        results = CommandResults(
+            readable_output=tableToMarkdown("Result", data, removeNull=True),
+            outputs_prefix="CTIX.Result",
+            outputs=data,
+            raw_response=data,
+        )
 
-    return results
+        return results
 
 
 def search_for_tag_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -1004,16 +1091,19 @@ def search_for_tag_command(client: Client, args: Dict[str, Any]) -> CommandResul
     params = {"page": page, "page_size": page_size, "q": q}
 
     response = client.search_for_tag(params)
-    data = response.get("data")
-    data = {"result": data}
-    results = CommandResults(
-        readable_output=tableToMarkdown("Result", data, removeNull=True),
-        outputs_prefix="CTIX.Result",
-        outputs=data,
-        raw_response=data,
-    )
+    data = response.get("data", {}).get('results', [])
+    data = no_result_found(data)
+    if isinstance(data, CommandResults):
+        return data
+    else:
+        results = CommandResults(
+            readable_output=tableToMarkdown("Result", data, removeNull=True),
+            outputs_prefix="CTIX.Result",
+            outputs=data,
+            raw_response=data,
+        )
 
-    return results
+        return results
 
 
 def get_indicator_details_command(
@@ -1021,6 +1111,7 @@ def get_indicator_details_command(
 ) -> CommandResults:
     '''
     Get Indicator Details Command
+
     :Description Get Indicator Details
     :param Dict[str, str] args: Paramters to be send to in request
     :return CommandResults: XSOAR based result
@@ -1033,15 +1124,18 @@ def get_indicator_details_command(
 
     response = client.get_indicator_details(object_type, object_id, params)
     data = response.get("data")
-    data = {"result": data}
-    results = CommandResults(
-        readable_output=tableToMarkdown("Result", data, removeNull=True),
-        outputs_prefix="CTIX.Result",
-        outputs=data,
-        raw_response=data,
-    )
+    data = no_result_found(data)
+    if isinstance(data, CommandResults):
+        return data
+    else:
+        results = CommandResults(
+            readable_output=tableToMarkdown("Result", data, removeNull=True),
+            outputs_prefix="CTIX.Result",
+            outputs=data,
+            raw_response=data,
+        )
 
-    return results
+        return results
 
 
 def get_indicator_tags_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -1054,21 +1148,24 @@ def get_indicator_tags_command(client: Client, args: Dict[str, Any]) -> CommandR
     '''
     page = args.get("page", 1)
     page_size = args.get("page_size", 10)
-    object_id = str(args.get("object_id"))
+    object_id = args.get("object_id")
     object_type = args["object_type"]
     params = {"page": page, "page_size": page_size}
 
     response = client.get_indicator_tags(object_type, object_id, params)
-    data = response.get("data")
-    data = {"result": data}
-    results = CommandResults(
-        readable_output=tableToMarkdown("Result", data, removeNull=True),
-        outputs_prefix="CTIX.Result",
-        outputs=data,
-        raw_response=data,
-    )
+    data = response.get("data", {})
+    data = no_result_found(data)
+    if isinstance(data, CommandResults):
+        return data
+    else:
+        results = CommandResults(
+            readable_output=tableToMarkdown("Result", data, removeNull=True),
+            outputs_prefix="CTIX.Result",
+            outputs=data,
+            raw_response=data,
+        )
 
-    return results
+        return results
 
 
 def get_indicator_relations_command(
@@ -1086,18 +1183,20 @@ def get_indicator_relations_command(
     object_id = args["object_id"]
     object_type = args["object_type"]
     params = {"page": page, "page_size": page_size}
-
     response = client.get_indicator_relations(object_type, object_id, params)
-    data = response.get("data")
-    data = {"result": data}
-    results = CommandResults(
-        readable_output=tableToMarkdown("Result", data, removeNull=True),
-        outputs_prefix="CTIX.Result",
-        outputs=data,
-        raw_response=data,
-    )
+    data = response.get("data", {}).get('results', {})
+    data = no_result_found(data)
+    if isinstance(data, CommandResults):
+        return data
+    else:
+        results = CommandResults(
+            readable_output=tableToMarkdown("Result", data, removeNull=True),
+            outputs_prefix="CTIX.Result",
+            outputs=data,
+            raw_response=data,
+        )
 
-    return results
+        return results
 
 
 def get_indicator_observations_command(
@@ -1122,16 +1221,19 @@ def get_indicator_observations_command(
     }
 
     response = client.get_indicator_observations(params)
-    data = response.get("data")
-    data = {"result": data}
-    results = CommandResults(
-        readable_output=tableToMarkdown("Result", data, removeNull=True),
-        outputs_prefix="CTIX.Result",
-        outputs=data,
-        raw_response=data,
-    )
+    data = response.get("data", {}).get('results', {})
+    data = no_result_found(data)
+    if isinstance(data, CommandResults):
+        return data
+    else:
+        results = CommandResults(
+            readable_output=tableToMarkdown("Result", data, removeNull=True),
+            outputs_prefix="CTIX.Result",
+            outputs=data,
+            raw_response=data,
+        )
 
-    return results
+        return results
 
 
 def get_conversion_feed_source_command(
@@ -1160,15 +1262,18 @@ def get_conversion_feed_source_command(
 
     response = client.get_conversion_feed_source(params)
     data = response.get("data")
-    data = {"result": data}
-    results = CommandResults(
-        readable_output=tableToMarkdown("Result", data, removeNull=True),
-        outputs_prefix="CTIX.Result",
-        outputs=data,
-        raw_response=data,
-    )
+    data = no_result_found(data)
+    if isinstance(data, CommandResults):
+        return data
+    else:
+        results = CommandResults(
+            readable_output=tableToMarkdown("Result", data, removeNull=True),
+            outputs_prefix="CTIX.Result",
+            outputs=data,
+            raw_response=data,
+        )
 
-    return results
+        return results
 
 
 def get_lookup_threat_data_command(
@@ -1188,14 +1293,18 @@ def get_lookup_threat_data_command(
     response = client.get_lookup_threat_data(object_type, object_names, params)
     data_set = response.get("data").get("results")
     results = [data for data in data_set]
-    results = CommandResults(
-        readable_output=tableToMarkdown("Result", results, removeNull=True),
-        outputs_prefix="CTIX.ThreatDataLookup",
-        outputs=results,
-        raw_response=results,
-    )
+    results = no_result_found(results)
+    if isinstance(results, CommandResults):
+        return results
+    else:
+        results = CommandResults(
+            readable_output=tableToMarkdown("Result", results, removeNull=True),
+            outputs_prefix="CTIX.ThreatDataLookup",
+            outputs=results,
+            raw_response=results,
+        )
 
-    return results
+        return results
 
 
 def main() -> None:
@@ -1219,63 +1328,63 @@ def main() -> None:
 
         if demisto.command() == "test-module":
             test_module(client)
-        elif demisto.command() == "create_tag":
+        elif demisto.command() == "ctix-create-tag":
             return_results(create_tag_command(client, demisto.args()))
-        elif demisto.command() == "get_tags":
+        elif demisto.command() == "ctix-get-tags":
             return_results(get_tags_command(client, demisto.args()))
-        elif demisto.command() == "delete_tag":
+        elif demisto.command() == "ctix-delete-tag":
             return_results(delete_tag_command(client, demisto.args()))
-        elif demisto.command() == "whitelist_iocs":
+        elif demisto.command() == "ctix-whitelist-iocs":
             return_results(whitelist_iocs_command(client, demisto.args()))
-        elif demisto.command() == "get_whitelist_iocs":
+        elif demisto.command() == "ctix-get-whitelist-iocs":
             return_results(get_whitelist_iocs_command(client, demisto.args()))
-        elif demisto.command() == "remove_whitelist_ioc":
+        elif demisto.command() == "ctix-remove-whitelist-ioc":
             return_results(remove_whitelisted_ioc_command(client, demisto.args()))
-        elif demisto.command() == "get_threat_data":
+        elif demisto.command() == "ctix-get-threat-data":
             return_results(get_threat_data_command(client, demisto.args()))
-        elif demisto.command() == "get_saved_searches":
+        elif demisto.command() == "ctix-get-saved-searches":
             return_results(get_saved_searches_command(client, demisto.args()))
-        elif demisto.command() == "get_server_collections":
+        elif demisto.command() == "ctix-get-server-collections":
             return_results(get_server_collections_command(client, demisto.args()))
-        elif demisto.command() == "get_actions":
+        elif demisto.command() == "ctix-get-actions":
             return_results(get_actions_command(client, demisto.args()))
-        elif demisto.command() == "ioc_manual_review":
+        elif demisto.command() == "ctix-ioc-manual-review":
             return_results(add_ioc_manual_review_command(client, demisto.args()))
-        elif demisto.command() == "deprecate_ioc":
+        elif demisto.command() == "ctix-deprecate-ioc":
             return_results(deprecate_ioc_command(client, demisto.args()))
-        elif demisto.command() == "add_analyst_tlp":
+        elif demisto.command() == "ctix-add-analyst-tlp":
             return_results(add_analyst_tlp_command(client, demisto.args()))
-        elif demisto.command() == "add_analyst_score":
+        elif demisto.command() == "ctix-add-analyst-score":
             return_results(add_analyst_score_command(client, demisto.args()))
-        elif demisto.command() == "saved_result_set":
+        elif demisto.command() == "ctix-saved-result-set":
             return_results(saved_result_set_command(client, demisto.args()))
-        elif demisto.command() == "add_tag_indicator":
+        elif demisto.command() == "ctix-add-tag-indicator":
             return_results(
                 tag_indicator_updation_command(
                     client, demisto.args(), "add_tag_indicator"
                 )
             )
-        elif demisto.command() == "remove_tag_from_indicator":
+        elif demisto.command() == "ctix-remove-tag-from-indicator":
             return_results(
                 tag_indicator_updation_command(
                     client, demisto.args(), "remove_tag_from_indicator"
                 )
             )
-        elif demisto.command() == "search_for_tag":
+        elif demisto.command() == "ctix-search-for-tag":
             return_results(search_for_tag_command(client, demisto.args()))
-        elif demisto.command() == "get_indicator_details":
+        elif demisto.command() == "ctix-get-indicator-details":
             return_results(get_indicator_details_command(client, demisto.args()))
-        elif demisto.command() == "get_indicator_tags":
+        elif demisto.command() == "ctix-get-indicator-tags":
             return_results(get_indicator_tags_command(client, demisto.args()))
-        elif demisto.command() == "get_indicator_relations":
+        elif demisto.command() == "ctix-get-indicator-relations":
             return_results(get_indicator_relations_command(client, demisto.args()))
-        elif demisto.command() == "get_indicator_observations":
+        elif demisto.command() == "ctix-get-indicator-observations":
             return_results(get_indicator_observations_command(client, demisto.args()))
-        elif demisto.command() == "get_conversion_feed_source":
+        elif demisto.command() == "ctix-get-conversion-feed-source":
             return_results(get_conversion_feed_source_command(client, demisto.args()))
-        elif demisto.command() == "get_lookup_threat_data":
+        elif demisto.command() == "ctix-get-lookup-threat-data":
             return_results(get_lookup_threat_data_command(client, demisto.args()))
-        elif demisto.command() == "add_indicator_as_false_positive":
+        elif demisto.command() == "ctix-add-indicator-as-false-positive":
             return_results(
                 add_indicator_as_false_positive_command(client, demisto.args())
             )
