@@ -7053,12 +7053,15 @@ class CommandRunner:
         results, errors = [], []
         for command, args in zip(command.commands, command.args_lst):
             try:
+                demisto.debug(' '.join(('calling', command, 'with args=', ','.join(args))))
                 execute_command_results = demisto.executeCommand(command, args)
                 for res in execute_command_results:
                     brand_name = res.get('Brand', 'Unknown') if isinstance(res, dict) else 'Unknown'
                     module_name = res.get('ModuleName', 'Unknown') if isinstance(res, dict) else 'Unknown'
                     if is_error(res):
-                        errors.append(CommandRunner.Result(command, args, brand_name, module_name, get_error(res)))
+                        error = get_error(res)
+                        demisto.debug('error: ' + error)
+                        errors.append(CommandRunner.Result(command, args, brand_name, module_name, error))
                     else:
                         if extract_contents:
                             res = res.get('Contents', {})
