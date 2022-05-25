@@ -98,7 +98,6 @@ def read_log_json():
     return 'MongoDB - no documents/records - Log collection is empty', {}, {}
 
 
-
 def num_log_json():
     """ Get a count of all log documents/records from MondoDB """
     # Point to the documents
