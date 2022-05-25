@@ -506,7 +506,7 @@ tasks:
       - "6"
     scriptarguments:
       Endpoint_id:
-        simple: ${inputs.AgentId}
+        simple: ${inputs.HostId}
     separatecontext: true
     loop:
       iscommand: false
@@ -790,10 +790,10 @@ inputs:
   description: |-
     Whether automatic un-isolation is allowed.
   playbookInputQuery:
-- key: AgentId
+- key: HostId
   value: {}
   required: false
-  description: The agent ID to unisolate.
+  description: The host ID to unisolate.
   playbookInputQuery:
 - key: AllowIOCTagName
   value: {}

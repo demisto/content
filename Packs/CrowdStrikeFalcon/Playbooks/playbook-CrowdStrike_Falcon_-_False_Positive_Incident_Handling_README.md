@@ -24,7 +24,7 @@ This playbook does not use any scripts.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | AutoUnisolation | Indicates if automatic un-isolation is allowed<br/>True/False | false | Optional |
-| AgentId | The agent ID to unisolate. |  | Optional |
+| HostId | The host ID to unisolate. |  | Optional |
 | AllowIOCTagName | The name of the tag to apply to allowed indicators. |  | Optional |
 | ApplyAllowIOCGlobally | Indicates if adding to allow list is globally<br/>If specified False provide an input for the AllowHostGroup input with the group name.<br/>True/False | True | Optional |
 | AllowHostGroupName | The name of the allow list group to apply in case ApplyAllowIOCGlobally isn't set as True. |  | Optional |
