@@ -17,8 +17,6 @@ urllib3.disable_warnings()  # pylint: disable=no-member
 ''' CONSTANTS '''
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
-SAAS_SECURITY_DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
-TOKEN_LIFE_TIME = 117  # token expiration in minutes since it was created
 SET_INTEGRATION_CONTEXT_RETRIES = 5
 
 ''' CLIENT CLASS '''
@@ -49,12 +47,15 @@ class Client(BaseClient):
 
         :return: The http response
         """
+
         token = demisto.getIntegrationContext().get('access_token')
+        if not token:  # only used for the test module
+            token = self.get_access_token().get('access_token')
         headers = {
             'Authorization': f'Bearer {token}',
             'Content-Type': 'application/json',
         }
-        return super()._http_request(*args, headers=headers, retries=5, status_list_to_retry=[204], **kwargs)
+        return super()._http_request(*args, headers=headers, **kwargs)
 
     def get_access_token(self):
         """
@@ -66,17 +67,7 @@ class Client(BaseClient):
        :return: Access token that will be added to authorization header.
        :rtype: dict
        """
-        now = datetime.now()
-        integration_context = get_integration_context()
-        access_token = integration_context.get('access_token')
-        time_issued = integration_context.get('time_issued')
-
-        if access_token and get_passed_mins(now, time_issued) < TOKEN_LIFE_TIME:
-            return {'access_token': access_token, 'time_issued': time_issued}
-
-        # there's no token or it is expired
-        access_token = self.get_token_request()
-        return {'access_token': access_token, 'time_issued': date_to_timestamp(now) / 1000}
+        return {'access_token': self.get_token_request()}
 
     def get_token_request(self):
         """
@@ -99,24 +90,14 @@ class Client(BaseClient):
         return token_response.get('access_token')
 
     def get_events_request(self):
-        url_suffix = '/api/v1/log_events'
-        return self.http_request('GET', url_suffix=url_suffix, resp_type='response')
-
-
-''' HELPER FUNCTIONS '''
-
-
-def get_passed_mins(start_time, end_time_str, tz=None):
-    """
-    Calculates the amount of minutes passed between 2 dates.
-    :param start_time: Start time in datetime
-    :param end_time_str: End time in str
-
-    :return: The passed minutes.
-    :rtype: int
-    """
-    time_delta = start_time - datetime.fromtimestamp(end_time_str, tz)
-    return time_delta.seconds / 60
+        return self.http_request(
+            'GET',
+            url_suffix='/api/v1/log_events',
+            resp_type='response',
+            status_list_to_retry=[204],
+            retries=5,
+            ok_codes=[200, 401, 204]
+        )
 
 
 ''' COMMAND FUNCTIONS '''
@@ -203,10 +184,10 @@ def long_running_execution_command(client: Client):
                 else:  # 'events' is a single dict (only one event)
                     integration_context_events.append(events)
                 updated_integration_context['events'] = integration_context_events
-
-            updated_integration_context.update(client.get_access_token())
-
-            demisto.debug(f'updated integration context: [{updated_integration_context}]')
+            elif response.status_code == 401:
+                updated_integration_context.update(client.get_access_token())
+            current_events = updated_integration_context.get("events")
+            demisto.debug(f'updated integration context events: [{len(current_events)}], content: [{current_events}]')
             if updated_integration_context != existing_integration_context:
                 # update integration context only in cases where there is anything to update, otherwise avoid
                 # setting the integration context as much as possible
