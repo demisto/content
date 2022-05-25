@@ -182,7 +182,12 @@ def long_running_execution_command(client: Client):
     # set the access token for the first fetch
     set_to_integration_context_with_retries(context=client.get_access_token())
     # there is no unique id for events, hence need to make one of our own.
-    current_event_id = 1
+    if events := json.loads(demisto.getIntegrationContext().get('events') or '[]'):
+        # in case the integration was disabled, we want to continue counting ids from the last time
+        current_event_id = arg_to_number(events[len(events) - 1].get('id'))
+    else:
+        # this is the first time integration is being used
+        current_event_id = 1
 
     while True:
         try:
