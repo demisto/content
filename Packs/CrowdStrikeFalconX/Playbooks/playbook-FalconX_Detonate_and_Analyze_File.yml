@@ -2,7 +2,7 @@ id: FalconX Detonate and Analyze File
 version: -1
 fromversion: 6.5.0
 name: FalconX Detonate and Analyze File
-description: The playbook uploads detonates and analyzes files for FalconX.
+description: This playbook uploads, detonates, and analyzes files for the Falcon X sandbox.
 starttaskid: "0"
 tasks:
   "0":
@@ -42,8 +42,7 @@ tasks:
       id: 20d4c83c-1366-4524-82a4-42a305852e17
       version: -1
       name: Is CrowdStrike Falcon X enabled?
-      description: Returns 'yes' if integration brand is available. Otherwise returns
-        'no'
+      description: Returns 'yes' if the Falcon X integration is available. 
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -152,7 +151,7 @@ tasks:
       id: 14ec2393-6dc2-464b-874b-ecff72eaf913
       version: -1
       name: Set File to context
-      description: Set the file object into context.
+      description: Sets the file object into context.
       scriptName: Set
       type: regular
       iscommand: false
@@ -189,7 +188,7 @@ tasks:
       id: 4c6b9421-a1bd-4b04-8b88-0a4d418e2fd4
       version: -1
       name: Is there a File to Detonate?
-      description: Checks that there is a file in the playbook’s input.
+      description: Checks that there is a file in the playbook input.
       type: condition
       iscommand: false
       brand: ""
@@ -375,16 +374,16 @@ inputs:
   playbookInputQuery:
 outputs:
 - contextPath: csfalconx.resource.tags
-  description: Analysis tags.
+  description: The analysis tags.
 - contextPath: csfalconx.resource.sha256
-  description: SHA256 hash of the scanned file.
+  description: The SHA256 hash of the scanned file.
 - contextPath: csfalconx.resource.file_name
-  description: 'Name of the uploaded file. '
+  description: 'The name of the uploaded file. '
 - contextPath: csfalconx.resource.sandbox
-  description: Falcon X findings results.
+  description: The Falcon X findings.
   type: unknown
 - contextPath: csfalconx.resource.intel
-  description: Falcon X intelligence results.
+  description: The Falcon X intelligence results.
   type: unknown
 tests:
 - CrowdStrike_Falcon_X_-Test-Detonate_URL
