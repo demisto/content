@@ -695,16 +695,22 @@ class MsGraphClient:
             'GET', suffix_endpoint, params=params
         ).get('value', [])
 
-        if fetched_emails and exclude_ids:  # removing emails in order to prevent duplicate incidents
-            excluded_id_index = -1
-            if fetched_emails[0].get('receivedDateTime') <= last_fetch:
+        ids_for_nextrun = []
+        if fetched_emails:
+            if exclude_ids and (fetched_emails[0].get('receivedDateTime', '') <= last_fetch):
+                # removing previously fetched emails to prevent duplicate incidents
                 for i, email in enumerate(fetched_emails):
                     if email.get('id') == exclude_ids[-1]:
-                        excluded_id_index = i
+                        ids_for_nextrun = [email.get('id') for email in
+                                           fetched_emails[:i + self._emails_fetch_limit + 1]]
+                        fetched_emails = fetched_emails[i + 1:]
                         break
-                if excluded_id_index != -1:
-                    fetched_emails = fetched_emails[excluded_id_index + 1:]
-        return fetched_emails[:self._emails_fetch_limit]
+            if not ids_for_nextrun:  # exclusion list not in fetched emails
+                ids_for_nextrun = [email.get('id') for email in fetched_emails[:self._emails_fetch_limit]]
+        else:
+            ids_for_nextrun = exclude_ids
+
+        return fetched_emails[:self._emails_fetch_limit], ids_for_nextrun
 
     @staticmethod
     def _parse_item_as_dict(email):
@@ -894,13 +900,13 @@ class MsGraphClient:
             last_fetch, _ = parse_date_range(self._first_fetch_interval, date_format=DATE_FORMAT, utc=True)
             demisto.info(f"MS-Graph-Listener: initialize fetch and pull emails from date :{last_fetch}")
 
-        fetched_emails = self._fetch_last_emails(folder_id=folder_id, last_fetch=last_fetch, exclude_ids=exclude_ids)
-        last_fetched_emails_id = [fetched_emails[-1].get('id')] if fetched_emails else exclude_ids
+        fetched_emails, exclude_ids = self._fetch_last_emails(
+            folder_id=folder_id, last_fetch=last_fetch, exclude_ids=exclude_ids)
         incidents = list(map(self._parse_email_as_incident, fetched_emails))
         next_run_time = MsGraphClient._get_next_run_time(fetched_emails, start_time)
         next_run = {
             'LAST_RUN_TIME': next_run_time,
-            'LAST_RUN_IDS': last_fetched_emails_id,  # because the fetch is sorted, just need to save last id
+            'LAST_RUN_IDS': exclude_ids,
             'LAST_RUN_FOLDER_ID': folder_id,
             'LAST_RUN_FOLDER_PATH': self._folder_to_fetch,
             'LAST_RUN_ACCOUNT': self._mailbox_to_fetch,

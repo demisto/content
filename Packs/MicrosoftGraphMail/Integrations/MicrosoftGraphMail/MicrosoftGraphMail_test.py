@@ -654,7 +654,7 @@ def test_server_to_endpoint(server_url, expected_endpoint):
     assert GRAPH_BASE_ENDPOINTS[server_url] == expected_endpoint
 
 
-def test_fetch_last_emails(mocker):
+def test_fetch_last_emails__with_exclude(mocker):
     """
     Given:
         - Last fetch fetched until email 2
@@ -665,6 +665,7 @@ def test_fetch_last_emails(mocker):
         - Calling fetch_incidents
     Then:
         - Fetch 2 emails
+        - Save previous 2 fetched mails + 2 new mails
         - Fetch emails after exclude id
         - Don't fetch emails after limit
     """
@@ -678,7 +679,56 @@ def test_fetch_last_emails(mocker):
     client = oproxy_client()
     client._emails_fetch_limit = 2
     mocker.patch.object(client.ms_client, 'http_request', return_value=emails)
-    res = client._fetch_last_emails('', last_fetch='2', exclude_ids=['2'])
-    assert len(res) == 2
-    assert res[0] == emails['value'][2]
-    assert res[1] == emails['value'][3]
+    fetched_emails, ids = client._fetch_last_emails('', last_fetch='2', exclude_ids=['2'])
+    assert len(fetched_emails) == 2
+    assert ids == ['1', '2', '3', '4']
+    assert fetched_emails[0] == emails['value'][2]
+    assert fetched_emails[1] == emails['value'][3]
+
+
+def test_fetch_last_emails__no_exclude(mocker):
+    """
+    Given:
+        - No previous last fetch
+        - Next fetch will fetch 1 email
+        - fetch limit is set to 2
+    When:
+        - Calling fetch_incidents
+    Then:
+        - Fetch 1 email
+        - Save mail in exclusion
+    """
+    emails = {'value': [
+        {'receivedDateTime': '1', 'id': '1'},
+    ]}
+    client = oproxy_client()
+    client._emails_fetch_limit = 2
+    mocker.patch.object(client.ms_client, 'http_request', return_value=emails)
+    fetched_emails, ids = client._fetch_last_emails('', last_fetch='0', exclude_ids=[])
+    assert len(fetched_emails) == 1
+    assert ids == ['1']
+    assert fetched_emails[0] == emails['value'][0]
+
+
+def test_fetch_last_emails__no_mails(mocker):
+    """
+    Given:
+        - Last fetch fetched until email 2
+        - Next fetch will fetch 2 emails
+        - Exclusion list contains 2/2 emails ids
+    When:
+        - Calling fetch_incidents
+    Then:
+        - Fetch 0 emails
+        - Save previous 2 fetched mails
+    """
+    emails = {'value': [
+        {'receivedDateTime': '1', 'id': '1'},
+        {'receivedDateTime': '2', 'id': '2'},
+    ]}
+    client = oproxy_client()
+    client._emails_fetch_limit = 2
+    mocker.patch.object(client.ms_client, 'http_request', return_value=emails)
+    fetched_emails, ids = client._fetch_last_emails('', last_fetch='2', exclude_ids=['2'])
+    assert len(fetched_emails) == 0
+    assert ids == ['1', '2']
