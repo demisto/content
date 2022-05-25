@@ -904,7 +904,7 @@ script:
       secret: false
     - default: false
       description: |-
-        A comma-separated list of distribution package names or installation package names. 
+        A comma-separated list of distribution package names or installation package names.
         Example: dist_name1,dist_name2
       isArray: true
       name: dist_name
@@ -3707,6 +3707,317 @@ script:
     - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.ingestion_time
       description: Ingestion time.
       type: String
+  - arguments:
+    - default: false
+      description: The unique ID of the alert.
+      isArray: true
+      name: alert_id
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The severity of the alert.
+      isArray: true
+      name: severity
+      predefined:
+      - low
+      - meduim
+      - high
+      required: false
+      secret: false
+    - default: false
+      description: "a custom filter, when using this argument, other filter arguments\
+        \ are not relevant. example: \n`{\n                \"OR\": [\n           \
+        \         {\n                        \"SEARCH_FIELD\": \"actor_process_command_line\"\
+        ,\n                        \"SEARCH_TYPE\": \"EQ\",\n                    \
+        \    \"SEARCH_VALUE\": \"path_to_file\"\n                    }\n         \
+        \       ]\n            }`"
+      isArray: false
+      name: custom_filter
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Account type.
+      isArray: true
+      name: Identity_type
+      predefined:
+      - 'ANONYMOUS'
+      - 'APPLICATION'
+      - 'COMPUTE'
+      - 'FEDERATED_IDENTITY'
+      - 'SERVICE'
+      - 'SERVICE_ACCOUNT'
+      - 'TEMPORARY_CREDENTIALS'
+      - 'TOKEN'
+      - 'UNKNOWN'
+      - 'USER'
+      required: false
+      secret: false
+    - default: false
+      description: A unique identifier per agent.
+      isArray: true
+      name: agent_id
+      required: false
+      secret: false
+    - default: false
+      description: The hostname to connect to. In case of a proxy connection, this
+        value will differ from action_remote_ip.
+      isArray: true
+      name: action_external_hostname
+      required: false
+      secret: false
+    - default: false
+      description: A string identifying the user rule.
+      isArray: true
+      name: rule_id
+      required: false
+      secret: false
+    - default: false
+      description: The name of the user rule.
+      isArray: true
+      name: rule_name
+      required: false
+      secret: false
+    - default: false
+      description: The alert name.
+      isArray: true
+      name: alert_name
+      required: false
+      secret: false
+    - default: false
+      description: The alert source.
+      isArray: true
+      name: alert_source
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Supports relative times or “custom” time option. If you choose
+        the "custom" option, you should use start_time and end_time arguments.
+      isArray: false
+      name: time_frame
+      predefined:
+      - 60 minutes
+      - 3 hours
+      - 12 hours
+      - 24 hours
+      - 2 days
+      - 7 days
+      - 14 days
+      - 30 days
+      - custom
+      required: false
+      secret: false
+    - default: false
+      description: The name assigned to the user_id during agent runtime.
+      isArray: true
+      name: user_name
+      required: false
+      secret: false
+    - default: false
+      description: The file name of the binary file.
+      isArray: true
+      name: actor_process_image_name
+      required: false
+      secret: false
+    - default: false
+      description: CGO CMD
+      isArray: true
+      name: causality_actor_process_image_command_line
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Trimmed to 128 unicode chars during event serialization.
+        Full value reported as part of the original process event.
+      isArray: true
+      name: actor_process_image_command_line
+      required: false
+      secret: false
+    - default: false
+      description: The command line of the process created.
+      isArray: true
+      name: action_process_image_command_line
+      required: false
+      secret: false
+    - default: false
+      description: SHA256 of the binary file.
+      isArray: true
+      name: actor_process_image_sha256
+      required: false
+      secret: false
+    - default: false
+      description: SHA256 of the binary file.
+      isArray: true
+      name: causality_actor_process_image_sha256
+      required: false
+      secret: false
+    - default: false
+      description: SHA256 of the binary file.
+      isArray: true
+      name: action_process_image_sha256
+      required: false
+      secret: false
+    - default: false
+      description: SHA256 of the file related to the event.
+      isArray: true
+      name: action_file_image_sha256
+      required: false
+      secret: false
+    - default: false
+      description: The name of the registry.
+      isArray: true
+      name: action_registry_name
+      required: false
+      secret: false
+    - default: false
+      description: The key data of the registry.
+      isArray: true
+      name: action_registry_key_data
+      required: false
+      secret: false
+    - default: false
+      description: The host IP.
+      isArray: true
+      name: host_ip
+      required: false
+      secret: false
+    - default: false
+      description: The local IP address for the connection.
+      isArray: true
+      name: action_local_ip
+      required: false
+      secret: false
+    - default: false
+      description: Remote IP address for the connection.
+      isArray: true
+      name: action_remote_ip
+      required: false
+      secret: false
+    - default: false
+      description: The local IP address for the connection.
+      isArray: true
+      name: action_local_port
+      required: false
+      secret: false
+    - default: false
+      description: The remote port for the connection.
+      isArray: true
+      name: action_remote_port
+      required: false
+      secret: false
+    - default: false
+      description: The hostname we connect to. In case of a proxy connection, this
+        value will differ from action_remote_ip.
+      isArray: true
+      name: dst_action_external_hostname
+      required: false
+      secret: false
+    - default: false
+      defaultValue: source_insert_ts
+      description: The field by which we will sort the results.
+      isArray: true
+      name: sort_field
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The order in which we sort the results.
+      isArray: false
+      name: sort_order
+      predefined:
+      - DESC
+      - ASC
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: The first page from which we bring the alerts.
+      isArray: true
+      name: offset
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: The last page from which we bring the alerts.
+      isArray: true
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: Relevant when "time_frame" argument is "custom". Supports Epoch
+        timestamp and simplified extended ISO format (YYYY-MM-DDThh:mm:ss.000Z).
+      isArray: false
+      name: start_time
+      required: false
+      secret: false
+    - default: false
+      description: Relevant when "time_frame" argument is "custom". Supports Epoch
+        timestamp and simplified extended ISO format (YYYY-MM-DDThh:mm:ss.000Z).
+      isArray: false
+      name: end_time
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Whether the alert is starred or not.
+      isArray: false
+      name: starred
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    deprecated: false
+    description: "Returns a list of alerts and their meta-data, which you can filter\
+      \ by built-in arguments or use the custom_filter to input a JSON filter object.\
+      \ \nMultiple filter arguments will be concatenated using AND operator, while\
+      \ arguments that support a comma-separated list of values will use an OR operator\
+      \ between each value."
+    execution: false
+    hidden: false
+    name: xdr-get-alerts
+    outputs:
+    - contextPath: PaloAltoNetworksXDR.Alert.internal_id
+      description: The unique ID of the alert.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Alert.source_insert_ts
+      description: The detection timestam
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.Alert.alert_name
+      description: The name of the alert.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Alert.severity
+      description: The severity of the alert.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Alert.alert_category
+      description: The category of the alert.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Alert.alert_action_status
+      description: The alert action.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Alert.alert_name
+      description: The alert name.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Alert.alert_description
+      description: The alert description.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Alert.agent_ip_addresses
+      description: The host IP
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Alert.agent_hostmae
+      description: The host name
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Alert.mitre_tactic_id_and_name
+      description: The MITRE attack tactic.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Alert.mitre_technique_id_and_name
+      description: The MITRE attack technique.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Alert.starred
+      description: Whether the alert is starred or not.
+      type: Boolean
   - arguments:
     - default: false
       description: Links the response action to the incident that triggered it.
