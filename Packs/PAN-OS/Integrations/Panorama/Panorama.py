@@ -710,8 +710,7 @@ def panorama_push_to_template(args: dict):
     command: str = ''
     command += f'<name>{TEMPLATE}</name>'
 
-    serial_number = args.get('serial_number')
-    if serial_number:
+    if serial_number := args.get('serial_number'):
         command = f'<name>{TEMPLATE}</name><device><member>{serial_number}</member></device>'
 
     if argToBoolean(args.get('validate-only', 'false')):
@@ -744,8 +743,7 @@ def panorama_push_to_template_stack(args: dict):
     command: str = ''
     command += f'<name>{template_stack}</name>'
 
-    serial_number = args.get('serial_number')
-    if serial_number:
+    if serial_number := args.get('serial_number'):
         command = f'<name>{template_stack}</name><device><member>{serial_number}</member></device>'
 
     if argToBoolean(args.get('validate-only', 'false')):

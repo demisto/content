@@ -1301,6 +1301,7 @@ def test_panorama_push_to_template_stack_command(mocker, args, expected_request_
     demisto_result_got = return_results_mock.call_args.args[0]['EntryContext']
     assert demisto_result_got == expected_demisto_result
 
+
 def test_get_url_category__url_length_gt_1278(mocker):
     """
     Given:
