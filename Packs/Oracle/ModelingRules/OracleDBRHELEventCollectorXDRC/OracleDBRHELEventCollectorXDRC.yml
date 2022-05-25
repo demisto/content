@@ -1,0 +1,4 @@
+name: OracleDBRHELEventCollector
+id: OracleDBRHELEventCollector
+fromversion: 3.3.0
+rules: ''
