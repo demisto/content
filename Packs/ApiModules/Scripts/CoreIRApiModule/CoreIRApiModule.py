@@ -1016,6 +1016,16 @@ class CoreClient(BaseClient):
         )
         return res.get('reply', {})
 
+    def get_alerts_by_filter_data(self, request_data: dict):
+        res = self._http_request(
+            method='POST',
+            url_suffix='/alerts/get_alerts_by_filter_data/',
+            json_data={
+                'request_data': request_data
+            },
+        )
+        return res.get('reply', {})
+
     def get_endpoint_device_control_violations(self, endpoint_ids: list, type_of_violation, timestamp_gte: int,
                                                timestamp_lte: int,
                                                ip_list: list, vendor: list, vendor_id: list, product: list,
@@ -1422,6 +1432,59 @@ class CoreClient(BaseClient):
         return reply[:limit]
 
 
+class AlertFilterArg:
+    def __init__(self, search_field: str, search_type: Optional[str], arg_type: str, option_mapper: dict = None):
+        self.search_field = search_field
+        self.search_type = search_type
+        self.arg_type = arg_type
+        self.option_mapper = option_mapper
+
+
+def init_filter_args_options():
+    array = 'array'
+    dropdown = 'dropdown'
+    time_frame = 'time_frame'
+
+    return {
+        'alert_id': AlertFilterArg('internal_id', 'EQ', array),
+        'severity': AlertFilterArg('severity', 'EQ', dropdown, {
+            'low': 'SEV_020_LOW',
+            'medium': 'SEV_030_MEDIUM',
+            'high': 'SEV_040_HIGH'
+        }),
+        'starred': AlertFilterArg('starred', 'EQ', dropdown, {
+            'true': True,
+            'False': False,
+        }),
+        'Identity_type': AlertFilterArg('Identity_type', 'EQ', dropdown),
+        'agent_id': AlertFilterArg('agent_id', 'EQ', array),
+        'action_external_hostname': AlertFilterArg('action_external_hostname', 'CONTAINS', array),
+        'rule_id': AlertFilterArg('matching_service_rule_id', 'EQ', array),
+        'rule_name': AlertFilterArg('fw_rule', 'EQ', array),
+        'alert_name': AlertFilterArg('alert_name', 'CONTAINS', array),
+        'alert_source': AlertFilterArg('alert_source', 'CONTAINS', array),
+        'time_frame': AlertFilterArg('source_insert_ts', None, time_frame),
+        'user_name': AlertFilterArg('actor_effective_username', 'CONTAINS', array),
+        'actor_process_image_name': AlertFilterArg('actor_process_image_name', 'CONTAINS', array),
+        'causality_actor_process_image_command_line': AlertFilterArg('causality_actor_process_command_line', 'EQ',
+                                                                     array),
+        'actor_process_image_command_line': AlertFilterArg('actor_process_command_line', 'EQ', array),
+        'action_process_image_command_line': AlertFilterArg('action_process_image_command_line', 'EQ', array),
+        'actor_process_image_sha256': AlertFilterArg('actor_process_image_sha256', 'EQ', array),
+        'causality_actor_process_image_sha256': AlertFilterArg('causality_actor_process_image_sha256', 'EQ', array),
+        'action_process_image_sha256': AlertFilterArg('action_process_image_sha256', 'EQ', array),
+        'action_file_image_sha256': AlertFilterArg('action_file_sha256', 'EQ', array),
+        'action_registry_name': AlertFilterArg('action_registry_key_name', 'EQ', array),
+        'action_registry_key_data': AlertFilterArg('action_registry_data', 'CONTAINS', array),
+        'host_ip': AlertFilterArg('agent_ip_addresses', 'IPLIST_MATCH', array),
+        'action_local_ip': AlertFilterArg('action_local_ip', 'IP_MATCH', array),
+        'action_remote_ip': AlertFilterArg('action_remote_ip', 'IP_MATCH', array),
+        'action_local_port': AlertFilterArg('action_local_port', 'EQ', array),
+        'action_remote_port': AlertFilterArg('action_remote_port', 'EQ', array),
+        'dst_action_external_hostname': AlertFilterArg('dst_action_external_hostname', 'CONTAINS', array),
+    }
+
+
 def run_polling_command(client: CoreClient,
                         args: dict,
                         cmd: str,
@@ -1495,6 +1558,91 @@ def run_polling_command(client: CoreClient,
         # result with scheduled_command only - no update to the war room
         command_results = CommandResults(scheduled_command=scheduled_command)
     return command_results
+
+
+def convert_time_to_epoch(time_to_convert: str) -> int:
+    """
+    Converts time in epoch UNIX timestamp format or date in '%Y-%m-%dT%H:%M:%S' format to timestamp format.
+    :param time_to_convert:
+    :return: converted_timestamp
+    """
+    try:
+        timestamp = int(time_to_convert)
+        return timestamp
+    except Exception:
+        try:
+            return date_to_timestamp(time_to_convert)
+        except Exception:
+            raise DemistoException('the time_frame format is invalid. Valid formats: %Y-%m-%dT%H:%M:%S or '
+                                   'epoch UNIX timestamp (example: 1651505482)')
+
+
+def create_filter_from_args(args: dict) -> dict:
+    """
+    Builds an XDR format filter dict for the xdr-get-alert command.
+    :param args: The arguments provided by the user
+    :return: The filter format built from args
+    """
+    valid_args = init_filter_args_options()
+    and_operator_list = []
+    start_time = args.pop('start_time', None)
+    end_time = args.pop('end_time', None)
+
+    if (start_time or end_time) and ('time_frame' not in args):
+        raise DemistoException('Please choose "custom" under time_frame argument when using start_time and end_time '
+                               'arguments')
+
+    for arg_name, arg_value in args.items():
+        if arg_name not in valid_args:
+            raise DemistoException(f'Argument {arg_name} is not valid.')
+        arg_properties = valid_args.get(arg_name)
+
+        # handle time frame
+        if arg_name == 'time_frame':
+            # custom time frame
+            if arg_value == 'custom':
+                if not start_time or not end_time:
+                    raise DemistoException(
+                        'Please provide start_time and end_time arguments when using time_frame as custom.')
+                start_time = convert_time_to_epoch(start_time)
+                end_time = convert_time_to_epoch(end_time)
+                search_type = 'RANGE'
+                search_value: Union[dict, Optional[str]] = {
+                    'from': start_time,
+                    'to': end_time
+                }
+
+            # relative time frame
+            else:
+                search_type = 'RELATIVE_TIMESTAMP'
+                date = dateparser.parse(arg_value)
+                search_value = date.strftime("%Y-%m-%dT%H:%M:%S") if date else None
+
+            and_operator_list.append({
+                'SEARCH_FIELD': arg_properties.search_field,
+                'SEARCH_TYPE': search_type,
+                'SEARCH_VALUE': search_value
+            })
+
+        # handle array args, array elements should be seperated with 'or' op
+        elif arg_properties.arg_type == 'array':
+            or_operator_list = []
+            arg_list = argToList(arg_value)
+            for arg_item in arg_list:
+                or_operator_list.append({
+                    'SEARCH_FIELD': arg_properties.search_field,
+                    'SEARCH_TYPE': arg_properties.search_type,
+                    'SEARCH_VALUE': arg_item
+                })
+            and_operator_list.append({'OR': or_operator_list})
+        else:
+            and_operator_list.append({
+                'SEARCH_FIELD': arg_properties.search_field,
+                'SEARCH_TYPE': arg_properties.search_type,
+                'SEARCH_VALUE': arg_properties.option_mapper.get(arg_value) if arg_properties.option_mapper else arg_value
+            })
+
+    return {'AND': and_operator_list}
 
 
 def arg_to_int(arg, arg_name: str, required: bool = False):
@@ -3157,6 +3305,70 @@ def get_original_alerts_command(client: CoreClient, args: Dict) -> CommandResult
         outputs_prefix=f'{args.get("integration_context_brand", "CoreApiModule")}.OriginalAlert',
         outputs_key_field='internal_id',
         outputs=filtered_alerts,
+        raw_response=raw_response,
+    )
+
+
+def get_alerts_by_filter_command(client: CoreClient, args: Dict) -> CommandResults:
+    # get arguments
+    request_data: dict = {'filter_data': {}}
+    filter_data = request_data['filter_data']
+    sort_field = args.pop('sort_field', 'source_insert_ts')
+    sort_order = args.pop('sort_order', 'DESC')
+    prefix = args.pop("integration_context_brand", "CoreApiModule")
+    args.pop("integration_name", None)
+    filter_data['sort'] = [{
+        'FIELD': sort_field,
+        'ORDER': sort_order
+    }]
+    offset = args.pop('offset', 0)
+    limit = args.pop('limit', 50)
+    filter_data['paging'] = {
+        'from': int(offset),
+        'to': int(limit)
+    }
+    if not args:
+        raise DemistoException('Please provide at least one filter argument.')
+
+    # handle custom filter
+    custom_filter = args.pop('custom_filter', None)
+
+    if custom_filter:
+        if args:
+            raise DemistoException(
+                'Please provide either "custom_filter" argument or other filter arguments but not both.')
+        try:
+            filter_res = json.loads(custom_filter)
+        except Exception as e:
+            raise DemistoException('custom_filter format is not valid.') from e
+
+    # if custom filter was not given, we should create the filter from the given arguments.
+    else:
+        filter_res = create_filter_from_args(args)
+
+    filter_data['filter'] = filter_res
+    demisto.debug(f'sending the following request data: {request_data}')
+    raw_response = client.get_alerts_by_filter_data(request_data)
+
+    context = [alert.get('alert_fields') for alert in raw_response.get('alerts', [])]
+
+    human_readable = [{
+        'Alert ID': alert.get('internal_id'),
+        'Detection Timestamp': timestamp_to_datestring(alert.get('source_insert_ts')),
+        'Name': alert.get('alert_name'),
+        'Severity': alert.get('severity'),
+        'Category': alert.get('alert_category'),
+        'Action': alert.get('alert_action_status'),
+        'Description': alert.get('alert_description'),
+        'Host IP': alert.get('agent_ip_addresses'),
+        'Host Name': alert.get('agent_hostname'),
+    } for alert in context]
+
+    return CommandResults(
+        outputs_prefix=f'{prefix}.Alert',
+        outputs_key_field='internal_id',
+        outputs=context,
+        readable_output=tableToMarkdown('Alerts', human_readable),
         raw_response=raw_response,
     )
 
