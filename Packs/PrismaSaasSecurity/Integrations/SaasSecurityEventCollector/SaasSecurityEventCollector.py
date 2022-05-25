@@ -47,10 +47,10 @@ class Client(BaseClient):
 
         :return: The http response
         """
-
-        token = demisto.getIntegrationContext().get('access_token')
-        if not token:  # only used for the test module
+        if kwargs.pop('is_test'):
             token = self.get_access_token().get('access_token')
+        else:
+            token = json.loads(demisto.getIntegrationContext().get('access_token'))
         headers = {
             'Authorization': f'Bearer {token}',
             'Content-Type': 'application/json',
@@ -89,23 +89,24 @@ class Client(BaseClient):
         token_response = self._http_request('POST', url_suffix='/oauth/token', params=params, headers=headers)
         return token_response.get('access_token')
 
-    def get_events_request(self):
+    def get_events_request(self, retries=5, is_test=False):
         return self.http_request(
             'GET',
             url_suffix='/api/v1/log_events',
             resp_type='response',
             status_list_to_retry=[204],
-            retries=5,
-            ok_codes=[200, 401, 204]
+            retries=retries,
+            ok_codes=[200, 401, 204],
+            is_test=is_test
         )
 
 
 ''' COMMAND FUNCTIONS '''
 
 
-def test_module(client):
+def test_module(client: Client):
     # could cause us to lose events, need to check how to handle if possible
-    response = client.get_events_request()
+    response = client.get_events_request(retries=1, is_test=True)  # retries 1 to avoid waiting so long for test module
     if response.status_code in (200, 204):
         return 'ok'
 
@@ -148,7 +149,7 @@ def saas_security_get_events_command(args: Dict) -> Union[str, CommandResults]:
     limit = arg_to_number(args.get('limit')) or 10
     if events := get_events_from_integration_context(max_fetch=limit):
         return CommandResults(
-            readable_output=tableToMarkdown(name='SaaS Security Logs', t=events, headerTransform=underscoreToCamelCase),
+            readable_output=tableToMarkdown('SaaS Security Logs', events, headerTransform=underscoreToCamelCase),
             raw_response=events,
             outputs=events,
             outputs_key_field='item_unique_id',
@@ -169,31 +170,42 @@ def long_running_execution_command(client: Client):
     Stores fetched events in the integration context and in addition make sure the access token is always up to date
     at all points of time.
     """
+    set_to_integration_context_with_retries(
+        context=client.get_access_token(), max_retry_times=SET_INTEGRATION_CONTEXT_RETRIES
+    )
+
     while True:
         try:
-            existing_integration_context = demisto.getIntegrationContext()
-            updated_integration_context = existing_integration_context.copy()
-            demisto.debug(f'existing integration context: [{existing_integration_context}]')
+            should_update_integration_context = False
+            integration_context = demisto.getIntegrationContext()
+            demisto.debug(f'existing integration context: ({integration_context})')
 
             response = client.get_events_request()
             if response.status_code == 200:
                 events = response.json()
-                integration_context_events = json.loads(existing_integration_context.get('events', '[]'))
+                integration_context_events = json.loads(integration_context.get('events', '[]'))
                 demisto.debug(f'Received event(s): {events}')
                 if isinstance(events, list):  # 'events' is a list of events
                     integration_context_events.extend(events)
                 else:  # 'events' is a single dict (only one event)
                     integration_context_events.append(events)
-                updated_integration_context['events'] = integration_context_events
+                integration_context['events'] = integration_context_events
+                should_update_integration_context = True
             elif response.status_code == 401:
-                updated_integration_context.update(client.get_access_token())
-            current_events = updated_integration_context.get("events")
-            demisto.debug(f'updated integration context events: [{len(current_events)}], content: [{current_events}]')
-            if updated_integration_context != existing_integration_context:
+                demisto.debug(f'Unauthorized: [{response.json()}]')
+                integration_context.update(client.get_access_token())
+                should_update_integration_context = True
+            elif response.status_code == 204:
+                demisto.debug(f'204 - No Content when fetching events')
+
+            if should_update_integration_context:
                 # update integration context only in cases where there is anything to update, otherwise avoid
                 # setting the integration context as much as possible
+                current_events = json.loads(integration_context.get('events') or '[]')
+                demisto.debug(f'updated integration context: ({integration_context})')
+                demisto.debug(f'updated integration events length: ({len(current_events)})')
                 set_to_integration_context_with_retries(
-                    context=updated_integration_context, max_retry_times=SET_INTEGRATION_CONTEXT_RETRIES
+                    context=integration_context, max_retry_times=SET_INTEGRATION_CONTEXT_RETRIES
                 )
         except Exception as e:
             demisto.error(traceback.format_exc())
