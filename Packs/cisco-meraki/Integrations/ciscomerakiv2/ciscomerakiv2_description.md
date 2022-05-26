@@ -1,7 +1,6 @@
-## BaseIntegration Help
+## Cisco Meraki v2
 
-Markdown file for integration configuration  help snippet. In this file add:
-- Brief information about how to retrieve the API key of your product
-- Other useful information on how to configure your integration in XSOAR
+Supports the Cisco Meraki v1 API set of commands (or a subset thereof)
 
-Since this is a Markdown file, we encourage you to use MD formatting for sections, sub-sections, lists, etc.
+### API Key
+Obtain the API from your Meraki device.

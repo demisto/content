@@ -4,7 +4,7 @@ commonfields:
 name: Cisco Meraki v2
 display: Cisco Meraki v2
 category: IT Services
-description: Cloud controlled WiFi, routing, and security.
+description: Cloud controlled WiFi, routing, and security. Supporting v1 of the Cisco Meraki API.
 configuration:
 - display: API Key
   name: apiKey

@@ -499,7 +499,7 @@ def main() -> None:
     command = demisto.command()
 
     if command == 'test-module':
-        test_module_command(client, args)
+        test_module_command(client)
 
     elif command in commands:
         commands[command](client, args)
