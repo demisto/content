@@ -1,9 +1,8 @@
 commonfields:
-  id: Cisco Meraki V2
+  id: Cisco Meraki v2
   version: -1
-vcShouldKeepItemLegacyProdMachine: false
-name: Cisco Meraki V2
-display: Cisco Meraki V2
+name: Cisco Meraki v2
+display: Cisco Meraki v2
 category: IT Services
 description: Cloud controlled WiFi, routing, and security.
 configuration:
@@ -480,18 +479,18 @@ script:
       required: true
       description: Serial number of the device to remove.
     outputs:
-      - contextPath: Meraki.DeviceRemoval.serial
-        description: Device serial.
-        type: String
-      - contextPath: Meraki.DeviceRemoval.networkId
-        description: Network ID.
-        type: String
-      - contextPath: Meraki.DeviceRemoval.success
-        description: Whether the device was removed.
-        type: bool
-      - contextPath: Meraki.DeviceRemoval.errors
-        description: Any errors received.
-        type: list
+    - contextPath: Meraki.DeviceRemoval.serial
+      description: Device serial.
+      type: String
+    - contextPath: Meraki.DeviceRemoval.networkId
+      description: Network ID.
+      type: String
+    - contextPath: Meraki.DeviceRemoval.success
+      description: Whether the device was removed.
+      type: bool
+    - contextPath: Meraki.DeviceRemoval.errors
+      description: Any errors received.
+      type: list
     description: Remove a single device.
   - name: meraki-update-device
     arguments:
@@ -514,9 +513,9 @@ script:
       description: Whether or not to set the latitude and longitude of a device based on the new address. Only applies when lat and lng are not specified.
       auto: PREDEFINED
       predefined:
-      - "false"
-      - "true"
-      defaultValue: "false"
+      - 'false'
+      - 'true'
+      defaultValue: 'false'
     - name: switchProfileId
       description: The ID of a switch profile to bind to the device (for available switch profiles, see the 'Switch Profiles' endpoint). Use null to unbind the switch device from the current profile. For a device to be bindable to a switch profile, it must (1) be a switch, and (2) belong to a network that is bound to a configuration template.
     - name: floorPlanId
@@ -580,18 +579,18 @@ script:
       required: true
       description: CSV of serial numbers of the devices to claim.
     outputs:
-      - contextPath: Meraki.ClaimDevices.serials
-        description: Device serial.
-        type: String
-      - contextPath: Meraki.ClaimDevices.networkId
-        description: Network ID.
-        type: String
-      - contextPath: Meraki.ClaimDevices.success
-        description: Whether the device was removed.
-        type: bool
-      - contextPath: Meraki.ClaimDevices.errors
-        description: Any errors received.
-        type: list
+    - contextPath: Meraki.ClaimDevices.serials
+      description: Device serial.
+      type: String
+    - contextPath: Meraki.ClaimDevices.networkId
+      description: Network ID.
+      type: String
+    - contextPath: Meraki.ClaimDevices.success
+      description: Whether the device was removed.
+      type: bool
+    - contextPath: Meraki.ClaimDevices.errors
+      description: Any errors received.
+      type: list
     description: Claim a device into a network.
   - name: meraki-update-wireless-firewall-rules
     arguments:
@@ -675,4 +674,6 @@ script:
   dockerimage: demisto/python3:3.10.4.29342
   runonce: false
   subtype: python3
-sourcemoduleid: Cisco Meraki V2
+fromversion: 6.2.0
+tests:
+- No tests (auto formatted)
