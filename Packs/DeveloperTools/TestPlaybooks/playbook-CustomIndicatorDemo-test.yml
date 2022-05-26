@@ -1,22 +1,22 @@
 id: playbook-CustomIndicatorDemo-test
-version: 5
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
 name: playbook-CustomIndicatorDemo-test
-starttaskid: "0"
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     taskid: ebdaf3a4-0912-454f-8370-5fb7bfffcb23
     type: start
     task:
       id: ebdaf3a4-0912-454f-8370-5fb7bfffcb23
       version: -1
-      name: ""
+      name: ''
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "1"
+      - '1'
     separatecontext: false
     view: |-
       {
@@ -32,8 +32,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "1":
-    id: "1"
+  '1':
+    id: '1'
     taskid: ae5c9730-39fc-4ad7-8478-d20a3fc6a632
     type: regular
     task:
@@ -47,7 +47,7 @@ tasks:
       brand: CustomIndicatorDemo
     nexttasks:
       '#none#':
-      - "3"
+      - '3'
     separatecontext: false
     view: |-
       {
@@ -63,8 +63,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "3":
-    id: "3"
+  '3':
+    id: '3'
     taskid: cb6e7515-30f5-4430-8734-ffa4745ba3ce
     type: condition
     task:
@@ -73,13 +73,13 @@ tasks:
       name: verify outputs
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
-      "yes":
-      - "5"
+      yes:
+      - '5'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isEqualString
           left:
@@ -119,8 +119,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "5":
-    id: "5"
+  '5':
+    id: '5'
     taskid: 246ea808-0fd6-478a-804f-21fb03205b8d
     type: regular
     task:
@@ -164,3 +164,5 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.5.0
+description: Test Playbook to generate CustomIndicator
