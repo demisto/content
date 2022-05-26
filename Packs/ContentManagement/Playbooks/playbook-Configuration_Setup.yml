@@ -735,7 +735,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "31"
+      - "17"
       AWS S3:
       - "36"
       Attachments:
@@ -840,47 +840,6 @@ tasks:
         "position": {
           "x": 1790,
           "y": 1185
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "31":
-    id: "31"
-    taskid: 4c2f3fac-7aeb-4aac-805f-81f51bc729b1
-    type: condition
-    task:
-      id: 4c2f3fac-7aeb-4aac-805f-81f51bc729b1
-      version: -1
-      name: If there is no Source Provided, then no Custom Packs should be Installed.
-      description: Checks whether there are custom packs to install when no source
-        is provided. In that case, the playbook will stop with an error.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "17"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEmpty
-          left:
-            value:
-              complex:
-                root: ConfigurationSetup
-                accessor: CustomPacks
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 1022.5,
-          "y": 1535
         }
       }
     note: false

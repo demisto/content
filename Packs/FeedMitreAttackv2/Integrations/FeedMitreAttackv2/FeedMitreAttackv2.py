@@ -233,7 +233,7 @@ def map_fields_by_type(indicator_type: str, indicator_json: dict):
     modified = handle_multiple_dates_in_one_field('modified', indicator_json.get('modified'))  # type: ignore
 
     kill_chain_phases_mitre = [chain.get('phase_name', '') for chain in indicator_json.get('kill_chain_phases', [])]
-    kill_chain_phases = [MITRE_CHAIN_PHASES_TO_DEMISTO_FIELDS.get(phase) for phase in kill_chain_phases_mitre]
+    kill_chain_phases = [MITRE_CHAIN_PHASES_TO_DEMISTO_FIELDS.get(phase) or phase for phase in kill_chain_phases_mitre]
 
     publications = []
     for external_reference in indicator_json.get('external_references', []):
@@ -303,7 +303,7 @@ def map_fields_by_type(indicator_type: str, indicator_json: dict):
             'operatingsystemrefs': indicator_json.get('x_mitre_platforms')
         }
     }
-    generic_mapping_fields.update(mapping_by_type.get(indicator_type, {}))
+    generic_mapping_fields.update(mapping_by_type.get(indicator_type, {}))  # type: ignore
     return generic_mapping_fields
 
 

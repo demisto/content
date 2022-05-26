@@ -994,6 +994,7 @@ def fetch_incidents(query, id_offset, should_get_attachments, should_get_comment
     incidents, max_results = [], 50
     if fetch_by_created and last_created_time:
         last_issue_time = parse(last_created_time)
+        assert last_issue_time is not None, f'could not parse {last_created_time}'
         minute_to_fetch = last_issue_time - timedelta(minutes=2)
         formatted_minute_to_fetch = minute_to_fetch.strftime('%Y-%m-%d %H:%M')
         query = f'{query} AND created>=\"{formatted_minute_to_fetch}\"'
@@ -1028,13 +1029,10 @@ def get_attachment_data(attachment):
     :param attachment: attachment metadata
     :return: attachment name and content
     """
-    attachment_url = f"rest{attachment['content'].split('/rest')[-1]}"
-    attachments_zip = jira_req(method='GET', resource_url=attachment_url).content
+    attachment_url = attachment.get('content')
+    filename = attachment.get('filename')
+    attachments_zip = jira_req(method='GET', resource_url=attachment_url, link=True).content
 
-    attachment_metadata_url = f"rest{attachment['self'].split('/rest')[-1]}"
-    attachment_metadata = jira_req(method='GET', resource_url=attachment_metadata_url).json()
-
-    filename = attachment_metadata.get('filename')
     return filename, attachments_zip
 
 
@@ -1055,7 +1053,8 @@ def get_attachments(attachments, incident_modified_date, only_new=True):
                 file_results.append(fileResult(filename=filename, data=attachments_zip))
         else:
             for attachment in attachments:
-                attachment_modified_date: datetime = parse(dict_safe_get(attachment, ['created'], "", str))
+                attachment_modified_date: datetime = \
+                    parse(dict_safe_get(attachment, ['created'], "", str))  # type: ignore
                 if incident_modified_date < attachment_modified_date:
                     filename, attachments_zip = get_attachment_data(attachment)
                     file_results.append(fileResult(filename=filename, data=attachments_zip))
@@ -1075,7 +1074,7 @@ def get_comments(comments, incident_modified_date, only_new=True):
     else:
         returned_comments = []
         for comment in comments:
-            comment_modified_date: datetime = parse(dict_safe_get(comment, ['updated'], "", str))
+            comment_modified_date: datetime = parse(dict_safe_get(comment, ['updated'], "", str))  # type: ignore
             if incident_modified_date < comment_modified_date:
                 returned_comments.append(comment)
         return returned_comments
@@ -1227,7 +1226,9 @@ def get_modified_remote_data_command(args):
             if not timezone_name:
                 demisto.error(f'Could not get Jira\'s time zone for get-modified-remote-data.Got unexpected reason:'
                               f' {res.json()}')
-            last_update: datetime = parse(remote_args.last_update, settings={'TIMEZONE': timezone_name})\
+            last_update_date = parse(remote_args.last_update, settings={'TIMEZONE': timezone_name})
+            assert last_update_date is not None, f'could not parse {remote_args.last_update}'
+            last_update: str = last_update_date \
                 .strftime('%Y-%m-%d %H:%M')
             demisto.debug(f'Performing get-modified-remote-data command. Last update is: {last_update}')
             _, _, context = issue_query_command(f'updated > "{last_update}"', max_results=100)
@@ -1265,9 +1266,10 @@ def get_remote_data_command(args) -> GetRemoteDataResponse:
         _, _, issue_raw_response = get_issue(issue_id=parsed_args.remote_incident_id)
         demisto.info('get remote data')
         # Timestamp - Issue last modified in jira server side
-        jira_modified_date: datetime = parse(dict_safe_get(issue_raw_response, ['fields', 'updated'], "", str))
+        jira_modified_date: datetime = \
+            parse(dict_safe_get(issue_raw_response, ['fields', 'updated'], "", str))  # type: ignore
         # Timestamp - Issue last sync in demisto server side
-        incident_modified_date: datetime = parse(parsed_args.last_update)
+        incident_modified_date: datetime = parse(parsed_args.last_update)  # type: ignore
         # Update incident only if issue modified in Jira server-side after the last sync
         demisto.info(f"jira_modified_date{jira_modified_date}")
         demisto.info(f"incident_modified_date{incident_modified_date}")

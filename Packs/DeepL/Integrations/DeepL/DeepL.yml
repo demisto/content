@@ -99,14 +99,14 @@ script:
       description: 'Sets whether the translation engine should first split the input into sentences. This is enabled by default. Possible values are: "0" - no splitting at all, whole input is treated as one sentence "1" (default) - splits on punctuation and on newlines "nonewlines" - splits on punctuation only, ignoring newlines'
       name: split_sentences
       predefined:
-      - "0"
-      - "1"
+      - '0'
+      - '1'
     - auto: PREDEFINED
       description: 'Sets whether the translation engine should respect the original formatting, even if it would usually correct some aspects. Possible values are: "0" (default) "1" The formatting aspects affected by this setting include: Punctuation at the beginning and end of the sentence Upper/lower case at the beginning of the sentence'
       name: preserve_formatting
       predefined:
-      - "0"
-      - "1"
+      - '0'
+      - '1'
     - auto: PREDEFINED
       description: 'Sets whether the translated text should lean towards formal or informal language. This feature currently only works for target languages "DE" (German), "FR" (French), "IT" (Italian), "ES" (Spanish), "NL" (Dutch), "PL" (Polish), "PT-PT", "PT-BR" (Portuguese) and "RU" (Russian).Possible options are: "default" (default) "more" - for a more formal language "less" - for a more informal language'
       name: formality
@@ -125,7 +125,7 @@ script:
     - description: Comma-separated list of XML tags which never split sentences.
       name: non_splitting_tags
     - name: outline_detection
-      description: "The automatic detection of the XML structure won't yield best results in all XML files. You can disable this automatic mechanism altogether by setting the outline_detection parameter to 0 and selecting the tags that should be considered structure tags. This will split sentences using the splitting_tags parameter."
+      description: The automatic detection of the XML structure won't yield best results in all XML files. You can disable this automatic mechanism altogether by setting the outline_detection parameter to 0 and selecting the tags that should be considered structure tags. This will split sentences using the splitting_tags parameter.
     - description: Comma-separated list of XML tags which always cause splits.
       name: splitting_tags
     - description: Comma-separated list of XML tags that indicate text not to be translated.
@@ -198,7 +198,7 @@ script:
       - SV
       - ZH
       required: true
-    - description: 'The document file to be translated. The file name should be included in this part''s content disposition. As an alternative, the filename parameter can be used. The following file types and extensions are supported: "docx" - Microsoft Word Document "pptx" - Microsoft PowerPoint Document "pdf" - Portable Document Format "htm / html" - HTML Document "txt" - Plain Text Document Please note that in order to translate PDF documents you need to give one-time consent to using the Adobe API via the account interface.'
+    - description: "The document file to be translated. The file name should be included in this part's content disposition. As an alternative, the filename parameter can be used. The following file types and extensions are supported: \"docx\" - Microsoft Word Document \"pptx\" - Microsoft PowerPoint Document \"pdf\" - Portable Document Format \"htm / html\" - HTML Document \"txt\" - Plain Text Document Please note that in order to translate PDF documents you need to give one-time consent to using the Adobe API via the account interface."
       name: file
       required: true
     - description: The name of the uploaded file. Can be used as an alternative to including the file name in the file part's content disposition.
@@ -258,7 +258,20 @@ script:
       name: filename
     description: Get the translated document
     name: deepl-get-document
-  dockerimage: demisto/python3:3.10.1.27636
+    outputs:
+    - contextPath: InfoFile.Name
+      description: File Name
+      type: string
+    - contextPath: InfoFile.EntryID
+      description: The EntryID of the translated document
+      type: string
+    - contextPath: InfoFile.Info
+      description: Basic information of the file
+    - contextPath: InfoFile.Size
+      description: File Size
+    - contextPath: InfoFile.Type
+      description: File type e.g. "PDF"
+  dockerimage: demisto/python3:3.10.4.28442
   runonce: false
   script: ''
   subtype: python3

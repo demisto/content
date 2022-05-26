@@ -1,0 +1,31 @@
+{
+  "RubrikPolaris.GPSSnapshotFile(val.snapshotId == obj.snapshotId)": {
+    "node": [
+      {
+        "absolutePath": "/C:",
+        "displayPath": "C:",
+        "fileMode": "DIRECTORY",
+        "filename": "C:",
+        "lastModified": "2020-10-05T18:56:18.000Z",
+        "path": "C:",
+        "size": 20455678807
+      },
+      {
+        "absolutePath": "/disk_0_part_1",
+        "displayPath": "disk_0_part_1",
+        "fileMode": "DIRECTORY",
+        "filename": "disk_0_part_1",
+        "lastModified": "2018-06-14T00:47:18.000Z",
+        "path": "",
+        "size": 346055933
+      }
+    ],
+    "snapshotId": "90858c2f-e572-5b9c-b455-ba309d50c1a2"
+  },
+  "RubrikPolaris.PageToken.GPSSnapshotFile(val.name == obj.name)": {
+    "has_next_page": true,
+    "name": "rubrik-gps-snapshot-files-list",
+    "next_page_token": "Y3Vyc29yOmludDox"
+  }
+}
+

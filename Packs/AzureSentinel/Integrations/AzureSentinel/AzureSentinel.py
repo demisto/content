@@ -906,6 +906,7 @@ def fetch_incidents(client: AzureSentinelClient, last_run: dict, first_fetch_tim
             latest_created_time = dateparser.parse(last_fetch_time_str)
         else:
             latest_created_time = dateparser.parse(last_fetch_time)
+        assert latest_created_time, f'Got empty latest_created_time. {last_fetch_time_str=} {last_fetch_time=}'
         latest_created_time_str = latest_created_time.strftime(DATE_FORMAT)
         command_args = {
             'filter': f'properties/createdTimeUtc ge {latest_created_time_str}',
@@ -916,13 +917,16 @@ def fetch_incidents(client: AzureSentinelClient, last_run: dict, first_fetch_tim
     else:
         demisto.debug("handle via id")
         latest_created_time = dateparser.parse(last_fetch_time)
+        assert latest_created_time is not None, f"dateparser.parse(last_fetch_time):" \
+                                                f" {dateparser.parse(last_fetch_time)} couldnt be parsed"
         command_args = {
             'filter': f'properties/incidentNumber gt {last_incident_number}',
             'orderby': 'properties/incidentNumber asc',
         }
         raw_incidents = list_incidents_command(client, command_args, is_fetch_incidents=True).outputs
 
-    return process_incidents(raw_incidents, last_fetch_ids, min_severity, latest_created_time, last_incident_number)
+    return process_incidents(raw_incidents, last_fetch_ids, min_severity,
+                             latest_created_time, last_incident_number)  # type: ignore[attr-defined]
 
 
 def process_incidents(raw_incidents: list, last_fetch_ids: list, min_severity: int, latest_created_time: datetime,
@@ -948,20 +952,25 @@ def process_incidents(raw_incidents: list, last_fetch_ids: list, min_severity: i
         incident_severity = severity_to_level(incident.get('Severity'))
         demisto.debug(f"{incident.get('ID')=}, {incident_severity=}, {incident.get('IncidentNumber')=}")
 
-        # fetch only incidents that weren't fetched in the last run and their severity is at least min_severity
-        if incident.get('ID') not in last_fetch_ids and incident_severity >= min_severity:
+        # create incident only for incidents that weren't fetched in the last run and their severity is at least min_severity
+        if incident.get('ID') not in last_fetch_ids:
             incident_created_time = dateparser.parse(incident.get('CreatedTimeUTC'))
-            xsoar_incident = {
-                'name': '[Azure Sentinel] ' + incident.get('Title'),
-                'occurred': incident.get('CreatedTimeUTC'),
-                'severity': incident_severity,
-                'rawJSON': json.dumps(incident)
-            }
-
-            incidents.append(xsoar_incident)
             current_fetch_ids.append(incident.get('ID'))
+            if incident_severity >= min_severity:
+                xsoar_incident = {
+                    'name': '[Azure Sentinel] ' + incident.get('Title'),
+                    'occurred': incident.get('CreatedTimeUTC'),
+                    'severity': incident_severity,
+                    'rawJSON': json.dumps(incident)
+                }
+                incidents.append(xsoar_incident)
+            else:
+                demisto.debug(f"drop creation of {incident.get('IncidentNumber')=} "
+                              "due to the {incident_severity=} is lower then {min_severity=}")
 
             # Update last run to the latest fetch time
+            assert incident_created_time is not None, f"incident.get('CreatedTimeUTC') : " \
+                                                      f"{incident.get('CreatedTimeUTC')} couldnt be parsed"
             if incident_created_time > latest_created_time:
                 latest_created_time = incident_created_time
             if incident.get('IncidentNumber') > last_incident_number:
@@ -1064,7 +1073,6 @@ def build_threat_indicator_data(args):
     value = args.get('value')
 
     data = {
-        'patternType': value,
         'displayName': args.get('display_name'),
         'description': args.get('description'),
         'revoked': args.get('revoked', ''),
@@ -1080,20 +1088,20 @@ def build_threat_indicator_data(args):
 
     indicator_type = args.get('indicator_type')
     if indicator_type == 'ipv4':
-        indicator_type = 'ipv4-address'
+        indicator_type = 'ipv4-addr'
     elif indicator_type == 'ipv6':
-        indicator_type = 'ipv6-address'
+        indicator_type = 'ipv6-addr'
     elif indicator_type == 'domain':
         indicator_type = 'domain-name'
 
-    data['patternTypes'] = indicator_type
+    data['patternType'] = indicator_type
 
     if indicator_type == 'file':
         hash_type = args.get('hash_type')
         data['hashType'] = hash_type
-        data['pattern'] = f"[file:hashes.'{hash_type}' = {value}]"
+        data['pattern'] = f"[file:hashes.'{hash_type}' = '{value}']"
     else:
-        data['pattern'] = f'[{indicator_type}:value = {value}]'
+        data['pattern'] = f"[{indicator_type}:value = '{value}']"
 
     data['killChainPhases'] = []
 

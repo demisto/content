@@ -2,7 +2,7 @@
     "name": "Common Playbooks",
     "description": "Frequently used playbooks pack.",
     "support": "xsoar",
-    "currentVersion": "2.1.17",
+    "currentVersion": "2.2.0",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -31,10 +31,6 @@
         "epo": {
             "mandatory": false,
             "display_name": "McAfee ePO"
-        },
-        "McAfee ePO v2": {
-            "mandatory": false,
-            "display_name": "McAfee ePO v2"
         },
         "CheckpointFirewall": {
             "mandatory": false,
@@ -280,10 +276,6 @@
             "mandatory": false,
             "display_name": "EWS"
         },
-            "MicrosoftDefenderAdvancedThreatProtection": {
-            "mandatory": false,
-            "display_name": "Microsoft Defender for Endpoint"
-        },
         "FiltersAndTransformers": {
             "mandatory": true,
             "display_name": "Filters And Transformers"
@@ -356,7 +348,6 @@
         "IllusiveNetworks",
         "McAfee-TIE",
         "EWS",
-        "MicrosoftDefenderAdvancedThreatProtection",
         "McAfee ePO v2"
     ],
     "marketplaces": [

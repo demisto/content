@@ -63,10 +63,14 @@ def main():
     response_type = demisto.get(demisto.args(), 'responseType')
     lifetime = demisto.get(demisto.args(), 'lifetime')
     try:
-        expiry = datetime.strftime(dateparser.parse('in ' + lifetime, settings={'TIMEZONE': 'UTC'}),
+        parsed_date = dateparser.parse('in ' + lifetime, settings={'TIMEZONE': 'UTC'})
+        assert parsed_date is not None, f'could not parse in {lifetime}'
+        expiry = datetime.strftime(parsed_date,
                                    DATE_FORMAT)
     except Exception:
-        expiry = datetime.strftime(dateparser.parse('in 1 day', settings={'TIMEZONE': 'UTC'}),
+        parsed_date = dateparser.parse('in 1 day', settings={'TIMEZONE': 'UTC'})
+        assert parsed_date is not None
+        expiry = datetime.strftime(parsed_date,
                                    DATE_FORMAT)
     default_response = demisto.get(demisto.args(), 'defaultResponse')
 

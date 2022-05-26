@@ -166,8 +166,9 @@ def main():
             else:
                 incident = demisto.incidents()
                 prevData = incident[0].get('CustomFields', {}).get('healthcheckinvestigationswithlargeinputoutput')
-                analyzeFields["healthcheckinvestigationswithlargeinputoutput"].extend(prevData)
-                demisto.executeCommand('setIncident', analyzeFields)
+                if analyzeFields["healthcheckinvestigationswithlargeinputoutput"]:
+                    analyzeFields["healthcheckinvestigationswithlargeinputoutput"].extend(prevData)
+                    demisto.executeCommand('setIncident', analyzeFields)
 
             # Add actionable items
             DESCRIPTION = [

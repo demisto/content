@@ -1,5 +1,6 @@
 import tempfile
-
+from io import StringIO
+import paramiko
 from paramiko import SSHClient, AutoAddPolicy, transport, Transport
 from paramiko.ssh_exception import NoValidConnectionsError
 from scp import SCPClient, SCPException
@@ -82,16 +83,19 @@ def get_available_key_algorithms() -> Set[str]:
     return set(opts.kex)
 
 
-def create_paramiko_ssh_client(host_name: str, user_name: str, password: str, ciphers: Set[str],
-                               key_algorithms: Set[str]) -> SSHClient:
+def create_paramiko_ssh_client(
+    host_name: str, user_name: str, password: str, ciphers: Set[str], key_algorithms: Set[str], private_key: str = ''
+) -> SSHClient:
     """
     Creates the Paramiko SSH client.
+
     Args:
         host_name (str): Hostname of the machine to create the SSH for.
         user_name (str): User to create the SSH session with the given host.
         password (str): Password of the given user.
         ciphers (Set[str]): Set of ciphers to be used, if given.
         key_algorithms (Set[str]): Set of key algorithms to be used, if given.
+        private_key (str): The SSH certificate (should be PEM file based certificate only).
 
     Returns:
         (SSHClient): Paramiko SSH client if connection was successful, exception otherwise.
@@ -102,17 +106,22 @@ def create_paramiko_ssh_client(host_name: str, user_name: str, password: str, ci
         if not ciphers.intersection(available_ciphers):
             raise DemistoException(f'Given ciphers are not available in server.\n'
                                    f'Ciphers available in server are: {available_ciphers}')
-        Transport._preferred_ciphers = (*ciphers,)
+        Transport._preferred_ciphers = (*ciphers,)  # type: ignore
     if key_algorithms:
         available_key_args = get_available_key_algorithms()
         if not key_algorithms.intersection(available_key_args):
             raise DemistoException(f'Given key algorithms are not available in server.\n'
                                    f'Key algorithms available in server are: {available_key_args}')
-        Transport._preferred_kex = (*key_algorithms,)
+        Transport._preferred_kex = (*key_algorithms,)  # type: ignore
     client = SSHClient()
     client.set_missing_host_key_policy(AutoAddPolicy())
     try:
-        client.connect(hostname=host_name, username=user_name, password=password, port=22)
+        rsa_private_key = None
+        if private_key:
+            # authenticating with private key only works for certificates which are based on PEM files.
+            # (RSA private keys)
+            rsa_private_key = paramiko.RSAKey.from_private_key(StringIO(private_key))  # type: ignore # [assignment]
+        client.connect(hostname=host_name, username=user_name, password=password, port=22, pkey=rsa_private_key)
     except NoValidConnectionsError as e:
         raise DemistoException(f'Unable to connect to port 22 on {host_name}') from e
     return client
@@ -236,12 +245,12 @@ def main() -> None:
     args = demisto.args()
     command = demisto.command()
 
-    credentials: Dict[str, Any] = params.get('credentials', {})
+    credentials: Dict[str, Any] = params.get('credentials') or {}
     user: str = credentials.get('identifier', '')
     password: str = credentials.get('password', '')
+    certificate: str = (credentials.get('credentials') or {}).get('sshkey', '')
 
     host_name: str = params.get('hostname', '')
-
     ciphers: Set[str] = set(argToList(params.get('ciphers')))
     key_algorithms: Set[str] = set(argToList(params.get('key_algorithms')))
 
@@ -253,7 +262,7 @@ def main() -> None:
                                    ' parameter value.')
     client = None
     try:
-        client = create_paramiko_ssh_client(host_name, user, password, ciphers, key_algorithms)
+        client = create_paramiko_ssh_client(host_name, user, password, ciphers, key_algorithms, certificate)
         if command == 'test-module':
             return_results('ok')
         elif command == 'ssh':

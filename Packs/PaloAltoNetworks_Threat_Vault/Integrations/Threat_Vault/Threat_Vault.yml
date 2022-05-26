@@ -8,6 +8,19 @@ configuration:
   name: api_key
   required: false
   type: 4
+- display: Source Reliability
+  name: integrationReliability
+  type: 15
+  additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: D - Not usually reliable
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -16,8 +29,8 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Use the Palo Alto Networks Threat Vault to research the latest threats (vulnerabilities/exploits, viruses, and spyware) that Palo Alto Networks next-generation firewalls can detect and prevent.
-display: Palo Alto Networks Threat Vault
+description: Deprecated. No available replacement.
+display: Palo Alto Networks Threat Vault (Deprecated)
 name: Palo Alto Networks Threat Vault
 script:
   commands:
@@ -34,68 +47,68 @@ script:
       name: signature_id
       required: false
       secret: false
-    deprecated: false
+    deprecated: true
     description: Gets the antivirus signature.
     execution: false
     name: threatvault-antivirus-signature-get
     outputs:
-      - contextPath: ThreatVault.Antivirus.active
-        description: Whether the antivirus signature is active.
-        type: Bool
-      - contextPath: ThreatVault.Antivirus.category
-        description: The category of the antivirus signature.
-        type: String
-      - contextPath: ThreatVault.Antivirus.createTime
-        description: The time the antivirus signature was created.
-        type: String
-      - contextPath: ThreatVault.Antivirus.release
-        description: The release details of the antivirus signature.
-        type: Unknown
-      - contextPath: ThreatVault.Antivirus.sha256
-        description: The sha256 hash of the antivirus signature.
-        type: String
-      - contextPath: ThreatVault.Antivirus.signatureId
-        description: The ID of the antivirus signature.
-        type: Number
-      - contextPath: ThreatVault.Antivirus.signatureName
-        description: The name of the antivirus signature.
-        type: String
+    - contextPath: ThreatVault.Antivirus.active
+      description: Whether the antivirus signature is active.
+      type: Bool
+    - contextPath: ThreatVault.Antivirus.category
+      description: The category of the antivirus signature.
+      type: String
+    - contextPath: ThreatVault.Antivirus.createTime
+      description: The time the antivirus signature was created.
+      type: String
+    - contextPath: ThreatVault.Antivirus.release
+      description: The release details of the antivirus signature.
+      type: Unknown
+    - contextPath: ThreatVault.Antivirus.sha256
+      description: The sha256 hash of the antivirus signature.
+      type: String
+    - contextPath: ThreatVault.Antivirus.signatureId
+      description: The ID of the antivirus signature.
+      type: Number
+    - contextPath: ThreatVault.Antivirus.signatureName
+      description: The name of the antivirus signature.
+      type: String
   - arguments:
     - default: true
       description: The SHA256 hash of the antivirus signature.
       isArray: true
       name: file
-      required: false
+      required: true
       secret: false
-    deprecated: false
+    deprecated: true
     description: Checks the reputation of an antivirus in Threat Vault.
     execution: false
     name: file
     outputs:
-      - contextPath: DBotScore.Vendor
-        description: The vendor used to calculate the score.
-        type: String
-      - contextPath: DBotScore.Score
-        description: The actual score.
-        type: Number
-      - contextPath: DBotScore.Type
-        description: The indicator type.
-        type: String
-      - contextPath: DBotScore.Indicator
-        description: The indicator that was tested.
-        type: String
-      - contextPath: File.MD5
-        description: The MD5 hash of the file.
-        type: String
-      - contextPath: File.SHA1
-        description: The SHA1 hash of the file.
-        type: String
-      - contextPath: File.SHA256
-        description: The SHA256 hash of the file.
-        type: String
-      - contextPath: File.Malicious.Vendor
-        description: For malicious files, the vendor that made the decision.
-        type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: File.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision.
+      type: String
   - arguments:
     - default: false
       description: The ID of the DNS signature.
@@ -103,32 +116,32 @@ script:
       name: dns_signature_id
       required: false
       secret: false
-    deprecated: false
+    deprecated: true
     description: Gets the DNS signature. For more details see the integration README.
     execution: false
     name: threatvault-dns-signature-get-by-id
     outputs:
-      - contextPath: ThreatVault.DNS.active
-        description: Whether the DNS signature is active.
-        type: Bool
-      - contextPath: ThreatVault.DNS.category
-        description: The category of the DNS signature.
-        type: String
-      - contextPath: ThreatVault.DNS.createTime
-        description: The time the DNS signature was created.
-        type: String
-      - contextPath: ThreatVault.DNS.domainName
-        description: The domain name of the DNS signature.
-        type: String
-      - contextPath: ThreatVault.DNS.release
-        description: The release details of the DNS signature.
-        type: Unknown
-      - contextPath: ThreatVault.DNS.signatureId
-        description: The ID of the DNS signature.
-        type: Number
-      - contextPath: ThreatVault.DNS.signatureName
-        description: The name of the DNS signature.
-        type: String
+    - contextPath: ThreatVault.DNS.active
+      description: Whether the DNS signature is active.
+      type: Bool
+    - contextPath: ThreatVault.DNS.category
+      description: The category of the DNS signature.
+      type: String
+    - contextPath: ThreatVault.DNS.createTime
+      description: The time the DNS signature was created.
+      type: String
+    - contextPath: ThreatVault.DNS.domainName
+      description: The domain name of the DNS signature.
+      type: String
+    - contextPath: ThreatVault.DNS.release
+      description: The release details of the DNS signature.
+      type: Unknown
+    - contextPath: ThreatVault.DNS.signatureId
+      description: The ID of the DNS signature.
+      type: Number
+    - contextPath: ThreatVault.DNS.signatureName
+      description: The name of the DNS signature.
+      type: String
   - arguments:
     - default: false
       description: ID of the antispyware signature.
@@ -136,7 +149,7 @@ script:
       name: signature_id
       required: false
       secret: false
-    deprecated: false
+    deprecated: true
     description: Gets the antispyware signature. For more details see the integration README.
     execution: false
     name: threatvault-antispyware-signature-get-by-id
@@ -181,7 +194,7 @@ script:
       name: ip
       required: false
       secret: false
-    deprecated: false
+    deprecated: true
     description: Get the IP address geolocation.
     execution: false
     name: threatvault-ip-geo-get
@@ -199,9 +212,9 @@ script:
     - default: true
       isArray: true
       name: ip
-      required: false
+      required: true
       description: IP address to query, e.g., !ip 1.1.1.1
-    deprecated: false
+    deprecated: true
     description: Check IP location.
     execution: false
     name: ip
@@ -243,7 +256,7 @@ script:
       name: to
       required: false
       secret: false
-    deprecated: false
+    deprecated: true
     description: Initiates an antivirus signature search.
     execution: false
     name: threatvault-antivirus-signature-search
@@ -279,7 +292,7 @@ script:
       name: to
       required: false
       secret: false
-    deprecated: false
+    deprecated: true
     description: Initiates a DNS signature search.
     execution: false
     name: threatvault-dns-signature-search
@@ -321,7 +334,7 @@ script:
       name: to
       required: false
       secret: false
-    deprecated: false
+    deprecated: true
     description: Initiates an antispyware signature search.
     execution: false
     name: threatvault-antispyware-signature-search
@@ -350,7 +363,7 @@ script:
       - panav
       required: true
       secret: false
-    deprecated: false
+    deprecated: true
     description: Initiates an antispyware signature search.
     execution: false
     name: threatvault-signature-search-results
@@ -384,3 +397,4 @@ script:
 tests:
 - PANW Threat Vault - Signature Search - Test
 fromversion: 5.0.0
+deprecated: true

@@ -1,0 +1,29 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "FortiSIEM"
+    ],
+    "caseInsensitive": true,
+    "cliName": "fortisiemincidentfirstseen",
+    "closeForm": false,
+    "content": true,
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_fortisiemincidentfirstseen",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "FortiSIEM Incident First Seen",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "date",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

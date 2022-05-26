@@ -11,6 +11,12 @@ For more details about the authentication used in this integration, see <a href=
 <li>User.ReadWrite.All - Application</li>
 <li>User.Read - Delegated</li>
 
+<h3>Authorize Cortex XSOAR for Azure Active Directory Users (Self deployed Azure App)</h3>
+<p>There are two different authentication methods for a self-deployed configuration: <li><a href="https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-client-creds-grant-flow"> Client Credentials flow</a></li><li><a href="https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-auth-code-flow"> Authorization Code flow</a></li> We recommend using the Client Credentials flow.</p>
+<p>In order to use the  <strong>msgraph-user-change-password</strong> command, you must configure with the Authorization Code flow.
+
+Note: When using the Authorization Code flow, make sure the user you authenticate with has the correct roles in Azure AD in order to use the command.</p>
+
 <div class="cl-preview-section">
 <h2 id="configure-microsoft-graph-user-on-demisto">Configure Azure Active Directory Users on Cortex XSOAR</h2>
 </div>
@@ -1711,3 +1717,18 @@ For more details about the authentication used in this integration, see <a href=
 <div class="cl-preview-section">
 <p>user: <a href="mailto:%22test@demistodev.onmicrosoft.com">"test@demistodev.onmicrosoft.com</a>" session has been revoked successfully</p>
 </div>
+### msgraph-user-test
+***
+Tests connectivity to Microsoft Graph User.
+
+
+#### Base Command
+
+`msgraph-user-test`
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.

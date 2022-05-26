@@ -47,6 +47,10 @@ data_test_is_id_valid = [
     (123, True),
     ('123', True),
     (123.3, False),
+    ('1,2,3', True),
+    ([1, 2, 3], True),
+    ('[1,2,3]', True),
+
 ]
 
 
@@ -109,13 +113,34 @@ def test_apply_filters(args, expected_incident_ids):
     assert [incident['id'] for incident in incidents] == expected_incident_ids
 
 
-@pytest.mark.parametrize('args,filtered_args', (({}, {}),
-                                                (dict(trimevents='0'), {}),
-                                                (dict(trimevents='1'), dict(trimevents='1')),
-                                                ))
-def test_filter_events(mocker, args, filtered_args):
+def get_incidents_mock(command, args, extract_contents=True, fail_on_error=True):
+    ids = args.get('id', '').split(',')
+    return [{'Contents': {'data': [incident for incident in EXAMPLE_INCIDENTS_RAW_RESPONSE if incident['id'] in ids]}}]
+
+
+@pytest.mark.parametrize('args,filtered_args,expected_result', [
+    ({}, {}, []),
+    (dict(trimevents='0'), {}, []),
+    (dict(trimevents='1'), dict(trimevents='1'), []),
+    ({'id': 1}, {'id': '1'}, [EXAMPLE_INCIDENTS_RAW_RESPONSE[0]]),
+    ({'id': [1, 2]}, {'id': '1,2'}, [EXAMPLE_INCIDENTS_RAW_RESPONSE[0], EXAMPLE_INCIDENTS_RAW_RESPONSE[1]]),
+    ({'id': '1,2'}, {'id': '1,2'}, [EXAMPLE_INCIDENTS_RAW_RESPONSE[0], EXAMPLE_INCIDENTS_RAW_RESPONSE[1]]),
+])
+def test_filter_events(mocker, args, filtered_args, expected_result):
+    """
+    Given:
+        - The script args.
+
+    When:
+        - Running the search_incidents function.
+
+    Then:
+        - Validating the outputs as expected.
+        - Validating the filtered args that was sent to the api is as expected.
+    """
     import SearchIncidentsV2
-    execute_mock = mocker.patch.object(SearchIncidentsV2, 'execute_command', return_value=[{'Contents': {'data': []}}])
-    SearchIncidentsV2.search_incidents(args)
+    execute_mock = mocker.patch.object(SearchIncidentsV2, 'execute_command', side_effect=get_incidents_mock)
+    _, res, _ = SearchIncidentsV2.search_incidents(args)
+    assert res == expected_result
     assert execute_mock.call_count == 1
     assert execute_mock.call_args[0][1] == filtered_args
