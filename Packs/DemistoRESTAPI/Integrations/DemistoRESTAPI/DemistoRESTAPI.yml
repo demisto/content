@@ -96,7 +96,8 @@ script:
       description: IDs of the incidents to delete
       isArray: true
     - name: fields
-      description: Comma separated list of fields to return, case sensitive. You can send "all" for debugging purposes.
+      description: 'Comma separated list of fields to return, case sensitive. Set
+        "all" for all fields. WARNING: Setting all fields may result in big results.'
       required: false
       isArray: true
       defaultValue: id,name,type,severity,status
