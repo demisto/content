@@ -1951,6 +1951,7 @@ class MsClient:
             raise Exception(f"Machine {machine_id} not found")
         return response
 
+
 ''' Commands '''
 
 
