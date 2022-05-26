@@ -190,7 +190,7 @@ If you pass multiple filtering arguments, they will be concatenated using the AN
 "low","medium","high"
  | 
 | PaloAltoNetworksXDR.Incident.low_severity_alert_count | String | Number of alerts with the severity LOW. | 
-| PaloAltoNetworksXDR.Incident.status | String | Current status of the incident. Valid values are: "new","under_investigation","resolved_known_issue","resolved_duplicate","resolved_false_positive","resolved_true_positive","resolved_security_testing" or "resolved_other".
+| PaloAltoNetworksXDR.Incident.status | String | Current status of the incident. Valid values are: "new","under_investigation","resolved_known_issue","resolved_duplicate","resolved_false_positive","resolved_true_positive","resolved_security_testing" or "resolved_other". |
 | PaloAltoNetworksXDR.Incident.starred | Boolean | Incident starred. |
 | PaloAltoNetworksXDR.Incident.description | String | Dynamic calculated description of the incident. | 
 | PaloAltoNetworksXDR.Incident.resolve_comment | String | Comments entered by the user when the incident was resolved. | 
