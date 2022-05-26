@@ -2,7 +2,7 @@ contentitemexportablefields:
   contentitemfields:
     propagationLabels:
     - all
-description: This playbook uses the Microsoft Defender For Endpoint Advanced Hunting feature. The hunt is executed based on the provided inputs.
+description: This playbook uses the Microsoft Defender For Endpoint Advanced Hunting feature based on the provided inputs.
 id: MDE - Host Advanced Hunting
 inputs:
 - description: A comma-separated list of file SHA1 hashes to hunt.
