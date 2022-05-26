@@ -509,7 +509,7 @@ def enrich_dbot_and_display_url_analysis_results(intezer_result, intezer_api):
         indicators: Dict[str, List[str]] = {}
         for indicator in intezer_result['indicators']:
             if indicator['classification'] not in indicators:
-                indicators['classification'] = []
+                indicators[indicator['classification']] = []
             indicators[indicator['classification']].append(indicator['text'])
         indicators_text = [
             get_indicator_text('malicious', indicators),
