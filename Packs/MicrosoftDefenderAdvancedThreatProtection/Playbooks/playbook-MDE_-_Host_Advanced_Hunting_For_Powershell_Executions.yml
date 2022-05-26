@@ -2,10 +2,10 @@ contentitemexportablefields:
   contentitemfields:
     propagationLabels:
     - all
-description: This playbook will use the Microsoft Defender For Endpoint feature - Advanced Hunting - and will hunt for host PowerShell executions.
+description: This playbook uses the Microsoft Defender For Endpoint Advanced Hunting feature to hunt for host PowerShell executions.
 id: MDE - Host Advanced Hunting For Powershell Executions
 inputs:
-- description: Enter IP to hunt on. Can be a comma-separated list.
+- description: A comma-separated list of IPs to hunt.
   key: IP
   playbookInputQuery:
   required: false
@@ -15,7 +15,7 @@ inputs:
       root: incident
       transformers:
       - operator: uniq
-- description: Enter a hostname to hunt on. Can be a comma-separated list.
+- description: A comma-separated list of host names to hunt.
   key: DeviceName
   playbookInputQuery:
   required: false
@@ -25,7 +25,7 @@ inputs:
       root: incident
       transformers:
       - operator: uniq
-- description: Enter file name to hunt on. Can be a comma-separated list.
+- description: A comma-separated list of file names to hunt.
   key: FileName
   playbookInputQuery:
   required: false
@@ -35,7 +35,7 @@ inputs:
       root: incident
       transformers:
       - operator: uniq
-- description: Enter device ID to hunt on. Can be a comma-separated list.
+- description: A comma-separated list of device IDs to hunt.
   key: DeviceID
   playbookInputQuery:
   required: false
@@ -45,7 +45,7 @@ inputs:
       root: incident
       transformers:
       - operator: uniq
-- description: Enter file MD5 to hunt on. Can be a comma-separated list.
+- description: A comma-separated list of file MD5 hashes to hunt.
   key: FileMd5
   playbookInputQuery:
   required: false
@@ -55,7 +55,7 @@ inputs:
       root: incident
       transformers:
       - operator: uniq
-- description: Enter file SHA256 to hunt on. Can be a comma-separated list.
+- description: A comma-separated list of file SHA256 hashes to hunt.
   key: FileSha256
   playbookInputQuery:
   required: false
@@ -65,7 +65,7 @@ inputs:
       root: incident
       transformers:
       - operator: uniq
-- description: Enter file SHA1 to hunt on. Can be a comma-separated list.
+- description: A comma-separated list of file SHA1 hashes to hunt.
   key: FileSha1
   playbookInputQuery:
   required: false
@@ -253,7 +253,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: Get a collection of machines related to a given file SHA1 hash.
+      description: Gets a collection of machines related to a given file SHA1 hash.
       id: 18b15d86-3087-44c3-8b15-8b8a606fc4d7
       iscommand: true
       name: List All Related Endpoints for this file
@@ -303,7 +303,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: Process investigation. By selecting a “query_purpose” argument, a designated query template will be used.
+      description: Are there Powershell unsigned executions? By selecting a “query_purpose” argument, a designated query template will be used.
       id: 0a74529c-7aa3-4021-8cfe-a2b7e9a7d070
       iscommand: true
       name: Check for any unsigned executions by Powershell?
@@ -358,7 +358,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: Process investigation. By selecting a “query_purpose” argument, a designated query template will be used.
+      description: Are there Powershell executions? By selecting a “query_purpose” argument, a designated query template will be used.
       id: 78fa6e53-39a8-4d0e-889b-6296c84a22a5
       iscommand: true
       name: Check for any Powershell Execution
@@ -721,7 +721,16 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: "This playbook takes the command line from the alert and performs the following actions:\n- Checks for base64 string and decodes if exists\n- Extracts and enriches indicators from the command line\n- Checks specific arguments for malicious usage \n\nAt the end of the playbook, it sets a possible verdict for the command line, based on the finding:\n1. Indicators found in the command line\n2. Found AMSI techniques\n3. Found suspicious parameters\n4. Usage of malicious tools\n5. Indication of network activity"
+      description: "This playbook takes the command line from the alert and performs the following actions:\n
+      - Checks for a base64 string and decodes if it exists.\n
+      - Extracts and enriches indicators from the command line.\n
+      - Checks specific arguments for malicious usage. \n\n
+      At the end of the playbook, it sets a possible verdict for the command line based on the finding:\n
+      1. Indicators found in the command line\n
+      2. Found AMSI techniques\n
+      3. Found suspicious parameters\n
+      4. Usage of malicious tools\n
+      5. Indication of network activity"
       id: 72f197cb-9a5a-4ed5-8b11-4e9885a3d3c2
       iscommand: false
       name: Command-Line Analysis
