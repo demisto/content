@@ -5,7 +5,7 @@ import requests_mock
 
 from CommonServerPython import *
 from MicrosoftGraphMail import MsGraphClient, build_mail_object, assert_pages, build_folders_path, \
-    add_second_to_str_date, list_mails_command, item_result_creator, create_attachment, reply_email_command, \
+    list_mails_command, item_result_creator, create_attachment, reply_email_command, \
     send_email_command, list_attachments_command, main
 from MicrosoftApiModule import MicrosoftClient
 import demistomock as demisto
@@ -335,11 +335,6 @@ def test_fetch_incidents_detect_initial(mocker, client, emails_data):
     mocker_folder_by_path.assert_called_once_with('dummy@mailbox.com', "Phishing")
 
 
-def test_add_second_to_str_date():
-    assert add_second_to_str_date("2019-11-12T15:00:00Z") == "2019-11-12T15:00:01Z"
-    assert add_second_to_str_date("2019-11-12T15:00:00Z", 10) == "2019-11-12T15:00:10Z"
-
-
 @pytest.mark.parametrize('client', [oproxy_client(), self_deployed_client()])
 def test_parse_email_as_label(client):
     assert client._parse_email_as_labels({'ID': 'dummy_id'}) == [{'type': 'Email/ID', 'value': 'dummy_id'}]
@@ -657,3 +652,83 @@ def test_server_to_endpoint(server_url, expected_endpoint):
     from MicrosoftApiModule import GRAPH_BASE_ENDPOINTS
 
     assert GRAPH_BASE_ENDPOINTS[server_url] == expected_endpoint
+
+
+def test_fetch_last_emails__with_exclude(mocker):
+    """
+    Given:
+        - Last fetch fetched until email 2
+        - Next fetch will fetch 5 emails
+        - Exclusion list contains 2/5 emails ids
+        - fetch limit is set to 2
+    When:
+        - Calling fetch_incidents
+    Then:
+        - Fetch 2 emails
+        - Save previous 2 fetched mails + 2 new mails
+        - Fetch emails after exclude id
+        - Don't fetch emails after limit
+    """
+    emails = {'value': [
+        {'receivedDateTime': '1', 'id': '1'},
+        {'receivedDateTime': '2', 'id': '2'},
+        {'receivedDateTime': '4', 'id': '3'},
+        {'receivedDateTime': '4', 'id': '4'},
+        {'receivedDateTime': '4', 'id': '5'},
+    ]}
+    client = oproxy_client()
+    client._emails_fetch_limit = 2
+    mocker.patch.object(client.ms_client, 'http_request', return_value=emails)
+    fetched_emails, ids = client._fetch_last_emails('', last_fetch='2', exclude_ids=['1', '2'])
+    assert len(fetched_emails) == 2
+    assert ids == ['3', '4']
+    assert fetched_emails[0] == emails['value'][2]
+    assert fetched_emails[1] == emails['value'][3]
+
+
+def test_fetch_last_emails__no_exclude(mocker):
+    """
+    Given:
+        - No previous last fetch
+        - Next fetch will fetch 1 email
+        - fetch limit is set to 2
+    When:
+        - Calling fetch_incidents
+    Then:
+        - Fetch 1 email
+        - Save mail in exclusion
+    """
+    emails = {'value': [
+        {'receivedDateTime': '1', 'id': '1'},
+    ]}
+    client = oproxy_client()
+    client._emails_fetch_limit = 2
+    mocker.patch.object(client.ms_client, 'http_request', return_value=emails)
+    fetched_emails, ids = client._fetch_last_emails('', last_fetch='0', exclude_ids=[])
+    assert len(fetched_emails) == 1
+    assert ids == ['1']
+    assert fetched_emails[0] == emails['value'][0]
+
+
+def test_fetch_last_emails__all_mails_in_exclude(mocker):
+    """
+    Given:
+        - Last fetch fetched until email 2
+        - Next fetch will fetch 2 emails
+        - Exclusion list contains 2/2 emails ids
+    When:
+        - Calling fetch_incidents
+    Then:
+        - Fetch 0 emails
+        - Save previous 2 fetched mails
+    """
+    emails = {'value': [
+        {'receivedDateTime': '1', 'id': '1'},
+        {'receivedDateTime': '2', 'id': '2'},
+    ]}
+    client = oproxy_client()
+    client._emails_fetch_limit = 2
+    mocker.patch.object(client.ms_client, 'http_request', return_value=emails)
+    fetched_emails, ids = client._fetch_last_emails('', last_fetch='2', exclude_ids=['1', '2'])
+    assert len(fetched_emails) == 0
+    assert ids == ['1', '2']
