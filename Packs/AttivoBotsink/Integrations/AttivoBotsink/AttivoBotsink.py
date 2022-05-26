@@ -4,7 +4,7 @@ import os
 import socket
 import time
 from datetime import datetime
-
+import sys
 import requests
 import urllib3
 
@@ -338,7 +338,7 @@ if demisto.command() == 'fetch-incidents':
         event_date = event['timeStamp']
         date_obj = datetime.strptime(event_date, date_pattern)
         event_timestamp = int((date_obj - datetime(1970, 1, 1)).total_seconds()) * 1000 + date_obj.microsecond / 1000
-        new_last_run = max(new_last_run, event_timestamp)
+        new_last_run = max(new_last_run, event_timestamp)  # type: ignore[assignment]
 
         demisto_severity = attivo_api.convert_to_demisto_severity(event['alertLevel'])
         event_type = event['details']['Attack Phase']
