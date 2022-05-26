@@ -455,6 +455,7 @@ def build_command_result(value, score, md, attack_obj):
     )
     attack_context = Common.AttackPattern(
         stix_id=attack_obj.get('stixid'),
+        value=value,
         kill_chain_phases=attack_obj.get('killchainphases'),
         first_seen_by_source=attack_obj.get('firstseenbysource'),
         description=attack_obj.get('description'),
@@ -528,7 +529,8 @@ def attack_pattern_reputation_command(client, args):
         attack_obj = map_fields_by_type('Attack Pattern', json.loads(str(mitre_data)))
         custom_fields = attack_obj or {}
         score = INDICATOR_TYPE_TO_SCORE.get('Attack Pattern')
-        md = f"## {[value]}: {attack_obj.get('mitreid')}\n {custom_fields.get('description', '')}"
+        md = f"## MITRE ATTACK \n ## Name: {value} - ID: " \
+             f"{attack_obj.get('mitreid')} \n {custom_fields.get('description', '')}"
         command_results.append(build_command_result(value, score, md, attack_obj))
 
     return command_results
