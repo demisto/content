@@ -5153,12 +5153,12 @@ script:
       name: machine_id
       required: true
     - description: A comment to associate with the action.
-        name: comment
-        required: true
-      description: Offboard a machine from defender.
-      execution: true
-      name: microsoft-atp-offboard-machine
-      outputs:
+      name: comment
+      required: true
+    description: Offboard a machine from defender.
+    execution: true
+    name: microsoft-atp-offboard-machine
+    outputs:
       - contextPath: MicrosoftATP.MachineAction.ID
         description: The machine action ID.
         type: String
