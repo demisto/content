@@ -3,7 +3,7 @@
     "feed": false,
     "id": "Microsoft Defender For Endpoint Mapper",
     "mapping": {
-		"Malware": {
+		"Malware Investigation and Response": {
 			"dontMapEventToLabels": false,
 			"internalMapping": {
 				"Additional Data": {
