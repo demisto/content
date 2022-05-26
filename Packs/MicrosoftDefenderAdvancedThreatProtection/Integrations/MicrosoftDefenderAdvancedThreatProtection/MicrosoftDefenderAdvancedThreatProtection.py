@@ -1921,7 +1921,7 @@ class MsClient:
         response = self.ms_client.http_request(method='POST', url_suffix=cmd_url, json_data=request_body)
         return response
 
-     def get_machine_users(self, machine_id):
+    def get_machine_users(self, machine_id):
         """Retrieves a collection of users related to a given machine ID (logon users).
         https://docs.microsoft.com/en-us/microsoft-365/security/defender-endpoint/get-machine-log-on-users?view=o365-worldwide
         Args:
@@ -1950,7 +1950,7 @@ class MsClient:
         except Exception:
             raise Exception(f"Machine {machine_id} not found")
         return response
-        
+
 ''' Commands '''
 
 
