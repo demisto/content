@@ -3,6 +3,7 @@ import io
 import requests_mock
 from freezegun import freeze_time
 import demistomock as demisto
+from datetime import datetime, timedelta
 
 
 DEMISTO_PARAMS = {
@@ -18,6 +19,7 @@ DEMISTO_PARAMS = {
 URL = 'https://your.domain/rest/api/3/auditing/record'
 FIRST_REQUESTS_PARAMS = 'from=2022-04-11T00:00:00.000000&limit=1000&offset=0'
 SECOND_REQUESTS_PARAMS = 'from=2022-04-11T00:00:00.000000&limit=1000&offset=1000'
+DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%S.%f"
 
 
 def util_load_json(path):
@@ -26,9 +28,8 @@ def util_load_json(path):
 
 
 def calculate_next_run(time):
-    next_time = time.removesuffix('+0000')
-    next_time_with_delta = next_time[:-1] + str(int(next_time[-1]) + 1)
-    return next_time_with_delta
+    last_datetime = datetime.strptime(time.removesuffix('+0000'), DATETIME_FORMAT) + timedelta(milliseconds=1)
+    return datetime.strftime(last_datetime, DATETIME_FORMAT)
 
 
 @freeze_time('2022-04-14T00:00:00Z')
