@@ -225,10 +225,18 @@ def clean_non_existing_packs(index_folder_path: str, private_packs: list, storag
     #     return True
 
     if marketplace == 'xsoar':
-        public_packs_names = {pack_name for pack_name, pack_data in
-                              id_set.get('Packs', {}).items() if 'xsoar' in pack_data.get('marketplaces', [])}
+        # public_packs_names = {pack_name for pack_name, pack_data in
+        #                       id_set.get('Packs', {}).items() if 'xsoar' in pack_data.get('marketplaces', [])}
+        public_packs_names = []
+        for pack_name, pack_data in id_set.get('Packs', {}).items():
+            logging.info(f"Found the following pack: {pack_name} is supported in {pack_data.get('marketplaces', [])}")
+            if 'xsoar' in pack_data.get('marketplaces', []):
+                public_packs_names.append(pack_name)
+
+        logging.info(f"Found the following valid packs: {public_packs_names}")
+
         private_packs_names = {p.get('id', '') for p in private_packs}
-        valid_packs_names = public_packs_names.union(private_packs_names)
+        valid_packs_names = set(public_packs_names).union(private_packs_names)
         # search for invalid packs folder inside index
         invalid_packs_names = {(entry.name, entry.path) for entry in os.scandir(index_folder_path) if
                                entry.name not in valid_packs_names and entry.is_dir()}
