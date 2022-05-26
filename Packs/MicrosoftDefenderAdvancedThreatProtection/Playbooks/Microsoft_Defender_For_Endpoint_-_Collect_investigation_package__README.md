@@ -6,18 +6,17 @@ The playbook receives information regarding the target devices (by hostnames, IP
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* GenericPolling
+This playbook does not use any sub-playbooks.
 
 ### Integrations
-* MicrosoftDefenderAdvancedThreatProtection
+* Microsoft Defender Advanced Threat Protection
 
 ### Scripts
-* http
+This playbook does not use any scripts.
 
 ### Commands
-* microsoft-atp-get-investigation-package-sas-uri
-* microsoft-atp-collect-investigation-package
 * endpoint
+* microsoft-atp-request-and-download-investigation-package
 
 ## Playbook Inputs
 ---
@@ -31,8 +30,11 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ## Playbook Outputs
 ---
-There are no outputs for this playbook.
+
+| **Path** | **Description** | **Type** |
+| --- | --- | --- |
+| MicrosoftATP.MachineAction | Microsoft Defender For Endpoint machine action details. | unknown |
 
 ## Playbook Image
 ---
-![Microsoft Security Defender For Endpoint - Collect investigation package ](../doc_files/Microsoft_Defender_For_Endpoint_-_Collect_investigation_package.png)
+![Microsoft Defender For Endpoint - Collect investigation package](../doc_files/Microsoft_Defender_For_Endpoint_-_Collect_investigation_package.png)
