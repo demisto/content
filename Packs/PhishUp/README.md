@@ -27,3 +27,42 @@ classified into a category based on various information. Our real time URL class
 provides latest category of URL’s.
 - <b>Image Screenshot APIs:</b> We enable you to detect famous object in screenshot with deep learning
 power.
+
+
+PRODUCT FEATURES
+- Logo detection
+- Intelligence Tools
+- Reporting
+- Detection of scams such as phishing, counterfeit url.
+- Real-Time Precise Analysis
+- Protect targeted attacks
+- Zero-Day Phishing
+- Email Gateway Integration
+- Detect fake sites
+- Quick response and fix
+- Protect your critical communications
+- Examine email sender reputation and analyze email content.
+- Real-time API for URL crawls and DPI filtering services
+
+
+### FACILITIES and BENEFITS
+
+The opportunities we offer you as Phishup.co, an advanced threat detection technology supported by
+artificial intelligence, that protects your business from known and unknown (zero-day) threats,
+- Uses thousands of feature vectors gathered from recent attack trends and starts tracking any
+domain name from the moment it is purchased.
+- Uses advanced real-time machine learning and image processing to detect malicious URLs at the
+millisecond level.
+- It aims to protect you and your employees from fake URLs using artificial intelligence-based
+protection. So you can easily see if the URL is a phishing or a clean URL.
+- Thanks to its batch query feature, it allows you to query in bulk instead of scanning URLs one by
+one.
+- Provides 24/7 real-time protection from threats that target you, or zero-day attacks.
+- Allows you to instantly detect fake web pages and domain names with our fake URL service.
+- Allows you to detect famous object in screenshot with deep learning power.
+- Combines machine learning, heuristics and human analytics to provide real-time visibility with low
+false positives.
+- Cost-effective application options
+- Predictive detection recognizes malicious sites before users are exposed
+- Classification triggered by each new site visited
+- Analysis of site dynamics and user behavior to determine crawl depth

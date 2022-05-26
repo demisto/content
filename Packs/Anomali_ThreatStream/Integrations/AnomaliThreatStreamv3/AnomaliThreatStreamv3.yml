@@ -1639,7 +1639,7 @@ script:
     - contextPath: URL.ThreatTypes
       description: Threat types associated with the url.
       type: Unknown
-  dockerimage: demisto/py3-tools:0.0.1.26536
+  dockerimage: demisto/py3-tools:0.0.1.29493
   feed: false
   isfetch: false
   longRunning: false

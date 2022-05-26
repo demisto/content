@@ -207,6 +207,10 @@
                     "complex": null,
                     "simple": "resolve_comment"
                 },
+                "XDR Starred": {
+                    "complex": null,
+                    "simple": "starred"
+                },
                 "XDR Status": {
                     "complex": null,
                     "simple": "status"
@@ -422,6 +426,10 @@
                 "XDR Resolve Comment": {
                     "complex": null,
                     "simple": "resolve_comment"
+                },
+                "XDR Starred": {
+                    "complex": null,
+                    "simple": "starred"
                 },
                 "XDR Status": {
                     "complex": null,
