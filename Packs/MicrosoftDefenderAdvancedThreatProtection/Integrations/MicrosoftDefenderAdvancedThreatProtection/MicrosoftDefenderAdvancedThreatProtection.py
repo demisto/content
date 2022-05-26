@@ -1921,7 +1921,36 @@ class MsClient:
         response = self.ms_client.http_request(method='POST', url_suffix=cmd_url, json_data=request_body)
         return response
 
+     def get_machine_users(self, machine_id):
+        """Retrieves a collection of users related to a given machine ID (logon users).
+        https://docs.microsoft.com/en-us/microsoft-365/security/defender-endpoint/get-machine-log-on-users?view=o365-worldwide
+        Args:
+            machine_id (str): The machine ID
+        Returns:
+            dict. User entities
+        """
+        cmd_url = f"/machines/{machine_id}/logonusers"
+        try:
+            response = self.ms_client.http_request(method="GET", url_suffix=cmd_url)
+        except Exception:
+            raise Exception(f"Machine {machine_id} was not found")
+        return response
 
+    def get_machine_alerts(self, machine_id):
+        """Retrieves a collection of alerts related to a given machine ID.
+        https://docs.microsoft.com/en-us/microsoft-365/security/defender-endpoint/get-machine-related-alerts?view=o365-worldwide
+        Args:
+            machine_id (str): The machine ID
+        Returns:
+            dict. Alert entities
+        """
+        cmd_url = f"/machines/{machine_id}/alerts"
+        try:
+            response = self.ms_client.http_request(method="GET", url_suffix=cmd_url)
+        except Exception:
+            raise Exception(f"Machine {machine_id} not found")
+        return response
+        
 ''' Commands '''
 
 
