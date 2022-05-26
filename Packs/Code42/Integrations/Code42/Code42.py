@@ -694,9 +694,6 @@ def _map_obj_to_context(obj, context_mapper):
     return {v: obj.get(k) for k, v in context_mapper.items() if obj.get(k)}
 
 
-def create_command_error_message(cmd, ex):
-    return "Failed to execute command {0} command. Error: {1}".format(cmd, str(ex))
-
 
 """Commands"""
 
@@ -1146,12 +1143,7 @@ def download_file_command(client, args):
 
 """Fetching"""
 
-
-def _create_incident_from_alert_details(details):
-    return {"name": "Code42 - {}".format(details.get("name")), "occurred": details.get("createdAt")}
-
-
-def _stringify_lists_if_needed(event):
+def _process_event_from_observation(event):
     # We need to convert certain fields to a stringified list else React.JS will throw an error
     shared_with = event.get("sharedWith")
     private_ip_addresses = event.get("privateIpAddresses")
@@ -1161,10 +1153,6 @@ def _stringify_lists_if_needed(event):
     if private_ip_addresses:
         event["privateIpAddresses"] = str(private_ip_addresses)
     return event
-
-
-def _process_event_from_observation(event):
-    return _stringify_lists_if_needed(event)
 
 
 class Code42SecurityIncidentFetcher(object):
@@ -1229,7 +1217,7 @@ class Code42SecurityIncidentFetcher(object):
 
     def _create_incident_from_alert(self, alert):
         details = self._client.get_alert_details(alert.get("id"))
-        incident = _create_incident_from_alert_details(details)
+        incident = {"name": "Code42 - {}".format(details.get("name")), "occurred": details.get("createdAt")}
         if self._include_files:
             details = self._relate_files_to_alert(details)
         incident["rawJSON"] = json.dumps(details)
@@ -1287,38 +1275,6 @@ def test_module(client):
         )
 
 
-def get_command_map():
-    return {
-        "code42-alert-get": alert_get_command,
-        "code42-alert-resolve": alert_resolve_command,
-        "code42-securitydata-search": securitydata_search_command,
-        "code42-departingemployee-add": departingemployee_add_command,
-        "code42-departingemployee-remove": departingemployee_remove_command,
-        "code42-departingemployee-get-all": departingemployee_get_all_command,
-        "code42-departingemployee-get": departingemployee_get_command,
-        "code42-highriskemployee-add": highriskemployee_add_command,
-        "code42-highriskemployee-remove": highriskemployee_remove_command,
-        "code42-highriskemployee-get-all": highriskemployee_get_all_command,
-        "code42-highriskemployee-add-risk-tags": highriskemployee_add_risk_tags_command,
-        "code42-highriskemployee-remove-risk-tags": highriskemployee_remove_risk_tags_command,
-        "code42-highriskemployee-get": highriskemployee_get_command,
-        "code42-user-create": user_create_command,
-        "code42-user-block": user_block_command,
-        "code42-user-unblock": user_unblock_command,
-        "code42-user-deactivate": user_deactivate_command,
-        "code42-user-reactivate": user_reactivate_command,
-        "code42-legalhold-add-user": legal_hold_add_user_command,
-        "code42-legalhold-remove-user": legal_hold_remove_user_command,
-        "code42-download-file": download_file_command,
-    }
-
-
-def handle_test_command(client):
-    # This is the call made when pressing the integration Test button.
-    result = test_module(client)
-    demisto.results(result)
-
-
 def handle_fetch_command(client):
     integration_context = demisto.getIntegrationContext()
     # Set and define the fetch incidents command to run after activated via integration settings.
@@ -1346,7 +1302,8 @@ def run_command(command):
         for result in results:
             return_results(result)
     except Exception as e:
-        return_error(create_command_error_message(demisto.command(), e))
+        msg = "Failed to execute command {0} command. Error: {1}".format(demisto.command(), e)
+        return_error(msg)
 
 
 def create_client():
@@ -1366,11 +1323,39 @@ def create_client():
 
 def main():
     client = create_client()
-    commands = get_command_map()
     command_key = demisto.command()
+    # switch case
+    commands = {
+        "code42-alert-get": alert_get_command,
+        "code42-alert-resolve": alert_resolve_command,
+        "code42-securitydata-search": securitydata_search_command,
+        "code42-departingemployee-add": departingemployee_add_command,
+        "code42-departingemployee-remove": departingemployee_remove_command,
+        "code42-departingemployee-get-all": departingemployee_get_all_command,
+        "code42-departingemployee-get": departingemployee_get_command,
+        "code42-highriskemployee-add": highriskemployee_add_command,
+        "code42-highriskemployee-remove": highriskemployee_remove_command,
+        "code42-highriskemployee-get-all": highriskemployee_get_all_command,
+        "code42-highriskemployee-add-risk-tags": highriskemployee_add_risk_tags_command,
+        "code42-highriskemployee-remove-risk-tags": highriskemployee_remove_risk_tags_command,
+        "code42-highriskemployee-get": highriskemployee_get_command,
+        "code42-user-create": user_create_command,
+        "code42-user-block": user_block_command,
+        "code42-user-unblock": user_unblock_command,
+        "code42-user-deactivate": user_deactivate_command,
+        "code42-user-reactivate": user_reactivate_command,
+        "code42-legalhold-add-user": legal_hold_add_user_command,
+        "code42-legalhold-remove-user": legal_hold_remove_user_command,
+        "code42-download-file": download_file_command,
+        "code42-watchlists-list": list_watchlists_command,
+        "code42-watchlists-list-included-users": list_watchlists_included_users,
+        "code42-watchlists-add-user": add_user_to_watchlist_command,
+        "code42-watchlists-remove-user": remove_user_from_watchlist_command,
+    }
     LOG("Command being called is {0}.".format(command_key))
     if command_key == "test-module":
-        handle_test_command(client)
+        result = test_module(client)
+        demisto.results(result)
     elif command_key == "fetch-incidents":
         handle_fetch_command(client)
     elif command_key in commands:
