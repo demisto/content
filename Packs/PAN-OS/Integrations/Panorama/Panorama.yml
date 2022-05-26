@@ -8254,7 +8254,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: String to filter to only show specific hostnames or serial numbers.
+      description: Serial number of device from which to fetch device-state
       isArray: false
       name: target
       required: true
