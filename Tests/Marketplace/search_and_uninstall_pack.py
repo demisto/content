@@ -100,7 +100,7 @@ def reset_base_pack_version(client: demisto_client):
 
 
     """
-    host = client.api_client.configuration.host.replace('api-', '')
+    host = client.api_client.configuration.host.replace('https://api-', 'https://')
     try:
         # make the search request
         response_data, status_code, _ = demisto_client.generic_request_func(client,
