@@ -66,7 +66,7 @@ script:
     name: alibaba-get-events
     arguments:
     - name: from
-      description: 'The date after which to search for logs in seconds Example: 1652617222'
+      description: The date after which to search for logs in ISO format. For example, 2020-12-24T00:00:00.
       required: false
       isArray: false
     - name: limit
