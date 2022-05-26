@@ -270,7 +270,7 @@ upload-packs-to-marketplace:
 upload-packs-to-marketplace-v2:
   tags:
     - gke
-  needs: ["run-validations-upload-flow", "run-unittests-and-lint-upload-flow", "prepare-testing-bucket-mpv2-upload-flow"]
+  needs: ["run-validations-upload-flow", "run-unittests-and-lint-upload-flow", "prepare-testing-bucket-mpv2-upload-flow", "install-packs-in-xsiam-master"]
   stage: upload-to-marketplace
   artifacts:
     expire_in: 48 hrs
