@@ -1,4 +1,4 @@
-name: OracleDBRHELEventCollector
-id: OracleDBRHELEventCollector
+name: OracleDBRHELEventCollectorSyslog
+id: OracleDBRHELEventCollectorSyslog
 fromversion: 3.3.0
 rules: ''

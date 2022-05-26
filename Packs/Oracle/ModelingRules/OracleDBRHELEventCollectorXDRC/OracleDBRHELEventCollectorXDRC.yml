@@ -1,4 +1,4 @@
-name: OracleDBRHELEventCollector
-id: OracleDBRHELEventCollector
+name: OracleDBRHELEventCollectorXDRC
+id: OracleDBRHELEventCollectorXDRC
 fromversion: 3.3.0
 rules: ''

@@ -1,24 +1,54 @@
-[MODEL: dataset=oracle_db_raw, model=Audit, content_id=***, version=***]
+[MODEL: dataset=oracle_db_rhel_raw, model=Audit, content_id=***, version=***]
 | filter ACTION_NAME in (""AUDIT OBJECT"", ""NOAUDIT OBJECT"", ""CREATE USER"", ""CREATE ROLE"", ""DROP USER"", ""DROP ROLE"", ""SET ROLE"", ""SESSION REC"", ""SYSTEM AUDIT"", ""SYSTEM NOAUDIT"", ""AUDIT DEFAULT"", ""NOAUDIT DEFAULT"", ""SYSTEM GRANT"", ""SYSTEM REVOKE"", ""GRANT ROLE"", ""REVOKE ROLE"")
 | alter XDM.Audit.TriggeredBy.identity.name = OS_USERNAME,
 XDM.Audit.event_timestamp = EVENT_TIMESTAMP,
 XDM.Audit.operation_type = ACTION_NAME,
 XDM.Audit.reason = SQL_TEXT;
 
-[MODEL: dataset=oracle_db_raw, model=Auth, content_id=***, version=***]
-| filter ACTION_NAME in (""ALTER SESSION"",""ALTER USER"",""LOGON"",""LOGOFF"",""LOGOFF BY CLEANUP"")
-| alter XDM.Auth.session_id = SESSIONID,
-XDM.Auth.Client.user.username = OS_USERNAME,
-XDM.Auth.ntlm.rsp_hostname = USERHOST,
-XDM.Auth.logon.type = AUTHENTICATION_TYPE,
-XDM.Auth.Client.application.name = CLIENT_PROGRAM_NAME,
-XDM.Auth.event_timestamp = EVENT_TIMESTAMP,
-XDM.Auth.reason = ACTION_NAME;
+[MODEL: dataset=""Oracle"", model=""Auth"", version=0.7]
+| filter _log_source_file_name ~= ""secure""
 
-[MODEL: dataset=oracle_db_raw, model=Database, content_id=***, version=***]
-| filter ACTION_NAME in (""CREATE TABLE"",""INSERT"",""SELECT"",""CREATE CLUSTER"",""ALTER CLUSTER"",""UPDATE"",""DELETE"",""DROP CLUSTER"",""CREATE INDEX"",""DROP INDEX"",""ALTER INDEX"",""DROP TABLE"",""CREATE SEQUENCE"",""ALTER SEQUENCE"",""ALTER TABLE"",""DROP SEQUENCE"",""GRANT OBJECT"",""REVOKE OBJECT"",""CREATE SYNONYM"",""DROP SYNONYM"",""CREATE VIEW"",""DROP VIEW"",""VALIDATE INDEX"",""CREATE PROCEDURE"",""ALTER PROCEDURE"",""LOCK"",""NO-OP"",""RENAME"",""COMMENT"",""CREATE DATABASE LINK"",""DROP DATABASE LINK"",""CREATE DATABASE"",""ALTER DATABASE"",""CREATE ROLLBACK SEG"",""ALTER ROLLBACK SEG"",""DROP ROLLBACK SEG"",""CREATE TABLESPACE"",""ALTER TABLESPACE"",""DROP TABLESPACE"",""COMMIT"",""ROLLBACK"",""SAVEPOINT"",""PL/SQL EXECUTE"",""SET TRANSACTION"",""ALTER SYSTEM"",""EXPLAIN"",""CREATE SCHEMA"",""CREATE CONTROL FILE"",""CREATE TRIGGER"",""ALTER TRIGGER"",""DROP TRIGGER"",""ANALYZE TABLE"",""ANALYZE INDEX"",""ANALYZE CLUSTER"",""CREATE PROFILE"",""DROP PROFILE"",""ALTER PROFILE"",""DROP PROCEDURE"",""ALTER RESOURCE COST"",""CREATE MATERIALIZED VIEW LOG"",""ALTER MATERIALIZED VIEW LOG"",""DROP MATERIALIZED VIEW LOG"",""CREATE MATERIALIZED VIEW"",""ALTER MATERIALIZED VIEW"",""DROP MATERIALIZED VIEW"",""CREATE TYPE"",""DROP TYPE"",""ALTER ROLE"",""ALTER TYPE"",""CREATE TYPE BODY"",""ALTER TYPE BODY"",""DROP TYPE BODY"",""DROP LIBRARY"",""TRUNCATE TABLE"",""TRUNCATE CLUSTER"",""CREATE FUNCTION"",""ALTER FUNCTION"",""DROP FUNCTION"",""CREATE PACKAGE"",""ALTER PACKAGE"",""DROP PACKAGE"",""CREATE PACKAGE BODY"",""ALTER PACKAGE BODY"",""DROP PACKAGE BODY"",""CREATE PUBLIC SYNONYM"",""DROP PUBLIC SYNONYM"",""CREATE PUBLIC DATABASE LINK"",""DROP PUBLIC DATABASE LINK"",""EXECUTE PROCEDURE"",""USER COMMENT"",""ENABLE TRIGGER"",""DISABLE TRIGGER"",""ENABLE ALL TRIGGERS"",""DISABLE ALL TRIGGERS"",""NETWORK ERROR"",""EXECUTE TYPE"",""CREATE DIRECTORY"",""DROP DIRECTORY"",""CREATE LIBRARY"",""CREATE JAVA"",""ALTER JAVA"",""DROP JAVA"",""CREATE OPERATOR"",""CREATE INDEXTYPE"",""DROP INDEXTYPE"",""DROP OPERATOR"",""ASSOCIATE STATISTICS"",""DISASSOCIATE STATISTICS"",""CALL METHOD"",""CREATE SUMMARY"",""ALTER SUMMARY"",""DROP SUMMARY"",""CREATE DIMENSION"",""ALTER DIMENSION"",""DROP DIMENSION"",""CREATE CONTEXT"",""DROP CONTEXT"",""ALTER OUTLINE"",""CREATE OUTLINE"",""DROP OUTLINE"",""UPDATE INDEXES"",""ALTER OPERATOR"")
-| alter XDM.Database.connection_id = SESSIONID,
-XDM.Database.Client.user.username = OS_USERNAME,
-XDM.Database.time = XDM.Database.event_timestamp,
-XDM.Database.operation = ACTION_NAME,
-XDM.Database.statement = SQL_TEXT;
+| alter timestamp = arrayindex(regextract(_raw_log , ""\w+\s\d{1,2}\s\d{2}(?::\d{2}){2}""), 0)
+| alter hostname =  arrayindex(regextract(_raw_log , ""[A-Z][a-z][a-z]\s{1,2}\d{1,2}\s\d{2}[:]\d{2}[:]\d{2}\s([\w][\w\d\.@-]*)\s.*$""), 0)
+| alter process_name =  arrayindex(regextract(_raw_log , ""[A-Z][a-z][a-z]\s{1,2}\d{1,2}\s\d{2}[:]\d{2}[:]\d{2}\s[\w][\w\d\.@-]*\s([\w|\-\/]+).*$""), 0)
+| alter pid = arrayindex(regextract(_raw_log , ""^\w+\s{1,2}\d{1,2}\s\d{2}\S\d{2}\S\d{2}\s+\w+\s\w+\S*?(\d*)\]"") ,0)
+| alter event_description = arrayindex(regextract(_raw_log , ""[A-Z][a-z][a-z]\s{1,2}\d{1,2}\s\d{2}[:]\d{2}[:]\d{2}\s[\w][\w\d\.@-]*\s[\w|\-\/]+.*\:\s(.*$)"") ,0)
+| alter src_ip = arrayindex(regextract(_raw_log ,""\s(\d{1,3}(?:\.\d{1,3}){3})"") ,0)
+| alter pri_value = to_integer(arrayindex(regextract(_raw_log , ""^\<(\d{0,2})"") ,0))
+| alter facility_val = floor(divide(pri_value,8))
+| alter severity_val = subtract(pri_value, multiply(facility_val, 8))
+| alter severity = if(severity_val = 0        ,""Emergency"" ,severity_val = 1        ,""Alert"" ,severity_val = 2        ,""Critical"" ,severity_val = 3        ,""Error"" ,severity_val = 4        ,""Warning"" ,severity_val = 5        ,""Notice"" ,severity_val = 6        ,""Informational"" ,severity_val = 7        ,""Debug"")
+| alter facility = if(facility_val = 0,        ""kern"" ,facility_val = 1,        ""user"" ,facility_val = 2,        ""mail"" ,facility_val = 3,        ""daemon"" ,facility_val = 4,        ""auth"" ,facility_val = 5,        ""syslog"" ,facility_val = 6,        ""lpr"" ,facility_val = 7,        ""news"" ,facility_val = 8,        ""uucp"" ,facility_val = 9,        ""cron"" ,facility_val = 10,        ""authpriv"" ,facility_val = 11,        ""ftp"" ,facility_val = 12,        ""ntp"" ,facility_val = 13,        ""security"" ,facility_val = 14,        ""console"" ,facility_val = 15,        ""solaris-cron"" ,facility_val = 16, ""local"")
+
+| alter XDM.Auth.event_timestamp = timestamp
+| alter XDM.Auth.Client.host.hostname = hostname
+| alter XDM.Auth.Client.process.name = process_name
+| alter XDM.Auth.Client.process.pid = pid
+| alter XDM.Auth.original_event_description = event_description
+| alter XDM.Auth.original_event_type = event_type
+| alter XDM.Auth.Client.ipv4 = src_ip
+| alter XDM.Auth.threat.severity = severity
+| alter XDM.Auth.original_event_sub_type = facility;
+
+
+[MODEL: dataset=""Oracle"", model=""Endpoint"", version=0.7]
+| filter _log_source_file_name ~= ""messages""
+
+| alter timestamp = arrayindex(regextract(_raw_log , ""^(\w+\s{1,2}\d{1,2}\s\d{2}\S\d{2}\S\d{2}\s)""), 0)
+| alter hostname =  arrayindex(regextract(_raw_log , ""^\w+\s{1,2}\d{1,2}\s\d{2}\S\d{2}\S\d{2}\s+(\w+)\s""), 0)
+| alter process_name =  arrayindex(regextract(_raw_log , ""^\w+\s{1,2}\d{1,2}\s\d{2}\S\d{2}\S\d{2}\s+\w+\s([\w|\-\/]+)\[*""), 0)
+| alter pid = arrayindex(regextract(_raw_log , ""^\w+\s{1,2}\d{1,2}\s\d{2}\S\d{2}\S\d{2}\s+\w+\s\w+\S*?(\d*)\]"") ,0)
+| alter event_description = arrayindex(regextract(_raw_log , ""^\w+\s{1,2}\d{1,2}\s\d{2}\S\d{2}\S\d{2}\s+\w+\s\S+\:(.+$)"") ,0)
+| alter pri_value = to_integer(arrayindex(regextract(_raw_log , ""^\<(\d{0,2})"") ,0))
+| alter facility_val = floor(divide(pri_value,8))
+| alter severity_val = subtract(pri_value, multiply(facility_val, 8))
+| alter severity = if(severity_val = 0        ,""Emergency"" ,severity_val = 1        ,""Alert"" ,severity_val = 2        ,""Critical"" ,severity_val = 3        ,""Error"" ,severity_val = 4        ,""Warning"" ,severity_val = 5        ,""Notice"" ,severity_val = 6        ,""Informational"" ,severity_val = 7        ,""Debug"")
+| alter facility = if(facility_val = 0,        ""kern"" ,facility_val = 1,        ""user"" ,facility_val = 2,        ""mail"" ,facility_val = 3,        ""daemon"" ,facility_val = 4,        ""auth"" ,facility_val = 5,        ""syslog"" ,facility_val = 6,        ""lpr"" ,facility_val = 7,        ""news"" ,facility_val = 8,        ""uucp"" ,facility_val = 9,        ""cron"" ,facility_val = 10,        ""authpriv"" ,facility_val = 11,        ""ftp"" ,facility_val = 12,        ""ntp"" ,facility_val = 13,        ""security"" ,facility_val = 14,        ""console"" ,facility_val = 15,        ""solaris-cron"" ,facility_val = 16, ""local"")
+
+| alter XDM.Endpoint.event_timestamp = timestamp
+| alter XDM_endpoint_hostname = hostname
+| alter XDM.Endpoint.Actor.process.name = process_name
+| alter XDM.Endpoint.Actor.process.pid = pid
+| alter XDM.Endpoint.original_event_description = event_description
+| alter XDM.Endpoint.original_event_sub_type = facility
+| alter XDM.Endpoint.threat.severity = severity;
