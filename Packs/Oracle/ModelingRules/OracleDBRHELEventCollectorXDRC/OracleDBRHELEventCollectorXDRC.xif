@@ -1,5 +1,5 @@
-[MODEL: dataset=""Oracle"", model=""Auth"", version=0.7]
-| filter _log_source_file_name ~= ""secure""
+[MODEL: dataset="Oracle", model="Auth", version=0.7]
+| filter _log_source_file_name ~= "secure"
 
 | alter XDM.Auth.event_timestamp = timestamp
 | alter XDM.Auth.Client.host.hostname = hostname
@@ -9,15 +9,15 @@
 | alter XDM.Auth.original_event_type = event_type
 | alter XDM.Auth.Client.ipv4 = src_ip;
 
-| alter timestamp = arrayindex(regextract(_raw_log , ""\w+\s\d{1,2}\s\d{2}(?::\d{2}){2}""), 0)
-| alter hostname =  arrayindex(regextract(_raw_log , ""^\w+\s{1,2}\d{1,2}\s\d{2}\S\d{2}\S\d{2}\s+(\w+)\s""), 0)
-| alter process_name =  arrayindex(regextract(_raw_log , ""^\w+\s{1,2}\d{1,2}\s\d{2}\S\d{2}\S\d{2}\s+\w+\s([\w|\-\/]+)\[*""), 0)
-| alter pid = arrayindex(regextract(_raw_log , ""^\w+\s{1,2}\d{1,2}\s\d{2}\S\d{2}\S\d{2}\s+\w+\s\w+\S*?(\d*)\]"") ,0)
-| alter event_description = arrayindex(regextract(_raw_log , ""^\w+\s{1,2}\d{1,2}\s\d{2}\S\d{2}\S\d{2}\s+\w+\s\S+\:(.+$)"") ,0)
+| alter timestamp = arrayindex(regextract(_raw_log , "\w+\s\d{1,2}\s\d{2}(?::\d{2}){2}"), 0)
+| alter hostname =  arrayindex(regextract(_raw_log , "^\w+\s{1,2}\d{1,2}\s\d{2}\S\d{2}\S\d{2}\s+(\w+)\s"), 0)
+| alter process_name =  arrayindex(regextract(_raw_log , "^\w+\s{1,2}\d{1,2}\s\d{2}\S\d{2}\S\d{2}\s+\w+\s([\w|\-\/]+)\[*"), 0)
+| alter pid = arrayindex(regextract(_raw_log , "^\w+\s{1,2}\d{1,2}\s\d{2}\S\d{2}\S\d{2}\s+\w+\s\w+\S*?(\d*)\]") ,0)
+| alter event_description = arrayindex(regextract(_raw_log , "^\w+\s{1,2}\d{1,2}\s\d{2}\S\d{2}\S\d{2}\s+\w+\s\S+\:(.+$)") ,0)
 
 
-[MODEL: dataset=""Oracle"", model=""Endpoint"", version=0.7]
-| filter _log_source_file_name ~= ""messages""
+[MODEL: dataset="Oracle", model="Endpoint", version=0.7]
+| filter _log_source_file_name ~= "messages"
 
 | alter XDM.Endpoint.event_timestamp = timestamp
 | alter XDM_endpoint_hostname = hostname
