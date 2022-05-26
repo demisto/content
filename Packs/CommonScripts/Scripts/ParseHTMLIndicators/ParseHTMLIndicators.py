@@ -36,7 +36,7 @@ def main():
     blog_url = args.get("url")
     try:
         headers = {'user-agent': 'PANW-XSOAR'}
-        page = requests.get(blog_url, verify=False, headers=headers) # nosec
+        page = requests.get(blog_url, verify=False, headers=headers)  # nosec
         page.raise_for_status
     except requests.HTTPError:
         raise
