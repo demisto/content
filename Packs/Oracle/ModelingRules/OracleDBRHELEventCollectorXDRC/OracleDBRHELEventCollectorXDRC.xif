@@ -1,4 +1,4 @@
-[MODEL: dataset="Oracle", model="Auth", version=0.7]
+[MODEL: dataset="Oracle", model="Auth"]
 | filter _log_source_file_name ~= "secure"
 
 | alter XDM.Auth.event_timestamp = timestamp
@@ -16,7 +16,7 @@
 | alter event_description = arrayindex(regextract(_raw_log , "^\w+\s{1,2}\d{1,2}\s\d{2}\S\d{2}\S\d{2}\s+\w+\s\S+\:(.+$)") ,0)
 
 
-[MODEL: dataset="Oracle", model="Endpoint", version=0.7]
+[MODEL: dataset="Oracle", model="Endpoint"]
 | filter _log_source_file_name ~= "messages"
 
 | alter XDM.Endpoint.event_timestamp = timestamp

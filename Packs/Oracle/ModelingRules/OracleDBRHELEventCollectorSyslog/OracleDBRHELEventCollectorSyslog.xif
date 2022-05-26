@@ -1,4 +1,4 @@
-[MODEL: dataset="Oracle", model="Auth", version=0.7]
+[MODEL: dataset="Oracle", model="Auth"]
 | filter _log_source_file_name ~= "secure"
 
 | alter timestamp = arrayindex(regextract(_raw_log , "\w+\s\d{1,2}\s\d{2}(?::\d{2}){2}"), 0)
@@ -25,7 +25,7 @@
 
 
 
-[MODEL: dataset="Oracle", model="Endpoint", version=0.7]
+[MODEL: dataset="Oracle", model="Endpoint"]
 | filter _log_source_file_name ~= "messages"
 
 | alter timestamp = arrayindex(regextract(_raw_log , "^(\w+\s{1,2}\d{1,2}\s\d{2}\S\d{2}\S\d{2}\s)"), 0)
