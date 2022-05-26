@@ -5687,6 +5687,7 @@ script:
   script: '-'
   subtype: python3
   type: python
+defaultmapperin: Microsoft Defender For Endpoint Mapper
 fromversion: 5.0.0
 tests:
 - No tests (auto formatted)
