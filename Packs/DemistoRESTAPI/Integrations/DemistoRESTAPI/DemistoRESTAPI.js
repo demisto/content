@@ -98,8 +98,7 @@ var sendRequest = function(method, uri, body, raw) {
     }
 };
 
-function reduce_one_entry(data) {
-    var keep_fields = ["id", "name", "type", "severity", "status"];
+function reduce_one_entry(data, keep_fields) {
     var new_d = {};
     for (var field_index = 0; (field_index < keep_fields.length); field_index += 1) {
         var field = keep_fields[field_index];
@@ -110,24 +109,24 @@ function reduce_one_entry(data) {
     return new_d;
 }
 
-function reduce_data(data) {
+function reduce_data(data, fields_to_keep) {
     if ((data instanceof Array)) { // is array
         var new_data = [];
         for (var data_index = 0; (data_index < data.length); data_index += 1) {
             var d = data[data_index];
-            new_data.push(reduce_one_entry(d));
+            new_data.push(reduce_one_entry(d, fields_to_keep));
         }
         return new_data;
     }
     else {
         if ((data.constructor == Object)) { // is dictionary
-            return [reduce_one_entry(data)];
+            return [reduce_one_entry(data, fields_to_keep)];
         } 
     }
     return data;
 }
 
-var deleteIncidents = function(ids_to_delete) {
+var deleteIncidents = function(ids_to_delete, fields_to_keep) {
     var body = {
         ids: ids_to_delete,
         all: false,
@@ -140,8 +139,10 @@ var deleteIncidents = function(ids_to_delete) {
     }
 
     var response = res['response'];
-    var reduced_response = {'total': response['total'], 'notUpdated': response['notUpdated'], 'data': reduce_data(response['data'])};
-    var md = tableToMarkdown('Demisto delete incidents', reduced_response, ['data', 'total', "notUpdated"]);
+    if (fields_to_keep != "all") {
+        response['data'] = reduce_data(response['data'], fields_to_keep);
+    }
+    var md = tableToMarkdown('Demisto delete incidents', response, ['data', 'total', "notUpdated"]);
 
     return {
         ContentsFormat: formats.json,
@@ -186,7 +187,8 @@ switch (command) {
         return ({Type: entryTypes.file, FileID: res.Path, File: filename, Contents: desc});
     case 'demisto-delete-incidents':
         var ids = argToList(args.ids);
-        return deleteIncidents(ids);
+        var fields = argToList(args.fields);
+        return deleteIncidents(ids, fields);
     default:
         throw 'Demisto REST APIs - unknown command';
 }
