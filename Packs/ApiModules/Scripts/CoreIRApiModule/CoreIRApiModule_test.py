@@ -2809,10 +2809,12 @@ class TestGetAlertByFilter:
         get_alerts_by_filter_command(client, args)
         assert "{'filter_data': {'sort': [{'FIELD': 'source_insert_ts', 'ORDER': 'DESC'}], " \
                "'paging': {'from': 0, 'to': 50}, " \
-               "'filter': {'AND': [{'SEARCH_FIELD': 'source_insert_ts', 'SEARCH_TYPE': 'RELATIVE_TIMESTAMP', 'SEARCH_VALUE': '172800000'}, " \
+               "'filter': {'AND': [{'SEARCH_FIELD': 'source_insert_ts', 'SEARCH_TYPE': 'RELATIVE_TIMESTAMP', " \
+               "'SEARCH_VALUE': '172800000'}, " \
                "{'OR': [{'SEARCH_FIELD': 'alert_source', 'SEARCH_TYPE': 'EQ', 'SEARCH_VALUE': 'CORRELATION'}, " \
                "{'SEARCH_FIELD': 'alert_source', 'SEARCH_TYPE': 'EQ', 'SEARCH_VALUE': 'IOC'}]}, " \
-               "{'SEARCH_FIELD': 'severity', 'SEARCH_TYPE': 'EQ', 'SEARCH_VALUE': 'SEV_040_HIGH'}]}}}" in request_data_log.call_args[0][0]
+               "{'SEARCH_FIELD': 'severity', 'SEARCH_TYPE': 'EQ', 'SEARCH_VALUE': 'SEV_040_HIGH'}]}}}" \
+               in request_data_log.call_args[0][0]
 
     @freeze_time('2022-05-26T13:00:00Z')
     def test_get_alert_by_filter_custom_filter_and_timeframe_(self, requests_mock, mocker):
@@ -2848,5 +2850,7 @@ class TestGetAlertByFilter:
         get_alerts_by_filter_command(client, args)
         assert "{'filter_data': {'sort': [{'FIELD': 'source_insert_ts', 'ORDER': 'DESC'}], " \
                "'paging': {'from': 0, 'to': 50}, " \
-               "'filter': {'AND': [{'SEARCH_FIELD': 'source_insert_ts', 'SEARCH_TYPE': 'RELATIVE_TIMESTAMP', 'SEARCH_VALUE': '172800000'}, " \
-               "{'OR': [{'SEARCH_FIELD': 'actor_process_image_sha256', 'SEARCH_TYPE': 'EQ', 'SEARCH_VALUE': '222'}]}]}" in request_data_log.call_args[0][0]
+               "'filter': {'AND': [{'SEARCH_FIELD': 'source_insert_ts', 'SEARCH_TYPE': 'RELATIVE_TIMESTAMP', " \
+               "'SEARCH_VALUE': '172800000'}, " \
+               "{'OR': [{'SEARCH_FIELD': 'actor_process_image_sha256', 'SEARCH_TYPE': 'EQ'," \
+               " 'SEARCH_VALUE': '222'}]}]}" in request_data_log.call_args[0][0]

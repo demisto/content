@@ -1615,10 +1615,12 @@ def create_filter_from_args(args: dict) -> dict:
 
             # relative time frame
             else:
+                search_value = None
                 search_type = 'RELATIVE_TIMESTAMP'
-                date = dateparser.parse(arg_value)
-                delta_in_milliseconds = int((datetime.now() - date).total_seconds() * 1000)
-                search_value = str(delta_in_milliseconds)
+                relative_date = dateparser.parse(arg_value)
+                if relative_date:
+                    delta_in_milliseconds = int((datetime.now() - relative_date).total_seconds() * 1000)
+                    search_value = str(delta_in_milliseconds)
 
             and_operator_list.append({
                 'SEARCH_FIELD': arg_properties.search_field,
