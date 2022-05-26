@@ -4369,6 +4369,65 @@ def endpoint_command(client: MsClient, args: dict) -> List[CommandResults]:
     return machines_outputs
 
 
+def get_machine_users_command(client: MsClient, args: dict) -> CommandResults:
+    """Retrieves a collection of logon users on a given machine
+    Returns:
+        CommandResults.
+    """
+    headers = ["ID", "AccountName", "AccountDomain", "FirstSeen", "LastSeen", "LogonTypes", "DomainAdmin", "NetworkUser"]
+    machine_id = args.get("machine_id")
+    response = client.get_machine_users(machine_id)
+    users_list = [dict(**get_user_data(r), MachineID=machine_id) for r in response.get("value", [])]
+
+    return CommandResults(
+        outputs=users_list,
+        outputs_key_field=["ID", "MachineID"],
+        outputs_prefix="MicrosoftATP.MachineUser",
+        readable_output=tableToMarkdown(
+            f"Microsoft Defender ATP logon users for machine {machine_id}:",
+            users_list,
+            headers=headers,
+            removeNull=True,
+        ),
+        raw_response=response,
+    )
+
+
+def get_machine_alerts_command(client: MsClient, args: dict) -> CommandResults:
+    """Retrieves a collection of alerts related to specific device.
+    Returns:
+        CommandResults.
+    """
+    headers = [
+        "ID",
+        "Title",
+        "Description",
+        "IncidentID",
+        "Severity",
+        "Status",
+        "Classification",
+        "Category",
+        "ThreatFamilyName",
+        "MachineID"
+    ]
+    machine_id = args.get("machine_id")
+    alerts_response = client.get_machine_alerts(machine_id)
+    alert_list = get_alerts_list(alerts_response)
+
+    return CommandResults(
+        outputs=alert_list,
+        outputs_key_field=["ID", "MachineID"],
+        outputs_prefix="MicrosoftATP.MachineAlerts",
+        readable_output=tableToMarkdown(
+            f"Alerts that are related to machine {machine_id}:",
+            alert_list,
+            headers=headers,
+            removeNull=True,
+        ),
+        raw_response=alerts_response,
+    )
+
+
 ''' EXECUTION CODE '''
 ''' LIVE RESPONSE CODE '''
 
