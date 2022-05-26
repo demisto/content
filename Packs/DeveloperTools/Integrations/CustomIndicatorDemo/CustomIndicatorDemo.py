@@ -77,6 +77,7 @@ def custom_indicator_creation(client: Client) -> CommandResults:
         'ip': '127.0.0.1',
         'hostname': 'localhost',
     }
+
     # Create the CustomIndicator
     custom_indicator = Common.CustomIndicator(
         indicator_type='MyCustomIndicator',
@@ -87,7 +88,8 @@ def custom_indicator_creation(client: Client) -> CommandResults:
     )
 
     # Create relationships
-    relationships = list(EntityRelationship(
+    relationships = []
+    relationships.append(EntityRelationship(
         name='impersonates',
         entity_a='0.0.0.0',
         entity_a_type='IP',
