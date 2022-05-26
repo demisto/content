@@ -165,7 +165,7 @@ Get all the data from a monitored domain and the breaches occurred that relates 
 | SpyCloud.Domain.infected_time | String | The date the user got infected | 
 | SpyCloud.Domain.target_url | String | Which URL the credentials are for | 
 | SpyCloud.Domain.source_id | String | breach source ID | 
-| SpyCloud.Results.password_plaintext | String | Plaintext password identified | 
+| SpyCloud.Domain.password_plaintext | String | Plaintext password identified | 
 
 #### Command example
 ```!spycloud-domain-data domain=example.com since=2022-05-01```
