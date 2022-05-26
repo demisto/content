@@ -36,7 +36,7 @@ def main():
     blog_url = args.get("url")
     try:
         headers = {'user-agent': 'PANW-XSOAR'}
-        page = requests.get(blog_url, verify=False, headers=headers)
+        page = requests.get(blog_url, verify=False, headers=headers) # nosec
         page.raise_for_status
     except requests.HTTPError:
         raise
@@ -54,7 +54,8 @@ def main():
 
     # Declare indicator regexs
     url_regex = r"([https|ftp|hxxps]+:[//|\\\\]+[\w\d:#@%/;$()~_\+-=\\\[\.\]&]*)"
-    ip_regex = r"(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(?:\[\.\]|\.)){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])"
+    ip_regex = r"(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(?:\[\.\]|\.)){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[" \
+               r"0-9])"
     cve_regex = r"(CVE-\d{4}-\d{4,7})"
 
     page_update = strip_html_tags(page)
