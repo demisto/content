@@ -1,5 +1,4 @@
 from collections import defaultdict
-from logging import getLogger
 from pathlib import Path
 from typing import Iterable, Optional
 
@@ -10,7 +9,7 @@ from Tests.scripts.collect_tests.constants import \
 from Tests.scripts.collect_tests.utils import (DictBased, DictFileBased,
                                                PackManager, to_tuple)
 
-logger = getLogger('test_collection')  # todo is this the right way?
+from logger import logger
 
 
 class IdSetItem(DictBased):
@@ -19,7 +18,8 @@ class IdSetItem(DictBased):
         self.id_: str = id_  # None for packs, as they don't have it.
         self.file_path: str = self.get('file_path', warn_if_missing=False)  # packs have no file_path value
         self.pack: Optional[str] = self.get('pack', warn_if_missing=False)  # we log an error instead of warning
-        self.name: str = self.get('name', '', warning_comment=Path(self.file_path or '').name)  # todo is ok w/o name?
+        self.name: str = self.get('name', '', warn_if_missing=False,
+                                  warning_comment=Path(self.file_path or '').name)  # todo is ok w/o name?
         if id_ and 'pack' not in self.content:  # packs have no ids, and no `pack`, so non-packs are errors
             logger.error(f'content item with id={id_} and name={self.name} has no pack value in id_set')
 
@@ -64,9 +64,10 @@ class IdSet(DictFileBased):
             for playbook in test.implementing_playbooks:
                 self.implemented_playbooks_to_tests[playbook].append(test)
 
-        self.integration_to_pack = {integration.name: integration.pack for integration in self.integrations}
-        self.scripts_to_pack = {script.name: script.pack for script in self.scripts}
-        self.test_playbooks_to_pack = {test.name: test.pack for test in self.test_playbooks}
+        self.integration_to_pack: dict[str, str] = {integration.name: integration.pack
+                                                    for integration in self.integrations}
+        self.scripts_to_pack: dict[str, str] = {script.name: script.pack for script in self.scripts}
+        self.test_playbooks_to_pack: dict[str, str] = {test.name: test.pack for test in self.test_playbooks}
 
     @property
     def artifact_iterator(self) -> Iterable[IdSetItem]:  # todo is used?

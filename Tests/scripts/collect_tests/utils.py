@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 from enum import Enum
-from logging import getLogger
 from pathlib import Path
 from typing import Any, Optional
 
@@ -19,7 +18,7 @@ from Tests.scripts.collect_tests.exceptions import (DeprecatedPackException,
                                                     SkippedPackException,
                                                     UnsupportedPackException)
 
-logger = getLogger('test_collection')  # todo is this the right way?
+from logger import logger
 
 
 def find_pack_folder(path: Path) -> Path:
@@ -162,7 +161,7 @@ class ContentItem(DictFileBased):
     @property
     def name(self) -> str:
         id_ = self.get('id', '', warn_if_missing=False)
-        return self.get('name', default='', warn_if_missing=True, warning_comment=id_)
+        return self.get('name', default='', warn_if_missing=False, warning_comment=id_)
 
     @property
     def tests(self):
@@ -199,7 +198,11 @@ class PackManager:
         yield from self.pack_name_to_pack_metadata.values()
 
     @staticmethod
-    def relative_to_packs(path: Path):
+    def relative_to_packs(path: Path | str):
+        if isinstance(path, str):
+            path = Path(path)
+        if path.parts[0] == 'Packs':
+            return Path(*path.parts[1:])
         return path.relative_to(PACKS_PATH)
 
     def validate_pack(self, pack: str) -> None:

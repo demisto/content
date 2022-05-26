@@ -2,7 +2,6 @@ import functools
 import sys
 from abc import ABC, abstractmethod
 from enum import Enum
-from logging import DEBUG, getLogger
 from pathlib import Path
 from typing import Iterable, Optional
 
@@ -28,8 +27,7 @@ from Tests.scripts.collect_tests.utils import (ContentItem, Machine,
                                                PackManager, VersionRange,
                                                find_pack_folder)
 
-logger = getLogger('test_collection')
-logger.level = DEBUG
+from logger import logger
 
 IS_GITLAB = False  # todo replace
 PACK_MANAGER = PackManager()
@@ -214,7 +212,9 @@ class TestCollector(ABC):
         collected = []
 
         for test in tests:
-            if pack := self.id_set.test_playbooks_to_pack[test]:  # todo is okay to fail when tpb is not in id-set?
+            if test not in self.id_set.test_playbooks_to_pack:
+                raise ValueError(f'test {test} is missing from id-set, stopping collection.')
+            if pack := self.id_set.test_playbooks_to_pack[test]:
                 collected.append(
                     self._collect_pack(pack, reason=CollectionReason.PACK_MATCHES_TEST, reason_description='')
                 )
@@ -450,8 +450,7 @@ class NightlyTestCollector(TestCollector, ABC):
         default = (DEFAULT_MARKETPLACE_WHEN_MISSING,)  # MUST BE OF LENGTH==1
         postfix = ' (only where this is the only marketplace value)' if only_value else ''
         logger.info(
-            f'collecting content items by their marketplace field, searching for {self.marketplace.value}'
-            f'{postfix}')
+            f'collecting content items by their marketplace field, searching for {self.marketplace.value} {postfix}')
 
         collected = []
 
@@ -466,12 +465,12 @@ class NightlyTestCollector(TestCollector, ABC):
                 try:
                     pack_folder = find_pack_folder(path)
                     pack = PACK_MANAGER.get_pack_by_path(pack_folder)
-                    relative_path = Path(*Path(item.file_path).parts[2:])
+                    relative_path = PACK_MANAGER.relative_to_packs(item.file_path)
                     collected.append(
                         CollectedTests(tests=None, packs=(pack.name,),
                                        reason=CollectionReason.CONTAINED_ITEM_MARKETPLACE_VERSION_VALUE,
                                        version_range=item.version_range or pack.version_range,
-                                       reason_description=f'{str(relative_path)}, {self.marketplace.value=}')
+                                       reason_description=f'{str(relative_path)}, ({self.marketplace.value})')
                     )
 
                 except NotUnderPackException:
@@ -522,8 +521,8 @@ class UploadCollector(BranchTestCollector):
 if __name__ == '__main__':
     try:
         sys.path.append(str(CONTENT_PATH))
-        collector = XSIAMNightlyTestCollector()
-        # collector = BranchTestCollector(marketplace=MarketplaceVersions.XSOAR, branch_name='master')
+        # collector = XSIAMNightlyTestCollector()
+        collector = BranchTestCollector(marketplace=MarketplaceVersions.XSOAR, branch_name='master')
         print(collector.collect(True, True))
 
     except:  # todo remove
