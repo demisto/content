@@ -12,8 +12,7 @@ urllib3.disable_warnings()
 
 class SalesforceClient(IntegrationEventsClient):
     def set_request_filter(self, after: str):
-        if self.request.params:
-            self.request.params.after = get_github_timestamp_format(after)
+        return
 
 
 class SalesforceGetEvents(IntegrationGetEvents):
@@ -140,6 +139,7 @@ class SalesforceGetEvents(IntegrationGetEvents):
 
             yield events_list
 
+    @staticmethod
     def get_last_run(self) -> dict:
         """
         Get the log time and the file id to prevent duplications in the next run
