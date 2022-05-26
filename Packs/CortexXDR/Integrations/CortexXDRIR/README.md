@@ -2531,7 +2531,7 @@ Multiple filter arguments will be concatenated using AND operator, while argumen
 | --- | --- | --- |
 | alert_id | The unique ID of the alert. | Optional | 
 | severity | The severity of the alert. Possible values are: low, meduim, high. | Optional | 
-| custom_filter | a custom filter, when using this argument, other filter arguments are not relevant. example: <br/>`{<br/>                "OR": [<br/>                    {<br/>                        "SEARCH_FIELD": "actor_process_command_line",<br/>                        "SEARCH_TYPE": "EQ",<br/>                        "SEARCH_VALUE": "path_to_file"<br/>                    }<br/>                ]<br/>            }`. | Optional | 
+| custom_filter | a custom filter, when using this argument, other filter arguments are not relevant except time_frame, start_time and end_time which are used to filter the time. example: <br/>`{<br/>                "OR": [<br/>                    {<br/>                        "SEARCH_FIELD": "actor_process_command_line",<br/>                        "SEARCH_TYPE": "EQ",<br/>                        "SEARCH_VALUE": "path_to_file"<br/>                    }<br/>                ]<br/>            }`. | Optional | 
 | Identity_type | Account type. Possible values are: ANONYMOUS,  APPLICATION,  COMPUTE,  FEDERATED_IDENTITY,  SERVICE,  SERVICE_ACCOUNT,  TEMPORARY_CREDENTIALS,  TOKEN,  UNKNOWN,  USER. | Optional | 
 | agent_id | A unique identifier per agent. | Optional | 
 | action_external_hostname | The hostname to connect to. In case of a proxy connection, this value will differ from action_remote_ip. | Optional | 
