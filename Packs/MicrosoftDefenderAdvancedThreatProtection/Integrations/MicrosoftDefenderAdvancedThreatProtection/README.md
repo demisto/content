@@ -143,7 +143,8 @@ After you successfully execute a command, a DBot message appears in the War Room
 46. endpoint
 47. microsoft-atp-indicator-batch-update
 48. microsoft-atp-get-alert-by-id
-49. microsoft-atp-offboard-machine
+49. microsoft-atp-request-and-download-investigation-package
+50. microsoft-atp-offboard-machine
 
 ### 1. microsoft-atp-isolate-machine
 ---
@@ -5863,6 +5864,26 @@ Machine.Offboard
 
 
 ##### Context Output
+=======
+### microsoft-atp-request-and-download-investigation-package
+***
+Collect and download an investigation package as a gz file.
+
+
+#### Base Command
+
+`microsoft-atp-request-and-download-investigation-package`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| machine_id | The machine ID. | Required | 
+| comment | A comment to associate with the action. | Required | 
+| timeout_in_seconds | Timeout for polling. | Optional | 
+| machine_action_id | Action ID to retrieve status and data for. | Optional | 
+
+
+#### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
@@ -5925,10 +5946,13 @@ Machine.Offboard
 
 ##### Human Readable Output
 
->##### The isolation request has been submitted successfully:
+>##### The offboard request has been submitted successfully:
 >|ID|Type|Requestor|RequestorComment|Status|MachineID|ComputerDNSName|
 >|---|---|---|---|---|---|---|
 >| 1f3098e20464 | Offboard | 2f48b784-5da5-4e61-9957-012d2630f1e4 | offboard_test_3 | Pending | 12342c13fef | desktop-s2455r8 |
 >| 6d39a3da0744 | Offboard | 2f48b784-5da5-4e61-9957-012d2630f1e4 | ofboard_test_3 | Pending | 12342c13fef8f06606 | desktop-s2455r9 |
 
 
+
+| MicrosoftATP.MachineAction.Status | String | The current status of the machine action. | 
+| MicrosoftATP.MachineAction.MachineID | String |  The machine ID on which the action was executed. |
