@@ -2,10 +2,10 @@ contentitemexportablefields:
   contentitemfields:
     propagationLabels:
     - all
-description: This playbook uses the Live Response feature in order to retrieve a file from an endpoint.
+description: This playbook uses the Live Response feature to retrieve a file from an endpoint.
 id: MDE - Retrieve File
 inputs:
-- description: File paths to be provided
+- description: The file paths to be provided.
   key: paths
   playbookInputQuery:
   required: false
@@ -65,10 +65,10 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: 'Collect file from a device. NOTE: Backslashes in path must be escaped.'
+      description: 'Collect a file from a device. NOTE: Backslashes in the path must be escaped.'
       id: 3a524860-88b6-411d-82b8-dfc9ae5263d8
       iscommand: true
-      name: Retrieve File From MSDE Live Response
+      name: Retrieve File From MDE Live Response
       script: '|||microsoft-atp-live-response-get-file'
       type: regular
       version: -1
@@ -142,7 +142,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: Unzip a file using fileName or entryID to specify a file. Unzipped files will be loaded to the War Room and names will be put into the context.
+      description: Unzips a file using file name or entry ID to specify a file. Unzipped files are loaded to the War Room and names are put into the context.
       id: 466943ee-d1f6-4264-80a4-d5b3c858d5e2
       iscommand: false
       name: Unzip results
@@ -178,7 +178,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries} to check the previous task entries. If array is provided, will return yes if one of the entries returned an error.
+      description: Checks whether specific entries returned an error. Use ${lastCompletedTaskEntries} to check the previous task entries. If an array is provided, will return 'yes' if one of the entries returned an error.
       id: 801e51fe-c520-4660-8dc9-65dc9d5b3721
       iscommand: false
       name: Any errors from the retrieval?
@@ -229,7 +229,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: File Path was provided?
+      description: Was file path provided?
       id: a682d3e4-e248-4b3e-8106-95fb3cb2d377
       iscommand: false
       name: File Path was provided?
