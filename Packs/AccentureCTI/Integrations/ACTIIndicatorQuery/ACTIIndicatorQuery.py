@@ -547,7 +547,7 @@ def _ia_ir_extract(Res: dict, reliability: DBotScoreReliability):
                                   integration_name='ACTI Indicator Query',
                                   score=severity_dbot_score, reliability=reliability)
     custom_indicator = Common.CustomIndicator(indicator_type=indicatortype, dbot_score=dbot_score,
-                                              value=uuid, data=context, context_prefix='IAIR', relationships=[])
+                                              value=uuid, data=context, context_prefix='IAIR')
     return custom_indicator, iair_link
 
 

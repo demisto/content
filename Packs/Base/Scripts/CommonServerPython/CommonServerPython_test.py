@@ -7254,7 +7254,7 @@ class TestCustomIndicator:
                 score=Common.DBotScore.BAD,
                 malicious_description='malicious!'
             )
-            Common.CustomIndicator('test', 'test_value', dbot_score, None, 'prefix', relationships=[])
+            Common.CustomIndicator('test', 'test_value', dbot_score, None, 'prefix')
 
     def test_custom_indicator_no_value(self):
         """
