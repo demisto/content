@@ -1304,6 +1304,8 @@ def test_module_command(client: Client, params: Dict) -> str:
         - (str): 'ok' if test passed
         - raises DemistoException if something had failed the test.
     """
+    global DEFAULT_EVENTS_TIMEOUT
+    DEFAULT_EVENTS_TIMEOUT = 1
     try:
         ctx = extract_context_data(get_integration_context(), include_id=True)
         print_mirror_events_stats(ctx, "Test Module")
