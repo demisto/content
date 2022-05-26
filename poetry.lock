@@ -180,14 +180,14 @@ six = "*"
 
 [[package]]
 name = "boto3"
-version = "1.23.5"
+version = "1.23.8"
 description = "The AWS SDK for Python"
 category = "main"
 optional = false
 python-versions = ">= 3.6"
 
 [package.dependencies]
-botocore = ">=1.26.5,<1.27.0"
+botocore = ">=1.26.8,<1.27.0"
 jmespath = ">=0.7.1,<2.0.0"
 s3transfer = ">=0.5.0,<0.6.0"
 
@@ -196,7 +196,7 @@ crt = ["botocore[crt] (>=1.21.0,<2.0a0)"]
 
 [[package]]
 name = "botocore"
-version = "1.26.5"
+version = "1.26.8"
 description = "Low-level, data-driven core of boto 3."
 category = "main"
 optional = false
@@ -477,7 +477,9 @@ typed-ast = "^1.5.2"
 types-chardet = "^4.0.3"
 types-dateparser = "^1.1.0"
 types-emoji = "^1.2.7"
+types-filelock = "^3.2.5"
 types-ipaddress = "^1.0.8"
+types-Markdown = "^3.3.21"
 types-paramiko = "^2.8.17"
 types-protobuf = "^3.19.15"
 types-PyMySQL = "^1.0.15"
@@ -501,8 +503,8 @@ build = ["gsutil (==5.8)"]
 [package.source]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
-reference = "9022ba1b3bdeb26ae1455680dba59fa0b9db559d"
-resolved_reference = "9022ba1b3bdeb26ae1455680dba59fa0b9db559d"
+reference = "03ab726e9d6dd1e79db01eed491c53cb5b5949bb"
+resolved_reference = "03ab726e9d6dd1e79db01eed491c53cb5b5949bb"
 
 [[package]]
 name = "deprecated"
@@ -534,7 +536,7 @@ tests = ["check-manifest (>=0.42)", "mock (>=1.3.0)", "pytest-cov (>=2.10.1)", "
 
 [[package]]
 name = "dictor"
-version = "0.1.9"
+version = "0.1.10"
 description = "an elegant dictionary and JSON handler"
 category = "main"
 optional = false
@@ -1287,8 +1289,8 @@ testing = ["google-api-core[grpc] (>=1.22.2)"]
 
 [[package]]
 name = "protobuf"
-version = "3.20.1"
-description = "Protocol Buffers"
+version = "4.21.0"
+description = ""
 category = "main"
 optional = false
 python-versions = ">=3.7"
@@ -1452,7 +1454,7 @@ diagrams = ["railroad-diagrams", "jinja2"]
 
 [[package]]
 name = "pypdf2"
-version = "1.28.1"
+version = "1.28.2"
 description = "A pure-python PDF library capable of splitting, merging, cropping, and transforming PDF files"
 category = "main"
 optional = false
@@ -1901,9 +1903,25 @@ optional = false
 python-versions = "*"
 
 [[package]]
+name = "types-filelock"
+version = "3.2.6"
+description = "Typing stubs for filelock"
+category = "main"
+optional = false
+python-versions = "*"
+
+[[package]]
 name = "types-ipaddress"
 version = "1.0.8"
 description = "Typing stubs for ipaddress"
+category = "main"
+optional = false
+python-versions = "*"
+
+[[package]]
+name = "types-markdown"
+version = "3.3.23"
+description = "Typing stubs for Markdown"
 category = "main"
 optional = false
 python-versions = "*"
@@ -2168,7 +2186,7 @@ testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8,<3.11"
-content-hash = "f797f6cd7aa3c6d727a1ef10a39c95c39811e85a3db0978ee86a72c4a4e3eccb"
+content-hash = "3f73a7c8732fa59b5bf4ca0068708b017b1a1b809f93aa156487371060ff14b9"
 
 [metadata.files]
 aiohttp = [
@@ -2322,12 +2340,12 @@ blessings = [
     {file = "blessings-1.7.tar.gz", hash = "sha256:98e5854d805f50a5b58ac2333411b0482516a8210f23f43308baeb58d77c157d"},
 ]
 boto3 = [
-    {file = "boto3-1.23.5-py3-none-any.whl", hash = "sha256:5cbbd985171b1e278b722dca48f71455b4938378962734828daeb76f73be6fba"},
-    {file = "boto3-1.23.5.tar.gz", hash = "sha256:73a0d092aaea1649150f43fb3f41451d5a0883940549a64d72781a23ce6b2d44"},
+    {file = "boto3-1.23.8-py3-none-any.whl", hash = "sha256:15733c2bbedce7a36fcf1749560c72c3ee90785aa6302a98658c7bffdcbe1f2a"},
+    {file = "boto3-1.23.8.tar.gz", hash = "sha256:ea8ebcea4ccb70d1cf57526d9eec6012c76796f28ada3e9cc1d89178683d8107"},
 ]
 botocore = [
-    {file = "botocore-1.26.5-py3-none-any.whl", hash = "sha256:805db3ecf85ff89edfb6788f862b87426f990e3e6383ef3fca3076f7659a5454"},
-    {file = "botocore-1.26.5.tar.gz", hash = "sha256:32541873924e3ff0ad95f02dc331e9f278721a3b864a4e2a8d514346b2598ce5"},
+    {file = "botocore-1.26.8-py3-none-any.whl", hash = "sha256:620851daf1245af5bc28137aa821375bac964aa0eddc482437c783fe01e298fc"},
+    {file = "botocore-1.26.8.tar.gz", hash = "sha256:e786722cb14de7319331cc55e9092174de66a768559700ef656d05ff41b3e24f"},
 ]
 bracex = [
     {file = "bracex-2.3-py3-none-any.whl", hash = "sha256:6789a715744bcb3359b53c4012dd94be5ab7669c638affe89f670595a3c73cc0"},
@@ -2515,7 +2533,7 @@ dictdiffer = [
     {file = "dictdiffer-0.9.0.tar.gz", hash = "sha256:17bacf5fbfe613ccf1b6d512bd766e6b21fb798822a133aa86098b8ac9997578"},
 ]
 dictor = [
-    {file = "dictor-0.1.9.tar.gz", hash = "sha256:84f6e0edce6a80a2178f97754af4c62a11ca48d12e7cc33eee8f309305605213"},
+    {file = "dictor-0.1.10.tar.gz", hash = "sha256:10c2fe969dd1b822a6413d0964d7e2c086fe64e5b21e6c634818d2501f66d3ed"},
 ]
 distlib = [
     {file = "distlib-0.3.4-py2.py3-none-any.whl", hash = "sha256:6564fe0a8f51e734df6333d08b8b94d4ea8ee6b99b5ed50613f731fd4089f34b"},
@@ -3093,30 +3111,20 @@ proto-plus = [
     {file = "proto_plus-1.20.4-py3-none-any.whl", hash = "sha256:3cfaac30676793d5ee764a0982bc30481beb5059f315e2a2422d7c73ded5b601"},
 ]
 protobuf = [
-    {file = "protobuf-3.20.1-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:3cc797c9d15d7689ed507b165cd05913acb992d78b379f6014e013f9ecb20996"},
-    {file = "protobuf-3.20.1-cp310-cp310-manylinux2014_aarch64.whl", hash = "sha256:ff8d8fa42675249bb456f5db06c00de6c2f4c27a065955917b28c4f15978b9c3"},
-    {file = "protobuf-3.20.1-cp310-cp310-manylinux_2_12_x86_64.manylinux2010_x86_64.whl", hash = "sha256:cd68be2559e2a3b84f517fb029ee611546f7812b1fdd0aa2ecc9bc6ec0e4fdde"},
-    {file = "protobuf-3.20.1-cp310-cp310-win32.whl", hash = "sha256:9016d01c91e8e625141d24ec1b20fed584703e527d28512aa8c8707f105a683c"},
-    {file = "protobuf-3.20.1-cp310-cp310-win_amd64.whl", hash = "sha256:32ca378605b41fd180dfe4e14d3226386d8d1b002ab31c969c366549e66a2bb7"},
-    {file = "protobuf-3.20.1-cp36-cp36m-macosx_10_9_x86_64.whl", hash = "sha256:9be73ad47579abc26c12024239d3540e6b765182a91dbc88e23658ab71767153"},
-    {file = "protobuf-3.20.1-cp36-cp36m-manylinux_2_5_x86_64.manylinux1_x86_64.whl", hash = "sha256:097c5d8a9808302fb0da7e20edf0b8d4703274d140fd25c5edabddcde43e081f"},
-    {file = "protobuf-3.20.1-cp37-cp37m-macosx_10_9_x86_64.whl", hash = "sha256:e250a42f15bf9d5b09fe1b293bdba2801cd520a9f5ea2d7fb7536d4441811d20"},
-    {file = "protobuf-3.20.1-cp37-cp37m-manylinux2014_aarch64.whl", hash = "sha256:cdee09140e1cd184ba9324ec1df410e7147242b94b5f8b0c64fc89e38a8ba531"},
-    {file = "protobuf-3.20.1-cp37-cp37m-manylinux_2_5_x86_64.manylinux1_x86_64.whl", hash = "sha256:af0ebadc74e281a517141daad9d0f2c5d93ab78e9d455113719a45a49da9db4e"},
-    {file = "protobuf-3.20.1-cp37-cp37m-win32.whl", hash = "sha256:755f3aee41354ae395e104d62119cb223339a8f3276a0cd009ffabfcdd46bb0c"},
-    {file = "protobuf-3.20.1-cp37-cp37m-win_amd64.whl", hash = "sha256:62f1b5c4cd6c5402b4e2d63804ba49a327e0c386c99b1675c8a0fefda23b2067"},
-    {file = "protobuf-3.20.1-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:06059eb6953ff01e56a25cd02cca1a9649a75a7e65397b5b9b4e929ed71d10cf"},
-    {file = "protobuf-3.20.1-cp38-cp38-manylinux2014_aarch64.whl", hash = "sha256:cb29edb9eab15742d791e1025dd7b6a8f6fcb53802ad2f6e3adcb102051063ab"},
-    {file = "protobuf-3.20.1-cp38-cp38-manylinux_2_5_x86_64.manylinux1_x86_64.whl", hash = "sha256:69ccfdf3657ba59569c64295b7d51325f91af586f8d5793b734260dfe2e94e2c"},
-    {file = "protobuf-3.20.1-cp38-cp38-win32.whl", hash = "sha256:dd5789b2948ca702c17027c84c2accb552fc30f4622a98ab5c51fcfe8c50d3e7"},
-    {file = "protobuf-3.20.1-cp38-cp38-win_amd64.whl", hash = "sha256:77053d28427a29987ca9caf7b72ccafee011257561259faba8dd308fda9a8739"},
-    {file = "protobuf-3.20.1-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:6f50601512a3d23625d8a85b1638d914a0970f17920ff39cec63aaef80a93fb7"},
-    {file = "protobuf-3.20.1-cp39-cp39-manylinux2014_aarch64.whl", hash = "sha256:284f86a6207c897542d7e956eb243a36bb8f9564c1742b253462386e96c6b78f"},
-    {file = "protobuf-3.20.1-cp39-cp39-manylinux_2_5_x86_64.manylinux1_x86_64.whl", hash = "sha256:7403941f6d0992d40161aa8bb23e12575637008a5a02283a930addc0508982f9"},
-    {file = "protobuf-3.20.1-cp39-cp39-win32.whl", hash = "sha256:db977c4ca738dd9ce508557d4fce0f5aebd105e158c725beec86feb1f6bc20d8"},
-    {file = "protobuf-3.20.1-cp39-cp39-win_amd64.whl", hash = "sha256:7e371f10abe57cee5021797126c93479f59fccc9693dafd6bd5633ab67808a91"},
-    {file = "protobuf-3.20.1-py2.py3-none-any.whl", hash = "sha256:adfc6cf69c7f8c50fd24c793964eef18f0ac321315439d94945820612849c388"},
-    {file = "protobuf-3.20.1.tar.gz", hash = "sha256:adc31566d027f45efe3f44eeb5b1f329da43891634d61c75a5944e9be6dd42c9"},
+    {file = "protobuf-4.21.0-cp310-abi3-win32.whl", hash = "sha256:bc78d6c23873ebf33076f0851ef64d050e7246d5b1e651b38a7e92c05f14881d"},
+    {file = "protobuf-4.21.0-cp310-abi3-win_amd64.whl", hash = "sha256:182b626615043e191e994672b7bbf1036bad5edc9f8f300a2f3a1fe77409a444"},
+    {file = "protobuf-4.21.0-cp37-abi3-macosx_10_9_universal2.whl", hash = "sha256:157e4ad67bf75d5719516fbf13fd652c634fd71338e01d2ac872bf365213b7a6"},
+    {file = "protobuf-4.21.0-cp37-abi3-manylinux2014_aarch64.whl", hash = "sha256:da3bb1acd646f01b4bdec128462441838e596899c5a5e1d2e8e31975f36cd0c4"},
+    {file = "protobuf-4.21.0-cp37-abi3-manylinux2014_x86_64.whl", hash = "sha256:9a65e012bc06022e98a57165ea48438b3b9f652eee33db7cbecb883588f9f169"},
+    {file = "protobuf-4.21.0-cp37-cp37m-win32.whl", hash = "sha256:b33660b14d582a700a47c8808a3f2da33f5bb3be576a8ae419d608db6b4f19b0"},
+    {file = "protobuf-4.21.0-cp37-cp37m-win_amd64.whl", hash = "sha256:f12e26fda74c40f308d37525e5276883388f25ff9a0c880f40f79d3ce9097d81"},
+    {file = "protobuf-4.21.0-cp38-cp38-win32.whl", hash = "sha256:2188063b59e1606cc45a1ad68beae7b94bec36e6d27d5e857dd611b79cdda99f"},
+    {file = "protobuf-4.21.0-cp38-cp38-win_amd64.whl", hash = "sha256:c8fc31d44e239178da6a698e0b69798387469b89172de3470a49d799550523a7"},
+    {file = "protobuf-4.21.0-cp39-cp39-win32.whl", hash = "sha256:2c753c5aa0943479a3f84b90e8c5bb28fef8cc3eb79c2c35e1bbf00d56cc435f"},
+    {file = "protobuf-4.21.0-cp39-cp39-win_amd64.whl", hash = "sha256:c92a9e2a94b9df945a6c578c3f53ace862ed3a50e849f41c27106007cc63ca8c"},
+    {file = "protobuf-4.21.0-py2.py3-none-any.whl", hash = "sha256:14c5fa41122e270d815b954ecdc25cb107d44b7d039def5cc57a5e5a9ab8d741"},
+    {file = "protobuf-4.21.0-py3-none-any.whl", hash = "sha256:4e78116673ba04e01e563f6a9cca2c72db0be8a3e1629094816357e81cc39d36"},
+    {file = "protobuf-4.21.0.tar.gz", hash = "sha256:6efbe40afb1b0303def53b3c5ce211b14e10d73d63a3f8b669ac0e3b74e8f863"},
 ]
 ptyprocess = [
     {file = "ptyprocess-0.7.0-py2.py3-none-any.whl", hash = "sha256:4b41f3967fce3af57cc7e94b888626c18bf37a083e3651ca8feeb66d492fef35"},
@@ -3233,8 +3241,8 @@ pyparsing = [
     {file = "pyparsing-3.0.9.tar.gz", hash = "sha256:2b020ecf7d21b687f219b71ecad3631f644a47f01403fa1d1036b0c6416d70fb"},
 ]
 pypdf2 = [
-    {file = "PyPDF2-1.28.1-py3-none-any.whl", hash = "sha256:38d9bd67000966dca519e1836454f49c93f94494dfe4d47a391b42eeb7cb7010"},
-    {file = "PyPDF2-1.28.1.tar.gz", hash = "sha256:bde31ef297d5124438688cce2656a7e453489e761166961cf1febe81877fc775"},
+    {file = "PyPDF2-1.28.2-py3-none-any.whl", hash = "sha256:8b5041f70743f08cb307ce6d0f1f27b2d0613bb479730b832530cd521458806c"},
+    {file = "PyPDF2-1.28.2.tar.gz", hash = "sha256:5660d2d5ab603bab11df1a1e3feeca40747378b2521112f3952364528c1fd5e2"},
 ]
 pyreadline3 = [
     {file = "pyreadline3-3.4.1-py3-none-any.whl", hash = "sha256:b0efb6516fd4fb07b45949053826a62fa4cb353db5be2bbb4a7aa1fdd1e345fb"},
@@ -3575,9 +3583,17 @@ types-emoji = [
     {file = "types-emoji-1.7.0.tar.gz", hash = "sha256:bfdf677bed34537117a7d43687b09a01b808e4d838872f7628c6dc4d8a64131e"},
     {file = "types_emoji-1.7.0-py3-none-any.whl", hash = "sha256:7655bb6aa1726ef6ee306d47679986def33f4ef909525687a40cad4bd06009a9"},
 ]
+types-filelock = [
+    {file = "types-filelock-3.2.6.tar.gz", hash = "sha256:81647b3ce2d81a704e5d6a66c1a4c935aafb780ae332c370af10598c6ebfb712"},
+    {file = "types_filelock-3.2.6-py3-none-any.whl", hash = "sha256:475a01ce06dd22a254228873dda868094c88066023b167502ece692adcfb7f69"},
+]
 types-ipaddress = [
     {file = "types-ipaddress-1.0.8.tar.gz", hash = "sha256:a03df3be5935e50ba03fa843daabff539a041a28e73e0fce2c5705bee54d3841"},
     {file = "types_ipaddress-1.0.8-py3-none-any.whl", hash = "sha256:4933b74da157ba877b1a705d64f6fa7742745e9ffd65e51011f370c11ebedb55"},
+]
+types-markdown = [
+    {file = "types-Markdown-3.3.23.tar.gz", hash = "sha256:5b9e3d08b74aab195145ffec5399ec0f5108cba52d5a023f597dcfbee895a2fb"},
+    {file = "types_Markdown-3.3.23-py3-none-any.whl", hash = "sha256:e9351a9d8dc04dc8215fbd2ffc8853866d2993945ea825475c76ca06b117fd25"},
 ]
 types-paramiko = [
     {file = "types-paramiko-2.10.0.tar.gz", hash = "sha256:ab6893d5fce5ed06964d61939ed6a7168ab14952945a90995a628a5e82a5e161"},
