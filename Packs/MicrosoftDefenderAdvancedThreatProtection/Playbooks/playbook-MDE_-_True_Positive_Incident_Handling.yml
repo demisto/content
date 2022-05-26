@@ -2,22 +2,22 @@ contentitemexportablefields:
   contentitemfields:
     propagationLabels:
     - all
-description: This Playbook handles a true-positive incident closure for Microsoft defender for endpoint
+description: This Playbook handles closing a true positive incident for Microsoft Defender for Endpoint.
 id: MDE - True Positive Incident Handling
 inputs:
-- description: 'XSOAR Investigation IDs to be closed '
+- description: 'The Cortex XSOAR investigation IDs to be closed. '
   key: DupAlertIDsToBeClosed
   playbookInputQuery:
   required: false
   value: {}
-- description: Add comment to close an incident on the Microsoft Defender For Endpoint side
+- description: Add a comment to close an incident on the Microsoft Defender For Endpoint side.
   key: Comment
   playbookInputQuery:
   required: false
   value:
     simple: 'XSOAR Incident #${incident.id}'
 - description: |-
-    Provide a reason for closing the incident. Please choose on of the following suggestions:
+    Provide a reason for closing the incident. Choose one of the following:
     "NotAvailable"/"Apt,Malware"/"SecurityPersonnel"/"SecurityTesting"/"UnwantedSoftware"/"Other"
   key: Reason
   playbookInputQuery:
@@ -28,38 +28,37 @@ inputs:
   playbookInputQuery:
   required: false
   value: {}
-- description: 'Please Specify the ticket description for this section '
+- description: 'Specify the ticket description for this section. '
   key: TicketDescription
   playbookInputQuery:
   required: false
   value: {}
-- description: Specify the banning tag name for founded indicators.
+- description: Specify the banning tag name for the found indicators.
   key: BlockTag
   playbookInputQuery:
   required: false
   value:
     simple: BlockTag
-- description: In case you are using Jira, please specify the Jira Project Key here ( can be retrieved from the Jira console)
+- description: If you are using Jira, specify the Jira Project Key here (can be retrieved from the Jira console).
   key: TicketProjectName
   playbookInputQuery:
   required: false
   value: {}
-- description: The name of the ticketing system to use, for example, Jira or ServiceNow
+- description: The name of the ticketing system to use, for example Jira or ServiceNow.
   key: TicketingSystemToUse
   playbookInputQuery:
   required: false
   value: {}
 - description: |-
-    Indicates if host isolation is allowed.
-    True/False
+    Whether host isolation is allowed.
   key: AutoIsolation
   playbookInputQuery:
   required: false
   value:
     simple: 'False'
 - description: |-
-    Determine if the duplicate incidents should be closed as well in Microsoft Defender Instance.
-    The playbook will look for the world "Close" in this input.
+    Whether duplicate incidents should be closed as well in the Microsoft Defender for Endpoint integration instance.
+    The playbook looks for the world "Close" in this input.
   key: CloseDuplicate
   playbookInputQuery:
   required: false
@@ -70,13 +69,13 @@ inputs:
   required: false
   value:
     simple: ${incident.deviceid}
-- description: Enter the File Sha256 you would like to block.
+- description: Enter the File SHA256 you want to block.
   key: FileSha256
   playbookInputQuery:
   required: false
   value:
     simple: ${incident.filesha256}
-- description: Enter the File Sha1 that you would like to remove from your protected endpoints.
+- description: Enter the File SHA1 you want to remove from your protected endpoints.
   key: FileSha1
   playbookInputQuery:
   required: false
@@ -135,14 +134,14 @@ tasks:
     task:
       brand: ''
       description: |-
-        Searches Demisto incidents.
+        Searches Cortex XSOAR incidents.
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
         https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
       id: 6fd207d1-791f-4b90-850b-a28c922534b3
       iscommand: false
-      name: Retrieve MSDE alerts ID based on XSOAR investigation
+      name: Retrieve MDE alert IDs based on Cortex XSOAR investigation
       scriptName: SearchIncidentsV2
       type: regular
       version: -1
@@ -193,7 +192,7 @@ tasks:
       description: Update the properties of an alert entity.
       id: 5d72a24f-10c7-482a-816b-2fcda6abc292
       iscommand: true
-      name: Resolve MSDE Alert
+      name: Resolve MDE Alert
       script: '|||microsoft-atp-update-alert'
       type: regular
       version: -1
@@ -356,7 +355,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: Auto Isolate the endpoint
+      description: Auto isolates the endpoint.
       id: 2ae67c4c-b175-4ee2-8888-072b0b96aef6
       iscommand: false
       name: Auto Isolate the endpoint
@@ -567,7 +566,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: Confirm Indicators to block
+      description: Confirms the indicators to block.
       id: b8bb6567-7dff-4770-87a7-b875a24a158f
       iscommand: false
       name: Confirm Indicators to block
@@ -865,12 +864,12 @@ tasks:
     task:
       brand: ''
       description: |-
-        This script is used to wrap the generic create-record command in ServiceNow.
+        This script wraps the generic create-record command in ServiceNow.
         You can add fields that you want to create the record with as script arguments or in the
-        code and work with the records easily.
+        code.
       id: 4b0e11b0-60fd-4630-89f6-a3fecf503e57
       iscommand: false
-      name: Open Snow ticket
+      name: Open ServiceNow ticket
       scriptName: ServiceNowCreateIncident
       type: regular
       version: -1
@@ -905,7 +904,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      description: Returns 'yes' if the ServiceNow integration is enabled.
       id: 2394b4c9-48a8-4f34-8f74-16d6f6cae38b
       iscommand: false
       name: Is ServiceNow Available?
@@ -943,7 +942,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      description: Returns 'yes' if the Jira integration is enabled.
       id: 7bae04fd-831d-43a4-85d2-490036807ee6
       iscommand: false
       name: Is Jira Available?
@@ -995,7 +994,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: Additional Duplicate IDs were provided?
+      description: Additional duplicate IDs were provided?
       id: 6fae56bf-0575-454f-8b43-b18a1affa536
       iscommand: false
       name: Additional Duplicate IDs were provided?
@@ -1040,7 +1039,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: Stop the execution of a file on a machine and delete it.
+      description: Stops the execution of a file on a machine and deletes it.
       id: cddcf330-2a00-4acb-8514-e8afb8f9922a
       iscommand: true
       name: Quarantine this file on an affected machine
@@ -1076,7 +1075,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: Get a collection of machines related to a given file SHA1 hash.
+      description: Gets a collection of machines related to a given file SHA1 hash.
       id: 7e49fe5f-992e-47f6-8eaf-b681ee2a75e8
       iscommand: true
       name: Get a list of devices associated with the malicious/suspicious SHA1 hashes
@@ -1285,7 +1284,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: Confirm which SHA1 should be deleted
+      description: Confirms which SHA1 to delete.
       id: 1e685c14-194d-46bb-8022-b3ea9de0e989
       iscommand: false
       name: Confirm which SHA1 should be deleted
@@ -1328,7 +1327,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: Was there any hash selected?
+      description: Was a hash selected?
       id: 83e10ad8-4cae-4707-8814-e7848604d2b9
       iscommand: false
       name: Was there any hash selected?
@@ -1370,7 +1369,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: Was there any hash selected?
+      description: Was a hash selected?
       id: c56502eb-8784-487f-8440-5c5aca6ba31d
       iscommand: false
       name: Was there any hash selected?
