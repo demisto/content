@@ -8,6 +8,7 @@ import requests
 import py42.sdk
 import py42.settings
 from datetime import datetime
+from uuid import UUID
 from py42.services.detectionlists.departing_employee import DepartingEmployeeFilters
 from py42.services.detectionlists.high_risk_employee import HighRiskEmployeeFilters
 from py42.sdk.queries.fileevents.file_event_query import FileEventQuery
@@ -168,6 +169,13 @@ class Code42Client(BaseClient):
             self._sdk = self._sdk_factory()
         return self._sdk
 
+    # Departing Employee methods (deprecated, replaced by Watchlist methods)
+
+    def get_departing_employee(self, username):
+        user_id = self._get_user_id(username)
+        response = self._get_sdk().detectionlists.departing_employee.get(user_id)
+        return response.data
+
     def add_user_to_departing_employee(self, username, departure_date=None, note=None):
         user_id = self._get_user_id(username)
         self._get_sdk().detectionlists.departing_employee.add(
@@ -188,13 +196,19 @@ class Code42Client(BaseClient):
         filter_type = filter_type if filter_type else DepartingEmployeeFilters.OPEN
         pages = self._get_sdk().detectionlists.departing_employee.get_all(filter_type=filter_type)
         for page in pages:
-            page_json = json.loads(page.text)
-            employees = page_json.get("items") or []
+            employees = page.data.get("items") or []
             for employee in employees:
                 res.append(employee)
                 if results and len(res) == results:
                     return res
         return res
+
+    # High Risk Employee methods (deprecated, replaced by Watchlist methods)
+
+    def get_high_risk_employee(self, username):
+        user_id = self._get_user_id(username)
+        response = self._get_sdk().detectionlists.high_risk_employee.get(user_id)
+        return response.data
 
     def add_user_to_high_risk_employee(self, username, note=None):
         user_id = self._get_user_id(username)
@@ -227,8 +241,7 @@ class Code42Client(BaseClient):
         res = []
         pages = self._get_sdk().detectionlists.high_risk_employee.get_all(filter_type=filter_type)
         for page in pages:
-            page_json = json.loads(page.text)
-            employees = _get_all_high_risk_employees_from_page(page_json, risk_tags)
+            employees = _get_all_high_risk_employees_from_page(page.data, risk_tags)
             for employee in employees:
                 res.append(employee)
                 if results and len(res) == results:
@@ -238,11 +251,11 @@ class Code42Client(BaseClient):
     def fetch_alerts(self, start_time, event_severity_filter):
         query = _create_alert_query(event_severity_filter, start_time)
         res = self._get_sdk().alerts.search(query)
-        return json.loads(res.text).get("alerts")
+        return res.data.get("alerts")
 
     def get_alert_details(self, alert_id):
         py42_res = self._get_sdk().alerts.get_details(alert_id)
-        res = json.loads(py42_res.text).get("alerts")
+        res = py42_res.data.get("alerts")
         if not res:
             raise Code42AlertNotFoundError(alert_id)
         return res[0]
@@ -257,7 +270,7 @@ class Code42Client(BaseClient):
 
     def get_user(self, username):
         py42_res = self._get_sdk().users.get_by_username(username)
-        res = json.loads(py42_res.text).get("users")
+        res = py42_res.data.get("users")
         if not res:
             raise Code42UserNotFoundError(username)
         return res[0]
@@ -265,7 +278,7 @@ class Code42Client(BaseClient):
     def create_user(self, org_name, username, email):
         org_uid = self._get_org_id(org_name)
         response = self._get_sdk().users.create_user(org_uid, username, email)
-        return json.loads(response.text)
+        return response.data
 
     def block_user(self, username):
         user_id = self._get_legacy_user_id(username)
@@ -299,7 +312,7 @@ class Code42Client(BaseClient):
         user_uid = self._get_user_id(username)
         matter_id = self._get_legal_hold_matter_id(matter_name)
         response = self._get_sdk().legalhold.add_to_matter(user_uid, matter_id)
-        return json.loads(response.text)
+        return response.data
 
     def remove_user_from_legal_hold_matter(self, username, matter_name):
         user_uid = self._get_user_id(username)
@@ -314,8 +327,7 @@ class Code42Client(BaseClient):
     def get_org(self, org_name):
         org_pages = self._get_sdk().orgs.get_all()
         for org_page in org_pages:
-            page_json = json.loads(org_page.text)
-            orgs = page_json.get("orgs")
+            orgs = org_page.data.get("orgs")
             for org in orgs:
                 if org.get("orgName", "") == org_name:
                     return org
@@ -323,7 +335,7 @@ class Code42Client(BaseClient):
 
     def search_file_events(self, payload):
         py42_res = self._get_sdk().securitydata.search_file_events(payload)
-        return json.loads(py42_res.text).get("fileEvents")
+        return py42_res.data.get("fileEvents")
 
     def download_file(self, hash_arg):
         security_module = self._get_sdk().securitydata
@@ -351,16 +363,6 @@ class Code42Client(BaseClient):
         if org_uid:
             return org_uid
         raise Code42OrgNotFoundError(org_name)
-
-    def get_departing_employee(self, username):
-        user_id = self._get_user_id(username)
-        response = self._get_sdk().detectionlists.departing_employee.get(user_id)
-        return json.loads(response.text)
-
-    def get_high_risk_employee(self, username):
-        user_id = self._get_user_id(username)
-        response = self._get_sdk().detectionlists.high_risk_employee.get(user_id)
-        return json.loads(response.text)
 
     def _get_legal_hold_matter_id(self, matter_name):
         matter_id = self.get_legal_hold_matter(matter_name).get("legalHoldUid")
@@ -394,6 +396,11 @@ class Code42OrgNotFoundError(Exception):
         super(Code42OrgNotFoundError, self).__init__(
             "No organization found with name {0}.".format(org_name)
         )
+
+
+class Code42InvalidWatchlistTypeError(Exception):
+    def __init__(self, watchlist):
+        super().__init__("Invalid Watchlist type: {0}, run !code42-watchlists-list to get a list of available Watchlists.".format(watchlist))
 
 
 class Code42UnsupportedHashError(Exception):
@@ -1140,6 +1147,97 @@ def download_file_command(client, args):
     file_chunks = [c for c in response.iter_content(chunk_size=128) if c]
     return fileResult(filename, data=b"".join(file_chunks))
 
+
+@logger
+def list_watchlists_command(client, args):
+    watchlists_context = []
+    for page in client._get_sdk().watchlists.get_all():
+        for watchlist in page["watchlists"]:
+            watchlists_context.append(
+                {
+                    "WatchlistID": watchlist["watchlistId"],
+                    "WatchlistType": watchlist["listType"],
+                    "IncludedUserCount": watchlist["stats"].get("includedUsersCount", 0)
+                }
+            )
+
+    if not watchlists_context:
+        CommandResults(
+            readable_output="No results found",
+            outputs_prefix="Code42.Watchlists",
+            outputs_key_field="WatchlistID",
+            outputs={"Results": []},
+            raw_response={},
+        )
+
+    readable_outputs = tableToMarkdown("Watchlists", watchlists_context)
+    return CommandResults(
+        outputs_prefix="Code42.Watchlists",
+        outputs_key_field="WatchlistID",
+        outputs=watchlists_context,
+        readable_output=readable_outputs,
+        raw_response=watchlists_context,
+    )
+
+
+@logger
+def list_watchlists_included_users(client, args):
+    watchlist = args.get("watchlist")
+    try:
+        UUID(hex=watchlist)
+        watchlist_id = watchlist
+    except ValueError:
+        watchlist_id = client._get_sdk().watchlists._watchlists_service.watchlist_type_id_map.get(watchlist)
+        if watchlist_id is None:
+            raise Code42InvalidWatchlistTypeError(watchlist)
+    included_users_context = []
+    for page in client._get_sdk().watchlists.get_all_included_users(watchlist_id):
+        for user in page["includedUsers"]:
+            included_users_context.append({"Username": user["username"], "AddedTime": user["addedTime"], "WatchlistID": watchlist_id})
+    readable_outputs = tableToMarkdown("Watchlists", included_users_context)
+    return CommandResults(
+        outputs_prefix="Code42.WatchlistUsers",
+        outputs=included_users_context,
+        readable_output=readable_outputs,
+    )
+
+
+@logger
+def add_user_to_watchlist_command(client, args):
+    username = args.get("username")
+    watchlist = args.get("watchlist")
+    user = client.get_user(username)
+    user_id = user["userUid"]
+    demisto.log(user_id)
+    try:
+        UUID(hex=watchlist)
+        resp = client._get_sdk().watchlists.add_included_users_by_watchlist_id(user_id, watchlist)
+    except ValueError:
+        resp = client._get_sdk().watchlists.add_included_users_by_watchlist_type(user_id, watchlist)
+    return CommandResults(
+        outputs_prefix="Code42.UsersAddedToWatchlists",
+        outputs_key_field="Watchlist",
+        outputs={"Watchlist": watchlist, "Username": username, "Success": resp.status_code == 200},
+    )
+
+
+@logger
+def remove_user_from_watchlist_command(client, args):
+    username = args.get("username")
+    watchlist = args.get("watchlist")
+    user = client.get_user(username)
+    user_id = user["userUid"]
+    demisto.log(user_id)
+    try:
+        UUID(hex=watchlist)
+        resp = client._get_sdk().watchlists.remove_included_users_by_watchlist_id(user_id, watchlist)
+    except ValueError:
+        resp = client._get_sdk().watchlists.remove_included_users_by_watchlist_type(user_id, watchlist)
+    return CommandResults(
+        outputs_prefix="Code42.UsersRemovedFromWatchlists",
+        outputs_key_field="Watchlist",
+        outputs={"Watchlist": watchlist, "Username": username, "Success": resp.status_code == 200},
+    )
 
 """Fetching"""
 
