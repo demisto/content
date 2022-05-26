@@ -9,6 +9,7 @@ urllib3.disable_warnings()
 DATETIME_FORMAT = '%Y-%m-%dT%H:%M:%S.%f'
 EVENT_FIELDS = [
     'ID',
+    'EventType',
     'AuthMethod',
     'DirectoryServiceUuid',
     'DirectoryServicePartnerName',
@@ -129,7 +130,7 @@ class CyberArkEventsClient(IntegrationEventsClient):
         credentials = base64.b64encode(f'{self.credentials.identifier}:{self.credentials.password}'.encode()).decode()
         request = IntegrationHTTPRequest(
             method=self.request.method,
-            url=f"{self.request.url.removesuffix('/')}/oauth2/token/{self.options.app_id}",
+            url=f"{self.request.url.removesuffix('/RedRock/Query')}/oauth2/token/{self.options.app_id}",
             headers={'Authorization': f"Basic {credentials}"},
             data={'grant_type': 'client_credentials', 'scope': 'siem'},
             verify=not self.request.verify,
@@ -208,7 +209,8 @@ def main(command: str, demisto_params: dict):
                 demisto.setLastRun(last_run)
 
             if command == 'fetch-events' or demisto_params.get('should_push_events'):
-                send_events_to_xsiam(events, vendor=demisto_params.get('vendor'), product=demisto_params.get('product'))
+                send_events_to_xsiam(events, vendor=demisto_params.get('vendor', 'cyberark'),
+                                     product=demisto_params.get('product', 'idaptive'))
 
             if command == 'cyberark-get-events':
                 command_results = CommandResults(
