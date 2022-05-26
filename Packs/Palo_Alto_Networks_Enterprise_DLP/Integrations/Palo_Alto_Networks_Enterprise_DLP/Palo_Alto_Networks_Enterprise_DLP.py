@@ -151,7 +151,13 @@ class Client(BaseClient):
                 break
             count += 1
 
-        result_json = {} if res.status_code == 204 else res.json()
+        result_json = {}
+        if res.status_code != 204:
+            try:
+                result_json = res.json()
+            except json.decoder.JSONDecodeError:
+                result_json = {}
+
         return result_json, res.status_code
 
     def _post_dlp_api_call(self, url_suffix: str, payload: Dict = None):
