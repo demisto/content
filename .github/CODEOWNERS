@@ -42,14 +42,18 @@
 /Packs/SplunkPy/Integrations/SplunkPy/* @demisto/content-leaders
 /Packs/Active_Directory_Query/Integrations/Active_Directory_Query/* @demisto/content-leaders
 /Packs/VirusTotal/Integrations/integration-VirusTotal_5.5.yml @demisto/content-leaders
-/Packs/VirusTotal/* @jochman
-/Packs/ContentManagement/* @ChanochShayner
-/Packs/MISP/* @abaumgarten
+/Packs/ContentManagement/* @adi88d
 
 # Important Scripts
-/Packs/CommonScripts/Scripts/SetGridField/* @yaakovi @David-BMS
+/Packs/CommonScripts/Scripts/SetGridField/* @yaakovi @David-BMS @altmannyarden
 /Packs/CommonScripts/Scripts/SearchIncidentsV2/* @demisto/content-leaders
 /Packs/CommonScripts/Scripts/ParseEmailFiles/* @moishce
+
+# Common Packs
+/Packs/CommonTypes/* @michalgold @altmannyarden @idovandijk
+/Packs/CommonPlaybooks/* @michalgold @altmannyarden @idovandijk
+/Packs/CommonDashboards/* @michalgold @altmannyarden @idovandijk
+
 
 # Build related
 .circleci/config.yml @esharf
