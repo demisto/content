@@ -178,3 +178,4 @@ endpoints
 DNS
 XDR
 CommandRunner
+AttackPattern
