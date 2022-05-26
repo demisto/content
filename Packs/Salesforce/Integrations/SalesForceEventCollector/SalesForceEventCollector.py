@@ -139,8 +139,7 @@ class SalesforceGetEvents(IntegrationGetEvents):
 
             yield events_list
 
-    @staticmethod
-    def get_last_run(self) -> dict:
+    def get_last_run_details(self) -> dict:
         """
         Get the log time and the file id to prevent duplications in the next run
         """
@@ -210,7 +209,7 @@ def main():
 
             if command == 'fetch-events':
                 send_events_to_xsiam(events, 'salesforce', demisto_params.get('product'))
-                demisto.setLastRun(get_events.get_last_run())
+                demisto.setLastRun(get_events.get_last_run_details())
 
             elif command == 'salesforce-get-events':
                 command_results = CommandResults(
