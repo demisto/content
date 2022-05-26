@@ -107,21 +107,13 @@ def canonicalized_resource(resource, params):
             urlString += u"{0}={1}&".format(
                 key, value.decode('utf8') if isinstance(value, six.binary_type) else value)
         resource += '?' + urlString[:-1]
-        if six.PY3:
-            return resource
-        else:
-            return resource.encode('utf8')
-
     return resource
 
 
 def base64_encodestring(s):
-    if six.PY2:
-        return base64.encodestring(s)
-    else:
-        if isinstance(s, str):
-            s = s.encode('utf8')
-        return base64.encodebytes(s).decode('utf8')
+    if isinstance(s, str):
+        s = s.encode('utf8')
+    return base64.encodebytes(s).decode('utf8')
 
 
 def hmac_sha1(content, key):
@@ -135,7 +127,6 @@ def hmac_sha1(content, key):
 
 
 def get_request_authorization(resource, key, req_params, req_headers):
-    """ :return bytes (PY2) or string (PY2) """
     content = 'GET\n\n\n'
     content += req_headers['Date'] + "\n"
     content += canonicalized_log_headers(req_headers)
@@ -149,8 +140,6 @@ def get_alibaba_timestamp_format(value):
         return value
     if not isinstance(value, datetime):
         timestamp = dateparser.parse(value)
-    if timestamp is None:
-        raise TypeError(f'after is not a valid time {value}')
     return int(time.mktime(timestamp.timetuple()))
 
 
@@ -162,7 +151,7 @@ def main():
     endpoint = demisto_params.get('endpoint')
     logstore_name = demisto_params.get('logstore_name')
     access_key = demisto_params.get('access_key').get('password')
-    access_key_id = demisto_params.get('access_key_id').get('password')
+    access_key_id = demisto_params.get('access_key').get('identifier')
     query = demisto_params.get('query')
     from_ = get_alibaba_timestamp_format(demisto_params.get('from'))
     should_push_events = argToBoolean(demisto_params.get('should_push_events', 'false'))

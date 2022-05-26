@@ -10,18 +10,11 @@ configuration:
   name: endpoint
   type: 0
   required: true
-- display: ""
-  displaypassword: Access key id
-  name: access_key_id
-  type: 9
-  required: true
-  hiddenusername: true
-- display: ""
+- display: "Access key ID"
   displaypassword: Access key
   name: access_key
   type: 9
   required: true
-  hiddenusername: true
 - display: Project name
   name: project_name
   type: 0
@@ -54,7 +47,7 @@ configuration:
   name: proxy
   type: 8
   required: false
-- display: Use Secured Connection
+- display: Trust any certificate (not secure)
   name: verify
   type: 8
   required: false
