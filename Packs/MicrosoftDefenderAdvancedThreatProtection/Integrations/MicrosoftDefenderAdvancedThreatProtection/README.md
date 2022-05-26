@@ -143,6 +143,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 46. endpoint
 47. microsoft-atp-indicator-batch-update
 48. microsoft-atp-get-alert-by-id
+49. microsoft-atp-request-and-download-investigation-package
 
 ### 1. microsoft-atp-isolate-machine
 ---
@@ -5841,3 +5842,29 @@ Alert.ReadWrite.All
 >|ID|Title|Description|IncidentID|Severity|Status|Classification|Category|ThreatFamilyName|MachineID|
 >|---|---|---|---|---|---|---|---|---|---|
 >| da637472900382838869_1364969609 | Low-reputation arbitrary code executed by signed executable | Binaries signed by Microsoft can be used to run low-reputation arbitrary code. This technique hides the execution of malicious code within a trusted process. As a result, the trusted process might exhibit suspicious behaviors, such as opening a listening port or connecting to a command-and-control (C&C) server. | 1126093 | Low | New |  | Execution |  | 111e6dd8c833c8a052ea231ec1b19adaf497b625 |
+
+### microsoft-atp-request-and-download-investigation-package
+***
+Collect and download an investigation package as a gz file.
+
+
+#### Base Command
+
+`microsoft-atp-request-and-download-investigation-package`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| machine_id | The machine ID. | Required | 
+| comment | A comment to associate with the action. | Required | 
+| timeout_in_seconds | Timeout for polling. | Optional | 
+| machine_action_id | Action ID to retrieve status and data for. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MicrosoftATP.MachineAction.ID | String | The machine action ID. | 
+| MicrosoftATP.MachineAction.Status | String | The current status of the machine action. | 
+| MicrosoftATP.MachineAction.MachineID | String |  The machine ID on which the action was executed. |
