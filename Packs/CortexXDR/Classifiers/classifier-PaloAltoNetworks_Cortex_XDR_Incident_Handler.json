@@ -5,7 +5,7 @@
 	"definitionId": "",
 	"description": "Classifies Cortex XDR incidents.",
 	"feed": false,
-	"fromServerVersion": "6.0.0",
+	"fromServerVersion": "6.5.0",
 	"id": "780f776e-4d18-427f-8b18-cb0fd22e4799",
 	"incidentSamples": null,
 	"indicatorSamples": null,
