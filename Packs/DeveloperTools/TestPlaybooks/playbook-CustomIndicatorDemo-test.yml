@@ -1,19 +1,19 @@
 id: playbook-CustomIndicatorDemo-test
-version: -1
+version: 5
+vcShouldKeepItemLegacyProdMachine: false
 name: playbook-CustomIndicatorDemo-test
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 21491667-52f3-4247-85bc-2c57a226abd4
+    taskid: ebdaf3a4-0912-454f-8370-5fb7bfffcb23
     type: start
     task:
-      id: 21491667-52f3-4247-85bc-2c57a226abd4
+      id: ebdaf3a4-0912-454f-8370-5fb7bfffcb23
       version: -1
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -30,15 +30,17 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 86b65937-519e-421c-8b04-50e0ad26d93d
+    taskid: ae5c9730-39fc-4ad7-8478-d20a3fc6a632
     type: regular
     task:
-      id: 86b65937-519e-421c-8b04-50e0ad26d93d
+      id: ae5c9730-39fc-4ad7-8478-d20a3fc6a632
       version: -1
       name: test-custom-indicator
-      description: 'This command demonstrates the usage of CustomIndicator.'
+      description: This command demonstrates the usage of CustomIndicator.
       script: CustomIndicatorDemo|||test-custom-indicator
       type: regular
       iscommand: true
@@ -59,12 +61,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 8f6b2ee7-9290-405a-858b-4868ab476608
+    taskid: cb6e7515-30f5-4430-8734-ffa4745ba3ce
     type: condition
     task:
-      id: 8f6b2ee7-9290-405a-858b-4868ab476608
+      id: cb6e7515-30f5-4430-8734-ffa4745ba3ce
       version: -1
       name: verify outputs
       type: condition
@@ -72,7 +76,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "4"
+      - "5"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -113,24 +117,30 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "4":
-    id: "4"
-    taskid: 9e31f61b-3068-40a4-8f25-7fba0d6c1df4
-    type: title
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 246ea808-0fd6-478a-804f-21fb03205b8d
+    type: regular
     task:
-      id: 9e31f61b-3068-40a4-8f25-7fba0d6c1df4
+      id: 246ea808-0fd6-478a-804f-21fb03205b8d
       version: -1
-      name: Test Done
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
+      name: Close
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      closeNotes:
+        simple: Test done
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 545
+          "y": 565
         }
       }
     note: false
@@ -138,12 +148,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 560,
+        "height": 610,
         "width": 380,
         "x": 50,
         "y": 50
@@ -152,5 +164,3 @@ view: |-
   }
 inputs: []
 outputs: []
-fromversion: 5.5.0
-description: ''
