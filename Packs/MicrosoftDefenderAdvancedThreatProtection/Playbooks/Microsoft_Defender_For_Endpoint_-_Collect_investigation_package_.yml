@@ -281,6 +281,12 @@ tasks:
         }
       }
     note: false
+    evidencedata:
+      description:
+        simple: Investigation Package from the Device ID- ${Endpoint.ID}
+      tags:
+        simple: Investigation Package
+      customfields: {}
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
