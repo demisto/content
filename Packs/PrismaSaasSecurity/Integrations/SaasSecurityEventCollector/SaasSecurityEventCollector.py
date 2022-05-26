@@ -92,7 +92,7 @@ class Client(BaseClient):
     def get_events_request(self, retries=5, is_test=False):
         return self.http_request(
             'GET',
-            url_suffix='/api/v1/log_events',
+            url_suffix='/api/v1/log_events_bulk',
             resp_type='response',
             status_list_to_retry=[204],
             retries=retries,
@@ -143,7 +143,9 @@ def get_events_from_integration_context(is_fetch_events: bool = False, max_fetch
             context={'events': events_to_remove},
             object_keys=EVENTS_OBJECT_KEYS
         )
-
+    # remove the ID, it is only used when setting integration context, this is something that the api returns
+    for event in fetched_events:
+        event.pop('id')
     demisto.debug(f'integration context events len: ({len(context_events)}), content: ({context_events})')
     return fetched_events
 
@@ -157,11 +159,15 @@ def saas_security_get_events_command(args: Dict) -> Union[str, CommandResults]:
     if events := get_events_from_integration_context(max_fetch=limit):
         return CommandResults(
             readable_output=tableToMarkdown(
-                'SaaS Security Logs', events, headers=list(events[0].keys()), headerTransform=underscoreToCamelCase
+                'SaaS Security Logs',
+                events,
+                headers=list(events[0].keys()),
+                headerTransform=underscoreToCamelCase,
+                removeNull=True
             ),
             raw_response=events,
             outputs=events,
-            outputs_key_field='id',
+            outputs_key_field=['item_unique_id', 'timestamp'],
             outputs_prefix='SaasSecurity.Event'
         )
     return 'No events were found.'
@@ -181,13 +187,6 @@ def long_running_execution_command(client: Client):
     """
     # set the access token for the first fetch
     set_to_integration_context_with_retries(context=client.get_access_token())
-    # there is no unique id for events, hence need to make one of our own.
-    if events := json.loads(demisto.getIntegrationContext().get('events') or '[]'):
-        # in case the integration was disabled, we want to continue counting ids from the last time
-        current_event_id = arg_to_number(events[len(events) - 1].get('id'))
-    else:
-        # this is the first time integration is being used
-        current_event_id = 1
 
     while True:
         try:
@@ -196,16 +195,11 @@ def long_running_execution_command(client: Client):
 
             response = client.get_events_request()
             if response.status_code == 200:
-                events = response.json()
+                events = response.json()  # ---> {events: [{event1}, {event2}....], it can not be empty.
                 demisto.debug(f'Received event(s): {events}')
-                if isinstance(events, list):  # 'events' is a list of events
-                    for event in events:
-                        event['id'] = current_event_id
-                    updated_integration_context['events'] = events
-                elif isinstance(events, dict):  # 'events' is a single dict (only one event)
-                    events['id'] = current_event_id
-                    updated_integration_context['events'] = [events]
-                current_event_id += 1
+                for event in events.get('events'):
+                    event['id'] = f'{event.get("item_unique_id")}-{event.get("timestamp")}'
+                updated_integration_context['events'] = events
             elif response.status_code == 401:
                 demisto.debug(f'Unauthorized: [{response.json()}]')
                 # update the access token in case its required

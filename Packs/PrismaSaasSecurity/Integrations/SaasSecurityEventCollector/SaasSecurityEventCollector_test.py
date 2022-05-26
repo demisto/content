@@ -176,7 +176,8 @@ class TestFetchEvents:
              deleted from the integration context
            - make sure that if limit < len(events), that the first 'limit' events will be fetched and deleted from
              the integration context
-           - make sure that when setting the integration context, the events that should be deleted are passed
+           - make sure that when setting the integration context, the events that should be deleted are passed to
+             the set integration function
            - make sure that every time we call fetch events, then set integration context will be called as well.
 
         """
