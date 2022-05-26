@@ -74,7 +74,7 @@ class CollectedTests:
         if tests and packs and len(tests) != len(packs):
             raise ValueError(f'when both are not empty, {len(tests)=} must be equal to {len(packs)=}')
         elif tests:
-            packs = (None,) * len(packs)  # so accessors get a None
+            packs = (None,) * len(tests)  # so accessors get a None
         elif packs:
             tests = (None,) * len(packs)  # so accessors get a None
 
