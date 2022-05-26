@@ -7,7 +7,7 @@ from CommonServerPython import *  # noqa: F401
 from tld import get_tld
 
 
-def strip_HTML_tags(page):
+def strip_html_tags(page):
     # Parse the HTML content
     soup = BeautifulSoup(page.content, "html.parser")
     # Strip irrelevant tags
@@ -16,18 +16,18 @@ def strip_HTML_tags(page):
     return(' '.join(soup.stripped_strings))
 
 
-def validate_domains(domains, unescapeDomain, TLDExclusion):
+def validate_domains(domains, unescape_domain, TLD_exclusion):
     # TLD exclusion and validation for domain indicators
-    badDomainTLD = set()
+    bad_domain_TLD = set()
     for indicator in domains:
-        if unescapeDomain == "True" and not (get_tld(indicator, fail_silently=True)):
-            badDomainTLD.add(indicator)
+        if unescape_domain == "True" and not (get_tld(indicator, fail_silently=True)):
+            bad_domain_TLD.add(indicator)
             continue
 
-        for tld in TLDExclusion:
+        for tld in TLD_exclusion:
             if indicator.endswith(tld):
-                badDomainTLD.add(indicator)
-    return(badDomainTLD)
+                bad_domain_TLD.add(indicator)
+    return(bad_domain_TLD)
 
 
 def main():
@@ -41,12 +41,12 @@ def main():
     except requests.HTTPError:
         raise
 
-    exclusionList = set(argToList(args.get("exclude_indicators")))
-    TLDExclusion = argToList(args.get("exclude_TLD"))
-    unescapeDomain = args.get("unescape_domain")
+    exclusion_list = set(argToList(args.get("exclude_indicators")))
+    TLD_exclusion = argToList(args.get("exclude_TLD"))
+    unescape_domain = args.get("unescape_domain")
 
     # Allow domain regex replacement between "[.]" and "."
-    if unescapeDomain == "False":
+    if unescape_domain == "False":
         domain_regex = r"([a-zA-Z0-9]+?\[?\.?\]?[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9]\[\.\][a-zA-Z]{2,}\[?\.?\]?[a-zA-Z]{0,})"
     else:
         domain_regex = r"([a-zA-Z0-9]+?\[?\.?\]?[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9]\[\.\][a-zA-Z]{2,}\[?\.?\]?[a-zA-Z]{0,})"
@@ -57,7 +57,7 @@ def main():
     ip_regex = r"(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(?:\[\.\]|\.)){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])"
     cve_regex = r"(CVE-\d{4}-\d{4,7})"
 
-    page_update = strip_HTML_tags(page)
+    page_update = strip_html_tags(page)
 
     # Extract indicators using regex
     md5 = set(md5Regex.findall(page_update))
@@ -69,13 +69,13 @@ def main():
     cve = set(re.findall(cve_regex, page_update, flags=re.IGNORECASE))
 
     # Validate the domain indicators
-    badDomainTLD = validate_domains(domain, unescapeDomain, TLDExclusion)
+    bad_domain_TLD = validate_domains(domain, unescape_domain, TLD_exclusion)
 
     # Combine all indicators
-    blogIndicators = (md5 | sha1 | sha256 | domain | url | ip | cve) - exclusionList - badDomainTLD
+    blog_indicators = (md5 | sha1 | sha256 | domain | url | ip | cve) - exclusion_list - bad_domain_TLD
 
-    return_results(CommandResults(readable_output='\n'.join(blogIndicators), outputs={
-                   "http.parsedBlog.indicators": list(blogIndicators), "http.parsedBlog.sourceLink": blog_url}))
+    return_results(CommandResults(readable_output='\n'.join(blog_indicators), outputs={
+                   "http.parsedBlog.indicators": list(blog_indicators), "http.parsedBlog.sourceLink": blog_url}))
 
 
 if __name__ in ('__builtin__', 'builtins', '__main__'):
