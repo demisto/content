@@ -100,7 +100,7 @@ var sendRequest = function(method, uri, body, raw) {
 
 function reduce_one_entry(data, keep_fields) {
     var new_d = {};
-    for (var field_index = 0; (field_index < keep_fields.length); field_index += 1) {
+    for (var field_index = 0; field_index < keep_fields.length; field_index += 1) {
         var field = keep_fields[field_index];
         if (data[field]) {
             new_d[field] = data[field];
@@ -110,16 +110,16 @@ function reduce_one_entry(data, keep_fields) {
 }
 
 function reduce_data(data, fields_to_keep) {
-    if ((data instanceof Array)) { // is array
+    if (data instanceof Array) {
         var new_data = [];
-        for (var data_index = 0; (data_index < data.length); data_index += 1) {
+        for (var data_index = 0; data_index < data.length; data_index += 1) {
             var d = data[data_index];
             new_data.push(reduce_one_entry(d, fields_to_keep));
         }
         return new_data;
     }
     else {
-        if ((data.constructor == Object)) { // is dictionary
+        if (data.constructor == Object) {
             return [reduce_one_entry(data, fields_to_keep)];
         } 
     }
