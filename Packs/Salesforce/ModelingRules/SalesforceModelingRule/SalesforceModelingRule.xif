@@ -6,7 +6,7 @@ filter event_type in("RestApi","Api","Sites","VisualForce","Uri")
         XDM.Network.http.response_code = request_status,
         XDM.Network.duration = run_time,
         XDM.Network.session_id = session_key,
-        XDM.Network.event_timestamp = timestamp,
+        XDM.Network.event_timestamp = parse_timestamp("%Y%m%d%H%M%S", arrayindex(split(timestamp, "."),0)),
         XDM.Network.http.url = uri,
         XDM.Network.Source.user.user_type = user_type;
 
@@ -20,7 +20,7 @@ filter event_type in("Login","Logout")
         XDM.Auth.Client.host.os = platform_type,
         XDM.Auth.session_id = session_key,
         XDM.Auth.Client.ipv4 = source_ip,
-        XDM.Auth.event_timestamp = timestamp,
+        XDM.Auth.event_timestamp = parse_timestamp("%Y%m%d%H%M%S", arrayindex(split(timestamp, "."),0)),
         XDM.Auth.Target.url = uri,
         XDM.Auth.Target.user.employee_id = user_id,
         XDM.Auth.Target.user.username = user_name;
