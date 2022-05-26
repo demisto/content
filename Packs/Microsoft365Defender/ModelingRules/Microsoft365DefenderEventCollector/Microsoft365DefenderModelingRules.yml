@@ -15,6 +15,10 @@ schema: |-
         "type": "string",
         "is_array": false
       },
+      "title": {
+        "type": "string",
+        "is_array": false
+      },
       "severity": {
         "type": "string",
         "is_array": false
