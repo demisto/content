@@ -1000,6 +1000,9 @@ def main():  # pragma: no cover
         elif command == 'xdr-get-cloud-original-alerts':
             return_results(get_original_alerts_command(client, args))
 
+        elif command == 'xdr-get-alerts':
+            return_results(get_alerts_by_filter_command(client, args))
+
         elif command == 'xdr-run-script-execute-commands':
             return_results(run_script_execute_commands_command(client, args))
 
