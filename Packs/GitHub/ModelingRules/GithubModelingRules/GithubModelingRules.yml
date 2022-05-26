@@ -19,7 +19,7 @@ schema: |-
         "is_array": false
       },
       "created_at": {
-        "type": "int",
+        "type": "datetime",
         "is_array": false
       },
       "actor": {
