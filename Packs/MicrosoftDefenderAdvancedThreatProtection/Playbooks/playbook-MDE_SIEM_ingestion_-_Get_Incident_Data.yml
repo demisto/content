@@ -2,25 +2,25 @@ contentitemexportablefields:
   contentitemfields:
     propagationLabels:
     - all
-description: The playbook handles when the incident ingestion was done from the SIEM. The user provides which incident fields contain the alert ID. In addition, it also allows changing the severity according to a user-defined scale to override the default assigned severity.
+description: This playbook handles incident ingestion from a SIEM. The user provides the incident fields containing the alert ID. This playbook also enables changing the severity according to a user-defined scale to override the default assigned severity.
 id: MDE SIEM ingestion - Get Incident Data
 inputs:
-- description: The name of the incident field that contains the detection or incident ID. Default value is incident.externalid
+- description: The name of the incident field that contains the detection ID or incident ID.
   key: SIEMincidentFieldForID
   playbookInputQuery:
   required: false
   value:
     simple: ${incident.externalsystemid}
 - description: |-
-    The severity scale as represented in the EDR
-    For example in Microsoft defender for endpoint the severity scale is Informational,Low,Medium,High
+    The severity scale as represented in the EDR. 
+    For example, in Microsoft Defender for Endpoint the severity scale is Informational, Low, Medium, High.
   key: ScaleToSetSeverity
   playbookInputQuery:
   required: false
   value:
     simple: Informational,Low,Medium,High
 - description: |-
-    This will provide the mapping to XSOAR severity for the ScaleToSetSeverity inputs
+    "The mapping to Cortex XSOAR severity from the severity scale in the EDR (the ScaleToSetSeverity inputs).
     For example
     0.5, 1, 2, 3,4
     Possible values to use are 0,0.5, 1, 2, 3,4
@@ -30,7 +30,7 @@ inputs:
   required: false
   value:
     simple: 0.5, 1, 2, 3
-- description: "Indicates if to set the severity according to the  ScaleToSetSeverity and SeverityValuesMapping settings (True) or keep the original severity as mapped by the SIEM (False) \nTrue/False"
+- description: "Whether to set the severity according to the ScaleToSetSeverity and SeverityValuesMapping settings (True) or keep the original severity as mapped by the SIEM (False)."
   key: OverrideSIEMSeverity
   playbookInputQuery:
   required: false
@@ -305,7 +305,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: Retrieves specific alert by the given alert ID. Note, if the given alert ID is not part of the results, it was not found.
+      description: Retrieves an alert by alert ID. Note - If the specific alert ID is not part of the results, it was not found.
       id: 415bbef6-e4c5-4d7c-8774-916f395d7ba9
       iscommand: true
       name: Get full alert details
