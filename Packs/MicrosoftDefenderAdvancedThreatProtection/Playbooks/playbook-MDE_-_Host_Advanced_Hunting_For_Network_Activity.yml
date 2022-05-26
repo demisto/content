@@ -2,7 +2,7 @@ contentitemexportablefields:
   contentitemfields:
     propagationLabels:
     - all
-description: This playbook uses the Microsoft Defender For Endpoint Advanced Hunting feature - and hunts for host network activity.
+description: This playbook uses the Microsoft Defender For Endpoint Advanced Hunting feature to hunt for host network activity.
 id: MDE - Host Advanced Hunting For Network Activity
 inputs:
 - description: A comma-separated list of IPs to hunt.
