@@ -52,7 +52,7 @@ def test_create_tag(requests_mock):
         proxies={},
     )
 
-    args = {"tag_name": "demisto_test_temp", "color": "blue"}
+    args = {"tag_name": "xsoar_test_temp", "color": "blue"}
 
     response = create_tag_command(client, args)
 
@@ -75,7 +75,7 @@ def test_create_tag_command_already_exists(requests_mock):
         proxies={},
     )
 
-    args = {"tag_name": "demisto_test_temp", "color": "blue"}
+    args = {"tag_name": "xsoar_test_temp", "color": "blue"}
     response = create_tag_command(client, args)
 
     assert response.outputs is None
