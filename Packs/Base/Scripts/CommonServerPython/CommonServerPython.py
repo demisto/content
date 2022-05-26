@@ -2837,7 +2837,7 @@ class Common(object):
 
     class CustomIndicator(Indicator):
 
-        def __init__(self, indicator_type, value, dbot_score, data, context_prefix, relationships):
+        def __init__(self, indicator_type, value, dbot_score, data, context_prefix, relationships=None):
             """
             :type indicator_type: ``Str``
             :param indicator_type: The name of the indicator type.

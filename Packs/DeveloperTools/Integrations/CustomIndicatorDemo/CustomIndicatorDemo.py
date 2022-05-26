@@ -74,8 +74,8 @@ def custom_indicator_creation(client: Client) -> CommandResults:
     )
     # Create a data dictionary, which is the data of the indicator
     data = {
-        'param1': 'value1',
-        'param2': 'value2',
+        'ip': '127.0.0.1',
+        'hostname': 'localhost',
     }
     # Create the CustomIndicator
     custom_indicator = Common.CustomIndicator(
@@ -83,9 +83,20 @@ def custom_indicator_creation(client: Client) -> CommandResults:
         dbot_score=dbot_score,
         value=indicator_value,
         data=data,
-        context_prefix='custom',
-        relationships=[]
+        context_prefix='custom'
     )
+
+    # Create relationships
+    relationships = list(EntityRelationship(
+        name='impersonates',
+        entity_a='0.0.0.0',
+        entity_a_type='IP',
+        entity_b=indicator_value,
+        entity_b_type=custom_indicator,
+        source_reliability='B - Usually reliable',
+        brand='XSOAR'
+    ))
+
     # Return a CommandResults object containing the CustomIndicator object created
     return CommandResults(
         readable_output='custom_value',
@@ -93,6 +104,7 @@ def custom_indicator_creation(client: Client) -> CommandResults:
         outputs_prefix='Demo.Result',
         outputs_key_field='test_key_field',
         indicator=custom_indicator,
+        relationships=relationships
     )
 
 
