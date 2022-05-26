@@ -15,13 +15,6 @@ test_client = CoreClient(
 )
 
 
-def test_get_incidents():
-    with pytest.raises(ValueError, match='Should be provide either sort_by_creation_time or '
-                                         'sort_by_modification_time. Can\'t provide both'):
-        test_client.get_incidents(sort_by_creation_time="asc",
-                                  sort_by_modification_time="desc")
-
-
 def test_client_update_incident():
     with pytest.raises(ValueError, match="Can't provide both assignee_email/assignee_name and unassign_user"):
         test_client.update_incident(incident_id='1',
