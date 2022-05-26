@@ -7,6 +7,7 @@ class Client:
     """
     Client to use in the APN-OS Policy Optimizer integration.
     """
+
     def __init__(self, url: str, username: str, password: str, vsys: str, device_group: str, verify: bool, tid: int):
         # The TID is used to track individual commands send to the firewall/Panorama during a PHP session, and
         # is also used to generate the security token (Data String) that is used to validate each command.
@@ -77,7 +78,8 @@ class Client:
         :return: hash token
         """
         data_code = f'{self.session_metadata["cookie"]}{str(self.session_metadata["tid"])}'
-        data_hash = hashlib.md5(data_code.encode())  # Use the hashlib library function to calculate the MD5
+        # Use the hashlib library function to calculate the MD5
+        data_hash = hashlib.md5(data_code.encode())  # nosec
         data_string = data_hash.hexdigest()  # Convert the hash to a proper hex string
         return data_string
 
@@ -388,7 +390,7 @@ def policy_optimizer_app_and_usage_command(client: Client, args: dict) -> Comman
 
 def policy_optimizer_get_dag_command(client: Client, args: dict) -> CommandResults:
     """
-    Gets the DAG
+    Gets the Dynamic Address group.
     """
     dag = str(args.get('dag'))
     raw_response = client.policy_optimizer_get_dag(dag)
@@ -398,8 +400,8 @@ def policy_optimizer_get_dag_command(client: Client, args: dict) -> CommandResul
 
     try:
         result = result['result']['dyn-addr-grp']['entry'][0]['member-list']['entry']
-    except KeyError:
-        raise Exception(f'Dynamic Address Group: {dag} was not found.')
+    except (KeyError, TypeError, IndexError):
+        return CommandResults(readable_output=f'Dynamic Address Group {dag} was not found.', raw_response=raw_response)
 
     return CommandResults(
         outputs_prefix='PanOS.PolicyOptimizer.DAG',

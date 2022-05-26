@@ -31,48 +31,59 @@
     "x2_fields": "fw_app_id",
     "Aliases": [
         {
-          "cliName": "protocol",
-          "type": "shortText"
+            "cliName": "protocol",
+            "type": "shortText",
+            "name": "Protocol"
         },
         {
-          "cliName": "protocols",
-          "type": "shortText"  
+            "cliName": "protocols",
+            "type": "shortText",
+            "name": "Protocols"
         },
         {
             "cliName": "prismacloudcomputeappid",
-            "type": "shortText"
+            "type": "shortText",
+            "name": "Prisma Cloud Compute AppID"
         },
         {
             "cliName": "protocolevent",
-            "type": "multiSelect"
+            "type": "multiSelect",
+            "name": "Protocol - Event"
         },
         {
             "cliName": "app",
-            "type": "shortText"
+            "type": "shortText",
+            "name": "App"
         },
         {
             "cliName": "applicationid",
-            "type": "shortText"
+            "type": "shortText",
+            "name": "Application Id"
         },
         {
             "cliName": "applicationname",
-            "type": "shortText"
+            "type": "shortText",
+            "name": "Application Name"
         },
         {
             "cliName": "googlecloudsccfindingsourcepropertiesapp",
-            "type": "shortText"
+            "type": "shortText",
+            "name": "GoogleCloudSCC Finding SourceProperties App"
         },
         {
             "cliName": "expanseprotocol",
-            "type": "shortText"
+            "type": "shortText",
+            "name": "Expanse Protocol"
         },
         {
             "cliName": "expanseprotocol",
-            "type": "shortText"
+            "type": "shortText",
+            "name": "Expanse Protocol"
         },
         {
             "cliName": "irondefenseprimaryappprotocol",
-            "type": "shortText"
+            "type": "shortText",
+            "name": "IronDefense Primary App Protocol"
         }
     ]
 }

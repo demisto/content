@@ -55,7 +55,7 @@ GET_LEVELS_BY_APP = {
     }}
 
 GET_FIElD_DEFINITION_RES = {
-    "RequestedObject": {"RelatedValuesListId": 62},
+    "RequestedObject": {"RelatedValuesListId": 62, "Type": 4},
     "IsSuccessful": True,
     "ValidationMessages": []
 }
@@ -282,7 +282,7 @@ class TestArcherV2:
                            json={'RequestedObject': {'SessionToken': 'session-id'}, 'IsSuccessful': True})
         requests_mock.get(BASE_URL + 'api/core/system/level/module/1', json=GET_LEVEL_RES)
         requests_mock.get(BASE_URL + 'api/core/system/fielddefinition/level/123', json=FIELD_DEFINITION_RES)
-        client = Client(BASE_URL, '', '', '', '')
+        client = Client(BASE_URL, '', '', '', '', 400)
         levels = client.get_level_by_app_id('1')
         assert levels == GET_LEVELS_BY_APP
 
@@ -292,7 +292,7 @@ class TestArcherV2:
     def test_update_session(self, mocker, requests_mock, requested_object, is_successful):
         requests_mock.post(BASE_URL + 'api/core/security/login', json=requested_object)
         mocker.patch.object(demisto, 'results')
-        client = Client(BASE_URL, '', '', '', '')
+        client = Client(BASE_URL, '', '', '', '', 400)
         if is_successful:
             client.update_session()
             assert demisto.results.call_count == 0
@@ -317,13 +317,13 @@ class TestArcherV2:
                                                                                   "window.top.location='/Default.aspx';"
                                                                                   "</script></head><body>"
                                                                                   "</body></html>"))
-        client = Client(BASE_URL, '', '', '', '')
+        client = Client(BASE_URL, '', '', '', '', 400)
         with pytest.raises(DemistoException) as e:
             client.update_session()
         assert "Check the given URL, it can be a redirect issue" in str(e.value)
 
     def test_generate_field_contents(self):
-        client = Client(BASE_URL, '', '', '', '')
+        client = Client(BASE_URL, '', '', '', '', 400)
         field = generate_field_contents(client, '{"Device Name":"Macbook"}', GET_LEVELS_BY_APP['mapping'])
         assert field == {'2': {'Type': 1, 'Value': 'Macbook', 'FieldId': '2'}}
 
@@ -335,7 +335,7 @@ class TestArcherV2:
         requests_mock.post(BASE_URL + 'api/core/security/login',
                            json={'RequestedObject': {'SessionToken': 'session-id'}, 'IsSuccessful': True})
         requests_mock.get(BASE_URL + 'api/core/content/1010', json=GET_RECORD_RES_failed)
-        client = Client(BASE_URL, '', '', '', '')
+        client = Client(BASE_URL, '', '', '', '', 400)
         record, res, errors = client.get_record(75, 1010)
         assert errors == 'No resource found.'
         assert res
@@ -347,14 +347,14 @@ class TestArcherV2:
         requests_mock.get(BASE_URL + 'api/core/content/1010', json=GET_RECORD_RES_SUCCESS)
         requests_mock.get(BASE_URL + 'api/core/system/level/module/1', json=GET_LEVEL_RES)
         requests_mock.get(BASE_URL + 'api/core/system/fielddefinition/level/123', json=FIELD_DEFINITION_RES)
-        client = Client(BASE_URL, '', '', '', '')
+        client = Client(BASE_URL, '', '', '', '', 400)
         record, res, errors = client.get_record(1, 1010)
         assert errors is None
         assert res
         assert record == {'Device Name': 'The device name', 'Id': 1010}
 
     def test_record_to_incident(self):
-        client = Client(BASE_URL, '', '', '', '')
+        client = Client(BASE_URL, '', '', '', '', 400)
         record = copy.deepcopy(INCIDENT_RECORD)
         record['raw']['Field'][1]['@xmlConvertedValue'] = '2018-03-26T10:03:00Z'
         incident, incident_created_time = client.record_to_incident(record, 75, '305')
@@ -370,7 +370,7 @@ class TestArcherV2:
         requests_mock.get(BASE_URL + 'api/core/system/level/module/1', json=GET_LEVEL_RES)
         requests_mock.get(BASE_URL + 'api/core/system/fielddefinition/level/123', json=FIELD_DEFINITION_RES)
         requests_mock.post(BASE_URL + 'ws/search.asmx', text=SEARCH_RECORDS_RES)
-        client = Client(BASE_URL, '', '', '', '')
+        client = Client(BASE_URL, '', '', '', '', 400)
         records, raw_res = client.search_records(1, ['External Links', 'Device Name'])
         assert raw_res
         assert len(records) == 1
@@ -409,12 +409,12 @@ class TestArcherV2:
                            json={'RequestedObject': {'SessionToken': 'session-id'}, 'IsSuccessful': True})
         requests_mock.get(BASE_URL + 'api/core/system/fielddefinition/304', json=GET_FIElD_DEFINITION_RES)
         requests_mock.get(BASE_URL + 'api/core/system/valueslistvalue/valueslist/62', json=VALUE_LIST_RES)
-        client = Client(BASE_URL, '', '', '', '')
+        client = Client(BASE_URL, '', '', '', '', 400)
         field_data = client.get_field_value_list(304)
         assert VALUE_LIST_FIELD_DATA == field_data
 
     def test_generate_field_value_text_input(self):
-        client = Client(BASE_URL, '', '', '', '')
+        client = Client(BASE_URL, '', '', '', '', 400)
         field_key, field_value = generate_field_value(client, "", {'Type': 1}, "Demisto")
         assert field_key == 'Value'
         assert field_value == 'Demisto'
@@ -429,13 +429,13 @@ class TestArcherV2:
         requests_mock.get(BASE_URL + 'api/core/system/fielddefinition/304', json=GET_FIElD_DEFINITION_RES)
         requests_mock.get(BASE_URL + 'api/core/system/valueslistvalue/valueslist/62', json=VALUE_LIST_RES)
 
-        client = Client(BASE_URL, '', '', '', '')
+        client = Client(BASE_URL, '', '', '', '', 400)
         field_key, field_value = generate_field_value(client, "", {'Type': 4, 'FieldId': 304}, ["High"])
         assert field_key == 'Value'
         assert field_value == {'ValuesListIds': [473]}
 
     def test_generate_field_external_link_input(self):
-        client = Client(BASE_URL, '', '', '', '')
+        client = Client(BASE_URL, '', '', '', '', 400)
         field_key, field_value = generate_field_value(client, "", {'Type': 7},
                                                       [{"value": "github", "link": "https://github.com"},
                                                        {"value": "google", "link": "https://google.com"}])
@@ -455,7 +455,7 @@ class TestArcherV2:
             - assert fields are generated correctly
 
         """
-        client = Client(BASE_URL, '', '', '', '')
+        client = Client(BASE_URL, '', '', '', '', 400)
         field_key, field_value = generate_field_value(client, "", {'Type': 8}, {"users": [20], "groups": [30]})
         assert field_key == 'Value'
         assert field_value == {"UserList": [{"ID": 20}], "GroupList": [{"ID": 30}]}
@@ -472,7 +472,7 @@ class TestArcherV2:
             - Raise exception indicates that the value is not with the right format
 
         """
-        client = Client(BASE_URL, '', '', '', '')
+        client = Client(BASE_URL, '', '', '', '', 400)
         with pytest.raises(DemistoException) as e:
             generate_field_value(client, "test", {'Type': 8}, 'user1, user2')
         assert "The value of the field: test must be a dictionary type and include a list under \"users\" key or " \
@@ -483,13 +483,13 @@ class TestArcherV2:
         (1234, [{"ContentID": 1234}])
     ])
     def test_generate_field_cross_reference_input(self, field_value, result):
-        client = Client(BASE_URL, '', '', '', '')
+        client = Client(BASE_URL, '', '', '', '', 400)
         field_key, field_value = generate_field_value(client, "", {'Type': 9}, field_value)
         assert field_key == 'Value'
         assert field_value == result
 
     def test_generate_field_ip_address_input(self):
-        client = Client(BASE_URL, '', '', '', '')
+        client = Client(BASE_URL, '', '', '', '', 400)
         field_key, field_value = generate_field_value(client, "", {'Type': 19}, '127.0.0.1')
         assert field_key == 'IpAddressBytes'
         assert field_value == '127.0.0.1'
@@ -512,7 +512,7 @@ class TestArcherV2:
                            json={'RequestedObject': {'SessionToken': 'session-id'}, 'IsSuccessful': 'yes'})
         requests_mock.get(BASE_URL + 'api/core/system/valueslistvalue/valueslist/62', json=VALUE_LIST_RES_FOR_SOURCE)
 
-        client = Client(BASE_URL, '', '', '', '')
+        client = Client(BASE_URL, '', '', '', '', 400)
         field_key, field_value = generate_field_value(client, "Source",
                                                       {'FieldId': '16172', 'IsRequired': False, 'Name':
                                                           'Source', 'RelatedValuesListId': 2092, 'Type': 4}, 'ArcSight')
@@ -531,7 +531,7 @@ class TestArcherV2:
             assert return dates are right
 
         """
-        client = Client(BASE_URL, '', '', '', '')
+        client = Client(BASE_URL, '', '', '', '', 400)
         incident = INCIDENT_RECORD.copy()
         incident['raw']['Field'][1]['@xmlConvertedValue'] = '2018-03-26T10:03:00Z'
         incident['record']['Date/Time Reported'] = "26/03/2018 10:03 AM"
@@ -551,7 +551,7 @@ class TestArcherV2:
             assert return dates are right
 
         """
-        client = Client(BASE_URL, '', '', '', '')
+        client = Client(BASE_URL, '', '', '', '', 400)
         incident = INCIDENT_RECORD.copy()
         incident['record']['Date/Time Reported'] = '03/26/2018 10:03 AM'
         incident['raw']['Field'][1]['@xmlConvertedValue'] = '2018-03-26T10:03:00Z'
@@ -575,7 +575,7 @@ class TestArcherV2:
             Check the wanted next_fetch is true
             Assert occurred time
         """
-        client = Client(BASE_URL, '', '', '', '')
+        client = Client(BASE_URL, '', '', '', '', 400)
         date_time_reported = '2018-04-03T10:03:00.000Z'
         params = {
             'applicationId': '75',
@@ -606,7 +606,7 @@ class TestArcherV2:
             Check the wanted next_fetch is equals to the date in the incident in both calls.
             Assert occurred time
         """
-        client = Client(BASE_URL, '', '', '', '')
+        client = Client(BASE_URL, '', '', '', '', 400)
         params = {
             'applicationId': '75',
             'applicationDateField': 'Date/Time Reported'
@@ -644,7 +644,7 @@ class TestArcherV2:
             Check that the next fetch is equals last fetch (no new incident)
             Check that no incidents brought back
         """
-        client = Client(BASE_URL, '', '', '', '')
+        client = Client(BASE_URL, '', '', '', '', 400)
         date_time_reported = '2018-03-01T10:02:00.000Z'
         params = {
             'applicationId': '75',
@@ -673,7 +673,7 @@ class TestArcherV2:
             Check that the next fetch is equals last fetch (no new incident)
             Check that no incidents brought back
         """
-        client = Client(BASE_URL, '', '', '', '')
+        client = Client(BASE_URL, '', '', '', '', 400)
         date_time_reported = '2018-03-01T10:02:00.000Z'
         params = {
             'applicationId': '75',
@@ -701,7 +701,7 @@ class TestArcherV2:
             Check the wanted next_fetch is equals to the date in the incident in both calls.
             Assert occurred time
         """
-        client = Client(BASE_URL, '', '', '', '')
+        client = Client(BASE_URL, '', '', '', '', 400)
         mocker.patch.object(
             client, 'search_records', side_effect=[
                 ([INCIDENT_RECORD_US_TZ], {}),
@@ -736,7 +736,7 @@ class TestArcherV2:
         """
 
         mock_args = {'reportGuid': 'id'}
-        client = Client(BASE_URL, '', '', '', '')
+        client = Client(BASE_URL, '', '', '', '', 400)
         mocker.patch.object(client, 'do_soap_request',
                             return_value=[SEARCH_RECORDS_BY_REPORT_RES, SEARCH_RECORDS_BY_REPORT_RES])
         mocker.patch.object(client, 'do_request', return_value=GET_LEVEL_RES_2)

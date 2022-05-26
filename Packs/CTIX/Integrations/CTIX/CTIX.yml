@@ -587,6 +587,18 @@ script:
     - contextPath: File.Name
       description: The full file name.
       type: String
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: File.SHA512
+      description: The SHA512 hash of the file.
+      type: String
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
       type: String
@@ -746,7 +758,65 @@ script:
       description: Additional enhanced data about the Threat Data Object fetched by
         the CTIX application
     description: Return File Details.
-  dockerimage: demisto/python3:3.9.8.24399
+  - name: ctix-create-intel
+    description: Creates Intel in CTIX platform.
+    arguments:
+    - name: title
+      required: false
+      description: Title of ioc.
+      isArray: false
+    - name: description
+      required: false
+      description: Description of ioc.
+      isArray: false
+    - name: tlp
+      required: false
+      description: tlp of ioc.
+      isArray: false
+    - name: confidence
+      required: false
+      description: confidence of ioc.
+      isArray: false
+    - name: ips
+      required: false
+      description: comma-separated list of IPs.
+      isArray: true
+    - name: urls
+      required: false
+      description: comma-separated list of URLs.
+      isArray: true
+    - name: domains
+      required: false
+      description: comma-separated list of domains.
+      isArray: true
+    - name: files
+      required: false
+      description: comma-separated list of files.
+      isArray: true
+    - name: emails
+      required: false
+      description: comma-separated list of emails.
+      isArray: true
+    - name: malwares
+      required: false
+      description: comma-separated list of malwares.
+      isArray: true
+    - name: threat_actors
+      required: false
+      description: comma-separated list of threat_actors.
+      isArray: true
+    - name: attack_patterns
+      required: false
+      description: comma-separated list of attack_patterns.
+      isArray: true
+    outputs:
+      - contextPath: CTIX.Intel.response
+        description: The response of the api.
+        type: String
+      - contextPath: CTIX.Intel.status
+        description: Status code returned from the api.
+        type: String
+  dockerimage: demisto/python3:3.10.1.26972
   runonce: false
   subtype: python3
 tests:

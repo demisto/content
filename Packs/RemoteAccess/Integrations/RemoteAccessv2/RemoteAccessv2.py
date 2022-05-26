@@ -1,5 +1,6 @@
 import tempfile
-
+from io import StringIO
+import paramiko
 from paramiko import SSHClient, AutoAddPolicy, transport, Transport
 from paramiko.ssh_exception import NoValidConnectionsError
 from scp import SCPClient, SCPException
@@ -82,16 +83,19 @@ def get_available_key_algorithms() -> Set[str]:
     return set(opts.kex)
 
 
-def create_paramiko_ssh_client(host_name: str, user_name: str, password: str, ciphers: Set[str],
-                               key_algorithms: Set[str]) -> SSHClient:
+def create_paramiko_ssh_client(
+    host_name: str, user_name: str, password: str, ciphers: Set[str], key_algorithms: Set[str], private_key: str = ''
+) -> SSHClient:
     """
     Creates the Paramiko SSH client.
+
     Args:
         host_name (str): Hostname of the machine to create the SSH for.
         user_name (str): User to create the SSH session with the given host.
         password (str): Password of the given user.
         ciphers (Set[str]): Set of ciphers to be used, if given.
         key_algorithms (Set[str]): Set of key algorithms to be used, if given.
+        private_key (str): The SSH certificate (should be PEM file based certificate only).
 
     Returns:
         (SSHClient): Paramiko SSH client if connection was successful, exception otherwise.
@@ -102,17 +106,22 @@ def create_paramiko_ssh_client(host_name: str, user_name: str, password: str, ci
         if not ciphers.intersection(available_ciphers):
             raise DemistoException(f'Given ciphers are not available in server.\n'
                                    f'Ciphers available in server are: {available_ciphers}')
-        Transport._preferred_ciphers = (*ciphers,)
+        Transport._preferred_ciphers = (*ciphers,)  # type: ignore
     if key_algorithms:
         available_key_args = get_available_key_algorithms()
         if not key_algorithms.intersection(available_key_args):
             raise DemistoException(f'Given key algorithms are not available in server.\n'
                                    f'Key algorithms available in server are: {available_key_args}')
-        Transport._preferred_kex = (*key_algorithms,)
+        Transport._preferred_kex = (*key_algorithms,)  # type: ignore
     client = SSHClient()
     client.set_missing_host_key_policy(AutoAddPolicy())
     try:
-        client.connect(hostname=host_name, username=user_name, password=password, port=22)
+        rsa_private_key = None
+        if private_key:
+            # authenticating with private key only works for certificates which are based on PEM files.
+            # (RSA private keys)
+            rsa_private_key = paramiko.RSAKey.from_private_key(StringIO(private_key))  # type: ignore # [assignment]
+        client.connect(hostname=host_name, username=user_name, password=password, port=22, pkey=rsa_private_key)
     except NoValidConnectionsError as e:
         raise DemistoException(f'Unable to connect to port 22 on {host_name}') from e
     return client
@@ -165,7 +174,17 @@ def copy_to_command(ssh_client: SSHClient, args: Dict[str, Any]) -> CommandResul
     Returns:
         (CommandResults).
     """
-    entry_id: str = args.get('entry_id', '')
+    dest_dir_arg = args.get('dest-dir', '')
+    destination_path_arg = args.get('destination_path', '')
+    if dest_dir_arg and destination_path_arg:
+        raise DemistoException('Please provide at most one of "dest-dir" argument or "destination_path", not both.')
+
+    # Support `entry` argument to maintain BC:
+    entry: str = args.get('entry', '')
+    entry_id: str = args.get('entry_id', entry)
+    if not entry_id:
+        raise DemistoException('No entry ID path given. Please provide one of the "entry_id" (recommended) or "entry" inputs.')
+
     if timeout := args.get('timeout'):
         timeout = float(timeout)
     else:
@@ -173,7 +192,22 @@ def copy_to_command(ssh_client: SSHClient, args: Dict[str, Any]) -> CommandResul
     file_path_data = demisto.getFilePath(entry_id)
     if not (file_path := file_path_data.get('path', '')):
         raise DemistoException('Could not find given entry ID path. Please assure given entry ID is correct.')
-    destination_path: str = args.get('destination_path', file_path)
+    file_name = file_path_data.get('name', '')
+
+    if dest_dir_arg:
+        destination_path = os.path.join(dest_dir_arg, file_name)
+        destination_dir = dest_dir_arg
+    elif destination_path_arg:
+        destination_path = destination_path_arg
+        destination_dir = os.path.split(destination_path)[0]
+    else:
+        destination_path = file_name
+        destination_dir = ''
+
+    # Create all folders to destination_path in the remote machine
+    if destination_dir:
+        execute_shell_command(ssh_client, args={'cmd': f'mkdir -p {destination_dir}'})
+
     perform_copy_command(ssh_client, file_path, destination_path, copy_to_remote=True, socket_timeout=timeout)
     return CommandResults(readable_output=f'### The file corresponding to entry ID: {entry_id} was copied to remote'
                                           ' host.')
@@ -193,7 +227,9 @@ def copy_from_command(ssh_client: SSHClient, args: Dict[str, Any]) -> Dict:
         timeout = float(timeout)
     else:
         timeout = DEFAULT_TIMEOUT
-    file_path: str = args.get('file_path', '')
+    # Support `file` argument to maintain BC:
+    file: str = args.get('file', '')
+    file_path: str = args.get('file_path', file)
     file_name: str = args.get('file_name', os.path.basename(file_path))
     remote_file_data = perform_copy_command(ssh_client, file_path, file_name, copy_to_remote=False,
                                             socket_timeout=timeout)
@@ -209,12 +245,12 @@ def main() -> None:
     args = demisto.args()
     command = demisto.command()
 
-    credentials: Dict[str, Any] = params.get('credentials', {})
+    credentials: Dict[str, Any] = params.get('credentials') or {}
     user: str = credentials.get('identifier', '')
     password: str = credentials.get('password', '')
+    certificate: str = (credentials.get('credentials') or {}).get('sshkey', '')
 
     host_name: str = params.get('hostname', '')
-
     ciphers: Set[str] = set(argToList(params.get('ciphers')))
     key_algorithms: Set[str] = set(argToList(params.get('key_algorithms')))
 
@@ -226,7 +262,7 @@ def main() -> None:
                                    ' parameter value.')
     client = None
     try:
-        client = create_paramiko_ssh_client(host_name, user, password, ciphers, key_algorithms)
+        client = create_paramiko_ssh_client(host_name, user, password, ciphers, key_algorithms, certificate)
         if command == 'test-module':
             return_results('ok')
         elif command == 'ssh':

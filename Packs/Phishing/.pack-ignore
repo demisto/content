@@ -138,3 +138,8 @@ ignore=IF115
 
 [file:incidentfield-reported_email_origin.json]
 ignore=IF116
+
+[known_words]
+CheckEmailAuthenticity
+DeleteReportedEmail
+GetBrandDeleteReportedEmail

@@ -4,13 +4,13 @@ from CommonServerUserPython import *
 from typing import Union, Optional
 
 ''' IMPORTS '''
-import requests
 import base64
 import binascii
+import urllib3
 from urllib.parse import quote
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 ''' GLOBAL VARS '''
 
@@ -63,13 +63,14 @@ class MsGraphClient:
     ITEM_ATTACHMENT = '#microsoft.graph.itemAttachment'
     FILE_ATTACHMENT = '#microsoft.graph.fileAttachment'
 
-    def __init__(self, self_deployed, tenant_id, auth_and_token_url, enc_key, app_name, base_url, use_ssl, proxy,
-                 ok_codes, mailbox_to_fetch, folder_to_fetch, first_fetch_interval, emails_fetch_limit, timeout=10,
-                 endpoint='com'):
+    def __init__(self, self_deployed, tenant_id, auth_and_token_url, enc_key,
+                 app_name, base_url, use_ssl, proxy, ok_codes, mailbox_to_fetch, folder_to_fetch, first_fetch_interval,
+                 emails_fetch_limit, timeout=10, endpoint='com', certificate_thumbprint=None, private_key=None):
 
         self.ms_client = MicrosoftClient(self_deployed=self_deployed, tenant_id=tenant_id, auth_id=auth_and_token_url,
                                          enc_key=enc_key, app_name=app_name, base_url=base_url, verify=use_ssl,
-                                         proxy=proxy, ok_codes=ok_codes, timeout=timeout, endpoint=endpoint)
+                                         proxy=proxy, ok_codes=ok_codes, timeout=timeout, endpoint=endpoint,
+                                         certificate_thumbprint=certificate_thumbprint, private_key=private_key)
 
         self._mailbox_to_fetch = mailbox_to_fetch
         self._folder_to_fetch = folder_to_fetch
@@ -680,26 +681,35 @@ class MsGraphClient:
         :return: Fetched emails and exclude ids list that contains the new ids of fetched emails
         :rtype: ``list`` and ``list``
         """
-        target_modified_time = add_second_to_str_date(last_fetch)  # workaround to Graph API bug
         suffix_endpoint = f"/users/{self._mailbox_to_fetch}/mailFolders/{folder_id}/messages"
         # If you add to the select filter the $ sign, The 'internetMessageHeaders' field not contained within the
         # API response, (looks like a bug in graph API).
         params = {
-            "$filter": f"receivedDateTime gt {target_modified_time}",
+            "$filter": f"receivedDateTime ge {last_fetch}",
             "$orderby": "receivedDateTime asc",
             "select": "*",
-            "$top": self._emails_fetch_limit
+            "$top": len(exclude_ids) + self._emails_fetch_limit  # fetch extra incidents
         }
 
         fetched_emails = self.ms_client.http_request(
             'GET', suffix_endpoint, params=params
-        ).get('value', [])[:self._emails_fetch_limit]
+        ).get('value', [])
 
-        if exclude_ids:  # removing emails in order to prevent duplicate incidents
-            fetched_emails = [email for email in fetched_emails if email.get('id') not in exclude_ids]
+        exclude_ids_size = len(exclude_ids)
+        if not fetched_emails or exclude_ids_size >= len(fetched_emails):
+            # no new emails
+            return [], exclude_ids
+        new_emails = fetched_emails[exclude_ids_size:exclude_ids_size + self._emails_fetch_limit]
+        last_email_time = new_emails[-1].get('receivedDateTime')
+        if last_email_time == last_fetch:
+            # next fetch will need to skip existing exclude_ids
+            excluded_ids_for_nextrun = exclude_ids + [email.get('id') for email in new_emails]
+        else:
+            # next fetch will need to skip messages the same time as last_email
+            excluded_ids_for_nextrun = [email.get('id') for email in new_emails if
+                                        email.get('receivedDateTime') == last_email_time]
 
-        fetched_emails_ids = [email.get('id') for email in fetched_emails]
-        return fetched_emails, fetched_emails_ids
+        return new_emails, excluded_ids_for_nextrun
 
     @staticmethod
     def _parse_item_as_dict(email):
@@ -854,9 +864,7 @@ class MsGraphClient:
         :return: Returns str date of format Y-m-dTH:M:SZ
         :rtype: `str`
         """
-        next_run_time = fetched_emails[-1].get('receivedDateTime') if fetched_emails else start_time
-
-        return next_run_time
+        return fetched_emails[-1].get('receivedDateTime') if fetched_emails else start_time
 
     @logger
     def fetch_incidents(self, last_run):
@@ -891,13 +899,13 @@ class MsGraphClient:
             last_fetch, _ = parse_date_range(self._first_fetch_interval, date_format=DATE_FORMAT, utc=True)
             demisto.info(f"MS-Graph-Listener: initialize fetch and pull emails from date :{last_fetch}")
 
-        fetched_emails, fetched_emails_ids = self._fetch_last_emails(folder_id=folder_id, last_fetch=last_fetch,
-                                                                     exclude_ids=exclude_ids)
+        fetched_emails, exclude_ids = self._fetch_last_emails(
+            folder_id=folder_id, last_fetch=last_fetch, exclude_ids=exclude_ids)
         incidents = list(map(self._parse_email_as_incident, fetched_emails))
         next_run_time = MsGraphClient._get_next_run_time(fetched_emails, start_time)
         next_run = {
             'LAST_RUN_TIME': next_run_time,
-            'LAST_RUN_IDS': fetched_emails_ids,
+            'LAST_RUN_IDS': exclude_ids,
             'LAST_RUN_FOLDER_ID': folder_id,
             'LAST_RUN_FOLDER_PATH': self._folder_to_fetch,
             'LAST_RUN_ACCOUNT': self._mailbox_to_fetch,
@@ -933,26 +941,6 @@ def upload_file(filename, content, attachments_list):
         'path': file_result['FileID'],
         'name': file_result['File']
     })
-
-
-def add_second_to_str_date(date_string, seconds=1):
-    """
-    Add seconds to date string.
-
-    Is used as workaround to Graph API bug, for more information go to:
-    https://stackoverflow.com/questions/35729273/office-365-graph-api-greater-than-filter-on-received-date
-
-    :type date_string: ``str``
-    :param date_string: Date string to add seconds
-
-    :type seconds: int
-    :param seconds: Seconds to add to date, by default is set to 1
-
-    :return: Date time string appended seconds
-    :rtype: ``str``
-    """
-    added_result = datetime.strptime(date_string, DATE_FORMAT) + timedelta(seconds=seconds)
-    return datetime.strftime(added_result, DATE_FORMAT)
 
 
 def get_now_utc():
@@ -1594,8 +1582,11 @@ def main():
     args: dict = demisto.args()
     params: dict = demisto.params()
     self_deployed: bool = params.get('self_deployed', False)
-    tenant_id: str = params.get('tenant_id', '') or params.get('_tenant_id', '')
-    auth_and_token_url: str = params.get('auth_id', '') or params.get('_auth_id', '')
+    # There're several options for tenant_id & auth_and_token_url due to the recent credentials set supoort enhancment.
+    tenant_id: str = params.get('tenant_id', '') or params.get('_tenant_id', '') or (params.get('creds_tenant_id')
+                                                                                     or {}).get('password', '')
+    auth_and_token_url: str = params.get('auth_id', '') or params.get('_auth_id', '') or (params.get('creds_auth_id')
+                                                                                          or {}).get('password', '')
     enc_key: str = params.get('enc_key', '') or (params.get('credentials') or {}).get('password', '')
     server = params.get('url', '')
     base_url: str = urljoin(server, '/v1.0')
@@ -1604,9 +1595,14 @@ def main():
     ok_codes: tuple = (200, 201, 202, 204)
     use_ssl: bool = not params.get('insecure', False)
     proxy: bool = params.get('proxy', False)
+    certificate_thumbprint: str = params.get('certificate_thumbprint', '')
+    private_key: str = params.get('private_key', '')
 
-    if not enc_key:
-        raise Exception('Key must be provided.')
+    if not self_deployed and not enc_key:
+        raise DemistoException('Key must be provided. For further information see '
+                               'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')
+    elif not enc_key and not (certificate_thumbprint and private_key):
+        raise DemistoException('Key or Certificate Thumbprint and Private Key must be provided.')
     if not auth_and_token_url:
         raise Exception('ID must be provided.')
     if not tenant_id:
@@ -1621,7 +1617,10 @@ def main():
 
     client: MsGraphClient = MsGraphClient(self_deployed, tenant_id, auth_and_token_url, enc_key, app_name, base_url,
                                           use_ssl, proxy, ok_codes, mailbox_to_fetch, folder_to_fetch,
-                                          first_fetch_interval, emails_fetch_limit, timeout, endpoint)
+                                          first_fetch_interval, emails_fetch_limit, timeout, endpoint,
+                                          certificate_thumbprint=certificate_thumbprint,
+                                          private_key=private_key,
+                                          )
 
     command = demisto.command()
     LOG(f'Command being called is {command}')

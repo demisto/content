@@ -1,6 +1,7 @@
 from Okta_v2 import Client, get_user_command, get_group_members_command, create_user_command, \
     verify_push_factor_command, get_groups_for_user_command, get_user_factors_command, get_logs_command, \
-    get_zone_command, list_zones_command, update_zone_command, list_users_command
+    get_zone_command, list_zones_command, update_zone_command, list_users_command, create_zone_command, \
+    create_group_command, assign_group_to_app_command
 import pytest
 import json
 import io
@@ -189,6 +190,49 @@ create_user_response = {
         },
         "self": {
             "href": "https://test.com/api/v1/users/TestID"
+        }
+    }
+}
+create_group_response = {
+    "id": "00g3q8tjdyoOw6fJE1d7",
+    "created": "2022-05-20T14:59:29.000Z",
+    "lastUpdated": "2022-05-20T14:59:29.000Z",
+    "lastMembershipUpdated": "2022-05-20T14:59:29.000Z",
+    "objectClass": ["okta:user_group"],
+    "type": "OKTA_GROUP",
+    "profile": {
+        "name": "TestGroup",
+        "description": "Test Group Description"
+    },
+    "_links": {
+        "logo": [{
+            "name": "medium",
+            "href": "https://op3static.oktacdn.com/assets/img/logos/groups/odyssey/okta-medium.png",
+            "type": "image/png"
+        },
+            {
+                "name": "large",
+                "href": "https://op3static.oktacdn.com/assets/img/logos/groups/odyssey/okta-large.png",
+                "type": "image/png"
+        }],
+        "users": {"href": "https://test.com/api/v1/groups/00g3q8tjdyoOw6fJE1d7/users"},
+        "apps": {"href": "https://test.com/api/v1/groups/00g3q8tjdyoOw6fJE1d7/apps"}
+    }
+}
+assign_group_to_app_response = {
+    "id": "00g3q8tjdyoOw6fJE1d7",
+    "lastUpdated": "2022-05-20T16:01:16.000Z",
+    "priority": 5,
+    "profile": {},
+    "_links": {
+        "app": {
+            "href": "https://test.com/api/v1/apps/0oa3ik9908vngPiMB1d7"
+        },
+        "self": {
+            "href": "https://test.com/api/v1/apps/0oa3ik9908vngPiMB1d7/groups/00g3q8tjdyoOw6fJE1d7"
+        },
+        "group": {
+            "href": "https://test.com/api/v1/groups/00g3q8tjdyoOw6fJE1d7"
         }
     }
 }
@@ -676,6 +720,28 @@ def test_create_user_command(mocker, args):
 
 
 @pytest.mark.parametrize(
+    "args",
+    [({'name': 'TestGroup',
+       'description': 'Test Group Description'})])
+def test_create_group_command(mocker, args):
+    mocker.patch.object(client, 'create_group', return_value=create_group_response)
+    readable, outputs, _ = create_group_command(client, args)
+    assert outputs.get('OktaGroup(val.ID && val.ID === obj.ID)')[0].get('Type') == 'OKTA_GROUP'
+
+
+@pytest.mark.parametrize(
+    "args",
+    [({'groupName': 'TestGroup',
+       'appName': 'TestApp'})])
+def test_assign_group_to_app_command(mocker, args):
+    mocker.patch.object(client, 'get_group_id', return_value='00g3q8tjdyoOw6fJE1d7')
+    mocker.patch.object(client, 'get_app_id', return_value='a456appid654')
+    mocker.patch.object(client, 'assign_group_to_app', return_value=assign_group_to_app_response)
+    readable, outputs, _ = assign_group_to_app_command(client, args)
+    assert _.get('id') == '00g3q8tjdyoOw6fJE1d7'
+
+
+@pytest.mark.parametrize(
     "args, expected",
     [
         ({'groupId': 'Test Group', 'limit': 5},
@@ -727,6 +793,19 @@ def test_update_zone_command(mocker, args):
     mocker.patch.object(client, 'get_zone', return_value=okta_zone)
     mocker.patch.object(client, 'update_zone', return_value=my_okta_zone)
     readable, outputs, _ = update_zone_command(client, args)
+    assert 'NewZoneName' == outputs.get('Okta.Zone(val.id && val.id === obj.id)').get('name', '')
+
+
+@pytest.mark.parametrize(
+    "args",
+    [
+        ({'gateway_ips': '8.8.8.8', 'name': 'NewZoneName'})
+    ])
+def test_create_zone_command(mocker, args):
+    my_okta_zone = okta_zone
+    my_okta_zone['name'] = 'NewZoneName'
+    mocker.patch.object(client, 'create_zone', return_value=okta_zone)
+    readable, outputs, _ = create_zone_command(client, args)
     assert 'NewZoneName' == outputs.get('Okta.Zone(val.id && val.id === obj.id)').get('name', '')
 
 

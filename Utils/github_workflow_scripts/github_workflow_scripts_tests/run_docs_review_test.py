@@ -1,10 +1,8 @@
 from argparse import Namespace
-
 from Utils.github_workflow_scripts.run_docs_review import run_docs_review
 
 
 class TestsRunDocsReview:
-
     def test_file_name_includes_apostrophe(self, mocker, capsys):
         """
             Given:
@@ -28,6 +26,4 @@ class TestsRunDocsReview:
         result = run_docs_review()
         captured = capsys.readouterr()
         assert sdk_docs_reviewer_starting_string in captured.out
-        assert file_name_with_apostrophe in captured.out
-        assert file_name in captured.out
         assert result == expected_exit_code_of_run_docs_review

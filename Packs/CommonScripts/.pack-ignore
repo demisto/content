@@ -66,3 +66,13 @@ ignore=SC106
 
 [file:ReadPDFFileV2.yml]
 ignore=SC106
+
+[known_words]
+UnzipFile
+ZipStrings
+ExtractInbetween
+TLDs
+ParseEmailFiles
+ParseEmailFilesV2
+RTF
+msg

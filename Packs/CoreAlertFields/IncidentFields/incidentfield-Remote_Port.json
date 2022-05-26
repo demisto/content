@@ -3,7 +3,7 @@
     "caseInsensitive": true,
     "cliName": "remoteport",
     "closeForm": false,
-	"description": "The remote port of a network operation that triggered the alert.",
+    "description": "The remote port of a network operation that triggered the alert.",
     "content": true,
     "editForm": true,
     "group": 0,
@@ -28,39 +28,47 @@
     "useAsKpi": false,
     "version": -1,
     "fromVersion": "6.5.0",
-	"x2_fields": "action_remote_port",
+    "x2_fields": "action_remote_port",
     "Aliases": [
         {
-          "cliName": "dstports",
-          "type": "multiSelect"
+            "cliName": "dstports",
+            "type": "multiSelect",
+            "name": "Dst Ports"
         },
         {
             "cliName": "destinationport",
-            "type": "shortText"
+            "type": "shortText",
+            "name": "Destination Port"
         },
         {
             "cliName": "destinationports",
-            "type": "shortText"
+            "type": "shortText",
+            "name": "Destination Ports"
         },
         {
             "cliName": "digitalguardianremoteport",
-            "type": "shortText"
+            "type": "shortText",
+            "name": "Digital Guardian Remote Port"
         },
         {
             "cliName": "expanseport",
-            "type": "number"
+            "type": "number",
+            "name": "Expanse Port"
         },
         {
             "cliName": "fireeyec2port",
-            "type": "shortText"
+            "type": "shortText",
+            "name": "FireEye C2 Port"
         },
         {
             "cliName": "fireeyenxeventdestinationport",
-            "type": "shortText"
+            "type": "shortText",
+            "name": "FireEye NX Event Destination Port"
         },
         {
             "cliName": "irondefensedstport",
-            "type": "number"
+            "type": "number",
+            "name": "IronDefense Dst Port"
         }
     ]
 }

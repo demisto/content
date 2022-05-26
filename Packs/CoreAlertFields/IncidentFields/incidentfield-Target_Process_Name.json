@@ -31,10 +31,9 @@
     "x2_fields": "action_process_image_name",
     "Aliases": [
         {
-          "cliName": "childprocess",
-          "type": "multiSelect"
+            "cliName": "childprocess",
+            "type": "multiSelect",
+            "name": "Child Process"
         }
-      
     ]
-
 }

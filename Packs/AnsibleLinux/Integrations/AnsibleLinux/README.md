@@ -6963,7 +6963,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 | version | The maven version coordinate. Default is latest. | Optional | 
 | classifier | The maven classifier coordinate. | Optional | 
 | extension | The maven type/extension coordinate. Default is jar. | Optional | 
-| repository_url | The URL of the Maven Repository to download from.<br/>Use s3://... if the repository is hosted on Amazon S3, added in version 2.2.<br/>Use file://... if the repository is local, added in version 2.6. Default is http://repo1.maven.org/maven2. | Optional | 
+| repository_url | The URL of the Maven Repository to download from.<br/>Use s3://... if the repository is hosted on Amazon S3, added in version 2.2.<br/>Use file://... if the repository is local, added in version 2.6. Default is https://repo1.maven.org/maven2. | Optional | 
 | username | The username to authenticate as to the Maven Repository. Use AWS secret key of the repository is hosted on S3. | Optional | 
 | password | The password to authenticate with to the Maven Repository. Use AWS secret access key of the repository is hosted on S3. | Optional | 
 | headers | Add custom HTTP headers to a request in hash/dict format. | Optional | 

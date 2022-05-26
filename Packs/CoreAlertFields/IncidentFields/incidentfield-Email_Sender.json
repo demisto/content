@@ -31,52 +31,64 @@
     "x2_fields": "fw_email_sender",
     "Aliases": [
         {
-          "cliName": "emailfrom",
-          "type": "shortText"
+            "cliName": "emailfrom",
+            "type": "shortText",
+            "name": "Email From"
         },
         {
-          "cliName": "ironscalessenderemail",
-          "type": "shortText"
+            "cliName": "ironscalessenderemail",
+            "type": "shortText",
+            "name": "Ironscales-sender_email"
         },
         {
-          "cliName": "proofpointtapsenderaddress",
-          "type": "shortText"
+            "cliName": "proofpointtapsenderaddress",
+            "type": "shortText",
+            "name": "Proofpoint TAP Sender Address"
         },
         {
-          "cliName": "apdmessagemailfrom",
-          "type": "shortText"
+            "cliName": "apdmessagemailfrom",
+            "type": "shortText",
+            "name": "APD Message Mail From"
         },
         {
-          "cliName": "cofensetriagereportfromaddress",
-          "type": "shortText"
+            "cliName": "cofensetriagereportfromaddress",
+            "type": "shortText",
+            "name": "Cofense Triage Report From Address"
         },
         {
-          "cliName": "cymulatesourceemailaddress",
-          "type": "shortText"
+            "cliName": "cymulatesourceemailaddress",
+            "type": "shortText",
+            "name": "Cymulate Source Email Address"
         },
         {
-          "cliName": "cyrenexternalfrom",
-          "type": "shortText"
+            "cliName": "cyrenexternalfrom",
+            "type": "shortText",
+            "name": "Cyren External From"
         },
         {
-          "cliName": "cyrenexternalsender",
-          "type": "shortText"
+            "cliName": "cyrenexternalsender",
+            "type": "shortText",
+            "name": "Cyren External Sender"
         },
         {
-          "cliName": "cyrenfromaddress",
-          "type": "shortText"
+            "cliName": "cyrenfromaddress",
+            "type": "shortText",
+            "name": "Cyren From Address"
         },
         {
-          "cliName": "cyrensenderaddress",
-          "type": "shortText"
+            "cliName": "cyrensenderaddress",
+            "type": "shortText",
+            "name": "Cyren Sender Address"
         },
         {
-          "cliName": "digitalguardianemailsender",
-          "type": "shortText"
+            "cliName": "digitalguardianemailsender",
+            "type": "shortText",
+            "name": "Digital Guardian Email Sender"
         },
         {
-          "cliName": "phisheremailfrom",
-          "type": "shortText"
+            "cliName": "phisheremailfrom",
+            "type": "shortText",
+            "name": "PhishER Email From"
         }
     ]
 }

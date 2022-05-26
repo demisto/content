@@ -64,6 +64,7 @@ Another authentication option is to create and register a GitHub app under your 
 
     | **Parameter**                                                                                                    | **Required** |
     | --- | --- |
+    | Server URL, the REST API URL as describe in [github REST API documentation](https://docs.github.com/en/enterprise-server@3.0/rest/guides/getting-started-with-the-rest-api) | True|
     | Fetch incidents                                                                                                  | False |
     | Select an Issue or Pull requests to Fetch                                                                        | False |
     | API Token, use the personal token created above                                                                                                        | False |

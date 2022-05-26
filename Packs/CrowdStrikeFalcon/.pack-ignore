@@ -5,3 +5,6 @@ ignore=RM102,RM104,RM106
 
 [file:classifier-CrowdStrike_Falcon_Mapper.json]
 ignore=BA101
+
+[known_words]
+CrowdStrike

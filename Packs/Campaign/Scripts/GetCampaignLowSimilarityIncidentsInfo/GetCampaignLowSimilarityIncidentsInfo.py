@@ -165,7 +165,7 @@ def main():
         else:
             readable_output = NO_CAMPAIGN_INCIDENTS_MSG
 
-        return_results(CommandResults(readable_output=readable_output))
+        return_results(CommandResults(readable_output=readable_output, raw_response=readable_output))
     except Exception as err:
         return_error(str(err))
 

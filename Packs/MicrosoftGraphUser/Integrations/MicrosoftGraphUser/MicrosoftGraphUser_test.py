@@ -64,7 +64,7 @@ def test_get_user_command_404_response(mocker):
     from requests.models import Response
 
     client = MsGraphClient('tenant_id', 'auth_id', 'enc_key', 'app_name', 'base_url', 'verify', 'proxy',
-                           'self_deployed', 'redirect_uri', 'auth_code')
+                           'self_deployed', 'redirect_uri', 'auth_code', True)
     error_404 = Response()
     error_404._content = b'{"error": {"code": "Request_ResourceNotFound", "message": "Resource ' \
                          b'"NotExistingUser does not exist."}}'
@@ -89,7 +89,7 @@ def test_get_user_command_url_saved_chars(mocker):
 
     user_name = "dbot^"
     client = MsGraphClient('tenant_id', 'auth_id', 'enc_key', 'app_name', 'http://base_url', 'verify', 'proxy',
-                           'self_deployed', 'redirect_uri', 'auth_code')
+                           'self_deployed', 'redirect_uri', 'auth_code', False)
     http_mock = mocker.patch.object(BaseClient, '_http_request')
     mocker.patch.object(MicrosoftClient, 'get_access_token')
     hr, _, _ = get_user_command(client, {'user': user_name})
@@ -110,3 +110,54 @@ def test_get_unsupported_chars_in_user():
     invalid_user = f'demi{invalid_chars}sto'
 
     assert len(get_unsupported_chars_in_user(invalid_user).difference(set(invalid_chars))) == 0
+
+
+def test_suppress_errors(mocker):
+
+    from MicrosoftGraphUser import unblock_user_command, disable_user_account_command, \
+        update_user_command, change_password_user_command, delete_user_command, \
+        get_direct_reports_command, get_manager_command, assign_manager_command, \
+        revoke_user_session_command, MsGraphClient
+    from MicrosoftApiModule import NotFoundError
+
+    TEST_SUPPRESS_ERRORS = [
+        {'fun': unblock_user_command, 'mock_fun': 'unblock_user',
+         'mock_value': NotFoundError('123456789'), 'args': {'user': '123456789'},
+         'expected_result': '#### User -> 123456789 does not exist'},
+        {'fun': disable_user_account_command, 'mock_fun': 'disable_user_account_session',
+         'mock_value': NotFoundError('123456789'), 'args': {'user': '123456789'},
+         'expected_result': '#### User -> 123456789 does not exist'},
+        {'fun': update_user_command, 'mock_fun': 'update_user',
+         'mock_value': NotFoundError('123456789'), 'args': {'user': '123456789'},
+         'expected_result': '#### User -> 123456789 does not exist'},
+        {'fun': change_password_user_command, 'mock_fun': 'password_change_user',
+         'mock_value': NotFoundError('123456789'), 'args': {'user': '123456789'},
+         'expected_result': '#### User -> 123456789 does not exist'},
+        {'fun': delete_user_command, 'mock_fun': 'delete_user',
+         'mock_value': NotFoundError('123456789'), 'args': {'user': '123456789'},
+         'expected_result': '#### User -> 123456789 does not exist'},
+        {'fun': get_direct_reports_command, 'mock_fun': 'get_direct_reports',
+         'mock_value': NotFoundError('123456789'), 'args': {'user': '123456789'},
+         'expected_result': '#### User -> 123456789 does not exist'},
+        {'fun': get_manager_command, 'mock_fun': 'get_manager',
+         'mock_value': NotFoundError('123456789'), 'args': {'user': '123456789'},
+         'expected_result': '#### User -> 123456789 does not exist'},
+        {'fun': assign_manager_command, 'mock_fun': 'assign_manager',
+         'mock_value': NotFoundError('123456789'), 'args': {'user': '123456789'},
+         'expected_result': '#### User -> 123456789 does not exist'},
+        {'fun': assign_manager_command, 'mock_fun': 'assign_manager',
+         'mock_value': NotFoundError('123456789'), 'args': {'manager': '123456789'},
+         'expected_result': '#### Manager -> 123456789 does not exist'},
+        {'fun': revoke_user_session_command, 'mock_fun': 'revoke_user_session',
+         'mock_value': NotFoundError('123456789'), 'args': {'user': '123456789'},
+         'expected_result': '#### User -> 123456789 does not exist'}
+    ]
+
+    client = MsGraphClient(base_url='https://graph.microsoft.com/v1.0', tenant_id='tenant-id',
+                           auth_id='auth_and_token_url', enc_key='enc_key', app_name='ms-graph-groups',
+                           verify='use_ssl', proxy='proxies', self_deployed='self_deployed', handle_error=True,
+                           auth_code='', redirect_uri='')
+    for test in TEST_SUPPRESS_ERRORS:
+        mocker.patch.object(client, test['mock_fun'], side_effect=test['mock_value'])
+        results, _, _ = test['fun'](client, test['args'])
+        assert results == test['expected_result']

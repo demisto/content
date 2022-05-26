@@ -269,24 +269,24 @@ def get_occurred_time(fields: Union[List[dict], dict], field_id: str) -> str:
 
 
 class Client(BaseClient):
-    def __init__(self, base_url, username, password, instance_name, domain, **kwargs):
+    def __init__(self, base_url, username, password, instance_name, domain, timeout, **kwargs):
         self.username = username
         self.password = password
         self.instance_name = instance_name
         self.domain = domain
-        super(Client, self).__init__(base_url=base_url, headers=REQUEST_HEADERS, **kwargs)
+        super(Client, self).__init__(base_url=base_url, headers=REQUEST_HEADERS, timeout=timeout, **kwargs)
 
     def do_request(self, method, url_suffix, data=None, params=None):
         if not REQUEST_HEADERS.get('Authorization'):
             self.update_session()
 
         res = self._http_request(method, url_suffix, headers=REQUEST_HEADERS, json_data=data, params=params,
-                                 resp_type='response', ok_codes=(200, 401), timeout=200)
+                                 resp_type='response', ok_codes=(200, 401))
 
         if res.status_code == 401:
             self.update_session()
             res = self._http_request(method, url_suffix, headers=REQUEST_HEADERS, json_data=data,
-                                     resp_type='response', ok_codes=(200, 401), timeout=200)
+                                     resp_type='response', ok_codes=(200, 401))
 
         return res.json()
 
@@ -298,7 +298,7 @@ class Client(BaseClient):
             'Password': self.password
         }
         try:
-            res = self._http_request('POST', f'{API_ENDPOINT}/core/security/login', json_data=body, timeout=200)
+            res = self._http_request('POST', f'{API_ENDPOINT}/core/security/login', json_data=body)
         except DemistoException as e:
             if '<html>' in str(e):
                 raise DemistoException(f"Check the given URL, it can be a redirect issue. Failed with error: {str(e)}")
@@ -551,6 +551,10 @@ class Client(BaseClient):
             return_error(errors)
 
         if res.get('RequestedObject') and res.get('IsSuccessful'):
+
+            if res.get('RequestedObject').get('Type') != 4:
+                raise Exception('The command returns values only for fields of type "Values List".\n')
+
             list_id = res['RequestedObject']['RelatedValuesListId']
             values_list_res = self.do_request('GET', f'{API_ENDPOINT}/core/system/valueslistvalue/valueslist/{list_id}')
             if values_list_res.get('RequestedObject') and values_list_res.get('IsSuccessful'):
@@ -1282,6 +1286,7 @@ def main():
         params.get('userDomain'),
         verify=not params.get('insecure', False),
         proxy=params.get('proxy', False),
+        timeout=int(params.get('timeout', 400))
     )
     commands = {
         'archer-search-applications': search_applications_command,

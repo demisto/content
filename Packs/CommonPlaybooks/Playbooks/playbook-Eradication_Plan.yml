@@ -1,0 +1,1188 @@
+id: Eradication Plan
+version: -1
+name: Eradication Plan
+description: |-
+  This playbook handles all the eradication actions available with Cortex XSIAM, including the following tasks:
+  * Reset user password
+  * Delete file
+  * Kill process (currently, the playbook supports terminating a process by name)  
+
+  Note: The playbook inputs enable manipulating the execution flow; read the input descriptions for details.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: a565fd6d-2dd4-4f6f-8c41-d80d96fd1a58
+    type: start
+    task:
+      id: a565fd6d-2dd4-4f6f-8c41-d80d96fd1a58
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "14"
+      - "15"
+      - "42"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 190,
+          "y": 450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: eeb8f845-7954-4f9f-81ad-4d675aac7086
+    type: condition
+    task:
+      id: eeb8f845-7954-4f9f-81ad-4d675aac7086
+      version: -1
+      name: Should delete the file?
+      description: Whether to delete the file automatically, manually, or not at all.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "33"
+      Manual:
+      - "26"
+      "yes":
+      - "27"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.FilePath
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.AutoEradicate
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.FileRemediation
+            iscontext: true
+          right:
+            value:
+              simple: Delete
+          ignorecase: true
+    - label: Manual
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.AutoEradicate
+            iscontext: true
+          right:
+            value:
+              simple: "False"
+          ignorecase: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.FilePath
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.FileRemediation
+            iscontext: true
+          right:
+            value:
+              simple: Delete
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 190,
+          "y": 620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 72c569d3-0951-4897-87df-ed27c3facf76
+    type: condition
+    task:
+      id: 72c569d3-0951-4897-87df-ed27c3facf76
+      version: -1
+      name: Should terminate the process?
+      description: Whether to terminate the process automatically, manually, or not at all.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "34"
+      Manual:
+      - "31"
+      "yes":
+      - "29"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.FilePath
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.AutoEradicate
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    - label: Manual
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.AutoEradicate
+            iscontext: true
+          right:
+            value:
+              simple: "False"
+          ignorecase: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.ProcessName
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1100,
+          "y": 620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 393a2a05-9342-45d1-8c2b-55300af80c2d
+    type: regular
+    task:
+      id: 393a2a05-9342-45d1-8c2b-55300af80c2d
+      version: -1
+      name: Auto password reset
+      description: Invalidates the password of an Active Directory user.
+      script: '|||ad-expire-password'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      username:
+        complex:
+          root: inputs.Username
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -510,
+          "y": 975
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: e991e0e1-23d1-4b43-8bc6-a749552e6401
+    type: condition
+    task:
+      id: e991e0e1-23d1-4b43-8bc6-a749552e6401
+      version: -1
+      name: Should reset the user's password?
+      description: Whether to reset the user's password automatically, manually, or not at all.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "25"
+      Manual:
+      - "32"
+      "YES":
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.Username
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.AutoEradicate
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    - label: Manual
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.AutoEradicate
+            iscontext: true
+          right:
+            value:
+              simple: "False"
+          ignorecase: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.Username
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -730,
+          "y": 790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: a7310eca-bb20-43f0-8658-a5ec8824a4a5
+    type: title
+    task:
+      id: a7310eca-bb20-43f0-8658-a5ec8824a4a5
+      version: -1
+      name: Done - Password Reset
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -730,
+          "y": 1720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 5f28252e-fa6f-4a56-8c51-9e9a4ab3a7e2
+    type: collection
+    task:
+      id: 5f28252e-fa6f-4a56-8c51-9e9a4ab3a7e2
+      version: -1
+      name: Choose files to delete
+      description: Asks which file should be deleted. If no value is selected, the following tasks will be ignored.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "37"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -30,
+          "y": 805
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+        simple: File Eradication
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: false
+        completeaftersla: false
+      replyOptions:
+      - "Yes"
+      - "No"
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Which files should be deleted?
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - complex:
+            root: inputs.FilePath
+            transformers:
+            - operator: uniq
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Please consider carefully whether the file will be needed for further investigation before deleting it.
+        readonly: false
+      title: File Eradication
+      description: ""
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: c414a12d-1e04-4e83-88ad-0ad67cfd5f1c
+    type: regular
+    task:
+      id: c414a12d-1e04-4e83-88ad-0ad67cfd5f1c
+      version: -1
+      name: Auto file deletion
+      description: Initiates a new endpoint script execution to delete the specified file.
+      script: '|||core-run-script-delete-file'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      endpoint_ids:
+        complex:
+          root: inputs.EndpointID
+      file_path:
+        complex:
+          root: inputs.FilePath
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 410,
+          "y": 800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: 1b94831d-005f-4990-8089-94e71b02d746
+    type: regular
+    task:
+      id: 1b94831d-005f-4990-8089-94e71b02d746
+      version: -1
+      name: File deletion
+      description: Initiates a new endpoint script execution to delete the specified file.
+      script: '|||core-run-script-delete-file'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      endpoint_ids:
+        complex:
+          root: inputs.EndpointID
+      file_path:
+        complex:
+          root: DeleteFileList
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -30,
+          "y": 1365
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 6a1f96e9-3423-4f81-87b9-ede585a2dcf3
+    type: regular
+    task:
+      id: 6a1f96e9-3423-4f81-87b9-ede585a2dcf3
+      version: -1
+      name: Auto process termination
+      description: Initiates a new endpoint script execution kill process.
+      script: '|||core-run-script-kill-process'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      endpoint_ids:
+        complex:
+          root: inputs.EndpointID
+      process_name:
+        complex:
+          root: inputs.FilePath
+          transformers:
+          - operator: RegexExtractAll
+            args:
+              error_if_no_match: {}
+              ignore_case: {}
+              multi_line: {}
+              period_matches_newline: {}
+              regex:
+                value:
+                  simple: '[^\\]+$'
+              unpack_matches: {}
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1320,
+          "y": 800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: 15adc145-2398-49fa-88dc-9f232ee605dd
+    type: regular
+    task:
+      id: 15adc145-2398-49fa-88dc-9f232ee605dd
+      version: -1
+      name: Process termination
+      description: Initiates a new endpoint script execution kill process.
+      script: '|||core-run-script-kill-process'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      endpoint_ids:
+        complex:
+          root: inputs.EndpointID
+      process_name:
+        complex:
+          root: TerminatePorcessList
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 880,
+          "y": 1365
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: 7cca3827-f138-4eff-8c99-b20f4a62d6db
+    type: collection
+    task:
+      id: 7cca3827-f138-4eff-8c99-b20f4a62d6db
+      version: -1
+      name: Choose processes to terminate
+      description: Asks which process should be terminated. If no value is selected, the following tasks will be ignored.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "38"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 880,
+          "y": 800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+        simple: Process Eradication
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: false
+        completeaftersla: false
+      replyOptions:
+      - "Yes"
+      - "No"
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: 'Which processes should be terminated? '
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - complex:
+            root: inputs.FilePath
+            transformers:
+            - operator: uniq
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Please consider carefully whether the process termination could impact system processes with similar name.
+        readonly: false
+      title: Process Eradication
+      description: ""
+      sender: Your SOC team
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: d914e93f-9869-49b4-8c60-0fc48799d369
+    type: collection
+    task:
+      id: d914e93f-9869-49b4-8c60-0fc48799d369
+      version: -1
+      name: Choose users to reset password
+      description: Asks which user passwords to reset. If no value is selected, the following tasks will be ignored.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "36"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -950,
+          "y": 975
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+        simple: User Eradication
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: false
+        completeaftersla: false
+      replyOptions:
+      - "Yes"
+      - "No"
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Should reset the following user password?
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - complex:
+            root: inputs.Username
+            transformers:
+            - operator: uniq
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: User Eradication
+      description: ""
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: 4714aeaa-2344-40ae-8495-2bdea06efba8
+    type: title
+    task:
+      id: 4714aeaa-2344-40ae-8495-2bdea06efba8
+      version: -1
+      name: Done - File Deletion
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 190,
+          "y": 1550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: a496238e-146f-4426-88b4-f2cd6feb5234
+    type: title
+    task:
+      id: a496238e-146f-4426-88b4-f2cd6feb5234
+      version: -1
+      name: Done - Process Termination
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1100,
+          "y": 1550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: 9d1b9ae5-69c7-4884-82a4-ec32488ff0e4
+    type: regular
+    task:
+      id: 9d1b9ae5-69c7-4884-82a4-ec32488ff0e4
+      version: -1
+      name: Password reset
+      description: Invalidates the password of an Active Directory user.
+      script: '|||ad-expire-password'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      username:
+        complex:
+          root: ResetPasswordList
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -950,
+          "y": 1535
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: a64c7fa9-4f32-491a-89bf-92a623686ff9
+    type: condition
+    task:
+      id: a64c7fa9-4f32-491a-89bf-92a623686ff9
+      version: -1
+      name: Check user answer
+      description: Check the user's answer.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "25"
+      "yes":
+      - "41"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: User Eradication.Answers
+                accessor: "0"
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": -950,
+          "y": 1150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: cdff16c4-deae-40db-8975-3f54ea1f19c7
+    type: condition
+    task:
+      id: cdff16c4-deae-40db-8975-3f54ea1f19c7
+      version: -1
+      name: Check user answer
+      description: Check the user's answer.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "33"
+      "yes":
+      - "40"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: File Eradication.Answers
+                accessor: "0"
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": -30,
+          "y": 980
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: ffe68905-e156-43d4-869a-901f0362676e
+    type: condition
+    task:
+      id: ffe68905-e156-43d4-869a-901f0362676e
+      version: -1
+      name: Check user answer
+      description: Check the user's answer.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "34"
+      "yes":
+      - "39"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Process Eradication.Answers
+                accessor: "0"
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 880,
+          "y": 980
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: b0e146d9-fc24-444c-8206-79d78dec4546
+    type: regular
+    task:
+      id: b0e146d9-fc24-444c-8206-79d78dec4546
+      version: -1
+      name: Set selected processes to terminate
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      key:
+        simple: TerminatePorcessList
+      value:
+        complex:
+          root: Process Eradication.Answers
+          accessor: "0"
+          transformers:
+          - operator: RegexExtractAll
+            args:
+              error_if_no_match: {}
+              ignore_case: {}
+              multi_line: {}
+              period_matches_newline: {}
+              regex:
+                value:
+                  simple: '[^\\]+$'
+              unpack_matches: {}
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 880,
+          "y": 1180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: 4c5fa1ef-5cfe-481a-8101-e316f9ea1f63
+    type: regular
+    task:
+      id: 4c5fa1ef-5cfe-481a-8101-e316f9ea1f63
+      version: -1
+      name: Set selected files to delete
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      key:
+        simple: DeleteFileList
+      value:
+        complex:
+          root: File Eradication.Answers
+          accessor: "0"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -30,
+          "y": 1180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: b39a0bc3-6c43-4898-8f74-9b9070e0a5d8
+    type: regular
+    task:
+      id: b39a0bc3-6c43-4898-8f74-9b9070e0a5d8
+      version: -1
+      name: Set selected users to reset password
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      key:
+        simple: ResetPasswordList
+      value:
+        complex:
+          root: User Eradication.Answers
+          accessor: "0"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -950,
+          "y": 1350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: 53b9f1ee-4114-4ca1-8d63-2f0f5e2d0255
+    type: condition
+    task:
+      id: 53b9f1ee-4114-4ca1-8d63-2f0f5e2d0255
+      version: -1
+      name: Is Active Directory Query v2 enabled?
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "25"
+      "yes":
+      - "21"
+    scriptarguments:
+      brandname:
+        simple: Active Directory Query v2
+    results:
+    - brandInstances
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -730,
+          "y": 610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "14_26_Manual": 0.35,
+      "14_27_yes": 0.29,
+      "14_33_#default#": 0.14,
+      "15_29_yes": 0.28,
+      "15_31_Manual": 0.36,
+      "15_34_#default#": 0.15,
+      "21_20_YES": 0.3,
+      "21_25_#default#": 0.16,
+      "21_32_Manual": 0.36,
+      "36_25_#default#": 0.33,
+      "36_41_yes": 0.4,
+      "37_33_#default#": 0.33,
+      "37_40_yes": 0.43,
+      "38_34_#default#": 0.32,
+      "38_39_yes": 0.43,
+      "42_21_yes": 0.37,
+      "42_25_no": 0.23
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1335,
+        "width": 2650,
+        "x": -950,
+        "y": 450
+      }
+    }
+  }
+inputs:
+- key: AutoEradicate
+  value:
+    simple: Auto
+  required: false
+  description: Set to True to execute the eradication playbook automatically.
+  playbookInputQuery:
+- key: EndpointID
+  value:
+    complex:
+      root: alert
+      accessor: agentid
+  required: false
+  description: The endpoint ID.
+  playbookInputQuery:
+- key: FilePath
+  value:
+    complex:
+      root: foundIncidents.CustomFields
+      accessor: initiatorpath
+  required: false
+  description: The file path for the file deletion task.
+  playbookInputQuery:
+- key: Username
+  value:
+    complex:
+      root: foundIncidents.CustomFields
+      accessor: username
+  required: false
+  description: The username to reset the password for.
+  playbookInputQuery:
+- key: FileRemediation
+  value:
+    simple: Delete
+  required: false
+  description: "Choose 'Quarantine' or 'Delete'  to avoid file remediation conflicts. \nFor example, choosing 'Delete' ignores the 'Quarantine file' task under the containment playbook and executes only file deletion."
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+marketplaces: ["marketplacev2"]
+fromversion: 6.6.0

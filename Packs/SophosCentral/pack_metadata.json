@@ -2,7 +2,7 @@
     "name": "Sophos Central",
     "description": "The unified console for managing Sophos products",
     "support": "partner",
-    "currentVersion": "1.1.1",
+    "currentVersion": "1.1.2",
     "author": "Sophos",
     "url": "https://www.sophos.com",
     "email": "apis@sophos.com",

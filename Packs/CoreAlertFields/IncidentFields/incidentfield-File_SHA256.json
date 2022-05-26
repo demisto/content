@@ -31,8 +31,9 @@
     "x2_fields": "action_file_sha256",
     "Aliases": [
         {
-          "cliName": "sha256",
-          "type": "shortText"
+            "cliName": "sha256",
+            "type": "shortText",
+            "name": "SHA256"
         }
     ]
 }

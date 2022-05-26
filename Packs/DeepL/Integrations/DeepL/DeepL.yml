@@ -1,0 +1,281 @@
+category: Utilities
+commonfields:
+  id: DeepL
+  version: -1
+configuration:
+- display: Server URL (e.g. https://api-free.deepl.com)
+  name: url
+  required: true
+  type: 0
+- display: API Key
+  name: apikey
+  required: true
+  type: 4
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: This integration uses DeepL (https://www.deepl.com/) to translate text or files
+display: DeepL
+name: DeepL
+script:
+  commands:
+  - arguments: []
+    description: Get current API key usage
+    name: deepl-usage
+    outputs:
+    - contextPath: DeepL.Usage
+      description: Usage statistics of API key
+  - arguments:
+    - description: input the text that you want to translate
+      name: text
+      required: true
+    - auto: PREDEFINED
+      description: Select source language. If not selected DeepL will autodetect
+      name: source_lang
+      predefined:
+      - BG
+      - CS
+      - DA
+      - DE
+      - EL
+      - EN
+      - ES
+      - ET
+      - FI
+      - FR
+      - HU
+      - IT
+      - JA
+      - LT
+      - LV
+      - NL
+      - PL
+      - PT
+      - RO
+      - RU
+      - SK
+      - SL
+      - SV
+      - ZH
+    - auto: PREDEFINED
+      description: Target language to translate to
+      name: target_lang
+      predefined:
+      - BG
+      - CS
+      - DA
+      - DE
+      - EL
+      - EN-GB
+      - EN-US
+      - EN
+      - ES
+      - ET
+      - FI
+      - FR
+      - HU
+      - IT
+      - JA
+      - LT
+      - LV
+      - NL
+      - PL
+      - PT-PT
+      - PT-BR
+      - PT
+      - RO
+      - RU
+      - SK
+      - SL
+      - SV
+      - ZH
+      required: true
+    - auto: PREDEFINED
+      description: 'Sets whether the translation engine should first split the input into sentences. This is enabled by default. Possible values are: "0" - no splitting at all, whole input is treated as one sentence "1" (default) - splits on punctuation and on newlines "nonewlines" - splits on punctuation only, ignoring newlines'
+      name: split_sentences
+      predefined:
+      - '0'
+      - '1'
+    - auto: PREDEFINED
+      description: 'Sets whether the translation engine should respect the original formatting, even if it would usually correct some aspects. Possible values are: "0" (default) "1" The formatting aspects affected by this setting include: Punctuation at the beginning and end of the sentence Upper/lower case at the beginning of the sentence'
+      name: preserve_formatting
+      predefined:
+      - '0'
+      - '1'
+    - auto: PREDEFINED
+      description: 'Sets whether the translated text should lean towards formal or informal language. This feature currently only works for target languages "DE" (German), "FR" (French), "IT" (Italian), "ES" (Spanish), "NL" (Dutch), "PL" (Polish), "PT-PT", "PT-BR" (Portuguese) and "RU" (Russian).Possible options are: "default" (default) "more" - for a more formal language "less" - for a more informal language'
+      name: formality
+      predefined:
+      - default
+      - more
+      - less
+    - description: 'Specify the glossary to use for the translation. Important: This requires the source_lang parameter to be set and the language pair of the glossary has to match the language pair of the request.'
+      name: glossary_id
+    - auto: PREDEFINED
+      description: 'Sets which kind of tags should be handled. Options currently available: "xml" "html"'
+      name: tag_handling
+      predefined:
+      - xml
+      - html
+    - description: Comma-separated list of XML tags which never split sentences.
+      name: non_splitting_tags
+    - name: outline_detection
+      description: The automatic detection of the XML structure won't yield best results in all XML files. You can disable this automatic mechanism altogether by setting the outline_detection parameter to 0 and selecting the tags that should be considered structure tags. This will split sentences using the splitting_tags parameter.
+    - description: Comma-separated list of XML tags which always cause splits.
+      name: splitting_tags
+    - description: Comma-separated list of XML tags that indicate text not to be translated.
+      name: ignore_tags
+    description: Translates input text
+    name: deepl-translate-text
+    outputs:
+    - contextPath: DeepL.TranslatedText
+      description: Output of Translation
+      type: string
+  - arguments:
+    - auto: PREDEFINED
+      description: Language of the document to be translated.  If this parameter is omitted, the API will attempt to detect the language of the text and translate it.
+      name: source_lang
+      predefined:
+      - BG
+      - CS
+      - DA
+      - DE
+      - EL
+      - EN
+      - ES
+      - ET
+      - FI
+      - FR
+      - HU
+      - IT
+      - JA
+      - LT
+      - LV
+      - NL
+      - PL
+      - PT
+      - RO
+      - RU
+      - SK
+      - SL
+      - SV
+      - ZH
+    - auto: PREDEFINED
+      description: Target language to translate to
+      name: target_lang
+      predefined:
+      - BG
+      - CS
+      - DA
+      - DE
+      - EL
+      - EN-GB
+      - EN-US
+      - EN
+      - ES
+      - ET
+      - FI
+      - FR
+      - HU
+      - IT
+      - JA
+      - LT
+      - LV
+      - NL
+      - PL
+      - PT-PT
+      - PT-BR
+      - PT
+      - RO
+      - RU
+      - SK
+      - SL
+      - SV
+      - ZH
+      required: true
+    - description: "The document file to be translated. The file name should be included in this part's content disposition. As an alternative, the filename parameter can be used. The following file types and extensions are supported: \"docx\" - Microsoft Word Document \"pptx\" - Microsoft PowerPoint Document \"pdf\" - Portable Document Format \"htm / html\" - HTML Document \"txt\" - Plain Text Document Please note that in order to translate PDF documents you need to give one-time consent to using the Adobe API via the account interface."
+      name: file
+      required: true
+    - description: The name of the uploaded file. Can be used as an alternative to including the file name in the file part's content disposition.
+      name: filename
+    - auto: PREDEFINED
+      description: 'Sets whether the translated text should lean towards formal or informal language. This feature currently only works for target languages "DE" (German), "FR" (French), "IT" (Italian), "ES" (Spanish), "NL" (Dutch), "PL" (Polish), "PT-PT", "PT-BR" (Portuguese) and "RU" (Russian).Possible options are: "default" (default) "more" - for a more formal language "less" - for a more informal language'
+      name: formality
+      predefined:
+      - default
+      - more
+      - less
+    - description: 'Specify the glossary to use for the document translation. Important: This requires the source_lang parameter to be set and the language pair of the glossary has to match the language pair of the request.'
+      name: glossary_id
+    description: Please note that with every submitted document of type .pptx, .docx or .pdf you are billed a minimum of 50'000 characters with the DeepL API plan, no matter how many characters are included in the document.  Because the request includes a file upload, it must be an HTTP POST request containing multipart/form-data. This call returns immediately after the document was uploaded and queued for translation. Further requests must be sent to the API to get updates on the translation progress or to download the translated document once the translation is finished (see other document request types below).  Once the document is fully uploaded, the translation starts immediately. Please be aware that the uploaded document is automatically removed from the server after the translation is done. You have to upload the document again in order to restart the translation.  The maximum upload limit for any document is 10MB and 1.000.000 characters.
+    name: deepl-submit-document
+    outputs:
+    - contextPath: DeepL.DocumentSubmission
+      description: Translated Document
+      type: string
+    - contextPath: DeepL.DocumentSubmission.document_id
+      description: Document ID returned
+      type: string
+    - contextPath: DeepL.DocumentSubmission.document_key
+      description: Document Key returned
+      type: string
+  - arguments:
+    - description: The document encryption key that was sent to the client when the document was uploaded to the API.
+      name: document_key
+      required: true
+    - description: The document id  that was sent to the client when the document was uploaded to the API.
+      name: document_id
+      required: true
+    description: The status of the document translation process can be checked by sending a status request to the document specific status URL.
+    name: deepl-check-document-status
+    outputs:
+    - contextPath: DeepL.DocumentStatus
+      description: Returns the status of the submitted document
+      type: string
+    - contextPath: DeepL.DocumentStatus.billed_characters
+      description: How many characters were billed.
+      type: number
+    - contextPath: DeepL.DocumentStatus.document_id
+      description: ID of the submitted document
+      type: string
+    - contextPath: DeepL.DocumentStatus.status
+      description: Status of the translation
+      type: string
+  - arguments:
+    - description: The document encryption key that was sent to the client when the document was uploaded to the API.
+      name: document_key
+      required: true
+    - description: The document id  that was sent to the client when the document was uploaded to the API.
+      name: document_id
+      required: true
+    - defaultValue: TranslatedFile
+      description: Filename to use for the file
+      name: filename
+    description: Get the translated document
+    name: deepl-get-document
+    outputs:
+    - contextPath: InfoFile.Name
+      description: File Name
+      type: string
+    - contextPath: InfoFile.EntryID
+      description: The EntryID of the translated document
+      type: string
+    - contextPath: InfoFile.Info
+      description: Basic information of the file
+    - contextPath: InfoFile.Size
+      description: File Size
+    - contextPath: InfoFile.Type
+      description: File type e.g. "PDF"
+  dockerimage: demisto/python3:3.10.4.28442
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

@@ -8,3 +8,6 @@ ignore=BA101
 ignore=IN145
 [file:pack_metadata.json]
 ignore=PA129
+
+[file:UnifiVideo_image.png]
+ignore=IM111

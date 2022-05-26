@@ -3,3 +3,6 @@ ignore=RM104
 
 [file:HatchingTriage.yml]
 ignore=IN145
+
+[file:HatchingTriage_image.png]
+ignore=IM111

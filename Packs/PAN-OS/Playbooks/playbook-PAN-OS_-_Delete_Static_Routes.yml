@@ -173,7 +173,7 @@ tasks:
       version: -1
       name: PAN-OS - delete static route
       description: Deletes a static route.
-      script: '|||panorama-delete-static-route'
+      script: '|||pan-os-delete-static-route'
       type: regular
       iscommand: true
       brand: ""
@@ -208,7 +208,7 @@ tasks:
       version: -1
       name: PAN-OS - list static routes
       description: Lists the static routes for a virtual router.
-      script: '|||panorama-list-static-routes'
+      script: '|||pan-os-list-static-routes'
       type: regular
       iscommand: true
       brand: ""

@@ -28,11 +28,12 @@
     "useAsKpi": false,
     "version": -1,
     "fromVersion": "6.5.0",
-	"x2_fields": "fw_app_category",
+    "x2_fields": "fw_app_category",
     "Aliases": [
         {
             "cliName": "googlecloudsccfindingsourcepropertiesappcategory",
-            "type": "shortText"
+            "type": "shortText",
+            "name": "GoogleCloudSCC Finding SourceProperties AppCategory"
         }
     ]
 }

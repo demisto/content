@@ -151,7 +151,11 @@ class Client(BaseClient):
             params = self.get_last_modified_time()
 
         url_suffix_to_filter_by = self.build_url_suffix(params, actors_filter)
-        response = self.http_request('GET', url_suffix_to_filter_by)
+        if limit:
+            response = self.http_request('GET', url_suffix_to_filter_by, params={'limit': limit})
+        else:
+            response = self.http_request('GET', url_suffix_to_filter_by)
+
         parsed_indicators = self.create_indicators_from_response(response, feed_tags,
                                                                  tlp_color)  # list of dict of indicators
 
@@ -258,6 +262,7 @@ def main():
     target_countries = params.get('target_countries')
     target_industries = params.get('target_industries')
     custom_filter = params.get('custom_filter')
+    fetch_limit = params.get('limit', '200')
     client = Client(params)
 
     command = demisto.command()
@@ -270,7 +275,8 @@ def main():
     try:
         if demisto.command() == 'fetch-indicators':
             indicators = fetch_indicators(client, feed_tags, tlp_color, target_countries=target_countries,
-                                          target_industries=target_industries, custom_filter=custom_filter)
+                                          target_industries=target_industries, custom_filter=custom_filter,
+                                          limit=fetch_limit, offset='0')
             # we submit the indicators in batches
             for b in batch(indicators, batch_size=2000):
                 demisto.createIndicators(b)
@@ -282,5 +288,5 @@ def main():
         raise Exception(f'Error in CrowdStrike falcon intel Integration [{e}]')
 
 
-if __name__ == '__builtin__' or __name__ == 'builtins':
+if __name__ in {'__builtin__', 'builtins', '__main__'}:
     main()

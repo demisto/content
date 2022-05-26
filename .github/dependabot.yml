@@ -1,0 +1,37 @@
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "daily"
+    labels:
+      - "github_actions"
+      - "dependencies"
+      - "docs-approved"
+
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "daily"
+    labels:
+      - "npm"
+      - "dependencies"
+      - "docs-approved"
+
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "daily"
+    labels:
+      - "python"
+      - "dependencies"
+      - "docs-approved"
+
+  - package-ecosystem: "pip"
+    directory: ".circleci"
+    schedule:
+      interval: "daily"
+    labels:
+      - "python"
+      - "dependencies"
+      - "docs-approved"

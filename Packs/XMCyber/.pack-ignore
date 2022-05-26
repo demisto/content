@@ -12,3 +12,7 @@ ignore=BA101
 
 [file:layoutscontainer-XM_Cyber_Security_Score.json]
 ignore=BA101
+
+
+[file:XMCyberIntegration_image.png]
+ignore=IM111

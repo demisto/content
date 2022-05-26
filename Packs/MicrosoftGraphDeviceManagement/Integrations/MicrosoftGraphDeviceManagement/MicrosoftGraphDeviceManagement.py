@@ -32,10 +32,11 @@ HEADERS: dict = {
 
 class MsGraphClient:
     def __init__(self, self_deployed, tenant_id, auth_and_token_url, enc_key, app_name, base_url, use_ssl, proxy,
-                 ok_codes):
+                 ok_codes, certificate_thumbprint, private_key):
         self.ms_client = MicrosoftClient(self_deployed=self_deployed, tenant_id=tenant_id, auth_id=auth_and_token_url,
                                          enc_key=enc_key, app_name=app_name, base_url=base_url, verify=use_ssl,
-                                         proxy=proxy, ok_codes=ok_codes)
+                                         proxy=proxy, ok_codes=ok_codes, certificate_thumbprint=certificate_thumbprint,
+                                         private_key=private_key)
 
     def list_managed_devices(self, limit: int) -> Tuple[list, Any]:
         url_suffix: str = '/deviceManagement/managedDevices'
@@ -389,9 +390,17 @@ def main():
     ok_codes: tuple = (200, 201, 202, 204)
     use_ssl: bool = not params.get('insecure', False)
     proxy: bool = params.get('proxy', False)
+    certificate_thumbprint: str = params.get('certificate_thumbprint', '')
+    private_key: str = params.get('private_key', '')
+    if not self_deployed and not enc_key:
+        raise DemistoException('Key must be provided. For further information see '
+                               'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')
+    elif not enc_key and not (certificate_thumbprint and private_key):
+        raise DemistoException('Key or Certificate Thumbprint and Private Key must be provided.')
 
     client: MsGraphClient = MsGraphClient(self_deployed, tenant_id, auth_and_token_url, enc_key, app_name, base_url,
-                                          use_ssl, proxy, ok_codes)
+                                          use_ssl, proxy, ok_codes, certificate_thumbprint=certificate_thumbprint,
+                                          private_key=private_key)
 
     command: str = demisto.command()
     LOG(f'Command being called is {command}')

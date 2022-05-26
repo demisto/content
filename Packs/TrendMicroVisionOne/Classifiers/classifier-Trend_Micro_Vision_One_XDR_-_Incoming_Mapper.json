@@ -10,6 +10,84 @@
                     "complex": null,
                     "simple": "workbenchName"
                 },
+                "Description": {
+                    "complex": {
+                        "accessor": "description",
+                        "filters": [],
+                        "root": "detail",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Detected User": {
+                    "complex": {
+                        "accessor": "entityValue",
+                        "filters": [
+                            [
+                                {
+                                    "ignoreCase": false,
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "detail.impactScope.entityType"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "account"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "detail.impactScope",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Hostnames": {
+                    "complex": {
+                        "accessor": "entityValue.name",
+                        "filters": [
+                            [
+                                {
+                                    "ignoreCase": false,
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "detail.impactScope.entityType"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "host"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "detail.impactScope",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Technique ID": {
+                    "complex": {
+                        "accessor": "mitreTechniques",
+                        "filters": [],
+                        "root": "detail.matchedRules.matchedFilters",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
                 "Trend Micro Vision One XDR Account Count": {
                     "complex": null,
                     "simple": "impactScope.accountCount"
@@ -317,6 +395,15 @@
                     },
                     "simple": ""
                 },
+                "Trend Micro Vision One XDR Impacted Entities JSON": {
+                    "complex": {
+                        "accessor": "impactScope",
+                        "filters": [],
+                        "root": "detail",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
                 "Trend Micro Vision One XDR Indicators": {
                     "complex": {
                         "accessor": "indicators",
@@ -446,9 +533,27 @@
                     },
                     "simple": ""
                 },
+                "Trend Micro Vision One XDR Indicators JSON": {
+                    "complex": {
+                        "accessor": "indicators",
+                        "filters": [],
+                        "root": "detail",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
                 "Trend Micro Vision One XDR Investigation Status": {
                     "complex": null,
                     "simple": "investigationStatus"
+                },
+                "Trend Micro Vision One XDR Matched Rules JSON": {
+                    "complex": {
+                        "accessor": "matchedRules",
+                        "filters": [],
+                        "root": "detail",
+                        "transformers": []
+                    },
+                    "simple": ""
                 },
                 "Trend Micro Vision One XDR Priority Score": {
                     "complex": null,

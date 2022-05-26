@@ -362,21 +362,32 @@ def main():
     # Detect packs to upload
     pack_names = get_pack_names(target_packs)
     extract_packs_artifacts(packs_artifacts_path, extract_destination_path)
-    packs_list = [Pack(pack_name, os.path.join(extract_destination_path, pack_name), marketplace) for pack_name in pack_names
+    packs_list = [Pack(pack_name, os.path.join(extract_destination_path, pack_name)) for pack_name in pack_names
                   if os.path.exists(os.path.join(extract_destination_path, pack_name))]
 
-    # Starting iteration over packs
+    packs_for_current_marketplace = []
+
     for pack in packs_list:
+        task_status = pack.load_user_metadata()
+        if not task_status:
+            pack.status = PackStatus.FAILED_LOADING_USER_METADATA.value
+            pack.cleanup()
+            continue
+
+        if marketplace not in pack.marketplaces:
+            logging.warning(f"Skipping {pack.name} pack as it is not supported in the current marketplace.")
+            pack.status = PackStatus.NOT_RELEVANT_FOR_MARKETPLACE.name
+            pack.cleanup()
+            continue
+
+        packs_for_current_marketplace.append(pack)
+
+    # Starting iteration over packs
+    for pack in packs_for_current_marketplace:
         # Indicates whether a pack has failed to upload on Prepare Content step
         task_status, pack_status = pack.is_failed_to_upload(pc_failed_packs_dict)
         if task_status:
             pack.status = pack_status
-            pack.cleanup()
-            continue
-
-        task_status = pack.load_user_metadata(marketplace)
-        if not task_status:
-            pack.status = PackStatus.FAILED_LOADING_USER_METADATA.name
             pack.cleanup()
             continue
 

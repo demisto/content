@@ -17,3 +17,6 @@ ignore=IF100
 
 [file:TheHiveProject.yml]
 ignore=IN145
+
+[file:TheHiveProject_image.png]
+ignore=IM111

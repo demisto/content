@@ -2,10 +2,10 @@
     "name": "Phishing",
     "description": "Phishing emails still hooking your end users? This Content Pack can drastically reduce the time your security team spends on phishing alerts.",
     "support": "xsoar",
-    "currentVersion": "3.1.2",
+    "currentVersion": "3.2.0",
     "serverMinVersion": "6.0.0",
     "author": "Cortex XSOAR",
-    "url": "https://www.paloaltonetworks.com/cortex",
+    "url": "https:\/\/www.paloaltonetworks.com\/cortex",
     "email": "",
     "created": "2020-05-12T10:55:43Z",
     "categories": [
@@ -57,6 +57,10 @@
             "mandatory": true,
             "display_name": "Common Playbooks"
         },
+        "CommonTypes": {
+            "mandatory": true,
+            "display_name": "Common Types"
+        },
         "GmailSingleUser": {
             "mandatory": false,
             "display_name": "Gmail Single User (Beta)"
@@ -68,6 +72,10 @@
         "CoreAlertFields": {
             "mandatory": false,
             "display_name": "Core Alert Fields"
+        },
+        "FiltersAndTransformers": {
+            "mandatory": true,
+            "display_name": "Filters And Transformers"
         }
     },
     "marketplaces": [

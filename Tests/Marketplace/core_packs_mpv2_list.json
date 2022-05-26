@@ -3,8 +3,8 @@
   "rasterize",
   "DemistoRESTAPI",
   "DemistoLocking",
+  "Malware",
   "ImageOCR",
-  "WhereIsTheEgg",
   "AutoFocus",
   "UrlScan",
   "Active_Directory_Query",
@@ -17,8 +17,7 @@
   "CommonTypes",
   "CoreAlertFields",
   "HelloWorld",
-  "ExportIndicators",
-  "Malware",
+  "EDL",
   "DefaultPlaybook",
   "AccessInvestigation",
   "ThreatIntelligenceManagement",
@@ -26,5 +25,7 @@
   "ipinfo",
   "FeedMitreAttackv2",
   "FeedUnit42v2",
-  "Palo_Alto_Networks_WildFire"
+  "Palo_Alto_Networks_WildFire",
+  "Core",
+  "FiltersAndTransformers"
 ]
