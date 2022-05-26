@@ -1,6 +1,7 @@
-This playbook aims to simplify the collection of investigation package retrieval into XSOAR from only supported machines (according to the article -  https://docs.microsoft.com/en-us/microsoft-365/security/defender-endpoint/collect-investigation-package?view=o365-worldwide). 
-
-The playbook receives information regarding the target devices (by hostnames, IPs, device ids), validates that those devices exist, and retrieves the collection package from those machines into the XSOAR console. Note that this action may time and the average size of such a package is around ~15 MB.
+This playbook simplifies retrieving investigation packages to Cortex XSOAR from supported machines (See https://docs.microsoft.com/en-us/microsoft-365/security/defender-endpoint/collect-investigation-package?view=o365-worldwide).  
+The playbook receives information about the target devices (host name, IP, and device ID), validates the devices exist, and retrieves the collection package from those machines into the Cortex XSOAR console.  
+**Note:**  
+This action may take time, the average package size is around ~15 MB. 
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -9,7 +10,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any sub-playbooks.
 
 ### Integrations
-* Microsoft Defender Advanced Threat Protection
+Microsoft Defender Advanced Threat Protection
 
 ### Scripts
 This playbook does not use any scripts.
@@ -23,10 +24,10 @@ This playbook does not use any scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| AutoCollectinvestigationPackege | Choose if to skip user validation on retrieving the Investigation pack within the provided assets. | True | Optional |
-| Hostnames | Comma-separated values of hostnames |  | Optional |
-| MachineIDs | Comma-separated values of machine IDs |  | Optional |
-| IPs | Comma-separated values of machine IPs |  | Optional |
+| AutoCollectinvestigationPackege | Choose True to skip user validation on retrieving the investigation pack within the provided assets. | True | Optional |
+| Hostnames | A comma-separated list of host names. |  | Optional |
+| MachineIDs | A comma-separated list of machine IDs. |  | Optional |
+| IPs | A comma-separated list of machine IPs. |  | Optional |
 
 ## Playbook Outputs
 ---

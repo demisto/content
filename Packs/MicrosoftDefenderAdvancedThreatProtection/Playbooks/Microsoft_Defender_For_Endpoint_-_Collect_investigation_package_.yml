@@ -1,7 +1,9 @@
 id: Microsoft Defender For Endpoint - Collect investigation package
 version: -1
 name: Microsoft Defender For Endpoint - Collect investigation package
-description: "This playbook aims to simplify the collection of investigation package retrieval into XSOAR from only supported machines (according to the article -  https://docs.microsoft.com/en-us/microsoft-365/security/defender-endpoint/collect-investigation-package?view=o365-worldwide). \n\nThe playbook receives information regarding the target devices (by hostnames, IPs, device ids), validates that those devices exist, and retrieves the collection package from those machines into the XSOAR console. Note that this action may time and the average size of such a package is around ~15 MB."
+description: "This playbook simplifies retrieving investigation packages to Cortex XSOAR from supported machines (See https://docs.microsoft.com/en-us/microsoft-365/security/defender-endpoint/collect-investigation-package?view=o365-worldwide). \n\n
+      The playbook receives information about the target devices (host name, IP, and device ID), validates the devices exist, and retrieves the collection package from those machines into the Cortex XSOAR console. \n 
+      Note: This action may take time, the average package size is around ~15 MB."
 starttaskid: '0'
 tasks:
   '0':
@@ -41,7 +43,7 @@ tasks:
       id: af8bdb83-23b7-4a66-8e78-9b46f5a423e7
       version: -1
       name: Run auto collection of investigation package?
-      description: Run auto collection of investigation package?
+      description: Run investigation package auto collection?
       type: condition
       iscommand: false
       brand: ''
@@ -85,7 +87,7 @@ tasks:
       id: e6035f10-d52c-484c-8098-f7cf71f40b2d
       version: -1
       name: Approve Investigation package collection
-      description: Approve Investigation package collection
+      description: Approves investigation package collection.
       type: condition
       iscommand: false
       brand: ''
@@ -135,7 +137,11 @@ tasks:
       id: 892afad3-2682-4f32-83b1-5c59e41daba9
       version: -1
       name: Validate endpoint input
-      description: Gets machines that have communicated with Microsoft Defender for Endpoint cloud. At least one of the following arguments is required - IP, hostname, or ID. Otherwise, an error appears.
+      description: "Gets machines that communicated with Microsoft Defender for Endpoint cloud. At least one of the following arguments is required: \n
+      - IP \n
+      - host name \n
+      - ID \n
+       Otherwise, an error appears."
       script: Microsoft Defender Advanced Threat Protection|||endpoint
       type: regular
       iscommand: true
@@ -173,7 +179,7 @@ tasks:
       id: 5b7b0285-4be7-4cba-8169-903c3df3444b
       version: -1
       name: Are there any windows machine IDs?
-      description: Are there any windows machine IDs?
+      description: Are there any Windows machine IDs?
       type: condition
       iscommand: false
       brand: ''
@@ -251,7 +257,7 @@ tasks:
       id: 87f341c2-660a-47ea-83d0-f85c8ec17cf5
       version: -1
       name: Collect and download the forensics package
-      description: Collect and download an investigation package from a machine.
+      description: Collects and downloads an investigation package from a machine.
       script: Microsoft Defender Advanced Threat Protection|||microsoft-atp-request-and-download-investigation-package
       type: regular
       iscommand: true
@@ -310,22 +316,22 @@ inputs:
   value:
     simple: 'True'
   required: false
-  description: Choose if to skip user validation on retrieving the Investigation pack within the provided assets.
+  description: Choose True to skip user validation on retrieving the investigation pack within the provided assets.
   playbookInputQuery:
 - key: Hostnames
   value: {}
   required: false
-  description: Comma-separated values of hostnames
+  description: A comma-separated list of host names.
   playbookInputQuery:
 - key: MachineIDs
   value: {}
   required: false
-  description: Comma-separated values of machine IDs
+  description: A comma-separated list of machine IDs.
   playbookInputQuery:
 - key: IPs
   value: {}
   required: false
-  description: Comma-separated values of machine IPs
+  description: A comma-separated list of machine IPs.
   playbookInputQuery:
 outputs:
 - contextPath: MicrosoftATP.MachineAction

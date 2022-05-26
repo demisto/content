@@ -1,7 +1,9 @@
 id: 'Get host forensics - Generic'
 version: -1
 name: 'Get host forensics - Generic'
-description: "This playbook retrieves forensics from hosts.\nThe available integration:\n- Illusive networks. \n- Microsoft Defender For Endpoint."
+description: "This playbook retrieves forensics from hosts for the following integrations:\n
+- Illusive Networks \n
+- Microsoft Defender For Endpoint"
 starttaskid: "0"
 tasks:
   "0":
@@ -42,7 +44,7 @@ tasks:
       id: 44e2bef7-db14-418e-8899-05b87ce087c1
       version: -1
       name: Is illusive enabled
-      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
+      description: Returns 'yes' if the Illusive Networks integration is enabled.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -150,7 +152,7 @@ tasks:
       id: c7004145-36f8-47b3-8bbf-b08852b7b00c
       version: -1
       name: Is Microsoft Defender For Endpoint Integration Enabled?
-      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      description: Returns 'yes' if the Microsoft Defender for Endpoint integration brand is enabled.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -188,7 +190,9 @@ tasks:
       id: 1fb6f15e-7c4b-429b-8974-e30dcac00512
       version: -1
       name: 'Microsoft Defender For Endpoint - Collect investigation package'
-      description: "This playbook aims to simplify the collection of investigation package retrieval into XSOAR from only supported machines (according to the article -  https://docs.microsoft.com/en-us/microsoft-365/security/defender-endpoint/collect-investigation-package?view=o365-worldwide). \n\nThe playbook receives information regarding the target devices (by hostnames, IPs, device ids), validates that those devices exist, and retrieves the collection package from those machines into the XSOAR console. Note that this action may time and the average size of such a package is around ~15 MB."
+      description: "This playbook simplifies retrieving investigation packages to Cortex XSOAR from supported machines (See https://docs.microsoft.com/en-us/microsoft-365/security/defender-endpoint/collect-investigation-package?view=o365-worldwide). \n\n
+      The playbook receives information about the target devices (host name, IP, and device ID), validates the devices exist, and retrieves the collection package from those machines into the Cortex XSOAR console. \n 
+      Note: This action may take time, the average package size is around ~15 MB."
       playbookName: 'Microsoft Defender For Endpoint - Collect investigation package'
       type: playbook
       iscommand: false
@@ -241,22 +245,22 @@ inputs:
 - key: fqdn_or_ip
   value: {}
   required: false
-  description: 'If using the illusive integration to retrieve additional forensics, provide fqdn_or_ip of the host from which to get the forensics. '
+  description: 'If using the Illusive Networks integration to retrieve additional forensics, provide the host fqdn_or_ip from which to get the forensics. '
   playbookInputQuery:
 - key: start_date
   value: {}
   required: false
-  description: 'Date_range must be "number date_range_unit", examples: (2 hours, 4 minutes,6 months, 1 day, etc.).'
+  description: 'Date_range must be "number date_range_unit", for example 2 hours, 4 minutes, 6 months, 1 day.'
   playbookInputQuery:
 - key: end_date
   value: {}
   required: false
-  description: 'Date_range must be "number date_range_unit", examples: (2 hours, 4 minutes,6 months, 1 day, etc.).'
+  description: 'Date_range must be "number date_range_unit" for example 2 hours, 4 minutes, 6 months, 1 day.'
   playbookInputQuery:
 - key: machine_ID
   value: {}
   required: false
-  description: Provide the Machine ID/s of the system/s that you would like to retrieve.
+  description: Provide the machine IDs of the systems you want to retrieve.
   playbookInputQuery: null
 outputs: []
 tests:

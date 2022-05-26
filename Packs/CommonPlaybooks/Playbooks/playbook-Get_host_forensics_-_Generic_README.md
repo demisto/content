@@ -1,7 +1,6 @@
-This playbook retrieves forensics from hosts.
-The available integration:
-- Illusive networks. 
-- Microsoft Defender For Endpoint.
+This playbook retrieves forensics from hosts for the following integrations:
+- Illusive Networks 
+- Microsoft Defender For Endpoint
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -14,7 +13,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any integrations.
 
 ### Scripts
-* IsIntegrationAvailable
+IsIntegrationAvailable
 
 ### Commands
 This playbook does not use any commands.
@@ -24,10 +23,10 @@ This playbook does not use any commands.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| fqdn_or_ip | If using the illusive integration to retrieve additional forensics, provide fqdn_or_ip of the host from which to get the forensics.  |  | Optional |
-| start_date | Date_range must be "number date_range_unit", examples: \(2 hours, 4 minutes,6 months, 1 day, etc.\). |  | Optional |
-| end_date | Date_range must be "number date_range_unit", examples: \(2 hours, 4 minutes,6 months, 1 day, etc.\). |  | Optional |
-| machine_ID | Provide the Machine ID/s of the system/s that you would like to retrieve. |  | Optional |
+| fqdn_or_ip | If using the Illusive Networks integration to retrieve additional forensics, provide the host fqdn_or_ip from which to get the forensics.  |  | Optional |
+| start_date | Date_range must be "number date_range_unit", for example 2 hours, 4 minutes, 6 months, 1 day. |  | Optional |
+| end_date | Date_range must be "number date_range_unit" for example 2 hours, 4 minutes, 6 months, 1 day. |  | Optional |
+| machine_ID | The machine IDs of the systems you want to retrieve. |  | Optional |
 
 ## Playbook Outputs
 ---
