@@ -39,7 +39,7 @@ HEADERS = {
     'Accept': "application/json"
 }
 
-QUERY_OPERATORS = ['eq', 'gt', 'lt', 'contains', 'startswith']
+QUERY_OPERATORS = ['eq', 'gt', 'lt', 'contains', 'startwith']
 
 ONE_STEP_ACTION_HEADERS = ['name', 'displayName', 'description', 'id', 'association', 'standInKey']
 
