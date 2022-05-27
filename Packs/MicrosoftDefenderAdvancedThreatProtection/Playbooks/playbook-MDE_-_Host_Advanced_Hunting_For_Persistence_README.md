@@ -1,4 +1,4 @@
-This playbook will use the Microsoft Defender For Endpoint feature - Advanced Hunting - and will hunt for host persistence evidence.
+This playbook uses the Microsoft Defender For Endpoint Advanced Hunting feature to hunt for host persistence evidence.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -7,7 +7,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any sub-playbooks.
 
 ### Integrations
-* MicrosoftDefenderAdvancedThreatProtection
+MicrosoftDefenderAdvancedThreatProtection
 
 ### Scripts
 This playbook does not use any scripts.
@@ -21,13 +21,13 @@ This playbook does not use any scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| FileSha256 | Enter File Sha256 to hunt on. Can be a comma-separated list. | incident.filesha256 | Optional |
-| FileSha1 | Enter File Sha1 to hunt on. Can be a comma-separated list. | incident.filesha1 | Optional |
-| FileMd5 | Enter File MD5 to hunt on. Can be a comma-separated list. | incident.filemd5 | Optional |
-| IP | Enter an IP to hunt on.  Can be a comma-separated list. | incident.detectedips | Optional |
-| DeviceName | Enter a Hostname to hunt on.  Can be a comma-separated list. | incident.hostnames | Optional |
-| FileName | Enter a File name to hunt on.  Can be a comma-separated list. | incident.filenames | Optional |
-| DeviceID | Enter a device ID to hunt on.  Can be a comma-separated list. | incident.agentsid | Optional |
+| FileSha256 | A comma-separated list of file SHA256 hashes to hunt. | incident.filesha256 | Optional |
+| FileSha1 | A comma-separated list of file SHA1 hashes to hunt. | incident.filesha1 | Optional |
+| FileMd5 | A comma-separated list of file MD5 hashes to hunt. | incident.filemd5 | Optional |
+| IP | A comma-separated list of IPs to hunt. | incident.detectedips | Optional |
+| DeviceName | A comma-separated list of host names to hunt. | incident.hostnames | Optional |
+| FileName | A comma-separated list of file names to hunt. | incident.filenames | Optional |
+| DeviceID | A comma-separated list of a device IDs to hunt. | incident.agentsid | Optional |
 
 ## Playbook Outputs
 ---
