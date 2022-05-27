@@ -96,7 +96,7 @@ tasks:
       id: a10b7555-36b7-444e-874c-20c10a692311
       version: -1
       name: Wildfire Detonate and Analyze File
-      playbookName: Detonates and analyzes a file in the Wildfire sandbox.
+      playbookName: Wildfire Detonate and Analyze File
       type: playbook
       iscommand: false
       brand: ""
@@ -329,7 +329,7 @@ tasks:
     task:
       id: 9392e375-e991-4914-8db3-0bf4a52f77bc
       version: -1
-      name: 'MITRE - Extract and Associate to Incident'
+      name: MITRE - Extract and Associate to Incident
       description: |-
         This playbook accepts as an input MITRE technique IDs.
         It provides the MITRE technique name and all the technique data using the MITRE integration.
