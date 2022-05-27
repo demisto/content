@@ -10,6 +10,9 @@
     "videos": [
         "https://www.youtube.com/watch?v=ium2969zgn8"
     ],
+    "itemPrefix": [
+        "XDR"
+    ],
     "categories": [
         "Endpoint",
         "Data Enrichment & Threat Intelligence"
