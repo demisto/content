@@ -638,7 +638,7 @@ tasks:
       brand: ''
       id: 3a2ccd6d-24af-4fdc-8e90-d7f4098b8a00
       iscommand: false
-      name: 23621c27-b05b-4630-8017-d6f1c2b4a15e
+      name: MDE - Host Advanced Hunting For Powershell Executions
       playbookId: MDE - Host Advanced Hunting For Powershell Executions
       type: playbook
       version: -1
@@ -688,7 +688,7 @@ tasks:
       description: This playbook uses the Microsoft Defender for Endpoint Advanced Hunting feature and hunts for host persistence evidence.
       id: 0ede68b1-a86f-444b-8e24-67554d08d6c9
       iscommand: false
-      name: 5a158ad1-7561-43de-8662-87706a82f2ae
+      name: MDE - Host Advanced Hunting For Persistence
       playbookId: MDE - Host Advanced Hunting For Persistence
       type: playbook
       version: -1

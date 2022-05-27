@@ -9,7 +9,7 @@ description: |
   - Requesting to run automatic investigation on an endpoint.
 id: MDE - Pro-Active Actions
 inputs:
-- description: |-
+- description: |
   "A comma-separated list of investigation actions. Possible values: \n
   `Full Scan` - Fully Scan the provided endpoints \n
   `Collect Investigation Package` - Collect investigation packages from endpoints (only for supported devices) \n
