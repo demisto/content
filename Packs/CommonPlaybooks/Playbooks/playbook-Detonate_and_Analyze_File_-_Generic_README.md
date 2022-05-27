@@ -4,7 +4,7 @@ The playbook uploads detonates and analyzes files for supported sandboxes. Curre
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Extract and Associate MITRE 
+* Mitre Attack - Extract Technique Information From ID
 * FalconX Detonate and Analyze File 
 * Wildfire Detonate and Analyze File
 

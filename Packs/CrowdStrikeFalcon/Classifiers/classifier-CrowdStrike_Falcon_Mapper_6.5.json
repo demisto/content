@@ -283,7 +283,7 @@
         "dbot_classification_incident_type_all": {
             "dontMapEventToLabels": false,
             "internalMapping": {
-                " External Start Time": {
+                "External Start Time": {
                     "complex": {
                         "filters": [],
                         "root": "first_behavior",
@@ -304,26 +304,6 @@
                 },
                 "Additional Data": {
                     "simple": "behaviors"
-                },
-                "Agent IDs": {
-                    "complex": {
-                        "accessor": "device_id",
-                        "filters": [],
-                        "root": "device",
-                        "transformers": [
-                            {
-                                "args": {
-                                    "item": {
-                                        "isContext": true,
-                                        "value": {
-                                            "simple": "host_ids"
-                                        }
-                                    }
-                                },
-                                "operator": "append"
-                            }
-                        ]
-                    }
                 },
                 "Agent Version": {
                     "simple": "device.agent_version"
@@ -439,9 +419,6 @@
                             }
                         ]
                     }
-                },
-                "Extermal Severity": {
-                    "simple": "max_severity"
                 },
                 "External Category Name": {
                     "simple": "incident_type"
@@ -668,7 +645,7 @@
                 "Parent Process SHA256": {
                     "simple": "behaviors.parent_details.parent_sha256"
                 },
-                "Parent process MD5": {
+                "Parent Process MD5": {
                     "simple": "behaviors.parent_details.parent_md5"
                 },
                 "Process CMD": {
@@ -686,57 +663,8 @@
                 "Source MAC Address": {
                     "simple": "device.mac_address"
                 },
-                "Tactic ID": {
-                    "simple": "behaviors.tactic_id"
-                },
-                "Tactic Name": {
-                    "complex": {
-                        "accessor": "tactic",
-                        "filters": [],
-                        "root": "behaviors",
-                        "transformers": [
-                            {
-                                "args": {
-                                    "item": {
-                                        "isContext": true,
-                                        "value": {
-                                            "simple": "tactics"
-                                        }
-                                    }
-                                },
-                                "operator": "append"
-                            }
-                        ]
-                    }
-                },
                 "Tags": {
                     "simple": "tags"
-                },
-                "Technique ID": {
-                    "simple": "behaviors.technique_id"
-                },
-                "Technique Name": {
-                    "complex": {
-                        "accessor": "technique",
-                        "filters": [],
-                        "root": "behaviors",
-                        "transformers": [
-                            {
-                                "args": {
-                                    "item": {
-                                        "isContext": true,
-                                        "value": {
-                                            "simple": "techniques"
-                                        }
-                                    }
-                                },
-                                "operator": "append"
-                            }
-                        ]
-                    }
-                },
-                "User IDs": {
-                    "simple": "behaviors.user_id"
                 },
                 "Users": {
                     "simple": "behaviors.user_name"

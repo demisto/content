@@ -4,7 +4,7 @@ This playbook searches for a specific hash in the supported sandboxes. If the ha
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-Extract and Associate MITRE 
+Mitre Attack - Extract Technique Information From ID
 
 ### Integrations
 This playbook does not use any integrations.

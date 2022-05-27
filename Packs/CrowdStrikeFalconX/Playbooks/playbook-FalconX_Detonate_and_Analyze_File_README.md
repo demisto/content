@@ -38,4 +38,4 @@ This playbook does not use any sub-playbooks.
 
 ## Playbook Image
 ---
-![FalconX Detonate and Analyze File]((../doc_files/FalconX_Detonate_and_Analyze.png)
+![FalconX Detonate and Analyze File](../doc_files/FalconX_Detonate_and_Analyze.png)
