@@ -1,4 +1,4 @@
-This playbook will use the Microsoft Defender For Endpoint feature - Advanced Hunting - and will hunt for host network activity.
+This playbook uses the Microsoft Defender For Endpoint Advanced Hunting feature to hunt for host network activity.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -7,10 +7,10 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any sub-playbooks.
 
 ### Integrations
-* MicrosoftDefenderAdvancedThreatProtection
+MicrosoftDefenderAdvancedThreatProtection
 
 ### Scripts
-* UnzipFile
+UnzipFile
 
 ### Commands
 * microsoft-atp-advanced-hunting-network-connections
@@ -26,13 +26,13 @@ This playbook does not use any sub-playbooks.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| IP | Enter IP to hunt on. Can be a comma-separated list. | incident.detectedips | Optional |
-| DeviceName | Enter a hostname to hunt on. Can be a comma-separated list. | incident.hostnames | Optional |
-| FileName | Enter file name to hunt on. Can be a comma-separated list. | incident.filenames | Optional |
-| DeviceID | Enter device id to hunt on. Can be a comma-separated list. | incident.agentsid | Optional |
-| FileMd5 | Enter file md5 id to hunt on. Can be a comma-separated list. | incident.filemd5 | Optional |
-| FileSha256 | Enter file SHA256 id to hunt on. Can be a comma-separated list. | incident.filesha256 | Optional |
-| FileSha1 | Enter file SHA1 id to hunt on. Can be a comma-separated list. | incident.filesha1 | Optional |
+| IP | A comma-separated list of IPs to hunt. | incident.detectedips | Optional |
+| DeviceName | A comma-separated list of host names to hunt. | incident.hostnames | Optional |
+| FileName | A comma-separated list of file names to hunt. | incident.filenames | Optional |
+| DeviceID | A comma-separated list of device IDs to hunt. | incident.agentsid | Optional |
+| FileMd5 | A comma-separated list of file MD5 hashes to hunt. | incident.filemd5 | Optional |
+| FileSha256 | A comma-separated list of file SHA256 hashes to hunt. | incident.filesha256 | Optional |
+| FileSha1 | A comma-separated list of file SHA1 hashes to hunt. | incident.filesha1 | Optional |
 
 ## Playbook Outputs
 ---
