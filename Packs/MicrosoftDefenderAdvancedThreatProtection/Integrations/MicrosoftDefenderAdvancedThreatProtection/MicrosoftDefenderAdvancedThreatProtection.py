@@ -1138,7 +1138,7 @@ class MsClient:
         """
         cmd_url = f'/machines/{machine_id}/offboard'
         json_data = {
-            "Comment": 'Offboarded during soc rountine',
+            "Comment": comment
         }
         response = self.ms_client.http_request(method='POST', url_suffix=cmd_url, json_data=json_data)
         return response
