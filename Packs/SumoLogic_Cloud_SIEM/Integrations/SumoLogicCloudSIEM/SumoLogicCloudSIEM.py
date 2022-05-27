@@ -94,6 +94,14 @@ def add_list_to_q(q, fields, args):
                 q = add_to_query(q) + '{}:"{}"'.format(arg_field, arg_value)
     return q
 
+def convert_api_url_to_service_url(api_url):
+    '''
+    '''
+    if (api_url.rfind('stag')==-1):
+        return api_url[:-4].replace('api','service')
+    else:
+        api_url
+
 
 def insight_signal_to_readable(obj):
     '''
@@ -221,6 +229,13 @@ def test_module(client: Client) -> str:
             raise e
     return message
 
+def craft_sumo_url(svc_url,resource_type,id):
+    if resource_type == "insight":
+        return f'{svc_url}/sec/insight/{id}'
+    elif resource_type == "signal":
+        return  f'{svc_url}/sec/signal/{id}'
+    else:
+        return ""
 
 def insight_get_details(client: Client, args: Dict[str, Any]) -> CommandResults:
     '''
@@ -239,10 +254,12 @@ def insight_get_details(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     resp_json = client.req('GET', 'sec/v1/insights/{}'.format(insight_id), query)
     insight = insight_signal_to_readable(resp_json)
+    insight['SumoUrl'] = craft_sumo_url(demisto.getParam('instance_endpoint'),'insight',insight_id)
+
     readable_output = tableToMarkdown(
         'Insight Details:', [insight],
         ['Id', 'ReadableId', 'Name', 'Action', 'Status', 'Assignee', 'Description', 'LastUpdated', 'LastUpdatedBy', 'Severity',
-         'Closed', 'ClosedBy', 'Timestamp', 'Entity', 'Resolution'], headerTransform=pascalToSpace)
+         'Closed', 'ClosedBy', 'Timestamp', 'Entity', 'Resolution','SumoUrl'], headerTransform=pascalToSpace)
 
     return CommandResults(
         readable_output=readable_output,
@@ -283,9 +300,10 @@ def signal_get_details(client: Client, args: Dict[str, Any]) -> CommandResults:
     signal = client.req('GET', 'sec/v1/signals/{}'.format(signal_id))
     signal.pop('allRecords', None)  # don't need to display records from signal
     signal = insight_signal_to_readable(signal)
+    signal['SumoUrl'] = craft_sumo_url(demisto.getParam('instance_endpoint'),'signal',signal_id)
     readable_output = tableToMarkdown(
         'Signal Details:', [signal],
-        ['Id', 'Name', 'RuleId', 'Description', 'Severity', 'ContentType', 'Timestamp', 'Entity'], headerTransform=pascalToSpace)
+        ['Id', 'Name', 'RuleId', 'Description', 'Severity', 'ContentType', 'Timestamp', 'Entity','SumoUrl'], headerTransform=pascalToSpace)
 
     return CommandResults(
         readable_output=readable_output,
@@ -683,6 +701,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int], 
         query['recordSummaryFields'] = record_summary_fields
     incidents = []
     hasNextPage = True
+    instance_endpoint = demisto.getParam('instance_endpoint')
     while hasNextPage:
 
         # only query parameter that changes loop to loop is the offset
@@ -694,6 +713,9 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int], 
             # convert it from the API response
             insight_timestamp = a.get('created')
             insight_id = a.get('id')
+            # add sumoUrl to signal:
+            a['sumoUrl']=craft_sumo_url(instance_endpoint,'insight',insight_id)
+
             if insight_id and insight_timestamp and insight_id not in last_fetch_ids:
                 try:
                     incident_datetime = datetime.strptime(insight_timestamp, '%Y-%m-%dT%H:%M:%S.%f')
@@ -707,6 +729,12 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int], 
                 if last_fetch:
                     if incident_created_time < last_fetch:
                         continue
+                # add sumoUrl to raw insight:
+
+                signals = a.get('signals')
+                for signal in signals:
+                    signal_id = signal['id']
+                    signal['sumoUrl'] = craft_sumo_url(instance_endpoint,'signal',signal_id)
 
                 incidents.append({
                     'name': a.get('name', 'No name') + ' - ' + insight_id,

@@ -91,9 +91,22 @@
             "fieldCalcScript": "",
             "isReadOnly": false,
             "selectValues": null
+        },
+        {
+            "key": "sumourl",
+            "displayName": "SumoURL",
+            "type": "shortText",
+            "required": false,
+            "script": "",
+            "width": 150,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
         }
     ],
     "defaultRows": [
+        {},
         {},
         {},
         {},
