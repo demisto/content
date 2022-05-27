@@ -447,7 +447,7 @@ tasks:
       {
         "position": {
           "x": 470,
-          "y": 8265
+          "y": 8050
         }
       }
   '15':
@@ -1913,59 +1913,35 @@ tasks:
     isoversize: false
     nexttasks:
       '#none#':
-      - '54'
-    note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ''
-      description: Returns the status of the push (commit-all) jobs from Panorama.
-      id: 19a71628-f575-4f67-83f6-a7ba521621ef
-      iscommand: true
-      name: pan-os-config-get-push-status
-      script: '|||pan-os-config-get-push-status'
-      type: regular
-      version: -1
-    taskid: 19a71628-f575-4f67-83f6-a7ba521621ef
-    timertriggers: []
-    type: regular
-    view: |-
-      {
-        "position": {
-          "x": 470,
-          "y": 7900
-        }
-      }
-  '54':
-    id: '54'
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
-    nexttasks:
-      '#none#':
       - '14'
     note: false
     quietmode: 0
+    scriptarguments:
+      target:
+        complex:
+          accessor: hostid
+          root: PANOS.ShowSystemInfo.Summary
+          transformers:
+          - operator: FirstArrayElement
     separatecontext: false
     skipunavailable: false
     task:
       brand: ''
-      description: Returns the status of the commit operation on all devices. If an ID is given, only that id will be returned.
-      id: a337cb9b-9f44-4346-8cbc-b2c0971017ea
+      description: Get the device state from the provided device. Note; This will attempt to connect directly to the provided target to get the device state - if the IP address, as reported in 'show system info' is unreachable, this command will fail.
+      id: 92d776e9-ea83-4922-84eb-2ef3be9d4c23
       iscommand: true
-      name: pan-os-config-get-commit-status
-      script: '|||pan-os-config-get-commit-status'
+      name: pan-os-platform-get-device-state
+      script: '|||pan-os-platform-get-device-state'
       type: regular
       version: -1
-    taskid: a337cb9b-9f44-4346-8cbc-b2c0971017ea
+    taskid: 92d776e9-ea83-4922-84eb-2ef3be9d4c23
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
           "x": 470,
-          "y": 8080
+          "y": 7880
         }
       }
 version: -1
@@ -1974,7 +1950,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 8280,
+        "height": 8065,
         "width": 400,
         "x": 450,
         "y": 50
