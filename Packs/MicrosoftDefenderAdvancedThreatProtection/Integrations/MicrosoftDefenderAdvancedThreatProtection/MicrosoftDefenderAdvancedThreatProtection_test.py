@@ -127,8 +127,8 @@ def test_get_machine_investigation_package_command(mocker):
     from MicrosoftDefenderAdvancedThreatProtection import get_machine_investigation_package_command
     mocker.patch.object(client_mocker, 'get_investigation_package', return_value=INVESTIGATION_PACKAGE_API_RESPONSE)
     mocker.patch.object(atp, 'get_machine_action_data', return_value=INVESTIGATION_ACTION_DATA)
-    result = get_machine_investigation_package_command(client_mocker, {'machine_id': '123', 'comment': 'test'})
-    assert result.outputs['MicrosoftATP.MachineAction(val.ID === obj.ID)'] == INVESTIGATION_ACTION_DATA
+    _, res, _ = get_machine_investigation_package_command(client_mocker, {'machine_id': '123', 'comment': 'test'})
+    assert res['MicrosoftATP.MachineAction(val.ID === obj.ID)'] == INVESTIGATION_ACTION_DATA
 
 
 def test_get_investigation_package_sas_uri_command(mocker):
@@ -1076,8 +1076,7 @@ def test_run_script_polling(mocker, args, request_status, args_to_compare, expec
     import CommonServerPython
 
     def mock_action_command(client, args):
-        return CommonServerPython.CommandResults(outputs={'action_id': 'action_id_example'},
-                                                 raw_response={'id': 'action_id_example'})
+        return CommonServerPython.CommandResults(outputs={'action_id': 'action_id_example'})
 
     def mock_get_status(client, args):
         return CommonServerPython.CommandResults(
