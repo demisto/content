@@ -1399,6 +1399,5 @@ view: |-
     }
   }
 tests:
-- Microsoft Defender Advanced Threat Protection - Test
-- Microsoft Defender - ATP - Indicators SC Test
-fromversion: 6.2.0
+- No tests (auto formatted)
+fromversion: 6.5.0

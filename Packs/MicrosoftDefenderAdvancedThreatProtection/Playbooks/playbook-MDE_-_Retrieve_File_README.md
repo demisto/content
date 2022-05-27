@@ -1,5 +1,7 @@
 This playbook uses the Live Response feature to retrieve a file from an endpoint.
 
+Note that the endpoint id will be set from the incident field "Device ID".
+
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
 

@@ -2,7 +2,7 @@ contentitemexportablefields:
   contentitemfields:
     propagationLabels:
     - all
-description: This playbook uses the Live Response feature to retrieve a file from an endpoint.
+description: "This playbook uses the Live Response feature to retrieve a file from an endpoint./nNote that the endpoint id will be set from the incident field \"Device ID\"."
 id: MDE - Retrieve File
 inputs:
 - description: The file paths to be provided.
@@ -58,7 +58,7 @@ tasks:
       comment:
         simple: Retrieving file - XSOAR PB ${incident.id}
       machine_id:
-        simple: ${Endpoint.ID}
+        simple: ${incident.deviceid}
       path:
         simple: ${inputs.paths}
     separatecontext: false
@@ -260,4 +260,4 @@ view: |-
   }
 tests:
 - No tests (auto formatted)
-fromversion: 6.2.0
+fromversion: 6.5.0

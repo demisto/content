@@ -738,7 +738,7 @@ tasks:
       brand: ''
       id: f5d3ed39-0b68-4048-86d5-d10ff75bf493
       iscommand: false
-      name: 1da35988-954b-489f-8973-89a62b0cc89c
+      name: MDE - Host Advanced Hunting For Network Activity
       playbookId: MDE - Host Advanced Hunting For Network Activity
       type: playbook
       version: -1
@@ -1004,4 +1004,4 @@ view: |-
   }
 tests:
 - Microsoft Defender Advanced Threat Protection - Test
-fromversion: 6.2.0
+fromversion: 6.5.0

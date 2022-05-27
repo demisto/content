@@ -1001,5 +1001,5 @@ view: |-
     }
   }
 tests:
-- Microsoft Defender Advanced Threat Protection - Test
-fromversion: 6.2.0
+- No tests (auto formatted)
+fromversion: 6.5.0

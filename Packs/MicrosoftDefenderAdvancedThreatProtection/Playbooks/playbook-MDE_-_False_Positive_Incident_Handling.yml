@@ -828,4 +828,4 @@ view: |-
   }
 tests:
   - No tests
-fromversion: 6.2.0
+fromversion: 6.5.0
