@@ -329,12 +329,12 @@ tasks:
     task:
       id: 9392e375-e991-4914-8db3-0bf4a52f77bc
       version: -1
-      name: MITRE - Extract and Associate to Incident
+      name: Mitre Attack - Extract Technique Information From ID
       description: |-
         This playbook accepts as an input MITRE technique IDs.
         It provides the MITRE technique name and all the technique data using the MITRE integration.
         After extracting the MITRE data, the techniques are associated with the incident.
-      playbookName: MITRE - Extract and Associate to Incident
+      playbookName: Mitre Attack - Extract Technique Information From ID
       type: playbook
       iscommand: false
       brand: ""
