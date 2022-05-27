@@ -1,4 +1,4 @@
-# Harfanglab EDR
+# HarfangLab EDR
 
 This connector allows to fetch security events from a HarfangLab EDR Manager and manage the incident response. 
 
