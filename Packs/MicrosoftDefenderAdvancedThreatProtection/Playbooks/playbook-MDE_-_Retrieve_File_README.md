@@ -1,4 +1,4 @@
-This playbook uses the Live Response feature in order to retrieve a file from an endpoint.
+This playbook uses the Live Response feature to retrieve a file from an endpoint.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -7,21 +7,21 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any sub-playbooks.
 
 ### Integrations
-* MicrosoftDefenderAdvancedThreatProtection
+MicrosoftDefenderAdvancedThreatProtection
 
 ### Scripts
 * isError
 * UnzipFile
 
 ### Commands
-* microsoft-atp-live-response-get-file
+microsoft-atp-live-response-get-file
 
 ## Playbook Inputs
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| paths | File paths to be provided |  | Optional |
+| paths | File paths to be provided. |  | Optional |
 
 ## Playbook Outputs
 ---
