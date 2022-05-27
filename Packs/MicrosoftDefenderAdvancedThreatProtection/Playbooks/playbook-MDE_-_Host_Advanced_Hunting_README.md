@@ -1,15 +1,15 @@
-This playbook will use the Microsoft Defender For Endpoint feature - Advanced Hunting. The hunt will be done based on provided inputs.
+This playbook uses the Microsoft Defender For Endpoint Advanced Hunting feature. The hunt is executed based on the provided inputs.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* 1da35988-954b-489f-8973-89a62b0cc89c
-* 23621c27-b05b-4630-8017-d6f1c2b4a15e
-* 5a158ad1-7561-43de-8662-87706a82f2ae
+* MDE - Host Advanced Hunting For Network Activity
+* MDE - Host Advanced Hunting For Powershell Executions
+* MDE - Host Advanced Hunting For Persistence
 
 ### Integrations
-* MicrosoftDefenderAdvancedThreatProtection
+MicrosoftDefenderAdvancedThreatProtection
 
 ### Scripts
 This playbook does not use any scripts.
@@ -26,13 +26,13 @@ This playbook does not use any scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| FileSha1 | Enter File Sha1 to hunt on. Can be a comma-separated list. |  | Optional |
-| FileSha256 | Enter File Sha256 to hunt on. Can be a comma-separated list. |  | Optional |
-| IP | Enter an IP to hunt on.  Can be a comma-separated list. |  | Optional |
-| DeviceName | Enter a Hostname to hunt on.  Can be a comma-separated list. |  | Optional |
-| FileName | Enter a File name to hunt on.  Can be a comma-separated list. |  | Optional |
-| DeviceID | Enter a device ID to hunt on.  Can be a comma-separated list. |  | Optional |
-| FileMd5 | Enter File MD5 to hunt on. Can be a comma-separated list. |  | Optional |
+| FileSha1 | A comma-separated list of file SHA1 hashes to hunt. |  | Optional |
+| FileSha256 | A comma-separated list of file Sha256 hashes to hunt. |  | Optional |
+| IP | A comma-separated list of IPs to hunt. |  | Optional |
+| DeviceName | A comma-separated list of host names to hunt. |  | Optional |
+| FileName | A comma-separated list of file names to hunt. |  | Optional |
+| DeviceID | A comma-separated list of device ID to hunt. |  | Optional |
+| FileMd5 | A comma-separated list of file MD5 hashes to hunt. |  | Optional |
 
 ## Playbook Outputs
 ---
