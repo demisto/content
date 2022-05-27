@@ -13,6 +13,7 @@ configuration:
   type: 0
 - additionalinfo: The SaaS Security Client ID and Client Secret.
   display: Client ID
+  displaypassword: Client Secret
   name: credentials
   required: true
   type: 9
@@ -25,12 +26,13 @@ configuration:
   required: false
   type: 8
 - display: The maximum number of events per fetch.
-  defaultvalue: 10
+  additionalinfo: How many events to fetch every time fetch is being executed. Default is 100.
+  defaultvalue: 100
   name: max_fetch
   required: true
   type: 0
 description: Palo Alto Saas Security Event Collector integration for XSIAM.
-display: Saas Security Event Collector
+display: Saas Security Event Collector (Beta)
 name: SaasSecurityEventCollector
 script:
   commands:
@@ -40,8 +42,17 @@ script:
     name: saas-security-get-events
     arguments:
       - name: limit
-        description: The number of events to get.Default is 10.
-        defaultValue: 10
+        description: The maximum number of events to get.
+        defaultValue: 100
+      - auto: PREDEFINED
+        defaultValue: 'False'
+        description: Set this argument to True in order to create events, otherwise the command will only display them. If setting to 'False' there is a risk of losing events.
+        isArray: false
+        name: should_push_events
+        predefined:
+          - 'True'
+          - 'False'
+        required: true
     outputs:
     - contextPath: SaasSecurity.Event.log_type
       description: Event type.
@@ -82,12 +93,59 @@ script:
     - contextPath: SaasSecurity.Event.timestamp
       description: ISO8601 timestamp to show when the event occurred.
       type: Date
+    - contextPath: SaasSecurity.Event.severity
+      description: Severity (0-5)
+      type: Number
+    - contextPath: SaasSecurity.Event.incident_id
+      description: Incident/risk id.
+      type: String
+    - contextPath: SaasSecurity.Event.exposure
+      description: Exposure level (public, external, company, or internal)
+      type: String
+    - contextPath: SaasSecurity.Event.asset_id
+      description: The asset ID.
+      type: String
+    - contextPath: SaasSecurity.Event.item_owner
+      description: The item owner.
+      type: String
+    - contextPath: SaasSecurity.Event.container_name
+      description: Item’s container name.
+      type: String
+    - contextPath: SaasSecurity.Event.item_creator
+      description: Item creator.
+      type: String
+    - contextPath: SaasSecurity.Event.occurrences_by_rule
+      description: Number of times the asset violated the policy.
+      type: Number
+    - contextPath: SaasSecurity.Event.policy_rule_name
+      description: Violated policy’s name.
+      type: String
+    - contextPath: SaasSecurity.Event.incident_owner
+      description: Incident owner.
+      type: String
+    - contextPath: SaasSecurity.Event.incident_category
+      description: Incident category..
+      type: String
+    - contextPath: SaasSecurity.Event.item_creator_email
+      description: Item creator’s email.
+      type: String
+    - contextPath: SaasSecurity.Event.action_taken
+      description: Action taken.
+      type: String
+    - contextPath: SaasSecurity.Event.action_taken_by
+      description: Action taken by.
+      type: String
+    - contextPath: SaasSecurity.Event.field
+      description: Name of field (optional).
+      type: String
+    - contextPath: SaasSecurity.Event.resource_value_old
+      description: Old resource value. (optional).
+      type: String
+    - contextPath: SaasSecurity.Event.resource_value_new
+      description: New resource value. (optional).
+      type: String
   dockerimage: demisto/python3:3.10.4.29342
-  feed: false
   isfetchevents: true
-  longRunning: true
-  longRunningPort: false
-  runonce: false
   script: '-'
   subtype: python3
   type: python
@@ -96,3 +154,4 @@ tests:
 marketplaces:
 - marketplacev2
 fromversion: 6.2.0
+beta: true

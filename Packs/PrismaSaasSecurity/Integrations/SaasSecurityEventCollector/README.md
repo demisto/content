@@ -1,3 +1,8 @@
+Note: This is a beta Integration, which lets you implement and test pre-release software. 
+Since the integration is beta, it might contain bugs. Updates to the integration during the beta phase might include 
+non-backward compatible features. We appreciate your feedback on the quality and usability of the integration to help 
+us identify issues, fix them, and continually improve.
+
 SaaS Security is an integrated CASB (Cloud Access Security Broker) solution that helps Security teams like yours meet 
 the challenges of protecting the growing availability of sanctioned and unsanctioned SaaS applications and maintaining 
 compliance consistently in the cloud while stopping threats to sensitive information, users, and resources. 
@@ -6,6 +11,20 @@ SaaS Security options include SaaS Security API (formerly Prisma SaaS) and the S
 
 ## Configure SaaS Security on Cortex XSIAM
 
+1. Navigate to **Settings** > **Configurations** > **Data Collection** > **Automations & Feed Integrations**.
+2. Search for Saas Security Event Collector.
+3. Click **Add instance** to create and configure a new integration instance.
+
+    | **Parameter** | **Description** | **Required** |
+    | --- | --- | --- |
+    | Your server URL | The instance configuration URL based on the server location. | True |
+    | Client ID | The SaaS Security Client ID. | True |
+    | Client Secret | The SaaS Security Secret ID. | True |
+    | Trust any certificate (not secure) | By default, SSL verification is enabled. If selected, the connection isn’t secure and all requests return an SSL error because the certificate cannot be verified. | False |
+    | Use system proxy settings | Uses the system proxy server to communicate with the  integration. If not selected, the integration will not use the system proxy server. | False |
+    | The maximum number of events per fetch. | How many events to fetch every time fetch is being executed. Default is 100 | True |
+
+4. Click **Test** to validate the URLs, token, and connection.
 
 ## Create the Client ID and Client Secret on SaaS Security
 In the SaaS Security UI, do the following:
@@ -22,9 +41,128 @@ Tip: Record your API client secret somewhere safe. For security purposes, it’s
 Note: For more information see the [SaaS Security Administrator's Guide](https://docs.paloaltonetworks.com/saas-security/saas-security-admin/saas-security-api/syslog-and-api-integration/api-client-integration/add-your-api-client-app.html)
 
 
+## Limitations
+* by definition the events that occur lasts only 1 hour in Saas-Security cache, hence if setting the limit to a very low limit while
+  in the Saas-Security environment there are huge amounts of events, those could be lost in the process of fetching.
+* the max-fetch/limit parameters to fetch events are limited to be only 100 divisible numbers due to Saas-Security api limitations.
+* The **reset last fetch** has no effect.
+
+## Fetch Events
+Log types could be one of policy_violation, activity_monitoring, remediation, incident, and admin_audit.
+Every type returns a different api response that is unique.
+
+**Example Activity Monitoring Response**
+```json
+{
+    "log_type" : "activity_monitoring",
+    "item_type" : "File",
+    "item_name" : "My File",
+    "user" : "John Smith",
+    "source_ip" : "10.10.10.10",
+    "location" : "Somewhere, USA",
+    "action" : "delete",
+    "target_name" : null,
+    "target_type" : null,
+    "severity" : 1.0,
+    "serial" : "mySerial",
+    "cloud_app_instance" : "My Cloud App",
+    "timestamp" : "2018-11-09T18:30:33.155Z"
+}
+```
+
+**Example Incident Response**
+```json
+{
+    "log_type" : "incident",
+    "severity" : 4.0,
+    "item_type" : "File",
+    "item_name" : "My File",
+    "asset_id" : "ce7c9ed11e6f4891ae73c1601af7f741",
+    "item_owner" : "John Smith",
+    "container_name" : "Container",
+    "item_creator" : "John Smith",
+    "exposure" : "public",
+    "occurrences_by_rule" : 5,
+    "item_owner_email" : "owner@<--domain-->.com",
+    "item_creator_email" : "creator@<--domain-->.com",
+    "serial" : "mySerial",
+    "cloud_app_instance" : "My Cloud App",
+    "timestamp" : "2018-11-09T18:30:32.572Z",
+    "incident_id" : "9610efdcd8a74a259bf031843eac0309",
+    "policy_rule_name" : "PCI Policy",
+    "incident_category" : "Testing",
+    "incident_owner" : "John Smith"
+}
+```
+
+**Example Remediation Response**
+```json
+{
+    "log_type" : "remediation",
+    "item_type" : "File",
+    "item_name" : "My File",
+    "asset_id" : "ce7c9ed11e6f4891ae73c1601af7f741",
+    "item_owner" : "John Smith",
+    "container_name" : "Container",
+    "item_creator" : "John Smith",
+    "action_taken" : "quarantine",
+    "action_taken_by" : "John Smith",
+    "item_owner_email" : "owner@<--domain-->.com",
+    "item_creator_email" : "creator@<--domain-->.com",
+    "serial" : "mySerial",
+    "cloud_app_instance" : "My Cloud App",
+    "timestamp" : "2018-11-09T18:30:30.909Z",
+    "incident_id" : "9610efdcd8a74a259bf031843eac0309",
+    "policy_rule_name" : "PCI Policy"
+}
+```
+
+**Example Policy Violation Response**
+```json
+{
+    "log_type" : "policy_violation",
+    "severity" : 3.0,
+    "item_type" : "File",
+    "item_name" : "My File",
+    "item_owner" : "John Smith",
+    "item_creator" : "John Smith",
+    "action_taken" : "download",
+    "action_taken_by" : "John Smith",
+    "asset_id" : "ce7c9ed11e6f4891ae73c1601af7f741",
+    "item_owner_email" : null,
+    "item_creator_email" : null,
+    "serial" : "serial",
+    "cloud_app_instance" : "My Cloud App",
+    "timestamp" : "2017-01-06T19:04:06Z",
+    "policy_rule_name" : "Policy Rule",
+    "incident_id" : "1234"
+}
+```
+
+**Example Admin Audit Response**
+```json
+{
+    "log_type" : "admin_audit",
+    "admin_id" : "admin id",
+    "admin_role" : "admin role",
+    "ip" : "ip address",
+    "event_type" : "event type",
+    "item_type" : "File",
+    "item_name" : "My File",
+    "field" : "field",
+    "action" : "action",
+    "resource_value_old" : "old val",
+    "resource_value_new" : "new val",
+    "timestamp" : "2018-11-09T18:30:29.739Z",
+    "serial" : "mySerial"
+}
+```
+for more information see [documentation](https://docs.paloaltonetworks.com/saas-security/saas-security-admin/saas-security-api/syslog-and-api-integration/api-client-integration/public-api-references/log-events-api#id2bfde842-f708-4e0b-bc41-9809903a6021_id51ace1dd-a6cd-4d8b-8014-094d1d7c26b2)
+
 ## Commands
 You can execute these commands from the Cortex XSIAM CLI as part of an automation or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### saas-security-get-events
 ***
 Manual command to fetch events and display them.
@@ -37,7 +175,8 @@ Manual command to fetch events and display them.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The number of events to get. Default is 10. | Optional | 
+| limit | The maximum number of events to get. Default is 100. | Optional | 
+| should_push_events | Set this argument to True in order to create events, otherwise the command will only display them. If setting to 'False' there is a risk of losing events. Possible values are: True, False. Default is False. | Required | 
 
 
 #### Context Output
@@ -57,28 +196,45 @@ Manual command to fetch events and display them.
 | SaasSecurity.Event.serial | String | Serial number of the organization using the service \(tenant\). | 
 | SaasSecurity.Event.cloud_app_instance | String | Cloud app name \(not cloud app type\). | 
 | SaasSecurity.Event.timestamp | Date | ISO8601 timestamp to show when the event occurred. | 
+| SaasSecurity.Event.severity | Number | Severity \(0-5\) | 
+| SaasSecurity.Event.incident_id | String | Incident/risk id. | 
+| SaasSecurity.Event.exposure | String | Exposure level \(public, external, company, or internal\) | 
+| SaasSecurity.Event.asset_id | String | The asset ID. | 
+| SaasSecurity.Event.item_owner | String | The item owner. | 
+| SaasSecurity.Event.container_name | String | Item’s container name. | 
+| SaasSecurity.Event.item_creator | String | Item creator. | 
+| SaasSecurity.Event.occurrences_by_rule | Number | Number of times the asset violated the policy. | 
+| SaasSecurity.Event.policy_rule_name | String | Violated policy’s name. | 
+| SaasSecurity.Event.incident_owner | String | Incident owner. | 
+| SaasSecurity.Event.incident_category | String | Incident category.. | 
+| SaasSecurity.Event.item_creator_email | String | Item creator’s email. | 
+| SaasSecurity.Event.action_taken | String | Action taken. | 
+| SaasSecurity.Event.action_taken_by | String | Action taken by. | 
+| SaasSecurity.Event.field | String | Name of field \(optional\). | 
+| SaasSecurity.Event.resource_value_old | String | Old resource value. \(optional\). | 
+| SaasSecurity.Event.resource_value_new | String | New resource value. \(optional\). | 
 
 #### Command example
-```!saas-security-get-events limit=5```
+```!saas-security-get-events limit=200 should_push_events=False```
 #### Context Example
 ```json
 {
     "SaasSecurity": {
         "Event": {
-            "action": "login",
+            "action": "preview",
             "cloud_app_instance": "Box 1",
-            "item_name": "test",
-            "item_type": "user",
+            "item_name": "ssn_test3.txt",
+            "item_type": "file",
             "item_unique_id": "1234",
-            "location": "Tel Aviv, Central District, Israel",
+            "location": "somewhere, Usa",
             "log_type": "activity_monitoring",
             "serial": null,
             "severity": 1,
             "source_ip": "1.1.1.1",
             "target_name": null,
             "target_type": "",
-            "timestamp": "2022-05-25T08:32:08Z",
-            "user": "test@gmail.com"
+            "timestamp": "2022-05-29T09:02:16Z",
+            "user": "user email"
         }
     }
 }
@@ -87,6 +243,7 @@ Manual command to fetch events and display them.
 #### Human Readable Output
 
 >### SaaS Security Logs
->|Action|CloudAppInstance|ItemName|ItemType|ItemUniqueId|Location|LogType|Serial|Severity|SourceIp|TargetName|TargetType|Timestamp|User|
->|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| login | Box 1 | test | user | 1234 | Tel Aviv, Central District, Israel | activity_monitoring |  | 1.0 | 1.1.1.1 |  |  | 2022-05-25T08:32:43Z | test@gmail.com |
+>|LogType|ItemType|ItemName|User|SourceIp|Location|Action|ItemUniqueId|Severity|CloudAppInstance|Timestamp|
+>|---|---|---|---|---|---|---|---|---|---|---|
+>| activity_monitoring | file | ssn_test3.txt | user email | 1.1.1.1 | somewhere, Usa | preview | 1234 | 1.0 | Box 1 | 2022-05-29T09:02:16Z |
+

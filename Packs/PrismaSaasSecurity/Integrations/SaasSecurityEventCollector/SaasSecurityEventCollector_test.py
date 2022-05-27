@@ -10,9 +10,9 @@ You must add at least a Unit Test function for every XSOAR command
 you are implementing with your integration
 """
 import demistomock as demisto
+from CommonServerPython import *
 import pytest
 import json
-import copy
 import io
 from SaasSecurityEventCollector import Client
 
@@ -20,6 +20,12 @@ from SaasSecurityEventCollector import Client
 @pytest.fixture
 def mock_client():
     return Client(base_url='https://test.com/api', client_id='', client_secret='', verify=False, proxy=False)
+
+
+def create_events(start_id=1, end_id=100):
+    if start_id == end_id:
+        return json.dumps({'events': []})
+    return json.dumps({'events': [{'id': i} for i in range(start_id, end_id + 1)]})
 
 
 class MockedResponse:
@@ -37,10 +43,7 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
-@pytest.mark.parametrize(
-    'mocked_response', [MockedResponse(status_code=200), MockedResponse(status_code=204)]
-)
-def test_module(mocker, mock_client, mocked_response):
+def test_module(mocker, mock_client):
     """
     Given
        - a response which indicates an event was found.
@@ -53,156 +56,237 @@ def test_module(mocker, mock_client, mocked_response):
         make sure the test module returns the 'ok' response.
     """
     from SaasSecurityEventCollector import test_module
-    mocker.patch.object(Client, 'http_request', return_value=mocked_response)
+    mocker.patch.object(Client, 'get_token_request')
     assert test_module(client=mock_client) == 'ok'
-
-
-@pytest.mark.parametrize(
-    'args, integration_context_mock', [
-        (
-            {"limit": "1"},
-            {'events': '[{"id":"1"},{"id":"2"}]'}
-        ),
-        (
-            {"limit": "2"},
-            {'events': '[{"id":"1"},{"id":"2"},{"id":"3"},{"id":"4"}]'}
-        ),
-        (
-            {"limit": "5"},
-            {'events': '[{"id":"1"},{"id":"2"},{"id":"3"}]'}
-        ),
-        (
-            {"limit": "50"},
-            {'events': '[{"id":"1"},{"id":"2"}]'}
-        ),
-        (
-            {"limit": "22"},
-            {'events': '[]'}
-        )
-    ]
-)
-def test_saas_security_get_events(mocker, args, integration_context_mock):
-    """
-    Given
-       - events in the integration context
-       - limit parameter
-
-    When -
-        executing the saas-security-get-events command
-
-    Then
-       - make sure the events that are returned the size of the limit or less
-       - make sure the integration context is not being overridden.
-       - make sure in case there are no events, a representing string will be returned
-    """
-    import SaasSecurityEventCollector
-
-    limit = int(args.get("limit"))
-    mocker.patch.object(demisto, 'getIntegrationContext', return_value=integration_context_mock)
-    set_context_mocker = mocker.patch.object(SaasSecurityEventCollector, 'set_to_integration_context_with_retries')
-
-    expected_events = json.loads(integration_context_mock['events'])
-
-    result = SaasSecurityEventCollector.saas_security_get_events_command(args=args)
-    if expected_events:
-        assert result.outputs == expected_events[:limit]
-    else:
-        assert result == 'No events were found.'
-    assert not set_context_mocker.called
 
 
 class TestFetchEvents:
 
-    INTEGRATION_CONTEXT = {}
+    EVENTS_DATA = [
+                (
+                    200,
+                    [
+                        MockedResponse(status_code=200, text=create_events(start_id=1, end_id=100)),
+                        MockedResponse(status_code=200, text=create_events(start_id=101, end_id=200)),
+                        MockedResponse(status_code=200, text=create_events(start_id=21, end_id=30))
+                    ],
+                    MockedResponse(status_code=200, text=create_events(start_id=1, end_id=200))
+                ),
+                (
+                    100,
+                    [
+                        MockedResponse(status_code=200, text=create_events(start_id=1, end_id=100)),
+                        MockedResponse(status_code=200, text=create_events(start_id=101, end_id=102)),
+                    ],
+                    MockedResponse(status_code=200, text=create_events(start_id=1, end_id=100))
+                ),
+                (
+                    100,
+                    [
+                        MockedResponse(status_code=200, text=create_events(start_id=1, end_id=8)),
+                    ],
+                    MockedResponse(status_code=200, text=create_events(start_id=1, end_id=8))
+                ),
+                (
+                    100,
+                    [
+                        MockedResponse(status_code=200, text=create_events(start_id=1, end_id=54)),
+                    ],
+                    MockedResponse(status_code=200, text=create_events(start_id=1, end_id=54))
+                ),
+                (
+                    100,
+                    [
+                        MockedResponse(status_code=204)
+                    ],
+                    MockedResponse(status_code=200, text=create_events(start_id=1, end_id=1))
+                ),
+                (
+                    200,
+                    [
+                        MockedResponse(status_code=200, text=create_events(start_id=1, end_id=100)),
+                        MockedResponse(status_code=204)
+                    ],
+                    MockedResponse(status_code=200, text=create_events(start_id=1, end_id=100))
+                ),
+                (
+                    300,
+                    [
+                        MockedResponse(status_code=200, text=create_events(start_id=1, end_id=100)),
+                        MockedResponse(status_code=200, text=create_events(start_id=101, end_id=200)),
+                        MockedResponse(status_code=204)
+                    ],
+                    MockedResponse(status_code=200, text=create_events(start_id=1, end_id=200))
+                ),
+                (
+                    1000,
+                    [
+                        MockedResponse(status_code=200, text=create_events(start_id=1, end_id=100)),
+                        MockedResponse(status_code=200, text=create_events(start_id=101, end_id=200)),
+                        MockedResponse(status_code=200, text=create_events(start_id=201, end_id=300)),
+                        MockedResponse(status_code=200, text=create_events(start_id=301, end_id=400)),
+                        MockedResponse(status_code=200, text=create_events(start_id=401, end_id=500)),
+                        MockedResponse(status_code=200, text=create_events(start_id=501, end_id=600)),
+                        MockedResponse(status_code=200, text=create_events(start_id=601, end_id=700)),
+                        MockedResponse(status_code=200, text=create_events(start_id=701, end_id=800)),
+                        MockedResponse(status_code=200, text=create_events(start_id=801, end_id=900)),
+                        MockedResponse(status_code=200, text=create_events(start_id=901, end_id=1000)),
+                        MockedResponse(status_code=200, text=create_events(start_id=1001, end_id=1050)),
+                    ],
+                    MockedResponse(status_code=200, text=create_events(start_id=1, end_id=1000))
+                ),
+                (
+                    300,
+                    [
+                        MockedResponse(status_code=200, text=create_events(start_id=1, end_id=100)),
+                        MockedResponse(status_code=200, text=create_events(start_id=101, end_id=200)),
+                        MockedResponse(status_code=200, text=create_events(start_id=201, end_id=280))
+                    ],
+                    MockedResponse(status_code=200, text=create_events(start_id=1, end_id=280))
+                ),
+                (
+                    400,
+                    [
+                        MockedResponse(status_code=200, text=create_events(start_id=1, end_id=100)),
+                        MockedResponse(status_code=200, text=create_events(start_id=101, end_id=200)),
+                        MockedResponse(status_code=200, text=create_events(start_id=201, end_id=300)),
+                        MockedResponse(status_code=204)
+                    ],
+                    MockedResponse(status_code=200, text=create_events(start_id=1, end_id=300))
+                ),
+            ]
 
-    def set_integration_context(self, **kwargs):
-        from CommonServerPython import merge_lists
-        events = kwargs.get('context').get('events')
-        self.INTEGRATION_CONTEXT['events'] = json.dumps(
-            merge_lists(original_list=json.loads(self.INTEGRATION_CONTEXT['events']), updated_list=events, key='id')
-        )
-
-    @pytest.mark.parametrize(
-        'limit, expected_integration_context', [
-            (
-                1,
-                {'events': '[{"id":"1"},{"id":"2"},{"id":"3"},{"id":"4"},{"id":"5"},{"id":"6"},{"id":"7"},{"id":"8"}]'}
-            ),
-            (
-                2,
-                {'events': '[{"id":"1"},{"id":"2"},{"id":"3"},{"id":"4"},{"id":"5"},{"id":"6"},{"id":"7"},{"id":"8"}]'}
-            ),
-            (
-                10,
-                {'events': '[{"id":"1"},{"id":"2"},{"id":"3"},{"id":"4"},{"id":"5"},{"id":"6"},{"id":"7"},{"id":"8"}]'}
-            ),
-            (
-               3,
-               {
-                   'events': '[{"id":"1"},{"id":"2"},{"id":"3"},{"id":"4"},{"id":"5"},'
-                             '{"id":"6"},{"id":"7"},{"id":"8"},{"id":"9"},{"id":"10"},'
-                             '{"id":"11"},{"id":"12"},{"id":"13"},{"id":"14"},{"id":"15"},{"id":"16"}]'
-               }
-            ),
-            (
-                15,
-                {
-                    'events': '[{"id":"1"},{"id":"2"},{"id":"3"},{"id":"4"},{"id":"5"},'
-                              '{"id":"6"},{"id":"7"},{"id":"8"},{"id":"9"},{"id":"10"},'
-                              '{"id":"11"},{"id":"12"},{"id":"13"},{"id":"14"},{"id":"15"},{"id":"16"}]'
-                }
-            ),
-            (
-                16,
-                {
-                    'events': '[{"id":"1"},{"id":"2"},{"id":"3"},{"id":"4"},{"id":"5"},'
-                              '{"id":"6"},{"id":"7"},{"id":"8"},{"id":"9"},{"id":"10"},'
-                              '{"id":"11"},{"id":"12"},{"id":"13"},{"id":"14"},{"id":"15"},{"id":"16"}]'
-                }
-            )
-        ]
-    )
-    def test_fetch_events(self, mocker, limit, expected_integration_context):
+    @pytest.mark.parametrize('max_fetch, queue, expected_events', EVENTS_DATA)
+    def test_fetch_events(self, mocker, mock_client, max_fetch, queue, expected_events):
         """
         Given
-           - events in the integration context
-           - limit parameter
+           - a queue of responses to fetch events.
+           - max fetch limit
 
         When -
-            executing the fetch-events command
+            fetching events.
+
+        Then -
+           make sure the correct events are fetched according to the queue and max fetch.
+        """
+        from SaasSecurityEventCollector import fetch_events
+        mocker.patch.object(Client, 'http_request', side_effect=queue)
+        assert expected_events.json().get('events') == fetch_events(client=mock_client, max_fetch=max_fetch)
+
+    @pytest.mark.parametrize('max_fetch, queue, expected_events', EVENTS_DATA)
+    def test_saas_security_get_events(self, mocker, mock_client, max_fetch, queue, expected_events):
+        """
+        Given
+           - a queue of responses to fetch events.
+           - a limit parameter.
+           - a should push events parameter.
+
+        When -
+            executing the get security events command.
 
         Then
-           - make sure that if limit > len(events) - then all of the events will be returned and all of them will be
-             deleted from the integration context
-           - make sure that if limit < len(events), that the first 'limit' events will be fetched and deleted from
-             the integration context
-           - make sure that when setting the integration context, the events that should be deleted are passed to
-             the set integration function
-           - make sure that every time we call fetch events, then set integration context will be called as well.
+          - make sure the correct events are fetched according to the queue and max fetch.
+          - make sure in case where there are no events to fetch, a proper message will be returned.
+          - make sure that the send_events_to_xsiam was called in case should_push_events is True
+          - make sure that the send_events_to_xsiam was not called in case should_push_events is False
+        """
+        import SaasSecurityEventCollector
+        import random
 
+        should_push_events = bool(random.choice([True, False]))
+        mocker.patch.object(Client, 'http_request', side_effect=queue)
+        send_events_mocker = mocker.patch.object(SaasSecurityEventCollector, 'send_events_to_xsiam')
+
+        result = SaasSecurityEventCollector.saas_security_get_events_command(
+            client=mock_client, args={'limit': max_fetch, 'should_push_events': should_push_events}
+        )
+
+        if expected_events := expected_events.json().get('events'):
+            assert expected_events == result.outputs
+            assert send_events_mocker.called == should_push_events
+        else:
+            assert result == 'No events were found.'
+            assert not send_events_mocker.called
+
+    @pytest.mark.parametrize('max_fetch, queue, expected_events', EVENTS_DATA)
+    def test_main_flow_fetch_events(self, mocker, max_fetch, queue, expected_events):
+        """
+        Given
+           - a queue of responses to fetch events.
+           - max fetch limit
+           - integration parameters
+
+        When -
+            executing main to fetch events.
+
+        Then -
+           make sure the correct events are fetched according to the queue and max fetch.
         """
         import SaasSecurityEventCollector
 
-        self.INTEGRATION_CONTEXT = copy.deepcopy(expected_integration_context)
-
-        mocker.patch.object(demisto, 'getIntegrationContext', return_value=self.INTEGRATION_CONTEXT)
-        set_context_mocker = mocker.patch.object(
-            SaasSecurityEventCollector,
-            'set_to_integration_context_with_retries',
-            side_effect=self.set_integration_context
+        mocker.patch.object(Client, 'http_request', side_effect=queue)
+        send_events_mocker = mocker.patch.object(SaasSecurityEventCollector, 'send_events_to_xsiam')
+        mocker.patch.object(demisto, 'params', return_value={
+                "url": "https://test.com/",
+                "credentials": {
+                    "identifier": "1234",
+                    "password": "1234",
+                },
+                "max_fetch": max_fetch
+            }
         )
+        mocker.patch.object(demisto, 'command', return_value='fetch-events')
+        SaasSecurityEventCollector.main()
+        assert send_events_mocker.called
+        assert send_events_mocker.call_args.kwargs.get('events') == expected_events.json().get('events')
 
-        expected_integration_context['events'] = json.loads(expected_integration_context['events'])
-        call_count = 1
 
-        while len(json.loads(self.INTEGRATION_CONTEXT['events'])) > 0:
-            actual_events = SaasSecurityEventCollector.fetch_events(max_fetch=limit)
-            assert actual_events == expected_integration_context['events'][:limit]
+@pytest.mark.parametrize(
+    'time_mock, token_initiate_time, token_expiration_seconds, expected_result', [
+        (17200.941587, 10000.941587, 7200, True),
+        (16999.941587, 10000.941587, 7200, False),
+        (20000.941587, 10000.941587, 9000, True),
+        (12456.941587, 10000.941587, 9000, False),
+        (300, 240, 60, True),
+        (299.99999, 240, 60, False),
+    ]
+)
+def test_is_token_expired(mocker, time_mock, token_initiate_time, token_expiration_seconds, expected_result):
+    """
+    Given
+       - time which means the token expiration time has reached.
+       - time which means the token expiration time has no reached yet.
 
-            assert set_context_mocker.call_count == call_count
-            call_count += 1
-            for event in expected_integration_context['events'][:limit]:
-                event['remove'] = True
-            expected_events_removed = expected_integration_context['events'][:limit]
-            assert {'events': expected_events_removed} == set_context_mocker.call_args.kwargs.get('context')
-            expected_integration_context['events'] = expected_integration_context['events'][limit:]
+    When -
+        validating whether token has expired
+
+    Then
+      - make sure when token expiration time has reached, the is_token_expired will return True
+      - make sure when token expiration time has not reached, the is_token_expired will return False
+    """
+    import time
+    from SaasSecurityEventCollector import is_token_expired
+
+    mocker.patch.object(time, 'time', return_value=time_mock)
+
+    assert is_token_expired(
+        token_initiate_time=token_initiate_time, token_expiration_seconds=token_expiration_seconds
+    ) == expected_result
+
+
+@pytest.mark.parametrize('limit', [126, 54, 23, 12, 45, 12, 3, 1, 76, 23, 101, 235])
+def test_validate_limit(limit):
+    """
+    Given
+       - a limit parameter which is not divisible by 100
+
+    When -
+        executing the validate limit
+
+    Then
+      - make sure an exception is raised
+    """
+    from SaasSecurityEventCollector import validate_limit
+
+    with pytest.raises(DemistoException):
+        validate_limit(limit=limit)
