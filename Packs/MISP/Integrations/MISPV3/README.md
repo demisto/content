@@ -2187,6 +2187,7 @@ Creates a new MISP event.
 | threat_level_id | MISP Threat level ID. Possible values: "High", "Medium", "Low", and "Unknown". Possible values are: High, Medium, Low, Unknown. Default is High. | Optional | 
 | analysis | The analysis event level. Possible values: "initial", "ongoing", and "completed". Possible values are: initial, ongoing, completed. Default is initial. | Optional | 
 | sharing_group_id | Sharing group ID. Mandatory when Sharing_group distribution is set. | Optional | 
+| creation_date | Set the creation date for the event in the format YYYY-MM-DD. | Optional | 
 
 
 #### Context Output
