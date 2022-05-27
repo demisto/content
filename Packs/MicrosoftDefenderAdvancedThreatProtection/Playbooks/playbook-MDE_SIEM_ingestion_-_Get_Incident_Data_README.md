@@ -1,4 +1,4 @@
-The playbook handles when the incident ingestion was done from the SIEM. The user provides which incident fields contain the alert ID. In addition, it also allows changing the severity according to a user-defined scale to override the default assigned severity.
+This playbook handles incident ingestion from a SIEM. The user provides the incident fields containing the alert ID. This playbook also enables changing the severity according to a user-defined scale to override the default assigned severity.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -7,7 +7,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any sub-playbooks.
 
 ### Integrations
-* MicrosoftDefenderAdvancedThreatProtection
+MicrosoftDefenderAdvancedThreatProtection
 
 ### Scripts
 This playbook does not use any scripts.
@@ -21,10 +21,10 @@ This playbook does not use any scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| SIEMincidentFieldForID | The name of the incident field that contains the detection or incident ID. Default value is incident.externalid | ${incident.externalsystemid} | Optional |
-| ScaleToSetSeverity | The severity scale as represented in the EDR<br/>For example in Microsoft defender for endpoint the severity scale is Informational,Low,Medium,High | Informational,Low,Medium,High | Optional |
-| SeverityValuesMapping | This will provide the mapping to XSOAR severity for the ScaleToSetSeverity inputs<br/>For example<br/>0.5, 1, 2, 3,4<br/>Possible values to use are 0,0.5, 1, 2, 3,4<br/>Which represent Unknown, Informational, Low, Medium, High, Critical | 0.5, 1, 2, 3 | Optional |
-| OverrideSIEMSeverity | Indicates if to set the severity according to the  ScaleToSetSeverity and SeverityValuesMapping settings \(True\) or keep the original severity as mapped by the SIEM \(False\) <br/>True/False | False | Optional |
+| SIEMincidentFieldForID | The name of the incident field that contains the detection ID or incident ID. | ${incident.externalsystemid} | Optional |
+| ScaleToSetSeverity |The severity scale as represented in the EDR.<br/>For example, in Microsoft Defender for Endpoint the severity scale is Informational, Low, Medium, High. | Informational,Low,Medium,High | Optional |
+| SeverityValuesMapping | The mapping to Cortex XSOAR severity from the severity scale in the EDR (the ScaleToSetSeverity inputs).<br/>For example<br/>0.5, 1, 2, 3, 4<br/>Possible values to use are 0, 0.5, 1, 2, 3, 4<br/>Which represent Unknown, Informational, Low, Medium, High, Critical | 0.5, 1, 2, 3 | Optional |
+| OverrideSIEMSeverity | Whether to set the severity according to the ScaleToSetSeverity and SeverityValuesMapping settings (True) or keep the original severity as mapped by the SIEM (False). | False | Optional |
 
 ## Playbook Outputs
 ---
