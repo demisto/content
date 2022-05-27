@@ -1,17 +1,16 @@
-This playbook support 3 different actions for the analyst:
-- Run Full AV scan for spesific enpoint
-- Request Investigation Package (zip file that contains forensic data - with a size of ~ 15MB) from an endpoint.
-- Request to run Automatic Investigation on an endpoint.
-
+This playbook supports investigation actions for the analyst, including:  
+- Running a full AV scan for a specific endpoint.
+- Requesting an investigation package (a zip file containing forensic data with a size of ~ 15MB) from an endpoint.
+- Requesting to run automatic investigation on an endpoint.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* 8d6603be-227b-48fb-8f77-0b0ff3d572db
+Microsoft Defender For Endpoint - Collect investigation package
 
 ### Integrations
-* MicrosoftDefenderAdvancedThreatProtection
+MicrosoftDefenderAdvancedThreatProtection
 
 ### Scripts
 This playbook does not use any scripts.
