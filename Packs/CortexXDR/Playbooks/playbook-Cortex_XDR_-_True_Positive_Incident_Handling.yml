@@ -4,18 +4,18 @@ contentitemexportablefields:
     - all
 id: Cortex XDR - True Positive Incident Handling
 inputs:
-- description: Add comment to close an incident on the Microsoft Defender For Endpoint side
+- description: Add comment to close this incident.
   key: Comment
   playbookInputQuery:
   required: false
   value:
     simple: 'XSOAR Incident #${incident.id}'
-- description: Choose From - "Unknown" / "TruePositive" / "FalsePositive"
+- description: Choose From - "Unknown" / "TruePositive"
   key: Classification
   playbookInputQuery:
   required: false
   value:
-    simple: Unknown
+    simple: TruePositive
 - description: Specify the banning tag name for founded indicators.
   key: BlockTag
   playbookInputQuery:
@@ -1145,5 +1145,5 @@ view: |-
   }
 tests:
 - Test XDR Playbook
-fromversion: 6.2.0
+fromversion: 6.5.0
 description: This Playbook handles a true-positive incident closure for Cortex XDR - Malware Investigation.

@@ -25,8 +25,8 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| Comment | Add comment to close an incident on the Microsoft Defender For Endpoint side | XSOAR Incident #${incident.id} | Optional |
-| Classification | Choose From - "Unknown" / "TruePositive" / "FalsePositive" | Unknown | Optional |
+| Comment | Add comment to close this incident. | XSOAR Incident #${incident.id} | Optional |
+| Classification | Choose From - "Unknown" / "TruePositive" | TruePositive | Optional |
 | BlockTag | Specify the banning tag name for founded indicators. | BlockTag | Optional |
 | AutoIsolation | Indicates if automatic host isolation is allowed.<br/>True/False | False | Optional |
 | TicketProjectName | For ticketing systems such as Jira a project name is required. |  | Optional |

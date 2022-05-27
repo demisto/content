@@ -22,7 +22,7 @@ This playbook does not use any scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| Comment | Add comment to close an incident on the Microsoft Defender For Endpoint side | XSOAR Incident #${incident.id} | Optional |
+| Comment | Add comment to close this incident. | XSOAR Incident #${incident.id} | Optional |
 | Reason | Choose From - "Unknown" / "TruePositive" / "FalsePositive" | FalsePositive | Optional |
 | AllowTag | Specify the approving tag name for found indicators. | AllowTag | Optional |
 | AutoUnisolation | Indicates if automatic un-isolation is allowed<br/>    True/False | False | Optional |

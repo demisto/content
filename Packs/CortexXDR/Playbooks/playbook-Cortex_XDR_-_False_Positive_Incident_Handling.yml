@@ -4,7 +4,7 @@ contentitemexportablefields:
     - all
 id: Cortex XDR - False Positive Incident Handling
 inputs:
-- description: Add comment to close an incident on the Microsoft Defender For Endpoint side
+- description: Add comment to close this incident.
   key: Comment
   playbookInputQuery:
   required: false
