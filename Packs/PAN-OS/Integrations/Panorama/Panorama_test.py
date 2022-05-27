@@ -1201,8 +1201,9 @@ def test_panorama_push_to_device_group_command(mocker, args, expected_request_pa
                                                                                   'Status': 'Pending'}},
                                        id='with device'),
                           ])
-def test_panorama_push_to_template_command(mocker, args, expected_request_params, request_result,
-                                               expected_demisto_result):
+def test_panorama_push_to_template_command(
+    mocker, args, expected_request_params, request_result, expected_demisto_result
+):
     """
     Given:
         - command args
@@ -1233,16 +1234,17 @@ def test_panorama_push_to_template_command(mocker, args, expected_request_params
 @pytest.mark.parametrize('args, expected_request_params, request_result, expected_demisto_result',
                          [pytest.param({"template-stack": "some_template_stack"},
                                        {'action': 'all',
-                                        'cmd': '<commit-all><template-stack><name>some_template_stack</name></template-stack></commit-all>',
+                                        'cmd': '<commit-all><template-stack><name>some_template_stack'
+                                               '</name></template-stack></commit-all>',
                                         'key': 'thisisabogusAPIKEY!',
                                         'type': 'commit'},
                                        MockedResponse(text='<response status="success" code="19"><result><msg>'
                                                            '<line>Commit job enqueued with jobid 19420</line></msg>'
                                                            '<job>19420</job></result></response>', status_code=200,
                                                       reason=''),
-                                       {'Panorama.Push(val.JobID == obj.JobID)': {'TemplateStack': 'some_template_stack',
-                                                                                  'JobID': '19420',
-                                                                                  'Status': 'Pending'}},
+                                       {'Panorama.Push(val.JobID == obj.JobID)': {
+                                           'TemplateStack': 'some_template_stack','JobID': '19420','Status': 'Pending'}
+                                       },
                                        id='no args'),
                           pytest.param({"validate-only": "true", "template-stack": "some_template_stack"},
                                        {'action': 'all',
@@ -1254,13 +1256,14 @@ def test_panorama_push_to_template_command(mocker, args, expected_request_params
                                                            '<line>Commit job enqueued with jobid 19420</line></msg>'
                                                            '<job>19420</job></result></response>', status_code=200,
                                                       reason=''),
-                                       {'Panorama.Push(val.JobID == obj.JobID)': {'TemplateStack': 'some_template_stack',
-                                                                                  'JobID': '19420',
-                                                                                  'Status': 'Pending'}},
+                                       {'Panorama.Push(val.JobID == obj.JobID)': {
+                                           'TemplateStack': 'some_template_stack','JobID': '19420','Status': 'Pending'}
+                                       },
                                        id='with validate'),
                           pytest.param({'serial_number': '1337', "template-stack": "some_template_stack"},
                                        {'action': 'all',
-                                        'cmd': '<commit-all><template-stack><name>some_template_stack</name><device><member>1337</member>'
+                                        'cmd': '<commit-all><template-stack><name>some_template_stack<'
+                                               '/name><device><member>1337</member>'
                                                '</device></template-stack></commit-all>',
                                         'key': 'thisisabogusAPIKEY!',
                                         'type': 'commit'},
@@ -1268,13 +1271,14 @@ def test_panorama_push_to_template_command(mocker, args, expected_request_params
                                                            '<line>Commit job enqueued with jobid 19420</line></msg>'
                                                            '<job>19420</job></result></response>', status_code=200,
                                                       reason=''),
-                                       {'Panorama.Push(val.JobID == obj.JobID)': {'TemplateStack': 'some_template_stack',
-                                                                                  'JobID': '19420',
-                                                                                  'Status': 'Pending'}},
+                                       {'Panorama.Push(val.JobID == obj.JobID)': {
+                                           'TemplateStack': 'some_template_stack','JobID': '19420','Status': 'Pending'}
+                                       },
                                        id='with device'),
                           ])
-def test_panorama_push_to_template_stack_command(mocker, args, expected_request_params, request_result,
-                                               expected_demisto_result):
+def test_panorama_push_to_template_stack_command(
+    mocker, args, expected_request_params, request_result, expected_demisto_result
+):
     """
     Given:
         - command args
@@ -2035,7 +2039,8 @@ class TestUniversalCommand:
     @patch("Panorama.run_op_command")
     def test_system_status(self, patched_run_op_command, mock_topology):
         """
-        Given a topology object with a mixture of systems in it, assert that check_system_availability returns the correct status
+        Given a topology object with a mixture of systems in it,
+        assert that check_system_availability returns the correct status
         based on whether devices are connected or not.
         """
         from Panorama import UniversalCommand
@@ -2236,9 +2241,12 @@ class TestHygieneFunctions:
         assert len(result.result_data) == 0
 
         # Trim the "threat" log type and cause a missing log type error
-        LogForwardingProfileMatchList.refreshall = MagicMock(return_value=[mock_good_log_forwarding_profile_match_list()[0]])
+        LogForwardingProfileMatchList.refreshall = MagicMock(
+            return_value=[mock_good_log_forwarding_profile_match_list()[0]]
+        )
         result = HygieneLookups.check_log_forwarding_profiles(mock_topology)
-        # Note; because we mock the topology with multiple devices, it appears that the same LFP is missing in each Container.
+        # Note; because we mock the topology with multiple devices,
+        # it appears that the same LFP is missing in each Container.
         # This is expected.
         assert len(result.result_data) == 3
         assert result.result_data[0].description == "Log forwarding profile missing log type 'threat'."
@@ -2280,7 +2288,8 @@ class TestHygieneFunctions:
     @patch("Panorama.DeviceGroup.refreshall", return_value=mock_device_groups())
     def test_check_spyware_profiles(self, _, __, ___, mock_topology):
         """
-        Test the Hygiene Configuration lookups can validate the Spyware profiles given combinations of good and bad profile
+        Test the Hygiene Configuration lookups can validate the
+        Spyware profiles given combinations of good and bad profile
         objects.
         """
         from Panorama import HygieneLookups, AntiSpywareProfile
@@ -2297,7 +2306,8 @@ class TestHygieneFunctions:
     @patch("Panorama.DeviceGroup.refreshall", return_value=mock_device_groups())
     def test_check_url_filtering_profiles(self, _, __, ___, mock_topology):
         """
-        Test the Hygiene Configuration lookups can validate the URL filtering profiles given combinations of good and bad
+        Test the Hygiene Configuration lookups can validate the
+        URL filtering profiles given combinations of good and bad
         profiles.
         """
         from Panorama import HygieneLookups, URLFilteringProfile
@@ -2372,7 +2382,8 @@ class TestHygieneFunctions:
 
     def test_hygiene_issue_dict_to_object(self):
         """
-        Tests the function can convert a given dictionary of an issue, returned by a hygiene lookup, back into the relevent
+        Tests the function can convert a given dictionary of
+        an issue, returned by a hygiene lookup, back into the relevent
         object. This is to allow the check commands to pass their results directly into the fix commands via XSOAR.
         """
         from Panorama import hygiene_issue_dict_to_object, ConfigurationHygieneIssue
@@ -2394,7 +2405,8 @@ class TestHygieneFunctions:
     @patch("Panorama.DeviceGroup.refreshall", return_value=mock_device_groups())
     def test_fix_log_forwarding_profile_enhanced_logging(self, _, __, ___, mock_topology):
         """
-        Tests wthe fix function for enabling enhanced application logging on log forwarding profiles, given an issue referring
+        Tests wthe fix function for enabling enhanced application
+        logging on log forwarding profiles, given an issue referring
         to a bad log forwarding profile.
         """
         from Panorama import hygiene_issue_dict_to_object, LogForwardingProfile, HygieneRemediation
@@ -2487,21 +2499,24 @@ class TestObjectFunctions:
 
         # Same as above but with a filter on object name
         AddressObject.refreshall = MagicMock(side_effect=[mock_address_objects(), []])
-        result = ObjectGetter.get_object_reference(mock_single_device_topology, "AddressObject", object_name="test-address-1")
+        result = ObjectGetter.get_object_reference(
+            mock_single_device_topology, "AddressObject", object_name="test-address-1"
+        )
         assert "test-address-1" in [x.name for x in result]
         assert "test-address-2" not in [x.name for x in result]
 
         # Same as above but include a regex filter
         AddressObject.refreshall = MagicMock(side_effect=[mock_address_objects(), []])
-        result = ObjectGetter.get_object_reference(mock_single_device_topology, "AddressObject", object_name="test-address-\d+",
-                                                   use_regex="true")
+        result = ObjectGetter.get_object_reference(
+            mock_single_device_topology, "AddressObject", object_name="test-address-\d+", use_regex="true"
+        )
         assert "test-address-1" in [x.name for x in result]
         assert "test-address-2" in [x.name for x in result]
 
         # Test broken regex
         AddressObject.refreshall = MagicMock(side_effect=[mock_address_objects(), []])
         with pytest.raises(DemistoException):
-            result = ObjectGetter.get_object_reference(mock_single_device_topology, "AddressObject",
-                                                       object_name="test-address-(\d+",
-                                                       use_regex="true")
+            result = ObjectGetter.get_object_reference(
+                mock_single_device_topology, "AddressObject", object_name="test-address-(\d+", use_regex="true"
+            )
             assert not result
