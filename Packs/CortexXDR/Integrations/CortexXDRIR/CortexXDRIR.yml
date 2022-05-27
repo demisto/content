@@ -6,6 +6,7 @@ configuration:
 - display: Fetch incidents
   name: isFetch
   required: false
+  defaultvalue: 'true'
   type: 8
 - display: Incident type
   name: incidentType
@@ -4130,6 +4131,6 @@ script:
 tests:
 - Test XDR Playbook
 defaultmapperin: Cortex XDR - IR-mapper
-defaultclassifier: Cortex XDR - IR
+defaultclassifier: Cortex XDR Incident Handler - Classifier
 defaultmapperout: Cortex XDR - IR-out-mapper
 fromversion: 5.0.0
