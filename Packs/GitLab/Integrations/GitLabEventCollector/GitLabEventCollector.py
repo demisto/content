@@ -19,12 +19,14 @@ class Client(IntegrationEventsClient):
 class GetEvents(IntegrationGetEvents):
     @staticmethod
     def get_last_run(events: list) -> dict:
-        groups = [event for event in events if event['entity_type'] == 'Group']
+        groups = [event for event in events if event.get('entity_type') == 'Group']
         groups.sort(key=lambda k: k.get('id'))
-        projects = [event for event in events if event['entity_type'] == 'Project']
+        projects = [event for event in events if event.get('entity_type') == 'Project']
         projects.sort(key=lambda k: k.get('id'))
-
-        return {'groups': groups[-1]['created_at'], 'projects': projects[-1]['created_at']}
+        user_events = [event for event in events if 'entity_type' not in event]
+        user_events.sort(key=lambda k: k.get('id'))
+        return {'groups': groups[-1]['created_at'], 'projects': projects[-1]['created_at'],
+                'events': user_events[-1]['created_at']}
 
     def _iter_events(self):  # pragma: no cover
         self.client.set_request_filter(None)
@@ -52,7 +54,7 @@ def main() -> None:  # pragma: no cover
         'projects_ids': argToList(demisto_params.get('project_ids', '')),
         'event_types': ['groups', 'projects']
     }
-
+    user_ids = demisto_params.get('user_ids', '').split(',')
     headers = {'PRIVATE-TOKEN': demisto_params.get('api_key', {}).get('credentials', {}).get('password')}
     request_object = {
         'method': Method.GET,
@@ -88,14 +90,14 @@ def main() -> None:  # pragma: no cover
                 get_events.client.page = 1
                 get_events.client.event_type = event_type
                 events.extend(get_events.run())
-        get_events.client.request.url = url + 'events'
-        get_events.client.page = 1
         get_events.client.event_type = 'events'
-        events.extend(get_events.run())
+        for obj_id in user_ids:
+            get_events.client.request.url = url + f'users/{obj_id}/events'
+            get_events.client.page = 1
+            events.extend(get_events.run())
         if command == 'test-module':
             return_results('ok')
             return
-
         for event in events:
             if 'details' in event:
                 for action in ['add', 'change', 'remove']:
