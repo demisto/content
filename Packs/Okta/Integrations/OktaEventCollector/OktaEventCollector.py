@@ -1,9 +1,8 @@
 from enum import Enum
-from pydantic import BaseModel, AnyUrl, Json, validator  # pylint: disable=no-name-in-module
+from pydantic import BaseModel, AnyUrl, Json  # pylint: disable=no-name-in-module
 from CommonServerPython import *
 
-# TODO: add if push to see if we should activate the send events function
-# TODO: add another param for vendor so there will be one for product and vendor
+
 class Method(str, Enum):
     """
     A list that represent the types of http request available
@@ -16,7 +15,7 @@ class Method(str, Enum):
     DELETE = 'DELETE'
 
 
-class ReqParams(BaseModel):
+class ReqParams(BaseModel):  # pragma: no cover
     """
     A class that stores the request query params
     """
@@ -28,7 +27,7 @@ class ReqParams(BaseModel):
         self.since = since
 
 
-class Request(BaseModel):
+class Request(BaseModel):  # pragma: no cover
     """
     A class that stores a request configuration
     """
@@ -45,7 +44,7 @@ class Client:
     A class for the client request handling
     """
 
-    def __init__(self, request: Request):
+    def __init__(self, request: Request):  # pragma: no cover
         self.request = request
 
     def call(self, requests=requests) -> requests.Response:  # pragma: no cover
@@ -79,7 +78,7 @@ class GetEvents:
         self.client.request.params.limit = str(limit_tmp - len(events))  # type: ignore
         return events
 
-    def _iter_events(self, last_object_ids: list) -> None:  # type: ignore
+    def _iter_events(self, last_object_ids: list) -> None:  # type: ignore  # pragma: no cover
         """
         Function that responsible for the iteration over the events returned from the Okta api
         """
@@ -135,7 +134,7 @@ class GetEvents:
 
 def main():  # pragma: no cover
     try:
-        demisto_params = demisto.params() #| demisto.args()
+        demisto_params = demisto.params() | demisto.args()
         events_limit = int(demisto_params.get('limit', 2000))
         after = dateparser.parse(demisto_params['after'].strip())
         api_key = demisto_params['api_key']['password']
