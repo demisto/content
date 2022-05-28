@@ -2,7 +2,7 @@ This playbook handles all the alert containment actions available with Cortex XS
 * Isolate endpoint
 * Disable account
 * Quarantine file
-* Block indicators (currently, the playbook supports only hashes)
+* Block indicators
 * Clear user session (currently, the playbook supports only Okta)
 
 **Note:** The playbook inputs enable manipulating the execution flow; read the input descriptions for details.
@@ -11,10 +11,11 @@ This playbook handles all the alert containment actions available with Cortex XS
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-Block Account - Generic
+* Block Indicators - Generic v2
+* Block Account - Generic
 
 ### Integrations
-Okta v2
+This playbook does not use any integrations.
 
 ### Scripts
 * IsIntegrationAvailable
@@ -34,18 +35,21 @@ Okta v2
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| AutoContainment | Whether to automatically execute the containment plan \(except isolation\).<br/>The specific containment playbook inputs should also be set to 'True'. | False | Optional |
-| HostAutoContainment | Whether to automatically execute endpoint isolation. | True | Optional |
-| UserContainment | Set to True to disable the user account. | True | Optional |
-| BlockIndicators | Set to True to block the indicators. | True | Optional |
-| FileContainment | Set to True to quarantine the identified file. | True | Optional |
-| ClearUserSessions | Set to True to clear the user active Okta sessions. | True | Optional |
-| EndpointID | The endpoint ID to run commands over. | alert.agentid | Optional |
+| AutoContainment | Whether to execute containment plan \(except isolation\) automatically.<br/>The specific containment playbook inputs should also be set to 'True'. | False | Optional |
+| HostContainment | Whether to execute endpoint isolation automatically. | True | Optional |
+| UserContainment | Set to 'True' to disable the user account. | True | Optional |
+| BlockIndicators | Set to 'True' to block the indicators. | True | Optional |
+| FileContainment | Set to 'True' to quarantine the identified file. | True | Optional |
+| ClearUserSessions | Set to 'True' to clear the user active Okta sessions. | True | Optional |
+| EndpointID | The endpoint ID to run commands over. |  | Optional |
 | Username | The username to disable. |  | Optional |
 | FileHash | The file hash to block. |  | Optional |
 | FilePath | The path of the file to block. |  | Optional |
-| IAMUserDomain | The Okta IAM user domain. The domain is appended to the username. For example, username@IAMUserDomain. | @demisto.com | Optional |
-| FileRemediation | Choose 'Quarantine' or 'Delete'  to avoid file remediation conflicts. <br/>For example, Choosing 'Quarantine' ignores the 'Delete file' task under the eradication playbook and executes only file quarantine. | Quarantine | Optional |
+| IP | The IP indicators. |  | Optional |
+| Domain | The domain indicators. |  | Optional |
+| URL | The URL indicator. |  | Optional |
+| FileRemediation | Choose 'Quarantine' or 'Delete'  to avoid file remediation conflicts. <br/>For example, choosing 'Quarantine' ignores the 'Delete file' task under the eradication playbook and will execute only file quarantine. | Quarantine | Optional |
+| IAMUserDomain | The Okta IAM users domain. The domain will be appended to the username. e.g. username@IAMUserDomain. | @demisto.com | Optional |
 
 ## Playbook Outputs
 ---
@@ -53,4 +57,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Containment Plan](https://raw.githubusercontent.com/demisto/content/f3d7d9140f4d82efde1704ed92b8de3176c35b2e/Packs/CommonPlaybooks/doc_files/Containment_Plan.png)
+![Containment Plan](https://raw.githubusercontent.com/demisto/content/48a7f1a1a628a2755201c55c24bc68d94e0dd49c/Packs/CommonPlaybooks/doc_files/Containment_Plan.png)

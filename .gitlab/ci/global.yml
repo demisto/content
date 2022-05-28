@@ -101,8 +101,14 @@
   - |
     if [ -n "${DEMISTO_SDK_NIGHTLY}" ]; then
       echo "Installing SDK from $SDK_REF" | tee --append $ARTIFACTS_FOLDER/logs/installations.log
-      pip3 install "git+https://github.com/demisto/demisto-sdk@${SDK_REF}" >> $ARTIFACTS_FOLDER/logs/installations.log 2>&1
+      pip3 uninstall -y demisto-sdk | tee --append $ARTIFACTS_FOLDER/logs/installations.log
+      pip3 install "git+https://github.com/demisto/demisto-sdk@${SDK_REF}#egg=demisto-sdk" | tee --append $ARTIFACTS_FOLDER/logs/installations.log
     fi
+  - |
+      python --version | tee -a $ARTIFACTS_FOLDER/python2_list.txt
+      python3 --version | tee -a $ARTIFACTS_FOLDER/python3_list.txt
+      python -m pip list | tee -a $ARTIFACTS_FOLDER/python2_list.txt
+      python3 -m pip list | tee -a $ARTIFACTS_FOLDER/python3_list.txt
   - section_end "Installing Virtualenv"
 
 .install_ssh_keys: &install_ssh_keys
@@ -127,6 +133,7 @@
   before_script:
     - *setup-network-certs
     - *clone_and_export_variables
+    - *check_build_files_are_up_to_date
     - section_start "Creating new clean logs folder" --collapsed
     - rm -rf $ARTIFACTS_FOLDER/logs
     - mkdir -p $ARTIFACTS_FOLDER/logs
@@ -147,7 +154,6 @@
     - jsdoc2md --version
     - demisto-sdk --version
     - section_end "Build Parameters"
-    - *check_build_files_are_up_to_date
 
 .default-job-settings:
   interruptible: true
@@ -199,6 +205,9 @@
         ./Tests/scripts/sdk_pylint_check.sh
       fi
     - section_end "Test Infrastructure"
+    - section_start "Create id set"
+    - *create-id-set
+    - section_end "Create id set"
     - section_start "Run Unit Testing and Lint"
     - |
       if [[ -n $FORCE_BUCKET_UPLOAD || -n $BUCKET_UPLOAD ]] && [[ "$(echo "$GCS_MARKET_BUCKET" | tr '[:upper:]' '[:lower:]')" != "marketplace-dist" ]] && [[ $CI_COMMIT_BRANCH != "master" ]]; then
@@ -216,9 +225,16 @@
         mkdir ./unit-tests
         if [ -n "$SHOULD_LINT_ALL" ]; then
           echo -e  "----------\nLinting all because:\n${SHOULD_LINT_ALL}\n----------"
-          demisto-sdk lint -p 12 -a -q --test-xml ./unit-tests --log-path $ARTIFACTS_FOLDER --failure-report $ARTIFACTS_FOLDER --coverage-report $ARTIFACTS_FOLDER/coverage_report -dt 120 --time-measurements-dir $ARTIFACTS_FOLDER
+          demisto-sdk lint -vvv -p 10 -a --test-xml ./unit-tests --log-path $ARTIFACTS_FOLDER --failure-report $ARTIFACTS_FOLDER --coverage-report $ARTIFACTS_FOLDER/coverage_report -dt 120 --time-measurements-dir $ARTIFACTS_FOLDER
         else
-          demisto-sdk lint -p 8 -g -v --test-xml ./unit-tests --log-path $ARTIFACTS_FOLDER --failure-report $ARTIFACTS_FOLDER --coverage-report $ARTIFACTS_FOLDER/coverage_report
+          if [[ -n $BUCKET_UPLOAD ]]; then
+            gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" > auth.out 2>&1
+            gsutil cp "gs://$GCS_MARKET_BUCKET/content/packs/index.json" "$ARTIFACTS_FOLDER/previous_index.json"
+            export COMMIT_HASH_COMPARE_TO=$(cat $ARTIFACTS_FOLDER/previous_index.json | jq -r ".\"commit\"")
+            demisto-sdk lint -vvv -p 8 -g --prev-ver $COMMIT_HASH_COMPARE_TO -v --test-xml ./unit-tests --log-path $ARTIFACTS_FOLDER --failure-report $ARTIFACTS_FOLDER --coverage-report $ARTIFACTS_FOLDER/coverage_report -idp $ARTIFACTS_FOLDER/id_set.json -cdam
+          else
+            demisto-sdk lint -vvv -p 8 -g -v --test-xml ./unit-tests --log-path $ARTIFACTS_FOLDER --failure-report $ARTIFACTS_FOLDER --coverage-report $ARTIFACTS_FOLDER/coverage_report
+          fi
         fi
         if [[ -f $ARTIFACTS_FOLDER/coverage_report/.coverage ]]; then
           if [[ "$CI_PIPELINE_SOURCE" == "schedule" ||  -n "${NIGHTLY}" || -n "${BUCKET_UPLOAD}" || -n "${DEMISTO_SDK_NIGHTLY}" ]]; then

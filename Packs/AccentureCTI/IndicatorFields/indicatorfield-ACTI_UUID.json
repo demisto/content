@@ -18,6 +18,7 @@
     "group": 2,
     "hidden": false,
     "openEnded": false,
+    "description": "Unique ID of report.",
     "associatedToAll": false,
     "associatedTypes": [
         "ACTI Intelligence Alert",

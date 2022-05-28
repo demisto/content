@@ -97,6 +97,12 @@ script:
       required: true
       secret: false
     - default: false
+      description: Maximum time to wait for a page to load (in seconds).
+      isArray: false
+      name: max_page_load_time
+      required: false
+      secret: false
+    - default: false
       defaultValue: 600px
       description: The html page width, for example, 600px. Specify with or without
         the px suffix.
@@ -217,7 +223,7 @@ script:
     description: Converts a PDF file to an image file.
     execution: false
     name: rasterize-pdf
-  dockerimage: demisto/chromium:1.0.0.27948
+  dockerimage: demisto/chromium:1.0.0.29408
   feed: false
   isfetch: false
   longRunning: false

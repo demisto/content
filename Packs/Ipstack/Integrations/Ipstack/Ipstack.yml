@@ -26,7 +26,6 @@ configuration:
   type: 15
 - display: Use system proxy settings
   name: proxy
-  defaultvalue: ''
   type: 8
   required: false
 script:

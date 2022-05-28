@@ -116,7 +116,7 @@ configuration:
     are labeled new or modified.
   display: Incremental Feed
   name: feedIncremental
-  defaultvalue: true
+  defaultvalue: 'true'
   required: false
   type: 8
   hidden: true

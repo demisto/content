@@ -1,5 +1,5 @@
 Symantec Data Loss Prevention enables you to discover, monitor and protect your sensitive corporate information.
-This integration was integrated and tested with version 15.7 RESTful API of Symantec Data Loss Prevention.
+This integration was integrated and tested with Symantec Data Loss Prevention version 15.7 RESTful API. 
 
 [Check Symantec DLP 15.7 API docs](https://techdocs.broadcom.com/content/dam/broadcom/techdocs/symantec-security-software/information-security/data-loss-prevention/generated-pdfs/Symantec_DLP_15.7_REST_API_Guide.pdf)
 
@@ -12,26 +12,26 @@ If you are upgrading from a previous of this integration, see [Breaking Changes]
 2. Search for Symantec Data Loss Prevention v2.
 3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Enforce Server (For example, `https://192.168.0.1`) | True |
-    | Username | True |
-    | Password | True |
-    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) | False |
-    | Fetch limit | False |
-    | Fetch incidents from type | False |
-    | Incident Status ID | False |
-    | Incident Severity | False |
-    | Trust any certificate (not secure) | False |
-    | Use system proxy settings | False |
-    | Fetch incidents | False |
+    | **Parameter** | **Description** | **Required** |
+    | --- | --- | --- |
+    | Enforce Server (e.g. https://192.168.0.1) |  | True |
+    | Username |  | True |
+    | Password |  | True |
+    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
+    | Fetch limit | Max fetch limit is 50 | False |
+    | Fetch incidents from type | If not selected, fetches all incident types. | False |
+    | Incident Status ID | The status ID of the incidents. To get the status IDs, run the \`symantec-dlp-list-incident-status\` command. | False |
+    | Incident Severity | If not selected, fetches high and medium incidents. | False |
+    | Trust any certificate (not secure) |  | False |
+    | Use system proxy settings |  | False |
+    | Fetch incidents |  | False |
+    | Incident type |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
 ## Fetch Incidents
-The integration fetches incidents ordered by the creation date of the incidents.
-Notice that due to creation time differences, some incidents may not be displayed in a sorted way.
-
+The integration fetches incidents in the order they were created. 
+Note that incident IDs may not be fetched in order, due to creation time differences.
 
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
@@ -48,13 +48,13 @@ Returns a list of incidents.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| creation_date | The earliest time from which to get incidents. Supports ISO (For example, 2021-12-28T00:00:00Z) and free text (For example, '2 days'). | Optional | 
-| status_id | The status ID of the incidents. To get status IDs, you should run the command `symantec-dlp-list-incident-status`. | Optional | 
-| severity | The severity of the incidents. Can be: "High", "Medium", "Low", and "Info". Possible values are: Info, Low, Medium, High. | Optional | 
-| incident_type | The incident type. Can be: "Network", "Endpoint" and "Discover". Possible values are: Network, Discover, Endpoint. | Optional | 
-| limit | The limit of the incidents list per page. Default is 50. | Optional | 
+| creation_date | The earliest time from which to get incidents. Supports ISO (e.g 2021-12-28T00:00:00Z) and free text (e.g. '2 days'). | Optional | 
+| status_id | The status ID of the incidents. To get status IDs, run the `symantec-dlp-list-incident-status` command. | Optional | 
+| severity | The severity of the incidents. Possible values are: Info, Low, Medium, High. | Optional | 
+| incident_type | The incident type. Possible values are: Network, Discover, Endpoint. | Optional | 
+| limit | The limit for number of incidents listed per page. Default is 50. | Optional | 
 | page | The page number you would like to view. Each page contains page_size values. Must be used along with page_size.<br/>Default is 1. | Optional | 
-| page_size | Number of results per page to display. | Optional | 
+| page_size | The number of results per page to display. | Optional | 
 
 
 #### Context Output
@@ -71,7 +71,7 @@ Returns a list of incidents.
 | SymantecDLP.Incident.creationDate | Date | The creation date of the incident. | 
 | SymantecDLP.Incident.detectionDate | Date | The detection date of the incident. | 
 | SymantecDLP.Incident.severity | String | The severity of the incident. | 
-| SymantecDLP.Incident.messageTypeId | Number | The ID of the Message Type. | 
+| SymantecDLP.Incident.messageTypeId | Number | The ID of the message type. | 
 | SymantecDLP.Incident.incidentStatusId | Number | The status ID of the incident. | 
 
 #### Command example
@@ -125,7 +125,7 @@ Returns a list of incidents.
 
 ### symantec-dlp-get-incident-details
 ***
-Returns the details of the specified incident.
+Returns details of the specified incident.
 
 
 #### Base Command
@@ -136,8 +136,8 @@ Returns the details of the specified incident.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | incident_id | Incident ID for which to retrieve details. | Required | 
-| custom_attributes | This argument can get the following values:<br/>all - All custom attributes are needed <br/>none - None of the custom attributes are needed<br/>specific attributes - A comma separated list of custom attributes names. For example: ca1,ca2,ca3<br/>custom attribute group name - A comma separated list of custom attributes group names. For example: cag1, cag2, cag3.<br/>This value retrieves all custom attributes in the mentioned group. The value "none" is default. Possible values are: all, none, specific attributes, custom attribute group name. Default is none. | Optional | 
-| custom_data | A comma separated list of custom attributes names or custom attribute group names. For example: item1,item2,item3. | Optional | 
+| custom_attributes | This argument can get the following values:<br/>all - All custom attributes are needed <br/>none - None of the custom attributes are needed<br/>specific attributes - A comma-separated list of custom attribute names. For example: ca1,ca2,ca3<br/>custom attribute group name - A comma-separated list of custom attribute group names. For example: cag1, cag2, cag3.<br/>This value retrieves all custom attributes in the mentioned group. The value "none" is default. Possible values are: all, none, specific attributes, custom attribute group name. Default is none. | Optional | 
+| custom_data | A comma-separated list of custom attribute names or custom attribute group names. For example: item1,item2,item3. | Optional | 
 
 
 #### Context Output
@@ -145,26 +145,82 @@ Returns the details of the specified incident.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | SymantecDLP.Incident.ID | Number | The ID of the incident. | 
-| SymantecDLP.Incident.creationDate | Date | The creation date of the incident. | 
-| SymantecDLP.Incident.detectionDate | Date | The detection date of the incident. | 
-| SymantecDLP.Incident.severity | String | The severity of the incident. | 
-| SymantecDLP.Incident.messageSource | String | The localized label that corresponds to the Symantec DLP product that generated the incident. | 
-| SymantecDLP.Incident.messageType | String | Indicates the Symantec DLP product that generated the incident. Can be: "NETWORK", "DISCOVER", "ENDPOINT". | 
-| SymantecDLP.Incident.incidentStatusId | Number | The status ID of the incident. | 
-| SymantecDLP.Incident.senderIPAddress | String | The IP address of the sender. | 
+| SymantecDLP.Incident.policyVersion | Number | The version of the policy. | 
+| SymantecDLP.Incident.attachmentInfo.componentType | Number | The ID of the type of the message component that generated the incident. | 
+| SymantecDLP.Incident.attachmentInfo.messageComponentName | String | The name of the file or attachment that generated the incident. | 
+| SymantecDLP.Incident.attachmentInfo.messageComponentId | Number | The ID of the message component that generated the incident. | 
+| SymantecDLP.Incident.attachmentInfo.wasCracked | Boolean | Indicates if the message component that generated the incident was cracked. | 
+| SymantecDLP.Incident.attachmentInfo.documentFormat | String | The file format of the message component that generated the incident. | 
+| SymantecDLP.Incident.attachmentInfo.mimeType | String | The standard mime type of the message component that generated the incident. | 
+| SymantecDLP.Incident.attachmentInfo.originalSize | Number | The size, in bytes, of the file or attachment that generated the incident. | 
+| SymantecDLP.Incident.messageSubject | String | The subject of the message that caused the incident. | 
 | SymantecDLP.Incident.policyName | String | The name of the policy. | 
+| SymantecDLP.Incident.policyGroupName | String | The name of the policy group. | 
+| SymantecDLP.Incident.policyGroupId | Number | The ID of the policy group of the policy that was violated. | 
+| SymantecDLP.Incident.messageSource | String | The localized label that corresponds to the Symantec DLP product that generated the incident. | 
+| SymantecDLP.Incident.messageId | Number | The ID of the message that caused the incident. | 
+| SymantecDLP.Incident.messageOriginatorID | Number | The ID of the sender or originator of the message that caused the incident. | 
+| SymantecDLP.Incident.matchCount | Number | The total number of policy violation matches produced by policies for this incident. | 
+| SymantecDLP.Incident.creationDate | Date | The creation date of the incident. | 
+| SymantecDLP.Incident.isBlockedStatusSuperseded | Boolean | Specifies whether the incident response was superseded by another response. | 
+| SymantecDLP.Incident.detectionServerName | String | The name of the detection server that created the incident. | 
+| SymantecDLP.Incident.networkSenderPort | Number | The port number on the host from which network traffic originated. | 
+| SymantecDLP.Incident.messageType | String | Indicates the Symantec DLP product component that generated the incident. | 
 | SymantecDLP.Incident.policyId | Number | The ID of the policy. | 
+| SymantecDLP.Incident.detectionDate | Date | The detection date of the incident. | 
+| SymantecDLP.Incident.messageTypeId | Number | The ID of the message type. | 
+| SymantecDLP.Incident.detectionServerId | Number | The ID of the detection server or cloud detector that created the incident. | 
+| SymantecDLP.Incident.messageDate | Date | The date and time that the network message that caused the incident originated. | 
+| SymantecDLP.Incident.senderIPAddress | String | The IP address of the sender. | 
 | SymantecDLP.Incident.endpointMachineIpAddress | String | The IP address of the endpoint machine. | 
+| SymantecDLP.Incident.recipientInfo.recipientType | Number | The type of the recipient. | 
+| SymantecDLP.Incident.recipientInfo.recipientPort | Number | The port of the recipient. | 
+| SymantecDLP.Incident.recipientInfo.recipientDomain | String | The domain of the recipient. | 
+| SymantecDLP.Incident.recipientInfo.recipientIdentifier | String | The identifier of the recipient. | 
+| SymantecDLP.Incident.recipientInfo.recipientIPAddress | String | The IP address of the recipient. | 
+| SymantecDLP.Incident.recipientInfo.recipientUrl | String | The URL address of the recipient. | 
+| SymantecDLP.Incident.networkSenderIdentifier | String | The name and/or IP address of the user who caused the incident. | 
+| SymantecDLP.Incident.isHidingNotAllowed | Boolean | Indicates if incident hiding is not allowed for the incident. | 
+| SymantecDLP.Incident.incidentStatusName | String | The status of the incident. | 
+| SymantecDLP.Incident.dataOwnerEmail | String | The email of the data owner. | 
+| SymantecDLP.Incident.dataOwnerName | String | The name of the data owner. | 
+| SymantecDLP.Incident.severity | Number | The severity of the incident. | 
+| SymantecDLP.Incident.incidentStatusId | Number | The status ID of the incident. | 
+| SymantecDLP.Incident.isHidden | Boolean | The hidden state of the incident. | 
+| SymantecDLP.Incident.preventOrProtectStatusId | Number | The remediation status ID. | 
 | SymantecDLP.Incident.CustomAttribute.Name | String | The name of the custom attribute. | 
 | SymantecDLP.Incident.CustomAttribute.Value | String | The value of the custom attribute. | 
 | SymantecDLP.Incident.CustomAttribute.Index | Number | The index of the custom attribute. | 
-| SymantecDLP.Incident.policyVersion | String | The version of the policy. | 
-| SymantecDLP.Incident.detectionServerName | String | The name of the detection server that created the incident. | 
-| SymantecDLP.Incident.policyGroupName | String | The name of the policy group. | 
-| SymantecDLP.Incident.dataOwnerEmail | String | The email of the data owner. | 
-| SymantecDLP.Incident.dataOwnerName | String | The name of the data owner. | 
-| SymantecDLP.Incident.preventOrProtectStatusId | Number | The remediation status ID. | 
-| SymantecDLP.Incident.matchCount | Number | The total number of policy violation matches produced by policies for this incident. | 
+| SymantecDLP.Incident.fileCreateDate | Date | The date and time the file was created. | 
+| SymantecDLP.Incident.discoverServer | String | The name of the file share, server, or SQL database that was scanned. | 
+| SymantecDLP.Incident.fileAccessDate | Date | The date and time the file was last accessed. | 
+| SymantecDLP.Incident.discoverTargetName | String | The name of the Discover scan target. | 
+| SymantecDLP.Incident.discoverRepositoryLocation | String | The location, file location, or other path to the resource which generated the incident. | 
+| SymantecDLP.Incident.discoverScanId | Number | The ID of the Discover scan. | 
+| SymantecDLP.Incident.discoverContentRootPath | String | The full path on the file share, server, or SQL database that was scanned. | 
+| SymantecDLP.Incident.discoverMillisSinceFirstSeen | Number | The time from the first incident generated, by the same policy on the same file, or resource using Discover detection, up to the detection time of the current incident. | 
+| SymantecDLP.Incident.isBlockedStatusSuperseded | Boolean | Specifies whether the incident response was superseded by another response. | 
+| SymantecDLP.Incident.messageAclEntries.principal | String | The principal of the entry. | 
+| SymantecDLP.Incident.messageAclEntries.aclType | String | The type of resource the access control list applies to. | 
+| SymantecDLP.Incident.messageAclEntries.permission | String | The permission of the entry. | 
+| SymantecDLP.Incident.messageAclEntries.grantDeny | String | Whether access is allowed or not. | 
+| SymantecDLP.Incident.discoverTargetId | Number | The ID of the Discover scan target. | 
+| SymantecDLP.Incident.discoverScanStartDate | Date | The date and time that the Discover scan started. | 
+| SymantecDLP.Incident.discoverName | String | The name of the file or resource that caused the incident. | 
+| SymantecDLP.Incident.fileOwner | String | The owner of the file at the time the incident was created. | 
+| SymantecDLP.Incident.discoverUrl | String | The URL of the resource scanned. | 
+| SymantecDLP.Incident.endpointFilePath | String | The file system path of the file that violated the policy. | 
+| SymantecDLP.Incident.endpointApplicationPath | String | The path to the application that caused the incident. | 
+| SymantecDLP.Incident.endpointVolumeName | String | The name of the local drive where the incident occurred. | 
+| SymantecDLP.Incident.domainUserName | String | The domain and user name associated with the incident. | 
+| SymantecDLP.Incident.fileCreatedBy | String | The name of the user who created the file. | 
+| SymantecDLP.Incident.fileModifiedBy | String | The name of the user who last modified the file. | 
+| SymantecDLP.Incident.endpointDeviceInstanceId | String | The ID to specifically identify an endpoint computer. | 
+| SymantecDLP.Incident.endpointFileName | String | The name of the file that violated the policy. | 
+| SymantecDLP.Incident.endpointConnectionStatus | String | The location of the endpoint computer, on or off the corporate network. | 
+| SymantecDLP.Incident.endpointMachineIpAddress | String | The IP address of the computer on which the incident occurred, if the computer is in the corporate network. | 
+| SymantecDLP.Incident.endpointMachineName | String | The name of the computer on which the incident occurred. | 
+| SymantecDLP.Incident.endpointApplicationName | String | The name of the application that caused the incident. | 
 
 #### Command example
 ```!symantec-dlp-get-incident-details incident_id=1 custom_attributes="custom attribute group name" custom_data="att group2"```
@@ -174,6 +230,17 @@ Returns the details of the specified incident.
     "SymantecDLP": {
         "Incident": {
             "ID": 1,
+            "attachmentInfo": [
+                {
+                    "componentType": 3,
+                    "documentFormat": "unknown",
+                    "messageComponentId": 5,
+                    "messageComponentName": "token",
+                    "mimeType": "application/octet-stream",
+                    "originalSize": 0,
+                    "wasCracked": false
+                }
+            ],
             "creationDate": "2021-12-20T13:25:46.103",
             "customAttributeGroup": [
                 {
@@ -190,18 +257,41 @@ Returns the details of the specified incident.
             "dataOwnerEmail": "testing@gmail.com",
             "dataOwnerName": "test123",
             "detectionDate": "2021-12-20T13:25:27.56",
+            "detectionServerId": 1,
             "detectionServerName": "Detection - Network monitor",
-            "endpointMachineIpAddress": "1.1.1.150",
+            "endpointMachineIpAddress": "1.31.25.150",
             "incidentStatusId": 1,
+            "incidentStatusName": "incident.status.New",
+            "isBlockedStatusSuperseded": false,
+            "isHidden": false,
+            "isHidingNotAllowed": false,
             "matchCount": 1,
+            "messageDate": "2021-12-20T13:25:27.623",
+            "messageId": 2,
+            "messageOriginatorID": 2,
             "messageSource": "NETWORK",
+            "messageSubject": "HTTP incident",
             "messageType": "HTTP",
+            "messageTypeId": 3,
+            "networkSenderIdentifier": "1.31.25.150",
+            "networkSenderPort": 51108,
+            "policyGroupId": 1,
             "policyGroupName": "policy_group.default.name",
             "policyId": 2,
             "policyName": "Network Test policy",
             "policyVersion": 1,
             "preventOrProtectStatusId": 0,
-            "senderIPAddress": "1.1.1.150",
+            "recipientInfo": [
+                {
+                    "recipientDomain": "1.254.1.254",
+                    "recipientIPAddress": "1.254.1.254",
+                    "recipientIdentifier": "http://1.254.1.254/latest/api/token",
+                    "recipientPort": 80,
+                    "recipientType": 1,
+                    "recipientUrl": "http://1.254.1.254/latest/api/token"
+                }
+            ],
+            "senderIPAddress": "1.31.25.150",
             "severity": "Medium"
         }
     }
@@ -232,11 +322,11 @@ Updates the details of a specific incident.
 | data_owner_email | The data owner email. | Optional | 
 | data_owner_name | The data owner name. | Optional | 
 | note | The note to be added. | Optional | 
-| incident_status_id | The status ID for which to update. Run the `symantec-dlp-list-incident-status` command to get the status ID. | Optional | 
-| remediation_status_name | Represents the remediation status name of an incident. | Optional | 
-| remediation_location | Represents the remediation location of the incident. Values can be user-defined. | Optional | 
-| severity | Represents the severity level of the incident. Can be: "High", "Medium", "Low", and "Info". Possible values are: Info, Low, Medium, High. | Optional | 
-| custom_attributes | The custom attributes to update. To get the custom attributes details, run the `symantec-dlp-get-incident-details` command with the `custom_attributes=all` command.<br/>Format:<br/>{columnIndex}:{newValue}<br/>For example, 1:update, 4:att. | Optional | 
+| incident_status_id | The status ID to update. Run the `symantec-dlp-list-incident-status` command to get the status ID. | Optional | 
+| remediation_status_name | The remediation status name of an incident. | Optional | 
+| remediation_location | The remediation location of the incident. Values can be user-defined. | Optional | 
+| severity | The severity level of the incident. Possible values are: Info, Low, Medium, High. | Optional | 
+| custom_attributes | The custom attributes to update. To get the custom attribute details, run the `symantec-dlp-get-incident-details` command with the `custom_attributes=all` command.<br/>Format:<br/>{columnIndex}:{newValue}<br/>For example, 1:update, 4:att. | Optional | 
 
 
 #### Context Output
@@ -334,7 +424,7 @@ Returns the history of the specified incident.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | incident_id | The incident ID. | Required | 
-| limit | The limit of the incident history list per page. Default is 50. Default is 50. | Optional | 
+| limit | The limit of the incident history list per page. Default is 50. | Optional | 
 
 
 #### Context Output
@@ -768,14 +858,14 @@ There are no input arguments for this command.
 
 ### Commands
 #### The following commands were removed in this version:
-* *symantec-dlp-incident-binaries*
-* *symantec-dlp-incident-violations*
-* *symantec-dlp-list-custom-attributes*
+- ***symantec-dlp-incident-binaries***
+- ***symantec-dlp-incident-violations***
+- ***symantec-dlp-list-custom-attributes***
 
 ### Arguments
 #### The following arguments were removed in this version:
 
-In the *symantec-dlp-update-incident* command:
+In the ***symantec-dlp-update-incident*** command:
 * *incident_id* - this argument was replaced by *incident_ids*.
 * *note_time*
 * *status*
@@ -785,43 +875,43 @@ In the *symantec-dlp-update-incident* command:
 
 #### The behavior of the following arguments was changed:
 
-In the *symantec-dlp-update-incident* command:
+In the ***symantec-dlp-update-incident*** command:
   *custom_attribute_name* and *custom_attribute_value* are now used in *custom_attributes*.
   *incident_id* argument are now called *incident_ids* and can get a list of incident IDs to update.
   
 ### Outputs
 #### The following outputs were removed in this version:
 
-In the *commandName* command:
+In the ***symantec-dlp-get-incident-details*** command:
 
-*SymantecDLP.Incident.LongID*
-*SymantecDLP.Incident.StatusCode* - this output was replaced by *SymantecDLP.Incident.incidentStatusIde*.
-*SymantecDLP.Incident.CreationDate* - this output was replaced by *SymantecDLP.Incident.creationDate*.
-*SymantecDLP.Incident.DetectionDate* - this output was replaced by *SymantecDLP.Incident.detectionDate*.
-*SymantecDLP.Incident.Severity* - this output was replaced by *SymantecDLP.Incident.severity*.
-*SymantecDLP.Incident.MessageSource* - this output was replaced by *SymantecDLP.Incident.messageSource*.
-*SymantecDLP.Incident.MessageSourceType*
-*SymantecDLP.Incident.MessageType* - this output was replaced by *SymantecDLP.Incident.messageType*.
-*SymantecDLP.Incident.MessageTypeID*
-*SymantecDLP.Incident.Policy.Name* - this output was replaced by *SymantecDLP.Incident.policyName*.
-*SymantecDLP.Incident.Policy.Version* - this output was replaced by *SymantecDLP.Incident.policyVersion*.
-*SymantecDLP.Incident.Policy.Label*
-*SymantecDLP.Incident.Policy.ID* - this output was replaced by *SymantecDLP.Incident.policyId*.
-*SymantecDLP.Incident.BlockedStatus*
-*SymantecDLP.Incident.MatchCount* - this output was replaced by *SymantecDLP.Incident.matchCount*.
-*SymantecDLP.Incident.RuleViolationCount*
-*SymantecDLP.Incident.DetectionServer* - this output was replaced by *SymantecDLP.Incident.detectionServerName*.
-*SymantecDLP.Incident.DataOwner.Name* - this output was replaced by *SymantecDLP.Incident.dataOwnerName*.
-*SymantecDLP.Incident.DataOwner.Email* - this output was replaced by *SymantecDLP.Incident.dataOwnerEmail*.
-*SymantecDLP.Incident.EventDate*
-*SymantecDLP.Incident.ViolatedPolicyRule.Name*
-*SymantecDLP.Incident.ViolatedPolicyRule.ID*
-*SymantecDLP.Incident.OtherViolatedPolicy.Name*
-*SymantecDLP.Incident.OtherViolatedPolicy.Version*
-*SymantecDLP.Incident.OtherViolatedPolicy.Label*
-*SymantecDLP.Incident.OtherViolatedPolicy.ID*
+- *SymantecDLP.Incident.LongID*
+- *SymantecDLP.Incident.StatusCode* - this output was replaced by *SymantecDLP.Incident.incidentStatusId*.
+- *SymantecDLP.Incident.CreationDate* - this output was replaced by *SymantecDLP.Incident.creationDate*.
+- *SymantecDLP.Incident.DetectionDate* - this output was replaced by *SymantecDLP.Incident.detectionDate*.
+- *SymantecDLP.Incident.Severity* - this output was replaced by *SymantecDLP.Incident.severity*.
+- *SymantecDLP.Incident.MessageSource* - this output was replaced by *SymantecDLP.Incident.messageSource*.
+- *SymantecDLP.Incident.MessageSourceType* - this output was replaced by *SymantecDLP.Incident.messageType*.
+- *SymantecDLP.Incident.MessageType* - this output was replaced by *SymantecDLP.Incident.messageType*.
+- *SymantecDLP.Incident.MessageTypeID - this output was replaced by *SymantecDLP.Incident.messageTypeId*.*
+- *SymantecDLP.Incident.Policy.Name* - this output was replaced by *SymantecDLP.Incident.policyName*.
+- *SymantecDLP.Incident.Policy.Version* - this output was replaced by *SymantecDLP.Incident.policyVersion*.
+- *SymantecDLP.Incident.Policy.Label*
+- *SymantecDLP.Incident.Policy.ID* - this output was replaced by *SymantecDLP.Incident.policyId*.
+- *SymantecDLP.Incident.BlockedStatus*
+- *SymantecDLP.Incident.MatchCount* - this output was replaced by *SymantecDLP.Incident.matchCount*.
+- *SymantecDLP.Incident.RuleViolationCount*
+- *SymantecDLP.Incident.DetectionServer* - this output was replaced by *SymantecDLP.Incident.detectionServerName*.
+- *SymantecDLP.Incident.DataOwner.Name* - this output was replaced by *SymantecDLP.Incident.dataOwnerName*.
+- *SymantecDLP.Incident.DataOwner.Email* - this output was replaced by *SymantecDLP.Incident.dataOwnerEmail*.
+- *SymantecDLP.Incident.EventDate*
+- *SymantecDLP.Incident.ViolatedPolicyRule.Name*
+- *SymantecDLP.Incident.ViolatedPolicyRule.ID*
+- *SymantecDLP.Incident.OtherViolatedPolicy.Name*
+- *SymantecDLP.Incident.OtherViolatedPolicy.Version*
+- *SymantecDLP.Incident.OtherViolatedPolicy.Label*
+- *SymantecDLP.Incident.OtherViolatedPolicy.ID*
 
 
 ## Additional Considerations for this version
 There is an issue with DLP API where some incidents get a 401 error.
-For these incidents, the missing data is returned. From the Network incident layout, in the description field you can see information about this issue.
+For these incidents, the missing data is returned. From the Network incident layout, in the description field, you can see information about this issue.

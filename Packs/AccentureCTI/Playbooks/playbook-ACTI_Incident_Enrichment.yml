@@ -1,0 +1,359 @@
+id: ACTI Incident Enrichment
+version: -1
+name: ACTI Incident Enrichment
+description: This playbook automatically queries Accenture IntelGraph API to pull context for IOC and associated intelligence reports into XSOAR incidents.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: a9d496ac-764a-46be-88a2-61923870e6b9
+    type: start
+    task:
+      id: a9d496ac-764a-46be-88a2-61923870e6b9
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: efe21c25-a55f-4000-87f9-2c19ceedeedb
+    type: title
+    task:
+      id: efe21c25-a55f-4000-87f9-2c19ceedeedb
+      version: -1
+      name: Enrich Indicator using ACTI integrations
+      type: title
+      iscommand: false
+      brand: ""
+      description: 'Enrich Indicator using ACTI integrations'
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: f3758ee6-8dc4-4064-87b8-4448eaec2098
+    type: regular
+    task:
+      id: f3758ee6-8dc4-4064-87b8-4448eaec2098
+      version: -1
+      name: Extracting indicators from incident
+      description: Extract all indicators according to server indicators configuration
+      script: Builtin|||extractIndicators
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      text:
+        simple: ${incident}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 5b6006fb-ce66-4c4a-8658-720f8b2ea86d
+    type: title
+    task:
+      id: 5b6006fb-ce66-4c4a-8658-720f8b2ea86d
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1365
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: da31e1f5-ca0f-4b89-87dc-48d0e36eb9be
+    type: playbook
+    task:
+      id: da31e1f5-ca0f-4b89-87dc-48d0e36eb9be
+      version: -1
+      name: Create Relationships
+      playbookName: ACTI Create Report-Indicator Associations
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: 'Creates report-indicator associations'
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      Domain:
+        complex:
+          root: ${Domain
+          accessor: Name}
+          transformers:
+          - operator: uniq
+      IA:
+        complex:
+          root: ${intelligence_alerts}
+          transformers:
+          - operator: uniq
+      IP:
+        complex:
+          root: ${IP
+          accessor: Address}
+          transformers:
+          - operator: uniq
+      IR:
+        complex:
+          root: ${intelligence_reports}
+          transformers:
+          - operator: uniq
+      URL:
+        complex:
+          root: ${URL
+          accessor: Data}
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+      forEach: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: d094d918-daf9-47c9-861f-ee02e481fa93
+    type: playbook
+    task:
+      id: d094d918-daf9-47c9-861f-ee02e481fa93
+      version: -1
+      name: ACTI Indicator Enrichment
+      playbookName: ACTI Indicator Enrichment
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: 'ACTI Indicator Enrichment is a sub-playbook used to enrich indicators using ACTI Indicator Query integration'
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      Domain_Pre_Enrich:
+        simple: ${ExtractedIndicators.Domain}
+      IP_Pre_Enrich:
+        simple: ${ExtractedIndicators.IP}
+      URL_Pre_Enrich:
+        simple: ${ExtractedIndicators.URL}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: c9dfb0b7-3a7c-4309-84e2-c32067b57c45
+    type: regular
+    task:
+      id: c9dfb0b7-3a7c-4309-84e2-c32067b57c45
+      version: -1
+      name: Sleep message
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      execution-timeout:
+        simple: "4"
+      value:
+        simple: '### Sleeping for 5 seconds for proper creation of relationships!'
+    reputationcalc: 2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 690
+        }
+      }
+    note: true
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 5a0b081e-159b-41d0-8fc6-473afdb75e86
+    type: regular
+    task:
+      id: 5a0b081e-159b-41d0-8fc6-473afdb75e86
+      version: -1
+      name: Sleep
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      seconds:
+        simple: "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 865
+        }
+      }
+    note: true
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 7b6244a8-3af8-402e-8289-539d4501f432
+    type: regular
+    task:
+      id: 7b6244a8-3af8-402e-8289-539d4501f432
+      version: -1
+      name: Create Relationship message
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      value:
+        simple: |-
+          ## I'm back !!
+          ## Invoking ACTI Create Report-Indicator Associations sub-playbook
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1010
+        }
+      }
+    note: true
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1380,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0
