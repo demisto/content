@@ -170,7 +170,11 @@ def main():  # pragma: no cover
                     raw_response=events,
                 )
                 return_results(command_results)
-            send_events_to_xsiam(events[:events_limit], 'okta', demisto_params.get('product', 'okta'))
+            else:
+                demisto_params['push_events'] = True
+            if demisto_params.get('push_events'):
+                send_events_to_xsiam(events[:events_limit], demisto_params.get('vendor', 'okta'),
+                                     demisto_params.get('product', 'okta'))
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
 
