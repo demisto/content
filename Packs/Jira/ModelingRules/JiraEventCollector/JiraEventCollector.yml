@@ -22,7 +22,7 @@ schema: |-
         "is_array": false
       },
       "created": {
-        "type": "string",
+        "type": "datetime",
         "is_array": false
       },
       "category": {
