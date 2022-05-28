@@ -161,8 +161,6 @@ def main():  # pragma: no cover
             demisto.results('ok')
         elif command in ('okta-get-events', 'fetch-events'):
             events = get_events.aggregated_results(last_object_ids=last_object_ids)
-            if events:
-                demisto.setLastRun(GetEvents.get_last_run(events))
             if command == 'okta-get-events':
                 command_results = CommandResults(
                     readable_output=tableToMarkdown('Okta Logs', events, headerTransform=pascalToSpace),
@@ -170,6 +168,7 @@ def main():  # pragma: no cover
                 )
                 return_results(command_results)
             else:
+                demisto.setLastRun(GetEvents.get_last_run(events))
                 demisto_params['push_events'] = True
             if demisto_params.get('push_events'):
                 send_events_to_xsiam(events[:events_limit], demisto_params.get('vendor', 'okta'),
