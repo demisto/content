@@ -11,10 +11,9 @@ class Client(IntegrationEventsClient):
         self.event_type = ''
 
     def set_request_filter(self, after: Any):  # pragma: no cover
+        base_url = self.request.url.split("?")[0]
+        self.request.url = f'{base_url}?created_after={self.last_run[self.event_type]}&per_page=100&page={self.page}'
         self.page += 1
-
-    def prepare_request(self):
-        self.request.url = f'{self.request.url.split("?")[0]}?created_after={self.last_run}&per_page=100&page={self.page}'
 
 
 class GetEvents(IntegrationGetEvents):
@@ -28,7 +27,7 @@ class GetEvents(IntegrationGetEvents):
         return {'groups': groups[-1]['created_at'], 'projects': projects[-1]['created_at']}
 
     def _iter_events(self):  # pragma: no cover
-        self.client.prepare_request()
+        self.client.set_request_filter(None)
         response = self.call()
         events: list = response.json()
         events.sort(key=lambda k: k.get('created_at'))
@@ -37,10 +36,7 @@ class GetEvents(IntegrationGetEvents):
 
         while True:
             yield events
-
-            last = events[-1]
-            self.client.set_request_filter(last['created_at'])
-            self.client.prepare_request()
+            self.client.set_request_filter(None)
             response = self.call()
             events = response.json()
             events.sort(key=lambda k: k.get('created_at'))
@@ -64,16 +60,17 @@ def main() -> None:  # pragma: no cover
         'headers': headers,
     }
     last_run = demisto.getLastRun()
-    if ('groups', 'projects') not in last_run:
+    if ('groups', 'projects', 'events') not in last_run:
         last_run = dateparser.parse(demisto_params['after'].strip()).isoformat()
         last_run = {
             'groups': last_run,
             'projects': last_run,
+            'events': last_run,
         }
     else:
         last_run = last_run
 
-    options = IntegrationOptions.parse_obj(demisto_params)
+    options = IntegrationOptions(**demisto_params)
 
     request = IntegrationHTTPRequest(**request_object)
 
@@ -91,9 +88,23 @@ def main() -> None:  # pragma: no cover
                 get_events.client.page = 1
                 get_events.client.event_type = event_type
                 events.extend(get_events.run())
+        get_events.client.request.url = url + 'events'
+        get_events.client.page = 1
+        get_events.client.event_type = 'events'
+        events.extend(get_events.run())
         if command == 'test-module':
             return_results('ok')
             return
+
+        for event in events:
+            if 'details' in event:
+                for action in ['add', 'change', 'remove']:
+                    if action in event['details']:
+                        event['details']['action'] = f'{action}_{event["details"][action]}'
+                        event['details']['action_type'] = action
+                        event["details"]['action_category'] = event['details'][action]
+                        break
+
         if command == 'gitlab-get-events':
             command_results = CommandResults(
                 readable_output=tableToMarkdown('gitlab Logs', events, headerTransform=pascalToSpace),
@@ -109,7 +120,6 @@ def main() -> None:  # pragma: no cover
         else:
             return_error(f'Command not found: {command}')
     except Exception as exc:
-        raise exc
         return_error(f'Failed to execute {command} command.\nError:\n{str(exc)}', error=exc)
 
 
