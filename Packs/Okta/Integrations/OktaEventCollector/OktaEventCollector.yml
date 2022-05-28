@@ -10,8 +10,9 @@ configuration:
   name: url
   type: 0
   required: true
-- display:  API key
-  name: apiKey
+- displaypassword:  API key
+  name: api_key
+  hiddenusername: true
   type: 9
   required: true
 - display: Number of incidents to fetch per fetch

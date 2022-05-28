@@ -1,5 +1,5 @@
 name: Okta Modeling Rule
 id: okta_modeling_rule
-fromversion: 3.3.0
+fromversion: 6.8.0
 tags: okta
 rules: ''

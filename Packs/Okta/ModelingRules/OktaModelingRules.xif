@@ -12,8 +12,8 @@ filter eventType in ("app.ad.api.user_import.account_locked","app.app_instance.c
 	XDM.Audit.operation_type = eventType,
 	XDM.Audit.outcome = if(outcome_result="SUCCESS", "SUCCESS", outcome_result="FAILURE", "FAILED", outcome_result="ALLOW", "SUCCESS", outcome_result="DENY", "FAILED", outcome_result="CHALLENGE", "PARTIAL", "UNKNOWN"),
 	XDM.Audit.reason = json_extract_scalar(outcome, "$.reason"),
-    XDM.Audit.audited_resource.id = arraymap (json_extract_array (`target`,"$."), json_extract_scalar ("@element", "$.alternateId")),
-XDM.Audit.audited_resource.type = arraymap (json_extract_array (`target`,"$."), json_extract_scalar ("@element", "$.type"));
+    XDM.Audit.audited_resource.id = arraystring (arraymap (json_extract_array (`target`,"$."), json_extract_scalar ("@element", "$.alternateId")),","),
+XDM.Audit.audited_resource.type = arraystring (arraymap (json_extract_array (`target`,"$."), json_extract_scalar ("@element", "$.type")),",");
 
 
 [MODEL: dataset=okta_okta_raw, model=Auth]
@@ -29,5 +29,5 @@ filter eventType  in ("app.access_request.approver.approve","app.access_request.
         XDM.Auth.logon.type = eventType,
         XDM.Auth.outcome = if(outcome_result="SUCCESS", "SUCCESS", outcome_result="FAILURE", "FAILED", outcome_result="ALLOW", "SUCCESS", outcome_result="DENY", "FAILED", outcome_result="CHALLENGE", "PARTIAL", "UNKNOWN"),
         XDM.Auth.reason = json_extract_scalar(outcome, "$.reason"),
-        XDM.Auth.Target.host.device_id = arraymap (json_extract_array (`target`,"$."), json_extract_scalar ("@element", "$.alternateId")),
-        XDM.Auth.Target.host.device_category = arraymap (json_extract_array (`target`,"$."), json_extract_scalar ("@element", "$.type"));
+        XDM.Auth.Target.host.device_id = arraystring (arraymap (json_extract_array (`target`,"$."), json_extract_scalar ("@element", "$.alternateId")),","),
+        XDM.Auth.Target.host.device_category = arraystring (arraymap (json_extract_array (`target`,"$."), json_extract_scalar ("@element", "$.type")),",");
