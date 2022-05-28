@@ -1180,6 +1180,7 @@ def search(user_id, subject='', _from='', to='', before='', after='', filename='
         'v1',
         ['https://www.googleapis.com/auth/gmail.readonly'],
         command_args['userId'])
+
     try:
         result = service.users().messages().list(**command_args).execute()
     except Exception as e:
@@ -1188,12 +1189,10 @@ def search(user_id, subject='', _from='', to='', before='', after='', filename='
         else:
             raise
 
-    with concurrent.futures.ThreadPoolExecutor() as executor:
-        futures = []
-        for mail in result.get('messages', []):
-            futures.append(executor.submit(get_mail, user_id=user_id, _id=mail['id'], _format='full'))
-
-        entries = [future.result() for future in concurrent.futures.as_completed(futures)]
+    entries = [get_mail(user_id=user_id,
+                        _id=mail['id'],
+                        _format='full',
+                        service=service) for mail in result.get('messages', [])]
 
     return entries, q
 
@@ -1208,18 +1207,18 @@ def get_mail_command():
     return emails_to_entry('Email:', [mail], _format, user_id)
 
 
-def get_mail(user_id, _id, _format):
+def get_mail(user_id, _id, _format, service=None):
     command_args = {
         'userId': user_id,
         'id': _id,
         'format': _format,
     }
-
-    service = get_service(
-        'gmail',
-        'v1',
-        ['https://www.googleapis.com/auth/gmail.readonly'],
-        delegated_user=command_args['userId'])
+    if not service:
+        service = get_service(
+            'gmail',
+            'v1',
+            ['https://www.googleapis.com/auth/gmail.readonly'],
+            delegated_user=command_args['userId'])
     result = service.users().messages().get(**command_args).execute()
 
     return result
