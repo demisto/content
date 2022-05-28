@@ -255,4 +255,4 @@ outputs:
   description: The number of devices the IOC ran on.
   type: number
 tests:
-- Test - CrowdStrike Falcon
+ -  No tests

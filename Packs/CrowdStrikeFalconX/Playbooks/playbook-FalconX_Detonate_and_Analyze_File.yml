@@ -386,6 +386,4 @@ outputs:
   description: The Falcon X intelligence results.
   type: unknown
 tests:
-- CrowdStrike_Falcon_X_-Test-Detonate_URL
-- CrowdStrike_Falcon_X_-Test-Detonate_File
-- CrowdStrike_FalconX_Test
+ -  No tests

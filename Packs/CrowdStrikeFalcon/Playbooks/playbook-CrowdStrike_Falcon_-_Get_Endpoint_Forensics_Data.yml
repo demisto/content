@@ -153,4 +153,4 @@ outputs:
   description: The results of the forensics commands.
   type: string
 tests:
-- Test - CrowdStrike Falcon
+ -  No tests

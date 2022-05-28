@@ -719,4 +719,4 @@ outputs:
   description: The results of the Falcon X report.
   type: string
 tests:
-- No tests (auto formatted)
+ -  No tests

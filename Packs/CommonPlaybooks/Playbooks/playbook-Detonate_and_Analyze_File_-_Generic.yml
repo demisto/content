@@ -242,7 +242,7 @@ tasks:
     task:
       id: e64d0590-3e6c-4b99-8ded-da01909d2195
       version: -1
-      name: Is Wildfile enabled?
+      name: Is Wildfire enabled?
       description: Returns 'yes' if the WildFire integration is available.
       scriptName: IsIntegrationAvailable
       type: condition
@@ -343,7 +343,11 @@ tasks:
       - "3"
     scriptarguments:
       TechniqueID:
-        simple: ${csfalconx.resource.sandbox.mitre_attacks.attack_id}
+        complex:
+          root: csfalconx.resource.sandbox.mitre_attacks
+          accessor: attack_id
+          transformers:
+          - operator: uniq
     separatecontext: true
     loop:
       iscommand: false
@@ -416,26 +420,4 @@ outputs:
   description: The Wildfire findings.
   type: string
 tests:
-- Calculate Severity - Generic v2 - Test
-- Test Convert file hash to corresponding hashes
-- Detonate URL - Generic Test
-- Block IP - Generic V3_Test
-- Detonate File - Generic Test
-- test-domain-indicator
-- Account Enrichment - Generic v2.1 - Test
-- Generic Polling Test
-- URL Enrichment - Generic v2 - Test
-- Send Investigation Summary Reports - Test
-- Isolate and unisolate endpoint - test
-- Endpoint Enrichment - Generic v2.1 - Test
-- Wait Until Datetime - Test
-- Detonate File - No Files test
-- Domain Enrichment - Generic v2 - Test
-- Calculate Severity - Standard - Test
-- Retrieve File from Endpoint - Generic V2 Test
-- Extract Indicators From File - Generic v2 - Test
-- Field polling test
-- Email Address Enrichment - Generic v2.1 - Test
-- File Enrichment - Generic v2 - Test
-- IP Enrichment - Generic v2 - Test
-- Get endpoint details - Generic - test
+ -  No tests
