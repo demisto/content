@@ -55,7 +55,7 @@ description: The RSA NetWitness integration provides system log, network, and en
   visibility for real-time collection, detection, and automated response with the
   Cortex XSOAR Enterprise platform. Using full session analysis, customers can extract
   critical data and effectively run security operations automated playbooks.
-display: RSANetWitnessv115 (Beta)
+display: RSANetWitness v11.5
 name: RSANetWitnessv115
 script:
   commands:
@@ -2444,7 +2444,7 @@ script:
       the exclusion list for the host with the specified agent ID.
     execution: false
     name: rsa-nw-endpoint-isolation-remove
-  dockerimage: demisto/python3:3.10.1.26972
+  dockerimage: demisto/python3:3.10.4.29342
   feed: false
   isfetch: true
   longRunning: false
@@ -2457,4 +2457,3 @@ tests:
 - RSANetWitnessv115-Test
 defaultmapperin: RSA NetWitness v11.5 - incoming mapper
 fromversion: 5.5.0
-beta: true
