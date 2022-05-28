@@ -5,8 +5,6 @@ API hostname: admin api hostname provided by duo (e.g. api-XXXXXXXX.duosecurity.
 Integration key: your integration key provided by duo
 Secret key: your secret key/password provided by duo
 
-Notice that duo admin api requires different credentials from your regular duo account (i.e. another set of api hostname, integration key and secret key)
-
 For more information please check out the documentation at [https://duo.com/docs/adminapi](https://duo.com/docs/adminapi) #disable-secrets-detection
 
 
@@ -23,6 +21,9 @@ Duo Events collector XSIAM
 * **First fetch from api time** - The time to take events from if no time is saved in the system.
 * **XSIAM request limit** - The limit amount of events to retrieve from the api.
 * **Request retries** - The number of retries to do to the api(we need it because too frequent request make the api retun a"too many requests 429" error).
+* **The vendor corresponding to the integration that originated the events** - product name of the product to name the dataset after.
+* **The product corresponding to the integration that originated the events** - vendor name of the product to name the dataset after.
+* **Push events to XSIAM on get events** - Whether or not to push event on octa_fet_events command.
 
 
 ## Step by step configuration

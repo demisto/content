@@ -4,7 +4,7 @@ commonfields:
 name: Duo Event Collector
 display: Duo Event Collector
 category: Analytics & SIEM
-description: Collects Auth and Audit events for Duo using the API(https://duo.com/docs/adminapi#logs).
+description: Collects Auth and Audit events for Duo using the API.
 configuration:
 - display: Server Host
   name: host
@@ -34,6 +34,20 @@ configuration:
   type: 0
   defaultvalue: 5
   required: false
+- display: The vendor corresponding to the integration that originated the events
+  name: vendor
+  type: 0
+  defaultvalue: okta
+  required: false
+- display: The product corresponding to the integration that originated the events
+  name: product
+  type: 0
+  defaultvalue: okta
+  required: false
+- display: Push events to XSIAM on get events
+  name: push_events
+  required: false
+  type: 8
 - display: Use system proxy settings
   name: proxy
   type: 8

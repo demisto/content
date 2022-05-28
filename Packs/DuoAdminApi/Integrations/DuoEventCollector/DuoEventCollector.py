@@ -1,3 +1,4 @@
+from collections import deque
 from enum import Enum
 import duo_client
 from pydantic import BaseModel
@@ -70,13 +71,18 @@ class GetEvents:
         self.client = client
         self.request_order = request_order
 
+    def rotate_request_order(self) -> None:
+        temp = deque(self.request_order)
+        temp.rotate(-1)
+        self.request_order = list(temp)
+
     def make_sdk_call(self, last_object_ids: list):  # pragma: no cover
         events: list = self.client.call(self.request_order)  # type: ignore
         if last_object_ids:
             events = GetEvents.remove_duplicates(events, last_object_ids)
         events = sorted(events, key=lambda e: e['timestamp'])
         events = events[: int(self.client.params.limit)]
-        self.request_order = self.request_order[::-1]
+        self.rotate_request_order()
         return events
 
     def _iter_events(self, last_object_ids: list) -> None:  # pragma: no cover  type: ignore
@@ -192,14 +198,17 @@ def main():  # pragma: no cover
             return_results('ok')
         elif command in ('duo-get-events', 'fetch-events'):
             events = get_events.aggregated_results(last_object_ids=last_object_ids)
-            demisto.setLastRun(get_events.get_last_run(events))
-            send_events_to_xsiam(events, 'duo', 'duo')
             if command == 'duo-get-events':
                 command_results = CommandResults(
                     readable_output=tableToMarkdown('Duo Logs', events, headerTransform=pascalToSpace),
                     raw_response=events,
                 )
                 return_results(command_results)
+            else:
+                demisto.setLastRun(get_events.get_last_run(events))
+                demisto_params['push_events'] = True
+            if demisto_params.get('push_events'):
+                send_events_to_xsiam(events, demisto_params.get('vendor', 'duo'), demisto_params.get('product', 'duo'))
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
 
