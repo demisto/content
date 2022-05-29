@@ -412,6 +412,7 @@ def get_urls_and_emails_from_pdf_annots(file_path):
 
     return all_urls, all_emails
 
+
 def extract_urls_and_emails_from_pdf_file(file_path, output_folder):
     """
     Extract URLs and Emails from the PDF file.
