@@ -1,0 +1,4 @@
+name: UbuntuAuthLogs
+id: UbuntuAuthLogs
+fromversion: 3.3.0
+rules: ''
