@@ -35,8 +35,8 @@ class AlibabaEventsClient(IntegrationEventsClient):
     def set_request_filter(self, after: Any):
         from_time = int(after)
 
-        self.request.params.from_ = from_time + 1
-        self.request.params.to = from_time + 3600
+        self.request.params.from_ = from_time + 1  # type: ignore
+        self.request.params.to = from_time + 3600  # type: ignore
 
     def call(self, request: IntegrationHTTPRequest) -> requests.Response:
         try:
@@ -54,8 +54,9 @@ class AlibabaEventsClient(IntegrationEventsClient):
         del headers['x-log-date']
         headers['Date'] = datetime.utcnow().strftime('%a, %d %b %Y %H:%M:%S GMT')
 
-        signature = get_request_authorization(f'/logstores/{self.logstore_name}', self.access_key, self.request.params.dict(by_alias=True),
-                                              headers)
+        signature = get_request_authorization(f'/logstores/{self.logstore_name}', self.access_key,
+                                              self.request.params.dict(by_alias=True), headers)
+
         headers['Authorization'] = "LOG " + self.access_key_id + ':' + signature
         headers['x-log-date'] = headers['Date']
         del headers['Date']
@@ -64,6 +65,9 @@ class AlibabaEventsClient(IntegrationEventsClient):
 
 
 class AlibabaGetEvents(IntegrationGetEvents):
+    def __init__(self, client: AlibabaEventsClient, options: IntegrationOptions):
+        super().__init__(client=client, options=options)
+
     @staticmethod
     def get_last_run(events: list) -> dict:
         return {'from': events[-1]['__time__']}
