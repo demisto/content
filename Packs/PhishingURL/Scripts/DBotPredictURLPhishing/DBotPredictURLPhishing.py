@@ -52,9 +52,9 @@ THRESHOLD_NEW_DOMAIN_MONTHS = 6
 DOMAIN_AGE_KEY = 'New domain (less than %s months)' % str(THRESHOLD_NEW_DOMAIN_MONTHS)
 
 MALICIOUS_VERDICT = "Malicious"
-BENIGN_VERDICT = "Benign"
+BENIGN_VERDICT = "Undetected"
 SUSPICIOUS_VERDICT = "Suspicious"
-BENIGN_VERDICT_WHITELIST = "Benign - Top domains from Majestic"
+BENIGN_VERDICT_WHITELIST = "Skip detection - Top domains from Majestic"
 UNKNOWN = 'Unknown'
 
 BENIGN_THRESHOLD = 0.5
