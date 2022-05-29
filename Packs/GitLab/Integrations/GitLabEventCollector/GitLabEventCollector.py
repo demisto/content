@@ -10,9 +10,10 @@ class Client(IntegrationEventsClient):
         self.page = 1
         self.event_type = ''
 
-    def set_request_filter(self):  # pragma: no cover
+    def set_request_filter(self, after):  # pragma: no cover
         base_url = self.request.url.split("?")[0]
-        self.request.url = f'{base_url}?created_after={self.last_run[self.event_type]}&per_page=100&page={self.page}'  # type: ignore
+        last_run = self.last_run[self.event_type]
+        self.request.url = f'{base_url}?created_after={last_run}&per_page=100&page={self.page}'  # type: ignore
         self.page += 1
 
 
@@ -25,12 +26,11 @@ class GetEvents(IntegrationGetEvents):
         projects.sort(key=lambda k: k.get('id'))
         user_events = [event for event in events if 'entity_type' not in event]
         user_events.sort(key=lambda k: k.get('id'))
-
         return {'groups': groups[-1]['created_at'], 'projects': projects[-1]['created_at'],
                 'events': user_events[-1]['created_at']}
 
     def _iter_events(self):  # pragma: no cover
-        self.client.set_request_filter()
+        self.client.set_request_filter(None)
         response = self.call()
         events: list = response.json()
         events.sort(key=lambda k: k.get('created_at'))
@@ -39,7 +39,7 @@ class GetEvents(IntegrationGetEvents):
 
         while True:
             yield events
-            self.client.set_request_filter()
+            self.client.set_request_filter(None)
             response = self.call()
             events = response.json()
             events.sort(key=lambda k: k.get('created_at'))
