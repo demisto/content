@@ -29,12 +29,12 @@ configuration:
 - displaypassword: API Key ID
   name: apikey_id_creds
   type: 9
-  required: true
+  required: false
   hiddenusername: true
 - displaypassword: API Key
   name: apikey_creds
   type: 9
-  required: true
+  required: false
   hiddenusername: true
 - display: API Key ID
   name: apikey_id
@@ -4010,6 +4010,12 @@ script:
       predefined:
       - 'true'
       - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: The MITRE attack technique.
+      isArray: true
+      name: mitre_technique_id_and_name
       required: false
       secret: false
     deprecated: false
