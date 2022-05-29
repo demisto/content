@@ -134,7 +134,7 @@ class GetEvents:
 
 def main():  # pragma: no cover
     try:
-        demisto_params = demisto.params() #| demisto.args()
+        demisto_params = demisto.params() | demisto.args()
         events_limit = int(demisto_params.get('limit', 2000))
         should_push_events = argToBoolean(demisto_params.get('should_push_events', 'false'))
         after = dateparser.parse(demisto_params['after'].strip())
