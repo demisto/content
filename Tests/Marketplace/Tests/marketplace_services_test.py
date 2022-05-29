@@ -721,7 +721,7 @@ class TestChangelogCreation:
         Given:
             A git log with only two valid PR numbers
 
-        When: 
+        When:
             calling get_pull_request_numbers_from_file with a mock file address
 
         Then:
