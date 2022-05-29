@@ -1,5 +1,5 @@
 With the SpyCloud integration, data from breaches can be pulled and further processed in Playbooks. Filtering parameters can be used to filter the data set
-This integration was integrated and tested with version xx of SpyCloud
+This integration was integrated and tested with version 2 of SpyCloud
 
 ## Configure SpyCloud on Cortex XSOAR
 
