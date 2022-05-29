@@ -188,9 +188,11 @@ def send_email_reply_to_mailbox(account, inReplyTo, to, body, subject=None, bcc=
 
     subject = subject or item_to_reply_to.subject
     message_body = HTMLBody(html_body) if html_body else body
-    m = item_to_reply_to.create_reply(subject='Re: ' + subject, body=message_body, to_recipients=to, cc_recipients=cc,
-                                      bcc_recipients=bcc)
-    m = m.save(account.drafts)
+    reply = item_to_reply_to.create_reply(subject='Re: ' + subject, body=message_body, to_recipients=to, cc_recipients=cc,
+                                          bcc_recipients=bcc)
+    reply = reply.save(account.drafts)
+    m = account.inbox.get(id=reply.id)
+
     for attachment in attachments:
         m.attach(attachment)
     m.send()
