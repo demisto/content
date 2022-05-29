@@ -4852,6 +4852,9 @@ class Common(object):
         :type external_references: ``ExternalReference``
         :param external_references:  A list of id's and description of the AP via external refs.
 
+        :type value: ``str``
+        :param value: The Attack Pattern value (name) - example: "Plist File Modification"
+
         :return: None
         :rtype: ``None``
         """
@@ -4859,7 +4862,7 @@ class Common(object):
 
         def __init__(self, stix_id, kill_chain_phases=None, first_seen_by_source=None, description=None,
                      operating_system_refs=None, publications=None, mitre_id=None, tags=None,
-                     traffic_light_protocol=None, dbot_score=None, community_notes=None, external_references=None):
+                     traffic_light_protocol=None, dbot_score=None, community_notes=None, external_references=None, value=None):
 
             self.community_notes = community_notes
             self.description = description
@@ -4872,7 +4875,7 @@ class Common(object):
             self.stix_id = stix_id
             self.tags = tags
             self.traffic_light_protocol = traffic_light_protocol
-
+            self.value = value
             self.dbot_score = dbot_score
 
         def to_context(self):
@@ -4883,6 +4886,7 @@ class Common(object):
                 'OperatingSystemRefs': self.operating_system_refs,
                 "Publications": self.publications,
                 "MITREID": self.mitre_id,
+                "Value": self.value,
                 "Tags": self.tags,
                 "Description": self.description
             }
@@ -7215,12 +7219,15 @@ class CommandRunner:
         results, errors = [], []
         for command, args in zip(command.commands, command.args_lst):
             try:
+                demisto.debug(' '.join(('calling', command, 'with args=', ','.join(args))))
                 execute_command_results = demisto.executeCommand(command, args)
                 for res in execute_command_results:
                     brand_name = res.get('Brand', 'Unknown') if isinstance(res, dict) else 'Unknown'
                     module_name = res.get('ModuleName', 'Unknown') if isinstance(res, dict) else 'Unknown'
                     if is_error(res):
-                        errors.append(CommandRunner.Result(command, args, brand_name, module_name, get_error(res)))
+                        error = get_error(res)
+                        demisto.debug('error: ' + error)
+                        errors.append(CommandRunner.Result(command, args, brand_name, module_name, error))
                     else:
                         if extract_contents:
                             res = res.get('Contents', {})
