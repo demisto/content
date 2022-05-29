@@ -337,7 +337,7 @@ Pushes rules from PAN-OS to the configured device group. In order to push the co
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Panorama.Push.DeviceGroup | String | Device group in which the policies were pushed. | 
-| Panorama.Push.JobID | Number | Job ID of the polices that were pushed. | 
+| Panorama.Push.JobID | Number | Job ID of the policies that were pushed. | 
 | Panorama.Push.Status | String | Push status. | 
 
 
@@ -6949,8 +6949,8 @@ Searches and returns a reference for the given object type and name. If no name 
 | --- | --- | --- |
 | object_type | The type of object to search; see https://pandevice.readthedocs.io/en/latest/module-objects.html. Possible values are: AddressObject, AddressGroup, ServiceGroup, ServiceObject, ApplicationObject, ApplicationGroup, LogForwardingProfile, SecurityProfileGroup. | Required | 
 | device_filter_string | If provided, only objects from the given device are returned. | Optional | 
-| object_name | The name of the object refernce to return if looking for a specific object. Supports regex if "use_regex" is set. | Optional | 
-| parent | The parent vsys or device group to search. if not provided, all will be returned. | Optional | 
+| object_name | The name of the object reference to return if looking for a specific object. Supports regex if "use_regex" is set. | Optional | 
+| parent | The parent vsys or device group to search. If not provided, all will be returned. | Optional | 
 | use_regex | Enables regex matching on object name. | Optional | 
 
 
@@ -6958,10 +6958,10 @@ Searches and returns a reference for the given object type and name. If no name 
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PANOS.PanosObject.hostid | String | Host ID | 
-| PANOS.PanosObject.container_name | String | What parent container \(DG, Template, VSYS\) this object belongs to. | 
-| PANOS.PanosObject.name | String | The PAN-OS object name | 
-| PANOS.PanosObject.object_type | String | The PAN-OS-Python object type | 
+| PANOS.PanosObject.hostid | String | Host ID. | 
+| PANOS.PanosObject.container_name | String | The parent container \(DG, Template, VSYS\) this object belongs to. | 
+| PANOS.PanosObject.name | String | The PAN-OS object name. | 
+| PANOS.PanosObject.object_type | String | The PAN-OS python object type. | 
 
 #### Command example
 ```!pan-os-config-get-object object_type="AddressObject"```
@@ -7005,7 +7005,7 @@ Searches and returns a reference for the given object type and name. If no name 
 
 ### pan-os-platform-get-device-state
 ***
-Get the device state from the provided device. Note; This will attempt to connect directly to the provided target to get the device state - if the IP address, as reported in 'show system info' is unreachable, this command will fail.
+Get the device state from the provided device. Note: This will attempt to connect directly to the provided target to get the device state. If the IP address as reported in 'show system info' is unreachable, this command will fail.
 
 
 #### Base Command
@@ -7015,7 +7015,7 @@ Get the device state from the provided device. Note; This will attempt to connec
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| target | String to filter to only show specific hostnames or serial numbers. | Required | 
+| target | String by which to filter to only show specific hostnames or serial numbers. | Required | 
 
 
 #### Context Output
@@ -7029,7 +7029,7 @@ Get the device state from the provided device. Note; This will attempt to connec
 | InfoFile.Info | String | Basic information of file | 
 ### pan-os-push-to-template
 ***
-Pushes the given PAN-OS Template to the given devices or all devices that belong to the template.
+Pushes the given PAN-OS template to the given devices or all devices that belong to the template.
 
 
 #### Base Command
@@ -7039,8 +7039,8 @@ Pushes the given PAN-OS Template to the given devices or all devices that belong
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| template | The Template to push. | Optional | 
-| validate-only | Pre policy validation. Possible values are: true, false. Default is false. | Optional | 
+| template | The template to push. | Optional | 
+| validate-only | Whether to validate the policy. Possible values are: true, false. Default is false. | Optional | 
 | description | The push description. | Optional | 
 | serial_number | The serial number for a virtual system commit. If provided, the commit will be a virtual system commit. | Optional | 
 
@@ -7050,7 +7050,7 @@ Pushes the given PAN-OS Template to the given devices or all devices that belong
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Panorama.Push.Template | String | The device group in which the policies were pushed. | 
-| Panorama.Push.JobID | Number | The job ID of the polices that were pushed. | 
+| Panorama.Push.JobID | Number | The job ID of the policies that were pushed. | 
 | Panorama.Push.Status | String | The push status. | 
 | Panorama.Push.Warnings | String | The push warnings. | 
 | Panorama.Push.Errors | String | The push errors. | 
@@ -7080,7 +7080,7 @@ Pushes the given PAN-OS Template to the given devices or all devices that belong
 
 ### pan-os-push-to-template-stack
 ***
-Pushes the given PAN-OS Template-stack to the given devices or all devices that belong to the template stack.
+Pushes the given PAN-OS template-stack to the given devices or all devices that belong to the template stack.
 
 
 #### Base Command
@@ -7090,8 +7090,8 @@ Pushes the given PAN-OS Template-stack to the given devices or all devices that 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| template-stack | The Template-stack to push. | Required | 
-| validate-only | Pre policy validation. Possible values are: true, false. Default is false. | Optional | 
+| template-stack | The template-stack to push. | Required | 
+| validate-only | Whether to validate the policy. Possible values are: true, false. Default is false. | Optional | 
 | description | The push description. | Optional | 
 | serial_number | The serial number for a virtual system commit. If provided, the commit will be a virtual system commit. | Optional | 
 
@@ -7101,7 +7101,7 @@ Pushes the given PAN-OS Template-stack to the given devices or all devices that 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Panorama.Push.TemplateStack | String | The device group in which the policies were pushed. | 
-| Panorama.Push.JobID | Number | The job ID of the polices that were pushed. | 
+| Panorama.Push.JobID | Number | The job ID of the policies that were pushed. | 
 | Panorama.Push.Status | String | The push status. | 
 | Panorama.Push.Warnings | String | The push warnings. | 
 | Panorama.Push.Errors | String | The push errors. | 
