@@ -3,14 +3,12 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-
 from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
 from selenium.common.exceptions import NoSuchElementException, InvalidArgumentException, TimeoutException
 from PyPDF2 import PdfFileReader
 from pdf2image import convert_from_path
 import numpy as np
-from PIL import Image  # , ImageDraw
+from PIL import Image
 import tempfile
 from io import BytesIO
 import base64
