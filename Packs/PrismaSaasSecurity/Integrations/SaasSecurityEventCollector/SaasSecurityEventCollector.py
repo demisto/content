@@ -40,15 +40,13 @@ class Client(BaseClient):
     def http_request(self, *args, **kwargs):
         """
         Overrides Base client request function, retrieves and adds to headers access token before sending the request.
-
-        :return: The http response
         """
         token = self.get_access_token()
         headers = {
             'Authorization': f'Bearer {token}',
             'Content-Type': 'application/json',
         }
-        return super()._http_request(*args, headers=headers, **kwargs)
+        return super()._http_request(*args, headers=headers, **kwargs)  # type: ignore[misc]
 
     def get_access_token(self) -> str:
         """
@@ -193,7 +191,7 @@ def fetch_events(client: Client, max_fetch: int) -> List[Dict]:
     """
     Fetches events from the saas-security queue.
     """
-    events = []
+    events: List[Dict] = []
     response = client.get_events_request()
 
     while len(events) < max_fetch and response.status_code == 200:
