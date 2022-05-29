@@ -50,7 +50,7 @@ dataset = nginx_audit_log
 | alter Referrer =arrayindex(regextract(_raw_log ,"referrer\:\s([^\s]+) "),0)
 | alter destination_port =arrayindex(regextract(_raw_log ,"host\:\s\"?[^\"?\:]+\:(\d+)"),0)
 
-| alter XDM.Network.event_timestamp= timestAMP
+| alter XDM.Network.event_timestamp= timestamp
 | alter XDM.Audit.threat.severity = log_level
 | alter XDM.Audit.identity.uuid=tid 
 | alter XDM.Network.Source.ipv4 =client_address       
