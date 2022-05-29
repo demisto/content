@@ -10,5 +10,5 @@
 | alter XDM.Endpoint.event_timestamp = timestamp
 | alter XDM.Endpoint.Target.hostname = hostname
 | alter XDM.Endpoint.Target.process.name = process_name
-| alter XDM.Endpoint.Target.process.identifier = pid
+| alter XDM.Endpoint.Target.process.pid = pid
 | alter XDM.Endpoint.original_event_description = event_description
