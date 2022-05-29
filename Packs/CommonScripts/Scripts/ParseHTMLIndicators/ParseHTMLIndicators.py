@@ -34,12 +34,9 @@ def main():
     # Retrieve demisto args
     args = demisto.args()
     blog_url = args.get("url")
-    try:
-        headers = {'user-agent': 'PANW-XSOAR'}
-        page = requests.get(blog_url, verify=False, headers=headers)  # nosec
-        page.raise_for_status()
-    except requests.HTTPError:
-        raise
+    headers = {'user-agent': 'PANW-XSOAR'}
+    page = requests.get(blog_url, verify=False, headers=headers)  # nosec
+    page.raise_for_status()
 
     exclusion_list = set(argToList(args.get("exclude_indicators")))
     TLD_exclusion = argToList(args.get("exclude_TLD"))
