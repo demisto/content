@@ -139,7 +139,7 @@ var deleteIncidents = function(ids_to_delete, fields_to_keep) {
     }
 
     var response = res['response'];
-    if (fields_to_keep != "all") {
+    if (fields_to_keep && (fields_to_keep != "all")) {
         response['data'] = reduce_data(response['data'], fields_to_keep);
     }
     var md = tableToMarkdown('Demisto delete incidents', response, ['data', 'total', "notUpdated"]);
