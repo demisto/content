@@ -10,9 +10,9 @@ class Client(IntegrationEventsClient):
         self.page = 1
         self.event_type = ''
 
-    def set_request_filter(self, after: Any):  # pragma: no cover
+    def set_request_filter(self):  # pragma: no cover
         base_url = self.request.url.split("?")[0]
-        self.request.url = f'{base_url}?created_after={self.last_run[self.event_type]}&per_page=100&page={self.page}'
+        self.request.url = f'{base_url}?created_after={self.last_run[self.event_type]}&per_page=100&page={self.page}'  # type: ignore
         self.page += 1
 
 
@@ -25,11 +25,12 @@ class GetEvents(IntegrationGetEvents):
         projects.sort(key=lambda k: k.get('id'))
         user_events = [event for event in events if 'entity_type' not in event]
         user_events.sort(key=lambda k: k.get('id'))
+
         return {'groups': groups[-1]['created_at'], 'projects': projects[-1]['created_at'],
                 'events': user_events[-1]['created_at']}
 
     def _iter_events(self):  # pragma: no cover
-        self.client.set_request_filter(None)
+        self.client.set_request_filter()
         response = self.call()
         events: list = response.json()
         events.sort(key=lambda k: k.get('created_at'))
@@ -38,7 +39,7 @@ class GetEvents(IntegrationGetEvents):
 
         while True:
             yield events
-            self.client.set_request_filter(None)
+            self.client.set_request_filter()
             response = self.call()
             events = response.json()
             events.sort(key=lambda k: k.get('created_at'))
@@ -76,7 +77,7 @@ def main() -> None:  # pragma: no cover
     }
     last_run = demisto.getLastRun()
     if ('groups', 'projects', 'events') not in last_run:
-        last_run = dateparser.parse(demisto_params['after'].strip()).isoformat()
+        last_run = dateparser.parse(demisto_params['after'].strip()).isoformat()  # type: ignore
         last_run = {
             'groups': last_run,
             'projects': last_run,
@@ -98,13 +99,13 @@ def main() -> None:  # pragma: no cover
             for obj_id in events_collection_management[f'{event_type}_ids']:
                 call_url_suffix = f'{event_type}/{obj_id}/audit_events'
                 get_events.client.request.url = url + call_url_suffix
-                get_events.client.page = 1
-                get_events.client.event_type = event_type
+                get_events.client.page = 1  # type: ignore
+                get_events.client.event_type = event_type  # type: ignore
                 events.extend(get_events.run())
-        get_events.client.event_type = 'events'
+        get_events.client.event_type = 'events'  # type: ignore
         for obj_id in user_ids:
             get_events.client.request.url = url + f'users/{obj_id}/events'
-            get_events.client.page = 1
+            get_events.client.page = 1  # type: ignore
             events.extend(get_events.run())
         if command == 'test-module':
             return_results('ok')
