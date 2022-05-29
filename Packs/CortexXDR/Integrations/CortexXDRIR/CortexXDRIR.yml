@@ -4013,6 +4013,12 @@ script:
       - 'false'
       required: false
       secret: false
+    - default: false
+      description: The MITRE attack technique.
+      isArray: true
+      name: mitre_technique_id_and_name
+      required: false
+      secret: false
     deprecated: false
     description: "Returns a list of alerts and their metadata, which you can filter\
       \ by built-in arguments or use the custom_filter to input a JSON filter object.\
