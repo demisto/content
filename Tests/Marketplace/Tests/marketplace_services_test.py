@@ -730,7 +730,7 @@ class TestChangelogCreation:
         """
 
         mocker.patch("git.Git", return_value=GitMock())
-        assert get_pull_request_numbers_from_file("someFile") == [12345, 12347]
+        assert get_pull_request_numbers_from_file("someFile") == ['12345', '12347']
 
     def test_get_same_block_versions(self, mocker, dummy_pack):
         """
