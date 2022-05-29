@@ -16,15 +16,14 @@ inputs:
   required: false
   value:
     simple: FalsePositive
-- description: Specify the approving tag name for found indicators.
+- description: The approving tag name for found indicators.
   key: AllowTag
   playbookInputQuery:
   required: false
   value:
     simple: AllowTag
 - description: |-
-    Indicates if automatic un-isolation is allowed
-        True/False
+    Whether automatic unisolation is allowed.
   key: AutoUnisolation
   playbookInputQuery:
   required: false
@@ -36,7 +35,7 @@ inputs:
   required: false
   value:
     simple: ${incident.deviceid}
-- description: Enter the File Sha256 you would like to block.
+- description: The File SHA256 you want to block.
   key: FileSha256
   playbookInputQuery:
   required: false
@@ -170,7 +169,7 @@ tasks:
       id: 82c575e9-5484-4d95-8728-6cd14c71d448
       iscommand: false
       name: Approve unisolation
-      description: Approve unisolation
+      description: Approve unisolation.
       type: condition
       version: -1
     taskid: 82c575e9-5484-4d95-8728-6cd14c71d448
@@ -344,7 +343,7 @@ tasks:
       id: c45a1727-d309-446d-850b-b9fffb2dfc1e
       iscommand: false
       name: Choose the marked IOC to be added to approve list
-      description: Choose the marked IOC to be added to approve list
+      description: Choose the marked IOC to be added to approve list.
       type: collection
       version: -1
     taskid: c45a1727-d309-446d-850b-b9fffb2dfc1e
@@ -454,7 +453,7 @@ tasks:
       id: 1b32f8b2-6624-465f-8f1e-20369a23503b
       iscommand: false
       name: Auto-Unisolate?
-      description: Auto-Unisolate?
+      description: Auto-unisolate?
       type: condition
       version: -1
     taskid: 1b32f8b2-6624-465f-8f1e-20369a23503b
@@ -558,4 +557,4 @@ view: |-
 tests:
 - No tests (auto formatted)
 fromversion: 6.5.0
-description: This Playbook handles a false-positive incident closure for Cortex XDR - Malware investigation.
+description: This Playbook handles false-positive incident closure for Cortex XDR - Malware investigation.
