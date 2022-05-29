@@ -1,6 +1,5 @@
-[MODEL: dataset="tomcat_logs_access ", model="Network"]
+[MODEL: dataset="apache_tomcat_raw", model="Network"]
 
-dataset = tomcat_logs_access 
 | filter _raw_log contains "GET" or _raw_log contains "HEAD" or _raw_log contains "POST" or _raw_log contains "DELETE" or _raw_log contains "CONNECT" or _raw_log contains "OPTIONS" or _raw_log contains "TRACE" or _raw_log contains "PATCH" 
 | alter Request_time = arrayindex(regextract(_raw_log , "\[(\d+\/\w+\/\d+\:\d+\:\d+\:\d+\s\S+)\]") , 0)
 | alter Username = arrayindex(regextract(_raw_log,"(\S+)\s\[\d+\/") ,0)
