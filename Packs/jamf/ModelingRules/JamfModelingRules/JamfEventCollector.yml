@@ -6,11 +6,11 @@ rules: ''
 schema: |-
   {
     "jamf_pro_raw": {
-      "Event": {
+      "event": {
         "type": "string",
         "is_array": false
       },
-      "Webhook": {
+      "webhook": {
         "type": "string",
         "is_array": false
       }
