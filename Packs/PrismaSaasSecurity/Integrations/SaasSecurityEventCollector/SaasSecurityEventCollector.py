@@ -117,7 +117,7 @@ class Client(BaseClient):
         """
         return self.http_request(
             'GET',
-            url_suffix='/api/v1/log_event',
+            url_suffix='/api/v1/log_events',
             resp_type='response',
             ok_codes=[200, 204],
         )

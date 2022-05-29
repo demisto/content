@@ -62,7 +62,7 @@ def test_module(mocker, mock_client, mocked_response):
 
 
 class TestFetchEvents:
-    
+
     EVENTS_DATA = [
         (
             200,
