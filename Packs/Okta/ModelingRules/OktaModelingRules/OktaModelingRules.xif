@@ -24,7 +24,7 @@ filter eventType  in ("app.access_request.approver.approve","app.access_request.
         XDM.Auth.Client.ipv4 = json_extract_scalar(Client, "$.ipAddress"),
         XDM.Auth.Client.location.city = json_extract_scalar(Client, "$.geographicalContext.city"),
         XDM.Auth.Client.location.country = json_extract_scalar(Client, "$.geographicalContext.country"),
-        XDM.Auth.Client.location.geo = concat("lan: ", json_extract_scalar(client, "$.geographicalContext.geolocation.lat"),", lon: ", json_extract_scalar(client, "$.geographicalContext.geolocation.lon"))
+        XDM.Auth.Client.location.geo = concat("lan: ", json_extract_scalar(client, "$.geographicalContext.geolocation.lat"),", lon: ", json_extract_scalar(client, "$.geographicalContext.geolocation.lon")),
         XDM.Auth.session_id = json_extract_scalar(authenticationContext, "$.externalSessionId"),
         XDM.Auth.logon.type = eventType,
         XDM.Auth.outcome = if(outcome_result="SUCCESS", "SUCCESS", outcome_result="FAILURE", "FAILED", outcome_result="ALLOW", "SUCCESS", outcome_result="DENY", "FAILED", outcome_result="CHALLENGE", "PARTIAL", "UNKNOWN"),

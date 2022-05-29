@@ -170,7 +170,7 @@ def main():  # pragma: no cover
                 return_results(command_results)
             else:
                 demisto.setLastRun(GetEvents.get_last_run(events))
-                demisto_params['push_events'] = True
+                should_push_events = True
             if should_push_events:
                 send_events_to_xsiam(events[:events_limit], demisto_params.get('vendor', 'okta'),
                                      demisto_params.get('product', 'okta'))
