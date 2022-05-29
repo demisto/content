@@ -2,8 +2,7 @@ id: CrowdStrike Falcon - Search Endpoints By Hash
 version: -1
 fromversion: 6.5.0
 name: CrowdStrike Falcon - Search Endpoints By Hash
-description: "This playbook searches across the organization for other endpoints\
-  \ associated with a specific SHA256 hash. \n"
+description: "This playbook searches across the organization for other endpoints associated with a specific SHA256 hash."
 starttaskid: "0"
 tasks:
   "0":

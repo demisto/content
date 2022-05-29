@@ -32,4 +32,4 @@ This playbook does not use any scripts.
 
 ## Playbook Image
 ---
-![Crowdstrike Malware - Incident Enrichment](../doc_files/CrowdStrike_Falcon_-_Incident_Enrichment.png)
+![Crowdstrike Malware - Incident Enrichment](../doc_files/CrowdStrike_Falcon_-_Get_Detections_by_Incident.png)
