@@ -1,4 +1,4 @@
-The playbook uploads detonates and analyzes files for Wildfire.
+This playbook uploads, detonates, and analyzes files for the Wildfire sandbox.
 
 
 ## Dependencies
@@ -8,7 +8,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any sub-playbooks.
 
 ### Integrations
-* Palo_Alto_Networks_WildFire_v2
+Palo_Alto_Networks_WildFire_v2
 
 ### Scripts
 * Set
@@ -30,7 +30,7 @@ This playbook does not use any sub-playbooks.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| WildFire.Report | Wildfire findings results. | string |
+| WildFire.Report | The Wildfire findings results. | string |
 
 ## Playbook Image
 ---
