@@ -926,8 +926,6 @@ tasks:
           root: inputs.ProjectKey
       summary:
         simple: ${inputs.TicketDescription}
-      using:
-        simple: ${inputs.InstanceName}
     separatecontext: false
     view: |-
       {
