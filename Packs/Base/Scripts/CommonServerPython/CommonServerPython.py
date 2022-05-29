@@ -4833,6 +4833,9 @@ class Common(object):
         :type external_references: ``ExternalReference``
         :param external_references:  A list of id's and description of the AP via external refs.
 
+        :type value: ``str``
+        :param value: The Attack Pattern value (name) - example: "Plist File Modification"
+
         :return: None
         :rtype: ``None``
         """
@@ -4840,7 +4843,7 @@ class Common(object):
 
         def __init__(self, stix_id, kill_chain_phases=None, first_seen_by_source=None, description=None,
                      operating_system_refs=None, publications=None, mitre_id=None, tags=None,
-                     traffic_light_protocol=None, dbot_score=None, community_notes=None, external_references=None):
+                     traffic_light_protocol=None, dbot_score=None, community_notes=None, external_references=None, value=None):
 
             self.community_notes = community_notes
             self.description = description
@@ -4853,7 +4856,7 @@ class Common(object):
             self.stix_id = stix_id
             self.tags = tags
             self.traffic_light_protocol = traffic_light_protocol
-
+            self.value = value
             self.dbot_score = dbot_score
 
         def to_context(self):
@@ -4864,6 +4867,7 @@ class Common(object):
                 'OperatingSystemRefs': self.operating_system_refs,
                 "Publications": self.publications,
                 "MITREID": self.mitre_id,
+                "Value": self.value,
                 "Tags": self.tags,
                 "Description": self.description
             }
