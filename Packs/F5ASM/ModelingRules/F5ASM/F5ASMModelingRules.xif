@@ -1,6 +1,5 @@
 [MODEL: dataset="F5_ASM_raw", model="Network"] 
- 
-dataset = CEF_F5_ASM
+
 | alter event_type = arrayindex(regextract(_raw_log ,"CEF\:\d\|\w+\|\w+\|\d+\.\d+[^A-Z]+([^\|]+) "), 0)
 | alter  dvchost  = arrayindex(regextract(_raw_log , "dvchost\=([^\s]+)"), 0)
 // extract policy_name
