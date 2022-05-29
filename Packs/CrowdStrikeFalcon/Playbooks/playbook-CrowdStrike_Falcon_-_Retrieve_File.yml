@@ -2,7 +2,7 @@ id: CrowdStrike Falcon - Retrieve File
 version: -1
 fromversion: 6.5.0
 name: CrowdStrike Falcon - Retrieve File
-description: This playbook is used to retrieve files from CrowdStrike Falcon as well as unzipping the retrieved files and outputting which files were and weren't retrieved.
+description: This playbook retrieves and unzips files from CrowdStrike Falcon and returns a list of the files that were and were not retrieved.
 starttaskid: '0'
 tasks:
   '0':
@@ -78,7 +78,7 @@ tasks:
       id: 7ba9331f-6e55-4841-8dab-6db7297c169c
       version: -1
       name: Unzip file
-      description: Unzip a file using fileName or entryID to specify a file. Unzipped files will be loaded to the War Room and names will be put into the context.
+      description: Unzips a file using fileName or entryID to specify a file. Unzipped files will be loaded to the War Room and file names will be put into the context.
       scriptName: UnzipFile
       type: regular
       iscommand: false
@@ -260,18 +260,18 @@ inputs:
 - key: PathsToGet
   value: {}
   required: false
-  description: The paths to retrieve the files from the host.
+  description: The path to retrieve the file from the host.
   playbookInputQuery:
 - key: ZipPassword
   value:
     simple: infected
   required: false
-  description: Default password to unzip files retrieved by CrowdStrike.
+  description: Default password to unzip files retrieved by CrowdStrike Falcon.
   playbookInputQuery:
 - key: FileNames
   value: {}
   required: false
-  description: 'The names of the file to retrieve. This is used just to validate that all the intended file were retrieved and not to specify which ones will be retrieved.   '
+  description: 'The names of the file to retrieve. This is used to validate that all the intended files were retrieved, not to specify which ones will be retrieved.   '
   playbookInputQuery:
 outputs:
 - contextPath: ExtractedFiles
