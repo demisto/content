@@ -223,8 +223,9 @@ class TestFetchEvents:
         When -
             executing main to fetch events.
 
-        Then -
-           make sure the correct events are fetched according to the queue and max fetch.
+        Then
+        - make sure the correct events are fetched according to the queue and max fetch.
+        - make sure the send_events_to_xsiam was called with the correct events.
         """
         import SaasSecurityEventCollector
 
