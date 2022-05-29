@@ -1,0 +1,4 @@
+name: SaasSecurityEventCollector
+id: SaasSecurityEventCollector
+fromversion: 3.3.0
+rules: ''
