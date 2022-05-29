@@ -11,7 +11,6 @@ Okta Events collector XSIAM
 * **First fetch time interval** - The period (in days) to retrieve events from, if no time is saved in the system.
 * **The product corresponding to the integration that originated the events** - product name of the product to name the dataset after.
 * **The vendor corresponding to the integration that originated the events** - vendor name of the product to name the dataset after.
-* **Push events to XSIAM on get events** - Whether or not to push event on octa_fet_events command.
 
 
 ## Step by step configuration
@@ -24,5 +23,4 @@ https://developer.okta.com/docs/guides/find-your-domain/main/
 **Fetches events** - True 
 **The product corresponding to the integration that originated the events** - okta 
 **The vendor corresponding to the integration that originated the events** - okta 
-**Push events to XSIAM on get events** - true 
 
