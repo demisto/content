@@ -6,7 +6,6 @@ from CommonServerUserPython import *
 
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
-from pyvirtualdisplay import Display
 from selenium.common.exceptions import NoSuchElementException, InvalidArgumentException, TimeoutException
 from PyPDF2 import PdfFileReader
 from pdf2image import convert_from_path
@@ -99,25 +98,18 @@ def check_response(driver):
         return_err_or_warn(EMPTY_RESPONSE_ERROR_MSG)
 
 
-def init_driver(offline_mode=False, include_url=False):
+def init_driver(offline_mode=False):
     """
     Creates headless Google Chrome Web Driver
     """
     demisto.debug(f'Creating chrome driver. Mode: {"OFFLINE" if offline_mode else "ONLINE"}')
     try:
         chrome_options = webdriver.ChromeOptions()
-        if include_url:
-            # os.environ['DISPLAY'] = ':1'
-            # display = Display(visible=False, size=(800, 600))
-            # display.start()
-            chrome_options.add_argument("disable-infobars")
-            chrome_options.add_experimental_option("excludeSwitches", ["enable - automation"])
-            chrome_options.add_experimental_option("useAutomationExtension", False)
         for opt in merge_options(DEFAULT_CHROME_OPTIONS, USER_CHROME_OPTIONS):
             chrome_options.add_argument(opt)
         driver = webdriver.Chrome(options=chrome_options, service_args=[
             f'--log-path={DRIVER_LOG}',
-        ], executable_path="/usr/bin/chromedriver")
+        ])
         if offline_mode:
             driver.set_network_conditions(offline=True, latency=5, throughput=500 * 1024)
     except Exception as ex:
@@ -172,28 +164,6 @@ def convert_file_to_bytes(file_path: str) -> bytes:
     return file_content
 
 
-def rasterize_test(url):
-    os.environ['DISPLAY'] = ':1'
-    display = Display(visible=0, size=(800, 600))
-    display.start()
-    chrome_options = Options()
-    chrome_options.add_argument('--no-sandbox')  # bypass OS security model
-    chrome_options.add_argument("disable-infobars")
-    chrome_options.add_experimental_option("excludeSwitches", ["enable - automation"])
-    chrome_options.add_experimental_option("useAutomationExtension", False)
-    driver = webdriver.Chrome(executable_path="/usr/bin/chromedriver", chrome_options=chrome_options)
-
-    time.sleep(3)
-    driver.get(url)
-    driver.maximize_window()
-    os.system("import -window root /tmp/screenshot.png")
-    driver.close()
-    output = convert_file_to_bytes("/tmp/screenshot.png")
-    res = fileResult(filename="url.png", data=output)
-    res['Type'] = entryTypes['image']
-    demisto.results(res)
-
-
 def rasterize(path: str, width: int, height: int, r_type: str = 'png', wait_time: int = 0,
               offline_mode: bool = False, max_page_load_time: int = 180):
     """
@@ -205,11 +175,8 @@ def rasterize(path: str, width: int, height: int, r_type: str = 'png', wait_time
     :param r_type: result type: .png/.pdf
     :param wait_time: time in seconds to wait before taking a screenshot
     """
-    include_url = demisto.args().get("include_url", False)
-    include_url = True if include_url == "true" else False
-    if include_url and r_type.lower() in ["pdf", "json"]:
-        return_error("when returning full page (url included) the return type should be an image format.")
-    driver = init_driver(offline_mode, include_url)
+
+    driver = init_driver(offline_mode)
     page_load_time = max_page_load_time if max_page_load_time > 0 else DEFAULT_PAGE_LOAD_TIME
     try:
         demisto.debug(f'Navigating to path: {path}. Mode: {"OFFLINE" if offline_mode else "ONLINE"}. page load: {page_load_time}')
@@ -226,10 +193,10 @@ def rasterize(path: str, width: int, height: int, r_type: str = 'png', wait_time
         elif r_type.lower() == 'json':
             html = driver.page_source
             url = driver.current_url
-            output = {'image_b64': base64.b64encode(get_image(driver, width, height, include_url)).decode('utf8'),
+            output = {'image_b64': base64.b64encode(get_image(driver, width, height)).decode('utf8'),
                       'html': html, 'current_url': url}
         else:
-            output = get_image(driver, width, height, include_url)
+            output = get_image(driver, width, height)
 
         return output
 
@@ -249,19 +216,15 @@ def rasterize(path: str, width: int, height: int, r_type: str = 'png', wait_time
         quit_driver_and_reap_children(driver)
 
 
-def get_image(driver, width: int, height: int, include_url: bool):
+def get_image(driver, width: int, height: int):
     """
     Uses the Chrome driver to generate an image out of a currently loaded path
     :return: .png file of the loaded path
     """
     demisto.debug('Capturing screenshot')
-    if include_url:
-        driver.maximize_window()
-        os.system("import -window root /tmp/screenshot.png")
-        image = convert_file_to_bytes("/tmp/screenshot.png")
-    else:
-        driver.set_window_size(width, height)
-        image = driver.get_screenshot_as_png()
+
+    driver.set_window_size(width, height)
+    image = driver.get_screenshot_as_png()
 
     driver.quit()
     demisto.debug('Capturing screenshot - COMPLETED')
