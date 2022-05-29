@@ -1333,7 +1333,7 @@ def add_hash_to_blocklist(client: Client, args: dict) -> CommandResults:
 
     try:
         result = client.add_hash_to_blocklist_request(value=sha1, description=args.get('description'),
-                                                      os_type=args.get('os_type'), source=args.get('source'))                                                      
+                                                      os_type=args.get('os_type'), source=args.get('source'))
         status = {
             'hash': sha1,
             'status': "Added to blocklist"
