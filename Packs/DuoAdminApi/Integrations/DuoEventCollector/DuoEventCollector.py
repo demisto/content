@@ -1,7 +1,7 @@
 from collections import deque
 from enum import Enum
 import duo_client
-from pydantic import BaseModel
+from pydantic import BaseModel  # pylint: disable=exists in the image
 from CommonServerPython import *
 
 
