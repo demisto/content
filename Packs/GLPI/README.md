@@ -4,7 +4,7 @@ This GLPI content pack contains the **GLPI (Partner Contribution)** integration,
 ##### What does this pack do?
 This Content Pack allows you to manage your GLPI tickets and users from Cortex Xsoar :
 - Create, update, delete tickets, for both Incidents and Requests.
-- Mirror Incidents and requests
+- Mirror incidents and requests.
 - Create, update, delete GLPI users.
 - Search GLPI items.
 - Upload a file to GLPI.
