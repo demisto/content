@@ -376,7 +376,7 @@ def get_urls_and_emails_from_pdf_annots(file_path):
     all_emails: Set[str] = set()
 
     pdf_file = open(file_path, 'rb')
-    pdf = PyPDF2.PdfFileReader(pdf_file)
+    pdf = PyPDF2.PdfFileReader(pdf_file, strict=False)
     pages = pdf.getNumPages()
 
     # Goes over the PDF, page by page, and extracts urls and emails:
@@ -390,7 +390,12 @@ def get_urls_and_emails_from_pdf_annots(file_path):
                 annots = [annots]
 
             for annot in annots:
-                annot_objects = annot.getObject()
+                try:
+                    annot_objects = annot.getObject()
+                # There is a bug in PyPDF2, failed when converting an empty byte to an int in the getObject function
+                except ValueError as e:
+                    demisto.error(f'annot.getObject() encountered an error: {e}.\n Skipping without failure.')
+                    continue
                 if not isinstance(annot_objects, PyPDF2.generic.ArrayObject):
                     annot_objects = [annot_objects]
 
@@ -406,7 +411,6 @@ def get_urls_and_emails_from_pdf_annots(file_path):
         demisto.debug('No Emails were extracted from the PDF.')
 
     return all_urls, all_emails
-
 
 def extract_urls_and_emails_from_pdf_file(file_path, output_folder):
     """
