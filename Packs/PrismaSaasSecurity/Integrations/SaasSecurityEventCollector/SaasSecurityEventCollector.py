@@ -13,7 +13,7 @@ urllib3.disable_warnings()  # pylint: disable=no-member
 ''' CONSTANTS '''
 
 MAX_EVENTS_PER_REQUEST = 100
-EVENTS_OBJECT_KEYS = {'events': 'id'}
+
 
 ''' CLIENT CLASS '''
 
