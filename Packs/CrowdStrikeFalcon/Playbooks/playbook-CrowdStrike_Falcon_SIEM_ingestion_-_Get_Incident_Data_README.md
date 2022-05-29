@@ -1,4 +1,6 @@
-The playbook handles when the incident ingestion was done from the SIEM. The user provides which incident fields contain the incident or detection ID, also which fields differentiates if this is an incident or detection. In addition it also allows to change the severity according to a user defined scale to override the default assigned severity as well as grab the CrowdStrike detections based on the CrowdStrike incident.
+This playbook handles incident ingestion from a SIEM.  
+The user provides the field for the incident ID or detection ID as well as the field indicating whether the ingested item is an incident or detection.   
+This playbook enables overriding the SIEM severity and changing it to the severity scale in Cortex XSOAR (based on the severity values in CrowdStrike Falcon). It also gets CrowdStrike Falcon detection data based on CrowdStrike Falcon incidents.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -7,7 +9,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any sub-playbooks.
 
 ### Integrations
-* CrowdStrikeFalcon
+CrowdStrikeFalcon
 
 ### Scripts
 This playbook does not use any scripts.
@@ -24,11 +26,11 @@ This playbook does not use any scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| SIEMincidentFieldForType | The incident field that contains if this is a detection or incident. Default value is incident.externalcategoryname | ${incident.externalcategoryname} | Optional |
-| SIEMincidentFieldForID | The name of the incident field that contains the detection or incident ID. Default value is incident.externalid | ${incident.externalsystemid} | Optional |
-| ScaleToSetSeverity | The severity scale as represented in the EDR<br/>For example in CrowdStrike uses values from 0 to 100<br/>So the scale can be divided in ranges such as<br/>0-20,21-40,41-60,61-80,81-100 | 0-20,21-40,41-60,61-80,81-100 | Optional |
-| SeverityValuesMapping | This will provide the mapping to XSOAR severity for the ScaleToSetSeverity inputs<br/>For example<br/>0.5, 1, 2, 3,4<br/>Possible values to use are 0,0.5, 1, 2, 3,4<br/>Which represent Unknown, Informational, Low, Medium, High, Critical | 0.5, 1, 2, 3,4 | Optional |
-| OverrideSIEMSeverity | Indicates if to set the severity according to the  ScaleToSetSeverity and SeverityValuesMapping settings \(True\) or keep the original severity as mapped by the SIEM \(False\) <br/>True/False | False | Optional |
+| SIEMincidentFieldForType | The incident field that determines if this is a detection or an incident. | ${incident.externalcategoryname} | Optional |
+| SIEMincidentFieldForID | The incident field name. that contains the detection ID or incident ID name. | ${incident.externalsystemid} | Optional |
+| ScaleToSetSeverity | The severity scale in the EDR<br/>For example, CrowdStrike uses values from 0 to 100.<br/>So the scale can be divided in ranges such as<br/>0-20, 21-40, 41-60, 61-80, 81-100 | 0-20,21-40,41-60,61-80,81-100 | Optional |
+| SeverityValuesMapping |  The mapping from the EDR severity scale to the Cortex XSOAR severity scale.<br/>For example:<br/>0.5, 1, 2, 3, 4<br/>Possible values to use are 0, 0.5, 1, 2, 3, 4<br/>Which represent Unknown, Informational, Low, Medium, High, Critical | 0.5, 1, 2, 3,4 | Optional |
+| OverrideSIEMSeverity | Whether to set the severity according to the EDR severity scale and its mapping to Cortex XSOAR (True) or keep the original severity scale as mapped by the SIEM (False). | False | Optional |
 
 ## Playbook Outputs
 ---
@@ -48,7 +50,7 @@ This playbook does not use any scripts.
 | CrowdStrike.Detection.Behavior.ProcessID | The process ID of the behavior. | string |
 | CrowdStrike.Detection.Behavior.ID | The ID of the behavior. | string |
 | CrowdStrike.Detection.System | The system name of the detection. | string |
-| CrowdStrike.Detection.CustomerID | The ID of the customer \(CID\). | string |
+| CrowdStrike.Detection.CustomerID | The ID of the customer (CID). | string |
 | CrowdStrike.Detection.MachineDomain | The name of the domain of the detection machine. | string |
 | CrowdStrike.Detection.ID | The detection ID. | string |
 | CrowdStrike.Detection.ProcessStartTime | The start time of the process that generated the detection. | string |
