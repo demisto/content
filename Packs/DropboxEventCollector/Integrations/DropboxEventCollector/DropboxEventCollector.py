@@ -22,7 +22,7 @@ class DropboxEventsRequestConfig(IntegrationHTTPRequest):
     method = Method.POST
     headers = {'Content-Type': 'application/json'}
     data: str
-    verify = False
+    verify = not demisto.params().get('insecure')
 
 
 class DropboxEventsClient(IntegrationEventsClient):
