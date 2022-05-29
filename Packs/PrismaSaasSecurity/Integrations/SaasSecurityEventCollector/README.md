@@ -1,8 +1,3 @@
-Note: This is a beta Integration, which lets you implement and test pre-release software. 
-Since the integration is beta, it might contain bugs. Updates to the integration during the beta phase might include 
-non-backward compatible features. We appreciate your feedback on the quality and usability of the integration to help 
-us identify issues, fix them, and continually improve.
-
 SaaS Security is an integrated CASB (Cloud Access Security Broker) solution that helps Security teams like yours meet 
 the challenges of protecting the growing availability of sanctioned and unsanctioned SaaS applications and maintaining 
 compliance consistently in the cloud while stopping threats to sensitive information, users, and resources. 
@@ -22,7 +17,7 @@ SaaS Security options include SaaS Security API (formerly Prisma SaaS) and the S
     | Client Secret | The SaaS Security Secret ID. | True |
     | Trust any certificate (not secure) | By default, SSL verification is enabled. If selected, the connection isn’t secure and all requests return an SSL error because the certificate cannot be verified. | False |
     | Use system proxy settings | Uses the system proxy server to communicate with the  integration. If not selected, the integration will not use the system proxy server. | False |
-    | The maximum number of events per fetch. | How many events to fetch every time fetch is being executed. Default is 100 | True |
+    | The maximum number of events per fetch. | How many events to fetch every time fetch is being executed. Default is 100. Must be divisible by 100 due to Saas-Security api limitations | True |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
@@ -48,6 +43,8 @@ Note: For more information see the [SaaS Security Administrator's Guide](https:/
 * The **reset last fetch** has no effect.
 
 ## Fetch Events
+Requires the scope of *Log access* in order to fetch log events, [Documentation](https://docs.paloaltonetworks.com/saas-security/saas-security-admin/saas-security-api/syslog-and-api-integration/api-client-integration/add-your-api-client-app#idd6102853-02a3-48b2-b5ca-7aeca3822a4f).
+
 Log types could be one of policy_violation, activity_monitoring, remediation, incident, and admin_audit.
 Every type returns a different api response that is unique.
 

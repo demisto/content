@@ -103,9 +103,23 @@ class Client(BaseClient):
         return token_response.get('access_token'), token_response.get('expires_in')
 
     def get_events_request(self):
+        """
+        Get up to 100 event logs.
+        """
         return self.http_request(
             'GET',
             url_suffix='/api/v1/log_events_bulk',
+            resp_type='response',
+            ok_codes=[200, 204],
+        )
+
+    def get_event_request(self):
+        """
+        Get only a single event log - used only for the test-module to verify log-access api scope.
+        """
+        return self.http_request(
+            'GET',
+            url_suffix='/api/v1/log_event',
             resp_type='response',
             ok_codes=[200, 204],
         )
@@ -127,23 +141,24 @@ def is_token_expired(token_initiate_time: float, token_expiration_seconds: float
 
 def validate_limit(limit: int):
     """
-    Validate that the limit/max fetch is a number divisible by 100
+    Validate that the limit/max fetch is a number divisible by the MAX_EVENTS_PER_REQUEST (100).
     """
-    if limit % 100 != 0:
-        raise DemistoException("fetch limit parameter should be divisible by 100")
+    if limit % MAX_EVENTS_PER_REQUEST != 0:
+        raise DemistoException(f'fetch limit parameter should be divisible by {MAX_EVENTS_PER_REQUEST}')
 
 
 ''' COMMAND FUNCTIONS '''
 
 
 def test_module(client: Client):
+    """
+    Testing we have a valid connection to Saas-Security.
 
-    # if the client_id/client_secret are not valid an exception will be raised, if no exception its a valid response.
-    client.get_token_request()
-    return 'ok'
-    # response = client.get_events_request()
-    # if response.status_code in (200, 204):
-    #     return 'ok'
+    The reason not testing fetching events is that if we fetch it from the api we will lose those requests.
+    """
+    response = client.get_event_request()
+    if response.status_code in (200, 204):
+        return 'ok'
 
 
 def saas_security_get_events_command(client: Client, args: Dict) -> Union[str, CommandResults]:
@@ -182,10 +197,7 @@ def fetch_events(client: Client, max_fetch: int) -> List[Dict]:
     response = client.get_events_request()
 
     while len(events) < max_fetch and response.status_code == 200:
-        current_fetched_events = response.json().get('events') or []
-        events.extend(current_fetched_events)
-        if len(current_fetched_events) < MAX_EVENTS_PER_REQUEST:
-            break
+        events.extend(response.json().get('events') or [])
         response = client.get_events_request()
 
     return events
@@ -218,7 +230,8 @@ def main() -> None:
             return_results(test_module(client=client))
         elif command == 'fetch-events':
             send_events_to_xsiam(
-                events=fetch_events(client=client, max_fetch=max_fetch), vendor='Palo Alto', product='saas-security'
+                events=fetch_events(client=client, max_fetch=max_fetch),
+                vendor='Palo Alto Networks', product='saas-security'
             )
         elif command == 'saas-security-get-events':
             return_results(saas_security_get_events_command(client=client, args=args))

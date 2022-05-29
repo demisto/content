@@ -43,7 +43,8 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
-def test_module(mocker, mock_client):
+@pytest.mark.parametrize('mocked_response', [MockedResponse(status_code=200), MockedResponse(status_code=204)])
+def test_module(mocker, mock_client, mocked_response):
     """
     Given
        - a response which indicates an event was found.
@@ -56,7 +57,7 @@ def test_module(mocker, mock_client):
         make sure the test module returns the 'ok' response.
     """
     from SaasSecurityEventCollector import test_module
-    mocker.patch.object(Client, 'get_token_request')
+    mocker.patch.object(Client, 'http_request', return_value=mocked_response)
     assert test_module(client=mock_client) == 'ok'
 
 
@@ -84,6 +85,7 @@ class TestFetchEvents:
                     100,
                     [
                         MockedResponse(status_code=200, text=create_events(start_id=1, end_id=8)),
+                        MockedResponse(status_code=204),
                     ],
                     MockedResponse(status_code=200, text=create_events(start_id=1, end_id=8))
                 ),
@@ -91,6 +93,7 @@ class TestFetchEvents:
                     100,
                     [
                         MockedResponse(status_code=200, text=create_events(start_id=1, end_id=54)),
+                        MockedResponse(status_code=204)
                     ],
                     MockedResponse(status_code=200, text=create_events(start_id=1, end_id=54))
                 ),
@@ -140,7 +143,8 @@ class TestFetchEvents:
                     [
                         MockedResponse(status_code=200, text=create_events(start_id=1, end_id=100)),
                         MockedResponse(status_code=200, text=create_events(start_id=101, end_id=200)),
-                        MockedResponse(status_code=200, text=create_events(start_id=201, end_id=280))
+                        MockedResponse(status_code=200, text=create_events(start_id=201, end_id=280)),
+                        MockedResponse(status_code=204)
                     ],
                     MockedResponse(status_code=200, text=create_events(start_id=1, end_id=280))
                 ),

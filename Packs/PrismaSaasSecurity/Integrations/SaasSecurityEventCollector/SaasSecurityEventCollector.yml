@@ -26,13 +26,13 @@ configuration:
   required: false
   type: 8
 - display: The maximum number of events per fetch.
-  additionalinfo: How many events to fetch every time fetch is being executed. Default is 100.
+  additionalinfo: How many events to fetch every time fetch is being executed. Default is 100. Must be divisible by 100 due to Saas-Security api limitations.
   defaultvalue: 100
   name: max_fetch
   required: true
   type: 0
 description: Palo Alto Saas Security Event Collector integration for XSIAM.
-display: Saas Security Event Collector (Beta)
+display: Saas Security Event Collector
 name: SaasSecurityEventCollector
 script:
   commands:
@@ -46,7 +46,7 @@ script:
         defaultValue: 100
       - auto: PREDEFINED
         defaultValue: 'False'
-        description: Set this argument to True in order to create events, otherwise the command will only display them. If setting to 'False' there is a risk of losing events.
+        description: Set this argument to True in order to create events, otherwise the command will only display them. If setting to 'False' The returned events will be lost.
         isArray: false
         name: should_push_events
         predefined:
@@ -154,4 +154,3 @@ tests:
 marketplaces:
 - marketplacev2
 fromversion: 6.2.0
-beta: true

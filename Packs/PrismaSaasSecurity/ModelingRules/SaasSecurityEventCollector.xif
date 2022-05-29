@@ -1,4 +1,4 @@
-[MODEL: dataset=<data_set_name>, model=Audit, content_id=***, version=***]
+[MODEL: dataset=Palo_Alto_Networks_Saas_Security_raw, model=Audit]
 | alter XDM.Audit.original_event_type = log_type,
 XDM.Audit.event_timestamp = timestamp,
 XDM.Audit.TriggeredBy.identity.name = admin_role,
