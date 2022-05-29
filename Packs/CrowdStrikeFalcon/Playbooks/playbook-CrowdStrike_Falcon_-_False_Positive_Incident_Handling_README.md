@@ -38,4 +38,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![CrowdStrikeF Falcon - False Positive Incident Handling](../doc_files/CrowdStikre_Falcon_-_False_Positive_Incident_Handling.png)
+![CrowdStrike Falcon - False Positive Incident Handling](../doc_files/CrowdStikre_Falcon_-_False_Positive_Incident_Handling.png)

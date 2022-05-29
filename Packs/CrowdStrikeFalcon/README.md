@@ -7,9 +7,19 @@ This SaaS platform provides a holistic solution for protecting enterprise assets
 - Provides real-time response features
 
 ## Playbooks
-This content pack includes the following playbooks. These playbooks auto isolate/unisolate endpoints by the device ID that was provided in the playbook. The playbooks can be used as part of a Malware investigation.
+This content pack includes the following playbooks. These playbooks provide a wide variety of action regarding CrowdStrike Falcon capabilities such as isolating, unisolating, Malware investigation and many more.
 - Crowdstrike Falcon - Isolate Endpoint
 - Crowdstrike Falcon - Unisolate Endpoint
+- CrowdStrike Falcon Malware - Verify Containment Actions  
+- CrowdStrike Falcon - SIEM ingestion Get Incident Data  
+- CrowdStrike Falcon - Search Endpoints By Hash  
+- CrowdStrike Falcon - False Positive Incident Handling  
+- CrowdStrike Falcon - True Positive Incident Handling
+- CrowdStrike Falcon - Retrieve File
+- CrowdStrike Falcon - Get Endpoint Forensics Data
+- CrowdStrike Falcon Malware - Incident Enrichment
+- CrowdStrike Falcon Malware - Investigation and Response
+- CrowdStrike Falcon - Get Detections by Incident
 
 
 ## Setup Instructions
