@@ -2,7 +2,13 @@ contentitemexportablefields:
   contentitemfields:
     propagationLabels:
     - all
-description: "This playbook handles all the endpoint investigation actions available with Cortex XSIAM, including the following tasks:\n* Pre-defined MITRE Tactics\n* Host fields (Host ID)\n* Attacker fields (Attacker IP, External host)\n* MITRE techniques\n* File hash (currently, the playbook supports only SHA256)  \n\nNote: The playbook inputs enable manipulating the execution flow; read the input descriptions for details."
+description: "This playbook handles all the endpoint investigation actions available with Cortex XSIAM, including the following tasks:\n
+* Pre-defined MITRE Tactics\n
+* Host fields (Host ID)\n
+* Attacker fields (Attacker IP, External host)\n
+* MITRE techniques\n
+* File hash (currently, the playbook supports only SHA256)  \n\n
+Note: The playbook inputs enable manipulating the execution flow; read the input descriptions for details."
 id: Cortex XDR - Endpoint Investigation
 inputs:
 - description: Set to True to hunt for identified alerts with MITRE Reconnaissance techniques.
@@ -71,7 +77,7 @@ inputs:
   required: false
   value:
     simple: 'True'
-- description: Set to True to hunt the attacker IP address or external hostname.
+- description: Set to True to hunt the attacker IP address or external host name.
   key: HuntAttacker
   playbookInputQuery:
   required: false
@@ -130,16 +136,14 @@ inputs:
     * 1 day ago
     * 2 minutes ago
     * 4 hours ago
-    * 8 days ago
-    etc.
+    * 8 days ago    
   key: timeRange
   playbookInputQuery:
   required: false
   value:
     simple: 2 hours ago
 - description: |-
-    Define if you prefer to run all the sub-tasks for Mitre Tactics.
-    Possible values: True / False
+    Whether to run all the sub-tasks for Mitre Tactics.
   key: RunAll
   playbookInputQuery:
   required: false
@@ -913,7 +917,8 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: "Returns a list of alerts and their meta-data, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \nMultiple filter arguments will be concatenated using AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
+      description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \n
+      Multiple filter arguments will be concatenated using AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
       id: c2580602-dd3f-44d7-8b4f-07c5dd498869
       iscommand: true
       name: Hunt Persistence techniques
@@ -1406,7 +1411,8 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: "Returns a list of alerts and their meta-data, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \nMultiple filter arguments will be concatenated using AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
+      description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \n
+      Multiple filter arguments will be concatenated using AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
       id: 4026ad92-0a13-4150-8bc8-d18c132bce46
       iscommand: true
       name: Hunt Reconnaissance techniques
@@ -1464,7 +1470,8 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: "Returns a list of alerts and their meta-data, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \nMultiple filter arguments will be concatenated using AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
+      description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \n
+      Multiple filter arguments will be concatenated using AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
       id: 9d9f94f4-c4a8-4843-8a29-c2a46a88d226
       iscommand: true
       name: Hunt Initial Access techniques
@@ -1555,7 +1562,8 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: "Returns a list of alerts and their meta-data, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \nMultiple filter arguments will be concatenated using AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
+      description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \n
+      Multiple filter arguments will be concatenated using AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
       id: 55256a99-e191-4d49-838e-e0e083e6c2fa
       iscommand: true
       name: Hunt Execution techniques
@@ -1626,7 +1634,8 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: "Returns a list of alerts and their meta-data, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \nMultiple filter arguments will be concatenated using AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
+      description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \n
+      Multiple filter arguments will be concatenated using AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
       id: d0a87664-d4bb-40d6-890b-b8e52adb2302
       iscommand: true
       name: Hunt Privilege Escalation techniques
@@ -1727,7 +1736,8 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: "Returns a list of alerts and their meta-data, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \nMultiple filter arguments will be concatenated using AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
+      description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \n
+      Multiple filter arguments will be concatenated using AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
       id: e35bdab9-f37c-44f9-8b3b-fae9bca7db40
       iscommand: true
       name: Hunt Defense Evasion techniques
@@ -1813,7 +1823,8 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: "Returns a list of alerts and their meta-data, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \nMultiple filter arguments will be concatenated using AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
+      description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \n
+      Multiple filter arguments will be concatenated using AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
       id: 11faa761-a508-434b-85bb-6cdfaa0b443d
       iscommand: true
       name: Hunt Discovery techniques
@@ -1904,7 +1915,8 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: "Returns a list of alerts and their meta-data, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \nMultiple filter arguments will be concatenated using AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
+      description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \n
+      Multiple filter arguments will be concatenated using AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
       id: 597d0a82-ea6f-4c28-81e8-5f7afc203c12
       iscommand: true
       name: Hunt Lateral Movement techniques
@@ -1978,7 +1990,8 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: "Returns a list of alerts and their meta-data, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \nMultiple filter arguments will be concatenated using AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
+      description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \n
+      Multiple filter arguments will be concatenated using AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
       id: f5d97a15-581c-4bf7-8d69-781cf2343040
       iscommand: true
       name: Hunt Collection techniques
@@ -2054,7 +2067,8 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: "Returns a list of alerts and their meta-data, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \nMultiple filter arguments will be concatenated using AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
+      description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \n
+      Multiple filter arguments will be concatenated using AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
       id: 7a459be8-7e52-4af6-8b19-3ba613ca6730
       iscommand: true
       name: Hunt Command and Control techniques
@@ -2136,7 +2150,8 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: "Returns a list of alerts and their meta-data, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \nMultiple filter arguments will be concatenated using AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
+      description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \n
+      Multiple filter arguments will be concatenated using AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
       id: 58498f0a-9f60-415f-8551-2aa65ac1c151
       iscommand: true
       name: Hunt Impact techniques
@@ -2244,7 +2259,8 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: "Returns a list of alerts and their meta-data, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \nMultiple filter arguments will be concatenated using AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
+      description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \n
+      Multiple filter arguments will be concatenated using AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
       id: a3aec506-0ee9-4f06-8433-4ccf7e5fd60a
       iscommand: true
       name: Hunt by attacker source IP or external host
@@ -2318,7 +2334,8 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: "Returns a list of alerts and their meta-data, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \nMultiple filter arguments will be concatenated using AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
+      description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \n
+      Multiple filter arguments will be concatenated using AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
       id: 8636fe8e-0d6a-4d0f-8fa1-b1e4dfae5436
       iscommand: true
       name: Hunt by technique ID
@@ -2398,7 +2415,8 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: "Returns a list of alerts and their meta-data, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \nMultiple filter arguments will be concatenated using AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
+      description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \n
+      Multiple filter arguments will be concatenated using AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
       id: 2d0fe604-acf7-4a1f-805b-ba7d8bcb0a98
       iscommand: true
       name: Hunt by file hash
@@ -2529,7 +2547,8 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: "Returns a list of alerts and their meta-data, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \nMultiple filter arguments will be concatenated using AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
+      description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \n
+      Multiple filter arguments will be concatenated using AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
       id: b2143569-691b-4156-8452-0fd43badb181
       iscommand: true
       name: Hunt by host ID
