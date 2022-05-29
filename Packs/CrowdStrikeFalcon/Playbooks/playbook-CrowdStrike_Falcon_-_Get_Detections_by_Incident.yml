@@ -2,7 +2,7 @@ id: CrowdStrike Falcon - Get Detections by Incident
 version: -1
 fromversion: 6.5.0
 name: CrowdStrike Falcon - Get Detections by Incident
-description: This playbook enabled to get the CrowdStrike detections details based on the CrowdStrike incident ID.
+description: This playbook enables getting CrowdStrike Falcon detection details based on the CrowdStrike incident ID.
 starttaskid: '0'
 tasks:
   '0':
@@ -76,7 +76,7 @@ tasks:
       id: 5a7f4edd-f080-4c19-80fd-dcb96cbe286f
       version: -1
       name: Get full detection details
-      description: Search for details of specific detections, either using a filter query, or by providing the IDs of the detections.
+      description: Searches for details of specific detections, either using a filter query or by providing the IDs of the detections.
       script: '|||cs-falcon-search-detection'
       type: regular
       iscommand: true
