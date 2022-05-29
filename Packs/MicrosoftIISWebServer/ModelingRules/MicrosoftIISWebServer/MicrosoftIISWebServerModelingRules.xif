@@ -1,5 +1,4 @@
-[MODEL: dataset="II", model="Network"] 
-dataset = iis_iis_raw 
+[MODEL: dataset="microsoft_iis_raw", model="Network"] 
 | filter _raw_log contains "100" or  _raw_log contains "101" or  _raw_log contains "200" or  _raw_log contains "201" or  _raw_log contains "203" or _raw_log contains "204" or _raw_log contains "205" or _raw_log contains "206" or _raw_log contains "301" or _raw_log contains "302" or _raw_log contains "304" or _raw_log contains "307" or _raw_log contains "404" or _raw_log contains "500"
 | alter timestamp = arrayindex(regextract(_raw_log , "(\d+\-\d+\-\d+\s\d+\:\d+\:\d+)"), 0)
 | alter c_sitename = arrayindex(regextract(_raw_log , "\d+\:\d+\:\d+\s([^\s]+)") ,0)
@@ -47,8 +46,7 @@ dataset = iis_iis_raw
 | alter  XDM.Network.Observer.unique_identifier = Sc_win32_status
 
 
-[MODEL: dataset="IIS_log", model="Audit"]
-dataset = iis_iis_raw  
+[MODEL: dataset="microsoft_iis_raw", model="Audit"]
 | alter event_type = arrayindex(regextract(_raw_log, "(\S+\s\d+\s\S+\s\d+)"),0)
 | filter event_type not contains "-"
 | alter Date = arrayindex(regextract(_raw_log ,"(\d+\-\d+\-\d+) "), 0)
