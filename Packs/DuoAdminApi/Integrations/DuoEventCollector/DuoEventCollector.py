@@ -85,7 +85,7 @@ class GetEvents:
         self.rotate_request_order()
         return events
 
-    def _iter_events(self, last_object_ids: list) -> None:  # pragma: no cover  type: ignore
+    def _iter_events(self, last_object_ids: list) -> None:  # pragma: no cover  # type: ignore
         """
         Function that responsible for the iteration over the events returned from the Duo api
         """

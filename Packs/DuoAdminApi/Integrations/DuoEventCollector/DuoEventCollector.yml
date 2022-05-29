@@ -20,8 +20,9 @@ configuration:
   name: integration_key
   type: 0
   required: true
-- display: Secrete key
+- displaypassword:  Secret key
   name: secret_key
+  hiddenusername: true
   type: 9
   required: true
 - display: XSIAM request limit
@@ -37,17 +38,13 @@ configuration:
 - display: The vendor corresponding to the integration that originated the events
   name: vendor
   type: 0
-  defaultvalue: okta
+  defaultvalue: duo
   required: false
 - display: The product corresponding to the integration that originated the events
   name: product
   type: 0
-  defaultvalue: okta
+  defaultvalue: duo
   required: false
-- display: Push events to XSIAM on get events
-  name: push_events
-  required: false
-  type: 8
 - display: Use system proxy settings
   name: proxy
   type: 8
@@ -56,12 +53,26 @@ script:
   script: ""
   type: python
   commands:
-  - description: Manual command to fetch events and display them.
-    name: duo-get-events
-  dockerimage: devdemisto/duoadmin3:1.0.0.29639
+  - arguments:
+    - auto: PREDEFINED
+      defaultValue: 'False'
+      description: Set this argument to True in orfer to create events, otherwise the command will only display them.
+      isArray: false
+      name: should_push_events
+      predefined:
+        - 'True'
+        - 'False'
+      required: true
+    deprecated: false
+    description: Manual command to fetch events and display them.
+    execution: false
+    name: okta-get-events
+  dockerimage: demisto/duoadmin3:1.0.0.29891
   runonce: false
   isfetchevents: true
   subtype: python3
-fromversion: 6.5.0
+marketplaces:
+- marketplacev2
+fromversion: 6.8.0
 tests:
-  - No Test
+- No tests

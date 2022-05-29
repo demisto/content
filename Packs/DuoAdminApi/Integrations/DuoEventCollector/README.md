@@ -16,7 +16,6 @@ Log collecting for AUDIT event using Duo API https://duo.com/docs/adminapi#logs
 | Request retries                                                         | We can get `to many request http error` so we will retry the request according to this parameter | False        |
 | The vendor corresponding to the integration that originated the events  | product name of the product to name the dataset after                                     | False        |
 | The product corresponding to the integration that originated the events | vendor name of the product to name the dataset after                                      | False        |
-| Push events to XSIAM on get events | Whether or not to push event on octa_fet_events command | False        |
 
 
 4. Click **Test** to validate the URLs, tokens, and connection.

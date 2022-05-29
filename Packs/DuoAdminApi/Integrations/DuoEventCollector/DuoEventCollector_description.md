@@ -23,7 +23,6 @@ Duo Events collector XSIAM
 * **Request retries** - The number of retries to do to the api(we need it because too frequent request make the api retun a"too many requests 429" error).
 * **The vendor corresponding to the integration that originated the events** - product name of the product to name the dataset after.
 * **The product corresponding to the integration that originated the events** - vendor name of the product to name the dataset after.
-* **Push events to XSIAM on get events** - Whether or not to push event on octa_fet_events command.
 
 
 ## Step by step configuration
@@ -35,3 +34,5 @@ Duo Events collector XSIAM
 **First fetch from api time** - 1 Day  
 **XSIAM request limit** - 01 Minutes 
 **Request retries** - 5 
+**The vendor corresponding to the integration that originated the events** - duo 
+**The product corresponding to the integration that originated the events** - duo 
