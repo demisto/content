@@ -78,6 +78,11 @@ def dummy_pack_metadata():
     return pack_metadata
 
 
+class GitMock:
+    def log(self, _):
+        return "Commit message (#12345) 12346, (#12347)"
+
+
 class TestMetadataParsing:
     """ Class for validating parsing of pack_metadata.json (metadata.json will be created from parsed result).
     """
@@ -590,10 +595,6 @@ class TestChangelogCreation:
         mocker.patch("Tests.Marketplace.marketplace_services.logging")
         mocker.patch("os.path.exists", return_value=True)
 
-        class GitMock:
-            def log(self, _):
-                return "Commit message (#12345)"
-
         mocker.patch("git.Git", return_value=GitMock())
         dir_list = ['1_0_1.md', '2_0_2.md', '2_0_0.md']
         mocker.patch("os.listdir", return_value=dir_list)
@@ -651,10 +652,6 @@ class TestChangelogCreation:
        """
         dummy_pack.current_version = '2.0.0'
 
-        class GitMock:
-            def log(self, _):
-                return "Commit message (#12345)"
-
         mocker.patch("git.Git", return_value=GitMock())
         mocker.patch("os.path.exists", return_value=True)
         mocker.patch("Tests.Marketplace.marketplace_services")
@@ -698,6 +695,26 @@ class TestChangelogCreation:
         mocker.patch("os.listdir", return_value=dir_list)
         assert is_the_only_rn_in_block(release_notes_dir, version, AGGREGATED_CHANGELOG) == boolean_value
 
+    def test_get_version_to_pr_numbers(self, mocker):
+        dir_list = ['1_0_1.md', '1_0_2.md', '1_0_3.md']
+        mocker.patch("os.listdir", return_value=dir_list)
+        mocker.patch("os.path.exists", return_value=True)
+
+        class GitMock:
+            def log(self, file_name):
+                match file_name.rpartition('/')[-1]:
+                    case '1_0_1.md':
+                        return '(#11)'
+                    case '1_0_2.md':
+                        return '(#22)'
+                    case '1_0_3.md':
+                        return '(#33)'
+
+        mocker.patch("git.Git", return_value=GitMock())
+
+        versions_dict = Pack(pack_name='SomeName', pack_path='SomePath').get_version_to_pr_numbers('')
+        assert versions_dict == {'1.0.1': ['11'], '1.0.2': ['22'], '1.0.3': ['33']}
+
     def test_get_pull_request_numbers_from_file(self, mocker):
         """
 
@@ -711,10 +728,6 @@ class TestChangelogCreation:
             Only the numbers matching the regex will be found
 
         """
-
-        class GitMock:
-            def log(self, _):
-                return "Commit message (#12345), 12346 (#12347)"
 
         mocker.patch("git.Git", return_value=GitMock())
         assert get_pull_request_numbers_from_file("someFile") == [12345, 12347]

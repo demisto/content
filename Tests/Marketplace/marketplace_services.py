@@ -2940,11 +2940,11 @@ class Pack(object):
             return {}
         versions_dict = {}
         for file in filter_dir_files_by_extension(release_notes_dir, '.md'):
-            rn_version =  underscore_file_name_to_dotted_version(file)
+            rn_version = underscore_file_name_to_dotted_version(file)
             pr_numbers = get_pull_request_numbers_from_file(file_path(file))
             versions_dict[rn_version] = pr_numbers
 
-            return versions_dict
+        return versions_dict
 
 
 # HELPER FUNCTIONS
@@ -2960,7 +2960,7 @@ def get_pull_request_numbers_from_file(file_path) -> List[int]:
         A list of relevant pull request numbers for the given file
     """
     log_info: str = git.Git(CONTENT_ROOT_PATH).log(file_path)
-    return [int(i) for i in re.findall(PULL_REQUEST_PATTERN, log_info)]
+    return re.findall(PULL_REQUEST_PATTERN, log_info)
 
 
 def get_upload_data(packs_results_file_path: str, stage: str) -> Tuple[dict, dict, dict, dict]:
