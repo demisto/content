@@ -113,8 +113,7 @@ def http_request(method, url_suffix, params=None, headers=HEADERS, threshold=THR
 
         return REPORT_SUCCESS if url_suffix == REPORT_CMD else analysis.json()
     except Exception as e:
-        LOG(e)
-        return_error(str(e))
+        return_error(str(e), e)
 
 
 def analysis_to_entry(info, reliability, threshold=THRESHOLD, verbose=VERBOSE):
@@ -277,8 +276,7 @@ def test_module(reliability):
     try:
         check_ip_command(ip=TEST_IP, verbose=False, reliability=reliability)
     except Exception as e:
-        LOG(e)
-        return_error(str(e))
+        return_error(str(e), e)
     demisto.results('ok')
 
 
@@ -319,5 +317,4 @@ try:
         demisto.results(get_categories_command(**demisto.args()))  # type:ignore
 
 except Exception as e:
-    LOG.print_log()
-    return_error(str(e))
+    return_error(str(e), e)
