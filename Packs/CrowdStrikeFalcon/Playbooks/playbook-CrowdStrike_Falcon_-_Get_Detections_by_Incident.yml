@@ -1,7 +1,7 @@
-id: CrowdStrike Falcon - Incident Enrichment
+id: CrowdStrike Falcon - Get Detections by Incident
 version: -1
 fromversion: 6.5.0
-name: CrowdStrike Falcon - Incident Enrichment
+name: CrowdStrike Falcon - Get Detections by Incident
 description: This playbook enabled to get the CrowdStrike detections details based on the CrowdStrike incident ID.
 starttaskid: '0'
 tasks:
