@@ -68,18 +68,6 @@ def detect_ip_type(indicator):
     return indicator_type
 
 
-def supports_polling():
-    """
-    Check if the integration supports polling.
-    Returns: Boolean
-    """
-    try:
-        ScheduledCommand.raise_error_if_not_supported()
-        return True
-    except DemistoException:
-        return False
-
-
 def schedule_polling(items_to_schedule):
     """
     Schedules a polling command for the items in the list.
@@ -94,11 +82,12 @@ def schedule_polling(items_to_schedule):
             polling_args[arg] = args[arg]
     polling_args['url'] = items_to_schedule
     polling_args['polling'] = True
+    next_polling_interval = int(args.get('interval'))
     scheduled_items = ScheduledCommand(
         command=demisto.command(),
         args=polling_args,
         items_remaining=len(items_to_schedule),
-        next_run_in_seconds=60
+        next_run_in_seconds=next_polling_interval
     )
     demisto.info("Polling args are: {}".format(polling_args))
     return CommandResults(scheduled_command=scheduled_items)
@@ -129,8 +118,8 @@ def http_request(client, method, url_suffix, json=None, wait=0, retries=0):
                                                                 r.headers.get("X-Rate-Limit-Reset")))
     if r.status_code != 200:
         if r.status_code == 429:
-            if supports_polling():
-                return {}, MetricTypes.QUOTA_ERROR
+            if ScheduledCommand.supports_polling():
+                return {}, ErrorTypes.QUOTA_ERROR
             if retries <= 0:
                 # Error in API call to URLScan.io [429] - Too Many Requests
                 return_error('API rate limit reached [%d] - %s.\nUse the retries and wait arguments when submitting '
@@ -147,12 +136,12 @@ def http_request(client, method, url_suffix, json=None, wait=0, retries=0):
             requested_url = JSON.loads(json)['url']
             blacklisted_message = 'The URL {} is blacklisted, no results will be returned for it.'.format(requested_url)
             demisto.results(blacklisted_message)
-            return response_json, MetricTypes.GENERAL_ERROR
+            return response_json, ErrorTypes.GENERAL_ERROR
 
         response_json['is_error'] = True
         demisto.results('Error in API call to URLScan.io [%d] - %s: %s' % (r.status_code, r.reason, error_description))
-        return response_json, MetricTypes.GENERAL_ERROR
-    return r.json(), MetricTypes.SUCCESS
+        return response_json, ErrorTypes.GENERAL_ERROR
+    return r.json(), None
 
 
 # Allows nested keys to be accessible
@@ -543,8 +532,6 @@ def urlscan_submit_command(client):
     execution_metrics = ExecutionMetrics()
     command_results = []
     items_to_schedule = []
-    calling_context = demisto.callingContext.get('context', {})
-    sm = get_schedule_metadata(context=calling_context)
 
     urls = argToList(demisto.args().get('url'))
     for url in urls:
@@ -553,8 +540,8 @@ def urlscan_submit_command(client):
         if response.get('url_is_blacklisted') or response.get('is_error'):
             execution_metrics.general_error += 1
             continue
-        if metrics == MetricTypes.QUOTA_ERROR:
-            if not sm.get('is_polling'):
+        if metrics == ErrorTypes.QUOTA_ERROR:
+            if not is_scheduled_command_retry():
                 execution_metrics.quota_error += 1
                 continue
             items_to_schedule.append(url)
@@ -562,9 +549,8 @@ def urlscan_submit_command(client):
         uuid = response.get('uuid')
         get_urlscan_submit_results_polling(client, uuid)
         execution_metrics.success += 1
-    if supports_polling():
-        if len(items_to_schedule) > 0:
-            command_results.append(schedule_polling(items_to_schedule))
+    if ScheduledCommand.supports_polling() and len(items_to_schedule) > 0:
+        command_results.append(schedule_polling(items_to_schedule))
     if execution_metrics.metrics is not None and execution_metrics.is_supported():
         command_results.append(execution_metrics.metrics)
     return command_results

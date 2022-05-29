@@ -137,6 +137,13 @@ script:
       secret: false
     - default: false
       defaultValue: '60'
+      description: The amount of time (in seconds) to wait prior to retrying the command. Default is 60.
+      isArray: false
+      name: interval
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '60'
       description: The amount of time (in seconds) to wait for the scan ID result
         before timeout. Default is 60.
       isArray: false
@@ -283,6 +290,13 @@ script:
         before timeout. Default is 60.
       isArray: false
       name: timeout
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '60'
+      description: The amount of time (in seconds) to wait prior to retrying the command. Default is 60.
+      isArray: false
+      name: interval
       required: false
       secret: false
     - default: false

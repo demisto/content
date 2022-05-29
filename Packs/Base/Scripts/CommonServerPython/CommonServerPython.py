@@ -470,7 +470,7 @@ INDICATOR_TYPE_TO_CONTEXT_KEY = {
 }
 
 
-class MetricTypes(object):
+class ErrorTypes(object):
     """
     Enum: contains all the available error types
     :return: None
@@ -5998,6 +5998,14 @@ class ScheduledCommand:
         if not is_demisto_version_ge('6.2.0'):
             raise DemistoException(ScheduledCommand.VERSION_MISMATCH_ERROR)
 
+    @staticmethod
+    def supports_polling():
+        """
+        Check if the integration supports polling.
+        Returns: Boolean
+        """
+        return True if is_demisto_version_ge('6.2.0') else False
+
     def to_results(self):
         """
         Returns the result dictionary of the polling command
@@ -6662,9 +6670,9 @@ class CommandResults:
                  scheduled_command=None,
                  relationships=None,
                  entry_type=None,
-                 execution_metrics=None,
-                 content_format=None):
-        # type: (str, object, object, list, str, object, IndicatorsTimeline, Common.Indicator, bool, bool, ScheduledCommand, list, int, ExecutionMetrics, str) -> None  # noqa: E501
+                 content_format=None,
+                 execution_metrics=None):
+        # type: (str, object, object, list, str, object, IndicatorsTimeline, Common.Indicator, bool, bool, ScheduledCommand, list, int, str, ExecutionMetrics) -> None  # noqa: E501
         if raw_response is None:
             raw_response = outputs
         if outputs is not None and not isinstance(outputs, dict) and not outputs_prefix:
@@ -6718,7 +6726,7 @@ class CommandResults:
         indicators_timeline = []  # type: ignore[assignment]
         ignore_auto_extract = False  # type: bool
         mark_as_note = False  # type: bool
-        execution_metrics = None  # type: ignore[assignment]
+        exec_metrics = None  # type: ignore[assignment]
 
         indicators = [self.indicator] if self.indicator else self.indicators
 
@@ -6771,6 +6779,10 @@ class CommandResults:
             else:
                 content_format = EntryFormat.JSON
 
+        if self.execution_metrics:
+            exec_metrics = self.execution_metrics
+            self.entry_type  = EntryType.EXECUTION_METRICS
+            raw_response = 'Metrics reported successfully.'
         return_entry = {
             'Type': self.entry_type,
             'ContentsFormat': content_format,
@@ -6785,10 +6797,8 @@ class CommandResults:
         if self.scheduled_command:
             return_entry.update(self.scheduled_command.to_results())
 
-        if self.execution_metrics:
-            return_entry['Type'] = EntryType.EXECUTION_METRICS
-            return_entry['Contents'] = 'Metrics reported successfully.'
-            return_entry['APIExecutionMetrics'] = self.execution_metrics
+        if exec_metrics:
+            return_entry.update({'APIExecutionMetrics': exec_metrics})
 
         return return_entry
 
@@ -7012,7 +7022,7 @@ class ExecutionMetrics(object):
     @success.setter
     def success(self, value):
         self._success = value
-        self.update_metrics(MetricTypes.SUCCESS, self._success)
+        self.update_metrics('Successful', self._success)
 
     @property
     def quota_error(self):
@@ -7021,7 +7031,7 @@ class ExecutionMetrics(object):
     @quota_error.setter
     def quota_error(self, value):
         self._quota_error = value
-        self.update_metrics(MetricTypes.QUOTA_ERROR, self._quota_error)
+        self.update_metrics(ErrorTypes.QUOTA_ERROR, self._quota_error)
 
     @property
     def general_error(self):
@@ -7030,7 +7040,7 @@ class ExecutionMetrics(object):
     @general_error.setter
     def general_error(self, value):
         self._general_error = value
-        self.update_metrics(MetricTypes.GENERAL_ERROR, self._general_error)
+        self.update_metrics(ErrorTypes.GENERAL_ERROR, self._general_error)
 
     @property
     def auth_error(self):
@@ -7039,7 +7049,7 @@ class ExecutionMetrics(object):
     @auth_error.setter
     def auth_error(self, value):
         self._auth_error = value
-        self.update_metrics(MetricTypes.AUTH_ERROR, self._auth_error)
+        self.update_metrics(ErrorTypes.AUTH_ERROR, self._auth_error)
 
     @property
     def service_error(self):
@@ -7048,7 +7058,7 @@ class ExecutionMetrics(object):
     @service_error.setter
     def service_error(self, value):
         self._service_error = value
-        self.update_metrics(MetricTypes.SERVICE_ERROR, self._service_error)
+        self.update_metrics(ErrorTypes.SERVICE_ERROR, self._service_error)
 
     @property
     def connection_error(self):
@@ -7057,7 +7067,7 @@ class ExecutionMetrics(object):
     @connection_error.setter
     def connection_error(self, value):
         self._connection_error = value
-        self.update_metrics(MetricTypes.CONNECTION_ERROR, self._connection_error)
+        self.update_metrics(ErrorTypes.CONNECTION_ERROR, self._connection_error)
 
     @property
     def proxy_error(self):
@@ -7066,7 +7076,7 @@ class ExecutionMetrics(object):
     @proxy_error.setter
     def proxy_error(self, value):
         self._proxy_error = value
-        self.update_metrics(MetricTypes.PROXY_ERROR, self._proxy_error)
+        self.update_metrics(ErrorTypes.PROXY_ERROR, self._proxy_error)
 
     @property
     def ssl_error(self):
@@ -7075,7 +7085,7 @@ class ExecutionMetrics(object):
     @ssl_error.setter
     def ssl_error(self, value):
         self._ssl_error = value
-        self.update_metrics(MetricTypes.SSL_ERROR, self._ssl_error)
+        self.update_metrics(ErrorTypes.SSL_ERROR, self._ssl_error)
 
     @property
     def timeout_error(self):
@@ -7084,7 +7094,7 @@ class ExecutionMetrics(object):
     @timeout_error.setter
     def timeout_error(self, value):
         self._timeout_error = value
-        self.update_metrics(MetricTypes.TIMEOUT_ERROR, self._timeout_error)
+        self.update_metrics(ErrorTypes.TIMEOUT_ERROR, self._timeout_error)
 
     def update_metrics(self, metric_type, metric_value):
         if metric_value > 0:
@@ -8776,11 +8786,22 @@ def update_integration_context(context, object_keys=None, sync=True):
 
 
 class DemistoException(Exception):
-    def __init__(self, message, exception=None, res=None, *args):
+    def __init__(self, message, exception=None, res=None, error_type=None, *args):
         self.res = res
         self.message = message
         self.exception = exception
-        super(DemistoException, self).__init__(message, exception, *args)
+        self.error_type = error_type
+        super(DemistoException, self).__init__(message, exception, error_type, *args)
+
+        if self.error_type:
+            # If an error is passed to DemistoException, then check if metrics reporting is supported. If so,
+            # instantiate an ExecutionMetrics instance and report the metrics
+            execution_metrics = ExecutionMetrics()
+            if execution_metrics.is_supported():
+                execution_metrics.update_metrics(metric_type=error_type, metric_value=1)
+                exc_metrics = execution_metrics.metrics
+                return_results(CommandResults(execution_metrics=exc_metrics))
+
 
     def __str__(self):
         return str(self.message)
@@ -10612,6 +10633,20 @@ def send_events_to_xsiam(events, vendor, product, data_format=None):
         raise DemistoException(header_msg + res.get('error'))
 
     demisto.updateModuleHealth({'eventsPulled': amount_of_events})
+
+
+def is_scheduled_command_retry():
+    """
+    Determines if the current command is a polling retry command. This is useful if some actions should not be performed
+    when a command is polling for a response such as submitting data for processing.
+
+    :returns: True if the command is part of a polling retry, otherwise false
+    :rtype: ``Bool``
+
+    """
+    calling_context = demisto.callingContext.get('context', {})
+    sm = get_schedule_metadata(context=calling_context)
+    return True if sm.get('is_polling', False) else False
 
 
 ###########################################
