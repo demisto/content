@@ -66,7 +66,7 @@ script:
     deprecated: false
     description: Manual command to fetch events and display them.
     execution: false
-    name: okta-get-events
+    name: duo-get-events
   dockerimage: demisto/duoadmin3:1.0.0.29891
   runonce: false
   isfetchevents: true

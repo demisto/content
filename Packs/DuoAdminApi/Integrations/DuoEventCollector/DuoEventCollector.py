@@ -85,7 +85,7 @@ class GetEvents:
         self.rotate_request_order()
         return events
 
-    def _iter_events(self, last_object_ids: list) -> None:  # pragma: no cover  # type: ignore
+    def _iter_events(self, last_object_ids: list) -> None:  # type: ignore
         """
         Function that responsible for the iteration over the events returned from the Duo api
         """
@@ -179,7 +179,7 @@ def main():  # pragma: no cover
         last_object_ids = last_run.get('ids')
         if 'after' not in last_run:
             after = dateparser.parse(demisto_params['after'].strip())
-            last_run = after.timestamp()
+            last_run = after.timestamp()  # type: ignore
             last_run = {LogType.AUTHENTICATION.value: last_run,
                         LogType.ADMINISTRATION.value: last_run,
                         LogType.TELEPHONY.value: last_run}
