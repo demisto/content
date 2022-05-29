@@ -739,10 +739,19 @@ def test_module(client: Client) -> str:
 def upload_file_command(  # type: ignore[return]
         client: Client,
         file: str,
+        sha256: str,
+        environment_id: str = "160: Windows 10",
         file_name: Optional[str] = None,
         is_confidential: str = "true",
         comment: str = "",
         submit_file: str = "no",
+        action_script: str = "",
+        command_line: str = "",
+        document_password: str = "",
+        enable_tor: str = "false",
+        submit_name: str = "",
+        system_date: str = "",
+        system_time: str = ""
 ) -> CommandResults:
     """Upload a file for sandbox analysis.
     :param client: the client object with an access token
@@ -767,8 +776,10 @@ def upload_file_command(  # type: ignore[return]
         )
 
     else:
-        sha256 = str(result.output.get("sha256"))  # type: ignore[union-attr]
-        return send_uploaded_file_to_sandbox_analysis_command(client, sha256, "160: Windows 10")
+        sha256 = sha256 or str(result.output.get("sha256"))  # type: ignore[union-attr]
+        return send_uploaded_file_to_sandbox_analysis_command(client, sha256, environment_id, action_script,
+                                                              command_line, document_password, enable_tor,
+                                                              submit_name, system_date, system_time)
 
 
 def send_uploaded_file_to_sandbox_analysis_command(

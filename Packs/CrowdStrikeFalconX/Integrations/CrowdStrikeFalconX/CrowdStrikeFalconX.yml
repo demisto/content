@@ -112,6 +112,83 @@ script:
       - yes
       required: false
       secret: false
+    - default: false
+      description: SHA256 ID of the sample, which is a SHA256 hash value. Find the sample ID from the response when uploading a malware sample or search with the cs-fx-upload-file command.
+      isArray: false
+      name: sha256
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: "160: Windows 10"
+      description: Sandbox environment used for analysis, relevant if submit_file parameter is set to true.
+      isArray: false
+      name: environment_id
+      predefined:
+        - '300: Linux Ubuntu 16.04'
+        - 64-bit
+        - '200: Android (static analysis)'
+        - '160: Windows 10'
+        - 64-bit
+        - '110: Windows 7'
+        - 64-bit
+        - '100: Windows 7'
+        - 32-bit
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Runtime script for sandbox analysis. Relavent if submit_file parameter is set to true.
+      isArray: false
+      name: action_script
+      predefined:
+        - default
+        - default_maxantievasion
+        - default_randomfiles
+        - default_randomtheme
+        - default_openie
+      required: false
+      secret: false
+    - default: false
+      description: 'Command line script passed to the submitted file at runtime. Max length: 2048 characters. Relevant if submit_file parameter is set to true.'
+      isArray: false
+      name: command_line
+      required: false
+      secret: false
+    - default: false
+      description: 'Auto-filled for Adobe or Office files that prompt for a password. Max length: 32 characters. Relevant if submit_file parameter is set to true.'
+      isArray: false
+      name: document_password
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Whether the sandbox analysis routes network traffic via TOR. Can be "true" or "false". If true, sandbox analysis routes network traffic via TOR. Relevant if submit_file parameter is set to true.
+      isArray: false
+      name: enable_tor
+      predefined:
+        - 'true'
+        - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: Name of the malware sample that’s used for file type detection. and analysis. Relevant if submit_file parameter is set to true.
+      isArray: false
+      name: submit_name
+      required: false
+      secret: false
+    - default: false
+      description: Set a custom date for the sandbox environment in the format yyyy-MM-dd. Relevant if submit_file parameter is set to true.
+      isArray: false
+      name: system_date
+      required: false
+      secret: false
+    - default: false
+      description: Sets a custom time for the sandbox environment in the format HH:mm. Relevant if submit_file parameter is set to true.
+      isArray: false
+      name: system_time
+      required: false
+      secret: false
     deprecated: false
     description: Uploads a file for sandbox analysis.
     execution: false
