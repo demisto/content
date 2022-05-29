@@ -29,12 +29,12 @@ configuration:
 - displaypassword: API Key ID
   name: apikey_id_creds
   type: 9
-  required: true
+  required: false
   hiddenusername: true
 - displaypassword: API Key
   name: apikey_creds
   type: 9
-  required: true
+  required: false
   hiddenusername: true
 - display: API Key ID
   name: apikey_id
