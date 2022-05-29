@@ -62,103 +62,103 @@ def test_module(mocker, mock_client, mocked_response):
 
 
 class TestFetchEvents:
-
+    
     EVENTS_DATA = [
-            (
-                200,
-                [
-                    MockedResponse(status_code=200, text=create_events(start_id=1, end_id=100)),
-                    MockedResponse(status_code=200, text=create_events(start_id=101, end_id=200)),
-                    MockedResponse(status_code=200, text=create_events(start_id=21, end_id=30))
-                ],
-                MockedResponse(status_code=200, text=create_events(start_id=1, end_id=200))
-            ),
-            (
-                100,
-                [
-                    MockedResponse(status_code=200, text=create_events(start_id=1, end_id=100)),
-                    MockedResponse(status_code=200, text=create_events(start_id=101, end_id=102)),
-                ],
-                MockedResponse(status_code=200, text=create_events(start_id=1, end_id=100))
-            ),
-            (
-                100,
-                [
-                    MockedResponse(status_code=200, text=create_events(start_id=1, end_id=8)),
-                    MockedResponse(status_code=204),
-                ],
-                MockedResponse(status_code=200, text=create_events(start_id=1, end_id=8))
-            ),
-            (
-                100,
-                [
-                    MockedResponse(status_code=200, text=create_events(start_id=1, end_id=54)),
-                    MockedResponse(status_code=204)
-                ],
-                MockedResponse(status_code=200, text=create_events(start_id=1, end_id=54))
-            ),
-            (
-                100,
-                [
-                    MockedResponse(status_code=204)
-                ],
-                MockedResponse(status_code=200, text=create_events(start_id=1, end_id=1))
-            ),
-            (
-                200,
-                [
-                    MockedResponse(status_code=200, text=create_events(start_id=1, end_id=100)),
-                    MockedResponse(status_code=204)
-                ],
-                MockedResponse(status_code=200, text=create_events(start_id=1, end_id=100))
-            ),
-            (
-                300,
-                [
-                    MockedResponse(status_code=200, text=create_events(start_id=1, end_id=100)),
-                    MockedResponse(status_code=200, text=create_events(start_id=101, end_id=200)),
-                    MockedResponse(status_code=204)
-                ],
-                MockedResponse(status_code=200, text=create_events(start_id=1, end_id=200))
-            ),
-            (
-                1000,
-                [
-                    MockedResponse(status_code=200, text=create_events(start_id=1, end_id=100)),
-                    MockedResponse(status_code=200, text=create_events(start_id=101, end_id=200)),
-                    MockedResponse(status_code=200, text=create_events(start_id=201, end_id=300)),
-                    MockedResponse(status_code=200, text=create_events(start_id=301, end_id=400)),
-                    MockedResponse(status_code=200, text=create_events(start_id=401, end_id=500)),
-                    MockedResponse(status_code=200, text=create_events(start_id=501, end_id=600)),
-                    MockedResponse(status_code=200, text=create_events(start_id=601, end_id=700)),
-                    MockedResponse(status_code=200, text=create_events(start_id=701, end_id=800)),
-                    MockedResponse(status_code=200, text=create_events(start_id=801, end_id=900)),
-                    MockedResponse(status_code=200, text=create_events(start_id=901, end_id=1000)),
-                    MockedResponse(status_code=200, text=create_events(start_id=1001, end_id=1050)),
-                ],
-                MockedResponse(status_code=200, text=create_events(start_id=1, end_id=1000))
-            ),
-            (
-                300,
-                [
-                    MockedResponse(status_code=200, text=create_events(start_id=1, end_id=100)),
-                    MockedResponse(status_code=200, text=create_events(start_id=101, end_id=200)),
-                    MockedResponse(status_code=200, text=create_events(start_id=201, end_id=280)),
-                    MockedResponse(status_code=204)
-                ],
-                MockedResponse(status_code=200, text=create_events(start_id=1, end_id=280))
-            ),
-            (
-                400,
-                [
-                    MockedResponse(status_code=200, text=create_events(start_id=1, end_id=100)),
-                    MockedResponse(status_code=200, text=create_events(start_id=101, end_id=200)),
-                    MockedResponse(status_code=200, text=create_events(start_id=201, end_id=300)),
-                    MockedResponse(status_code=204)
-                ],
-                MockedResponse(status_code=200, text=create_events(start_id=1, end_id=300))
-            ),
-        ]
+        (
+            200,
+            [
+                MockedResponse(status_code=200, text=create_events(start_id=1, end_id=100)),
+                MockedResponse(status_code=200, text=create_events(start_id=101, end_id=200)),
+                MockedResponse(status_code=200, text=create_events(start_id=21, end_id=30))
+            ],
+            MockedResponse(status_code=200, text=create_events(start_id=1, end_id=200))
+        ),
+        (
+            100,
+            [
+                MockedResponse(status_code=200, text=create_events(start_id=1, end_id=100)),
+                MockedResponse(status_code=200, text=create_events(start_id=101, end_id=102)),
+            ],
+            MockedResponse(status_code=200, text=create_events(start_id=1, end_id=100))
+        ),
+        (
+            100,
+            [
+                MockedResponse(status_code=200, text=create_events(start_id=1, end_id=8)),
+                MockedResponse(status_code=204),
+            ],
+            MockedResponse(status_code=200, text=create_events(start_id=1, end_id=8))
+        ),
+        (
+            100,
+            [
+                MockedResponse(status_code=200, text=create_events(start_id=1, end_id=54)),
+                MockedResponse(status_code=204)
+            ],
+            MockedResponse(status_code=200, text=create_events(start_id=1, end_id=54))
+        ),
+        (
+            100,
+            [
+                MockedResponse(status_code=204)
+            ],
+            MockedResponse(status_code=200, text=create_events(start_id=1, end_id=1))
+        ),
+        (
+            200,
+            [
+                MockedResponse(status_code=200, text=create_events(start_id=1, end_id=100)),
+                MockedResponse(status_code=204)
+            ],
+            MockedResponse(status_code=200, text=create_events(start_id=1, end_id=100))
+        ),
+        (
+            300,
+            [
+                MockedResponse(status_code=200, text=create_events(start_id=1, end_id=100)),
+                MockedResponse(status_code=200, text=create_events(start_id=101, end_id=200)),
+                MockedResponse(status_code=204)
+            ],
+            MockedResponse(status_code=200, text=create_events(start_id=1, end_id=200))
+        ),
+        (
+            1000,
+            [
+                MockedResponse(status_code=200, text=create_events(start_id=1, end_id=100)),
+                MockedResponse(status_code=200, text=create_events(start_id=101, end_id=200)),
+                MockedResponse(status_code=200, text=create_events(start_id=201, end_id=300)),
+                MockedResponse(status_code=200, text=create_events(start_id=301, end_id=400)),
+                MockedResponse(status_code=200, text=create_events(start_id=401, end_id=500)),
+                MockedResponse(status_code=200, text=create_events(start_id=501, end_id=600)),
+                MockedResponse(status_code=200, text=create_events(start_id=601, end_id=700)),
+                MockedResponse(status_code=200, text=create_events(start_id=701, end_id=800)),
+                MockedResponse(status_code=200, text=create_events(start_id=801, end_id=900)),
+                MockedResponse(status_code=200, text=create_events(start_id=901, end_id=1000)),
+                MockedResponse(status_code=200, text=create_events(start_id=1001, end_id=1050)),
+            ],
+            MockedResponse(status_code=200, text=create_events(start_id=1, end_id=1000))
+        ),
+        (
+            300,
+            [
+                MockedResponse(status_code=200, text=create_events(start_id=1, end_id=100)),
+                MockedResponse(status_code=200, text=create_events(start_id=101, end_id=200)),
+                MockedResponse(status_code=200, text=create_events(start_id=201, end_id=280)),
+                MockedResponse(status_code=204)
+            ],
+            MockedResponse(status_code=200, text=create_events(start_id=1, end_id=280))
+        ),
+        (
+            400,
+            [
+                MockedResponse(status_code=200, text=create_events(start_id=1, end_id=100)),
+                MockedResponse(status_code=200, text=create_events(start_id=101, end_id=200)),
+                MockedResponse(status_code=200, text=create_events(start_id=201, end_id=300)),
+                MockedResponse(status_code=204)
+            ],
+            MockedResponse(status_code=200, text=create_events(start_id=1, end_id=300))
+        ),
+    ]
 
     @pytest.mark.parametrize('max_fetch, queue, expected_events', EVENTS_DATA)
     def test_fetch_events(self, mocker, mock_client, max_fetch, queue, expected_events):
