@@ -1,4 +1,4 @@
-This playbook enabled to get the CrowdStrike detections details based on the CrowdStrike incident ID.
+This playbook enables getting CrowdStrike Falcon detection details based on the CrowdStrike incident ID.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -7,7 +7,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any sub-playbooks.
 
 ### Integrations
-* CrowdStrikeFalcon
+CrowdStrikeFalcon
 
 ### Scripts
 This playbook does not use any scripts.
@@ -21,14 +21,14 @@ This playbook does not use any scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| IncidentID | The id of the CrowdStike incident. |  | Optional |
+| IncidentID | The ID of the CrowdStrike incident. |  | Optional |
 
 ## Playbook Outputs
 ---
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| CrowdStrike.Detection.Behavior | CrowdStrike Detaction Details | string |
+| CrowdStrike.Detection.Behavior | CrowdStrike Detection Details. | string |
 
 ## Playbook Image
 ---
