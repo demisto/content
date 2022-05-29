@@ -134,13 +134,14 @@ class GetEvents:
 
 def main():  # pragma: no cover
     try:
-        demisto_params = demisto.params() | demisto.args()
+        demisto_params = demisto.params() #| demisto.args()
         events_limit = int(demisto_params.get('limit', 2000))
+        should_push_events = argToBoolean(demisto_params.get('should_push_events', 'false'))
         after = dateparser.parse(demisto_params['after'].strip())
         api_key = demisto_params['api_key']['password']
         demisto_params['headers'] = {"Accept": "application/json", "Content-Type": "application/json",
                                      "Authorization": f"SSWS {api_key}"}
-        demisto_params['url'] = demisto_params['url'] + '/api/v1/logs'
+        demisto_params['url'] = urljoin(demisto_params['url'], '/api/v1/logs')
         last_run = demisto.getLastRun()
         last_object_ids = last_run.get('ids')
         if 'after' not in last_run:
@@ -170,7 +171,7 @@ def main():  # pragma: no cover
             else:
                 demisto.setLastRun(GetEvents.get_last_run(events))
                 demisto_params['push_events'] = True
-            if demisto_params.get('push_events'):
+            if should_push_events:
                 send_events_to_xsiam(events[:events_limit], demisto_params.get('vendor', 'okta'),
                                      demisto_params.get('product', 'okta'))
     except Exception as e:
