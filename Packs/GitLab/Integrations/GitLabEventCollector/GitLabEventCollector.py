@@ -46,16 +46,29 @@ class GetEvents(IntegrationGetEvents):
                 break
 
 
+def reformat_details(events: list) -> list:
+    for event in events:
+        if 'details' in event:
+            for action in ['add', 'change', 'remove']:
+                if action in event['details']:
+                    event['details']['action'] = f'{action}_{event["details"][action]}'
+                    event['details']['action_type'] = action
+                    event["details"]['action_category'] = event['details'][action]
+                    break
+    return events
+
+
 def main() -> None:  # pragma: no cover
     demisto_params = demisto.params()
     url = urljoin(demisto_params['url'], '/api/v4/')
+    should_push_events = argToBoolean(demisto_params.get('should_push_events', 'false'))
     events_collection_management = {
         'groups_ids': argToList(demisto_params.get('group_ids', '')),
         'projects_ids': argToList(demisto_params.get('project_ids', '')),
         'event_types': ['groups', 'projects']
     }
     user_ids = demisto_params.get('user_ids', '').split(',')
-    headers = {'PRIVATE-TOKEN': demisto_params.get('api_key', {}).get('credentials', {}).get('password')}
+    headers = {'PRIVATE-TOKEN': demisto_params.get('api_key', {}).get('password')}
     request_object = {
         'method': Method.GET,
         'url': url,
@@ -69,8 +82,6 @@ def main() -> None:  # pragma: no cover
             'projects': last_run,
             'events': last_run,
         }
-    else:
-        last_run = last_run
 
     options = IntegrationOptions(**demisto_params)
 
@@ -98,14 +109,8 @@ def main() -> None:  # pragma: no cover
         if command == 'test-module':
             return_results('ok')
             return
-        for event in events:
-            if 'details' in event:
-                for action in ['add', 'change', 'remove']:
-                    if action in event['details']:
-                        event['details']['action'] = f'{action}_{event["details"][action]}'
-                        event['details']['action_type'] = action
-                        event["details"]['action_category'] = event['details'][action]
-                        break
+
+        events = reformat_details(events)
 
         if command == 'gitlab-get-events':
             command_results = CommandResults(
@@ -115,12 +120,11 @@ def main() -> None:  # pragma: no cover
             return_results(command_results)
         elif command == 'fetch-events':
             demisto.setLastRun(get_events.get_last_run(events))
-            demisto_params['push_events'] = True
-        if demisto_params.get('push_events'):
+            should_push_events = True
+        if should_push_events:
             send_events_to_xsiam(events, demisto_params.get('vendor', 'gitlab'),
                                  demisto_params.get('product', 'gitlab'))
-        else:
-            return_error(f'Command not found: {command}')
+
     except Exception as exc:
         return_error(f'Failed to execute {command} command.\nError:\n{str(exc)}', error=exc)
 

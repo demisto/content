@@ -1,5 +1,7 @@
-GITLAB log events collector
+An event collector for Gitlab audit events using and events using Gitlab's the api  
 
+[Audit events api documentation](https://docs.gitlab.com/ee/api/audit_events.html)  
+[Events api documentation](https://docs.gitlab.com/ee/api/events.html)
 ## Configure Gitlab Event Collector on Cortex XSIAM
 
 1. Navigate to **Settings** > **Configurations** > **Automation & Feed Integrations**.
