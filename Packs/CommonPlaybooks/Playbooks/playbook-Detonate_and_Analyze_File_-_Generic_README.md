@@ -1,4 +1,4 @@
-The playbook uploads detonates and analyzes files for supported sandboxes. Currently supported sandboxes are Falcon X and Wildfire. 
+This playbook uploads, detonates, and analyzes files for supported sandboxes. Currently supported sandboxes are Falcon X and Wildfire. 
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -12,7 +12,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any integrations.
 
 ### Scripts
-* IsIntegrationAvailable
+IsIntegrationAvailable
 
 ### Commands
 This playbook does not use any commands.
@@ -29,12 +29,12 @@ This playbook does not use any commands.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| csfalconx.resource.tags | Analysis tags. | string |
-| csfalconx.resource.sha256 | SHA256 hash of the scanned file. | string |
-| csfalconx.resource.file_name | Name of the uploaded file.  | string |
-| csfalconx.resource.sandbox | Falcon X findings results. | string |
-| csfalconx.resource.intel | Falcon X intelligence results. | string |
-| WildFire.Report | Wildfire findings results. | string |
+| csfalconx.resource.tags | The analysis tags. | string |
+| csfalconx.resource.sha256 | The SHA256 hash of the scanned file. | string |
+| csfalconx.resource.file_name | The name of the uploaded file.  | string |
+| csfalconx.resource.sandbox | The Falcon X findings results. | string |
+| csfalconx.resource.intel | The Falcon X intelligence results. | string |
+| WildFire.Report | The Wildfire findings results. | string |
 
 ## Playbook Image
 ---
