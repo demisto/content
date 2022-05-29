@@ -6201,6 +6201,7 @@ class TestCommonTypes:
             tags=['tag1', 'tag2'],
             traffic_light_protocol='test_traffic_light_protocol',
             dbot_score=dbot_score,
+            value='test_stix_id',
             community_notes=[Common.CommunityNotes(note='note', timestamp='2019-01-01T00:00:00')],
             external_references=None
         )
@@ -6226,6 +6227,7 @@ class TestCommonTypes:
                         'OperatingSystemRefs': None,
                         'Publications': 'test_publications',
                         'MITREID': 'test_mitre_id',
+                        'Value': 'test_stix_id',
                         'Tags': ['tag1', 'tag2'],
                         'Description': 'test_description',
                         'TrafficLightProtocol': 'test_traffic_light_protocol'
