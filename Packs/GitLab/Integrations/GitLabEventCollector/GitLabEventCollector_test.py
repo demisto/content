@@ -36,11 +36,6 @@ def test_get_last_run():
                                               'events': '2022-06-17T12:31:36.667'}
 
 
-def test_prepare_request():
-    client.prepare_request()
-    assert client.request.url == 'https://test.test?created_after=2022-05-22T16:25:59.776885&per_page=100&page=1'
-
-
 def test_reformat_details():
     res = reformat_details(events)
     assert res[0]['details'] == {'add': 'aaa', 'action': 'add_aaa', 'action_type': 'add', 'action_category': 'aaa'}
