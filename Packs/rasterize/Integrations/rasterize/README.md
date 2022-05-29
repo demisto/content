@@ -53,7 +53,14 @@ Converts the contents of a URL to an image file or a PDF file.
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| InfoFile.Name | string | File name. | 
+| InfoFile.EntryID | string | File entry ID. | 
+| InfoFile.Size | number | File size. | 
+| InfoFile.Type | string | File type, e.g., "PE" | 
+| InfoFile.Info | string | Basic information of the file. | 
+| InfoFile.Extension | string | File extension. | 
 
 #### Command Example
 ```!rasterize url=http://google.com```
