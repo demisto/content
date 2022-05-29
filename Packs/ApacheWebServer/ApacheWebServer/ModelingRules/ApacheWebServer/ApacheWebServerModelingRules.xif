@@ -1,4 +1,4 @@
-[MODEL: dataset="apache_httpd_error_raw", model="Audit"] 
+[MODEL: dataset="apache_httpd_raw", model="Audit"] 
 
 | filter _raw_log contains "emerg" or  _raw_log contains "alert" or  _raw_log contains "error" or  _raw_log contains "warn" or  _raw_log contains "notice"
 or  _raw_log contains "info" or  _raw_log contains "debug" or  _raw_log contains "trace1"
@@ -28,7 +28,7 @@ or  _raw_log contains "info" or  _raw_log contains "debug" or  _raw_log contains
 
 
 
-[MODEL: dataset="apache_httpd_access_raw", model="Network"]
+[MODEL: dataset="apache_httpd_raw", model="Network"]
 
 | filter _raw_log contains "GET" or _raw_log contains "HEAD" or _raw_log contains "POST" or _raw_log contains "DELETE" or _raw_log contains "CONNECT" or _raw_log contains "OPTIONS" or _raw_log contains "TRACE" or _raw_log contains "PATCH"
  
