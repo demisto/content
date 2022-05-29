@@ -37,13 +37,14 @@ Note: For more information see the [SaaS Security Administrator's Guide](https:/
 
 
 ## Limitations
-* by definition the events that occur lasts only 1 hour in Saas-Security cache, hence if setting the limit to a very low limit while
+* By definition the events that occur lasts only 1 hour in Saas-Security cache, hence if setting the limit to a very low limit while
   in the Saas-Security environment there are huge amounts of events, those could be lost in the process of fetching.
-* the max-fetch/limit parameters to fetch events are limited to be only 100 divisible numbers due to Saas-Security api limitations.
+* The max-fetch/limit parameters to fetch events are limited to be only 100 divisible numbers due to Saas-Security api limitations.
 * The **reset last fetch** has no effect.
 
 ## Fetch Events
-Requires the scope of *Log access* in order to fetch log events, [Documentation](https://docs.paloaltonetworks.com/saas-security/saas-security-admin/saas-security-api/syslog-and-api-integration/api-client-integration/add-your-api-client-app#idd6102853-02a3-48b2-b5ca-7aeca3822a4f).
+Requires the scope of *Log access* in order to fetch log events.
+Since those events are saved only 1 hour at cache, it is highly recommended giving *Events Fetch Interval* in minutes rather than hours.
 
 Log types could be one of policy_violation, activity_monitoring, remediation, incident, and admin_audit.
 Every type returns a different api response that is unique.
