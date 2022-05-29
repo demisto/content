@@ -1,4 +1,4 @@
-
+This playbook extracts data from the host using RTR commands. For example, commands for getting a list of running processes and network connections.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -7,7 +7,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any sub-playbooks.
 
 ### Integrations
-* CrowdStrikeFalcon
+CrowdStrikeFalcon
 
 ### Scripts
 This playbook does not use any scripts.

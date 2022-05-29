@@ -1,4 +1,4 @@
-This playbook is used to retrieve files from CrowdStrike Falcon as well as unzipping the retrieved files and outputting which files were and weren't retrieved.
+This playbook retrieves and unzips files from CrowdStrike Falcon and returns a list of the files that were and were not retrieved.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -7,14 +7,14 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any sub-playbooks.
 
 ### Integrations
-* CrowdStrikeFalcon
+CrowdStrikeFalcon
 
 ### Scripts
 * Set
 * UnzipFile
 
 ### Commands
-* cs-falcon-rtr-retrieve-file
+cs-falcon-rtr-retrieve-file
 
 ## Playbook Inputs
 ---
@@ -23,8 +23,8 @@ This playbook does not use any sub-playbooks.
 | --- | --- | --- | --- |
 | HostId | The ID of the host to use. |  | Optional |
 | PathsToGet | The paths to retrieve the files from the host. |  | Optional |
-| ZipPassword | Default password to unzip files retrieved by CrowdStrike. | infected | Optional |
-| FileNames | The names of the file to retrieve. This is used just to validate that all the intended file were retrieved and not to specify which ones will be retrieved.    |  | Optional |
+| ZipPassword | The default password to unzip files retrieved by CrowdStrike Falcon. | infected | Optional |
+| FileNames | The names of the file to retrieve. Used to validate that all the intended files were retrieved, not to specify which ones will be retrieved.    |  | Optional |
 
 ## Playbook Outputs
 ---
@@ -32,7 +32,7 @@ This playbook does not use any sub-playbooks.
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
 | ExtractedFiles | A list of file names that were extracted from the ZIP file. | string |
-| NonRetrievedFiles | A list of files that were not retrieved. | string |
+| NonRetrievedFiles | A list of file names that were not retrieved. | string |
 
 ## Playbook Image
 ---

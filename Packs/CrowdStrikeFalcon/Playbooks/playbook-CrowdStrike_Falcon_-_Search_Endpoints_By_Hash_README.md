@@ -1,4 +1,4 @@
-This playbook searches across the organization for other endpoints associated with a specific SHA256 hash. 
+This playbook searches across the organization for other endpoints associated with a specific SHA256 hash.
 
 
 ## Dependencies
