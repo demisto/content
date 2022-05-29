@@ -1,5 +1,5 @@
 [MODEL: dataset="Oracle", model="Auth"]
-| filter _log_source_file_name ~= "secure"
+| filter facility in ("auth","authpriv","security")
 
 | alter timestamp = arrayindex(regextract(_raw_log , "\w+\s\d{1,2}\s\d{2}(?::\d{2}){2}"), 0)
 | alter hostname =  arrayindex(regextract(_raw_log , "[A-Z][a-z][a-z]\s{1,2}\d{1,2}\s\d{2}[:]\d{2}[:]\d{2}\s([\w][\w\d\.@-]*)\s.*$"), 0)
@@ -18,7 +18,6 @@
 | alter XDM.Auth.Client.process.name = process_name
 | alter XDM.Auth.Client.process.pid = pid
 | alter XDM.Auth.original_event_description = event_description
-| alter XDM.Auth.original_event_type = event_type
 | alter XDM.Auth.Client.ipv4 = src_ip
 | alter XDM.Auth.threat.severity = severity
 | alter XDM.Auth.original_event_sub_type = facility;
@@ -26,7 +25,7 @@
 
 
 [MODEL: dataset="Oracle", model="Endpoint"]
-| filter _log_source_file_name ~= "messages"
+| filter facility in ("auth","authpriv","security")
 
 | alter timestamp = arrayindex(regextract(_raw_log , "^(\w+\s{1,2}\d{1,2}\s\d{2}\S\d{2}\S\d{2}\s)"), 0)
 | alter hostname =  arrayindex(regextract(_raw_log , "^\w+\s{1,2}\d{1,2}\s\d{2}\S\d{2}\S\d{2}\s+(\w+)\s"), 0)
