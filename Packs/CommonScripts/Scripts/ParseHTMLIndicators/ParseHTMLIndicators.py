@@ -20,7 +20,7 @@ def validate_domains(domains, unescape_domain, TLD_exclusion):
     # TLD exclusion and validation for domain indicators
     bad_domain_TLD = set()
     for indicator in domains:
-        if unescape_domain == "True" and not (get_tld(indicator, fail_silently=True)):
+        if unescape_domain and not (get_tld(indicator, fail_silently=True)):
             bad_domain_TLD.add(indicator)
             continue
 
