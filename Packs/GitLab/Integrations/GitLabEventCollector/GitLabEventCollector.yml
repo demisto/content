@@ -21,7 +21,7 @@ configuration:
   name: project_ids
   required: false
   type: 0
-- display: projects ids
+- display: Projects ids
   name: group_ids
   required: false
   type: 0
