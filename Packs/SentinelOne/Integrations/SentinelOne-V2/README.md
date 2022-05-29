@@ -1376,7 +1376,19 @@ Add a hash to the blocklist ("blacklist" in SentinelOne documentation). If the `
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SentinelOne.Blocklist.UserId | String | User ID | 
+| SentinelOne.Blocklist.UpdatedAt | String | When entry was most recently updated | 
+| SentinelOne.Blocklist.Value | String | File Hash | 
+| SentinelOne.Blocklist.ScopePath | String | Sentinel One list scope | 
+| SentinelOne.Blocklist.Type | String | Block list type | 
+| SentinelOne.Blocklist.Source | String | Source of entry | 
+| SentinelOne.Blocklist.ID | String | Entry ID | 
+| SentinelOne.Blocklist.CreatedAt | String | Date entry was created | 
+| SentinelOne.Blocklist.Description | String | Description | 
+| SentinelOne.Blocklist.OSType | String | OS Type block is enforced on | 
+| SentinelOne.Blocklist.ScopeName | String | Name of block list scope | 
 
 #### Command Example
 ```!sentinelone-get-blocklist account_ids=ACCOUNT_ID global=true offset=0 limit=1```
