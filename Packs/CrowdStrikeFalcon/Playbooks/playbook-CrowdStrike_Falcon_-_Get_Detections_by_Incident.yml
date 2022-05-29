@@ -175,11 +175,11 @@ inputs:
 - key: IncidentID
   value: {}
   required: false
-  description: The id of the CrowdStike incident.
+  description: The ID of the CrowdStrike incident.
   playbookInputQuery:
 outputs:
 - contextPath: CrowdStrike.Detection.Behavior
-  description: CrowdStrike Detaction Details
+  description: CrowdStrike Detection Details
   type: string
 tests:
  -  No tests
