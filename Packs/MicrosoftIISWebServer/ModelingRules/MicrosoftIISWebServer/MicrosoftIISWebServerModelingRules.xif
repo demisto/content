@@ -1,10 +1,9 @@
 [MODEL: dataset="II", model="Network"] 
 dataset = iis_iis_raw 
 | filter _raw_log contains "100" or  _raw_log contains "101" or  _raw_log contains "200" or  _raw_log contains "201" or  _raw_log contains "203" or _raw_log contains "204" or _raw_log contains "205" or _raw_log contains "206" or _raw_log contains "301" or _raw_log contains "302" or _raw_log contains "304" or _raw_log contains "307" or _raw_log contains "404" or _raw_log contains "500"
-| alter Date = arrayindex(regextract(_raw_log , "(\d+\-\d+\-\d+)"), 0)
-| alter Time = arrayindex(regextract(_raw_log , "\d+\-\d+\-\d+\s(\d+\:\d+\:\d+)") ,0)
+| alter timestamp = arrayindex(regextract(_raw_log , "(\d+\-\d+\-\d+\s\d+\:\d+\:\d+)"), 0)
 | alter c_sitename = arrayindex(regextract(_raw_log , "\d+\:\d+\:\d+\s([^\s]+)") ,0)
-| alter S_computername = arrayindex(regextract(_raw_log , " \d+\:\d+\:\d+\s[^\s]+\s([^\s]+)") ,0)
+| alter S_computername = arrayindex(regextract(_raw_log , "\d+\:\d+\:\d+\s[^\s]+\s([^\s]+)") ,0)
 | alter Cs_method= arrayindex(regextract(_raw_log ,"\d+\:\d+\:\d+\s[^\s]+\s[^\s]+\s[^\s]+\s(\w+)") ,0)
 | alter Cs_uri_stem = arrayindex(regextract(_raw_log ,"\s\w+\s\/([^\-]+)") ,0)
 | alter Cs_uri_query = arrayindex(regextract(_raw_log ,"\s\w+\s\/[^\-]+([^\d+]+)") ,0)
@@ -25,8 +24,7 @@ dataset = iis_iis_raw
 | alter s_ip = arrayindex(regextract(_raw_log ,"\d+\:\d+\:\d+\s[^\s]+\s[^\s]+\s([^\s]+)") ,0)
 
  
-| alter XDM.Network.event_timestamp =date
-| alter XDM.Network.event_timestamp = time  
+| alter XDM.Network.event_timestamp =timestamp
 | alter XDM.Network.Source.ipv4 =  c_ip  
 | alter XDM.Network.Source.user.username  = cs_username
 | alter XDM.Network.Destination.host.hostname = c_sitename
@@ -41,13 +39,12 @@ dataset = iis_iis_raw
 | alter  XDM.Network.http.referrer =CS_reffer
 | alter XDM.Network.http.user_agent= cs_User_Agent 
 | alter XDM.Network.Source.bytes= sc_bytes 
-| alter XDM.Network.Destination.bytes = cs_bytes
+ | alter XDM.Network.Destination.bytes = cs_bytes
 | alter XDM.Network.Destination.host.hostname= cs_host
 | alter XDM.Network.Observer.version= cs_version  
 | alter XDM.Network.http.url= Cs_uri_query
 | alter  XDM.Network.Observer.unique_identifier = Sc_substatus
 | alter  XDM.Network.Observer.unique_identifier = Sc_win32_status
-
 
 
 [MODEL: dataset="IIS_log", model="Audit"]
