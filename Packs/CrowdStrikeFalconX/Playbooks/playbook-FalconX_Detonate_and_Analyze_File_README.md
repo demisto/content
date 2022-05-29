@@ -1,4 +1,4 @@
-The playbook uploads detonates and analyzes files for FalconX.
+This playbook uploads, detonates, and analyzes files for the CrowdStrike Falcon X sandbox.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -23,18 +23,18 @@ This playbook does not use any sub-playbooks.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | File | The details of the file to detonate. |  | Optional |
-| AlertOS | The operating system for which the alert was raised.<br/>accepted values are Windows, Linux, Android<br/><br/>.. | ${incident.sourceosversion} | Optional |
+| AlertOS | The operating system for which the alert was raised.<br/>Possible values:<br/>* Windows<br/>* Linux<br/>* Android | ${incident.sourceosversion} | Optional |
 
 ## Playbook Outputs
 ---
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| csfalconx.resource.tags | Analysis tags. | unknown |
-| csfalconx.resource.sha256 | SHA256 hash of the scanned file. | unknown |
-| csfalconx.resource.file_name | Name of the uploaded file.  | unknown |
-| csfalconx.resource.sandbox | Falcon X findings results. | unknown |
-| csfalconx.resource.intel | Falcon X intelligence results. | unknown |
+| csfalconx.resource.tags | The analysis tags. | unknown |
+| csfalconx.resource.sha256 | The SHA256 hash of the scanned file. | unknown |
+| csfalconx.resource.file_name | The name of the uploaded file.  | unknown |
+| csfalconx.resource.sandbox | The Falcon X findings results. | unknown |
+| csfalconx.resource.intel | The Falcon X intelligence results. | unknown |
 
 ## Playbook Image
 ---

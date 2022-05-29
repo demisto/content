@@ -361,8 +361,4 @@ outputs:
   description: The Wildfire findings.
   type: string
 tests:
-- Detonate URL - WildFire v2.1 - Test
-- Wildfire Test
-- Detonate File - WildFire - Test
-- Detonate URL - WildFire-v2 - Test
-- Wildfire Test With Polling
+ -  No tests

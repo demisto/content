@@ -2,7 +2,8 @@ id: CrowdStrike Falcon - True Positive Incident Handling
 version: -1
 fromversion: 6.5.0
 name: CrowdStrike Falcon - True Positive Incident Handling
-description: The playbooks allows to handle a CrowdStrike incident that was determined to be a true positive by the analyst. Actions include isolating the host, blocking the indicator by the EDR as well as tagging it.
+description: This playbook handles a CrowdStrike incident that was determined to be a true positive by the analyst. 
+  Actions include isolating the host, blocking the indicator by the EDR, and tagging it.
 starttaskid: '0'
 tasks:
   '0':
@@ -131,9 +132,9 @@ tasks:
       version: -1
       name: Open Snow ticket
       description: |-
-        This script is used to wrap the generic create-record command in ServiceNow.
-        You can add fields that you want to create the record with as script arguments or in the
-        code and work with the records easily.
+        This script wraps the generic create-record command in ServiceNow.
+        You can add fields you want to create the record with as script arguments or in the
+        code.
       scriptName: ServiceNowCreateIncident
       type: regular
       iscommand: false
@@ -394,7 +395,7 @@ tasks:
       id: bfacf224-5d44-475f-8704-2a208fc11e17
       version: -1
       name: Resolve CS incident
-      description: Resolve incidents.
+      description: Resolves the CrowdStrike Falcon incident.
       script: '|||cs-falcon-resolve-incident'
       type: regular
       iscommand: true
@@ -430,7 +431,7 @@ tasks:
       id: 91e0201f-ece7-46ad-8708-c95cf1ac8399
       version: -1
       name: Resolve CS detection
-      description: Resolves and updates a detection using the provided arguments. At least one optional argument must be passed, otherwise no change will take place.
+      description: Resolves and updates a CrowdStrike Falcon detection using the provided arguments. At least one optional argument must be passed, otherwise no change will take place.
       script: '|||cs-falcon-resolve-detection'
       type: regular
       iscommand: true
@@ -521,7 +522,7 @@ tasks:
       id: 90d0d8ac-75b4-41ce-81ce-f6639d1c695f
       version: -1
       name: Is ServiceNow Available?
-      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      description: Returns 'yes' if the ServiceNow integration is enabled.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -559,7 +560,7 @@ tasks:
       id: ee436f66-fde3-4caa-8730-2ddf0425a959
       version: -1
       name: Is Jira Available?
-      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      description: Returns 'yes' if the Jira integration is available.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -597,7 +598,7 @@ tasks:
       id: ea9fd0b1-fd0a-4987-89d3-5432b5ef7e74
       version: -1
       name: Remove file
-      description: Batch executes an RTR active-responder remove file across the hosts mapped to the given batch ID.
+      description: Batch executes RTR active-responder remove file across the hosts mapped to a specific batch ID.
       script: '|||cs-falcon-rtr-remove-file'
       type: regular
       iscommand: true
@@ -765,7 +766,7 @@ tasks:
       id: e8f22502-f0dd-4c13-899a-9f94b25f38b3
       version: -1
       name: Crowdstrike Falcon - Isolate Endpoint
-      description: This playbook will auto isolate endpoints by the device ID that was provided in the playbook.
+      description: This playbook auto isolates endpoints by the device ID provided in the playbook.
       playbookName: Crowdstrike Falcon - Isolate Endpoint
       type: playbook
       iscommand: false
@@ -925,6 +926,8 @@ tasks:
           root: inputs.ProjectKey
       summary:
         simple: ${inputs.TicketDescription}
+      using:
+        simple: ${inputs.InstanceName}
     separatecontext: false
     view: |-
       {
@@ -1144,33 +1147,36 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "49":
-    id: "49"
-    taskid: ccfab030-433a-4a88-8d24-03426552b06b
+  '49':
+    id: '49'
+    taskid: bea75fc0-ea15-4515-80d9-d8b09c67948e
     type: condition
     task:
-      id: ccfab030-433a-4a88-8d24-03426552b06b
+      id: bea75fc0-ea15-4515-80d9-d8b09c67948e
       version: -1
-      name: Were any values provided?
+      name: Were are values provided?
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#default#':
-      - "10"
-      "yes":
-      - "41"
-      - "9"
+      - '10'
+      yes:
+      - '41'
+      - '9'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
-      - - operator: isNotEmpty
+      - - operator: isEqualString
           left:
             value:
-              simple: Indicators to block.Answers.0
+              simple: '1'
             iscontext: true
+          right:
+            value:
+              simple: '1'
     view: |-
       {
         "position": {
@@ -1184,7 +1190,7 @@ tasks:
     skipunavailable: false
     quietmode: 0
     isoversize: false
-    isautoswitchedtoquietmode: false  
+    isautoswitchedtoquietmode: false
   '50':
     id: '50'
     taskid: 4bfee436-6d61-427f-8c34-e17faa6ea6ba
@@ -1192,7 +1198,7 @@ tasks:
     task:
       id: 4bfee436-6d61-427f-8c34-e17faa6ea6ba
       version: -1
-      name: Were any values provided?
+      name: Were are values provided?
       type: condition
       iscommand: false
       brand: ''
@@ -1243,7 +1249,7 @@ inputs:
 - key: TicketingSystemToUse
   value: {}
   required: false
-  description: The name of the ticketing system to use, for example Jira or ServiceNow
+  description: The name of the ticketing system to use, for example Jira or ServiceNow.
   playbookInputQuery:
 - key: BlockIOCTagName
   value: {}
@@ -1260,27 +1266,25 @@ inputs:
     simple: 'false'
   required: false
   description: |
-    Indicates if automatic host isolation is allowed.
-    True/False
+    Whether automatic host isolation is allowed.
   playbookInputQuery:
 - key: TicketProjectName
   value: {}
   required: false
-  description: For ticketing systems such as Jira a project name is required.
+  description: The ticket project name (required for Jira).
   playbookInputQuery:
 - key: BlockMaliciousIOCGlobally
   value:
     simple: 'True'
   required: false
   description: |-
-    Indicates if adding to block list is globally
-    If specified False provide an input for the BlockHostGroup input with the group name.
-    True/False
+    Whether adding to block list is global.
+    If False, provide an input for the BlockHostGroup input with the group name.
   playbookInputQuery:
 - key: BlockHostGroupName
   value: {}
   required: false
-  description: The name of the allow list group to apply in case BlockMaliciousIOCGlobally isn't set as True.
+  description: The name of the allow list group to apply if BlockMaliciousIOCGlobally is set to False.
   playbookInputQuery:
 - key: TicketDescription
   value: {}
@@ -1300,7 +1304,7 @@ inputs:
 - key: PathsForFilesToRemove
   value: {}
   required: false
-  description: Provide the file path to remove from.
+  description: Provide the path for the file to remove.
   playbookInputQuery:
 - key: OperatingSystemToRemoveFrom
   value: {}

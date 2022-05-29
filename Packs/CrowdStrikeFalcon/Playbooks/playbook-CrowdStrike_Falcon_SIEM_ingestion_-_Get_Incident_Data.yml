@@ -890,4 +890,4 @@ outputs:
   description: The details of the endpoint.
   type: string
 tests:
-- Test - CrowdStrike Falcon
+ -  No tests

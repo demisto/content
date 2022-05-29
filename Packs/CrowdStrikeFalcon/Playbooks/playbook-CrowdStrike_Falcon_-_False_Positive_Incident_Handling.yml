@@ -825,4 +825,4 @@ inputs:
   playbookInputQuery:
 outputs: []
 tests:
-- Test - CrowdStrike Falcon
+ -  No tests
