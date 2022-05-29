@@ -1,4 +1,4 @@
-This Playbook handles a true-positive incident closure for Cortex XDR - Malware Investigation.
+This Playbook handles true-positive incident closure for Cortex XDR - Malware Investigation.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -8,7 +8,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 * Cortex XDR - Isolate Endpoint
 
 ### Integrations
-* CortexXDRIR
+CortexXDRIR
 
 ### Scripts
 * ServiceNowCreateIncident
@@ -25,15 +25,15 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| Comment | Add comment to close this incident. | XSOAR Incident #${incident.id} | Optional |
-| Classification | Choose From - "Unknown" / "TruePositive" | TruePositive | Optional |
-| BlockTag | Specify the banning tag name for founded indicators. | BlockTag | Optional |
-| AutoIsolation | Indicates if automatic host isolation is allowed.<br/>True/False | False | Optional |
-| TicketProjectName | For ticketing systems such as Jira a project name is required. |  | Optional |
-| TicketingSystemToUse | The name of the ticketing system to use, for example Jira or ServiceNow |  | Optional |
-| FileSha256 | Enter the File Sha256 you would like to block. | ${incident.filesha256} | Optional |
+| Comment | Add a comment to close this incident. | XSOAR Incident #${incident.id} | Optional |
+| Classification | Possible values:<br/>* Unknown<br/>* TruePositive | TruePositive | Optional |
+| BlockTag | The banning tag name for founded indicators. | BlockTag | Optional |
+| AutoIsolation | Whether automatic host isolation is allowed. | False | Optional |
+| TicketProjectName | The ticket project name (required for Jira). |  | Optional |
+| TicketingSystemToUse | The name of the ticketing system to use, for example Jira or ServiceNow. |  | Optional |
+| FileSha256 | The file SHA256 you want to block. | ${incident.filesha256} | Optional |
 | HostID | The ID of the host for running an isolation process. | ${incident.deviceid} | Optional |
-| FilePaths | Enter the File paths you would like to delete. | ${incident.processpath} | Optional |
+| FilePaths | The file paths you want to delete. | ${incident.processpath} | Optional |
 
 ## Playbook Outputs
 ---
