@@ -37,19 +37,17 @@ def main():
     try:
         headers = {'user-agent': 'PANW-XSOAR'}
         page = requests.get(blog_url, verify=False, headers=headers)  # nosec
-        page.raise_for_status
+        page.raise_for_status()
     except requests.HTTPError:
         raise
 
     exclusion_list = set(argToList(args.get("exclude_indicators")))
     TLD_exclusion = argToList(args.get("exclude_TLD"))
-    unescape_domain = args.get("unescape_domain")
+    unescape_domain = argToBoolean(args.get("unescape_domain"))
 
     # Allow domain regex replacement between "[.]" and "."
-    if unescape_domain == "False":
-        domain_regex = r"([a-zA-Z0-9]+?\[?\.?\]?[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9]\[\.\][a-zA-Z]{2,}\[?\.?\]?[a-zA-Z]{0,})"
-    else:
-        domain_regex = r"([a-zA-Z0-9]+?\[?\.?\]?[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9]\[\.\][a-zA-Z]{2,}\[?\.?\]?[a-zA-Z]{0,})"
+    domain_regex = r"([a-zA-Z0-9]+?\[?\.?\]?[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9]\[\.\][a-zA-Z]{2,}\[?\.?\]?[a-zA-Z]{0,})"
+    if unescape_domain:
         domain_regex = domain_regex.replace("\[\.\]", "\.")
 
     # Declare indicator regexs
