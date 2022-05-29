@@ -2316,7 +2316,7 @@ script:
       description: Was the scan aborted?
       type: Boolean
   - deprecated: false
-    description: 'Gets mapping fields from remote incident. Note: This method will not update the current incident, it's here for debugging purposes.'
+    description: "Gets mapping fields from remote incident. Note: This method will not update the current incident, it's here for debugging purposes."
     execution: false
     name: get-mapping-fields
   - arguments:
@@ -2334,7 +2334,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: 'Gets remote data from a remote incident. Note: This method will not update the current incident, it's here for debugging purposes.'
+    description: "Gets remote data from a remote incident. Note: This method will not update the current incident, it's here for debugging purposes."
     execution: false
     name: get-remote-data
   - arguments:
