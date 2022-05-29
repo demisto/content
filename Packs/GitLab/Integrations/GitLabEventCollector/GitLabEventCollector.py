@@ -10,7 +10,7 @@ class Client(IntegrationEventsClient):
         self.page = 1
         self.event_type = ''
 
-    def set_request_filter(self, after):  # pragma: no cover #noqa
+    def set_request_filter(self, after):  # noqa: F841  # pragma: no cover
         base_url = self.request.url.split("?")[0]
         last_run = self.last_run[self.event_type]  # type: ignore
         self.request.url = f'{base_url}?created_after={last_run}&per_page=100&page={self.page}'  # type: ignore
