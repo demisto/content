@@ -696,6 +696,14 @@ class TestChangelogCreation:
         assert is_the_only_rn_in_block(release_notes_dir, version, AGGREGATED_CHANGELOG) == boolean_value
 
     def test_get_version_to_pr_numbers(self, mocker):
+        """
+           Given:
+               - Mocked pr numbers for 3 files.
+           When:
+               - Calling get_version_to_pr_numbers.
+           Then:
+               - Receive a dict with the proper version to pr number.
+        """
         dir_list = ['1_0_1.md', '1_0_2.md', '1_0_3.md']
         mocker.patch("os.listdir", return_value=dir_list)
         mocker.patch("os.path.exists", return_value=True)
