@@ -1,4 +1,3 @@
-
 # type: ignore[attr-defined]
 
 import shutil
@@ -21,7 +20,7 @@ from typing import List, Dict, Optional, Tuple, Any
 from Tests.Marketplace.marketplace_services import Pack, input_to_list, get_valid_bool, convert_price, \
     get_updated_server_version, load_json, \
     store_successful_and_failed_packs_in_ci_artifacts, is_ignored_pack_file, \
-    is_the_only_rn_in_block
+    is_the_only_rn_in_block, get_pull_request_numbers_from_file
 from Tests.Marketplace.marketplace_constants import PackStatus, PackFolders, Metadata, GCPConfig, BucketUploadFlow, \
     PACKS_FOLDER, PackTags, BASE_PACK_DEPENDENCY_DICT
 
@@ -590,6 +589,12 @@ class TestChangelogCreation:
         open_mocker[os.path.join(dummy_pack.path, Pack.RELEASE_NOTES, '2_0_2.md')].read_data = 'wow'
         mocker.patch("Tests.Marketplace.marketplace_services.logging")
         mocker.patch("os.path.exists", return_value=True)
+
+        class GitMock:
+            def log(self, _):
+                return "Commit message (#12345)"
+
+        mocker.patch("git.Git", return_value=GitMock())
         dir_list = ['1_0_1.md', '2_0_2.md', '2_0_0.md']
         mocker.patch("os.listdir", return_value=dir_list)
         mocker.patch('builtins.open', open_mocker)
@@ -645,6 +650,12 @@ class TestChangelogCreation:
                - return True
        """
         dummy_pack.current_version = '2.0.0'
+
+        class GitMock:
+            def log(self, _):
+                return "Commit message (#12345)"
+
+        mocker.patch("git.Git", return_value=GitMock())
         mocker.patch("os.path.exists", return_value=True)
         mocker.patch("Tests.Marketplace.marketplace_services")
         dir_list = ['1_0_1.md', '2_0_0.md']
@@ -686,6 +697,27 @@ class TestChangelogCreation:
         dir_list = ['1_0_1.md', '1_0_2.md', '1_0_3.md']
         mocker.patch("os.listdir", return_value=dir_list)
         assert is_the_only_rn_in_block(release_notes_dir, version, AGGREGATED_CHANGELOG) == boolean_value
+
+    def test_get_pull_request_numbers_from_file(self, mocker):
+        """
+
+        Given:
+            A git log with only two valid PR numbers
+
+        When: 
+            calling get_pull_request_numbers_from_file with a mock file address
+
+        Then:
+            Only the numbers matching the regex will be found
+
+        """
+
+        class GitMock:
+            def log(self, _):
+                return "Commit message (#12345), 12346 (#12347)"
+
+        mocker.patch("git.Git", return_value=GitMock())
+        assert get_pull_request_numbers_from_file("someFile") == [12345, 12347]
 
     def test_get_same_block_versions(self, mocker, dummy_pack):
         """
