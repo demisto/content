@@ -16,19 +16,11 @@ GITLAB log events collector
 | The product name corresponding to the integration that originated the events     | The name of the product to name the dataset after     | False        |
 | The vendor name corresponding to the integration that originated the events     | The name of the vendor to name the dataset after      | False        |
 | First fetch from API time     | The time to first fetch from the api                                              | True         |
-| Push events to XSIAM on get events     | Weather or nut to push event to XSIAM when using the manual command                                              | False        |
 
 
 4. Click **Test** to validate the URLs, tokens, and connection.
 ## Commands
 You can execute these commands in a playbook.
-#### test-module
-***
-Integration command for testing.
-
-#### fetch-events
-***
-Command that is activated by the engine to fetch event.
 
 ####$ gitlab-get-events
 ***

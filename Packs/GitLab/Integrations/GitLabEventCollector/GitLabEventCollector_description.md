@@ -1,4 +1,4 @@
-Gitlab Events collector XSIAM
+Gitlab Events Collector
 -
  Collects the events log for events and audit events provided by Gitlab API
 
@@ -13,4 +13,3 @@ Gitlab Events collector XSIAM
 * **The product name corresponding to the integration that originated the events** - The name of the product to name the dataset after.
 * **The vendor name corresponding to the integration that originated the events** - The name of the vendor to name the dataset after.
 * **First fetch from API time** - The time to first fetch from the api.
-* **Push events to XSIAM on get events** - Weather or nut to push event to XSIAM when using the manual command.
