@@ -377,11 +377,11 @@ def get_urls_and_emails_from_pdf_annots(file_path):
 
     pdf_file = open(file_path, 'rb')
     pdf = PyPDF2.PdfFileReader(pdf_file)
-    pages = len(pdf.pages)
+    pages_len = len(pdf.pages)
 
     # Goes over the PDF, page by page, and extracts urls and emails:
-    for page in range(pages):
-        page_sliced = pdf.getPage(page)
+    for page in range(pages_len):
+        page_sliced = pdf.pages[page]
         page_object = page_sliced.getObject()
 
         # Extracts the PDF's Annots (Annotations and Commenting):
