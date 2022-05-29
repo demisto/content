@@ -5967,6 +5967,9 @@ class ScheduledCommand:
     :type timeout_in_seconds: ``Optional[int]``
     :param timeout_in_seconds: Number of seconds until the polling sequence will timeout.
 
+    :type items_remaining: ``Optional[int]``
+    :param items_remaining: Number of items that are remaining to be polled.
+
     :return: None
     :rtype: ``None``
     """
@@ -6652,6 +6655,9 @@ class CommandResults:
 
     :type scheduled_command: ``ScheduledCommand``
     :param scheduled_command: manages the way the command should be polled.
+
+    :type execution_metrics: ``ExecutionMetrics``
+    :param execution_metrics: contains metric data about a command's execution
 
     :return: None
     :rtype: ``None``
