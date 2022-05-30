@@ -23,18 +23,18 @@ configuration:
   type: 9
   required: true
   hiddenusername: true
-- display: "Username"
+- display: Username
   displaypassword: Password
   name: credentials
   type: 9
   required: true
 - display: Query to get Hourly Event Log Files
-  additionalinfo: For more Information visit the Query Hourly Event Log Files documentation https://developer.salesforce.com/docs/atlas.en-us.234.0.api_rest.meta/api_rest/event_log_file_hourly_query.htm
+  additionalinfo: For more information, visit the Query Hourly Event Log Files documentation https://developer.salesforce.com/docs/atlas.en-us.234.0.api_rest.meta/api_rest/event_log_file_hourly_query.htm
   name: query
   defaultvalue: "SELECT+Id+,+EventType+,+Interval+,+LogDate+,+LogFile+,+LogFileLength+FROM+EventLogFile+WHERE+Interval+=+'Hourly'"
   type: 12
   required: true
-- display: How many log files to fetch.
+- display: How many log files to fetch
   name: files_limit
   type: 0
   defaultvalue: 1000
@@ -44,7 +44,7 @@ configuration:
   type: 0
   defaultvalue: 3 days
   required: false
-- display: The product corresponding to the integration that originated the events.
+- display: The product corresponding to the integration that originated the events
   name: product
   type: 0
   defaultvalue: 'event-audit'
@@ -66,12 +66,12 @@ script:
     arguments:
       - name: files_limit
         defaultValue: 1
-        description: 'How many log files to fetch.'
+        description: 'The maximum number of log files to fetch.'
         required: false
         isArray: false
       - auto: PREDEFINED
         defaultValue: 'False'
-        description: Set this argument to True in orfer to create events, otherwise the command will only display them.
+        description: Set this argument to True in order to create events, otherwise the command will only display them.
         isArray: false
         name: should_push_events
         predefined:
