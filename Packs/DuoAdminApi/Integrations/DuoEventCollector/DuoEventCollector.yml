@@ -56,7 +56,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       defaultValue: 'False'
-      description: Set this argument to True in orfer to create events, otherwise the command will only display them.
+      description: Set this argument to True in order to create events, otherwise the command will only display them.
       isArray: false
       name: should_push_events
       predefined:
