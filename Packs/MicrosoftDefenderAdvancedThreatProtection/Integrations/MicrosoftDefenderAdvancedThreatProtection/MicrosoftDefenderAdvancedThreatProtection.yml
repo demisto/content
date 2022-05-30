@@ -33,6 +33,7 @@ configuration:
   type: 14
 - display: Fetch incidents
   name: isFetch
+  defaultvalue: 'true'
   required: false
   type: 8
 - display: Incident type
@@ -5735,6 +5736,7 @@ script:
   script: '-'
   subtype: python3
   type: python
+defaultmapperin: Microsoft Defender For Endpoint Mapper
 fromversion: 5.0.0
 tests:
 - No tests (auto formatted)
