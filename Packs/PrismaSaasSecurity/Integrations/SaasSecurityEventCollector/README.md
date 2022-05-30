@@ -41,6 +41,7 @@ Note: For more information see the [SaaS Security Administrator's Guide](https:/
   in the Saas-Security environment there are huge amounts of events, those could be lost in the process of fetching.
 2) The max-fetch/limit parameters to fetch events are limited to be only 100 divisible numbers due to Saas-Security api limitations.
 3) The **reset last fetch** has no effect.
+4) When executing the test-module and there are events saved in the cache of Saas-Security, 1 event will be lost.
 
 ## Fetch Events
 Requires the scope of *Log access* in order to fetch log events.

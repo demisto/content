@@ -236,7 +236,7 @@ def main() -> None:
         elif command == 'fetch-events':
             send_events_to_xsiam(
                 events=fetch_events(client=client, max_fetch=max_fetch),
-                vendor='PaloAltoNetworks', product='SaasSecurity'
+                vendor='pan', product='saassecurity'
             )
         elif command == 'saas-security-get-events':
             return_results(saas_security_get_events_command(client=client, args=args))
