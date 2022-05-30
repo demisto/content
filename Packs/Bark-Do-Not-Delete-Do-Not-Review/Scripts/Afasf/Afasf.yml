@@ -1,0 +1,26 @@
+commonfields:
+  id: f4f036aa-69fd-47cb-87df-61c27efc9ef8
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ""
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 93d31d31-c944-436c-8b1b-062212c6774c
+    packName: ff
+    propagationLabels:
+    - all
+    toServerVersion: ""
+dockerimage: demisto/python3:3.10.1.25933
+enabled: true
+engineinfo: {}
+mainengineinfo: {}
+name: afasf
+pswd: ""
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python

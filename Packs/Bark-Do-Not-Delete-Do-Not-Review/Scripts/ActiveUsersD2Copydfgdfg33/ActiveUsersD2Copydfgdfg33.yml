@@ -1,0 +1,27 @@
+comment: Get active users from a D2 agent and parsed them into context
+commonfields:
+  id: dd0c9c17-0790-4121-80de-e40e07408292
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ""
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 93d31d31-c944-436c-8b1b-062212c6774c
+    packName: ff
+    propagationLabels:
+    - all
+    toServerVersion: ""
+enabled: true
+engineinfo: {}
+mainengineinfo: {}
+name: ActiveUsersD2_copydfgdfg33
+pswd: ""
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+tags:
+- endpoint
+- agent
+type: javascript
