@@ -1111,6 +1111,7 @@ def main():
     # 1. we might need the info about this pack if a modified pack is dependent on it.
     # 2. even if the pack is not updated, we still keep some fields in it's metadata updated, such as download count,
     # changelog, etc.
+    pack: Pack
     for pack in list(packs_for_current_marketplace_dict.values()):
         task_status = pack.collect_content_items()
         if not task_status:
@@ -1128,6 +1129,13 @@ def main():
 
         if not task_status:
             pack.status = PackStatus.FAILED_DETECTING_MODIFIED_FILES.name
+            pack.cleanup()
+            continue
+
+        task_status, modified_files_data = pack.check_changes_relevance_for_marketplace(id_set)
+
+        if not task_status:
+            pack.status = PackStatus.CHANGES_ARE_NOT_RELEVANT_FOR_MARKETPLACE.name
             pack.cleanup()
             continue
 
@@ -1149,7 +1157,8 @@ def main():
             continue
 
         task_status, not_updated_build = pack.prepare_release_notes(index_folder_path, build_number,
-                                                                    modified_rn_files_paths)
+                                                                    modified_rn_files_paths,
+                                                                    modified_files_data)
         if not task_status:
             pack.status = PackStatus.FAILED_RELEASE_NOTES.name
             pack.cleanup()

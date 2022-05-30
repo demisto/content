@@ -24,9 +24,10 @@ import yaml
 from google.cloud import storage
 
 import Tests.Marketplace.marketplace_statistics as mp_statistics
-from Tests.Marketplace.marketplace_constants import PackFolders, Metadata, GCPConfig, BucketUploadFlow, PACKS_FOLDER, \
-    PackTags, PackIgnored, Changelog, BASE_PACK_DEPENDENCY_DICT, SIEM_RULES_OBJECTS, PackStatus
-from Utils.release_notes_generator import aggregate_release_notes_for_marketplace
+from Tests.Marketplace.marketplace_constants import (PackFolders, Metadata, GCPConfig, BucketUploadFlow, PACKS_FOLDER,
+    PackTags, PackIgnored, Changelog, BASE_PACK_DEPENDENCY_DICT, SIEM_RULES_OBJECTS, PackStatus, PACK_FOLDERS_TO_ID_SET_KEYS,
+        RN_HEADER_BY_PACK_FOLDER)
+from Utils.release_notes_generator import aggregate_release_notes_for_marketplace, merge_version_blocks, construct_entities_block
 from Tests.scripts.utils import logging_wrapper as logging
 
 
@@ -109,6 +110,7 @@ class Pack(object):
         self._contains_filter = False  # initialized in collect_content_items function
         self._is_missing_dependencies = False  # initialized in _load_pack_dependencies function
         self._is_modified = None  # initialized in detect_modified function
+        self._modified_files = {}  # initialized in detect_modified function
         self._is_siem = False  # initialized in collect_content_items function
 
         # Dependencies attributes - these contain only packs that are a part of this marketplace
@@ -732,7 +734,7 @@ class Pack(object):
 
         return changelog_entry
 
-    def _create_changelog_entry(self, release_notes, version_display_name, build_number,
+    def _create_changelog_entry(self, release_notes, version_display_name, build_number, modified_files_data={},
                                 new_version=True, initial_release=False):
         """ Creates dictionary entry for changelog.
 
@@ -744,24 +746,27 @@ class Pack(object):
             initial_release (bool): whether the entry is an initial release or not.
         Returns:
             dict: release notes entry of changelog
+            bool: Whether the pack is not updated
 
         """
+        entry_result = {}
+
         if new_version:
-            return {Changelog.RELEASE_NOTES: release_notes,
-                    Changelog.DISPLAY_NAME: f'{version_display_name} - {build_number}',
-                    Changelog.RELEASED: datetime.utcnow().strftime(Metadata.DATE_FORMAT)}
+            entry_result = {Changelog.RELEASE_NOTES: release_notes,
+                            Changelog.DISPLAY_NAME: f'{version_display_name} - {build_number}',
+                            Changelog.RELEASED: datetime.utcnow().strftime(Metadata.DATE_FORMAT)}
 
         elif initial_release:
-            return {Changelog.RELEASE_NOTES: release_notes,
-                    Changelog.DISPLAY_NAME: f'{version_display_name} - {build_number}',
-                    Changelog.RELEASED: self._create_date}
+            entry_result = {Changelog.RELEASE_NOTES: release_notes,
+                            Changelog.DISPLAY_NAME: f'{version_display_name} - {build_number}',
+                            Changelog.RELEASED: self._create_date}
 
         elif self.is_modified:
-            return {Changelog.RELEASE_NOTES: release_notes,
-                    Changelog.DISPLAY_NAME: f'{version_display_name} - R{build_number}',
-                    Changelog.RELEASED: datetime.utcnow().strftime(Metadata.DATE_FORMAT)}
+            entry_result = {Changelog.RELEASE_NOTES: release_notes,
+                            Changelog.DISPLAY_NAME: f'{version_display_name} - R{build_number}',
+                            Changelog.RELEASED: datetime.utcnow().strftime(Metadata.DATE_FORMAT)}
 
-        return {}
+        return self.filter_changelog_entries_based_marketplace(entry_result, version_display_name, modified_files_data)
 
     def remove_unwanted_files(self, delete_test_playbooks=True):
         """ Iterates over pack folder and removes hidden files and unwanted folders.
@@ -1017,8 +1022,16 @@ class Pack(object):
                             logging.info(f"Detected modified files in {self._pack_name} pack")
                             task_status, pack_was_modified = True, True
                             modified_rn_files_paths.append(modified_file.a_path)
+
+                            if modified_file_path_parts[2] in PackFolders.pack_displayed_items():
+                                if modified_file_path_parts[2] in self._modified_files:
+                                    self._modified_files[modified_file_path_parts[2]].append(modified_file.a_path)
+                                else:
+                                    self._modified_files[modified_file_path_parts[2]] = [modified_file.a_path]
+
                         else:
                             logging.debug(f'{modified_file.a_path} is an ignored file')
+
             task_status = True
             if pack_was_modified:
                 # Make sure the modification is not only of release notes files, if so count that as not modified
@@ -1031,6 +1044,43 @@ class Pack(object):
             logging.exception(f"Failed in detecting modified files of {self._pack_name} pack")
         finally:
             return task_status, modified_rn_files_paths
+
+    def check_changes_relevance_for_marketplace(self, id_set: dict):
+        """
+        Checks if the pack modification is relevant for the current marketplace.
+
+        This is done by searching the modified files in the id_set, if the files were not found in id_set,
+        then the modified entities probably not relevant for the current marketplace upload.
+
+        Args:
+            id_set: The current id set.
+
+        Returns:
+            bool: whether the operation succeeded and changes are relevant for marketplace.
+            dict: data from id set for the modified files.
+        """
+
+        task_status = False
+        modified_files_data = {}
+
+        for pack_folder, modified_file_paths in self._modified_files.items():
+
+            modified_entities = [list(entity.values())[0] for entity in id_set[PACK_FOLDERS_TO_ID_SET_KEYS[pack_folder]] \
+                if list(entity.values())[0]['file_path'] in modified_file_paths]
+
+            # Check for Mappers since they are in the same folder as Classifiers
+            if pack_folder == PackFolders.CLASSIFIERS.value:
+                modified_entities.extend([list(entity.values())[0] for entity in id_set['Mappers'] \
+                    if list(entity.values())[0]['file_path'] in modified_file_paths])
+
+            if modified_entities:
+                modified_files_data[pack_folder] = modified_entities
+
+        # Return success if were not modified entities or if there are modified entities related to current marketplace
+        if not self._modified_files or (self._modified_files and modified_files_data):
+            task_status = True
+
+        return task_status, modified_files_data
 
     def upload_to_storage(self, zip_pack_path, latest_version, storage_bucket, override_pack, storage_base_path,
                           private_content=False, pack_artifacts_path=None, overridden_upload_path=None):
@@ -1422,7 +1472,7 @@ class Pack(object):
         return modified_rn_files
 
     def prepare_release_notes(self, index_folder_path, build_number,
-                              modified_rn_files_paths=None):
+                              modified_rn_files_paths=None, modified_files_data={}):
         """
         Handles the creation and update of the changelog.json files.
 
@@ -1430,6 +1480,7 @@ class Pack(object):
             index_folder_path (str): Path to the unzipped index json.
             build_number (str): circleCI build number.
             modified_rn_files_paths (list): list of paths of the pack's modified file
+            modified_files_data (dict): data from id set of the modified files.
 
         Returns:
             bool: whether the operation succeeded.
@@ -1470,17 +1521,22 @@ class Pack(object):
                     else:
                         if latest_release_notes in changelog:
                             logging.debug(f"Found existing release notes for version: {latest_release_notes}")
-                            version_changelog = self._create_changelog_entry(release_notes=release_notes_lines,
-                                                                             version_display_name=latest_release_notes,
-                                                                             build_number=build_number,
-                                                                             new_version=False)
+                            version_changelog, not_updated_build = self._create_changelog_entry(release_notes=release_notes_lines,
+                                                                                                version_display_name=latest_release_notes,
+                                                                                                build_number=build_number,
+                                                                                                modified_files_data=modified_files_data,
+                                                                                                new_version=False)
 
                         else:
                             logging.info(f"Created new release notes for version: {latest_release_notes}")
-                            version_changelog = self._create_changelog_entry(release_notes=release_notes_lines,
-                                                                             version_display_name=latest_release_notes,
-                                                                             build_number=build_number,
-                                                                             new_version=True)
+                            version_changelog, not_updated_build = self._create_changelog_entry(release_notes=release_notes_lines,
+                                                                                                version_display_name=latest_release_notes,
+                                                                                                build_number=build_number,
+                                                                                                modified_files_data=modified_files_data,
+                                                                                                new_version=True)
+
+                        if not_updated_build:
+                            return task_status, not_updated_build
 
                         if version_changelog:
                             changelog[latest_release_notes] = version_changelog
@@ -1504,12 +1560,16 @@ class Pack(object):
                     else:
                         # allow changing the initial changelog version
                         first_key_in_changelog = list(changelog.keys())[0]
-                        changelog[first_key_in_changelog] = self._create_changelog_entry(
+                        changelog[first_key_in_changelog], not_updated_build = self._create_changelog_entry(
                             release_notes=self.description,
                             version_display_name=first_key_in_changelog,
                             build_number=build_number,
+                            modified_files_data=modified_files_data,
                             initial_release=True,
                             new_version=False)
+
+                        if not_updated_build:
+                            return task_status, not_updated_build
 
                         logging.info(f"Found existing release notes in {Pack.CHANGELOG_JSON} for version: "
                                      f"{first_key_in_changelog} of pack {self._pack_name}. Modifying this version in "
@@ -1524,13 +1584,18 @@ class Pack(object):
             else:
                 # if there is no changelog file for the pack, this is a new pack, and we start it's changelog at it's
                 # current version
-                version_changelog = self._create_changelog_entry(
+                version_changelog, not_updated_build = self._create_changelog_entry(
                     release_notes=self.description,
                     version_display_name=self._current_version,
                     build_number=build_number,
+                    modified_files_data=modified_files_data,
                     new_version=True,
                     initial_release=True
                 )
+
+                if not_updated_build:
+                    return task_status, not_updated_build
+
                 changelog = {
                     self._current_version: version_changelog
                 }
@@ -1551,6 +1616,42 @@ class Pack(object):
                           f"Additional info: {e}")
         finally:
             return task_status, not_updated_build
+
+    def filter_changelog_entries_based_marketplace(self, changelog_entry: dict, version: str, modified_files_data: dict):
+        """
+        Filters the changelog entries by the entities that are given from id-set,
+        this is to avoid rn entries for entities that are not relevant to the current marketplace.
+
+        Args:
+            changelog_entry: The version changelog object.
+            version: The changelog's version.
+            modified_files_data: The data from id_set for the modified entities.
+
+        Returns:
+            (bool) Whether the pack is not updated because the changes are not relevant to the current marketplace.
+        """
+        
+        release_notes =  changelog_entry.get(Changelog.RELEASE_NOTES)
+        release_notes_dict: dict[str, Optional[dict]] = merge_version_blocks(pack_versions_dict={version: release_notes}, return_str=False)
+        new_release_notes_dict: dict = {}
+
+        for pack_folder, entities_data in modified_files_data.items():
+            
+            rn_header = RN_HEADER_BY_PACK_FOLDER[pack_folder]
+            display_names = [entity['display_name'] for entity in entities_data]
+
+            # Filters the RN entries by the entity display name
+            new_release_notes_dict[rn_header] = {display_name: rn_desc for display_name, rn_desc in release_notes_dict[rn_header].items() \
+                if display_name in display_names}
+            
+            if not new_release_notes_dict[rn_header]:
+                new_release_notes_dict.pop(rn_header)
+        
+        if not new_release_notes_dict:
+            return {}, True
+
+        changelog_entry[Changelog.RELEASE_NOTES] = construct_entities_block(new_release_notes_dict)
+        return changelog_entry, False
 
     def create_local_changelog(self, build_index_folder_path):
         """ Copies the pack index changelog.json file to the pack path

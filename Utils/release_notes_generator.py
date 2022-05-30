@@ -305,7 +305,7 @@ def aggregate_release_notes(pack_name: str, pack_versions_dict: dict, pack_metad
             f'{pack_release_notes}')
 
 
-def merge_version_blocks(pack_versions_dict: dict) -> Tuple[str, str]:
+def merge_version_blocks(pack_versions_dict: dict, return_str: bool = True) -> Tuple[str, str]:
     """
     merge several pack release note versions into a single block.
 
@@ -347,7 +347,8 @@ def merge_version_blocks(pack_versions_dict: dict) -> Tuple[str, str]:
                     entities_data[entity_type][entity_name] += f'{entity_comment.strip()}\n'
                 else:
                     entities_data[entity_type][entity_name] = f'{entity_comment.strip()}\n'
-    pack_release_notes = construct_entities_block(entities_data).strip()
+
+    pack_release_notes = construct_entities_block(entities_data).strip() if return_str else entities_data
 
     return pack_release_notes, latest_version
 
