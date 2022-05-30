@@ -1,0 +1,17 @@
+{
+    "name": "bar_k_test3",
+    "description": "test\ndo not review\ndo not merge",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "bakatzir",
+    "url": "",
+    "email": "",
+    "created": "2022-05-30T08:20:44Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "bakatzir"
+    ]
+}
