@@ -89,7 +89,6 @@ def schedule_polling(items_to_schedule):
         items_remaining=len(items_to_schedule),
         next_run_in_seconds=next_polling_interval
     )
-    demisto.info("Polling args are: {}".format(polling_args))
     return CommandResults(scheduled_command=scheduled_items)
 
 

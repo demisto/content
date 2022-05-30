@@ -8,7 +8,6 @@ from typing import Callable
 
 from dateparser import parse
 
-import demistomock
 from CommonServerPython import *
 
 INTEGRATION_NAME = "VirusTotal"
@@ -115,7 +114,7 @@ class Client(BaseClient):
         """
         return self._http_request(
             'GET',
-            f'ip_addresses/{ip}?relationships={relationships}', ok_codes=(429, 200)
+            f'ip_addresses/{ip}?relationships={relationships}'
         )
 
     def file(self, file: str, relationships: str = '') -> dict:
@@ -125,7 +124,7 @@ class Client(BaseClient):
         """
         return self._http_request(
             'GET',
-            f'files/{file}?relationships={relationships}', ok_codes=(429, 200)
+            f'files/{file}?relationships={relationships}'
         )
 
     def url(self, url: str, relationships: str = ''):
@@ -135,7 +134,7 @@ class Client(BaseClient):
         """
         return self._http_request(
             'GET',
-            f'urls/{encode_url_to_base64(url)}?relationships={relationships}', ok_codes=(429, 200)
+            f'urls/{encode_url_to_base64(url)}?relationships={relationships}'
         )
 
     def domain(self, domain: str, relationships: str = '') -> dict:
@@ -145,7 +144,7 @@ class Client(BaseClient):
         """
         return self._http_request(
             'GET',
-            f'domains/{domain}?relationships={relationships}', ok_codes=(429, 200)
+            f'domains/{domain}?relationships={relationships}'
         )
 
     # endregion
@@ -813,10 +812,10 @@ class ScoreCalculator:
         """
         self.logs.append(f'Basic analyzing of "{indicator}"')
         data = raw_response.get('data', {})
-        attributes = data.get('attributes', {})
+        attributes = data['attributes']
         popularity_ranks = attributes.get('popularity_ranks')
-        last_analysis_results = attributes.get('last_analysis_results')
-        last_analysis_stats = attributes.get('last_analysis_stats')
+        last_analysis_results = attributes['last_analysis_results']
+        last_analysis_stats = attributes['last_analysis_stats']
         if self.is_good_by_popularity_ranks(popularity_ranks):
             return Common.DBotScore.GOOD
         if self.is_preferred_vendors_pass_malicious(last_analysis_results):
@@ -1554,30 +1553,17 @@ def ip_command(client: Client, score_calculator: ScoreCalculator, args: dict, re
     """
     ips = argToList(args['ip'])
     results: List[CommandResults] = list()
-    execution_metrics = ExecutionMetrics()
     for ip in ips:
         raise_if_ip_not_valid(ip)
         try:
             raw_response = client.ip(ip, relationships)
-            if raw_response.get('error', {}).get('code') == "QuotaExceededError":
-                execution_metrics.quota_error += 1
-                result = CommandResults(readable_output=f'Quota exceeded for IP: {ip}').to_context()
-                results.append(result)
-                continue
         except Exception as exception:
             # If anything happens, just keep going
             demisto.debug(f'Could not process IP: "{ip}"\n {str(exception)}')
-            execution_metrics.general_error += 1
             continue
-        execution_metrics.success += 1
         results.append(
-            build_ip_output(client, score_calculator, ip, raw_response, argToBoolean(args.get('extended_data'))).to_context()
+            build_ip_output(client, score_calculator, ip, raw_response, argToBoolean(args.get('extended_data')))
         )
-    if len(results) == 0:
-        result = CommandResults(readable_output='No IPs were found.').to_context()
-        results.append(result)
-    if execution_metrics.is_supported():
-        results.append(execution_metrics.metrics.to_context())
     return results
 
 
@@ -1588,29 +1574,15 @@ def file_command(client: Client, score_calculator: ScoreCalculator, args: dict, 
     files = argToList(args['file'])
     extended_data = argToBoolean(args.get('extended_data'))
     results: List[CommandResults] = list()
-    execution_metrics = ExecutionMetrics()
-
     for file in files:
         raise_if_hash_not_valid(file)
         try:
             raw_response = client.file(file, relationships)
-            if raw_response.get('error', {}).get('code') == "QuotaExceededError":
-                execution_metrics.quota_error += 1
-                result = CommandResults(readable_output=f'Quota exceeded for file: {file}').to_context()
-                results.append(result)
-                continue
-            results.append(build_file_output(client, score_calculator, file, raw_response, extended_data).to_context())
-            execution_metrics.success += 1
+            results.append(build_file_output(client, score_calculator, file, raw_response, extended_data))
         except Exception as exc:
             # If anything happens, just keep going
-            demisto.debug(f'Could not process file: "{file}"\n {str(exc)}')
-            execution_metrics.general_error += 1
-            continue
-    if len(results) == 0:
-        result = CommandResults(readable_output='No files were found.').to_context()
-        results.append(result)
-    if execution_metrics.is_supported():
-        results.append(execution_metrics.metrics.to_context())
+            results.append(CommandResults(readable_output=f'Could not process file: "{file}"\n {str(exc)}'))
+
     return results
 
 
@@ -1622,30 +1594,16 @@ def url_command(client: Client, score_calculator: ScoreCalculator, args: dict, r
     urls = argToList(args['url'])
     extended_data = argToBoolean(args.get('extended_data'))
     results: List[CommandResults] = list()
-    execution_metrics = ExecutionMetrics()
     for url in urls:
         try:
             raw_response = client.url(
                 url, relationships
             )
-            demisto.results(raw_response)
-            if raw_response.get('error', {}).get('code') == "QuotaExceededError":
-                execution_metrics.quota_error += 1
-                result = CommandResults(readable_output=f'Quota exceeded for url: {url}').to_context()
-                results.append(result)
-                continue
         except Exception as exception:
             # If anything happens, just keep going
             demisto.debug(f'Could not process URL: "{url}".\n {str(exception)}')
-            execution_metrics.general_error += 1
             continue
-        execution_metrics.success += 1
-        results.append(build_url_output(client, score_calculator, url, raw_response, extended_data).to_context())
-    if len(results) == 0:
-        result = CommandResults(readable_output='No domains were found.').to_context()
-        results.append(result)
-    if execution_metrics.is_supported():
-        results.append(execution_metrics.metrics.to_context())
+        results.append(build_url_output(client, score_calculator, url, raw_response, extended_data))
     return results
 
 
@@ -1654,31 +1612,18 @@ def domain_command(client: Client, score_calculator: ScoreCalculator, args: dict
     1 API Call for regular
     1-4 API Calls for premium subscriptions
     """
-    execution_metrics = ExecutionMetrics()
     domains = argToList(args['domain'])
     results: List[CommandResults] = list()
-    demisto.debug(f'Domains: {domains}')
     for domain in domains:
         try:
             raw_response = client.domain(domain, relationships)
-            if raw_response.get('error', {}).get('code') == "QuotaExceededError":
-                execution_metrics.quota_error += 1
-                result = CommandResults(readable_output=f'Quota exceeded for domain: {domain}').to_context()
-                results.append(result)
-                continue
         except Exception as exception:
             # If anything happens, just keep going
             demisto.debug(f'Could not process domain: "{domain}"\n {str(exception)}')
-            execution_metrics.general_error += 1
             continue
-        execution_metrics.success += 1
-        result = build_domain_output(client, score_calculator, domain, raw_response, argToBoolean(args.get('extended_data'))).to_context()
-        results.append(result)
-    if len(results) == 0:
-        result = CommandResults(readable_output='No domains were found.').to_context()
-        results.append(result)
-    if execution_metrics.is_supported():
-        results.append(execution_metrics.metrics.to_context())
+        results.append(
+            build_domain_output(client, score_calculator, domain, raw_response, argToBoolean(args.get('extended_data')))
+        )
     return results
 
 
@@ -2231,7 +2176,6 @@ def main(params: dict, args: dict, command: str):
         results = file_sigma_analysis_command(client, args)
     else:
         raise NotImplementedError(f'Command {command} not implemented')
-    demisto.info(results)
     return_results(results)
 
 
