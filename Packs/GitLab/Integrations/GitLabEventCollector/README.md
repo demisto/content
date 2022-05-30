@@ -1,4 +1,4 @@
-An event collector for Gitlab audit events using and events using Gitlab's API.  
+An event collector for Gitlab audit events and events using Gitlab's API.  
 
 [Audit events API documentation](https://docs.gitlab.com/ee/api/audit_events.html)  
 [Events API documentation](https://docs.gitlab.com/ee/api/events.html)
