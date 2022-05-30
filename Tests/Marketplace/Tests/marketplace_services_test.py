@@ -87,6 +87,8 @@ class GitMock:
                 return '(#22)'
             case '1_0_3.md':
                 return '(#33)'
+            case _:
+                return 'no number'
 
 
 class TestMetadataParsing:
