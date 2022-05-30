@@ -1,3 +1,8 @@
+import os
+
+import git
+from argparse import ArgumentParser
+
 import functools
 import sys
 from abc import ABC, abstractmethod
@@ -6,9 +11,10 @@ from pathlib import Path
 from typing import Iterable, Optional
 
 from demisto_sdk.commands.common.constants import FileType, MarketplaceVersions
-from demisto_sdk.commands.common.tools import find_type_by_path
+from demisto_sdk.commands.common.tools import find_type_by_path, str2bool
 from git import Repo
 
+from Tests.Marketplace.marketplace_services import get_last_commit_from_index
 from Tests.scripts.collect_tests.constants import (
     CONTENT_PATH, DEFAULT_MARKETPLACE_WHEN_MISSING, DEFAULT_REPUTATION_TESTS,
     EXCLUDED_FILES, SKIPPED_CONTENT_ITEMS, XSOAR_SANITY_TEST_NAMES)
@@ -81,10 +87,6 @@ class CollectedTests:
         for i in range(len(tests)):
             self._add_single(tests[i], packs[i], reason, reason_description)
 
-    @property
-    def not_empty(self):
-        return any((self.tests, self.packs))
-
     def __or__(self, other: 'CollectedTests') -> 'CollectedTests':
         self.tests.update(other.tests)
         self.packs.update(other.packs)
@@ -108,7 +110,7 @@ class CollectedTests:
             reason: CollectionReason,
             description: str,
     ):
-        """ Should only be called from add_multiple """  # todo really?
+        """ Should only be called from add_multiple """
         if not any((test, pack)):
             raise RuntimeError('both test and pack provided are empty')
 
@@ -172,28 +174,28 @@ class TestCollector(ABC):
 
         collected.machines = Machine.get_suitable_machines(collected.version_range, run_nightly, run_master)
 
-        if collected.machines is None and not collected.not_empty:  # todo reconsider
+        if collected.machines is None and not (collected.tests or collected.packs):  # todo reconsider
             raise EmptyMachineListException()
 
         # collected |= self._add_packs_used(collected.tests)  # todo should we use it?
         return collected
 
-    def _add_packs_used(self, tests: set[str]) -> list[CollectedTests]:  # todo is used?
-        return self._add_packs_from_tested_integrations(tests) + self._add_packs_from_test_playbooks(tests)
-
-    def _add_packs_from_tested_integrations(self, tests: set[str]) -> list[CollectedTests]:
-        # only called in _add_packs_used
-        # todo is it used in the new version?
-        logger.info(f'searching for integrations used in test playbooks, '
-                    f'to make sure the integration pack_name_to_pack_metadata are installed')
-        collected = []
-
-        for test in tests:
-            for integration in self.conf.tests_to_integrations.get(test, ()):
-                if pack := self.id_set.integration_to_pack.get(integration):  # todo what if not?
-                    collected.append(self._collect_pack(pack, CollectionReason.PACK_MATCHES_INTEGRATION,
-                                                        reason_description=f'{integration=}'))
-        return collected
+    # def _add_packs_used(self, tests: set[str]) -> list[CollectedTests]:  # todo is used?
+    #     return self._add_packs_from_tested_integrations(tests) + self._add_packs_from_test_playbooks(tests)
+    #
+    # def _add_packs_from_tested_integrations(self, tests: set[str]) -> list[CollectedTests]:
+    #     # only called in _add_packs_used
+    #     # todo is it used in the new version?
+    #     logger.info(f'searching for integrations used in test playbooks, '
+    #                 f'to make sure the integration pack_name_to_pack_metadata are installed')
+    #     collected = []
+    #
+    #     for test in tests:
+    #         for integration in self.conf.tests_to_integrations.get(test, ()):
+    #             if pack := self.id_set.integration_to_pack.get(integration):  # todo what if not?
+    #                 collected.append(self._collect_pack(pack, CollectionReason.PACK_MATCHES_INTEGRATION,
+    #                                                     reason_description=f'{integration=}'))
+    #     return collected
 
     @staticmethod
     def _collect_pack(name: str, reason: CollectionReason, reason_description: str) -> CollectedTests:
@@ -219,6 +221,19 @@ class TestCollector(ABC):
                     self._collect_pack(pack, reason=CollectionReason.PACK_MATCHES_TEST, reason_description='')
                 )
         return collected
+
+
+class ChangeBranch:
+    def __init__(self, branch: str):
+        self.repo = Repo(CONTENT_PATH)
+        self.original = self.repo.active_branch.name
+        self.change_to = branch
+
+    def __enter__(self):
+        self.repo.git.checkout(self.change_to)
+
+    def __exit__(self):
+        self.repo.git.checkout(self.original)
 
 
 class BranchTestCollector(TestCollector):
@@ -378,13 +393,35 @@ class BranchTestCollector(TestCollector):
         )
 
     def _get_changed_files(self) -> tuple[str]:
-        repo = Repo(CONTENT_PATH)
-        full_branch_name = f'origin/{self.branch_name}'  # todo remove, debugging only
-        latest, previous = tuple(repo.iter_commits(
-            rev=f'{full_branch_name}~1...{full_branch_name}~3' if IS_GITLAB
-            else f'{full_branch_name}...{full_branch_name}~2'
-        ))
-        return tuple(str(file.b_path) for file in latest.diff(previous))
+        compare_branch = 'origin/master'
+        #
+        # if os.getenv("IFRA_ENV_TYPE") == 'Bucket-Upload':
+        #     service_account = None  # todo
+        #     latest_commit = get_last_commit_from_index(service_account)
+        #     compare_branch = self.branch_name if self.branch_name != 'master' else 'origin/master'
+        #
+        # elif self.branch_name != 'master':
+        #     files_string = tools.run_command("git diff --name-status origin/master...{0}".format(branch_name))
+        #
+        #     # Checks if the build is for contributor PR and if so add it's pack.
+        #     if os.getenv('CONTRIB_BRANCH'):
+        #         packs_diff = tools.run_command('git status -uall --porcelain -- Packs').replace('??', 'A')
+        #         files_string = '\n'.join([files_string, packs_diff])
+        # else:
+        #     commit_string = tools.run_command("git log -n 2 --pretty='%H'")
+        #     logging.debug(f'commit string: {commit_string}')
+        #     commit_string = commit_string.replace("'", "")
+        #     last_commit, second_last_commit = commit_string.split()
+        #     files_string = tools.run_command(f'git diff --name-status {second_last_commit}...{last_commit}')
+        #
+        with ChangeBranch(self.branch_name):
+            repo = Repo(CONTENT_PATH)
+            full_branch_name = f'origin/{self.branch_name}'  # todo remove, debugging only
+            latest, previous = tuple(repo.iter_commits(
+                rev=f'{full_branch_name}~1...{full_branch_name}~3' if IS_GITLAB
+                else f'{full_branch_name}...{full_branch_name}~2'
+            ))
+            return tuple(str(file.b_path) for file in latest.diff(previous))
 
 
 class NightlyTestCollector(TestCollector, ABC):
@@ -516,6 +553,36 @@ class UploadCollector(BranchTestCollector):
         collected = super()._collect()
         collected.tests = set()
         return collected
+
+
+def ui():
+    if __name__ == "__main__":
+        parser = ArgumentParser(description='Utility CircleCI usage')  # todo (?)
+        parser.add_argument('-n', '--nightly', type=str2bool, help='Is nightly')
+        parser.add_argument('-p', '--changed_pack_path', type=str, help='A string representing the changed files')
+        parser.add_argument('-mp', '--marketplace', help='marketplace version.', default='xsoar')
+        parser.add_argument('--service_account', help="Path to gcloud service account")
+        options = parser.parse_args()
+
+        match (options.nightly, marketplace := MarketplaceVersions(options.marketplace)):
+            case False, _:  # not nightly
+                collector = BranchTestCollector(marketplace=MarketplaceVersions.XSOAR, branch_name='master')
+            case True, MarketplaceVersions.XSOAR:
+                collector = XSOARNightlyTestCollector()
+            case True, MarketplaceVersions.MarketplaceV2:
+                collector = XSIAMNightlyTestCollector()
+            case _, _:  # todo _ or _, _?
+                raise ValueError(f"unexpected marketplace value {marketplace}")
+
+        # Create test file based only on committed files
+        create_test_file(options.nightly, options.skip_save, options.changed_pack_path, options.marketplace,
+                         options.service_account)
+        if not _FAILED:
+            logging.info("Finished test configuration")
+            sys.exit(0)
+        else:
+            logging.error("Failed test configuration. See previous errors.")
+            sys.exit(1)
 
 
 if __name__ == '__main__':
