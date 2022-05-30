@@ -112,12 +112,6 @@ script:
       - yes
       required: false
       secret: false
-    - default: false
-      description: SHA256 ID of the sample, which is a SHA256 hash value. Find the sample ID from the response when uploading a malware sample or search with the cs-fx-upload-file command.
-      isArray: false
-      name: sha256
-      required: false
-      secret: false
     - auto: PREDEFINED
       default: false
       defaultValue: "160: Windows 10"
