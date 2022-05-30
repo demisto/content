@@ -479,6 +479,7 @@ class Pack(object):
         Returns:
             Doesn't return
         """
+
         if yaml_type == 'Integration':
             if yaml_content.get('script', {}).get('feed', False) is True:
                 self._is_feed = True
