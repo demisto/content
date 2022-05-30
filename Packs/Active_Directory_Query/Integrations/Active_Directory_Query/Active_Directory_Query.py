@@ -11,6 +11,8 @@ from ldap3.utils.log import (set_library_log_detail_level, get_library_log_detai
                              set_library_log_hide_sensitive_data, EXTENDED)
 from ldap3.utils.conv import escape_filter_chars
 
+CIPHERS_STRING = '@SECLEVEL=1:ECDHE+AESGCM:ECDHE+CHACHA20:DHE+AESGCM:DHE+CHACHA20:ECDH+AESGCM:DH+AESGCM:ECDH+AES:DH+AES:RSA+ANESGCM:RSA+AES:!aNULL:!eNULL:!MD5:!DSS'
+
 # global connection
 conn: Optional[Connection] = None
 
@@ -81,7 +83,7 @@ def initialize_server(host, port, secure_connection, unsecure):
 
     if secure_connection == "TLS":
         demisto.debug(f"initializing sever with TLS (unsecure: {unsecure}). port: {port or 'default(636)'}")
-        tls = Tls(validate=ssl.CERT_NONE)
+        tls = Tls(validate=ssl.CERT_NONE, ciphers=CIPHERS_STRING)
         if port:
             return Server(host, port=port, use_ssl=unsecure, tls=tls)
         return Server(host, use_ssl=unsecure, tls=tls)
@@ -92,17 +94,19 @@ def initialize_server(host, port, secure_connection, unsecure):
         demisto.debug(f"initializing sever with SSL (unsecure: {unsecure}). port: {port or 'default(636)'}")
         if not unsecure:
             demisto.debug("will require server certificate.")
-            tls = Tls(validate=ssl.CERT_REQUIRED, ca_certs_file=os.environ.get('SSL_CERT_FILE'))
+            tls = Tls(validate=ssl.CERT_REQUIRED, ca_certs_file=os.environ.get('SSL_CERT_FILE'), ciphers=CIPHERS_STRING)
             if port:
                 return Server(host, port=port, use_ssl=True, tls=tls)
             return Server(host, use_ssl=True, tls=tls)
+        tls = Tls(ciphers=CIPHERS_STRING)
         if port:
-            return Server(host, port=port, use_ssl=True)
-        return Server(host, use_ssl=True)
+            return Server(host, port=port, use_ssl=True, tls=tls)
+        return Server(host, use_ssl=True, tls=tls)
     demisto.debug(f"initializing server without secure connection. port: {port or 'default(389)'}")
+    tls = Tls(ciphers=CIPHERS_STRING)
     if port:
-        return Server(host, port=port)
-    return Server(host)
+        return Server(host, port=port, tls=tls)
+    return Server(host, tls=tls)
 
 
 def user_account_to_boolean_fields(user_account_control):
