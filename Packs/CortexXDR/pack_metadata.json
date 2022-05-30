@@ -65,7 +65,7 @@
             "display_name": "Malware Investigation and Response"
         },
         "AutoFocus": {
-            "mandatory": true,
+            "mandatory": false,
             "display_name": "AutoFocus"
         },
         "Jira": {
