@@ -1,4 +1,4 @@
-Log collecting for AUDIT event using Duo API https://duo.com/docs/adminapi#logs
+Log collecting for AUDIT events using the Duo API https://duo.com/docs/adminapi#logs.
 
 ## Configure Duo Event Collector on Cortex XSIAM
 
@@ -6,16 +6,16 @@ Log collecting for AUDIT event using Duo API https://duo.com/docs/adminapi#logs
 2. Search for Duo Event Collector.
 3. Click **Add instance** to create and configure a new integration instance.
 
-| **Parameter**                                                           | **Description**                                                                           | **Required** |
-|-------------------------------------------------------------------------|-------------------------------------------------------------------------------------------|--------------|
-| Server Host                                                             | Duo api host (api-XXXXXXXX.duosecurity.com)                                               | True         |
-| First fetch from api time                                               | The time to fetch from on the first run                                                   | True         |
-| Integration key                                                         | API integration key                                                                       | True         |
-| Secrete key                                                             | API secrete key                                                                           | True         |
-| XSIAM request limit                                                     | The number of results to get from the api and to add to XSIAM                             | True         |
-| Request retries                                                         | We can get `to many request http error` so we will retry the request according to this parameter | False        |
-| The vendor corresponding to the integration that originated the events  | product name of the product to name the dataset after                                     | False        |
-| The product corresponding to the integration that originated the events | vendor name of the product to name the dataset after                                      | False        |
+| **Parameter** | **Description** | **Required** |
+|----|--------|----------|
+| Server Host    | Duo API host (api-XXXXXXXX.duosecurity.com).   | True         |
+| First fetch from API time   | The time to fetch from for the first run.     | True   |
+| Integration key   | API integration key.   | True    |
+| Secret key  | API secret key.  | True    |
+| XSIAM request limit  | The maximum number of results to get from the API and to add to XSIAM. | True |
+| Request retries  | The number of retries to perform in the API. (This is necessary because if there are too many retries, the API will return a "too many requests 429" error). | False        |
+| The vendor corresponding to the integration that originated the events  | Product name of the product to name the dataset after.   | False   |
+| The product corresponding to the integration that originated the events | Vendor name of the product to name the dataset after.   | False  |
 
 
 4. Click **Test** to validate the URLs, tokens, and connection.
