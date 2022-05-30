@@ -92,6 +92,7 @@ There is no context output for this command.
 #### Human Readable Output
 
 >### Slack Audit Logs
->|id|date_create|action|actor|entity|context|
+>|action|actor|context|date_create|entity|id|
 >|---|---|---|---|---|---|
->| 0123a45b-6c7d-8900-e12f-3456789gh0i1 | 2018-03-16 17:32:23 | user_login | type: user\nuser: {"id":"W123AB456", "name":"Charlie Parker", "email":"bird@slack.com"} | type: user\nuser: {"id":"W123AB456", "name":"Charlie Parker", "email":"bird@slack.com"} | location: {"type":"enterprise", "id":"E1701NCCA", "name":"Birdland", "domain":"birdland"}\nua: Mozilla\/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit\/537.36 (KHTML, like Gecko) Chrome\/64.0.3282.186 Safari\/537.36\nsession_id: 847288190092\nip_address: 1.23.45.678 |
+>| user_login | type: user<br/>user: {"id": "W123AB456", "name": "Charlie Parker", "email": "bird@slack.com"} | location: {"type": "enterprise", "id": "E1701NCCA", "name": "Birdland", "domain": "birdland"}<br/>ua: Mozilla\/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit\/537.36 (KHTML, like Gecko) Chrome\/64.0.3282.186 Safari\/537.36<br/>session_id: 847288190092<br/>ip_address: 1.23.45.678 | 1970-01-18 14:33:34 | type: user<br/>user: {"id": "W123AB456", "name": "Charlie Parker", "email": "bird@slack.com"} | 0123a45b-6c7d-8900-e12f-3456789gh0i2 |
+
