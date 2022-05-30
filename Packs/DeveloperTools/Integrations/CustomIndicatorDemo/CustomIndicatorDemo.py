@@ -37,7 +37,7 @@ class Client(BaseClient):
         return {"dummy": dummy}
 
 
-def test_module() -> str:  # pragma: no cover
+def test_module() -> str:
     """Tests API connectivity and authentication'
 
     Returning 'ok' indicates that the integration works like it is supposed to.
@@ -74,22 +74,20 @@ def custom_indicator_creation(client: Client) -> CommandResults:
     )
     # Create a data dictionary, which is the data of the indicator
     data = {
-        'ip': '127.0.0.1',
-        'hostname': 'localhost',
+        'param1': 'value1',
+        'param2': 'value2',
     }
-
     # Create the CustomIndicator
     custom_indicator = Common.CustomIndicator(
         indicator_type='MyCustomIndicator',
         dbot_score=dbot_score,
         value=indicator_value,
         data=data,
-        context_prefix='custom'
+        context_prefix='custom',
     )
 
-    # Create relationships
-    relationships = []
-    relationships.append(EntityRelationship(
+    # Create a relationship
+    relationships = [EntityRelationship(
         name='impersonates',
         entity_a='0.0.0.0',
         entity_a_type='IP',
@@ -97,7 +95,9 @@ def custom_indicator_creation(client: Client) -> CommandResults:
         entity_b_type=custom_indicator,
         source_reliability='B - Usually reliable',
         brand='XSOAR'
-    ))
+    )]
+
+    custom_indicator.relationships = relationships
 
     # Return a CommandResults object containing the CustomIndicator object created
     return CommandResults(
@@ -105,15 +105,14 @@ def custom_indicator_creation(client: Client) -> CommandResults:
         outputs=result,
         outputs_prefix='Demo.Result',
         outputs_key_field='test_key_field',
-        indicator=custom_indicator,
-        relationships=relationships
+        indicator=custom_indicator
     )
 
 
 ''' MAIN FUNCTION '''
 
 
-def main() -> None:  # pragma: no cover
+def main() -> None:
     """main function, parses params and runs command functions
 
     :return:
@@ -135,8 +134,6 @@ def main() -> None:  # pragma: no cover
             return_results(result)
         elif demisto.command() == 'test-custom-indicator':
             return_results(custom_indicator_creation(client))
-        else:
-            raise NotImplementedError(f"Command '{demisto.command()}' is not implemented.")
 
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
