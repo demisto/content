@@ -113,7 +113,7 @@ def main() -> None:  # pragma: no cover
                 get_events.client.event_type = event_type  # type: ignore
                 events.extend(get_events.run())
         get_events.client.event_type = 'events'  # type: ignore
-        get_events.client.request.url = urljoin(url + f'events')
+        get_events.client.request.url = urljoin(url + 'events')
         get_events.client.page = 1  # type: ignore
         events.extend(get_events.run())
 
