@@ -483,7 +483,7 @@ class Pack(object):
         if yaml_type == 'Integration':
             if yaml_content.get('script', {}).get('feed', False) is True:
                 self._is_feed = True
-            if yaml_content.get('isfetchevents', False) is True:
+            if yaml_content.get('script', {}).get('isfetchevents', False) is True:
                 self._is_siem = True
         if yaml_type == 'Playbook':
             if yaml_content.get('name').startswith('TIM '):
