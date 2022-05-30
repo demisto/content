@@ -107,7 +107,7 @@ tags:
 - ml
 timeout: 480ns
 type: python
-dockerimage: demisto/mlurlphishing:1.0.0.28347
+dockerimage: demisto/mlurlphishing:1.0.0.29930
 runas: DBotRole
 runonce: false
 tests:
