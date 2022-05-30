@@ -14,6 +14,8 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
+  required: true
+  defaultvalue: C - Fairly reliable
   type: 15
 - defaultvalue: https://soar.monstersofhack.com
   display: Server URL (e.g. https://soar.monstersofhack.com)
@@ -602,7 +604,7 @@ script:
     - contextPath: CVE.ID
       description: The ID of the CVE.
       type: string
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3.10.4.29342
   isfetch: true
   longRunning: false
   longRunningPort: false
