@@ -7,17 +7,6 @@ demisto_params = {'after': '1 month', 'host': 'api-a1fdb00d.duosecurity.com', 'i
 demisto_params['params'] = Params(**demisto_params, mintime={})
 client = Client(demisto_params)
 get_events = GetEvents(client=client, request_order=[LogType.AUTHENTICATION, LogType.ADMINISTRATION, LogType.TELEPHONY])
-id1 = {'username': 'a', 'eventtype': 'a', 'timestamp': 'a'}
-id2 = {'username': 'b', 'eventtype': 'b', 'timestamp': 'b'}
-id3 = {'username': 'c', 'eventtype': 'c', 'timestamp': 'c'}
-
-
-@pytest.mark.parametrize("events,ids,result", [
-    ([id1, id2, id3], ['aaa'], [id2, id3]),
-    ([id1, id2, id3], ['ddd'], [id1, id2, id3]),
-    ([], ['aaa'], [])])
-def test_remove_duplicates(events, ids, result):
-    assert get_events.remove_duplicates(events, ids) == result
 
 
 def test_rotate_request_order():

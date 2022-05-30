@@ -11,7 +11,7 @@ XDM.Auth.auth_method = factor,
 XDM.Auth.event_timestamp = isotimestamp;
 
 [MODEL: dataset=duo_duo_raw, model=Audit]
-XDM.Audit.operation = action,
+| alter XDM.Audit.operation = action,
 XDM.Audit.original_event_description = description,
 XDM.Audit.audited_resource.name = object,
 XDM.Audit.event_timestamp = timestamp,

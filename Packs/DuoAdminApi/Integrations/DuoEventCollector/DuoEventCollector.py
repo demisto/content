@@ -59,7 +59,7 @@ class Client:
         return {}
 
     def set_next_run_filter(self, mintime: int, log_type: LogType):  # pragma: no cover
-        self.params.set_mintime_value(mintime, log_type)
+        self.params.set_mintime_value(mintime + 1, log_type)
 
 
 class GetEvents:
@@ -76,66 +76,46 @@ class GetEvents:
         temp.rotate(-1)
         self.request_order = list(temp)
 
-    def make_sdk_call(self, last_object_ids: list):  # pragma: no cover
+    def make_sdk_call(self):  # pragma: no cover
         events: list = self.client.call(self.request_order)  # type: ignore
-        if last_object_ids:
-            events = GetEvents.remove_duplicates(events, last_object_ids)
         events = sorted(events, key=lambda e: e['timestamp'])
         events = events[: int(self.client.params.limit)]
-        self.rotate_request_order()
         return events
 
-    def _iter_events(self, last_object_ids: list) -> None:  # type: ignore
+    def _iter_events(self) -> None:  # type: ignore
         """
         Function that responsible for the iteration over the events returned from the Duo api
         """
-        events: list = self.make_sdk_call(last_object_ids)
+        events: list = self.make_sdk_call()
         while True:
             yield events
-            self.client.set_next_run_filter(events[-1]['timestamp'], self.request_order[-1])
-            events = self.make_sdk_call(last_object_ids)
+            self.client.set_next_run_filter(events[-1]['timestamp'], self.request_order[0])
+            events = self.make_sdk_call()
             try:
                 assert events
             except (IndexError, AssertionError):
                 LOG('empty list, breaking')
                 break
 
-    def aggregated_results(self, last_object_ids: list = None) -> List[dict]:  # pragma: no cover
+    def aggregated_results(self) -> List[dict]:  # pragma: no cover
         """
         Function to group the events returned from the api
         """
 
         stored_events = []
-        for events in self._iter_events(last_object_ids):  # type: ignore
+        for events in self._iter_events():  # type: ignore
             stored_events.extend(events)
             if len(stored_events) >= int(self.client.params.limit) or not events:
                 return stored_events
             self.client.params.limit = int(self.client.params.limit) - len(stored_events)
         return stored_events
 
-    def get_last_run(self, events: List[dict]) -> dict:  # pragma: no cover
+    def get_last_run(self):  # pragma: no cover
         """
-        Get the info from the last run, it returns the time to query from and a list of ids to prevent duplications
+        Get the info from the last run, it returns the time to query from
         """
-        ids = []
-        last_time = self.client.params.mintime
-        if events:
-            # gets the last event time
-            last_time = events[-1].get('timestamp')
-            for event in events:
-                if event.get('timestamp') == last_time:
-                    event_id = f'{event.get("username")}{event.get("eventtype")}{event.get("timestamp")}'
-                    ids.append(event_id)
-        return {'mintime': last_time, 'ids': ids, 'request_order': self.request_order}
-
-    @staticmethod
-    def remove_duplicates(events: list, ids: list) -> list:
-        """
-        Remove object duplicates by the uuid of the object
-        """
-
-        return [event for event in events if
-                f'{event.get("username")}{event.get("eventtype")}{event.get("timestamp")}' not in ids]
+        self.rotate_request_order()
+        return {'after': self.client.params.mintime, 'request_order': self.request_order}
 
 
 def override_make_request(self, method: str, uri: str, body: dict, headers: dict):  # pragma: no cover
@@ -176,7 +156,6 @@ def main():  # pragma: no cover
         last_run = demisto.getLastRun()
         request_order = last_run.get('request_order',
                                      [LogType.AUTHENTICATION, LogType.ADMINISTRATION, LogType.TELEPHONY])
-        last_object_ids = last_run.get('ids')
         if 'after' not in last_run:
             after = dateparser.parse(demisto_params['after'].strip())
             last_run = after.timestamp()  # type: ignore
@@ -197,7 +176,7 @@ def main():  # pragma: no cover
             get_events.aggregated_results()
             return_results('ok')
         elif command in ('duo-get-events', 'fetch-events'):
-            events = get_events.aggregated_results(last_object_ids=last_object_ids)
+            events = get_events.aggregated_results()
             if command == 'duo-get-events':
                 command_results = CommandResults(
                     readable_output=tableToMarkdown('Duo Logs', events, headerTransform=pascalToSpace),
@@ -205,12 +184,13 @@ def main():  # pragma: no cover
                 )
                 return_results(command_results)
             else:
-                demisto.setLastRun(get_events.get_last_run(events))
+                demisto.setLastRun(get_events.get_last_run())
                 demisto_params['push_events'] = True
             if demisto_params.get('push_events'):
                 send_events_to_xsiam(events, demisto_params.get('vendor', 'duo'), demisto_params.get('product', 'duo'))
     except Exception as e:
-        return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
+        raise e
+        return_error('Failed to execute {demisto.command()} command. Error: {str(e)}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
