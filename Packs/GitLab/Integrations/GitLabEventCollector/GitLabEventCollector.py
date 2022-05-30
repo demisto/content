@@ -78,12 +78,12 @@ def main() -> None:  # pragma: no cover
         'event_types': ['groups', 'projects']
     }
     headers = {'PRIVATE-TOKEN': demisto_params.get('api_key', {}).get('password')}
-    insecure = not demisto_params.get('insecure', 'True')
+    verify = not demisto_params.get('insecure', 'True')
     request_object = {
         'method': Method.GET,
         'url': url,
         'headers': headers,
-        'verify': insecure
+        'verify': verify
     }
     last_run = demisto.getLastRun()
     if ('groups', 'projects', 'events') not in last_run:
