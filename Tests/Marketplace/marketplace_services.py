@@ -24,9 +24,9 @@ import yaml
 from google.cloud import storage
 
 import Tests.Marketplace.marketplace_statistics as mp_statistics
-from Tests.Marketplace.marketplace_constants import (PackFolders, Metadata, GCPConfig, BucketUploadFlow, PACKS_FOLDER,
-    PackTags, PackIgnored, Changelog, BASE_PACK_DEPENDENCY_DICT, SIEM_RULES_OBJECTS, PackStatus, PACK_FOLDERS_TO_ID_SET_KEYS,
-        RN_HEADER_BY_PACK_FOLDER, CONTENT_ROOT_PATH)
+from Tests.Marketplace.marketplace_constants import PackFolders, Metadata, GCPConfig, BucketUploadFlow, PACKS_FOLDER, \
+    PackTags, PackIgnored, Changelog, BASE_PACK_DEPENDENCY_DICT, SIEM_RULES_OBJECTS, PackStatus, PACK_FOLDERS_TO_ID_SET_KEYS, \
+    RN_HEADER_BY_PACK_FOLDER, CONTENT_ROOT_PATH
 from Utils.release_notes_generator import aggregate_release_notes_for_marketplace, merge_version_blocks, construct_entities_block
 from Tests.scripts.utils import logging_wrapper as logging
 
@@ -1070,13 +1070,13 @@ class Pack(object):
 
         for pack_folder, modified_file_paths in self._modified_files.items():
 
-            modified_entities = [list(entity.values())[0] for entity in id_set[PACK_FOLDERS_TO_ID_SET_KEYS[pack_folder]] \
-                if list(entity.values())[0]['file_path'] in modified_file_paths]
+            modified_entities = [list(entity.values())[0] for entity in id_set[PACK_FOLDERS_TO_ID_SET_KEYS[pack_folder]]
+                                    if list(entity.values())[0]['file_path'] in modified_file_paths]
 
             # Check for Mappers since they are in the same folder as Classifiers
             if pack_folder == PackFolders.CLASSIFIERS.value:
-                modified_entities.extend([list(entity.values())[0] for entity in id_set['Mappers'] \
-                    if list(entity.values())[0]['file_path'] in modified_file_paths])
+                modified_entities.extend([list(entity.values())[0] for entity in id_set['Mappers']
+                                            if list(entity.values())[0]['file_path'] in modified_file_paths])
 
             if modified_entities:
                 modified_files_data[pack_folder] = modified_entities
@@ -1530,21 +1530,25 @@ class Pack(object):
                         logging.info(f"found prs for version {latest_release_notes} : {prs_for_version}")
                         if latest_release_notes in changelog:
                             logging.debug(f"Found existing release notes for version: {latest_release_notes}")
-                            version_changelog, not_updated_build = self._create_changelog_entry(release_notes=release_notes_lines,
-                                                                                                version_display_name=latest_release_notes,
-                                                                                                build_number=build_number,
-                                                                                                modified_files_data=modified_files_data,
-                                                                                                new_version=False,
-                                                                                                pull_request_numbers=prs_for_version)
+                            version_changelog, not_updated_build = self._create_changelog_entry(
+                                release_notes=release_notes_lines,
+                                version_display_name=latest_release_notes,
+                                build_number=build_number,
+                                modified_files_data=modified_files_data,
+                                new_version=False,
+                                pull_request_numbers=prs_for_version
+                            )
 
                         else:
                             logging.info(f"Created new release notes for version: {latest_release_notes}")
-                            version_changelog, not_updated_build = self._create_changelog_entry(release_notes=release_notes_lines,
-                                                                                                version_display_name=latest_release_notes,
-                                                                                                build_number=build_number,
-                                                                                                modified_files_data=modified_files_data,
-                                                                                                new_version=True,
-                                                                                                pull_request_numbers=prs_for_version)
+                            version_changelog, not_updated_build = self._create_changelog_entry(
+                                release_notes=release_notes_lines,
+                                version_display_name=latest_release_notes,
+                                build_number=build_number,
+                                modified_files_data=modified_files_data,
+                                new_version=True,
+                                pull_request_numbers=prs_for_version
+                            )
 
                         if not_updated_build:
                             return task_status, not_updated_build
@@ -1646,23 +1650,25 @@ class Pack(object):
         Returns:
             (bool) Whether the pack is not updated because the changes are not relevant to the current marketplace.
         """
-        
-        release_notes =  changelog_entry.get(Changelog.RELEASE_NOTES)
-        release_notes_dict: dict[str, Optional[dict]] = merge_version_blocks(pack_versions_dict={version: release_notes}, return_str=False)
+
+        release_notes = changelog_entry.get(Changelog.RELEASE_NOTES)
+        release_notes_dict: dict[str, dict[str, str]] = merge_version_blocks(pack_versions_dict={version: release_notes},
+                                                                             return_str=False)
         new_release_notes_dict: dict = {}
 
         for pack_folder, entities_data in modified_files_data.items():
-            
+
             rn_header = RN_HEADER_BY_PACK_FOLDER[pack_folder]
             display_names = [entity['display_name'] for entity in entities_data]
 
             # Filters the RN entries by the entity display name
-            new_release_notes_dict[rn_header] = {display_name: rn_desc for display_name, rn_desc in release_notes_dict[rn_header].items() \
-                if display_name in display_names}
-            
+            new_release_notes_dict[rn_header] = \
+                {display_name: rn_desc for display_name, rn_desc in release_notes_dict[rn_header].items()
+                    if display_name in display_names}
+
             if not new_release_notes_dict[rn_header]:
                 new_release_notes_dict.pop(rn_header)
-        
+
         if not new_release_notes_dict:
             return {}, True
 
