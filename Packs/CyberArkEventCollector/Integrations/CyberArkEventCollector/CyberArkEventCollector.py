@@ -104,7 +104,7 @@ class CyberArkEventsOptions(IntegrationOptions):
 
 
 class CyberArkEventsRequest(IntegrationHTTPRequest):
-    method = Method.GET
+    method = Method.POST
     headers = {'Accept': '*/*', 'Content-Type': 'application/json'}
 
 
@@ -129,7 +129,7 @@ class CyberArkEventsClient(IntegrationEventsClient):
     def authenticate(self):
         credentials = base64.b64encode(f'{self.credentials.identifier}:{self.credentials.password}'.encode()).decode()
         request = IntegrationHTTPRequest(
-            method=self.request.method,
+            method=Method.POST,
             url=f"{self.request.url.removesuffix('/RedRock/Query')}/oauth2/token/{self.options.app_id}",
             headers={'Authorization': f"Basic {credentials}"},
             data={'grant_type': 'client_credentials', 'scope': 'siem'},
