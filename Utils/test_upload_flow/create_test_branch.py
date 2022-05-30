@@ -178,7 +178,7 @@ if __name__ == "__main__":
             repo.git.add(f"{p}/*")
 
         repo.git.commit(m="Added Test file")
-        repo.git.push('--set-upstream', 'https://code.pan.run/xsoar/content.git', branch)
+        repo.git.push('--set-upstream', 'https://code.pan.run/xsoar/content.git', branch)  # disable-secrets-detection
 
     except GitCommandError as e:
         print(e)
