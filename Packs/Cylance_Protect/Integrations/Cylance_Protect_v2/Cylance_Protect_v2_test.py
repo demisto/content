@@ -1,9 +1,12 @@
+import json
+
 import demistomock as demisto
 from CommonServerPython import Common
 from Cylance_Protect_v2 import create_dbot_score_entry, translate_score, FILE_THRESHOLD, \
     get_device, get_device_by_hostname, update_device, get_device_threats, get_policies, create_zone, get_zones, \
     get_zone, update_zone, get_threat, get_threats, get_threat_devices, get_list, get_list_entry_by_hash, \
-    add_hash_to_list, delete_hash_from_lists, delete_devices, get_policy_details
+    add_hash_to_list, delete_hash_from_lists, delete_devices, get_policy_details, create_instaquery, list_instaquery, \
+    get_instaquery_result
 import Cylance_Protect_v2
 
 THREAT_OUTPUT = {u'cylance_score': -1.0, u'name': u'name',
@@ -232,6 +235,75 @@ EXPECTED_POLICY = {'Timestamp': '2020-04-13T10:32:44.507000+00:00',
                    'Name': u'fff'
                    }
 
+INSTAQUERY_OUTPUT = {u'match_type': u'Fuzzy',
+                     u'name': u'Test Instaquery',
+                     u'created_at': u'2022-05-23T00:02:37Z',
+                     u'artifact': u'File',
+                     u'case_sensitive': False,
+                     u'zones': [u'6608CA0E88C64647B276271CC5EA4295'],
+                     u'progress': {},
+                     u'match_value_type': u'Path',
+                     u'results_available': False,
+                     u'match_values': [u'cyoptics.exe'],
+                     u'id': u'CBEB9E9C9A9A41D1BD06C87464F5E2CD',
+                     u'description': u'Test only'}
+
+INSTAQUERY_RESULT_OUTPUT = {
+    u'status': u'done',
+    u'id': u'CBEB9E9C9A9A41D1BD06C87464F5E2CD',
+    u'result': [
+        {u'@timestamp': 1653264158.3315804,
+            u'HostName': u'windows-server-',
+            u'DeviceId': u'65DB26864E364409B50DDC23291A3511',
+            u'@version': u'1',
+            u'CorrelationId': u'CBEB9E9C9A9A41D1BD06C87464F5E2CD',
+            u'Result': u'{"FirstObservedTime": "1970-01-01T00:00:00.000Z", "LastObservedTime": "1970-01-01T00:00:00.000Z", '
+                       u'"Uid": "dHrtLYQzbt9oJPxO8HaeyA==", "Type": "File", "Properties": {"Path": '
+                       u'"c:\\\\program files\\\\cylance\\\\optics\\\\cyoptics.exe", "CreationDateTime": '
+                       u'"2021-03-29T22:34:14.000Z", "Md5": "A081D3268531485BF95DC1A15A5BC6B0", "Sha256": '
+                       u'"256809AABD3AB57949003B9AFCB556A9973222CDE81929982DAE7D306648E462", "Owner": "NT AUTHORITY\\\\SYSTEM", '
+                       u'"SuspectedFileType": "Executable/PE", "FileSignature": "", "Size": "594104", "OwnerUid": '
+                       u'"P3p6fdq3FlMsld6Rz95EOA=="}}'
+         }
+    ]
+}
+
+LIST_INSTAQUERY_OUTPUT = {
+    u'page_number': 1,
+    u'page_items': [
+        {
+            u'match_type': u'Fuzzy',
+            u'name': u'Test Insta continue 84',
+            u'created_at': u'2022-05-23T00:02:37Z',
+            u'artifact': u'File', u'case_sensitive': False,
+            u'zones': [u'6608CA0E88C64647B276271CC5EA4295'],
+            u'progress': {u'queried': 1, u'responded': 1},
+            u'match_value_type': u'Path',
+            u'results_available': True,
+            u'match_values': [u'cyoptics.exe'],
+            u'id': u'CBEB9E9C9A9A41D1BD06C87464F5E2CD',
+            u'description': u'Test only'
+        },
+        {
+            u'match_type': u'Exact',
+            u'name': u'CylanceProtectv2InstaQueryTest Test creation 2',
+            u'created_at': u'2022-05-20T09:15:09Z',
+            u'artifact': u'File',
+            u'case_sensitive': True,
+            u'zones': [u'6608CA0E88C64647B276271CC5EA4295'],
+            u'progress': {u'queried': 1, u'responded': 1},
+            u'match_value_type': u'Path',
+            u'results_available': False,
+            u'match_values': [u'exe'],
+            u'id': u'BC522393DD6E666C9EA9A999767EF5DB',
+            u'description': u'Description here'
+        }
+    ],
+    u'total_pages': 13,
+    u'total_number_of_items': 26,
+    u'page_size': 2
+}
+
 
 def test_create_dbot_score_entry():
     """
@@ -397,7 +469,7 @@ def test_get_zones(mocker):
 
     contents = demisto_results.call_args[0][0]
     assert EXPECTED_ZONES.items() <= \
-           contents.get('EntryContext').get('CylanceProtect.Zones(val.Id && val.Id === obj.Id)')[0].items()
+        contents.get('EntryContext').get('CylanceProtect.Zones(val.Id && val.Id === obj.Id)')[0].items()
 
 
 def test_get_zone(mocker):
@@ -651,5 +723,76 @@ def test_get_policy_details(mocker):
     get_policy_details()
 
     contents = demisto_results.call_args[0][0]
-    assert EXPECTED_POLICY.get("ID") == contents.get('EntryContext').get('Cylance.Policy(val.ID && val.ID == obj.ID)') \
-        .get("ID")
+    assert EXPECTED_POLICY.get("ID") == \
+        contents.get('EntryContext').get('Cylance.Policy(val.policy_id && val.policy_id == obj.policy_id)').get("policy_id")
+
+
+def test_create_instaquery(mocker):
+    """
+    Given
+        - demisto args
+    When
+        - calls the function create_insta_query
+    Then
+        - checks if the output is as expected
+    """
+    args = {
+        "name": "Test Instaquery",
+        "description": "To collect test result",
+        "artifact": "File",
+        "match_value_type": "File.Path",
+        "match_values": "cyoptics.exe",
+        "case_sensitive": False,
+        "match_type": "Fuzzy",
+        "zone": "6608ca0e-88c6-4647-b276-271cc5ea4295"
+    }
+    mocker.patch.object(Cylance_Protect_v2, "create_instaquery_request", return_value=INSTAQUERY_OUTPUT)
+    mocker.patch.object(demisto, 'args', return_value=args)
+    demisto_results = mocker.patch.object(demisto, 'results')
+    create_instaquery()
+
+    contents = demisto_results.call_args[0][0]
+    assert INSTAQUERY_OUTPUT.get("id") == \
+        contents.get('EntryContext').get('InstaQuery.New(val.id && val.id == obj.id)').get("id")
+
+
+def test_get_instaquery_result(mocker):
+    """
+    Given
+        - demisto args
+    When
+        - calls the function get_instaquery_result
+    Then
+        - checks if the output is as expected
+    """
+    args = {'query_id': 'CBEB9E9C9A9A41D1BD06C87464F5E2CD'}
+    mocker.patch.object(Cylance_Protect_v2, "get_instaquery_result_request", return_value=INSTAQUERY_RESULT_OUTPUT)
+    mocker.patch.object(demisto, 'args', return_value=args)
+    demisto_results = mocker.patch.object(demisto, 'results')
+    get_instaquery_result()
+
+    contents = demisto_results.call_args[0][0]
+    assert json.loads(INSTAQUERY_RESULT_OUTPUT['result'][0]['Result']).get(
+        'Properties').get('Sha256') in contents.get('HumanReadable')
+
+
+def test_list_instaquery(mocker):
+    """
+    Given
+        - demisto args
+    When
+        - calls the function list_instaquery
+    Then
+        - checks if the number of output items is as expected
+    """
+    args = {'page_number': '1',
+            'page_size': '2'
+            }
+    mocker.patch.object(Cylance_Protect_v2, "list_instaquery_request", return_value=LIST_INSTAQUERY_OUTPUT)
+    mocker.patch.object(demisto, 'args', return_value=args)
+    demisto_results = mocker.patch.object(demisto, 'results')
+    list_instaquery()
+
+    contents = demisto_results.call_args[0][0]
+    assert len(LIST_INSTAQUERY_OUTPUT.get("page_items")) == \
+        len(contents.get('EntryContext').get("InstaQuery.List").get("page_items"))

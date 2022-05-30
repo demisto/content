@@ -1,4 +1,5 @@
 from http import HTTPStatus
+from collections import defaultdict
 from typing import Callable
 from typing import Dict
 from typing import List
@@ -11,9 +12,6 @@ from CommonServerUserPython import *
 from intezer_sdk import consts
 from intezer_sdk.analysis import FileAnalysis
 from intezer_sdk.analysis import UrlAnalysis
-from intezer_sdk.analysis import get_file_analysis_by_id
-from intezer_sdk.analysis import get_url_analysis_by_id
-from intezer_sdk.analysis import get_latest_analysis
 from intezer_sdk.api import IntezerApi
 from intezer_sdk.errors import AnalysisIsAlreadyRunning
 from intezer_sdk.errors import AnalysisIsStillRunning
@@ -190,7 +188,7 @@ def get_latest_result_command(intezer_api: IntezerApi, args: Dict[str, str]) -> 
     if not file_hash:
         raise ValueError('Missing file hash')
 
-    latest_analysis = get_latest_analysis(file_hash=file_hash, api=intezer_api, requester=REQUESTER)
+    latest_analysis = FileAnalysis.from_latest_hash_analysis(file_hash=file_hash, api=intezer_api, requester=REQUESTER)
 
     if not latest_analysis:
         return _get_missing_file_result(file_hash)
@@ -235,14 +233,14 @@ def check_analysis_status_and_get_results_command(intezer_api: IntezerApi, args:
                 response = intezer_api.get_url_result(f'/endpoint-analyses/{analysis_id}')
                 analysis_result = response.json()['result']
             elif analysis_type == 'Url':
-                analysis = get_url_analysis_by_id(analysis_id, api=intezer_api)
+                analysis = UrlAnalysis.from_analysis_id(analysis_id, api=intezer_api)
                 if not analysis:
                     command_results.append(_get_missing_url_result(analysis_id))
                     continue
                 else:
                     analysis_result = analysis.result()
             else:
-                analysis = get_file_analysis_by_id(analysis_id, api=intezer_api)
+                analysis = FileAnalysis.from_analysis_id(analysis_id, api=intezer_api)
                 if not analysis:
                     command_results.append(_get_missing_analysis_result(analysis_id))
                     continue
@@ -275,7 +273,7 @@ def get_analysis_sub_analyses_command(intezer_api: IntezerApi, args: dict) -> Co
     analysis_id = args.get('analysis_id')
 
     try:
-        analysis = get_file_analysis_by_id(analysis_id, api=intezer_api)
+        analysis = FileAnalysis.from_analysis_id(analysis_id, api=intezer_api)
         if not analysis:
             return _get_missing_analysis_result(analysis_id=str(analysis_id))
     except AnalysisIsStillRunning:
@@ -509,10 +507,8 @@ def enrich_dbot_and_display_url_analysis_results(intezer_result, intezer_api):
         intezer_result['redirect_chain'] = redirect_chain
 
     if 'indicators' in intezer_result:
-        indicators: Dict[str, List[str]] = {}
+        indicators: Dict[str, List[str]] = defaultdict(list)
         for indicator in intezer_result['indicators']:
-            if indicator['classification'] not in indicators:
-                indicators['classification'] = []
             indicators[indicator['classification']].append(indicator['text'])
         indicators_text = [
             get_indicator_text('malicious', indicators),
@@ -532,7 +528,7 @@ def enrich_dbot_and_display_url_analysis_results(intezer_result, intezer_api):
         downloaded_file = intezer_result.pop('downloaded_file')
         presentable_result += f'Downloaded file SHA256: {downloaded_file["sha256"]}\n'
         presentable_result += f'Downloaded file Verdict: **{downloaded_file["analysis_summary"]["verdict_type"]}**\n'
-        downloaded_file_analysis = get_file_analysis_by_id(downloaded_file['analysis_id'], intezer_api)
+        downloaded_file_analysis = FileAnalysis.from_analysis_id(downloaded_file['analysis_id'], intezer_api)
         downloaded_file_presentable_result = _file_analysis_presentable_code(downloaded_file_analysis.result())
 
     md = tableToMarkdown('Analysis Report', intezer_result, url_keys=['analysis_url'])

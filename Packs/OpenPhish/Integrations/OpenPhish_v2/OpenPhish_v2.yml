@@ -3,7 +3,7 @@ commonfields:
   id: OpenPhish_v2
   version: -1
 configuration:
-- defaultvalue: false
+- defaultvalue: 'false'
   display: Use HTTPS connection
   name: https
   required: false
