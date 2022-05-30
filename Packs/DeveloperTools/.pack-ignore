@@ -18,3 +18,5 @@ ignore=IM111
 
 [known_words]
 CustomIndicator
+IndicatorTypes
+MyCustomIndicator
