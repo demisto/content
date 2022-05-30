@@ -48,6 +48,7 @@ Get alerts from Varonis DA
 | user_name | List of users (up to 5). | Optional |
 | user_domain_name | User domain name (cannot be provided without user_name). | Optional |
 | sam_account_name | List of sam account names (up to 5). | Optional |
+| email | List of emails (up to 5). | Optional |
 | page | Page number. Default is 1. | Optional | 
 
 

@@ -16,6 +16,7 @@ requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
 ''' CONSTANTS '''
 
+MAX_USERS_TO_SEARCH = 5
 NON_EXISTENT_SID = -1000
 MAX_INCIDENTS_TO_FETCH = 100
 SEARCH_RESULT_RETRIES = 10
@@ -220,16 +221,7 @@ class Client(BaseClient):
         :return: The list of users
         :rtype: ``Dict[str, Any]``
         """
-        request_params: Dict[str, Any] = {}
-        request_params['columns'] = '[\'ObjName\']'
-        request_params['searchString'] = user_name
-        request_params['limit'] = 1000
-
-        return self._http_request(
-            'GET',
-            'api/userdata/users',
-            params=request_params
-        )['ResultSet']
+        return self.varonis_get_users(user_name, '[\'ObjName\']')
 
     def varonis_get_users_by_sam_account_name(self, sam_account_name: str) -> List[Any]:
         """Search users by sam account name
@@ -240,9 +232,34 @@ class Client(BaseClient):
         :return: The list of users
         :rtype: ``Dict[str, Any]``
         """
+        return self.varonis_get_users(sam_account_name, '[\'SamAccountName\']')
+
+    def varonis_get_users_by_email(self, email: str) -> List[Any]:
+        """Search users by email
+
+        :type email: ``str``
+        :param email: email to search by
+
+        :return: The list of users
+        :rtype: ``Dict[str, Any]``
+        """
+        return self.varonis_get_users(email, '[\'Email\']')
+
+    def varonis_get_users(self, search_string: str, columns: str) -> List[Any]:
+        """Search users by search string
+
+        :type search_string: ``str``
+        :param search_string: search string
+
+        :type columns: ``str``
+        :param columns: columns to search by
+
+        :return: The list of users
+        :rtype: ``Dict[str, Any]``
+        """
         request_params: Dict[str, Any] = {}
-        request_params['columns'] = '[\'SamAccountName\']'
-        request_params['searchString'] = sam_account_name
+        request_params['columns'] = columns
+        request_params['searchString'] = search_string
         request_params['limit'] = 1000
 
         return self._http_request(
@@ -638,22 +655,7 @@ class SearchAlertsQueryBuilder(SearchQueryBuilder):
                 if user['DisplayName'] == user_name and (not user_domain_name or user['DomainName'] == user_domain_name):
                     sidIds.append(user['Id'])
 
-        filter_obj: Dict[str, Any] = {
-            'path': 'Alert.User.SidID',
-            'operator': 'In',
-            'values': []
-        }
-
-        if len(sidIds) == 0:
-            sidIds.append(NON_EXISTENT_SID)
-
-        for sidId in sidIds:
-            user_object = {
-                'Alert.User.SidID': sidId,
-            }
-            filter_obj['values'].append(user_object)
-
-        self._filters.append(filter_obj)
+        self.create_alert_sid_id_filter(sidIds)
 
     def create_alert_sam_account_name_filter(self, sam_account_names: List[str]):
         """Add alert sam account name filter to the search query
@@ -670,6 +672,31 @@ class SearchAlertsQueryBuilder(SearchQueryBuilder):
                 if user['SAMAccountName'] == sam_account_name:
                     sidIds.append(user['Id'])
 
+        self.create_alert_sid_id_filter(sidIds)
+
+    def create_alert_email_filter(self, emails: List[str]):
+        """Add alert email filter to the search query
+
+        :type emails: ``List[str]``
+        :param emails: A list of emails
+        """
+        sidIds: List[int] = []
+
+        for email in emails:
+            users = self._client.varonis_get_users_by_email(email)
+
+            for user in users:
+                if user['Email'] == email:
+                    sidIds.append(user['Id'])
+
+        self.create_alert_sid_id_filter(sidIds)
+
+    def create_alert_sid_id_filter(self, sidIds: List[int]):
+        """Add alert sid id filter to the search query
+
+        :type sidIds: ``List[int]``
+        :param sidIds: A list of sid ids
+        """
         filter_obj: Dict[str, Any] = {
             'path': 'Alert.User.SidID',
             'operator': 'In',
@@ -854,6 +881,7 @@ def varonis_get_alerts(
         user_domain_name: str,
         user_names: Optional[List[str]],
         sam_account_names: Optional[List[str]],
+        emails: Optional[List[str]],
 ) -> Dict[str, Any]:
     """Searches and retrieves alerts
 
@@ -896,6 +924,9 @@ def varonis_get_alerts(
     :type sam_account_names: ``str``
     :param sam_account_names: Sam account names
 
+    :type emails: ``str``
+    :param emails: List of emails
+
     :return: Alerts
     :rtype: ``Dict[str, Any]``
     """
@@ -917,6 +948,8 @@ def varonis_get_alerts(
         builder.create_alert_user_name_filter(user_names, user_domain_name)
     if sam_account_names and any(sam_account_names):
         builder.create_alert_sam_account_name_filter(sam_account_names)
+    if emails and any(emails):
+        builder.create_alert_email_filter(emails)
     builder.create_ordering('Alert.Time', 'Asc')
 
     query = builder.build()
@@ -1134,6 +1167,7 @@ def varonis_get_alerts_command(client: Client, args: Dict[str, Any]) -> CommandR
         ``args['user_domain_name']`` User domain name
         ``args['user_name']`` List of user names
         ``args['sam_account_name']`` List of sam account names
+        ``args['email']`` List of emails
 
     :return:
         A ``CommandResults`` object
@@ -1151,18 +1185,23 @@ def varonis_get_alerts_command(client: Client, args: Dict[str, Any]) -> CommandR
     user_domain_name = args.get('user_domain_name', None)
     user_names = args.get('user_name', None)
     sam_account_names = args.get('sam_account_name', None)
+    emails = args.get('email', None)
 
     user_names = try_convert(user_names, lambda x: argToList(x))
     sam_account_names = try_convert(sam_account_names, lambda x: argToList(x))
+    emails = try_convert(emails, lambda x: argToList(x))
 
     if user_domain_name and (not user_names or len(user_names) == 0):
         raise ValueError('user_domain_name cannot be provided without user_name')
 
-    if user_names and len(user_names) > 5:
-        raise ValueError('cannot provide more then 5 users')
+    if user_names and len(user_names) > MAX_USERS_TO_SEARCH:
+        raise ValueError(f'cannot provide more then {MAX_USERS_TO_SEARCH} users')
 
-    if sam_account_names and len(sam_account_names) > 5:
-        raise ValueError('cannot provide more then 5 sam account names')
+    if sam_account_names and len(sam_account_names) > MAX_USERS_TO_SEARCH:
+        raise ValueError(f'cannot provide more then {MAX_USERS_TO_SEARCH} sam account names')
+
+    if emails and len(emails) > MAX_USERS_TO_SEARCH:
+        raise ValueError(f'cannot provide more then {MAX_USERS_TO_SEARCH} emails')
 
     alert_severities = try_convert(alert_severities, lambda x: argToList(x))
     device_names = try_convert(device_names, lambda x: argToList(x))
@@ -1192,7 +1231,7 @@ def varonis_get_alerts_command(client: Client, args: Dict[str, Any]) -> CommandR
 
     result = varonis_get_alerts(client, alert_statuses, threat_model_names, start_time, end_time,
                                 max_results, page, None, alert_severities, device_names, user_domain_name,
-                                user_names, sam_account_names)
+                                user_names, sam_account_names, emails)
     outputs = create_output(ALERT_OUTPUT, result['rows'])
     page_size = result['rowsCount']
     alerts = []

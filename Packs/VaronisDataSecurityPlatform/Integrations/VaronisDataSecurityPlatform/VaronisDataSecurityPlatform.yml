@@ -138,6 +138,12 @@ script:
       name: sam_account_name
       required: false
       secret: false
+    - default: false
+      description: List of emails (up to 5)
+      isArray: true
+      name: email
+      required: false
+      secret: false
     - default: true
       defaultValue: '1'
       description: Page number
