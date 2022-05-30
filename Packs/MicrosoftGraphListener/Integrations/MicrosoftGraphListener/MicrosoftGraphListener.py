@@ -1070,8 +1070,7 @@ def list_attachments_command(client: MsGraphClient, args):
             'Name': attachment.get('name') or attachment.get('id'),
             'Type': attachment.get('contentType')
         } for attachment in attachments]
-        attachment_entry = {'ID': message_id, 'Attachment': attachment_list, 'UserID': user_id}
-        entry_context = {'MSGraphMailAttachment(val.ID === obj.ID)': attachment_entry}
+        entry_context = {'ID': message_id, 'Attachment': attachment_list, 'UserID': user_id}
 
         # Build human readable
         file_names = [attachment.get('Name') for attachment in attachment_list if isinstance(
@@ -1080,11 +1079,26 @@ def list_attachments_command(client: MsGraphClient, args):
             f'Total of {len(attachment_list)} attachments found in message {message_id} from user {user_id}',
             {'File names': file_names}
         )
-        return_outputs(human_readable, entry_context, raw_response)
+        command_results = CommandResults(
+            outputs_prefix='MSGraphMailAttachment',
+            outputs_key_field='ID',
+
+            outputs=entry_context,
+            readable_output=human_readable,
+            raw_response=raw_response
+        )
+        return_results(command_results)
     else:
         human_readable = f'### No attachments found in message {message_id}'
-        return_outputs(human_readable, dict(), raw_response)
+        command_results = CommandResults(
+            outputs_prefix='MSGraphMailAttachment',
+            outputs_key_field='ID',
 
+            outputs=dict(),
+            readable_output=human_readable,
+            raw_response=raw_response
+        )
+        return_results(command_results)
 
 def get_attachment_command(client: MsGraphClient, args):
     message_id = args.get('message_id')
@@ -1111,7 +1125,7 @@ def list_mails_command(client: MsGraphClient, args):
     mail_context = build_mail_object(raw_response)
     entry_context = {}
     if mail_context:
-        entry_context = {'MSGraphMail(val.ID === obj.ID)': mail_context}
+        entry_context = mail_context
         if next_page:
             # .NextPage.indexOf(\'http\')>=0 : will make sure the NextPage token will always be updated because it's a url
             entry_context['MSGraphMail(val.NextPage.indexOf(\'http\')>=0)'] = {'NextPage': next_page}
@@ -1126,8 +1140,16 @@ def list_mails_command(client: MsGraphClient, args):
         )
     else:
         human_readable = '### No mails were found'
-    return_outputs(human_readable, entry_context, raw_response)
 
+    command_results = CommandResults(
+        outputs_prefix='MSGraphMail',
+        outputs_key_field='ID',
+
+        outputs=entry_context,
+        readable_output=human_readable,
+        raw_response=raw_response
+    )
+    return_results(command_results)
 
 def get_email_as_eml_command(client: MsGraphClient, args):
     user_id = args.get('user_id')
@@ -1140,7 +1162,6 @@ def get_email_as_eml_command(client: MsGraphClient, args):
         raise Exception(file_result['Contents'])
 
     demisto.results(file_result)
-
 
 def build_folders_path(folder_string: str) -> Optional[str]:
     """
