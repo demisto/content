@@ -7,7 +7,6 @@ Gitlab Events Collector
 
 * **Server URL** - The API domain URL for Gitlab.
 * **API key** - The request API key, you can learn how to generate one [here](https://docs.gitlab.com/ee/user/profile/personal_access_tokens.html).
-* **Event types** - A comma-separated list of event types.
 * **Groups ids** - A comma-separated list of group ids.
 * **Projects ids** - A comma-separated list of project ids.
 * **The product name corresponding to the integration that originated the events** - The name of the product to name the dataset after.

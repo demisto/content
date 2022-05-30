@@ -12,7 +12,6 @@ An event collector for Gitlab audit events using and events using Gitlab's the a
 |---------------|-------------------------------------------------------|--------------|
 | Server Host   | Gitlab git url                                        | True         |
 | API key     | The request API key                                   | True         |
-| Event types     | The event types to get as a comma delimitered string  | False         |
 | Groups ids     | The groups ids to get as a comma delimitered string   | False         |
 | Projects ids     | The Projects ids to get as a comma delimitered string | True         |
 | The product name corresponding to the integration that originated the events     | The name of the product to name the dataset after     | False        |
