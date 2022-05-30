@@ -1,4 +1,4 @@
-[MODEL: dataset=filestream_filestream_raw, model=Audit]
+[MODEL: dataset=oracle_db_raw, model=Audit]
 filter json_extract_scalar(_raw_log, "$.ACTION_NAME") in ("AUDIT OBJECT", "NOAUDIT OBJECT", "CREATE USER", "CREATE ROLE", "DROP USER", "DROP ROLE", "SET ROLE", "SESSION REC", "SYSTEM AUDIT", "SYSTEM NOAUDIT", "AUDIT DEFAULT", "NOAUDIT DEFAULT", "SYSTEM GRANT", "SYSTEM REVOKE", "GRANT ROLE", "REVOKE ROLE")
 | alter XDM.Audit.TriggeredBy.identity.name = json_extract_scalar(_raw_log, "$.OS_USERNAME"),
 XDM.Audit.event_timestamp = parse_timestamp("%Y-%m-%d %H:%M:%S", json_extract(_raw_log, "$.EVENT_TIMESTAMP")),
@@ -9,7 +9,7 @@ XDM.Audit.reason = json_extract_scalar(_raw_log, "$.SQL_TEXT");
 filter json_extract_scalar(_raw_log, "$.ACTION_NAME") in ("ALTER SESSION","ALTER USER","LOGON","LOGOFF","LOGOFF BY CLEANUP")
 | alter XDM.Auth.session_id = json_extract_scalar(_raw_log, "$.SESSIONID"),
 XDM.Auth.Client.user.username = json_extract_scalar(_raw_log, "$.OS_USERNAME"),
-XDM.Auth.ntlm.rsp_hostname = json_extract_scalar(_raw_log, "$.USERHOST"),
+XDM.Auth.ntlm.dns_hostname = json_extract_scalar(_raw_log, "$.USERHOST"),
 XDM.Auth.logon.type = json_extract_scalar(_raw_log, "$.AUTHENTICATION_TYPE"),
 XDM.Auth.Client.application.name = json_extract_scalar(_raw_log, "$.CLIENT_PROGRAM_NAME"),
 XDM.Auth.event_timestamp = parse_timestamp("%Y-%m-%d %H:%M:%S", json_extract(_raw_log, "$.EVENT_TIMESTAMP")),

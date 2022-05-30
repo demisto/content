@@ -1,6 +1,6 @@
 {
     "name": "Oracle",
-    "description": "Oracle Pack",
+    "description": "The modeling rules for Oracle event collectors.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
