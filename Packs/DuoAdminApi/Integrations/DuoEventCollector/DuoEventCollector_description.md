@@ -20,7 +20,7 @@ Duo Events collector XSIAM
 * **SECRET KEY** - The secret key.
 * **First fetch from api time** - The time to take events from if no time is saved in the system.
 * **XSIAM request limit** - The maximum amount of events to retrieve from the API.
-* **Request retries** - The number of retries to perform in the API. (This is necessary because if there are too may retries, the API will return a "too many requests 429" error).
+* **Request retries** - The number of retries to perform in the API. (This is necessary because if there are too many retries, the API will return a "too many requests 429" error).
 * **The vendor corresponding to the integration that originated the events** - Product name of the product to name the dataset after.
 * **The product corresponding to the integration that originated the events** - Vendor name of the product to name the dataset after.
 
