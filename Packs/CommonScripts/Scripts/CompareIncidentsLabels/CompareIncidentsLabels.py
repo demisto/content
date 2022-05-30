@@ -1,7 +1,5 @@
 import demistomock as demisto
 from CommonServerPython import *
-from CommonServerUserPython import *
-import traceback
 
 try:
     inc1 = demisto.args().get('incident_id_1')
