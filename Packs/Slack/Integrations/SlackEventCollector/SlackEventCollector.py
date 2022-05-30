@@ -21,14 +21,14 @@ def get_slack_events_to_timestamp_format(value: Any) -> int:
     return int(datetime_obj.timestamp())
 
 
-class SlackEventsParams(BaseModel):
+class Params(BaseModel):
     oldest: Optional[int]
     latest: Optional[int]
     limit: int = Field(1000, alias='limit', gt=0, le=9999)
     action: Optional[str]
     actor: Optional[str]
     entity: Optional[str]
-    last_id: Optional[str]  # used in lastRun object only, for dedup
+    last_id: Optional[str]  # used for dedup only
 
     # validators
     _normalize_oldest = validator('oldest', pre=True, allow_reuse=True)(
@@ -42,28 +42,19 @@ class SlackEventsParams(BaseModel):
         validate_assignment = True
 
 
-class SlackEventsRequestConfig(IntegrationHTTPRequest):
+class RequestConfig(IntegrationHTTPRequest):
     # https://api.slack.com/admins/audit-logs#how_to_call
-    params: SlackEventsParams
+    params: Optional[Params] = None
     url = parse_obj_as(AnyUrl, 'https://api.slack.com/audit/v1/logs')
     headers = {'Accept': 'application/json'}
     method = Method.GET
 
 
-class SlackEventClient(IntegrationEventsClient):
-    def __init__(self, params: dict) -> None:
-        request = SlackEventsRequestConfig(params=SlackEventsParams.parse_obj(params))
-        set_authorization(request, params.get('user_token'))
-        options = IntegrationOptions.parse_obj(params)
-        super().__init__(request, options)
-
-    def set_request_filter(self, _: Any) -> None:
-        pass
-
-
-class SlackGetEvents(IntegrationGetEvents):
-    def __init__(self, client: IntegrationEventsClient) -> None:
-        super().__init__(client, client.options)
+class Client(IntegrationEventsClient):
+    def __init__(self, creds: dict) -> None:
+        request = RequestConfig()
+        set_authorization(request, creds)
+        super().__init__(request)
 
     @staticmethod
     def get_last_run(events: list) -> dict:
@@ -73,35 +64,37 @@ class SlackGetEvents(IntegrationGetEvents):
         }
 
     def remove_duplicates(self, events: list) -> list:
-        if events and events[0].get('date_create') == self.client.request.params.oldest:
+        if events and events[0].get('date_create') == self.request.params.oldest:
             for idx, event in enumerate(events):
-                if event.get('id') == self.client.request.params.last_id:
+                if event.get('id') == self.request.params.last_id:
                     return events[idx + 1:]
         return events
 
-    def _iter_events(self) -> list:
-        # No need to implement a generator, since the API supports limit of 9999 records.
+    def run(self) -> list:
         events = (self.call().json() or {}).get('entries', [])
+        events = events.get('entries', [])
         events.reverse()  # results from API are descending (most to least recent)
-        return [self.remove_duplicates(events)]
+        return self.remove_duplicates(events)
 
 
 ''' MAIN FUNCTION '''
 
 
-def main(command: str, params: dict) -> None:  # pragma: no cover
-    client = SlackEventClient(params)
-    get_events = SlackGetEvents(client)
-    demisto.debug(f'Command being called is {command}')
+def main() -> None:  # pragma: no cover
+    command = demisto.command()
+    params = demisto.getXSIAMParams()
+    client = Client(params.get('user_token'))
 
+    demisto.debug(f'Command being called is {command}')
     try:
         if command == 'test-module':
-            client.request.params.limit = 1
-            get_events.run()
+            client.request.params = Params(limit=1)
+            client.run()
             demisto.results('ok')
 
         elif command in ['slack-get-events', 'fetch-events']:
-            events = get_events.run()
+            client.request.params = Params.parse_obj(params)
+            events = client.run()
 
             if argToBoolean(params.get('should_push_events', 'true')):
                 send_events_to_xsiam(
@@ -120,7 +113,7 @@ def main(command: str, params: dict) -> None:  # pragma: no cover
                     )
                 )
             elif events:
-                demisto.setLastRun(get_events.get_last_run(events))
+                demisto.setLastRun(client.get_last_run(events))
 
     except Exception as e:
         return_error(f'Failed to execute {command} command.\nError:\n{e}')
@@ -130,5 +123,4 @@ def main(command: str, params: dict) -> None:  # pragma: no cover
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
-    demisto_params = demisto.params() | demisto.args() | demisto.getLastRun()
-    main(demisto.command(), demisto_params)
+    main()

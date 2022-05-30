@@ -71,32 +71,16 @@ def set_authorization(request: IntegrationHTTPRequest, auth_credendtials):
         request.headers = auth  # type: ignore[assignment]
 
 
-class IntegrationOptions(BaseModel):
-    """Add here any option you need to add to the logic"""
-
-    proxy: Optional[bool] = False
-    limit: Optional[int] = Field(None, ge=1)
-
-
 class IntegrationEventsClient(ABC):
     def __init__(
         self,
         request: IntegrationHTTPRequest,
-        options: IntegrationOptions,
         session=requests.Session(),
     ):
         self.request = request
-        self.options = options
         self.session = session
-        self._set_proxy()
         self._skip_cert_verification()
-
-    @abstractmethod
-    def set_request_filter(self, after: Any):
-        """TODO: set the next request's filter.
-        Example:
-        """
-        self.request.headers['after'] = after
+        handle_proxy()
 
     def __del__(self):
         try:
@@ -121,47 +105,3 @@ class IntegrationEventsClient(ABC):
     ):
         if not self.request.verify:
             skip_cert_verification()
-
-    def _set_proxy(self):
-        if self.options.proxy:
-            ensure_proxy_has_http_prefix()
-        else:
-            skip_proxy()
-
-
-class IntegrationGetEvents(ABC):
-    def __init__(
-        self, client: IntegrationEventsClient, options: IntegrationOptions
-    ) -> None:
-        self.client = client
-        self.options = options
-
-    def run(self):
-        stored = []
-        for logs in self._iter_events():
-            stored.extend(logs)
-            if self.options.limit:
-                demisto.debug(
-                    f'{self.options.limit=} reached. \
-                    slicing from {len(logs)=}. \
-                    limit must be presented ONLY in commands and not in fetch-events.'
-                )
-                if len(stored) >= self.options.limit:
-                    return stored[: self.options.limit]
-        return stored
-
-    def call(self) -> requests.Response:
-        return self.client.call(self.client.request)
-
-    @staticmethod
-    @abstractmethod
-    def get_last_run(events: list) -> dict:
-        """Logic to get the last run from the events
-        Example:
-        """
-        return {'after': events[-1]['created']}
-
-    @abstractmethod
-    def _iter_events(self):
-        """Create iterators with Yield"""
-        pass
