@@ -750,7 +750,8 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int],
     return next_run, incidents
 
 
-def ip_reputation_command(client: Client, args: Dict[str, Any], default_threshold: int, reliability: DBotScoreReliability) -> List[CommandResults]:
+def ip_reputation_command(client: Client, args: Dict[str, Any], default_threshold: int,
+                          reliability: DBotScoreReliability) -> List[CommandResults]:
     """ip command: Returns IP reputation for a list of IPs
 
     :type client: ``Client``
@@ -900,7 +901,8 @@ def ip_reputation_command(client: Client, args: Dict[str, Any], default_threshol
     return command_results
 
 
-def domain_reputation_command(client: Client, args: Dict[str, Any], default_threshold: int, reliability: DBotScoreReliability) -> List[CommandResults]:
+def domain_reputation_command(client: Client, args: Dict[str, Any], default_threshold: int,
+                              reliability: DBotScoreReliability) -> List[CommandResults]:
     """domain command: Returns domain reputation for a list of domains
 
     :type client: ``Client``
