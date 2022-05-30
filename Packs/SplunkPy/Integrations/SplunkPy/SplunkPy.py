@@ -1014,6 +1014,7 @@ def handle_submitted_notables(service, incidents, cache_object, mapper):
         task_status = handle_submitted_notable(service, notable, enrichment_timeout)
         if task_status:
             demisto.debug("%%%% debug session %%%% - incident {}".format(notable.to_incident(mapper)))
+            # todo add docs about mapper
             incidents.append(notable.to_incident(mapper))
             handled_notables.append(notable)
 
