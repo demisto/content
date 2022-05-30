@@ -8,16 +8,16 @@ configuration:
   required: true
   type: 0
 - displaypassword: API Key
-  additionalinfo: The API Key to use for connection
+  additionalinfo: The API Key to use for connection.
   name: api_key
   required: true
   hiddenusername: true
   type: 9
-- display: Groups ids
+- display: Groups IDs
   name: group_ids
   required: false
   type: 0
-- display: Projects ids
+- display: Projects IDS
   name: project_ids
   required: false
   type: 0
@@ -56,7 +56,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       defaultValue: 'False'
-      description: Set this argument to True in orfer to create events, otherwise the command will only display them.
+      description: Set this argument to True in order to create events, otherwise the command will only display them.
       isArray: false
       name: should_push_events
       predefined:
