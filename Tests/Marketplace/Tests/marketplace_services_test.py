@@ -79,8 +79,14 @@ def dummy_pack_metadata():
 
 
 class GitMock:
-    def log(self, _):
-        return "Commit message (#12345) 12346, (#12347)"
+    def log(self, file_name):
+        match file_name.rpartition('/')[-1]:
+            case '1_0_1.md':
+                return '(#11) (#111) 1111'
+            case '1_0_2.md':
+                return '(#22)'
+            case '1_0_3.md':
+                return '(#33)'
 
 
 class TestMetadataParsing:
@@ -708,20 +714,10 @@ class TestChangelogCreation:
         mocker.patch("os.listdir", return_value=dir_list)
         mocker.patch("os.path.exists", return_value=True)
 
-        class GitMock:
-            def log(self, file_name):
-                match file_name.rpartition('/')[-1]:
-                    case '1_0_1.md':
-                        return '(#11)'
-                    case '1_0_2.md':
-                        return '(#22)'
-                    case '1_0_3.md':
-                        return '(#33)'
-
         mocker.patch("git.Git", return_value=GitMock())
 
         versions_dict = Pack(pack_name='SomeName', pack_path='SomePath').get_version_to_pr_numbers('')
-        assert versions_dict == {'1.0.1': ['11'], '1.0.2': ['22'], '1.0.3': ['33']}
+        assert versions_dict == {'1.0.1': ['11', '111'], '1.0.2': ['22'], '1.0.3': ['33']}
 
     def test_get_pull_request_numbers_from_file(self, mocker):
         """
@@ -738,7 +734,7 @@ class TestChangelogCreation:
         """
 
         mocker.patch("git.Git", return_value=GitMock())
-        assert get_pull_request_numbers_from_file("someFile") == ['12345', '12347']
+        assert get_pull_request_numbers_from_file("1_0_1.md") == ['11', '111']
 
     def test_get_same_block_versions(self, mocker, dummy_pack):
         """
