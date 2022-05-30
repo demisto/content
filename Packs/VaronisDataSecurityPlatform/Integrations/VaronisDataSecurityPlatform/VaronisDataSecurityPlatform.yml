@@ -132,6 +132,12 @@ script:
       name: user_name
       required: false
       secret: false
+    - default: false
+      description: List of sam account names (up to 5)
+      isArray: true
+      name: sam_account_name
+      required: false
+      secret: false
     - default: true
       defaultValue: '1'
       description: Page number
