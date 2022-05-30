@@ -13,7 +13,13 @@ class Client(IntegrationEventsClient):
     def set_request_filter(self, after):  # noqa: F841  # pragma: no cover
         base_url = self.request.url.split("?")[0]
         last_run = self.last_run[self.event_type]  # type: ignore
-        self.request.url = f'{base_url}?created_after={last_run}&per_page=100&page={self.page}'  # type: ignore
+        after_var = 'created_after'
+        per_page = '100'
+        if demisto.command() == 'test-module':
+            per_page = '1'
+        if self.event_type == 'events':
+            after_var = 'after'
+        self.request.url = f'{base_url}?{after_var}={last_run}&per_page={per_page}&page={self.page}'  # type: ignore
         self.page += 1
 
 
@@ -36,6 +42,9 @@ class GetEvents(IntegrationGetEvents):
         events.sort(key=lambda k: k.get('created_at'))
         if not events:
             return []
+        if demisto.command() == 'test-module':
+            self.client.options.limit = 1
+            yield events
 
         while True:
             yield events
@@ -60,7 +69,7 @@ def reformat_details(events: list) -> list:
 
 
 def main() -> None:  # pragma: no cover
-    demisto_params = demisto.params()
+    demisto_params = demisto.params() | demisto.args()
     url = urljoin(demisto_params['url'], '/api/v4/')
     should_push_events = argToBoolean(demisto_params.get('should_push_events', 'false'))
     events_collection_management = {
@@ -68,12 +77,13 @@ def main() -> None:  # pragma: no cover
         'projects_ids': argToList(demisto_params.get('project_ids', '')),
         'event_types': ['groups', 'projects']
     }
-    user_ids = demisto_params.get('user_ids', '').split(',')
     headers = {'PRIVATE-TOKEN': demisto_params.get('api_key', {}).get('password')}
+    insecure = not demisto_params.get('insecure', 'True')
     request_object = {
         'method': Method.GET,
         'url': url,
         'headers': headers,
+        'verify': insecure
     }
     last_run = demisto.getLastRun()
     if ('groups', 'projects', 'events') not in last_run:
@@ -103,10 +113,10 @@ def main() -> None:  # pragma: no cover
                 get_events.client.event_type = event_type  # type: ignore
                 events.extend(get_events.run())
         get_events.client.event_type = 'events'  # type: ignore
-        for obj_id in user_ids:
-            get_events.client.request.url = url + f'users/{obj_id}/events'
-            get_events.client.page = 1  # type: ignore
-            events.extend(get_events.run())
+        get_events.client.request.url = urljoin(url + f'events')
+        get_events.client.page = 1  # type: ignore
+        events.extend(get_events.run())
+
         if command == 'test-module':
             return_results('ok')
             return

@@ -13,25 +13,23 @@ configuration:
   required: true
   hiddenusername: true
   type: 9
-- display: Event types
-  name: audit_events_type
-  required: true
-  type: 0
 - display: Groups ids
-  name: project_ids
+  name: group_ids
   required: false
   type: 0
 - display: Projects ids
-  name: group_ids
+  name: project_ids
   required: false
   type: 0
 - display: The product name corresponding to the integration that originated the events
   name: product
   required: false
+  defaultvalue: gitlab
   type: 0
 - display: The vendor name corresponding to the integration that originated the events
   name: vendor
   required: false
+  defaultvalue: gitlab
   type: 0
 - display: First fetch timestamp (<number> <time unit>, for example, 12 hours, 7 days,
     3 months, 1 year)
@@ -42,6 +40,7 @@ configuration:
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
+  defaultvalue: true
   type: 8
 - display: Use system proxy settings
   name: proxy
