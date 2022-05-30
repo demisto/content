@@ -770,8 +770,10 @@ class Pack(object):
                             Changelog.DISPLAY_NAME: f'{version_display_name} - R{build_number}',
                             Changelog.RELEASED: datetime.utcnow().strftime(Metadata.DATE_FORMAT),
                             Changelog.PULL_REQUEST_NUMBERS: pull_request_numbers}
+        if entry_result:
+            return self.filter_changelog_entries_based_marketplace(entry_result, version_display_name, modified_files_data)
 
-        return self.filter_changelog_entries_based_marketplace(entry_result, version_display_name, modified_files_data)
+        return entry_result, False
 
     def remove_unwanted_files(self, delete_test_playbooks=True):
         """ Iterates over pack folder and removes hidden files and unwanted folders.
@@ -1071,12 +1073,12 @@ class Pack(object):
         for pack_folder, modified_file_paths in self._modified_files.items():
 
             modified_entities = [list(entity.values())[0] for entity in id_set[PACK_FOLDERS_TO_ID_SET_KEYS[pack_folder]]
-                                    if list(entity.values())[0]['file_path'] in modified_file_paths]
+                                 if list(entity.values())[0]['file_path'] in modified_file_paths]
 
             # Check for Mappers since they are in the same folder as Classifiers
             if pack_folder == PackFolders.CLASSIFIERS.value:
                 modified_entities.extend([list(entity.values())[0] for entity in id_set['Mappers']
-                                            if list(entity.values())[0]['file_path'] in modified_file_paths])
+                                          if list(entity.values())[0]['file_path'] in modified_file_paths])
 
             if modified_entities:
                 modified_files_data[pack_folder] = modified_entities
@@ -1503,6 +1505,8 @@ class Pack(object):
             # load changelog from downloaded index
             logging.info(f"Loading changelog for {self._pack_name} pack")
             changelog_index_path = os.path.join(index_folder_path, self._pack_name, Pack.CHANGELOG_JSON)
+
+            changelog = {}
             if os.path.exists(changelog_index_path):
                 changelog, changelog_latest_rn_version, changelog_latest_rn = \
                     self.get_changelog_latest_rn(changelog_index_path)
@@ -1550,9 +1554,6 @@ class Pack(object):
                                 pull_request_numbers=prs_for_version
                             )
 
-                        if not_updated_build:
-                            return task_status, not_updated_build
-
                         if version_changelog:
                             changelog[latest_release_notes] = version_changelog
 
@@ -1580,7 +1581,7 @@ class Pack(object):
                     else:
                         # allow changing the initial changelog version
                         first_key_in_changelog = list(changelog.keys())[0]
-                        changelog[first_key_in_changelog], not_updated_build = self._create_changelog_entry(
+                        version_changelog, not_updated_build = self._create_changelog_entry(
                             release_notes=self.description,
                             version_display_name=first_key_in_changelog,
                             build_number=build_number,
@@ -1588,8 +1589,8 @@ class Pack(object):
                             initial_release=True,
                             new_version=False)
 
-                        if not_updated_build:
-                            return task_status, not_updated_build
+                        if version_changelog:
+                            changelog[first_key_in_changelog] = version_changelog
 
                         logging.info(f"Found existing release notes in {Pack.CHANGELOG_JSON} for version: "
                                      f"{first_key_in_changelog} of pack {self._pack_name}. Modifying this version in "
@@ -1613,12 +1614,11 @@ class Pack(object):
                     initial_release=True
                 )
 
-                if not_updated_build:
-                    return task_status, not_updated_build
+                if version_changelog:
+                    changelog = {
+                        self._current_version: version_changelog
+                    }
 
-                changelog = {
-                    self._current_version: version_changelog
-                }
                 logging.info(f'Created {Pack.CHANGELOG_JSON} for pack {self._pack_name} starting at version'
                              f' {self._current_version}')
 

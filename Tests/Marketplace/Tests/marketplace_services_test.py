@@ -886,7 +886,7 @@ This is visible
         release_notes = "dummy release notes"
         version_display_name = "1.2.3"
         build_number = "5555"
-        version_changelog = dummy_pack._create_changelog_entry(release_notes=release_notes,
+        version_changelog, _ = dummy_pack._create_changelog_entry(release_notes=release_notes,
                                                                version_display_name=version_display_name,
                                                                build_number=build_number, new_version=True)
 
@@ -906,7 +906,7 @@ This is visible
         version_display_name = "1.2.3"
         build_number = "5555"
         dummy_pack._is_modified = True
-        version_changelog = dummy_pack._create_changelog_entry(release_notes=release_notes,
+        version_changelog, _ = dummy_pack._create_changelog_entry(release_notes=release_notes,
                                                                version_display_name=version_display_name,
                                                                build_number=build_number, new_version=False,
                                                                )
@@ -926,7 +926,7 @@ This is visible
         release_notes = "dummy release notes"
         version_display_name = "1.0.0"
         build_number = "5555"
-        version_changelog = dummy_pack._create_changelog_entry(release_notes=release_notes,
+        version_changelog, _ = dummy_pack._create_changelog_entry(release_notes=release_notes,
                                                                version_display_name=version_display_name,
                                                                build_number=build_number, new_version=False,
                                                                initial_release=True)
@@ -946,7 +946,7 @@ This is visible
         version_display_name = "1.0.0"
         build_number = "5555"
         dummy_pack._is_modified = True
-        version_changelog = dummy_pack._create_changelog_entry(release_notes=release_notes,
+        version_changelog, _ = dummy_pack._create_changelog_entry(release_notes=release_notes,
                                                                version_display_name=version_display_name,
                                                                build_number=build_number, new_version=False)
 
