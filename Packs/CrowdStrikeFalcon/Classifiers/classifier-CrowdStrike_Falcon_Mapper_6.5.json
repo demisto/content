@@ -1,7 +1,7 @@
 {
     "description": "CrowdStrike Falcon Mapper for incidents and detections",
     "feed": false,
-    "id": "CrowdStrike Falcon Mapper",
+    "id": "CrowdStrike Falcon-Mapper",
     "mapping": {
         "CrowdStrike Falcon Detection": {
             "dontMapEventToLabels": true,
