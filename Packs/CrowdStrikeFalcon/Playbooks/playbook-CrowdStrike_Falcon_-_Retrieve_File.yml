@@ -1,0 +1,284 @@
+id: CrowdStrike Falcon - Retrieve File
+version: -1
+fromversion: 6.5.0
+name: CrowdStrike Falcon - Retrieve File
+description: This playbook retrieves and unzips files from CrowdStrike Falcon and returns a list of the files that were and were not retrieved.
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: 15c3515f-c5ca-4fc0-827b-297313a31e67
+    type: start
+    task:
+      id: 15c3515f-c5ca-4fc0-827b-297313a31e67
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '1':
+    id: '1'
+    taskid: f7414601-135b-4d4a-8994-0c4e68a68c0b
+    type: regular
+    task:
+      id: f7414601-135b-4d4a-8994-0c4e68a68c0b
+      version: -1
+      name: Retrieve file
+      description: Gets the RTR extracted file contents for the specified file path.
+      script: '|||cs-falcon-rtr-retrieve-file'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '2'
+    scriptarguments:
+      file_path:
+        simple: ${inputs.PathsToGet}
+      host_ids:
+        simple: ${inputs.HostId}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '2':
+    id: '2'
+    taskid: 7ba9331f-6e55-4841-8dab-6db7297c169c
+    type: regular
+    task:
+      id: 7ba9331f-6e55-4841-8dab-6db7297c169c
+      version: -1
+      name: Unzip file
+      description: Unzips a file using fileName or entryID to specify a file. Unzipped files will be loaded to the War Room and file names will be put into the context.
+      scriptName: UnzipFile
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '4'
+    scriptarguments:
+      entryID:
+        complex:
+          root: File
+          accessor: EntryID
+          transformers:
+          - operator: LastArrayElement
+      nonSensetivePassword:
+        simple: ${inputs.ZipPassword}
+      nonsensitive_password:
+        simple: ${inputs.ZipPassword}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '3':
+    id: '3'
+    taskid: b15be011-39c5-4bd1-872f-9d1885d33431
+    type: title
+    task:
+      id: b15be011-39c5-4bd1-872f-9d1885d33431
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '4':
+    id: '4'
+    taskid: 2c74a6ab-ea5a-4219-8d31-7c921193ae8f
+    type: condition
+    task:
+      id: 2c74a6ab-ea5a-4219-8d31-7c921193ae8f
+      version: -1
+      name: 'Have all files been retrieved? '
+      type: condition
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#default#':
+      - '5'
+      yes:
+      - '3'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.FileNames
+                filters:
+                - - operator: inList
+                    left:
+                      value:
+                        simple: inputs.FileNames
+                      iscontext: true
+                    right:
+                      value:
+                        simple: ExtractedFiles
+                      iscontext: true
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '5':
+    id: '5'
+    taskid: 1ded9b31-a6c6-4157-8f14-b1d4c212c3e8
+    type: regular
+    task:
+      id: 1ded9b31-a6c6-4157-8f14-b1d4c212c3e8
+      version: -1
+      name: Set files that were not retrieved
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '3'
+    scriptarguments:
+      append:
+        simple: 'true'
+      key:
+        simple: NonRetrievedFiles
+      value:
+        complex:
+          root: inputs.FileNames
+          filters:
+          - - operator: notInList
+              left:
+                value:
+                  simple: inputs.FileNames
+                iscontext: true
+              right:
+                value:
+                  simple: ExtractedFiles
+                iscontext: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 780,
+          "y": 700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 885,
+        "width": 710,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: HostId
+  value: {}
+  required: false
+  description: The ID of the host to use.
+  playbookInputQuery:
+- key: PathsToGet
+  value: {}
+  required: false
+  description: The path to retrieve the file from the host.
+  playbookInputQuery:
+- key: ZipPassword
+  value:
+    simple: infected
+  required: false
+  description: Default password to unzip files retrieved by CrowdStrike Falcon.
+  playbookInputQuery:
+- key: FileNames
+  value: {}
+  required: false
+  description: 'The names of the file to retrieve. This is used to validate that all the intended files were retrieved, not to specify which ones will be retrieved.   '
+  playbookInputQuery:
+outputs:
+- contextPath: ExtractedFiles
+  description: A list of file names that were extracted from the ZIP file.
+  type: string
+- contextPath: NonRetrievedFiles
+  description: A list of files that were not retrieved.
+  type: string
+tests:
+- No tests (auto formatted)
