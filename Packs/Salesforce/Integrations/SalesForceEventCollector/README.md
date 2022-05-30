@@ -1,5 +1,5 @@
 Salesforce logs event collector integration for XSIAM.
-This integration was integrated and tested with version xx of Salesforce Event Collector
+This integration was integrated and tested with version xx of Salesforce Event Collector.
 
 ## Configure Salesforce Event Collector on Cortex XSOAR
 
@@ -14,10 +14,10 @@ This integration was integrated and tested with version xx of Salesforce Event C
     | Client Secret |  | True |
     | Username |  | True |
     | Password |  | True |
-    | Query to get Hourly Event Log Files | For more Information visit the Query Hourly Event Log Files documentation https://developer.salesforce.com/docs/atlas.en-us.234.0.api_rest.meta/api_rest/event_log_file_hourly_query.htm | True |
-    | How many log files to fetch. |  | True |
+    | Query to get Hourly Event Log Files | For more information visit the Query Hourly Event Log Files documentation https://developer.salesforce.com/docs/atlas.en-us.234.0.api_rest.meta/api_rest/event_log_file_hourly_query.htm | True |
+    | How many log files to fetch |  | True |
     | First fetch time interval |  | False |
-    | The product corresponding to the integration that originated the events. |  | True |
+    | The product corresponding to the integration that originated the events |  | True |
     | Use system proxy settings |  | False |
     | Trust any certificate (not secure) |  | False |
 
@@ -37,8 +37,8 @@ Manual command to fetch events.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| files_limit | How many log files to fetch. Default is 1. | Optional | 
-| should_push_events | Set this argument to True in orfer to create events, otherwise the command will only display them. Possible values are: True, False. Default is False. | Required | 
+| files_limit | The maximum number of log files to fetch. Default is 1. | Optional | 
+| should_push_events | Set this argument to True in order to create events, otherwise the command will only display them. Possible values are: True, False. Default is False. | Required | 
 
 
 #### Context Output
