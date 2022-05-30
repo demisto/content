@@ -1,0 +1,785 @@
+{
+    "TASK_0": {
+        "inputs": [
+            {
+                "Name": "Role",
+                "Value": "Administrator",
+                "Description": "The default role to assign the incident to.",
+                "Mandatory": true
+            },
+            {
+                "Name": "SearchAndDelete",
+                "Value": "False",
+                "Description": "Enables the Search and Delete capability.\nFor a malicious email, the \"Search and Delete\" sub-playbook looks for other instances of the email and deletes them pending analyst approval.",
+                "Mandatory": false
+            },
+            {
+                "Name": "BlockIndicators",
+                "Value": "False",
+                "Description": "Enables the Block Indicators capability.\nFor a malicious email, the \"Block Indicators\" sub-playbook blocks all malicious indicators in the relevant integrations.",
+                "Mandatory": false
+            },
+            {
+                "Name": "AuthenticateEmail",
+                "Value": "True",
+                "Description": "Determines whether the authenticity of the email should be verified using SPF, DKIM, and DMARC.",
+                "Mandatory": false
+            },
+            {
+                "Name": "OnCall",
+                "Value": "False",
+                "Description": "Set to True to assign only the user who is currently on shift.",
+                "Mandatory": false
+            },
+            {
+                "Name": "SearchAndDeleteIntegration",
+                "Value": "EWS",
+                "Description": "Determines which product and playbook is used to search and delete the phishing email from user inboxes.\n  - Set this to \"O365\" to use the \"O365 - Security And Compliance - Search And Delete\" playbook.\n  - Set this to \"EWS\" to use the \"Search And Delete Emails - EWS\" playbook.\n  - Set this to \"Gmail\" to use the \"Search And Delete - Gmail\" playbook.",
+                "Mandatory": false
+            },
+            {
+                "Name": "O365DeleteType",
+                "Value": "Soft",
+                "Description": "Sets the method to delete emails in the \"O365 - Security And Compliance - Search And Delete\" playbook. Can be \"Soft\" (recoverable), or \"Hard\" (unrecoverable). Leave empty to decide manually for each email incident.\nThis is only applicable if the SearchAndDeleteIntegration input is set to \"O365\".",
+                "Mandatory": false
+            },
+            {
+                "Name": "O365ExchangeLocation",
+                "Value": "",
+                "Description": "The exchange location. Determines from where to search and delete emails using O365 playbooks. Use the value \"All\" to search all mailboxes. If no input provided, it will search and delete the email only from the recipient's mailboxes. Note - Searching all mailboxes may take a significant amount of time. This input is used only when searching and deleting emails in O365 and only applies if the SearchAndDeleteIntegration input is set to O365.",
+                "Mandatory": false
+            },
+            {
+                "Name": "O365AllowNotFoundSearchLocations",
+                "Value": "False",
+                "Description": "Used only when searching and deleting emails in O365. Determines whether to include mailboxes other than regular user mailboxes in the compliance search.",
+                "Mandatory": false
+            },
+            {
+                "Name": "O365ExchangeLocationExclusion",
+                "Value": "",
+                "Description": "Used only when searching and deleting emails in O365. A comma-separated list of mailboxes/distribution groups to exclude when you use the value \"All\" for the O365ExchangeLocation input.",
+                "Mandatory": false
+            },
+            {
+                "Name": "CheckMicrosoftHeaders",
+                "Value": "True",
+                "Description": "Whether to check Microsoft headers for BCL/PCL/SCL scores and set the \"Severity\" and \"Email Classification\" accordingly.",
+                "Mandatory": false
+            },
+            {
+                "Name": "InternalDomains",
+                "Value": "",
+                "Description": "A CSV list of internal domains. The list is used to determine whether an email address is internal or external.",
+                "Mandatory": false
+            },
+            {
+                "Name": "DetonateURL",
+                "Value": "False",
+                "Description": "Determines whether to use the \"URL Detonation\" playbook. Detonating a URL may take a few minutes.",
+                "Mandatory": false
+            },
+            {
+                "Name": "InternalRange",
+                "Value": "",
+                "Description": "This input is used in the \"Entity Enrichment - Phishing v2\" playbook.\nA list of internal IP ranges to check IP addresses against. The list should be provided in CIDR notation, separated by commas. An example of a list of ranges is: \"172.16.0.0/12,10.0.0.0/8,192.168.0.0/16\" (without quotes). If a list is not provided, uses the default list provided in the IsIPInRanges script (the known IPv4 private address ranges).",
+                "Mandatory": false
+            },
+            {
+                "Name": "PhishingModelName",
+                "Value": "phishing_model",
+                "Description": "Optional - the name of a pre-trained phishing model to predict the phishing type using machine learning.",
+                "Mandatory": false
+            },
+            {
+                "Name": "GetOriginalEmail",
+                "Value": "",
+                "Description": "For forwarded emails. When \"True\", retrieves the original email in the thread.\n\nYou must have the necessary permissions in your email service to execute a global search.\n\n- For EWS: eDiscovery\n- For Gmail: Google Apps Domain-Wide Delegation of Authority\n- For MSGraph: As described in these links\nhttps://docs.microsoft.com/en-us/graph/api/message-get\nhttps://docs.microsoft.com/en-us/graph/api/user-list-messages",
+                "Mandatory": false
+            },
+            {
+                "Name": "DBotPredictURLPhishingURLsNumber",
+                "Value": "3",
+                "Description": "The number of URLs to extract from the email HTML and analyze in the \"DBotPredictURLPhishing\" automation.\nThis automation runs several checks to determine the score of the URLs found in the email, sets a verdict for URLs found as \"Suspicious\" or \"Malicious\", and adds these URLs as indicators. Based on the verdict, the incident severity is set (Medium for \"Suspicious\" and High for \"Malicious\").\nNote:\n- You need to install the \"Phishing URL\" pack to use this automation.\n- False/True positives are possible.\n- This automation may take a few minutes to run.\n- To increase result accuracy, it is recommended to install and enable the \"Whois\" pack (optional).",
+                "Mandatory": false
+            },
+            {
+                "Name": "EmailFileToExtract",
+                "Value": "Inner file",
+                "Description": "Reported emails and emails retrieved during playbook execution can contain multiple nested email files. For example, an EML nested inside another EML file.\nIf multiple level files are detected, this field determines which file represents the phishing email.\n\nFor example:\nUser1 receives an email from Attacker. User1 attaches the email as an EML file and sends the email to User2.\nUser2 also attaches that email as a file, and reports it as phishing. In this case, the phishing email would be the \"inner file\" (as opposed to \"outer file\").\n\nPossible values are: Inner file, Outer file, All files.\nInner file: The file at the deepest level is parsed. If there is only one file, that file is parsed.\nOuter file: The file at the first level is parsed.\nAll files: All files are parsed. Do not use this option in the phishing playbook, as there should only be one phishing email per playbook run.",
+                "Mandatory": false
+            }
+        ],
+        "outputs": []
+    },
+    "TASK_2": {
+        "details": {
+            "description": "Assigns the incident to an analyst based on the analyst's organizational role."
+        },
+        "timers": [],
+        "inputs": [
+            {
+                "Name": "onCall",
+                "Value": {
+                    "Get": "inputs.OnCall",
+                    "Where": [
+                        "No filters applied"
+                    ],
+                    "Transformers": [
+                        "toLowerCase(value)"
+                    ]
+                }
+            },
+            {
+                "Name": "roles",
+                "Value": {
+                    "Get": "inputs.Role",
+                    "Where": [
+                        "No filters applied"
+                    ],
+                    "Transformers": [
+                        "No transformers applied"
+                    ]
+                }
+            }
+        ]
+    },
+    "TASK_7": {
+        "details": {
+            "description": "Reviews the incident to determine if the email that the user reported is malicious."
+        },
+        "timers": [],
+        "inputs": []
+    },
+    "TASK_8": {
+        "details": {
+            "description": "Closes the investigation."
+        },
+        "timers": [],
+        "inputs": []
+    },
+    "TASK_11": {
+        "details": {
+            "description": ""
+        },
+        "timers": []
+    },
+    "TASK_13": {
+        "details": {
+            "description": "Sends an auto-response to the user reporting that the incident was received and is being handled.\n"
+        },
+        "timers": [],
+        "inputs": [
+            {
+                "Name": "body",
+                "Value": "Hi ${.=function(val) { if(!(val.Account.length > 1)) return val.incident.reporteremailaddress; var reporter = val.incident.reporteremailaddress; var account = val.Account && val.Account.filter(function(acc) { return acc.DisplayName && (acc.Email  === reporter || Array.isArray(acc.Email) && acc.Email.indexOf(reporter) > -1) }); return account && account[0] && account[0].DisplayName[0] || reporter || ''; }(val)},\nWe've received your email and are investigating.\nPlease do not touch the email until further notice.\n\nCordially, \n  Your friendly neighborhood security team"
+            },
+            {
+                "Name": "subject",
+                "Value": "Re: Phishing Investigation - ${incident.name}"
+            },
+            {
+                "Name": "to",
+                "Value": {
+                    "Get": "incident",
+                    "Where": [
+                        "No filters applied"
+                    ],
+                    "Transformers": [
+                        "No transformers applied"
+                    ]
+                }
+            }
+        ]
+    },
+    "TASK_15": {
+        "details": {
+            "description": "Determines if the email is malicious based on the calculated severity."
+        },
+        "timers": []
+    },
+    "TASK_16": {
+        "details": {
+            "description": "Sends an email to the user explaining that the email they reported is safe."
+        },
+        "timers": [
+            {
+                "fieldname": "detectionsla",
+                "action": "stop"
+            }
+        ],
+        "inputs": [
+            {
+                "Name": "body",
+                "Value": "Hi ${.=function(val) { if(!(val.Account.length > 1)) return val.incident.reporteremailaddress; var reporter = val.incident.reporteremailaddress; var account = val.Account && val.Account.filter(function(acc) { return acc.DisplayName && (acc.Email  === reporter || Array.isArray(acc.Email) && acc.Email.indexOf(reporter) > -1) }); return account && account[0] && account[0].DisplayName[0] || reporter || ''; }(val)},\nWe've concluded that the email you forwarded to us is safe. In case you think the verdict is not accurate and the email is suspicious, please contact our SOC team.\nThank you for your alertness and your participation in keeping our organization secure.\n\nCordially,\n  Your security team"
+            },
+            {
+                "Name": "subject",
+                "Value": "Re: Phishing Investigation - ${incident.name}"
+            },
+            {
+                "Name": "to",
+                "Value": {
+                    "Get": "incident",
+                    "Where": [
+                        "No filters applied"
+                    ],
+                    "Transformers": [
+                        "No transformers applied"
+                    ]
+                }
+            }
+        ]
+    },
+    "TASK_18": {
+        "details": {
+            "description": ""
+        },
+        "timers": []
+    },
+    "TASK_22": {
+        "details": {
+            "description": ""
+        },
+        "timers": []
+    },
+    "TASK_26": {
+        "details": {
+            "description": "This playbook adds email details to the relevant context entities and handles original email attachments.\n\nThe v2 playbook enables parsing email artifacts more efficiently, including:\n- Using incident fields and not incident labels.\n- Providing separate paths to \"Phishing Alerts\".\n- Using the new \"Get Original Email - Generic v2\" playbook to retrieve original emails as EML files from the following integrations:\n  * EWS v2\n  * Microsoft Graph Mail integration\n  * Gmail\n  * FireEye EX and FireEye CM\n  * Proofpoint Protection Server\n  * Agari Phishing Defense (EWS v2, MSGraph Mail, Gmail)\n  * Mimecast\n"
+        },
+        "timers": []
+    },
+    "TASK_27": {
+        "details": {
+            "description": ""
+        },
+        "timers": [
+            {
+                "fieldname": "remediationsla",
+                "action": "start"
+            }
+        ]
+    },
+    "TASK_28": {
+        "details": {
+            "description": "This playbook searches and deletes emails with similar attributes of a malicious email using one of the following integrations: * EWS * Office 365 * Gmail * Agari Phishing Defense"
+        },
+        "timers": []
+    },
+    "TASK_29": {
+        "details": {
+            "description": ""
+        },
+        "timers": []
+    },
+    "TASK_30": {
+        "details": {
+            "description": ""
+        },
+        "timers": []
+    },
+    "TASK_31": {
+        "details": {
+            "description": ""
+        },
+        "timers": []
+    },
+    "TASK_33": {
+        "details": {
+            "description": "Is the email that the user reported malicious?"
+        },
+        "timers": []
+    },
+    "TASK_34": {
+        "details": {
+            "description": "To manually remediate a phishing incident you need to:\n1. Search for and delete similar emails.\n2. Inform the organization about the threat.\n3. Hunt relevant IOCs.\n4. Update proxies and firewalls as necessary.\n5. Block the malicious sender/domain in the mail-gateway. "
+        },
+        "timers": [],
+        "inputs": []
+    },
+    "TASK_36": {
+        "details": {
+            "description": "Checks whether the **SearchAndDelete** playbook input is set to True."
+        },
+        "timers": []
+    },
+    "TASK_37": {
+        "details": {
+            "description": "Checks whether the **BlockIndicators** playbook input is set to True."
+        },
+        "timers": []
+    },
+    "TASK_39": {
+        "details": {
+            "description": ""
+        },
+        "timers": [
+            {
+                "fieldname": "detectionsla",
+                "action": "start"
+            }
+        ]
+    },
+    "TASK_43": {
+        "details": {
+            "description": ""
+        },
+        "timers": [
+            {
+                "fieldname": "remediationsla",
+                "action": "stop"
+            }
+        ]
+    },
+    "TASK_52": {
+        "details": {
+            "description": ""
+        },
+        "timers": []
+    },
+    "TASK_53": {
+        "details": {
+            "description": "Enrich email addresses.\n- Get information from Active Directory for internal addresses.\n- Get the domain-squatting reputation for external addresses."
+        },
+        "timers": []
+    },
+    "TASK_55": {
+        "details": {
+            "description": "This playbook extracts indicators from a file.\nSupported file types:\n- CSV\n- PDF\n- TXT\n- HTM, HTML\n- DOC, DOCX\n- PPT\n- PPTX\n- RTF\n- XLS\n- XLSX\n- XML"
+        },
+        "timers": []
+    },
+    "TASK_56": {
+        "details": {
+            "description": ""
+        },
+        "timers": []
+    },
+    "TASK_79": {
+        "details": {
+            "description": "Checks whether the email should be authenticated using DKIM, SPF, and DMARC. This checks if \"AuthenticateEmail\" output is set to \"True\" and if there are headers from an email to authenticate."
+        },
+        "timers": []
+    },
+    "TASK_80": {
+        "details": {
+            "description": ""
+        },
+        "timers": []
+    },
+    "TASK_82": {
+        "details": {
+            "description": "Checks the authenticity of an email based on the email's SPF, DMARC, and DKIM."
+        },
+        "timers": [],
+        "inputs": [
+            {
+                "Name": "headers",
+                "Value": {
+                    "Get": "Email",
+                    "Where": [
+                        "No filters applied"
+                    ],
+                    "Transformers": [
+                        "uniq(value)"
+                    ]
+                }
+            }
+        ]
+    },
+    "TASK_83": {
+        "details": {
+            "description": "Saves the email authenticity verdict in an incident field."
+        },
+        "timers": [],
+        "inputs": [
+            {
+                "Name": "emailauthenticitycheck",
+                "Value": {
+                    "Get": "Email",
+                    "Where": [
+                        "No filters applied"
+                    ],
+                    "Transformers": [
+                        "replace(value, limit=None, replaceWith=Undetermined, toReplace=undetermined)",
+                        "replace(value, limit=None, replaceWith=Pass, toReplace=pass)",
+                        "replace(value, limit=None, replaceWith=Fail, toReplace=fail)",
+                        "replace(value, limit=None, replaceWith=Suspicious, toReplace=suspicious)"
+                    ]
+                }
+            }
+        ]
+    },
+    "TASK_84": {
+        "details": {
+            "description": ""
+        },
+        "timers": []
+    },
+    "TASK_85": {
+        "details": {
+            "description": "Saves the email address of the email reporter in an incident field."
+        },
+        "timers": [],
+        "inputs": [
+            {
+                "Name": "reporteremailaddress",
+                "Value": {
+                    "Get": "incident",
+                    "Where": [
+                        "No filters applied"
+                    ],
+                    "Transformers": [
+                        "ExtractEmailTransformer(value)"
+                    ]
+                }
+            }
+        ]
+    },
+    "TASK_87": {
+        "details": {
+            "description": "Predicts the specific phishing mail type using a pre-trained machine learning model, and highlights the most important words used in the classification decision."
+        },
+        "timers": [],
+        "inputs": [
+            {
+                "Name": "emailBody",
+                "Value": {
+                    "Get": "Email",
+                    "Where": [
+                        "No filters applied"
+                    ],
+                    "Transformers": [
+                        "uniq(value)"
+                    ]
+                }
+            },
+            {
+                "Name": "emailBodyHTML",
+                "Value": {
+                    "Get": "Email",
+                    "Where": [
+                        "No filters applied"
+                    ],
+                    "Transformers": [
+                        "uniq(value)"
+                    ]
+                }
+            },
+            {
+                "Name": "emailSubject",
+                "Value": {
+                    "Get": "Email",
+                    "Where": [
+                        "No filters applied"
+                    ],
+                    "Transformers": [
+                        "uniq(value)"
+                    ]
+                }
+            },
+            {
+                "Name": "modelName",
+                "Value": {
+                    "Get": "inputs.PhishingModelName",
+                    "Where": [
+                        "No filters applied"
+                    ],
+                    "Transformers": [
+                        "No transformers applied"
+                    ]
+                }
+            },
+            {
+                "Name": "returnError",
+                "Value": "false"
+            }
+        ]
+    },
+    "TASK_88": {
+        "details": {
+            "description": ""
+        },
+        "timers": []
+    },
+    "TASK_89": {
+        "details": {
+            "description": "Updates incident fields with the machine learning phishing model predictions."
+        },
+        "timers": [],
+        "inputs": [
+            {
+                "Name": "dbotprediction",
+                "Value": {
+                    "Get": "DBotPredictPhishingWords",
+                    "Where": [
+                        "No filters applied"
+                    ],
+                    "Transformers": [
+                        "uniq(value)"
+                    ]
+                }
+            },
+            {
+                "Name": "dbotpredictionprobability",
+                "Value": {
+                    "Get": "DBotPredictPhishingWords",
+                    "Where": [
+                        "No filters applied"
+                    ],
+                    "Transformers": [
+                        "uniq(value)"
+                    ]
+                }
+            },
+            {
+                "Name": "dbottextsuggestionhighlighted",
+                "Value": {
+                    "Get": "DBotPredictPhishingWords",
+                    "Where": [
+                        "No filters applied"
+                    ],
+                    "Transformers": [
+                        "uniq(value)"
+                    ]
+                }
+            }
+        ]
+    },
+    "TASK_90": {
+        "details": {
+            "description": "Checks whether the model predicted the phishing type."
+        },
+        "timers": []
+    },
+    "TASK_91": {
+        "details": {
+            "description": "This playbook blocks malicious indicators using all enabled integrations, with the following sub-playbooks:\n\n- Block URL - Generic\n- Block Account - Generic\n- Block IP - Generic v2\n- Block File - Generic v2\n\n"
+        },
+        "timers": []
+    },
+    "TASK_92": {
+        "details": {
+            "description": "Enrich entities using one or more integrations."
+        },
+        "timers": []
+    },
+    "TASK_97": {
+        "details": {
+            "description": ""
+        },
+        "timers": []
+    },
+    "TASK_98": {
+        "details": {
+            "description": ""
+        },
+        "timers": []
+    },
+    "TASK_99": {
+        "details": {
+            "description": ""
+        },
+        "timers": []
+    },
+    "TASK_101": {
+        "details": {
+            "description": ""
+        },
+        "timers": []
+    },
+    "TASK_126": {
+        "details": {
+            "description": "This playbook is used to find, create, and manage phishing campaigns. When a number of similar phishing incidents exist in the system, the playbook can be used to:\n1. Find and tie together incidents that are related to the same phishing attack (a phishing campaign).\n2. Search for an existing Phishing Campaign incident or create a new one for the tied phishing incidents.\n3. Link all detected phishing incidents to the Phishing Campaign incident that was found or created previously.\n4. Update the Phishing Campaign incident with the latest data about the campaign, and update all related phishing incidents to indicate that they are part of the campaign."
+        },
+        "timers": []
+    },
+    "TASK_131": {
+        "details": {
+            "description": ""
+        },
+        "timers": []
+    },
+    "TASK_132": {
+        "details": {
+            "description": "Whether to check Microsoft's proprietary email headers."
+        },
+        "timers": []
+    },
+    "TASK_133": {
+        "details": {
+            "description": "This playbook stores the SCL, BCL, and PCL scores if they exist to the associated incident fields (Phishing SCL Score, Phishing PCL Score, and Phishing BCL Score).\nIt also does the following:\n1) Sets the email classification to \"spam\" if the SCL score is equal to or greater than 5.\n2) Sets the incident severity according to the playbook inputs (default is: PCL/BCL - Medium, SCL - Low). The severity of the incident is set only when one (or more) of the following occurs:\n  - PCL (Phishing Confidence Level) score between and including 4-8: The message content is likely to be phishing.\n  - [BCL](https://docs.microsoft.com/en-us/microsoft-365/security/office-365-security/bulk-complaint-level-values?view=o365-worldwide) (Bulk Complaint Level) score between and including 4-7: The message is from a bulk sender that generates a mixed number of complaints. \n    For a score between and including 8-9: The message is from a bulk sender that generates a high number of complaints.\n  - [SCL](https://docs.microsoft.com/en-us/microsoft-365/security/office-365-security/spam-confidence-levels?view=o365-worldwide) (Spam Confidence Level) score between and including 5-6: Spam filtering marks the message as spam. \n    For a score of 9: Spam filtering marks the message as high confidence spam. See [anti-spam stamps](https://docs.microsoft.com/en-us/exchange/antispam-and-antimalware/antispam-protection/antispam-stamps?view=exchserver-2019)."
+        },
+        "timers": []
+    },
+    "TASK_135": {
+        "details": {
+            "description": "This playbook detonates URLs using active integrations that support URL detonation."
+        },
+        "timers": []
+    },
+    "TASK_137": {
+        "details": {
+            "description": "Whether to detonate URLs in supported sandboxes."
+        },
+        "timers": []
+    },
+    "TASK_140": {
+        "details": {
+            "description": "Predicts phishing URLs using a pre-trained model."
+        },
+        "timers": [],
+        "inputs": [
+            {
+                "Name": "emailHTML",
+                "Value": {
+                    "Get": "incident",
+                    "Where": [
+                        "No filters applied"
+                    ],
+                    "Transformers": [
+                        "No transformers applied"
+                    ]
+                }
+            },
+            {
+                "Name": "maxNumberOfURL",
+                "Value": {
+                    "Get": "inputs.DBotPredictURLPhishingURLsNumber",
+                    "Where": [
+                        "No filters applied"
+                    ],
+                    "Transformers": [
+                        "No transformers applied"
+                    ]
+                }
+            },
+            {
+                "Name": "urls",
+                "Value": {
+                    "Get": "ExtractedURLsFromFiles",
+                    "Where": [
+                        "No filters applied"
+                    ],
+                    "Transformers": [
+                        "No transformers applied"
+                    ]
+                }
+            }
+        ]
+    },
+    "TASK_142": {
+        "details": {
+            "description": ""
+        },
+        "timers": []
+    },
+    "TASK_143": {
+        "details": {
+            "description": ""
+        },
+        "timers": []
+    },
+    "TASK_144": {
+        "details": {
+            "description": ""
+        },
+        "timers": []
+    },
+    "TASK_145": {
+        "details": {
+            "description": "Checks whether the email address of the phishing email reporter was specified on incident creation, so that an acknowledgement email can be sent to them."
+        },
+        "timers": []
+    },
+    "TASK_147": {
+        "details": {
+            "description": "Checks whether the incident came from a mail listener integration, or was created manually by the user."
+        },
+        "timers": []
+    },
+    "TASK_148": {
+        "details": {
+            "description": "Sends an email to the user explaining that the email they reported is malicious."
+        },
+        "timers": [
+            {
+                "fieldname": "detectionsla",
+                "action": "stop"
+            }
+        ],
+        "inputs": [
+            {
+                "Name": "body",
+                "Value": "Hi ${.=function(val) { if(!(val.Account.length > 1)) return val.incident.reporteremailaddress; var reporter = val.incident.reporteremailaddress; var account = val.Account && val.Account.filter(function(acc) { return acc.DisplayName && (acc.Email  === reporter || Array.isArray(acc.Email) && acc.Email.indexOf(reporter) > -1) }); return account && account[0] && account[0].DisplayName[0] || reporter || ''; }(val)},\nWe've concluded that the email you forwarded to us is malicious. No further action is required on your part. Good job on detecting and forwarding it to us!\n\nAll the best,\n  Your security team"
+            },
+            {
+                "Name": "subject",
+                "Value": "Re: Phishing Investigation - ${incident.name}"
+            },
+            {
+                "Name": "to",
+                "Value": {
+                    "Get": "incident",
+                    "Where": [
+                        "No filters applied"
+                    ],
+                    "Transformers": [
+                        "No transformers applied"
+                    ]
+                }
+            }
+        ]
+    },
+    "TASK_149": {
+        "details": {
+            "description": "Checks whether the user can be informed about the verdict of the incident."
+        },
+        "timers": []
+    },
+    "TASK_150": {
+        "details": {
+            "description": "Sends an email to the user explaining that the email they reported is malicious."
+        },
+        "timers": [
+            {
+                "fieldname": "detectionsla",
+                "action": "stop"
+            }
+        ],
+        "inputs": [
+            {
+                "Name": "body",
+                "Value": "Hi ${.=function(val) { if(!(val.Account.length > 1)) return val.incident.reporteremailaddress; var reporter = val.incident.reporteremailaddress; var account = val.Account && val.Account.filter(function(acc) { return acc.DisplayName && (acc.Email  === reporter || Array.isArray(acc.Email) && acc.Email.indexOf(reporter) > -1) }); return account && account[0] && account[0].DisplayName[0] || reporter || ''; }(val)},\nWe've concluded that the email you forwarded to us is part of a bigger phishing campaign that targeted our company. No further action is required on your part. Good job on detecting and forwarding it to us!\n\nAll the best,\n  Your security team"
+            },
+            {
+                "Name": "subject",
+                "Value": "Re: Phishing Investigation - ${incident.name}"
+            },
+            {
+                "Name": "to",
+                "Value": {
+                    "Get": "incident",
+                    "Where": [
+                        "No filters applied"
+                    ],
+                    "Transformers": [
+                        "No transformers applied"
+                    ]
+                }
+            }
+        ]
+    },
+    "TASK_151": {
+        "details": {
+            "description": "Checks whether the user can be informed about the verdict of the incident."
+        },
+        "timers": []
+    },
+    "TASK_152": {
+        "details": {
+            "description": ""
+        },
+        "timers": []
+    }
+}
