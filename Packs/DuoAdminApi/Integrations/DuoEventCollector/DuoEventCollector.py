@@ -189,7 +189,7 @@ def main():  # pragma: no cover
             if demisto_params.get('push_events'):
                 send_events_to_xsiam(events, demisto_params.get('vendor', 'duo'), demisto_params.get('product', 'duo'))
     except Exception as e:
-        return_error('Failed to execute {demisto.command()} command. Error: {str(e)}')
+        return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
