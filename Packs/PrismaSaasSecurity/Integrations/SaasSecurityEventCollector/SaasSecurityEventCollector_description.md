@@ -1,10 +1,9 @@
 
 ## Limitations
-## Limitations
-* by definition the events that occur lasts only 1 hour in Saas-Security cache, hence if setting the limit to a very low limit while
+1) by definition the events that occur lasts only 1 hour in Saas-Security cache, hence if setting the limit to a very low limit while
   in the Saas-Security environment there are huge amounts of events, those could be lost in the process of fetching.
-* the max-fetch/limit parameters to fetch events are limited to be only 100 divisible numbers due to Saas-Security api limitations.
-* The **reset last fetch** has no effect.
+2) the max-fetch/limit parameters to fetch events are limited to be only 100 divisible numbers due to Saas-Security api limitations.
+3) The **reset last fetch** has no effect.
 
 Creating the Client ID and Client Secret in the SaaS Security UI:
 ---
