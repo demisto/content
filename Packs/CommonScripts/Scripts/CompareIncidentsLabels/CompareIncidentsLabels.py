@@ -40,5 +40,4 @@ try:
         md = "No different labels."
     return_outputs(md, {}, {})
 except Exception as ex:
-    demisto.error(str(ex) + "\n\nTrace:\n" + traceback.format_exc())
-    return_error(ex.message)
+    return_error(f'An Error occured: {ex}', error=ex)
