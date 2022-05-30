@@ -82,7 +82,7 @@ class GetEvents:
         events = events[: int(self.client.params.limit)]
         return events
 
-    def _iter_events(self) -> None:  # type: ignore
+    def _iter_events(self) -> None:  # type: ignore  # pragma: no cover
         """
         Function that responsible for the iteration over the events returned from the Duo api
         """
@@ -189,7 +189,6 @@ def main():  # pragma: no cover
             if demisto_params.get('push_events'):
                 send_events_to_xsiam(events, demisto_params.get('vendor', 'duo'), demisto_params.get('product', 'duo'))
     except Exception as e:
-        raise e
         return_error('Failed to execute {demisto.command()} command. Error: {str(e)}')
 
 
