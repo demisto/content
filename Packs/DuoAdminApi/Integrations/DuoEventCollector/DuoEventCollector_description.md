@@ -5,7 +5,7 @@ To set up an instance you will need:
 - Integration key: your integration key provided by Duo.
 - Secret key: your secret key/password provided by Duo.
 
-For more information, check out the documentation at [https://duo.com/docs/adminapi](https://duo.com/docs/adminapi) #disable-secrets-detection
+For more information, check out the documentation at [https://duo.com/docs/adminapi](https://duo.com/docs/adminapi).
 
 
 Duo Events collector XSIAM
