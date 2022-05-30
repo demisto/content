@@ -1,1 +1,0 @@
-The modeling rules for MySQL Enterprise event collectors.
