@@ -37,10 +37,10 @@ Note: For more information see the [SaaS Security Administrator's Guide](https:/
 
 
 ## Limitations
-* By definition the events that occur lasts only 1 hour in Saas-Security cache, hence if setting the limit to a very low limit while
+1) By definition the events that occur lasts only 1 hour in Saas-Security cache, hence if setting the limit to a very low limit while
   in the Saas-Security environment there are huge amounts of events, those could be lost in the process of fetching.
-* The max-fetch/limit parameters to fetch events are limited to be only 100 divisible numbers due to Saas-Security api limitations.
-* The **reset last fetch** has no effect.
+2) The max-fetch/limit parameters to fetch events are limited to be only 100 divisible numbers due to Saas-Security api limitations.
+3) The **reset last fetch** has no effect.
 
 ## Fetch Events
 Requires the scope of *Log access* in order to fetch log events.
@@ -161,6 +161,7 @@ for more information see [documentation](https://docs.paloaltonetworks.com/saas-
 You can execute these commands from the Cortex XSIAM CLI as part of an automation or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
+
 ### saas-security-get-events
 ***
 Manual command to fetch events and display them.
@@ -173,8 +174,8 @@ Manual command to fetch events and display them.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of events to get. Default is 100. | Optional | 
-| should_push_events | Set this argument to True in order to create events, otherwise the command will only display them. If setting to 'False' there is a risk of losing events. Possible values are: True, False. Default is False. | Required | 
+| limit | The maximum number of events to get. Must be divisible by 100 due to Saas-Security api limitations. Default is 100. | Optional | 
+| should_push_events | Set this argument to True in order to create events, otherwise the command will only display them. If setting to 'False' The returned events will be lost. Possible values are: True, False. Default is False. | Required | 
 
 
 #### Context Output
@@ -218,22 +219,40 @@ Manual command to fetch events and display them.
 ```json
 {
     "SaasSecurity": {
-        "Event": {
-            "action": "preview",
-            "cloud_app_instance": "Box 1",
-            "item_name": "ssn_test3.txt",
-            "item_type": "file",
-            "item_unique_id": "1234",
-            "location": "somewhere, Usa",
-            "log_type": "activity_monitoring",
-            "serial": null,
-            "severity": 1,
-            "source_ip": "1.1.1.1",
-            "target_name": null,
-            "target_type": "",
-            "timestamp": "2022-05-29T09:02:16Z",
-            "user": "user email"
-        }
+        "Event": [
+            {
+                "action": "preview",
+                "cloud_app_instance": "Box 1",
+                "item_name": "ssn_test3.txt",
+                "item_type": "file",
+                "item_unique_id": "123",
+                "location": "somewhere, usa",
+                "log_type": "activity_monitoring",
+                "serial": null,
+                "severity": 1,
+                "source_ip": "2.2.2.2",
+                "target_name": null,
+                "target_type": "",
+                "timestamp": "2022-05-30T06:40:59Z",
+                "user": "some email"
+            },
+            {
+                "action": "preview",
+                "cloud_app_instance": "Box 1",
+                "item_name": "SP0605 copy.java.txt",
+                "item_type": "file",
+                "item_unique_id": "1234",
+                "location": "somewhere usa, Israel",
+                "log_type": "activity_monitoring",
+                "serial": null,
+                "severity": 1,
+                "source_ip": "1.1.1.1",
+                "target_name": null,
+                "target_type": "",
+                "timestamp": "2022-05-30T06:40:47Z",
+                "user": "some email"
+            }
+        ]
     }
 }
 ```
@@ -241,7 +260,8 @@ Manual command to fetch events and display them.
 #### Human Readable Output
 
 >### SaaS Security Logs
->|LogType|ItemType|ItemName|User|SourceIp|Location|Action|ItemUniqueId|Severity|CloudAppInstance|Timestamp|
->|---|---|---|---|---|---|---|---|---|---|---|
->| activity_monitoring | file | ssn_test3.txt | user email | 1.1.1.1 | somewhere, Usa | preview | 1234 | 1.0 | Box 1 | 2022-05-29T09:02:16Z |
+>|LogType|ItemType|ItemName|Timestamp|
+>|---|---|---|---|
+>| activity_monitoring | file | ssn_test3.txt | 2022-05-30T06:40:59Z |
+>| activity_monitoring | file | SP0605 copy.java.txt | 2022-05-30T06:40:47Z |
 

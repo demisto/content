@@ -251,15 +251,16 @@ class TestFetchEvents:
         (16999.941587, 10000.941587, 7200, False),
         (20000.941587, 10000.941587, 9000, True),
         (12456.941587, 10000.941587, 9000, False),
-        (300, 240, 60, True),
-        (299.99999, 240, 60, False),
+        (300, 240, 120, True),
+        (300.00001, 240, 120, True),
+        (299.99999, 240, 120, False),
     ]
 )
 def test_is_token_expired(mocker, time_mock, token_initiate_time, token_expiration_seconds, expected_result):
     """
     Given
        - time which means the token expiration time has reached.
-       - time which means the token expiration time has no reached yet.
+       - time which means the token expiration time has not reached yet.
 
     When -
         validating whether token has expired

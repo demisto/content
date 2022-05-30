@@ -42,7 +42,7 @@ script:
     name: saas-security-get-events
     arguments:
       - name: limit
-        description: The maximum number of events to get.
+        description: The maximum number of events to get. Must be divisible by 100 due to Saas-Security api limitations
         defaultValue: 100
       - auto: PREDEFINED
         defaultValue: 'False'

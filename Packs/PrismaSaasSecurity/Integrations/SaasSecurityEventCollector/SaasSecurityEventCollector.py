@@ -125,16 +125,21 @@ class Client(BaseClient):
 
 def is_token_expired(token_initiate_time: float, token_expiration_seconds: float) -> bool:
     """
-    Check whether a token has expired.
+    Check whether a token has expired. a token considered expired if it has been reached to its expiration date in
+    seconds minus a minute.
+
+    for example ---> time.time() = 300, token_initiate_time = 240, token_expiration_seconds = 120
+
+    300.0001 - 240 < 120 - 60
 
     Args:
-        token_initiate_time (float): the time in which the token was initiated
+        token_initiate_time (float): the time in which the token was initiated in seconds.
         token_expiration_seconds (float): the time in which the token should be expired in seconds.
 
     Returns:
         bool: True if token has expired, False if not.
     """
-    return time.time() - token_initiate_time >= token_expiration_seconds
+    return time.time() - token_initiate_time >= token_expiration_seconds - 60
 
 
 def validate_limit(limit: int):
@@ -175,7 +180,7 @@ def saas_security_get_events_command(client: Client, args: Dict) -> Union[str, C
             readable_output=tableToMarkdown(
                 'SaaS Security Logs',
                 events,
-                headers=list(events[0].keys()),
+                headers=['log_type', 'item_type', 'item_name', 'timestamp', 'serial'],
                 headerTransform=underscoreToCamelCase,
                 removeNull=True
             ),
@@ -195,7 +200,9 @@ def fetch_events(client: Client, max_fetch: int) -> List[Dict]:
     response = client.get_events_request()
 
     while len(events) < max_fetch and response.status_code == 200:
-        events.extend(response.json().get('events') or [])
+        fetched_events = response.json().get('events') or []
+        demisto.debug(f'fetched events: ({fetched_events})')
+        events.extend(fetched_events)
         response = client.get_events_request()
 
     return events
@@ -224,7 +231,7 @@ def main() -> None:
             proxy=proxy,
         )
 
-        if command == "test-module":
+        if command == 'test-module':
             return_results(test_module(client=client))
         elif command == 'fetch-events':
             send_events_to_xsiam(
