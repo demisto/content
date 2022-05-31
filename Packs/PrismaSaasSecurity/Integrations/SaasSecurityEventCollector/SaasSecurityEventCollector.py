@@ -169,16 +169,14 @@ def test_module(client: Client):
         return 'ok'
 
 
-def get_events_command(client: Client, args: Dict) -> Union[str, CommandResults]:
+def get_events_command(client: Client, args: Dict, max_fetch: int) -> Union[str, CommandResults]:
     """
     Fetches events from the saas-security queue and return them to the war-room.
     in case should_push_events is set to True, they will be also sent to XSIAM.
     """
-    limit = arg_to_number(args.get('limit')) or 100
-    validate_limit(limit)
     should_push_events = argToBoolean(args.get('should_push_events'))
 
-    if events := fetch_events_from_saas_security(client=client, max_fetch=limit):
+    if events := fetch_events_from_saas_security(client=client, max_fetch=max_fetch):
         if should_push_events:
             send_events_to_xsiam(events, 'pan', 'saassecurity')
         return CommandResults(
@@ -220,10 +218,9 @@ def main() -> None:
     base_url: str = params.get('url', '').rstrip('/')
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
-    max_fetch = arg_to_number(params.get('max_fetch')) or 100
-    validate_limit(limit=max_fetch)
-
     args = demisto.args()
+    max_fetch = arg_to_number(args.get('limit') or params.get('max_fetch')) or 100
+    validate_limit(max_fetch)
 
     command = demisto.command()
     demisto.info(f'Command being called is {command}')
@@ -245,7 +242,7 @@ def main() -> None:
                 product='saassecurity'
             )
         elif command == 'saas-security-get-events':
-            return_results(get_events_command(client=client, args=args))
+            return_results(get_events_command(client=client, args=args, max_fetch=max_fetch))
         else:
             raise ValueError(f'Command {command} is not implemented in saas-security integration.')
     except Exception as e:

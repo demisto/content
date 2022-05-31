@@ -211,7 +211,7 @@ class TestFetchEvents:
         send_events_mocker = mocker.patch.object(SaasSecurityEventCollector, 'send_events_to_xsiam')
 
         result = SaasSecurityEventCollector.get_events_command(
-            client=mock_client, args={'limit': max_fetch, 'should_push_events': should_push_events}
+            client=mock_client, args={'should_push_events': should_push_events}, max_fetch=max_fetch
         )
 
         if expected_events := expected_events.get('events'):
