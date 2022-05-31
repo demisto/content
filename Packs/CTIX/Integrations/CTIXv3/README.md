@@ -1,4 +1,4 @@
-This is Cyware Threat Intelligence eXhange(CTIX) integration which enriches IP/Domain/URL/File Data.
+This is example Threat Intelligence eXhange(CTIX) integration which enriches IP/Domain/URL/File Data.
 This integration was integrated and tested with version 3.0.0 of CTIX
 
 ## Configure CTIX on Cortex XSOAR
@@ -22,14 +22,14 @@ This integration was integrated and tested with version 3.0.0 of CTIX
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
-### create_tag
+### ctix-create-tag
 ***
 Create new tag in the ctix platform
 
 
 #### Base Command
 
-`create_tag`
+`ctix-create-tag`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -50,7 +50,7 @@ Create new tag in the ctix platform
 | CTIX.Tag.modified | number | Modified at timestamp | 
 
 #### Command Example
-```!create_tag tag_name=xsoar_test_trial color_code=#95A1B1```
+```!ctix-create-tag tag_name=xsoar_test_trial color_code=#95A1B1```
 
 #### Context Example
 ```json
@@ -65,14 +65,14 @@ Create new tag in the ctix platform
     "type": "manual"
 }
 ```
-### get_tags
+### ctix-get-tags
 ***
 Get paginated list of tags
 
 
 #### Base Command
 
-`get_tags`
+`ctix-get-tags`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -94,7 +94,7 @@ Get paginated list of tags
 | CTIX.Tag.modified | number | Modified at timestamp | 
 
 #### Command Example
-```!get_tags```
+```!ctix-get-tags```
 
 #### Context Example
 ```json
@@ -118,14 +118,14 @@ Get paginated list of tags
  "total": 10}
 ```
 
-### delete_tag
+### ctix-delete-tag
 ***
 Delete a tag with given tag_name
 
 
 #### Base Command
 
-`delete_tag`
+`ctix-delete-tag`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -140,20 +140,20 @@ Delete a tag with given tag_name
 | CTIX.Result.result | string | Status | 
 
 #### Command Example
-```!delete_tag tag_name=xsoar_test_trial```
+```!ctix-delete-tag tag_name=xsoar_test_trial```
 
 #### Context Example
 ```json
 {"result": "Action Successfully Executed"}
 ```
-### whitelist_iocs
+### ctix-allowed-iocs
 ***
-Adds list of same type of iocs to whitelist
+Adds list of same type of iocs to allowed
 
 
 #### Base Command
 
-`whitelist_iocs`
+`ctix-allowed-iocs`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -173,7 +173,7 @@ Adds list of same type of iocs to whitelist
 
 
 #### Command Example
-```!whitelist_iocs reason=test type="ipv4-addr" values=x.x.x.x,x.x.xx.x```
+```!ctix-allowed-iocs reason=test type="ipv4-addr" values=x.x.x.x,x.x.xx.x```
 
 #### Context Example
 ```json
@@ -189,14 +189,14 @@ Adds list of same type of iocs to whitelist
 }
 ```
 
-### get_whitelist_iocs
+### ctix-get-allowed-iocs
 ***
-get paginated list of whitelist iocs
+get paginated list of allowed iocs
 
 
 #### Base Command
 
-`get_whitelist_iocs`
+`ctix-get-allowed-iocs`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -220,11 +220,11 @@ get paginated list of whitelist iocs
 | CTIX.IOC.modified | number | Modified at timestamp | 
 
 #### Command Example
-```!get_whitelist_iocs q=type=indicator```
+```!ctix-get-allowed-iocs q=type=indicator```
 
 #### Context Example
 ```json
-{"next": "whitelist/?page=2&page_size=1", "page_size": 1, "previous": null, 
+{"next": "allowed/?page=2&page_size=1", "page_size": 1, "previous": null, 
 	"results": [{"created": 1652084983, "created_by": {"email": 
 	"dumy.account@example.com", "first_name": "dumy", "id": 
 	"40ab0f84-fb39-4444-95b2-cd155f574aa2", "last_name": "account"}, "follow": 
@@ -235,19 +235,19 @@ get paginated list of whitelist iocs
 	"ipv4-addr", "value": "x.x.x.x"}], "total": 5}
 ```
 
-### remove_whitelist_ioc
+### ctix-remove-allowed-ioc
 ***
-Removes a whitelisted ioc with given id
+Removes a alloweded ioc with given id
 
 
 #### Base Command
 
-`remove_whitelist_ioc`
+`ctix-remove-allowed-ioc`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ids | Whitelist IOC ids. | Required | 
+| ids | allowed IOC ids. | Required | 
 
 
 #### Context Output
@@ -257,7 +257,7 @@ Removes a whitelisted ioc with given id
 | details | string | Operation result | 
 
 #### Command Example
-```!remove_whitelist_ioc ids=7a33a7ac-ab54-412f-a725-f35c208a54ea```
+```!ctix-remove-allowed-ioc ids=7a33a7ac-ab54-412f-a725-f35c208a54ea```
 
 #### Context Example
 ```json
@@ -266,14 +266,14 @@ Removes a whitelisted ioc with given id
 }
 ```
 
-### get_threat_data
+### ctix-get-threat-data
 ***
 Command for querying and listing threat data
 
 
 #### Base Command
 
-`get_threat_data`
+`ctix-get-threat-data`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -301,7 +301,7 @@ Command for querying and listing threat data
 | CTIX.ThreatData.is_reviewed | boolean | Is reviewed | 
 | CTIX.ThreatData.is_revoked | boolean | Is revoked | 
 | CTIX.ThreatData.is_watchlist | boolean | Is Watchlist | 
-| CTIX.ThreatData.is_whitelisted | boolean | Is Whitelisted | 
+| CTIX.ThreatData.is_whitelisted | boolean | Is alloweded | 
 | CTIX.ThreatData.modified | boolean | When the indicator modified | 
 | CTIX.ThreatData.name | boolean | Name of the indicator | 
 | CTIX.ThreatData.risk_severity | boolean | risk severity of the indicator | 
@@ -314,7 +314,7 @@ Command for querying and listing threat data
 | CTIX.ThreatData.valid_from | number | Date from which IOC is valid | 
 
 #### Command Example
-```!get_threat_data query=type=indicator```
+```!ctix-get-threat-data query=type=indicator```
 
 #### Context Example
 ```json
@@ -366,14 +366,14 @@ Command for querying and listing threat data
 	"total": 1}
 ```
 
-### get_saved_searches
+### ctix-get-saved-searches
 ***
 Saved Search listing api with pagination
 
 
 #### Base Command
 
-`get_saved_searches`
+`ctix-get-saved-searches`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -398,7 +398,7 @@ Saved Search listing api with pagination
 | CTIX.SavedSearch.meta_data | unknown |  | 
 
 #### Command Example
-```!get_saved_searches```
+```!ctix-get-saved-searches```
 
 #### Context Example
 ```json
@@ -434,14 +434,14 @@ Saved Search listing api with pagination
 }
 ```
 
-### get_server_collections
+### ctix-get-server-collections
 ***
 Source Collection listing api with pagination
 
 
 #### Base Command
 
-`get_server_collections`
+`ctix-get-server-collections`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -465,7 +465,7 @@ Source Collection listing api with pagination
 | CTIX.ServerCollection.created | number | Created timestamp | 
 
 #### Command Example
-```!get_server_collections```
+```!ctix-get-server-collections```
 
 #### Context Example
 ```json
@@ -476,14 +476,14 @@ Source Collection listing api with pagination
 	"created": 1652080268, "has_subscribed": null}], "subscriber_name": ""}
 ```
 
-### get_actions
+### ctix-get-actions
 ***
 Enrichment tools listing API
 
 
 #### Base Command
 
-`get_actions`
+`ctix-get-actions`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -507,7 +507,7 @@ Enrichment tools listing API
 | CTIX.Action.object_type | string | Type of the action | 
 
 #### Command Example
-```!get_actions action_type=manual object_type=indicator```
+```!ctix-get-actions action_type=manual object_type=indicator```
 
 #### Context Example
 ```json
@@ -544,14 +544,14 @@ Enrichment tools listing API
   }
 ```
 
-### add_indicator_as_false_positive
+### ctix-add-indicator-as-false-positive
 ***
  
 
 
 #### Base Command
 
-`add_indicator_as_false_positive`
+`ctix-add-indicator-as-false-positive`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -567,21 +567,21 @@ Enrichment tools listing API
 | CTIX.Result.message | unknown | Indicator change result | 
 
 #### Command Example
-```!add_indicator_as_false_positive object_ids=19176d96-716d-48aa-af15-dfeff22e72e2,531e47a6-d7cd-47be-ae21-a3260518d4a5 object_type=indicator```
+```!ctix-add-indicator-as-false-positive object_ids=19176d96-716d-48aa-af15-dfeff22e72e2,531e47a6-d7cd-47be-ae21-a3260518d4a5 object_type=indicator```
 
 #### Context Example
 ```json
 {"message":"Action Successfully Executed"}
 ```
 
-### ioc_manual_review
+### ctix-ioc-manual-review
 ***
 Adds ioc to manual review bulk api
 
 
 #### Base Command
 
-`ioc_manual_review`
+`ctix-ioc-manual-review`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -597,7 +597,7 @@ Adds ioc to manual review bulk api
 | CTIX.Result.message | unknown | IOC Manual Review result | 
 
 #### Command Example
-```!ioc_manual_review object_ids=f3064a83-304e-4801-bec2-2f26a432bfd2,0aced40d-9a83-46cd-a92b-0c776c92594c object_type=indicator```
+```!ctix-ioc-manual-review object_ids=f3064a83-304e-4801-bec2-2f26a432bfd2,0aced40d-9a83-46cd-a92b-0c776c92594c object_type=indicator```
 
 #### Context Example
 ```json
@@ -606,14 +606,14 @@ Adds ioc to manual review bulk api
 }
 ```
 
-### deprecate_ioc
+### ctix-deprecate-ioc
 ***
 Deprecate ioc bulk api
 
 
 #### Base Command
 
-`deprecate_ioc`
+`ctix-deprecate-ioc`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -629,7 +629,7 @@ Deprecate ioc bulk api
 | CTIX.Result | unknown | Result of the IOC deprecation request | 
 
 #### Command Example
-```!deprecate_ioc object_ids=f3064a83-304e-4801-bec2-2f26a432bfd2,0aced40d-9a83-46cd-a92b-0c776c92594c object_type=indicator```
+```!ctix-deprecate-ioc object_ids=f3064a83-304e-4801-bec2-2f26a432bfd2,0aced40d-9a83-46cd-a92b-0c776c92594c object_type=indicator```
 
 #### Context Example
 ```json
@@ -638,14 +638,14 @@ Deprecate ioc bulk api
 }
 ```
 
-### add_analyst_tlp
+### ctix-add-analyst-tlp
 ***
 Add Analyst TLP
 
 
 #### Base Command
 
-`add_analyst_tlp`
+`ctix-add-analyst-tlp`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -662,7 +662,7 @@ Add Analyst TLP
 | CTIX.Result | unknown | Result of the addition of analyst TLP | 
 
 #### Command Example
-```!add_analyst_tlp object_id=19176d96-716d-48aa-af15-dfeff22e72e2 object_type=indicator data={\"analyst_tlp\":\"GREEN\"}```
+```!ctix-add-analyst-tlp object_id=19176d96-716d-48aa-af15-dfeff22e72e2 object_type=indicator data={\"analyst_tlp\":\"GREEN\"}```
 
 #### Context Example
 ```json
@@ -671,14 +671,14 @@ Add Analyst TLP
 }
 ```
 
-### add_analyst_score
+### ctix-add-analyst-score
 ***
 Add Analyst Score for a Threat data
 
 
 #### Base Command
 
-`add_analyst_score`
+`ctix-add-analyst-score`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -695,7 +695,7 @@ Add Analyst Score for a Threat data
 | CTIX.Result | unknown | Result of adding analyst score to threat data | 
 
 #### Command Example
-```!add_analyst_score data={"analyst_score":10} object_id=19176d96-716d-48aa-af15-dfeff22e72e2 object_type=indicator```
+```!ctix-add-analyst-score data={"analyst_score":10} object_id=19176d96-716d-48aa-af15-dfeff22e72e2 object_type=indicator```
 
 #### Context Example
 ```json
@@ -704,14 +704,14 @@ Add Analyst Score for a Threat data
 }
 ```
 
-### saved_result_set
+### ctix-saved-result-set
 ***
 Saved Result Set
 
 
 #### Base Command
 
-`saved_result_set`
+`ctix-saved-result-set`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -765,7 +765,7 @@ Saved Result Set
 | CTIX.SavedResultSet.valid_until | unknown | Timestamp till then the IOC is valid | 
 
 #### Command Example
-```!saved_result_set label_name=test query=type=indicator```
+```!ctix-saved-result-set label_name=test query=type=indicator```
 
 #### Context Example
 ```json
@@ -788,14 +788,14 @@ Saved Result Set
 	"valid_from": null, "valid_until": null}], "total": 353243}
 ```
 
-### add_tag_indicator
+### ctix-add-tag-indicator
 ***
 Adding Tag to Indicator
 
 
 #### Base Command
 
-`add_tag_indicator`
+`ctix-add-tag-indicator`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -815,7 +815,7 @@ Adding Tag to Indicator
 | CTIX.Result.meesage | unknown | Result of the add indicator tag request | 
 
 #### Command Example
-```!add_tag_indicator object_id=19176d96-716d-48aa-af15-dfeff22e72e2 object_type=indicator tag_id=fb35000b-82e7-4440-8f18-8b63bba5b372```
+```!ctix-add-tag-indicator object_id=19176d96-716d-48aa-af15-dfeff22e72e2 object_type=indicator tag_id=fb35000b-82e7-4440-8f18-8b63bba5b372```
 
 #### Context Example
 ```json
@@ -824,14 +824,14 @@ Adding Tag to Indicator
 }
 ```
 
-### remove_tag_from_indicator
+### ctix-remove-tag-from-indicator
 ***
 Remove Tag From Indicator
 
 
 #### Base Command
 
-`remove_tag_from_indicator`
+`ctix-remove-tag-from-indicator`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -851,7 +851,7 @@ Remove Tag From Indicator
 | CTIX.Result.message | unknown | Result of the remove indicator tag request | 
 
 #### Command Example
-```!remove_tag_from_indicator object_id=19176d96-716d-48aa-af15-dfeff22e72e2 object_type=indicator tag_id=fb35000b-82e7-4440-8f18-8b63bba5b372```
+```!ctix-remove-tag-from-indicator object_id=19176d96-716d-48aa-af15-dfeff22e72e2 object_type=indicator tag_id=fb35000b-82e7-4440-8f18-8b63bba5b372```
 
 #### Context Example
 ```json
@@ -860,14 +860,14 @@ Remove Tag From Indicator
 }
 ```
 
-### search_for_tag
+### ctix-search-for-tag
 ***
 Search for tag
 
 
 #### Base Command
 
-`search_for_tag`
+`ctix-search-for-tag`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -891,7 +891,7 @@ Search for tag
 | CTIX.Result.type | unknown | type of the tag | 
 
 #### Command Example
-```!search_for_tag q=xsoar_test_trial```
+```!ctix-search-for-tag q=xsoar_test_trial```
 
 #### Context Example
 ```json
@@ -905,14 +905,14 @@ Search for tag
 	"account"}, "name": "xsoar_test", "type": "manual"}], "total": 39893}
 ```
 
-### get_indicator_details
+### ctix-get-indicator-details
 ***
 Get Indicator Details
 
 
 #### Base Command
 
-`get_indicator_details`
+`ctix-get-indicator-details`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -963,7 +963,7 @@ Get Indicator Details
 | CTIX.Result.valid_until | unknown | Timestamp of the indicator till  | 
 
 #### Command Example
-```!get_indicator_details object_id=20067ec2-8ad1-470e-b0bb-3c4a72b15883 object_type=indicator```
+```!ctix-get-indicator-details object_id=20067ec2-8ad1-470e-b0bb-3c4a72b15883 object_type=indicator```
 
 #### Context Example
 ```json
@@ -983,14 +983,14 @@ Get Indicator Details
  1644335851, "valid_until": null}
 ```
 
-### get_indicator_tags
+### ctix-get-indicator-tags
 ***
 Get Indicator Tags
 
 
 #### Base Command
 
-`get_indicator_tags`
+`ctix-get-indicator-tags`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1020,7 +1020,7 @@ Get Indicator Tags
 | CTIX.Result.type | unknown | Type of Indicator | 
 
 #### Command Example
-```!get_indicator_tags object_id=20067ec2-8ad1-470e-b0bb-3c4a72b15883 object_type=indicator```
+```!ctix-get-indicator-tags object_id=20067ec2-8ad1-470e-b0bb-3c4a72b15883 object_type=indicator```
 
 #### Context Example
 ```json
@@ -1052,14 +1052,14 @@ Get Indicator Tags
 }
 ```
 
-### get_indicator_relations
+### ctix-get-indicator-relations
 ***
 Get Indicator Relations
 
 
 #### Base Command
 
-`get_indicator_relations`
+`ctix-get-indicator-relations`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1079,7 +1079,7 @@ Get Indicator Relations
 | CTIX.Result.target_ref | unknown | Indicator target reference  | 
 
 #### Command Example
-```!get_indicator_relations object_id=20067ec2-8ad1-470e-b0bb-3c4a72b15883 object_type=indicator```
+```!ctix-get-indicator-relations object_id=20067ec2-8ad1-470e-b0bb-3c4a72b15883 object_type=indicator```
 
 #### Context Example
 ```json
@@ -1112,14 +1112,14 @@ Get Indicator Relations
 }
 ```
 
-### get_indicator_observations
+### ctix-get-indicator-observations
 ***
 Get Indicator Observations
 
 
 #### Base Command
 
-`get_indicator_observations`
+`ctix-get-indicator-observations`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1160,7 +1160,7 @@ Get Indicator Observations
 | CTIX.Result.collection | unknown | Collection details of the indicator | 
 
 #### Command Example
-```!get_indicator_observations object_id=20067ec2-8ad1-470e-b0bb-3c4a72b15883 object_type=indicator```
+```!ctix-get-indicator-observations object_id=20067ec2-8ad1-470e-b0bb-3c4a72b15883 object_type=indicator```
 
 #### Context Example
 ```json
@@ -1222,14 +1222,14 @@ Get Indicator Observations
 }
 ```
 
-### get_conversion_feed_source
+### ctix-get-conversion-feed-source
 ***
  
 
 
 #### Base Command
 
-`get_conversion_feed_source`
+`ctix-get-conversion-feed-source`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1250,7 +1250,7 @@ Get Indicator Observations
 | CTIX.Result.taxii_option | string | TAXII option | 
 
 #### Command Example
-```!get_conversion_feed_source object_id=20067ec2-8ad1-470e-b0bb-3c4a72b15883 object_type=indicator```
+```!ctix-get-conversion-feed-source object_id=20067ec2-8ad1-470e-b0bb-3c4a72b15883 object_type=indicator```
 
 #### Context Example
 ```json
@@ -1272,14 +1272,14 @@ Get Indicator Observations
 }
 ```
 
-### get_lookup_threat_data
+### ctix-get-lookup-threat-data
 ***
 Lookup to get threat data
 
 
 #### Base Command
 
-`get_lookup_threat_data`
+`ctix-get-lookup-threat-data`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1332,7 +1332,7 @@ Lookup to get threat data
 | CTIX.ThreatDataLookup.valid_until | number | Timestamp till when the indicator was valid | 
 
 #### Command Example
-```!get_lookup_threat_data object_names=example.com, test.com object_type=indicator```
+```!ctix-get-lookup-threat-data object_names=example.com, test.com object_type=indicator```
 
 #### Context Example
 ```json

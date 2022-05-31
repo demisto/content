@@ -139,7 +139,7 @@ def test_delete_tag(requests_mock):
 
     response = delete_tag_command(client, args)
     assert response.outputs[0] == mock_response
-    assert response.outputs_prefix == "CTIX.Result"
+    assert response.outputs_prefix == "CTIX.DeleteTag"
     assert response.outputs_key_field == "result"
 
     assert isinstance(response.raw_response, list)
@@ -188,7 +188,7 @@ def test_whitelist_iocs_command(requests_mock):
     response = resp.raw_response
 
     assert response == mock_response["details"]
-    assert resp.outputs_prefix == "CTIX.Detail"
+    assert resp.outputs_prefix == "CTIX.AllowedIOC"
 
     assert isinstance(response, dict)
     assert len(response) == 3
@@ -237,7 +237,7 @@ def test_remove_whitelisted_ioc_command(requests_mock):
     response = remove_whitelisted_ioc_command(client, args)
 
     assert response.outputs == mock_response
-    assert response.outputs_prefix == "CTIX.Detail"
+    assert response.outputs_prefix == "CTIX.RemovedIOC"
 
     assert isinstance(response.raw_response, dict)
     assert len(response.raw_response) == 1
@@ -262,11 +262,11 @@ def test_get_threat_data_command(requests_mock):
 
     response = get_threat_data_command(client, args)
 
-    assert response.outputs == mock_response["results"]
-    assert response.outputs_prefix == "CTIX.ThreatData"
+    assert response[0].outputs == mock_response["results"][0]
+    assert response[0].outputs_prefix == "CTIX.ThreatData"
 
-    assert isinstance(response.raw_response, list)
-    assert len(response.raw_response) == 1
+    assert isinstance(response[0].outputs, dict)
+    assert len(response[0].outputs) == 37
 
 
 def test_get_saved_searches_command(requests_mock):
@@ -369,7 +369,7 @@ def test_add_indicator_as_false_positive_command(requests_mock):
     response = add_indicator_as_false_positive_command(client, args)
 
     assert response.outputs == mock_response
-    assert response.outputs_prefix == "CTIX.Result"
+    assert response.outputs_prefix == "CTIX.IndicatorFalsePositive"
 
     assert isinstance(response.raw_response, dict)
     assert len(response.raw_response) == 1
@@ -395,7 +395,7 @@ def test_add_ioc_manual_review_command(requests_mock):
     response = add_ioc_manual_review_command(client, args)
 
     assert response.outputs == mock_response
-    assert response.outputs_prefix == "CTIX.Result"
+    assert response.outputs_prefix == "CTIX.IOCManualReview"
 
     assert isinstance(response.raw_response, dict)
     assert len(response.raw_response) == 1
@@ -420,7 +420,7 @@ def test_deprecate_ioc_command(requests_mock):
     response = deprecate_ioc_command(client, args)
 
     assert response.outputs == mock_response
-    assert response.outputs_prefix == "CTIX.Result"
+    assert response.outputs_prefix == "CTIX.DeprecateIOC"
 
     assert isinstance(response.raw_response, dict)
     assert len(response.raw_response) == 1
@@ -449,7 +449,7 @@ def test_add_analyst_tlp_command(requests_mock):
     response = add_analyst_tlp_command(client, args)
 
     assert response.outputs == mock_response
-    assert response.outputs_prefix == "CTIX.Result"
+    assert response.outputs_prefix == "CTIX.AddAnalystTLP"
 
     assert isinstance(response.raw_response, dict)
     assert len(response.raw_response) == 1
@@ -478,7 +478,7 @@ def test_add_analyst_score_command(requests_mock):
     response = add_analyst_score_command(client, args)
 
     assert response.outputs == mock_response
-    assert response.outputs_prefix == "CTIX.Result"
+    assert response.outputs_prefix == "CTIX.AddAnalystScore"
 
     assert isinstance(response.raw_response, dict)
     assert len(response.raw_response) == 1
@@ -500,11 +500,11 @@ def test_saved_result_set_command(requests_mock):
 
     response = saved_result_set_command(client, args)
 
-    assert response.outputs == mock_response["results"]
-    assert response.outputs_prefix == "CTIX.SavedResultSet"
+    assert response[0].outputs == mock_response["results"][0]
+    assert response[0].outputs_prefix == "CTIX.SavedResultSet"
 
-    assert isinstance(response.raw_response, list)
-    assert len(response.raw_response) == 1
+    assert isinstance(response[0].outputs, dict)
+    assert len(response[0].outputs) == 37
 
 
 def test_add_tag_indicator_updation_command(requests_mock):
@@ -540,7 +540,7 @@ def test_add_tag_indicator_updation_command(requests_mock):
     )
 
     assert response.outputs == mock_response
-    assert response.outputs_prefix == "CTIX.Result"
+    assert response.outputs_prefix == "CTIX.TagUpdation"
 
     assert isinstance(response.raw_response, dict)
     assert len(response.raw_response) == 1
@@ -579,7 +579,7 @@ def test_remove_tag_indicator_updation_command(requests_mock):
     )
 
     assert response.outputs == mock_response
-    assert response.outputs_prefix == "CTIX.Result"
+    assert response.outputs_prefix == "CTIX.TagUpdation"
 
     assert isinstance(response.raw_response, dict)
     assert len(response.raw_response) == 1
@@ -605,7 +605,7 @@ def test_search_for_tag_command(requests_mock):
     response = search_for_tag_command(client, args)
 
     assert response.outputs == mock_response['results']
-    assert response.outputs_prefix == "CTIX.Result"
+    assert response.outputs_prefix == "CTIX.SearchTag"
 
     assert isinstance(response.raw_response, list)
     assert len(response.raw_response) == 1
@@ -630,7 +630,7 @@ def test_get_indicator_details_command(requests_mock):
     response = get_indicator_details_command(client, args)
 
     assert response.outputs == mock_response
-    assert response.outputs_prefix == "CTIX.Result"
+    assert response.outputs_prefix == "CTIX.IndicatorDetails"
 
     assert isinstance(response.raw_response, dict)
     assert len(response.raw_response) == 34
@@ -656,7 +656,7 @@ def test_get_indicator_tags_command(requests_mock):
     response = get_indicator_tags_command(client, args)
 
     assert response.outputs == mock_response
-    assert response.outputs_prefix == "CTIX.Result"
+    assert response.outputs_prefix == "CTIX.IndicatorTags"
 
     assert isinstance(response.raw_response, dict)
     assert len(response.raw_response) == 13
@@ -681,7 +681,7 @@ def test_get_indicator_relations_command(requests_mock):
     response = get_indicator_relations_command(client, args)
 
     assert response.outputs == mock_response['results']
-    assert response.outputs_prefix == "CTIX.Result"
+    assert response.outputs_prefix == "CTIX.IndicatorRelations"
 
     assert isinstance(response.raw_response, list)
     assert len(response.raw_response) == 1
@@ -705,11 +705,11 @@ def test_get_indicator_observations_command(requests_mock):
 
     response = get_indicator_observations_command(client, args)
 
-    assert response.outputs == mock_response['result']
-    assert response.outputs_prefix == "CTIX.Result"
+    assert response.outputs == mock_response['results']
+    assert response.outputs_prefix == "CTIX.IndicatorObservations"
 
-    assert isinstance(response.raw_response, dict)
-    assert len(response.raw_response) == 5
+    assert isinstance(response.raw_response, list)
+    assert len(response.raw_response) == 1
 
 
 def test_get_conversion_feed_source_command(requests_mock):
@@ -728,11 +728,11 @@ def test_get_conversion_feed_source_command(requests_mock):
 
     response = get_conversion_feed_source_command(client, args)
 
-    assert response.outputs == mock_response
-    assert response.outputs_prefix == "CTIX.Result"
+    assert response.outputs[0] == mock_response['results'][0]
+    assert response.outputs_prefix == "CTIX.ConversionFeedSource"
 
-    assert isinstance(response.raw_response, dict)
-    assert len(response.raw_response) == 1
+    assert isinstance(response.raw_response, list)
+    assert len(response.raw_response) == 10
 
 
 def test_get_lookup_threat_data_command(requests_mock):
@@ -756,8 +756,8 @@ def test_get_lookup_threat_data_command(requests_mock):
 
     response = get_lookup_threat_data_command(client, args)
 
-    assert response.outputs == mock_response["results"]
-    assert response.outputs_prefix == "CTIX.ThreatDataLookup"
+    assert response[0].outputs == mock_response["results"][0]
+    assert response[0].outputs_prefix == "CTIX.ThreatDataLookup"
 
-    assert isinstance(response.raw_response, list)
-    assert len(response.raw_response) == 1
+    assert isinstance(response[0].raw_response, dict)
+    assert len(response[0].raw_response) == 37
