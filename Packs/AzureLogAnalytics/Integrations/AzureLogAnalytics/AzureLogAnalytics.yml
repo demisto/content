@@ -12,7 +12,7 @@ configuration:
   type: 4
 - additionalinfo: Received from the authorization process or from the self-deployed
     configuration process.
-  display: ID / (Client ID :For client credentials flow)
+  display: ID / (Client ID: For client credentials flow)
   name: credentials
   required: false
   type: 9
