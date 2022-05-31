@@ -44,3 +44,8 @@ def test_reformat_details():
                                  'action_category': 'ccc'}
     assert res[5]['details'] == {'remove': 'ddd', 'action': 'remove_ddd', 'action_type': 'remove',
                                  'action_category': 'ddd'}
+
+
+def test_prepare_time_for_next():
+    assert get_events.prepare_time_for_next('2022-06-17T12:31:36.667Z') == '2022-06-17T12:31:36.668000'
+    assert get_events.prepare_time_for_next('2022-06-17T12:31:36.669Z') == '2022-06-17T12:31:36.670000'

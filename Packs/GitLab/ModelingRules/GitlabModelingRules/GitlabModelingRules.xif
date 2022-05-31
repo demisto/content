@@ -1,6 +1,6 @@
 [MODEL: model = Audit, dataset = gitlab_gitlab_raw]
-|alter        XDM.Audit.original_event_id=id,
-                XDM.Audit.TriggeredBy.identity.uuid=author_id,
+alter        XDM.Audit.original_event_id=to_string(id),
+                XDM.Audit.TriggeredBy.identity.uuid=to_string(author_id),
                 XDM.Audit.audited_resource.id=entity_id,
                 XDM.Audit.audited_resource.type=entity_type,
                 XDM.Audit.TriggeredBy.identity.name=json_extract_scalar("details", "$.author_name"),

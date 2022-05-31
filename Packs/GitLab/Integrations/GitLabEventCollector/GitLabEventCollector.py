@@ -25,6 +25,12 @@ class Client(IntegrationEventsClient):
 
 class GetEvents(IntegrationGetEvents):
     @staticmethod
+    def prepare_time_for_next(time_var: str) -> str:
+        temp_time = datetime.strptime(time_var, "%Y-%m-%dT%H:%M:%S.%fZ")
+        temp_time = temp_time + timedelta(milliseconds=1)
+        return temp_time.isoformat()
+
+    @staticmethod
     def get_last_run(events: list) -> dict:
         groups = [event for event in events if event.get('entity_type') == 'Group']
         groups.sort(key=lambda k: k.get('id'))
@@ -32,8 +38,12 @@ class GetEvents(IntegrationGetEvents):
         projects.sort(key=lambda k: k.get('id'))
         user_events = [event for event in events if 'entity_type' not in event]
         user_events.sort(key=lambda k: k.get('id'))
-        return {'groups': groups[-1]['created_at'], 'projects': projects[-1]['created_at'],
-                'events': user_events[-1]['created_at']}
+        a = GetEvents.prepare_time_for_next(groups[-1]['created_at'])
+        b = GetEvents.prepare_time_for_next(projects[-1]['created_at'])
+        c = GetEvents.prepare_time_for_next(user_events[-1]['created_at'])
+        return {'groups': GetEvents.prepare_time_for_next(groups[-1]['created_at']),
+                'projects': GetEvents.prepare_time_for_next(projects[-1]['created_at']),
+                'events': GetEvents.prepare_time_for_next(user_events[-1]['created_at'])}
 
     def _iter_events(self):  # pragma: no cover
         self.client.set_request_filter(None)
@@ -69,7 +79,7 @@ def reformat_details(events: list) -> list:
 
 
 def main() -> None:  # pragma: no cover
-    demisto_params = demisto.params() | demisto.args()
+    demisto_params = demisto.params()  # | demisto.args()
     url = urljoin(demisto_params['url'], '/api/v4/')
     should_push_events = argToBoolean(demisto_params.get('should_push_events', 'false'))
     events_collection_management = {
@@ -137,6 +147,7 @@ def main() -> None:  # pragma: no cover
                                  demisto_params.get('product', 'gitlab'))
 
     except Exception as exc:
+        raise exc
         return_error(f'Failed to execute {command} command.\nError:\n{str(exc)}', error=exc)
 
 
