@@ -31,11 +31,11 @@ configuration:
   name: max_fetch
   required: false
   type: 0
-- display: The vendor corresponding to the integration that originated the events.
+- display: The vendor corresponding to the integration that produced the events.
   name: vendor
   type: 0
   defaultvalue: paloaltonetworks
-- display: The product corresponding to the integration that originated the events.
+- display: The product corresponding to the integration that produced the events.
   name: product
   type: 0
   defaultvalue: saassecurity

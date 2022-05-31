@@ -42,22 +42,36 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
-@pytest.mark.parametrize('mocked_response', [MockedResponse(status_code=200), MockedResponse(status_code=204)])
-def test_module(mocker, mock_client, mocked_response):
+@pytest.mark.parametrize(
+    'mocked_response, should_call_set_integration', (
+        [
+            (MockedResponse(status_code=200, text=create_events(start_id=1, end_id=2)), True),
+            (MockedResponse(status_code=204, text=''), False)
+        ]
+    )
+)
+def test_module(mocker, mock_client, mocked_response, should_call_set_integration):
     """
     Given
        - a response which indicates an event was found.
        - a response which indicates that an event is still being searched
+       - whether should set to context or not.
 
     When -
-        testing the module
+        testing the module.
 
-    Then -
-        make sure the test module returns the 'ok' response.
+    Then
+       - make sure the test module returns the 'ok' response.
+       - make sure the set context was called in case of 200 and not called in case of 204
     """
-    from SaasSecurityEventCollector import test_module
+    import SaasSecurityEventCollector
     mocker.patch.object(Client, 'http_request', return_value=mocked_response)
-    assert test_module(client=mock_client) == 'ok'
+    set_integration_context_mocker = mocker.patch.object(
+        SaasSecurityEventCollector,
+        'set_to_integration_context_with_retries'
+    )
+    assert SaasSecurityEventCollector.test_module(client=mock_client) == 'ok'
+    assert set_integration_context_mocker.called == should_call_set_integration
 
 
 class TestFetchEvents:

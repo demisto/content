@@ -13,7 +13,7 @@ urllib3.disable_warnings()  # pylint: disable=no-member
 ''' CONSTANTS '''
 
 MAX_EVENTS_PER_REQUEST = 100
-
+OBJECT_KEYS = {'events': 'timestamp'}
 
 ''' CLIENT CLASS '''
 
@@ -76,7 +76,7 @@ class Client(BaseClient):
             'token_initiate_time': time.time()
         }
         demisto.debug(f'updating access token - {integration_context}')
-        set_integration_context(context=integration_context)
+        set_to_integration_context_with_retries(context=integration_context)
 
         return access_token
 
@@ -163,9 +163,13 @@ def test_module(client: Client):
 
     The reason we must use the get events endpoint is because Saas-Security have different scopes for each type
     of api. To verify the customer have the log access scope we must try and fetch an event.
+    Saves the events in the cache for fetching events.
     """
     response = client.get_event_request()
-    if response.status_code in (200, 204):
+    if response.status_code == 200:
+        set_to_integration_context_with_retries(context=response.json(), object_keys=OBJECT_KEYS)
+        return 'ok'
+    elif response.status_code == 204:
         return 'ok'
 
 
@@ -200,6 +204,8 @@ def get_events_command(
 def fetch_events_from_saas_security(client: Client, max_fetch: int) -> List[Dict]:
     """
     Fetches events from the saas-security queue.
+
+    If the test-module produced any events, take them from the cache as well.
     """
     events: List[Dict] = []
     response = client.get_events_request()
@@ -209,6 +215,17 @@ def fetch_events_from_saas_security(client: Client, max_fetch: int) -> List[Dict
         demisto.debug(f'fetched events: ({fetched_events}), fetched events length: ({len(fetched_events)})')
         events.extend(fetched_events)
         response = client.get_events_request()
+
+    # get events fetched from test-module.
+    integration_context_events = json.loads(demisto.getIntegrationContext().get('events') or '[]')
+    demisto.debug(
+        f'integration context events: {integration_context_events}, '
+        f'integration context events length {len(integration_context_events)}'
+    )
+    if integration_context_events:
+        # set events to zero in case there was something in the cache from the test module.
+        set_to_integration_context_with_retries(context={'events': []})
+        events.extend(integration_context_events)
 
     return events
 
