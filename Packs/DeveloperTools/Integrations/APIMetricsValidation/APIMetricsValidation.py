@@ -336,6 +336,9 @@ def main():
         elif command == 'test-scenario-ten':
             results = scenario_ten()
             return_results(results)
+
+        elif command == 'test-module':
+            demisto.results('ok')
         else:
             raise NotImplementedError(f'{command} command is not implemented.')
 

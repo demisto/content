@@ -8,6 +8,7 @@ from __future__ import print_function
 
 import base64
 import gc
+import gzip
 import json
 import logging
 import os
@@ -18,18 +19,15 @@ import time
 import traceback
 import types
 import urllib
-import gzip
-from random import randint
+import warnings
 import xml.etree.cElementTree as ET
+from abc import abstractmethod
 from collections import OrderedDict
 from datetime import datetime, timedelta
-from abc import abstractmethod
 from distutils.version import LooseVersion
-from threading import Lock
 from inspect import currentframe
-
-import demistomock as demisto
-import warnings
+from random import randint
+from threading import Lock
 
 
 def __line__():
@@ -485,7 +483,6 @@ class ErrorTypes(object):
     PROXY_ERROR = 'ProxyError'
     SSL_ERROR = 'SSLError'
     TIMEOUT_ERROR = 'TimeoutError'
-
 
 
 class FeedIndicatorType(object):
@@ -6682,7 +6679,7 @@ class CommandResults:
                  entry_type=None,
                  content_format=None,
                  execution_metrics=None):
-        # type: (str, object, object, list, str, object, IndicatorsTimeline, Common.Indicator, bool, bool, ScheduledCommand, list, int, str, ExecutionMetrics) -> None  # noqa: E501
+        # type: (str, object, object, list, str, object, IndicatorsTimeline, Common.Indicator, bool, bool, ScheduledCommand, list, int, str, List[Any]) -> None  # noqa: E501
         if raw_response is None:
             raw_response = outputs
         if outputs is not None and not isinstance(outputs, dict) and not outputs_prefix:
@@ -6791,7 +6788,7 @@ class CommandResults:
 
         if self.execution_metrics:
             exec_metrics = self.execution_metrics
-            self.entry_type  = EntryType.EXECUTION_METRICS
+            self.entry_type = EntryType.EXECUTION_METRICS
             raw_response = 'Metrics reported successfully.'
         return_entry = {
             'Type': self.entry_type,
@@ -7003,6 +7000,7 @@ def return_warning(message, exit=False, warning='', outputs=None, ignore_auto_ex
     if exit:
         sys.exit(0)
 
+
 class ExecutionMetrics(object):
     def __init__(self, success=0, quota_error=0, general_error=0, auth_error=0, service_error=0, connection_error=0,
                  proxy_error=0, ssl_error=0, timeout_error=0):
@@ -7023,7 +7021,6 @@ class ExecutionMetrics(object):
         if is_demisto_version_ge('7.0.0'):
             return True
         return False
-
 
     @property
     def success(self):

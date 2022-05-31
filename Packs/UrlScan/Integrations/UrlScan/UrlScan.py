@@ -74,7 +74,7 @@ def schedule_polling(items_to_schedule):
     Args:
         items_to_schedule: List of items to schedule.
     """
- # Prepare scheduled url entries
+    # Prepare scheduled url entries
     args = demisto.args()
     polling_args = {}
     for arg in args:
@@ -544,8 +544,8 @@ def get_urlscan_submit_results_polling(client, uuid):
 
 def urlscan_submit_command(client):
     execution_metrics = ExecutionMetrics()
-    command_results = []
-    items_to_schedule = []
+    command_results: list = []
+    items_to_schedule: list = []
 
     urls = argToList(demisto.args().get('url'))
     for url in urls:
