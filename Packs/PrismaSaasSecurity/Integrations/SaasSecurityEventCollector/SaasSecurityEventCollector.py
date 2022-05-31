@@ -231,6 +231,8 @@ def fetch_events_from_saas_security(client: Client, max_fetch: int) -> List[Dict
         f'integration context events length {len(integration_context_events)}'
     )
     if integration_context_events:
+        for event in integration_context_events:
+            event.pop('uuid', None)
         # add integration context events to the fetched events.
         events.extend(integration_context_events)
         # set events to zero in case there was something in the cache from the test module.
