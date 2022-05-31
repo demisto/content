@@ -1,12 +1,10 @@
 commonfields:
   id: APIMetricsValidation
   version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: APIMetricsValidation
 display: APIMetricsValidation
 category: Utilities
-description: This integration runs through all scenarios as defined in the API Metrics
-  expected results guide.
+description: This integration runs through all scenarios as defined in the API Metrics expected results guide.
 configuration:
 - display: This is not needed
   name: testing
@@ -23,8 +21,7 @@ script:
     polling: true
   - name: test-scenario-two
     arguments: []
-    description: Test Scenario Two - 5 Pass on first try, 5 error on quota and are
-      scheduled
+    description: Test Scenario Two - 5 Pass on first try, 5 error on quota and are scheduled
     polling: true
   - name: test-scenario-three
     arguments: []
@@ -44,13 +41,11 @@ script:
     polling: true
   - name: test-scenario-seven
     arguments: []
-    description: Test Scenario Seven - 10 items are in 1 call. 1 fail. No metrics
-      are returned.
+    description: Test Scenario Seven - 10 items are in 1 call. 1 fail. No metrics are returned.
     polling: true
   - name: test-scenario-eight
     arguments: []
-    description: Test Scenario Eight - 10 items are in 1 call. 1 fail. No metrics
-      returned. Timeout.
+    description: Test Scenario Eight - 10 items are in 1 call. 1 fail. No metrics returned. Timeout.
     polling: true
   - name: test-scenario-nine
     arguments: []
@@ -61,3 +56,6 @@ script:
   dockerimage: demisto/python3:3.9.8.24399
   runonce: false
   subtype: python3
+fromversion: 6.8.0
+tests:
+- No tests (auto formatted)
