@@ -1,4 +1,5 @@
 from http import HTTPStatus
+from collections import defaultdict
 from typing import Callable
 from typing import Dict
 from typing import List
@@ -506,10 +507,8 @@ def enrich_dbot_and_display_url_analysis_results(intezer_result, intezer_api):
         intezer_result['redirect_chain'] = redirect_chain
 
     if 'indicators' in intezer_result:
-        indicators: Dict[str, List[str]] = {}
+        indicators: Dict[str, List[str]] = defaultdict(list)
         for indicator in intezer_result['indicators']:
-            if indicator['classification'] not in indicators:
-                indicators['classification'] = []
             indicators[indicator['classification']].append(indicator['text'])
         indicators_text = [
             get_indicator_text('malicious', indicators),

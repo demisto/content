@@ -231,6 +231,38 @@ def test_check_analysis_status_and_get_results_url_command_single_success(reques
                     'title': 'malicious',
                     'verdict_name': 'malicious'
                 },
+                'indicators': [
+                    {
+                        'classification': 'informative',
+                        'text': 'URL is accessible'
+                    },
+                    {
+                        'classification': 'informative',
+                        'text': 'Assigned IPv4 domain'
+                    },
+                    {
+                        'classification': 'informative',
+                        'text': 'Vaild IPv4 domain'
+                    },
+                    {
+                        'classification': 'suspicious',
+                        'text': 'suspicious'
+                    },
+                    {
+                        'classification': 'malicious',
+                        'text': 'malicious'
+                    }
+                ],
+                'redirect_chain': [
+                    {
+                        'response_status': 301,
+                        'url': 'https://foo.com/'
+                    },
+                    {
+                        'response_status': 200,
+                        'url': 'http://www.foo.com/'
+                    }
+                ],
                 'submitted_url': url,
                 'downloaded_file': {
                     'analysis_id': file_analysis_id,
@@ -689,8 +721,8 @@ def test_get_family_info_command_analysis_doesnt_exist(requests_mock):
 # endregion
 
 
-# region analyze_by_hash_command
-def test_analyze_by_url_command_success(requests_mock):
+# region analyze_url_command
+def test_analyze_url_command_success(requests_mock):
     # Arrange
     analysis_id = 'analysis-id'
 
@@ -710,7 +742,7 @@ def test_analyze_by_url_command_success(requests_mock):
     assert command_results.outputs['ID'] == analysis_id
 
 
-def test_analyze_by_url_command_missing_url(requests_mock):
+def test_analyze_url_command_missing_url(requests_mock):
     # Arrange
 
     _setup_access_token(requests_mock)
@@ -729,3 +761,5 @@ def test_analyze_by_url_command_missing_url(requests_mock):
     # Assert
     assert command_results.readable_output == ('The Url 123test was not found on Intezer. '
                                                'Error Server returned bad request error: Bad url. Error:Bad url')
+
+# endregion
