@@ -67,8 +67,6 @@ def test_module(mocker, mock_client, mocked_response, should_call_set_integratio
     """
     import SaasSecurityEventCollector
 
-    a = json.dumps('aaa')
-
     mocker.patch.object(Client, 'http_request', return_value=mocked_response)
     set_integration_context_mocker = mocker.patch.object(
         SaasSecurityEventCollector,
