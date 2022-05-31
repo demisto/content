@@ -8,6 +8,7 @@ from ReadNetstatFile import *
     ({"netstat": [{'Filename': "first"}]}, "first"),
     ({"netstat": []}, ""),
     ({'netstat': {"Filename": "first"}}, "first"),
+    ([{"netstat": [{'Filename': "first"}]}, {"netstat": [{'Filename': "second"}]}], "first"),
     ({}, ""),
 ])
 def test_get_file_name_from_context(mocker, context, expected_file_name):

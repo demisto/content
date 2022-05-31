@@ -5,17 +5,25 @@ COMMAND_NAME = 'netstat'
 
 
 def get_file_name_from_context() -> str:
-    file_name = ""
+    def get_file_name(command_files):
+        if command_files and isinstance(command_files, dict):
+            netstat_files = command_files.get(COMMAND_NAME, [])
+            if netstat_files:
+                if isinstance(netstat_files, list):
+                    # we want to get the last file name
+                    return netstat_files[len(netstat_files) - 1].get('Filename')
+                elif isinstance(netstat_files, dict):
+                    return netstat_files.get('Filename')  # type:ignore
+
     all_command_files = demisto.get(demisto.context(), CONTEXT_PATH_TO_READ_PROCESS_FILE_NAME_FROM)
-    if all_command_files and isinstance(all_command_files, dict):
-        netstat_files = all_command_files.get(COMMAND_NAME, [])
-        if netstat_files:
-            if isinstance(netstat_files, list):
-                # we want to get the last file name
-                file_name = netstat_files[len(netstat_files) - 1].get('Filename')
-            elif isinstance(netstat_files, dict):
-                file_name = netstat_files.get('Filename')  # type:ignore
-    return file_name
+    if isinstance(all_command_files, dict):
+        all_command_files = [all_command_files]
+    if isinstance(all_command_files, list):
+        # get first file in context
+        for command_file in all_command_files:
+            if file_name := get_file_name(command_file):
+                return file_name
+    return ""
 
 
 def get_file_entry_id(file_name):

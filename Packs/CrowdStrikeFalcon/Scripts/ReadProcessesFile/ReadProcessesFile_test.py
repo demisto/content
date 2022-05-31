@@ -8,6 +8,7 @@ from ReadProcessesFile import *
     ({"ps": [{'Filename': "first"}]}, "first"),
     ({"ps": []}, ""),
     ({'ps': {"Filename": "first"}}, "first"),
+    ([{'ps': {"Filename": "first"}}, {'ps': {"Filename": "second"}}], "first"),
     ({}, ""),
 ])
 def test_get_file_name_from_context(mocker, context, expected_file_name):
