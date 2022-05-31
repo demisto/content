@@ -1,16 +1,17 @@
+This pack is part of the [Rapid Breach Response](https://xsoar.pan.dev/marketplace/details/MajorBreachesInvestigationandResponse) pack.
+
 On **May 27th**, a new Microsoft Office Zero-Day was discovered by Nao_sec. 
 
 The new Zero-Day is a remote code execution vulnerability that exists when MSDT is called using the URL protocol from a calling application such as Word. 
 
 On **May 30th**, Microsoft assigned **CVE-2022-30190** to the MSDT vulnerability, aka **Follina vulnerability**.
 
-The playbook includes the following tasks:
+This playbook includes the following tasks:
 
-* Collect detection rules
-  * Sigma
-* Exploitation patterns hunting using Cortex XDR - XQL Engine and 3rd party SIEM products
-* Cortex XDR BIOCs post-detection hunting
-* Workarounds
+* Collect detection rules.
+* Exploitation patterns hunting using Cortex XDR - XQL Engine and 3rd party SIEM products.
+* Cortex XDR BIOCs coverage.
+* Provides Microsoft workarounds and detection capabilities.
 
 **More information:**
 
