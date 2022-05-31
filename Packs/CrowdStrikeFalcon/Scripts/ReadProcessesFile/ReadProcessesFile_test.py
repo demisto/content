@@ -8,12 +8,18 @@ from ReadProcessesFile import *
     ({"ps": [{'Filename': "first"}]}, "first"),
     ({"ps": []}, ""),
     ({'ps': {"Filename": "first"}}, "first"),
-    ([{'ps': {"Filename": "first"}}, {'ps': {"Filename": "second"}}], "second"),
     ({}, ""),
 ])
 def test_get_file_name_from_context(mocker, context, expected_file_name):
-    mocker.patch.object(demisto, 'get', return_value=context)
+    mocker.patch.object(demisto, 'context', return_value={'CrowdStrike': {'Command': context}})
     assert get_file_name_from_context() == expected_file_name
+
+
+def test_get_file_name_from_context_list(mocker):
+    context = {'CrowdStrike': [{'NotCommand': ''}, {'Command': {'ps': {"Filename": "first"}}}]}
+    mocker.patch.object(demisto, 'context', return_value=context)
+    assert get_file_name_from_context() == 'first'
+
 
 
 @pytest.mark.parametrize('file_name_in_context, file_name_in_to_search, expected_entry_id', [
