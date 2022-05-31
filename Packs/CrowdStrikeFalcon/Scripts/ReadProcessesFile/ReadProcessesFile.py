@@ -19,8 +19,8 @@ def get_file_name_from_context() -> str:
     if isinstance(all_command_files, dict):
         all_command_files = [all_command_files]
     if isinstance(all_command_files, list):
-        for command_file in all_command_files:
-            # get first file in context
+        for command_file in all_command_files[::-1]:
+            # get last file in context
             if file_name := get_file_name(command_file):
                 return file_name
     return ""
