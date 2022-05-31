@@ -191,7 +191,7 @@ tasks:
       version: -1
       name: Edit current policy
       description: Edits a policy rule.
-      script: '|||panorama-edit-rule'
+      script: '|||pan-os-edit-rule'
       type: regular
       iscommand: true
       brand: ""
@@ -271,7 +271,7 @@ tasks:
       version: -1
       name: Edit current policy
       description: Edits a policy rule.
-      script: '|||panorama-edit-rule'
+      script: '|||pan-os-edit-rule'
       type: regular
       iscommand: true
       brand: ""

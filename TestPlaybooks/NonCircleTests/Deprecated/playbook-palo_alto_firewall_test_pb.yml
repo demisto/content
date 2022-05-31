@@ -1480,9 +1480,9 @@ tasks:
     task:
       id: 3d284ec9-6587-4dc8-82f3-7ae16facdd4d
       version: -1
-      name: panorama-list-rules
+      name: pan-os-list-rules
       description: Returns a list of predefined Security Rules
-      script: '|||panorama-list-rules'
+      script: '|||pan-os-list-rules'
       type: regular
       iscommand: true
       brand: ""

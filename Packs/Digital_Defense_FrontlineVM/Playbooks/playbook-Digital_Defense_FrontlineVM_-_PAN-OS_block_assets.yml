@@ -306,7 +306,7 @@ tasks:
         simple: '1'
       playbookId: {}
       pollingCommand:
-        simple: panorama-check-logs-status
+        simple: pan-os-check-logs-status
       pollingCommandArgName:
         simple: job_id
       tag: {}
@@ -331,9 +331,9 @@ tasks:
     task:
       id: 15f1f59b-a7a2-4abe-879d-e562e1ae0933
       version: -1
-      name: panorama-check-logs-status
+      name: pan-os-check-logs-status
       description: Command to check panorama log status.
-      script: '|||panorama-check-logs-status'
+      script: '|||pan-os-check-logs-status'
       type: regular
       iscommand: true
       brand: ''

@@ -121,7 +121,7 @@ tasks:
       version: -1
       name: PAN-OS - Refresh Domain EDL
       description: Refreshes the specified external dynamic list
-      script: '|||panorama-refresh-edl'
+      script: '|||pan-os-refresh-edl'
       type: regular
       iscommand: true
       brand: ""

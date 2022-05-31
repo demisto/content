@@ -333,7 +333,7 @@ tasks:
       version: -1
       name: Get Rules
       description: Returns a list of predefined Security Rules.
-      script: '|||panorama-list-rules'
+      script: '|||pan-os-list-rules'
       type: regular
       iscommand: true
       brand: ""
@@ -401,7 +401,7 @@ tasks:
       version: -1
       name: Get Rules
       description: Returns a list of predefined Security Rules.
-      script: '|||panorama-list-rules'
+      script: '|||pan-os-list-rules'
       type: regular
       iscommand: true
       brand: ""
