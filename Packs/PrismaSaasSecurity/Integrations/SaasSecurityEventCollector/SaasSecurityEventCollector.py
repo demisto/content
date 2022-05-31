@@ -178,7 +178,7 @@ def get_events_command(client: Client, args: Dict, max_fetch: int) -> Union[str,
 
     if events := fetch_events_from_saas_security(client=client, max_fetch=max_fetch):
         if should_push_events:
-            send_events_to_xsiam(events, 'pan', 'saassecurity')
+            send_events_to_xsiam(events, 'paloaltonetworks', 'saassecurity')
         return CommandResults(
             readable_output=tableToMarkdown(
                 'SaaS Security Logs',
