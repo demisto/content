@@ -360,6 +360,10 @@ slack-notify-nightly-build:
       fi
     - section_end "Run Tests"
 
+    - section_start "XSIAM Machine information"
+    - ./Tests/scripts/print_xsiam_machine_details.sh
+    - section_end "XSIAM Machine information"
+
     - section_start "After script" --collapsed
     - |
       if ! [ -z "$XSIAM_CHOSEN_MACHINE_ID" ]
