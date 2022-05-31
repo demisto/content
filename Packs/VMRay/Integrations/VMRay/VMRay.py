@@ -1,7 +1,13 @@
 import json
 
+import demistomock as demisto  # noqa: F401
 import requests
-from CommonServerPython import *
+from CommonServerPython import *  # noqa: F401
+
+register_module_line('vmray', 'start', __line__())
+
+
+# this is a test
 
 ''' GLOBAL PARAMS '''
 API_KEY = demisto.params().get('api_key') or demisto.params().get('credentials', {}).get('password')
@@ -1321,3 +1327,5 @@ def main():
 
 if __name__ in ('__builtin__', 'builtins', '__main__'):
     main()
+
+register_module_line('vmray', 'end', __line__())
