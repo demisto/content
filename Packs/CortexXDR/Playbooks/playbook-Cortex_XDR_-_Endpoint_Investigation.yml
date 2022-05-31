@@ -812,7 +812,7 @@ tasks:
     evidencedata:
       customfields: {}
       description:
-        simple: Hunt Persistence techniques - Cortex XDR - Endpoint Investigation.
+        simple: Hunt Persistence techniques - Cortex XDR - Endpoint Investigation
       tags:
         simple: Persistence
     id: '15'
@@ -1374,7 +1374,7 @@ tasks:
     evidencedata:
       customfields: {}
       description:
-        simple: Hunt Reconnaissance techniques - Cortex XDR - Endpoint Investigation.
+        simple: Hunt Reconnaissance techniques - Cortex XDR - Endpoint Investigation
       tags:
         simple: Reconnaissance
     id: '29'
@@ -1433,7 +1433,7 @@ tasks:
     evidencedata:
       customfields: {}
       description:
-        simple: Hunt Initial Access techniques - Cortex XDR - Endpoint Investigation.
+        simple: Hunt Initial Access techniques - Cortex XDR - Endpoint Investigation
       tags:
         simple: Initial Access
     id: '30'
@@ -1492,7 +1492,7 @@ tasks:
     evidencedata:
       customfields: {}
       description:
-        simple: Hunt Initial Access techniques - Cortex XDR - Endpoint Investigation.
+        simple: Hunt Initial Access techniques - Cortex XDR - Endpoint Investigation
       tags:
         simple: Execution
     id: '31'
@@ -1584,7 +1584,7 @@ tasks:
     evidencedata:
       customfields: {}
       description:
-        simple: Hunt Privilege Escalation techniques - Cortex XDR - Endpoint Investigation.
+        simple: Hunt Privilege Escalation techniques - Cortex XDR - Endpoint Investigation
       tags:
         simple: Privilege Escalation
     id: '32'
@@ -1656,7 +1656,7 @@ tasks:
     evidencedata:
       customfields: {}
       description:
-        simple: Hunt Privilege Escalation techniques - Cortex XDR - Endpoint Investigation.
+        simple: Hunt Privilege Escalation techniques - Cortex XDR - Endpoint Investigation
       tags:
         simple: Defense_Evasion
     id: '33'
@@ -1758,7 +1758,7 @@ tasks:
     evidencedata:
       customfields: {}
       description:
-        simple: Hunt Discovery techniques - Cortex XDR - Endpoint Investigation.
+        simple: Hunt Discovery techniques - Cortex XDR - Endpoint Investigation
       tags:
         simple: Discovery
     id: '34'
@@ -1845,7 +1845,7 @@ tasks:
     evidencedata:
       customfields: {}
       description:
-        simple: Hunt Lateral Movement techniques - Cortex XDR - Endpoint Investigation.
+        simple: Hunt Lateral Movement techniques - Cortex XDR - Endpoint Investigation
       tags:
         simple: Lateral_Movement
     id: '35'
@@ -1937,7 +1937,7 @@ tasks:
     evidencedata:
       customfields: {}
       description:
-        simple: Hunt Lateral Movement techniques - Cortex XDR - Endpoint Investigation.
+        simple: Hunt Lateral Movement techniques - Cortex XDR - Endpoint Investigation
     id: '36'
     ignoreworker: false
     isautoswitchedtoquietmode: false
@@ -2012,7 +2012,7 @@ tasks:
     evidencedata:
       customfields: {}
       description:
-        simple: Hunt Command and Control techniques - Cortex XDR - Endpoint Investigation.
+        simple: Hunt Command and Control techniques - Cortex XDR - Endpoint Investigation
       tags:
         simple: Command and Control
     id: '37'
@@ -2089,7 +2089,7 @@ tasks:
     evidencedata:
       customfields: {}
       description:
-        simple: Hunt Impact techniques - Cortex XDR - Endpoint Investigation.
+        simple: Hunt Impact techniques - Cortex XDR - Endpoint Investigation
     id: '38'
     ignoreworker: false
     isautoswitchedtoquietmode: false
@@ -2232,7 +2232,7 @@ tasks:
     evidencedata:
       customfields: {}
       description:
-        simple: Hunt by attacker source IP or external host - Cortex XDR - Endpoint Investigation.
+        simple: Hunt by attacker source IP or external host - Cortex XDR - Endpoint Investigation
       tags:
         simple: Attacker network activity
     id: '44'
@@ -2311,7 +2311,7 @@ tasks:
     evidencedata:
       customfields: {}
       description:
-        simple: Hunt by technique ID - Cortex XDR - Endpoint Investigation.
+        simple: Hunt by technique ID - Cortex XDR - Endpoint Investigation
       tags:
         simple: MITRE Techniques
     id: '47'
@@ -2386,7 +2386,7 @@ tasks:
     evidencedata:
       customfields: {}
       description:
-        simple: Hunt by file hash - Cortex XDR - Endpoint Investigation.
+        simple: Hunt by file hash - Cortex XDR - Endpoint Investigation
       tags:
         simple: Hunt File Hash
     id: '49'
@@ -2524,7 +2524,7 @@ tasks:
     evidencedata:
       customfields: {}
       description:
-        simple: Hunt alerts by ID - Cortex XDR - Endpoint Investigation.
+        simple: Hunt alerts by ID - Cortex XDR - Endpoint Investigation
       tags:
         simple: Host activity
     id: '57'
