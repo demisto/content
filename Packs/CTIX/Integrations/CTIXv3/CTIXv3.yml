@@ -1,7 +1,7 @@
 commonfields:
-  id: CTIXv3
+  id: CTIX v3
   version: -1
-fromversion: 5.0.0
+fromversion: 6.2.0
 name: CTIX v3
 display: CTIX v3
 category: Data Enrichment & Threat Intelligence
@@ -53,8 +53,7 @@ script:
       - pink
       - light-red
       - grey
-      description: New tag's name for the defined colour. If no colour selected, colour
-        grey will be given
+      description: New tag's name for the defined colour. If no colour selected, colour grey will be given
     outputs:
     - contextPath: CTIX.Tag.name
       description: Name of the tag
@@ -1145,3 +1144,5 @@ script:
   runonce: false
   subtype: python3
 
+tests:
+- No tests (auto formatted)
