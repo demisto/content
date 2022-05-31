@@ -32,7 +32,7 @@ You can execute these commands from the Cortex XSOAR CLI, as part of an automati
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### bt-get-tree
 ***
-Gets the parent and child processes for a crowdstrike process.
+Gets the parent and child processes for a crowdstrike process/processes for given sensor id(s)
 
 
 #### Base Command

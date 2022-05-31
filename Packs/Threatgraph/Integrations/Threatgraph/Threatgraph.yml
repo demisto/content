@@ -114,12 +114,13 @@ script:
       isArray: true
       name: process_ids
       required: true
-    description: Gets the parent and child processes for a crowdstrike process.
+    description: Gets the parent and child processes for a crowdstrike process/processes
+      for given sensor id(s)
     name: bt-get-tree
     outputs:
     - contextPath: ThreatGraph_data
       description: An output of the threatgraph query
-  dockerimage: demisto/python3:3.9.7.24076
+  dockerimage: demisto/python3:3.10.4.29342
   feed: true
   isFetchSamples: true
   isfetch: true
