@@ -20,7 +20,7 @@ To use a self-configured Azure application, you need to add a new Azure App Regi
 - Azure Service Management - permission `user_impersonation` of type `Delegated`
 - Log Analytics API - permission `Data.Read` of type `Delegated`
 
-In the self-deployed mode you can authenticate, by using one of the following flows:
+In the self-deployed mode, you can authenticate by using one of the following flows:
 - Authentication code flow
 - Client Credentials flow
 
@@ -52,4 +52,4 @@ Follow these steps for client-credentials configuration.
 
 ## Get the additional instance parameters
 
-To get the ***Subscription ID***, ***Workspace Name***, ***Workspace ID*** and ***Resource Group*** parameters,  in the Azure Portal, go to ***Log Analytics workspaces > YOUR-WORKSPACE > Settings*** and click the ***Workspace Settings*** tab.
+To get the **Subscription ID**, **Workspace Name**, **Workspace ID** and **Resource Group** parameters, in the Azure Portal, go to **Log Analytics workspaces > YOUR-WORKSPACE > Settings** and click the **Workspace Settings** tab.
