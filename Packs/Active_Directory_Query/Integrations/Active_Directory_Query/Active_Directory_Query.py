@@ -85,6 +85,7 @@ def initialize_server(host, port, secure_connection, unsecure):
     if secure_connection == "TLS":
         demisto.debug(f"initializing sever with TLS (unsecure: {unsecure}). port: {port or 'default(636)'}")
         if unsecure:
+            # Add support for all CIPHERS_STRING
             tls = Tls(validate=ssl.CERT_NONE, ciphers=CIPHERS_STRING)
         else:
             tls = Tls(validate=ssl.CERT_NONE)
@@ -104,6 +105,7 @@ def initialize_server(host, port, secure_connection, unsecure):
                 return Server(host, port=port, use_ssl=True, tls=tls)
             return Server(host, use_ssl=True, tls=tls)
         else:
+            # Add support for all CIPHERS_STRING
             tls = Tls(ciphers=CIPHERS_STRING)
             if port:
                 return Server(host, port=port, use_ssl=True, tls=tls)
