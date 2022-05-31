@@ -173,9 +173,9 @@ def test_module(client: Client):
     response = client.get_event_request()
     if response.status_code == 200:
         fetched_event = response.json()
-        demisto.debug(f'fetched event in test-module: {fetched_event}')
+        demisto.info(f'fetched event in test-module: {fetched_event}')
         fetched_event['uuid'] = f'{uuid.uuid4()}'
-        set_to_integration_context_with_retries(context=fetched_event, object_keys=OBJECT_KEYS)
+        set_to_integration_context_with_retries(context={'events': fetched_event}, object_keys=OBJECT_KEYS)
         return 'ok'
     elif response.status_code == 204:
         return 'ok'
@@ -220,21 +220,21 @@ def fetch_events_from_saas_security(client: Client, max_fetch: int) -> List[Dict
 
     while len(events) < max_fetch and response.status_code == 200:
         fetched_events = response.json().get('events') or []
-        demisto.debug(f'fetched events: ({fetched_events}), fetched events length: ({len(fetched_events)})')
+        demisto.info(f'fetched events: ({fetched_events}), fetched events length: ({len(fetched_events)})')
         events.extend(fetched_events)
         response = client.get_events_request()
 
     # get events fetched from test-module.
     integration_context_events = json.loads(demisto.getIntegrationContext().get('events') or '[]')
-    demisto.debug(
+    demisto.info(
         f'integration context events: {integration_context_events}, '
         f'integration context events length {len(integration_context_events)}'
     )
     if integration_context_events:
-        # set events to zero in case there was something in the cache from the test module.
-        set_to_integration_context_with_retries(context={'events': []})
         # add integration context events to the fetched events.
         events.extend(integration_context_events)
+        # set events to zero in case there was something in the cache from the test module.
+        set_to_integration_context_with_retries(context={'events': []})
 
     return events
 
