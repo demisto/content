@@ -96,7 +96,7 @@ def test_send_mail(mocker):
 def test_send_mail_with_trailing_comma(mocker):
     """
     Given -
-        to and subject arguments to send an email.
+        a 'subject' which is 'test' and 'to' which is 'test@gmail.com,' (ending with a comma),
 
     When -
         trying to send an email
