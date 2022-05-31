@@ -144,6 +144,12 @@ script:
       name: email
       required: false
       secret: false
+    - default: false
+      description: Number of days you want the search to go back to
+      isArray: false
+      name: last_days
+      required: false
+      secret: false
     - default: true
       defaultValue: '1'
       description: Page number

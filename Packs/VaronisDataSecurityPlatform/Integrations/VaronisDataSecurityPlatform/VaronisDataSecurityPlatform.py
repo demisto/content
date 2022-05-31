@@ -559,6 +559,23 @@ class SearchAlertsQueryBuilder(SearchQueryBuilder):
             filter_obj['values'].append(threat_object)
         self._filters.append(filter_obj)
 
+    def create_last_days_filter(self, last_days: int):
+        """Add last days to the search query
+
+        :type last_days: ``int``
+        :param last_days: Number of days you want the search to go back to
+        """
+        filter_obj: Dict[str, Any] = {
+            'path': 'Alert.Time',
+            'operator': 'LastDays',
+            'values': [{
+                'Alert.Time': last_days,
+                'displayValue': last_days
+            }]
+        }
+
+        self._filters.append(filter_obj)
+
     def create_time_interval_filter(self, start: datetime, end: Optional[datetime]):
         """Add time interval to the search query
 
@@ -882,6 +899,7 @@ def varonis_get_alerts(
         user_names: Optional[List[str]],
         sam_account_names: Optional[List[str]],
         emails: Optional[List[str]],
+        last_days: Optional[int]
 ) -> Dict[str, Any]:
     """Searches and retrieves alerts
 
@@ -927,6 +945,9 @@ def varonis_get_alerts(
     :type emails: ``str``
     :param emails: List of emails
 
+    :type last_days: ``Optional[int]``
+    :param last_days: Number of days you want the search to go back to
+
     :return: Alerts
     :rtype: ``Dict[str, Any]``
     """
@@ -950,6 +971,8 @@ def varonis_get_alerts(
         builder.create_alert_sam_account_name_filter(sam_account_names)
     if emails and any(emails):
         builder.create_alert_email_filter(emails)
+    if last_days:
+        builder.create_last_days_filter(last_days)
     builder.create_ordering('Alert.Time', 'Asc')
 
     query = builder.build()
@@ -1168,6 +1191,7 @@ def varonis_get_alerts_command(client: Client, args: Dict[str, Any]) -> CommandR
         ``args['user_name']`` List of user names
         ``args['sam_account_name']`` List of sam account names
         ``args['email']`` List of emails
+        ``args['last_days']`` Number of days you want the search to go back to
 
     :return:
         A ``CommandResults`` object
@@ -1186,10 +1210,14 @@ def varonis_get_alerts_command(client: Client, args: Dict[str, Any]) -> CommandR
     user_names = args.get('user_name', None)
     sam_account_names = args.get('sam_account_name', None)
     emails = args.get('email', None)
+    last_days = args.get('last_days', None)
 
     user_names = try_convert(user_names, lambda x: argToList(x))
     sam_account_names = try_convert(sam_account_names, lambda x: argToList(x))
     emails = try_convert(emails, lambda x: argToList(x))
+
+    if last_days and last_days <= 0:
+        raise ValueError('last_days cannot be less then 1')
 
     if user_domain_name and (not user_names or len(user_names) == 0):
         raise ValueError('user_domain_name cannot be provided without user_name')
@@ -1231,7 +1259,7 @@ def varonis_get_alerts_command(client: Client, args: Dict[str, Any]) -> CommandR
 
     result = varonis_get_alerts(client, alert_statuses, threat_model_names, start_time, end_time,
                                 max_results, page, None, alert_severities, device_names, user_domain_name,
-                                user_names, sam_account_names, emails)
+                                user_names, sam_account_names, emails, last_days)
     outputs = create_output(ALERT_OUTPUT, result['rows'])
     page_size = result['rowsCount']
     alerts = []
