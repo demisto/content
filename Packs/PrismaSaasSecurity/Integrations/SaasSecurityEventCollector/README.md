@@ -4,10 +4,6 @@ the challenges of:
 * maintaining compliance consistently in the cloud
 * stopping threats to sensitive information, users, and resources
 
-protecting the growing availability of sanctioned and unsanctioned SaaS applications and maintaining 
-compliance consistently in the cloud while stopping threats to sensitive information, users, and resources. 
-SaaS Security options include SaaS Security API (formerly Prisma SaaS) and the SaaS Security Inline add-on.
-
 
 ## Configure SaaS Security on Cortex XSIAM
 
@@ -23,8 +19,10 @@ SaaS Security options include SaaS Security API (formerly Prisma SaaS) and the S
     | Trust any certificate (not secure) | By default, SSL verification is enabled. If selected, the connection isn’t secure and all requests return an SSL error because the certificate cannot be verified. | False |
     | Use system proxy settings | Uses the system proxy server to communicate with the  integration. If not selected, the integration will not use the system proxy server. | False |
     | The maximum number of events per fetch. | The maximum number of events to get. Must be divisible by 100 due to Saas-Security api limitations, Default is 100 | False |
+    | The vendor corresponding to the integration that originated the events. | The name of the vendor to name the dataset after. Default is paloaltonetworks | False |
+    | The product corresponding to the integration that originated the events. | The name of the product to name the dataset after. Default is saassecurity | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
+5. Click **Test** to validate the URLs, token, and connection.
 
 ## Create the Client ID and Client Secret on SaaS Security
 In the SaaS Security UI, do the following:

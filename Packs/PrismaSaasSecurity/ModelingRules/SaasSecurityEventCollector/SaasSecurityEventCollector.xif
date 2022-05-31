@@ -1,4 +1,4 @@
-[MODEL: dataset=palo_alto_networks_saas_security_raw, model=Audit]
+[MODEL: dataset=paloaltonetworks_saassecurity_raw, model=Audit]
 | alter XDM.Audit.original_event_type = log_type,
 XDM.Audit.event_timestamp = timestamp,
 XDM.Audit.TriggeredBy.identity.name = admin_role,

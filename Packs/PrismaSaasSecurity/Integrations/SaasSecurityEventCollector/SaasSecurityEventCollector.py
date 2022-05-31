@@ -169,7 +169,9 @@ def test_module(client: Client):
         return 'ok'
 
 
-def get_events_command(client: Client, args: Dict, max_fetch: int) -> Union[str, CommandResults]:
+def get_events_command(
+    client: Client, args: Dict, max_fetch: int, vendor='paloaltonetworks', product='saassecurity'
+) -> Union[str, CommandResults]:
     """
     Fetches events from the saas-security queue and return them to the war-room.
     in case should_push_events is set to True, they will be also sent to XSIAM.
@@ -178,7 +180,7 @@ def get_events_command(client: Client, args: Dict, max_fetch: int) -> Union[str,
 
     if events := fetch_events_from_saas_security(client=client, max_fetch=max_fetch):
         if should_push_events:
-            send_events_to_xsiam(events, 'paloaltonetworks', 'saassecurity')
+            send_events_to_xsiam(events=events, vendor=vendor, product=product)
         return CommandResults(
             readable_output=tableToMarkdown(
                 'SaaS Security Logs',
@@ -221,6 +223,7 @@ def main() -> None:
     args = demisto.args()
     max_fetch = arg_to_number(args.get('limit') or params.get('max_fetch')) or 100
     validate_limit(max_fetch)
+    vendor, product = params.get('vendor'), params.get('product')
 
     command = demisto.command()
     demisto.info(f'Command being called is {command}')
@@ -238,11 +241,13 @@ def main() -> None:
         elif command == 'fetch-events':
             send_events_to_xsiam(
                 events=fetch_events_from_saas_security(client=client, max_fetch=max_fetch),
-                vendor='paloaltonetworks',
-                product='saassecurity'
+                vendor=vendor,
+                product=product
             )
         elif command == 'saas-security-get-events':
-            return_results(get_events_command(client=client, args=args, max_fetch=max_fetch))
+            return_results(get_events_command(
+                client=client, args=args, max_fetch=max_fetch, vendor=vendor, product=product)
+            )
         else:
             raise ValueError(f'Command {command} is not implemented in saas-security integration.')
     except Exception as e:
