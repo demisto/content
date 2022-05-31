@@ -21,7 +21,7 @@ def download_data(URL_SUFFIX, cursor=' '):
 
     return jdata
 
-SpyCloud_image.png
+
 def get_breach_data():
     """Func to get a specific breach SpyCloud has"""
     breach_id = demisto.args().get('id')
