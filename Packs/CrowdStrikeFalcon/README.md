@@ -19,6 +19,4 @@ Make sure you have the following content packs:
 - Common Types
 
 ## Pack Configurations  
-To get up and running with this pack, you must do the following:  
-1. Get an API client ID and secret from CrowdStrike support: support@crowdstrike.com.
-
+To get up and running with this pack, you must get an API client ID and secret from CrowdStrike support: support@crowdstrike.com.
