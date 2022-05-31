@@ -125,8 +125,6 @@ args:
 - name: reportdata
   description: 'The report to be parsed '
 scripttarget: 0
-dependson:
-  must:
 timeout: 0s
 fromversion: 5.0.0
 dockerimage: demisto/python:2.7.18.24398
