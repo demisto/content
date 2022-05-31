@@ -954,7 +954,7 @@ def identity_enrichment(service, notable_data, num_enrichment_events):
         try:
             job = service.jobs.create(query, **kwargs)
         except Exception as e:
-            demisto.error("Caught an exception in drilldown_enrichment function: {}".format(str(e)))
+            demisto.error("Caught an exception in identity_enrichment function: {}".format(str(e)))
     else:
         demisto.debug('No users were found in notable. {}'.format(error_msg))
 
