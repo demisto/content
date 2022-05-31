@@ -14,7 +14,6 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-  required: true
   defaultvalue: C - Fairly reliable
   type: 15
 - defaultvalue: https://soar.monstersofhack.com
