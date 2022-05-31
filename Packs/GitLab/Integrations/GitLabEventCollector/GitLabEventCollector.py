@@ -10,7 +10,7 @@ class Client(IntegrationEventsClient):
         self.page = 1
         self.event_type = ''
 
-    def set_request_filter(self, after):  # noqa: F841  # pragma: no cover
+    def set_request_filter(self, after: Any) -> None:  # noqa: F841  # pragma: no cover
         base_url = self.request.url.split("?")[0]
         last_run = self.last_run[self.event_type]  # type: ignore
         after_var = 'created_after'
@@ -38,9 +38,6 @@ class GetEvents(IntegrationGetEvents):
         projects.sort(key=lambda k: k.get('id'))
         user_events = [event for event in events if 'entity_type' not in event]
         user_events.sort(key=lambda k: k.get('id'))
-        a = GetEvents.prepare_time_for_next(groups[-1]['created_at'])
-        b = GetEvents.prepare_time_for_next(projects[-1]['created_at'])
-        c = GetEvents.prepare_time_for_next(user_events[-1]['created_at'])
         return {'groups': GetEvents.prepare_time_for_next(groups[-1]['created_at']),
                 'projects': GetEvents.prepare_time_for_next(projects[-1]['created_at']),
                 'events': GetEvents.prepare_time_for_next(user_events[-1]['created_at'])}
@@ -140,7 +137,6 @@ def main() -> None:  # pragma: no cover
             )
             return_results(command_results)
         elif command == 'fetch-events':
-            k = get_events.get_last_run(events)
             demisto.setLastRun(get_events.get_last_run(events))
             should_push_events = True
         if should_push_events:
@@ -148,7 +144,6 @@ def main() -> None:  # pragma: no cover
                                  demisto_params.get('product', 'gitlab'))
 
     except Exception as exc:
-        raise exc
         return_error(f'Failed to execute {command} command.\nError:\n{str(exc)}', error=exc)
 
 
