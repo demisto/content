@@ -1,16 +1,16 @@
 args:
 - auto: PREDEFINED
-  defaultValue: "True"
+  defaultValue: 'True'
   description: Define if that in Widget Context or analyse data.
   name: isWidget
   predefined:
-  - "True"
-  - "False"
+  - 'True'
+  - 'False'
 comment: Present or parse CPU usage stats.
 commonfields:
   id: HealthCheckCPU
   version: -1
-dockerimage: demisto/python3:3.10.1.27636
+dockerimage: demisto/python3:3.10.4.29342
 enabled: true
 name: HealthCheckCPU
 runas: DBotWeakRole

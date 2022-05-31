@@ -369,8 +369,6 @@ inputs:
   description: |-
     The operating system for which the alert was raised.
     accepted values are Windows, Linux, Android
-
-    ..
   playbookInputQuery:
 outputs:
 - contextPath: csfalconx.resource.tags
