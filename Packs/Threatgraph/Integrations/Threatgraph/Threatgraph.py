@@ -14,11 +14,7 @@ from CommonServerPython import *  # noqa: F401
     # as soon as Crowdstrike create a replacement then this integration can be removed
 """
 
-import logging
-
 import requests
-
-logging.basicConfig()
 
 BASE_URL = demisto.params()['url'][:-1] if demisto.params()['url'].endswith('/') else demisto.params()['url']
 USERNAME = demisto.params().get('apikey')
@@ -35,16 +31,8 @@ def get_tree(args):
     Returns:
         _type_: dictionary of parent/child process information along with IP and type details
     """
-    sensor_ids = str(args["sensor_ids"])
-    process_ids = str(args["process_ids"])
-
-    if isinstance(sensor_ids, str):
-        sensor_ids = sensor_ids.replace('[', '').replace(']', '').replace("'", "").replace('"', '')
-        sensor_ids = sensor_ids.split(",")
-
-    if isinstance(process_ids, str):
-        process_ids = process_ids.replace('[', '').replace(']', '').replace("'", "").replace('"', '')
-        process_ids = process_ids.split(",")
+    sensor_ids = argToList(args.get("sensor_ids"))
+    process_ids = argToList(args.get("process_ids"))
 
     all_results = {}
     all_ips = []
@@ -197,18 +185,15 @@ def test():
 
 
 def main():
-    integration_logger = logging.getLogger('threatgraph')
-    integration_logger.propagate = False
-    LOG(f'Command is {demisto.command}')
+    demisto.info(f'Command is {demisto.command}')
     try:
         args = demisto.args()
         if demisto.command() == 'test-module':
-            test()
+            demisto.results(test())
         if demisto.command() == 'bt-get-tree':
             demisto.results(get_tree(args))
     except Exception as e:
-        LOG(e)
-        LOG.print_log()
+        demisto.error(e)
         raise
 
 

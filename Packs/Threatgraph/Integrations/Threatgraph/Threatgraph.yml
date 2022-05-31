@@ -8,10 +8,6 @@ configuration:
   name: url
   required: true
   type: 0
-- display: Fetch incidents
-  name: isFetch
-  required: false
-  type: 8
 - additionalinfo: Threatgraph API key
   display: API Key
   name: apikey
@@ -22,67 +18,8 @@ configuration:
   name: apisecret
   required: true
   type: 4
-- defaultvalue: "1"
-  display: Incidents Fetch Interval
-  name: incidentFetchInterval
-  required: false
-  type: 19
 - display: Fetch indicators
   name: feed
-  required: false
-  type: 8
-- additionalinfo: Indicators from this integration instance will be marked with this
-    verdict
-  display: Indicator Verdict
-  name: feedReputation
-  options:
-  - Unknown
-  - None
-  - Benign
-  - Good
-  - Suspicious
-  - Malicious
-  - Bad
-  required: false
-  type: 18
-- additionalinfo: Reliability of the source providing the intelligence data
-  defaultvalue: F - Reliability cannot be judged
-  display: Source Reliability
-  name: feedReliability
-  options:
-  - A - Completely reliable
-  - B - Usually reliable
-  - C - Fairly reliable
-  - D - Not usually reliable
-  - E - Unreliable
-  - F - Reliability cannot be judged
-  required: true
-  type: 15
-- defaultvalue: indicatorType
-  display: ""
-  name: feedExpirationPolicy
-  options:
-  - never
-  - interval
-  - indicatorType
-  - suddenDeath
-  required: false
-  type: 17
-- defaultvalue: "20160"
-  display: ""
-  name: feedExpirationInterval
-  required: false
-  type: 1
-- defaultvalue: "240"
-  display: Feed Fetch Interval
-  name: feedFetchInterval
-  required: false
-  type: 19
-- additionalinfo: When selected, the exclusion list is ignored for indicators from
-    this feed. This means that if an indicator from this feed is on the exclusion
-    list, the indicator might still be added to the system.
-  display: Bypass exclusion list
-  name: feedBypassExclusionList
   required: false
   type: 8
 contentitemexportablefields:
@@ -96,11 +33,14 @@ contentitemexportablefields:
     - cloud-zscaler
     toServerVersion: ""
 description: |-
-  # V2.1.2 no change, just reversioned following git restructuring and changed tags for deployment
-  V1.1.1 support multiple sensors
-  V1.1.0 added test method
-  V1.0.0 original version
-  A script to get the parent and child process data from crowdstrike.
+  Uses the deprecated crowdstrike graph api to return process and other information.
+
+  Version History
+  - v2.1.3 lint tidy
+  - V2.1.2 no change, just reversioned following git restructuring and changed tags for deployment
+  - V1.1.1 support multiple sensors
+  - V1.1.0 added test method
+  - V1.0.0 original version
 display: Threatgraph
 name: Threatgraph
 script:
@@ -121,9 +61,6 @@ script:
     - contextPath: ThreatGraph_data
       description: An output of the threatgraph query
   dockerimage: demisto/python3:3.10.4.29342
-  feed: true
-  isFetchSamples: true
-  isfetch: true
   runonce: false
   script: ''
   subtype: python3

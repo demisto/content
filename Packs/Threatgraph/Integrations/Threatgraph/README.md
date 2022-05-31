@@ -1,8 +1,11 @@
-# V2.1.2 no change, just reversioned following git restructuring and changed tags for deployment
-V1.1.1 support multiple sensors
-V1.1.0 added test method
-V1.0.0 original version
-A script to get the parent and child process data from crowdstrike.
+Uses the deprecated crowdstrike graph api to return process and other information.
+
+Version History
+- v2.1.3 lint tidy
+- V2.1.2 no change, just reversioned following git restructuring and changed tags for deployment
+- V1.1.1 support multiple sensors
+- V1.1.0 added test method
+- V1.0.0 original version
 This integration was integrated and tested with version xx of Threatgraph
 
 ## Configure Threatgraph on Cortex XSOAR
@@ -14,17 +17,9 @@ This integration was integrated and tested with version xx of Threatgraph
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
     | Server URL (e.g. https://falconapi.us-2.crowdstrike.com) |  | True |
-    | Fetch incidents |  | False |
     | API Key | Threatgraph API key | True |
     | API Secret | Threatgraph API secret | True |
-    | Incidents Fetch Interval |  | False |
     | Fetch indicators |  | False |
-    | Indicator Verdict | Indicators from this integration instance will be marked with this verdict | False |
-    | Source Reliability | Reliability of the source providing the intelligence data | True |
-    |  |  | False |
-    |  |  | False |
-    | Feed Fetch Interval |  | False |
-    | Bypass exclusion list | When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
