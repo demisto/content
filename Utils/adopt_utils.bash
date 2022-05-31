@@ -313,10 +313,11 @@ add_msg_to_readme(){
 
 	readme=$1
 	message=$2
+	os=$(detect_os)
 
 	if [ "$os" == "Mac OS" ] 
 	then
-		sed -i '' "1s/^/$message\n\n/g" "$readme"
+		sed -i '' "1s/^/$message\n\n/" "$readme"
 	else
 		sed -i "1s/^/$message\n\n/" "$readme"
 	fi
