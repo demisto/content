@@ -15,6 +15,9 @@ This integration was integrated and tested with version 2.6.5 of Cortex XDR - IR
     | Server URL (copy URL from XDR - click ? to see more info.) |  | True |
     | API Key ID |  | True |
     | API Key |  | True |
+    | Only fetch starred incidents |  | False |
+    | Starred incidents fetch window (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days)  |  | False |
+    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days)__
     | HTTP Timeout | The timeout of the HTTP requests sent to Cortex XDR API \(in seconds\). | False |
     | Maximum number of incidents per fetch | The maximum number of incidents per fetch. Cannot exceed 100. | False |
     | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
@@ -138,7 +141,9 @@ To setup the mirroring follow these instructions:
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### xdr-get-incidents
+
 ***
 Returns a list of incidents, which you can filter by a list of incident IDs (max. 100), the time the incident was last modified, and the time the incident was created.
 If you pass multiple filtering arguments, they will be concatenated using the AND condition. The OR condition is not supported.
@@ -163,6 +168,7 @@ If you pass multiple filtering arguments, they will be concatenated using the AN
 | page | Page number (for pagination). The default is 0 (the first page). Default is 0. | Optional | 
 | limit | Maximum number of incidents to return per page. The default and maximum is 100. Default is 100. | Optional | 
 | status | Filters only incidents in the specified status. The options are: new, under_investigation, resolved_known_issue, resolved_false_positive, resolved_true_positive resolved_security_testing, resolved_other, resolved_auto. | Optional | 
+| starred | Whether the incident is starred or not (Boolean value: true or false). | Optional |
 
 
 #### Context Output
@@ -184,8 +190,8 @@ If you pass multiple filtering arguments, they will be concatenated using the AN
 "low","medium","high"
  | 
 | PaloAltoNetworksXDR.Incident.low_severity_alert_count | String | Number of alerts with the severity LOW. | 
-| PaloAltoNetworksXDR.Incident.status | String | Current status of the incident. Valid values are: "new","under_investigation","resolved_known_issue","resolved_duplicate","resolved_false_positive","resolved_true_positive","resolved_security_testing" or "resolved_other".
- | 
+| PaloAltoNetworksXDR.Incident.status | String | Current status of the incident. Valid values are: "new","under_investigation","resolved_known_issue","resolved_duplicate","resolved_false_positive","resolved_true_positive","resolved_security_testing" or "resolved_other". |
+| PaloAltoNetworksXDR.Incident.starred | Boolean | Incident starred. |
 | PaloAltoNetworksXDR.Incident.description | String | Dynamic calculated description of the incident. | 
 | PaloAltoNetworksXDR.Incident.resolve_comment | String | Comments entered by the user when the incident was resolved. | 
 | PaloAltoNetworksXDR.Incident.notes | String | Comments entered by the user regarding the incident. | 
@@ -2531,7 +2537,7 @@ Multiple filter arguments will be concatenated using AND operator, while argumen
 | --- | --- | --- |
 | alert_id | The unique ID of the alert. | Optional | 
 | severity | The severity of the alert. Possible values are: low, meduim, high. | Optional | 
-| custom_filter | a custom filter, when using this argument, other filter arguments are not relevant. example: <br/>`{<br/>                "OR": [<br/>                    {<br/>                        "SEARCH_FIELD": "actor_process_command_line",<br/>                        "SEARCH_TYPE": "EQ",<br/>                        "SEARCH_VALUE": "path_to_file"<br/>                    }<br/>                ]<br/>            }`. | Optional | 
+| custom_filter | a custom filter, when using this argument, other filter arguments are not relevant except time_frame, start_time and end_time which are used to filter the time. example: <br/>`{<br/>                "OR": [<br/>                    {<br/>                        "SEARCH_FIELD": "actor_process_command_line",<br/>                        "SEARCH_TYPE": "EQ",<br/>                        "SEARCH_VALUE": "path_to_file"<br/>                    }<br/>                ]<br/>            }`. | Optional | 
 | Identity_type | Account type. Possible values are: ANONYMOUS,  APPLICATION,  COMPUTE,  FEDERATED_IDENTITY,  SERVICE,  SERVICE_ACCOUNT,  TEMPORARY_CREDENTIALS,  TOKEN,  UNKNOWN,  USER. | Optional | 
 | agent_id | A unique identifier per agent. | Optional | 
 | action_external_hostname | The hostname to connect to. In case of a proxy connection, this value will differ from action_remote_ip. | Optional | 
