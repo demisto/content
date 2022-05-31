@@ -142,7 +142,7 @@ tasks:
     evidencedata:
       customfields: {}
       description:
-        simple: Microsoft Defender For Endpoint - Results on Process Details query in Advanced Hunting feature.
+        simple: Results on Process Details query in Advanced Hunting feature - Microsoft Defender For Endpoint.
       tags:
         simple: Process Details
     id: '4'
@@ -234,7 +234,7 @@ tasks:
     evidencedata:
       customfields: {}
       description:
-        simple: Microsoft Defender For Endpoint - Results on searching additional devices associated with this File Sha1
+        simple:  Results on searching additional devices associated with this File Sha1 - Microsoft Defender For Endpoint.
       tags:
         simple: Multi Affected Devices
     id: '6'
@@ -274,7 +274,7 @@ tasks:
     evidencedata:
       customfields: {}
       description:
-        simple: Microsoft Defender For Endpoint - Results on Unsigned Powershell query in Advanced Hunting feature.
+        simple:  Results on Unsigned Powershell query in Advanced Hunting feature - Microsoft Defender For Endpoint.
       tags:
         simple: cmd###powershell
     id: '7'
@@ -324,7 +324,7 @@ tasks:
     evidencedata:
       customfields: {}
       description:
-        simple: Microsoft Defender For Endpoint - Results on Powershell Execution query in Advanced Hunting feature.
+        simple: Results on Powershell Execution query in Advanced Hunting feature - Microsoft Defender For Endpoint.
       tags:
         simple: powershell###cmd
     id: '8'
