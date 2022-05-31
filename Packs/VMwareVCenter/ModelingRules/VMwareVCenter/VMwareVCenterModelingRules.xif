@@ -1,0 +1,27 @@
+[Model: dataset ="VMware_vCenter_raw", moder=Audit] 
+| filter _raw_log contains "| vlsi |" or _raw_log contains "| vim" or _raw_log contains "jointool" or _raw_log contains "heard-" 
+| alter Timestamp0= arrayindex(regextract(_raw_log ,"(\d+\-\d+\-\d+\w\d+\:\d+\:\d+\.\d+\w+)") ,0)
+| alter Timestamp1 = arrayindex(regextract(_raw_log ,"\[(\d+\-\d+\-\d+\s\d+\:\d+\:\d+)") ,0)
+| alter Timestamp = coalesce(Timestamp0 ,Timestamp1 )
+| alter LogLevel = arrayindex(regextract(_raw_log ,"\d+\-\d+\-\d+\w\d+\:\d+\:\d+\.\d+\w+\s\|\s+(\S+)") ,0)
+| alter Message0 = arrayindex(regextract(_raw_log ,"\|\s\d+\s\|\s([^\t]+)") ,0)
+| alter Message1 = arrayindex(regextract(_raw_log ,"\]\s([^\t]+)") ,0)
+| alter Message = coalesce(Message0, Message1)
+
+| alter XDM.Auth.event_timestamp = Timestamp
+, XDM.Auth.threat.description = Message
+, XDM.identity.name = LogLevel 
+
+
+
+[Model: dataset ="VMware_vCenter_raw", moder=Auth] 
+| filter _raw_log contains "vpxd[" or _raw_log contains "[vmafdd]" or _raw_log contains " vmdird "
+| alter Timestamp= arrayindex(regextract(_raw_log ,"(\d+\-\d+\-\d+\w\d+\:\d+\:\d+\.\d+\w+)") ,0)
+| alter Message_vpxd= arrayindex(regextract(_raw_log ,"vpxd\[\d+\](.*)") ,0)
+| alter user0_vpxd= arrayindex(regextract(_raw_log ,"user\s\<([^\>]+)") ,0)
+| alter user1_vpxd= arrayindex(regextract(_raw_log ,"User\:\s'([^'])") ,0)
+| alter Message_vmdrid= arrayindex(regextract(_raw_log ,"@\d+\:\s([^\t]+)") ,0)
+| alter Message_vmafdd= arrayindex(regextract(_raw_log ,"vmafdd.*\]\s[^\:]+\:\s([^\t]+)") ,0)
+| alter eventName_vmafdd = arrayindex(regextract(_raw_log ,"vmafdd.*\]\s([^\:]+)") ,0)
+| alter Message = coalesce(Message_vpxd ,Message_vmdrid ,Message_vmafdd )
+| alter user = coalesce(user0_vpxd , user1_vpxd )
