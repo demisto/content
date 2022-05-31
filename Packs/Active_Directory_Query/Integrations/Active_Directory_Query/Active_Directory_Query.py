@@ -11,7 +11,8 @@ from ldap3.utils.log import (set_library_log_detail_level, get_library_log_detai
                              set_library_log_hide_sensitive_data, EXTENDED)
 from ldap3.utils.conv import escape_filter_chars
 
-CIPHERS_STRING = '@SECLEVEL=1:ECDHE+AESGCM:ECDHE+CHACHA20:DHE+AESGCM:DHE+CHACHA20:ECDH+AESGCM:DH+AESGCM:ECDH+AES:DH+AES:RSA+ANESGCM:RSA+AES:!aNULL:!eNULL:!MD5:!DSS'
+CIPHERS_STRING = '@SECLEVEL=1:ECDHE+AESGCM:ECDHE+CHACHA20:DHE+AESGCM:DHE+CHACHA20:ECDH+AESGCM:DH+AESGCM:ECDH+AES:DH+AES:' \
+                 'RSA+ANESGCM:RSA+AES:!aNULL:!eNULL:!MD5:!DSS'
 
 # global connection
 conn: Optional[Connection] = None
