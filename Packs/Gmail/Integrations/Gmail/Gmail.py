@@ -1081,10 +1081,6 @@ def get_user_tokens(user_id):
 
 
 def search_all_mailboxes():
-    """
-    Searches and returns all email information (including content) of all users,
-    Supports search by specific queries.
-    """
     users_next_page_token = None
     service = get_service('admin', 'directory_v1')
     while True:
