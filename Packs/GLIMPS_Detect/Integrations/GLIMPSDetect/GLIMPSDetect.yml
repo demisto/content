@@ -11,7 +11,7 @@ description: Use the GLIMPS Detect Integration to send files to GLIMPS Malware a
 configuration:
 - display: API Token
   name: api_token
-  type: 0
+  type: 4
   required: true
 - display: URL
   name: url
