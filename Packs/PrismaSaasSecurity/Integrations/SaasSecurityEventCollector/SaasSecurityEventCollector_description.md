@@ -5,6 +5,8 @@
 3) **reset last fetch** has no effect.
 4) On initial activation this integration will pull events starting from one hour prior.
 5) Calling ```fetch-events``` or ```saas-security-get-events``` or ```test-module``` may take upwards of twenty seconds in some cases.
+6) due to Saas-Security api limitations, every event fetched in the ```test-module``` will be saved in a cache. In every fetch-incidents the cache saved by the test-module will be fetched too, hence in some cases more than 'max-fetch' events could be fetched.
+
 
 Creating the Client ID and Client Secret in the SaaS Security UI:
 ---

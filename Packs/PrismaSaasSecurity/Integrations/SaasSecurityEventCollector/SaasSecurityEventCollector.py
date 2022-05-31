@@ -62,9 +62,9 @@ class Client(BaseClient):
             str: the access token.
        """
         integration_context = get_integration_context()
-        access_token = integration_context.get('access_token')
-        token_initiate_time = integration_context.get('token_initiate_time')
-        token_expiration_seconds = integration_context.get('token_expiration_seconds')
+        access_token = json.loads(integration_context.get('access_token'))
+        token_initiate_time = json.loads(integration_context.get('token_initiate_time'))
+        token_expiration_seconds = json.loads(integration_context.get('token_expiration_seconds'))
 
         if access_token and not is_token_expired(
             token_initiate_time=float(token_initiate_time), token_expiration_seconds=float(token_expiration_seconds)
