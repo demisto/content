@@ -5,6 +5,12 @@ args:
   name: job_name
   required: true
   secret: false
+- default: false
+  description: True to delete the existing job with job_name
+  isArray: false
+  name: delete_job
+  required: false
+  secret: false
 commonfields:
   id: JobCreator
   version: -1

@@ -38,7 +38,7 @@ def main():
         )
 
     except Exception as e:
-        return_error(f'{SCRIPT_NAME} - Error occurred while setting up machine.\n{e}')
+        return_error(f'{SCRIPT_NAME} - Error occurred while setting up list.\n{e}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
