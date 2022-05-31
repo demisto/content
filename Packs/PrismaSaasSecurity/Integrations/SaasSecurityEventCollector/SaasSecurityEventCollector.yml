@@ -1,6 +1,6 @@
 category: Analytics & SIEM
 commonfields:
-  id: SaasSecurityEventCollector
+  id: Saas Security Event Collector
   version: -1
 configuration:
 - additionalinfo: 'The instance configuration URL based on the server location: <br/>US:
@@ -26,14 +26,14 @@ configuration:
   required: false
   type: 8
 - display: The maximum number of events per fetch.
-  additionalinfo: How many events to fetch every time fetch is being executed. Default is 100. Must be divisible by 100 due to Saas-Security api limitations.
+  additionalinfo: The maximum number of events to fetch every time fetch is being executed. This number must be divisible by 100 due to Saas-Security api limitations. Default is 100.
   defaultvalue: 100
   name: max_fetch
-  required: true
+  required: false
   type: 0
 description: Palo Alto Saas Security Event Collector integration for XSIAM.
 display: Saas Security Event Collector
-name: SaasSecurityEventCollector
+name: Saas Security Event Collector
 script:
   commands:
   - deprecated: false
@@ -42,11 +42,11 @@ script:
     name: saas-security-get-events
     arguments:
       - name: limit
-        description: The maximum number of events to get. Must be divisible by 100 due to Saas-Security api limitations
+        description: The maximum number of events to get. Must be divisible by 100 due to Saas-Security api limitations. Default is 100.
         defaultValue: 100
       - auto: PREDEFINED
         defaultValue: 'False'
-        description: Set this argument to True in order to create events, otherwise the command will only display them. If setting to 'False' The returned events will be lost.
+        description: Set this argument to True in order to create events, otherwise the command will only display them. *If setting to 'False' The returned events will be lost.*
         isArray: false
         name: should_push_events
         predefined:
@@ -94,13 +94,13 @@ script:
       description: ISO8601 timestamp to show when the event occurred.
       type: Date
     - contextPath: SaasSecurity.Event.severity
-      description: Severity (0-5)
+      description: Severity (0-5).
       type: Number
     - contextPath: SaasSecurity.Event.incident_id
       description: Incident/risk id.
       type: String
     - contextPath: SaasSecurity.Event.exposure
-      description: Exposure level (public, external, company, or internal)
+      description: Exposure level (public, external, company, or internal).
       type: String
     - contextPath: SaasSecurity.Event.asset_id
       description: The asset ID.
@@ -124,7 +124,7 @@ script:
       description: Incident owner.
       type: String
     - contextPath: SaasSecurity.Event.incident_category
-      description: Incident category..
+      description: Incident category.
       type: String
     - contextPath: SaasSecurity.Event.item_creator_email
       description: Item creator’s email.

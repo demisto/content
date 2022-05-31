@@ -1,5 +1,10 @@
 SaaS Security is an integrated CASB (Cloud Access Security Broker) solution that helps Security teams like yours meet 
-the challenges of protecting the growing availability of sanctioned and unsanctioned SaaS applications and maintaining 
+the challenges of:
+* protecting the growing availability of sanctioned and unsanctioned SaaS applications
+* maintaining compliance consistently in the cloud
+* stopping threats to sensitive information, users, and resources
+
+protecting the growing availability of sanctioned and unsanctioned SaaS applications and maintaining 
 compliance consistently in the cloud while stopping threats to sensitive information, users, and resources. 
 SaaS Security options include SaaS Security API (formerly Prisma SaaS) and the SaaS Security Inline add-on.
 
@@ -17,7 +22,7 @@ SaaS Security options include SaaS Security API (formerly Prisma SaaS) and the S
     | Client Secret | The SaaS Security Secret ID. | True |
     | Trust any certificate (not secure) | By default, SSL verification is enabled. If selected, the connection isn’t secure and all requests return an SSL error because the certificate cannot be verified. | False |
     | Use system proxy settings | Uses the system proxy server to communicate with the  integration. If not selected, the integration will not use the system proxy server. | False |
-    | The maximum number of events per fetch. | How many events to fetch every time fetch is being executed. Default is 100. Must be divisible by 100 due to Saas-Security api limitations | True |
+    | The maximum number of events per fetch. | The maximum number of events to get. Must be divisible by 100 due to Saas-Security api limitations, Default is 100 | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
@@ -37,11 +42,12 @@ Note: For more information see the [SaaS Security Administrator's Guide](https:/
 
 
 ## Limitations
-1) By definition the events that occur lasts only 1 hour in Saas-Security cache, hence if setting the limit to a very low limit while
-  in the Saas-Security environment there are huge amounts of events, those could be lost in the process of fetching.
-2) The max-fetch/limit parameters to fetch events are limited to be only 100 divisible numbers due to Saas-Security api limitations.
-3) The **reset last fetch** has no effect.
+1) Occurring events expire after one hour in Saas-Security cache, so setting a low limit could cause events to expire if there are a large number of events in the Saas-Security cache.
+2) The max-fetch/limit parameters to fetch events must be divisible by 100.
+3) **reset last fetch** has no effect.
 4) When executing the test-module and there are events saved in the cache of Saas-Security, 1 event will be lost.
+5) On initial activation this integration will pull events starting from one hour prior.
+6) Calling ```fetch-events``` or ```saas-security-get-events``` or ```test-module``` may take upwards of twenty seconds in some cases.
 
 ## Fetch Events
 Requires the scope of *Log access* in order to fetch log events.
@@ -176,7 +182,7 @@ Manual command to fetch events and display them.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | limit | The maximum number of events to get. Must be divisible by 100 due to Saas-Security api limitations. Default is 100. | Optional | 
-| should_push_events | Set this argument to True in order to create events, otherwise the command will only display them. If setting to 'False' The returned events will be lost. Possible values are: True, False. Default is False. | Required | 
+| should_push_events | Set this argument to True in order to create events, otherwise the command will only display them. *If setting to 'False' The returned events will be lost.* Possible values are: True, False. Default is False. | Required | 
 
 
 #### Context Output
@@ -196,9 +202,9 @@ Manual command to fetch events and display them.
 | SaasSecurity.Event.serial | String | Serial number of the organization using the service \(tenant\). | 
 | SaasSecurity.Event.cloud_app_instance | String | Cloud app name \(not cloud app type\). | 
 | SaasSecurity.Event.timestamp | Date | ISO8601 timestamp to show when the event occurred. | 
-| SaasSecurity.Event.severity | Number | Severity \(0-5\) | 
+| SaasSecurity.Event.severity | Number | Severity \(0-5\). | 
 | SaasSecurity.Event.incident_id | String | Incident/risk id. | 
-| SaasSecurity.Event.exposure | String | Exposure level \(public, external, company, or internal\) | 
+| SaasSecurity.Event.exposure | String | Exposure level \(public, external, company, or internal\). | 
 | SaasSecurity.Event.asset_id | String | The asset ID. | 
 | SaasSecurity.Event.item_owner | String | The item owner. | 
 | SaasSecurity.Event.container_name | String | Item’s container name. | 
@@ -206,7 +212,7 @@ Manual command to fetch events and display them.
 | SaasSecurity.Event.occurrences_by_rule | Number | Number of times the asset violated the policy. | 
 | SaasSecurity.Event.policy_rule_name | String | Violated policy’s name. | 
 | SaasSecurity.Event.incident_owner | String | Incident owner. | 
-| SaasSecurity.Event.incident_category | String | Incident category.. | 
+| SaasSecurity.Event.incident_category | String | Incident category. | 
 | SaasSecurity.Event.item_creator_email | String | Item creator’s email. | 
 | SaasSecurity.Event.action_taken | String | Action taken. | 
 | SaasSecurity.Event.action_taken_by | String | Action taken by. | 

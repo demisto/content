@@ -144,10 +144,14 @@ def is_token_expired(token_initiate_time: float, token_expiration_seconds: float
 
 def validate_limit(limit: int):
     """
-    Validate that the limit/max fetch is a number divisible by the MAX_EVENTS_PER_REQUEST (100).
+    Validate that the limit/max fetch is a number divisible by the MAX_EVENTS_PER_REQUEST (100) and that it is not
+    a negative number.
     """
     if limit % MAX_EVENTS_PER_REQUEST != 0:
         raise DemistoException(f'fetch limit parameter should be divisible by {MAX_EVENTS_PER_REQUEST}')
+
+    if limit < 0:
+        raise DemistoException('fetch limit parameter cannot be negative number')
 
 
 ''' COMMAND FUNCTIONS '''
@@ -157,25 +161,26 @@ def test_module(client: Client):
     """
     Testing we have a valid connection to Saas-Security.
 
-    The reason not testing fetching events is that if we fetch it from the api we will lose those requests.
+    The reason we must use the get events endpoint is because Saas-Security have different scopes for each type
+    of api. To verify the customer have the log access scope we must try and fetch an event.
     """
     response = client.get_event_request()
     if response.status_code in (200, 204):
         return 'ok'
 
 
-def saas_security_get_events_command(client: Client, args: Dict) -> Union[str, CommandResults]:
+def get_events_command(client: Client, args: Dict) -> Union[str, CommandResults]:
     """
     Fetches events from the saas-security queue and return them to the war-room.
     in case should_push_events is set to True, they will be also sent to XSIAM.
     """
     limit = arg_to_number(args.get('limit')) or 100
-    validate_limit(limit=limit)
+    validate_limit(limit)
     should_push_events = argToBoolean(args.get('should_push_events'))
 
-    if events := fetch_events(client=client, max_fetch=limit):
+    if events := fetch_events_from_saas_security(client=client, max_fetch=limit):
         if should_push_events:
-            send_events_to_xsiam(events=events, vendor='PaloAltoNetworks', product='SaasSecurity')
+            send_events_to_xsiam(events, 'pan', 'saassecurity')
         return CommandResults(
             readable_output=tableToMarkdown(
                 'SaaS Security Logs',
@@ -192,7 +197,7 @@ def saas_security_get_events_command(client: Client, args: Dict) -> Union[str, C
     return 'No events were found.'
 
 
-def fetch_events(client: Client, max_fetch: int) -> List[Dict]:
+def fetch_events_from_saas_security(client: Client, max_fetch: int) -> List[Dict]:
     """
     Fetches events from the saas-security queue.
     """
@@ -201,7 +206,7 @@ def fetch_events(client: Client, max_fetch: int) -> List[Dict]:
 
     while len(events) < max_fetch and response.status_code == 200:
         fetched_events = response.json().get('events') or []
-        demisto.debug(f'fetched events: ({fetched_events})')
+        demisto.debug(f'fetched events: ({fetched_events}), fetched events length: ({len(fetched_events)})')
         events.extend(fetched_events)
         response = client.get_events_request()
 
@@ -235,11 +240,12 @@ def main() -> None:
             return_results(test_module(client=client))
         elif command == 'fetch-events':
             send_events_to_xsiam(
-                events=fetch_events(client=client, max_fetch=max_fetch),
-                vendor='pan', product='saassecurity'
+                events=fetch_events_from_saas_security(client=client, max_fetch=max_fetch),
+                vendor='pan',
+                product='saassecurity'
             )
         elif command == 'saas-security-get-events':
-            return_results(saas_security_get_events_command(client=client, args=args))
+            return_results(get_events_command(client=client, args=args))
         else:
             raise ValueError(f'Command {command} is not implemented in saas-security integration.')
     except Exception as e:

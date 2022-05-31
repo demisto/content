@@ -22,10 +22,9 @@ def mock_client():
     return Client(base_url='https://test.com/api', client_id='', client_secret='', verify=False, proxy=False)
 
 
-def create_events(start_id=1, end_id=100):
-    if start_id == end_id:
-        return json.dumps({'events': []})
-    return json.dumps({'events': [{'id': i} for i in range(start_id, end_id + 1)]})
+def create_events(start_id=1, end_id=100, should_dump=True):
+    events = {'events': [{'id': i} for i in range(start_id, end_id + 1)]}
+    return json.dumps(events) if should_dump else events
 
 
 class MockedResponse:
@@ -71,7 +70,7 @@ class TestFetchEvents:
                 MockedResponse(status_code=200, text=create_events(start_id=101, end_id=200)),
                 MockedResponse(status_code=200, text=create_events(start_id=21, end_id=30))
             ],
-            MockedResponse(status_code=200, text=create_events(start_id=1, end_id=200))
+            create_events(start_id=1, end_id=200, should_dump=False)
         ),
         (
             100,
@@ -79,7 +78,7 @@ class TestFetchEvents:
                 MockedResponse(status_code=200, text=create_events(start_id=1, end_id=100)),
                 MockedResponse(status_code=200, text=create_events(start_id=101, end_id=102)),
             ],
-            MockedResponse(status_code=200, text=create_events(start_id=1, end_id=100))
+            create_events(start_id=1, end_id=100, should_dump=False)
         ),
         (
             100,
@@ -87,7 +86,7 @@ class TestFetchEvents:
                 MockedResponse(status_code=200, text=create_events(start_id=1, end_id=8)),
                 MockedResponse(status_code=204),
             ],
-            MockedResponse(status_code=200, text=create_events(start_id=1, end_id=8))
+            create_events(start_id=1, end_id=8, should_dump=False)
         ),
         (
             100,
@@ -95,14 +94,14 @@ class TestFetchEvents:
                 MockedResponse(status_code=200, text=create_events(start_id=1, end_id=54)),
                 MockedResponse(status_code=204)
             ],
-            MockedResponse(status_code=200, text=create_events(start_id=1, end_id=54))
+            create_events(start_id=1, end_id=54, should_dump=False)
         ),
         (
             100,
             [
                 MockedResponse(status_code=204)
             ],
-            MockedResponse(status_code=200, text=create_events(start_id=1, end_id=1))
+            create_events(start_id=2, end_id=1, should_dump=False)  # empty events response
         ),
         (
             200,
@@ -110,7 +109,7 @@ class TestFetchEvents:
                 MockedResponse(status_code=200, text=create_events(start_id=1, end_id=100)),
                 MockedResponse(status_code=204)
             ],
-            MockedResponse(status_code=200, text=create_events(start_id=1, end_id=100))
+            create_events(start_id=1, end_id=100, should_dump=False)
         ),
         (
             300,
@@ -119,7 +118,7 @@ class TestFetchEvents:
                 MockedResponse(status_code=200, text=create_events(start_id=101, end_id=200)),
                 MockedResponse(status_code=204)
             ],
-            MockedResponse(status_code=200, text=create_events(start_id=1, end_id=200))
+            create_events(start_id=1, end_id=200, should_dump=False)
         ),
         (
             1000,
@@ -136,7 +135,7 @@ class TestFetchEvents:
                 MockedResponse(status_code=200, text=create_events(start_id=901, end_id=1000)),
                 MockedResponse(status_code=200, text=create_events(start_id=1001, end_id=1050)),
             ],
-            MockedResponse(status_code=200, text=create_events(start_id=1, end_id=1000))
+            create_events(start_id=1, end_id=1000, should_dump=False)
         ),
         (
             300,
@@ -146,7 +145,7 @@ class TestFetchEvents:
                 MockedResponse(status_code=200, text=create_events(start_id=201, end_id=280)),
                 MockedResponse(status_code=204)
             ],
-            MockedResponse(status_code=200, text=create_events(start_id=1, end_id=280))
+            create_events(start_id=1, end_id=280, should_dump=False)
         ),
         (
             400,
@@ -156,7 +155,18 @@ class TestFetchEvents:
                 MockedResponse(status_code=200, text=create_events(start_id=201, end_id=300)),
                 MockedResponse(status_code=204)
             ],
-            MockedResponse(status_code=200, text=create_events(start_id=1, end_id=300))
+            create_events(start_id=1, end_id=300, should_dump=False)
+        ),
+        (
+            400,
+            [
+                MockedResponse(status_code=200, text=create_events(start_id=1, end_id=100)),
+                MockedResponse(status_code=200, text=create_events(start_id=101, end_id=200)),
+                MockedResponse(status_code=200, text=create_events(start_id=201, end_id=300)),
+                MockedResponse(status_code=204),
+                MockedResponse(status_code=200, text=create_events(start_id=301, end_id=400))
+            ],
+            create_events(start_id=1, end_id=300, should_dump=False)
         ),
     ]
 
@@ -173,9 +183,9 @@ class TestFetchEvents:
         Then -
            make sure the correct events are fetched according to the queue and max fetch.
         """
-        from SaasSecurityEventCollector import fetch_events
+        from SaasSecurityEventCollector import fetch_events_from_saas_security
         mocker.patch.object(Client, 'http_request', side_effect=queue)
-        assert expected_events.json().get('events') == fetch_events(client=mock_client, max_fetch=max_fetch)
+        assert expected_events.get('events') == fetch_events_from_saas_security(client=mock_client, max_fetch=max_fetch)
 
     @pytest.mark.parametrize('max_fetch, queue, expected_events', EVENTS_DATA)
     def test_saas_security_get_events(self, mocker, mock_client, max_fetch, queue, expected_events):
@@ -195,17 +205,16 @@ class TestFetchEvents:
           - make sure that the send_events_to_xsiam was not called in case should_push_events is False
         """
         import SaasSecurityEventCollector
-        import random
 
-        should_push_events = bool(random.choice([True, False]))
+        should_push_events = True if max_fetch == 100 else False
         mocker.patch.object(Client, 'http_request', side_effect=queue)
         send_events_mocker = mocker.patch.object(SaasSecurityEventCollector, 'send_events_to_xsiam')
 
-        result = SaasSecurityEventCollector.saas_security_get_events_command(
+        result = SaasSecurityEventCollector.get_events_command(
             client=mock_client, args={'limit': max_fetch, 'should_push_events': should_push_events}
         )
 
-        if expected_events := expected_events.json().get('events'):
+        if expected_events := expected_events.get('events'):
             assert expected_events == result.outputs
             assert send_events_mocker.called == should_push_events
         else:
@@ -242,7 +251,7 @@ class TestFetchEvents:
         mocker.patch.object(demisto, 'command', return_value='fetch-events')
         SaasSecurityEventCollector.main()
         assert send_events_mocker.called
-        assert send_events_mocker.call_args.kwargs.get('events') == expected_events.json().get('events')
+        assert send_events_mocker.call_args.kwargs.get('events') == expected_events.get('events')
 
 
 @pytest.mark.parametrize(
@@ -279,11 +288,11 @@ def test_is_token_expired(mocker, time_mock, token_initiate_time, token_expirati
     ) == expected_result
 
 
-@pytest.mark.parametrize('limit', [126, 54, 23, 12, 45, 12, 3, 1, 76, 23, 101, 235])
+@pytest.mark.parametrize('limit', [126, 54, 23, 12, 45, 12, 3, 1, 76, 23, 101, 235, -1, -80])
 def test_validate_limit(limit):
     """
     Given
-       - a limit parameter which is not divisible by 100
+       - a limit parameter which is not divisible by 100/negative limit.
 
     When -
         executing the validate limit
@@ -294,4 +303,4 @@ def test_validate_limit(limit):
     from SaasSecurityEventCollector import validate_limit
 
     with pytest.raises(DemistoException):
-        validate_limit(limit=limit)
+        validate_limit(limit)
