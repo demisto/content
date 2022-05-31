@@ -6,12 +6,11 @@ On **May 30th**, Microsoft assigned **CVE-2022-30190** to the MSDT vulnerability
 
 The playbook includes the following tasks:
 
-* Collect detection rules.
-* Exploitation patterns hunting using Cortex XDR - XQL Engine and 3rd party SIEM products.
-* Cortex XDR BIOCs post-detection hunting.
+* Collect detection rules
+  * Sigma
+* Exploitation patterns hunting using Cortex XDR - XQL Engine and 3rd party SIEM products
+* Cortex XDR BIOCs post-detection hunting
 * Workarounds
-* Detection Rules
-    * Sigma
 
 **More information:**
 
