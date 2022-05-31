@@ -24,7 +24,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 725,
           "y": 50
         }
       }
@@ -58,8 +58,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1145,
-          "y": 1595
+          "x": 1277.5,
+          "y": 1945
         }
       }
     note: false
@@ -83,9 +83,9 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "11"
+      - "57"
       "yes":
-      - "54"
+      - "58"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -116,7 +116,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 725,
           "y": 195
         }
       }
@@ -143,8 +143,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 4045
+          "x": 480,
+          "y": 4780
         }
       }
     note: false
@@ -178,8 +178,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 705,
-          "y": 1595
+          "x": 837.5,
+          "y": 1945
         }
       }
     note: false
@@ -218,8 +218,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 930,
-          "y": 1420
+          "x": 950,
+          "y": 1770
         }
       }
     note: false
@@ -238,8 +238,8 @@ tasks:
       version: -1
       name: Save feedback failed?
       description: Checks whether entry/entries returned an error. Use ${lastCompletedTaskEntries}
-        to check the previous task entries. If an array is provided, returns Yes
-        if one of the entries returned an error.
+        to check the previous task entries. If an array is provided, returns Yes if
+        one of the entries returned an error.
       scriptName: isError
       type: condition
       iscommand: false
@@ -256,8 +256,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 930,
-          "y": 1945
+          "x": 950,
+          "y": 2295
         }
       }
     note: false
@@ -285,9 +285,9 @@ tasks:
       - "11"
     scriptarguments:
       body:
-        simple: XSOAR playbook failed to save ${incident.pandlpincidentfeedback} feedback for user ${Slack.User.Name}
-          ${incident.sourceusername} for DLP Incident ${incident.pandlpincidentid},
-          Tenant ID ${incident.pandlptenantid}
+        simple: XSOAR playbook failed to save ${incident.pandlpincidentfeedback} feedback
+          for user ${Slack.User.Name} ${incident.sourceusername} for DLP Incident
+          ${incident.pandlpincidentid}, Tenant ID ${incident.pandlptenantid}
       subject:
         simple: XSOAR Playbook Error
       to:
@@ -296,8 +296,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1562.5,
-          "y": 3695
+          "x": 725,
+          "y": 4045
         }
       }
     note: false
@@ -309,10 +309,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: ea098652-e80e-49de-87cb-a7b66041db8f
+    taskid: 867c4856-6c10-48e0-8586-a14a46738474
     type: regular
     task:
-      id: ea098652-e80e-49de-87cb-a7b66041db8f
+      id: 867c4856-6c10-48e0-8586-a14a46738474
       version: -1
       name: Find user on slack
       description: Gets details about a specified user.
@@ -322,7 +322,7 @@ tasks:
       brand: SlackV3
     nexttasks:
       '#none#':
-      - "26"
+      - "59"
     scriptarguments:
       user:
         simple: ${incident.sourceusername}
@@ -331,7 +331,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 275,
+          "x": 1187.5,
           "y": 545
         }
       }
@@ -359,6 +359,7 @@ tasks:
       - "55"
       "yes":
       - "42"
+      - "54"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -371,8 +372,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 275,
-          "y": 720
+          "x": 1200,
+          "y": 885
         }
       }
     note: false
@@ -412,8 +413,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 930,
-          "y": 1245
+          "x": 950,
+          "y": 1595
         }
       }
     note: false
@@ -453,8 +454,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 930,
-          "y": 1770
+          "x": 950,
+          "y": 2120
         }
       }
     note: false
@@ -466,13 +467,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: aa218cf8-ac59-402e-8b29-a887c9e96d4a
+    taskid: a1fc8002-3427-4ef5-8e14-10a1f88e10a6
     type: regular
     task:
-      id: aa218cf8-ac59-402e-8b29-a887c9e96d4a
+      id: a1fc8002-3427-4ef5-8e14-10a1f88e10a6
       version: -1
       name: Ask user if file contains sensitive info
-      description: ""
       scriptName: DlpAskFeedback
       type: regular
       iscommand: false
@@ -491,6 +491,8 @@ tasks:
         simple: "True"
       is_follow_up:
         simple: "False"
+      messenger:
+        simple: ${messenger}
       question_type:
         simple: ABOUT_FILE
       task:
@@ -498,15 +500,15 @@ tasks:
       user:
         simple: ${Slack.User.Email}
       user_display_name:
-        simple: ${Slack.User.Name}
+        simple: ${user_display_name}
       user_id:
-        simple: ${Slack.User.Email}
+        simple: ${incident.sourceusername}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 930,
-          "y": 1070
+          "x": 950,
+          "y": 1420
         }
       }
     note: false
@@ -518,10 +520,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "35":
     id: "35"
-    taskid: b02603f1-197a-4efc-8a2b-c4a217597e0a
+    taskid: 692879ae-50fb-4987-867b-8d9f11ae611b
     type: regular
     task:
-      id: b02603f1-197a-4efc-8a2b-c4a217597e0a
+      id: 692879ae-50fb-4987-867b-8d9f11ae611b
       version: -1
       name: Call API to save status
       description: Call DLP API to save user feedback for the incident
@@ -544,14 +546,14 @@ tasks:
       report_id:
         simple: ${incident.pandlpreportid}
       user_id:
-        simple: ${Slack.User.Email}
+        simple: ${incident.sourceusername}
     continueonerror: true
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 715,
-          "y": 3345
+          "x": 725,
+          "y": 3695
         }
       }
     note: false
@@ -570,8 +572,8 @@ tasks:
       version: -1
       name: Any Error?
       description: Checks whether entry/entries returned an error. Use ${lastCompletedTaskEntries}
-        to check the previous task entries. If an array is provided, returns Yes
-        if one of the entries returned an error.
+        to check the previous task entries. If an array is provided, returns Yes if
+        one of the entries returned an error.
       scriptName: isError
       type: condition
       iscommand: false
@@ -588,8 +590,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 715,
-          "y": 3520
+          "x": 725,
+          "y": 3870
         }
       }
     note: false
@@ -607,8 +609,8 @@ tasks:
       id: f706b7cc-a555-430e-8ea6-5c9d902463a3
       version: -1
       name: Get eligibility for exemption
-      description: Determines whether exemption can be granted on incidents from a certain
-        data profile.
+      description: Determines whether exemption can be granted on incidents from a
+        certain data profile.
       script: '|||pan-dlp-exemption-eligible'
       type: regular
       iscommand: true
@@ -623,8 +625,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 602.5,
-          "y": 2295
+          "x": 510,
+          "y": 2645
         }
       }
     note: false
@@ -663,8 +665,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 602.5,
-          "y": 2470
+          "x": 510,
+          "y": 2820
         }
       }
     note: false
@@ -695,8 +697,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 715,
-          "y": 2995
+          "x": 725,
+          "y": 3345
         }
       }
     note: false
@@ -708,13 +710,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "40":
     id: "40"
-    taskid: 415619a7-63e4-4ac4-84ad-04765eedcb43
+    taskid: cde58638-a001-43bd-83cf-f108234b21b5
     type: regular
     task:
-      id: 415619a7-63e4-4ac4-84ad-04765eedcb43
+      id: cde58638-a001-43bd-83cf-f108234b21b5
       version: -1
-      name: Send notice about exemption
-      description: Send the user a Slack message about the temporary exemption on the file .
+      name: Send Slack notice about exemption
+      description: Send the user a Slack message about the temporary exemption on
+        the file .
       script: SlackV3|||send-notification
       type: regular
       iscommand: true
@@ -734,8 +737,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1155,
-          "y": 3870
+          "x": 1410,
+          "y": 4510
         }
       }
     note: false
@@ -769,8 +772,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 930,
-          "y": 3170
+          "x": 1155,
+          "y": 3520
         }
       }
     note: false
@@ -817,8 +820,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 460,
-          "y": 900
+          "x": 510,
+          "y": 1245
         }
       }
     note: false
@@ -876,8 +879,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 1945
+          "x": 275,
+          "y": 2295
         }
       }
     note: false
@@ -917,8 +920,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 715,
-          "y": 2820
+          "x": 725,
+          "y": 3170
         }
       }
     note: false
@@ -952,8 +955,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 500,
-          "y": 3170
+          "x": 622.5,
+          "y": 3520
         }
       }
     note: false
@@ -979,7 +982,7 @@ tasks:
       '#default#':
       - "11"
       "yes":
-      - "40"
+      - "61"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -995,8 +998,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1042.5,
-          "y": 3695
+          "x": 1155,
+          "y": 4045
         }
       }
     note: false
@@ -1008,10 +1011,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "51":
     id: "51"
-    taskid: 3c064aef-67b0-4385-8126-2cf0638a3562
+    taskid: 8e7acc73-5fec-4256-89b5-55573b605d8b
     type: regular
     task:
-      id: 3c064aef-67b0-4385-8126-2cf0638a3562
+      id: 8e7acc73-5fec-4256-89b5-55573b605d8b
       version: -1
       name: Ask user if exemption needed
       description: ""
@@ -1033,6 +1036,8 @@ tasks:
         simple: ${include_violation_detail}
       is_follow_up:
         simple: "False"
+      messenger:
+        simple: ${messenger}
       question_type:
         simple: ABOUT_EXEMPTION
       task:
@@ -1040,15 +1045,15 @@ tasks:
       user:
         simple: ${Slack.User.Email}
       user_display_name:
-        simple: ${Slack.User.Name}
+        simple: ${user_display_name}
       user_id:
-        simple: ${Slack.User.Email}
+        simple: ${incident.sourceusername}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 715,
-          "y": 2645
+          "x": 725,
+          "y": 2995
         }
       }
     note: false
@@ -1087,8 +1092,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 817.5,
-          "y": 2120
+          "x": 950,
+          "y": 2470
         }
       }
     note: false
@@ -1127,8 +1132,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 377.5,
-          "y": 2120
+          "x": 500,
+          "y": 2470
         }
       }
     note: false
@@ -1154,7 +1159,7 @@ tasks:
       '#default#':
       - "11"
       "yes":
-      - "25"
+      - "42"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1170,8 +1175,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 370
+          "x": 330,
+          "y": 980
         }
       }
     note: false
@@ -1213,8 +1218,304 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -440,
-          "y": 1830
+          "x": 50,
+          "y": 4220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "56":
+    id: "56"
+    taskid: eff53938-5d72-4811-8fdd-c4ae06f0efca
+    type: regular
+    task:
+      id: eff53938-5d72-4811-8fdd-c4ae06f0efca
+      version: -1
+      name: Set "Microsoft Teams" as messenger
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "60"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: messenger
+      value:
+        simple: Microsoft Teams
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 320,
+          "y": 580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "57":
+    id: "57"
+    taskid: bb6689a8-b286-482b-8a82-96fcb7428bcb
+    type: condition
+    task:
+      id: bb6689a8-b286-482b-8a82-96fcb7428bcb
+      version: -1
+      name: Is Microsoft Teams enabled?
+      description: Checks whether the Slack V3 integration is enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "11"
+      "yes":
+      - "56"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Microsoft Teams
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 580,
+          "y": 380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "58":
+    id: "58"
+    taskid: 9afdb672-4d56-45d0-8f3e-3d88fba3d9bc
+    type: regular
+    task:
+      id: 9afdb672-4d56-45d0-8f3e-3d88fba3d9bc
+      version: -1
+      name: Set "Slack" as messenger
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+        - "25"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: messenger
+      value:
+        simple: Slack
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1187.5,
+          "y": 380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "59":
+    id: "59"
+    taskid: beab5ad9-803e-4d32-82d1-6516c63a8fd7
+    type: regular
+    task:
+      id: beab5ad9-803e-4d32-82d1-6516c63a8fd7
+      version: -1
+      name: Set user display name
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: user_display_name
+      value:
+        simple: ${Slack.User.DisplayName}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1200,
+          "y": 710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "60":
+    id: "60"
+    taskid: 80bac5eb-df25-4472-8fc5-6633dbb2d53b
+    type: regular
+    task:
+      id: 80bac5eb-df25-4472-8fc5-6633dbb2d53b
+      version: -1
+      name: Set user display name
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "54"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: user_display_name
+      value:
+        simple: ${incident.sourceusername}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -10,
+          "y": 760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "61":
+    id: "61"
+    taskid: f4a01fea-3077-48e7-858f-04bb8623d25b
+    type: condition
+    task:
+      id: f4a01fea-3077-48e7-858f-04bb8623d25b
+      version: -1
+      name: Is Slack the messenger?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "62"
+      "yes":
+      - "40"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${messenger}
+            iscontext: true
+          right:
+            value:
+              simple: Slack
+    view: |-
+      {
+        "position": {
+          "x": 1510,
+          "y": 4260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "62":
+    id: "62"
+    taskid: af3085c8-4ac8-4a43-8c0d-7fb60200880c
+    type: regular
+    task:
+      id: af3085c8-4ac8-4a43-8c0d-7fb60200880c
+      version: -1
+      name: Send Teams notice about exemption
+      description: |-
+        Sends a message to the specified teams.
+        To mention a user in the message, add a semicolon ";" at the end of the user mention. For example: @Bruce Willis;
+      script: Microsoft Teams|||send-notification
+      type: regular
+      iscommand: true
+      brand: Microsoft Teams
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      adaptive_card:
+        simple: "{\n\t\"contentType\": \"application/vnd.microsoft.card.adaptive\",\n\t\"content\":
+                {\n\t\t\"$schema\": \"http://adaptivecards.io/schemas/adaptive-card.json\",\n\t\t\"version\":
+                \"1.0\",\n\t\t\"type\": \"AdaptiveCard\",\n\t\t\"msteams\": {\n\t\t\t\"width\":
+                \"Full\"\n\t\t},\n\t\t\"body\": [{\n\t\t\t\"type\": \"TextBlock\",\n\t\t\t\"text\":
+                \"Thank you for the request. Your temporary exemption for ${incident.filename}
+                is enabled now for ${Exemption.duration}. Please try again.\",\n\t\t\t\"wrap\":
+                true\n\t\t}]\n\t}\n}"
+      team_member:
+        simple: ${incident.sourceusername}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1850,
+          "y": 4510
         }
       }
     note: false
@@ -1227,15 +1528,14 @@ tasks:
 view: |-
   {
     "linkLabelsPosition": {
-      "10_11_#default#": 0.48,
       "17_12_#default#": 0.72,
       "17_4_Yes": 0.6
     },
     "paper": {
       "dimensions": {
-        "height": 4060,
-        "width": 2382.5,
-        "x": -440,
+        "height": 4795,
+        "width": 2240,
+        "x": -10,
         "y": 50
       }
     }

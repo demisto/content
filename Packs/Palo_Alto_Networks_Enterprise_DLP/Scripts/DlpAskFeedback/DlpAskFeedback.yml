@@ -9,6 +9,14 @@ enabled: true
 comment: Sends a message via Slack to the user whose file upload violated DLP
   policies and triggered the incident.
 args:
+- name: messenger
+  required: true
+  auto: PREDEFINED
+  predefined:
+    - "Slack"
+    - "Microsoft Teams"
+  defaultValue: "Slack"
+  description: The messenger to use for sending notification,
 - name: file_name
   required: true
   description: The name of the file that triggered the incident.

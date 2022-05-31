@@ -37,12 +37,12 @@ configuration:
   required: false
   additionalinfo: A comma-separated list of data profile names to request an exemption.
     Use "*" to allow everything.
-- display: Slack Bot Message
+- display: Bot Message
   name: dlp_slack_message
   type: 12
   required: false
-  additionalinfo: The Slack message to send to the user to ask for feedback.
-  defaultvalue: 'Hi $user🔔, \n\n*We need your feedback* \nYour upload of *$file_name*
+  additionalinfo: The message to send to the user to ask for feedback.
+  defaultvalue: 'Hi $user🔔, \n\n*We need your feedback:* \n\nYour upload of *$file_name*
     on *$app_name* was blocked due to company policy. This file contains sensitive
     information which violates *$data_profile_name* policy. \n\n $snippets\n\n'
 - display: Fetch incidents
@@ -157,7 +157,7 @@ script:
     arguments: []
     description: Resets the fetch incidents last run value, which resets the fetch
       to its initial fetch state.
-  dockerimage: demisto/python3:3.10.4.28442
+  dockerimage: demisto/python3:3.10.4.29342
   isFetchSamples: true
   longRunning: true
   runonce: false
