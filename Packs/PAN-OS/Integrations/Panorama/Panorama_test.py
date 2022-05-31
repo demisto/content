@@ -1232,50 +1232,79 @@ def test_panorama_push_to_template_command(
 
 
 @pytest.mark.parametrize('args, expected_request_params, request_result, expected_demisto_result',
-                         [pytest.param({"template-stack": "some_template_stack"},
-                                       {'action': 'all',
-                                        'cmd': '<commit-all><template-stack><name>some_template_stack'
-                                               '</name></template-stack></commit-all>',
-                                        'key': 'thisisabogusAPIKEY!',
-                                        'type': 'commit'},
-                                       MockedResponse(text='<response status="success" code="19"><result><msg>'
-                                                           '<line>Commit job enqueued with jobid 19420</line></msg>'
-                                                           '<job>19420</job></result></response>', status_code=200,
-                                                      reason=''),
-                                       {'Panorama.Push(val.JobID == obj.JobID)': {
-                                           'TemplateStack': 'some_template_stack','JobID': '19420','Status': 'Pending'}
-                                       },
-                                       id='no args'),
-                          pytest.param({"validate-only": "true", "template-stack": "some_template_stack"},
-                                       {'action': 'all',
-                                        'cmd': '<commit-all><template-stack><name>some_template_stack</name>'
-                                               '<validate-only>yes</validate-only></template-stack></commit-all>',
-                                        'key': 'thisisabogusAPIKEY!',
-                                        'type': 'commit'},
-                                       MockedResponse(text='<response status="success" code="19"><result><msg>'
-                                                           '<line>Commit job enqueued with jobid 19420</line></msg>'
-                                                           '<job>19420</job></result></response>', status_code=200,
-                                                      reason=''),
-                                       {'Panorama.Push(val.JobID == obj.JobID)': {
-                                           'TemplateStack': 'some_template_stack','JobID': '19420','Status': 'Pending'}
-                                       },
-                                       id='with validate'),
-                          pytest.param({'serial_number': '1337', "template-stack": "some_template_stack"},
-                                       {'action': 'all',
-                                        'cmd': '<commit-all><template-stack><name>some_template_stack<'
-                                               '/name><device><member>1337</member>'
-                                               '</device></template-stack></commit-all>',
-                                        'key': 'thisisabogusAPIKEY!',
-                                        'type': 'commit'},
-                                       MockedResponse(text='<response status="success" code="19"><result><msg>'
-                                                           '<line>Commit job enqueued with jobid 19420</line></msg>'
-                                                           '<job>19420</job></result></response>', status_code=200,
-                                                      reason=''),
-                                       {'Panorama.Push(val.JobID == obj.JobID)': {
-                                           'TemplateStack': 'some_template_stack','JobID': '19420','Status': 'Pending'}
-                                       },
-                                       id='with device'),
-                          ])
+                         [
+                             pytest.param(
+                                 {
+                                     "template-stack": "some_template_stack"
+                                 },
+                                 {
+                                     'action': 'all',
+                                     'cmd': '<commit-all><template-stack><name>some_template_stack'
+                                            '</name></template-stack></commit-all>',
+                                     'key': 'thisisabogusAPIKEY!',
+                                     'type': 'commit'
+                                 },
+                                 MockedResponse(text='<response status="success" code="19"><result><msg>'
+                                                     '<line>Commit job enqueued with jobid 19420</line></msg>'
+                                                     '<job>19420</job></result></response>', status_code=200,
+                                                reason=''),
+                                 {
+                                     'Panorama.Push(val.JobID == obj.JobID)':
+                                         {
+                                             'TemplateStack': 'some_template_stack',
+                                             'JobID': '19420', 'Status': 'Pending'
+                                         }
+                                 },
+                                 id='no args'
+                             ),
+                             pytest.param(
+                                 {
+                                     "validate-only": "true", "template-stack": "some_template_stack"
+                                 },
+                                 {
+                                     'action': 'all',
+                                     'cmd': '<commit-all><template-stack><name>some_template_stack</name>'
+                                            '<validate-only>yes</validate-only></template-stack></commit-all>',
+                                     'key': 'thisisabogusAPIKEY!',
+                                     'type': 'commit'
+                                 },
+                                 MockedResponse(text='<response status="success" code="19"><result><msg>'
+                                                     '<line>Commit job enqueued with jobid 19420</line></msg>'
+                                                     '<job>19420</job></result></response>', status_code=200,
+                                                reason=''),
+                                 {
+                                     'Panorama.Push(val.JobID == obj.JobID)': {
+                                         'TemplateStack': 'some_template_stack', 'JobID': '19420', 'Status': 'Pending'
+                                     }
+                                 },
+                                 id='with validate'),
+                             pytest.param(
+                                 {
+                                     'serial_number': '1337',
+                                     "template-stack": "some_template_stack"
+                                 },
+                                 {
+                                     'action': 'all',
+                                     'cmd': '<commit-all><template-stack><name>some_template_stack<'
+                                            '/name><device><member>1337</member>'
+                                            '</device></template-stack></commit-all>',
+                                     'key': 'thisisabogusAPIKEY!',
+                                     'type': 'commit'
+                                 },
+                                 MockedResponse(text='<response status="success" code="19"><result><msg>'
+                                                     '<line>Commit job enqueued with jobid 19420</line></msg>'
+                                                     '<job>19420</job></result></response>', status_code=200,
+                                                reason=''),
+                                 {
+                                     'Panorama.Push(val.JobID == obj.JobID)':
+                                         {
+                                             'TemplateStack': 'some_template_stack',
+                                             'JobID': '19420',
+                                             'Status': 'Pending'
+                                         }
+                                 },
+                                 id='with device'),
+                         ])
 def test_panorama_push_to_template_stack_command(
     mocker, args, expected_request_params, request_result, expected_demisto_result
 ):
