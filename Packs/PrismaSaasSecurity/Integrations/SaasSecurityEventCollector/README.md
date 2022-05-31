@@ -43,9 +43,8 @@ Note: For more information see the [SaaS Security Administrator's Guide](https:/
 1) Occurring events expire after one hour in Saas-Security cache, so setting a low limit could cause events to expire if there are a large number of events in the Saas-Security cache.
 2) The max-fetch/limit parameters to fetch events must be divisible by 100.
 3) **reset last fetch** has no effect.
-4) When executing the test-module and there are events saved in the cache of Saas-Security, 1 event will be lost.
-5) On initial activation this integration will pull events starting from one hour prior.
-6) Calling ```fetch-events``` or ```saas-security-get-events``` or ```test-module``` may take upwards of twenty seconds in some cases.
+4) On initial activation this integration will pull events starting from one hour prior.
+5) Calling ```fetch-events``` or ```saas-security-get-events``` or ```test-module``` may take upwards of twenty seconds in some cases.
 
 ## Fetch Events
 Requires the scope of *Log access* in order to fetch log events.

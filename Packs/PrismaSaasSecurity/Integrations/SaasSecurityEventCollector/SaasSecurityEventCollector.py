@@ -1,6 +1,7 @@
 
 import demistomock as demisto
 import urllib3
+import uuid
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 import traceback
@@ -9,11 +10,13 @@ from typing import Dict, Tuple
 # Disable insecure warnings
 urllib3.disable_warnings()  # pylint: disable=no-member
 
-
 ''' CONSTANTS '''
 
 MAX_EVENTS_PER_REQUEST = 100
-OBJECT_KEYS = {'events': 'timestamp'}
+
+# since the responses don't have an ID for an event, we will create one of our which will be a combination of
+# timestamp and a random uuid.
+OBJECT_KEYS = {'events': 'uuid'}
 
 ''' CLIENT CLASS '''
 
@@ -167,7 +170,10 @@ def test_module(client: Client):
     """
     response = client.get_event_request()
     if response.status_code == 200:
-        set_to_integration_context_with_retries(context=response.json(), object_keys=OBJECT_KEYS)
+        fetched_event = response.json()
+        demisto.debug(f'fetched event in test-module: {fetched_event}')
+        fetched_event['uuid'] = f'{uuid.uuid4()}'
+        set_to_integration_context_with_retries(context=fetched_event, object_keys=OBJECT_KEYS)
         return 'ok'
     elif response.status_code == 204:
         return 'ok'
@@ -195,7 +201,7 @@ def get_events_command(
             ),
             raw_response=events,
             outputs=events,
-            outputs_key_field=['timestamp', 'log_type, item_name, item_type'],
+            outputs_key_field=['timestamp', 'log_type', 'item_name', 'item_type'],
             outputs_prefix='SaasSecurity.Event'
         )
     return 'No events were found.'
@@ -225,6 +231,7 @@ def fetch_events_from_saas_security(client: Client, max_fetch: int) -> List[Dict
     if integration_context_events:
         # set events to zero in case there was something in the cache from the test module.
         set_to_integration_context_with_retries(context={'events': []})
+        # add integration context events to the fetched events.
         events.extend(integration_context_events)
 
     return events

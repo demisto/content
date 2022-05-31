@@ -63,6 +63,7 @@ def test_module(mocker, mock_client, mocked_response, should_call_set_integratio
     Then
        - make sure the test module returns the 'ok' response.
        - make sure the set context was called in case of 200 and not called in case of 204
+       - make sure the uuid is set in the fetched events when setting to context.
     """
     import SaasSecurityEventCollector
     mocker.patch.object(Client, 'http_request', return_value=mocked_response)
@@ -72,6 +73,8 @@ def test_module(mocker, mock_client, mocked_response, should_call_set_integratio
     )
     assert SaasSecurityEventCollector.test_module(client=mock_client) == 'ok'
     assert set_integration_context_mocker.called == should_call_set_integration
+    if should_call_set_integration:
+        assert 'uuid' in set_integration_context_mocker.call_args.kwargs.get('context')
 
 
 class TestFetchEvents:
