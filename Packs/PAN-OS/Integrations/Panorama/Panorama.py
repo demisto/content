@@ -1,5 +1,6 @@
 from collections import defaultdict
 from dataclasses import dataclass, fields
+import enum
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
@@ -8,8 +9,11 @@ import panos.errors
 
 from panos.base import PanDevice, VersionedPanObject, Root, ENTRY, VersionedParamPath  # type: ignore
 from panos.panorama import Panorama, DeviceGroup, Template, PanoramaCommitAll
-from panos.policies import Rulebase, PreRulebase, PostRulebase, SecurityRule
-from panos.objects import LogForwardingProfile, LogForwardingProfileMatchList
+from panos.policies import Rulebase, PreRulebase, PostRulebase, SecurityRule, NatRule
+from panos.objects import (
+    LogForwardingProfile, LogForwardingProfileMatchList, AddressObject, AddressGroup, ServiceObject, ServiceGroup,
+    ApplicationObject, ApplicationGroup, SecurityProfileGroup
+)
 from panos.firewall import Firewall
 from panos.device import Vsys
 from panos.network import Zone
@@ -698,6 +702,71 @@ def panorama_push_to_device_group(args: dict):
     return result
 
 
+@logger
+def panorama_push_to_template(args: dict):
+    """
+    Push a single template.
+    """
+    command: str = ''
+    command += f'<name>{TEMPLATE}</name>'
+
+    if serial_number := args.get('serial_number'):
+        command = f'<name>{TEMPLATE}</name><device><member>{serial_number}</member></device>'
+
+    if argToBoolean(args.get('validate-only', 'false')):
+        command += '<validate-only>yes</validate-only>'
+    if description := args.get('description'):
+        command += f'<description>{description}</description>'
+
+    params = {
+        'type': 'commit',
+        'action': 'all',
+        'cmd': f'<commit-all><template>{command}</template></commit-all>',
+        'key': API_KEY
+    }
+
+    result = http_request(
+        URL,
+        'POST',
+        body=params
+    )
+
+    return result
+
+
+@logger
+def panorama_push_to_template_stack(args: dict):
+    """
+    Push a single template-stack
+    """
+    template_stack = args.get("template-stack")
+    command: str = ''
+    command += f'<name>{template_stack}</name>'
+
+    if serial_number := args.get('serial_number'):
+        command = f'<name>{template_stack}</name><device><member>{serial_number}</member></device>'
+
+    if argToBoolean(args.get('validate-only', 'false')):
+        command += '<validate-only>yes</validate-only>'
+    if description := args.get('description'):
+        command += f'<description>{description}</description>'
+
+    params = {
+        'type': 'commit',
+        'action': 'all',
+        'cmd': f'<commit-all><template-stack>{command}</template-stack></commit-all>',
+        'key': API_KEY
+    }
+
+    result = http_request(
+        URL,
+        'POST',
+        body=params
+    )
+
+    return result
+
+
 def panorama_push_to_device_group_command(args: dict):
     """
     Push Panorama configuration and show message in warroom
@@ -729,6 +798,66 @@ def panorama_push_to_device_group_command(args: dict):
         # no changes to commit
         return_results(result['response']['msg']['line'])
 
+
+def panorama_push_to_template_command(args: dict):
+    """
+    Push Panorama Template to it's associated firewalls
+    """
+
+    if not TEMPLATE:
+        raise Exception("The 'panorama-push-to-template' command is relevant for a Palo Alto Panorama instance.")
+
+    result = panorama_push_to_template(args)
+    if 'result' in result['response']:
+        # commit has been given a jobid
+        push_output = {
+            'Template': TEMPLATE,
+            'JobID': result['response']['result']['job'],
+            'Status': 'Pending'
+        }
+        return_results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': result,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Push to Template:', push_output, ['JobID', 'Status'],
+                                             removeNull=True),
+            'EntryContext': {
+                "Panorama.Push(val.JobID == obj.JobID)": push_output
+            }
+        })
+    else:
+        # no changes to commit
+        return_results(result['response']['msg']['line'])
+
+
+def panorama_push_to_template_stack_command(args: dict):
+    """
+    Push Panorama Template to it's associated firewalls
+    """
+    template_stack = args.get("template-stack")
+    result = panorama_push_to_template_stack(args)
+    if 'result' in result['response']:
+        # commit has been given a jobid
+        push_output = {
+            'TemplateStack': template_stack,
+            'JobID': result['response']['result']['job'],
+            'Status': 'Pending'
+        }
+        return_results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': result,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Push to Template:', push_output, ['JobID', 'Status'],
+                                             removeNull=True),
+            'EntryContext': {
+                "Panorama.Push(val.JobID == obj.JobID)": push_output
+            }
+        })
+    else:
+        # no changes to commit
+        return_results(result['response']['msg']['line'])
 
 @logger
 def panorama_push_status(job_id: str):
@@ -7877,7 +8006,8 @@ class Topology:
         return PanDevice.create_from_device(
             hostname=ip_address,
             api_username=self.username,
-            api_password=self.password
+            api_password=self.password,
+            api_key=self.api_key
         )
 
     def get_all_object_containers(
@@ -8812,24 +8942,37 @@ class HygieneRemediation:
         return result
 
     @staticmethod
-    def get_all_security_rules_in_container(container: Union[Panorama, Firewall, DeviceGroup, Template, Vsys]
-                                            ) -> List[SecurityRule]:
+    def get_all_rules_in_container(container: Union[Panorama, Firewall, DeviceGroup, Template, Vsys],
+                                   object_class: Union[SecurityRule, NatRule]):
         """
-        Gets all the security rule objects from the given VSYS or device group and return them.
-        :param container: The object to search for the rules in, as passed to pan-os-python
+        Given a container (DG/template) and the class representing a type of rule object in pan-os-python, gets all the
+        associated objects.
+        :param container: Device group or template
+        :param object_class: The pan-os-python class of objects to retrieve
         """
+        if object_class not in [SecurityRule, NatRule]:
+            raise ValueError(f"Given class {object_class} cannot be retrieved by this function.")
+
         firewall_rulebase = Rulebase()
         pre_rulebase = PreRulebase()
         post_rulebase = PostRulebase()
         container.add(pre_rulebase)
         container.add(post_rulebase)
         container.add(firewall_rulebase)
-        security_rules: List[SecurityRule] = SecurityRule.refreshall(firewall_rulebase)
-        pre_security_rules: List[SecurityRule] = SecurityRule.refreshall(pre_rulebase)
-        post_security_rules: List[SecurityRule] = SecurityRule.refreshall(post_rulebase)
-        security_rules = security_rules + pre_security_rules + post_security_rules
+        objects = object_class.refreshall(firewall_rulebase)
+        objects += object_class.refreshall(pre_rulebase)
+        objects += object_class.refreshall(post_rulebase)
 
-        return security_rules
+        return objects
+
+    @staticmethod
+    def get_all_security_rules_in_container(container: Union[Panorama, Firewall, DeviceGroup, Template, Vsys]
+                                            ) -> List[SecurityRule]:
+        """
+        Gets all the security rule objects from the given VSYS or device group and return them.
+        :param container: The object to search for the rules in, as passed to pan-os-python
+        """
+        return HygieneRemediation.get_all_rules_in_container(container, SecurityRule)
 
     @staticmethod
     def fix_secuity_rule_log_settings(topology: Topology,
@@ -8894,6 +9037,87 @@ class HygieneRemediation:
                         ))
 
         return result
+
+
+class ObjectGetter:
+    """Retrieves objects from the PAN-OS configuration"""
+
+    SUPPORTED_OBJECT_TYPES = {
+        "AddressObject": AddressObject,
+        "AddressGroup": AddressGroup,
+        "ServiceObject": ServiceObject,
+        "ServiceGroup": ServiceGroup,
+        "ApplicationObject": ApplicationObject,
+        "ApplicationGroup": ApplicationGroup,
+        "SecurityProfileGroup": SecurityProfileGroup,
+        "SecurityRule": SecurityRule,
+        "NatRule": NatRule,
+    }
+
+    @staticmethod
+    def get_object_reference(
+            topology: Topology,
+            object_type: str,
+            device_filter_string: Optional[str] = None,
+            container_filter: Optional[str] = None,
+            object_name: Optional[str] = None,
+            use_regex: Optional[str] = None
+    ) -> List[PanosObjectReference]:
+        """
+        Given a string object type, returns all the matching objects by reference. The object type matches a pan-os-python
+        object exactly. Note this ONLY returns the "pointer" to the objects, that is, it's location in the config, not all the
+        object attributes.
+
+        :param topology: `Topology` instance
+        :param device_filter_string: String to filter the devices we search for objects within.
+        :param object_type: String object type to look for, this matches exactly with Pan-os-python supported objects
+        :param container_filter: Container we look for objects in, such as a device group or template-stack
+        :param object_name: The name of the object to find; can be regex if use_regex is set
+        :param use_regex: Whether we should use regex matching for the object_name
+        """
+
+        object_class = ObjectGetter.SUPPORTED_OBJECT_TYPES.get(object_type)
+        if not object_class:
+            raise DemistoException(f"Object type {object_type} is not gettable with this integration.")
+
+        object_references = []
+        for device, container in topology.get_all_object_containers(
+                device_filter_string,
+                container_name=container_filter
+        ):
+            unfiltered_objects = []
+            # If the object class is a security rule we need to handle it specially
+            if object_class in [SecurityRule, NatRule]:
+                unfiltered_objects = HygieneRemediation.get_all_rules_in_container(container, object_class)
+            else:
+                unfiltered_objects = object_class.refreshall(container)
+
+            for panos_object in unfiltered_objects:
+                if panos_object.name == object_name or not object_name:
+                    object_references.append(
+                        PanosObjectReference(
+                            object_type=object_type,
+                            container_name=resolve_container_name(container),
+                            name=panos_object.name,
+                            hostid=resolve_host_id(device)
+                        )
+                    )
+                elif use_regex:
+                    try:
+                        if re.match(object_name, panos_object.name):
+                            object_references.append(
+                                PanosObjectReference(
+                                    object_type=object_type,
+                                    container_name=resolve_container_name(container),
+                                    name=panos_object.name,
+                                    hostid=resolve_host_id(device)
+                                )
+                            )
+                    # Regex compilation errors should raise if the regex flag is chosen
+                    except re.error:
+                        raise DemistoException(f"Invalid regex; {object_name}")
+
+        return object_references
 
 
 class HygieneCheckRegister:
@@ -9526,109 +9750,44 @@ class PanoramaCommand:
         return result
 
     @staticmethod
-    def push_all(
-        topology: Topology,
-        device_filter_str: str = None,
-        device_group_filter: Optional[List[str]] = None,
-        template_stack_filter: Optional[List[str]] = None
-    ) -> List[PushStatus]:
+    def push_style(topology: Topology, device: Union[Firewall, Panorama], style: str, filter: Optional[List[str]] = None):
         """
-        Pushes the pending configuration from Panorama to the firewalls. This is an async function,
-        and will only push if there is config pending.
-        :param topology: `Topology` instance.
-        :param device_filter_str: If provided, filters this command to only the devices specified.
-        :param device_group_filter: If provided, only the given named device groups will be pushed to devices
-        :param template_stack_filter: If provided, only the given named template-stacks will be pushed to devices
+        Given a pan-os-python push style, a device and the topology object, work out what DGs and templates we need to push,
+        then push them.
+        :param topology: `Topology` instance
+        :param device: The device to push to - will always be a Panorama instance
+        :param style: The pan-os-python commit style; can be 'device group' or 'template stack'
+        :param filter: Optionally only push the following named device-groups or template stacks.
         """
         result = []
+        if style == "device group":
+            commit_groups: Union[List[DeviceGroupInformation], List[TemplateStackInformation]] = \
+                PanoramaCommand.get_device_groups(topology, resolve_host_id(device))
+            commit_group_names = set([x.name for x in commit_groups])
+        elif style == "template stack":
+            commit_groups = PanoramaCommand.get_template_stacks(topology, resolve_host_id(device))
+            commit_group_names = set([x.name for x in commit_groups])
+        else:
+            raise DemistoException(f"Provided push style {style} is invalid. Please specify `device group` or `template stack`")
 
-        for device in topology.active_top_level_devices(device_filter_str):
-            # Get the relevent DGs and Templates to push.
-            device_groups = PanoramaCommand.get_device_groups(topology, resolve_host_id(device))
-            device_group_names = set([x.name for x in device_groups])
-            template_stacks = PanoramaCommand.get_template_stacks(topology, resolve_host_id(device))
-            template_stack_names = set([x.name for x in template_stacks])
+        if filter:
+            commit_group_names = set([x for x in commit_group_names if x in filter])
 
-            if device_group_filter:
-                device_group_names = set([x for x in device_group_names if x in device_group_filter])
-
-            if template_stack_filter:
-                template_stack_names = set([x for x in template_stack_names if x in template_stack_filter])
-
-            for dg_name in device_group_names:
-                device_group_commit = PanoramaCommitAll(
-                    style="device group",
-                    name=dg_name
-                )
-                result_job_id = device.commit(cmd=device_group_commit)
-                result.append(PushStatus(
-                    hostid=resolve_host_id(device),
-                    commit_type="devicegroup",
-                    name=dg_name,
-                    job_id=result_job_id,
-                    commit_all_status="Initiated",
-                    device_status="",
-                    device=""
-                ))
-
-            for template_name in template_stack_names:
-                template_stack_commit = PanoramaCommitAll(
-                    style="template stack",
-                    name=template_name
-                )
-                result_job_id = device.commit(cmd=template_stack_commit)
-                result.append(PushStatus(
-                    hostid=resolve_host_id(device),
-                    commit_type="template-stack",
-                    name=template_name,
-                    job_id=result_job_id,
-                    commit_all_status="Initiated",
-                    device_status="",
-                    device=""
-                ))
-
-        return result
-
-    @staticmethod
-    def get_push_status(topology: Topology, match_job_ids: Optional[List[str]] = None) -> List[PushStatus]:
-        """
-        Retrieves the status of a Panorama Push, using the given job ids.
-        :param topology: `Topology` instance.
-        :param match_job_ids: If provided, only returns the jobs with the given ID.
-        """
-        result: List[PushStatus] = []
-        for device in topology.active_top_level_devices():
-            response = run_op_command(device, UniversalCommand.SHOW_JOBS_COMMAND)
-            for job in response.findall("./result/job"):
-                commit_type = find_text_in_element(job, "./type")
-                if commit_type in ["CommitAll"]:
-                    commit_all_status = find_text_in_element(job, "./status")
-                    job_id = find_text_in_element(job, "./id")
-                    commit_type = find_text_in_element(job, "./type")
-                    dg_name_xml = job.find("./dgname")
-                    tpl_name_xml = job.find("./tplname")
-                    name = ""
-                    if hasattr(dg_name_xml, "text") and dg_name_xml:
-                        name = dg_name_xml.text  # type: ignore
-
-                    if hasattr(tpl_name_xml, "text") and tpl_name_xml:
-                        name = tpl_name_xml.text  # type: ignore
-
-                    for device_xml in job.findall("./devices/entry"):
-                        serial = find_text_in_element(device_xml, "./serial-no")
-                        device_status = find_text_in_element(device_xml, "./result")
-                        result.append(PushStatus(
-                            hostid=resolve_host_id(device),
-                            job_id=job_id,
-                            commit_type=commit_type,
-                            commit_all_status=commit_all_status,
-                            device_status=device_status,
-                            name=name,
-                            device=serial
-                        ))
-
-        if match_job_ids:
-            return [x for x in result if x.job_id in match_job_ids]
+        for commit_group_name in commit_group_names:
+            commit_command = PanoramaCommitAll(
+                style=style,
+                name=commit_group_name
+            )
+            result_job_id = device.commit(cmd=commit_command)
+            result.append(PushStatus(
+                hostid=resolve_host_id(device),
+                commit_type=style.replace(" ", ""),
+                name=commit_group_name,
+                job_id=result_job_id,
+                commit_all_status="Initiated",
+                device_status="",
+                device=""
+            ))
 
         return result
 
@@ -9747,66 +9906,6 @@ class UniversalCommand:
         ))
 
         return RestartSystemCommandResult(summary_data=result)
-
-    @staticmethod
-    def commit(topology: Topology, device_filter_string: Optional[str] = None) -> List[CommitStatus]:
-        """
-        Commits the configuration
-
-        :param topology: `Topology` instance.
-        :param device_filter_string: If provided, filters this command to only the devices specified.
-        """
-        result = []
-        for device in topology.active_devices(device_filter_string):
-            job_id = device.commit()
-            if isinstance(device, Panorama):
-                device_type = "Panorama"
-            else:
-                device_type = "Firewall"
-
-            result.append(CommitStatus(
-                hostid=resolve_host_id(device),
-                job_id=job_id,
-                commit_type="Commit",
-                status="started",
-                device_type=device_type
-            ))
-
-        return result
-
-    @staticmethod
-    def get_commit_job_status(topology: Topology, match_job_ids: Optional[List[str]] = None) -> List[CommitStatus]:
-        """
-        Gets the status of all the commit jobs on the device.
-
-        :param topology: `Topology` instance.
-        :param match_job_ids: List of IDs to return
-        """
-        result: List[CommitStatus] = []
-        for device in topology.active_devices():
-            response = run_op_command(device, UniversalCommand.SHOW_JOBS_COMMAND)
-            for job in response.findall("./result/job"):
-                commit_type = find_text_in_element(job, "./type")
-                if commit_type in ["Commit", "CommitAll"]:
-                    status = find_text_in_element(job, "./status")
-                    job_id = find_text_in_element(job, "./id")
-                    commit_type = find_text_in_element(job, "./type")
-                    if isinstance(device, Panorama):
-                        device_type = "Panorama"
-                    else:
-                        device_type = "Firewall"
-                    result.append(CommitStatus(
-                        hostid=resolve_host_id(device),
-                        job_id=job_id,
-                        commit_type=commit_type,
-                        status=status,
-                        device_type=device_type
-                    ))
-
-        if match_job_ids:
-            return [job for job in result if job.job_id in match_job_ids]
-
-        return result
 
     @staticmethod
     def check_system_availability(topology: Topology, hostid: str) -> CheckSystemStatus:
@@ -9979,15 +10078,17 @@ class FirewallCommand:
         )
 
     @staticmethod
-    def get_device_state(topology: Topology, device_filter_str: str):
+    def get_device_state(topology: Topology, target: str):
         """
-        Returns an exported device state, as binary data
+        Returns an exported device state, as binary data. Note that this will attempt to connect directly to the target
+        firewall, as it cannot be exported via the Panorama proxy. If there are network issues that prevent that, this command
+        will time out.
         :param topology: `Topology` instance.
-        :param device_filter_str: If provided, filters this command to only the devices specified.
+        :param target: The target serial number to retrieve the device state from.
         """
-        for firewall in topology.firewalls(filter_string=device_filter_str):
+        for firewall in topology.firewalls(target=target):
             # Connect directly to the firewall
-            direct_firewall_connection: Firewall = topology.get_direct_device(firewall)
+            direct_firewall_connection = topology.get_direct_device(firewall)
             direct_firewall_connection.xapi.export(category="device-state")
             return direct_firewall_connection.xapi.export_result.get("content")
 
@@ -10584,6 +10685,61 @@ def fix_security_rule_security_profile_group(
     )
 
 
+class ObjectTypeEnum(enum.Enum):
+    ADDRESS = "AddressObject"
+    ADDRESS_GROUP = "AddressGroup"
+    SERVICE_GROUP = "ServiceGroup"
+    SERVICE = "ServiceObject"
+    APPLICATION = "ApplicationObject"
+    APPLICATION_GROUP = "ApplicationGroup"
+    LOG_FORWARDING_PROFILE = "LogForwardingProfile"
+    SECURITY_PROFILE_GROUP = "SecurityProfileGroup"
+
+
+def get_object(
+        topology: Topology,
+        object_type: ObjectTypeEnum,
+        device_filter_string: Optional[str] = None,
+        object_name: Optional[str] = None,
+        parent: Optional[str] = None,
+        use_regex: Optional[str] = None
+) -> List[PanosObjectReference]:
+    """Searches and returns a reference for the given object type and name. If no name is provided, all
+    objects of the given type are returned. Note this only returns a reference, and not the complete object
+    information.
+    :param topology: `Topology` instance !no-auto-argument
+    :param object_name: The name of the object refernce to return if looking for a specific object. Supports regex if "use_regex" is set.
+    :param object_type: The type of object to search; see https://pandevice.readthedocs.io/en/latest/module-objects.html
+    :param device_filter_string: If provided, only objects from the given device are returned.
+    :param parent: The parent vsys or device group to search. if not provided, all will be returned.
+    :param use_regex: Enables regex matching on object name.
+    """
+    return ObjectGetter.get_object_reference(
+        topology=topology,
+        device_filter_string=device_filter_string,
+        object_name=object_name,
+        # Fixing the ignore below would rfequire adding union handling to code generation script.
+        object_type=object_type,  # type: ignore
+        container_filter=parent,
+        use_regex=use_regex
+    )
+
+
+def get_device_state(topology: Topology, target: str) -> dict:
+    """
+    Get the device state from the provided device target (serial number). Note that this will attempt to connect directly to the
+    firewall as there is no way to get the device state for a firewall via Panorama.
+
+    :param topology: `Topology` instance !no-auto-argument
+    :param target: String to filter to only show specific hostnames or serial numbers.
+    """
+    return fileResult(
+        filename=f"{target}_device_state.tar.gz",
+        data=FirewallCommand.get_device_state(topology, target),
+        file_type=EntryType.ENTRY_INFO_FILE
+    )
+
+
 def get_topology() -> Topology:
     """
     Builds and returns the Topology instance
@@ -10701,7 +10857,10 @@ def main():
 
         elif command == 'panorama-push-to-device-group' or command == 'pan-os-push-to-device-group':
             panorama_push_to_device_group_command(args)
-
+        elif command == 'pan-os-push-to-template':
+            panorama_push_to_template_command(args)
+        elif command == 'pan-os-push-to-template-stack':
+            panorama_push_to_template_stack_command(args)
         elif command == 'panorama-push-status' or command == 'pan-os-push-status':
             panorama_push_status_command(**args)
 
@@ -11287,6 +11446,18 @@ def main():
                     empty_result_message="Nothing to fix."
                 )
             )
+        elif command == 'pan-os-config-get-object':
+            topology = get_topology()
+            return_results(
+                dataclasses_to_command_results(
+                    get_object(topology, **demisto.args()),
+                    empty_result_message="No objects found."
+                )
+            )
+        elif command == 'pan-os-platform-get-device-state':
+            topology = get_topology()
+            # This just returns a fileResult object directly.
+            return_results(get_device_state(topology, **demisto.args()))
         else:
             raise NotImplementedError(f'Command {command} is not implemented.')
     except Exception as err:
