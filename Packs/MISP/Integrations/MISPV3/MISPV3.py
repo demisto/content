@@ -511,7 +511,7 @@ def get_new_misp_event_object(args):
     analysis_arg = args.get('analysis')
     event.analysis = MISP_ANALYSIS_TO_IDS.get(analysis_arg) if analysis_arg in MISP_ANALYSIS_TO_IDS else analysis_arg
     event.info = args.get('info') if args.get('info') else 'Event from XSOAR'
-    event.date = datetime.today()
+    event.date = datetime.strptime(args.get('creation_date'), "%Y-%m-%d") if args.get('creation_date') else datetime.today()
     event.published = argToBoolean(args.get('published', 'False'))
     return event
 

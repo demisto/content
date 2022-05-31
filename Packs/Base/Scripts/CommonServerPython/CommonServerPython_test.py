@@ -3440,9 +3440,7 @@ INDICATOR_VALUE_AND_TYPE = [
     ('11.111.11.11/11', 'CIDR'),
     ('CVE-0000-0000', 'CVE'),
     ('dbot@demisto.works', 'Email'),
-    ('37b6d02m-63e0-495e-kk92-7c21511adc7a@SB2APC01FT091.outlook.com', 'Email'),
     ('dummy@recipient.com', 'Email'),
-    ('image003.gif@01CF4D7F.1DF62650', 'Email'),
     ('bruce.wayne@pharmtech.zz', 'Email'),
     ('joe@gmail.com', 'Email'),
     ('koko@demisto.com', 'Email'),
@@ -6201,6 +6199,7 @@ class TestCommonTypes:
             tags=['tag1', 'tag2'],
             traffic_light_protocol='test_traffic_light_protocol',
             dbot_score=dbot_score,
+            value='test_stix_id',
             community_notes=[Common.CommunityNotes(note='note', timestamp='2019-01-01T00:00:00')],
             external_references=None
         )
@@ -6226,6 +6225,7 @@ class TestCommonTypes:
                         'OperatingSystemRefs': None,
                         'Publications': 'test_publications',
                         'MITREID': 'test_mitre_id',
+                        'Value': 'test_stix_id',
                         'Tags': ['tag1', 'tag2'],
                         'Description': 'test_description',
                         'TrafficLightProtocol': 'test_traffic_light_protocol'
