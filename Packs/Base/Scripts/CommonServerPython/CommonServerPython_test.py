@@ -8055,47 +8055,52 @@ class TestSendEventsToXSIAMTest:
         demisto.updateModuleHealth.assert_called_with({'eventsPulled': number_of_events})
 
 
-def test_metrics_supported(mocker):
-    """
-    Given: An XSOAR server running version 7.0.0
-    When: Testing that a server supports ExecutionMetrics
-    Then: Assert that is_supported reports True
-    """
-    from CommonServerPython import ExecutionMetrics
-    mocker.patch.object(
-        demisto,
-        'demistoVersion',
-        return_value={
-            'version': '7.0.0',
-            'buildNumber': '50000'
-        }
-    )
-    mock_metrics = ExecutionMetrics()
+class TestIsMetricsSupportedByServer:
+    @classmethod
+    @pytest.fixture(scope='function', autouse=True)
+    def clear_cache(cls):
+        get_demisto_version._version = None
 
-    # XSOAR version is 7.0.0 and should be supported. Assert that it is.
-    assert mock_metrics.is_supported() is True
+    def test_metrics_supported(self, mocker):
+        """
+        Given: An XSOAR server running version 7.0.0
+        When: Testing that a server supports ExecutionMetrics
+        Then: Assert that is_supported reports True
+        """
+        from CommonServerPython import ExecutionMetrics
+        mocker.patch.object(
+            demisto,
+            'demistoVersion',
+            return_value={
+                'version': '7.0.0',
+                'buildNumber': '50000'
+            }
+        )
+        mock_metrics = ExecutionMetrics()
 
+        # XSOAR version is 7.0.0 and should be supported. Assert that it is.
+        assert mock_metrics.is_supported() is True
 
-def test_metrics_are_not_supported(mocker):
-    """
-    Given: An XSOAR server running version 1.0.0
-    When: Testing that a server does not support ExecutionMetrics
-    Then: Assert that is_supported reports False
-    """
-    from CommonServerPython import ExecutionMetrics
+    def test_metrics_are_not_supported(self, mocker):
+        """
+        Given: An XSOAR server running version 1.0.0
+        When: Testing that a server does not support ExecutionMetrics
+        Then: Assert that is_supported reports False
+        """
+        from CommonServerPython import ExecutionMetrics
 
-    # XSOAR version is not supported.
-    mocker.patch.object(
-        demisto,
-        'demistoVersion',
-        return_value={
-            'version': '1.0.0',
-            'buildNumber': '50000'
-        }
-    )
-    mock_metrics = ExecutionMetrics()
-    # XSOAR version is 1.0.0 and should not be supported. Assert that it isn't.
-    assert mock_metrics.is_supported() is False
+        # XSOAR version is not supported.
+        mocker.patch.object(
+            demisto,
+            'demistoVersion',
+            return_value={
+                'version': '1.0.0',
+                'buildNumber': '50000'
+            }
+        )
+        mock_metrics = ExecutionMetrics()
+        # XSOAR version is 1.0.0 and should not be supported. Assert that it isn't.
+        assert mock_metrics.is_supported() is False
 
 
 def test_collect_execution_metrics():

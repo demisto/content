@@ -8,7 +8,6 @@ from __future__ import print_function
 
 import base64
 import gc
-import gzip
 import json
 import logging
 import os
@@ -19,15 +18,18 @@ import time
 import traceback
 import types
 import urllib
-import warnings
+import gzip
+from random import randint
 import xml.etree.cElementTree as ET
-from abc import abstractmethod
 from collections import OrderedDict
 from datetime import datetime, timedelta
+from abc import abstractmethod
 from distutils.version import LooseVersion
-from inspect import currentframe
-from random import randint
 from threading import Lock
+from inspect import currentframe
+
+import demistomock as demisto
+import warnings
 
 
 def __line__():

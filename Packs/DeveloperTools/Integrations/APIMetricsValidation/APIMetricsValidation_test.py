@@ -1,4 +1,5 @@
 import APIMetricsValidation
+import demistomock as demisto
 from CommonServerPython import *  # noqa: F401
 
 
@@ -14,7 +15,7 @@ def test_scenario_one():
     assert expected_result == returned_result[10].execution_metrics
 
 
-def test_scenario_two():
+def test_scenario_two(mocker):
     """
     Given: 5 successful and 5 failed API Calls
     When: API Metrics Validation scenario two is run
@@ -24,6 +25,7 @@ def test_scenario_two():
         {'Type': 'Successful', 'APICallsCount': 5},
         {'Type': 'QuotaError', 'APICallsCount': 5}
     ]
+    mocker.patch.object(demisto, 'demistoVersion', return_value={'version': '6.5.0', 'buildNumber': '61000'})
 
     returned_result = APIMetricsValidation.scenario_two()
     assert expected_result == returned_result[6].execution_metrics

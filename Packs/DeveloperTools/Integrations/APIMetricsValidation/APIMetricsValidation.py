@@ -79,17 +79,13 @@ def scenario_three():
     """
     execution_metrics = ExecutionMetrics()
     command_results = []
-    has_ran_before = True
 
     urls = argToList(TEST_BANK_SCENARIO_FIVE_ITEMS)
     items_to_schedule = []
     for idx, url in enumerate(urls):
         items_to_schedule.append(url)
         # All 5 items fail on retry here, and it's expected that all 5 iterations are previously scheduled
-        if has_ran_before:
-            continue
-        else:
-            execution_metrics.quota_error += 1
+        continue
 
     scheduled_command = ScheduledCommand(
         command='test-scenario-three',
@@ -197,13 +193,8 @@ def scenario_seven():
     execution_metrics = ExecutionMetrics()
     command_results = []
 
-    has_ran_before = True
-
     urls = argToList(TEST_BANK_SCENARIO_TEN_ITEMS)
-    items_to_schedule = []
-    if not has_ran_before:
-        execution_metrics.quota_error += 1
-    items_to_schedule.append(urls)
+    items_to_schedule = [urls]
 
     scheduled_command = ScheduledCommand(
         command='test-scenario-seven',
