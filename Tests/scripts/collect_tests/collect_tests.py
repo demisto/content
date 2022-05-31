@@ -224,8 +224,8 @@ class TestCollector(ABC):
 
 
 class ChangeBranch:
-    def __init__(self, branch: str):
-        self.repo = Repo(CONTENT_PATH)
+    def __init__(self, branch: str, repo: Repo):
+        self.repo = repo
         self.original = self.repo.active_branch.name
         self.change_to = branch
 
@@ -241,7 +241,6 @@ class BranchTestCollector(TestCollector):
         super().__init__(marketplace)
         self.branch_name = branch_name
         self.repo = Repo(CONTENT_PATH)
-        self.repo.git.checkout(self.branch_name)
 
     def _collect(self) -> Optional[CollectedTests]:
         collected = []
@@ -393,35 +392,43 @@ class BranchTestCollector(TestCollector):
         )
 
     def _get_changed_files(self) -> tuple[str]:
-        compare_branch = 'origin/master'
-        #
-        # if os.getenv("IFRA_ENV_TYPE") == 'Bucket-Upload':
-        #     service_account = None  # todo
-        #     latest_commit = get_last_commit_from_index(service_account)
-        #     compare_branch = self.branch_name if self.branch_name != 'master' else 'origin/master'
-        #
-        # elif self.branch_name != 'master':
-        #     files_string = tools.run_command("git diff --name-status origin/master...{0}".format(branch_name))
-        #
-        #     # Checks if the build is for contributor PR and if so add it's pack.
-        #     if os.getenv('CONTRIB_BRANCH'):
-        #         packs_diff = tools.run_command('git status -uall --porcelain -- Packs').replace('??', 'A')
-        #         files_string = '\n'.join([files_string, packs_diff])
-        # else:
-        #     commit_string = tools.run_command("git log -n 2 --pretty='%H'")
-        #     logging.debug(f'commit string: {commit_string}')
-        #     commit_string = commit_string.replace("'", "")
-        #     last_commit, second_last_commit = commit_string.split()
-        #     files_string = tools.run_command(f'git diff --name-status {second_last_commit}...{last_commit}')
-        #
-        with ChangeBranch(self.branch_name):
-            repo = Repo(CONTENT_PATH)
-            full_branch_name = f'origin/{self.branch_name}'  # todo remove, debugging only
-            latest, previous = tuple(repo.iter_commits(
-                rev=f'{full_branch_name}~1...{full_branch_name}~3' if IS_GITLAB
-                else f'{full_branch_name}...{full_branch_name}~2'
-            ))
-            return tuple(str(file.b_path) for file in latest.diff(previous))
+        current_commit = str(self.repo.head.commit)
+        previous_commit = 'origin/master'
+
+        if os.getenv("IFRA_ENV_TYPE") == 'Bucket-Upload':
+            service_account = None  # todo
+            current_commit = get_last_commit_from_index(service_account)
+            previous_commit = self.branch_name if self.branch_name != 'master' else 'origin/master'
+
+        elif self.branch_name != 'master':
+            # Checks if the build is for contributor PR and if so add its pack.
+            if os.getenv('CONTRIB_BRANCH'):
+
+                pass  # todo
+                # packs_diff = tools.run_command('git status -uall --porcelain -- Packs').replace('??', 'A')
+                # files_string = '\n'.join([files_string, packs_diff])
+        else:
+            pass  # todo remove
+            # commit_string = tools.run_command("git log -n 2 --pretty='%H'")
+            # logging.debug(f'commit string: {commit_string}')
+            # commit_string = commit_string.replace("'", "")
+            # last_commit, second_last_commit = commit_string.split()
+            # files_string = tools.run_command(f'git diff --name-status {second_last_commit}...{last_commit}')
+
+        with ChangeBranch(self.branch_name, self.repo):
+            # rev = f'{full_branch_name}~1...{full_branch_name}~3' if IS_GITLAB \
+            #     else f'{full_branch_name}...{full_branch_name}~2'
+            rev = f'{previous_commit}...{current_commit}'
+            logger.info(f'comparing commits {rev}')
+            latest, previous = tuple(self.repo.iter_commits(rev))
+            results = tuple(str(file.b_path) for file in latest.diff(previous))
+
+            logger.info(f'found {len(results)} changed files between the compared commits')
+            logger.debug(f'changed files:')
+            for file in results:
+                logger.debug(file)
+
+            return results
 
 
 class NightlyTestCollector(TestCollector, ABC):
