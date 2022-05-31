@@ -14,7 +14,7 @@ comment: "Verify that all firewalls successfully pushed logs to the Cortex Data 
   \ to get the list of equipment to monitor. "
 dependson:
   must:
-  - panorama
+  - pan-os
   - cdl-query-traffic-logs
 outputs:
 - contextPath: CDL.monitoring.FirewallsWithLogsSent
