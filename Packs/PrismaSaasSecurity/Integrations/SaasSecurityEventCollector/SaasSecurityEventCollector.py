@@ -150,8 +150,8 @@ def validate_limit(limit: int):
     if limit % MAX_EVENTS_PER_REQUEST != 0:
         raise DemistoException(f'fetch limit parameter should be divisible by {MAX_EVENTS_PER_REQUEST}')
 
-    if limit < 0:
-        raise DemistoException('fetch limit parameter cannot be negative number')
+    if limit <= 0:
+        raise DemistoException('fetch limit parameter cannot be negative number or zero')
 
 
 ''' COMMAND FUNCTIONS '''
