@@ -14,8 +14,7 @@ alter XDM.Audit.audited_resource.name = coalesce(json_extract_scalar(Event, "$.d
       XDM.Audit.outcome = coalesce(json_extract_scalar(Event, "$.successful"), json_extract_scalar(Event, "$.operationSuccessful")),
       XDM.Audit.operation_type = json_extract_scalar(Event, "$.restAPIOperationType");
 
-
 [MODEL: dataset=jamf_pro_raw, model=Asset]
-alter XDM.Asset.host.mac_addresses = coalesce(json_extract_scalar(Event, "$.wifiMacAddress"), json_extract_scalar(Event, "$.macAddress"), json_extract_scalar(Event, "$.computer.macAddress"), json_extract_scalar(Event, "$.targetDevice.wifiMacAddress")),
+alter XDM.Asset.host.mac_addresses = arraycreate(coalesce(json_extract_scalar(Event, "$.wifiMacAddress"), json_extract_scalar(Event, "$.macAddress"), json_extract_scalar(Event, "$.computer.macAddress"), json_extract_scalar(Event, "$.targetDevice.wifiMacAddress"))),
       XDM.Asset.host.device_id = coalesce(json_extract_scalar(Event, "$.serialNumber"), json_extract_scalar(Event, "$.computer.serialNumber"), json_extract_scalar(Event, "$.targetDevice.serialNumber"), arraystring(arraymap (json_extract_array ("groupAddedDevices","$."), json_extract_scalar ("@element", "$.serialNumber")), ","), arraystring(arraymap (json_extract_array ("groupRemovedDevices","$."), json_extract_scalar ("@element", "$.serialNumber")), ",")),
       XDM.Asset.host.hardware_uuid = coalesce(json_extract_scalar(Event, "$.udid"), json_extract_scalar(Event, "$.computer.udid"), arraystring(arraymap (json_extract_array ("groupAddedDevices","$."), json_extract_scalar ("@element", "$.udid")), ","), arraystring(arraymap (json_extract_array ("groupRemovedDevices","$."), json_extract_scalar ("@element", "$.udid")), ","), json_extract_scalar(Event, "$.targetDevice.udid"));
