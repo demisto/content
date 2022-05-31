@@ -25,5 +25,6 @@ for eid in eventIDs:
         res += resCmd
     except Exception as ex:
         res.append({"Type": entryTypes["error"], "ContentsFormat": formats["text"],
-                    "Contents": "Error occurred while parsing output from command. Exception info:\n" + str(ex) + "\n\nInvalid output:\n" + str(resCmd)})
+                    "Contents": "Error occurred while parsing output from command. Exception info:\n"
+                    + str(ex) + "\n\nInvalid output:\n" + str(resCmd)})
 demisto.results(res)
