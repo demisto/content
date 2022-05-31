@@ -339,9 +339,9 @@ add_msg_to_rn(){
 	os=$3
 
 	if [[ "$opt" == "complete" ]]; then
-		message="- Completed Adoption process."
+		message="- Completed adoption process."
 	else
-		message="- Started Adoption process."
+		message="- Started adoption process."
 	fi
 
 	if [ "$os" == "Mac OS" ] 
