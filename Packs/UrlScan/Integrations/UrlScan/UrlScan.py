@@ -8,7 +8,7 @@ import time
 
 import requests
 from requests.utils import quote  # type: ignore
-from urlparse import urlparse
+from urllib.parse import urlparse
 
 """ POLLING FUNCTIONS"""
 try:
@@ -138,7 +138,8 @@ def http_request(client, method, url_suffix, json=None, wait=0, retries=0):
             return response_json, ErrorTypes.GENERAL_ERROR
 
         response_json['is_error'] = True
-        demisto.results('Error in API call to URLScan.io [%d] - %s: %s' % (r.status_code, r.reason, error_description))
+        response_json['error_string'] = 'Error in API call to URLScan.io [%d] - %s: %s' % (r.status_code, r.reason,
+                                                                                           error_description)
         return response_json, ErrorTypes.GENERAL_ERROR
     return r.json(), None
 
@@ -146,6 +147,20 @@ def http_request(client, method, url_suffix, json=None, wait=0, retries=0):
 # Allows nested keys to be accessible
 def makehash():
     return collections.defaultdict(makehash)
+
+
+def schedule_and_report(command_results, items_to_schedule, execution_metrics):
+    """
+    Before the command is done running, or going to raise an error, we need to dump all the currently collected data
+    Args:
+        command_results: List of CommandResults objects
+        items_to_schedule: List of urls to schedule
+        execution_metrics: ExecutionMetrics object
+    """
+    if ScheduledCommand.supports_polling() and len(items_to_schedule) > 0:
+        command_results.append(schedule_polling(items_to_schedule))
+    if execution_metrics.metrics is not None and execution_metrics.is_supported():
+        command_results.append(execution_metrics.metrics)
 
 
 def get_result_page(client):
@@ -538,6 +553,11 @@ def urlscan_submit_command(client):
         response, metrics = urlscan_submit_url(client, url)
         if response.get('url_is_blacklisted') or response.get('is_error'):
             execution_metrics.general_error += 1
+            if response.get('is_error'):
+                schedule_and_report(command_results=command_results, items_to_schedule=items_to_schedule,
+                                    execution_metrics=execution_metrics)
+                return_results(results=command_results)
+                return_error(response.get('error_string'))
             continue
         if metrics == ErrorTypes.QUOTA_ERROR:
             if not is_scheduled_command_retry():
@@ -548,10 +568,8 @@ def urlscan_submit_command(client):
         uuid = response.get('uuid')
         get_urlscan_submit_results_polling(client, uuid)
         execution_metrics.success += 1
-    if ScheduledCommand.supports_polling() and len(items_to_schedule) > 0:
-        command_results.append(schedule_polling(items_to_schedule))
-    if execution_metrics.metrics is not None and execution_metrics.is_supported():
-        command_results.append(execution_metrics.metrics)
+    schedule_and_report(command_results=command_results, items_to_schedule=items_to_schedule,
+                        execution_metrics=execution_metrics)
     return command_results
 
 

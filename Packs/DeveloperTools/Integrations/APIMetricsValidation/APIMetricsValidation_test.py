@@ -8,7 +8,7 @@ def test_scenario_one():
     When: API Metrics Validation scenario one is run
     Then: API Metrics Validation should return an execution_metrics object with 10 successful API calls
     """
-    expected_result = [{'MetricType': 'Successful', 'ApiCalls': 10}]
+    expected_result = [{'Type': 'Successful', 'APICallsCount': 10}]
 
     returned_result = APIMetricsValidation.scenario_one()
     assert expected_result == returned_result[10].execution_metrics
@@ -21,8 +21,8 @@ def test_scenario_two():
     Then: API Metrics Validation should return an execution_metrics object with 5 failed API calls and 5 successful API calls
     """
     expected_result = [
-        {'MetricType': 'Successful', 'ApiCalls': 5},
-        {'MetricType': 'QuotaError', 'ApiCalls': 5}
+        {'Type': 'Successful', 'APICallsCount': 5},
+        {'Type': 'QuotaError', 'APICallsCount': 5}
     ]
 
     returned_result = APIMetricsValidation.scenario_two()
@@ -58,7 +58,7 @@ def test_scenario_four(mocker):
     Then: 3 scheduled command results, and 2 successful execution metrics
     """
     mocker.patch('CommonServerPython.ScheduledCommand.raise_error_if_not_supported')
-    expected_result = [{'MetricType': 'Successful', 'ApiCalls': 2}]
+    expected_result = [{'Type': 'Successful', 'APICallsCount': 2}]
 
     returned_result = APIMetricsValidation.scenario_four()
     assert expected_result == returned_result[3].execution_metrics
@@ -71,7 +71,7 @@ def test_scenario_five(mocker):
     Then: 1 execution metrics containing one successful API call
     """
     mocker.patch('CommonServerPython.ScheduledCommand.raise_error_if_not_supported')
-    expected_result = [{'MetricType': 'Successful', 'ApiCalls': 1}]
+    expected_result = [{'Type': 'Successful', 'APICallsCount': 1}]
 
     returned_result = APIMetricsValidation.scenario_five()
     assert expected_result == returned_result[1].execution_metrics
@@ -84,7 +84,7 @@ def test_scenario_six(mocker):
     Then: 1 scheduled command result, and execution metrics containing one quota error
     """
     mocker.patch('CommonServerPython.ScheduledCommand.raise_error_if_not_supported')
-    expected_result = [{'ApiCalls': 1, 'MetricType': 'QuotaError'}]
+    expected_result = [{'APICallsCount': 1, 'Type': 'QuotaError'}]
 
     returned_result = APIMetricsValidation.scenario_six()
     assert expected_result == returned_result[1].execution_metrics
@@ -151,7 +151,7 @@ def test_scenario_nine(mocker):
     Then: 1 Execution Metrics containing 5 quota error API calls
     """
     mocker.patch('CommonServerPython.ScheduledCommand.raise_error_if_not_supported')
-    expected_result = [{'ApiCalls': 5, 'MetricType': 'QuotaError'}]
+    expected_result = [{'APICallsCount': 5, 'Type': 'QuotaError'}]
 
     returned_result = APIMetricsValidation.scenario_nine()
     assert expected_result == returned_result[5].execution_metrics
@@ -164,7 +164,7 @@ def test_scenario_ten(mocker):
     Then: 1 Execution metric result with one success
     """
     mocker.patch('CommonServerPython.ScheduledCommand.raise_error_if_not_supported')
-    expected_result = [{'ApiCalls': 1, 'MetricType': 'Successful'}]
+    expected_result = [{'APICallsCount': 1, 'Type': 'Successful'}]
 
     returned_result = APIMetricsValidation.scenario_ten()
     assert expected_result == returned_result[1].execution_metrics
