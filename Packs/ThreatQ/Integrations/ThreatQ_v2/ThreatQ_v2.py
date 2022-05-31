@@ -19,6 +19,7 @@ EMAIL = demisto.getParam('credentials').get('identifier')
 PASSWORD = demisto.getParam('credentials').get('password')
 USE_SSL = not demisto.params().get('insecure', False)
 THRESHOLD = int(demisto.params().get('threshold', '0'))
+TLP = demisto.params().get('tlp_color')
 if THRESHOLD:
     THRESHOLD = int(THRESHOLD)
 
@@ -300,7 +301,7 @@ def make_indicator_reputation_request(indicator_type, value, generic_context):
             url_suffix = f'/indicators/{obj.get("id")}?with=attributes,sources,score,type'
             res = tq_request('GET', url_suffix)
             indicators.append(indicator_data_to_demisto_format(res['data']))
-    indicators = indicators or [{'Value': value, 'TQScore': -1}]
+    indicators = indicators or [{'Value': value, 'TQScore': -1, 'fields': {'trafficlightprotocol': TLP}}] if TLP else [{'Value': value, 'TQScore': -1}]
     entry_context = aggregate_search_results(
         indicators=indicators,
         default_indicator_type=indicator_type,
@@ -484,6 +485,8 @@ def indicator_data_to_demisto_format(data):
         'Source': sources_to_demisto_format(data.get('sources')),
         'Attribute': attributes_to_demisto_format(data.get('attributes'))
     }
+    if TLP:
+        ret['fields'] = {'trafficlightprotocol': TLP}
     return ret
 
 
