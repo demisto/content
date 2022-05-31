@@ -76,7 +76,7 @@ def test_module(mocker, mock_client, mocked_response, should_call_set_integratio
     assert SaasSecurityEventCollector.test_module(client=mock_client) == 'ok'
     assert set_integration_context_mocker.called == should_call_set_integration
     if should_call_set_integration:
-        assert 'uuid' in set_integration_context_mocker.call_args.kwargs.get('context')
+        assert 'uuid' in set_integration_context_mocker.call_args.kwargs.get('context').get('events')
 
 
 class TestFetchEvents:
