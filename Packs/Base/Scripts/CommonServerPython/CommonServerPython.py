@@ -8814,7 +8814,6 @@ class DemistoException(Exception):
                 exc_metrics = execution_metrics.metrics
                 return_results(CommandResults(execution_metrics=exc_metrics))
 
-
     def __str__(self):
         return str(self.message)
 

@@ -111,7 +111,7 @@ def test_scenario_seven(mocker):
             'eighteight',
             'ninenine',
             'tenten'
-             ]],
+        ]],
         'polling': True
     }
 

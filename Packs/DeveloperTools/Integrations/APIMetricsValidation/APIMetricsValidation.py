@@ -15,7 +15,7 @@ def scenario_one():
         1 ExecutionMetrics object containing 10 success
     """
     execution_metrics = ExecutionMetrics()
-    command_results = []
+    command_results: list = []
 
     urls = argToList(TEST_BANK_SCENARIO_TEN_ITEMS)
 
@@ -39,7 +39,7 @@ def scenario_two():
         1 ExecutionMetrics object containing 5 success and 5 quota errors
     """
     execution_metrics = ExecutionMetrics()
-    command_results = []
+    command_results: list = []
 
     urls = argToList(TEST_BANK_SCENARIO_TEN_ITEMS)
     items_to_schedule = []
@@ -78,7 +78,7 @@ def scenario_three():
         No ExecutionMetrics object
     """
     execution_metrics = ExecutionMetrics()
-    command_results = []
+    command_results: list = []
 
     urls = argToList(TEST_BANK_SCENARIO_FIVE_ITEMS)
     items_to_schedule = []
@@ -109,7 +109,7 @@ def scenario_four():
         1 ExecutionMetrics object containing 2 successful
     """
     execution_metrics = ExecutionMetrics()
-    command_results = []
+    command_results: list = []
 
     urls = argToList(TEST_BANK_SCENARIO_FIVE_ITEMS)
     items_to_schedule = []
@@ -146,7 +146,7 @@ def scenario_five():
         1 ExecutionMetrics object containing 10 success
     """
     execution_metrics = ExecutionMetrics()
-    command_results = []
+    command_results: list = []
 
     urls = argToList(TEST_BANK_SCENARIO_TEN_ITEMS)
 
@@ -166,7 +166,7 @@ def scenario_six():
         1 Scheduled entry
     """
     execution_metrics = ExecutionMetrics()
-    command_results = []
+    command_results: list = []
     execution_metrics.quota_error += 1
 
     scheduled_command = ScheduledCommand(
@@ -191,8 +191,7 @@ def scenario_seven():
         No ExecutionMetrics object
     """
     execution_metrics = ExecutionMetrics()
-    command_results = []
-
+    command_results: list = []
     urls = argToList(TEST_BANK_SCENARIO_TEN_ITEMS)
     items_to_schedule = [urls]
 
@@ -220,8 +219,7 @@ def scenario_eight():
     Notes: To simulate that this command has been re-ran before, we are not returning _any_ metrics.
     """
     execution_metrics = ExecutionMetrics()
-    command_results = []
-
+    command_results: list = []
     urls = argToList(TEST_BANK_SCENARIO_TEN_ITEMS)
     items_to_schedule = [urls]
 
@@ -247,8 +245,7 @@ def scenario_nine():
         1 ExecutionMetrics object containing 10 success
     """
     execution_metrics = ExecutionMetrics()
-    command_results = []
-
+    command_results: list = []
     urls = argToList(TEST_BANK_SCENARIO_FIVE_ITEMS)
 
     for url in urls:
@@ -270,7 +267,7 @@ def scenario_ten():
         1 ExecutionMetrics object containing 1 success
     """
     execution_metrics = ExecutionMetrics()
-    command_results = []
+    command_results: list = []
     execution_metrics.success += 1
     command_results.append(
         CommandResults(readable_output="Item has been processed")

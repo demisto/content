@@ -82,7 +82,7 @@ def schedule_polling(items_to_schedule):
             polling_args[arg] = args[arg]
     polling_args['url'] = items_to_schedule
     polling_args['polling'] = True
-    next_polling_interval = int(args.get('interval'))
+    next_polling_interval = int(demisto.params().get('interval'))
     scheduled_items = ScheduledCommand(
         command=demisto.command(),
         args=polling_args,
