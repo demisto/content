@@ -467,8 +467,6 @@ script:
     arguments:
     - name: message_id
       required: true
-    - name: user_id
-      required: true
     - name: attachment_id
       required: true
     - name: folder_id
@@ -506,8 +504,6 @@ script:
     description: Get email attachment
   - name: msgraph-mail-list-attachments
     arguments:
-    - name: user_id
-      required: true
     - name: message_id
       required: true
     - name: folder_id
@@ -530,10 +526,6 @@ script:
     description: Lists all of the attachments of given email
   - name: msgraph-mail-get-email-as-eml
     arguments:
-    - name: user_id
-      required: true
-      description: User ID or principal ID (usually an email address in the format someuser@example.com).
-      type: unknown
     - name: message_id
       required: true
       description: The unique ID of the mail. You cannot use the the 'MessageID' key in the form '<message-id>'.

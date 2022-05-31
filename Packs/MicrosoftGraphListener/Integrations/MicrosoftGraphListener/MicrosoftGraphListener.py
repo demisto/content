@@ -896,11 +896,11 @@ class MsGraphClient:
         """Returning all mails from given user
 
         Args:
-            search (str):
-            odata (str):
+            search (str):   plaintext search query
+            odata (str):    odata-formatted query
 
         Returns:
-            dict or list:
+            dict or list:   list of mails or dictionary when single item is returned
         """
         suffix = f'/users/{self._mailbox_to_fetch}/messages'
         pages_to_pull = demisto.args().get('pages_to_pull', 1)
@@ -918,37 +918,38 @@ class MsGraphClient:
         response = self.ms_client.http_request('GET', suffix)
         return self.pages_puller(response, assert_pages(pages_to_pull))
 
-    def list_attachments(self, user_id: str, message_id: str, folder_id: str) -> dict:
+    def list_attachments(self, message_id: str, folder_id: str) -> dict:
         """Listing all the attachments
 
         Args:
-            user_id (str):
-            message_id (str):
-            folder_id (str):
+            message_id (str): ID of a message to pull
+            folder_id (str):  ID of folder from which to pull message
 
         Returns:
-            dict:
+            dict: Attachments Data
         """
-        no_folder = f'/users/{user_id}/messages/{message_id}/attachments/'
-        with_folder = f'/users/{user_id}/{build_folders_path(folder_id)}/messages/{message_id}/attachments/'
+        no_folder = f'/users/{self._mailbox_to_fetch}/messages/{message_id}/attachments/'
+        with_folder = f'/users/{self._mailbox_to_fetch}/{build_folders_path(folder_id)}/messages/{message_id}/attachments/'
         suffix = with_folder if folder_id else no_folder
         return self.ms_client.http_request('GET', suffix)
+    
+    def get_mailbox_to_fetch(self):
+        return self._mailbox_to_fetch
 
-    def get_attachment(self, message_id: str, user_id: str, attachment_id: str, folder_id: str = None) -> dict:
+    def get_attachment(self, message_id: str, attachment_id: str, folder_id: str = None) -> dict:
         """
 
         Args:
-            message_id (str):
-            user_id (str_:
-            attachment_id (str):
-            folder_id (str):
+            message_id (str):       ID of a message to pull
+            attachment_id (str):    ID of an attachment to pull
+            folder_id (str):        ID of folder from which to pull message
 
         Returns:
-            dict:
+            dict:                   Attachment Data
         """
-        no_folder = f'/users/{user_id}/messages/{message_id}/attachments/{attachment_id}/' \
+        no_folder = f'/users/{self._mailbox_to_fetch}/messages/{message_id}/attachments/{attachment_id}/' \
                     f'?$expand=microsoft.graph.itemattachment/item'
-        with_folder = (f'/users/{user_id}/{build_folders_path(folder_id)}/'  # type: ignore
+        with_folder = (f'/users/{self._mailbox_to_fetch}/{build_folders_path(folder_id)}/'  # type: ignore
                        f'messages/{message_id}/attachments/{attachment_id}/'
                        f'?$expand=microsoft.graph.itemattachment/item')
         suffix = with_folder if folder_id else no_folder
@@ -974,8 +975,8 @@ class MsGraphClient:
         """ Gets first response from API and returns all pages
 
         Args:
-            response (dict):
-            page_count (int):
+            response (dict):        raw http response data
+            page_count (int):       amount of pages
 
         Returns:
             list: list of all pages
@@ -1059,10 +1060,9 @@ def create_attachment(raw_response, user_id) -> Union[CommandResults, dict]:
 
 
 def list_attachments_command(client: MsGraphClient, args):
-    user_id = args.get('user_id')
     message_id = args.get('message_id')
     folder_id = args.get('folder_id')
-    raw_response = client.list_attachments(user_id, message_id, folder_id)
+    raw_response = client.list_attachments(message_id, folder_id)
     attachments = raw_response.get('value')
     if attachments:
         attachment_list = [{
@@ -1070,7 +1070,7 @@ def list_attachments_command(client: MsGraphClient, args):
             'Name': attachment.get('name') or attachment.get('id'),
             'Type': attachment.get('contentType')
         } for attachment in attachments]
-        entry_context = {'ID': message_id, 'Attachment': attachment_list, 'UserID': user_id}
+        entry_context = {'ID': message_id, 'Attachment': attachment_list, 'UserID': client.get_mailbox_to_fetch()}
 
         # Build human readable
         file_names = [attachment.get('Name') for attachment in attachment_list if isinstance(
@@ -1102,10 +1102,10 @@ def list_attachments_command(client: MsGraphClient, args):
 
 def get_attachment_command(client: MsGraphClient, args):
     message_id = args.get('message_id')
-    user_id = args.get('user_id')
+    user_id = client.get_mailbox_to_fetch()
     folder_id = args.get('folder_id')
     attachment_id = args.get('attachment_id')
-    raw_response = client.get_attachment(message_id, user_id, folder_id=folder_id, attachment_id=attachment_id)
+    raw_response = client.get_attachment(message_id, folder_id=folder_id, attachment_id=attachment_id)
     attachment = create_attachment(raw_response, user_id)
     return_results(attachment)
 
@@ -1203,10 +1203,10 @@ def build_mail_object(raw_response: Union[dict, list], get_body: bool = False, u
         """
 
         Args:
-            given_mail (dict):
+            given_mail (dict):  Mail Data
 
         Returns:
-            dict:
+            dict: Transformed mail data
         """
         # Dicts
         mail_properties = {
