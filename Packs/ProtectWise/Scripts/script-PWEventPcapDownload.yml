@@ -31,7 +31,7 @@ script: >
       else:
           sleep(waitSeconds)
           remaining = burstSize
-      resCmd = demisto.executeCommand("event-pcap-download", dArgs)
+      resCmd = demisto.executeCommand("protectwise-event-pcap-download", dArgs)
       try:
          res += resCmd
       except Exception as ex:
@@ -58,7 +58,7 @@ args:
 scripttarget: 0
 dependson:
   must:
-  - ProtectWise|||event-pcap-download
+  - ProtectWise|||protectwise-event-pcap-download
 timeout: 0s
 tests:
 - Protectwise-Test
