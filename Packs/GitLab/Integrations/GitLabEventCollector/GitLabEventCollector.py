@@ -96,7 +96,7 @@ def main() -> None:  # pragma: no cover
         'verify': verify
     }
     last_run = demisto.getLastRun()
-    if ('groups', 'projects', 'events') not in last_run:
+    if 'groups' not in last_run and 'projects' not in last_run and 'events' not in last_run:
         last_run = dateparser.parse(demisto_params['after'].strip()).isoformat()  # type: ignore
         last_run = {
             'groups': last_run,
@@ -140,6 +140,7 @@ def main() -> None:  # pragma: no cover
             )
             return_results(command_results)
         elif command == 'fetch-events':
+            k = get_events.get_last_run(events)
             demisto.setLastRun(get_events.get_last_run(events))
             should_push_events = True
         if should_push_events:
