@@ -3,7 +3,7 @@ from CommonServerPython import *
 COMMAND_NAME = 'ps'
 
 
-def get_netstat_file_name(command_files) -> Optional[str]:
+def get_ps_file_name(command_files):
     if command_files and isinstance(command_files, dict):
         ps_files = command_files.get(COMMAND_NAME, [])
         if ps_files:
@@ -24,7 +24,7 @@ def get_file_name_from_context() -> str:
     elif isinstance(crowdstrike_context, dict) and (cmd_ctx := crowdstrike_context.get('Command')):
         all_command_files.append(cmd_ctx)
     for command_file in all_command_files[::-1]:  # get last file in context
-        if file_name := get_netstat_file_name(command_file):
+        if file_name := get_ps_file_name(command_file):
             return file_name
     return ""
 

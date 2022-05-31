@@ -3,7 +3,7 @@ from CommonServerPython import *
 COMMAND_NAME = 'netstat'
 
 
-def get_netstat_file_name(command_files) -> Optional[str]:
+def get_netstat_file_name(command_files):
     if command_files and isinstance(command_files, dict):
         netstat_files = command_files.get(COMMAND_NAME, [])
         if netstat_files:

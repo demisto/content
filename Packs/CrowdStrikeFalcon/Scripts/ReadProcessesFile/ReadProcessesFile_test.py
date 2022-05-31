@@ -21,7 +21,6 @@ def test_get_file_name_from_context_list(mocker):
     assert get_file_name_from_context() == 'first'
 
 
-
 @pytest.mark.parametrize('file_name_in_context, file_name_in_to_search, expected_entry_id', [
     ("name1", "name1", "1"),
     ("name1", "name2", ""),
