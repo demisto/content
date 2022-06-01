@@ -99,23 +99,23 @@ EVENT_FIELDS = [
 ]
 
 
-class CyberArkEventsOptions(IntegrationOptions):
+class CyberArkIdentityEventsOptions(IntegrationOptions):
     app_id: str
 
 
-class CyberArkEventsRequest(IntegrationHTTPRequest):
+class CyberArkIdentityEventsRequest(IntegrationHTTPRequest):
     method = Method.POST
     headers = {'Accept': '*/*', 'Content-Type': 'application/json'}
 
 
-class CyberArkEventsClient(IntegrationEventsClient):
+class CyberArkIdentityEventsClient(IntegrationEventsClient):
     request: IntegrationHTTPRequest
-    options: CyberArkEventsOptions
+    options: CyberArkIdentityEventsOptions
 
     def __init__(
         self,
-        request: CyberArkEventsRequest,
-        options: CyberArkEventsOptions,
+        request: CyberArkIdentityEventsRequest,
+        options: CyberArkIdentityEventsOptions,
         credentials: Credentials,
         session=requests.Session(),
     ) -> None:
@@ -145,8 +145,8 @@ class CyberArkEventsClient(IntegrationEventsClient):
             demisto.debug(f'authentication failed: {response.json()}')
 
 
-class CyberArkGetEvents(IntegrationGetEvents):
-    client: CyberArkEventsClient
+class CyberArkIdentityGetEvents(IntegrationGetEvents):
+    client: CyberArkIdentityEventsClient
 
     @staticmethod
     def get_last_run_ids(events: list) -> list:
@@ -189,18 +189,18 @@ def get_request_params(**kwargs: dict) -> dict:
 
 def main(command: str, demisto_params: dict):
     credentials = Credentials(**demisto_params.get('credentials', {}))
-    options = CyberArkEventsOptions(**demisto_params)
+    options = CyberArkIdentityEventsOptions(**demisto_params)
     request_params = get_request_params(**demisto_params)
-    request = CyberArkEventsRequest(**request_params)
-    client = CyberArkEventsClient(request, options, credentials)
-    get_events = CyberArkGetEvents(client, options)
+    request = CyberArkIdentityEventsRequest(**request_params)
+    client = CyberArkIdentityEventsClient(request, options, credentials)
+    get_events = CyberArkIdentityGetEvents(client, options)
 
     try:
         if command == 'test-module':
             get_events.run()
             demisto.results('ok')
 
-        if command in ('fetch-events', 'cyberark-get-events'):
+        if command in ('fetch-events', 'cyberarkidentity-get-events'):
             events = get_events.run()
 
             if events:
@@ -210,12 +210,12 @@ def main(command: str, demisto_params: dict):
 
             if command == 'fetch-events' or demisto_params.get('should_push_events'):
                 send_events_to_xsiam(events, vendor=demisto_params.get('vendor', 'cyberark'),
-                                     product=demisto_params.get('product', 'idaptive'))
+                                     product=demisto_params.get('product', 'identity'))
 
-            if command == 'cyberark-get-events':
+            if command == 'cyberarkidentity-get-events':
                 command_results = CommandResults(
                     readable_output=tableToMarkdown(
-                        'CyberArkIdentity RedRock records', events, removeNull=True, headerTransform=pascalToSpace
+                        'CyberArk Identity RedRock records', events, removeNull=True, headerTransform=pascalToSpace
                     ),
                     raw_response=events,
                 )

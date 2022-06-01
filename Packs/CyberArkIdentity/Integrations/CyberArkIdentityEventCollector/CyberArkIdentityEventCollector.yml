@@ -1,6 +1,6 @@
 category: Analytics & SIEM
 commonfields:
-  id: CyberArk Event Collector
+  id: CyberArk Identity Event Collector
   version: -1
 configuration:
 - defaultvalue: https://<tenant>.my.idaptive.app
@@ -46,14 +46,14 @@ configuration:
   required: false
   type: 8
 description: This integration collects events from the Idaptive Next-Gen Access (INGA) using REST APIs.
-display: CyberArk Event Collector
-name: CyberArk Event Collector
+display: CyberArk Identity Event Collector
+name: CyberArk Identity Event Collector
 script:
   commands:
   - deprecated: false
     description: 'Returns a list of events'
     execution: false
-    name: cyberark-get-events
+    name: cyberarkidentity-get-events
     arguments:
     - description: The maximum number of incidents per fetch. Default is 100.
       isArray: true

@@ -1,4 +1,4 @@
-Integration with CyberArk Idaptive using REST API to get the Audit and Auth log for an application.
+Integration with CyberArk Identity using REST API to get the Audit and Auth log for an application.
 
 
 The first task that you must perform before accessing the events is to configure the
@@ -56,4 +56,4 @@ The application ID from where to fetch the logs,
 **User name and Password**  
 The siem user name and password.
 
-For more information see the [CyberArk Documentation](https://docs.cyberark.com/Product-Doc/OnlineHelp/Idaptive/Latest/en/Content/Integrations/SIEM-PlatformEvents/Identity%20Platform%20API%20Usage%20Guide%20for%20ArcSight.pdf).
+For more information see the [CyberArk Identity Documentation](https://docs.cyberark.com/Product-Doc/OnlineHelp/Idaptive/Latest/en/Content/Integrations/SIEM-PlatformEvents/Identity%20Platform%20API%20Usage%20Guide%20for%20ArcSight.pdf).

@@ -1,5 +1,5 @@
 {
-    "name": "CyberArk Events Collector",
+    "name": "CyberArk Identity Events Collector",
     "description": "This integration collects events from the Idaptive Next-Gen Access (INGA) using REST APIs.",
     "support": "xsoar",
     "currentVersion": "1.0.0",

@@ -1,15 +1,15 @@
-CyberArk logs event collector integration for Cortex XSIAM.
-This integration was integrated and tested with version 22.4 of CyberArk Event Collector.
+CyberArk Identity logs event collector integration for Cortex XSIAM.
+This integration was integrated and tested with version 22.4 of CyberArk Identity Event Collector.
 
-## Configure CyberArk Event Collector on Cortex XSIAM
+## Configure CyberArk Identity Event Collector on Cortex XSIAM
 
 1. Navigate to **Settings** > **Configurations** > **Data Collection** > **Automation & Feed Integrations**.
-2. Search for CyberArk Event Collector.
+2. Search for CyberArk Identity Event Collector.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Description**                                                  | **Required** |
     |------------------------------------------------------------------| --- | --- |
-    | Server URL | CyberArk URL (https://<tenant>.my.idaptive.app).                 | True |
+    | Server URL | CyberArk Identity URL (https://<tenant>.my.idaptive.app).                 | True |
     | App ID | The application ID from where to fetch the logs.                 | True |
     | User name | The user name (e.g.`admin@example.com`).                         | True |
     | Password | The password.                                                    | True |
@@ -24,14 +24,14 @@ This integration was integrated and tested with version 22.4 of CyberArk Event C
 ## Commands
 You can execute these commands from the Cortex XSIAM Alerts War Room, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
-### cyberark-get-events
+### cyberarkidentity-get-events
 ***
 Returns a list of events
 
 
 #### Base Command
 
-`cyberark-get-events`
+`cyberarkidentity-get-events`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -45,7 +45,7 @@ Returns a list of events
 
 There is no context output for this command.
 #### Command example
-`!cyberark-get-events should_push_events=false limit=10 from="3 days"`
+`!cyberarkidentity-get-events should_push_events=false limit=10 from="3 days"`
 #### Human Readable Output
 
 >### CyberArkIdentity RedRock records

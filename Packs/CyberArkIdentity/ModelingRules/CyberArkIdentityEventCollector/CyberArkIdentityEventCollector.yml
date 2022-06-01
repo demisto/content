@@ -1,10 +1,10 @@
-name: CyberArkEventCollector
-id: CyberArkEventCollector
+name: CyberArkIdentityEventCollector
+id: CyberArkIdentityEventCollector
 fromversion: 3.3.0
 rules: ''
 schema: |-
   {
-    "cyberark_idaptive_raw": {
+    "cyberark_identity_raw": {
       "ID": {
         "type": "string",
         "is_array": false
