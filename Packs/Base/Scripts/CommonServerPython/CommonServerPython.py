@@ -7004,6 +7004,9 @@ def return_warning(message, exit=False, warning='', outputs=None, ignore_auto_ex
 
 
 class ExecutionMetrics(object):
+    """
+    ExecutionMetrics is used to collect and format metric data to be reported to the XSOAR server.
+    """
     def __init__(self, success=0, quota_error=0, general_error=0, auth_error=0, service_error=0, connection_error=0,
                  proxy_error=0, ssl_error=0, timeout_error=0):
         self._metrics = []
