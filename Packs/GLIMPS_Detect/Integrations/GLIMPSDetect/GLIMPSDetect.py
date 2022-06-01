@@ -87,7 +87,7 @@ def gdetect_send_command(client, args):  # TO TEST
     entry_id = args.get('entryID')
     filepath = demisto.getFilePath(entry_id).get('path')
     uuid = client.gdetect_send(filepath)
-    readable_output = f'## GLIMPS.GDetect.UUID: {uuid}'
+    readable_output = f'## The file was sent successfully, UUID: {uuid}'
     outputs = {
         'entryID': entry_id,
         'uuid': uuid
