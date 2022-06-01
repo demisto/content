@@ -1,4 +1,4 @@
-[MODEL: dataset="filestream_filestream_raw", model="Auth"]
+[MODEL: dataset="redhat_linux-xdrc_raw", model="Auth"]
 filter _log_source_file_name ~= "secure"
 
 | alter current_year =  arrayindex(regextract(to_string(current_time()), "\d{4}"), 0)
@@ -19,7 +19,7 @@ filter _log_source_file_name ~= "secure"
 | alter XDM.Auth.Client.ipv4 = src_ip;
 
 
-[MODEL: dataset="filestream_filestream_raw", model="Endpoint"]
+[MODEL: dataset="redhat_linux-xdrc_raw", model="Endpoint"]
 filter _log_source_file_name ~= "messages"
 
 | alter current_year =  arrayindex(regextract(to_string(current_time()), "\d{4}"), 0)
