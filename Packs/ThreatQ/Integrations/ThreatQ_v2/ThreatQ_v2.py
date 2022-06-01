@@ -301,12 +301,7 @@ def make_indicator_reputation_request(indicator_type, value, generic_context):
             url_suffix = f'/indicators/{obj.get("id")}?with=attributes,sources,score,type'
             res = tq_request('GET', url_suffix)
             indicators.append(indicator_data_to_demisto_format(res['data']))
-    
-    if not indicators:
-        indicators = {'Value': value, 'TQScore': -1}
-        if TLP:
-            indicators['fields'] = {'trafficlightprotocol': TLP}
-        indicators = [indicators]
+    indicators = indicators or [{'Value': value, 'TQScore': -1}]
 
     entry_context = aggregate_search_results(
         indicators=indicators,
@@ -491,8 +486,6 @@ def indicator_data_to_demisto_format(data):
         'Source': sources_to_demisto_format(data.get('sources')),
         'Attribute': attributes_to_demisto_format(data.get('attributes'))
     }
-    if TLP:
-        ret['fields'] = {'trafficlightprotocol': TLP}
     return ret
 
 
@@ -687,6 +680,11 @@ def get_indicator_type_id(indicator_name: str) -> str:
 def aggregate_search_results(indicators, default_indicator_type, generic_context=None):
     entry_context = []
     for i in indicators:
+        if TLP:
+            if generic_context:
+                generic_context['TrafficLightProtocol'] = TLP
+            else:
+                generic_context = {'Data': i.get('Value'), 'TrafficLightProtocol': TLP}
         entry_context.append(set_indicator_entry_context(
             indicator_type=i.get('Type') or default_indicator_type,
             indicator=i,
