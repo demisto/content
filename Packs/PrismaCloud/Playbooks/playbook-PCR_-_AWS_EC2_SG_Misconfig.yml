@@ -883,6 +883,7 @@ tasks:
         simple: tcp
       toPort:
         simple: "22"
+    continueonerror: true
     separatecontext: false
     view: |-
       {
