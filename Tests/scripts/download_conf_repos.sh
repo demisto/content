@@ -13,6 +13,9 @@ echo ${SECRET_CONF_PATH} > secret_conf_path
 XSIAM_SERVERS_PATH="./xsiam_servers.json"
 echo ${XSIAM_SERVERS_PATH} > xsiam_servers_path
 
+DEMISTO_PACK_SIGNATURE_UTIL_PATH="./signDirectory"
+echo ${DEMISTO_PACK_SIGNATURE_UTIL_PATH} > demisto_pack_sig_util_path
+
 # download configuration files from Gitlab repo
 echo "clone content-test-conf from branch: $UNDERSCORE_BRANCH in content-test-conf"
 git clone --depth=1 https://gitlab-ci-token:${CI_JOB_TOKEN}@code.pan.run/xsoar/content-test-conf.git --branch $UNDERSCORE_BRANCH
@@ -21,6 +24,7 @@ if [ "$?" != "0" ]; then
     git clone --depth=1 https://gitlab-ci-token:${CI_JOB_TOKEN}@code.pan.run/xsoar/content-test-conf.git
 fi
 mv ./content-test-conf/conf.json $SECRET_CONF_PATH
+mv ./content-test-conf/signDirectory $DEMISTO_PACK_SIGNATURE_UTIL_PATH
 mv ./content-test-conf/xsiam_servers.json $XSIAM_SERVERS_PATH
 rm -rf ./content-test-conf
 
