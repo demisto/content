@@ -3,7 +3,8 @@ commonfields:
   id: CyberArk Event Collector
   version: -1
 configuration:
-- display: Server URL
+- defaultvalue: https://<tenant>.my.idaptive.app
+  display: Server URL
   name: url
   required: true
   type: 0
