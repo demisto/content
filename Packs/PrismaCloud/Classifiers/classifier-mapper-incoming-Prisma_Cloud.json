@@ -1059,7 +1059,7 @@
 				},
 				"Account Name": {
 					"complex": {
-						"accessor": "accountname",
+						"accessor": "account",
 						"filters": [],
 						"root": "resource",
 						"transformers": []
