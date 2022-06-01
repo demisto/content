@@ -10474,6 +10474,7 @@ def send_events_to_xsiam(events, vendor, product, data_format=None):
 
     demisto.updateModuleHealth({'eventsPulled': amount_of_events})
 
+from DemistoClassApiModule import *
 
 ###########################################
 #     DO NOT ADD LINES AFTER THIS ONE     #
