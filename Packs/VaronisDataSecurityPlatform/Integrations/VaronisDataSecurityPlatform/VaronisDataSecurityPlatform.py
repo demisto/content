@@ -1216,8 +1216,15 @@ def varonis_get_alerts_command(client: Client, args: Dict[str, Any]) -> CommandR
     sam_account_names = try_convert(sam_account_names, lambda x: argToList(x))
     emails = try_convert(emails, lambda x: argToList(x))
 
-    if last_days and last_days <= 0:
-        raise ValueError('last_days cannot be less then 1')
+    if last_days:
+        last_days = try_convert(
+            last_days,
+            lambda x: int(x),
+            ValueError(f'last_days should be integer, but it is {last_days}.')
+        )
+
+        if last_days <= 0:
+            raise ValueError('last_days cannot be less then 1')
 
     if user_domain_name and (not user_names or len(user_names) == 0):
         raise ValueError('user_domain_name cannot be provided without user_name')
