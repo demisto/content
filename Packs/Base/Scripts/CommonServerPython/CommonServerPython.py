@@ -7023,7 +7023,7 @@ class ExecutionMetrics(object):
         """
             Initializes an ExecutionMetrics object. Once initialized, you may increment each metric type according to the
             metric you'd like to report. Afterwards, pass the `metrics` value to CommandResults.
-  
+
             :type success: ``int``
             :param success: Quantity of Successful metrics
 
