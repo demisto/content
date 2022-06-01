@@ -20,7 +20,7 @@ filter event_type in ("ACCESS_GRANTED","ACCESS_REVOKED","ADD_DEVICE_ASSOCIATION"
     XDM.Audit.TriggeredBy.identity.name=json_extract_scalar(created_by, "$.login"),
 
     XDM.Audit.event_timestamp=created_at,
-    XDM.Audit.event_id=event_id,
+    XDM.Audit.original_event_id=event_id,
     XDM.Audit.original_event_type=event_type,
     XDM.Audit.TriggeredBy.ipv4=ip_address;
 
