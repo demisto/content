@@ -1,18 +1,19 @@
 id: Search For Hash In Sandbox - Generic
 version: -1
-fromversion: 6.5.0
+contentitemexportablefields:
+  contentitemfields: {}
 name: Search For Hash In Sandbox - Generic
-description: 'This playbook searches for a specific hash in the supported sandboxes. If
-  the hash is known, the playbook provides a detailed analysis of the sandbox
-  report. Currently supported sandboxes are Falcon X and Wildfire. '
+description: 'This playbook searches for a specific hash in the supported sandboxes.
+  If the hash is known, the playbook provides a detailed analysis of the sandbox report.
+  Currently supported sandboxes are Falcon X and Wildfire. '
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 8c6641d7-83e2-47ae-8884-967b0d527fd7
+    taskid: 568ce337-1ee9-443e-8022-0fc40fff04aa
     type: start
     task:
-      id: 8c6641d7-83e2-47ae-8884-967b0d527fd7
+      id: 568ce337-1ee9-443e-8022-0fc40fff04aa
       version: -1
       name: ""
       iscommand: false
@@ -38,13 +39,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: c832a0ae-ed29-47e5-8d84-988bbf58285d
+    taskid: ee043234-3d7b-4195-8ca7-1cbde477e677
     type: condition
     task:
-      id: c832a0ae-ed29-47e5-8d84-988bbf58285d
+      id: ee043234-3d7b-4195-8ca7-1cbde477e677
       version: -1
       name: Is FalconX enabled?
-      description: Returns 'yes' if the CrowdStrike Falcon X integration is available. 
+      description: Returns 'yes' if the CrowdStrike Falcon X integration is available.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -76,13 +77,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 4e4317f2-e95c-4ab5-831c-7dc38e911ffc
+    taskid: dbdc45b0-9334-406c-8a0f-4d96d4b1c51b
     type: condition
     task:
-      id: 4e4317f2-e95c-4ab5-831c-7dc38e911ffc
+      id: dbdc45b0-9334-406c-8a0f-4d96d4b1c51b
       version: -1
       name: Is WildFire enabled?
-      description: Returns 'yes' if the WildFire-v2 integration is available. 
+      description: Returns 'yes' if the WildFire-v2 integration is available.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -114,10 +115,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 7bb954a8-b5f5-4051-8472-3c0d52b01561
+    taskid: 17c289b8-e1d0-40ab-8880-5c64708b5225
     type: regular
     task:
-      id: 7bb954a8-b5f5-4051-8472-3c0d52b01561
+      id: 17c289b8-e1d0-40ab-8880-5c64708b5225
       version: -1
       name: Search for hash in Wildfire
       description: Searches for a specific hash in the WildFire sandbox.
@@ -154,10 +155,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 77b93aea-c233-4258-80e8-330190935665
+    taskid: f1fa61ce-3ee3-4918-86af-e6d66a3c6b24
     type: regular
     task:
-      id: 77b93aea-c233-4258-80e8-330190935665
+      id: f1fa61ce-3ee3-4918-86af-e6d66a3c6b24
       version: -1
       name: Search for hash in FalconX
       description: Finds sandbox reports by providing an FQL filter and paging details.
@@ -188,10 +189,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 1ba433b5-4813-4716-84b9-498c824197c1
+    taskid: ca8852d8-fa26-4061-8673-2e0f0710b967
     type: condition
     task:
-      id: 1ba433b5-4813-4716-84b9-498c824197c1
+      id: ca8852d8-fa26-4061-8673-2e0f0710b967
       version: -1
       name: Is there a hash to check?
       type: condition
@@ -229,10 +230,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 7aa61cf1-4a75-4a9d-8674-bbb57d6a34c3
+    taskid: 0eb7ea1e-8067-4c3c-8d44-9fa64f71e7ad
     type: title
     task:
-      id: 7aa61cf1-4a75-4a9d-8674-bbb57d6a34c3
+      id: 0eb7ea1e-8067-4c3c-8d44-9fa64f71e7ad
       version: -1
       name: Done
       type: title
@@ -256,10 +257,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 747647ca-ea8e-43c6-8994-1e5878f9a3b1
+    taskid: 0cc08ef9-5225-44a8-8221-553bb90807b1
     type: regular
     task:
-      id: 747647ca-ea8e-43c6-8994-1e5878f9a3b1
+      id: 0cc08ef9-5225-44a8-8221-553bb90807b1
       version: -1
       name: Get full report from FalconX
       description: Gets a full report from the Falcon X sandbox.
@@ -269,7 +270,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "21"
+      - "22"
     scriptarguments:
       extended_data:
         simple: "true"
@@ -300,10 +301,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 15589a78-818d-4e40-8bd6-8c6dc805f63a
+    taskid: 776cf8da-d5f6-4fcc-8c46-be9bda455b2e
     type: condition
     task:
-      id: 15589a78-818d-4e40-8bd6-8c6dc805f63a
+      id: 776cf8da-d5f6-4fcc-8c46-be9bda455b2e
       version: -1
       name: Are there MITRE findings?
       type: condition
@@ -351,10 +352,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: 2e1c0e4a-fa4b-43ae-88cf-30e51243afda
+    taskid: 60bac145-90e5-4429-8609-c659c8c2a182
     type: playbook
     task:
-      id: 2e1c0e4a-fa4b-43ae-88cf-30e51243afda
+      id: 60bac145-90e5-4429-8609-c659c8c2a182
       version: -1
       name: Mitre Attack - Extract Technique Information From ID
       description: |-
@@ -393,10 +394,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 88094dce-b9ea-48bf-8f87-c1963ffdae57
+    taskid: aad4cc28-d608-4319-8985-f4a20a3c9f87
     type: condition
     task:
-      id: 88094dce-b9ea-48bf-8f87-c1963ffdae57
+      id: aad4cc28-d608-4319-8985-f4a20a3c9f87
       version: -1
       name: Were all hashes found?
       type: condition
@@ -424,7 +425,7 @@ tasks:
       {
         "position": {
           "x": 950,
-          "y": 850
+          "y": 1000
         }
       }
     note: false
@@ -436,10 +437,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: ad661142-d014-45f9-80fa-a9523a563cba
+    taskid: 87f2fab9-de14-4277-8357-8decd2d1b522
     type: regular
     task:
-      id: ad661142-d014-45f9-80fa-a9523a563cba
+      id: 87f2fab9-de14-4277-8357-8decd2d1b522
       version: -1
       name: Set non found hashes
       description: |-
@@ -479,51 +480,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1210,
-          "y": 1020
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "21":
-    id: "21"
-    taskid: 03b8c600-3aac-43a6-8ea7-205f84d17e0c
-    type: condition
-    task:
-      id: 03b8c600-3aac-43a6-8ea7-205f84d17e0c
-      version: -1
-      name: Were all hashes found?
-      type: condition
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#default#':
-      - "22"
-      "yes":
-      - "16"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: csfalconx.resource.FindReport.Result
-            iscontext: true
-          right:
-            value:
-              simple: Success
-    view: |-
-      {
-        "position": {
-          "x": -40,
-          "y": 660
+          "x": 1220,
+          "y": 1170
         }
       }
     note: false
@@ -535,10 +493,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: 68a941de-358b-4b3e-8ce0-0ef227197503
+    taskid: 5ac5a3af-906e-4065-81be-63d12e6ca8f3
     type: regular
     task:
-      id: 68a941de-358b-4b3e-8ce0-0ef227197503
+      id: 5ac5a3af-906e-4065-81be-63d12e6ca8f3
       version: -1
       name: Set non found hashes
       description: |-
@@ -575,8 +533,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -300,
-          "y": 830
+          "x": -40,
+          "y": 735
         }
       }
     note: false
@@ -588,21 +546,21 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: d346e9ac-c1df-4ad8-8009-dd0b0a84affc
+    taskid: f1e1594d-5b8b-4414-8efb-2682ee0bb1a2
     type: regular
     task:
-      id: d346e9ac-c1df-4ad8-8009-dd0b0a84affc
+      id: f1e1594d-5b8b-4414-8efb-2682ee0bb1a2
       version: -1
       name: Get Wildfire PDF report
-      description: Gets a PDF report of search results for hashes in the WildFire sandbox.
+      description: Gets a PDF report of search results for hashes in the WildFire
+        sandbox.
       script: '|||wildfire-report'
       type: regular
       iscommand: true
       brand: ""
     nexttasks:
       '#none#':
-      - "19"
-      - "24"
+      - "25"
     scriptarguments:
       format:
         simple: pdf
@@ -613,7 +571,7 @@ tasks:
       {
         "position": {
           "x": 950,
-          "y": 505
+          "y": 490
         }
       }
     note: false
@@ -625,10 +583,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: e26ee643-f8d3-43f0-8969-c71616cf8e25
+    taskid: 93e1ecdb-1db8-4189-8aea-f455c87ebab2
     type: regular
     task:
-      id: e26ee643-f8d3-43f0-8969-c71616cf8e25
+      id: 93e1ecdb-1db8-4189-8aea-f455c87ebab2
       version: -1
       name: Rasterize PDF
       description: Converts a PDF file to an image file.
@@ -660,8 +618,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1290,
-          "y": 675
+          "x": 1190,
+          "y": 830
         }
       }
     note: false
@@ -669,6 +627,50 @@ tasks:
       description:
         simple: Wildfire report
       customfields: {}
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 41001a52-b698-414c-8561-a9f8a3c2d620
+    type: condition
+    task:
+      id: 41001a52-b698-414c-8561-a9f8a3c2d620
+      version: -1
+      name: Is there a report to rasterize?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "19"
+      "yes":
+      - "24"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: InfoFile.Extension
+            iscontext: true
+          right:
+            value:
+              simple: pdf
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 950,
+          "y": 650
+        }
+      }
+    note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
@@ -687,8 +689,8 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 1605,
-        "width": 1970,
-        "x": -300,
+        "width": 1850,
+        "x": -250,
         "y": -200
       }
     }
@@ -697,7 +699,7 @@ inputs:
 - key: FileSha256
   value: {}
   required: false
-  description: 'The SHA256 hash to search for.'
+  description: The SHA256 hash to search for.
   playbookInputQuery:
 outputs:
 - contextPath: AttackPattern.MITREID
@@ -716,4 +718,27 @@ outputs:
   description: The results of the Falcon X report.
   type: string
 tests:
-- No tests (auto formatted)
+- Calculate Severity - Generic v2 - Test
+- Test Convert file hash to corresponding hashes
+- Detonate URL - Generic Test
+- Block IP - Generic V3_Test
+- Detonate File - Generic Test
+- test-domain-indicator
+- Account Enrichment - Generic v2.1 - Test
+- Generic Polling Test
+- URL Enrichment - Generic v2 - Test
+- Send Investigation Summary Reports - Test
+- Isolate and unisolate endpoint - test
+- Endpoint Enrichment - Generic v2.1 - Test
+- Wait Until Datetime - Test
+- Detonate File - No Files test
+- Domain Enrichment - Generic v2 - Test
+- Calculate Severity - Standard - Test
+- Retrieve File from Endpoint - Generic V2 Test
+- Extract Indicators From File - Generic v2 - Test
+- Field polling test
+- Email Address Enrichment - Generic v2.1 - Test
+- File Enrichment - Generic v2 - Test
+- IP Enrichment - Generic v2 - Test
+- Get endpoint details - Generic - test
+fromversion: 6.5.0
