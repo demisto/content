@@ -7,18 +7,18 @@ This integration was integrated and tested with version 22.4 of CyberArk Identit
 2. Search for CyberArk Identity Event Collector.
 3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description**                                                  | **Required** |
-    |------------------------------------------------------------------| --- | --- |
-    | Server URL | CyberArk Identity URL (https://<tenant>.my.idaptive.app).                 | True |
-    | App ID | The application ID from where to fetch the logs.                 | True |
-    | User name | The user name (e.g.`admin@example.com`).                         | True |
-    | Password | The password.                                                    | True |
-    | The product corresponding to the integration that originated the events | The name of the product to name the dataset after.               | False        |
-    | The vendor corresponding to the integration that originated the events | The name of the vendor to name the dataset after.                | False        |
-    | First fetch time (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 1 day, 3 months). Default is 3 days. | The period (in days) to retrieve events from, if no time is saved in the system                                                                 | True |
-    | The maximum number of events per fetch. Default is 100. | The amount of items to retrieve from CyberArk's API per request. | True |
-    | Trust any certificate (not secure) | When selected, certificates are not checked.                     | False |
-    | proxy | Use system proxy settings.                                       | False |
+    | **Parameter** | **Description**                                                                 | **Required** |
+    |---------------------------------------------------------------------------------| --- | --- |
+    | Server URL | CyberArk Identity URL (https://{{tenant}}.my.idaptive.app).                     | True |
+    | App ID | The application ID from where to fetch the logs.                                | True |
+    | User name | The user name (e.g.`admin@example.com`).                                        | True |
+    | Password | The password.                                                                   | True |
+    | The product corresponding to the integration that originated the events | The name of the product to name the dataset after.                              | False        |
+    | The vendor corresponding to the integration that originated the events | The name of the vendor to name the dataset after.                               | False        |
+    | First fetch time (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 1 day, 3 months). Default is 3 days. | The period (in days) to retrieve events from, if no time is saved in the system | True |
+    | The maximum number of events per fetch. Default is 100. | The amount of items to retrieve from CyberArk's API per request.                | True |
+    | Trust any certificate (not secure) | When selected, certificates are not checked.                                    | False |
+    | proxy | Use system proxy settings.                                                      | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
