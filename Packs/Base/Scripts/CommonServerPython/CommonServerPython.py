@@ -7009,6 +7009,20 @@ class ExecutionMetrics(object):
     """
     def __init__(self, success=0, quota_error=0, general_error=0, auth_error=0, service_error=0, connection_error=0,
                  proxy_error=0, ssl_error=0, timeout_error=0):
+        """
+        Initializes an ExecutionMetrics object. Once initialized, you may increment each metric type according to the
+        metric you'd like to report.
+        Args:
+            success: Successful
+            quota_error: Quota Error (Rate Limited)
+            general_error: General Error
+            auth_error: Authentication Error
+            service_error: Service Error
+            connection_error: Connection Error
+            proxy_error: Proxy Error
+            ssl_error: SSL Error
+            timeout_error: Timeout Error
+        """
         self._metrics = []
         self.metrics = None
         self.success = success
