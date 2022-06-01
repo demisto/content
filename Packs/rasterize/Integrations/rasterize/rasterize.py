@@ -16,7 +16,8 @@ from PyPDF2 import PdfFileReader
 from selenium import webdriver
 from selenium.common.exceptions import (InvalidArgumentException,
                                         NoSuchElementException,
-                                        TimeoutException)
+                                        TimeoutException,
+                                        WebDriverException)
 
 
 # Chrome respects proxy env params
@@ -226,10 +227,20 @@ def get_image(driver, width: int, height: int, full_screen: bool):
         #calculate the width and height using the scrollbar of the window
         calc_width = driver.execute_script('return document.body.parentNode.scrollWidth')
         calc_height = driver.execute_script('return document.body.parentNode.scrollHeight')
+        if calc_width <= 0 or calc_width >= 10000:
+            calc_width = width
+            demisto.error("Guardrail width, using default width")
+        if calc_height <= 0 or calc_height >= 10000:
+            calc_height = height
+            demisto.error("Guardrail height, using default height")
         #Reset window size
         driver.set_window_size(calc_width, calc_height)
-        #Screenshot the content of the tag HTML aka the full page
-        image = driver.find_element_by_tag_name('html').screenshot_as_png
+        #this can throw an exception of height 0 if the html contains only javascript 
+        try:
+            #Screenshot the content of the tag HTML to avoid multiple footer
+            image = driver.find_element_by_tag_name('html').screenshot_as_png
+        except WebDriverException as ex:
+            image = driver.get_screenshot_as_png()
     else:
         image = driver.get_screenshot_as_png()
 
