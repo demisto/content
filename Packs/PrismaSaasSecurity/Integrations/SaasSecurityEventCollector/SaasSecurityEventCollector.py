@@ -158,6 +158,7 @@ def test_module(client: Client):
     of api. To verify the customer have the log access scope we must try and fetch an event.
     Saves the events in the cache for fetching events.
     """
+    # if 401 will be raised, that means that the credentials are invalid.
     client.get_token_request()
     return 'ok'
 

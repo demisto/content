@@ -45,10 +45,9 @@ Note: For more information see the [SaaS Security Administrator's Guide](https:/
 3) **reset last fetch** has no effect.
 4) On initial activation this integration will pull events starting from one hour prior.
 5) Calling ```fetch-events``` or ```saas-security-get-events``` or ```test-module``` may take upwards of twenty seconds in some cases.
-6) due to Saas-Security api limitations, every event fetched in the ```test-module``` will be saved in a cache. In every fetch-incidents the cache saved by the test-module will be fetched too, hence in some cases more than 'max-fetch' events could be fetched.
 
 ## Fetch Events
-Requires the scope of *Log access* in order to fetch log events.
+Requires the scope of *api_access* in order to fetch log events. See [Documentation](https://docs.paloaltonetworks.com/saas-security/saas-security-admin/saas-security-api/syslog-and-api-integration/api-client-integration/api-client-authentication/retrieve-a-token#idd543d5f0-c56e-4899-957f-74f921fd0976)
 Since those events are saved only 1 hour at cache, it is highly recommended giving *Events Fetch Interval* in minutes rather than hours.
 
 Log types could be one of policy_violation, activity_monitoring, remediation, incident, and admin_audit.
