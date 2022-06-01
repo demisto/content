@@ -18,8 +18,6 @@ from selenium.common.exceptions import (InvalidArgumentException,
                                         NoSuchElementException,
                                         TimeoutException)
 
-register_module_line('Rasterize', 'start', __line__())
-
 
 # Chrome respects proxy env params
 handle_proxy()
@@ -168,6 +166,8 @@ def rasterize(path: str, width: int, height: int, r_type: str = 'png', wait_time
     :param height: desired snapshot height in pixels
     :param r_type: result type: .png/.pdf
     :param wait_time: time in seconds to wait before taking a screenshot
+    :param max_page_load_time: amount of time to wait for a page load to complete before throwing an error
+    :param full_screen: when set to True, the screenshot will take the whole page
     """
     driver = init_driver(offline_mode)
     page_load_time = max_page_load_time if max_page_load_time > 0 else DEFAULT_PAGE_LOAD_TIME
@@ -212,6 +212,9 @@ def rasterize(path: str, width: int, height: int, r_type: str = 'png', wait_time
 def get_image(driver, width: int, height: int, full_screen: bool):
     """
     Uses the Chrome driver to generate an image out of a currently loaded path
+    :param width: desired snapshot width in pixels
+    :param height: desired snapshot height in pixels
+    :param full_screen: when set to True, the screenshot will take the whole page
     :return: .png file of the loaded path
     """
     demisto.debug('Capturing screenshot')
@@ -220,11 +223,13 @@ def get_image(driver, width: int, height: int, full_screen: bool):
     driver.set_window_size(width, height)
 
     if full_screen:
+        #calculate the width and height using the scrollbar of the window
         calc_width = driver.execute_script('return document.body.parentNode.scrollWidth')
         calc_height = driver.execute_script('return document.body.parentNode.scrollHeight')
+        #Reset window size
         driver.set_window_size(calc_width, calc_height)
+        #Screenshot the content of the tag HTML aka the full page
         image = driver.find_element_by_tag_name('html').screenshot_as_png
-        driver.set_window_size(width, height)
     else:
         image = driver.get_screenshot_as_png()
 
@@ -238,6 +243,8 @@ def get_image(driver, width: int, height: int, full_screen: bool):
 def get_pdf(driver, width: int, height: int):
     """
     Uses the Chrome driver to generate an pdf file out of a currently loaded path
+    :param width: desired snapshot width in pixels
+    :param height: desired snapshot height in pixels
     :return: .pdf file of the loaded path
     """
     demisto.debug('Generating PDF')
@@ -350,7 +357,8 @@ def rasterize_image_command():
     file_name = f'{file_name}.pdf'
 
     with open(file_path, 'rb') as f:
-        output = rasterize(path=f'file://{os.path.realpath(f.name)}', width=w, height=h, r_type='pdf', full_screen=full_screen)
+        output = rasterize(path=f'file://{os.path.realpath(f.name)}', width=w, height=h,
+                           r_type='pdf', full_screen=full_screen)
         res = fileResult(filename=file_name, data=output, file_type=entryTypes['entryInfoFile'])
         demisto.results(res)
 
@@ -449,5 +457,3 @@ def main():
 
 if __name__ in ["__builtin__", "builtins", '__main__']:
     main()
-
-register_module_line('Rasterize', 'end', __line__())
