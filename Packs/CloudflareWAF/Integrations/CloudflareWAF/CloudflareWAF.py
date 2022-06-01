@@ -953,7 +953,7 @@ def cloudflare_waf_ip_list_delete_command(client: Client, args: Dict[str, Any]) 
     )
 
 
-def cloudflare_waf_ip_list_item_create_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def cloudflare_waf_ip_list_item_create_command(client: Client, args: Dict[str, Any]) -> Tuple[CommandResults, Any]:
     """ Create a new ip-list items.
 
     Args:
@@ -975,7 +975,7 @@ def cloudflare_waf_ip_list_item_create_command(client: Client, args: Dict[str, A
     ), output
 
 
-def cloudflare_waf_ip_list_item_update_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def cloudflare_waf_ip_list_item_update_command(client: Client, args: Dict[str, Any]) -> Tuple[CommandResults, Any]:
     """ Replace exist ip-list items with a new items.
 
     Args:
@@ -999,7 +999,7 @@ def cloudflare_waf_ip_list_item_update_command(client: Client, args: Dict[str, A
     ), output
 
 
-def cloudflare_waf_ip_list_item_delete_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def cloudflare_waf_ip_list_item_delete_command(client: Client, args: Dict[str, Any]) -> Tuple[CommandResults, Any]:
     """ Delete items from an ip-list.
 
     Args:
@@ -1193,7 +1193,7 @@ def main() -> None:
         'cloudflare-waf-ip-list-item-list': cloudflare_waf_ip_list_item_list_command
     }
     try:
-        client: Client = Client(credentials, account_id, proxy, insecure, base_url, zone_id)
+        client: Client = Client(credentials, account_id, proxy, insecure, base_url, zone_id) # type: ignore
 
         if command == 'test-module':
             return_results(test_module(client))
