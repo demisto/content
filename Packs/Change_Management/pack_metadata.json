@@ -23,8 +23,7 @@
         "Network"
     ],
     "marketplaces": [
-        "xsoar",
-        "marketplacev2"
+        "xsoar"
     ],
     "itemPrefix": [
         "Security Policy"

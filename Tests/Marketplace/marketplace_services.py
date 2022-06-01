@@ -2651,8 +2651,10 @@ class Pack(object):
             True if the images were successfully uploaded, false otherwise.
 
         """
-        detect_changes = os.path.exists(os.path.join(index_folder_path, self.name, Pack.METADATA)) or \
-                         self.hidden or not override_all_packs
+
+        detect_changes = False if override_all_packs else os.path.exists(os.path.join(index_folder_path, self.name,
+                                                                                      Pack.METADATA)) or self.hidden
+
         # Don't check if the image was modified if this is the first time it is uploaded to this marketplace, meaning it
         # doesn't exist in the index (and it isn't deprecated), or if we want to override it (upload without
         # detecting changes)
