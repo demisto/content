@@ -1,5 +1,6 @@
 import os
 import pytest
+from git import Repo
 
 
 def test_get_content_modules(tmp_path, requests_mock, monkeypatch):
@@ -53,9 +54,9 @@ def test_get_content_modules(tmp_path, requests_mock, monkeypatch):
     monkeypatch.setattr('ValidateContent.CACHED_MODULES_DIR', str(cached_modules))
     content_tmp_dir = tmp_path / 'content_tmp_dir'
     content_tmp_dir.mkdir()
+    Repo.init(content_tmp_dir)
 
     from ValidateContent import get_content_modules
-
     get_content_modules(str(content_tmp_dir))
 
     assert os.path.isfile(content_tmp_dir / 'Packs/Base/Scripts/CommonServerPython/CommonServerPython.py')
