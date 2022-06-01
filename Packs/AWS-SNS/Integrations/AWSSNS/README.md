@@ -1,5 +1,5 @@
 Amazon Web Services Simple Notification Service (SNS)
-This integration was integrated and tested with version xx of AWS - SNS
+This integration was integrated and tested with version 1.0.0 of AWS - SNS
 
 ## Configure AWS - SNS on Cortex XSOAR
 
@@ -12,8 +12,8 @@ This integration was integrated and tested with version xx of AWS - SNS
     | AWS Default Region |  | False |
     | Role Arn | When using Access Key and Secret Key, there is no need to use Role Arn | False |
     | Role Session Name |  | False |
-    | Access Key |  | False |
-    | Secret Key |  | False |
+    | Access Key |  | True |
+    | Secret Key |  | True |
     | Role Session Duration |  | False |
     | Timeout | The time in seconds till a timeout exception is reached. You can specify just the read timeout \(for example 60\) or also the connect timeout followed after a comma \(for example 60,10\). If a connect timeout is not specified, a default of 10 second will be used. | False |
     | Retries | The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time. | False |

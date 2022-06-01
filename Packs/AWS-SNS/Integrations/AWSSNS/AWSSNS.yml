@@ -19,11 +19,11 @@ configuration:
   type: 0
 - display: Access Key
   name: access_key
-  required: false
+  required: true
   type: 0
 - display: Secret Key
   name: secret_key
-  required: false
+  required: true
   type: 4
 - display: Role Session Duration
   name: sessionDuration
@@ -54,15 +54,6 @@ configuration:
   name: insecure
   required: false
   type: 8
-contentitemexportablefields:
-  contentitemfields:
-    definitionid: ""
-    fromServerVersion: ""
-    itemVersion: ""
-    packID: 1095fc53-a5b3-4931-84fe-0b382cb87701
-    propagationLabels:
-    - all
-    toServerVersion: ""
 description: Amazon Web Services Simple Notification Service (SNS)
 display: AWS - SNS
 name: AWS - SNS
