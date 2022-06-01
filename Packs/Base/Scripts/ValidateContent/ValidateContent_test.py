@@ -1,8 +1,6 @@
 import os
 import pytest
 
-from ValidateContent import get_content_modules, adjust_linter_row_and_col
-
 
 def test_get_content_modules(tmp_path, requests_mock, monkeypatch):
     """
@@ -41,11 +39,22 @@ def test_get_content_modules(tmp_path, requests_mock, monkeypatch):
     requests_mock.get(
         'https://raw.githubusercontent.com/demisto/content/master/Tests/Marketplace/approved_tags.json'
     )
+    requests_mock.get(
+        'https://raw.githubusercontent.com/demisto/content/master/Tests/Marketplace/core_packs_list.json',
+        json={}
+    )
+    requests_mock.get(
+        'https://raw.githubusercontent.com/demisto/content/master/Tests/Marketplace/core_packs_mpv2_list.json',
+        json={}
+    )
+
     cached_modules = tmp_path / 'cached_modules'
     cached_modules.mkdir()
     monkeypatch.setattr('ValidateContent.CACHED_MODULES_DIR', str(cached_modules))
     content_tmp_dir = tmp_path / 'content_tmp_dir'
     content_tmp_dir.mkdir()
+
+    from ValidateContent import get_content_modules
 
     get_content_modules(str(content_tmp_dir))
 
@@ -89,6 +98,7 @@ row_and_column_adjustment_test_data = [
 
 @pytest.mark.parametrize('original_validation_result,expected_output', row_and_column_adjustment_test_data)
 def test_adjust_linter_row_and_col(original_validation_result, expected_output):
+    from ValidateContent import adjust_linter_row_and_col
     adjust_linter_row_and_col(original_validation_result)
     # after adjustment, the original validation result should match the expected
     assert original_validation_result == expected_output

@@ -193,7 +193,7 @@ def run_lint(file_path: str, json_output_file: str) -> None:
         input=file_path, git=False, all_packs=False, quiet=False, verbose=1,
         prev_ver='', json_file_path=json_output_file
     )
-    lint_manager.run_dev_packages(
+    lint_manager.run(
         parallel=1, no_flake8=False, no_xsoar_linter=False, no_bandit=False, no_mypy=False,
         no_pylint=True, no_coverage=True, coverage_report='', no_vulture=False, no_test=True, no_pwsh_analyze=True,
         no_pwsh_test=True, keep_container=False, test_xml='', failure_report=lint_log_dir, docker_timeout=60,
