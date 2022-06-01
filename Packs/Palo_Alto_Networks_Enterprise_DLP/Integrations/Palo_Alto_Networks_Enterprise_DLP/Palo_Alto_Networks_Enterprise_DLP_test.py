@@ -236,6 +236,13 @@ def test_refresh_token(requests_mock, mocker):
         assert client.access_token == 'abc'
 
 
+def test_refresh_token(requests_mock, mocker):
+    requests_mock.post(f'{DLP_URL}/public/oauth/refreshToken', json={'access_token': 'abc'})
+    client = Client(DLP_URL, CREDENTIALS, False, None)
+    client._refresh_token()
+    assert client.access_token == 'abc'
+
+
 def test_refresh_token_with_client_credentials(requests_mock, mocker):
     credentials = {
         'credential': 'test credentials',
@@ -343,11 +350,6 @@ def test_slack_bot_message(mocker):
     mocker.patch.object(demisto, 'results')
     results = slack_bot_message_command(args, params).to_context()
     assert results['Contents'] == {'message': 'Hello John Doe, your file secrets.doc on Google Drive violated PCI'}
-
-
-def test_reset_last_run(mocker):
-    results = reset_last_run_command()
-    assert results == 'fetch-incidents was reset successfully.'
 
 
 def test_parse_incident_details():
