@@ -1193,7 +1193,7 @@ def main() -> None:
         'cloudflare-waf-ip-list-item-list': cloudflare_waf_ip_list_item_list_command
     }
     try:
-        client: Client = Client(credentials, account_id, proxy, insecure, base_url, zone_id) # type: ignore
+        client: Client = Client(credentials, account_id, proxy, insecure, base_url, zone_id)  # type: ignore
 
         if command == 'test-module':
             return_results(test_module(client))
