@@ -48,7 +48,7 @@ Follow these steps:
 ## Configuration Parameters
 
 **Server URL**
-Endpoint to get the logs, For example: ``https://{{tenant}}.my.idaptive.app/``.
+Endpoint to get the logs, For example: ``https://{{tenant}}.my.idaptive.app/``
 
 **App ID**
 The application ID from where to fetch the logs, 
