@@ -39,7 +39,7 @@ def test_fetch_events_few_events(mocker):
     """
 
     params = mocker.patch.object(demisto, 'params', return_value=DEMISTO_PARAMS)
-    mocker.patch.object(demisto, 'args', return_value={})
+    args = mocker.patch.object(demisto, 'args', return_value={'should_push_events': True})
     mock_last_run = mocker.patch.object(demisto, 'setLastRun', side_effect=mock_set_last_run)
     results = mocker.patch.object(demisto, 'results')
     mocker.patch('CyberArkIdentityEventCollector.send_events_to_xsiam')
@@ -49,7 +49,7 @@ def test_fetch_events_few_events(mocker):
         m.post(f'{URL}RedRock/Query', json=util_load_json('test_data/events.json'))
 
         from CyberArkIdentityEventCollector import main
-        main('cyberarkidentity-get-events', params.return_value)
+        main('cyberarkidentity-get-events', params.return_value | args.return_value)
 
     events = results.call_args[0][0]['Contents']
     last_run = mock_last_run.call_args[0][0]
@@ -69,7 +69,7 @@ def test_fetch_events_no_events(mocker):
     """
 
     params = mocker.patch.object(demisto, 'params', return_value=DEMISTO_PARAMS)
-    mocker.patch.object(demisto, 'args', return_value={})
+    args = mocker.patch.object(demisto, 'args', return_value={'should_push_events': True})
     mock_last_run = mocker.patch.object(demisto, 'setLastRun', side_effect=mock_set_last_run)
     results = mocker.patch.object(demisto, 'results')
     mocker.patch('CyberArkIdentityEventCollector.send_events_to_xsiam')
@@ -79,7 +79,7 @@ def test_fetch_events_no_events(mocker):
         m.post(f'{URL}RedRock/Query', json={'Result': {}})
 
         from CyberArkIdentityEventCollector import main
-        main('cyberarkidentity-get-events', params.return_value)
+        main('cyberarkidentity-get-events', params.return_value | args.return_value)
 
     events = results.call_args[0][0]['Contents']
     last_run = mock_last_run.call_args
@@ -100,7 +100,7 @@ def test_fetch_events_limit_set_to_one(mocker):
     demisto_params = DEMISTO_PARAMS
     demisto_params['limit'] = 1
     params = mocker.patch.object(demisto, 'params', return_value=demisto_params)
-    mocker.patch.object(demisto, 'args', return_value={})
+    args = mocker.patch.object(demisto, 'args', return_value={'should_push_events': True})
     mock_last_run = mocker.patch.object(demisto, 'setLastRun', side_effect=mock_set_last_run)
     results = mocker.patch.object(demisto, 'results')
     mocker.patch('CyberArkIdentityEventCollector.send_events_to_xsiam')
@@ -110,7 +110,7 @@ def test_fetch_events_limit_set_to_one(mocker):
         m.post(f'{URL}RedRock/Query', json=util_load_json('test_data/events.json'))
 
         from CyberArkIdentityEventCollector import main
-        main('cyberarkidentity-get-events', params.return_value)
+        main('cyberarkidentity-get-events', params.return_value | args.return_value)
 
     events = results.call_args[0][0]['Contents']
     last_run = mock_last_run.call_args[0][0]
