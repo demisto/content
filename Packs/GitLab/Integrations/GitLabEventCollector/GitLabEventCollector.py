@@ -31,13 +31,27 @@ class GetEvents(IntegrationGetEvents):
         return temp_time.isoformat()
 
     @staticmethod
+    def get_sorted_events_by_type(events: list, search_in: bool, entity_type: str = '') -> list:  # pragma: no cover
+        if search_in:
+            filtered_events = [event for event in events if event.get('entity_type') == entity_type]
+        else:
+            filtered_events = [event for event in events if 'entity_type' not in event]
+        filtered_events.sort(key=lambda k: k.get('id'))
+        return filtered_events
+
+    @staticmethod
     def get_last_run(events: list, last_run: dict) -> dict:  # type: ignore
-        groups = [event for event in events if event.get('entity_type') == 'Group']
-        groups.sort(key=lambda k: k.get('id'))
-        projects = [event for event in events if event.get('entity_type') == 'Project']
-        projects.sort(key=lambda k: k.get('id'))
-        user_events = [event for event in events if 'entity_type' not in event]
-        user_events.sort(key=lambda k: k.get('id'))
+        """
+        Check if the dockerfile has the latest tag and if there is a new version of it.
+        Args:
+        events (list): list of the event from the api
+        last_run (dict): the dictionary containing the last run times for the event types
+        Returns:
+        A dictionary with the times for the next run
+        """
+        groups = GetEvents.get_sorted_events_by_type(events, True, 'Group')
+        projects = GetEvents.get_sorted_events_by_type(events, True, 'Project')
+        user_events = GetEvents.get_sorted_events_by_type(events, False)
         if not groups:
             groups_time = last_run['groups']
         else:
