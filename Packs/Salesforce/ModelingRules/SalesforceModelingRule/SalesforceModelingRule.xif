@@ -4,7 +4,7 @@ filter event_type in("RestApi","Api","Sites","VisualForce","Uri")
         XDM.Network.original_event_type = event_type,
         XDM.Network.Source.user.badge_id = organization_id,
         XDM.Network.http.response_code = request_status,
-        XDM.Network.duration = run_time,
+        XDM.Network.duration = to_integer(run_time),
         XDM.Network.session_id = session_key,
         XDM.Network.event_timestamp = parse_timestamp("%Y%m%d%H%M%S", arrayindex(split(timestamp, "."),0)),
         XDM.Network.http.url = uri,
