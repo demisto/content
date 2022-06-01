@@ -47,7 +47,8 @@ def test_get_content_modules(tmp_path, requests_mock, mocker):
         'https://raw.githubusercontent.com/demisto/content/master/Tests/Marketplace/core_packs_mpv2_list.json',
         json={}
     )
-
+    from demisto_sdk.commands.common import git_util
+    mocker.patch.object(git_util)  # prevents RepoNotFoundException during import
     import ValidateContent
 
     cached_modules = tmp_path / 'cached_modules'
