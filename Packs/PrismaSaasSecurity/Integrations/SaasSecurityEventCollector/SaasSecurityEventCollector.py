@@ -13,9 +13,6 @@ urllib3.disable_warnings()  # pylint: disable=no-member
 
 MAX_EVENTS_PER_REQUEST = 100
 
-# since the responses don't have an ID for an event, we will create one of our which will be a combination of
-# timestamp and a random uuid.
-OBJECT_KEYS = {'events': 'uuid'}
 
 ''' CLIENT CLASS '''
 
@@ -152,12 +149,8 @@ def validate_limit(limit: int):
 def test_module(client: Client):
     """
     Testing we have a valid connection to Saas-Security.
-
-    The reason we must use the get events endpoint is because Saas-Security have different scopes for each type
-    of api. To verify the customer have the log access scope we must try and fetch an event.
-    Saves the events in the cache for fetching events.
     """
-    # if 401 will be raised, that means that the credentials are invalid.
+    # if 401 will be raised, that means that the credentials are invalid an exception will be raised.
     client.get_token_request()
     return 'ok'
 
