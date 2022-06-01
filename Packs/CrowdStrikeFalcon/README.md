@@ -1,22 +1,22 @@
-CrowdStrike Falcon is one of the leaders in the Endpoint Protection Platform (EPP) market.
-This SaaS platform provides a holistic solution for protecting enterprise assets (such as servers and endpoints) and stopping different types of attacks/threats aiming to impact your organization. Moreover, the platform provides real-time response actions, vulnerability assessment, and other security-wise features.
-
-
-## What does this pack do?
-- Enable incident mirroring between Cortex XSOAR incidents and CrowdStrike Falcon incidents or detections
+Endpoint security is at the frontline to protect against malicious cybersecurity threats. It represents one of the first places organizations look to secure their enterprise networks.  
+As the volume and sophistication of cybersecurity threats have increased, so has the need for more advanced endpoint security solutions.  
+CrowdStrike Falcon is one of the leaders in the Endpoint Protection Platform (EPP) market, and the CrowdStrike Falcon content pack provides a holistic solution for protecting enterprise endpoints and servers from malicious attacks that can seriously impact your organization.  
+This pack is designed to quickly detect, analyze, block, and contain malicious attacks in progress. It also gives administrators visibility into advanced threats to speed detection and remediation response times.  
+  
+## What Does This Pack Do?
+- Mirrors incidents between Cortex XSOAR incidents and CrowdStrike Falcon incidents or detections
 - Provides real-time response features
+- Assesses vulnerability
+- Contains endpoints (isolation/unisolation)
+- Removes duplicate incidents
+- Eliminates false positive incidents
+- Enriches incidents
 
-## Playbooks
-This content pack includes the following playbooks. These playbooks auto isolate/unisolate endpoints by the device ID that was provided in the playbook. The playbooks can be used as part of a Malware investigation.
-- Crowdstrike Falcon - Isolate Endpoint
-- Crowdstrike Falcon - Unisolate Endpoint
+## Before You Start
+Make sure you have the following content packs:
+- Base
+- Common Scripts
+- Common Types
 
-
-## Setup Instructions
-1. Ensure you have the following content packs:
-   - Base
-   - Common Scripts
-   - Common Types
-2. To set up the CrowdStrike Falcon integration, you will need to get an API client ID and secret from CrowdStrike support: support@crowdstrike.com.
-3. To run the playbooks, provide the ID of the device you want to isolate/unisolate.
-
+## Pack Configurations  
+To get up and running with this pack, you must get an API client ID and secret from CrowdStrike support: support@crowdstrike.com.
