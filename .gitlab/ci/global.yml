@@ -38,7 +38,7 @@
 
 .download-demisto-conf:
   - section_start "Download content-test-conf" --collapsed
-  - ./Tests/scripts/download_demisto_conf.sh  >> $ARTIFACTS_FOLDER/logs/download_demisto_conf.log
+  - ./Tests/scripts/download_conf_repos.sh  >> $ARTIFACTS_FOLDER/logs/download_conf_repos.log
   - section_end "Download content-test-conf"
 
 .open-ssh-tunnel:

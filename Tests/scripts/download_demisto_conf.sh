@@ -13,12 +13,6 @@ echo ${SECRET_CONF_PATH} > secret_conf_path
 XSIAM_SERVERS_PATH="./xsiam_servers.json"
 echo ${XSIAM_SERVERS_PATH} > xsiam_servers_path
 
-DEMISTO_LIC_PATH="./demisto.lic"
-echo ${DEMISTO_LIC_PATH} > demisto_lic_path
-
-DEMISTO_PACK_SIGNATURE_UTIL_PATH="./signDirectory"
-echo ${DEMISTO_PACK_SIGNATURE_UTIL_PATH} > demisto_pack_sig_util_path
-
 # download configuration files from Gitlab repo
 echo "clone content-test-conf from branch: $UNDERSCORE_BRANCH in content-test-conf"
 git clone --depth=1 https://gitlab-ci-token:${CI_JOB_TOKEN}@code.pan.run/xsoar/content-test-conf.git --branch $UNDERSCORE_BRANCH
@@ -26,12 +20,18 @@ if [ "$?" != "0" ]; then
     echo "No such branch in content-test-conf: $UNDERSCORE_BRANCH , falling back to master"
     git clone --depth=1 https://gitlab-ci-token:${CI_JOB_TOKEN}@code.pan.run/xsoar/content-test-conf.git
 fi
-cp -r ./content-test-conf/awsinstancetool ./Tests/scripts/awsinstancetool
-cp -r ./content-test-conf/demisto.lic $DEMISTO_LIC_PATH
-cp -r ./content-test-conf/conf.json $SECRET_CONF_PATH
-cp -r ./content-test-conf/signDirectory $DEMISTO_PACK_SIGNATURE_UTIL_PATH
-cp -r ./content-test-conf/xsiam_servers.json $XSIAM_SERVERS_PATH
+mv ./content-test-conf/conf.json $SECRET_CONF_PATH
+mv ./content-test-conf/xsiam_servers.json $XSIAM_SERVERS_PATH
 rm -rf ./content-test-conf
+
+echo "clone infra from branch: $UNDERSCORE_BRANCH in content-test-conf"
+git clone --depth=1 https://gitlab-ci-token:${CI_JOB_TOKEN}@code.pan.run/xsoar/infra.git --branch $UNDERSCORE_BRANCH
+if [ "$?" != "0" ]; then
+    echo "No such branch in infra: $UNDERSCORE_BRANCH , falling back to master"
+    git clone --depth=1 https://gitlab-ci-token:${CI_JOB_TOKEN}@code.pan.run/xsoar/infra.git
+fi
+mv -r ./infra/gcp ./gcp
+rm -rf ./infra
 
 set -e
 echo "Successfully downloaded configuration files"
