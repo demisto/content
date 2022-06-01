@@ -293,7 +293,7 @@ tasks:
     evidencedata:
       customfields: {}
       description:
-        simple: Microsoft Defender For Endpoint - Results on Tempering Activity query in Advanced Hunting feature.
+        simple: Results on Tempering Activity query in Advanced Hunting feature - Microsoft Defender For Endpoint
       tags:
         simple: Tempering Action
     id: '29'
@@ -333,7 +333,7 @@ tasks:
     evidencedata:
       customfields: {}
       description:
-        simple: Microsoft Defender For Endpoint - Results on Local Admin query in Advanced Hunting feature.
+        simple: Results on Local Admin query in Advanced Hunting feature - Microsoft Defender For Endpoint
       tags:
         simple: Local Admin
     id: '37'
@@ -377,7 +377,7 @@ tasks:
     evidencedata:
       customfields: {}
       description:
-        simple: Microsoft Defender For Endpoint - Results on Credential Dump query in Advanced Hunting feature.
+        simple: Results on Credential Dump query in Advanced Hunting feature - Microsoft Defender For Endpoint
       tags:
         simple: Credential Dump
     id: '38'
@@ -865,7 +865,7 @@ tasks:
     evidencedata:
       customfields: {}
       description:
-        simple: Microsoft Defender For Endpoint - Results on File Information by SHA1
+        simple: Results on File Information by SHA1 - Microsoft Defender For Endpoint
       tags:
         simple: File Information by SHA1
     id: '86'
