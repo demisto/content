@@ -1,0 +1,11 @@
+[MODEL: dataset = msft_radius_raw , model=Auth]
+| alter packet_type = arrayindex( regextract(__raw_log ,"\<Packet\-Type\sdata_type\=\"\d+\"\>([^\<]+)\<" ) ,0)
+| alter XDM.Auth.event_timestamp = arrayindex( regextract(__raw_log ,"\<Timestamp\sdata_type\=\"\d+\"\>([^\<]+)\<" ) ,0)
+    ,XDM.Auth.Server.host.hostname  = arrayindex( regextract(__raw_log ,"\<Computer\-Name\sdata_type\=\"\d+\"\>([^\<]+)\<" ) ,0)
+    ,XDM.Auth.original_event_type = packet_type_name = arrayindex( if(packet_type ="1","Access-Request",packet_type ="2","Access-Accept",packet_type ="3","Access-Reject",packet_type ="4","Accounting-Request",null) )
+    ,XDM.Auth.Client.user.username = arrayindex( regextract(__raw_log ,"\<User\\-Name\sdata_type\=\"\d+\"\>([^\<]+)\<" ) ,0)
+    ,XDM.Auth.Server.host.device_id = arrayindex( regextract(__raw_log ,"\<Called\-Station\-ID\sdata_type\=\"\d+\"\>([^\<]+)\<" ) ,0)
+    ,XDM.Auth.Client.host.ipv4_addresses = arrayindex( regextract(__raw_log ,"\<Client\-IP\-Address\sdata_type\=\"\d+\"\>([^\<]+)\<" ) ,0)
+    ,XDM.Auth.Client.port = arrayindex( regextract(__raw_log ,"\<NAS\-Port\sdata_type\=\"\d+\"\>([^\<]+)\<" ) ,0)
+    ,XDM.Auth.reason = arrayindex( regextract(__raw_log ,"\<Reason\-Code\sdata_type\=\"\d+\"\>([^\<]+)\<" ) ,0)
+| fields -packet_type
