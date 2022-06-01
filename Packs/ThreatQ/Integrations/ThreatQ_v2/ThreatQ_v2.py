@@ -301,7 +301,13 @@ def make_indicator_reputation_request(indicator_type, value, generic_context):
             url_suffix = f'/indicators/{obj.get("id")}?with=attributes,sources,score,type'
             res = tq_request('GET', url_suffix)
             indicators.append(indicator_data_to_demisto_format(res['data']))
-    indicators = indicators or [{'Value': value, 'TQScore': -1, 'fields': {'trafficlightprotocol': TLP}}] if TLP else [{'Value': value, 'TQScore': -1}]
+    
+    if not indicators:
+        indicators = {'Value': value, 'TQScore': -1}
+        if TLP:
+            indicators['fields'] = {'trafficlightprotocol': TLP}
+        indicators = [indicators]
+
     entry_context = aggregate_search_results(
         indicators=indicators,
         default_indicator_type=indicator_type,
