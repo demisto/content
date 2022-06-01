@@ -113,7 +113,7 @@ tasks:
     evidencedata:
       customfields: {}
       description:
-        simple: Results on File External Connections query in Advanced Hunting feature - Microsoft Defender For Endpoint.
+        simple: Results on File External Connections query in Advanced Hunting feature - Microsoft Defender For Endpoint
       tags:
         simple: File External Connections
     id: '1'
@@ -161,7 +161,7 @@ tasks:
     evidencedata:
       customfields: {}
       description:
-        simple: Results on Remote Connections query in Advanced Hunting feature - Microsoft Defender For Endpoint.
+        simple: Results on Remote Connections query in Advanced Hunting feature - Microsoft Defender For Endpoint
       tags:
         simple: Remote Connections
     id: '2'
@@ -267,7 +267,7 @@ tasks:
     evidencedata:
       customfields: {}
       description:
-        simple: Results on Remote Connections query in Advanced Hunting feature - Microsoft Defender For Endpoint.
+        simple: Results on Remote Connections query in Advanced Hunting feature - Microsoft Defender For Endpoint
       tags:
         simple: Remote Connections
     id: '5'
@@ -311,7 +311,7 @@ tasks:
     evidencedata:
       customfields: {}
       description:
-        simple: Results on Enumeration of Network Shares query in Advanced Hunting feature - Microsoft Defender For Endpoint.
+        simple: Results on Enumeration of Network Shares query in Advanced Hunting feature - Microsoft Defender For Endpoint
       tags:
         simple: Enumeration of Network Shares
     id: '6'
@@ -357,7 +357,7 @@ tasks:
     evidencedata:
       customfields: {}
       description:
-        simple: Results on Remote Connections query in Advanced Hunting feature - Microsoft Defender For Endpoint.
+        simple: Results on Remote Connections query in Advanced Hunting feature - Microsoft Defender For Endpoint
     id: '7'
     ignoreworker: false
     isautoswitchedtoquietmode: false
@@ -399,7 +399,7 @@ tasks:
     evidencedata:
       customfields: {}
       description:
-        simple: Results on Local FW Rules Change query in Advanced Hunting feature - Microsoft Defender For Endpoint.
+        simple: Results on Local FW Rules Change query in Advanced Hunting feature - Microsoft Defender For Endpoint
       tags:
         simple: Local FW Rules Change
     id: '8'
@@ -443,7 +443,7 @@ tasks:
     evidencedata:
       customfields: {}
       description:
-        simple: Results on DNS Requests query in Advanced Hunting feature - Microsoft Defender For Endpoint.
+        simple: Results on DNS Requests query in Advanced Hunting feature - Microsoft Defender For Endpoint
       tags:
         simple: DNS Requests
     id: '9'
