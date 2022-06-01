@@ -1,16 +1,19 @@
-Object.byString = function(o, s) {
-    s = s.replace(/\[(\w+)\]/g, '.$1'); // convert indexes to properties
-    s = s.replace(/^\./, '');           // strip a leading dot
-    var a = s.split('.');
-    for (var i = 0, n = a.length; i < n; ++i) {
-        var k = a[i];
-        if (k in o) {
-            o = o[k];
+Object.byString = function(object, string_path) {
+    // Convert indices to props
+    string_path = string_path.replace(/\[(\w+)\]/g, '.$1');
+    
+    // strip a leading dot
+    string_path = string_path.replace(/^\./, '');
+    var nested_paths = string_path.split('.');
+    for (var i = 0, n = nested_paths.length; i < n; ++i) {
+        var key = nested_paths[i];
+        if (key in object) {
+            object = object[key];
         } else {
             return;
         }
     }
-    return o;
+    return object;
 }
 
 
