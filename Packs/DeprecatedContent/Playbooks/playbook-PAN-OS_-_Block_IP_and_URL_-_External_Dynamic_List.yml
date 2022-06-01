@@ -94,7 +94,7 @@ tasks:
       version: -1
       name: PAN-OS - Refresh IP EDL
       description: Refreshes the specified external dynamic list
-      script: '|||pan-os-refresh-edl'
+      script: '|||panorama-refresh-edl'
       type: regular
       iscommand: true
       brand: ""
@@ -232,7 +232,7 @@ tasks:
       version: -1
       name: PAN-OS - Refresh URL EDL
       description: Refreshes the specified external dynamic list
-      script: '|||pan-os-refresh-edl'
+      script: '|||panorama-refresh-edl'
       type: regular
       iscommand: true
       brand: ""
