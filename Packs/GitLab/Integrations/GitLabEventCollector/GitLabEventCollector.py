@@ -31,16 +31,26 @@ class GetEvents(IntegrationGetEvents):
         return temp_time.isoformat()
 
     @staticmethod
-    def get_last_run(events: list) -> dict:
+    def get_last_run(events: list, last_run: dict) -> dict:  # type: ignore
         groups = [event for event in events if event.get('entity_type') == 'Group']
         groups.sort(key=lambda k: k.get('id'))
         projects = [event for event in events if event.get('entity_type') == 'Project']
         projects.sort(key=lambda k: k.get('id'))
         user_events = [event for event in events if 'entity_type' not in event]
         user_events.sort(key=lambda k: k.get('id'))
-        return {'groups': GetEvents.prepare_time_for_next(groups[-1]['created_at']),
-                'projects': GetEvents.prepare_time_for_next(projects[-1]['created_at']),
-                'events': GetEvents.prepare_time_for_next(user_events[-1]['created_at'])}
+        if not groups:
+            groups_time = last_run['groups']
+        else:
+            groups_time = GetEvents.prepare_time_for_next(groups[-1]['created_at'])
+        if not projects:
+            projects_time = last_run['projects']
+        else:
+            projects_time = GetEvents.prepare_time_for_next(projects[-1]['created_at'])
+        if not user_events:
+            events_time = last_run['events']
+        else:
+            events_time = GetEvents.prepare_time_for_next(user_events[-1]['created_at'])
+        return {'groups': groups_time, 'projects': projects_time, 'events': events_time}
 
     def _iter_events(self):  # pragma: no cover
         self.client.set_request_filter(None)
@@ -76,7 +86,7 @@ def reformat_details(events: list) -> list:
 
 
 def main() -> None:  # pragma: no cover
-    demisto_params = demisto.params()  # | demisto.args()
+    demisto_params = demisto.params() | demisto.args()
     url = urljoin(demisto_params['url'], '/api/v4/')
     should_push_events = argToBoolean(demisto_params.get('should_push_events', 'false'))
     events_collection_management = {
@@ -137,7 +147,7 @@ def main() -> None:  # pragma: no cover
             )
             return_results(command_results)
         elif command == 'fetch-events':
-            demisto.setLastRun(get_events.get_last_run(events))
+            demisto.setLastRun(get_events.get_last_run(events, last_run))  # type: ignore
             should_push_events = True
         if should_push_events:
             send_events_to_xsiam(events, demisto_params.get('vendor', 'gitlab'),

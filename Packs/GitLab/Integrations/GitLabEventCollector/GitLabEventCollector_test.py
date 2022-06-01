@@ -31,9 +31,22 @@ get_events = GetEvents(client, options)
 
 
 def test_get_last_run():
-    assert GetEvents.get_last_run(events) == {'groups': '2022-06-17T12:31:36.668000',
-                                              'projects': '2022-06-17T12:31:36.668000',
-                                              'events': '2022-06-17T12:31:36.668000'}
+    assert GetEvents.get_last_run(events, {}) == {'groups': '2022-06-17T12:31:36.668000',
+                                                  'projects': '2022-06-17T12:31:36.668000',
+                                                  'events': '2022-06-17T12:31:36.668000'}
+
+    assert GetEvents.get_last_run([], {'groups': '2022-06-17T12:31:36.668000',
+                                       'projects': '2022-06-17T12:31:36.668000',
+                                       'events': '2022-06-17T12:31:36.668000'}) == {
+               'groups': '2022-06-17T12:31:36.668000',
+               'projects': '2022-06-17T12:31:36.668000',
+               'events': '2022-06-17T12:31:36.668000'}
+    assert GetEvents.get_last_run(events[3:], {'groups': '2022-06-17T12:31:36.666000',
+                                               'projects': '2022-06-17T12:31:36.668000',
+                                               'events': '2022-06-17T12:31:36.668000'}) == {
+               'groups': '2022-06-17T12:31:36.666000',
+               'projects': '2022-06-17T12:31:36.668000',
+               'events': '2022-06-17T12:31:36.668000'}
 
 
 def test_reformat_details():
