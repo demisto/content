@@ -1,5 +1,5 @@
 Salesforce logs event collector integration for XSIAM.
-This integration was integrated and tested with version xx of Salesforce Event Collector.
+This integration was integrated and tested with Salesforce REST API V54.0.
 
 ## Configure Salesforce Event Collector on Cortex XSOAR
 

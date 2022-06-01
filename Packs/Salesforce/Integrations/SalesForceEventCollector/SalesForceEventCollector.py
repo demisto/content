@@ -155,6 +155,10 @@ class SalesforceGetEvents(IntegrationGetEvents):
 
         return {}
 
+    @staticmethod
+    def get_last_run(events: list) -> dict:
+        return {}
+
 
 def get_timestamp_format(value):
     timestamp: Optional[datetime]
