@@ -3,7 +3,7 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 from gdetect import Client as gClient
-from gdetect.exceptions import GDetectError
+from gdetect.exceptions import GDetectError, BadAuthenticationToken
 ''' IMPORTS '''
 
 from copy import copy
@@ -21,8 +21,8 @@ class Client(BaseClient):
 
     def __init__(self, base_url: str, api_token: str, verify: bool, proxy: bool):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
-        self.__client = gClient(url=self._base_url, token=api_token)
-        self.__client.verify = not self._verify
+        self.client = gClient(url=self._base_url, token=api_token)
+        self.client.verify = not self._verify
 
     def gdetect_send(self, filepath: str) -> str:
         """Sends file to GLIMPS Detect API.
@@ -34,7 +34,7 @@ class Client(BaseClient):
         :rtype: ``str``
         """
 
-        return self.__client.push(filepath)
+        return self.client.push(filepath)
 
     def gdetect_get(self, uuid: str) -> Dict[str, Any]:
         """Gets GLIMPS Detect result for given uuid.
@@ -46,7 +46,7 @@ class Client(BaseClient):
         :rtype: ``Dict[str, Any]``
         """
 
-        return self.__client.get(uuid)
+        return self.client.get(uuid)
 
 
 def test_module(client):
@@ -59,16 +59,12 @@ def test_module(client):
     Returns:
         'ok' if test passed, anything else will fail the test
     """
-    try:
-        resp = client.gdetect_get('00000000-0000-0000-0000-000000000000')
-    except GDetectError as err:
-        return err
+    resp = client.gdetect_get('00000000-0000-0000-0000-000000000000')
+    error = resp.get('error')
+    if error == 'file not found':
+        return 'ok'
     else:
-        error = resp.get('error')
-        if error == 'file not found':
-            return 'ok'
-        else:
-            return error
+        return error
 
 
 def gdetect_send_command(client, args):  # TO TEST
@@ -264,6 +260,8 @@ def main():
         if command == 'test-module':
             # This is the call made when pressing the integration Test button.
             result = test_module(client)
+            if result != 'ok':
+                return_error(result)
             return_results(result)
         elif command == 'gdetect-send':
             return_results(gdetect_send_command(client, demisto.args()))
@@ -273,9 +271,12 @@ def main():
             return_results(gdetect_get_threats_command(client, demisto.args()))
 
     # Log exceptions
+    except GDetectError:
+        resp = client.client.response
+        if isinstance(resp, BadAuthenticationToken):
+            return_error(f'Bad authentification: {resp.message}')
     except Exception as e:
         return_error(f'Failed to execute {command} command. Error: {str(e)}')
-
 
 # Start Main
 if __name__ in ('__main__', '__builtin__', 'builtins'):
