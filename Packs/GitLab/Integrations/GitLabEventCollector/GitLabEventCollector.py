@@ -31,7 +31,7 @@ class GetEvents(IntegrationGetEvents):
         return temp_time.isoformat()
 
     @staticmethod
-    def get_sorted_events_by_type(events: list, search_in: bool, entity_type: str = '') -> list:  # pragma: no cover
+    def get_sorted_events_by_type(events: list, search_in: bool, entity_type: str = '') -> list:
         if search_in:
             filtered_events = [event for event in events if event.get('entity_type') == entity_type]
         else:

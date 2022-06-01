@@ -62,3 +62,20 @@ def test_reformat_details():
 def test_prepare_time_for_next():
     assert get_events.prepare_time_for_next('2022-06-17T12:31:36.667Z') == '2022-06-17T12:31:36.668000'
     assert get_events.prepare_time_for_next('2022-06-17T12:31:36.669Z') == '2022-06-17T12:31:36.670000'
+
+
+def test_get_sorted_events_by_type():
+    assert get_events.get_sorted_events_by_type(events, True, 'Group') == [{'created_at': '2022-04-17T12:31:36.667Z',
+                                                                            'details': {'add': 'aaa'},
+                                                                            'entity_type': 'Group',
+                                                                            'id': '1'},
+                                                                           {'created_at': '2022-05-17T12:31:36.667Z',
+                                                                            'details': {'add': 'bbb'},
+                                                                            'entity_type': 'Group',
+                                                                            'id': '2'},
+                                                                           {'created_at': '2022-06-17T12:31:36.667Z',
+                                                                            'details': {'change': 'ccc'},
+                                                                            'entity_type': 'Group',
+                                                                            'id': '3'}]
+    assert get_events.get_sorted_events_by_type(events, False) == [
+        {'created_at': '2022-06-17T12:31:36.667Z', 'id': '99'}]
