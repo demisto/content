@@ -560,7 +560,7 @@ tasks:
         complex:
           root: inputs.O365ExchangeLocationExclusion
       O365KQL:
-        simple: from:${incident.reportedemailfrom} AND subject:${incident.reportedemailsubject}
+        simple: from:${incident.reportedemailfrom} AND subject:"${incident.reportedemailsubject}"
       SearchAndDeleteIntegration:
         complex:
           root: inputs.SearchAndDeleteIntegration
@@ -3018,6 +3018,7 @@ inputs:
   playbookInputQuery:
 outputs: []
 tests:
-- Phishing v2 - Test - Incident Starter
+- Phishing v3 - Get Original Email + Search & Delete - Test
+- Phishing v3 - DomainSquatting+EML+MaliciousIndicators - Test
 fromversion: 6.1.0
 system: true
