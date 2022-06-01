@@ -1,3 +1,19 @@
+Object.byString = function(o, s) {
+    s = s.replace(/\[(\w+)\]/g, '.$1'); // convert indexes to properties
+    s = s.replace(/^\./, '');           // strip a leading dot
+    var a = s.split('.');
+    for (var i = 0, n = a.length; i < n; ++i) {
+        var k = a[i];
+        if (k in o) {
+            o = o[k];
+        } else {
+            return;
+        }
+    }
+    return o;
+}
+
+
 function errorEntry(text) {
     return  {
         ContentsFormat: formats.text,
@@ -5,6 +21,8 @@ function errorEntry(text) {
         Contents: text
     };
 }
+
+
 
 var fieldsToDelete;
 var shouldDeleteAll = (args.all === 'yes');
@@ -84,12 +102,23 @@ if (shouldDeleteAll) {
     if (isNaN(index)) {
         return errorEntry("Invalid index " + args.index)
     }
-    var contextVal = invContext[args.key];
-    if (!contextVal) {
-        return "Key [" + args.key + "] was not found.";
-    }
-    if (!Array.isArray(contextVal)) {
-        contextVal = [contextVal];
+    
+    var contextVal;
+    
+    // Check if key references a nested object
+    if (args.key.indexOf(".") !== -1) {
+        
+        contextVal = Object.byString(invContext, args.key)
+        
+    } else {
+    
+        contextVal = invContext[args.key];
+        if (!contextVal) {
+            return "Key [" + args.key + "] was not found.";
+        }
+        if (!Array.isArray(contextVal)) {
+            contextVal = [contextVal];
+        }
     }
 
     if (index < 0 || index >= contextVal.length) {
