@@ -1,0 +1,33 @@
+[MODEL: dataset=microsoft_365_defender_raw, model=Endpoint]
+alter 
+        XDM.Endpoint.original_event_id = id,
+        XDM.Endpoint.threat.original_alert_id = to_string(incidentId),						
+        XDM.Endpoint.threat.severity = severity,		
+        XDM.Endpoint.Observer.product = detectionSource,
+        XDM.Endpoint.threat.category = category,		
+        XDM.Endpoint.threat.subcategory = threatFamilyName,
+        XDM.Endpoint.threat.name = if(threatName = null, title, threatName),
+        XDM.Endpoint.threat.description = description,			
+        XDM.Endpoint.event_timestamp = parse_timestamp("%Y-%m-%dT%H:%M:%E*SZ", alertCreationTime),					
+        XDM.Endpoint.Target.host.device_id = machineId,			
+        XDM.Endpoint.Target.host.fqdn = computerDnsName,	
+        XDM.Endpoint.threat.mitre_techniques = json_extract_array(mitreTechniques, "$."),
+        evidence_arr = json_extract_array (evidence ,"$.")
+| alter
+        XDM.Endpoint.Target.file.sha256	= arraystring (arraymap (evidence_arr, json_extract_scalar ("@element", "$.sha256")),","),
+        XDM.Endpoint.Target.file.filename = arraystring (arraymap (evidence_arr, json_extract_scalar ("@element", "$.fileName")),","),
+        XDM.Endpoint.Target.file.path = arraystring (arraymap (evidence_arr, json_extract_scalar ("@element", "$.filePath")),","),	
+        XDM.Endpoint.Target.process.command_line = arraystring (arraymap (evidence_arr, json_extract_scalar ("@element", "$.processCommandLine")),","),	
+        XDM.Endpoint.Target.process.parent_id = arraystring (arraymap (evidence_arr, json_extract_scalar ("@element", "$.parentProcessId")),","),		
+        XDM.Endpoint.Target.host.ipv4_addresses	= arraymap (evidence_arr, json_extract_scalar ("@element", "$.ipAddress")),	
+        XDM.Endpoint.Target.registry.key = arraystring (arraymap (evidence_arr, json_extract_scalar ("@element", "$.registryKey")),","),		
+        XDM.Endpoint.Target.registry.value_type	= arraystring (arraymap (evidence_arr, json_extract_scalar ("@element", "$.registryValueType")),","),		
+        XDM.Endpoint.Target.registry.value = arraystring (arraymap (evidence_arr, json_extract_scalar ("@element", "$.registryValue")),","),	
+        XDM.Endpoint.Actor.user.username = arraystring (arraymap (evidence_arr, json_extract_scalar ("@element", "$.accountName")),","),		
+        XDM.Endpoint.Actor.user.domain = arraystring (arraymap (evidence_arr, json_extract_scalar ("@element", "$.domainName")),","),	
+        XDM.Endpoint.Actor.user.identifier = arraystring (arraymap (evidence_arr, json_extract_scalar ("@element", "$.userSid")),","),
+        
+        process_ids = arraymap (evidence_arr, json_extract_scalar ("@element", "$.processId"))	
+
+| alter
+        XDM.Endpoint.Target.process.pid	= to_integer(if(array_length(process_ids) > 0, arrayindex(process_ids, 0), null));		
