@@ -29,6 +29,7 @@ def mock_client():
     return Client(account_id=ACCOUNT_ID,
                   zone_id=ZONE_ID,
                   credentials=CREDENTIALS,
+                  base_url=BASE_URL,
                   proxy=False,
                   insecure=True)
 
