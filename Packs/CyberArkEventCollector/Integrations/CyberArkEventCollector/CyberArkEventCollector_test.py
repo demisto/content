@@ -45,8 +45,8 @@ def test_fetch_events_few_events(mocker):
     mocker.patch('CyberArkEventCollector.send_events_to_xsiam')
 
     with requests_mock.Mocker() as m:
-        m.get(f'{URL}oauth2/token/test_app', json={'access_token': '123456abc'})
-        m.get(f'{URL}RedRock/Query', json=util_load_json('test_data/events.json'))
+        m.post(f'{URL}oauth2/token/test_app', json={'access_token': '123456abc'})
+        m.post(f'{URL}RedRock/Query', json=util_load_json('test_data/events.json'))
 
         from CyberArkEventCollector import main
         main('cyberark-get-events', params.return_value)
@@ -75,8 +75,8 @@ def test_fetch_events_no_events(mocker):
     mocker.patch('CyberArkEventCollector.send_events_to_xsiam')
 
     with requests_mock.Mocker() as m:
-        m.get(f'{URL}oauth2/token/test_app', json={'access_token': '123456abc'})
-        m.get(f'{URL}RedRock/Query', json={'Result': {}})
+        m.post(f'{URL}oauth2/token/test_app', json={'access_token': '123456abc'})
+        m.post(f'{URL}RedRock/Query', json={'Result': {}})
 
         from CyberArkEventCollector import main
         main('cyberark-get-events', params.return_value)
@@ -106,8 +106,8 @@ def test_fetch_events_limit_set_to_one(mocker):
     mocker.patch('CyberArkEventCollector.send_events_to_xsiam')
 
     with requests_mock.Mocker() as m:
-        m.get(f'{URL}oauth2/token/test_app', json={'access_token': '123456abc'})
-        m.get(f'{URL}RedRock/Query', json=util_load_json('test_data/events.json'))
+        m.post(f'{URL}oauth2/token/test_app', json={'access_token': '123456abc'})
+        m.post(f'{URL}RedRock/Query', json=util_load_json('test_data/events.json'))
 
         from CyberArkEventCollector import main
         main('cyberark-get-events', params.return_value)
