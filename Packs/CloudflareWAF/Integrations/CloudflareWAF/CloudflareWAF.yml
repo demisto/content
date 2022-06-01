@@ -27,13 +27,11 @@ configuration:
 - name: proxy
   display: Use system proxy settings
   required: false
-  defaultvalue: ''
   type: 8
   additionalinfo:
 - name: insecure
   display: Trust any certificate (not secure)
   required: false
-  defaultvalue: ''
   type: 8
   additionalinfo: ''
 description: Cloudflare WAF integration allows customers to manage firewall rules, filters, and IP-lists. It also allows to retrieve zones list for each account.
