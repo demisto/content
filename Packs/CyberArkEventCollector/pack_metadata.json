@@ -1,6 +1,6 @@
 {
     "name": "CyberArk Events Collector",
-    "description": "Use the CyberArk integration to fetch events",
+    "description": "This integration collects events from the Idaptive Next-Gen Access (INGA) using REST APIs.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",

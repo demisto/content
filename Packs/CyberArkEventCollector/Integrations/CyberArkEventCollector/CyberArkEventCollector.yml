@@ -48,7 +48,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: 'CyberArk logs event collector integration for Cortex XSIAM.'
+description: This integration collects events from the Idaptive Next-Gen Access (INGA) using REST APIs.
 display: CyberArk Event Collector
 name: CyberArk Event Collector
 script:
