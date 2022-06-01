@@ -1,0 +1,31 @@
+{
+    "id": "incident_wizresourceid",
+    "version": -1,
+    "modified": "2021-12-30T16:28:54.982420965Z",
+    "name": "Wiz Resource ID",
+    "ownerOnly": false,
+    "cliName": "wizresourceid",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "Wiz Issue"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "description": "Unique (provider) cloud resource ID",
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.0.0"
+}

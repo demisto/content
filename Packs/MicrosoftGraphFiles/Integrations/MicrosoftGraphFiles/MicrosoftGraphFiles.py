@@ -107,10 +107,12 @@ class MsGraphClient:
     Microsoft Graph Client enables authorized access to organization's files in OneDrive, SharePoint, and MS Teams.
     """
 
-    def __init__(self, tenant_id, auth_id, enc_key, app_name, base_url, verify, proxy, self_deployed, ok_codes):
+    def __init__(self, tenant_id, auth_id, enc_key, app_name, base_url, verify, proxy, self_deployed, ok_codes,
+                 certificate_thumbprint: Optional[str] = None, private_key: Optional[str] = None):
         self.ms_client = MicrosoftClient(
             tenant_id=tenant_id, auth_id=auth_id, enc_key=enc_key, app_name=app_name,
-            base_url=base_url, verify=verify, proxy=proxy, self_deployed=self_deployed, ok_codes=ok_codes)
+            base_url=base_url, verify=verify, proxy=proxy, self_deployed=self_deployed, ok_codes=ok_codes,
+            certificate_thumbprint=certificate_thumbprint, private_key=private_key)
 
     def list_sharepoint_sites(self):
         """
@@ -270,7 +272,7 @@ class MsGraphClient:
         Create a new folder in a Drive with a specified parent item or path.
         :param object_type: ms graph resource.
         :param object_type_id: the selected object type id.
-        :param parent_id: an ID of the Drive to upload the folder to.
+        :param parent_id: an ID of the parent to upload the folder to.
         :param folder_name: folder name
         :return: graph api raw response
         """
@@ -616,10 +618,18 @@ def main():
     proxy: bool = params.get('proxy', False)
     self_deployed: bool = params.get('self_deployed', False)
     ok_codes: tuple = (200, 204, 201)
+    certificate_thumbprint = params.get('certificate_thumbprint')
+    private_key = params.get('private_key')
+    if not self_deployed and not enc_key:
+        raise DemistoException('Key must be provided. For further information see '
+                               'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')
+    elif not enc_key and not (certificate_thumbprint and private_key):
+        raise DemistoException('Key or Certificate Thumbprint and Private Key must be provided.')
 
     try:
         client = MsGraphClient(base_url=base_url, tenant_id=tenant, auth_id=auth_id, enc_key=enc_key, app_name=APP_NAME,
-                               verify=use_ssl, proxy=proxy, self_deployed=self_deployed, ok_codes=ok_codes)
+                               verify=use_ssl, proxy=proxy, self_deployed=self_deployed, ok_codes=ok_codes,
+                               certificate_thumbprint=certificate_thumbprint, private_key=private_key)
 
         LOG(f"Command being called is {demisto.command()}")
 

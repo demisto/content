@@ -1,0 +1,136 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "Cyberpion-Mapper",
+    "mapping": {
+        "Cyberpion": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Cyberpion Category": {
+                    "complex": null,
+                    "simple": "category"
+                }
+            }
+        },
+        "Cyberpion Security Alert": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Cyberpion Asset": {
+                    "complex": null,
+                    "simple": "domain"
+                },
+                "Cyberpion Category": {
+                    "complex": null,
+                    "simple": "category"
+                },
+                "Cyberpion Description": {
+                    "complex": null,
+                    "simple": "description"
+                },
+                "Cyberpion Domain": {
+                    "complex": null,
+                    "simple": "domain"
+                },
+                "Cyberpion Impact": {
+                    "complex": null,
+                    "simple": "impact"
+                },
+                "Cyberpion Solution": {
+                    "complex": null,
+                    "simple": "solution"
+                },
+                "Cyberpion Summary": {
+                    "complex": null,
+                    "simple": "summary"
+                },
+                "Cyberpion Technical Details": {
+                    "complex": null,
+                    "simple": "technical_details"
+                },
+                "Cyberpion Title": {
+                    "complex": null,
+                    "simple": "title"
+                },
+                "Cyberpion portal link": {
+                    "complex": null,
+                    "simple": "link"
+                },
+                "category": {
+                    "complex": null,
+                    "simple": "category"
+                }
+            }
+        },
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Category": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "category",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Cyberpion Action item ID": {
+                    "complex": null,
+                    "simple": "id"
+                },
+                "Cyberpion Category": {
+                    "complex": null,
+                    "simple": "category"
+                },
+                "Cyberpion Domain": {
+                    "complex": null,
+                    "simple": "domain"
+                },
+                "Cyberpion Impact": {
+                    "complex": null,
+                    "simple": "impact"
+                },
+                "Cyberpion Solution": {
+                    "complex": null,
+                    "simple": "solution"
+                },
+                "Cyberpion Summary": {
+                    "complex": null,
+                    "simple": "summary"
+                },
+                "Cyberpion Technical Details": {
+                    "complex": null,
+                    "simple": "technical_details"
+                },
+                "Cyberpion Title": {
+                    "complex": null,
+                    "simple": "title"
+                },
+                "Cyberpion Description": {
+                    "complex": null,
+                    "simple": "description"
+                },
+                "Cyberpion portal link": {
+                    "complex": null,
+                    "simple": "link"
+                },
+                "category": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "category",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "severity": {
+                    "complex": null,
+                    "simple": "urgency"
+                }
+            }
+        }
+    },
+    "name": "Cyberpion-Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

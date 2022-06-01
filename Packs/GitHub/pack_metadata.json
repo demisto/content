@@ -1,8 +1,8 @@
 {
     "name": "GitHub",
-    "description": "Integration to GitHub API",
+    "description": "Manage GitHub issues and pull requests directly from Cortex XSOAR",
     "support": "xsoar",
-    "currentVersion": "1.1.1",
+    "currentVersion": "2.0.2",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -12,5 +12,15 @@
     ],
     "tags": [],
     "useCases": [],
-    "keywords": []
+    "keywords": [],
+    "dependencies": {
+        "IAM-SCIM": {
+            "mandatory": true,
+            "display_name": "IAM SCIM"
+        }
+    },
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

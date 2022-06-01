@@ -1,0 +1,66 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "FraudWatch-mapper",
+    "mapping": {
+        "FraudWatch Incident": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Country": {
+                    "complex": null,
+                    "simple": "host_country"
+                },
+                "Destination Hostname": {
+                    "complex": null,
+                    "simple": "host"
+                },
+                "FraudWatch Abuse URL": {
+                    "complex": null,
+                    "simple": "url"
+                },
+                "FraudWatch Brand": {
+                    "complex": null,
+                    "simple": "brand"
+                },
+                "FraudWatch Reference ID": {
+                    "complex": null,
+                    "simple": "reference_id"
+                },
+                "Incident Link": {
+                    "complex": null,
+                    "simple": "link"
+                },
+                "Ticket Closed Date": {
+                    "complex": null,
+                    "simple": "date_closed"
+                },
+                "Ticket Opened Date": {
+                    "complex": null,
+                    "simple": "date_opened"
+                },
+                "Timezone": {
+                    "complex": null,
+                    "simple": "host_timezone"
+                },
+                "FraudWatch Abuse Type": {
+                    "complex": null,
+                    "simple": "type"
+                },
+                "FraudWatch Additional URLs": {
+                    "complex": null,
+                    "simple": "additional_urls"
+                }
+            }
+        },
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+
+            }
+        }
+    },
+    "name": "FraudWatch Incident - Incoming Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

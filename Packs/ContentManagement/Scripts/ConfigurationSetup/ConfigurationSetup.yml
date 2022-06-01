@@ -1,0 +1,47 @@
+args:
+- default: false
+  description: The war room entry ID of the configuration file.
+  isArray: false
+  name: configuration_file_entry_id
+  required: false
+  secret: false
+comment: Configurtaion loader for the Content Management pack.
+commonfields:
+  id: ConfigurationSetup
+  version: -1
+enabled: false
+name: ConfigurationSetup
+outputs:
+- contextPath: ConfigurationSetup.Jobs.name
+  description: The name of job to be created.
+  type: Unknown
+- contextPath: ConfigurationSetup.Lists.listname
+  description: The name of the list to be configured.
+  type: Unknown
+- contextPath: ConfigurationSetup.Lists.listdata
+  description: The data of the list to be configured.
+  type: Unknown
+- contextPath: ConfigurationSetup.CustomPacks.packid
+  description: The ID of the custom pack to install.
+  type: Unknown
+- contextPath: ConfigurationSetup.CustomPacks.packurl
+  description: The URL of the custom pack to install.
+  type: Unknown
+- contextPath: ConfigurationSetup.MarketplacePacks.packid
+  description: The ID of the marketplace pack to install.
+  type: Unknown
+- contextPath: ConfigurationSetup.MarketplacePacks.packversion
+  description: The version of the marketplace pack to install.
+  type: Unknown
+script: '-'
+subtype: python3
+system: false
+tags:
+- configuration
+- Content Management
+timeout: '0'
+type: python
+dockerimage: demisto/xsoar-tools:1.0.0.23423
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

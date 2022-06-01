@@ -1,0 +1,31 @@
+{
+    "id": "incident_wizcloudaccountname",
+    "version": -1,
+    "modified": "2021-12-30T16:05:21.387984146Z",
+    "name": "Wiz Cloud Account Name",
+    "ownerOnly": false,
+    "cliName": "wizcloudaccountname",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "Wiz Issue"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "description": "Name (if set) of your cloud Account",
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.0.0"
+}

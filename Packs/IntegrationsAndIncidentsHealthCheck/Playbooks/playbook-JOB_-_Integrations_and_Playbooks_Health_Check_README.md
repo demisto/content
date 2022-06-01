@@ -4,22 +4,23 @@ You should run this playbook as a scheduled job.  The playbook checks the health
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Integrations and Playbooks Health Check - Running Scripts
-* JOB - Integrations and Playbooks Health Check - Lists handling
+* JOB - Integrations and Incidents Health Check - Lists handling
+* Integrations and Incidents Health Check - Running Scripts
 
 ### Integrations
 This playbook does not use any integrations.
 
 ### Scripts
-* DeleteContext
+* RestartFailedTasks
 * CopyLinkedAnalystNotes
+* DeleteContext
 * FindSimilarIncidents
 
 ### Commands
+* setIncident
 * generateGeneralReport
 * closeInvestigation
 * send-mail
-* setIncident
 
 ## Playbook Inputs
 ---
@@ -28,6 +29,9 @@ This playbook does not use any integrations.
 | --- | --- | --- | --- |
 | SendHealthCheckReport | This input determines if the health check report should be sent automatically after running the playbook.<br/>True - Yes. |  | Optional |
 | EmailReportTo | In case the 'SendHealthCheckReport' input equals to 'True', the email address the report will be sent to. |  | Optional |
+| AutoCloseInvestigation | This input determines if the investigation should close automatically after the re-run of the scripts. | False | Optional |
+| playbookExclusion | Comma separated list of playbook names to exclude from restarting their failed tasks. |  | Optional |
+| AutoRestartFailedTasks | Whether to automatically run the RestartFailedTasks automation. | False | Optional |
 
 ## Playbook Outputs
 ---
@@ -35,4 +39,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![JOB - Integrations and Playbooks Health Check](https://raw.githubusercontent.com/demisto/content/70deb610bd081957d58323b197d4648dc504722c/Packs/IntegrationsAndIncidentsHealthCheck/doc_files/JOB_-_Integrations_and_Playbooks_Checkup.png)
+![JOB - Integrations and Incidents Health Check](https://raw.githubusercontent.com/demisto/content/540045cb42ae4da5e862424df5293e4502f6981e/Packs/IntegrationsAndIncidentsHealthCheck/doc_files/JOB_-_Integrations_and_Playbooks_Checkup.png)

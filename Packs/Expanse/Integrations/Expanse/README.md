@@ -1,14 +1,10 @@
 ## Overview
 ---
 
-The Expanse App for Demisto leverages the Expander API to retrieve network exposures and create incidents in Demisto.  This application also allows for IP, Domain, Certificate, and Behavior enrichment, retrieving assets and exposures information drawn from Expanse’s unparalleled view of the Internet.
+The Expanse App for Cortex XSOAR leverages the Expander API to retrieve network exposures and create incidents in Cortex XSOAR.  This application also allows for IP, Domain, Certificate, and Behavior enrichment, retrieving assets and exposures information drawn from Expanse’s unparalleled view of the Internet.
 This integration was integrated and tested with Expanse Events API v1, Assets API v2, and Behavior API v1.
 
-## Use Cases
----
-
-
-## Configure Expanse on Demisto
+## Configure Expanse on Cortex XSOAR
 ---
 
 1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
@@ -104,8 +100,8 @@ This integration was integrated and tested with Expanse Events API v1, Assets AP
     },
     "riskRule": {
         "id": "02b6c647-65f4-4b69-b4b0-64af34fd1b29",
-        "name": "Connections to and from Blacklisted Countries",
-        "description": "Connections to and from Blacklisted Countries (Belarus, Côte d'Ivoire, Cuba, Democratic Republic of the Congo, Iran, Iraq, Liberia, North Korea, South Sudan, Sudan, Syria, Zimbabwe)",
+        "name": "Connections to and from countries on block list",
+        "description": "Connections to and from countries on block list (Belarus, Côte d'Ivoire, Cuba, Democratic Republic of the Congo, Iran, Iraq, Liberia, North Korea, South Sudan, Sudan, Syria, Zimbabwe)",
         "additionalDataFields": "[]"
     },
     "internalAddress": "184.174.38.51",
@@ -135,7 +131,7 @@ This integration was integrated and tested with Expanse Events API v1, Assets AP
 
 ## Commands
 ---
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 1. ip
 2. domain
@@ -953,14 +949,6 @@ expanse-get-domains-for-certificate command
 |---|---|---|
 | california.us.expanse.co, dc.us.expanse.co | *.us.expanse.co | 2 |
 
-## Additional Information
----
-
-## Known Limitations
----
-
-## Troubleshooting
----
 
 ## Contact Details
 ---

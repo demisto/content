@@ -1,0 +1,619 @@
+id: Send Indicators - Cofense Triage v3
+version: -1
+name: Send Indicators - Cofense Triage v3
+description: Send Indicators playbook is used to create or update threat indicators in Cofense Triage that have been identified as malicious or suspicious by the analysis.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: bfb2276c-e236-419d-8597-930166e4a152
+    type: start
+    task:
+      id: bfb2276c-e236-419d-8597-930166e4a152
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "24"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": -705
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 7ca3cfcd-be9e-47be-8e52-6275684f74d8
+    type: regular
+    task:
+      id: 7ca3cfcd-be9e-47be-8e52-6275684f74d8
+      version: -1
+      name: List the Threat Indicators
+      description: "Retrieves the list of threat indicators based on the provided\
+        \ parameters. \nThreat indicators identify the threat level of an email's\
+        \ subject, sender, domains, URLs, and MD5 and SHA256 attachment hash signatures."
+      script: '|||cofense-threat-indicator-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      created_at: {}
+      fields_to_retrieve: {}
+      filter_by: {}
+      id: {}
+      page_number: {}
+      page_size: {}
+      sort_by: {}
+      threat_level: {}
+      threat_source:
+        complex:
+          root: inputs.Source
+      threat_type: {}
+      threat_value:
+        complex:
+          root: inputs.Value
+      updated_at: {}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 83c85a95-052a-403e-8693-7fd8fd991784
+    type: regular
+    task:
+      id: 83c85a95-052a-403e-8693-7fd8fd991784
+      version: -1
+      name: Update Threat Indicator
+      description: Updates a threat indicator based on the values provided in the
+        command arguments.
+      script: '|||cofense-threat-indicator-update'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      id:
+        complex:
+          root: Cofense.ThreatIndicator
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Cofense.ThreatIndicator.attributes.threat_source
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.Source
+                iscontext: true
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Cofense.ThreatIndicator.attributes.threat_value
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.Value
+                iscontext: true
+          accessor: id
+      threat_level:
+        complex:
+          root: inputs.Level
+      threat_source: {}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 925
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 080fdab3-0e5f-4a38-8054-5b5b3859ac6e
+    type: condition
+    task:
+      id: 080fdab3-0e5f-4a38-8054-5b5b3859ac6e
+      version: -1
+      name: Is Indicator available in Cofense?
+      description: Check whether the indicator is available in Cofense or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "21"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: hasLength
+          left:
+            value:
+              complex:
+                root: Cofense.ThreatIndicator
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: Cofense.ThreatIndicator.attributes.threat_value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: inputs.Value
+                      iscontext: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: Cofense.ThreatIndicator.attributes.threat_source
+                      iscontext: true
+                    right:
+                      value:
+                        simple: inputs.Source
+                      iscontext: true
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 405
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 62412a1b-54bd-4f30-8c02-d104ac4c2d0f
+    type: title
+    task:
+      id: 62412a1b-54bd-4f30-8c02-d104ac4c2d0f
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 285,
+          "y": 1100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: a83a1b93-69a4-4b5f-8c41-fdd4e3638826
+    type: regular
+    task:
+      id: a83a1b93-69a4-4b5f-8c41-fdd4e3638826
+      version: -1
+      name: Create Threat Indicator of type MD5
+      description: Creates a threat indicator based on the values provided in the
+        command arguments.
+      script: '|||cofense-threat-indicator-create'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      threat_level:
+        complex:
+          root: inputs.Level
+      threat_source:
+        complex:
+          root: inputs.Source
+      threat_type:
+        simple: MD5
+      threat_value:
+        complex:
+          root: inputs.Value
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 925
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: 3010aae2-973b-439b-8f5c-023608f5190b
+    type: regular
+    task:
+      id: 3010aae2-973b-439b-8f5c-023608f5190b
+      version: -1
+      name: Create Threat Indicator of type url
+      description: Creates a threat indicator based on the values provided in the
+        command arguments.
+      script: '|||cofense-threat-indicator-create'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      threat_level:
+        complex:
+          root: inputs.Level
+      threat_source:
+        complex:
+          root: inputs.Source
+      threat_type:
+        simple: URL
+      threat_value:
+        complex:
+          root: inputs.Value
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 925
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: 580eb69d-4d32-450f-8658-495d39925b6a
+    type: regular
+    task:
+      id: 580eb69d-4d32-450f-8658-495d39925b6a
+      version: -1
+      name: Create Threat Indicator of type SHA256
+      description: Creates a threat indicator based on the values provided in the
+        command arguments.
+      script: '|||cofense-threat-indicator-create'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      threat_level:
+        complex:
+          root: inputs.Level
+      threat_source:
+        complex:
+          root: inputs.Source
+      threat_type:
+        simple: SHA256
+      threat_value:
+        complex:
+          root: inputs.Value
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1360,
+          "y": 925
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
+    taskid: 3825d30f-d0ca-439d-8e67-cf0cfeba7a2c
+    type: condition
+    task:
+      id: 3825d30f-d0ca-439d-8e67-cf0cfeba7a2c
+      version: -1
+      name: Classify threats based on the type of the threat
+      description: Determine the type of the threat based on the value of the threat
+        indicator.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      md5:
+      - "14"
+      sha256:
+      - "20"
+      url:
+      - "19"
+    separatecontext: false
+    conditions:
+    - label: url
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.Type
+            iscontext: true
+          right:
+            value:
+              simple: url
+    - label: sha256
+      condition:
+      - - operator: match
+          left:
+            value:
+              complex:
+                root: inputs.Value
+            iscontext: true
+          right:
+            value:
+              simple: \b[0-9a-fA-F]{64}\b
+    - label: md5
+      condition:
+      - - operator: match
+          left:
+            value:
+              complex:
+                root: inputs.Value
+            iscontext: true
+          right:
+            value:
+              simple: \b[0-9a-fA-F]{32}\b
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 725
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: 365c9aca-4b26-4918-89df-62fbb30a61b1
+    type: condition
+    task:
+      id: 365c9aca-4b26-4918-89df-62fbb30a61b1
+      version: -1
+      name: Is the type of Indicator hash or url?
+      description: Determines whether the type of the threat indicator is other then
+        hash or url or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: inList
+          left:
+            value:
+              complex:
+                root: inputs.Type
+            iscontext: true
+          right:
+            value:
+              simple: url,hash
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 30
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "23":
+    id: "23"
+    taskid: 3b1fdb46-f53d-4fc9-85b7-06accc23bcd8
+    type: condition
+    task:
+      id: 3b1fdb46-f53d-4fc9-85b7-06accc23bcd8
+      version: -1
+      name: Is the indicator unique?
+      description: Check whether the indicator is already updated or created.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "22"
+      "no":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "no"
+      condition:
+      - - operator: hasLength
+          left:
+            value:
+              complex:
+                root: Cofense.ThreatIndicator
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: Cofense.ThreatIndicator.attributes.threat_value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: inputs.Value
+                      iscontext: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: Cofense.ThreatIndicator.attributes.threat_source
+                      iscontext: true
+                    right:
+                      value:
+                        simple: inputs.Source
+                      iscontext: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: Cofense.ThreatIndicator.attributes.threat_level
+                      iscontext: true
+                    right:
+                      value:
+                        simple: inputs.Level
+                      iscontext: true
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": -230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "24":
+    id: "24"
+    taskid: 236d0087-be94-4708-8b6a-cdba1dbcb73b
+    type: condition
+    task:
+      id: 236d0087-be94-4708-8b6a-cdba1dbcb73b
+      version: -1
+      name: Is Threat Indicator Benign?
+      description: Determine whether the threat level of indicator is benign.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "23"
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.Level
+            iscontext: true
+          right:
+            value:
+              simple: Benign
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": -550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "24_10_yes": 0.13
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1870,
+        "width": 1690,
+        "x": 50,
+        "y": -705
+      }
+    }
+  }
+inputs:
+- key: Value
+  value: {}
+  required: true
+  description: The indicator value.
+  playbookInputQuery:
+- key: Level
+  value: {}
+  required: true
+  description: Represents the status of the indicator.
+  playbookInputQuery:
+- key: Type
+  value: {}
+  required: true
+  description: Type of the indicator.
+  playbookInputQuery:
+- key: Source
+  value: {}
+  required: true
+  description: The source reporting the indicator.
+  playbookInputQuery:
+outputs: []
+tests:
+- Cofense Triage v3-Test
+fromversion: 6.0.0

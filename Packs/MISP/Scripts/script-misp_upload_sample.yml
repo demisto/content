@@ -29,7 +29,7 @@ script: >
 type: python
 subtype: python2
 tags: []
-comment: Deprecated. Upload malicious file sample to MISP
+comment: Deprecated. No available replacement. Upload malicious file sample to MISP.
 enabled: true
 args:
 - name: fileEntryID
@@ -55,3 +55,4 @@ tests:
 - MISP V2 Test
 deprecated: true
 fromversion: 5.0.0
+dockerimage: demisto/python:2.7.18.20958

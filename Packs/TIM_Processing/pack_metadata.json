@@ -2,7 +2,7 @@
     "name": "TIM - Indicator Auto-Processing",
     "description": "Too many threat feeds? This Content Pack automates the processing of indicators at scale, significantly reducing busywork for your analysts.",
     "support": "xsoar",
-    "currentVersion": "1.1.5",
+    "currentVersion": "1.1.12",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -82,10 +82,6 @@
             "mandatory": false,
             "display_name": "Palo Alto Networks WildFire"
         },
-        "XFE": {
-            "mandatory": false,
-            "display_name": "IBM X-Force Exchange"
-        },
         "ReversingLabs_Titanium_Cloud": {
             "mandatory": false,
             "display_name": "ReversingLabs Titanium Cloud"
@@ -116,7 +112,7 @@
         },
         "illuminate": {
             "mandatory": false,
-            "display_name": "illuminate"
+            "display_name": "Analyst1"
         },
         "Symantec_Deepsight": {
             "mandatory": false,
@@ -238,5 +234,8 @@
             "mandatory": false,
             "display_name": "ReversingLabs A1000"
         }
-    }
+    },
+    "marketplaces": [
+        "xsoar"
+    ]
 }

@@ -1,8 +1,6 @@
 from typing import Dict, List
 import demistomock as demisto
 from CommonServerPython import *
-from CommonServerUserPython import *
-
 
 special = ['n', 't', '\\', '"', '\'', '7', 'r']
 
@@ -24,7 +22,15 @@ def is_valid_args(args: Dict):
     for _key, value in args.items():
         if _key in array_args:
             try:
-                _ = bytes(value, "utf-8").decode("unicode_escape")
+                if _key == 'id':
+                    if not isinstance(value, (int, str, list)):
+                        error_msg.append(
+                            f'Error while parsing the incident id with the value: {value}. The given type: '
+                            f'{type(value)} is not a valid type for an ID. The supported id types are: int, list and str')
+                    elif isinstance(value, str):
+                        _ = bytes(value, "utf-8").decode("unicode_escape")
+                else:
+                    _ = bytes(value, "utf-8").decode("unicode_escape")
             except UnicodeDecodeError as ex:
                 error_msg.append(f'Error while parsing the argument: "{_key}" '
                                  f'\nError:\n- "{str(ex)}"')
@@ -35,30 +41,77 @@ def is_valid_args(args: Dict):
     return True
 
 
-def search_incidents(args: Dict):
-    if is_valid_args(args):
-        res: List = demisto.executeCommand('getIncidents', args)
-        if is_error(res):
-            raise DemistoException(get_error(res))
-        incident_found: bool = check_if_found_incident(res)
-        if incident_found is False:
-            return 'Incidents not found.', {}, {}
-        else:
-            data: Dict = res[0]['Contents']['data']
-            context_entry: Dict = {'foundIncidents': data}
-            headers: List[str] = ['id', 'name', 'severity', 'status', 'owner', 'created', 'closed']
-            md: str = tableToMarkdown(name="Incidents found", t=data, headers=headers)
-            return md, context_entry, res
+def apply_filters(incidents: List, args: Dict):
+    names_to_filter = set(argToList(args.get('name')))
+    types_to_filter = set(argToList(args.get('type')))
+    filtered_incidents = []
+    for incident in incidents:
+        if names_to_filter and incident['name'] not in names_to_filter:
+            continue
+        if types_to_filter and incident['type'] not in types_to_filter:
+            continue
+
+        filtered_incidents.append(incident)
+
+    return filtered_incidents
 
 
-def main():
+def add_incidents_link(data: List):
+    server_url = demisto.demistoUrls().get('server')
+    for incident in data:
+        incident_link = urljoin(server_url, f'#/Details/{incident.get("id")}')
+        incident['incidentLink'] = incident_link
+    return data
+
+
+def search_incidents(args: Dict):   # pragma: no cover
+    if not is_valid_args(args):
+        return
+
+    if fromdate := arg_to_datetime(args.get('fromdate')):
+        from_date = fromdate.isoformat()
+        args['fromdate'] = from_date
+    if todate := arg_to_datetime(args.get('todate')):
+        to_date = todate.isoformat()
+        args['todate'] = to_date
+
+    if args.get('trimevents') == '0':
+        args.pop('trimevents')
+
+    # handle list of ids
+    if args.get('id'):
+        args['id'] = ','.join(argToList(args.get('id'), transform=str))
+
+    res: List = execute_command('getIncidents', args, extract_contents=False)
+    incident_found: bool = check_if_found_incident(res)
+    if incident_found is False:
+        return 'Incidents not found.', {}, {}
+
+    data = apply_filters(res[0]['Contents']['data'], args)
+    data = add_incidents_link(data)
+    headers: List[str] = ['id', 'name', 'severity', 'status', 'owner', 'created', 'closed', 'incidentLink']
+    md: str = tableToMarkdown(name="Incidents found", t=data, headers=headers)
+    return md, data, res
+
+
+def main():  # pragma: no cover
     args: Dict = demisto.args()
     try:
         readable_output, outputs, raw_response = search_incidents(args)
-        return_outputs(readable_output, outputs, raw_response)
+        if search_results_label := args.get('searchresultslabel'):
+            for output in outputs:
+                output['searchResultsLabel'] = search_results_label
+        results = CommandResults(
+            outputs_prefix='foundIncidents',
+            outputs_key_field='id',
+            readable_output=readable_output,
+            outputs=outputs,
+            raw_response=raw_response
+        )
+        return_results(results)
     except DemistoException as error:
         return_error(str(error), error)
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ('__main__', '__builtin__', 'builtins'):  # pragma: no cover
     main()

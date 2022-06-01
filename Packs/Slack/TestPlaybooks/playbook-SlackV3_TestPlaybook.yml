@@ -1,0 +1,792 @@
+id: SlackV3 TestPB
+version: -1
+name: SlackV3 TestPB
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 14229d05-7018-47c0-8488-bbf890f47f56
+    type: start
+    task:
+      id: 14229d05-7018-47c0-8488-bbf890f47f56
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: bcfea214-19e4-41cb-891c-056a10cce033
+    type: regular
+    task:
+      id: bcfea214-19e4-41cb-891c-056a10cce033
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 7fdd213a-de40-4f6c-8020-ed1abd0d16e9
+    type: regular
+    task:
+      id: 7fdd213a-de40-4f6c-8020-ed1abd0d16e9
+      version: -1
+      name: GetTime
+      description: |
+        Retrieves the current date and time.
+      scriptName: GetTime
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 1697210f-0371-4813-81d7-208431fa6902
+    type: regular
+    task:
+      id: 1697210f-0371-4813-81d7-208431fa6902
+      version: -1
+      name: mirror-investigation
+      description: Mirrors the investigation between Slack and the Demisto War Room.
+      script: SlackV3|||mirror-investigation
+      type: regular
+      iscommand: true
+      brand: SlackV3
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      channelName:
+        complex:
+          root: TimeNowUnix
+          transformers:
+          - operator: Stringify
+      direction:
+        simple: FromDemisto
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: c2ca3b80-1539-485a-8769-3fd41eb32692
+    type: regular
+    task:
+      id: c2ca3b80-1539-485a-8769-3fd41eb32692
+      version: -1
+      name: send-notification
+      description: Sends a message to a user, group, or channel.
+      script: SlackV3|||send-notification
+      type: regular
+      iscommand: true
+      brand: SlackV3
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      channel:
+        complex:
+          root: TimeNowUnix
+          transformers:
+          - operator: Stringify
+      message:
+        simple: Hey hey heeeeeeyyyyy
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 969c48c2-3761-4cca-8eeb-b0b39e24cdd0
+    type: regular
+    task:
+      id: 969c48c2-3761-4cca-8eeb-b0b39e24cdd0
+      version: -1
+      name: slack-edit-message
+      description: Edit an existing slack message.
+      script: SlackV3|||slack-edit-message
+      type: regular
+      iscommand: true
+      brand: SlackV3
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      channel:
+        complex:
+          root: TimeNowUnix
+          transformers:
+          - operator: Stringify
+      message:
+        simple: This is changed
+      threadID:
+        simple: ${Slack.Thread.ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: c854d2bd-f211-4315-84d8-4e4954678020
+    type: regular
+    task:
+      id: c854d2bd-f211-4315-84d8-4e4954678020
+      version: -1
+      name: slack-pin-message
+      description: Pins a selected message to the given channel.
+      script: SlackV3|||slack-pin-message
+      type: regular
+      iscommand: true
+      brand: SlackV3
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      channel:
+        complex:
+          root: TimeNowUnix
+          transformers:
+          - operator: Stringify
+      threadID:
+        simple: ${Slack.Thread.ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: fdd95f48-f590-4354-8b2c-c032ff190c1d
+    type: regular
+    task:
+      id: fdd95f48-f590-4354-8b2c-c032ff190c1d
+      version: -1
+      name: send-notification
+      description: Sends a message to a user, group, or channel.
+      script: SlackV3|||send-notification
+      type: regular
+      iscommand: true
+      brand: SlackV3
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      blocks:
+        simple: "[\n\t\t{\n\t\t\t\"type\": \"section\",\n\t\t\t\"text\": {\n\t\t\t\t\"type\":
+          \"mrkdwn\",\n\t\t\t\t\"text\": \"This is a test. \"\n\t\t\t},\n\t\t\t\"accessory\":
+          {\n\t\t\t\t\"type\": \"button\",\n\t\t\t\t\"text\": {\n\t\t\t\t\t\"type\":
+          \"plain_text\",\n\t\t\t\t\t\"text\": \"Button\",\n\t\t\t\t\t\"emoji\": true\n\t\t\t\t},\n\t\t\t\t\"value\":
+          \"testing\"\n\t\t\t}\n\t\t}\n\t]"
+      channel:
+        complex:
+          root: TimeNowUnix
+          transformers:
+          - operator: Stringify
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 51e83618-1cd3-406a-830c-759cf2a21f46
+    type: regular
+    task:
+      id: 51e83618-1cd3-406a-830c-759cf2a21f46
+      version: -1
+      name: VerifyHumanReadableContains
+      description: Verify given entry contains a string
+      scriptName: VerifyHumanReadableContains
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      humanReadableEntryId:
+        simple: ${lastCompletedTaskEntries}
+      substring:
+        simple: Message sent to Slack successfully
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 95fb53e2-220d-49ab-8f02-2ec034f52496
+    type: regular
+    task:
+      id: 95fb53e2-220d-49ab-8f02-2ec034f52496
+      version: -1
+      name: FileCreateAndUpload
+      description: |
+        Will create a file (using the given data input or entry ID) and upload it to current investigation war room.
+      scriptName: FileCreateAndUpload
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      data:
+        simple: This is a test
+      filename:
+        simple: test
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 9463ccd7-0fd3-460a-8ee0-71ebd6f33f37
+    type: regular
+    task:
+      id: 9463ccd7-0fd3-460a-8ee0-71ebd6f33f37
+      version: -1
+      name: slack-send-file
+      description: Sends a file to a user, channel, or group. If not specified, the
+        file is sent to the mirrored investigation channel (if the channel exists).
+      script: SlackV3|||slack-send-file
+      type: regular
+      iscommand: true
+      brand: SlackV3
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      channel:
+        complex:
+          root: TimeNowUnix
+          transformers:
+          - operator: Stringify
+      file:
+        simple: ${File.EntryID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 6e241b47-2bf5-489b-86f9-0e8c10cb8b67
+    type: regular
+    task:
+      id: 6e241b47-2bf5-489b-86f9-0e8c10cb8b67
+      version: -1
+      name: VerifyHumanReadableContains
+      description: Verify given entry contains a string
+      scriptName: VerifyHumanReadableContains
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      humanReadableEntryId:
+        simple: ${lastCompletedTaskEntries}
+      substring:
+        simple: File sent to Slack successfully.
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1990
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: a8e810a1-9afb-403c-8a80-d368c9ece48d
+    type: regular
+    task:
+      id: a8e810a1-9afb-403c-8a80-d368c9ece48d
+      version: -1
+      name: close-channel
+      description: Archives a Slack channel.
+      script: SlackV3|||close-channel
+      type: regular
+      iscommand: true
+      brand: SlackV3
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      channel:
+        complex:
+          root: TimeNowUnix
+          transformers:
+          - operator: Stringify
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: dd55494e-2a0b-4dda-8f53-723e3856d79e
+    type: regular
+    task:
+      id: dd55494e-2a0b-4dda-8f53-723e3856d79e
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 65a50010-08e4-4640-8cef-027c883ed28c
+    type: regular
+    task:
+      id: 65a50010-08e4-4640-8cef-027c883ed28c
+      version: -1
+      name: GetTime
+      description: |
+        Retrieves the current date and time.
+      scriptName: GetTime
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 6ec7da54-4342-4e14-80fe-e3a0035b7e39
+    type: regular
+    task:
+      id: 6ec7da54-4342-4e14-80fe-e3a0035b7e39
+      version: -1
+      name: slack-create-channel
+      description: Creates a channel in Slack.
+      script: SlackV3|||slack-create-channel
+      type: regular
+      iscommand: true
+      brand: SlackV3
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      name:
+        complex:
+          root: TimeNowUnix
+          transformers:
+          - operator: Stringify
+      users:
+        simple: cortex_xsoar
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 5b56ce73-dc34-4460-882b-fd7fcd0a2b6c
+    type: regular
+    task:
+      id: 5b56ce73-dc34-4460-882b-fd7fcd0a2b6c
+      version: -1
+      name: slack-get-user-details
+      description: Get details about a specified user.
+      script: SlackV3|||slack-get-user-details
+      type: regular
+      iscommand: true
+      brand: SlackV3
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      user:
+        simple: TestingUser
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 4aed847e-67fe-4309-809a-e65052562e1b
+    type: regular
+    task:
+      id: 4aed847e-67fe-4309-809a-e65052562e1b
+      version: -1
+      name: slack-invite-to-channel
+      description: Invites users to join a channel.
+      script: SlackV3|||slack-invite-to-channel
+      type: regular
+      iscommand: true
+      brand: SlackV3
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      channel:
+        complex:
+          root: TimeNowUnix
+          transformers:
+          - operator: Stringify
+      users:
+        simple: ${Slack.User.Username}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 8a9be988-6810-4edc-8838-4aef36021387
+    type: regular
+    task:
+      id: 8a9be988-6810-4edc-8838-4aef36021387
+      version: -1
+      name: GetTime
+      description: |
+        Retrieves the current date and time.
+      scriptName: GetTime
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      contextKey:
+        simple: TimeNow2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 59fe9d8f-0ff3-42be-8d43-cc8fbd5ded94
+    type: regular
+    task:
+      id: 59fe9d8f-0ff3-42be-8d43-cc8fbd5ded94
+      version: -1
+      name: slack-rename-channel
+      description: Renames a channel in Slack.
+      script: SlackV3|||slack-rename-channel
+      type: regular
+      iscommand: true
+      brand: SlackV3
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      channel:
+        complex:
+          root: TimeNowUnix
+          transformers:
+          - operator: Stringify
+      name:
+        complex:
+          root: TimeNow2TimeNowUnix
+          transformers:
+          - operator: Stringify
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: cabf2dea-0d09-4bd1-8f08-cf5eebb7e6c3
+    type: regular
+    task:
+      id: cabf2dea-0d09-4bd1-8f08-cf5eebb7e6c3
+      version: -1
+      name: slack-kick-from-channel
+      description: Removes users from the specified channel.
+      script: SlackV3|||slack-kick-from-channel
+      type: regular
+      iscommand: true
+      brand: SlackV3
+    scriptarguments:
+      channel:
+        complex:
+          root: TimeNow2TimeNowUnix
+          transformers:
+          - operator: Stringify
+      users:
+        simple: TestingUser
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 3625,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+fromversion: 5.0.0
+inputs: []
+outputs: []

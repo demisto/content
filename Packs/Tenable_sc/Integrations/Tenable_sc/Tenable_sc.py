@@ -882,7 +882,7 @@ def get_scan_report_command():
         'Description': scan_results['description'],
         'Policy': scan_results['details'],
         'Group': scan_results.get('ownerGroup', {}).get('name'),
-        'Checks': scan_results['completedChecks'],
+        'Checks': scan_results.get('completedChecks'),
         'StartTime': timestamp_to_utc(scan_results['startTime']),
         'EndTime': timestamp_to_utc(scan_results['finishTime']),
         'Duration': scan_duration_to_demisto_format(scan_results['scanDuration']),
@@ -986,6 +986,8 @@ def get_vulnearbilites(scan_results_id):
 
     analysis = get_analysis(query['response']['id'], scan_results_id)
 
+    delete_query(query.get('response', {}).get('id'))
+
     if not analysis or 'response' not in analysis:
         return 'Could not get vulnerabilites analysis'
 
@@ -1035,6 +1037,13 @@ def create_query(scan_id, tool, query_filters=None):
         body['filters'] = query_filters
 
     return send_request(path, method='post', body=body)
+
+
+def delete_query(query_id):
+    if not query_id:
+        return_error('query id returned None')
+    path = 'query/' + str(query_id)
+    send_request(path, method='delete')
 
 
 def get_analysis(query, scan_results_id):
@@ -1168,7 +1177,8 @@ def get_vulnerability_command():
 
     context = {}
 
-    context['TenableSC.ScanResults(val.ID===obj.ID)'] = createContext(scan_result, removeNull=True)
+    context['TenableSC.ScanResults.Vulnerability(val.ID===obj.ID)'] = createContext(scan_result['Vulnerability'], removeNull=True)
+
     if len(cves_output) > 0:
         context['CVE(val.ID===obj.ID)'] = createContext(cves_output)
 

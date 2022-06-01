@@ -7,7 +7,7 @@ This is automatic and changes can be configured to your needs.
 | --- | --- |
 | Script Type | python |
 | Tags | field-change-triggered, example |
-| Demisto Version | 4.1.0+ |
+| Cortex XSOAR Version | 4.1.0+ |
 
 ## Inputs
 ---

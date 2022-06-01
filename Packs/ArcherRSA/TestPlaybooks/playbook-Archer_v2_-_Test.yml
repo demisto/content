@@ -5,15 +5,14 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: eac44f95-e9a0-4a17-85cb-e79b1d53c2eb
+    taskid: 0336b689-94a7-4759-89b0-b870c76ce18d
     type: start
     task:
-      id: eac44f95-e9a0-4a17-85cb-e79b1d53c2eb
+      id: 0336b689-94a7-4759-89b0-b870c76ce18d
       version: -1
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -32,10 +31,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: e09675d6-3c12-401a-8b05-7fae1a86d951
+    taskid: 3c0c7f2a-230b-4032-8fda-0b5f61c6bc5b
     type: regular
     task:
-      id: e09675d6-3c12-401a-8b05-7fae1a86d951
+      id: 3c0c7f2a-230b-4032-8fda-0b5f61c6bc5b
       version: -1
       name: DeleteContext
       script: DeleteContext
@@ -63,10 +62,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: 333541de-5c29-4f2f-83f4-85b75351e009
+    taskid: 431aaff8-2157-44e7-8136-77be27c88980
     type: regular
     task:
-      id: 333541de-5c29-4f2f-83f4-85b75351e009
+      id: 431aaff8-2157-44e7-8136-77be27c88980
       version: -1
       name: archer-search-applications
       script: '|||archer-search-applications'
@@ -94,10 +93,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: a490c90d-885a-4944-8a1b-635b9a0cbbbb
+    taskid: 2182dc5f-3f34-4d7e-8752-115e08dc6d3c
     type: condition
     task:
-      id: a490c90d-885a-4944-8a1b-635b9a0cbbbb
+      id: 2182dc5f-3f34-4d7e-8752-115e08dc6d3c
       version: -1
       name: Verify Outputs
       type: condition
@@ -164,10 +163,10 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: c8da5ffb-a254-4f40-8c26-4257c687398a
+    taskid: 0369c9c1-478e-4fd0-854f-04ccfec4a960
     type: regular
     task:
-      id: c8da5ffb-a254-4f40-8c26-4257c687398a
+      id: 0369c9c1-478e-4fd0-854f-04ccfec4a960
       version: -1
       name: archer-get-application-fields
       script: '|||archer-get-application-fields'
@@ -199,10 +198,10 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: eed9c7b6-5e99-470b-86e4-ce59a508e4a4
+    taskid: b1fe5242-3482-40bc-836d-22764fca9563
     type: condition
     task:
-      id: eed9c7b6-5e99-470b-86e4-ce59a508e4a4
+      id: b1fe5242-3482-40bc-836d-22764fca9563
       version: -1
       name: Verify Outputs
       type: condition
@@ -261,10 +260,10 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: 072140e7-6198-42be-8376-57582333814e
+    taskid: 3733f6ba-ff22-4843-8ac2-e8058d149137
     type: regular
     task:
-      id: 072140e7-6198-42be-8376-57582333814e
+      id: 3733f6ba-ff22-4843-8ac2-e8058d149137
       version: -1
       name: archer-get-field
       script: '|||archer-get-field'
@@ -292,10 +291,10 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: 3ec5098b-638b-4012-8217-d5e9d22655bb
+    taskid: 52ff1083-15b0-49c3-80ba-2fa9bb5ecdb6
     type: condition
     task:
-      id: 3ec5098b-638b-4012-8217-d5e9d22655bb
+      id: 52ff1083-15b0-49c3-80ba-2fa9bb5ecdb6
       version: -1
       name: Verify Outputs
       type: condition
@@ -354,10 +353,10 @@ tasks:
     quietmode: 0
   "8":
     id: "8"
-    taskid: 7185aa81-ca94-4d34-823a-858f6227940c
+    taskid: 812101ec-208e-484f-8f6e-fc091f2f7b25
     type: regular
     task:
-      id: 7185aa81-ca94-4d34-823a-858f6227940c
+      id: 812101ec-208e-484f-8f6e-fc091f2f7b25
       version: -1
       name: archer-get-mapping-by-level
       script: '|||archer-get-mapping-by-level'
@@ -387,10 +386,10 @@ tasks:
     quietmode: 0
   "9":
     id: "9"
-    taskid: a92cbd63-eeb8-49dc-88ab-c56779739c84
+    taskid: 7cfdbb9d-fcbf-41e2-84fe-2bf29138b9ef
     type: condition
     task:
-      id: a92cbd63-eeb8-49dc-88ab-c56779739c84
+      id: 7cfdbb9d-fcbf-41e2-84fe-2bf29138b9ef
       version: -1
       name: Verify Outputs
       type: condition
@@ -449,10 +448,10 @@ tasks:
     quietmode: 0
   "10":
     id: "10"
-    taskid: b004b8e8-ef89-4b86-88aa-71148121beca
+    taskid: aa113199-4041-46e0-8881-b6cedd81f463
     type: regular
     task:
-      id: b004b8e8-ef89-4b86-88aa-71148121beca
+      id: aa113199-4041-46e0-8881-b6cedd81f463
       version: -1
       name: archer-get-record
       script: '|||archer-get-record'
@@ -463,14 +462,14 @@ tasks:
       '#none#':
       - "11"
     scriptarguments:
-      retry-count:
-        simple: "4"
       applicationId:
         simple: "75"
       contentId:
         complex:
           root: Archer
           accessor: Record.Id
+      retry-count:
+        simple: "4"
     separatecontext: false
     view: |-
       {
@@ -486,10 +485,10 @@ tasks:
     quietmode: 0
   "11":
     id: "11"
-    taskid: 6664ed2e-0b1a-4ff8-8c7e-5e3611bf6e29
+    taskid: f549113b-84e8-4d41-8d3f-0e747ef48a51
     type: condition
     task:
-      id: 6664ed2e-0b1a-4ff8-8c7e-5e3611bf6e29
+      id: f549113b-84e8-4d41-8d3f-0e747ef48a51
       version: -1
       name: Verify Outputs
       type: condition
@@ -521,10 +520,10 @@ tasks:
     quietmode: 0
   "12":
     id: "12"
-    taskid: 511c4311-98c5-412a-843c-fa108eb31067
+    taskid: 7adcf581-0e13-4378-8408-d81aef97619a
     type: regular
     task:
-      id: 511c4311-98c5-412a-843c-fa108eb31067
+      id: 7adcf581-0e13-4378-8408-d81aef97619a
       version: -1
       name: ArcherCreateRecordExample
       description: This script is an example script of how to create Incident in Archer.
@@ -559,10 +558,10 @@ tasks:
     quietmode: 0
   "13":
     id: "13"
-    taskid: 0726bbac-1dc1-4ba3-80b6-5da46e78f702
+    taskid: aba3a65e-c0ea-4ddd-86dd-0ea72c2b9cc8
     type: regular
     task:
-      id: 0726bbac-1dc1-4ba3-80b6-5da46e78f702
+      id: aba3a65e-c0ea-4ddd-86dd-0ea72c2b9cc8
       version: -1
       name: archer-delete-record
       script: '|||archer-delete-record'
@@ -573,13 +572,13 @@ tasks:
       '#none#':
       - "15"
     scriptarguments:
-      retry-count:
-        simple: "4"
       applicationId: {}
       contentId:
         complex:
           root: Archer
           accessor: Record.Id
+      retry-count:
+        simple: "4"
     separatecontext: false
     view: |-
       {
@@ -595,10 +594,10 @@ tasks:
     quietmode: 0
   "14":
     id: "14"
-    taskid: d85648f7-fada-4bac-8832-5c05c8d1f352
+    taskid: 9c0da6e0-3ca9-4fe9-8efe-31a09aaa7a5a
     type: regular
     task:
-      id: d85648f7-fada-4bac-8832-5c05c8d1f352
+      id: 9c0da6e0-3ca9-4fe9-8efe-31a09aaa7a5a
       version: -1
       name: archer-update-record
       script: '|||archer-update-record'
@@ -632,10 +631,10 @@ tasks:
     quietmode: 0
   "15":
     id: "15"
-    taskid: 65ab3b9b-8988-4ca6-8d8b-bdb9b51c561b
+    taskid: 6771d856-2740-4b24-8e2f-ee0e6f682377
     type: regular
     task:
-      id: 65ab3b9b-8988-4ca6-8d8b-bdb9b51c561b
+      id: 6771d856-2740-4b24-8e2f-ee0e6f682377
       version: -1
       name: archer-execute-statistic-search-by-report
       script: '|||archer-execute-statistic-search-by-report'
@@ -668,10 +667,10 @@ tasks:
     quietmode: 0
   "17":
     id: "17"
-    taskid: e015be7d-b9cb-4d1f-86dd-f9f99451cdb6
+    taskid: 192e7036-86d8-400e-84aa-081f969441c9
     type: regular
     task:
-      id: e015be7d-b9cb-4d1f-86dd-f9f99451cdb6
+      id: 192e7036-86d8-400e-84aa-081f969441c9
       version: -1
       name: archer-get-search-options-by-guid
       script: '|||archer-get-search-options-by-guid'
@@ -701,10 +700,10 @@ tasks:
     quietmode: 0
   "18":
     id: "18"
-    taskid: 5ea27291-603b-46a8-8033-46da203c5e4a
+    taskid: 4275b879-258d-4bd0-8867-fb4492d3dca9
     type: regular
     task:
-      id: 5ea27291-603b-46a8-8033-46da203c5e4a
+      id: 4275b879-258d-4bd0-8867-fb4492d3dca9
       version: -1
       name: archer-reset-cache
       script: '|||archer-reset-cache'
@@ -729,10 +728,10 @@ tasks:
     quietmode: 0
   "19":
     id: "19"
-    taskid: 161a9a7f-f57a-4952-806a-db8691f83b6d
+    taskid: ee61b890-cf4c-40fa-8a05-e3c012a2213d
     type: regular
     task:
-      id: 161a9a7f-f57a-4952-806a-db8691f83b6d
+      id: ee61b890-cf4c-40fa-8a05-e3c012a2213d
       version: -1
       name: archer-get-valuelist
       script: '|||archer-get-valuelist'
@@ -762,10 +761,10 @@ tasks:
     quietmode: 0
   "20":
     id: "20"
-    taskid: d7c7e978-d7d8-4c49-899a-f6cd968a27f4
+    taskid: 5c306753-e6ca-4c57-8264-c6440bdf0ab6
     type: condition
     task:
-      id: d7c7e978-d7d8-4c49-899a-f6cd968a27f4
+      id: 5c306753-e6ca-4c57-8264-c6440bdf0ab6
       version: -1
       name: Verify Outputs
       type: condition
@@ -808,10 +807,10 @@ tasks:
     quietmode: 0
   "22":
     id: "22"
-    taskid: 08000134-8584-498d-8399-d7fa4270df18
+    taskid: 9722f0f8-a0a6-4854-842c-a2fda41e62f5
     type: regular
     task:
-      id: 08000134-8584-498d-8399-d7fa4270df18
+      id: 9722f0f8-a0a6-4854-842c-a2fda41e62f5
       version: -1
       name: archer-get-file
       script: '|||archer-get-file'
@@ -839,10 +838,10 @@ tasks:
     quietmode: 0
   "23":
     id: "23"
-    taskid: 7e146c04-ef7d-4271-8628-34eb32fdf8fd
+    taskid: 84e4aa99-7d67-402b-84a8-9bf2951e0811
     type: regular
     task:
-      id: 7e146c04-ef7d-4271-8628-34eb32fdf8fd
+      id: 84e4aa99-7d67-402b-84a8-9bf2951e0811
       version: -1
       name: archer-list-users
       script: '|||archer-list-users'
@@ -871,10 +870,10 @@ tasks:
     quietmode: 0
   "24":
     id: "24"
-    taskid: 612c1f46-da79-471d-8581-481bac54676f
+    taskid: ef405fa8-a3be-4bb5-839e-57ad09c95c59
     type: condition
     task:
-      id: 612c1f46-da79-471d-8581-481bac54676f
+      id: ef405fa8-a3be-4bb5-839e-57ad09c95c59
       version: -1
       name: Verify Outputs
       type: condition
@@ -925,10 +924,10 @@ tasks:
     quietmode: 0
   "25":
     id: "25"
-    taskid: dae939e6-a86d-4e84-8e8f-d8e7a1923afc
+    taskid: 3d01fcdf-e965-4843-83d0-daa0e3ef9d68
     type: regular
     task:
-      id: dae939e6-a86d-4e84-8e8f-d8e7a1923afc
+      id: 3d01fcdf-e965-4843-83d0-daa0e3ef9d68
       version: -1
       name: archer-search-records
       script: '|||archer-search-records'
@@ -976,10 +975,10 @@ tasks:
     quietmode: 0
   "26":
     id: "26"
-    taskid: f158a43b-0a8b-49cb-8ff7-8179db335755
+    taskid: a4fde6a9-6c6a-4387-8d6c-65059401776b
     type: condition
     task:
-      id: f158a43b-0a8b-49cb-8ff7-8179db335755
+      id: a4fde6a9-6c6a-4387-8d6c-65059401776b
       version: -1
       name: Verify Outputs
       type: condition
@@ -1016,10 +1015,10 @@ tasks:
     quietmode: 0
   "27":
     id: "27"
-    taskid: 1e03656f-da3b-4e5d-878c-a9a537e1d85c
+    taskid: 4bb00617-c1d5-4239-88ac-751d192c6a28
     type: regular
     task:
-      id: 1e03656f-da3b-4e5d-878c-a9a537e1d85c
+      id: 4bb00617-c1d5-4239-88ac-751d192c6a28
       version: -1
       name: archer-search-records-by-report
       script: '|||archer-search-records-by-report'
@@ -1049,22 +1048,21 @@ tasks:
     quietmode: 0
   "29":
     id: "29"
-    taskid: 3f1a351d-64c4-4ca9-8da5-08dda7d1d42b
+    taskid: a9e07ce0-6e98-4917-8801-14394b480fae
     type: title
     task:
-      id: 3f1a351d-64c4-4ca9-8da5-08dda7d1d42b
+      id: a9e07ce0-6e98-4917-8801-14394b480fae
       version: -1
       name: Test Done
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 5795
+          "y": 6640
         }
       }
     note: false
@@ -1074,10 +1072,10 @@ tasks:
     quietmode: 0
   "30":
     id: "30"
-    taskid: c7c0e911-9d2c-454c-8bbf-968f0da1f9a8
+    taskid: 8e721b8a-ee13-418b-8bfa-5ee9e43ec1e8
     type: regular
     task:
-      id: c7c0e911-9d2c-454c-8bbf-968f0da1f9a8
+      id: 8e721b8a-ee13-418b-8bfa-5ee9e43ec1e8
       version: -1
       name: archer-search-application by Id
       script: '|||archer-search-applications'
@@ -1110,10 +1108,10 @@ tasks:
     quietmode: 0
   "31":
     id: "31"
-    taskid: 5b80cba3-61d4-49eb-86e0-013509c9f379
+    taskid: b0393bdd-362d-4ba6-8ec9-3fa0768bd12e
     type: condition
     task:
-      id: 5b80cba3-61d4-49eb-86e0-013509c9f379
+      id: b0393bdd-362d-4ba6-8ec9-3fa0768bd12e
       version: -1
       name: Verify Outputs
       type: condition
@@ -1148,10 +1146,10 @@ tasks:
     quietmode: 0
   "32":
     id: "32"
-    taskid: 0c1c46ad-e46d-45f3-8098-9abf10de138a
+    taskid: f68e8b43-ca52-4737-89b2-486b30330c1c
     type: regular
     task:
-      id: 0c1c46ad-e46d-45f3-8098-9abf10de138a
+      id: f68e8b43-ca52-4737-89b2-486b30330c1c
       version: -1
       name: archer-get-record
       script: '|||archer-get-record'
@@ -1162,8 +1160,6 @@ tasks:
       '#none#':
       - "31"
     scriptarguments:
-      retry-count:
-        simple: "4"
       applicationId:
         simple: "75"
       contentId:
@@ -1175,6 +1171,8 @@ tasks:
         complex:
           root: Archer
           accessor: Record.Id
+      retry-count:
+        simple: "4"
     separatecontext: false
     view: |-
       {
@@ -1190,10 +1188,10 @@ tasks:
     quietmode: 0
   "33":
     id: "33"
-    taskid: d33ec124-55a3-4ce9-8483-1779e118fa74
+    taskid: 56cc320e-2bfe-4f76-8cfb-13ff9037417a
     type: regular
     task:
-      id: d33ec124-55a3-4ce9-8483-1779e118fa74
+      id: 56cc320e-2bfe-4f76-8cfb-13ff9037417a
       version: -1
       name: archer-list-users by user
       script: '|||archer-list-users'
@@ -1223,10 +1221,10 @@ tasks:
     quietmode: 0
   "34":
     id: "34"
-    taskid: 866342e8-e106-452b-853a-d21f09a41956
+    taskid: 2c7e793a-4c6e-409b-8875-2d0b459f444b
     type: regular
     task:
-      id: 866342e8-e106-452b-853a-d21f09a41956
+      id: 2c7e793a-4c6e-409b-8875-2d0b459f444b
       version: -1
       name: DeleteContext
       script: DeleteContext
@@ -1254,10 +1252,10 @@ tasks:
     quietmode: 0
   "35":
     id: "35"
-    taskid: c4b2f7ca-7edb-42b7-8dbe-6cf1fcd0784f
+    taskid: 1ef4b2e3-9519-4c1a-8b40-334af74c6410
     type: regular
     task:
-      id: c4b2f7ca-7edb-42b7-8dbe-6cf1fcd0784f
+      id: 1ef4b2e3-9519-4c1a-8b40-334af74c6410
       version: -1
       name: sleep
       description: Sleep for X seconds
@@ -1286,10 +1284,10 @@ tasks:
     quietmode: 0
   "36":
     id: "36"
-    taskid: 62a411f1-fd1c-442c-8e9f-6b092c6dc78d
+    taskid: bbce9adc-482e-4312-8d4d-47870d04129e
     type: regular
     task:
-      id: 62a411f1-fd1c-442c-8e9f-6b092c6dc78d
+      id: bbce9adc-482e-4312-8d4d-47870d04129e
       version: -1
       name: archer-print-cache
       description: prints Archer's integration cache.
@@ -1299,7 +1297,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "29"
+      - "39"
     separatecontext: false
     view: |-
       {
@@ -1313,12 +1311,183 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+  "37":
+    id: "37"
+    taskid: 79410cfd-679b-4cef-82c8-1429629a2f6e
+    type: title
+    task:
+      id: 79410cfd-679b-4cef-82c8-1429629a2f6e
+      version: -1
+      name: Upload and associate
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "38"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "38":
+    id: "38"
+    taskid: e250d0aa-67e4-46dc-835e-088047159ed1
+    type: regular
+    task:
+      id: e250d0aa-67e4-46dc-835e-088047159ed1
+      version: -1
+      name: Create record
+      description: Creates a new content record in the given application.
+      script: '|||archer-create-record'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "40"
+    scriptarguments:
+      applicationId:
+        simple: "75"
+      fieldsToValues:
+        simple: '{"Test": "It is a test"}'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6115
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "39":
+    id: "39"
+    taskid: b55b685c-743a-46b1-8cfa-ea769954e80d
+    type: regular
+    task:
+      id: b55b685c-743a-46b1-8cfa-ea769954e80d
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "37"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5795
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "40":
+    id: "40"
+    taskid: 70a19bb6-b420-4e74-82ef-75d85fb3cae6
+    type: regular
+    task:
+      id: 70a19bb6-b420-4e74-82ef-75d85fb3cae6
+      version: -1
+      name: Get file
+      description: Downloads a file from Archer to Cortex XSOAR context.
+      script: '|||archer-get-file'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "41"
+    scriptarguments:
+      fileId:
+        simple: "125"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "41":
+    id: "41"
+    taskid: cd71e20a-3908-49f1-808a-53c4affd1154
+    type: regular
+    task:
+      id: cd71e20a-3908-49f1-808a-53c4affd1154
+      version: -1
+      name: Upload and associate
+      description: Uploads a file to Archer.
+      script: '|||archer-upload-file'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      applicationId:
+        simple: "75"
+      associatedField:
+        simple: ״Supporting Documentation"
+      contentId:
+        complex:
+          root: Archer.Record
+          accessor: Id
+      entryId:
+        complex:
+          root: File
+          accessor: EntryID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6465
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 5810,
+        "height": 6655,
         "width": 380,
         "x": 50,
         "y": 50

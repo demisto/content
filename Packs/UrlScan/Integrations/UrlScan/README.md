@@ -1,7 +1,6 @@
 <!-- HTML_DOC -->
 <p>Use urlscan.io integration to perform scans on suspected urls and see their reputation.</p>
-<p>This integration was integrated and tested with version xx of urlscan.io.</p>
-<h2>Configure urlscan.io on Demisto</h2>
+<h2>Configure urlscan.io on Cortex XSOAR</h2>
 <ol>
 <li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>
 <li>Search for urlscan.io.</li>
@@ -11,17 +10,19 @@
 <strong>Name</strong>: a textual name for the integration instance.</li>
 <li><strong>Server URL (e.g. https://urlscan.io/api/v1/ )</strong></li>
 <li><strong>API Key (needed only for submitting URLs for scanning)</strong></li>
+<li><strong>Scan Visibility</strong>: Determines the visibility level of the scan. This will override the 'public submissions' setting.</li>
+<li><strong>Source Reliability.</strong> Reliability of the source providing the intelligence data. (The default value is C - Fairly reliable)</li>
 <li><strong>Trust any certificate (not secure)</strong></li>
 <li><strong>Use system proxy settings</strong></li>
 <li>
 <strong>URL Threshold. </strong>Minimum number of positive results from urlscan.io to consider the URL malicious.</li>
-<li>
+<li><strong>User Agent</strong>: User Agent used during scans with this integration.</li>
 </ul>
 </li>
 <li>Click <strong>Test</strong> to validate the URLs, token, and connection.</li>
 </ol>
 <h2>Commands</h2>
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ol>
 <li><a href="#h_66414687541541575058084">Search for indicators: urlscan-search</a></li>
 <li><a href="#h_872696191351541575062805">(Deprecated) Submit a URL: urlscan-submit</a></li>
@@ -46,6 +47,11 @@
 <td style="width: 145px;">searchParameter</td>
 <td style="width: 492px;">Enter a parameter to search as a string (IP, File name, sha256, url, domain)</td>
 <td style="width: 71px;">Required</td>
+</tr>
+<tr>
+<td style="width: 145px;">searchType</td>
+<td style="width: 492px;">Allows querying multiple search parameters</td>
+<td style="width: 71px;">Optional</td>
 </tr>
 </tbody>
 </table>
@@ -104,6 +110,7 @@
 <h5> </h5>
 <h5>Command Example</h5>
 <p><code>!urlscan-search searchParameter=8.8.8.8</code></p>
+<p><code>!urlscan-search searchType=advanced searchParameter="filename:logo.png AND date:>now-24h"</code></p>
 <h3 id="h_872696191351541575062805">2. (Deprecated) Submit a URL directly to urlscan.io</h3>
 <hr>
 <p>Submits a URL to urlscan.io.</p>
@@ -133,6 +140,16 @@
 <tr>
 <td style="width: 165px;">public</td>
 <td style="width: 446px;">Will the submission be public or private</td>
+<td style="width: 97px;">Optional</td>
+</tr>
+<tr>
+<td style="width: 165px;">useragent</td>
+<td style="width: 446px;">User Agent used to perform scans</td>
+<td style="width: 97px;">Optional</td>
+</tr>
+<tr>
+<td style="width: 165px;">scan_visibility</td>
+<td style="width: 446px;">The submission visibility. If specified, overrides the 'public' parameter</td>
 <td style="width: 97px;">Optional</td>
 </tr>
 </tbody>
@@ -252,6 +269,16 @@
 <td style="width: 446px;">Time interval (in seconds) between retries, if the API rate limit is reached. This argument is optional, but if you specify the retries argument, you need to specify this argument.</td>
 <td style="width: 96px;">Optional</td>
 </tr>
+<tr>
+<td style="width: 166px;">useragent</td>
+<td style="width: 446px;">User Agent used to perform scans</td>
+<td style="width: 96px;">Optional</td>
+</tr>
+<tr>
+<td style="width: 165px;">scan_visibility</td>
+<td style="width: 446px;">The submission visibility. If specified, overrides the 'public' parameter</td>
+<td style="width: 97px;">Optional</td>
+</tr>
 </tbody>
 </table>
 <h5> </h5>
@@ -331,6 +358,30 @@
 <tr>
 <td style="width: 267px;">URLScan.EffectiveURL </td>
 <td style="width: 454px;">Effective URL of the original URL</td>
+</tr>
+<tr>
+<td style="width: 267px;">URL.ASN </td>
+<td style="width: 454px;">The URL ASN.</td>
+</tr>
+<tr>
+<td style="width: 267px;">URL.FeedRelatedIndicators.value </td>
+<td style="width: 454px;">Indicators that are associated with the URL.</td>
+</tr>
+<tr>
+<td style="width: 267px;">URL.FeedRelatedIndicators.type </td>
+<td style="width: 454px;">The type of the indicators that are associated with the URL.</td>
+</tr>
+<tr>
+<td style="width: 267px;">URL.Geo.Country </td>
+<td style="width: 454px;">The URL country.</td>
+</tr>
+<tr>
+<td style="width: 267px;">URL.ASOwner </td>
+<td style="width: 454px;">The URL AS owner.</td>
+</tr>
+<tr>
+<td style="width: 267px;">URL.Tags </td>
+<td style="width: 454px;">Tags that are associated with the URL.</td>
 </tr>
 </tbody>
 </table>

@@ -1,130 +1,12 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
 """IMPORTS"""
-import boto3
-import base64
-from datetime import datetime, date
-from botocore.config import Config
-from botocore.parsers import ResponseParserError
+from datetime import date
 import urllib3.util
 
 # Disable insecure warnings
 urllib3.disable_warnings()
-
-"""GLOBAL VARIABLES"""
-AWS_DEFAULT_REGION = demisto.params().get('defaultRegion')
-AWS_ROLE_ARN = demisto.params().get('roleArn')
-AWS_ROLE_SESSION_NAME = demisto.params().get('roleSessionName')
-AWS_ROLE_SESSION_DURATION = demisto.params().get('sessionDuration')
-AWS_ROLE_POLICY = None
-AWS_ACCESS_KEY_ID = demisto.params().get('access_key')
-AWS_SECRET_ACCESS_KEY = demisto.params().get('secret_key')
-VERIFY_CERTIFICATE = not demisto.params().get('insecure', True)
-proxies = handle_proxy(proxy_param_name='proxy', checkbox_default_value=False)
-config = Config(
-    connect_timeout=1,
-    retries=dict(
-        max_attempts=5
-    ),
-    proxies=proxies
-)
-
-"""HELPER FUNCTIONS"""
-
-
-def aws_session(service='lambda', region=None, roleArn=None, roleSessionName=None, roleSessionDuration=None,
-                rolePolicy=None):
-    kwargs = {}
-    if roleArn and roleSessionName is not None:
-        kwargs.update({
-            'RoleArn': roleArn,
-            'RoleSessionName': roleSessionName,
-        })
-    elif AWS_ROLE_ARN and AWS_ROLE_SESSION_NAME is not None:
-        kwargs.update({
-            'RoleArn': AWS_ROLE_ARN,
-            'RoleSessionName': AWS_ROLE_SESSION_NAME,
-        })
-
-    if roleSessionDuration is not None:
-        kwargs.update({'DurationSeconds': int(roleSessionDuration)})
-    elif AWS_ROLE_SESSION_DURATION is not None:
-        kwargs.update({'DurationSeconds': int(AWS_ROLE_SESSION_DURATION)})
-
-    if rolePolicy is not None:
-        kwargs.update({'Policy': rolePolicy})
-    elif AWS_ROLE_POLICY is not None:
-        kwargs.update({'Policy': AWS_ROLE_POLICY})
-    if kwargs and AWS_ACCESS_KEY_ID is None:
-
-        if AWS_ACCESS_KEY_ID is None:
-            sts_client = boto3.client('sts', config=config, verify=VERIFY_CERTIFICATE)
-            sts_response = sts_client.assume_role(**kwargs)
-            if region is not None:
-                client = boto3.client(
-                    service_name=service,
-                    region_name=region,
-                    aws_access_key_id=sts_response['Credentials']['AccessKeyId'],
-                    aws_secret_access_key=sts_response['Credentials']['SecretAccessKey'],
-                    aws_session_token=sts_response['Credentials']['SessionToken'],
-                    verify=VERIFY_CERTIFICATE,
-                    config=config
-                )
-            else:
-                client = boto3.client(
-                    service_name=service,
-                    region_name=AWS_DEFAULT_REGION,
-                    aws_access_key_id=sts_response['Credentials']['AccessKeyId'],
-                    aws_secret_access_key=sts_response['Credentials']['SecretAccessKey'],
-                    aws_session_token=sts_response['Credentials']['SessionToken'],
-                    verify=VERIFY_CERTIFICATE,
-                    config=config
-                )
-    elif AWS_ACCESS_KEY_ID and AWS_ROLE_ARN:
-        sts_client = boto3.client(
-            service_name='sts',
-            aws_access_key_id=AWS_ACCESS_KEY_ID,
-            aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
-            verify=VERIFY_CERTIFICATE,
-            config=config
-        )
-        kwargs.update({
-            'RoleArn': AWS_ROLE_ARN,
-            'RoleSessionName': AWS_ROLE_SESSION_NAME,
-        })
-        sts_response = sts_client.assume_role(**kwargs)
-        client = boto3.client(
-            service_name=service,
-            region_name=AWS_DEFAULT_REGION,
-            aws_access_key_id=sts_response['Credentials']['AccessKeyId'],
-            aws_secret_access_key=sts_response['Credentials']['SecretAccessKey'],
-            aws_session_token=sts_response['Credentials']['SessionToken'],
-            verify=VERIFY_CERTIFICATE,
-            config=config
-        )
-    else:
-        if region is not None:
-            client = boto3.client(
-                service_name=service,
-                region_name=region,
-                aws_access_key_id=AWS_ACCESS_KEY_ID,
-                aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
-                verify=VERIFY_CERTIFICATE,
-                config=config
-            )
-        else:
-            client = boto3.client(
-                service_name=service,
-                region_name=AWS_DEFAULT_REGION,
-                aws_access_key_id=AWS_ACCESS_KEY_ID,
-                aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
-                verify=VERIFY_CERTIFICATE,
-                config=config
-            )
-
-    return client
 
 
 def parse_tag_field(tags_str):
@@ -174,12 +56,13 @@ def create_entry(title, data, ec):
 """MAIN FUNCTIONS"""
 
 
-def get_function(args):
-    client = aws_session(
+def get_function(args, aws_client):
+    client = aws_client.aws_session(
+        service='lambda',
         region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
     obj = vars(client._client_config)
     kwargs = {'FunctionName': args.get('functionName')}
@@ -204,12 +87,13 @@ def get_function(args):
     return_outputs(human_readable, ec)
 
 
-def list_functions(args):
-    client = aws_session(
+def list_functions(args, aws_client):
+    client = aws_client.aws_session(
+        service='lambda',
         region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
     obj = vars(client._client_config)
     data = []
@@ -236,12 +120,13 @@ def list_functions(args):
     return_outputs(human_readable, ec)
 
 
-def list_aliases(args):
-    client = aws_session(
+def list_aliases(args, aws_client):
+    client = aws_client.aws_session(
+        service='lambda',
         region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
 
     data = []
@@ -268,12 +153,13 @@ def list_aliases(args):
     return_outputs(human_readable, ec)
 
 
-def invoke(args):
-    client = aws_session(
+def invoke(args, aws_client):
+    client = aws_client.aws_session(
+        service='lambda',
         region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
     obj = vars(client._client_config)
     kwargs = {'FunctionName': args.get('functionName')}
@@ -284,7 +170,10 @@ def invoke(args):
     if args.get('clientContext') is not None:
         kwargs.update({'ClientContext': args.get('clientContext')})
     if args.get('payload') is not None:
-        kwargs.update({'Payload': json.dumps(args.get('payload'))})
+        payload = args.get('payload')
+        if (not isinstance(payload, str)) or (not payload.startswith('{') and not payload.startswith('[')):
+            payload = json.dumps(payload)
+        kwargs.update({'Payload': payload})
     if args.get('qualifier') is not None:
         kwargs.update({'Qualifier': args.get('qualifier')})
     response = client.invoke(**kwargs)
@@ -293,7 +182,7 @@ def invoke(args):
         'Region': obj['_user_provided_options']['region_name'],
     })
     if 'LogResult' in response:
-        data.update({'LogResult': base64.b64decode(response['LogResult'])})  # type:ignore
+        data.update({'LogResult': base64.b64decode(response['LogResult']).decode("utf-8")})  # type:ignore
     if 'Payload' in response:
         data.update({'Payload': response['Payload'].read().decode("utf-8")})  # type:ignore
     if 'ExecutedVersion' in response:
@@ -306,12 +195,13 @@ def invoke(args):
     return_outputs(human_readable, ec)
 
 
-def remove_permission(args):
-    client = aws_session(
+def remove_permission(args, aws_client):
+    client = aws_client.aws_session(
+        service='lambda',
         region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
     kwargs = {
         'FunctionName': args.get('functionName'),
@@ -327,12 +217,13 @@ def remove_permission(args):
         demisto.results('Permissions have been removed')
 
 
-def get_account_settings(args):
-    client = aws_session(
+def get_account_settings(args, aws_client):
+    client = aws_client.aws_session(
+        service='lambda',
         region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
     obj = vars(client._client_config)
     response = client.get_account_settings()
@@ -366,34 +257,57 @@ def get_account_settings(args):
 """TEST FUNCTION"""
 
 
-def test_function():
-    client = aws_session()
+def test_function(aws_client):
+    client = aws_client.aws_session(service='lambda')
     response = client.list_functions()
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:
         demisto.results('ok')
 
 
-"""EXECUTION BLOCK"""
-try:
-    if demisto.command() == 'test-module':
-        test_function()
-    elif demisto.command() == 'aws-lambda-get-function':
-        get_function(demisto.args())
-    elif demisto.command() == 'aws-lambda-list-functions':
-        list_functions(demisto.args())
-    elif demisto.command() == 'aws-lambda-list-aliases':
-        list_aliases(demisto.args())
-    elif demisto.command() == 'aws-lambda-invoke':
-        invoke(demisto.args())
-    elif demisto.command() == 'aws-lambda-remove-permission':
-        remove_permission(demisto.args())
-    elif demisto.command() == 'aws-lambda-get-account-settings':
-        get_account_settings(demisto.args())
-except ResponseParserError as e:
-    return_error('Could not connect to the AWS endpoint. Please check that the region is valid.\n {error}'.format(
-        error=type(e)))
-    LOG(str(e))
+def main():
 
-except Exception as e:
-    return_error('Error has occurred in the AWS Lambda Integration: {error}\n {message}'.format(
-        error=type(e), message=str(e)))
+    params = demisto.params()
+    aws_default_region = params.get('defaultRegion')
+    aws_role_arn = params.get('roleArn')
+    aws_role_session_name = params.get('roleSessionName')
+    aws_role_session_duration = params.get('sessionDuration')
+    aws_role_policy = None
+    aws_access_key_id = params.get('access_key')
+    aws_secret_access_key = params.get('secret_key')
+    verify_certificate = not params.get('insecure', True)
+    timeout = params.get('timeout')
+    retries = params.get('retries') or 5
+    validate_params(aws_default_region, aws_role_arn, aws_role_session_name, aws_access_key_id,
+                    aws_secret_access_key)
+    aws_client = AWSClient(aws_default_region, aws_role_arn, aws_role_session_name, aws_role_session_duration,
+                           aws_role_policy, aws_access_key_id, aws_secret_access_key, verify_certificate, timeout,
+                           retries)
+    command = demisto.command()
+    args = demisto.args()
+
+    try:
+        if command == 'test-module':
+            test_function(aws_client)
+        elif command == 'aws-lambda-get-function':
+            get_function(args, aws_client)
+        elif command == 'aws-lambda-list-functions':
+            list_functions(args, aws_client)
+        elif command == 'aws-lambda-list-aliases':
+            list_aliases(args, aws_client)
+        elif command == 'aws-lambda-invoke':
+            invoke(args, aws_client)
+        elif command == 'aws-lambda-remove-permission':
+            remove_permission(args, aws_client)
+        elif command == 'aws-lambda-get-account-settings':
+            get_account_settings(args, aws_client)
+
+    except Exception as e:
+        return_error('Error has occurred in the AWS Lambda Integration: {error}\n {message}'.format(
+            error=type(e), message=str(e)))
+
+
+from AWSApiModule import *  # noqa: E402
+
+# python2 uses __builtin__ python3 uses builtins
+if __name__ in ("__builtin__", "builtins"):
+    main()

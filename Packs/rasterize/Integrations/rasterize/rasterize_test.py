@@ -66,6 +66,7 @@ def test_rasterize_no_defunct_processes(caplog):
         caplog.clear()
 
 
+@pytest.mark.filterwarnings('ignore::ResourceWarning')
 def test_find_zombie_processes(mocker):
     ps_output = '''   PID  PPID S CMD
     1     0 S python /tmp/pyrunner/_script_docker_python_loop.py
@@ -147,6 +148,7 @@ def http_wait_server():
 # In this case chromium will hang. An example for this is:
 # curl -v -H 'user-agent: HeadlessChrome' --max-time 10  "http://www.grainger.com/"  # disable-secrets-detection
 # This tests access a server which waits for 10 seconds and makes sure we timeout
+@pytest.mark.filterwarnings('ignore::ResourceWarning')
 def test_rasterize_url_long_load(mocker, http_wait_server):
     return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
     time.sleep(1)  # give time to the servrer to start
@@ -161,6 +163,7 @@ def test_rasterize_url_long_load(mocker, http_wait_server):
     assert not return_error_mock.called
 
 
+@pytest.mark.filterwarnings('ignore::ResourceWarning')
 def test_rasterize_image_to_pdf(mocker):
     path = os.path.realpath('test_data/image.png')
     mocker.patch.object(demisto, 'args', return_value={'EntryID': 'test'})
@@ -172,3 +175,26 @@ def test_rasterize_image_to_pdf(mocker):
     results = demisto.results.call_args[0]
     assert len(results) == 1
     assert results[0]['Type'] == entryTypes['entryInfoFile']
+
+
+TEST_DATA = [
+    (
+        'test_data/many_pages.pdf',
+        21,
+        2,
+    ),
+    (
+        'test_data/many_pages.pdf',
+        20,
+        1,
+    ),
+]
+
+
+@pytest.mark.parametrize('file_path, max_pages, expected_length', TEST_DATA)
+def test_convert_pdf_to_jpeg(file_path, max_pages, expected_length):
+    from rasterize import convert_pdf_to_jpeg
+    res = convert_pdf_to_jpeg(file_path, max_pages, "pass")
+
+    assert type(res) == list
+    assert len(res) == expected_length

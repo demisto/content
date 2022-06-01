@@ -13,6 +13,6 @@ The playbooks included in this pack guides you manually through the necessary ta
 - For the final steps of the playbook, it will guide the analyst to retrieve more information from the owner, open a ticket for a new device, and issue a report to be shared   with the CISO.
 
 
-_For more information, visit our [Cortex XSOAR Developer Docs]https://xsoar.pan.dev/docs/reference/playbooks/playbook8)_
+_For more information, visit our [Cortex XSOAR Developer Docs](https://xsoar.pan.dev/docs/reference/playbooks/playbook8)_
 
 ![lost_stolen_device](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Lost_Stolen_Device_Playbook.png)

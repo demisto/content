@@ -1,0 +1,24 @@
+[{
+    "action": {"value": "allow"},
+    "app": "web-browsing",
+    "protocol": {"value": "tcp"},
+    "dest_ip": {"value": "198.51.100.20"},
+    "rule_matched": "Allow-All",
+    "characteristics_of_app": [
+        "able-to-transfer-file",
+        "has-known-vulnerability",
+        "tunnel-other-application",
+        "prone-to-misuse",
+        "is-saas"
+    ],
+    "log_source_name": "ngfw1",
+    "is_nat": false,
+    "nat_dest_port": 80,
+    "nat_dest": {"value": "198.51.100.20"},
+    "nat_source": {"value": "203.0.113.1"},
+    "source_ip": {"value": "203.0.113.1"},
+    "app_category": "networking",
+    "source_location": "203.0.113.0-203.0.113.255",
+    "dest_location": "198.51.100.0-198.51.255",
+    "count": 100
+}]

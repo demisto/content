@@ -1,5 +1,6 @@
-import pytest
-from XSOARmirroring import get_mapping_fields_command, arg_to_int
+from XSOARmirroring import get_mapping_fields_command, Client, fetch_incidents, XSOAR_DATE_FORMAT
+from datetime import datetime, timedelta
+import dateparser
 
 
 def generate_dummy_client():
@@ -63,31 +64,52 @@ def test_mirroring(mocker):
     response = get_mapping_fields_command(client).extract_mapping()
     assert len(response) == 3
     assert 'Default Mapping' in str(response)
-    parsed_response = {}
-    for mapping in response:
-        parsed_response.update(mapping)
-    assert parsed_response['Default Mapping'] == {
+    assert response['Default Mapping'] == {
         'cliName1': 'field1 - type1'
     }
-    assert parsed_response['test'] == {
+    assert response['test'] == {
         'cliName1': 'field1 - type1',
         'cliName2': 'field2 - type2'
     }
-    assert parsed_response['Something'] == {
+    assert response['Something'] == {
         'cliName1': 'field1 - type1'
     }
 
 
-def test_arg_to_int():
+INCIDENTS = [
+    {
+        "id": 1,
+        "created": (datetime.now() - timedelta(minutes=10)).strftime(XSOAR_DATE_FORMAT)
+    },
+    {
+        "id": 2,
+        "created": (datetime.now() - timedelta(minutes=8)).strftime(XSOAR_DATE_FORMAT)
+    },
+    {
+        "id": 3,
+        "created": (datetime.now() - timedelta(minutes=5)).strftime(XSOAR_DATE_FORMAT)
+    }
+]
+
+
+def test_fetch_incidents(mocker):
     """
-    Given
-        - argument representation
-    When
-        - The argument is None and required
-    Then
-        - Get value error
+    Given:
+        - List of incidents.
+
+    When:
+        - Running the fetch_incidents and getting these incidents.
+
+    Then:
+        - Ensure the incidents result and the last_fetch in the LastRun object as expected.
     """
-    with pytest.raises(ValueError) as ex:
-        arg_to_int(None, 'test', True)
-        assert 'missing' in str(ex).lower()
-        assert 'test' in str(ex).lower()
+    mocker.patch.object(Client, 'search_incidents', return_value=INCIDENTS)
+
+    first_fetch = dateparser.parse('3 days').strftime(XSOAR_DATE_FORMAT)
+    client = Client("")
+
+    next_run, incidents_result = fetch_incidents(client=client, max_results=3, last_run={}, first_fetch_time=first_fetch,
+                                                 query='', mirror_direction='None', mirror_tag=[])
+
+    assert len(incidents_result) == 3
+    assert dateparser.parse(next_run['last_fetch']) == dateparser.parse(INCIDENTS[-1]['created']) + timedelta(microseconds=1)

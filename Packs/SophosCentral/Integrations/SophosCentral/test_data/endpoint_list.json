@@ -1,0 +1,315 @@
+{
+   "items":[
+      {
+         "id":"6e9567ea-bb50-40c5-9f12-42eb308e4c9b",
+         "type":"computer",
+         "tenant":{
+            "id":"11f104c5-cc4a-4a9f-bb9c-632c936dfb9f"
+         },
+         "hostname":"Thunderbox",
+         "health":{
+            "overall":"suspicious",
+            "threats":{
+               "status":"suspicious"
+            },
+            "services":{
+               "status":"good",
+               "serviceDetails":[
+                  {
+                     "name":"HitmanPro.Alert service",
+                     "status":"running"
+                  },
+                  {
+                     "name":"Sophos Anti-Virus",
+                     "status":"running"
+                  },
+                  {
+                     "name":"Sophos Anti-Virus Status Reporter",
+                     "status":"running"
+                  },
+                  {
+                     "name":"Sophos AutoUpdate Service",
+                     "status":"running"
+                  },
+                  {
+                     "name":"Sophos Clean Service",
+                     "status":"running"
+                  },
+                  {
+                     "name":"Sophos Device Control Service",
+                     "status":"running"
+                  },
+                  {
+                     "name":"Sophos Device Encryption Service",
+                     "status":"running"
+                  },
+                  {
+                     "name":"Sophos EDR Agent",
+                     "status":"running"
+                  },
+                  {
+                     "name":"Sophos Endpoint Defense",
+                     "status":"running"
+                  },
+                  {
+                     "name":"Sophos Endpoint Defense Service",
+                     "status":"running"
+                  },
+                  {
+                     "name":"Sophos File Scanner",
+                     "status":"running"
+                  },
+                  {
+                     "name":"Sophos File Scanner Service",
+                     "status":"running"
+                  },
+                  {
+                     "name":"Sophos MCS Agent",
+                     "status":"running"
+                  },
+                  {
+                     "name":"Sophos MCS Client",
+                     "status":"running"
+                  },
+                  {
+                     "name":"Sophos Network Threat Protection",
+                     "status":"running"
+                  },
+                  {
+                     "name":"Sophos Safestore Service",
+                     "status":"running"
+                  },
+                  {
+                     "name":"Sophos System Protection Service",
+                     "status":"running"
+                  },
+                  {
+                     "name":"Sophos Web Control Service",
+                     "status":"running"
+                  },
+                  {
+                     "name":"Sophos Web Intelligence Filter Service",
+                     "status":"running"
+                  },
+                  {
+                     "name":"Sophos Web Intelligence Service",
+                     "status":"running"
+                  }
+               ]
+            }
+         },
+         "os":{
+            "isServer":"False",
+            "platform":"windows",
+            "name":"Windows 10 Pro",
+            "majorVersion":10,
+            "minorVersion":0,
+            "build":18363
+         },
+         "ipv4Addresses":[
+            "1.1.1.1"
+         ],
+         "ipv6Addresses":[
+            "fe80::48c8:9e5c:1e9:d3d2",
+            "fe80::606e:d8f8:b3b0:9760",
+            "fe80::7d92:c72b:6623:f9be",
+            "fe80::8167:d417:af35:afe7",
+            "fe80::900a:a513:84e0:a46d",
+            "fe80::fc7b:8b8d:eeee:6b5c"
+         ],
+         "macAddresses":[
+            "00:15:5D:A8:4B:64",
+            "00:50:56:C0:00:01",
+            "00:50:56:C0:00:08",
+            "02:50:41:00:00:01",
+            "04:33:C2:64:46:E6",
+            "04:33:C2:64:46:E7",
+            "06:33:C2:64:46:E6",
+            "0A:00:27:00:00:0B",
+            "0A:00:27:00:00:10",
+            "34:48:ED:5D:72:E5"
+         ],
+         "associatedPerson":{
+            "viaLogin":"THUNDERBOX\\Lior"
+         },
+         "tamperProtectionEnabled":"False",
+         "assignedProducts":[
+            {
+               "code":"endpointProtection",
+               "version":"10.8.9.2",
+               "status":"installed"
+            },
+            {
+               "code":"deviceEncryption",
+               "version":"2.0.81",
+               "status":"installed"
+            },
+            {
+               "code":"interceptX",
+               "version":"2.0.18",
+               "status":"installed"
+            },
+            {
+               "code":"coreAgent",
+               "version":"2.10.7",
+               "status":"installed"
+            }
+         ],
+         "lastSeenAt":"2020-11-15T13:14:39.357Z",
+         "encryption":{
+            "volumes":[
+               {
+                  "volumeId":"\\\\?\\Volume{9f72a59d-0941-4c31-aa69-84ab2bd64d0c}\\",
+                  "status":"encrypted"
+               }
+            ]
+         }
+      },
+      {
+         "id":"a24b74a2-68e3-4fa5-8119-95744e0ab421",
+         "type":"server",
+         "tenant":{
+            "id":"11f104c5-cc4a-4a9f-bb9c-632c936dfb9f"
+         },
+         "hostname":"WIN-CEAESQ7V08E",
+         "health":{
+            "overall":"good",
+            "threats":{
+               "status":"good"
+            },
+            "services":{
+               "status":"good",
+               "serviceDetails":[
+                  {
+                     "name":"HitmanPro.Alert service",
+                     "status":"running"
+                  },
+                  {
+                     "name":"Sophos Anti-Virus",
+                     "status":"running"
+                  },
+                  {
+                     "name":"Sophos Anti-Virus Status Reporter",
+                     "status":"running"
+                  },
+                  {
+                     "name":"Sophos AutoUpdate Service",
+                     "status":"running"
+                  },
+                  {
+                     "name":"Sophos Clean Service",
+                     "status":"running"
+                  },
+                  {
+                     "name":"Sophos Device Control Service",
+                     "status":"running"
+                  },
+                  {
+                     "name":"Sophos EDR Agent",
+                     "status":"running"
+                  },
+                  {
+                     "name":"Sophos Endpoint Defense",
+                     "status":"running"
+                  },
+                  {
+                     "name":"Sophos Endpoint Defense Service",
+                     "status":"running"
+                  },
+                  {
+                     "name":"Sophos File Integrity Monitoring",
+                     "status":"running"
+                  },
+                  {
+                     "name":"Sophos File Scanner",
+                     "status":"running"
+                  },
+                  {
+                     "name":"Sophos File Scanner Service",
+                     "status":"running"
+                  },
+                  {
+                     "name":"Sophos MCS Agent",
+                     "status":"running"
+                  },
+                  {
+                     "name":"Sophos MCS Client",
+                     "status":"running"
+                  },
+                  {
+                     "name":"Sophos Network Threat Protection",
+                     "status":"running"
+                  },
+                  {
+                     "name":"Sophos Safestore Service",
+                     "status":"running"
+                  },
+                  {
+                     "name":"Sophos System Protection Service",
+                     "status":"running"
+                  },
+                  {
+                     "name":"Sophos Web Control Service",
+                     "status":"running"
+                  },
+                  {
+                     "name":"Sophos Web Intelligence Filter Service",
+                     "status":"running"
+                  },
+                  {
+                     "name":"Sophos Web Intelligence Service",
+                     "status":"running"
+                  }
+               ]
+            }
+         },
+         "os":{
+            "isServer":"True",
+            "platform":"windows",
+            "name":"Windows Server 2019 Standard Evaluation",
+            "majorVersion":10,
+            "minorVersion":0,
+            "build":17763
+         },
+         "ipv4Addresses":[
+            "1.1.1.1"
+         ],
+         "ipv6Addresses":[
+            "fe80::9905:5b42:6605:5e93"
+         ],
+         "macAddresses":[
+            "00:50:56:B0:5C:BA"
+         ],
+         "associatedPerson":{
+            "viaLogin":"WIN-CEAESQ7V08E\\Administrator"
+         },
+         "tamperProtectionEnabled":"False",
+         "assignedProducts":[
+            {
+               "code":"coreAgent",
+               "version":"2.10.7",
+               "status":"installed"
+            },
+            {
+               "code":"endpointProtection",
+               "version":"10.8.9.2",
+               "status":"installed"
+            },
+            {
+               "code":"interceptX",
+               "version":"2.0.17",
+               "status":"installed"
+            }
+         ],
+         "lastSeenAt":"2020-11-15T10:09:56.722Z",
+         "lockdown":{
+            "status":"notInstalled",
+            "updateStatus":"notInstalled"
+         }
+      }
+   ],
+   "pages":{
+      "size":50,
+      "maxSize":500
+   }
+}

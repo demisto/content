@@ -1,69 +1,172 @@
+category: Network Security
 commonfields:
   id: RedLock
   version: -1
-name: RedLock
-display: Prisma Cloud (RedLock)
-category: Network Security
-description: Cloud threat defense
 configuration:
-- display: Server URL
+- defaultvalue: https://api.prismacloud.io/
+  display: Server URL
   name: url
-  defaultvalue: https://api.redlock.io/
-  type: 0
   required: true
+  type: 0
 - display: Username
   name: credentials
-  defaultvalue: ""
-  type: 9
   required: true
+  type: 9
 - display: Customer name
   name: customer
-  defaultvalue: ""
+  required: false
   type: 0
-  required: false
-- display: Use system proxy settings
-  name: proxy
-  defaultvalue: ""
-  type: 8
-  required: false
-- display: Trust any certificate (not secure)
-  name: unsecure
-  defaultvalue: ""
-  type: 8
-  required: false
-- display: Fetch only incidents matching this rule name
-  name: ruleName
-  defaultvalue: ""
-  type: 0
-  required: false
-- display: Fetch only incidents with this severity
-  name: policySeverity
-  defaultvalue: ""
-  type: 0
-  required: false
 - display: Fetch incidents
   name: isFetch
-  type: 8
   required: false
+  type: 8
 - display: Incident type
   name: incidentType
-  type: 13
   required: false
+  type: 13
+- display: Fetch only incidents matching this rule name
+  name: ruleName
+  required: false
+  type: 0
+- display: Fetch only incidents matching this policy name
+  name: policyName
+  required: false
+  type: 0
+- display: Fetch only incidents with this severity
+  name: policySeverity
+  required: false
+  type: 0
+- defaultvalue: 7 days
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3
+    months, 1 year)
+  name: fetch_time
+  required: false
+  type: 0
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: Trust any certificate (not secure)
+  name: unsecure
+  required: false
+  type: 8
+description: Cloud threat defense
+display: Prisma Cloud (RedLock)
+name: RedLock
 script:
-  script: ''
-  type: python
-  subtype: python2
   commands:
-  - name: redlock-search-alerts
-    arguments:
-    - name: time-range-date-from
+  - arguments:
+    - default: false
+      description: The maximum number of records to return. '; limit search records
+        to {}' is appended to every query where {} is the maximum number of records
+        to return. If no value is provided, only 1 record is returned.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: 'The RQL config query to run. Examples of RQL config queries can
+        be found here: https://docs.paloaltonetworks.com/prisma/prisma-cloud/prisma-cloud-rql-reference/rql-reference/config-query/config-query-examples.html.
+        Note that ` limit search records to 1` is automatically appended to each query
+        and a `;` may need to be added to the end of the rql input to make the entire
+        query valid.  The limit parameter adjusts this to be a value other than 1.'
+      isArray: false
+      name: rql
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns the results of an RQL config query.
+    execution: false
+    name: redlock-get-rql-response
+    outputs:
+    - contextPath: Redlock.RQL.Query
+      description: The RQL query that was run.
+      type: String
+    - contextPath: Redlock.RQL.Response.AccountId
+      description: The cloud account ID.
+      type: Date
+    - contextPath: Redlock.RQL.Response.AccountName
+      description: The cloud account name.
+      type: String
+    - contextPath: Redlock.RQL.Response.AllowDrillDown
+      description: Flag to allow drill down.
+      type: Boolean
+    - contextPath: Redlock.RQL.Response.CloudType
+      description: The cloud type.
+      type: String
+    - contextPath: Redlock.RQL.Response.Data
+      description: The data object returned by the RQL response.
+      type: Object
+    - contextPath: Redlock.RQL.Response.Deleted
+      description: Flag if deleted.
+      type: Boolean
+    - contextPath: Redlock.RQL.Response.HasAlert
+      description: Flag to check if RQL response has alerts.
+      type: Boolean
+    - contextPath: Redlock.RQL.Response.HasExtFindingRiskFactors
+      description: Flag if query returns external risk factors.
+      type: Boolean
+    - contextPath: Redlock.RQL.Response.HasExternalFinding
+      description: Flag for external findings.
+      type: Boolean
+    - contextPath: Redlock.RQL.Response.HasExternalIntegration
+      description: Flag for external integration.
+      type: Boolean
+    - contextPath: Redlock.RQL.Response.HasNetwork
+      description: Flag for determining if network exists.
+      type: Boolean
+    - contextPath: Redlock.RQL.Response.Id
+      description: The RQL response ID.
+      type: String
+    - contextPath: Redlock.RQL.Response.InsertTs
+      description: The response time.
+      type: Date
+    - contextPath: Redlock.RQL.Response.Name
+      description: The RQL response name.
+      type: String
+    - contextPath: Redlock.RQL.Response.RegionId
+      description: The cloud region ID.
+      type: String
+    - contextPath: Redlock.RQL.Response.RegionName
+      description: The cloud region name.
+      type: String
+    - contextPath: Redlock.RQL.Response.ResourceType
+      description: The resource type.
+      type: String
+    - contextPath: Redlock.RQL.Response.Rrn
+      description: The account RRN.
+      type: String
+    - contextPath: Redlock.RQL.Response.Service
+      description: The RQL response service.
+      type: String
+    - contextPath: Redlock.RQL.Response.StateId
+      description: The response state ID.
+      type: String
+  - arguments:
+    - default: false
       description: Start time for search in the following string format -  MM/DD/YYYY
-    - name: time-range-date-to
+      isArray: false
+      name: time-range-date-from
+      required: false
+      secret: false
+    - default: false
       description: End time for search in the following format -  MM/DD/YYYY
-    - name: time-range-value
+      isArray: false
+      name: time-range-date-to
+      required: false
+      secret: false
+    - default: false
       description: The amount of units to go back in time
-    - name: time-range-unit
-      auto: PREDEFINED
+      isArray: false
+      name: time-range-value
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The search unit. login and epoch are only available if timeRangeValue
+        is not provided.
+      isArray: false
+      name: time-range-unit
       predefined:
       - hour
       - day
@@ -72,9 +175,13 @@ script:
       - year
       - login
       - epoch
-      description: The search unit. login and epoch are only available if timeRangeValue is not provided.
-    - name: policy-name
-      auto: PREDEFINED
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The policy name
+      isArray: false
+      name: policy-name
       predefined:
       - IAM password policy does not have a symbol
       - IAM password policy does not expire in 90 days
@@ -106,111 +213,193 @@ script:
       - VPC Flow Logs not enabled
       - MFA not enabled for IAM users
       - Inactive users for more than 30 days
-      description: The policy name
-    - name: policy-label
+      required: false
+      secret: false
+    - default: false
       description: The policy label
-    - name: policy-compliance-standard
+      isArray: false
+      name: policy-label
+      required: false
+      secret: false
+    - default: false
       description: The policy compliance standard
-    - name: cloud-account
+      isArray: false
+      name: policy-compliance-standard
+      required: false
+      secret: false
+    - default: false
       description: The cloud account
-    - name: cloud-region
+      isArray: false
+      name: cloud-account
+      required: false
+      secret: false
+    - default: false
       description: The cloud region
-    - name: alert-rule-name
+      isArray: false
+      name: cloud-region
+      required: false
+      secret: false
+    - default: false
       description: The alert rule name
-    - name: resource-id
+      isArray: false
+      name: alert-rule-name
+      required: false
+      secret: false
+    - default: false
       description: The resource ID
-    - name: resource-name
+      isArray: false
+      name: resource-id
+      required: false
+      secret: false
+    - default: false
       description: The resource name
-    - name: resource-type
+      isArray: false
+      name: resource-name
+      required: false
+      secret: false
+    - default: false
       description: The resource type
-    - name: alert-status
-      auto: PREDEFINED
+      isArray: false
+      name: resource-type
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: open
+      description: The alert status
+      isArray: false
+      name: alert-status
       predefined:
       - open
       - resolved
       - dismissed
-      description: The alert status
-      defaultValue: open
-    - name: alert-id
+      required: false
+      secret: false
+    - default: false
       description: The alert ID
-    - name: cloud-type
-      auto: PREDEFINED
+      isArray: false
+      name: alert-id
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The cloud type
+      isArray: false
+      name: cloud-type
       predefined:
       - aws
       - azure
       - gcp
-      description: The cloud type
-    - name: risk-grade
-      auto: PREDEFINED
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The risk grade
+      isArray: false
+      name: risk-grade
       predefined:
       - A
       - B
       - C
       - F
-      description: The risk grade
-    - name: policy-type
-      auto: PREDEFINED
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The policy type
+      isArray: false
+      name: policy-type
       predefined:
       - anomaly
       - audit_event
       - config
       - network
-      description: The policy type
-    - name: policy-severity
-      auto: PREDEFINED
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The policy severity
+      isArray: false
+      name: policy-severity
       predefined:
       - high
       - medium
       - low
-      description: The policy severity
+      required: false
+      secret: false
+    deprecated: false
+    description: Search alerts on the Prisma Cloud (RedLock) platform.
+                 If no time-range arguments are given, the search will filter only alerts from the last 7 days.
+    execution: false
+    name: redlock-search-alerts
     outputs:
     - contextPath: Redlock.Alert.ID
-      description: ID of returned alert
+      description: The ID of the returned alert.
       type: string
     - contextPath: Redlock.Alert.Status
-      description: Status of returned alert
+      description: The status of the returned alert.
       type: string
     - contextPath: Redlock.Alert.AlertTime
-      description: Time of alert
+      description: The time of the returned alert.
       type: string
     - contextPath: Redlock.Alert.Policy.ID
-      description: The policy ID
+      description: The policy ID of the returned alert.
       type: string
     - contextPath: Redlock.Alert.Policy.Name
-      description: The policy name
+      description: The policy name of the returned alert.
       type: string
     - contextPath: Redlock.Alert.Policy.Type
-      description: The policy type
+      description: The policy type of the returned alert.
       type: string
     - contextPath: Redlock.Alert.Policy.Severity
-      description: The policy severity
+      description: The policy severity of the returned alert.
       type: string
     - contextPath: Redlock.Alert.Policy.Remediable
-      description: Whether or not the policy is remediable
+      description: Whether or not the policy is remediable.
       type: boolean
     - contextPath: Redlock.Alert.RiskDetail.Rating
-      description: The risk rating
+      description: The risk rating of the returned alert.
       type: string
     - contextPath: Redlock.Alert.RiskDetail.Score
-      description: The risk score
+      description: The risk score of the returned alert.
       type: string
     - contextPath: Redlock.Metadata.CountOfAlerts
-      description: The number of alerts found
+      description: The number of alerts found.
       type: number
-    description: Search alerts on the Prisma Cloud (RedLock) platform
-  - name: redlock-get-alert-details
-    arguments:
-    - name: alert-id
-      required: true
-      default: true
+  - arguments:
+    - default: true
       description: The alert ID
-    - name: detailed
-      auto: PREDEFINED
-      predefined:
-      - "true"
-      - "false"
+      isArray: false
+      name: alert-id
+      required: true
+      secret: false
+    - default: false
+      description: Start time for search in the following string format -  MM/DD/YYYY, Should be provided along with time-range-date-to. If not both are provided, the time range will be set to the last 7 days and this argument will be ignored.
+      isArray: false
+      name: time-range-date-from
+      required: false
+      secret: false
+    - default: false
+      description: End time for search in the following format -  MM/DD/YYYY, Should be provided along with time-range-date-from. If not both are provided, the time range will be set to the last 7 days and this argument will be ignored.
+      isArray: false
+      name: time-range-date-to
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'true'
       description: Allows for retrieving entire / trimmed alert model
-      defaultValue: "true"
+      isArray: false
+      name: detailed
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets the details of an alert based on alert ID
+    execution: false
+    name: redlock-get-alert-details
     outputs:
     - contextPath: Redlock.Alert.ID
       description: The alert ID
@@ -245,22 +434,64 @@ script:
     - contextPath: Redlock.Alert.RiskDetail.Score
       description: The risk score
       type: string
-    description: Gets the details of an alert based on alert ID
-  - name: redlock-dismiss-alerts
-    arguments:
-    - name: alert-id
-      description: comma separated list of string IDs to be dismissed
-    - name: dismissal-note
+  - arguments:
+    - default: false
+      description: Comma-separated list of string IDs to be dismissed.
+      isArray: false
+      name: alert-id
+      required: false
+      secret: false
+    - default: false
+      description: The amount of time to snooze. Both snooze value and unit must be
+        specified.
+      isArray: false
+      name: snooze-value
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The time unit for if snoozing alert.  Both snooze value and unit
+        must be specified if snoozing.
+      isArray: false
+      name: snooze-unit
+      predefined:
+      - hour
+      - day
+      - week
+      - month
+      - year
+      - epoch
+      required: false
+      secret: false
+    - default: false
+      description: Reason for dismissal.
+      isArray: false
+      name: dismissal-note
       required: true
-      description: Reason for dismissal
-    - name: time-range-date-from
+      secret: false
+    - default: false
       description: Start time for search in the following string format -  MM/DD/YYYY
-    - name: time-range-date-to
+      isArray: false
+      name: time-range-date-from
+      required: false
+      secret: false
+    - default: false
       description: End time for search in the following format -  MM/DD/YYYY
-    - name: time-range-value
+      isArray: false
+      name: time-range-date-to
+      required: false
+      secret: false
+    - default: false
       description: The amount of units to go back in time
-    - name: time-range-unit
-      auto: PREDEFINED
+      isArray: false
+      name: time-range-value
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The search unit
+      isArray: false
+      name: time-range-unit
       predefined:
       - hour
       - day
@@ -269,9 +500,13 @@ script:
       - year
       - login
       - epoch
-      description: The search unit
-    - name: policy-name
-      auto: PREDEFINED
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The policy name
+      isArray: false
+      name: policy-name
       predefined:
       - IAM password policy does not have a symbol
       - IAM password policy does not expire in 90 days
@@ -303,80 +538,158 @@ script:
       - VPC Flow Logs not enabled
       - MFA not enabled for IAM users
       - Inactive users for more than 30 days
-      description: The policy name
-    - name: policy-label
+      required: false
+      secret: false
+    - default: false
       description: The policy label
-    - name: policy-compliance-standard
+      isArray: false
+      name: policy-label
+      required: false
+      secret: false
+    - default: false
       description: The policy compliance standard
-    - name: cloud-account
+      isArray: false
+      name: policy-compliance-standard
+      required: false
+      secret: false
+    - default: false
       description: The cloud account
-    - name: cloud-region
+      isArray: false
+      name: cloud-account
+      required: false
+      secret: false
+    - default: false
       description: The cloud region
-    - name: alert-rule-name
+      isArray: false
+      name: cloud-region
+      required: false
+      secret: false
+    - default: false
       description: The alert rule name
-    - name: resource-id
+      isArray: false
+      name: alert-rule-name
+      required: false
+      secret: false
+    - default: false
       description: The resource ID
-    - name: resource-name
+      isArray: false
+      name: resource-id
+      required: false
+      secret: false
+    - default: false
       description: The resource name
-    - name: resource-type
+      isArray: false
+      name: resource-name
+      required: false
+      secret: false
+    - default: false
       description: The resource type
-    - name: alert-status
-      auto: PREDEFINED
+      isArray: false
+      name: resource-type
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The alert status
+      isArray: false
+      name: alert-status
       predefined:
       - open
       - resolved
       - dismissed
-      description: The alert status
-    - name: cloud-type
-      auto: PREDEFINED
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The cloud type
+      isArray: false
+      name: cloud-type
       predefined:
       - aws
       - azure
       - gcp
-      description: The cloud type
-    - name: risk-grade
-      auto: PREDEFINED
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The risk grade
+      isArray: false
+      name: risk-grade
       predefined:
       - A
       - B
       - C
       - F
-      description: The risk grade
-    - name: policy-type
-      auto: PREDEFINED
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The policy type
+      isArray: false
+      name: policy-type
       predefined:
       - anomaly
       - audit_event
       - config
       - network
-      description: The policy type
-    - name: policy-severity
-      auto: PREDEFINED
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The policy severity
+      isArray: false
+      name: policy-severity
       predefined:
       - high
       - medium
       - low
-      description: The policy severity
-    - name: policy-id
-      description: comma separated string of policy IDs
+      required: false
+      secret: false
+    - default: false
+      description: Comma-separated string of policy IDs.
+      isArray: false
+      name: policy-id
+      required: false
+      secret: false
+    deprecated: false
+    description: Dismiss the alerts matching the given filter. Must provide either
+      policy IDs or alert IDs.
+    execution: true
+    name: redlock-dismiss-alerts
     outputs:
     - contextPath: Redlock.DismissedAlert.ID
       description: The IDs of the dismissed alerts
       type: string
-    description: Dismiss the alerts matching the given filter. Must provide either policy IDs or alert IDs.
-    execution: true
-  - name: redlock-reopen-alerts
-    arguments:
-    - name: alert-id
+  - arguments:
+    - default: false
       description: The IDs of alerts to reopen
-    - name: time-range-date-from
+      isArray: false
+      name: alert-id
+      required: false
+      secret: false
+    - default: false
       description: Start time for search in the following string format -  MM/DD/YYYY
-    - name: time-range-date-to
+      isArray: false
+      name: time-range-date-from
+      required: false
+      secret: false
+    - default: false
       description: End time for search in the following format -  MM/DD/YYYY
-    - name: time-range-value
+      isArray: false
+      name: time-range-date-to
+      required: false
+      secret: false
+    - default: false
       description: The amount of units to go back in time
-    - name: time-range-unit
-      auto: PREDEFINED
+      isArray: false
+      name: time-range-value
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The search unit
+      isArray: false
+      name: time-range-unit
       predefined:
       - hour
       - day
@@ -385,9 +698,13 @@ script:
       - year
       - login
       - epoch
-      description: The search unit
-    - name: policy-name
-      auto: PREDEFINED
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The policy name
+      isArray: false
+      name: policy-name
       predefined:
       - IAM password policy does not have a symbol
       - IAM password policy does not expire in 90 days
@@ -419,71 +736,137 @@ script:
       - VPC Flow Logs not enabled
       - MFA not enabled for IAM users
       - Inactive users for more than 30 days
-      description: The policy name
-    - name: policy-label
+      required: false
+      secret: false
+    - default: false
       description: The policy label
-    - name: policy-compliance-standard
+      isArray: false
+      name: policy-label
+      required: false
+      secret: false
+    - default: false
       description: The policy compliance standard
-    - name: cloud-account
+      isArray: false
+      name: policy-compliance-standard
+      required: false
+      secret: false
+    - default: false
       description: The cloud account
-    - name: cloud-region
+      isArray: false
+      name: cloud-account
+      required: false
+      secret: false
+    - default: false
       description: The cloud region
-    - name: alert-rule-name
+      isArray: false
+      name: cloud-region
+      required: false
+      secret: false
+    - default: false
       description: The alert rule name
-    - name: resource-id
+      isArray: false
+      name: alert-rule-name
+      required: false
+      secret: false
+    - default: false
       description: The resource ID
-    - name: resource-name
+      isArray: false
+      name: resource-id
+      required: false
+      secret: false
+    - default: false
       description: The resource name
-    - name: resource-type
+      isArray: false
+      name: resource-name
+      required: false
+      secret: false
+    - default: false
       description: The resource type
-    - name: alert-status
-      auto: PREDEFINED
+      isArray: false
+      name: resource-type
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The alert status
+      isArray: false
+      name: alert-status
       predefined:
       - open
       - resolved
       - dismissed
-      description: The alert status
-    - name: cloud-type
-      auto: PREDEFINED
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The cloud type
+      isArray: false
+      name: cloud-type
       predefined:
       - aws
       - azure
       - gcp
-      description: The cloud type
-    - name: risk-grade
-      auto: PREDEFINED
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The risk grade
+      isArray: false
+      name: risk-grade
       predefined:
       - A
       - B
       - C
       - F
-      description: The risk grade
-    - name: policy-type
-      auto: PREDEFINED
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The policy type
+      isArray: false
+      name: policy-type
       predefined:
       - anomaly
       - audit_event
       - config
       - network
-      description: The policy type
-    - name: policy-severity
-      auto: PREDEFINED
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The policy severity
+      isArray: false
+      name: policy-severity
       predefined:
       - high
       - medium
       - low
-      description: The policy severity
+      required: false
+      secret: false
+    deprecated: false
+    description: Re-open the alerts matching the given filter.  Must provide either
+      policy IDs or alert IDs.
+    execution: true
+    name: redlock-reopen-alerts
     outputs:
     - contextPath: Redlock.ReopenedAlert.ID
       description: IDs of the re-opened alerts
       type: string
-    description: Re-open the alerts matching the given filter.  Must provide either policy IDs or alert IDs.
-    execution: true
-  - name: redlock-list-alert-filters
-    arguments: []
+  - deprecated: false
     description: List the acceptable filters and values for alerts
-  - name: redlock-get-remediation-details
+    execution: false
+    name: redlock-list-alert-filters
+  - arguments:
+    - default: false
+      description: The alert ID for which to get remediation details.
+      isArray: false
+      name: alert-id
+      required: false
+      secret: false
+    deprecated: false
     description: Gets remediation details for the given alert.
+    execution: false
+    name: redlock-get-remediation-details
     outputs:
     - contextPath: Redlock.Alert.Remediation.Description
       description: Description of CLI remediation instructions.
@@ -494,11 +877,543 @@ script:
     - contextPath: Redlock.Alert.Remediation.CLI
       description: The exact CLI command string.
       type: string
-    arguments:
-    - name: alert-id
-      description: The alert ID for which to get remediation details.
+  - arguments:
+    - default: false
+      description: Start time for the search, in the following string format -  MM/DD/YYYY
+      isArray: false
+      name: time-range-date-from
+      required: false
+      secret: false
+    - default: false
+      description: End time for the search, in the following format -  MM/DD/YYYY
+      isArray: false
+      name: time-range-date-to
+      required: false
+      secret: false
+    - default: false
+      description: The number of time range value units for the search. For example,
+        3 days, 5 weeks, etc.
+      isArray: false
+      name: time-range-value
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: |-
+        The search unit. Possible values are: "hour", "week", "month", "year", "login", or "epoch". The "login" and "epoch" options are only available if timeRangeValue
+        is not provided.
+      isArray: false
+      name: time-range-unit
+      predefined:
+      - hour
+      - day
+      - week
+      - month
+      - year
+      - login
+      - epoch
+      required: false
+      secret: false
+    - default: false
+      description: Query to run in Prisma Cloud config API using RQL language.
+      isArray: false
+      name: query
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '100'
+      description: Maximum number of entries to return.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Search configuration inventory on the Prisma Cloud (RedLock) platform
+      using RQL language.
+    execution: false
+    name: redlock-search-config
+    outputs:
+    - contextPath: Redlock.Asset.accountId
+      description: Cloud Account ID
+      type: Date
+    - contextPath: Redlock.Asset.accountName
+      description: Cloud Account Name
+      type: String
+    - contextPath: Redlock.Asset.allowDrillDown
+      description: Flag to allow drill down.
+      type: Boolean
+    - contextPath: Redlock.Asset.cloudType
+      description: Cloud Type
+      type: String
+    - contextPath: Redlock.Asset.deleted
+      description: Asset was deleted?
+      type: Boolean
+    - contextPath: Redlock.Asset.hasAlert
+      description: Asset has Prisma Cloud alert?
+      type: Boolean
+    - contextPath: Redlock.Asset.hasExtFindingRiskFactors
+      description: Has External Finding Risk Factors?
+      type: Boolean
+    - contextPath: Redlock.Asset.hasExternalFinding
+      description: Has External Finding?
+      type: Boolean
+    - contextPath: Redlock.Asset.hasExternalIntegration
+      description: Has External Integration?
+      type: Boolean
+    - contextPath: Redlock.Asset.hasNetwork
+      description: Has Network?
+      type: Boolean
+    - contextPath: Redlock.Asset.id
+      description: Redlock Asset ID
+      type: String
+    - contextPath: Redlock.Asset.data
+      description: Redlock Asset specific data
+      type: Unknown
+    - contextPath: Redlock.Asset.insertTs
+      description: Insert Ts
+      type: Date
+    - contextPath: Redlock.Asset.name
+      description: Asset Name
+      type: String
+    - contextPath: Redlock.Asset.regionId
+      description: Cloud Region ID
+      type: String
+    - contextPath: Redlock.Asset.regionName
+      description: Cloud Region Name
+      type: String
+    - contextPath: Redlock.Asset.resourceType
+      description: Cloud Resource type
+      type: String
+    - contextPath: Redlock.Asset.rrn
+      description: Cloud RRN
+      type: String
+    - contextPath: Redlock.Asset.service
+      description: Cloud service
+      type: String
+    - contextPath: Redlock.Asset.stateId
+      description: State ID
+      type: String
+  - arguments:
+    - default: false
+      description: Start time for the search, in the following format -  MM/DD/YYYY.
+      isArray: false
+      name: time-range-date-from
+      required: false
+      secret: false
+    - default: false
+      description: End time for the search, in the following format -  MM/DD/YYYY.
+      isArray: false
+      name: time-range-date-to
+      required: false
+      secret: false
+    - default: false
+      description: The number of time range value units for the search. For example,
+        3 days, 5 weeks, etc.
+      isArray: false
+      name: time-range-value
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: |-
+        The search unit. Possible values are: "hour", "week", "month", "year", "login", or "epoch". The "login" and "epoch" options are only available if timeRangeValue
+        is not provided.
+      isArray: false
+      name: time-range-unit
+      predefined:
+      - hour
+      - day
+      - week
+      - month
+      - year
+      - login
+      - epoch
+      required: false
+      secret: false
+    - default: false
+      description: Query to run in Prisma Cloud search API using RQL language.
+      isArray: false
+      name: query
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '100'
+      description: Maximum number of entries to return.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Search events on the Prisma Cloud (RedLock) platform using RQL language.
+    execution: false
+    name: redlock-search-event
+    outputs:
+    - contextPath: Redlock.Event
+      description: Cloud audit events.
+      type: Unknown
+  - arguments:
+    - default: false
+      description: Start time for the search, in the following format -  MM/DD/YYYY.
+      isArray: false
+      name: time-range-date-from
+      required: false
+      secret: false
+    - default: false
+      description: End time for the search, in the following format -  MM/DD/YYYY.
+      isArray: false
+      name: time-range-date-to
+      required: false
+      secret: false
+    - default: false
+      description: The number of time range value units for the search. For example,
+        3 days, 5 weeks, etc.
+      isArray: false
+      name: time-range-value
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: |-
+        The search unit. Possible values are: "hour", "week", "month", "year", "login", or "epoch". The "login" and "epoch" options are only available if timeRangeValue
+        is not provided.
+      isArray: false
+      name: time-range-unit
+      predefined:
+      - hour
+      - day
+      - week
+      - month
+      - year
+      - login
+      - epoch
+      required: false
+      secret: false
+    - default: false
+      description: Query to run in Prisma Cloud search API using RQL language.
+      isArray: false
+      name: query
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The cloud in which the network should be searched.
+      isArray: false
+      name: cloud-type
+      predefined:
+      - aws
+      - azure
+      - gcp
+      - alibaba_cloud
+      - oci
+      required: false
+      secret: false
+    deprecated: false
+    description: Search networks on the Prisma Cloud (RedLock) platform using RQL
+      language.
+    execution: false
+    name: redlock-search-network
+    outputs:
+    - contextPath: Redlock.Network.Node
+      description: Cloud network node.
+      type: Unknown
+    - contextPath: Redlock.Network.Connection
+      description: Cloud network connection.
+      type: Unknown
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      defaultValue: scanId
+      description: Group by which to aggregate scan results.
+      isArray: false
+      name: group_by
+      predefined:
+      - scanId
+      - ' assetType'
+      - assetName
+      - resourceList
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '25'
+      description: Pagination size.
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '1'
+      description: Pagination number.
+      isArray: false
+      name: page_number
+      required: false
+      secret: false
+    - default: false
+      description: Sorting parameters. The sort order is ascending unless the field
+        is prefixed with minus (-), in which case it is descending.
+      isArray: false
+      name: sort
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: relative
+      description: Time filter type.
+      isArray: false
+      name: filter_type
+      predefined:
+      - to_now
+      - absolute
+      - relative
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '1'
+      description: Number of time units.
+      isArray: false
+      name: filter_time_amount
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: day
+      description: The time unit for retrieving the list of IaC scans.
+      isArray: false
+      name: to_now_time_unit
+      predefined:
+      - epoch
+      - login
+      - year
+      required: false
+      secret: false
+    - default: false
+      description: 'Start time, for example: 11/01/2021 10:10:10.'
+      isArray: false
+      name: filter_start_time
+      required: false
+      secret: false
+    - default: false
+      description: End time in Unix time (the number of seconds that have elapsed
+        since the Unix epoch) for the absolute time type.
+      isArray: false
+      name: filter_end_time
+      required: false
+      secret: false
+    - default: false
+      description: Asset type to search with.
+      isArray: false
+      name: filter_asset_type
+      required: false
+      secret: false
+    - default: false
+      description: Asset name to search with.
+      isArray: false
+      name: filter_asset_name
+      required: false
+      secret: false
+    - default: false
+      description: 'User to filter with, example: ayman@example.domain'
+      isArray: false
+      name: filter_user
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'Status to filter with, example: passed'
+      isArray: false
+      name: filter_status
+      predefined:
+      - passed
+      - failed
+      - processing
+      - errored
+      - failed_n_merged
+      - failed_n_deployed
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: login
+      description: Relative Time unit
+      isArray: false
+      name: relative_time_unit
+      predefined:
+      - hour
+      - day
+      - week
+      - month
+      - year
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns a list of IaC scans that meet the given conditions.
+    execution: false
+    name: redlock-list-scans
+    outputs:
+    - contextPath: Redlock.Scans.deployed
+      description: Scan deployed attribute.
+      type: Boolean
+    - contextPath: Redlock.Scans.fail
+      description: Scan fail attribute.
+      type: Number
+    - contextPath: Redlock.Scans.failureCriteria
+      description: Scan failure criteria attribute.
+      type: String
+    - contextPath: Redlock.Scans.matchedPoliciesSummary.high
+      description: Scan matched policies summary attribute.
+      type: Number
+    - contextPath: Redlock.Scans.matchedPoliciesSummary.low
+      description: Scan matched low policies summary attribute.
+      type: Number
+    - contextPath: Redlock.Scans.matchedPoliciesSummary.medium
+      description: Scan matched medium policies summary attribute.
+      type: Number
+    - contextPath: Redlock.Scans.merged
+      description: Scan merged attribute.
+      type: Boolean
+    - contextPath: Redlock.Scans.name
+      description: Scan name attribute.
+      type: String
+    - contextPath: Redlock.Scans.pass
+      description: Scan pass attribute.
+      type: Number
+    - contextPath: Redlock.Scans.scanAttributes.appliedAlertRules
+      description: Scan applied alert rules attribute.
+      type: String
+    - contextPath: Redlock.Scans.scanAttributes.branch
+      description: Scan Scan branch attribute.
+      type: String
+    - contextPath: Redlock.Scans.scanAttributes.org
+      description: Scan org attribute.
+      type: String
+    - contextPath: Redlock.Scans.scanAttributes.pullRequestId
+      description: Scan PR ID attribute.
+      type: String
+    - contextPath: Redlock.Scans.scanAttributes.repository
+      description: Scan repository attribute.
+      type: String
+    - contextPath: Redlock.Scans.scanAttributes.resourcesScanned
+      description: Scan resources scanned attribute.
+      type: String
+    - contextPath: Redlock.Scans.scanAttributes.templateType
+      description: Scan template type attribute.
+      type: String
+    - contextPath: Redlock.Scans.scanAttributes.triggeredOn
+      description: Scan triggered on attribute.
+      type: String
+    - contextPath: Redlock.Scans.scanAttributes.userId
+      description: Scan user id attribute.
+      type: String
+    - contextPath: Redlock.Scans.scanTime
+      description: Scan scan time attribute.
+      type: Date
+    - contextPath: Redlock.Scans.status
+      description: Scan status attribute.
+      type: String
+    - contextPath: Redlock.Scans.tags.name
+      description: Scan tags name attribute.
+      type: String
+    - contextPath: Redlock.Scans.tags.value
+      description: Scan tags value attribute.
+      type: String
+    - contextPath: Redlock.Scans.type
+      description: Scan type attribute.
+      type: String
+    - contextPath: Redlock.Scans.user
+      description: Scan user attribute.
+      type: List
+    - contextPath: Redlock.Scans.id
+      description: Scan id.
+      type: String
+    - contextPath: Redlock.Scans.links.self
+      description: Scan links.
+      type: String
+    - contextPath: Redlock.Scans.relationships.scanResult.links.related
+      description: Scan relationships scan result links .
+      type: String
+  - arguments:
+    - default: false
+      description: The scan ID. The scan ID can be retrieved by the redlock-list-scans
+        command.
+      isArray: false
+      name: scan_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns the status of the asynchronous IaC scan job that has the
+      specified scan ID.
+    execution: false
+    name: redlock-get-scan-status
+    outputs:
+    - contextPath: Redlock.Scans.id
+      description: Scan ID
+      type: String
+    - contextPath: Redlock.Scans.status
+      description: Scan status
+      type: String
+  - arguments:
+    - default: false
+      description: The scan ID. Scan Id can be retrieved by the redlock-list-scans
+        command.
+      isArray: false
+      name: scan_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns scan result details for the completed scan that has the specified
+      scan ID
+    execution: false
+    name: redlock-get-scan-results
+    outputs:
+    - contextPath: Redlock.Scans.id
+      description: Scan ID
+      type: String
+    - contextPath: Redlock.Scans.results.attributes.blameList.file
+      description: Scan results blame list file
+      type: String
+    - contextPath: Redlock.Scans.results.attributes.blameList.locations.line
+      description: Scan results blame list locations line
+      type: Number
+    - contextPath: Redlock.Scans.results.attributes.blameList.locations.path
+      description: Scan results blame list locations path
+      type: String
+    - contextPath: Redlock.Scans.results.attributes.desc
+      description: Scan results description
+      type: String
+    - contextPath: Redlock.Scans.results.attributes.docUrl
+      description: Scan results doc URL
+      type: String
+    - contextPath: Redlock.Scans.results.attributes.files
+      description: Scan results files
+      type: String
+    - contextPath: Redlock.Scans.results.attributes.name
+      description: Scan results name
+      type: String
+    - contextPath: Redlock.Scans.results.attributes.policyId
+      description: Scan results policy ID
+      type: String
+    - contextPath: Redlock.Scans.results.attributes.rule
+      description: Scan results rule
+      type: String
+    - contextPath: Redlock.Scans.results.attributes.severity
+      description: Scan results severity
+      type: String
+    - contextPath: Redlock.Scans.results.attributes.systemDefault
+      description: Scan results system default
+      type: Boolean
+    - contextPath: Redlock.Scans.results.id
+      description: Scan results ID
+      type: String
+  dockerimage: demisto/python3:3.10.4.29342
+  feed: false
   isfetch: true
+  longRunning: false
+  longRunningPort: false
   runonce: false
-defaultclassifier: RedLock
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- RedLockTest
 defaultmapperin: RedLock-mapper
+defaultclassifier: RedLock
 fromversion: 5.0.0

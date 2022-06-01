@@ -1,0 +1,91 @@
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
+description: Playbook used to retrieve the verdict for a specific job id for a sample
+  submitted to FortiSandbox
+id: FortiSandbox - Loop For Job Verdict
+inputs:
+- description: Job ID to get verdicts on
+  key: JobIds
+  playbookInputQuery:
+  required: false
+  value: {}
+name: FortiSandbox - Loop For Job Verdict
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 9a8b0f6d-3a50-46eb-8d87-4f2597e54007
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 9a8b0f6d-3a50-46eb-8d87-4f2597e54007
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      job_id:
+        simple: ${inputs.JobIds}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: FortiSandbox
+      description: Query File Scan verdict from FortiSandbox based on Job ID
+      id: 0be92ab1-4117-4ddb-8a16-26685d22be04
+      iscommand: true
+      name: Loop for getting verdicts
+      script: FortiSandbox|||fortisandbox-query-job-verdict
+      type: regular
+      version: -1
+    taskid: 0be92ab1-4117-4ddb-8a16-26685d22be04
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 275,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0
+marketplaces:
+  - xsoar

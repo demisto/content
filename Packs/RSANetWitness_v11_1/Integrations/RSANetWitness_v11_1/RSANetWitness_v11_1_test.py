@@ -242,6 +242,43 @@ def test_fetch_incidents_fetch_with_last_fetched_id(mocker):
     assert fetched_inc[0]['labels'][0]['value'] == '"{}"'.format(INCIDENT_NEW['items'][0]['id'])
 
 
+def test_fetch_incidents_with_empty_response(mocker):
+    """
+    Given:
+        Response from API will be empty
+    When:
+        fetch-incidents
+    Then:
+        Don't throw an error
+    """
+    def mock_demisto():
+        mocked_dict = {
+            'server': '',
+            'credentials': {
+                'identifier': '',
+                'password': ''
+            },
+            'insecure': '',
+            'version': '',
+            'isFetch': '',
+            'fetch_limit': 1
+        }
+        mocker.patch.object(demisto, 'params', return_value=mocked_dict)
+        mocker.patch.object(demisto, "getLastRun", return_value={
+            "timestamp": "2018-08-13T09:56:02.000000",
+            "last_fetched_id": INCIDENT_OLD['items'][0]['id']
+        })
+        mocker.patch.object(demisto, 'incidents')
+        mocker.patch('RSANetWitness_v11_1.get_incidents_request', return_value=None)
+
+    mock_demisto()
+    from RSANetWitness_v11_1 import fetch_incidents
+
+    fetched_inc = fetch_incidents()
+    # assert fetch
+    assert len(fetched_inc) == 0
+
+
 def test_get_incident(mocker):
     def mock_demisto():
         mock_args = {

@@ -1,0 +1,47 @@
+{
+    "single_url_output":
+        {
+            "annotation": [
+                "Google Maps"
+            ],
+            "cid": [
+                -1
+            ],
+            "pgid": [
+                -1
+            ],
+            "updateTime": 1616090919,
+            "url": "maps.google.com"
+    },
+
+    "multiple_urls_output": {
+        "urls": [
+        {
+            "annotation": [
+                "Google Maps"
+            ],
+            "cid": [
+                -1
+            ],
+            "pgid": [
+                -1
+            ],
+            "updateTime": 1616090919,
+            "url": "maps.google.com"
+        },
+        {
+            "annotation": [
+                "Google Maps"
+            ],
+            "cid": [
+                -1
+            ],
+            "pgid": [
+                -1
+            ],
+            "updateTime": 1616090919,
+            "url": "sport.com"
+        }
+    ]
+    }
+}

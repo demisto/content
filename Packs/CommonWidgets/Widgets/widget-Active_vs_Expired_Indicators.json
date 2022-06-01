@@ -1,0 +1,31 @@
+{
+    "dataType": "indicators",
+    "dateRange": {
+        "fromDate": "0001-01-01T00:00:00Z",
+        "fromDateLicense": "0001-01-01T00:00:00Z",
+        "period": {
+            "by": "",
+            "byFrom": "days",
+            "byTo": "",
+            "field": "",
+            "fromValue": 7,
+            "toValue": null
+        },
+        "toDate": "0001-01-01T00:00:00Z"
+    },
+    "id": "7036f5f4-1471-4a27-8b7c-f2bbcd7fba42",
+    "isPredefined": true,
+    "name": "Active vs Expired Indicators",
+    "params": {
+        "groupBy": [
+            "expirationStatus"
+        ],
+        "hideLegend": false,
+        "showGraphValues": false,
+        "valuesFormat": "abbreviated"
+    },
+    "version": -1,
+    "widgetType": "pie",
+    "fromVersion": "6.2.0",
+    "description": ""
+}

@@ -1,0 +1,30 @@
+{
+    "associatedToAll": true,
+    "caseInsensitive": false,
+    "cliName": "deviceusername",
+    "closeForm": false,
+    "content": true,
+    "description": "The username of the user that owns the device",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_deviceusername",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Device Username",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "5.5.0",
+    "marketplaces": [
+       "xsoar"
+    ]
+}

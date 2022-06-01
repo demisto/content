@@ -33,7 +33,7 @@ if [ "$1" == "-u" -o "$1" == "--update" ]; then
     fi
     if [ -f "venv/bin/pip3" ]; then
         echo "Updating python 3 dependencies ..."
-        venv/bin/pip3 install -r dev-requirements-py3.txt
+        venv/bin/pip3 install -r dev-requirements-py3.txt -U --upgrade-strategy only-if-needed
     fi
     if [ -d "node_modules" ]; then
         echo "Updating node modules"
@@ -87,8 +87,20 @@ else
                 INCLUDE_PY2_NOTE=yes
             fi
         fi
+
+        VIRTUALENV_VERSION=$(virtualenv --version)
+        if [[ $VIRTUALENV_VERSION != *16.7.* && "$SETUP_PY2" == "yes" ]]; then
+            echo "ERROR: You are using virtualenv version ${VIRTUALENV_VERSION}, Please install virtualenv version 16.7.7:
+            pip3 uninstall virtualenv && pip3 install virtualenv==16.7.7"
+            exit 1
+        fi
+
         PY3CMD="python3"
-        if command -v python3.8 >/dev/null 2>&1; then
+        if command -v python3.10 >/dev/null 2>&1; then
+            PY3CMD="python3.10"
+        elif command -v python3.9 >/dev/null 2>&1; then
+            PY3CMD="python3.9"
+        elif command -v python3.8 >/dev/null 2>&1; then
             PY3CMD="python3.8"
         elif command -v python3.7 >/dev/null 2>&1; then
             PY3CMD="python3.7"
@@ -108,7 +120,7 @@ else
                 exit 1
             fi
         fi
-        virtualenv -p $PY3CMD venv
+        $PY3CMD -m venv --system-site-packages  venv
         if [ "$SETUP_PY2" == "yes" ]; then
             virtualenv -p python2 venv
         fi
@@ -118,7 +130,7 @@ else
         if [ "$SETUP_PY2" == "yes" ]; then
             venv/bin/pip2 install -r dev-requirements-py2.txt
         fi
-        venv/bin/pip3 install -r dev-requirements-py3.txt
+        venv/bin/pip3 install -r dev-requirements-py3.txt -U --upgrade-strategy only-if-needed
         if [ "$INCLUDE_PY2_NOTE" == "yes" ]; then
             echo "=========================="
             echo "Note: python 2 is NOT setup. If you require python 2 for your scripts/integrations run this command again"
@@ -136,7 +148,10 @@ fi
 
 echo "======================="
 
-if [ -n "$NO_NPM" ]; then
+if [ -n "$CI" ]; then
+    echo "Detected CI env. Running npm ci..."
+    npm ci --cache .npm --prefer-offline
+elif [ -n "$NO_NPM" ]; then
     echo "Skipping npm node modules setup as environment varialbe NO_NPM is set"
 else
     if ! command -v npm >/dev/null 2>&1; then
@@ -145,7 +160,7 @@ else
         echo "You can install node and npm on your machine."
         echo "and then run: 'npm install'"
     else
-        echo "Running: npm install ..."
+        echo "Running: npm install ..."        
         npm install
     fi
 fi

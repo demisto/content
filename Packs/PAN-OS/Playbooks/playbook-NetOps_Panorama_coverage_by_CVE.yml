@@ -1,0 +1,119 @@
+id: NetOps Panorama coverage by CVE
+version: -1
+name: NetOps Panorama coverage by CVE
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 3e896440-3bfd-4265-8d70-afc83e373905
+    type: start
+    task:
+      id: 3e896440-3bfd-4265-8d70-afc83e373905
+      version: -1
+      name: ""
+      iscommand: false
+      description: ''
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 2d6dd63c-b9b9-419b-86a9-3fa5ad9ccdb0
+    type: regular
+    task:
+      id: 2d6dd63c-b9b9-419b-86a9-3fa5ad9ccdb0
+      version: -1
+      name: Check coverage from the CVE list
+      description: Check coverage from the CVE list.
+      scriptName: PanoramaCVECoverage
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      CVE_List:
+        complex:
+          root: incident
+          accessor: cvelist
+      Result_file:
+        complex:
+          root: File
+          accessor: EntryID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: true
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 0aa77ad6-c7bc-4f8b-84cf-3b8c9a901a7f
+    type: regular
+    task:
+      id: 0aa77ad6-c7bc-4f8b-84cf-3b8c9a901a7f
+      version: -1
+      name: pan-os-get-predefined-threats-list
+      description: Gets the predefined threats list from Firewall or Panorama.
+      script: '|||pan-os-get-predefined-threats-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      target:
+        complex:
+          root: incident
+          accessor: target
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 415,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 5.0.0
+description: Find if there is signature coverage for a specific CVE.

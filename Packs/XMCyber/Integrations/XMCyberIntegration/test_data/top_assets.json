@@ -1,0 +1,189 @@
+{
+    "data": {
+        "entities": [
+            {
+                "entityId": "azureUser-5d49400b-bc26-4d36-8cff-640d1eeb6465",
+                "name": "Deployer",
+                "entityType": "azureUser",
+                "entityTypeDisplayName": "Azure User",
+                "entitySubType": {
+                    "name": "entitySubType",
+                    "displayName": "Entity Subtype",
+                    "value": "azureUser",
+                    "displayValue": "Azure User"
+                },
+                "displayName": "Deployer",
+                "entityBasicData": {
+                    "entityFlavorProperties": [
+                        {
+                            "name": "userPrincipalName",
+                            "displayName": "User Principal Name",
+                            "value": "deployer@domaine.model.cyberxm.com",
+                            "displayValue": "deployer@domaine.model.cyberxm.com"
+                        },
+                        {
+                            "name": "name",
+                            "displayName": "User Name",
+                            "value": "Deployer",
+                            "displayValue": "Deployer"
+                        }
+                    ],
+                    "entityNetworkIdentifierProperties": [
+                        {
+                            "name": "tenantId",
+                            "displayName": "Tenant ID",
+                            "value": "a23d3b89-7fd2-4579-89b7-51641b12265b",
+                            "displayValue": "a23d3b89-7fd2-4579-89b7-51641b12265b"
+                        }
+                    ]
+                },
+                "value": 0.53,
+                "score": 0.53,
+                "level": "low",
+                "trend": null
+            },
+            {
+                "entityId": "azureVirtualMachine-4be55d60-136f-4410-9b0b-26f192e941ad",
+                "name": "testwinvm2",
+                "entityType": "azureVirtualMachine",
+                "entityTypeDisplayName": "Azure Virtual Machine",
+                "entitySubType": {
+                    "name": "entitySubType",
+                    "displayName": "Entity Subtype",
+                    "value": "azureVirtualMachine",
+                    "displayValue": "Azure Virtual Machine"
+                },
+                "displayName": "testwinvm2",
+                "entityBasicData": {
+                    "entityFlavorProperties": [
+                        {
+                            "name": "name",
+                            "displayName": "Virtual Machine Name",
+                            "value": "testwinvm2",
+                            "displayValue": "testwinvm2"
+                        },
+                        {
+                            "name": "id",
+                            "displayName": "Virtual Machine Id",
+                            "value": "4be55d60-136f-4410-9b0b-26f192e941ad",
+                            "displayValue": "4be55d60-136f-4410-9b0b-26f192e941ad"
+                        },
+                        {
+                            "name": "location",
+                            "displayName": "Virtual Machine Location",
+                            "value": "eastus",
+                            "displayValue": "eastus"
+                        },
+                        {
+                            "name": "subscriptionId",
+                            "displayName": "Subscription ID",
+                            "value": "3bbab85a-c99a-4851-8e70-45d85d8378f0",
+                            "displayValue": "3bbab85a-c99a-4851-8e70-45d85d8378f0"
+                        },
+                        {
+                            "name": "resourceGroupName",
+                            "displayName": "Resource Group",
+                            "value": "TestResources",
+                            "displayValue": "TestResources"
+                        },
+                        {
+                            "name": "fqdn",
+                            "displayName": "Fully Qualified Name",
+                            "value": "/subscriptions/3bbab85a-c99a-4851-8e70-45d85d8378f0/resourceGroups/TestResources/providers/Microsoft.Compute/virtualMachines/testwinvm2",
+                            "displayValue": "/subscriptions/3bbab85a-c99a-4851-8e70-45d85d8378f0/resourceGroups/TestResources/providers/Microsoft.Compute/virtualMachines/testwinvm2"
+                        }
+                    ],
+                    "entityNetworkIdentifierProperties": [
+                        {
+                            "name": "tenantId",
+                            "displayName": "Tenant ID",
+                            "value": "a23d3b89-7fd2-4579-89b7-51641b12265b",
+                            "displayValue": "a23d3b89-7fd2-4579-89b7-51641b12265b"
+                        }
+                    ]
+                },
+                "value": 1.55,
+                "score": 1.55,
+                "level": "low",
+                "trend": null
+            },
+            {
+                "entityId": "azureVirtualMachine-9f9a1625-aa36-428c-b6bd-e9c7c476510a",
+                "name": "testwinvm",
+                "entityType": "azureVirtualMachine",
+                "entityTypeDisplayName": "Azure Virtual Machine",
+                "entitySubType": {
+                    "name": "entitySubType",
+                    "displayName": "Entity Subtype",
+                    "value": "azureVirtualMachine",
+                    "displayValue": "Azure Virtual Machine"
+                },
+                "displayName": "testwinvm",
+                "entityBasicData": {
+                    "entityFlavorProperties": [
+                        {
+                            "name": "name",
+                            "displayName": "Virtual Machine Name",
+                            "value": "testwinvm",
+                            "displayValue": "testwinvm"
+                        },
+                        {
+                            "name": "id",
+                            "displayName": "Virtual Machine Id",
+                            "value": "9f9a1625-aa36-428c-b6bd-e9c7c476510a",
+                            "displayValue": "9f9a1625-aa36-428c-b6bd-e9c7c476510a"
+                        },
+                        {
+                            "name": "location",
+                            "displayName": "Virtual Machine Location",
+                            "value": "eastus",
+                            "displayValue": "eastus"
+                        },
+                        {
+                            "name": "subscriptionId",
+                            "displayName": "Subscription ID",
+                            "value": "3bbab85a-c99a-4851-8e70-45d85d8378f0",
+                            "displayValue": "3bbab85a-c99a-4851-8e70-45d85d8378f0"
+                        },
+                        {
+                            "name": "resourceGroupName",
+                            "displayName": "Resource Group",
+                            "value": "TestResources",
+                            "displayValue": "TestResources"
+                        },
+                        {
+                            "name": "fqdn",
+                            "displayName": "Fully Qualified Name",
+                            "value": "/subscriptions/3bbab85a-c99a-4851-8e70-45d85d8378f0/resourceGroups/TestResources/providers/Microsoft.Compute/virtualMachines/testwinvm",
+                            "displayValue": "/subscriptions/3bbab85a-c99a-4851-8e70-45d85d8378f0/resourceGroups/TestResources/providers/Microsoft.Compute/virtualMachines/testwinvm"
+                        }
+                    ],
+                    "entityNetworkIdentifierProperties": [
+                        {
+                            "name": "tenantId",
+                            "displayName": "Tenant ID",
+                            "value": "a23d3b89-7fd2-4579-89b7-51641b12265b",
+                            "displayValue": "a23d3b89-7fd2-4579-89b7-51641b12265b"
+                        }
+                    ]
+                },
+                "value": 1.91,
+                "score": 1.91,
+                "level": "low",
+                "trend": null
+            }
+        ],
+        "stats": {
+            "totalAssets": 480,
+            "assetComplexity": {
+                "none": 0,
+                "low": 159,
+                "medium": 319,
+                "high": 2
+            }
+        }
+    },
+    "scenarioId": null,
+    "timeId": "timeAgo_days_14",
+    "amountOfResults": 3
+}

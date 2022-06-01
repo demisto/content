@@ -15,22 +15,22 @@
 <h2 id="prerequisite">Prerequisite</h2>
 </div>
 <div class="cl-preview-section">
-<p><strong>Install Demisto Engine</strong></p>
+<p><strong>Install Cortex XSOAR Engine</strong></p>
 </div>
 <div class="cl-preview-section">
 <ul>
-<li>Demisto Engine must be installed on a target window machine which is part of the domain of your Exchange 2016 server.</li>
+<li>Cortex XSOAR Engine must be installed on a target window machine which is part of the domain of your Exchange 2016 server.</li>
 <li>Make sure you have Python 2.7 installed on the Engine machine.</li>
 <li>Add the necessary Python lbs to the Engine machine.<br> <a href="https://github.com/demisto/content/blob/master/Packs/Exchange2016_Compliance/Integrations/Exchange2016_Compliance/doc_files/requirements.txt">https://github.com/demisto/content/blob/master/Packs/Exchange2016_Compliance/Integrations/Exchange2016_Compliance/doc_files/requirements.txt</a><br> Run the pip install --no-cache-dir -r requirements.txt command.</li>
 <li>Make sure the integration runs without docker image.</li>
-<li>For more information regarding Installing and Deploying Demisto Engines, see the <a href="https://docs.paloaltonetworks.com/cortex/cortex-xsoar/5-5/cortex-xsoar-admin/engines/install-deploy-and-configure-demisto-engines.html">Demisto Engines Documentation</a>.</li>
+<li>For more information regarding Installing and Deploying Cortex XSOAR Engines, see the <a href="https://docs.paloaltonetworks.com/cortex/cortex-xsoar/5-5/cortex-xsoar-admin/engines/install-deploy-and-configure-demisto-engines.html">Cortex XSOAR Engines Documentation</a>.</li>
 </ul>
 </div>
 <div class="cl-preview-section">
 <p><strong>Permissions</strong><br> The user that you configure for the integration instance requires the Compliance Management role to run the integration commands. For more information, see the <a href="https://docs.microsoft.com/en-us/powershell/exchange/exchange-server/find-exchange-cmdlet-permissions?view=exchange-ps">Microsoft Documentation</a>.</p>
 </div>
 <div class="cl-preview-section">
-<h2 id="configure-exchange-2016-compliance-search-on-demisto">Configure Exchange 2016 Compliance Search on Demisto</h2>
+<h2 id="configure-exchange-2016-compliance-search-on-demisto">Configure Exchange 2016 Compliance Search on Cortex XSOAR</h2>
 </div>
 <div class="cl-preview-section">
 <ol>
@@ -40,7 +40,7 @@
 <ul>
 <li>
 <strong>Name</strong>: a textual name for the integration instance.</li>
-<li><strong>DOMAIN\USERNAME (e.g., DEMISTO.INT\admin)</strong></li>
+<li><strong>DOMAIN\USERNAME (e.g., XSOAR.INT\admin)</strong></li>
 <li><strong>Exchange Server fully qualified domain name (FQDN)</strong></li>
 <li>
 <strong>Use single engine</strong>: engine to run the integration on</li>
@@ -56,7 +56,7 @@
 <h2 id="commands">Commands</h2>
 </div>
 <div class="cl-preview-section">
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.<br> After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.<br> After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 </div>
 <div class="cl-preview-section">
 <ol>

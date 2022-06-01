@@ -1,0 +1,33 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Trello"
+    ],
+    "caseInsensitive": true,
+    "cliName": "trellodetails",
+    "closeForm": false,
+    "content": true,
+    "description": "Trello Card Details",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_trellodetails",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Trello Details",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "markdown",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

@@ -70,7 +70,6 @@ configuration:
   type: 19
 - display: Bypass exclusion list
   name: feedBypassExclusionList
-  defaultvalue: ""
   type: 8
   required: false
   additionalinfo: When selected, the exclusion list is ignored for indicators from
@@ -108,6 +107,12 @@ configuration:
   name: polling_timeout
   required: true
   type: 0
+- defaultvalue: 'true'
+  additionalinfo: Create relationships between indicators as part of Enrichment.
+  display: Create relationships
+  name: create_relationships
+  required: false
+  type: 8
 description: Use the Bambenek Consulting feed integration to fetch indicators from
   the feed.
 display: Bambenek Consulting Feed
@@ -132,7 +137,7 @@ script:
     description: Gets the feed indicators.
     execution: false
     name: bambenek-get-indicators
-  dockerimage: demisto/python3:3.8.5.10845
+  dockerimage: demisto/python3:3.10.4.29342
   feed: true
   isfetch: false
   longRunning: false

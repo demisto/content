@@ -1,0 +1,175 @@
+{
+    "description": "Maps Splunk ES incoming fields.",
+    "feed": false,
+    "id": "Splunk - Notable Generic Incoming Mapper",
+    "mapping": {
+        "Phishing Alerts": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Alert Action": {
+                    "simple": "action"
+                },
+                "Alert Name": {
+                    "simple": "rule_name"
+                },
+                "Email From": {
+                    "simple": "src_user"
+                },
+                "Email Message ID": {
+                    "simple": "message_id"
+                },
+                "Email To": {
+                    "simple": "recipient"
+                }
+            }
+        },
+        "Splunk Generic": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Notable - ID": {
+                    "simple": "event_id"
+                },
+                "dbotMirrorDirection": {
+                    "simple": "mirror_direction"
+                },
+                "dbotMirrorId": {
+                    "simple": "event_id"
+                },
+                "dbotMirrorInstance": {
+                    "simple": "mirror_instance"
+                }
+            }
+        },
+        "Splunk Notable Generic": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Asset Table": {
+                    "simple": "Asset"
+                },
+                "Assigned User": {
+                    "simple": "owner"
+                },
+                "Dsts": {
+                    "simple": "dest"
+                },
+                "Identity Table": {
+                    "simple": "Identity"
+                },
+                "Notable - ID": {
+                    "simple": "event_id"
+                },
+                "Notable Drilldown": {
+                    "simple": "Drilldown"
+                },
+                "Notable Status": {
+                    "simple": "status_label"
+                },
+                "Notable Urgency": {
+                    "simple": "urgency"
+                },
+                "Splunk Notable Reviewer": {
+					"complex": {
+						"filters": [],
+						"root": "reviewer",
+						"transformers": [
+							{
+								"operator": "FirstArrayElement"
+							}
+						]
+					}
+				},
+                "Srcs": {
+                    "simple": "src"
+                },
+                "Successful Asset Enrichment": {
+                    "simple": "successful_asset_enrichment"
+                },
+                "Successful Drilldown Enrichment": {
+                    "simple": "successful_drilldown_enrichment"
+                },
+                "Successful Identity Enrichment": {
+                    "simple": "successful_identity_enrichment"
+                },
+                "Tags": {
+                    "simple": "tag"
+                },
+                "Usernames": {
+                    "simple": "user"
+                },
+                "dbotMirrorDirection": {
+                    "simple": "mirror_direction"
+                },
+                "dbotMirrorId": {
+                    "simple": "event_id"
+                },
+                "dbotMirrorInstance": {
+                    "simple": "mirror_instance"
+                },
+                "details": {
+                    "simple": "rule_description"
+                },
+                "name": {
+                    "complex": {
+                        "filters": [],
+                        "root": "event_id",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "prefix": {},
+                                    "suffix": {
+                                        "value": {
+                                            "simple": " - "
+                                        }
+                                    }
+                                },
+                                "operator": "concat"
+                            },
+                            {
+                                "args": {
+                                    "prefix": {},
+                                    "suffix": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "rule_name"
+                                        }
+                                    }
+                                },
+                                "operator": "concat"
+                            }
+                        ]
+                    }
+                },
+                "occurred": {
+                    "simple": "_time"
+                },
+                "owner": {
+					"simple": "owner"
+				},
+                "severity": {
+                    "simple": "severity"
+                }
+            }
+        },
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Categories": {
+                    "simple": "security_domain"
+                },
+                "dbotMirrorDirection": {
+                    "simple": "mirror_direction"
+                },
+                "dbotMirrorId": {
+                    "simple": "event_id"
+                },
+                "dbotMirrorInstance": {
+                    "simple": "mirror_instance"
+                }
+            }
+        }
+    },
+    "name": "Splunk - Notable Generic Incoming Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

@@ -1,0 +1,23 @@
+{
+ "id": "ConcentricAI Security Event",
+ "version": -1,
+ "vcShouldIgnore": false,
+ "locked": false,
+ "name": "ConcentricAI Security Event",
+ "prevName": "ConcentricAI Security Event",
+ "color": "#90A4AE",
+ "playbookId": "ConcentricAI Demo Playbook",
+ "hours": 0,
+ "days": 0,
+ "weeks": 0,
+ "hoursR": 0,
+ "daysR": 0,
+ "weeksR": 0,
+ "system": false,
+ "readonly": false,
+ "default": false,
+ "autorun": true,
+ "disabled": false,
+ "reputationCalc": 0,
+ "fromVersion": "6.0.0"
+}

@@ -1,0 +1,38 @@
+args: []
+comment: Returns a list of all the users marked as away in Cortex XSOAR.
+commonfields:
+  id: GetAwayUsers
+  version: -1
+enabled: false
+name: GetAwayUsers
+outputs:
+- contextPath: AwayUsers.id
+  description: Away user ID.
+  type: String
+- contextPath: AwayUsers.username
+  description: Away user username.
+  type: String
+- contextPath: AwayUsers.name
+  description: Away user name.
+  type: String
+- contextPath: AwayUsers.phone
+  description: Away user phone.
+  type: String
+- contextPath: AwayUsers.roles
+  description: Away user roles.
+  type: Unknown
+- contextPath: AwayUsers.email
+  description: Away user email.
+  type: String
+script: '-'
+system: false
+tags:
+- Shift Management
+- widget
+timeout: '0'
+type: python
+subtype: python3
+dockerimage: demisto/python3:3.9.9.25564
+fromversion: 5.5.0
+tests:
+- No tests (auto formatted)

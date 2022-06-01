@@ -14,7 +14,7 @@ args:
   isArray: true
 scripttarget: 0
 runonce: false
-dockerimage: demisto/tld
+dockerimage: demisto/tld:1.0.0.23423
 runas: DBotWeakRole
 subtype: python3
 tests:

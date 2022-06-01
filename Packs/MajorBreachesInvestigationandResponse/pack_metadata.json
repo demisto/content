@@ -1,0 +1,84 @@
+{
+    "name": "Rapid Breach Response",
+    "description": "This content Pack helps you collect, investigate, and remediate incidents related to major breaches.",
+    "support": "xsoar",
+    "currentVersion": "1.6.22",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2020-12-16T14:11:20Z",
+    "categories": [],
+    "tags": [
+        "Breach",
+        "TIM",
+        "Incident Response"
+    ],
+    "itemPrefix": [
+        "Completed",
+        "Source",
+        "Playbook",
+        "Remaining",
+        "Remediation",
+        "Total",
+        "Hunting",
+        "Mitigation",
+        "Eradication"
+    ],
+    "useCases": [
+        "Hunting",
+        "Incident Response",
+        "Rapid Breach Response"
+    ],
+    "keywords": [
+        "SolarStorm",
+        "SunBurst",
+        "SolarWinds",
+        "Hafnium",
+        "zero-day",
+        "0-day",
+        "zero day",
+        "Exchange"
+    ],
+    "dependencies": {
+        "CommonPlaybooks": {
+            "mandatory": true,
+            "display_name": "Common Playbooks"
+        },
+        "PANWComprehensiveInvestigation": {
+            "mandatory": false,
+            "display_name": "PANW Comprehensive Investigation"
+        },
+        "CommonScripts": {
+            "mandatory": true,
+            "display_name": "Common Scripts"
+        },
+        "ExpanseV2": {
+            "mandatory": false,
+            "display_name": "Expanse v2"
+        },
+        "PAN-OS": {
+            "mandatory": false,
+            "display_name": "PAN-OS"
+        },
+        "MicrosoftPolicyAndCompliance": {
+            "display_name": "Microsoft Policy And Compliance",
+            "mandatory": false
+        },
+        "CVE_2021_44228": {
+            "mandatory": false,
+            "display_name": "CVE-2021-44228 - Log4j RCE"
+        },
+        "CVE_2021_40444": {
+            "mandatory": false,
+            "display_name": "CVE-2021-40444 - MSHTML RCE"
+        },
+        "ServiceNow": {
+            "mandatory": false,
+            "display_name": "ServiceNow"
+        }
+    },
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
+}

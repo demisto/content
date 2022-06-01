@@ -1,0 +1,37 @@
+[
+  {
+    "_id": "id_12345",
+    "name": "new name",
+    "client": "Cymulate",
+    "__v": 0,
+    "canDelete": true
+  },
+  {
+    "_id": "123",
+    "name": "pruebas",
+    "client": "Cymulate",
+    "__v": 0,
+    "canDelete": true
+  },
+  {
+    "_id": "456",
+    "name": "nurses ",
+    "client": "Cymulate",
+    "__v": 0,
+    "canDelete": true
+  },
+  {
+    "_id": "789",
+    "name": "arien",
+    "client": "Cymulate",
+    "__v": 0,
+    "canDelete": true
+  },
+  {
+    "_id": "a123",
+    "name": "new zoi",
+    "client": "Cymulate",
+    "__v": 0,
+    "canDelete": true
+  }
+]

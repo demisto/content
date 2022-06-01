@@ -191,9 +191,9 @@ def get_rule_logs_by_id_command(client, args):
     if client.security_api_token is None:
         raise Exception("Security API Token wasn't provided, cannot perform search")
     id = args.get("id")
-    size = args.get("size", 100)
-    page_size = args.get("page_size", MAX_LOGZIO_DOCS)
-    timeout = args.get("timeout", DEFAULT_TIMEOUT_SEC)
+    size = int(args.get("size", 100))
+    page_size = int(args.get("page_size", MAX_LOGZIO_DOCS))
+    timeout = int(args.get("timeout", DEFAULT_TIMEOUT_SEC))
     resp = client.get_rule_logs(id, size, page_size, timeout)
     readable, context = get_formatted_logs(resp)
     return_outputs(readable, context, resp)

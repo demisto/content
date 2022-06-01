@@ -3,15 +3,14 @@ version: -1
 name: Google Chronicle Backstory List Events - Test
 description: This playbook uses the Google Chronicle Backstory integration and tests
   the various scenarios of the "gcb-list-events" command.
-fromversion: 5.0.0
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: c5774b22-b4fa-4bd0-8037-b8193b9bfb88
+    taskid: 2ecac28e-5b6a-4849-8276-a9946cf0ac2a
     type: start
     task:
-      id: c5774b22-b4fa-4bd0-8037-b8193b9bfb88
+      id: 2ecac28e-5b6a-4849-8276-a9946cf0ac2a
       version: -1
       name: ""
       iscommand: false
@@ -35,10 +34,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: 91287b46-ce51-4ddc-881f-0c02d5b84a54
+    taskid: f13cb26f-6736-4192-83fe-92d3435b179a
     type: title
     task:
-      id: 91287b46-ce51-4ddc-881f-0c02d5b84a54
+      id: f13cb26f-6736-4192-83fe-92d3435b179a
       version: -1
       name: Test gcb-list-events command
       type: title
@@ -63,21 +62,27 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: 188083b5-e526-4308-8491-cd229fefd617
+    taskid: 953fe96b-300b-4857-8f17-3c2b33133371
     type: regular
     task:
-      id: 188083b5-e526-4308-8491-cd229fefd617
+      id: 953fe96b-300b-4857-8f17-3c2b33133371
       version: -1
       name: Get events from Chronicle
       description: List all of the events discovered within your enterprise on a particular
-        asset within the specified time range.
-      script: Google Chronicle Backstory|||gcb-list-events
+        device within the specified time range. If you receive the maximum number
+        of events you specified using the page_size parameter (or 100, the default),
+        there might still be more events within your Chronicle account. You can narrow
+        the time range and issue the call again to ensure you have visibility into
+        all possible events. This command returns more than 60 different types of
+        events. Any event would have only specific output context set. Refer the UDM
+        documentation to figure out the output properties specific to the event types.
+      script: '|||gcb-list-events'
       type: regular
       iscommand: true
-      brand: Google Chronicle Backstory
+      brand: ""
     nexttasks:
       '#none#':
-      - "3"
+      - "9"
     scriptarguments:
       asset_identifier:
         simple: ray-glass-laptop
@@ -106,19 +111,16 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: e81470e1-0cfd-41a6-85bd-1abd3579d273
+    taskid: fffb96f4-9780-4cfe-8dd1-b09581a6e0c8
     type: condition
     task:
-      id: e81470e1-0cfd-41a6-85bd-1abd3579d273
+      id: fffb96f4-9780-4cfe-8dd1-b09581a6e0c8
       version: -1
       name: Verify context data
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
-      '#default#':
-      - "5"
       "yes":
       - "7"
     separatecontext: false
@@ -138,8 +140,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 690
+          "x": 50,
+          "y": 865
         }
       }
     note: false
@@ -149,10 +151,10 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: d05ead51-2a5a-474d-87c2-69deda184a6d
+    taskid: 48c09236-575a-4111-8131-ab33f097aa7d
     type: title
     task:
-      id: d05ead51-2a5a-474d-87c2-69deda184a6d
+      id: 48c09236-575a-4111-8131-ab33f097aa7d
       version: -1
       name: Done
       type: title
@@ -164,35 +166,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 1360
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "5":
-    id: "5"
-    taskid: 0abdcd72-e594-405f-8d29-928f9777b644
-    type: title
-    task:
-      id: 0abdcd72-e594-405f-8d29-928f9777b644
-      version: -1
-      name: Empty response recieved from Chronicle
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "7"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 420,
-          "y": 870
+          "y": 1390
         }
       }
     note: false
@@ -202,10 +176,10 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: 4a07f52a-d692-4a6d-8701-e50ef5a4a378
+    taskid: b33d52ef-ee6c-4779-8572-5ecfd14684c5
     type: regular
     task:
-      id: 4a07f52a-d692-4a6d-8701-e50ef5a4a378
+      id: b33d52ef-ee6c-4779-8572-5ecfd14684c5
       version: -1
       name: Delete Context
       description: Delete field from context
@@ -238,10 +212,10 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: d5d03967-bcfd-40c2-8fba-6c9cb1cfadaa
+    taskid: 9b0c7856-84b8-4657-8ef0-a5ceff02e21e
     type: regular
     task:
-      id: d5d03967-bcfd-40c2-8fba-6c9cb1cfadaa
+      id: 9b0c7856-84b8-4657-8ef0-a5ceff02e21e
       version: -1
       name: Delete Context
       description: Delete field from context
@@ -264,7 +238,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 1010
+          "y": 1040
         }
       }
     note: false
@@ -274,10 +248,10 @@ tasks:
     quietmode: 0
   "8":
     id: "8"
-    taskid: 43d85b1e-7ef5-4568-871a-39b7b29bee09
+    taskid: 2c363649-47a7-40b7-87cb-dddc96aeb169
     type: regular
     task:
-      id: 43d85b1e-7ef5-4568-871a-39b7b29bee09
+      id: 2c363649-47a7-40b7-87cb-dddc96aeb169
       version: -1
       name: Close Investigation
       description: commands.local.cmd.close.inv
@@ -301,7 +275,44 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 1185
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: ac2c4b32-b3a9-4485-8b10-bdbf681d42d8
+    type: condition
+    task:
+      id: ac2c4b32-b3a9-4485-8b10-bdbf681d42d8
+      version: -1
+      name: Is response received from chronicle?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: GoogleChronicleBackstory.Events
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 690
         }
       }
     note: false
@@ -311,17 +322,16 @@ tasks:
     quietmode: 0
 view: |-
   {
-    "linkLabelsPosition": {
-      "3_5_#default#": 0.32
-    },
+    "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1375,
-        "width": 637.5,
-        "x": 162.5,
+        "height": 1405,
+        "width": 492.5,
+        "x": 50,
         "y": 50
       }
     }
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

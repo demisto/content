@@ -1,0 +1,22 @@
+{
+  "reply" : {
+    "result_count":1,
+    "total_count":1,
+    "violations":[
+      {
+        "endpoint_id": "$ENDPOINT_ID",
+        "hostname": "win-2020-04-14---12-39",
+        "ip": "$IP_ADDRESS",
+        "os_type": "AGENT_OS_WINDOWS",
+        "product": "Cruzer Blade",
+        "product_id": "0x5567",
+        "serial": "4C530010060624106156",
+        "timestamp": 1586813964000,
+        "type": "Disk Drive",
+        "username": "st3.local\\assaflevi",
+        "vendor": "SanDisk Corp.",
+        "vendor_id": "0x0781",
+        "violation_id": 100
+      }]
+  }
+}

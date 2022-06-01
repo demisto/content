@@ -1,0 +1,21 @@
+{
+    "name": "BatchData",
+    "description": "This script is used to split large list data sets into a defined batch size. A common use case is for api requests that can only handle a set number of items per request. ",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "cstone112",
+    "url": "",
+    "email": "",
+    "created": "2022-03-02T16:40:15Z",
+    "categories": ["Utilities"],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "cstone112"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
+}

@@ -7,7 +7,7 @@ This script checks that a field exists (and contains data), and optionally check
 | --- | --- |
 | Script Type | python3 |
 | Tags | evaluation, polling |
-| Demisto Version | 5.0.0 |
+| Cortex XSOAR Version | 5.0.0 |
 
 ## Inputs
 ---

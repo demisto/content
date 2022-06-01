@@ -1,0 +1,11 @@
+!kenna-search-vulnerabilities id=123
+!kenna-run-connector id=123
+!kenna-search-fixes min-score=7 limit=100
+!kenna-update-asset id=123 notes="New asset info"
+!kenna-update-vulnerability id=123 status="open"
+!kenna-get-connectors
+!kenna-search-assets hostname="some.hostname.com"
+!kenna-get-asset-vulnerabilities id=123 limit=250
+!kenna-add-tag tag="comma,seperated,tags" id=123
+!kenna-delete-tag id=123 tag="sometag"
+!kenna-get-connector-runs connector_id=123

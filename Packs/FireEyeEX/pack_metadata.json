@@ -1,0 +1,26 @@
+{
+    "name": "FireEye Email Security (EX)",
+    "description": "FireEye Email Security series protects against breaches caused by advanced email attacks.",
+    "support": "xsoar",
+    "serverMinVersion": "6.0.0",
+    "currentVersion": "2.0.7",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "categories": [
+        "Email Gateway"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "dependencies": {
+        "FireEyeCommonFields": {
+            "mandatory": true,
+            "display_name": "FireEye Common Fields"
+        }
+    },
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
+}

@@ -1,0 +1,28 @@
+{
+    "autorun": false,
+    "color": "#B7B7B7",
+    "days": 0,
+    "daysR": 0,
+    "default": false,
+    "detached": false,
+    "disabled": false,
+    "extractSettings": {
+        "fieldCliNameToExtractSettings": {},
+        "mode": "Specific"
+    },
+    "hours": 0,
+    "hoursR": 0,
+    "id": "Phishing Alerts",
+    "layout": "Phishing Alerts Incident",
+    "locked": false,
+    "name": "Phishing Alerts",
+    "onChangeRepAlg": 0,
+    "playbookId": "Phishing Alerts Investigation",
+    "readonly": false,
+    "reputationCalc": 0,
+    "system": false,
+    "version": -1,
+    "weeks": 0,
+    "weeksR": 0,
+    "fromVersion": "6.0.0"
+}

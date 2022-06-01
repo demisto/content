@@ -1,0 +1,17 @@
+{
+    "Type": 1,
+    "Contents":
+        {
+            "uniqueUrlsProvisioned": 555,
+            "remainingUrlsQuota": 24445
+        },
+    "ContentsFormat": "json",
+    "ReadableContentsFormat": "markdown",
+    "HumanReadable": "### Quota Information\n|Remaining URLs Quota|Unique Provisioned URLs|\n|---|---|\n| 24445 | 555 |\n",
+    "EntryContext": {
+      "Zscaler.Quota": {
+        "uniqueUrlsProvisioned" : 555,
+        "remainingUrlsQuota" : 24445
+      }
+    }
+}

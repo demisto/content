@@ -63,10 +63,14 @@ def main():
     response_type = demisto.get(demisto.args(), 'responseType')
     lifetime = demisto.get(demisto.args(), 'lifetime')
     try:
-        expiry = datetime.strftime(dateparser.parse('in ' + lifetime, settings={'TIMEZONE': 'UTC'}),
+        parsed_date = dateparser.parse('in ' + lifetime, settings={'TIMEZONE': 'UTC'})
+        assert parsed_date is not None, f'could not parse in {lifetime}'
+        expiry = datetime.strftime(parsed_date,
                                    DATE_FORMAT)
     except Exception:
-        expiry = datetime.strftime(dateparser.parse('in 1 day', settings={'TIMEZONE': 'UTC'}),
+        parsed_date = dateparser.parse('in 1 day', settings={'TIMEZONE': 'UTC'})
+        assert parsed_date is not None
+        expiry = datetime.strftime(parsed_date,
                                    DATE_FORMAT)
     default_response = demisto.get(demisto.args(), 'defaultResponse')
 
@@ -125,7 +129,15 @@ def main():
     else:
         return_error('Either a user or a channel must be provided.')
 
-    demisto.results(demisto.executeCommand('send-notification', args))
+    try:
+        demisto.results(demisto.executeCommand('send-notification', args))
+    except ValueError as e:
+        if 'Unsupported Command' in str(e):
+            return_error('The command is unsupported by any integration instance. If you have SlackV3 or above enabled, '
+                         'please use SlackAskV2 instead.')
+        else:
+            return_error('An error has occurred while executing the send-notification command',
+                         error=e)
 
 
 if __name__ in ('__builtin__', 'builtins', '__main__'):

@@ -542,6 +542,9 @@ def test_send_message(mocker, requests_mock):
                     'type': 'TextBlock'
                 }],
                 'type': 'AdaptiveCard',
+                'msteams': {
+                    'width': 'Full'
+                },
                 'version': '1.0'
             },
             'contentType': 'application/vnd.microsoft.card.adaptive'
@@ -996,6 +999,9 @@ def test_create_adaptive_card():
             '$schema': 'http://adaptivecards.io/schemas/adaptive-card.json',
             'version': '1.0',
             'type': 'AdaptiveCard',
+            'msteams': {
+                'width': 'Full'
+            },
             'body': body
         }
     }
@@ -1023,6 +1029,9 @@ def test_process_tasks_list():
             '$schema': 'http://adaptivecards.io/schemas/adaptive-card.json',
             'version': '1.0',
             'type': 'AdaptiveCard',
+            'msteams': {
+                'width': 'Full'
+            },
             'body': [{
                 'type': 'FactSet',
                 'facts': [
@@ -1065,6 +1074,9 @@ def test_process_incidents_list():
             '$schema': 'http://adaptivecards.io/schemas/adaptive-card.json',
             'version': '1.0',
             'type': 'AdaptiveCard',
+            'msteams': {
+                'width': 'Full'
+            },
             'body': [
                 {
                     'type': 'FactSet',
@@ -1148,6 +1160,9 @@ def test_process_mirror_or_unknown_message():
             '$schema': 'http://adaptivecards.io/schemas/adaptive-card.json',
             'version': '1.0',
             'type': 'AdaptiveCard',
+            'msteams': {
+                'width': 'Full'
+            },
             'body': [{
                 'type': 'TextBlock',
                 'text': 'I can understand the following commands:\n\nlist incidents [page x]\n\nlist my incidents [page'
@@ -1157,6 +1172,22 @@ def test_process_mirror_or_unknown_message():
         }
     }
     assert process_mirror_or_unknown_message(message) == expected_adaptive_card
+
+
+def test_get_participant_info():
+    from MicrosoftTeams import get_participant_info
+    participants = {'organizer': {'upn': 'mail.com', 'role': 'presenter',
+                                  'identity': {'phone': None, 'guest': None, 'encrypted': None,
+                                               'onPremises': None, 'applicationInstance': None,
+                                               'application': None, 'device': None,
+                                               'user':
+                                                   {'id': 'id_identifier',
+                                                    'displayName': 'best_user',
+                                                    'tenantId': 'tenantId_identifier',
+                                                    'identityProvider': 'AAD'}}}, 'attendees': []}
+    participant_id, participant_display_name = get_participant_info(participants)
+    assert participant_id == 'id_identifier'
+    assert participant_display_name == 'best_user'
 
 
 def test_create_channel(requests_mock):
@@ -1170,6 +1201,52 @@ def test_create_channel(requests_mock):
     channel_name: str = 'CrazyChannel'
     response = create_channel(team_aad_id, channel_name)
     assert response == '19:67pd3967e74g45f28d0c65f1689132bb@thread.skype'
+
+
+def test_create_meeting_command(requests_mock, mocker):
+    from MicrosoftTeams import create_meeting_command
+    mocker.patch.object(demisto, 'args', return_value={"subject": "Best_Meeting", "member": "username"})
+    mocker.patch.object(demisto, 'results')
+    requests_mock.get(
+        'https://graph.microsoft.com/v1.0/users',
+        json={"value": [{"id": "userid1"}]}
+    )
+
+    requests_mock.post(
+        'https://graph.microsoft.com/v1.0/users/userid1/onlineMeetings',
+        json={
+            "chatInfo": {
+                "threadId": "19:@thread.skype",
+                "messageId": "0",
+                "replyChainMessageId": "0"
+            },
+            "creationDateTime": "2019-07-11T02:17:17.6491364Z",
+            "startDateTime": "2019-07-11T02:17:17.6491364Z",
+            "endDateTime": "2019-07-11T02:47:17.651138Z",
+            "id": "id_12345",
+            "joinWebUrl": "https://teams.microsoft.com/l/meetup-join/12345",
+            "participants": {
+                "organizer": {
+                    "identity": {
+                        "user": {
+                            "id": "user_id_12345",
+                            "displayName": "Demisto"
+                        }
+                    },
+                    "upn": "upn-value"
+                }
+            },
+            "subject": "User Token Meeting"
+        }
+    )
+
+    expected_results = 'The meeting "Best_Meeting" was created successfully'
+    create_meeting_command()
+    results = demisto.results.call_args[0]
+
+    assert len(results) == 1
+    assert results[0]['HumanReadable'] == expected_results
+    assert results[0]['Contents'].get('id') == 'id_12345'
 
 
 def test_get_team_members(requests_mock):
@@ -1196,6 +1273,9 @@ def test_update_message(requests_mock):
             'content': {
                 '$schema': 'http://adaptivecards.io/schemas/adaptive-card.json',
                 'version': '1.0', 'type': 'AdaptiveCard',
+                'msteams': {
+                    'width': 'Full'
+                },
                 'body': [{
                     'type': 'TextBlock', 'text': 'OMG!'
                 }]
@@ -1326,6 +1406,9 @@ def test_direct_message_handler(mocker, requests_mock):
                     'type': 'FactSet'
                 }],
                 'type': 'AdaptiveCard',
+                'msteams': {
+                    'width': 'Full'
+                },
                 'version': '1.0'
             },
             'contentType': 'application/vnd.microsoft.card.adaptive'

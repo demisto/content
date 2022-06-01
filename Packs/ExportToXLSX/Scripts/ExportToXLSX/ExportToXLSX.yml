@@ -1,0 +1,64 @@
+args:
+- default: false
+  description: The output file name (for example "Report.xlsx").
+  isArray: false
+  name: file_name
+  required: true
+  secret: false
+- default: false
+  description: 'The data to export. Accepts a context key of a dictionary or a list of dictionaries for a single sheet file (${data}). Separate multiple sheet files using a comma ",". For example, if you are exporting multiple sheet files, the argument would be: ${data1},${data2}.'
+  isArray: true
+  name: data
+  required: true
+  secret: false
+- default: false
+  description: The sheet name. Separate multiple sheet names using a comma ",", for example, sheet1,sheet2.
+  isArray: true
+  name: sheet_name
+  required: true
+  secret: false
+- default: false
+  description: 'A comma-separated list of headers. The order that you pass the headers determines how they display in the exported sheet(s). Separated multiple sheets using a semicolon. For example, if you are exporting two sheets that includes two headers each, the argument would be: "header1,header2;header3,header4".'
+  isArray: false
+  name: headers
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: 'true'
+  description: Whether table headers should be bold. If this argument is set to "true", table headers are bold. Default is "true".
+  isArray: false
+  name: bold
+  predefined:
+  - 'true'
+  - 'false'
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: 'true'
+  description: Whether borders should be added to table cells. If this argument is set to "true", borders are added to table cells. Default is "true".
+  isArray: false
+  name: border
+  predefined:
+  - 'true'
+  - 'false'
+  required: false
+  secret: false
+comment: Exports context data to a Microsoft Excel Open XML Spreadsheet (XLSX) file.
+commonfields:
+  id: ExportToXLSX
+  version: -1
+enabled: true
+name: ExportToXLSX
+script: '-'
+subtype: python3
+system: false
+timeout: '0'
+type: python
+dockerimage: demisto/xslxwriter:1.0.0.12410
+runas: DBotWeakRole
+runonce: false
+tests:
+- No tests (auto formatted)
+fromversion: 5.0.0

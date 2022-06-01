@@ -35,7 +35,13 @@ ignore=IF100
 ignore=IF100
 
 [file:layoutscontainer-Case_layout.json]
-ignore=IF100
+ignore=IF100,BA101
 
 [file:playbook-Case_Management_-_Generic.yml]
 ignore=IF100
+
+[file:pack_metadata.json]
+ignore=PA129
+
+[known_words]
+fromVersion

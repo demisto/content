@@ -1,0 +1,55 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Certificate"
+    ],
+    "caseInsensitive": true,
+    "cliName": "subjectalternativenames",
+    "closeForm": false,
+    "columns": [
+        {
+            "displayName": "Type",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "type",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150
+        },
+        {
+            "displayName": "Value",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "value",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150
+        }
+    ],
+    "content": true,
+    "editForm": true,
+    "group": 2,
+    "hidden": false,
+    "id": "indicator_subjectalternativenames",
+    "isReadOnly": true,
+    "locked": false,
+    "name": "Subject Alternative Names",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "grid",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

@@ -1,0 +1,144 @@
+id: Registry Parse Data Analysis
+version: -1
+name: Registry Parse Data Analysis
+description: This playbook leverages the RegistryParse automation to perform registry
+  analysis and extract forensic artifacts.  The automation includes common registry
+  objects to extract which are useful for analyzing registry, or a user provides registry
+  path to parse.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 77c3cb89-ebc6-40d7-8896-622d033682ee
+    type: start
+    task:
+      id: 77c3cb89-ebc6-40d7-8896-622d033682ee
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: aa019586-b07e-489f-8d0f-5c60f2362ea8
+    type: regular
+    task:
+      id: aa019586-b07e-489f-8d0f-5c60f2362ea8
+      version: -1
+      name: Registry Data parsing
+      description: "This command uses the RegistryParse automation to extract critical forensics\
+        \ data from a registry file. The essential values are specified by the argument.\
+        \ \n"
+      tags:
+      - RegistryTable
+      scriptName: RegistryParse
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      customRegistryPaths:
+        simple: ${inputs.CustomRegistryPaths}
+      entryID:
+        simple: ${inputs.RegistryFileEntryID}
+      registryData:
+        simple: ${inputs.RegistryData}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 28499c75-288b-4af0-825e-9658ae301f8b
+    type: title
+    task:
+      id: 28499c75-288b-4af0-825e-9658ae301f8b
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 435,
+        "width": 380,
+        "x": 450,
+        "y": 190
+      }
+    }
+  }
+inputs:
+- key: RegistryFileEntryID
+  value: {}
+  required: false
+  description: The entry ID for the registry file to parse.
+  playbookInputQuery:
+- key: RegistryData
+  value: {}
+  required: false
+  description: |-
+    The data to parse out of the registry and output to context, including
+    Users
+    LastLoggedOnUser
+    MachineRunOnce
+    MachineStartup
+    Timezone
+    USB
+    "All" selects all the options along with any default options.
+  playbookInputQuery:
+- key: CustomRegistryPaths
+  value: {}
+  required: false
+  description: Custom registry path to parse.
+  playbookInputQuery:
+outputs:
+- contextPath: RegistryForensicData
+  description: The data parsed from the registry.
+  type: string
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

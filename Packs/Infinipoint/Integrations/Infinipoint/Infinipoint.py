@@ -133,7 +133,7 @@ COMMANDS_CONFIG = {
         "pass_args": True
     },
 
-    "infinipoint-get-events": {
+    "infinipoint-get-non-compliance": {
         "args": {
             "offset": "contains",
             "limit": "contains"
@@ -236,7 +236,7 @@ def get_auth_headers(access_key, private_key):
             "iat": int(time.time()),
             "sub": access_key
         }
-        token = jwt.encode(payload, private_key.replace('\\n', '\n'), 'ES256').decode("utf-8")
+        token = str(jwt.encode(payload, private_key.replace('\\n', '\n'), 'ES256'))
         return {"Content-Type": "application/json",
                 "Authorization": f"Bearer {token}"}
     except Exception as e:
@@ -309,7 +309,7 @@ def fetch_incidents(client, last_run: Dict[str, int], first_fetch_time: Optional
         'offset': last_fetch
     }
 
-    alerts = infinipoint_command(client, args, COMMANDS_CONFIG['infinipoint-get-events'])
+    alerts = infinipoint_command(client, args, COMMANDS_CONFIG['infinipoint-get-non-compliance'])
 
     if alerts:
         for alert in alerts.outputs:
@@ -353,7 +353,7 @@ def test_module(route, base_url, insecure, headers):
 
 def infinipoint_command(client: Client, args=None, optional_args=None, pagination=True):
     rules = None
-    cve = []
+    cve = None
     method = "POST"
 
     # Cancel pagination if necessary
@@ -389,25 +389,25 @@ def infinipoint_command(client: Client, args=None, optional_args=None, paginatio
 
         # CVE reputation
         if "cve_id" in res:
-            cve = [Common.CVE(
+            cve = Common.CVE(
                 id=res['cve_id'],
                 cvss=res['cve_dynamic_data']['base_metric_v2']['base_score'],
                 description=res['cve_description'],
                 published='',
                 modified=''
-            )]
+            )
 
         return CommandResults(outputs_prefix=optional_args['outputs_prefix'],
                               outputs_key_field=optional_args['outputs_key_field'],
                               outputs=res,
-                              indicators=cve)
+                              indicator=cve)
 
 
 def run_queries_command(client: Client, args: Dict, optional_args=None):
     target = args.get('target')
     node = {'id': args.get('id')}
     if target:
-        node['target'] = {'ids': args.get('target')}
+        node['target'] = {'ids': argToList(args.get('target'))}
     res = client.call_api(route=optional_args['route'], rules=node, pagination=False)
     if res:
         command_results = CommandResults(

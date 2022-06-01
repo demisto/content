@@ -17,7 +17,7 @@ def hash_value(simple_value):
         return None
     if RANDOM_UUID:
         simple_value += RANDOM_UUID
-    return hashlib.md5(simple_value.encode('utf8')).hexdigest()
+    return hashlib.md5(simple_value.encode('utf8')).hexdigest()  # nosec
 
 
 def pattern_match(pattern, s):
@@ -41,12 +41,13 @@ def is_key_match_fields_to_hash(key, fields_to_hash):
 
 def hash_incident_labels(incident_labels, fields_to_hash):
     labels = []
-    for label in incident_labels:
-        if is_key_match_fields_to_hash(label.get('type'), fields_to_hash):
-            value = label.get('value') or ''
-            if value:
-                label['value'] = hash_value(value)
-        labels.append(label)
+    if isinstance(incident_labels, list):
+        for label in incident_labels:
+            if is_key_match_fields_to_hash(label.get('type'), fields_to_hash):
+                value = label.get('value') or ''
+                if value:
+                    label['value'] = hash_value(value)
+            labels.append(label)
     return labels
 
 
@@ -130,6 +131,9 @@ def hash_incident(fields_to_hash, un_populate_fields):
     for incident in incident_list:
         if context_keys:
             incident['context'] = copy_key_from_context(get_context(incident['id']), context_keys)
+
+        # remove CustomFields
+        incident.pop('CustomFields', None)
 
         incident = hash_multiple(incident, fields_to_hash)
 

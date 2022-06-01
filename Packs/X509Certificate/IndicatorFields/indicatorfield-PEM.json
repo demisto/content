@@ -1,0 +1,30 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Certificate"
+    ],
+    "caseInsensitive": true,
+    "cliName": "pem",
+    "closeForm": false,
+    "content": true,
+    "description": "Certificate in PEM format.",
+    "editForm": true,
+    "group": 2,
+    "hidden": false,
+    "id": "indicator_pem",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "PEM",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "longText",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

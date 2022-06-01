@@ -15,7 +15,7 @@ def csv_file_to_indicator_list(file_path, col_num, starting_row, auto_detect, de
     # TODO: add run on all columns functionality
 
     line_index = 0
-    with open(file_path, 'rU') as csv_file:
+    with open(file_path, 'r') as csv_file:
         # csv reader can fail when encountering a NULL byte (\0) - so we go through the file and take out the NUL bytes.
         file_reader = csv.reader(line.replace('\0', '') for line in csv_file)
         for row in file_reader:
@@ -192,8 +192,8 @@ def detect_type(indicator):
         # we use TLDExtract class to fetch all existing domain suffixes from the bellow mentioned file:
         # https://raw.githubusercontent.com/publicsuffix/list/master/public_suffix_list.dat
         # the suffix_list_urls=None is used to not make http calls using the extraction - avoiding SSL errors
-        if tldextract.TLDExtract(cache_file='https://raw.githubusercontent.com/publicsuffix'
-                                            '/list/master/public_suffix_list.dat',
+        if tldextract.TLDExtract(cache_dir='https://raw.githubusercontent.com/publicsuffix'
+                                           '/list/master/public_suffix_list.dat',
                                  suffix_list_urls=None).__call__(indicator).suffix:
             if '*' in indicator:
                 return FeedIndicatorType.DomainGlob
@@ -243,15 +243,19 @@ def fetch_indicators_from_file(args):
 
     # Create indicators in demisto
     errors = []
+    domains = []
     for indicator in indicator_list:
         res = demisto.executeCommand("createNewIndicator", indicator)
         if is_error(res[0]):
             errors.append("Error creating indicator - {}".format(res[0]["Contents"]))
 
+        domain_obj = {'Name': indicator.get('value')}
+        if indicator.get('type') == FeedIndicatorType.Domain and domain_obj not in domains:
+            domains.append(domain_obj)
     if errors:
         return_error(json.dumps(errors, indent=4))
-
-    return human_readable, None, indicator_list
+    domain_context = {outputPaths['domain']: domains} if domains else None
+    return human_readable, domain_context, indicator_list
 
 
 def main():

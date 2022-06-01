@@ -4,9 +4,6 @@ from CommonServerUserPython import *
 
 '''IMPORTS'''
 from typing import List
-from elasticsearch import Elasticsearch, RequestsHttpConnection, NotFoundError
-from elasticsearch_dsl import Search
-from elasticsearch_dsl.query import QueryString
 from datetime import datetime
 import json
 import requests
@@ -16,6 +13,16 @@ from dateutil.parser import parse
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 warnings.filterwarnings(action="ignore", message='.*using SSL with verify_certs=False is insecure.')
+
+ELASTIC_SEARCH_CLIENT = demisto.params().get('client_type')
+if ELASTIC_SEARCH_CLIENT == 'OpenSearch':
+    from opensearchpy import OpenSearch as Elasticsearch, RequestsHttpConnection, NotFoundError
+    from opensearch_dsl import Search
+    from opensearch_dsl.query import QueryString
+else:
+    from elasticsearch import Elasticsearch, RequestsHttpConnection, NotFoundError
+    from elasticsearch_dsl import Search
+    from elasticsearch_dsl.query import QueryString
 
 API_KEY_PREFIX = '_api_key_id:'
 SERVER = demisto.params().get('url', '').rstrip('/')
@@ -38,13 +45,16 @@ HTTP_ERRORS = {
 }
 
 '''VARIABLES FOR FETCH INCIDENTS'''
-TIME_FIELD = demisto.params().get('fetch_time_field', '')
-FETCH_INDEX = demisto.params().get('fetch_index', '')
-FETCH_QUERY = demisto.params().get('fetch_query', '')
-FETCH_TIME = demisto.params().get('fetch_time', '3 days')
-FETCH_SIZE = int(demisto.params().get('fetch_size', 50))
-INSECURE = not demisto.params().get('insecure', False)
-TIME_METHOD = demisto.params().get('time_method', 'Simple-Date')
+param = demisto.params()
+TIME_FIELD = param.get('fetch_time_field', '')
+FETCH_INDEX = param.get('fetch_index', '')
+FETCH_QUERY = param.get('fetch_query', '')
+FETCH_TIME = param.get('fetch_time', '3 days')
+FETCH_SIZE = int(param.get('fetch_size', 50))
+INSECURE = not param.get('insecure', False)
+TIME_METHOD = param.get('time_method', 'Simple-Date')
+TIMEOUT = int(param.get('timeout') or 60)
+MAP_LABELS = param.get('map_labels', True)
 
 
 def get_timestamp_first_fetch(last_fetch):
@@ -56,7 +66,7 @@ def get_timestamp_first_fetch(last_fetch):
     Returns:
         (num).The formatted timestamp
     """
-    # this theorticly shouldn't happen but just in case
+    # this theoretically shouldn't happen but just in case
     if str(last_fetch).isdigit():
         return int(last_fetch)
 
@@ -101,22 +111,26 @@ def get_api_key_header_val(api_key):
     return "ApiKey " + api_key
 
 
-def elasticsearch_builder():
+def elasticsearch_builder(proxies):
     """Builds an Elasticsearch obj with the necessary credentials, proxy settings and secure connection."""
-    proxies = handle_proxy() if PROXY else None
+    connection_args = {
+        "hosts": [SERVER],
+        "connection_class": RequestsHttpConnection,
+        "proxies": proxies,
+        "verify_certs": INSECURE,
+        "timeout": TIMEOUT,
+    }
     if API_KEY_ID:
-        es = Elasticsearch(hosts=[SERVER], connection_class=RequestsHttpConnection, verify_certs=INSECURE,
-                           api_key=API_KEY, proxies=proxies)
-        # this should be passed as api_key via Elasticsearch init, but this code ensures it'll be set correctly
-        if hasattr(es, 'transport'):
-            es.transport.get_connection().session.headers['authorization'] = get_api_key_header_val(API_KEY)
-        return es
-    if USERNAME:
-        return Elasticsearch(hosts=[SERVER], connection_class=RequestsHttpConnection, verify_certs=INSECURE,
-                             http_auth=(USERNAME, PASSWORD), proxies=proxies)
-    else:
-        return Elasticsearch(hosts=[SERVER], connection_class=RequestsHttpConnection, verify_certs=INSECURE,
-                             proxies=proxies)
+        connection_args["api_key"] = API_KEY
+    elif USERNAME:
+        connection_args["http_auth"] = (USERNAME, PASSWORD)
+
+    es = Elasticsearch(**connection_args)
+    # this should be passed as api_key via Elasticsearch init, but this code ensures it'll be set correctly
+    if API_KEY_ID and hasattr(es, 'transport'):
+        es.transport.get_connection().session.headers['authorization'] = get_api_key_header_val(API_KEY)
+
+    return es
 
 
 def get_hit_table(hit):
@@ -211,7 +225,7 @@ def get_total_results(response_dict):
     return total_dict, total_results
 
 
-def search_command():
+def search_command(proxies):
     """Performs a search in Elasticsearch."""
     index = demisto.args().get('index')
     query = demisto.args().get('query')
@@ -222,7 +236,7 @@ def search_command():
     sort_field = demisto.args().get('sort-field')
     sort_order = demisto.args().get('sort-order')
 
-    es = elasticsearch_builder()
+    es = elasticsearch_builder(proxies)
 
     que = QueryString(query=query)
     search = Search(using=es, index=index).query(que)[base_page:base_page + size]
@@ -269,7 +283,7 @@ def fetch_params_check():
         return_error("Got the following errors in test:\nFetches incidents is enabled.\n" + '\n'.join(str_error))
 
 
-def test_general_query(es):
+def test_query_to_fetch_incident_index(es):
     """Test executing query in fetch index.
 
     Notes:
@@ -287,6 +301,23 @@ def test_general_query(es):
 
     except NotFoundError as e:
         return_error("Fetch incidents test failed.\nError message: {}.".format(str(e).split(',')[2][2:-1]))
+
+
+def test_general_query(es):
+    """Test executing query to all available indexes.
+
+    Args:
+        es(Elasticsearch): an Elasticsearch object to which we run the test.
+    """
+    try:
+        query = QueryString(query='*')
+        search = Search(using=es, index='*').query(query)[0:1]
+        response = search.execute().to_dict()
+        get_total_results(response)
+
+    except NotFoundError as e:
+        return_error("Failed executing general search command - please check the Server URL and port number "
+                     "and the supplied credentials.\nError message: {}.".format(str(e)))
 
 
 def test_time_field_query(es):
@@ -365,7 +396,7 @@ def test_timestamp_format(timestamp):
             return_error(f"Fetched timestamp is not in milliseconds since epoch.\nFetched: {timestamp}")
 
 
-def test_func():
+def test_func(proxies):
     headers = {
         'Content-Type': "application/json"
     }
@@ -396,16 +427,17 @@ def test_func():
     except requests.exceptions.RequestException as e:
         return_error("Failed to connect. Check Server URL field and port number.\nError message: " + str(e))
 
+    # build general Elasticsearch class
+    es = elasticsearch_builder(proxies)
+
     if demisto.params().get('isFetch'):
         # check the existence of all necessary fields for fetch
         fetch_params_check()
 
         try:
-            # build general Elasticsearch class
-            es = elasticsearch_builder()
 
             # test if FETCH_INDEX exists
-            test_general_query(es)
+            test_query_to_fetch_incident_index(es)
 
             # test if TIME_FIELD in index exists
             response = test_time_field_query(es)
@@ -430,6 +462,10 @@ def test_func():
         except ValueError as e:
             return_error("Inserted time format is incorrect.\n" + str(e) + '\n' + TIME_FIELD + ' fetched: ' + hit_date)
 
+    else:
+        # check that we can reach any indexes in the supplied server URL
+        test_general_query(es)
+
     demisto.results('ok')
 
 
@@ -443,8 +479,9 @@ def incident_label_maker(source):
         (list).The labels.
     """
     labels = []
-    for field in source.keys():
-        labels.append({'type': str(field), 'value': str(source.get(field))})
+    for field, value in source.items():
+        encoded_value = value if isinstance(value, str) else json.dumps(value)
+        labels.append({'type': str(field), 'value': encoded_value})
 
     return labels
 
@@ -477,9 +514,12 @@ def results_to_incidents_timestamp(response, last_fetch):
                 inc = {
                     'name': 'Elasticsearch: Index: ' + str(hit.get('_index')) + ", ID: " + str(hit.get('_id')),
                     'rawJSON': json.dumps(hit),
-                    'labels': incident_label_maker(hit.get('_source')),
                     'occurred': hit_date.isoformat() + 'Z'
                 }
+
+                if MAP_LABELS:
+                    inc['labels'] = incident_label_maker(hit.get('_source'))
+
                 incidents.append(inc)
 
     return incidents, last_fetch
@@ -515,15 +555,18 @@ def results_to_incidents_datetime(response, last_fetch):
                 inc = {
                     'name': 'Elasticsearch: Index: ' + str(hit.get('_index')) + ", ID: " + str(hit.get('_id')),
                     'rawJSON': json.dumps(hit),
-                    'labels': incident_label_maker(hit.get('_source')),
                     # parse function returns iso format sometimes as YYYY-MM-DDThh:mm:ss+00:00
                     # and sometimes as YYYY-MM-DDThh:mm:ss
                     # we want to return format: YYYY-MM-DDThh:mm:ssZ in our incidents
                     'occurred': format_to_iso(hit_date.isoformat())
                 }
+
+                if MAP_LABELS:
+                    inc['labels'] = incident_label_maker(hit.get('_source'))
+
                 incidents.append(inc)
 
-    return incidents, format_to_iso(last_fetch.isoformat())
+    return incidents, last_fetch.isoformat()
 
 
 def format_to_iso(date_string):
@@ -535,6 +578,9 @@ def format_to_iso(date_string):
     Returns:
         str. A date string in the format: YYYY-MM-DDThh:mm:ssZ
     """
+    if '.' in date_string:
+        date_string = date_string.split('.')[0]
+
     if len(date_string) > 19 and not date_string.endswith('Z'):
         date_string = date_string[:-6]
 
@@ -544,7 +590,7 @@ def format_to_iso(date_string):
     return date_string
 
 
-def fetch_incidents():
+def fetch_incidents(proxies):
     last_run = demisto.getLastRun()
     last_fetch = last_run.get('time')
 
@@ -569,7 +615,7 @@ def fetch_incidents():
     else:
         last_fetch_timestamp = last_fetch
 
-    es = elasticsearch_builder()
+    es = elasticsearch_builder(proxies)
 
     query = QueryString(query=FETCH_QUERY + " AND " + TIME_FIELD + ":*")
     # Elastic search can use epoch timestamps (in milliseconds) as date representation regardless of date format.
@@ -624,18 +670,25 @@ def get_mapping_fields_command():
 
 
 def main():
+    proxies = handle_proxy()
+    proxies = proxies if proxies else None
     try:
         LOG('command is %s' % (demisto.command(),))
         if demisto.command() == 'test-module':
-            test_func()
+            test_func(proxies)
         elif demisto.command() == 'fetch-incidents':
-            fetch_incidents()
+            fetch_incidents(proxies)
         elif demisto.command() in ['search', 'es-search']:
-            search_command()
+            search_command(proxies)
         elif demisto.command() == 'get-mapping-fields':
             get_mapping_fields_command()
     except Exception as e:
+        if 'The client noticed that the server is not a supported distribution of Elasticsearch' in str(e):
+            return_error('Failed executing {}. Seems that the client does not support the server\'s distribution, '
+                         'Please try using the Open Search client in the instance configuration.'
+                         '\nError message: {}'.format(demisto.command(), str(e)), error=e)
         return_error("Failed executing {}.\nError message: {}".format(demisto.command(), str(e)), error=e)
 
 
-main()
+if __name__ in ('__main__', 'builtin', 'builtins'):
+    main()

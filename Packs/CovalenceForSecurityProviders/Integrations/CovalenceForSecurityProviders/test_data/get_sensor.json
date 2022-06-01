@@ -1,0 +1,13 @@
+{
+  "id": "4ebd0208-8328-5d69-8c44-ec50939c0967",
+  "name": "1.1.1.1",
+  "isAuthorized": true,
+  "listeningInterfaces": [
+    "eth0",
+    "eth1"
+  ],
+  "isNetflowGenerator": false,
+  "bytesIn": null,
+  "bytesOut": null,
+  "lastActive": null
+}

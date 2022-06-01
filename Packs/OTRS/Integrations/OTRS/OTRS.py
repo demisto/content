@@ -1,24 +1,28 @@
 ''' IMPORTS '''
 
-import urllib3
 from CommonServerPython import *
+import urllib3
 from pyotrs import Article, Attachment, Client, DynamicField, Ticket
+from urllib.parse import unquote
 
 
 # disable insecure warnings
 urllib3.disable_warnings()
 
 ''' GLOBAL VARS '''
-
-SERVER = demisto.params()['server'][:-1] if demisto.params()['server'].endswith('/') else demisto.params()['server']
-USERNAME = demisto.params()['credentials']['identifier']
-PASSWORD = demisto.params()['credentials']['password']
-USE_SSL = not demisto.params().get('unsecure', False)
-FETCH_QUEUE = demisto.params().get('fetch_queue', 'Any')
-FETCH_PRIORITY = demisto.params().get('fetch_priority')
+params = demisto.params()
+SERVER = params.get('server', '').strip('/')
+USERNAME = params.get('credentials', {}).get('identifier')
+PASSWORD = params.get('credentials', {}).get('password')
+USE_LEGACY_SESSIONS = argToBoolean(params.get('use_legacy_sessions', False))
+USE_SSL = not params.get('unsecure', False)
+FETCH_QUEUE = params.get('fetch_queue', 'Any')
+FETCH_PRIORITY = params.get('fetch_priority')
 FETCH_TIME_DEFAULT = '3 days'
-FETCH_TIME = demisto.params().get('fetch_time', FETCH_TIME_DEFAULT)
+FETCH_TIME = params.get('fetch_time', FETCH_TIME_DEFAULT)
 FETCH_TIME = FETCH_TIME if FETCH_TIME and FETCH_TIME.strip() else FETCH_TIME_DEFAULT
+LOOK_BACK_DAYS = int(params.get('look_back', 1))
+otrs_client = None  # type: Client
 
 
 ''' HELPER FUNCTIONS '''
@@ -42,7 +46,7 @@ def ticket_to_incident(ticket):
 
     incident = {
         'attachment': attachments_list,
-        'rawJSON': json.dumps(ticket),
+        'rawJSON': unquote(json.dumps(ticket)),
         'name': 'OTRS ticket {}'.format(ticket['TicketID'])
     }
     return incident
@@ -165,11 +169,11 @@ def get_ticket_command():
             # Get article details
             current_article = {
                 'ID': str(article['ArticleID']),
-                'Subject': article['Subject'],
-                'Body': article['Body'],
-                'CreateTime': article['CreateTime'],
-                'From': article['From'],
-                'ContentType': article['ContentType']
+                'Subject': article.get('Subject'),
+                'Body': article.get('Body'),
+                'CreateTime': article.get('CreateTime'),
+                'From': article.get('From'),
+                'ContentType': article.get('ContentType')
             }
             currect_human_readable_article = dict(current_article)
 
@@ -220,15 +224,15 @@ def get_ticket_command():
 
 
 def get_ticket(ticket_id):
-
-    response = client.ticket_get_by_id(ticket_id, articles=True, attachments=True, dynamic_fields=True)
+    args = {'ticket_id': ticket_id, 'articles': True, 'attachments': True, 'dynamic_fields': True}
+    response = execute_otrs_method(otrs_client.ticket_get_by_id, args)
     raw_ticket = response.to_dct()['Ticket']
     return raw_ticket
 
 
 def get_ticket_by_number(ticket_number):
-
-    response = client.ticket_get_by_number(ticket_number, articles=True, attachments=True, dynamic_fields=True)
+    args = {'ticket_number': ticket_number, 'articles': True, 'attachments': True, 'dynamic_fields': True}
+    response = execute_otrs_method(otrs_client.ticket_get_by_number, args)
     raw_ticket = response.to_dct().get('Ticket')
     return raw_ticket
 
@@ -258,6 +262,7 @@ def search_ticket_command():
 
     if tickets:
         output = []
+        raw_output = []
         for ticket_id in tickets:
             raw_ticket = get_ticket(ticket_id)
             ticket = {
@@ -272,6 +277,8 @@ def search_ticket_command():
                 'Type': raw_ticket['Type']
             }
             output.append(ticket)
+            raw_output.append(raw_ticket)
+
         ec = {
             'OTRS.Ticket(val.ID===obj.ID)': output
         }
@@ -280,7 +287,7 @@ def search_ticket_command():
 
         demisto.results({
             'Type': entryTypes['note'],
-            'Contents': raw_ticket,
+            'Contents': raw_output,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown(title, output, headers),
@@ -291,17 +298,14 @@ def search_ticket_command():
 
 
 def search_ticket(states=None, created_before=None, created_after=None, title=None, queue=None, priority=None, ticket_type=None):
-
-    response = client.ticket_search(
-        States=states,
-        TicketCreateTimeOlderDate=created_before,
-        TicketCreateTimeNewerDate=created_after,
-        Title=title,
-        Queues=queue,
-        Priorities=priority,
-        Types=ticket_type
-    )
-    return response
+    args = {'States': states,
+            'TicketCreateTimeOlderDate': created_before,
+            'TicketCreateTimeNewerDate': created_after,
+            'Title': title,
+            'Queues': queue,
+            'Priorities': priority,
+            'Types': ticket_type}
+    return execute_otrs_method(otrs_client.ticket_search, args)
 
 
 def create_ticket_command():
@@ -379,9 +383,8 @@ def create_ticket_command():
 
 
 def create_ticket(new_ticket, article, df, attachments):
-
-    response = client.ticket_create(new_ticket, article, dynamic_fields=df, attachments=attachments)
-    return response
+    args = {'ticket': new_ticket, 'article': article, 'dynamic_fields': df, 'attachments': attachments}
+    return execute_otrs_method(otrs_client.ticket_create, args)
 
 
 def update_ticket_command():
@@ -500,42 +503,48 @@ def close_ticket_command():
 
 def update_ticket(ticket_id, title=None, queue=None, state=None, priority=None,
                   article=None, ticket_type=None, df=None, attachments=None):
-
     kwargs = {'Type': ticket_type}
-
-    response = client.ticket_update(
-        ticket_id,
-        Title=title,
-        Queue=queue,
-        State=state,
-        Priority=priority,
-        article=article,
-        dynamic_fields=df,
-        attachments=attachments,
-        **kwargs
-    )
-    return response
+    args = {'ticket_id': ticket_id,
+            'Title': title,
+            'Queue': queue,
+            'State': state,
+            'Priority': priority,
+            'article': article,
+            'dynamic_fields': df,
+            'attachments': attachments,
+            'kwargs': kwargs}
+    return execute_otrs_method(otrs_client.ticket_update, args)
 
 
 def fetch_incidents():
-    last_run = demisto.getLastRun() and demisto.getLastRun()['time']
-    if last_run:
-        last_run = datetime.strptime(last_run, '%Y-%m-%d %H:%M:%S')
-        last_run += timedelta(seconds=1)
-    else:
-        last_run, _ = parse_date_range(FETCH_TIME)
+    last_run_obj = demisto.getLastRun()
+    last_run_time = last_run_obj.get('time')
+    is_first_fetch = last_run_time is None
+    last_fetched_ids = last_run_obj.get('last_fetched_ids', [])
 
-    queue_list = argToList(FETCH_QUEUE)
-    if 'Any' in queue_list:
-        queue = None
+    if is_first_fetch:
+        last_run_time, _ = parse_date_range(FETCH_TIME)
     else:
-        queue = queue_list
+        last_run_time = datetime.strptime(last_run_time, '%Y-%m-%d %H:%M:%S') + timedelta(seconds=1)
+
+    # in case that a specific queue is provided - we also look back in the search to find incidents created before the last run
+    # but moved to the queue after the fetch and the fetch missed them.
+    # the looked_back_last_run will be used only for search,
+    # while in demisto.setLastRun the original last_run will be saved if no incident fetched.
+    looked_back_last_run = last_run_time
+    queue = None if 'Any' in FETCH_QUEUE else argToList(FETCH_QUEUE)
+    if queue and not is_first_fetch:
+        looked_back_last_run -= timedelta(days=LOOK_BACK_DAYS)
+
+    demisto.debug(f'the base time will be used in search: {datetime.strftime(looked_back_last_run, "%Y-%m-%d %H:%M:%S")}')
 
     priority = None
     if FETCH_PRIORITY:
         priority = [translate_priority(p) for p in FETCH_PRIORITY]
 
-    tickets = search_ticket(created_after=last_run, queue=queue, priority=priority)
+    raw_tickets = search_ticket(created_after=looked_back_last_run, queue=queue, priority=priority)
+    tickets = [ticket_id for ticket_id in raw_tickets if ticket_id not in last_fetched_ids]
+    demisto.debug(f'filter out {len(raw_tickets) - len(tickets)} already fetched tickets')
     incidents = []
 
     first_ticket = True
@@ -553,42 +562,71 @@ def fetch_incidents():
     demisto.incidents(incidents)
 
     if not last_created:
-        last_created = datetime.strftime(last_run, '%Y-%m-%d %H:%M:%S')
+        last_created = datetime.strftime(last_run_time, '%Y-%m-%d %H:%M:%S')
 
-    demisto.setLastRun({'time': last_created})
+    demisto.setLastRun({'time': last_created, 'last_fetched_ids': raw_tickets})
 
 
-''' EXECUTION CODE '''
-handle_proxy(demisto.params().get('proxy'))
-client = Client(SERVER, USERNAME, PASSWORD, https_verify=USE_SSL)
-client.session_create()
+def update_session():
+    otrs_client.session_create()
+    sessionID = otrs_client.session_id_store.value
+    demisto.setIntegrationContext({'SessionID': sessionID})
+    otrs_client.session_id_store.write(sessionID)
 
-LOG('command is %s' % (demisto.command(), ))
 
-try:
-    if demisto.command() == 'test-module':
-        # Testing connectivity and credentials
-        demisto.results('ok')
+def execute_otrs_method(method, args):
+    try:
+        response = method(**args)
+    except Exception:
+        update_session()
+        response = method(**args)
+    return response
 
-    elif demisto.command() == 'fetch-incidents':
-        fetch_incidents()
 
-    elif demisto.command() == 'otrs-get-ticket':
-        get_ticket_command()
+def main():
+    global otrs_client
+    handle_proxy(demisto.params().get('proxy'))
 
-    elif demisto.command() == 'otrs-search-ticket':
-        search_ticket_command()
+    cache = demisto.getIntegrationContext()
+    otrs_client = Client(SERVER, USERNAME, PASSWORD, https_verify=USE_SSL, use_legacy_sessions=USE_LEGACY_SESSIONS)
 
-    elif demisto.command() == 'otrs-create-ticket':
-        create_ticket_command()
+    # OTRS creates new session for each request, to avoid that behavior -
+    # save the sessionId in integration context to use it multiple times
+    if cache.get('SessionID'):
+        otrs_client.session_id_store.write(cache['SessionID'])
+    else:
+        update_session()
 
-    elif demisto.command() == 'otrs-update-ticket':
-        update_ticket_command()
+    LOG('command is %s' % (demisto.command(), ))
 
-    elif demisto.command() == 'otrs-close-ticket':
-        close_ticket_command()
+    try:
+        if demisto.command() == 'test-module':
+            # Testing connectivity and credentials
+            demisto.results('ok')
 
-except Exception as e:
-    LOG(str(e))
-    LOG.print_log()
-    return_error(str(e))
+        elif demisto.command() == 'fetch-incidents':
+            fetch_incidents()
+
+        elif demisto.command() == 'otrs-get-ticket':
+            get_ticket_command()
+
+        elif demisto.command() == 'otrs-search-ticket':
+            search_ticket_command()
+
+        elif demisto.command() == 'otrs-create-ticket':
+            create_ticket_command()
+
+        elif demisto.command() == 'otrs-update-ticket':
+            update_ticket_command()
+
+        elif demisto.command() == 'otrs-close-ticket':
+            close_ticket_command()
+
+    except Exception as e:
+        LOG(str(e))
+        LOG.print_log()
+        return_error(str(e))
+
+
+if __name__ in ('__main__', '__builtin__', 'builtins'):
+    main()

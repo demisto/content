@@ -1,0 +1,32 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Zendesk Ticket",
+        "Log Analysis",
+        "Internal Log analysis",
+        "System Diagnostics and Health Check"
+    ],
+    "caseInsensitive": true,
+    "cliName": "xsoardevprod",
+    "closeForm": false,
+    "content": true,
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_xsoardevprod",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "XSOAR Dev-Prod",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

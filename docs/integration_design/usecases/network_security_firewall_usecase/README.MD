@@ -16,8 +16,6 @@ Top Use-Cases:
 ### panorama-create-rule <a name="create">
 ---
 Creates a policy rule.
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
 ##### Base Command
 `panorama-create-rule`
 ##### Input
@@ -72,8 +70,6 @@ Creates a policy rule.
 ### panorama-create-address-group <a name="create-address">
 ---
 Creates a static or dynamic address book.
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
 ##### Base Command
 `panorama-create-address-group`
 ##### Input

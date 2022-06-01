@@ -28,7 +28,3 @@ There are no inputs for this playbook.
 ## Playbook Outputs
 ---
 There are no outputs for this playbook.
-
-## Playbook Image
----
-![McAfee ePO Repository Compliance Playbook v2](Insert the link to your image here)

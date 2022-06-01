@@ -1,16 +1,20 @@
 {
-  "name": "VMRay",
-  "description": "Ransomware analysis sandboxing.",
-  "support": "xsoar",
-  "currentVersion": "1.0.0",
-  "author": "Cortex XSOAR",
-  "url": "https://www.paloaltonetworks.com/cortex",
-  "email": "",
-  "created": "2020-04-14T00:00:00Z",
-  "categories": [
-    "Forensics & Malware Analysis"
-  ],
-  "tags": [],
-  "useCases": [],
-  "keywords": []
+    "name": "VMRay Analyzer",
+    "description": "Analyze files and URLs using the VMRay Platform for accurate threat intelligence and high-quality IOCs.",
+    "support": "partner",
+    "currentVersion": "1.1.5",
+    "author": "VMRay",
+    "url": "https://www.vmray.com/",
+    "email": "support@vmray.com",
+    "created": "2020-04-14T00:00:00Z",
+    "categories": [
+        "Forensics & Malware Analysis"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

@@ -1,13 +1,17 @@
 import os
 import re
+import pytest
 from Utils.release_notes_generator import (get_release_notes_dict,
                                            generate_release_notes_summary,
                                            get_pack_entities,
+                                           get_pack_version_from_path,
                                            read_and_format_release_note,
                                            merge_version_blocks,
                                            EMPTY_LINES_REGEX,
                                            get_new_entity_record,
-                                           construct_entities_block)
+                                           construct_entities_block,
+                                           aggregate_release_notes,
+                                           aggregate_release_notes_for_marketplace)
 
 TEST_DATA_PATH = 'Tests/scripts/infrastructure_tests/tests_data/RN_tests_data'
 
@@ -70,6 +74,7 @@ class TestReadAndFormatReleaseNote:
         assert formatted_text == ''
 
 
+# pylint: disable=W0201
 class TestGenerateReleaseNotesSummary:
     def setup(self):
         self._version = VERSION
@@ -138,6 +143,38 @@ class TestGenerateReleaseNotesSummary:
         assert '## New: FakePack3 Pack v1.0.0 (Partner Supported)' in rn_summary
         assert '## New: FakePack4 Pack v1.0.0' in rn_summary
         assert '## New: FakePack4 Pack v1.0.0 (Partner Supported)' not in rn_summary
+
+    def test_added_contribution_pack(self):
+        """
+        Given
+        - A repository of two new packs:
+          - FakePack3 version 1.0.0, metadata "supports" field has value "contribution"
+          - FakePack4 version 1.0.0
+
+        When
+        - Generating a release notes summary file.
+
+        Then
+        - Ensure release notes generator creates a valid summary, by checking:
+          - the release notes summary contains two packs:
+            - FakePack3 with version 1.0.0 and has the string "(Community Contributed)" after the version
+            - FakePack4 with version 1.0.0 dose not have the string "(Community Contributed)" after the version
+        """
+        new_packs_rn = {
+            'FakePack3': get_pack_entities(os.path.join(TEST_DATA_PATH, 'FakePack3')),
+            'FakePack4': get_pack_entities(os.path.join(TEST_DATA_PATH, 'FakePack4')),
+        }
+        packs_metadta_dict = {
+            'FakePack3': {'support': 'community'},
+            'FakePack4': {'support': 'xsoar'}
+        }
+
+        rn_summary = generate_release_notes_summary(
+            new_packs_rn, {}, packs_metadta_dict, self._version, self._asset_id, 'temp.md')
+
+        assert '## New: FakePack3 Pack v1.0.0 (Community Contributed)' in rn_summary
+        assert '## New: FakePack4 Pack v1.0.0' in rn_summary
+        assert '## New: FakePack4 Pack v1.0.0 (Community Contributed)' not in rn_summary
 
     def test_two_packs(self):
         """
@@ -224,6 +261,46 @@ class TestGenerateReleaseNotesSummary:
         assert '### FakePack2 Pack v1.1.0' in rn_summary
         assert '### FakePack2 Pack v1.1.0 (Partner Supported)' not in rn_summary
 
+    def test_updated_community_pack(self):
+        """
+        Given
+        - A repository of two packs updates and release notes:
+          - FakePack1 with version 2.0.0 metadata "supports" field has value "community"
+          - FakePack2 version 1.1.0
+
+        When
+        - Generating a release notes summary file.
+
+        Then
+        - Ensure release notes generator creates a valid summary, by checking:
+          - the output of get_release_notes_dict() is a valid dict of (pack_name, dict(pack_version, release_note)).
+          - the release notes summary contains two packs with the following:
+            - FakePack1 with version 2.0.0 and has the string "(Community Supported)" after the version
+            - FakePack2 with version 1.1.0 DOES NOT have the string "(Community Supported)" after the version
+        """
+        release_notes_files = [
+            os.path.join(TEST_DATA_PATH, 'FakePack1', 'ReleaseNotes', '1_1_0.md'),
+            os.path.join(TEST_DATA_PATH, 'FakePack1', 'ReleaseNotes', '2_0_0.md'),
+            os.path.join(TEST_DATA_PATH, 'FakePack2', 'ReleaseNotes', '1_1_0.md'),
+        ]
+
+        rn_dict, _ = get_release_notes_dict(release_notes_files)
+
+        packs_metadta_dict = {
+            'FakePack1': {'support': 'community'},
+            'FakePack2': {'support': 'xsoar'}
+        }
+
+        assert '2.0.0' in rn_dict['FakePack1'].keys()
+        assert '1.1.0' in rn_dict['FakePack2'].keys()
+
+        rn_summary = generate_release_notes_summary({}, rn_dict, packs_metadta_dict, self._version, self._asset_id, self._outfile)
+
+        assert VERSION in rn_summary and ASSET_ID in rn_summary  # summary title
+        assert '### FakePack1 Pack v2.0.0 (Community Contributed)' in rn_summary
+        assert '### FakePack2 Pack v1.1.0' in rn_summary
+        assert '### FakePack2 Pack v1.1.0 (Community Contributed)' not in rn_summary
+
     def test_release_notes_summary_with_empty_lines_in_rn(self):
         """
         Given
@@ -293,6 +370,65 @@ class TestGenerateReleaseNotesSummary:
 
 
 class TestMergeVersionBlocks:
+    def test_aggregate_release_notes_for_marketplace(self):
+        """
+        Given
+        - Two release notes files with content entity instance wrapped with ** and entity type contains spaces.
+        When
+        - Merging the two release notes files into one file.
+        Then
+        - Ensure that the content entity instance is wrapped with **.
+        - Ensure that the content entity type contains whitespace.
+        - Ensure that the content of both RN files appears in the result file.
+        """
+        release_notes_paths = [
+            os.path.join(TEST_DATA_PATH, 'FakePack6', 'ReleaseNotes', '1_0_1.md'),
+            os.path.join(TEST_DATA_PATH, 'FakePack6', 'ReleaseNotes', '1_0_2.md'),
+        ]
+
+        pack_versions_dict = {}
+        for path in release_notes_paths:
+            with open(path) as file_:
+                pack_versions_dict[get_pack_version_from_path(path)] = file_.read()
+
+        rn_block = aggregate_release_notes_for_marketplace(pack_versions_dict)
+
+        assert 'Incident Fields' in rn_block
+        assert '**XDR Alerts**' in rn_block
+        assert 'First' in rn_block
+        assert 'Second' in rn_block
+        assert rn_block.endswith('\n')
+        assert rn_block.startswith('\n')
+
+    def test_spaced_content_entity_and_old_format(self):
+        """
+        Given
+        - Two release notes files with content entity instance wrapped with ** and entity type contains spaces.
+        When
+        - Merging the two release notes files into one file.
+        Then
+        - Ensure that the content entity instance is wrapped with **.
+        - Ensure that the content entity type contains whitespace.
+        - Ensure that the content of both RN files appears in the result file.
+        """
+        release_notes_paths = [
+            os.path.join(TEST_DATA_PATH, 'FakePack6', 'ReleaseNotes', '1_0_1.md'),
+            os.path.join(TEST_DATA_PATH, 'FakePack6', 'ReleaseNotes', '1_0_2.md'),
+        ]
+
+        pack_versions_dict = {}
+        for path in release_notes_paths:
+            with open(path) as file_:
+                pack_versions_dict[get_pack_version_from_path(path)] = file_.read()
+
+        rn_block, latest_version = merge_version_blocks(pack_versions_dict)
+
+        assert 'Incident Fields' in rn_block
+        assert '**XDR Alerts**' in rn_block
+        assert 'First' in rn_block
+        assert 'Second' in rn_block
+        assert latest_version == '1.0.2'
+
     def test_sanity(self):
         """
         Given
@@ -312,16 +448,16 @@ class TestMergeVersionBlocks:
         pack_versions_dict = {}
         for path in release_notes_paths:
             with open(path) as file_:
-                pack_versions_dict[os.path.basename(os.path.splitext(path)[0])] = file_.read()
+                pack_versions_dict[get_pack_version_from_path(path)] = file_.read()
 
-        rn_block = merge_version_blocks('FakePack', pack_versions_dict, {})
+        rn_block = aggregate_release_notes('FakePack', pack_versions_dict, {})
 
         assert 'FakePack1_Playbook1' in rn_block
         assert 'FakePack1_Playbook2' in rn_block
         assert 'FakePack1_Integration1' in rn_block
         assert 'FakePack1_Integration2' in rn_block
-        assert 'v2_1_0' in rn_block
-        assert 'v1_1_0' not in rn_block
+        assert 'v2.1.0' in rn_block
+        assert 'v1.1.0' not in rn_block
 
     def test_similiar_entities(self):
         """
@@ -343,15 +479,15 @@ class TestMergeVersionBlocks:
         pack_versions_dict = {}
         for path in release_notes_paths:
             with open(path) as file_:
-                pack_versions_dict[os.path.basename(os.path.splitext(path)[0])] = file_.read()
+                pack_versions_dict[get_pack_version_from_path(path)] = file_.read()
 
-        rn_block = merge_version_blocks('FakePack', pack_versions_dict, {})
+        rn_block = aggregate_release_notes('FakePack', pack_versions_dict, {})
 
         assert rn_block.count('Integrations') == 1
         assert rn_block.count('FakePack1_Integration1') == 1
         assert rn_block.count('FakePack1_Integration2') == 1
-        assert 'v2_0_0' in rn_block
-        assert 'v1_1_0' not in rn_block
+        assert 'v2.0.0' in rn_block
+        assert 'v1.1.0' not in rn_block
         assert 'fake1 minor' in rn_block
         assert 'fake2 minor' in rn_block
         assert 'fake1 major' in rn_block
@@ -373,6 +509,23 @@ class TestMergeVersionBlocks:
 
         assert name == 'fake_integration'
         assert description == 'Use the Zoom integration manage your Zoom users and meetings'
+
+    def test_get_new_entity_record_layoutscontainer(self):
+        """
+        Given
+            fake layoutscontainer path.
+
+        When
+            getting entity record for layoutscontainer.
+
+        Then
+            Ensure the method is valid and returns the layoutscontainer name and the fromversion.
+        """
+        name, description = get_new_entity_record(os.path.join(TEST_DATA_PATH,
+                                                               'FakePack5', 'Layouts', 'layoutscontainer-fake.json'))
+
+        assert name == 'layoutscontainer-fake'
+        assert description == '(Available from Cortex XSOAR 6.0.0)'
 
     def test_get_new_entity_record_layout(self):
         """
@@ -440,3 +593,38 @@ class TestMergeVersionBlocks:
         rn = construct_entities_block(entities_data)
         assert '### Indicator Types' in rn
         assert '- **accountRep**' in rn
+
+    @pytest.mark.parametrize('Pack_name, versions_ls, expected_version', [
+        ("FakePack7", ["1_0_1.md", "1_0_2.md"], "1.0.2"),
+        ("FakePack8", ["1_13_44.md", "1_14_0.md"], '1.14.0')])
+    def test_merge_rns_with_gerneral_announcment(self, Pack_name, versions_ls, expected_version):
+        """
+            Given:
+                - Case 1: two consecutive versions of RN, both containing scripts with changes announcments,
+                One of them contain entity with description and one of them contain entity with an empty description.
+                One RN also contain integration changes announcments and the other contain entity with description.
+                - Case 2: two consecutive versions of RN, one contain a script with changes announcments and two entities
+                listed in this announcments and one of them contain a script with an entity with description.
+            When:
+                - Using merge_version_blocks function.
+            Then:
+                Ensure that the merge was done correctly.
+                - Case 1: Should create a merged RN with anouncments as the top descrition of each category, two categories with
+                one entity with descrition each. The other entity with the empty description should be omitted.
+                - Case 2: Should create a merged RN with the anouncment at the top of the category
+                including the two related entities, and under entity with descrition under the anouncment.
+        """
+        release_notes_paths = [os.path.join(TEST_DATA_PATH, Pack_name, 'ReleaseNotes', ver) for ver in versions_ls]
+        expected_results_paths = os.path.join(TEST_DATA_PATH, Pack_name, 'expected_results.md')
+
+        pack_versions_dict = {}
+        for path in release_notes_paths:
+            with open(path) as file:
+                pack_versions_dict[get_pack_version_from_path(path)] = file.read()
+
+            with open(expected_results_paths) as file:
+                expected_results = file.read()
+
+        rn_block, latest_version = merge_version_blocks(pack_versions_dict)
+        assert latest_version == expected_version
+        assert rn_block == expected_results

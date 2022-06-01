@@ -1,0 +1,43 @@
+enabled: false
+name: ExpanseAggregateAttributionCI
+comment: Aggregate entries from ServiceNow CMDB into AttributionCI
+commonfields:
+  id: ExpanseAggregateAttributionCI
+  version: -1
+args:
+- name: input
+  description: Input list.
+  isArray: true
+- name: current
+  required: false
+  description: Current aggregation state.
+  isArray: true
+outputs:
+- contextPath: Expanse.AttributionCI.name
+  description: Name of the CI
+  type: string
+- contextPath: Expanse.AttributionCI.sys_id
+  description: sys_id of the CI
+  type: string
+- contextPath: Expanse.AttributionCI.sys_class_name
+  description: Class name of the CI
+  type: string
+- contextPath: Expanse.AttributionCI.asset.display_value
+  description: The CI Asset display value
+  type: string
+- contextPath: Expanse.AttributionCI.asset.link
+  description: The CI Asset link url
+  type: string
+- contextPath: Expanse.AttributionCI.asset.value
+  description: The CI Asset value
+  type: string
+script: '-'
+system: false
+tags: []
+timeout: '0'
+type: python
+subtype: python3
+dockerimage: demisto/python3:3.9.7.24076
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

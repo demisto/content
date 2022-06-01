@@ -50,9 +50,14 @@ def docker_auth(image_name, verify_ssl=True, registry=DEFAULT_REGISTRY):
         else:
             demisto.info('Failed extracting www-authenticate header from registry: {}, final url: {}'.format(
                 registry, res.url))
+        auth = None
+        if registry.lower().startswith('xsoar-registry'):
+            demisto.debug('Authenticating using license id to registry: {}'.format(registry))
+            licenseID = demisto.getLicenseID()
+            auth = ('preview', licenseID)
         res = requests.get(
             "{}?scope=repository:{}:pull&service={}".format(realm, image_name, service),
-            headers=ACCEPT_HEADER, timeout=TIMEOUT, verify=verify_ssl)
+            headers=ACCEPT_HEADER, timeout=TIMEOUT, verify=verify_ssl, auth=auth)
         res.raise_for_status()
         res_json = res.json()
         return res_json.get('token')

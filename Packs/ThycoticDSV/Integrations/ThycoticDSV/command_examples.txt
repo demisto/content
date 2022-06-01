@@ -1,0 +1,1 @@
+!dsv-secret-get name="accounts/xsoar"

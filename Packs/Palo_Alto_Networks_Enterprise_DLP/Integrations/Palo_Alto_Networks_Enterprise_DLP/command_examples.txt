@@ -1,0 +1,2 @@
+!pan-dlp-get-report report_id=3165792284
+!pan-dlp-get-report report_id=3165792284 fetch_snippets=true

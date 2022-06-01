@@ -1,0 +1,63 @@
+interactions:
+- request:
+    body: '{"ip": ["8.8.8.8", "1.1.1.1"], "domain": ["www.feddoctor.com"], "hash":
+      ["fa964842244e752950fd4ed711759382a8950e13cc2794d6f73ab7eb9169e5ee"], "url":
+      ["https://sites.google.com/site/unblockingnotice/"], "vulnerability": ["CVE-2020-8813",
+      "CVE-2011-3874"]}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '254'
+      Content-Type:
+      - application/json
+      User-Agent:
+      - python-requests/2.24.0
+      X-RF-User-Agent:
+      - Cortex_XSOAR/2.0 Cortex_XSOAR_unittest_0.1
+      X-RFToken:
+      - XXXXXX
+    method: POST
+    uri: https://api.recordedfuture.com/v2/soar/triage/contexts/phishing?format=phantom
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAAK2TwW6jMBCG38VnQrCBGLit0kqNWu2h0nYP1Wpl7CFYBRvZpmka5d1raHZBalTt
+        KpUvo9/2P9/M2AcEykknwaLi8YAUawEVKAvHhQJkuTZeicIoQKZvfHhAXPfKnTR4lgIU9/rjrwC1
+        7GX9vonD6BggKbyZ7IrJz+27IcGm+yaEAWvRMfibtXaus8VyaaUDG2613jYQct2OwrJXZaP5k1Rb
+        pZ3ksLyALp7oetMU/5/4VMaP+7t5AeuH6wWJSLTIMhxPeDQ/w5d8xkfIBMjT15/uasq53pdgHvpG
+        gWGlbKTbzxEqlq+SLCEkSYCmJE+jSiQgKMY0zeOMsMxLgGPOCc0TsapozEoKZY5XOaQAM2p6hjr+
+        dOazttbM1sUXwJyKvvF28zJ3u11YgRCaO22GUV3wGGa9lkIV56z/vFrlwChwV7plUn0fUD5MH+NF
+        nNFk4skumv7t5kbdb/51+jgc15f928nv47/111ztw1o34vdp2/v4s1z7Pr14M9TV0tb+43jxGYyQ
+        3IsVayzM7qJilQ5EI7EdOAeXd8pWqjE6Ht8AxvTGL6gEAAA=
+    headers:
+      Cache-Control:
+      - no-cache, no-store, private, must-revalidate, max-age=0, no-transform
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json;charset=utf-8
+      Date:
+      - Mon, 09 Nov 2020 16:04:04 GMT
+      Expires:
+      - Thu, 01 Jan 1970 00:00:00 GMT
+      Pragma:
+      - no-cache
+      Set-Cookie:
+      - JSESSIONID=node016kgmji8lyhwn1a9fn1zg7xltt18426.node0;Path=/rfq
+      Strict-Transport-Security:
+      - max-age=86400; includeSubDomains
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+version: 1

@@ -2,9 +2,10 @@
 <h2>Overview</h2>
 <hr>
 <p>Use the McAfee Advanced Threat Defense integration to enhance protection from network edge to endpoint and enable investigation.</p>
+<p>This integration was integrated and tested with MATD Version 4.2.2.16.</p>
 <h2>McAfee Advanced Threat Defense Playbooks</h2>
 <hr>
-<p>This integration is used in the following Demisto playbooks.</p>
+<p>This integration is used in the following Cortex XSOAR playbooks.</p>
 <ul>
 <li>McAfee ATD - Detonate URL</li>
 <li>McAfee ATD - Detonate File</li>
@@ -17,7 +18,7 @@
 <li>Get information on an old sample.</li>
 <li>Send a URL sample to McAfee ATD.</li>
 </ul>
-<h2>Configure McAfee Advanced Threat Defense on Demisto</h2>
+<h2>Configure McAfee Advanced Threat Defense on Cortex XSOAR</h2>
 <hr>
 <ol>
 <li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>
@@ -38,7 +39,7 @@
 <h2> </h2>
 <h2>Commands</h2>
 <hr>
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ol>
 <li><a href="#h_53523308371535891435690">Upload a file: atd-file-upload</a></li>
 <li><a href="#h_302118921961535891441834">Retrieve taskIDs: atd-get-task-ids</a></li>
@@ -589,7 +590,7 @@
 <tr>
 <td style="width: 288px;">ATD.ListAnalyzerProfiles.LocalBlackList</td>
 <td style="width: 62px;">boolean</td>
-<td style="width: 358px;">Whether the Analyzer's profile has access to the local black list</td>
+<td style="width: 358px;">Whether the Analyzer's profile has access to the local block list</td>
 </tr>
 </tbody>
 </table>

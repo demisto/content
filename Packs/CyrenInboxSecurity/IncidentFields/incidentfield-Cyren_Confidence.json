@@ -1,0 +1,31 @@
+{
+	"associatedTypes": [
+		"Cyren Inbox Security"
+	],
+	"systemAssociatedTypes": null,
+	"associatedToAll": false,
+    "caseInsensitive": true,
+    "cliName": "cyrenconfidence",
+    "closeForm": false,
+    "content": true,
+    "description": "2 Medium, 3 High",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_cyrenconfidence",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Cyren Confidence",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

@@ -1,0 +1,30 @@
+{
+    "id": "indicator_devsecopssastcategory",
+    "version": -1,
+    "modified": "2020-08-11T11:21:57.544333029+04:00",
+    "name": "DevSecOps SAST Category",
+    "ownerOnly": false,
+    "cliName": "devsecopssastcategory",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 2,
+    "hidden": false,
+    "associatedTypes": [
+        "DevSecOps SAST Alert"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.0.0"
+}

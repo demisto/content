@@ -7,7 +7,7 @@ Calculates features for machine learning.
 | --- | --- |
 | Script Type | python |
 | Tags | ml |
-| Demisto Version | 3.5.0+ |
+| Cortex XSOAR Version | 3.5.0+ |
 
 ## Inputs
 ---

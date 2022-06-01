@@ -1,0 +1,15 @@
+{
+  "ArtifactsMetadata": [
+    {
+      "ArtifactName": "artifact name test 1",
+      "ArtifactSize": "1010",
+      "ArtifactType": "artifact type test 1"
+    },
+    {
+      "ArtifactName": "artifact name test 2",
+      "ArtifactSize": "1010",
+      "ArtifactType": "artifact type test 2"
+    }
+  ],
+  "Uuid": "test"
+}

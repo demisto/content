@@ -1,0 +1,30 @@
+{
+    "id": "incident_f5silverlineattacksignatureid",
+    "version": -1,
+    "modified": "2021-05-13T15:13:06.93001205Z",
+    "name": "F5 Silverline Attack Signature ID",
+    "ownerOnly": false,
+    "cliName": "f5silverlineattacksignatureid",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "F5 Silverline WAF Events"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.0.0"
+}

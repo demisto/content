@@ -6,7 +6,7 @@ Health Check dynamic section, showing the total number of checked integrations.
 | --- | --- |
 | Script Type | python3 |
 | Tags | dynamic-section, failedInstances |
-| Demisto Version | 6.0.0 |
+| Cortex XSOAR Version | 6.0.0 |
 
 ## Inputs
 ---

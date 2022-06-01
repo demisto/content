@@ -1,22 +1,33 @@
+"""Main file for GoogleChronicleBackstory Integration."""
 from CommonServerPython import *
 
-''' IMPORTS '''
 from collections import defaultdict
-from typing import Any, Dict
+from typing import Any, Dict, Tuple, List
 import httplib2
 import urllib.parse
 from oauth2client import service_account
+from copy import deepcopy
+import dateparser
+from hashlib import sha256
 
 # A request will be tried 3 times if it fails at the socket/connection level
 httplib2.RETRIES = 3
 
 ''' CONSTANTS '''
 
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
+DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
 
 SCOPES = ['https://www.googleapis.com/auth/chronicle-backstory']
 
-BACKSTORY_API_V1_URL = 'https://backstory.googleapis.com/v1'
+BACKSTORY_API_V1_URL = 'https://{}backstory.googleapis.com/v1'
+BACKSTORY_API_V2_URL = 'https://{}backstory.googleapis.com/v2'
+MAX_ATTEMPTS = 60
+DEFAULT_FIRST_FETCH = "3 days"
+REGIONS = {
+    "General": "",
+    "Europe": "europe-",
+    "Asia": "asia-southeast1-"
+}
 
 ISO_DATE_REGEX = (r'^(-?(?:[1-9][0-9]*)?[0-9]{4})-(1[0-2]|0[1-9])-(3[01]|0[1-9]|[12][0-9])T(2[0-3]|[01][0-9]):'
                   r'([0-5][0-9]):([0-5][0-9])(\.[0-9]+)?Z$')
@@ -28,7 +39,11 @@ CHRONICLE_OUTPUT_PATHS = {
     'Ip': 'GoogleChronicleBackstory.IP(val.IoCQueried && val.IoCQueried == obj.IoCQueried)',
     'Domain': 'GoogleChronicleBackstory.Domain(val.IoCQueried && val.IoCQueried == obj.IoCQueried)',
     'Alert': 'GoogleChronicleBackstory.Alert(val.AssetName && val.AssetName == obj.AssetName)',
-    'Events': 'GoogleChronicleBackstory.Events'
+    'UserAlert': 'GoogleChronicleBackstory.UserAlert(val.User && val.User == obj.User)',
+    'Events': 'GoogleChronicleBackstory.Events',
+    'Detections': 'GoogleChronicleBackstory.Detections(val.id == obj.id && val.ruleVersion == obj.ruleVersion)',
+    'Rules': 'GoogleChronicleBackstory.Rules(val.ruleId == obj.ruleId)',
+    'Token': 'GoogleChronicleBackstory.Token(val.name == obj.name)'
 }
 
 ARTIFACT_NAME_DICT = {
@@ -88,22 +103,47 @@ SEVERITY_MAP = {
     'high': 3
 }
 
+MESSAGES = {
+    "INVALID_DAY_ARGUMENT": 'Invalid value provided. Allowed values are  "Last 1 day", "Last 7 days", '
+                            '"Last 15 days" and "Last 30 days"',
+    "INVALID_PAGE_SIZE": 'Page size should be in the range from 1 to 1000.',
+    "NO_RECORDS": 'No Records Found'
+}
+FIRST_ACCESSED_TIME = 'First Accessed Time'
+LAST_ACCESSED_TIME = 'Last Accessed Time'
+IP_ADDRESS = 'IP Address'
+CONFIDENCE_SCORE = 'Confidence Score'
+VENDOR = 'Google Chronicle Backstory'
+LAST_SEEN_AGO = 'Last Seen Ago'
+LAST_SEEN = 'Last Seen'
+FIRST_SEEN_AGO = 'First Seen Ago'
+FIRST_SEEN = 'First Seen'
+ALERT_NAMES = 'Alert Names'
+
 ''' CLIENT CLASS '''
 
 
 class Client:
     """
-    Client to use in integration to fetch data from Chronicle Backstory
+    Client to use in integration to fetch data from Chronicle Backstory.
 
     requires service_account_credentials : a json formatted string act as a token access
     """
 
     def __init__(self, params: Dict[str, Any], proxy, disable_ssl):
+        """
+        Initialize HTTP Client.
+
+        :param params: parameter returned from demisto.params()
+        :param proxy: whether to use environment proxy
+        :param disable_ssl: whether to disable ssl
+        """
         encoded_service_account = str(params.get('service_account_credential'))
         service_account_credential = json.loads(encoded_service_account, strict=False)
         credentials = service_account.ServiceAccountCredentials.from_json_keyfile_dict(service_account_credential,
                                                                                        scopes=SCOPES)
         self.http_client = credentials.authorize(get_http_client(proxy, disable_ssl))
+        self.region = params.get("region") if params.get("region") else "General"
 
 
 ''' HELPER FUNCTIONS '''
@@ -111,18 +151,17 @@ class Client:
 
 def get_http_client(proxy, disable_ssl):
     """
-    Constructs HTTP Client.
+    Construct HTTP Client.
 
     :param proxy: if proxy is enabled, http client with proxy is constructed
     :param disable_ssl: insecure
     :return: http_client object
     """
-
     proxy_info = {}
     if proxy:
         proxies = handle_proxy()
         if not proxies.get('https', True):
-            raise Exception('https proxy value is empty. Check Demisto server configuration' + str(proxies))
+            raise DemistoException('https proxy value is empty. Check Demisto server configuration' + str(proxies))
         https_proxy = proxies['https']
         if not https_proxy.startswith('https') and not https_proxy.startswith('http'):
             https_proxy = 'https://' + https_proxy
@@ -151,31 +190,30 @@ def validate_response(client, url, method='GET'):
 
     :return: response
     """
-    for _ in range(3):
-        raw_response = client.http_client.request(url, method)
-
-        if not raw_response:
-            raise ValueError('Technical Error while making API call to Chronicle. Empty response received')
-        if raw_response[0].status == 500:
-            raise ValueError('Internal server error occurred, please try again later')
-        if raw_response[0].status == 429:
-            demisto.debug('API Rate limit exceeded. Retrying in {} seconds...'.format(1))
-            time.sleep(1)
-            continue
-        if raw_response[0].status != 200:
-            return_error(
-                'Status code: {}\nError: {}'.format(raw_response[0].status, parse_error_message(raw_response[1])))
-        try:
-            response = json.loads(raw_response[1])
-            return response
-        except json.decoder.JSONDecodeError:
-            raise ValueError('Invalid response format while making API call to Chronicle. Response not in JSON format')
-    raise ValueError('API rate limit exceeded. Try again later.')
+    demisto.info('[CHRONICLE DETECTIONS]: Request URL: ' + url.format(REGIONS[client.region]))
+    raw_response = client.http_client.request(url.format(REGIONS[client.region]), method)
+    if not raw_response:
+        raise ValueError('Technical Error while making API call to Chronicle. Empty response received')
+    if raw_response[0].status == 500:
+        raise ValueError('Internal server error occurred, Reattempt will be initiated.')
+    if raw_response[0].status == 429:
+        raise ValueError('API rate limit exceeded. Reattempt will be initiated.')
+    if raw_response[0].status == 400 or raw_response[0].status == 404:
+        raise ValueError(
+            'Status code: {}\nError: {}'.format(raw_response[0].status, parse_error_message(raw_response[1])))
+    if raw_response[0].status != 200:
+        raise ValueError(
+            'Status code: {}\nError: {}'.format(raw_response[0].status, parse_error_message(raw_response[1])))
+    try:
+        response = json.loads(raw_response[1])
+        return response
+    except json.decoder.JSONDecodeError:
+        raise ValueError('Invalid response format while making API call to Chronicle. Response not in JSON format')
 
 
 def get_params_for_reputation_command():
     """
-    This function gets the Demisto parameters related to reputation command
+    Get Demisto parameters related to the reputation command.
 
     :return: Dict of parameters related to reputation command
     :rtype: dict
@@ -233,18 +271,37 @@ def validate_configuration_parameters(param: Dict[str, Any]):
     """
     # get configuration parameters
     service_account_json = param.get('service_account_credential', '')
-    fetch_days = param.get('first_fetch_time_interval_days', '3 days').lower()
-    page_size = param.get('fetch_limit', '10')
+    fetch_days = param.get('first_fetch', DEFAULT_FIRST_FETCH).lower()
+    page_size = param.get('max_fetch', '10')
+    time_window = param.get('time_window', '15')
+
+    detection_by_ids = param.get('fetch_detection_by_ids') or ""
+    detection_by_id = [r_v_id.strip() for r_v_id in detection_by_ids.split(',')]
+
+    if param.get('backstory_alert_type', 'ioc domain matches').lower() == 'detection alerts' and not \
+            param.get('fetch_all_detections', False) and not get_unique_value_from_list(detection_by_id):
+        raise ValueError('Please enter one or more Rule ID(s) or Version ID(s) as value of "Detections to '
+                         'fetch by Rule ID or Version ID" or check the checkbox "Fetch all rules '
+                         'detections" to fetch detections.')
 
     try:
         # validate service_account_credential configuration parameter
         json.loads(service_account_json, strict=False)
 
-        # validate fetch_limit configuration parameter
+        # validate max_fetch configuration parameter
         if not page_size.isdigit():
             raise ValueError('Incidents fetch limit must be a number')
 
-        # validate first_fetch_time_interval_days parameter
+        invalid_time_window_error_message = 'Time window(in minutes) should be in the numeric range from 1 to 60.'
+        if not time_window:
+            time_window = '15'
+        if not time_window.isdigit():
+            raise ValueError(invalid_time_window_error_message)
+        time_window = int(time_window)
+        if time_window > 60:
+            raise ValueError(invalid_time_window_error_message)
+
+        # validate first_fetch parameter
         range_split = fetch_days.split(' ')
         if len(range_split) != 2:
             raise ValueError('First fetch days must be "number time_unit", '
@@ -274,7 +331,9 @@ def validate_configuration_parameters(param: Dict[str, Any]):
 
 def validate_start_end_date(start_date, end_date=None, reference_time=None):
     """
-    Check whether the start_date and end_date provided are in valid ISO Format(e.g. 2019-10-17T00:00:00Z)
+    Perform start and end date validation.
+
+    Check whether the start_date and end_date provided are in valid ISO Format(e.g. 2019-10-17T00:00:00Z).
     Check whether start_date is not later than end_date.
     Check whether start_date and end_date are not a future date.
 
@@ -288,45 +347,42 @@ def validate_start_end_date(start_date, end_date=None, reference_time=None):
     :param reference_time: date
 
     :return: raise ValueError if validation fails, else return None
-    :rtype: None
+    :rtype: str, str, Optional[str]
     """
+    if start_date.isdigit():
+        raise ValueError("Invalid start time, supports ISO date format only. e.g. 2019-10-17T00:00:00Z")
+
     # checking date format
-    try:
-        datetime.strptime(start_date, '%Y-%m-%dT%H:%M:%SZ')
-    except Exception:
+    start_date = dateparser.parse(start_date, settings={'STRICT_PARSING': True})
+    if not start_date:
         raise ValueError('Invalid start time, supports ISO date format only. e.g. 2019-10-17T00:00:00Z')
 
-    # checking future date
-    today = datetime.utcnow().strftime(DATE_FORMAT)
-    if start_date > today:
-        raise ValueError('Invalid start time, can not be greater than current UTC time')
+    start_date = str(datetime.strftime(start_date, DATE_FORMAT))
 
     if end_date:
+        if end_date.isdigit():
+            raise ValueError("Invalid end time, supports ISO date format only. e.g. 2019-10-17T00:00:00Z")
         # checking date format
-        try:
-            datetime.strptime(end_date, '%Y-%m-%dT%H:%M:%SZ')
-        except Exception:
+        end_date = dateparser.parse(end_date, settings={'STRICT_PARSING': True})
+        if not end_date:
             raise ValueError('Invalid end time, supports ISO date format only. e.g. 2019-10-17T00:00:00Z')
 
-        # checking future date
-        if end_date > today:
-            raise ValueError('Invalid end time, can not be greater than current UTC time')
-
-        # checking end date must be lower than start date
-        if start_date > end_date:
-            raise ValueError('End time must be later than Start time')
+        end_date = str(datetime.strftime(end_date, DATE_FORMAT))
 
     if reference_time:
         # checking date format
-        try:
-            datetime.strptime(reference_time, '%Y-%m-%dT%H:%M:%SZ')
-        except Exception:
+        reference_time = dateparser.parse(reference_time, settings={'STRICT_PARSING': True})
+        if not reference_time:
             raise ValueError('Invalid reference time, supports ISO date format only. e.g. 2019-10-17T00:00:00Z')
+
+        reference_time = str(datetime.strftime(reference_time, DATE_FORMAT))
+
+    return start_date, end_date, reference_time
 
 
 def validate_page_size(page_size):
     """
-    Validate that page size parameter is in numeric format or not
+    Validate that page size parameter is in numeric format or not.
 
     :type page_size: str
     :param page_size: this value will be check as numeric or not
@@ -341,8 +397,8 @@ def validate_page_size(page_size):
 
 def validate_preset_time_range(value):
     """
-    Validate that preset_time_range parameter is in valid format or not
-    Strip the keyword 'Last' to extract the date range if validation is through.
+    Validate that preset_time_range parameter is in valid format or not and \
+    strip the keyword 'Last' to extract the date range if validation is through.
 
     :type value: str
     :param value: this value will be check as valid or not
@@ -353,31 +409,23 @@ def validate_preset_time_range(value):
     value_split = value.split(' ')
     try:
         if value_split[0].lower() != 'last':
-            raise ValueError(
-                'Invalid value provided. Allowed values are  "Last 1 day", "Last 7 days", '
-                '"Last 15 days" and "Last 30 days"')
+            raise ValueError(MESSAGES["INVALID_DAY_ARGUMENT"])
 
         day = int(value_split[1])
 
         if day not in [1, 7, 15, 30]:
-            raise ValueError(
-                'Invalid value provided. Allowed values are  "Last 1 day", "Last 7 days", '
-                '"Last 15 days" and "Last 30 days"')
+            raise ValueError(MESSAGES["INVALID_DAY_ARGUMENT"])
 
         if value_split[2].lower() not in ['day', 'days']:
-            raise ValueError(
-                'Invalid value provided. Allowed values are  "Last 1 day", "Last 7 days", '
-                '"Last 15 days" and "Last 30 days"')
+            raise ValueError(MESSAGES["INVALID_DAY_ARGUMENT"])
     except Exception:
-        raise ValueError(
-            'Invalid value provided. Allowed values are  "Last 1 day", "Last 7 days", '
-            '"Last 15 days" and "Last 30 days"')
+        raise ValueError(MESSAGES["INVALID_DAY_ARGUMENT"])
     return value_split[1] + ' ' + value_split[2].lower()
 
 
-def get_chronicle_default_date_range(days='3 days'):
+def get_chronicle_default_date_range(days=DEFAULT_FIRST_FETCH):
     """
-    This function returns Chronicle Backstory default date range(last 3 days)
+    Get Chronicle Backstory default date range(last 3 days).
 
     :return: start_date, end_date (ISO date in UTC)
     :rtype: string
@@ -388,7 +436,7 @@ def get_chronicle_default_date_range(days='3 days'):
 
 def get_artifact_type(value):
     """
-    This function derives the input value's artifact type based on regex match.
+    Derive the input value's artifact type based on the regex match. \
     The returned artifact_type is complaint with the Search API.
 
     :type value: string
@@ -409,9 +457,27 @@ def get_artifact_type(value):
         return 'domain_name'  # if it's not IP or hash then it'll be considered as domain_name
 
 
+def prepare_hr_for_assets(asset_identifier_value, asset_identifier_key, data):
+    """
+    Prepare HR for assets.
+
+    :param asset_identifier_value: Value of asset identifier
+    :param asset_identifier_key: Key of asset identifier
+    :param data: response from API endpoint
+    :return: HR dictionary
+    """
+    tabular_data_dict = dict()
+    tabular_data_dict['Host Name'] = asset_identifier_value if asset_identifier_key == 'hostname' else '-'
+    tabular_data_dict['Host IP'] = asset_identifier_value if asset_identifier_key == 'assetIpAddress' else '-'
+    tabular_data_dict['Host MAC'] = asset_identifier_value if asset_identifier_key == 'MACAddress' else '-'
+    tabular_data_dict[FIRST_ACCESSED_TIME] = data.get('firstSeenArtifactInfo', {}).get('seenTime', '-')
+    tabular_data_dict[LAST_ACCESSED_TIME] = data.get('lastSeenArtifactInfo', {}).get('seenTime', '-')
+    return tabular_data_dict
+
+
 def parse_assets_response(response: Dict[str, Any], artifact_type, artifact_value):
     """
-    parse response of list assets within the specified time range.
+    Parse response of list assets within the specified time range.
 
     :type response: Dict
     :param response: it is response of assets
@@ -425,7 +491,6 @@ def parse_assets_response(response: Dict[str, Any], artifact_type, artifact_valu
     :return: command output
     :rtype: Tuple
     """
-
     asset_list = response.get('assets', [])
     context_data = defaultdict(list)  # type: Dict[str, Any]
     tabular_data_list = list()
@@ -463,12 +528,7 @@ def parse_assets_response(response: Dict[str, Any], artifact_type, artifact_valu
         context_data[CHRONICLE_OUTPUT_PATHS['Asset'].format(ctx_primary_key)].append(gcb_context_data)
 
         # Response for HR
-        tabular_data_dict = dict()
-        tabular_data_dict['Host Name'] = asset_identifier_value if asset_identifier_key == 'hostname' else '-'
-        tabular_data_dict['Host IP'] = asset_identifier_value if asset_identifier_key == 'assetIpAddress' else '-'
-        tabular_data_dict['Host MAC'] = asset_identifier_value if asset_identifier_key == 'MACAddress' else '-'
-        tabular_data_dict['First Accessed Time'] = data.get('firstSeenArtifactInfo', {}).get('seenTime', '-')
-        tabular_data_dict['Last Accessed Time'] = data.get('lastSeenArtifactInfo', {}).get('seenTime', '-')
+        tabular_data_dict = prepare_hr_for_assets(asset_identifier_value, asset_identifier_key, data)
         tabular_data_list.append(tabular_data_dict)
 
         # Populating Host context for list of assets
@@ -478,7 +538,7 @@ def parse_assets_response(response: Dict[str, Any], artifact_type, artifact_valu
 
 def get_default_command_args_value(args: Dict[str, Any], date_range=None):
     """
-    returns and validate commands argument default values as per Chronicle Backstory
+    Validate and return command arguments default values as per Chronicle Backstory.
 
     :type args: dict
     :param args: contain all arguments for command
@@ -490,28 +550,30 @@ def get_default_command_args_value(args: Dict[str, Any], date_range=None):
     :rtype : datetime, datetime, int̥
     """
     preset_time_range = args.get('preset_time_range', None)
+    reference_time = None
     if preset_time_range:
         preset_time_range = validate_preset_time_range(preset_time_range)
         start_time, end_time = get_chronicle_default_date_range(preset_time_range)
     else:
         if date_range is None:
-            date_range = '3 days'
+            date_range = DEFAULT_FIRST_FETCH
         start_time, end_time = get_chronicle_default_date_range(days=date_range)
         start_time = args.get('start_time', start_time)
         end_time = args.get('end_time', end_time)
     page_size = args.get('page_size', 10000)
     validate_page_size(page_size)
     if args.get('reference_time', ''):
-        validate_start_end_date(start_time, end_time, args.get('reference_time', ''))
+        start_time, end_time, reference_time = validate_start_end_date(start_time, end_time,
+                                                                       args.get('reference_time', ''))
     else:
-        validate_start_end_date(start_time, end_time)
+        start_time, end_time, _ = validate_start_end_date(start_time, end_time)
 
-    return start_time, end_time, page_size
+    return start_time, end_time, page_size, reference_time
 
 
 def parse_error_message(error):
     """
-    Extract error message from error object
+    Extract error message from error object.
 
     :type error: bytearray
     :param error: Error byte response to be parsed
@@ -532,9 +594,28 @@ def parse_error_message(error):
     return json_error.get('error', {}).get('message', '')
 
 
+def transform_to_informal_time(total_time, singular_expected_string, plural_expected_string):
+    """
+    Convert to informal time from date to current time.
+
+    :type total_time: float
+    :param total_time: string of datetime object
+
+    :type singular_expected_string: string
+    :param singular_expected_string: expected string if total_time is 1
+
+    :type plural_expected_string: string
+    :param plural_expected_string: expected string if total_time is more than 1
+
+    :return: informal time from date to current time
+    :rtype: str
+    """
+    return singular_expected_string if total_time == 1 else str(total_time) + plural_expected_string
+
+
 def get_informal_time(date):
     """
-    convert to informal time from date to current time
+    Convert to informal time from date to current time.
 
     :type date: string
     :param date: string of datetime object
@@ -548,26 +629,26 @@ def get_informal_time(date):
     total_time = (current_time - previous_time).total_seconds()
 
     if 0 < total_time < 60:
-        return 'a second ago' if total_time == 1 else str(total_time) + ' seconds ago'
+        return transform_to_informal_time(total_time, 'a second ago', ' seconds ago')
     total_time = round(total_time / 60)
     if 0 < total_time < 60:
-        return 'a minute ago' if total_time == 1 else str(total_time) + ' minutes ago'
+        return transform_to_informal_time(total_time, 'a minute ago', ' minutes ago')
     total_time = round(total_time / 60)
     if 0 < total_time < 24:
-        return 'an hour ago' if total_time == 1 else str(total_time) + ' hours ago'
+        return transform_to_informal_time(total_time, 'an hour ago', ' hours ago')
     total_time = round(total_time / 24)
     if 0 < total_time < 31:
-        return 'a day ago' if total_time == 1 else str(total_time) + ' days ago'
+        return transform_to_informal_time(total_time, 'a day ago', ' days ago')
     total_time = round(total_time / 31)
     if 0 < total_time < 12:
-        return 'a month ago' if total_time == 1 else str(total_time) + ' months ago'
+        return transform_to_informal_time(total_time, 'a month ago', ' months ago')
     total_time = round((total_time * 31) / 365)
-    return 'a year ago' if total_time == 1 else str(total_time) + ' years ago'
+    return transform_to_informal_time(total_time, 'a year ago', ' years ago')
 
 
 def parse_list_ioc_response(ioc_matches):
     """
-    Parse response of list iocs within the specified time range.
+    Parse response of list iocs within the specified time range. \
     Constructs the Domain Standard context, Human readable and EC.
 
     :type ioc_matches: List
@@ -629,79 +710,59 @@ def parse_list_ioc_response(ioc_matches):
 
 
 def is_category_malicious(category, reputation_params):
-    """
-        determine if category is malicious in reputation_params
-    """
+    """Determine if category is malicious in reputation_params."""
     return category and category.lower() in reputation_params['malicious_categories']
 
 
 def is_severity_malicious(severity, reputation_params):
-    """
-        determine if severity is malicious in reputation_params
-    """
+    """Determine if severity is malicious in reputation_params."""
     return severity and severity.lower() in reputation_params['override_severity_malicious']
 
 
 def is_confidence_score_malicious(confidence_score, params):
-    """
-        determine if confidence score is malicious in reputation_params
-    """
+    """Determine if confidence score is malicious in reputation_params."""
     return is_int_type_malicious_score(confidence_score, params) or is_string_type_malicious_score(confidence_score,
                                                                                                    params)
 
 
 def is_string_type_malicious_score(confidence_score, params):
-    """
-        determine if string type confidence score is malicious in reputation_params
-    """
+    """Determine if string type confidence score is malicious in reputation_params."""
     return not isinstance(confidence_score, int) and CONFIDENCE_LEVEL_PRIORITY.get(
         params['override_confidence_level_malicious'], 10) <= CONFIDENCE_LEVEL_PRIORITY.get(confidence_score.lower(),
                                                                                             -1)
 
 
 def is_int_type_malicious_score(confidence_score, params):
-    """
-        determine if integer type confidence score is malicious in reputation_params
-    """
+    """Determine if integer type confidence score is malicious in reputation_params."""
     return params['override_confidence_score_malicious_threshold'] and isinstance(confidence_score, int) and int(
         params['override_confidence_score_malicious_threshold']) <= confidence_score
 
 
 def is_category_suspicious(category, reputation_params):
-    """
-        determine if category is suspicious in reputation_params
-    """
+    """Determine if category is suspicious in reputation_params."""
     return category and category.lower() in reputation_params['suspicious_categories']
 
 
 def is_severity_suspicious(severity, reputation_params):
-    """
-        determine if severity is suspicious in reputation_params
-    """
+    """Determine if severity is suspicious in reputation_params."""
     return severity and severity.lower() in reputation_params['override_severity_suspicious']
 
 
 def is_confidence_score_suspicious(confidence_score, params):
-    """
-        determine if confidence score is suspicious in reputation_params
-    """
+    """Determine if confidence score is suspicious in reputation_params."""
     return is_int_type_suspicious_score(confidence_score, params) or is_string_type_suspicious_score(confidence_score,
                                                                                                      params)
 
 
 def is_string_type_suspicious_score(confidence_score, params):
-    """
-        determine if string type confidence score is suspicious in reputation_params
-    """
+    """Determine if string type confidence score is suspicious in reputation_params."""
     return not isinstance(confidence_score, int) and CONFIDENCE_LEVEL_PRIORITY.get(
         params['override_confidence_level_suspicious'], 10) <= CONFIDENCE_LEVEL_PRIORITY.get(confidence_score.lower(),
                                                                                              -1)
 
 
 def is_int_type_suspicious_score(confidence_score, params):
-    """
-        determine if integer type confidence score is suspicious in reputation_params
-    """
+    """Determine if integer type confidence score is suspicious in reputation_params."""
     return params['override_confidence_score_suspicious_threshold'] and isinstance(confidence_score, int) and int(
         params['override_confidence_score_suspicious_threshold']) <= confidence_score
 
@@ -739,9 +800,34 @@ def evaluate_dbot_score(category, severity, confidence_score):
     return dbot_score
 
 
+def prepare_hr_for_ioc_details(addresses, hr_table_row):
+    """
+    Prepare HR for IOC Details.
+
+    :param hr_table_row: dictionary containing HR details
+    :param addresses: List of addresses
+    :return: updated HR dictionary
+    """
+    address_data = []
+    for address in addresses:
+        if address.get('domain'):
+            address_data.append({
+                'Domain': address['domain'],
+                'Port': address.get('port', '')
+            })
+            hr_table_row['Domain'] = address['domain']
+        if address.get('ipAddress'):
+            address_data.append({
+                'IpAddress': address['ipAddress'],
+                'Port': address.get('port', '')
+            })
+            hr_table_row[IP_ADDRESS] = address['ipAddress']
+    return address_data, hr_table_row
+
+
 def get_context_for_ioc_details(sources, artifact_indicator, artifact_type, is_reputation_command=True):
     """
-    Generate context data for reputation command and ioc details command
+    Generate context data for reputation command and ioc details command.
 
     :type sources: list
     :param sources: list of the sources getting response from listiocdetails endpoint
@@ -782,30 +868,16 @@ def get_context_for_ioc_details(sources, artifact_indicator, artifact_type, is_r
         # prepare table content for Human Readable Data
         hr_table_row = {
             'Domain': '-',
-            'IP Address': '-',
+            IP_ADDRESS: '-',
             'Category': category,
-            'Confidence Score': confidence_score,
+            CONFIDENCE_SCORE: confidence_score,
             'Severity': severity,
-            'First Accessed Time': source.get('firstActiveTime'),
-            'Last Accessed Time': source.get('lastActiveTime')
+            FIRST_ACCESSED_TIME: source.get('firstActiveTime'),
+            LAST_ACCESSED_TIME: source.get('lastActiveTime')
         }
 
         # Parsing the Addresses data to fetch IP and Domain data for context
-        address_data = []
-        for address in source.get('addresses', []):
-            if address.get('domain'):
-                address_data.append({
-                    'Domain': address['domain'],
-                    'Port': address.get('port', '')
-                })
-                hr_table_row['Domain'] = address['domain']
-            if address.get('ipAddress'):
-                address_data.append({
-                    'IpAddress': address['ipAddress'],
-                    'Port': address.get('port', '')
-                })
-                hr_table_row['IP Address'] = address['ipAddress']
-
+        address_data, hr_table_row = prepare_hr_for_ioc_details(source.get('addresses', []), hr_table_row)
         hr_table_data.append(hr_table_row)
 
         source_data_list.append({
@@ -824,12 +896,12 @@ def get_context_for_ioc_details(sources, artifact_indicator, artifact_type, is_r
         dbot_context = {
             'Indicator': artifact_indicator,
             'Type': artifact_type,
-            'Vendor': 'Google Chronicle Backstory',
+            'Vendor': VENDOR,
             'Score': dbot_score_max
         }
         if dbot_score_max == 3:
             standard_context['Malicious'] = {
-                'Vendor': 'Google Chronicle Backstory',
+                'Vendor': VENDOR,
                 'Description': 'Found in malicious data set'
             }
 
@@ -849,7 +921,8 @@ def get_context_for_ioc_details(sources, artifact_indicator, artifact_type, is_r
 
 def parse_alert_info(alert_infos, filter_severity):
     """
-    parses alert info of alerts
+    Parse alert info of alerts.
+
     :param alert_infos:
     :param filter_severity: will include alert_info if matches
     :return:
@@ -873,18 +946,19 @@ def parse_alert_info(alert_infos, filter_severity):
     return infos, len(infos)
 
 
-def get_ioc_domain_matches(client_obj, start_time, fetch_limit):
+def get_ioc_domain_matches(client_obj, start_time, max_fetch):
     """
-    Calls list IOC API with :start_time, :end_time and :fetch_limit.
-        filter_severity to filter out an alert after getting a response from API. Passing ALL will not filter any data
+    Call list IOC API with :start_time, :end_time and :max_fetch.
+
+    filter_severity to filter out an alert after getting a response from API. Passing ALL will not filter any data
+
     :param client_obj perform API request
     :param start_time
-    :param fetch_limit
+    :param max_fetch
 
     return events - list of dict representing events
     """
-
-    request_url = '{}/ioc/listiocs?start_time={}&page_size={}'.format(BACKSTORY_API_V1_URL, start_time, fetch_limit)
+    request_url = '{}/ioc/listiocs?start_time={}&page_size={}'.format(BACKSTORY_API_V1_URL, start_time, max_fetch)
 
     response_body = validate_response(client_obj, request_url)
     ioc_matches = response_body.get('response', {}).get('matches', [])
@@ -892,20 +966,24 @@ def get_ioc_domain_matches(client_obj, start_time, fetch_limit):
     return parsed_ioc['context']
 
 
-def get_gcb_alerts(client_obj, start_time, end_time, fetch_limit, filter_severity):
+def get_gcb_alerts(client_obj, start_time, end_time, max_fetch, filter_severity):
     """
-    Calls list alert API with :start_time, :end_time and :fetch_limit.
-        filter_severity to filter out an alert after getting a response from API. Passing ALL will not filter any data
+    Call list alert API with :start_time, :end_time and :max_fetch.
+
+    filter_severity to filter out an alert after getting a response from API. Passing ALL will not filter any data
+
     :param client_obj perform API request
     :param start_time
     :param end_time
-    :param fetch_limit
+    :param max_fetch
     :param filter_severity
 
     return events - list of dict representing events
     """
     request_url = '{}/alert/listalerts?start_time={}&end_time={}&page_size={}'.format(BACKSTORY_API_V1_URL, start_time,
-                                                                                      end_time, fetch_limit)
+                                                                                      end_time, max_fetch)
+    demisto.debug("[CHRONICLE] Request URL for fetching alerts: {}".format(request_url))
+
     json_response = validate_response(client_obj, request_url)
 
     alerts = []
@@ -928,7 +1006,9 @@ def get_gcb_alerts(client_obj, start_time, end_time, fetch_limit, filter_severit
 
 def reputation_operation_command(client_obj, indicator, reputation_function):
     """
-    Common method for reputation commands to accept argument as a comma-separated values and converted into list
+    Call appropriate reputation command.
+
+    Common method for reputation commands to accept argument as a comma-separated values and converted into list \
     and call specific function for all values.
 
     :param client_obj: object of client class
@@ -944,15 +1024,16 @@ def reputation_operation_command(client_obj, indicator, reputation_function):
 
 def group_infos_by_alert_asset_name(asset_alerts):
     """
-    this method converts assets with multiple alerts into assets per asset_alert and
-        returns both human readable and context.
+    Group alerts by assets.
+
+    This method converts assets with multiple alerts into assets per asset_alert and \
+    returns both human readable and context.
     For an asset, group the asset_alert infos based on asset_alert name.
     Returns human readable and context data.
 
     :param asset_alerts: normalized asset alerts returned by Backstory.
     :return: both human readable and context format having asset per alerts object
     """
-
     unique_asset_alerts_hr = {}  # type: Dict[str,Any]
     unique_asset_alert_ctx = {}  # type: Dict[str,Any]
     for asset_alert in asset_alerts:
@@ -964,19 +1045,19 @@ def group_infos_by_alert_asset_name(asset_alerts):
 
             if asset_alert_hr:
                 # Re calculate First and Last seen time
-                if info['Timestamp'] >= asset_alert_hr['Last Seen Ago']:
-                    asset_alert_hr['Last Seen Ago'] = info['Timestamp']
-                    asset_alert_hr['Last Seen'] = get_informal_time(info['Timestamp'])
+                if info['Timestamp'] >= asset_alert_hr[LAST_SEEN_AGO]:
+                    asset_alert_hr[LAST_SEEN_AGO] = info['Timestamp']
+                    asset_alert_hr[LAST_SEEN] = get_informal_time(info['Timestamp'])
                     asset_alert_ctx['LastSeen'] = info['Timestamp']
-                elif info['Timestamp'] <= asset_alert_hr['First Seen Ago']:
-                    asset_alert_hr['First Seen Ago'] = info['Timestamp']
-                    asset_alert_hr['First Seen'] = get_informal_time(info['Timestamp'])
+                elif info['Timestamp'] <= asset_alert_hr[FIRST_SEEN_AGO]:
+                    asset_alert_hr[FIRST_SEEN_AGO] = info['Timestamp']
+                    asset_alert_hr[FIRST_SEEN] = get_informal_time(info['Timestamp'])
                     asset_alert_ctx['FirstSeen'] = info['Timestamp']
             else:
-                asset_alert_hr['First Seen Ago'] = info['Timestamp']
-                asset_alert_hr['First Seen'] = get_informal_time(info['Timestamp'])
-                asset_alert_hr['Last Seen Ago'] = info['Timestamp']
-                asset_alert_hr['Last Seen'] = get_informal_time(info['Timestamp'])
+                asset_alert_hr[FIRST_SEEN_AGO] = info['Timestamp']
+                asset_alert_hr[FIRST_SEEN] = get_informal_time(info['Timestamp'])
+                asset_alert_hr[LAST_SEEN_AGO] = info['Timestamp']
+                asset_alert_hr[LAST_SEEN] = get_informal_time(info['Timestamp'])
 
                 asset_alert_ctx['FirstSeen'] = info['Timestamp']
                 asset_alert_ctx['LastSeen'] = info['Timestamp']
@@ -984,7 +1065,7 @@ def group_infos_by_alert_asset_name(asset_alerts):
             asset_alert_ctx.setdefault('Occurrences', []).append(info['Timestamp'])
             asset_alert_ctx['Alerts'] = asset_alert_hr['Alerts'] = asset_alert_ctx.get('Alerts', 0) + 1
             asset_alert_ctx['Asset'] = asset_alert['AssetName']
-            asset_alert_ctx['AlertName'] = asset_alert_hr['Alert Names'] = info['Name']
+            asset_alert_ctx['AlertName'] = asset_alert_hr[ALERT_NAMES] = info['Name']
             asset_alert_ctx['Severities'] = asset_alert_hr['Severities'] = info['Severity']
             asset_alert_ctx['Sources'] = asset_alert_hr['Sources'] = info['SourceProduct']
 
@@ -998,20 +1079,21 @@ def group_infos_by_alert_asset_name(asset_alerts):
 
 def convert_alerts_into_hr(events):
     """
-    converts alerts into human readable by parsing alerts
-    :param events:
-    :return:
+    Convert alerts into human readable by parsing alerts.
+
+    :param events: events from the response
+    :return: human readable for alerts
     """
     data = group_infos_by_alert_asset_name(events)[0].values()
     return tableToMarkdown('Security Alert(s)', list(data),
-                           ['Alerts', 'Asset', 'Alert Names', 'First Seen', 'Last Seen', 'Severities',
+                           ['Alerts', 'Asset', ALERT_NAMES, FIRST_SEEN, LAST_SEEN, 'Severities',
                             'Sources'],
                            removeNull=True)
 
 
 def get_asset_identifier_details(asset_identifier):
     """
-    Return asset identifier detail such as hostname, ip, mac
+    Return asset identifier detail such as hostname, ip, mac.
 
     :param asset_identifier: A dictionary that have asset information
     :type asset_identifier: dict
@@ -1030,7 +1112,7 @@ def get_asset_identifier_details(asset_identifier):
 
 def get_more_information(event):
     """
-    Get more information for event from response
+    Get more information for event from response.
 
     :param event: event details
     :type event: dict
@@ -1058,7 +1140,7 @@ def get_more_information(event):
 
 def get_context_for_events(events):
     """
-    Convert response into Context data
+    Convert response into Context data.
 
     :param events: List of events
     :type events: list
@@ -1078,7 +1160,7 @@ def get_context_for_events(events):
 
 def get_list_events_hr(events):
     """
-    converts events response into human readable.
+    Convert events response into human readable.
 
     :param events: list of events
     :type events: list
@@ -1086,7 +1168,6 @@ def get_list_events_hr(events):
     :return: returns human readable string for gcb-list-events command
     :rtype: str
     """
-
     hr_dict = []
     for event in events:
         # Get queried domain, process command line, file use by process information
@@ -1108,12 +1189,1059 @@ def get_list_events_hr(events):
     return hr
 
 
+def validate_and_parse_detection_start_end_time(args: Dict[str, Any]) -> Tuple[str, str]:
+    """
+    Validate and return detection_start_time and detection_end_time as per Chronicle Backstory or \
+    raise a ValueError if the given inputs are invalid.
+
+    :type args: dict
+    :param args: contains all arguments for command
+
+    :return : detection_start_time, detection_end_time: Detection start and end time in the format API accepts
+    :rtype : Tuple[str, str]
+    """
+    detection_start_time = args.get('start_time') if args.get('start_time') else args.get('detection_start_time')
+    detection_end_time = args.get('end_time') if args.get('end_time') else args.get('detection_end_time')
+
+    list_basis = args.get('list_basis', '')
+    if list_basis and not detection_start_time and not detection_end_time:
+        raise ValueError("To sort detections by \"list_basis\", either \"start_time\" or \"end_time\" argument is "
+                         "required.")
+
+    invalid_time_error_message = 'Invalid {} time. Some supported formats are ISO date format and relative time.' \
+                                 ' e.g. 2019-10-17T00:00:00Z, 3 days'
+    if detection_start_time:
+        if detection_start_time.isdigit():
+            raise ValueError(invalid_time_error_message.format('start'))
+        detection_start_time = dateparser.parse(detection_start_time, settings={'STRICT_PARSING': True})
+
+        if not detection_start_time:
+            raise ValueError(invalid_time_error_message.format('start'))
+
+        detection_start_time = str(datetime.strftime(detection_start_time, DATE_FORMAT))
+
+    if detection_end_time:
+        if detection_end_time.isdigit():
+            raise ValueError(invalid_time_error_message.format('end'))
+
+        detection_end_time = dateparser.parse(detection_end_time, settings={'STRICT_PARSING': True})
+        if not detection_end_time:
+            raise ValueError(invalid_time_error_message.format('end'))
+
+        detection_end_time = str(datetime.strftime(detection_end_time, DATE_FORMAT))
+
+    return detection_start_time, detection_end_time
+
+
+def validate_and_parse_list_detections_args(args: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Return and validate page_size, detection_start_time and detection_end_time.
+
+    :type args: Dict[str, Any]
+    :param args: contains all arguments for list-detections command
+
+    :return: Dictionary containing values of page_size, detection_start_time and detection_end_time
+     or raise ValueError if the arguments are invalid
+    :rtype: Dict[str, Any]
+    """
+    page_size = args.get('page_size', 100)
+    validate_page_size(page_size)
+    if int(page_size) > 1000:
+        raise ValueError(MESSAGES["INVALID_PAGE_SIZE"])
+
+    rule_id = args.get('id', '')
+    detection_for_all_versions = argToBoolean(args.get('detection_for_all_versions', False))
+    if detection_for_all_versions and not rule_id:
+        raise ValueError('If "detection_for_all_versions" is true, rule id is required.')
+
+    detection_start_time, detection_end_time = validate_and_parse_detection_start_end_time(args)
+
+    valid_args = {'page_size': page_size, 'detection_start_time': detection_start_time,
+                  'detection_end_time': detection_end_time, 'detection_for_all_versions': detection_for_all_versions}
+
+    return valid_args
+
+
+def get_hr_for_event_in_detection(event: Dict[str, Any]) -> str:
+    """
+    Return a string containing event information for an event.
+
+    :param event: event for which hr is to be prepared
+    :return: event information in human readable format
+    """
+    event_info = []
+
+    # Get queried domain, process command line, file use by process information
+    more_info = get_more_information(event)
+
+    event_timestamp = event.get('metadata', {}).get('eventTimestamp', '')
+    event_type = event.get('metadata', {}).get('eventType', '')
+    principal_asset_identifier = get_asset_identifier_details(event.get('principal', {}))
+    target_asset_identifier = get_asset_identifier_details(event.get('target', {}))
+    queried_domain = more_info[0][:-1]
+    process_command_line = more_info[1]
+    file_in_use_by_process = more_info[2]
+    if event_timestamp:
+        event_info.append('**Event Timestamp:** {}'.format(event_timestamp))
+    if event_type:
+        event_info.append('**Event Type:** {}'.format(event_type))
+    if principal_asset_identifier:
+        event_info.append('**Principal Asset Identifier:** {}'.format(principal_asset_identifier))
+    if target_asset_identifier:
+        event_info.append('**Target Asset Identifier:** {}'.format(target_asset_identifier))
+    if queried_domain:
+        event_info.append('**Queried Domain:** {}'.format(queried_domain))
+    if process_command_line:
+        event_info.append('**Process Command Line:** {}'.format(process_command_line))
+    if file_in_use_by_process:
+        event_info.append('**File In Use By Process:** {}'.format(file_in_use_by_process))
+    return '\n'.join(event_info)
+
+
+def get_events_hr_for_detection(events: List[Dict[str, Any]]) -> str:
+    """
+    Convert events response related to the specified detection into human readable.
+
+    :param events: list of events
+    :type events: list
+
+    :return: returns human readable string for the events related to the specified detection
+    :rtype: str
+    """
+    events_hr = []
+    for event in events:
+        events_hr.append(get_hr_for_event_in_detection(event))
+
+    return '\n\n'.join(events_hr)
+
+
+def get_event_list_for_detections_hr(result_events: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    """
+    Convert events response related to the specified detection into list of events for command's human readable.
+
+    :param result_events: List having dictionary containing list of events
+    :type result_events: List[Dict[str, Any]]
+
+    :return: returns list of the events related to the specified detection
+    :rtype: List[Dict[str,Any]]
+    """
+    events = []
+    if result_events:
+        for element in result_events:
+            for event in element.get('references', []):
+                events.append(event.get('event', {}))
+    return events
+
+
+def get_event_list_for_detections_context(result_events: Dict[str, Any]) -> List[Dict[str, Any]]:
+    """
+    Convert events response related to the specified detection into list of events for command's context.
+
+    :param result_events: Dictionary containing list of events
+    :type result_events: Dict[str, Any]
+
+    :return: returns list of the events related to the specified detection
+    :rtype: List[Dict[str,Any]]
+    """
+    events = []
+    if result_events:
+        for event in result_events.get('references', []):
+            events.append(event.get('event', {}))
+    return events
+
+
+def get_list_detections_hr(detections: List[Dict[str, Any]], rule_or_version_id: str) -> str:
+    """
+    Convert detections response into human readable.
+
+    :param detections: list of detections
+    :type detections: list
+
+    :type rule_or_version_id: str
+    :param rule_or_version_id: rule_id or version_id to fetch the detections for.
+
+    :return: returns human readable string for gcb-list-detections command
+    :rtype: str
+    """
+    hr_dict = []
+    for detection in detections:
+        events = get_event_list_for_detections_hr(detection.get('collectionElements', []))
+        detection_details = detection.get('detection', {})
+        hr_dict.append({
+            'Detection ID': "[{}]({})".format(detection.get('id', ''),
+                                              detection_details[0].get('urlBackToProduct', '')),
+            'Detection Type': detection.get('type', ''),
+            'Detection Time': detection.get('detectionTime', ''),
+            'Events': get_events_hr_for_detection(events),
+            'Alert State': detection_details[0].get('alertState', '')
+        })
+    rule_uri = detections[0].get('detection', {})[0].get('urlBackToProduct', '')
+    if rule_uri:
+        rule_uri = rule_uri.split('&', maxsplit=2)
+        rule_uri = '{}&{}'.format(rule_uri[0], rule_uri[1])
+    if rule_or_version_id:
+        hr_title = 'Detection(s) Details For Rule: [{}]({})'. \
+            format(detections[0].get('detection', {})[0].get('ruleName', ''), rule_uri)
+    else:
+        hr_title = 'Detection(s)'
+    hr = tableToMarkdown(hr_title, hr_dict, ['Detection ID', 'Detection Type', 'Detection Time', 'Events',
+                                             'Alert State'], removeNull=True)
+    return hr
+
+
+def get_events_context_for_detections(result_events: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    """
+    Convert events in response into Context data for events associated with a detection.
+
+    :param result_events: List of Dictionary containing list of events
+    :type result_events: List[Dict[str, Any]]
+
+    :return: list of events to populate in the context
+    :rtype: List[Dict[str, Any]]
+    """
+    events_ec = []
+    for collection_element in result_events:
+        reference = []
+        events = get_event_list_for_detections_context(collection_element)
+        for event in events:
+            event_dict = {}
+            if 'metadata' in event.keys():
+                event_dict.update(event.pop('metadata'))
+            principal_asset_identifier = get_asset_identifier_details(event.get('principal', {}))
+            target_asset_identifier = get_asset_identifier_details(event.get('target', {}))
+            if principal_asset_identifier:
+                event_dict.update({'principalAssetIdentifier': principal_asset_identifier})
+            if target_asset_identifier:
+                event_dict.update({'targetAssetIdentifier': target_asset_identifier})
+            event_dict.update(event)
+            reference.append(event_dict)
+        collection_element_dict = {'references': reference, 'label': collection_element.get('label', '')}
+        events_ec.append(collection_element_dict)
+
+    return events_ec
+
+
+def get_context_for_detections(detection_resp: Dict[str, Any]) -> Tuple[List[Dict[str, Any]], Dict[str, str]]:
+    """
+    Convert detections response into Context data.
+
+    :param detection_resp: Response fetched from the API call for detections
+    :type detection_resp: Dict[str, Any]
+
+    :return: list of detections and token to populate context data
+    :rtype: Tuple[List[Dict[str, Any]], Dict[str, str]]
+    """
+    detections_ec = []
+    token_ec = {}
+    next_page_token = detection_resp.get('nextPageToken')
+    if next_page_token:
+        token_ec = {'name': 'gcb-list-detections', 'nextPageToken': next_page_token}
+    detections = detection_resp.get('detections', [])
+    for detection in detections:
+        detection_dict = detection
+        result_events = detection.get('collectionElements', [])
+        if result_events:
+            detection_dict['collectionElements'] = get_events_context_for_detections(result_events)
+
+        detection_details = detection.get('detection', {})
+        if detection_details:
+            detection_dict.update(detection_details[0])
+            detection_dict.pop('detection')
+
+        time_window_details = detection.get('timeWindow', {})
+        if time_window_details:
+            detection_dict.update({'timeWindowStartTime': time_window_details.get('startTime'),
+                                   'timeWindowEndTime': time_window_details.get('endTime')})
+            detection_dict.pop('timeWindow')
+        detections_ec.append(detection_dict)
+
+    return detections_ec, token_ec
+
+
+def get_detections(client_obj, rule_or_version_id: str, page_size: str, detection_start_time: str,
+                   detection_end_time: str, page_token: str, alert_state: str, detection_for_all_versions: bool = False,
+                   list_basis: str = None) \
+        -> Tuple[Dict[str, Any], Dict[str, Any]]:
+    """
+    Return context data and raw response for gcb-list-detections command.
+
+    :type client_obj: Client
+    :param client_obj: client object which is used to get response from api
+    :type rule_or_version_id: str
+    :param rule_or_version_id: rule_id or version_id to fetch the detections for.
+    :type page_size: str
+    :param page_size: Number of detections to fetch at a time.
+    :type detection_start_time: str
+    :param detection_start_time: The time to start listing detections from.
+    :type detection_end_time: str
+    :param detection_end_time: The time to start listing detections to.
+    :type page_token: str
+    :param page_token: The token for the page from which the detections should be fetched.
+    :type alert_state: str
+    :param alert_state: Alert state for the detections to fetch.
+    :type detection_for_all_versions: bool
+    :param detection_for_all_versions: Whether to retrieve detections for all versions of a rule with a given rule
+    identifier.
+    :type list_basis: str
+    :param list_basis: To sort the detections.
+
+    :rtype: Tuple[Dict[str, Any], Dict[str, Any]]
+    :return: ec, json_data: Context data and raw response for the fetched detections
+    """
+    # Make a request URL
+    if not rule_or_version_id:
+        rule_or_version_id = "-"
+    if detection_for_all_versions and rule_or_version_id:
+        rule_or_version_id = f"{rule_or_version_id}@-"
+
+    request_url = '{}/detect/rules/{}/detections?pageSize={}' \
+        .format(BACKSTORY_API_V2_URL, rule_or_version_id, page_size)
+
+    # Append parameters if specified
+    if detection_start_time:
+        request_url += '&startTime={}'.format(detection_start_time)
+
+    if detection_end_time:
+        request_url += '&endTime={}'.format(detection_end_time)
+
+    if alert_state:
+        request_url += '&alertState={}'.format(alert_state)
+
+    if list_basis:
+        request_url += '&listBasis={}'.format(list_basis)
+
+    if page_token:
+        request_url += '&page_token={}'.format(page_token)
+    # get list of detections from Chronicle Backstory
+    json_data = validate_response(client_obj, request_url)
+    raw_resp = deepcopy(json_data)
+    parsed_ec, token_ec = get_context_for_detections(json_data)
+    ec: Dict[str, Any] = {
+        CHRONICLE_OUTPUT_PATHS['Detections']: parsed_ec
+    }
+    if token_ec:
+        ec.update({CHRONICLE_OUTPUT_PATHS['Token']: token_ec})
+    return ec, raw_resp
+
+
+def generate_delayed_start_time(time_window: str, start_time: str) -> str:
+    """
+    Generate the delayed start time accordingly after validating the time window provided by user.
+
+    :type time_window: str
+    :param time_window: Time window to delay the start time.
+    :type start_time: str
+    :param start_time: Initial start time calculated by fetch_incidents method
+
+    :rtype: delayed_start_time: str
+    :return: delayed_start_time: Returns generated delayed start time or raises error if invalid value
+     is provided for time window configuration parameter
+    """
+    if not time_window:
+        time_window = '15'
+    delayed_start_time = dateparser.parse(start_time, settings={'STRICT_PARSING': True})
+    delayed_start_time = delayed_start_time - timedelta(minutes=int(time_window))  # type: ignore
+    delayed_start_time = datetime.strftime(delayed_start_time, DATE_FORMAT)  # type: ignore
+
+    return delayed_start_time
+
+
+def deduplicate_events_and_create_incidents(contexts: List, event_identifiers: List[str], user_alert: bool = False):
+    """
+    De-duplicates the fetched events and creates a list of actionable incidents.
+
+    :type contexts: List
+    :param contexts: Context of the events fetched.
+    :type event_identifiers: List[str]
+    :param event_identifiers: List of hashes generated for the events fetched in previous call.
+    :type user_alert: bool
+    :param user_alert: if enable creates user alerts incidents otherwise create asset alerts incidents
+
+    :rtype: new_event_hashes, incidents
+    :return: Returns updated list of event hashes and unique incidents that should be created.
+    """
+    incidents: List[Dict[str, Any]] = []
+    new_event_hashes = []
+    for event in contexts:
+        try:
+            event_hash = sha256(str(event).encode()).hexdigest()  # NOSONAR
+            new_event_hashes.append(event_hash)
+        except Exception as e:
+            demisto.error("[CHRONICLE] Skipping insertion of current event since error occurred while calculating"
+                          " Hash for the event {}. Error: {}".format(event, str(e)))
+            continue
+        if event_identifiers and event_hash in event_identifiers:
+            demisto.info("[CHRONICLE] Skipping insertion of current event since it already exists."
+                         " Event: {}".format(event))
+            continue
+        if user_alert:
+            event["IncidentType"] = "UserAlert"
+            incidents.append({
+                'name': '{} for {}'.format(event['AlertName'], event['User']),
+                'details': json.dumps(event),
+                'rawJSON': json.dumps(event)
+            })
+        else:
+            severity = SEVERITY_MAP.get(event['Severities'].lower(), 0)
+            event["IncidentType"] = "AssetAlert"
+            unique_incident = {
+                'name': '{} for {}'.format(event['AlertName'], event['Asset']),
+                'details': json.dumps(event),
+                'severity': severity,
+                'rawJSON': json.dumps(event)
+            }
+            incidents.append(unique_incident)
+    return new_event_hashes, incidents
+
+
+def deduplicate_detections(detection_context: List[Dict[str, Any]], detection_identifiers: List[Dict[str, Any]]):
+    """
+    De-duplicates the fetched detections and creates a list of unique detections to be created.
+
+    :type detection_context: Dict[str, Any]
+    :param detection_context: Raw response of the detections fetched.
+    :type detection_identifiers: List[str]
+    :param detection_identifiers: List of dictionaries containing id and ruleVersion of detections.
+
+    :rtype: new_detection_identifiers, incidents
+    :return: Returns updated list of detection identifiers and unique incidents that should be created.
+    """
+    unique_detections = []
+    new_detection_identifiers = []
+    for detection in detection_context:
+        current_detection_identifier = {'id': detection.get('id', ''),
+                                        'ruleVersion': detection.get('detection', [])[0].get('ruleVersion', '')}
+        new_detection_identifiers.append(current_detection_identifier)
+        if detection_identifiers and current_detection_identifier in detection_identifiers:
+            demisto.info("[CHRONICLE] Skipping insertion of current detection since it already exists."
+                         " Detection: {}".format(detection))
+            continue
+        unique_detections.append(detection)
+    return new_detection_identifiers, unique_detections
+
+
+def convert_events_to_actionable_incidents(events: list) -> list:
+    """
+    Convert event to incident.
+
+    :type events: List
+    :param events: List of events
+
+    :rtype: list
+    :return: Returns updated list of detection identifiers and unique incidents that should be created.
+    """
+    incidents = []
+    for event in events:
+        event["IncidentType"] = "DetectionAlert"
+        incident = {
+            'name': event['detection'][0]['ruleName'],
+            'details': json.dumps(event),
+            'rawJSON': json.dumps(event)
+        }
+        incidents.append(incident)
+
+    return incidents
+
+
+def fetch_detections(client_obj, start_time, end_time, max_fetch, detection_to_process, detection_to_pull,
+                     pending_rule_or_version_id: list, alert_state, simple_backoff_rules,
+                     fetch_detection_by_list_basis):
+    """
+    Fetch detections in given time slot.
+
+    This method calls the get_max_fetch_detections method.
+    If detections are more than max_fetch then it partition it into 2 part, from which
+    one part(total detection = max_fetch) will be pushed and another part(detection more than max_fetch) will be
+    kept in 'detection_to_process' for next cycle. If all rule_id covers, then it will return empty list.
+    """
+    if not pending_rule_or_version_id and not detection_to_process and not detection_to_pull and not simple_backoff_rules:
+        return [], detection_to_process, detection_to_pull, pending_rule_or_version_id, simple_backoff_rules
+
+    # get detections using API call.
+    detection_to_process, detection_to_pull, pending_rule_or_version_id, simple_backoff_rules = get_max_fetch_detections(
+        client_obj, start_time, end_time, max_fetch, detection_to_process, detection_to_pull,
+        pending_rule_or_version_id, alert_state, simple_backoff_rules, fetch_detection_by_list_basis)
+
+    if len(detection_to_process) > max_fetch:
+        events, detection_to_process = detection_to_process[:max_fetch], detection_to_process[max_fetch:]
+    else:
+        events = detection_to_process
+        detection_to_process = []
+
+    return events, detection_to_process, detection_to_pull, pending_rule_or_version_id, simple_backoff_rules
+
+
+def get_max_fetch_detections(client_obj, start_time, end_time, max_fetch, detection_incidents, detection_to_pull,
+                             pending_rule_or_version_id, alert_state, simple_backoff_rules,
+                             fetch_detection_by_list_basis):
+    """
+    Get list of detection using detection_to_pull and pending_rule_or_version_id.
+
+    If the API responds with 429, 500 error then it will retry it for 60 times(each attempt take one minute).
+    If it responds with 400 or 404 error, then it will skip that rule_id. In case of an empty response for any next_page_token
+    it will skip that rule_id.
+    """
+    # loop if length of detection is less than max_fetch and if any further rule_id(with or without next_page_token)
+    # or any retry attempt remaining
+    while len(detection_incidents) < max_fetch and (len(pending_rule_or_version_id) != 0
+                                                    or detection_to_pull or simple_backoff_rules):
+
+        next_page_token = ''
+        if detection_to_pull:
+            rule_id = detection_to_pull.get('rule_id')
+            next_page_token = detection_to_pull.get('next_page_token')
+        elif simple_backoff_rules:
+            rule_id = simple_backoff_rules.get('rule_id')
+            next_page_token = simple_backoff_rules.get('next_page_token')
+        else:
+            rule_id = pending_rule_or_version_id.pop(0)
+
+        try:
+            _, raw_resp = get_detections(client_obj, rule_id, max_fetch, start_time, end_time, next_page_token,
+                                         alert_state, list_basis=fetch_detection_by_list_basis)
+        except ValueError as e:
+            if str(e).endswith('Reattempt will be initiated.'):
+                attempts = simple_backoff_rules.get('attempts', 0)
+                if attempts < MAX_ATTEMPTS:
+                    demisto.error(
+                        f"[CHRONICLE DETECTIONS] Error while fetching incidents: {str(e)} Attempt no : {attempts + 1} "
+                        f"for the rule_id : {rule_id} and next_page_token : {next_page_token}")
+                    simple_backoff_rules = {'rule_id': rule_id, 'next_page_token': next_page_token,
+                                            'attempts': attempts + 1}
+                else:
+                    demisto.error(f"[CHRONICLE DETECTIONS] Skipping the rule_id : {rule_id} due to the maximum "
+                                  f"number of attempts ({MAX_ATTEMPTS}). You'll experience data loss for the given rule_id. "
+                                  f"Switching to next rule id.")
+                    simple_backoff_rules = {}
+                    detection_to_pull = {}
+                break
+
+            if str(e).startswith('Status code: 404') or str(e).startswith('Status code: 400'):
+                if str(e).startswith('Status code: 404'):
+                    demisto.error(
+                        f"[CHRONICLE DETECTIONS] Error while fetching incidents: Rule with ID {rule_id} not found.")
+                else:
+                    demisto.error(
+                        f"[CHRONICLE DETECTIONS] Error while fetching incidents: Rule with ID {rule_id} is invalid.")
+                detection_to_pull = {}
+                simple_backoff_rules = {}
+                break
+
+            demisto.error("Error while fetching incidents: " + str(e))
+            if not detection_to_pull:
+                pending_rule_or_version_id.insert(0, rule_id)
+
+            break
+
+        if not raw_resp:
+            detection_to_pull = {}
+            simple_backoff_rules = {}
+            continue
+
+        detections: List[Dict[str, Any]] = raw_resp.get('detections', [])
+
+        # Add found detection in incident list.
+        add_detections_in_incident_list(detections, detection_incidents)
+
+        if raw_resp.get('nextPageToken'):
+            next_page_token = str(raw_resp.get('nextPageToken'))
+            detection_to_pull = {'rule_id': rule_id, 'next_page_token': next_page_token}
+            simple_backoff_rules = {'rule_id': rule_id, 'next_page_token': next_page_token}
+
+        # when exact size is returned but no next_page_token
+        if len(detections) <= max_fetch and not raw_resp.get('nextPageToken'):
+            detection_to_pull = {}
+            simple_backoff_rules = {}
+
+    return detection_incidents, detection_to_pull, pending_rule_or_version_id, simple_backoff_rules
+
+
+def add_detections_in_incident_list(detections: List, detection_incidents: List) -> None:
+    """
+    Add found detection in incident list.
+
+    :type detections: list
+    :param detections: list of detection
+    :type detection_incidents: list
+    :param detection_incidents: list of incidents
+
+    :rtype: None
+    """
+    if detections and len(detections) > 0:
+        for detection in detections:
+            events_ec = get_events_context_for_detections(detection.get('collectionElements', []))
+            detection['collectionElements'] = events_ec
+        detection_incidents.extend(detections)
+
+
+def get_unique_value_from_list(data: List) -> List:
+    """
+    Return unique value of list with preserving order.
+
+    :type data: list
+    :param data: list of value
+
+    :rtype: list
+    :return: list of unique value
+    """
+    output = []
+
+    for value in data:
+        if value and value not in output:
+            output.append(value)
+
+    return output
+
+
+def fetch_incidents_asset_alerts(client_obj, params: Dict[str, Any], start_time, end_time, time_window, max_fetch):
+    """Fetch incidents of asset alerts type.
+
+    :type client_obj: Client
+    :param client_obj: client object.
+    :type params: dict
+    :param params: configuration parameter of fetch incidents.
+    :type start_time: str
+    :param start_time: start time of request.
+    :type end_time: str
+    :param end_time: end time of request.
+    :type time_window: str
+    :param time_window: time delay for an event to appear in chronicle after generation
+    :type max_fetch: str
+    :param max_fetch: maximum number of incidents to fetch each time
+
+    :rtype: list
+    :return: list of incidents
+    """
+    assets_alerts_identifiers: List = []
+    last_run = demisto.getLastRun()
+    filter_severity = params.get('incident_severity', 'ALL')  # All to get all type of severity
+    if last_run:
+        start_time = last_run.get('start_time') or start_time
+        assets_alerts_identifiers = last_run.get('assets_alerts_identifiers', assets_alerts_identifiers)
+    delayed_start_time = generate_delayed_start_time(time_window, start_time)
+    events = get_gcb_alerts(client_obj, delayed_start_time, end_time, max_fetch, filter_severity)
+    _, contexts = group_infos_by_alert_asset_name(events)
+
+    # Converts event alerts into  actionable incidents
+    new_event_hashes, incidents = deduplicate_events_and_create_incidents(list(contexts.values()),
+                                                                          assets_alerts_identifiers)
+
+    # Updates the event hashes in last run with the new event hashes
+    if contexts:
+        assets_alerts_identifiers = new_event_hashes
+
+    demisto.setLastRun({
+        'start_time': end_time,
+        'assets_alerts_identifiers': assets_alerts_identifiers
+    })
+
+    return incidents
+
+
+def fetch_incidents_user_alerts(client_obj, params: Dict[str, Any], start_time, end_time, time_window, max_fetch):
+    """Fetch incidents of user alerts type.
+
+    :type client_obj: Client
+    :param client_obj: client object.
+    :type params: dict
+    :param params: configuration parameter of fetch incidents.
+    :type start_time: str
+    :param start_time: start time of request.
+    :type end_time: str
+    :param end_time: end time of request.
+    :type time_window: str
+    :param time_window: time delay for an event to appear in chronicle after generation
+    :type max_fetch: str
+    :param max_fetch: maximum number of incidents to fetch each time
+
+    :rtype: list
+    :return: list of incidents
+    """
+    user_alerts_identifiers: List = []
+    last_run = demisto.getLastRun()
+
+    if last_run:
+        start_time = last_run.get('start_time') or start_time
+        user_alerts_identifiers = last_run.get('user_alerts_identifiers', user_alerts_identifiers)
+    delayed_start_time = generate_delayed_start_time(time_window, start_time)
+    events = get_user_alerts(client_obj, delayed_start_time, end_time, max_fetch)
+    _, contexts = group_infos_by_alert_user_name(events)
+
+    # Converts user alerts into  actionable incidents
+    new_event_hashes, incidents = deduplicate_events_and_create_incidents(contexts, user_alerts_identifiers,
+                                                                          user_alert=True)
+
+    # Updates the event hashes in last run with the new event hashes
+    if contexts:
+        user_alerts_identifiers = new_event_hashes
+
+    demisto.setLastRun({
+        'start_time': end_time,
+        'user_alerts_identifiers': user_alerts_identifiers
+    })
+
+    return incidents
+
+
+def fetch_incidents_detection_alerts(client_obj, params: Dict[str, Any], start_time, end_time, time_window, max_fetch):
+    """Fetch incidents of detection alert type.
+
+    :type client_obj: Client
+    :param client_obj: client object.
+    :type params: dict
+    :param params: configuration parameter of fetch incidents.
+    :type start_time: str
+    :param start_time: start time of request.
+    :type end_time: str
+    :param end_time: end time of request.
+    :type time_window: str
+    :param time_window: time delay for an event to appear in chronicle after generation
+    :type max_fetch: str
+    :param max_fetch: maximum number of incidents to fetch each time
+
+    :rtype: list
+    :return: list of incidents
+    """
+    # list of detections that were pulled but not processed due to max_fetch.
+    detection_to_process: List[Dict[str, Any]] = []
+    # detections that are larger than max_fetch and had a next page token for fetch incident.
+    detection_to_pull: Dict[str, Any] = {}
+    # max_attempts track for 429 and 500 error
+    simple_backoff_rules: Dict[str, Any] = {}
+    # rule_id or version_id and alert_state for which detections are yet to be fetched.
+    pending_rule_or_version_id_with_alert_state: Dict[str, Any] = {}
+    detection_identifiers: List = []
+    rule_first_fetched_time = None
+
+    last_run = demisto.getLastRun()
+    incidents = []
+
+    if last_run and 'start_time' in last_run:
+        start_time = last_run.get('start_time') or start_time
+        detection_identifiers = last_run.get('detection_identifiers', detection_identifiers)
+        detection_to_process = last_run.get('detection_to_process', detection_to_process)
+        detection_to_pull = last_run.get('detection_to_pull', detection_to_pull)
+        simple_backoff_rules = last_run.get('simple_backoff_rules', simple_backoff_rules)
+        pending_rule_or_version_id_with_alert_state = last_run.get('pending_rule_or_version_id_with_alert_state',
+                                                                   pending_rule_or_version_id_with_alert_state)
+
+        end_time = last_run.get('rule_first_fetched_time') or end_time
+    if not last_run.get('rule_first_fetched_time'):
+        demisto.info(f"Starting new time window from START-TIME :  {start_time} to END_TIME : {end_time}")
+
+    delayed_start_time = generate_delayed_start_time(time_window, start_time)
+    fetch_detection_by_alert_state = pending_rule_or_version_id_with_alert_state.get('alert_state', '')
+    fetch_detection_by_list_basis = pending_rule_or_version_id_with_alert_state.get('listBasis', 'CREATED_TIME')
+    # giving priority to comma separated detection ids over check box of fetch all live detections
+    if not pending_rule_or_version_id_with_alert_state.get("rule_id") and \
+            not detection_to_pull and not detection_to_process and not simple_backoff_rules:
+        fetch_detection_by_ids = params.get('fetch_detection_by_ids') or ""
+        if not fetch_detection_by_ids and params.get('fetch_all_detections', False):
+            fetch_detection_by_ids = '-'
+        fetch_detection_by_ids = get_unique_value_from_list(
+            [r_v_id.strip() for r_v_id in fetch_detection_by_ids.split(',')])
+
+        fetch_detection_by_alert_state = params.get('fetch_detection_by_alert_state',
+                                                    fetch_detection_by_alert_state)
+        fetch_detection_by_list_basis = params.get('fetch_detection_by_list_basis', fetch_detection_by_list_basis)
+
+        # when 1st time fetch or when pending_rule_or_version_id got emptied in last sync.
+        # when detection_to_pull has some rule ids
+        pending_rule_or_version_id_with_alert_state.update({'rule_id': fetch_detection_by_ids,
+                                                            'alert_state': fetch_detection_by_alert_state,
+                                                            'listBasis': fetch_detection_by_list_basis})
+
+    events, detection_to_process, detection_to_pull, pending_rule_or_version_id, simple_backoff_rules \
+        = fetch_detections(client_obj, delayed_start_time, end_time, int(max_fetch), detection_to_process,
+                           detection_to_pull, pending_rule_or_version_id_with_alert_state.get('rule_id', ''),
+                           pending_rule_or_version_id_with_alert_state.get('alert_state', ''), simple_backoff_rules,
+                           pending_rule_or_version_id_with_alert_state.get('listBasis'))
+
+    # The batch processing is in progress i.e. detections for pending rules are yet to be fetched
+    # so updating the end_time to the start time when considered for current batch
+    if pending_rule_or_version_id or detection_to_pull or simple_backoff_rules:
+        rule_first_fetched_time = end_time
+        end_time = start_time
+    else:
+        demisto.info(f"End of current time window from START-TIME : {start_time} to END_TIME : {end_time}")
+
+    pending_rule_or_version_id_with_alert_state.update({'rule_id': pending_rule_or_version_id,
+                                                        'alert_state': fetch_detection_by_alert_state,
+                                                        'listBasis': fetch_detection_by_list_basis})
+
+    detection_identifiers, unique_detections = deduplicate_detections(events, detection_identifiers)
+
+    if unique_detections:
+        incidents = convert_events_to_actionable_incidents(unique_detections)
+
+    demisto.setLastRun({
+        'start_time': end_time,
+        'detection_identifiers': detection_identifiers,
+        'rule_first_fetched_time': rule_first_fetched_time,
+        'detection_to_process': detection_to_process,
+        'detection_to_pull': detection_to_pull,
+        'simple_backoff_rules': simple_backoff_rules,
+        'pending_rule_or_version_id_with_alert_state': pending_rule_or_version_id_with_alert_state
+    })
+
+    return incidents
+
+
+def convert_events_to_chronicle_event_incident_field(events: List) -> None:
+    """Convert Chronicle event into Chronicle Event incident field.
+
+    :type events: list
+    :param events: list of Chronicle UDM events
+
+    :rtype: list
+    :return: list of incidents
+    """
+    for event in events:
+        event["principalAssetIdentifier"] = get_asset_identifier_details(event.get('principal', {}))
+        event["targetAssetIdentifier"] = get_asset_identifier_details(event.get('target', {}))
+
+
+def get_user_alerts(client_obj, start_time, end_time, max_fetch):
+    """
+    Get user alerts and parse response.
+
+    :type client_obj: Client
+    :param client_obj: client object
+    :type start_time: str
+    :param start_time: starting time of request
+    :type end_time: str
+    :param end_time: end time of request
+    :type max_fetch: str
+    :param max_fetch: number of records will be returned
+
+    :rtype: list
+    :return: list of alerts
+    """
+    request_url = '{}/alert/listalerts?start_time={}&end_time={}&page_size={}'.format(BACKSTORY_API_V1_URL, start_time,
+                                                                                      end_time, max_fetch)
+    demisto.debug("[CHRONICLE] Request URL for fetching user alerts: {}".format(request_url))
+
+    json_response = validate_response(client_obj, request_url)
+
+    alerts = []
+    for user_alert in json_response.get('userAlerts', []):
+
+        # parsing each alert infos
+        infos = []
+        for alert_info in user_alert['alertInfos']:
+            info = {
+                'Name': alert_info.get('name', ''),
+                'SourceProduct': alert_info.get('sourceProduct', ''),
+                'Timestamp': alert_info.get('timestamp', ''),
+                'Uri': alert_info.get('uri', [''])[0],
+                'RawLog': base64.b64decode(alert_info.get('rawLog', '')).decode(),  # decode base64 raw log
+                'UdmEvent': alert_info.get('udmEvent', {})
+            }
+            infos.append(info)
+        user_identifier = list(user_alert.get("user", {}).values())
+        asset_alert = {
+            'User': user_identifier[0] if user_identifier else "",
+            'AlertCounts': len(infos),
+            'AlertInfo': infos
+        }
+        alerts.append(asset_alert)
+    return alerts
+
+
+def group_infos_by_alert_user_name(user_alerts):
+    """
+    Group user alerts with combination of user identifier and alert name.
+
+    :type user_alerts: list
+    :param user_alerts: list of user alerts
+
+    :rtype: str, list
+    :return: human readable and incident context data
+    """
+    user_alerts = deepcopy(user_alerts)
+
+    hr = []
+    incident_context = []
+    unique_alert = defaultdict(list)
+    for user_alert in user_alerts:
+        user = user_alert.get("User", "")
+        for alert_info in user_alert["AlertInfo"]:
+            alert_info["User"] = user
+            unique_alert[user + " - " + alert_info["Name"]].append(alert_info)
+
+    for _, value in unique_alert.items():
+        occurrences = []
+        events = []
+        raw_logs = []
+        for info in value:
+            occurrences.append(info.get("Timestamp", ""))
+            events.append(info.get("UdmEvent", ""))
+            raw_logs.append(info.get("RawLog", ""))
+        occurrences.sort()
+        events = get_context_for_events(events)
+        convert_events_to_chronicle_event_incident_field(events)
+
+        hr.append({
+            "User": '[{}]({})'.format(value[0]["User"], value[0]["Uri"]),
+            'Alerts': len(value),
+            ALERT_NAMES: value[0].get("Name", ""),
+            FIRST_SEEN: get_informal_time(occurrences[0]),
+            LAST_SEEN: get_informal_time(occurrences[-1]),
+            'Sources': value[0].get("SourceProduct", ""),
+        })
+        incident_context.append({
+            "User": value[0]["User"],
+            'Alerts': len(value),
+            'AlertName': value[0].get("Name", ""),
+            'Occurrences': occurrences,
+            'FirstSeen': occurrences[0],
+            'LastSeen': occurrences[-1],
+            'Sources': value[0].get("SourceProduct", ""),
+            'UdmEvents': events,
+            'RawLogs': raw_logs
+        })
+
+    return hr, incident_context
+
+
+def get_user_alert_hr_and_ec(client_obj: Client, start_time: str, end_time: str, page_size: str):
+    """
+    Get and parse HR, EC and raw response.
+
+    :type client_obj: Client
+    :param client_obj: client object
+    :type start_time: str
+    :param start_time: start time
+    :type end_time: str
+    :param end_time: end time
+    :type page_size: str
+    :param page_size: maximum number of records to be fetch
+
+    :rtype: str, dict, dict
+    :return: human readable. entry context and raw response
+    """
+    alerts = get_user_alerts(client_obj, start_time, end_time, page_size)
+    if not alerts:
+        hr = '### User Alert(s): '
+        hr += MESSAGES["NO_RECORDS"]
+        return hr, {}, {}
+
+    # prepare alerts into human readable
+    data, _ = group_infos_by_alert_user_name(alerts)
+    hr = tableToMarkdown('User Alert(s)', data, ['Alerts', 'User', ALERT_NAMES, FIRST_SEEN, LAST_SEEN, 'Sources'],
+                         removeNull=True)
+
+    for alert in alerts:
+        for alert_info in alert.get('AlertInfo', []):
+            alert_info.pop('Uri', None)
+            alert_info.pop('UdmEvent', None)
+
+    ec = {
+        CHRONICLE_OUTPUT_PATHS['UserAlert']: alerts
+    }
+
+    return hr, ec, alerts
+
+
+def get_context_for_rules(rule_resp: Dict[str, Any]) -> Tuple[List[Dict[str, Any]], Dict[str, str]]:
+    """
+    Convert rules response into Context data.
+
+    :param rule_resp: Response fetched from the API call for rules
+    :type rule_resp: Dict[str, Any]
+
+    :return: list of rules and token to populate context data
+    :rtype: Tuple[List[Dict[str, Any]], Dict[str, str]]
+    """
+    rules_ec = []
+    token_ec = {}
+    next_page_token = rule_resp.get('nextPageToken')
+    if next_page_token:
+        token_ec = {'name': 'gcb-list-rules', 'nextPageToken': next_page_token}
+    rules = rule_resp.get('rules', [])
+    for rule in rules:
+        rules_ec.append(rule)
+
+    return rules_ec, token_ec
+
+
+def get_rules(client_obj, args: Dict[str, str]) -> Tuple[Dict[str, Any], Dict[str, Any]]:
+    """
+    Return context data and raw response for gcb-list-rules command.
+
+    :type client_obj: Client
+    :param client_obj: client object which is used to get response from api
+
+    :type args:  Dict[str, str]
+    :param args: it contain arguments of gcb-list-rules command
+
+    :rtype: Tuple[Dict[str, Any], Dict[str, Any]]
+    :return: ec, json_data: Context data and raw response for the fetched rules
+    """
+    page_size = args.get('page_size', 100)
+    validate_page_size(page_size)
+    page_token = args.get('page_token', '')
+    if int(page_size) > 1000:
+        raise ValueError(MESSAGES["INVALID_PAGE_SIZE"])
+
+    live_rule = args.get('live_rule', '').lower()
+    if live_rule and live_rule != 'true' and live_rule != 'false':
+        raise ValueError('Live rule should be true or false.')
+
+    request_url = '{}/detect/rules?pageSize={}'.format(BACKSTORY_API_V2_URL, page_size)
+
+    # Append parameters if specified
+    if page_token:
+        request_url += '&page_token={}'.format(page_token)
+
+    # get list of rules from Chronicle Backstory
+    json_data = validate_response(client_obj, request_url)
+    if live_rule:
+        if live_rule == 'true':
+            list_live_rule = [rule for rule in json_data.get('rules', []) if rule.get('liveRuleEnabled')]
+        else:
+            list_live_rule = [rule for rule in json_data.get('rules', []) if not rule.get('liveRuleEnabled')]
+        json_data = {
+            'rules': list_live_rule
+        }
+    raw_resp = deepcopy(json_data)
+    parsed_ec, token_ec = get_context_for_rules(json_data)
+    ec: Dict[str, Any] = {
+        CHRONICLE_OUTPUT_PATHS['Rules']: parsed_ec
+    }
+    if token_ec:
+        ec.update({CHRONICLE_OUTPUT_PATHS['Token']: token_ec})
+    return ec, raw_resp
+
+
+def get_list_rules_hr(rules: List[Dict[str, Any]]) -> str:
+    """
+    Convert rules response into human readable.
+
+    :param rules: list of rules
+    :type rules: list
+
+    :return: returns human readable string for gcb-list-rules command
+    :rtype: str
+    """
+    hr_dict = []
+    for rule in rules:
+        hr_dict.append({
+            'Rule ID': rule.get('ruleId'),
+            'Rule Name': rule.get('ruleName'),
+            'Compilation State': rule.get('compilationState', '')
+        })
+    hr = tableToMarkdown('Rule(s) Details', hr_dict, ['Rule ID', 'Rule Name', 'Compilation State'],
+                         removeNull=True)
+    return hr
+
+
 ''' REQUESTS FUNCTIONS '''
 
 
 def test_function(client_obj, params: Dict[str, Any]):
     """
-    Performs test connectivity by validating a valid http response
+    Perform test connectivity by validating a valid http response.
 
     :type client_obj: Client
     :param client_obj: client object which is used to get response from api
@@ -1134,7 +2262,7 @@ def test_function(client_obj, params: Dict[str, Any]):
 
 def gcb_list_iocs_command(client_obj, args: Dict[str, Any]):
     """
-    List all of the IoCs discovered within your enterprise within the specified time range
+    List all of the IoCs discovered within your enterprise within the specified time range.
 
     :type client_obj: Client
     :param client_obj: client object which is used to get response from api
@@ -1147,7 +2275,7 @@ def gcb_list_iocs_command(client_obj, args: Dict[str, Any]):
     """
     # retrieve arguments and validate it
 
-    start_time, _, page_size = get_default_command_args_value(args)
+    start_time, _, page_size, _ = get_default_command_args_value(args)
 
     # Make a request
     request_url = '{}/ioc/listiocs?start_time={}&page_size={}'.format(
@@ -1175,6 +2303,8 @@ def gcb_list_iocs_command(client_obj, args: Dict[str, Any]):
 
 def gcb_assets_command(client_obj, args: Dict[str, str]):
     """
+    List assets which relates to an IOC.
+
     This command will respond with a list of the assets which accessed the input artifact
     (ip, domain, md5, sha1, sha256) during the specified time.
 
@@ -1186,11 +2316,10 @@ def gcb_assets_command(client_obj, args: Dict[str, str]):
 
     :return: command output
     """
-
     artifact_value = args.get('artifact_value', '')
     artifact_type = get_artifact_type(artifact_value)
 
-    start_time, end_time, page_size = get_default_command_args_value(args)
+    start_time, end_time, page_size, _ = get_default_command_args_value(args)
 
     request_url = '{}/artifact/listassets?artifact.{}={}&start_time={}&end_time={}&page_size={}'.format(
         BACKSTORY_API_V1_URL, artifact_type, urllib.parse.quote(artifact_value), start_time, end_time, page_size)
@@ -1202,7 +2331,7 @@ def gcb_assets_command(client_obj, args: Dict[str, str]):
         context_data, tabular_data, host_context = parse_assets_response(response, artifact_type,
                                                                          artifact_value)
         hr = tableToMarkdown('Artifact Accessed - {0}'.format(artifact_value), tabular_data,
-                             ['Host Name', 'Host IP', 'Host MAC', 'First Accessed Time', 'Last Accessed Time'])
+                             ['Host Name', 'Host IP', 'Host MAC', FIRST_ACCESSED_TIME, LAST_ACCESSED_TIME])
         hr += '[View assets in Chronicle]({})'.format(response.get('uri', [''])[0])
         ec = {
             'Host': host_context,
@@ -1210,13 +2339,13 @@ def gcb_assets_command(client_obj, args: Dict[str, str]):
         }
     else:
         hr = '### Artifact Accessed: {} \n\n'.format(artifact_value)
-        hr += 'No Records Found'
+        hr += MESSAGES["NO_RECORDS"]
     return hr, ec, response
 
 
 def gcb_ioc_details_command(client_obj, args: Dict[str, str]):
     """
-    This method fetches the IoC Details from Backstory using 'listiocdetails' Search API
+    Fetch IoC Details from Backstory using 'listiocdetails' Search API.
 
     :type client_obj: Client
     :param client_obj: The Client object which abstracts the API calls to Backstory.
@@ -1254,23 +2383,23 @@ def gcb_ioc_details_command(client_obj, args: Dict[str, str]):
 
         if context_dict['hr_table_data']:
             hr += tableToMarkdown('IoC Details', context_dict['hr_table_data'],
-                                  ['Domain', 'IP Address', 'Category', 'Confidence Score', 'Severity',
-                                   'First Accessed Time', 'Last Accessed Time'])
+                                  ['Domain', IP_ADDRESS, 'Category', CONFIDENCE_SCORE, 'Severity',
+                                   FIRST_ACCESSED_TIME, LAST_ACCESSED_TIME])
             hr += '[View IoC details in Chronicle]({})'.format(response.get('uri', [''])[0])
         else:
-            hr += 'No Records Found'
+            hr += MESSAGES["NO_RECORDS"]
         return hr, ec, response
 
     else:
         hr += '### For artifact: {}\n'.format(artifact_value)
-        hr += 'No Records Found'
+        hr += MESSAGES["NO_RECORDS"]
 
         return hr, ec, response
 
 
 def ip_command(client_obj, ip_address: str):
     """
-    reputation command for given IP address
+    Reputation command for given IP address.
 
     :type client_obj: Client
     :param client_obj: object of the client class
@@ -1298,11 +2427,11 @@ def ip_command(client_obj, ip_address: str):
         hr += 'IP: ' + str(ip_address) + ' found with Reputation: ' + str(context_dict['reputation']) + '\n'
         if context_dict['hr_table_data']:
             hr += tableToMarkdown('Reputation Parameters', context_dict['hr_table_data'],
-                                  ['Domain', 'IP Address', 'Category', 'Confidence Score', 'Severity',
-                                   'First Accessed Time', 'Last Accessed Time'])
+                                  ['Domain', IP_ADDRESS, 'Category', CONFIDENCE_SCORE, 'Severity',
+                                   FIRST_ACCESSED_TIME, LAST_ACCESSED_TIME])
             hr += '[View IoC details in Chronicle]({})'.format(response.get('uri', [''])[0])
         else:
-            hr += 'No Records Found'
+            hr += MESSAGES["NO_RECORDS"]
 
         # preparing entry context
         ec = {
@@ -1314,12 +2443,12 @@ def ip_command(client_obj, ip_address: str):
         dbot_context = {
             'Indicator': ip_address,
             'Type': 'ip',
-            'Vendor': 'Google Chronicle Backstory',
+            'Vendor': VENDOR,
             'Score': 0
         }
 
         hr += '### IP: {} found with Reputation: Unknown\n'.format(ip_address)
-        hr += 'No Records Found'
+        hr += MESSAGES["NO_RECORDS"]
 
         ec = {
             'DBotScore': dbot_context
@@ -1330,7 +2459,7 @@ def ip_command(client_obj, ip_address: str):
 
 def domain_command(client_obj, domain_name: str):
     """
-    reputation command for given Domain address
+    Reputation command for given Domain address.
 
     :type client_obj: Client
     :param client_obj: object of the client class
@@ -1354,11 +2483,11 @@ def domain_command(client_obj, domain_name: str):
         hr += 'Domain: ' + str(domain_name) + ' found with Reputation: ' + str(context_dict['reputation']) + '\n'
         if context_dict['hr_table_data']:
             hr += tableToMarkdown('Reputation Parameters', context_dict['hr_table_data'],
-                                  ['Domain', 'IP Address', 'Category', 'Confidence Score', 'Severity',
-                                   'First Accessed Time', 'Last Accessed Time'])
+                                  ['Domain', IP_ADDRESS, 'Category', CONFIDENCE_SCORE, 'Severity',
+                                   FIRST_ACCESSED_TIME, LAST_ACCESSED_TIME])
             hr += '[View IoC details in Chronicle]({})'.format(response.get('uri', [''])[0])
         else:
-            hr += 'No Records Found'
+            hr += MESSAGES["NO_RECORDS"]
 
         # preparing entry context
         ec = {
@@ -1373,12 +2502,12 @@ def domain_command(client_obj, domain_name: str):
         dbot_context = {
             'Indicator': domain_name,
             'Type': 'domain',
-            'Vendor': 'Google Chronicle Backstory',
+            'Vendor': VENDOR,
             'Score': 0
         }
 
         hr += '### Domain: {} found with Reputation: Unknown\n'.format(domain_name)
-        hr += 'No Records Found'
+        hr += MESSAGES["NO_RECORDS"]
 
         ec = {
             'DBotScore': dbot_context
@@ -1389,45 +2518,42 @@ def domain_command(client_obj, domain_name: str):
 
 def fetch_incidents(client_obj, params: Dict[str, Any]):
     """
-    fetches alerts or IoC domain matches and convert them into actionable incidents.
-    :param client_obj:
-    :param params:
+    Fetch alerts or IoC domain matches and convert them into actionable incidents.
+
+    :type client_obj: Client
+    :param client_obj: object of the client class
+
+    :type params: dict
+    :param params: configuration parameter of fetch incidents
     :return:
     """
-    first_fetch_in_days = params.get('first_fetch_time_interval_days', '3 days').lower()  # 3 days as default
-    fetch_limit = params.get('fetch_limit', 10)  # default page size
-    filter_severity = params.get('incident_severity', 'ALL')  # All to get all type of severity
+    first_fetch_in_days = params.get('first_fetch', DEFAULT_FIRST_FETCH).lower()  # 3 days as default
+    max_fetch = params.get('max_fetch', 10)  # default page size
+    time_window = params.get('time_window', '15')
 
     # getting numeric value from string representation
     start_time, end_time = parse_date_range(first_fetch_in_days, date_format=DATE_FORMAT)
 
-    last_run = demisto.getLastRun()
-    if last_run and 'start_time' in last_run:
-        start_time = last_run.get('start_time', start_time)
-
     # backstory_alert_type will create actionable incidents based on input selection in configuration
-    backstory_alert_type = params.get('backstory_alert_type', 'ioc domain matches')
+    backstory_alert_type = params.get('backstory_alert_type', 'ioc domain matches').lower()
 
     incidents = []
-    if 'ioc domain matches' != backstory_alert_type.lower():
-        events = get_gcb_alerts(client_obj, start_time, end_time, fetch_limit, filter_severity)
 
-        _, contexts = group_infos_by_alert_asset_name(events)
-
-        # Converts event alerts into  actionable incidents
-        for event in list(contexts.values()):
-            severity = SEVERITY_MAP.get(event['Severities'].lower(), 0)
-            incident = {
-                'name': '{} for {}'.format(event['AlertName'], event['Asset']),
-                'details': json.dumps(event),
-                'severity': severity,
-                'rawJSON': json.dumps(event)
-            }
-            incidents.append(incident)
+    if "assets with alerts" == backstory_alert_type:
+        incidents = fetch_incidents_asset_alerts(client_obj, params, start_time, end_time, time_window, max_fetch)
+    elif "user alerts" == backstory_alert_type:
+        incidents = fetch_incidents_user_alerts(client_obj, params, start_time, end_time, time_window, max_fetch)
+    elif 'detection alerts' == backstory_alert_type:
+        incidents = fetch_incidents_detection_alerts(client_obj, params, start_time, end_time, time_window, max_fetch)
     else:
-        events = get_ioc_domain_matches(client_obj, start_time, fetch_limit)
+        last_run = demisto.getLastRun()
+        if last_run:
+            start_time = last_run.get('start_time') or start_time
+
+        events = get_ioc_domain_matches(client_obj, start_time, max_fetch)
         # Converts IoCs into actionable incidents
         for event in events:
+            event["IncidentType"] = "IocDomainMatches"
             incident = {
                 'name': 'IOC Domain Match: {}'.format(event['Artifact']),
                 'details': json.dumps(event),
@@ -1435,10 +2561,7 @@ def fetch_incidents(client_obj, params: Dict[str, Any]):
             }
             incidents.append(incident)
 
-    # Saving last_run
-    demisto.setLastRun({
-        'start_time': end_time
-    })
+        demisto.setLastRun({'start_time': end_time})
 
     # this command will create incidents in Demisto
     demisto.incidents(incidents)
@@ -1446,6 +2569,8 @@ def fetch_incidents(client_obj, params: Dict[str, Any]):
 
 def gcb_list_alerts_command(client_obj, args: Dict[str, Any]):
     """
+    List alerts which relates to an asset.
+
     This method fetches alerts that are correlated to the asset under investigation.
     :type client_obj: Client
     :param client_obj:
@@ -1454,30 +2579,39 @@ def gcb_list_alerts_command(client_obj, args: Dict[str, Any]):
     :param args: inputs to fetch alerts from a specified date range. start_time, end_time, and page_size are
         considered for pulling the data.
     """
-    start_time, end_time, page_size = get_default_command_args_value(args)
+    start_time, end_time, page_size, _ = get_default_command_args_value(args)
 
-    severity_filter = args.get('severity', 'ALL')
+    alert_type = args.get('alert_type', 'Asset Alerts').lower()
 
-    # gathering all the alerts from Backstory
-    alerts = get_gcb_alerts(client_obj, start_time, end_time, page_size, severity_filter)
-    if not alerts:
-        hr = '### Security Alert(s):'
-        hr += 'No Records Found'
-        return hr, {}, {}
+    if alert_type not in ["asset alerts", "user alerts"]:
+        raise ValueError('Allowed value for alert type should be either "Asset Alerts" or "User Alerts".')
 
-    # prepare alerts into human readable
-    hr = convert_alerts_into_hr(alerts)
+    if alert_type == 'asset alerts':
+        severity_filter = args.get('severity', 'ALL')
 
-    # Remove Url key in context data
-    for alert in alerts:
-        for alert_info in alert.get('AlertInfo', []):
-            if 'Uri' in alert_info.keys():
-                del alert_info['Uri']
-    ec = {
-        CHRONICLE_OUTPUT_PATHS['Alert']: alerts
-    }
+        # gathering all the alerts from Backstory
+        alerts = get_gcb_alerts(client_obj, start_time, end_time, page_size, severity_filter)
+        if not alerts:
+            hr = '### Security Alert(s): '
+            hr += MESSAGES["NO_RECORDS"]
+            return hr, {}, {}
 
-    return hr, ec, alerts
+        # prepare alerts into human readable
+        hr = convert_alerts_into_hr(alerts)
+
+        # Remove Url key in context data
+        for alert in alerts:
+            for alert_info in alert.get('AlertInfo', []):
+                if 'Uri' in alert_info.keys():
+                    del alert_info['Uri']
+        ec = {
+            CHRONICLE_OUTPUT_PATHS['Alert']: alerts
+        }
+
+        return hr, ec, alerts
+    else:
+        hr, ec, raw_alert = get_user_alert_hr_and_ec(client_obj, start_time, end_time, page_size)
+        return hr, ec, raw_alert
 
 
 def gcb_list_events_command(client_obj, args: Dict[str, str]):
@@ -1493,19 +2627,18 @@ def gcb_list_events_command(client_obj, args: Dict[str, str]):
     :return: command output
     :rtype: str, dict, dict
     """
-
     asset_identifier_type = ASSET_IDENTIFIER_NAME_DICT.get(args.get('asset_identifier_type', '').lower(),
                                                            args.get('asset_identifier_type', ''))
     asset_identifier = urllib.parse.quote(args.get('asset_identifier', ''))
 
     # retrieve arguments and validate it
-    start_time, end_time, _ = get_default_command_args_value(args, '2 hours')
+    start_time, end_time, _, _ = get_default_command_args_value(args, '2 hours')
 
     page_size = args.get('page_size', '100')
 
     # validate page size argument
     if int(page_size) > 1000:
-        return_error('Page size should be in the range from 1 to 1000.')
+        raise ValueError(MESSAGES["INVALID_PAGE_SIZE"])
 
     reference_time = args.get('reference_time', start_time)
 
@@ -1528,10 +2661,16 @@ def gcb_list_events_command(client_obj, args: Dict[str, str]):
     hr += '[View events in Chronicle]({})'.format(json_data.get('uri', [''])[0])
 
     if json_data.get('moreDataAvailable', False):
-        last_event_timestamp = datetime.strptime(events[-1].get('metadata', {}).get('eventTimestamp', ''), DATE_FORMAT)
-        hr += '\n\nMaximum number of events specified in page_size has been returned. There might still be more ' \
-              'events in your Chronicle account. To fetch the next set of events, execute the command with the start ' \
-              'time as {}'.format(last_event_timestamp.strftime(DATE_FORMAT))
+        last_event_timestamp = events[-1].get('metadata', {}).get('eventTimestamp', '')
+        hr += '\n\nMaximum number of events specified in page_size has been returned. There might' \
+              ' still be more events in your Chronicle account.'
+        if not dateparser.parse(last_event_timestamp, settings={'STRICT_PARSING': True}):
+            demisto.error('Event timestamp of the last event: {} is invalid.'.format(last_event_timestamp))
+            hr += ' An error occurred while fetching the start time that could have been used to' \
+                  ' fetch next set of events.'
+        else:
+            hr += ' To fetch the next set of events, execute the command with the start time as {}.' \
+                .format(last_event_timestamp)
 
     parsed_ec = get_context_for_events(json_data.get('events', []))
 
@@ -1542,17 +2681,89 @@ def gcb_list_events_command(client_obj, args: Dict[str, str]):
     return hr, ec, json_data
 
 
+def gcb_list_detections_command(client_obj, args: Dict[str, str]):
+    """
+    Return the Detections for a specified Rule Version.
+
+    :type client_obj: Client
+    :param client_obj: client object which is used to get response from api
+
+    :type args:  Dict[str, str]
+    :param args: it contain arguments of gcb-list-detections command
+
+    :return: command output
+    :rtype: str, dict, dict
+    """
+    # retrieve arguments and validate it
+    valid_args = validate_and_parse_list_detections_args(args)
+
+    ec, json_data = get_detections(client_obj, args.get('id', ''), valid_args.get('page_size', ''),
+                                   valid_args.get('detection_start_time', ''), valid_args.get('detection_end_time', ''),
+                                   args.get('page_token', ''), args.get('alert_state', ''),
+                                   valid_args.get('detection_for_all_versions', False),
+                                   args.get('list_basis', ''))
+
+    detections = json_data.get('detections', [])
+    if not detections:
+        hr = 'No Detections Found'
+        return hr, {}, {}
+
+    # prepare alerts into human readable
+    hr = get_list_detections_hr(detections, args.get('id', ''))
+    hr += '\nView all detections for this rule in Chronicle by clicking on {} and to view individual detection' \
+          ' in Chronicle click on its respective Detection ID.\n\nNote: If a specific version of the rule is provided' \
+          ' then detections for that specific version will be fetched.'.format(detections[0].
+                                                                               get('detection')[0].get('ruleName'))
+
+    next_page_token = json_data.get('nextPageToken')
+    if next_page_token:
+        hr += '\nMaximum number of detections specified in page_size has been returned. To fetch the next set of' \
+              ' detections, execute the command with the page token as {}.'.format(next_page_token)
+
+    return hr, ec, json_data
+
+
+def gcb_list_rules_command(client_obj, args: Dict[str, str]):
+    """
+    Return the latest version of all rules.
+
+    :type client_obj: Client
+    :param client_obj: client object which is used to get response from api
+
+    :type args:  Dict[str, str]
+    :param args: it contain arguments of gcb-list-rules command
+
+    :return: command output
+    :rtype: str, dict, dict
+    """
+    ec, json_data = get_rules(client_obj, args)
+
+    rules = json_data.get('rules', [])
+    if not rules:
+        hr = 'No Rules Found'
+        return hr, {}, {}
+
+    hr = get_list_rules_hr(rules)
+
+    next_page_token = json_data.get('nextPageToken')
+    if next_page_token:
+        hr += '\nMaximum number of rules specified in page_size has been returned. To fetch the next set of' \
+              ' rules, execute the command with the page token as {}.'.format(next_page_token)
+
+    return hr, ec, json_data
+
+
 def main():
-    """
-    PARSE AND VALIDATE INTEGRATION PARAMS
-    """
+    """PARSE AND VALIDATE INTEGRATION PARAMS."""
     # supported command list
     chronicle_commands = {
         'gcb-list-iocs': gcb_list_iocs_command,
         'gcb-assets': gcb_assets_command,
         'gcb-ioc-details': gcb_ioc_details_command,
         'gcb-list-alerts': gcb_list_alerts_command,
-        'gcb-list-events': gcb_list_events_command
+        'gcb-list-events': gcb_list_events_command,
+        'gcb-list-detections': gcb_list_detections_command,
+        'gcb-list-rules': gcb_list_rules_command
     }
     # initialize configuration parameter
     proxy = demisto.params().get('proxy')

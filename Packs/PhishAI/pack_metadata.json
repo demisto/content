@@ -2,7 +2,8 @@
     "name": "Phish.AI",
     "description": "Next-Generation Anti-Phishing Platform Powered by AI & Computer Vision",
     "support": "partner",
-    "currentVersion": "1.0.0",
+    "hidden": true,
+    "currentVersion": "1.0.2",
     "author": "Phish.AI",
     "url": "",
     "email": "info@phish.ai",
@@ -15,5 +16,10 @@
     "keywords": [],
     "githubUser": [
         "yevgenypats"
+    ],
+    "certification": "certified",
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
     ]
 }

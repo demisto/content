@@ -1,7 +1,8 @@
 # type: ignore
+
 from CommonServerPython import *
 import collections
-from dateutil import parser
+from dateutil import parser  # type: ignore[import]
 
 EXACT_MATCH = 0
 CONTAINS = '*'
@@ -21,8 +22,6 @@ STATUS_MAP = {
     '2': 'Closed',
     '3': 'Closed'
 }
-
-CREATED_TIME_FIELD = "created"
 
 
 def parse_input(csv):
@@ -108,42 +107,61 @@ def get_incident_labels_map(labels):
     return labels_map
 
 
+def handle_str_field(key, value):
+    value = value.replace('"', r'\"').replace("\n", "\\n").replace("\r", "\\r").replace(r'\\"', r'\\\"')
+    query = '{}="{}"'.format(key, value.encode('utf-8'))
+    return query.decode('utf-8')
+
+
+def handle_int_field(key, value):
+    query_template = '{}:={}'
+    return query_template.format(key, str(value))
+
+
+def handle_list_field(key, value):
+    if not value:  # empty list
+        return '{}={}'.format(key, str(value))
+    queries_list = []
+    for item in value:
+        queries_list.append(handle_field[type(item)](key, item))
+    return queries_list
+
+
+handle_field = {
+    int: handle_int_field,
+    str: handle_str_field,
+    unicode: handle_str_field,
+    list: handle_list_field
+}
+
+
+def build_incident_fields_query(incident_data):
+    similar_keys_list = []
+    for key, value in incident_data.items():
+        result = handle_field[type(value)](key, value)
+        similar_keys_list.extend(result) if isinstance(result, list) else\
+            similar_keys_list.append(result)  # type: ignore
+
+    return similar_keys_list
+
+
 def get_incidents_by_keys(similar_incident_keys, time_field, incident_time, incident_id, hours_back, ignore_closed,
                           max_number_of_results, extra_query, applied_condition):
     condition_string = ' %s ' % applied_condition.lower()
 
-    similar_keys_list = []
-    for key, value in similar_incident_keys.items():
-        value = value.encode('utf-8')
-        compare_str = '{}:={}' if str(value).isdigit() else '{}="{}"'
-        similar_key = compare_str.format(key, str(value).replace('"', r'\"').replace("\n", "\\n").replace("\r", "\\r"))
-        similar_keys_list.append(similar_key.decode('utf-8'))
-
-    similar_keys_query = condition_string.join(similar_keys_list)
+    incident_fields_query = build_incident_fields_query(similar_incident_keys)
+    similar_keys_query = condition_string.join(incident_fields_query)
     incident_time = parse_datetime(incident_time)
     max_date = incident_time
     min_date = incident_time - timedelta(hours=hours_back)
-    hours_back_query = '{0}:>="{1}" and {0}:<"{2}"'.format(time_field, min_date.isoformat(), max_date.isoformat())
-
-    if similar_keys_query:
-        query = "(%s) and (%s)" % (similar_keys_query, hours_back_query)
-    else:
-        query = hours_back_query
-
-    if ignore_closed:
-        query += " and -status:Closed"
-
-    if incident_id:
-        query = '(-id:%s) and (%s)' % (incident_id, query)
-
-    if extra_query:
-        query += " and (%s)" % extra_query
+    query = build_incident_query(similar_keys_query, ignore_closed, incident_id, extra_query)
 
     demisto.log("Find similar incidents based on initial query: %s" % query)
 
     get_incidents_argument = {'query': query, 'size': max_number_of_results, 'sort': '%s.desc' % time_field}
-    if time_field == CREATED_TIME_FIELD:
-        get_incidents_argument['fromdate'] = min_date.isoformat()
+
+    get_incidents_argument['fromdate'] = min_date.isoformat()
+    get_incidents_argument['todate'] = max_date.isoformat()
 
     res = demisto.executeCommand("getIncidents", get_incidents_argument)
     if res[0]['Type'] == entryTypes['error']:
@@ -252,6 +270,23 @@ def merge_incident_fields(incident):
     incident['severity'] = SEVERITY_MAP.get(str(incident['severity']))
     incident['status'] = STATUS_MAP.get(str(incident['status']))
     return incident
+
+
+def build_incident_query(similar_keys_query, ignore_closed, incident_id, extra_query):
+    query = ''
+
+    if similar_keys_query:
+        query = similar_keys_query
+
+    if ignore_closed:
+        query += " and -status:Closed" if query else "-status:Closed"
+
+    if incident_id:
+        query = "(-id:%s) and (%s)" % (incident_id, query) if query else "(-id:%s)" % (incident_id)
+
+    if extra_query:
+        query += " and (%s)" % extra_query if query else extra_query
+    return query
 
 
 def main():

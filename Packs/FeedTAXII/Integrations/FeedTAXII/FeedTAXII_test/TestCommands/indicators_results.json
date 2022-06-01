@@ -2,9 +2,12 @@
     {
         "value": "http://www.lifetmeda.ru/rewq/3e7479b6d30a8b744b96db72795b6aba/",
         "type": "URL",
-        "fields": {
-            "tags": []
-        },
+        "title": "URL: http://www.lifetmeda.ru/rewq/3e7479b6d30a8b744b96db72795b6aba/...",
+        "description": "URL: http://www.lifetmeda.ru/rewq/3e7479b6d30a8b744b96db72795b6aba/| isOnline:yes| dateVerified:2020-01-06T07:55:08+00:00",
+        "stixindicatorname": null,
+        "stixindicatordescription": null,
+        "confidence": null,
+        "fields": {},
         "rawJSON": {
             "indicator": "http://www.lifetmeda.ru/rewq/3e7479b6d30a8b744b96db72795b6aba/",
             "type": "URL",
@@ -17,9 +20,12 @@
     {
         "value": "https://software8n-chase.com/home/",
         "type": "URL",
-        "fields": {
-            "tags": []
-        },
+        "title": "URL: https://software8n-chase.com/home/...",
+        "description": "URL: https://software8n-chase.com/home/| isOnline:yes| dateVerified:2020-01-06T07:54:30+00:00",
+        "stixindicatorname": null,
+        "stixindicatordescription": null,
+        "confidence": null,
+        "fields": {},
         "rawJSON": {
             "indicator": "https://software8n-chase.com/home/",
             "type": "URL",
@@ -32,9 +38,12 @@
     {
         "value": "https://hmrc.5-notifications.com/338c933a18e9b57f72e608e67c5e4afd/index.php",
         "type": "URL",
-        "fields": {
-            "tags": []
-        },
+        "title": "URL: https://hmrc.5-notifications.com/338c933a18e9b57f72e608e67c5e4afd/inde...",
+        "description": "URL: https://hmrc.5-notifications.com/338c933a18e9b57f72e608e67c5e4afd/index.php| isOnline:yes| dateVerified:2020-01-06T13:25:07+00:00",
+        "stixindicatorname": null,
+        "stixindicatordescription": null,
+        "confidence": null,
+        "fields": {},
         "rawJSON": {
             "indicator": "https://hmrc.5-notifications.com/338c933a18e9b57f72e608e67c5e4afd/index.php",
             "type": "URL",
@@ -47,9 +56,12 @@
     {
         "value": "http://medimobility.es/wordpress/wp-admin/includes/onlinebanking/account/validation/chase.com/home/myaccount/billing.php?dispatched=66",
         "type": "URL",
-        "fields": {
-            "tags": []
-        },
+        "title": "URL: http://medimobility.es/wordpress/wp-admin/includes/onlinebanking/accou...",
+        "description": "URL: http://medimobility.es/wordpress/wp-admin/includes/onlinebanking/account/validation/chase.com/home/myaccount/billing.php?dispatched=66| isOnline:yes| dateVerified:2020-01-06T07:37:02+00:00",
+        "stixindicatorname": null,
+        "stixindicatordescription": null,
+        "confidence": null,
+        "fields": {},
         "rawJSON": {
             "indicator": "http://medimobility.es/wordpress/wp-admin/includes/onlinebanking/account/validation/chase.com/home/myaccount/billing.php?dispatched=66",
             "type": "URL",
@@ -62,9 +74,12 @@
     {
         "value": "https://icloud.com.uk-maps.info/?ld=iXS64Gold",
         "type": "URL",
-        "fields": {
-            "tags": []
-        },
+        "title": "URL: https://icloud.com.uk-maps.info/?ld=iXS64Gold...",
+        "description": "URL: https://icloud.com.uk-maps.info/?ld=iXS64Gold| isOnline:yes| dateVerified:2020-01-06T09:38:56+00:00",
+        "stixindicatorname": null,
+        "stixindicatordescription": null,
+        "confidence": null,
+        "fields": {},
         "rawJSON": {
             "indicator": "https://icloud.com.uk-maps.info/?ld=iXS64Gold",
             "type": "URL",
@@ -77,9 +92,12 @@
     {
         "value": "https://www.americanas.semanasaldao.com/destaques/produto/133756522/smart-tv-led-55-samsung-ultra-hd-4k-55nu7100-com-conversor-digital-3-hdmi-2-usb-wi-fi-solucao-inteligente-de-cabos-hdr-premium-smart-tizen/29120912594122",
         "type": "URL",
-        "fields": {
-            "tags": []
-        },
+        "title": "URL: https://www.americanas.semanasaldao.com/destaques/produto/133756522/sm...",
+        "description": "URL: https://www.americanas.semanasaldao.com/destaques/produto/133756522/smart-tv-led-55-samsung-ultra-hd-4k-55nu7100-com-conversor-digital-3-hdmi-2-usb-wi-fi-solucao-inteligente-de-cabos-hdr-premium-smart-tizen/29120912594122| isOnline:yes| dateVerified:2020-01-06T07:38:50+00:00",
+        "stixindicatorname": null,
+        "stixindicatordescription": null,
+        "confidence": null,
+        "fields": {},
         "rawJSON": {
             "indicator": "https://www.americanas.semanasaldao.com/destaques/produto/133756522/smart-tv-led-55-samsung-ultra-hd-4k-55nu7100-com-conversor-digital-3-hdmi-2-usb-wi-fi-solucao-inteligente-de-cabos-hdr-premium-smart-tizen/29120912594122",
             "type": "URL",
@@ -92,9 +110,12 @@
     {
         "value": "https://www31.janeirodepromocao.com/prodcb684ff46e483a3566954545d85715e7lnk/samsung-galaxy-j8-prata-64gb-and-8-1-6-octa-core-1-8ghz-4g/p/ceg87g4b76/te/sgj8/",
         "type": "URL",
-        "fields": {
-            "tags": []
-        },
+        "title": "URL: https://www31.janeirodepromocao.com/prodcb684ff46e483a3566954545d85715...",
+        "description": "URL: https://www31.janeirodepromocao.com/prodcb684ff46e483a3566954545d85715e7lnk/samsung-galaxy-j8-prata-64gb-and-8-1-6-octa-core-1-8ghz-4g/p/ceg87g4b76/te/sgj8/| isOnline:yes| dateVerified:2020-01-06T10:46:48+00:00",
+        "stixindicatorname": null,
+        "stixindicatordescription": null,
+        "confidence": null,
+        "fields": {},
         "rawJSON": {
             "indicator": "https://www31.janeirodepromocao.com/prodcb684ff46e483a3566954545d85715e7lnk/samsung-galaxy-j8-prata-64gb-and-8-1-6-octa-core-1-8ghz-4g/p/ceg87g4b76/te/sgj8/",
             "type": "URL",
@@ -107,9 +128,12 @@
     {
         "value": "https://services.runescape.com-ey.top/weblogin/loginForm/",
         "type": "URL",
-        "fields": {
-            "tags": []
-        },
+        "title": "URL: https://services.runescape.com-ey.top/weblogin/loginForm/...",
+        "description": "URL: https://services.runescape.com-ey.top/weblogin/loginForm/| isOnline:yes| dateVerified:2020-01-06T12:37:36+00:00",
+        "stixindicatorname": null,
+        "stixindicatordescription": null,
+        "confidence": null,
+        "fields": {},
         "rawJSON": {
             "indicator": "https://services.runescape.com-ey.top/weblogin/loginForm/",
             "type": "URL",
@@ -122,9 +146,12 @@
     {
         "value": "http://inspireddds.com/jc",
         "type": "URL",
-        "fields": {
-            "tags": []
-        },
+        "title": "URL: http://inspireddds.com/jc...",
+        "description": "URL: http://inspireddds.com/jc| isOnline:yes| dateVerified:2020-01-06T07:37:09+00:00",
+        "stixindicatorname": null,
+        "stixindicatordescription": null,
+        "confidence": null,
+        "fields": {},
         "rawJSON": {
             "indicator": "http://inspireddds.com/jc",
             "type": "URL",
@@ -137,9 +164,12 @@
     {
         "value": "http://paypal.co.uk.useriq3sr4wszak.settingsppup.com/Settingsppup.cfm?fp=qA%20%20vfQCaxyRJ63KlZNT%20STTnPxyxrYfTfokWwjt6X8B2KMHd6vrhSDSVfCo87DIqJw7qRkWEOMbkv0rR4RQZYukqG1gSiNtwcKqaVUL1Ij0SBjrze%20hbkOC8CcMto%20ggUgBfzdNZ3Nh0nPG3SVk1Z8b5UrUDAxFsPajUDfY%20dBMPYAFLetKCfGDMDOS/jyeF2uK0Mh6gRUZKk99LBnJtA==&amp;amp;maxads=0&amp;amp;kld=1003&amp;amp;yprpnd=7kxC8yexsnklnVq9qQrS1HTq1TxFDwZbYVKGXhVoFBU=&amp;amp;prvtof=i4Cwtdag9Riq8qyOYYXfleX%20C9RGjbg5qA0Mcy3u6sE=&amp;amp;eml&amp;amp;cmd=form_submit&amp;amp;dispatch=34xsd45423d1zmw241234zxadvzvh24af23d60&amp;amp;&amp;amp;kt=217&amp;amp;kbc=settingsppup&amp;amp;ktd=0&amp;amp;kp=2",
         "type": "URL",
-        "fields": {
-            "tags": []
-        },
+        "title": "URL: http://paypal.co.uk.useriq3sr4wszak.settingsppup.com/Settingsppup.cfm?...",
+        "description": "URL: http://paypal.co.uk.useriq3sr4wszak.settingsppup.com/Settingsppup.cfm?fp=qA%20%20vfQCaxyRJ63KlZNT%20STTnPxyxrYfTfokWwjt6X8B2KMHd6vrhSDSVfCo87DIqJw7qRkWEOMbkv0rR4RQZYukqG1gSiNtwcKqaVUL1Ij0SBjrze%20hbkOC8CcMto%20ggUgBfzdNZ3Nh0nPG3SVk1Z8b5UrUDAxFsPajUDfY%20dBMPYAFLetKCfGDMDOS/jyeF2uK0Mh6gRUZKk99LBnJtA==&amp;maxads=0&amp;kld=1003&amp;yprpnd=7kxC8yexsnklnVq9qQrS1HTq1TxFDwZbYVKGXhVoFBU=&amp;prvtof=i4Cwtdag9Riq8qyOYYXfleX%20C9RGjbg5qA0Mcy3u6sE=&amp;eml&amp;cmd=form_submit&amp;dispatch=34xsd45423d1zmw241234zxadvzvh24af23d60&amp;&amp;kt=217&amp;kbc=settingsppup&amp;ktd=0&amp;kp=2| isOnline:yes| dateVerified:2020-01-06T07:32:28+00:00",
+        "stixindicatorname": null,
+        "stixindicatordescription": null,
+        "confidence": null,
+        "fields": {},
         "rawJSON": {
             "indicator": "http://paypal.co.uk.useriq3sr4wszak.settingsppup.com/Settingsppup.cfm?fp=qA%20%20vfQCaxyRJ63KlZNT%20STTnPxyxrYfTfokWwjt6X8B2KMHd6vrhSDSVfCo87DIqJw7qRkWEOMbkv0rR4RQZYukqG1gSiNtwcKqaVUL1Ij0SBjrze%20hbkOC8CcMto%20ggUgBfzdNZ3Nh0nPG3SVk1Z8b5UrUDAxFsPajUDfY%20dBMPYAFLetKCfGDMDOS/jyeF2uK0Mh6gRUZKk99LBnJtA==&amp;amp;maxads=0&amp;amp;kld=1003&amp;amp;yprpnd=7kxC8yexsnklnVq9qQrS1HTq1TxFDwZbYVKGXhVoFBU=&amp;amp;prvtof=i4Cwtdag9Riq8qyOYYXfleX%20C9RGjbg5qA0Mcy3u6sE=&amp;amp;eml&amp;amp;cmd=form_submit&amp;amp;dispatch=34xsd45423d1zmw241234zxadvzvh24af23d60&amp;amp;&amp;amp;kt=217&amp;amp;kbc=settingsppup&amp;amp;ktd=0&amp;amp;kp=2",
             "type": "URL",
@@ -152,9 +182,12 @@
     {
         "value": "https://docs.google.com/forms/d/e/1FAIpQLSfLZzjIPwUm4Vu6wdSTu1N_h_cA0ZDfGXxatIKjXc4cdv43Vw/viewform",
         "type": "URL",
-        "fields": {
-            "tags": []
-        },
+        "title": "URL: https://docs.google.com/forms/d/e/1FAIpQLSfLZzjIPwUm4Vu6wdSTu1N_h_cA0Z...",
+        "description": "URL: https://docs.google.com/forms/d/e/1FAIpQLSfLZzjIPwUm4Vu6wdSTu1N_h_cA0ZDfGXxatIKjXc4cdv43Vw/viewform| isOnline:yes| dateVerified:2020-01-06T07:52:14+00:00",
+        "stixindicatorname": null,
+        "stixindicatordescription": null,
+        "confidence": null,
+        "fields": {},
         "rawJSON": {
             "indicator": "https://docs.google.com/forms/d/e/1FAIpQLSfLZzjIPwUm4Vu6wdSTu1N_h_cA0ZDfGXxatIKjXc4cdv43Vw/viewform",
             "type": "URL",
@@ -167,9 +200,12 @@
     {
         "value": "http://20.36.37.97/~/",
         "type": "URL",
-        "fields": {
-            "tags": []
-        },
+        "title": "URL: http://20.36.37.97/~/...",
+        "description": "URL: http://20.36.37.97/~/| isOnline:yes| dateVerified:2020-01-06T14:17:16+00:00",
+        "stixindicatorname": null,
+        "stixindicatordescription": null,
+        "confidence": null,
+        "fields": {},
         "rawJSON": {
             "indicator": "http://20.36.37.97/~/",
             "type": "URL",
@@ -182,9 +218,12 @@
     {
         "value": "https://docs.google.com/forms/d/e/1FAIpQLScq5VuZ98zL9mh341AaAzgMNHvEh8Luuka_eoZOV_DtRcjCoA/viewform",
         "type": "URL",
-        "fields": {
-            "tags": []
-        },
+        "title": "URL: https://docs.google.com/forms/d/e/1FAIpQLScq5VuZ98zL9mh341AaAzgMNHvEh8...",
+        "description": "URL: https://docs.google.com/forms/d/e/1FAIpQLScq5VuZ98zL9mh341AaAzgMNHvEh8Luuka_eoZOV_DtRcjCoA/viewform| isOnline:yes| dateVerified:2020-01-06T08:42:27+00:00",
+        "stixindicatorname": null,
+        "stixindicatordescription": null,
+        "confidence": null,
+        "fields": {},
         "rawJSON": {
             "indicator": "https://docs.google.com/forms/d/e/1FAIpQLScq5VuZ98zL9mh341AaAzgMNHvEh8Luuka_eoZOV_DtRcjCoA/viewform",
             "type": "URL",
@@ -197,9 +236,12 @@
     {
         "value": "http://clienteofertaoonline.com/promocao.php",
         "type": "URL",
-        "fields": {
-            "tags": []
-        },
+        "title": "URL: http://clienteofertaoonline.com/promocao.php...",
+        "description": "URL: http://clienteofertaoonline.com/promocao.php| isOnline:yes| dateVerified:2020-01-06T10:57:35+00:00",
+        "stixindicatorname": null,
+        "stixindicatordescription": null,
+        "confidence": null,
+        "fields": {},
         "rawJSON": {
             "indicator": "http://clienteofertaoonline.com/promocao.php",
             "type": "URL",
@@ -212,9 +254,12 @@
     {
         "value": "https://www35.janeirodepromocao.com/proddd16cd2bd128c923651287c2ba7a1a74lnk/samsung-galaxy-j8-prata-64gb-and-8-1-6-octa-core-1-8ghz-4g/p/ceg87g4b76/te/sgj8/",
         "type": "URL",
-        "fields": {
-            "tags": []
-        },
+        "title": "URL: https://www35.janeirodepromocao.com/proddd16cd2bd128c923651287c2ba7a1a...",
+        "description": "URL: https://www35.janeirodepromocao.com/proddd16cd2bd128c923651287c2ba7a1a74lnk/samsung-galaxy-j8-prata-64gb-and-8-1-6-octa-core-1-8ghz-4g/p/ceg87g4b76/te/sgj8/| isOnline:yes| dateVerified:2020-01-06T10:44:31+00:00",
+        "stixindicatorname": null,
+        "stixindicatordescription": null,
+        "confidence": null,
+        "fields": {},
         "rawJSON": {
             "indicator": "https://www35.janeirodepromocao.com/proddd16cd2bd128c923651287c2ba7a1a74lnk/samsung-galaxy-j8-prata-64gb-and-8-1-6-octa-core-1-8ghz-4g/p/ceg87g4b76/te/sgj8/",
             "type": "URL",
@@ -227,9 +272,12 @@
     {
         "value": "http://telesomonline.com/",
         "type": "URL",
-        "fields": {
-            "tags": []
-        },
+        "title": "URL: http://telesomonline.com/...",
+        "description": "URL: http://telesomonline.com/| isOnline:yes| dateVerified:2020-01-06T08:00:06+00:00",
+        "stixindicatorname": null,
+        "stixindicatordescription": null,
+        "confidence": null,
+        "fields": {},
         "rawJSON": {
             "indicator": "http://telesomonline.com/",
             "type": "URL",
@@ -242,9 +290,12 @@
     {
         "value": "http://novasmelhoresluiza.com/site/25181aihj521800084/index.php?o-de-panelas-tramontina-turim-20298707-7-pecas-vermelho-/p/ehf4hekh4a/ud/panl/&amp;amp;id=1",
         "type": "URL",
-        "fields": {
-            "tags": []
-        },
+        "title": "URL: http://novasmelhoresluiza.com/site/25181aihj521800084/index.php?o-de-p...",
+        "description": "URL: http://novasmelhoresluiza.com/site/25181aihj521800084/index.php?o-de-panelas-tramontina-turim-20298707-7-pecas-vermelho-/p/ehf4hekh4a/ud/panl/&amp;id=1| isOnline:yes| dateVerified:2020-01-06T10:34:46+00:00",
+        "stixindicatorname": null,
+        "stixindicatordescription": null,
+        "confidence": null,
+        "fields": {},
         "rawJSON": {
             "indicator": "http://novasmelhoresluiza.com/site/25181aihj521800084/index.php?o-de-panelas-tramontina-turim-20298707-7-pecas-vermelho-/p/ehf4hekh4a/ud/panl/&amp;amp;id=1",
             "type": "URL",
@@ -257,9 +308,12 @@
     {
         "value": "http://www.lifetmeda.ru/rewq/3e7479b6d30a8b744b96db72795b6aba",
         "type": "URL",
-        "fields": {
-            "tags": []
-        },
+        "title": "URL: http://www.lifetmeda.ru/rewq/3e7479b6d30a8b744b96db72795b6aba...",
+        "description": "URL: http://www.lifetmeda.ru/rewq/3e7479b6d30a8b744b96db72795b6aba| isOnline:yes| dateVerified:2020-01-06T08:15:25+00:00",
+        "stixindicatorname": null,
+        "stixindicatordescription": null,
+        "confidence": null,
+        "fields": {},
         "rawJSON": {
             "indicator": "http://www.lifetmeda.ru/rewq/3e7479b6d30a8b744b96db72795b6aba",
             "type": "URL",
@@ -272,9 +326,12 @@
     {
         "value": "http://0fertas-do-dia-24hr-com.umbler.net/promocao.php",
         "type": "URL",
-        "fields": {
-            "tags": []
-        },
+        "title": "URL: http://0fertas-do-dia-24hr-com.umbler.net/promocao.php...",
+        "description": "URL: http://0fertas-do-dia-24hr-com.umbler.net/promocao.php| isOnline:yes| dateVerified:2020-01-06T13:03:38+00:00",
+        "stixindicatorname": null,
+        "stixindicatordescription": null,
+        "confidence": null,
+        "fields": {},
         "rawJSON": {
             "indicator": "http://0fertas-do-dia-24hr-com.umbler.net/promocao.php",
             "type": "URL",
@@ -287,9 +344,12 @@
     {
         "value": "http://mindspring.com/~hangle/homepage/index.html",
         "type": "URL",
-        "fields": {
-            "tags": []
-        },
+        "title": "URL: http://mindspring.com/~hangle/homepage/index.html...",
+        "description": "URL: http://mindspring.com/~hangle/homepage/index.html| isOnline:yes| dateVerified:2020-01-06T10:06:41+00:00",
+        "stixindicatorname": null,
+        "stixindicatordescription": null,
+        "confidence": null,
+        "fields": {},
         "rawJSON": {
             "indicator": "http://mindspring.com/~hangle/homepage/index.html",
             "type": "URL",
@@ -302,9 +362,12 @@
     {
         "value": "https://ltau-portal.com/device/m/para-voce/webApps_AplicationInfoFisica1.php",
         "type": "URL",
-        "fields": {
-            "tags": []
-        },
+        "title": "URL: https://ltau-portal.com/device/m/para-voce/webApps_AplicationInfoFisic...",
+        "description": "URL: https://ltau-portal.com/device/m/para-voce/webApps_AplicationInfoFisica1.php| isOnline:yes| dateVerified:2020-01-06T14:16:27+00:00",
+        "stixindicatorname": null,
+        "stixindicatordescription": null,
+        "confidence": null,
+        "fields": {},
         "rawJSON": {
             "indicator": "https://ltau-portal.com/device/m/para-voce/webApps_AplicationInfoFisica1.php",
             "type": "URL",
@@ -317,9 +380,12 @@
     {
         "value": "https://ecertificatewala.com/www.PayPal.com-Re-Secure-Your-Account-verification-support/signin?amp&amp;amp;&amp;amp;&amp;amp;country.x=US",
         "type": "URL",
-        "fields": {
-            "tags": []
-        },
+        "title": "URL: https://ecertificatewala.com/www.PayPal.com-Re-Secure-Your-Account-ver...",
+        "description": "URL: https://ecertificatewala.com/www.PayPal.com-Re-Secure-Your-Account-verification-support/signin?amp&amp;&amp;&amp;country.x=US| isOnline:yes| dateVerified:2020-01-06T06:27:50+00:00",
+        "stixindicatorname": null,
+        "stixindicatordescription": null,
+        "confidence": null,
+        "fields": {},
         "rawJSON": {
             "indicator": "https://ecertificatewala.com/www.PayPal.com-Re-Secure-Your-Account-verification-support/signin?amp&amp;amp;&amp;amp;&amp;amp;country.x=US",
             "type": "URL",
@@ -332,9 +398,12 @@
     {
         "value": "http://receptfritt-cialis.com/drwxe/customer_center/customer-IDPP00C129/myaccount/signin/",
         "type": "URL",
-        "fields": {
-            "tags": []
-        },
+        "title": "URL: http://receptfritt-cialis.com/drwxe/customer_center/customer-IDPP00C12...",
+        "description": "URL: http://receptfritt-cialis.com/drwxe/customer_center/customer-IDPP00C129/myaccount/signin/| isOnline:yes| dateVerified:2020-01-06T10:11:25+00:00",
+        "stixindicatorname": null,
+        "stixindicatordescription": null,
+        "confidence": null,
+        "fields": {},
         "rawJSON": {
             "indicator": "http://receptfritt-cialis.com/drwxe/customer_center/customer-IDPP00C129/myaccount/signin/",
             "type": "URL",
@@ -347,9 +416,12 @@
     {
         "value": "http://ahahahahah.buzz/l/rBraLX/welcome.html",
         "type": "URL",
-        "fields": {
-            "tags": []
-        },
+        "title": "URL: http://ahahahahah.buzz/l/rBraLX/welcome.html...",
+        "description": "URL: http://ahahahahah.buzz/l/rBraLX/welcome.html| isOnline:yes| dateVerified:2020-01-06T07:42:52+00:00",
+        "stixindicatorname": null,
+        "stixindicatordescription": null,
+        "confidence": null,
+        "fields": {},
         "rawJSON": {
             "indicator": "http://ahahahahah.buzz/l/rBraLX/welcome.html",
             "type": "URL",
@@ -362,9 +434,12 @@
     {
         "value": "https://optusupdatemail.com/optusnetAU/fbs/?cmd=_account-details&amp;session=84afcc2281c3532820e288acca3079f5&amp;dispatch=b0cd4918361149a5283d11547c1a65e55b1a1079",
         "type": "URL",
-        "fields": {
-            "tags": []
-        },
+        "title": "URL: https://optusupdatemail.com/optusnetAU/fbs/?cmd=_account-details&amp;s...",
+        "description": "URL: https://optusupdatemail.com/optusnetAU/fbs/?cmd=_account-details&session=84afcc2281c3532820e288acca3079f5&dispatch=b0cd4918361149a5283d11547c1a65e55b1a1079| isOnline:yes| dateVerified:2020-01-06T04:13:03+00:00",
+        "stixindicatorname": null,
+        "stixindicatordescription": null,
+        "confidence": null,
+        "fields": {},
         "rawJSON": {
             "indicator": "https://optusupdatemail.com/optusnetAU/fbs/?cmd=_account-details&amp;session=84afcc2281c3532820e288acca3079f5&amp;dispatch=b0cd4918361149a5283d11547c1a65e55b1a1079",
             "type": "URL",
@@ -377,9 +452,12 @@
     {
         "value": "http://clinicaskin.cl/whre/beth/",
         "type": "URL",
-        "fields": {
-            "tags": []
-        },
+        "title": "URL: http://clinicaskin.cl/whre/beth/...",
+        "description": "URL: http://clinicaskin.cl/whre/beth/| isOnline:yes| dateVerified:2020-01-06T10:01:19+00:00",
+        "stixindicatorname": null,
+        "stixindicatordescription": null,
+        "confidence": null,
+        "fields": {},
         "rawJSON": {
             "indicator": "http://clinicaskin.cl/whre/beth/",
             "type": "URL",
@@ -392,9 +470,12 @@
     {
         "value": "https://belovedcommunityusa.com/.NEDBRANCH/NedMoney~PROFILE~PIN~PASSWORD.htm",
         "type": "URL",
-        "fields": {
-            "tags": []
-        },
+        "title": "URL: https://belovedcommunityusa.com/.NEDBRANCH/NedMoney~PROFILE~PIN~PASSWO...",
+        "description": "URL: https://belovedcommunityusa.com/.NEDBRANCH/NedMoney~PROFILE~PIN~PASSWORD.htm| isOnline:yes| dateVerified:2020-01-06T06:21:07+00:00",
+        "stixindicatorname": null,
+        "stixindicatordescription": null,
+        "confidence": null,
+        "fields": {},
         "rawJSON": {
             "indicator": "https://belovedcommunityusa.com/.NEDBRANCH/NedMoney~PROFILE~PIN~PASSWORD.htm",
             "type": "URL",
@@ -407,9 +488,12 @@
     {
         "value": "http://bit.ly/2RTEXSf",
         "type": "URL",
-        "fields": {
-            "tags": []
-        },
+        "title": "URL: http://bit.ly/2RTEXSf...",
+        "description": "URL: http://bit.ly/2RTEXSf| isOnline:yes| dateVerified:2020-01-06T08:23:29+00:00",
+        "stixindicatorname": null,
+        "stixindicatordescription": null,
+        "confidence": null,
+        "fields": {},
         "rawJSON": {
             "indicator": "http://bit.ly/2RTEXSf",
             "type": "URL",
@@ -422,9 +506,12 @@
     {
         "value": "http://dreamhouse.in.th/sigin/customer_center/customer-IDPP00C134",
         "type": "URL",
-        "fields": {
-            "tags": []
-        },
+        "title": "URL: http://dreamhouse.in.th/sigin/customer_center/customer-IDPP00C134...",
+        "description": "URL: http://dreamhouse.in.th/sigin/customer_center/customer-IDPP00C134| isOnline:yes| dateVerified:2020-01-06T07:55:18+00:00",
+        "stixindicatorname": null,
+        "stixindicatordescription": null,
+        "confidence": null,
+        "fields": {},
         "rawJSON": {
             "indicator": "http://dreamhouse.in.th/sigin/customer_center/customer-IDPP00C134",
             "type": "URL",
@@ -437,9 +524,12 @@
     {
         "value": "http://sdfgress.info/Tssb/",
         "type": "URL",
-        "fields": {
-            "tags": []
-        },
+        "title": "URL: http://sdfgress.info/Tssb/...",
+        "description": "URL: http://sdfgress.info/Tssb/| isOnline:yes| dateVerified:2020-01-06T15:06:50+00:00",
+        "stixindicatorname": null,
+        "stixindicatordescription": null,
+        "confidence": null,
+        "fields": {},
         "rawJSON": {
             "indicator": "http://sdfgress.info/Tssb/",
             "type": "URL",
@@ -452,9 +542,12 @@
     {
         "value": "https://rebrand.ly/ir3td8",
         "type": "URL",
-        "fields": {
-            "tags": []
-        },
+        "title": "URL: https://rebrand.ly/ir3td8...",
+        "description": "URL: https://rebrand.ly/ir3td8| isOnline:yes| dateVerified:2020-01-06T07:38:49+00:00",
+        "stixindicatorname": null,
+        "stixindicatordescription": null,
+        "confidence": null,
+        "fields": {},
         "rawJSON": {
             "indicator": "https://rebrand.ly/ir3td8",
             "type": "URL",
@@ -467,9 +560,12 @@
     {
         "value": "https://ltau-portal.com/device/m",
         "type": "URL",
-        "fields": {
-            "tags": []
-        },
+        "title": "URL: https://ltau-portal.com/device/m...",
+        "description": "URL: https://ltau-portal.com/device/m| isOnline:yes| dateVerified:2020-01-06T14:17:16+00:00",
+        "stixindicatorname": null,
+        "stixindicatordescription": null,
+        "confidence": null,
+        "fields": {},
         "rawJSON": {
             "indicator": "https://ltau-portal.com/device/m",
             "type": "URL",
@@ -482,9 +578,12 @@
     {
         "value": "http://www.sdmiramar.edu/library/sites/default/files/styles/RedirSeguro.html",
         "type": "URL",
-        "fields": {
-            "tags": []
-        },
+        "title": "URL: http://www.sdmiramar.edu/library/sites/default/files/styles/RedirSegur...",
+        "description": "URL: http://www.sdmiramar.edu/library/sites/default/files/styles/RedirSeguro.html| isOnline:yes| dateVerified:2020-01-06T07:40:30+00:00",
+        "stixindicatorname": null,
+        "stixindicatordescription": null,
+        "confidence": null,
+        "fields": {},
         "rawJSON": {
             "indicator": "http://www.sdmiramar.edu/library/sites/default/files/styles/RedirSeguro.html",
             "type": "URL",
@@ -497,9 +596,12 @@
     {
         "value": "http://exam.karthikeyaiasacademy.com/.chase/chases/jpmchase.html",
         "type": "URL",
-        "fields": {
-            "tags": []
-        },
+        "title": "URL: http://exam.karthikeyaiasacademy.com/.chase/chases/jpmchase.html...",
+        "description": "URL: http://exam.karthikeyaiasacademy.com/.chase/chases/jpmchase.html| isOnline:yes| dateVerified:2020-01-06T14:23:01+00:00",
+        "stixindicatorname": null,
+        "stixindicatordescription": null,
+        "confidence": null,
+        "fields": {},
         "rawJSON": {
             "indicator": "http://exam.karthikeyaiasacademy.com/.chase/chases/jpmchase.html",
             "type": "URL",
@@ -512,9 +614,12 @@
     {
         "value": "https://t.co/urOY0sKqpl",
         "type": "URL",
-        "fields": {
-            "tags": []
-        },
+        "title": "URL: https://t.co/urOY0sKqpl...",
+        "description": "URL: https://t.co/urOY0sKqpl| isOnline:yes| dateVerified:2020-01-06T09:43:39+00:00",
+        "stixindicatorname": null,
+        "stixindicatordescription": null,
+        "confidence": null,
+        "fields": {},
         "rawJSON": {
             "indicator": "https://t.co/urOY0sKqpl",
             "type": "URL",
@@ -527,9 +632,12 @@
     {
         "value": "https://paypal.co.uk.6mon.icu/p/login.php",
         "type": "URL",
-        "fields": {
-            "tags": []
-        },
+        "title": "URL: https://paypal.co.uk.6mon.icu/p/login.php...",
+        "description": "URL: https://paypal.co.uk.6mon.icu/p/login.php| isOnline:yes| dateVerified:2020-01-06T14:29:56+00:00",
+        "stixindicatorname": null,
+        "stixindicatordescription": null,
+        "confidence": null,
+        "fields": {},
         "rawJSON": {
             "indicator": "https://paypal.co.uk.6mon.icu/p/login.php",
             "type": "URL",
@@ -542,9 +650,12 @@
     {
         "value": "http://chase-2sconfirm.com/home/myaccount/billing.php?websrc=e17ea285ad581008aac6b89b49ab879e&amp;amp;dispatched=80&amp;amp;id=6383734797",
         "type": "URL",
-        "fields": {
-            "tags": []
-        },
+        "title": "URL: http://chase-2sconfirm.com/home/myaccount/billing.php?websrc=e17ea285a...",
+        "description": "URL: http://chase-2sconfirm.com/home/myaccount/billing.php?websrc=e17ea285ad581008aac6b89b49ab879e&amp;dispatched=80&amp;id=6383734797| isOnline:yes| dateVerified:2020-01-06T07:58:20+00:00",
+        "stixindicatorname": null,
+        "stixindicatordescription": null,
+        "confidence": null,
+        "fields": {},
         "rawJSON": {
             "indicator": "http://chase-2sconfirm.com/home/myaccount/billing.php?websrc=e17ea285ad581008aac6b89b49ab879e&amp;amp;dispatched=80&amp;amp;id=6383734797",
             "type": "URL",
@@ -557,9 +668,12 @@
     {
         "value": "http://magalufimdesemana.com/promocao.php",
         "type": "URL",
-        "fields": {
-            "tags": []
-        },
+        "title": "URL: http://magalufimdesemana.com/promocao.php...",
+        "description": "URL: http://magalufimdesemana.com/promocao.php| isOnline:yes| dateVerified:2020-01-06T10:47:34+00:00",
+        "stixindicatorname": null,
+        "stixindicatordescription": null,
+        "confidence": null,
+        "fields": {},
         "rawJSON": {
             "indicator": "http://magalufimdesemana.com/promocao.php",
             "type": "URL",
@@ -572,9 +686,12 @@
     {
         "value": "http://20.36.37.97/~",
         "type": "URL",
-        "fields": {
-            "tags": []
-        },
+        "title": "URL: http://20.36.37.97/~...",
+        "description": "URL: http://20.36.37.97/~| isOnline:yes| dateVerified:2020-01-06T14:17:16+00:00",
+        "stixindicatorname": null,
+        "stixindicatordescription": null,
+        "confidence": null,
+        "fields": {},
         "rawJSON": {
             "indicator": "http://20.36.37.97/~",
             "type": "URL",
@@ -587,9 +704,12 @@
     {
         "value": "http://jppost-ki.co/zog.html",
         "type": "URL",
-        "fields": {
-            "tags": []
-        },
+        "title": "URL: http://jppost-ki.co/zog.html...",
+        "description": "URL: http://jppost-ki.co/zog.html| isOnline:yes| dateVerified:2020-01-06T08:58:15+00:00",
+        "stixindicatorname": null,
+        "stixindicatordescription": null,
+        "confidence": null,
+        "fields": {},
         "rawJSON": {
             "indicator": "http://jppost-ki.co/zog.html",
             "type": "URL",
@@ -602,9 +722,12 @@
     {
         "value": "https://addventures.reclaimbetasite.com/sec/Asb/",
         "type": "URL",
-        "fields": {
-            "tags": []
-        },
+        "title": "URL: https://addventures.reclaimbetasite.com/sec/Asb/...",
+        "description": "URL: https://addventures.reclaimbetasite.com/sec/Asb/| isOnline:yes| dateVerified:2020-01-06T14:29:05+00:00",
+        "stixindicatorname": null,
+        "stixindicatordescription": null,
+        "confidence": null,
+        "fields": {},
         "rawJSON": {
             "indicator": "https://addventures.reclaimbetasite.com/sec/Asb/",
             "type": "URL",
@@ -617,9 +740,12 @@
     {
         "value": "https://paypal.co.uk.6mon.icu/air/Login.php?sslchannel=true&amp;amp;sessionid=EavGnT9qBbJHUghI9lfdBfQBcNIJriWz93UpeD9bm22QzPKIZj9WJxUGHc7IW6T001IYCJHrI7wmAouc6yKYxTbBVsl3XABKGqZtju5hjlwiEcTvWCpaRamuHSRX2TVDBl",
         "type": "URL",
-        "fields": {
-            "tags": []
-        },
+        "title": "URL: https://paypal.co.uk.6mon.icu/air/Login.php?sslchannel=true&amp;amp;se...",
+        "description": "URL: https://paypal.co.uk.6mon.icu/air/Login.php?sslchannel=true&amp;sessionid=EavGnT9qBbJHUghI9lfdBfQBcNIJriWz93UpeD9bm22QzPKIZj9WJxUGHc7IW6T001IYCJHrI7wmAouc6yKYxTbBVsl3XABKGqZtju5hjlwiEcTvWCpaRamuHSRX2TVDBl| isOnline:yes| dateVerified:2020-01-06T14:23:46+00:00",
+        "stixindicatorname": null,
+        "stixindicatordescription": null,
+        "confidence": null,
+        "fields": {},
         "rawJSON": {
             "indicator": "https://paypal.co.uk.6mon.icu/air/Login.php?sslchannel=true&amp;amp;sessionid=EavGnT9qBbJHUghI9lfdBfQBcNIJriWz93UpeD9bm22QzPKIZj9WJxUGHc7IW6T001IYCJHrI7wmAouc6yKYxTbBVsl3XABKGqZtju5hjlwiEcTvWCpaRamuHSRX2TVDBl",
             "type": "URL",
@@ -632,9 +758,12 @@
     {
         "value": "https://a1.gymtracker.net/v2/?sess=t51h1q0sljin0t3e4ahejnk4h2",
         "type": "URL",
-        "fields": {
-            "tags": []
-        },
+        "title": "URL: https://a1.gymtracker.net/v2/?sess=t51h1q0sljin0t3e4ahejnk4h2...",
+        "description": "URL: https://a1.gymtracker.net/v2/?sess=t51h1q0sljin0t3e4ahejnk4h2| isOnline:yes| dateVerified:2020-01-06T07:41:04+00:00",
+        "stixindicatorname": null,
+        "stixindicatordescription": null,
+        "confidence": null,
+        "fields": {},
         "rawJSON": {
             "indicator": "https://a1.gymtracker.net/v2/?sess=t51h1q0sljin0t3e4ahejnk4h2",
             "type": "URL",
@@ -647,9 +776,12 @@
     {
         "value": "https://kb-healthcare.com/att/sbc/sbc/sbcglobal.net.htm",
         "type": "URL",
-        "fields": {
-            "tags": []
-        },
+        "title": "URL: https://kb-healthcare.com/att/sbc/sbc/sbcglobal.net.htm...",
+        "description": "URL: https://kb-healthcare.com/att/sbc/sbc/sbcglobal.net.htm| isOnline:yes| dateVerified:2020-01-06T07:33:19+00:00",
+        "stixindicatorname": null,
+        "stixindicatordescription": null,
+        "confidence": null,
+        "fields": {},
         "rawJSON": {
             "indicator": "https://kb-healthcare.com/att/sbc/sbc/sbcglobal.net.htm",
             "type": "URL",
@@ -662,9 +794,12 @@
     {
         "value": "https://x0m0s.weblium.site/",
         "type": "URL",
-        "fields": {
-            "tags": []
-        },
+        "title": "URL: https://x0m0s.weblium.site/...",
+        "description": "URL: https://x0m0s.weblium.site/| isOnline:yes| dateVerified:2020-01-06T14:35:24+00:00",
+        "stixindicatorname": null,
+        "stixindicatordescription": null,
+        "confidence": null,
+        "fields": {},
         "rawJSON": {
             "indicator": "https://x0m0s.weblium.site/",
             "type": "URL",
@@ -677,9 +812,12 @@
     {
         "value": "http://www.ablenew.biz/nD/",
         "type": "URL",
-        "fields": {
-            "tags": []
-        },
+        "title": "URL: http://www.ablenew.biz/nD/...",
+        "description": "URL: http://www.ablenew.biz/nD/| isOnline:yes| dateVerified:2020-01-06T09:13:21+00:00",
+        "stixindicatorname": null,
+        "stixindicatordescription": null,
+        "confidence": null,
+        "fields": {},
         "rawJSON": {
             "indicator": "http://www.ablenew.biz/nD/",
             "type": "URL",
@@ -692,9 +830,12 @@
     {
         "value": "http://www.mahmoudghoneim.com/help/login/customer_center/customer-IDPP00C468/",
         "type": "URL",
-        "fields": {
-            "tags": []
-        },
+        "title": "URL: http://www.mahmoudghoneim.com/help/login/customer_center/customer-IDPP...",
+        "description": "URL: http://www.mahmoudghoneim.com/help/login/customer_center/customer-IDPP00C468/| isOnline:yes| dateVerified:2020-01-06T10:06:44+00:00",
+        "stixindicatorname": null,
+        "stixindicatordescription": null,
+        "confidence": null,
+        "fields": {},
         "rawJSON": {
             "indicator": "http://www.mahmoudghoneim.com/help/login/customer_center/customer-IDPP00C468/",
             "type": "URL",
@@ -707,9 +848,12 @@
     {
         "value": "http://genuineautoparts.co.uk/nofij3ksa/nptoris/shipping_info/datenschutz/videotest/privacy_policy.php/cps/ypx/?sense=1v05z5csp5aeuaw",
         "type": "URL",
-        "fields": {
-            "tags": []
-        },
+        "title": "URL: http://genuineautoparts.co.uk/nofij3ksa/nptoris/shipping_info/datensch...",
+        "description": "URL: http://genuineautoparts.co.uk/nofij3ksa/nptoris/shipping_info/datenschutz/videotest/privacy_policy.php/cps/ypx/?sense=1v05z5csp5aeuaw| isOnline:yes| dateVerified:2020-01-06T10:23:06+00:00",
+        "stixindicatorname": null,
+        "stixindicatordescription": null,
+        "confidence": null,
+        "fields": {},
         "rawJSON": {
             "indicator": "http://genuineautoparts.co.uk/nofij3ksa/nptoris/shipping_info/datenschutz/videotest/privacy_policy.php/cps/ypx/?sense=1v05z5csp5aeuaw",
             "type": "URL",
@@ -722,9 +866,12 @@
     {
         "value": "https://zasobygwp.pl/redirect?sig=78a326687125ec4399e48d9862d738f4eed69984f79ae4231dac7b02040c966b&amp;amp;url=aHR0cHM6Ly9yZWJyYW5kLmx5L2xuMW4xZA==&amp;amp;platform=app_android&amp;amp;brand=o2",
         "type": "URL",
-        "fields": {
-            "tags": []
-        },
+        "title": "URL: https://zasobygwp.pl/redirect?sig=78a326687125ec4399e48d9862d738f4eed6...",
+        "description": "URL: https://zasobygwp.pl/redirect?sig=78a326687125ec4399e48d9862d738f4eed69984f79ae4231dac7b02040c966b&amp;url=aHR0cHM6Ly9yZWJyYW5kLmx5L2xuMW4xZA==&amp;platform=app_android&amp;brand=o2| isOnline:yes| dateVerified:2020-01-06T07:53:37+00:00",
+        "stixindicatorname": null,
+        "stixindicatordescription": null,
+        "confidence": null,
+        "fields": {},
         "rawJSON": {
             "indicator": "https://zasobygwp.pl/redirect?sig=78a326687125ec4399e48d9862d738f4eed69984f79ae4231dac7b02040c966b&amp;amp;url=aHR0cHM6Ly9yZWJyYW5kLmx5L2xuMW4xZA==&amp;amp;platform=app_android&amp;amp;brand=o2",
             "type": "URL",
@@ -737,9 +884,12 @@
     {
         "value": "http://111.90.149.220/banks/Desjardins/a40b89886fe5eb23fc134a53e1bd0af2",
         "type": "URL",
-        "fields": {
-            "tags": []
-        },
+        "title": "URL: http://111.90.149.220/banks/Desjardins/a40b89886fe5eb23fc134a53e1bd0af...",
+        "description": "URL: http://111.90.149.220/banks/Desjardins/a40b89886fe5eb23fc134a53e1bd0af2| isOnline:yes| dateVerified:2020-01-06T10:30:01+00:00",
+        "stixindicatorname": null,
+        "stixindicatordescription": null,
+        "confidence": null,
+        "fields": {},
         "rawJSON": {
             "indicator": "http://111.90.149.220/banks/Desjardins/a40b89886fe5eb23fc134a53e1bd0af2",
             "type": "URL",

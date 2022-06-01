@@ -1,0 +1,501 @@
+id: Get File Sample From Path - VMware Carbon Black EDR - Live Response API
+version: -1
+name: Get File Sample From Path - VMware Carbon Black EDR - Live Response API
+description: |-
+  This playbook retrieves a file from a path on an endpoint using VMware Carbon Black EDR (Live Response API).
+  Make sure to provide the Carbon Black sensor ID of the endpoint from which you want to retrieve the file.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 8baac39a-0dd6-46c9-8fa4-7d42cabc95ea
+    type: start
+    task:
+      id: 8baac39a-0dd6-46c9-8fa4-7d42cabc95ea
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -50,
+          "y": -400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: f1583a69-7773-4855-805f-cc705026c481
+    type: condition
+    task:
+      id: f1583a69-7773-4855-805f-cc705026c481
+      version: -1
+      name: Is VMware Carbon Black EDR (Live Response API) enabled?
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "3"
+    scriptarguments:
+      value:
+        complex:
+          root: modules
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: modules.brand
+                iscontext: true
+              right:
+                value:
+                  simple: carbonblackliveresponse
+          accessor: brand
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -50,
+          "y": -245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 30e19c29-760e-4c99-803f-e04d6099f69d
+    type: title
+    task:
+      id: 30e19c29-760e-4c99-803f-e04d6099f69d
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -50,
+          "y": 1450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 479ffe0a-38c6-4af1-8dec-a15dc315a1c9
+    type: condition
+    task:
+      id: 479ffe0a-38c6-4af1-8dec-a15dc315a1c9
+      version: -1
+      name: Is there a file path and sensor ID?
+      description: ''
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.Sensor_ID
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.Hostname
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.Path
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 1f47fc8a-b3d5-4749-8334-fe625088e487
+    type: regular
+    task:
+      id: 1f47fc8a-b3d5-4749-8334-fe625088e487
+      version: -1
+      name: Get File
+      description: Retrieve a file from a path on an endpoint. 
+      script: '|||cb-get-file-from-endpoint'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      path:
+        simple: ${inputs.Path}
+      sensor: {}
+      session:
+        complex:
+          root: CbLiveResponse
+          accessor: Sessions.CbSessionID
+      wait-timeout: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 950,
+          "y": 760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 48e1ce0b-aba6-4b86-8675-6f6fe880ed7c
+    type: regular
+    task:
+      id: 48e1ce0b-aba6-4b86-8675-6f6fe880ed7c
+      version: -1
+      name: List the CarbonBlack sessions
+      description: List the CarbonBlack sessions.
+      script: '|||cb-list-sessions'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      sensor:
+        complex:
+          root: inputs.Sensor_ID
+      status:
+        simple: active
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 650,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 2ab45ea6-9de6-4899-8c00-c067d336de5a
+    type: condition
+    task:
+      id: 2ab45ea6-9de6-4899-8c00-c067d336de5a
+      version: -1
+      name: Is there an open CarbonBlack session?
+      description: ''
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: CbResponse
+                accessor: Sessions.Status
+            iscontext: true
+          right:
+            value:
+              simple: active
+    view: |-
+      {
+        "position": {
+          "x": 650,
+          "y": 560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 3989d436-6a7b-4c96-8aea-2e408b35e20c
+    type: regular
+    task:
+      id: 3989d436-6a7b-4c96-8aea-2e408b35e20c
+      version: -1
+      name: Create new CB Session
+      description: Create a new CarbonBlack session for a given sensor.
+      script: carbonblackliveresponse|||cb-session-create
+      type: regular
+      iscommand: true
+      brand: carbonblackliveresponse
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      command-timeout: {}
+      keepalive-timeout: {}
+      sensor:
+        complex:
+          root: inputs.Sensor_ID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 380,
+          "y": 760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 424c062a-88ab-484d-80e3-c375de820cef
+    type: regular
+    task:
+      id: 424c062a-88ab-484d-80e3-c375de820cef
+      version: -1
+      name: CB Get File
+      description: Retrieve a file from a path on an endpoint.
+      script: '|||cb-get-file-from-endpoint'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      path:
+        complex:
+          root: inputs.Path
+      sensor: {}
+      session:
+        complex:
+          root: CbLiveResponse
+          accessor: Sessions.CbSessionID
+      wait-timeout: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 380,
+          "y": 1100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: d4f20578-96c4-4e2b-80a1-dd73c26980d8
+    type: playbook
+    task:
+      id: d4f20578-96c4-4e2b-80a1-dd73c26980d8
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      AdditionalPollingCommandArgNames: {}
+      AdditionalPollingCommandArgValues: {}
+      Ids:
+        simple: ${CbLiveResponse.Sessions.CbSessionID}
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: session
+      PollingCommandName:
+        simple: cb-session-info
+      Timeout:
+        simple: "10"
+      dt:
+        simple: CbLiveResponse.Sessions(val.Status != 'active').CbSessionID
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 380,
+          "y": 940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: b8b8df75-8ec9-4b16-8040-49d8ff890129
+    type: regular
+    task:
+      id: b8b8df75-8ec9-4b16-8040-49d8ff890129
+      version: -1
+      name: Close CB session
+      description: Close the given session.
+      script: '|||cb-session-close'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      session:
+        complex:
+          root: CbLiveResponse
+          accessor: Sessions.CbSessionID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 650,
+          "y": 1280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "1_2_#default#": 0.12,
+      "3_2_#default#": 0.15
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1915,
+        "width": 1380,
+        "x": -50,
+        "y": -400
+      }
+    }
+  }
+inputs:
+- key: Sensor_ID
+  value: {}
+  required: false
+  description: The sensor ID. Provide the sensor ID to run the command with a new
+    session. The session will be created and closed automatically.
+  playbookInputQuery:
+- key: Path
+  value: {}
+  required: false
+  description: |-
+    The path of the file to retrieve.
+    For example:
+    C:\users\folder\file.txt
+  playbookInputQuery:
+outputs:
+- contextPath: File.Size
+  description: The size of the file.
+  type: number
+- contextPath: File.Type
+  description: The type of the file.
+  type: string
+- contextPath: File.Info
+  description: General information of the file.
+  type: string
+- contextPath: File.MD5
+  description: The MD5 hash of the file.
+  type: string
+- contextPath: File.SHA1
+  description: The SHA1 hash of the file.
+  type: string
+- contextPath: File.SHA256
+  description: The SHA256 hash of the file.
+  type: string
+- contextPath: File.SHA512
+  description: The SHA512 hash of the file.
+  type: string
+- contextPath: File.SSDeep
+  description: The file SSDeep.
+  type: string
+- contextPath: File.Name
+  description: The file name.
+  type: string
+- contextPath: File.EntryID
+  description: File entry ID.
+  type: string
+- contextPath: File.Extension
+  description: The file extension.
+  type: string
+tests:
+- Carbon Black Live Response Test
+fromversion: 5.0.0

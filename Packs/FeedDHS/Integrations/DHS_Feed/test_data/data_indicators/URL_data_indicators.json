@@ -1,0 +1,21 @@
+[
+    {
+        "value": "http://t.com/hud-file/New/Error.php",
+        "type": "URL",
+        "rawJson": {
+            "@type": "URL",
+            "@xsi:type": "URIObj:URIObjectType",
+            "URIObj:Value": {
+                "#text": "http://t.com/hud-file/New/Error.php",
+                "@condition": "Equals"
+            }
+        },
+        "fields": {
+            "tags": [
+                "tag"
+            ],
+            "reportedby": "source",
+            "trafficlightprotocol": "color"
+        }
+    }
+]

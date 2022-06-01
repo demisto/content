@@ -1,0 +1,20 @@
+!gitlab-get-version using="Moon-Integration"
+!gitlab-get-projects owned=true using="Moon-Integration"
+!gitlab-projects-create-repository-branch branch=feature1 id=21898188 ref=master using="Moon-Integration"
+!gitlab-projects-delete-repository-branch branch=feature1 id=21898188 using="Moon-Integration"
+!gitlab-projects-delete-repository-merged-branches id=21898188 using="Moon-Integration"
+!gitlab-projects-get-repository-branches id=21898188 using="Moon-Integration"
+!gitlab-projects-request-access id=21898188 using=Asteroid
+!gitlab-projects-get-access-requests id=21898188 using="Moon-Integration"
+!gitlab-projects-deny-access id=21898188 user_id=7475865 using="Moon-Integration"
+!gitlab-pipelines-schedules-list project_id=123
+!gitlab-pipelines-list project_id=123 pipeline_id=1254426
+!gitlab-jobs-list project_id=123 pipeline_id=1254426
+!gitlab-artifact-get project_id=123 job_id=6063195 artifact_path_suffix=artifacts/failed_tests.txt
+!gitlab-issues-list project_id=123 state=opened search="Summary"
+!gitlab-merge-requests-list target_branch=development project_id=123 state=merged
+!gitlab-merge-request-get project_id=123 merge_request_iid=18
+!gitlab-issue-edit project_id=123 issue_id=1 add_labels="To Do"
+!gitlab-group-projects-list group_id=1
+!gitlab-issue-create title=wow description=wow labels=a,b,c
+!gitlab-raw-file-get project_id=123 ref=master file=wow.py

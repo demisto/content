@@ -1,5 +1,7 @@
-Druva Ransomware Response Integration provides an API based orchestration framework for Druva Ransomware Recovery customers. The integration allows Druva customers to respond immediately in case of a security incident and recovery their backed up data with Confidence
-This integration was integrated and tested with Realize Ransomwary Recovery module of Druva Public Cloud 
+Centrally orchestrate ransomware response and recovery via API integrations and automated playbooks. This content pack will empower you to get back to normal faster after security incidents such as insider threats and ransomware attacks.
+
+This integration was integrated and tested with Public APIs available on Druva Public Cloud documented at https://developer.druva.com/
+
 ## Configure Druva Ransomware Response on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -14,7 +16,7 @@ This integration was integrated and tested with Realize Ransomwary Recovery modu
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### druva-find-device
 ***

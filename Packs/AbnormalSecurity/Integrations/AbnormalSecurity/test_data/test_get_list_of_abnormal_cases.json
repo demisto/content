@@ -1,0 +1,10 @@
+{
+    "cases": [
+        {
+            "caseId": "1234",
+            "description": "Potential Account Takeover"
+        }
+    ],
+    "pageNumber": 1,
+    "nextPageNumber": 2
+}

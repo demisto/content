@@ -303,3 +303,11 @@ TASKS_RESULT = [
          'scheduled': False, 'entryTask': None, 'taskId': '', 'playbookId': '', 'reputationSize': 0,
          'contentsSize': 0, 'brand': 'Demisto REST API', 'instance': 'Demisto REST API_instance_1',
          'IndicatorTimeline': None, 'mirrored': False}, 'IndicatorTimeline': None}]
+
+SERVER_URL = [{'ModuleName': 'CustomScripts',
+               'Brand': 'Scripts',
+               'Category': 'automation',
+               'ID': '', 'Version': 0,
+               'Type': 1,
+               'Contents': 'https://ec2-11-123-11-22.eu-west-1.compute.amazonaws.com//acc_test',
+               'HumanReadable': 'https://ec2-11-123-11-22.eu-west-1.compute.amazonaws.com//acc_test'}]

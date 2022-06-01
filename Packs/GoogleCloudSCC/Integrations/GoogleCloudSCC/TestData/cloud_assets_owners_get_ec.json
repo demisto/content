@@ -1,0 +1,53 @@
+[
+  {
+    "name": "//cloudresourcemanager.googleapis.com/projects/123456789",
+    "assetType": "cloudresourcemanager.googleapis.com/Project",
+    "iamPolicy": {
+      "etag": "BwVcch5RSWA=",
+      "bindings": [
+        {
+          "role": "roles/owner",
+          "members": [
+            "user:dummyuser1@dummy.com"
+          ]
+        }
+      ]
+    },
+    "ancestors": [
+      "projects/123456789",
+      "organizations/123456789"
+    ],
+    "updateTime": "2021-05-15T10:00:00Z",
+    "owners": [
+      "user:dummyuser1@dummy.com"
+    ],
+    "readTime": "2021-05-15T10:00:00Z"
+  },
+  {
+    "name": "//cloudresourcemanager.googleapis.com/projects/234567890",
+    "assetType": "cloudresourcemanager.googleapis.com/Project",
+    "iamPolicy": {
+      "version": 1,
+      "etag": "BwV9ONRnkz4=",
+      "bindings": [
+        {
+          "role": "roles/owner",
+          "members": [
+            "serviceAccount.iam.gserviceaccount.com",
+            "user:dummyuser2@dummy.com"
+          ]
+        }
+      ]
+    },
+    "ancestors": [
+      "projects/234567890",
+      "organizations/123456789"
+    ],
+    "updateTime": "2021-05-15T10:00:00Z",
+    "owners": [
+      "serviceAccount.iam.gserviceaccount.com",
+      "user:dummyuser2@dummy.com"
+    ],
+    "readTime": "2021-05-15T10:00:00Z"
+  }
+]

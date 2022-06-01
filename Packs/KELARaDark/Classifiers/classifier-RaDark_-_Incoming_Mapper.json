@@ -1,0 +1,92 @@
+{
+    "description": "Map incident data to RaDark incident fields.",
+    "feed": false,
+    "id": "RaDark - Incoming Mapper",
+    "mapping": {
+        "RaDark": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Event ID": {
+                    "complex": null,
+                    "simple": "id"
+                },
+                "Srcs": {
+                    "complex": null,
+                    "simple": "source_url"
+                },
+                "Tags": {
+                    "complex": {
+                        "accessor": "[0]",
+                        "filters": [],
+                        "root": "tags",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "details": {
+                    "complex": null,
+                    "simple": "text"
+                },
+                "name": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "title",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "severity": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "severity",
+                        "transformers": []
+                    },
+                    "simple": ""
+                }
+            }
+        },
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Alert ID": {
+                    "complex": null,
+                    "simple": "feed_property_id"
+                },
+                "Categories": {
+                    "complex": null,
+                    "simple": "type_description"
+                },
+                "KELA RaDark Incident URL": {
+                    "complex": null,
+                    "simple": "incident_url"
+                },
+                "KELA RaDark Monitor ID": {
+                    "complex": null,
+                    "simple": "monitor_id"
+                },
+                "KELA RaDark Sub Type": {
+                    "complex": null,
+                    "simple": "sub_type"
+                },
+                "Sub Category": {
+                    "complex": null,
+                    "simple": "sub_type_description"
+                },
+                "Tags": {
+                    "complex": null,
+                    "simple": "tags"
+                },
+                "severity": {
+                    "complex": null,
+                    "simple": "severity"
+                }
+            }
+        }
+    },
+    "name": "RaDark - Incoming Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

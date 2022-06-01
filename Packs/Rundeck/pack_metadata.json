@@ -1,0 +1,20 @@
+{
+    "name": "Rundeck",
+    "description": "Rundeck is runbook automation for incident management, business continuity, and self-service operations",
+    "support": "xsoar",
+    "currentVersion": "1.0.12",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2020-10-01T09:14:58Z",
+    "categories": [
+        "Utilities"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
+}

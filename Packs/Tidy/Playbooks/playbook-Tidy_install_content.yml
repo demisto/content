@@ -1,0 +1,516 @@
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
+description: new content developer installation playbook
+id: Tidy install content
+inputs: []
+name: Tidy install content
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 6367e369-3234-43fb-835c-c88933125b51
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 6367e369-3234-43fb-835c-c88933125b51
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -110
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      apps: {}
+      cask_apps:
+        simple: iterm2,postman,docker
+      execution-timeout:
+        simple: "3600"
+      hostname:
+        simple: ${incident.tidyhost}
+      password:
+        simple: ${incident.tidypassword}
+      user:
+        simple: ${incident.tidyuser}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Tidy
+      description: Install and configure homebrew, Install additional homebrew/-cask
+        packages.
+      id: fb77da27-f2a3-4692-8292-1c886b1dd10e
+      iscommand: true
+      name: install utilities
+      script: Tidy|||tidy-homebrew
+      type: regular
+      version: -1
+    taskid: fb77da27-f2a3-4692-8292-1c886b1dd10e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 870,
+          "y": 230
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      hostname:
+        simple: ${incident.tidyhost}
+      password:
+        simple: ${incident.tidypassword}
+      user:
+        simple: ${incident.tidyuser}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Tidy
+      description: Install zsh, oh-my-zsh, p10k.
+      id: ca7d2070-509a-4957-839c-9a20ec7971f9
+      iscommand: true
+      name: install zsh
+      script: Tidy|||tidy-zsh
+      type: regular
+      version: -1
+    taskid: ca7d2070-509a-4957-839c-9a20ec7971f9
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "11"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      execution-timeout:
+        simple: "3600"
+      globals:
+        simple: 2.7.18,3.8.5
+      hostname:
+        simple: ${incident.tidyhost}
+      password:
+        simple: ${incident.tidypassword}
+      user:
+        simple: ${incident.tidyuser}
+      versions:
+        simple: 2.7.18,3.8.5,3.7.5
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Tidy
+      description: Install Python versions, Using Pyenv.
+      id: 7114dd8a-02f4-4e6a-8f67-d8f9d19703cf
+      iscommand: true
+      name: install pyenv
+      script: Tidy|||tidy-pyenv
+      type: regular
+      version: -1
+    taskid: 7114dd8a-02f4-4e6a-8f67-d8f9d19703cf
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 870,
+          "y": 410
+        }
+      }
+  "4":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: incident.tidygithubtoken
+          operator: isNotEmpty
+      label: "yes"
+    id: "4"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "7"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Does GitHub token exist?
+      id: 3a3e3561-cfcd-450b-8668-fe83689fdbae
+      iscommand: false
+      name: Does GitHub token exist?
+      type: condition
+      version: -1
+    taskid: 3a3e3561-cfcd-450b-8668-fe83689fdbae
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": -20,
+          "y": 410
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      access_token:
+        simple: ${incident.tidygithubtoken}
+      hostname:
+        simple: ${incident.tidyhost}
+      password:
+        simple: ${incident.tidypassword}
+      user:
+        simple: ${incident.tidyuser}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Tidy
+      description: Generate private/public key, Configure ssh client, and deploy keys
+        to your GitHub account.
+      id: 406d3cca-e8bc-4c39-8ccb-a69751359818
+      iscommand: true
+      name: Deploy GitHub SSH key
+      script: Tidy|||tidy-github-ssh-key
+      type: regular
+      version: -1
+    taskid: 406d3cca-e8bc-4c39-8ccb-a69751359818
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -20,
+          "y": 770
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      hostname:
+        simple: ${incident.tidyhost}
+      key:
+        simple: user.name
+      password:
+        simple: ${incident.tidypassword}
+      scope: {}
+      user:
+        simple: ${incident.tidyuser}
+      value:
+        simple: ${incident.tidyuser}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Tidy
+      description: Configure git cli.
+      id: a5fc32bf-df1e-4c3a-84e3-e5b66477004a
+      iscommand: true
+      name: Git configuration
+      script: Tidy|||tidy-git-config
+      type: regular
+      version: -1
+    taskid: a5fc32bf-df1e-4c3a-84e3-e5b66477004a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -20,
+          "y": 590
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      dest:
+        simple: ~/dev/xsoar/demisto-sdk
+      force:
+        simple: "yes"
+      hostname:
+        simple: ${incident.tidyhost}
+      password:
+        simple: ${incident.tidypassword}
+      repo:
+        simple: https://github.com/demisto/demisto-sdk.git
+      update:
+        simple: "yes"
+      user:
+        simple: ${incident.tidyuser}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Tidy
+      description: Clone git repository to destination.
+      id: e77d717f-2ef5-448b-8570-c02c68f7c86e
+      iscommand: true
+      name: tidy-git-clone
+      script: Tidy|||tidy-git-clone
+      type: regular
+      version: -1
+    taskid: e77d717f-2ef5-448b-8570-c02c68f7c86e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -20,
+          "y": 950
+        }
+      }
+  "9":
+    id: "9"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 7995d86d-4e02-42f8-8a9c-84d5ae41a449
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: 7995d86d-4e02-42f8-8a9c-84d5ae41a449
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1120
+        }
+      }
+  "10":
+    id: "10"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+      - "2"
+      - "13"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Tidy
+      description: Install OSx command line tools.
+      id: 25027b6d-d3e1-4faa-8568-7a281a42da1a
+      iscommand: true
+      name: tidy-osx-command-line-tools
+      script: Tidy|||tidy-osx-command-line-tools
+      type: regular
+      version: -1
+    taskid: 25027b6d-d3e1-4faa-8568-7a281a42da1a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 40
+        }
+      }
+  "11":
+    id: "11"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "12"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      apps: {}
+      cask_apps:
+        simple: pycharm-ce,visual-studio-code
+      execution-timeout:
+        simple: "3600"
+      hostname:
+        simple: ${incident.tidyhost}
+      password:
+        simple: ${incident.tidypassword}
+      user:
+        simple: ${incident.tidyuser}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Tidy
+      description: Install and configure homebrew, Install additional homebrew/-cask
+        packages.
+      id: 8b6b12ab-0f7a-4a91-8a09-c5625346cdad
+      iscommand: true
+      name: install editors (pycharm and code)
+      script: Tidy|||tidy-homebrew
+      type: regular
+      version: -1
+    taskid: 8b6b12ab-0f7a-4a91-8a09-c5625346cdad
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 870,
+          "y": 590
+        }
+      }
+  "12":
+    id: "12"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      apps: {}
+      cask_apps:
+        simple: google-chrome
+      execution-timeout:
+        simple: "3600"
+      hostname:
+        simple: ${incident.tidyhost}
+      password:
+        simple: ${incident.tidypassword}
+      user:
+        simple: ${incident.tidyuser}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Tidy
+      description: Install and configure homebrew, Install additional homebrew/-cask
+        packages.
+      id: c0473b45-7208-4fc2-8ff4-de9fd3d2cc19
+      iscommand: true
+      name: install browser (google-chrome)
+      script: Tidy|||tidy-homebrew
+      type: regular
+      version: -1
+    taskid: c0473b45-7208-4fc2-8ff4-de9fd3d2cc19
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 870,
+          "y": 770
+        }
+      }
+  "13":
+    id: "13"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      apps:
+        simple: git
+      cask_apps: {}
+      hostname:
+        simple: ${incident.tidyhost}
+      password:
+        simple: ${incident.tidypassword}
+      user:
+        simple: ${incident.tidyuser}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Tidy
+      description: Install and configure homebrew, Install additional homebrew/-cask
+        packages.
+      id: 1940d4ed-de6f-4ac6-80a7-ffcfc2d3c050
+      iscommand: true
+      name: install git
+      script: Tidy|||tidy-homebrew
+      type: regular
+      version: -1
+    taskid: 1940d4ed-de6f-4ac6-80a7-ffcfc2d3c050
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -20,
+          "y": 230
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1295,
+        "width": 1270,
+        "x": -20,
+        "y": -110
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

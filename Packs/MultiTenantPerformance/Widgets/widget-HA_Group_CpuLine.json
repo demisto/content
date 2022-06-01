@@ -1,0 +1,27 @@
+{
+ "id": "ha-group-cpu-line",
+ "version": -1,
+ "fromVersion": "6.1.0",
+ "name": "Average CPU Usage per HA Group (last 24h)",
+ "description": "The average percentage of CPU usage per HA group in the previous 24h.",
+ "dataType": "system",
+ "widgetType": "line",
+ "query": "host.cpu",
+ "isPredefined": true,
+ "params": {
+  "groupBy": [
+   "haGroup"
+  ],
+  "timeFrame": "minutes"
+ },
+ "size": 1440,
+ "dateRange": {
+  "period": {
+   "byTo": "",
+   "byFrom": "minutes",
+   "toValue": null,
+   "fromValue": 60,
+   "field": ""
+  }
+ }
+}

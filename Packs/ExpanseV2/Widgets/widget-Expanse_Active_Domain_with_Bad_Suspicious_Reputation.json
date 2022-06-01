@@ -1,0 +1,99 @@
+{
+    "dataType": "indicators",
+    "dateRange": {
+        "fromDate": "0001-01-01T00:00:00Z",
+        "fromDateLicense": "0001-01-01T00:00:00Z",
+        "period": {
+            "by": "",
+            "byFrom": "days",
+            "byTo": "",
+            "field": "",
+            "fromValue": 7,
+            "toValue": null
+        },
+        "toDate": "0001-01-01T00:00:00Z"
+    },
+    "fromVersion": "6.0.0",
+    "id": "expanse-active-domain-with-bad-suspicious-reputation",
+    "isPredefined": true,
+    "modified": "2020-10-16T10:51:37.008097046Z",
+    "name": "Expanse Active Domain with Bad/Suspicious Reputation",
+    "params": {
+        "groupBy": [
+            "expansebusinessunits"
+        ],
+        "tableColumns": [
+            {
+                "isDefault": true,
+                "key": "indicator_type",
+                "position": 1,
+                "width": 120
+            },
+            {
+                "isDefault": true,
+                "key": "value",
+                "position": 2,
+                "width": 300
+            },
+            {
+                "isDefault": true,
+                "key": "score",
+                "position": 4,
+                "width": 120
+            },
+            {
+                "isDefault": true,
+                "key": "firstSeen",
+                "position": 5,
+                "width": 275
+            },
+            {
+                "isDefault": true,
+                "key": "lastSeen",
+                "position": 6,
+                "width": 275
+            },
+            {
+                "isDefault": true,
+                "key": "timestamp",
+                "position": 8,
+                "width": 190
+            },
+            {
+                "isDefault": true,
+                "key": "relatedIncCount",
+                "position": 9,
+                "width": 150
+            },
+            {
+                "isDefault": true,
+                "key": "sourceBrands",
+                "position": 12,
+                "width": 175
+            },
+            {
+                "isDefault": true,
+                "key": "sourceInstances",
+                "position": 13,
+                "width": 175
+            },
+            {
+                "isDefault": true,
+                "key": "expirationStatus",
+                "position": 14,
+                "width": 175
+            },
+            {
+                "isDefault": true,
+                "key": "expiration",
+                "position": 15,
+                "width": 190
+            }
+        ]
+    },
+    "query": "sourceBrands:FeedExpanse and (type:Domain or type:DomainGlob) and expanselastobserved:\u003e=\"7 day ago\" and (reputation:Bad or reputation:Suspicious)",
+    "size": 0,
+    "version": -1,
+    "widgetType": "pie",
+    "description": ""
+}

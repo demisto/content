@@ -1,0 +1,39 @@
+na-ed-country-code-list limit=5
+na-ed-inbound-blacklisted-countries-list country=AM
+na-ed-inbound-blacklisted-countries-add country=AU
+na-ed-inbound-blacklisted-countries-remove country=AU
+
+na-ed-outbound-blacklisted-countries-list
+na-ed-outbound-blacklisted-countries-add country=AU
+na-ed-outbound-blacklisted-countries-remove country=AU
+
+na-ed-outbound-blacklisted-hosts-list
+na-ed-outbound-blacklisted-hosts-add host_address=1.2.3.4
+na-ed-outbound-blacklisted-hosts-replace host_address=5.2.3.4
+na-ed-outbound-blacklisted-hosts-remove host_address=5.2.3.4
+
+na-ed-inbound-blacklisted-hosts-list
+na-ed-inbound-blacklisted-hosts-add host_address=1.2.3.4
+na-ed-inbound-blacklisted-hosts-replace host_address=5.2.3.4
+na-ed-inbound-blacklisted-hosts-remove host_address=5.2.3.4
+
+na-ed-outbound-whitelisted-hosts-list
+na-ed-outbound-whitelisted-hosts-add host_address=3.3.3.3
+na-ed-outbound-whitelisted-hosts-replace host_address=3.3.3.3,4.4.4.4
+na-ed-outbound-whitelisted-hosts-remove host_address=3.3.3.3
+
+na-ed-inbound-whitelisted-hosts-list
+na-ed-inbound-whitelisted-hosts-add host_address=1.2.3.4
+na-ed-inbound-whitelisted-hosts-replace host_address=5.2.3.4
+na-ed-inbound-whitelisted-hosts-remove host_address=5.2.3.4
+
+na-ed-protection-groups-list active=true
+na-ed-protection-groups-update pgid=52 active=false
+
+na-ed-inbound-blacklisted-domains-list
+na-ed-inbound-blacklisted-domains-add domain=goo.com
+na-ed-inbound-blacklisted-domains-remove domain=goo.com
+
+na-ed-inbound-blacklisted-urls-list limit=3
+na-ed-inbound-blacklisted-urls-add url=www.goo.com
+na-ed-inbound-blacklisted-urls-remove url=www.goo.com

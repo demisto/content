@@ -1,0 +1,51 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Microsoft 365 Defender Incident"
+    ],
+    "caseInsensitive": true,
+    "cliName": "microsoft365defenderusers",
+    "closeForm": false,
+    "columns": [
+        {
+            "displayName": "User",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "user",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150
+        }
+    ],
+    "content": true,
+    "defaultRows": [
+        {},
+        {},
+        {}
+    ],
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_microsoft365defenderusers",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Microsoft 365 Defender Users",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "grid",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "5.5.0",
+    "marketplaces": [
+       "xsoar"
+    ]
+}

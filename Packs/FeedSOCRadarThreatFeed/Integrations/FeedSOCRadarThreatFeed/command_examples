@@ -1,0 +1,2 @@
+!socradar-get-indicators collections_to_fetch="SOCRadar-APT-Recommended-Block-Domain" limit=2
+!socradar-reset-fetch-indicators

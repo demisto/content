@@ -1,0 +1,18 @@
+[
+  {
+    "customerId": "dummy_customerId",
+    "alertId": "dummy_alertId_1",
+    "feedbackId": "dummy_feedbackId_1",
+    "createTime": "2021-01-13T04:47:07.370388Z",
+    "type": "NOT_USEFUL",
+    "email": "test@gmail.com"
+  },
+  {
+    "customerId": "dummy_customerId",
+    "alertId": "dummy_alertId_1",
+    "feedbackId": "dummy_feedbackId_2",
+    "createTime": "2021-01-13T04:47:07.370388Z",
+    "type": "SOMEWHAT_USEFUL",
+    "email": "test@gmail.com"
+  }
+]

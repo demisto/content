@@ -1,0 +1,31 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Certificate",
+        "DomainGlob",
+        "Domain"
+    ],
+    "caseInsensitive": true,
+    "cliName": "expansefirstobserved",
+    "closeForm": false,
+    "content": true,
+    "editForm": true,
+    "group": 2,
+    "hidden": false,
+    "id": "indicator_expansefirstobserved",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Expanse First Observed",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "date",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": true,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

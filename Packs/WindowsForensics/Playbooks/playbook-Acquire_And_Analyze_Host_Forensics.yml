@@ -1,0 +1,207 @@
+id: Acquire And Analyze Host Forensics
+version: -1
+name: Acquire And Analyze Host Forensics
+description: This playbook enables gathering forensic data from a host
+  and analyzing the acquired data by using the relevant forensics automations.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 00a4be27-1ca3-497d-8100-3c001c8fab2c
+    type: start
+    task:
+      id: 00a4be27-1ca3-497d-8100-3c001c8fab2c
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 270,
+          "y": -170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: e31fb2e3-3dc8-4099-8e7e-2bf07e1f3e52
+    type: playbook
+    task:
+      id: e31fb2e3-3dc8-4099-8e7e-2bf07e1f3e52
+      version: -1
+      name: PS-Remote Acquire Host Forensics
+      description: This playbook allows the user to gather multiple forensic data
+        from a Windows endpoint, including network traffic, MFT (Master File Table),
+        and registry export, by using the PS remote automations that enable you to connect
+        to a Windows host using just the native Windows management tools. You do not need to install any 3rd-party tools.
+      playbookName: PS-Remote Acquire Host Forensics
+      playbookId: PS-Remote Acquire Host Forensics
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      GetMft:
+        simple: "true"
+      GetNetworkTraffic:
+        simple: "true"
+      GetRegistry:
+        simple: "true"
+      Host:
+        simple: ${inputs.Host}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 3fc3264f-288c-4360-8972-d5f648ca6a16
+    type: title
+    task:
+      id: 3fc3264f-288c-4360-8972-d5f648ca6a16
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 270,
+          "y": 500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: abaccea2-7642-47dc-835d-202c037abb96
+    type: playbook
+    task:
+      id: abaccea2-7642-47dc-835d-202c037abb96
+      version: -1
+      name: Forensics Tools Analysis
+      description: This playbook allows the user to analyze forensic evidence acquired
+        from a host, such as registry files, memory dump files, and PCAP files.
+      playbookName: Forensics Tools Analysis
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      PcapEntryID:
+        simple: ${PcapDetails.EntryID}
+      RegistryEntryId:
+        simple: ${RegistryDetails.EntryID}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 320
+        }
+      }
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "4":
+    id: "4"
+    taskid: 149d44c0-a825-4db0-89ae-57d23251de85
+    type: condition
+    task:
+      id: 149d44c0-a825-4db0-89ae-57d23251de85
+      version: -1
+      name: Was a hostname provided?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.Host
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 270,
+          "y": -30
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 735,
+        "width": 590,
+        "x": 270,
+        "y": -170
+      }
+    }
+  }
+inputs:
+- key: Host
+  value: {}
+  required: false
+  description: 'A single hostname or IP address from which to acquire the forensic data. For example,
+    testpc01. '
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

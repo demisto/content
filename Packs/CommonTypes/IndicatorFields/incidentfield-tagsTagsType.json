@@ -31,10 +31,7 @@
   "required": false,
   "modified": "2019-07-29T10:37:51.882925705Z",
   "fieldCalcScript": "",
-  "selectValues": [
-    "",
-    ""
-  ],
+  "selectValues": [],
   "validationRegex": "",
   "sla": 0,
   "fromVersion": "5.5.0"

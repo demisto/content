@@ -42,7 +42,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: All Data
-      description: Search scope, default is "All Data"; "All Data", "Held Data", "Unprocessed Data"
+      description: Search scope, default is "All Data"; "All Data", "Held Data", "Unprocessed
+        Data"
       isArray: false
       name: dataScope
       predefined:
@@ -54,7 +55,9 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: All Accounts
-      description: Search method, default is "All Accounts"; "All Accounts", "Specific Accounts" (requires the "email" argument), "Organizational Unit" (requires the "ou" argument)
+      description: Search method, default is "All Accounts"; "All Accounts", "Specific
+        Accounts" (requires the "email" argument), "Organizational Unit" (requires
+        the "ou" argument)
       isArray: false
       name: searchMethod
       predefined:
@@ -64,13 +67,15 @@ script:
       required: false
       secret: false
     - default: false
-      description: CSV list of emails to search in. Use this argument if the "searchMethod" argument is set to "Specific Accounts"
+      description: CSV list of emails to search in. Use this argument if the "searchMethod"
+        argument is set to "Specific Accounts"
       isArray: false
       name: emails
       required: false
       secret: false
     - default: false
-      description: The organizational unit. Only use this argument if the "searchMethod" argument is set to "Organizational Unit"
+      description: The organizational unit. Only use this argument if the "searchMethod"
+        argument is set to "Organizational Unit"
       isArray: false
       name: ou
       required: false
@@ -78,7 +83,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'true'
-      description: Whether to include drafts in the search, default is "true"; "true" or "false"
+      description: Whether to include drafts in the search, default is "true"; "true"
+        or "false"
       isArray: false
       name: includeDrafts
       predefined:
@@ -133,7 +139,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Creates a Google Vault export in order to perform search actions on emails
+    description: Creates a Google Vault export in order to perform search actions
+      on emails
     execution: false
     name: gvault-create-export-mail
     outputs:
@@ -163,7 +170,9 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Creates a new matter with the specified name and description. The initial state is open, and the owner is the method caller. First, checks if a matter with the same name already exists.
+    description: Creates a new matter with the specified name and description. The
+      initial state is open, and the owner is the method caller. First, checks if
+      a matter with the same name already exists.
     execution: false
     name: gvault-create-matter
     outputs:
@@ -192,7 +201,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: All Data
-      description: Search scope, default is "All Data"; "All Data", "Held Data", "Unprocessed Data"
+      description: Search scope, default is "All Data"; "All Data", "Held Data", "Unprocessed
+        Data"
       isArray: false
       name: dataScope
       predefined:
@@ -204,7 +214,9 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: Specific Accounts(requires emails argument)
-      description: Search method, default is "Specific Accounts"; "Specific Accounts" (requires the "email" argument), "Organizational Unit" (requires the "ou" argument), "Team Drive"
+      description: Search method, default is "Specific Accounts"; "Specific Accounts"
+        (requires the "email" argument), "Organizational Unit" (requires the "ou"
+        argument), "Team Drive"
       isArray: false
       name: searchMethod
       predefined:
@@ -214,13 +226,15 @@ script:
       required: false
       secret: false
     - default: false
-      description: CSV list of emails to search in. Use this argument if the "searchMethod" argument is set to "Specific Accounts"
+      description: CSV list of emails to search in. Use this argument if the "searchMethod"
+        argument is set to "Specific Accounts"
       isArray: false
       name: emails
       required: false
       secret: false
     - default: false
-      description: The organizational unit. Only use this argument if the "searchMethod" argument is set to "Organizational Unit"
+      description: The organizational unit. Only use this argument if the "searchMethod"
+        argument is set to "Organizational Unit"
       isArray: false
       name: ou
       required: false
@@ -267,7 +281,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Creates a Google Vault export in order to perform search actions on drives.
+    description: Creates a Google Vault export in order to perform search actions
+      on drives.
     execution: false
     name: gvault-create-export-drive
     outputs:
@@ -332,7 +347,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: All Data
-      description: Search scope, default is "All Data"; "All Data", "Held Data", "Unprocessed Data"
+      description: Search scope, default is "All Data"; "All Data", "Held Data", "Unprocessed
+        Data"
       isArray: false
       name: dataScope
       predefined:
@@ -394,7 +410,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Creates a Google Vault Export in order to perform search actions on Google groups.
+    description: Creates a Google Vault Export in order to perform search actions
+      on Google groups.
     execution: false
     name: gvault-create-export-groups
     outputs:
@@ -435,7 +452,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: CSV list of accounts/group IDs to place in the hold, requires at least one account/group ID
+      description: CSV list of accounts/group IDs to place in the hold, requires at
+        least one account/group ID
       isArray: true
       name: accountID
       required: true
@@ -459,13 +477,15 @@ script:
       required: false
       secret: false
     - default: false
-      description: The terms that must be matched for a message to be covered by this hold.
+      description: The terms that must be matched for a message to be covered by this
+        hold.
       isArray: false
       name: terms
       required: false
       secret: false
     deprecated: false
-    description: Creates a hold in the given matter. Holds are used to preserve data in the organization.
+    description: Creates a hold in the given matter. Holds are used to preserve data
+      in the organization.
     execution: false
     name: gvault-create-hold
     outputs:
@@ -542,14 +562,16 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Removes a hold by ID. This will release any Held Accounts on this Hold.
+    description: Removes a hold by ID. This will release any Held Accounts on this
+      Hold.
     execution: false
     name: gvault-delete-hold
   - arguments:
     - auto: PREDEFINED
       default: false
       defaultValue: All
-      description: If set, list only matters with that specific state, default is "ALL"; "ALL", "OPEN", "CLOSED", "DELETED"
+      description: If set, list only matters with that specific state, default is
+        "ALL"; "ALL", "OPEN", "CLOSED", "DELETED"
       isArray: false
       name: state
       predefined:
@@ -575,7 +597,8 @@ script:
       type: string
   - arguments:
     - default: false
-      description: Search by matter name (multiple matters with the same name can exist)
+      description: Search by matter name (multiple matters with the same name can
+        exist)
       isArray: false
       name: matterName
       required: false
@@ -635,7 +658,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'MatterID and ExportID concatenation separated by ''#'' (used only for playbook) such: <Matter_ID>#<ExportID>'
+      description: 'MatterID and ExportID concatenation separated by ''#'' (used only
+        for playbook) such: <Matter_ID>#<ExportID>'
       isArray: false
       name: queryIDS
       required: false
@@ -698,7 +722,8 @@ script:
       secret: false
     - default: true
       defaultValue: '30'
-      description: Maximum number of results to return (a high threshold can slow down your browser), default is "30"
+      description: Maximum number of results to return (a high threshold can slow
+        down your browser), default is "30"
       isArray: false
       name: maxResult
       required: false
@@ -747,7 +772,8 @@ script:
       secret: false
     - default: true
       defaultValue: '30'
-      description: Maximum number of results to return (a high threshold can slow down your browser), default is "30"
+      description: Maximum number of results to return (a high threshold can slow
+        down your browser), default is "30"
       isArray: false
       name: maxResult
       required: false
@@ -793,7 +819,8 @@ script:
       secret: false
     - default: true
       defaultValue: '30'
-      description: Maximum number of results to return (a high threshold can slow down your browser), default is "30"
+      description: Maximum number of results to return (a high threshold can slow
+        down your browser), default is "30"
       isArray: false
       name: maxResult
       required: false
@@ -824,14 +851,14 @@ script:
     - contextPath: GoogleVault.Matter.Export.Results.To
       description: The address the message was sent to
       type: string
-  dockerimage: demisto/gvault:1.0.0.11128
+  dockerimage: demisto/gvault:1.0.0.24033
   feed: false
   isfetch: false
   longRunning: false
   longRunningPort: false
   runonce: false
   script: '-'
-  subtype: python3
+  subtype: python2
   type: python
 tests:
 - Google-Vault-Generic-Test

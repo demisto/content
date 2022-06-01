@@ -1,81 +1,98 @@
+category: Network Security
 commonfields:
   id: Zscaler
   version: -1
-name: Zscaler
-display: Zscaler
-category: Network Security
-description: Zscaler is a cloud security solution built for performance and flexible scalability.
 configuration:
-- display: Cloud Name (i.e. https://admin.zscalertwo.net)
+- display: Cloud Name (i.e., https://admin.zscalertwo.net)
   name: cloud
-  defaultvalue: ""
+  required: true
   type: 0
-  required: true
-- display: Credentials
+- display: Username
   name: credentials
-  defaultvalue: ""
-  type: 9
   required: true
+  type: 9
 - display: API Key
   name: key
-  defaultvalue: ""
-  type: 4
   required: true
+  type: 4
+- additionalinfo: If enabled, the integration will log out after executing each command.
+  defaultvalue: 'true'
+  display: Auto Logout
+  name: auto_logout
+  required: false
+  type: 8
+- additionalinfo: If enabled, the integration will activate the command changes after
+    each execution. If disabled, use the 'zscaler-activate-changes' command to activate
+    Zscaler command changes.
+  defaultvalue: 'true'
+  display: Auto Activate Changes
+  name: auto_activate
+  required: false
+  type: 8
 - display: Trust any certificate (not secure)
   name: insecure
-  defaultvalue: ""
-  type: 8
   required: false
+  type: 8
 - display: Use system proxy settings
   name: proxy
-  defaultvalue: ""
-  type: 8
   required: false
+  type: 8
+description: Zscaler is a cloud security solution built for performance and flexible
+  scalability. This integration enables you to manage URL and IP address allow lists
+  and block lists, manage and update categories, get Sandbox reports, and manually
+  log in, log out, and activate changes in a Zscaler session.
+display: Zscaler Internet Access
+name: Zscaler
 script:
-  script: ''
-  type: python
-  subtype: python2
   commands:
-  - name: zscaler-blacklist-url
-    arguments:
-    - name: url
+  - arguments:
+    - default: true
+      description: A comma-separated list of URLs to add to block list. For example,
+        snapchat.com,facebook.com.
+      isArray: true
+      name: url
       required: true
-      default: true
-      description: 'URL to be blacklisted. Should be comma separated (i.e. snapchat.com,tinder.com) '
-    description: Adds URL to the blacklist.
+    description: Adds the specified URLs to the block list.
     execution: true
-  - name: url
-    arguments:
-    - name: url
-      required: false
-      default: true
-      description: URL to search for
-    - name: multiple
-      default: true
-      auto: PREDEFINED
+    name: zscaler-blacklist-url
+  - arguments:
+    - default: true
+      description: A comma-separated list of URLs for which to look up the classification.  For
+        example, abc.com,xyz.com. The maximum number of URLs per call is 100. A URL
+        cannot exceed 1024 characters. If there are multiple URLs, set the 'multiple'
+        argument to 'true'.
+      isArray: true
+      name: url
+      required: true
+    - auto: PREDEFINED
+      defaultValue: 'true'
+      description: Whether there are multiple URLs in the 'url' argument. If a URL
+        contains commas, set this argument to 'false' and enter the single URL as
+        the 'url' argument.
+      name: multiple
       predefined:
-      - "true"
-      - "false"
-      description: Whether multiple URLs are being submitted. If "true", the value entered for the "url" command argument is interpreted as a CSV list of URLs. If you want to submit a URL that has commas in it, you can set this value to "false" and enter the singular URL for the value of the "url" command argument.
-      defaultValue: "true"
+      - 'true'
+      - 'false'
+    description: Looks up the classification for the each of the specified URLs.
+    name: url
     outputs:
     - contextPath: URL.Data
-      description: The URL that was searched
+      description: The URL that was searched.
       type: string
     - contextPath: URL.Address
-      description: The URL that was searched
+      description: The URL that was searched.
       type: string
     - contextPath: URL.urlClassifications
-      description: The classification of the URL
+      description: The classification of the URL. For example, MUSIC or WEB_SEARCH.
       type: string
     - contextPath: URL.urlClassificationsWithSecurityAlert
-      description: Classifications with security alert of the URL
+      description: The classifications of the URLs that have security alerts.
       type: string
     - contextPath: URL.Malicious.Vendor
-      description: For malicious URLs, the vendor that made the decision
+      description: For malicious URLs, the vendor that tagged the URL as malicious.
       type: string
     - contextPath: URL.Malicious.Description
-      description: For malicious URLs, the reason for the vendor to make the decision
+      description: For malicious URLs, the reason the vendor tagged the URL as malicious.
       type: string
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -89,28 +106,33 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score.
       type: number
-    description: Look up the categorization of the given set of URLs, e.g., abc.com,xyz.com. Up to 100 URLs can be looked up per request, and a URL cannot exceed 1024 characters.
-  - name: ip
-    arguments:
-    - name: ip
-      required: false
-      default: true
-      description: IP address to search for
+  - arguments:
+    - default: true
+      description: A comma-separated list of IP address for which to look up the classification.
+        For example, 8.8.8.8,1.2.3.4. The maximum number of URLs per call is 100.
+        An IP address cannot exceed 1024 characters.
+      isArray: true
+      name: ip
+      required: true
+    description: Looks up the classification for each of the specified IP addresses.
+    name: ip
     outputs:
     - contextPath: IP.Address
-      description: The IP address that was searched
+      description: The IP address that was searched.
       type: string
     - contextPath: IP.ipClassifications
-      description: The classification of the IP address
+      description: The classification of the IP address. For example, MUSIC or WEB_SEARCH.
       type: string
     - contextPath: IP.iplClassificationsWithSecurityAlert
-      description: Classifications with security alert of the IP address
+      description: Classifications that have a security alert for the IP address.
       type: string
     - contextPath: IP.Malicious.Vendor
-      description: For malicious IP addresses, the vendor that made the decision
+      description: For malicious IP addresses, the vendor that tagged the IP address
+        as malicious.
       type: string
     - contextPath: IP.Malicious.Description
-      description: For malicious IP addresses, the reason for the vendor to make the decision
+      description: For malicious IP addresses, the reason the vendor tagged the IP
+        address as malicious.
       type: string
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -124,234 +146,359 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score.
       type: number
-    description: Look up the categorization of the given set of IP addresses, e.g., 8.8.8.8,1.2.3.4. Up to 100 URLs can be looked up per request, and a IP cannot exceed 1024 characters.
-  - name: zscaler-undo-blacklist-url
-    arguments:
-    - name: url
-      required: true
-      default: true
-      description: 'URL to be  removed from blacklist. Should be comma separated (i.e. snapchat.com,tinder.com) '
-    description: Removes URL from the blacklist.
-    execution: true
-  - name: zscaler-whitelist-url
-    arguments:
-    - name: url
-      required: true
-      default: true
-      description: 'URL to be whitelisted. Should be comma separated (i.e. snapchat.com,tinder.com) '
-    description: Adds URL to the whitelist.
-    execution: true
-  - name: zscaler-undo-whitelist-url
-    arguments:
-    - name: url
-      required: true
-      default: true
-      description: 'URL to be  removed from whitelist. Should be comma separated (i.e. snapchat.com,tinder.com) '
-    description: Removes URL from the whitelist.
-    execution: true
-  - name: zscaler-undo-whitelist-ip
-    arguments:
-    - name: ip
-      required: true
-      default: true
-      description: 'IP address to be  removed from whitelist. Should be comma separated (i.e. 8.8.8.8,1.2.3.4) '
-    description: Removes IP from the whitelist.
-    execution: true
-  - name: zscaler-whitelist-ip
-    arguments:
-    - name: ip
-      required: true
-      default: true
-      description: 'IP address to be whitelisted. Should be comma separated (i.e. 8.8.8.8,1.2.3.4) '
-    description: Adds IP address to the whitelist.
-    execution: true
-  - name: zscaler-undo-blacklist-ip
-    arguments:
-    - name: ip
-      required: true
-      default: true
-      description: 'IP address to be  removed from blacklist. Should be comma separated (i.e. 8.8.8.8,1.2.3.4) '
-    description: Removes IP address from the blacklist.
-  - name: zscaler-blacklist-ip
-    arguments:
-    - name: ip
-      required: true
-      default: true
-      description: 'IP address to be blacklisted. Should be comma separated (i.e. 8.8.8.8,1.2.3.4) '
-    description: Adds IP address to the blacklist.
-    execution: true
-  - name: zscaler-category-add-url
-    arguments:
-    - name: category-id
-      required: true
-      description: Category ID to add URL to, e.g. RADIO_STATIONS (Could be retreived by running the command zscaler-get-categories)
-    - name: url
-      required: true
+  - arguments:
+    - default: true
+      description: A comma-separated list of URLs to remove from the block list. For
+        example, snapchat.com,facebook.com.
       isArray: true
-      description: URL address to add. Comma separated values supported, e.g. pandora.com,spotify.com
-    outputs:
-    - contextPath: Zscaler.Category.CustomCategory
-      description: True if category is custom, else false.
-      type: boolean
-    - contextPath: Zscaler.Category.Description
-      description: Category description
-      type: string
-    - contextPath: Zscaler.Category.ID
-      description: Category ID
-      type: string
-    - contextPath: Zscaler.Category.URL
-      description: List of category URL addresses
-      type: string
-    description: Adds URL address to given category
-  - name: zscaler-category-add-ip
-    arguments:
-    - name: category-id
+      name: url
       required: true
-      description: Category ID to add URL to, e.g. RADIO_STATIONS (Could be retreived by running the command zscaler-get-categories)
-    - name: ip
-      required: true
+    description: Removes the specified URLs from the block list.
+    execution: true
+    name: zscaler-undo-blacklist-url
+  - arguments:
+    - default: true
+      description: A comma-separated list of URLs to add to the allow list. For example,
+        snapchat.com,facebook.com.
       isArray: true
-      description: IP address to add. Comma separated values supported, e.g. 1.2.3.4,8.8.8.8
+      name: url
+      required: true
+    description: Adds the specified URLs to the allow list.
+    execution: true
+    name: zscaler-whitelist-url
+  - arguments:
+    - default: true
+      description: A comma-separated list of URLs to remove from the allow list. For
+        example, snapchat.com,facebook.com.
+      isArray: true
+      name: url
+      required: true
+    description: Removes the specified URLs from the allow list.
+    execution: true
+    name: zscaler-undo-whitelist-url
+  - arguments:
+    - default: true
+      description: A comma-separated list of IP addresses to remove from the allow
+        list. For example, 8.8.8.8,1.2.3.4.
+      isArray: true
+      name: ip
+      required: true
+    description: Removes the specified IP addresses from the allow list.
+    execution: true
+    name: zscaler-undo-whitelist-ip
+  - arguments:
+    - default: true
+      description: A comma-separated list of IP addresses to add to the allow list.
+        For example, 8.8.8.8,1.2.3.4.
+      isArray: true
+      name: ip
+      required: true
+    description: Adds the specified IP address to the allow list.
+    execution: true
+    name: zscaler-whitelist-ip
+  - arguments:
+    - default: true
+      description: A comma-separated list of IP addresses to remove from the allow
+        list. For example, 8.8.8.8,1.2.3.4.
+      isArray: true
+      name: ip
+      required: true
+    description: Removes the specified IP addresses from the allow list.
+    name: zscaler-undo-blacklist-ip
+  - arguments:
+    - default: true
+      description: A comma-separated list of IP addresses to add to the allow list.
+        For example, 8.8.8.8,1.2.3.4.
+      isArray: true
+      name: ip
+      required: true
+    description: Adds the specified IP addresses to the allow list.
+    execution: true
+    name: zscaler-blacklist-ip
+  - arguments:
+    - description: The ID of the category to add the specified URLs to. For example,
+        RADIO_STATIONS. You can retrieve the category IDs by running the 'zscaler-get-categories'
+        command.
+      name: category-id
+      required: true
+    - description: A comma-separated list of URLs to add to the specified category.
+        For example, pandora.com,spotify.com.
+      isArray: true
+      name: url
+      required: true
+    description: Adds URLs to the specified category.
+    name: zscaler-category-add-url
     outputs:
     - contextPath: Zscaler.Category.CustomCategory
-      description: True if category is custom, else false.
+      description: True, if the category is a custom category. Otherwise, false.
       type: boolean
     - contextPath: Zscaler.Category.Description
-      description: Category description
+      description: The description of the category.
       type: string
     - contextPath: Zscaler.Category.ID
-      description: Category ID
+      description: The ID of the category.
       type: string
     - contextPath: Zscaler.Category.URL
-      description: List of category URL addresses
+      description: The URL of the category.
       type: string
-    description: Adds IP address to given category
-  - name: zscaler-category-remove-url
-    arguments:
-    - name: category-id
+  - arguments:
+    - description: The ID of the category to add the specified IP addresses to. For
+        example, RADIO_STATIONS. You can retrieve the category IDs by running the
+        'zscaler-get-categories' command.
+      name: category-id
       required: true
-      description: Category ID to remove URL from, e.g. RADIO_STATIONS (Could be retreived by running the command zscaler-get-categories)
-    - name: url
+    - description: A comma-separated list of IP address to add to the specified category.
+        For example, 1.2.3.4,8.8.8.8.
+      isArray: true
+      name: ip
       required: true
-      description: URL address to remove. Comma separated values supported, e.g. pandora.com,spotify.com
+    description: Adds IP address to the specified category.
+    name: zscaler-category-add-ip
     outputs:
     - contextPath: Zscaler.Category.CustomCategory
-      description: True if category is custom, else false.
+      description: True, if the category is a custom category. Otherwise, false.
       type: boolean
     - contextPath: Zscaler.Category.Description
-      description: Category description
+      description: The description of the category.
       type: string
     - contextPath: Zscaler.Category.ID
-      description: Category ID
+      description: The ID of the category.
       type: string
     - contextPath: Zscaler.Category.URL
-      description: List of category URL addresses
+      description: The URL of the category
       type: string
-    description: Removes URL address to given category
-  - name: zscaler-category-remove-ip
-    arguments:
-    - name: category-id
+  - arguments:
+    - description: The ID of the category to remove the specified URLs from. For example,
+        RADIO_STATIONS. You can retrieve the category IDs by running the 'zscaler-get-categories'
+        command.
+      name: category-id
       required: true
-      description: Category ID to remove IP from, e.g. RADIO_STATIONS (Could be retreived by running the command zscaler-get-categories)
-    - name: ip
+    - description: A comma-separated list of URLs to remove from the specified category.
+        For example, pandora.com,spotify.com.
+      isArray: true
+      name: url
       required: true
-      description: IP address to remove. Comma separated values supported, e.g. 1.2.3.4,8.8.8.8
+    description: Removes URLs from the specified category.
+    name: zscaler-category-remove-url
     outputs:
     - contextPath: Zscaler.Category.CustomCategory
-      description: True if category is custom, else false.
+      description: True, if the category is a custom category. Otherwise, false.
       type: boolean
     - contextPath: Zscaler.Category.Description
-      description: Category description
+      description: The description of the category.
       type: string
     - contextPath: Zscaler.Category.ID
-      description: Category ID
+      description: The ID of the category.
       type: string
     - contextPath: Zscaler.Category.URL
-      description: List of category URL addresses
+      description: The URL of the category.
       type: string
-    description: Removes IP address to given category
-  - name: zscaler-get-categories
-    arguments:
-    - name: displayURL
-      auto: PREDEFINED
+  - arguments:
+    - description: The ID of the category to remove the specified IP addresses from.
+        For example, RADIO_STATIONS. You can retrieve the category IDs by running
+        the 'zscaler-get-categories' command.
+      name: category-id
+      required: true
+    - description: A comma-separated list of IP addresses to remove from the specified
+        category. For example, 1.2.3.4,8.8.8.8.
+      isArray: true
+      name: ip
+      required: true
+    description: Removes IP address from the specified category.
+    name: zscaler-category-remove-ip
+    outputs:
+    - contextPath: Zscaler.Category.CustomCategory
+      description: True, if the category is a custom category. Otherwise, false.
+      type: boolean
+    - contextPath: Zscaler.Category.Description
+      description: The description of the category.
+      type: string
+    - contextPath: Zscaler.Category.ID
+      description: The ID of the category.
+      type: string
+    - contextPath: Zscaler.Category.URL
+      description: The URL of the category.
+      type: string
+  - arguments:
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Whether to display the URLs of each category in the War Room. URLs
+        will always be returned to the Context Data.
+      name: displayURL
       predefined:
-      - "true"
-      - "false"
-      description: True to display URLs of each category in the war room, else false.
-      defaultValue: "false"
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Whether to retrieve only custom categories to the War Room.
+      name: custom_categories_only
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Whether to retrieve only a list containing URL category IDs and
+        names. Even if *displayURL* is set to true, URLs will not be returned. Please
+        note - the API does not support the combination of custom_only and get_ids_and_names_only.
+      name: get_ids_and_names_only
+      predefined:
+      - 'true'
+      - 'false'
+    description: Retrieves a list of all categories.
+    name: zscaler-get-categories
     outputs:
     - contextPath: Zscaler.Category.ID
-      description: Category ID
+      description: The ID of the category.
       type: string
     - contextPath: Zscaler.Category.CustomCategory
-      description: True if category is custom, else false.
+      description: True, if the category is a custom category. Otherwise, false.
       type: boolean
     - contextPath: Zscaler.Category.URL
-      description: List of category URL addresses
+      description: The URL of the category.
       type: string
     - contextPath: Zscaler.Category.Description
-      description: Category description
+      description: The description of the category.
       type: string
     - contextPath: Zscaler.Category.Name
-      description: Category name
+      description: The name of the category.
       type: string
-    description: Returns a list of all categories
-  - name: zscaler-get-blacklist
-    arguments: []
+  - arguments:
+    - auto: PREDEFINED
+      description: Filter results by URL or IP objects.
+      name: filter
+      predefined:
+      - url
+      - ip
+    - description: Query (Python regular expression) to match against. For example,
+        8.*.*.8
+      name: query
+    description: Retrieves the Zscaler default block list.
+    name: zscaler-get-blacklist
     outputs:
     - contextPath: Zscaler.Blacklist
-      description: Zscaler blacklist
+      description: The Zscaler block list.
       type: string
-    description: Returns Zscaler default blacklist
-  - name: zscaler-get-whitelist
-    arguments: []
+  - arguments: []
+    description: Retrieves the Zscaler default allow list.
+    name: zscaler-get-whitelist
     outputs:
     - contextPath: Zscaler.Whitelist
-      description: Zsclaer whitelist
+      description: The Zscaler allow list.
       type: string
-    description: Returns Zscaler default whitelist
-  - name: zscaler-sandbox-report
-    arguments:
-    - name: md5
+  - arguments:
+    - description: The MD5 hash of a file.
+      name: md5
       required: true
-      description: MD5 hash of a file
-    - name: details
-      auto: PREDEFINED
+    - auto: PREDEFINED
+      defaultValue: full
+      description: The type of report. Possible values are 'full' or 'summary'. Default
+        is 'full'.
+      name: details
       predefined:
-      - "full"
-      - "summary"
-      description: Type of report, full or summary.
-      defaultValue: "full"
+      - full
+      - summary
+    description: Retrieves a full or summary report of the file that was analyzed
+      by Sandbox. The file is represented by the specified MD5 hash.
+    name: zscaler-sandbox-report
     outputs:
     - contextPath: File.MD5
-      description: File MD-5
+      description: The MD5 hash of the file.
       type: string
     - contextPath: File.Malicious.Vendor
-      description: For malicious files, the vendor that made the decision
+      description: For malicious files, the vendor that tagged the file as malicious.
       type: string
     - contextPath: File.Malicious.Description
-      description: For malicious files, the reason that the vendor made the decision
+      description: For malicious files, the reason the vendor tagged the file as malicious.
       type: string
     - contextPath: File.DetectedMalware
-      description: Detected Malware
+      description: The malware detected in the file.
       type: string
     - contextPath: File.FileType
-      description: File Type
+      description: The file type.
       type: string
     - contextPath: DBotScore.Indicator
-      description: The indicator that was tested
+      description: The MD5 hash file that was tested.
       type: string
     - contextPath: DBotScore.Type
-      description: Indicator type
+      description: The MD5 hash file type.
       type: string
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score
+      description: The vendor that calculated the DBot score.
       type: string
     - contextPath: DBotScore.Score
-      description: The actual score
+      description: The actual DBot score.
       type: number
-    description: Get a full or summary detail report for an MD5 hash of a file that was analyzed by Sandbox.
+  - arguments: []
+    description: Manually create a Zscaler login session. This command will also try
+      to log out of the previous session.
+    name: zscaler-login
+  - arguments: []
+    description: Logs out of the current Zscaler session.
+    name: zscaler-logout
+  - arguments: []
+    description: Activates the changes executed by other Zscaler commands in this
+      session.
+    name: zscaler-activate-changes
+  - arguments: []
+    description: Gets information on the number of unique URLs that are currently
+      provisioned for your organization as well as how many URLs you can add before
+      reaching that number.
+    name: zscaler-url-quota
+    outputs:
+    - contextPath: Zscaler.remainingUrlsQuota
+      description: The number of URLs you can add before reaching the quota.
+      type: Number
+    - contextPath: Zscaler.uniqueUrlsProvisioned
+      description: The number of unique URLs that are currently provisioned for your
+        organization.
+      type: Number
+  - arguments:
+    - description: Filer by user name
+      name: name
+    - description: Specifies the page offset.
+      name: page
+    - default: true
+      defaultValue: '100'
+      description: Specifies the page size.
+      name: pageSize
+    description: Get Zscaler users
+    name: zscaler-get-users
+  - arguments:
+    - description: The unique identifer for the user.
+      name: id
+      required: true
+    - description: 'New user information. Docs: https://help.zscaler.com/zia/api#/User%20Management/updateUser'
+      name: user
+      required: true
+    description: Updates the user information for the specified ID.
+    name: zscaler-update-user
+  - arguments:
+    - description: Filter by department name
+      name: name
+    - description: Specifies the page offset.
+      name: page
+    - default: true
+      defaultValue: '100'
+      description: Specifies the page size.
+      name: pageSize
+    description: Get a list of departments. It can be searched by name.
+    name: zscaler-get-departments
+  - arguments:
+    - description: Filter by group name or comment
+      name: name
+    - description: Specifies the page offset.
+      name: page
+    - default: true
+      defaultValue: '100'
+      description: Specifies the page size.
+      name: pageSize
+    description: Gets a list of groups
+    name: zscaler-get-usergroups
   runonce: false
+  script: ''
+  subtype: python2
+  dockerimage: demisto/python:2.7.18.27799
+  type: python
+fromversion: 5.0.0
 tests:
 - Zscaler Test
-fromversion: 5.0.0

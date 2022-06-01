@@ -1,0 +1,180 @@
+{
+    "description": "Maps incoming BitSight Alert field",
+    "feed": false,
+    "id": "BitSight - Incoming Mapper",
+    "mapping": {
+        "BitSight Findings": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "BitSight Affects Rating": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "affects_rating",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "BitSight Assets": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "assets",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "BitSight Comments": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "comments",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "BitSight Evidence Key": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "evidence_key",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "BitSight Related Findings": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "related_findings",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "BitSight Remaining Decay": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "remaining_decay",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "BitSight Risk Category": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "risk_category",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "BitSight Risk Vector": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "risk_vector",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "BitSight Risk Vector Label": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "risk_vector_label",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "BitSight Rolledup Observation Id": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "rolledup_observation_id",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "BitSight Severity Category": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "severity_category",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "BitSight Tags": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "tags",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "BitSight Temporary Id": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "temporary_id",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "category": {
+                    "complex": {
+                        "accessor": "[0].category",
+                        "filters": [],
+                        "root": "assets",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "details": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "details",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "severity": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "severity_category",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "input_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "minor,moderate,material,severe"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "Low,Medium,High,Critical"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                }
+            }
+        }
+    },
+    "name": "BitSight - Incoming Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

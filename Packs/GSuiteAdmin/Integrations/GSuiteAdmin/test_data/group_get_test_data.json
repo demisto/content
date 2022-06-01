@@ -1,0 +1,14 @@
+{
+  "args": {
+    "group": "SOME_ID"
+  },
+  "response_data": {
+    "kind": "admin#directory#group",
+    "id": "SOME_ID",
+    "etag": "SOME_TAG",
+    "email": "test@email.com",
+    "name": "test group",
+    "description": "test group desc",
+    "adminCreated": true
+  }
+}

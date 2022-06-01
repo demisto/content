@@ -126,3 +126,4 @@ view: |-
 inputs: []
 tests:
 - No test - no instance
+deprecated: true

@@ -1,0 +1,492 @@
+id: HPEArubaClearPass_TestPlaybook
+version: -1
+name: HPEArubaClearPass_TestPlaybook
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 1aec6123-ae63-45e9-83b1-4f4d7abad774
+    type: start
+    task:
+      id: 1aec6123-ae63-45e9-83b1-4f4d7abad774
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: b07a73f8-2aa5-4279-843c-b41f87d2388f
+    type: regular
+    task:
+      id: b07a73f8-2aa5-4279-843c-b41f87d2388f
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+      - "9"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: e26c4cde-4c5c-4954-8c56-1d96f6e623fe
+    type: regular
+    task:
+      id: e26c4cde-4c5c-4954-8c56-1d96f6e623fe
+      version: -1
+      name: Get endpoints list
+      description: Get a list of endpoints.
+      script: '|||aruba-clearpass-endpoints-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: e62f3903-15aa-44e0-8d65-3252f4e56df2
+    type: condition
+    task:
+      id: e62f3903-15aa-44e0-8d65-3252f4e56df2
+      version: -1
+      name: Verify endpoints list
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: HPEArubaClearPass.Endpoints.[0]
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: e84612a3-0478-411a-818c-3964612442f2
+    type: title
+    task:
+      id: e84612a3-0478-411a-818c-3964612442f2
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 1e7a5fa2-c2af-4cf0-8d22-16af21f33c21
+    type: regular
+    task:
+      id: 1e7a5fa2-c2af-4cf0-8d22-16af21f33c21
+      version: -1
+      name: Update endpoint description
+      description: Updates some fields of an endpoint.
+      script: '|||aruba-clearpass-endpoint-update'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      description:
+        simple: test_playbook
+      endpoint_id:
+        simple: ${HPEArubaClearPass.Endpoints.[0].id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 4c2f9e74-dbac-42f1-889f-8d8c2ff3f36a
+    type: condition
+    task:
+      id: 4c2f9e74-dbac-42f1-889f-8d8c2ff3f36a
+      version: -1
+      name: Verify description update
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: HPEArubaClearPass.Endpoints.description
+            iscontext: true
+          right:
+            value:
+              simple: test_playbook
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 31275de3-8eaa-4b22-89e5-418b8e491b14
+    type: condition
+    task:
+      id: 31275de3-8eaa-4b22-89e5-418b8e491b14
+      version: -1
+      name: Verify attributes list
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: in
+          left:
+            value:
+              simple: ${HPEArubaClearPass.Attributes.id}
+            iscontext: true
+          right:
+            value:
+              simple: ${HPEArubaClearPass.Attributes.id}
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: c7abbacc-173f-4995-88a5-57dd5b8c4e98
+    type: regular
+    task:
+      id: c7abbacc-173f-4995-88a5-57dd5b8c4e98
+      version: -1
+      name: Create new attribute
+      description: Create a new attribute.
+      script: '|||aruba-clearpass-attribute-create'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      data_type:
+        simple: String
+      entity_name:
+        simple: Device
+      name:
+        simple: test_name
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 62517e0c-24d0-4ff7-8915-b4ce201586fa
+    type: regular
+    task:
+      id: 62517e0c-24d0-4ff7-8915-b4ce201586fa
+      version: -1
+      name: Get attribute
+      description: Get a list of attributes. If no arguments were given, all of the
+        attributes will be displayed.
+      script: '|||aruba-clearpass-attributes-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      attribute_id:
+        complex:
+          root: HPEArubaClearPass.Attributes
+          accessor: id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: f7768642-1272-4432-8e50-78f26dbdcaa6
+    type: regular
+    task:
+      id: f7768642-1272-4432-8e50-78f26dbdcaa6
+      version: -1
+      name: Update attribute fields
+      description: Update some fields of an attribute by the attribute's ID.
+      script: '|||aruba-clearpass-attribute-update'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      attribute_id:
+        simple: ${HPEArubaClearPass.Attributes.id}
+      data_type:
+        simple: String
+      entity_name:
+        simple: GuestUser
+      name:
+        simple: test_name
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: b9cc0a37-83ea-4141-8963-3d6fa4131438
+    type: condition
+    task:
+      id: b9cc0a37-83ea-4141-8963-3d6fa4131438
+      version: -1
+      name: Verify update attribute
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${HPEArubaClearPass.Attributes.name}
+            iscontext: true
+          right:
+            value:
+              simple: test_name
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${HPEArubaClearPass.Attributes.id}
+            iscontext: true
+          right:
+            value:
+              simple: ${HPEArubaClearPass.Attributes.id}
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: b76fdab2-0763-49b9-8554-f2b558e36d82
+    type: regular
+    task:
+      id: b76fdab2-0763-49b9-8554-f2b558e36d82
+      version: -1
+      name: Delete attribute
+      description: Delete an attribute.
+      script: '|||aruba-clearpass-attribute-delete'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      attribute_id:
+        simple: ${HPEArubaClearPass.Attributes.id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1435,
+        "width": 922.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.0.0

@@ -1,0 +1,251 @@
+{
+    "_id": "5f52e43fccb926e53adde73b",
+    "isAlwaysStartingPoint": false,
+    "attackedByTechniques": [
+        {
+            "technique": "Exploit::VeritasNetbackup",
+            "displayName": "Veritas Netbackup (CVE-2017-8856)",
+            "count": 104
+        }
+    ],
+    "totalVectors": 104,
+    "agentId": "2809855439067817172",
+    "name": "CentOSbb01",
+    "productType": "Workstation",
+    "os": {
+        "type": "Linux",
+        "version": {
+            "major": 3,
+            "minor": 10,
+            "patch": 0,
+            "build": 0
+        },
+        "servicePack": {
+            "major": 514,
+            "minor": 0,
+            "patch": 0,
+            "build": 0
+        },
+        "distributionName": "centos",
+        "distributionVersion": "7.3.1611",
+        "name": "Linux  centos 7.3.1611 Workstation"
+    },
+    "arch": "amd64",
+    "ipv4": [
+        "wKiqkg=="
+    ],
+    "ipv6": [
+        "/oAAAAAAAABqxlRoGwjAkA=="
+    ],
+    "agentVersion": {
+        "major": 1,
+        "minor": 5,
+        "patch": 798,
+        "build": 0
+    },
+    "latestPossibleAgentVersion": {
+        "major": 1,
+        "minor": 5,
+        "patch": 798,
+        "build": 0
+    },
+    "hasUpdateAvailable": false,
+    "lastConnectionTime": "2020-08-27T11:47:33.786Z",
+    "status": "active",
+    "lastStatusChange": "2020-08-27T11:47:33.786Z",
+    "lastDisconnectionReason": "DisconnectionReason_NetworkDisconnected",
+    "remoteAddress": "1",
+    "notReportedBySouthAt": null,
+    "firstSeen": "2018-08-06T09:31:44.645Z",
+    "disabled": false,
+    "disabledChangedAt": "2019-06-16T16:42:47.606Z",
+    "disabledReason": "Manual",
+    "timeToReviveAt": null,
+    "nameUppercase": "CENTOSBB01",
+    "cmId": "0000",
+    "customProperties": {
+        "domainWorkgroup": {
+            "type": "workgroup",
+            "data": "Linux"
+        },
+        "subnetInfo": "1/24",
+        "snifferStatusChangeable": true,
+        "snifferStatus": "Active",
+        "ouComputer": "Linux",
+        "ouUser": "Linux",
+        "labels": [
+            {
+                "label": "veritas_netbackup"
+            },
+            {
+                "label": "ssh_server"
+            }
+        ],
+        "snifferStatusConfiguration": "ForcedEnabled"
+    },
+    "agentVersionStr": "1.5.798",
+    "latestPossibleAgentVersionStr": "1.5.798",
+    "ipv4Str": [
+        "1"
+    ],
+    "ipv6Str": [
+        "fe80::6ac6:5468:1b08:c090"
+    ],
+    "securityFlags": {},
+    "inActiveWorkingSet": true,
+    "activeWorkingSetLastPick": "2020-09-04T05:03:45.393Z",
+    "markedForUpdate": false,
+    "lastUpdateAttempt": "2020-08-11T11:55:03.083Z",
+    "autoUpdate": true,
+    "lastUpdateResult": "Updated Successfully",
+    "vulnerabilities": 0,
+    "patches": 0,
+    "availabilityChanges": [
+        {
+            "timestamp": "2020-09-06T21:06:40.150Z",
+            "available": true
+        }
+    ],
+    "color": "red",
+    "joinedCampaignAt": "2020-09-06T21:06:43.647Z",
+    "entityId": "2809855439067817172",
+    "entityType": "node",
+    "entityTypeDisplayName": "Sensor",
+    "entitySubType": {
+        "name": "osType",
+        "displayName": "OS Type",
+        "value": "linux",
+        "displayValue": "Linux"
+    },
+    "entityBasicData": {
+        "entityFlavorProperties": [
+            {
+                "name": "osName",
+                "displayName": "OS",
+                "value": "Linux  centos 7.3.1611 Workstation",
+                "displayValue": "Linux  centos 7.3.1611 Workstation"
+            }
+        ],
+        "entityNetworkIdentifierProperties": [
+            {
+                "name": "ipv4",
+                "displayName": "Private IP Address",
+                "value": [
+                    192,
+                    168,
+                    170,
+                    146
+                ],
+                "displayValue": "1"
+            }
+        ]
+    },
+    "entityExtraData": [
+        {
+            "name": "publicIp",
+            "displayName": "Public IP Address",
+            "value": [
+                163,
+                172,
+                231,
+                216
+            ],
+            "displayValue": "1"
+        }
+    ],
+    "displayName": "CentOSbb01",
+    "title": "CentOSbb01",
+    "compromised": true,
+    "compromisedRate": {
+        "compromised": 104,
+        "total": 112,
+        "score": 0.9285714285714286,
+        "level": "high"
+    },
+    "tags": [
+        "veritas_netbackup",
+        "ssh_server"
+    ],
+    "lastBecameRedAt": "2020-09-06T21:36:43.767Z",
+    "asset": true,
+    "assetAt": "2020-09-06T21:06:56.193Z",
+    "discovered": true,
+    "discoveredAt": "2020-09-06T21:06:57.446Z",
+    "becameRedAt": "2020-09-06T21:07:28.252Z",
+    "startingPoint": true,
+    "startingPointAt": "2020-09-05T05:13:06.055Z",
+    "timeId": "monthly_2020_09",
+    "scenarioId": null,
+    "snapshotMetadata": {
+        "snapshotFromDate": "2020-09-01T00:00:00.000Z",
+        "snapshotToDate": "2020-09-07T01:00:00.000Z",
+        "jobId": "6324",
+        "snapshotCreatedAt": "2020-09-07T01:04:08.602Z"
+    },
+    "affectedUniqueAssets": {
+        "count": {
+            "value": 1,
+            "score": 0.006666666666666667,
+            "level": "low"
+        }
+    },
+    "affectedUniqueEntities": {
+        "count": {
+            "value": 1,
+            "score": 0.0005274261603375527,
+            "level": "low"
+        }
+    },
+    "affectedEntities": {
+        "max": {
+            "value": 1
+        },
+        "min": {
+            "value": 0
+        },
+        "avg": {
+            "value": 0.01,
+            "score": 0,
+            "level": "low"
+        },
+        "count": {
+            "value": 114
+        }
+    },
+    "affectedAssets": {
+        "max": {
+            "value": 1
+        },
+        "min": {
+            "value": 0
+        },
+        "avg": {
+            "value": 0.01,
+            "score": 0,
+            "level": "low"
+        },
+        "count": {
+            "value": 114
+        }
+    },
+    "attackComplexity": {
+        "max": {
+            "value": 24
+        },
+        "min": {
+            "value": 2,
+            "score": 2,
+            "level": "low"
+        },
+        "avg": {
+            "value": 9.37,
+            "score": 9.37,
+            "level": "medium"
+        },
+        "count": {
+            "value": 104,
+            "score": 0.05,
+            "level": "medium"
+        }
+    }
+}

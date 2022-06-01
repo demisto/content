@@ -1,0 +1,32 @@
+{
+ "id": "incident_riskiqautowhitelistipaddress",
+ "version": -1,
+ "modified": "2020-07-13T01:40:24.148132325+05:30",
+ "name": "RiskIQ Auto Whitelist IP Address",
+ "ownerOnly": false,
+ "description": "Automatically whitelist the IP Address(es). Select 'yes' to automatically start the process of whitelisting or 'no' otherwise.",
+ "cliName": "riskiqautowhitelistipaddress",
+ "type": "singleSelect",
+ "closeForm": false,
+ "editForm": true,
+ "required": false,
+ "neverSetAsRequired": false,
+ "isReadOnly": false,
+ "selectValues": [
+  "Yes",
+  "No"
+ ],
+ "useAsKpi": false,
+ "locked": false,
+ "system": false,
+ "content": true,
+ "group": 0,
+ "hidden": false,
+ "associatedToAll": true,
+ "unmapped": false,
+ "unsearchable": false,
+ "caseInsensitive": true,
+ "sla": 0,
+ "threshold": 72,
+ "fromVersion": "5.5.0"
+}

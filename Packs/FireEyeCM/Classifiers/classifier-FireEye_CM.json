@@ -1,0 +1,17 @@
+{
+  "name": "FireEye Central Management - Classifier",
+  "type": "classification",
+  "id": "FireEye Central Management - Classifier",
+  "description": "Classifies FireEye Alerts.",
+  "keyTypeMap": {
+    "EMAIL_MPS": "FireEye EX Alert",
+    "Ips Events": "FireEye NX IPS Event",
+    "WEB_MPS": "FireEye NX Alert"
+  },
+  "transformer": {
+    "complex": null,
+    "simple": "product"
+  },
+  "version": -1,
+  "fromVersion": "6.0.0"
+}

@@ -21,11 +21,11 @@
 <li>Log in to the Preempt platform.</li>
 <li>Navigate to <strong>Administration</strong> &gt; <strong>System</strong> &gt; <strong>Settings</strong> &gt; <strong>API Keys</strong>.</li>
 <li>Enable the <strong>API Token</strong> option.</li>
-<li>Create a token for Demisto if one was not already created.</li>
-<li>Click the link icon on the row for the token.<br> The API key is copied to your clipboard. You will paste this when configuring the integration in Demisto.</li>
+<li>Create a token for Cortex XSOAR if one was not already created.</li>
+<li>Click the link icon on the row for the token.<br> The API key is copied to your clipboard. You will paste this when configuring the integration in Cortex XSOAR.</li>
 </ol>
 <hr>
-<h2>Configure the Preempt Integration on Demisto</h2>
+<h2>Configure the Preempt Integration on Cortex XSOAR</h2>
 <ol>
 <li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>
 <li>Search for Preempt.</li>
@@ -47,7 +47,7 @@
 </ol>
 <hr>
 <h2>Commands</h2>
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ul>
 <li><a href="#h_57680759771526892358096">Add an account to the watch list: preempt-add-to-watch-list</a></li>
 <li><a href="#h_326567481411526892365995">Remove an account from the watch list: preempt-remove-from-watch-list</a></li>

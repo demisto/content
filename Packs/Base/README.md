@@ -1,1 +1,0 @@
-The base pack for Cortex XSOAR.

@@ -1,0 +1,23 @@
+{
+    "id": "Proofpoint TAP - Message Delivered",
+    "version": -1,
+    "vcShouldIgnore": false,
+    "locked": false,
+    "name": "Proofpoint TAP - Message Delivered",
+    "prevName": "Proofpoint TAP - Message Delivered",
+    "color": "#64DC17",
+    "hours": 0,
+    "days": 0,
+    "weeks": 0,
+    "hoursR": 0,
+    "daysR": 0,
+    "weeksR": 0,
+    "system": false,
+    "readonly": false,
+    "default": false,
+    "autorun": false,
+    "disabled": false,
+    "reputationCalc": 1,
+    "layout": "Proofpoint TAP Message Layout",
+    "fromVersion": "5.0.0"
+}

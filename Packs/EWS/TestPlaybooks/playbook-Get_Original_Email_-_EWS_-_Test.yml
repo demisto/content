@@ -15,7 +15,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+      - "5"
     separatecontext: false
     view: |-
       {
@@ -46,11 +46,11 @@ tasks:
       - "4"
     scriptarguments:
       InReplyTo:
-        simple: <8504be6f440847ce988eae64585c1012@WIN-MICMSOEE1BU.demisto.int>
+        simple: <1623747438069.65340@demisto.int>
       Mailbox:
         simple: demistoadmin@demisto.int
       ThreadTopic:
-        simple: Attach Item
+        simple: do not delete used for a test
     separatecontext: true
     loop:
       iscommand: false
@@ -60,7 +60,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 195
+          "y": 370
         }
       }
     note: false
@@ -80,7 +80,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 545
+          "y": 720
         }
       }
     note: false
@@ -109,7 +109,35 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 370
+          "y": 545
+        }
+      }
+    note: false
+  "5":
+    id: "5"
+    taskid: a914023b-01b2-4eb4-8f58-b38639725928
+    type: regular
+    task:
+      id: a914023b-01b2-4eb4-8f58-b38639725928
+      version: -1
+      name: Delete context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
         }
       }
     note: false
@@ -118,7 +146,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 560,
+        "height": 735,
         "width": 380,
         "x": 50,
         "y": 50

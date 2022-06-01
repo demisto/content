@@ -1,0 +1,648 @@
+id: AzureADTest
+version: -1
+vcShouldKeepItemLegacyProdMachine: false
+name: AzureADTest
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: cd00d1bc-d265-41b4-889a-b9b0daeccebc
+    type: start
+    task:
+      id: cd00d1bc-d265-41b4-889a-b9b0daeccebc
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 0bb2453d-6d3a-428f-8a42-4057830c7a33
+    type: regular
+    task:
+      id: 0bb2453d-6d3a-428f-8a42-4057830c7a33
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 59012cb4-389c-4aaf-8555-96a2d6cbd3f7
+    type: regular
+    task:
+      id: 59012cb4-389c-4aaf-8555-96a2d6cbd3f7
+      version: -1
+      name: azure-ad-auth-test
+      script: '|||azure-ad-auth-test'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 72e0ca06-a808-448d-8539-cac9ec3c9317
+    type: regular
+    task:
+      id: 72e0ca06-a808-448d-8539-cac9ec3c9317
+      version: -1
+      name: azure-ad-identity-protection-risks-list
+      script: '|||azure-ad-identity-protection-risks-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 9ea4e2ca-0057-4adc-8f99-0757abd85e19
+    type: condition
+    task:
+      id: 9ea4e2ca-0057-4adc-8f99-0757abd85e19
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AADIdentityProtection.Risks.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AADIdentityProtection.Risks.requestId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AADIdentityProtection.Risks.correlationId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AADIdentityProtection.Risks.riskEventType
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AADIdentityProtection.Risks.riskType
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AADIdentityProtection.Risks.riskLevel
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AADIdentityProtection.Risks.riskState
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AADIdentityProtection.Risks.riskDetail
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AADIdentityProtection.Risks.source
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AADIdentityProtection.Risks.detectionTimingType
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AADIdentityProtection.Risks.activity
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AADIdentityProtection.Risks.tokenIssuerType
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AADIdentityProtection.Risks.ipAddress
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AADIdentityProtection.Risks.location.city
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AADIdentityProtection.Risks.location.countryOrRegion
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AADIdentityProtection.Risks.location.geoCoordinates.latitude
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AADIdentityProtection.Risks.location.geoCoordinates.longitude
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AADIdentityProtection.Risks.location.state
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AADIdentityProtection.Risks.activityDateTime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AADIdentityProtection.Risks.detectedDateTime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AADIdentityProtection.Risks.activityDateTime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AADIdentityProtection.Risks.userId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AADIdentityProtection.Risks.userDisplayName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AADIdentityProtection.Risks.userPrincipalName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AADIdentityProtection.Risks.additionalInfo
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: aa60fa42-4684-4433-8651-191416daaf8c
+    type: regular
+    task:
+      id: aa60fa42-4684-4433-8651-191416daaf8c
+      version: -1
+      name: azure-ad-identity-protection-risky-user-list
+      script: '|||azure-ad-identity-protection-risky-user-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 8878db68-62f5-4b7d-81fb-f7937f781e62
+    type: condition
+    task:
+      id: 8878db68-62f5-4b7d-81fb-f7937f781e62
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AADIdentityProtection.RiskyUsers.id
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: AADIdentityProtection.RiskyUsers.isDeleted
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: AADIdentityProtection.RiskyUsers.isProcessing
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AADIdentityProtection.RiskyUsers.riskLastUpdatedDateTime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AADIdentityProtection.RiskyUsers.riskLevel
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AADIdentityProtection.RiskyUsers.riskState
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AADIdentityProtection.RiskyUsers.riskDetail
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AADIdentityProtection.RiskyUsers.userDisplayName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AADIdentityProtection.RiskyUsers.userPrincipalName
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 294d0137-44d6-44d3-8bfd-66e2b0e04ee1
+    type: regular
+    task:
+      id: 294d0137-44d6-44d3-8bfd-66e2b0e04ee1
+      version: -1
+      name: azure-ad-identity-protection-risky-user-history-list
+      script: '|||azure-ad-identity-protection-risky-user-history-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      user_id:
+        simple: 09f05c43-ffc5-4ff8-8cf5-c5e89699375d
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 7adeb079-6e09-44fe-8010-b32e5c339936
+    type: condition
+    task:
+      id: 7adeb079-6e09-44fe-8010-b32e5c339936
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AADIdentityProtection.RiskyUserHistory.id
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: AADIdentityProtection.RiskyUserHistory.isDeleted
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: AADIdentityProtection.RiskyUserHistory.isProcessing
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AADIdentityProtection.RiskyUserHistory.riskLastUpdatedDateTime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AADIdentityProtection.RiskyUserHistory.riskLevel
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AADIdentityProtection.RiskyUserHistory.riskState
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AADIdentityProtection.RiskyUserHistory.riskDetail
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AADIdentityProtection.RiskyUserHistory.userDisplayName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AADIdentityProtection.RiskyUserHistory.userPrincipalName
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 0012e644-4198-4c8f-8aec-423f82f02352
+    type: regular
+    task:
+      id: 0012e644-4198-4c8f-8aec-423f82f02352
+      version: -1
+      name: azure-ad-identity-protection-risky-user-confirm-compromised
+      script: '|||azure-ad-identity-protection-risky-user-confirm-compromised'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      user_ids:
+        simple: ad73627d-29a8-4d66-a89f-c96afc5125a6
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 1ec17789-9771-4a8a-894a-31f54efefa4c
+    type: regular
+    task:
+      id: 1ec17789-9771-4a8a-894a-31f54efefa4c
+      version: -1
+      name: azure-ad-identity-protection-risky-user-dismiss
+      script: '|||azure-ad-identity-protection-risky-user-dismiss'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      user_ids:
+        simple: ad73627d-29a8-4d66-a89f-c96afc5125a6
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: f3625c56-735d-4180-8564-42b306cc9ca9
+    type: playbook
+    task:
+      id: f3625c56-735d-4180-8564-42b306cc9ca9
+      version: -1
+      name: Fetch Incidents Test
+      playbookName: Fetch Incidents Test
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      searchfield:
+        simple: CustomFields.azureactivedirectoryidentityandaccessalerttype
+      sourcebrand:
+        simple: Azure Active Directory Identity Protection
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: a9c2c9c8-5340-402d-8974-0c96fb7955fe
+    type: title
+    task:
+      id: a9c2c9c8-5340-402d-8974-0c96fb7955fe
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2135,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.0.0

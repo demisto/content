@@ -1,0 +1,892 @@
+{
+	"alerts": [{
+			"id": "27",
+			"username": "user@domain.com",
+			"change_type": "score_change",
+			"domain": "domain1.co.il",
+			"company_name": "Domain1",
+			"portfolios": [{
+				"id": "a",
+				"name": "test_portfolio"
+			}],
+			"my_scorecard": false,
+			"created_at": "2021-07-27T00:00:00.000Z",
+			"change_data": [{
+				"score": 77,
+				"factor": "network_security",
+				"direction": "drops",
+				"grade_letter": "C",
+				"score_impact": -3,
+				"direction": "drops",
+				"score": 77,
+				"grade_letter": "C",
+				"factor": "network_security",
+				"score_impact": -3
+			}, {
+				"score": 69,
+				"factor": "ip_reputation",
+				"direction": "drops",
+				"grade_letter": "D",
+				"score_impact": -3,
+				"direction": "drops",
+				"score": 69,
+				"grade_letter": "D",
+				"factor": "ip_reputation",
+				"score_impact": -3
+			}]
+		}, {
+			"id": "26",
+			"username": "user@domain.com",
+			"change_type": "score_change",
+			"domain": "domain2.com",
+			"company_name": "Domain2",
+			"portfolios": [{
+				"id": "b",
+				"name": "test_portfolio2"
+			}],
+			"my_scorecard": false,
+			"created_at": "2021-07-26T00:00:00.000Z",
+			"change_data": [{
+				"score": 78,
+				"factor": "network_security",
+				"direction": "drops",
+				"grade_letter": "C",
+				"score_impact": -2,
+				"direction": "drops",
+				"score": 78,
+				"grade_letter": "C",
+				"factor": "network_security",
+				"score_impact": -2
+			}]
+		}],
+	"incidents": [
+		{
+			"name": "Domain1 Score Change",
+			"occurred": "2021-07-27T00:00:00Z",
+			"rawJSON": "{\"id\": \"27\", \"username\": \"user@domain.com\", \"change_type\": \"score_change\", \"domain\": \"domain1.co.il\", \"company_name\": \"Domain1\", \"portfolios\": [{\"id\": \"a\", \"name\": \"test_portfolio\"}], \"my_scorecard\": false, \"created_at\": \"2021-07-27T00:00:00.000Z\", \"change_data\": [{\"score\": 77, \"factor\": \"network_security\", \"direction\": \"drops\", \"grade_letter\": \"C\", \"score_impact\": -3}, {\"score\": 69, \"factor\": \"ip_reputation\", \"direction\": \"drops\", \"grade_letter\": \"D\", \"score_impact\": -3}]}"}, 
+		{
+			"name": "Domain2 Score Change",
+			"occurred": "2021-07-26T00:00:00Z",
+			"rawJSON": "{\"id\": \"26\", \"username\": \"user@domain.com\", \"change_type\": \"score_change\", \"domain\": \"domain2.com\", \"company_name\": \"Domain2\", \"portfolios\": [{\"id\": \"b\", \"name\": \"test_portfolio2\"}], \"my_scorecard\": false, \"created_at\": \"2021-07-26T00:00:00.000Z\", \"change_data\": [{\"score\": 78, \"factor\": \"network_security\", \"direction\": \"drops\", \"grade_letter\": \"C\", \"score_impact\": -2}]}"
+		}
+	],
+	"portfolios": {
+		"entries": [{
+			"id": "1",
+			"name": "portfolio_1",
+			"privacy": "private",
+			"read_only": "true"
+		}, {
+			"id": "2",
+			"name": "portfolio_2",
+			"privacy": "shared",
+			"read_only": "true"
+		}, {
+			"id": "3",
+			"name": "portfolio_3",
+			"privacy": "private"
+		}],
+		"total": 3
+	},
+	"companies": {
+		"entries": [{
+			"domain": "company1.com",
+			"name": "company1",
+			"score": 93,
+			"grade": "A",
+			"grade_url": "https://s3.amazonaws.com/ssc-static/grades/factor_a.svg",
+			"last30days_score_change": 0,
+			"industry": "food",
+			"size": "size_more_than_10000",
+			"is_custom_vendor": false
+		}, {
+			"domain": "company2.com",
+			"name": "company2",
+			"score": 48,
+			"grade": "F",
+			"grade_url": "https://s3.amazonaws.com/ssc-static/grades/factor_f.svg",
+			"last30days_score_change": -15,
+			"industry": "technology",
+			"size": "size_more_than_10000",
+			"is_custom_vendor": false
+		}, {
+			"domain": "company3.com",
+			"name": "company3",
+			"score": 71,
+			"grade": "C",
+			"grade_url": "https://s3.amazonaws.com/ssc-static/grades/factor_c.svg",
+			"last30days_score_change": -3,
+			"industry": "technology",
+			"size": "size_more_than_10000",
+			"is_custom_vendor": false
+		}, {
+			"domain": "company4.com",
+			"name": "company4",
+			"score": 90,
+			"grade": "A",
+			"grade_url": "https://s3.amazonaws.com/ssc-static/grades/factor_b.svg",
+			"last30days_score_change": 3,
+			"industry": "government",
+			"size": "size_more_than_10000",
+			"is_custom_vendor": false
+		}],
+		"total": 3
+	},
+	"companies_A_grade": {
+		"entries": [{
+			"domain": "company1.com",
+			"name": "company1",
+			"score": 93,
+			"grade": "A",
+			"grade_url": "https://s3.amazonaws.com/ssc-static/grades/factor_a.svg",
+			"last30days_score_change": 0,
+			"industry": "food",
+			"size": "size_more_than_10000",
+			"is_custom_vendor": false
+		}, 
+		{
+			"domain": "company4.com",
+			"name": "company4",
+			"score": 90,
+			"grade": "A",
+			"grade_url": "https://s3.amazonaws.com/ssc-static/grades/factor_b.svg",
+			"last30days_score_change": 3,
+			"industry": "government",
+			"size": "size_more_than_10000",
+			"is_custom_vendor": false
+		}],
+		"total": 2
+	},
+	"companies_A_grade_food_industry": {
+		"entries": [{
+			"domain": "company1.com",
+			"name": "company1",
+			"score": 93,
+			"grade": "A",
+			"grade_url": "https://s3.amazonaws.com/ssc-static/grades/factor_a.svg",
+			"last30days_score_change": 0,
+			"industry": "food",
+			"size": "size_more_than_10000",
+			"is_custom_vendor": false
+		}],
+		"total": 1
+	},
+	"portfolio_not_exist": {
+		"error": {
+			"message": "portfolio not found",
+			"statusCode": 404,
+			"data": {
+				"portfoliosRequested": ["asdasdasdas"],
+				"portfoliosWithAccess": [],
+				"portfoliosWithoutAccess": [],
+				"portfoliosNotFound": ["asdasdasdas"]
+			}
+		}
+	},
+	"score": {
+		"name": "Domain 1",
+		"domain": "domain1.com",
+		"grade_url": "https://s3.amazonaws.com/ssc-static/grades/factor_b.svg",
+		"industry": "technology",
+		"size": "size_51_to_200",
+		"score": 81,
+		"grade": "B",
+		"last30day_score_change": 4
+	},
+	"company_not_found": {
+		"error": {
+			"message": "company not found: domain2.com",
+			"statusCode": 404,
+			"data": {
+				"related": "domain2.com"
+			}
+		}
+	},
+	"factor_score": {
+		"entries": [{
+			"name": "application_security",
+			"score": 58,
+			"grade": "F",
+			"grade_url": "https://s3.amazonaws.com/ssc-static/grades/factor_f.svg",
+			"issue_summary": [{
+				"type": "csp_no_policy",
+				"count": 13,
+				"severity": "medium",
+				"total_score_impact": 4.072702494206439,
+				"detail_url": "https://api.securityscorecard.io/companies/domain1.com/issues/csp_no_policy/"
+			}, {
+				"type": "csp_too_broad_v2",
+				"count": 2,
+				"severity": "info",
+				"total_score_impact": 0,
+				"detail_url": "https://api.securityscorecard.io/companies/domain1.com/issues/csp_too_broad_v2/"
+			}, {
+				"type": "x_xss_protection_incorrect_v2",
+				"count": 4,
+				"severity": "info",
+				"total_score_impact": 0,
+				"detail_url": "https://api.securityscorecard.io/companies/domain1.com/issues/x_xss_protection_incorrect_v2/"
+			}, {
+				"type": "unsafe_sri",
+				"count": 9,
+				"severity": "info",
+				"total_score_impact": 0,
+				"detail_url": "https://api.securityscorecard.io/companies/domain1.com/issues/unsafe_sri/"
+			}, {
+				"type": "waf_detected",
+				"count": 3,
+				"severity": "positive",
+				"total_score_impact": 0,
+				"detail_url": "https://api.securityscorecard.io/companies/domain1.com/issues/waf_detected/"
+			}, {
+				"type": "insecure_https_redirect_pattern_v2",
+				"count": 1,
+				"severity": "info",
+				"total_score_impact": 0,
+				"detail_url": "https://api.securityscorecard.io/companies/domain1.com/issues/insecure_https_redirect_pattern_v2/"
+			}, {
+				"type": "domain_missing_https",
+				"count": 1,
+				"severity": "high",
+				"total_score_impact": 1.9752854719369566,
+				"detail_url": "https://api.securityscorecard.io/companies/domain1.com/issues/domain_missing_https/"
+			}, {
+				"type": "hsts_incorrect_v2",
+				"count": 13,
+				"severity": "info",
+				"total_score_impact": 0,
+				"detail_url": "https://api.securityscorecard.io/companies/domain1.com/issues/hsts_incorrect_v2/"
+			}, {
+				"type": "x_xss_protection_incorrect",
+				"count": 9,
+				"severity": "info",
+				"total_score_impact": 0,
+				"detail_url": "https://api.securityscorecard.io/companies/domain1.com/issues/x_xss_protection_incorrect/"
+			}, {
+				"type": "csp_too_broad",
+				"count": 3,
+				"severity": "info",
+				"total_score_impact": 0,
+				"detail_url": "https://api.securityscorecard.io/companies/domain1.com/issues/csp_too_broad/"
+			}, {
+				"type": "x_content_type_options_incorrect_v2",
+				"count": 1,
+				"severity": "info",
+				"total_score_impact": 0,
+				"detail_url": "https://api.securityscorecard.io/companies/domain1.com/issues/x_content_type_options_incorrect_v2/"
+			}, {
+				"type": "redirect_chain_contains_http",
+				"count": 3,
+				"severity": "medium",
+				"total_score_impact": 1.4223057985582273,
+				"detail_url": "https://api.securityscorecard.io/companies/domain1.com/issues/redirect_chain_contains_http/"
+			}, {
+				"type": "domain_missing_https_v2",
+				"count": 1,
+				"severity": "info",
+				"total_score_impact": 0,
+				"detail_url": "https://api.securityscorecard.io/companies/domain1.com/issues/domain_missing_https_v2/"
+			}, {
+				"type": "hosted_on_object_storage",
+				"count": 3,
+				"severity": "info",
+				"total_score_impact": 0,
+				"detail_url": "https://api.securityscorecard.io/companies/domain1.com/issues/hosted_on_object_storage/"
+			}, {
+				"type": "x_frame_options_incorrect_v2",
+				"count": 7,
+				"severity": "info",
+				"total_score_impact": 0,
+				"detail_url": "https://api.securityscorecard.io/companies/domain1.com/issues/x_frame_options_incorrect_v2/"
+			}, {
+				"type": "csp_no_policy_v2",
+				"count": 9,
+				"severity": "info",
+				"total_score_impact": 0,
+				"detail_url": "https://api.securityscorecard.io/companies/domain1.com/issues/csp_no_policy_v2/"
+			}, {
+				"type": "cookie_missing_http_only",
+				"count": 1,
+				"severity": "low",
+				"total_score_impact": 0.23445749731544652,
+				"detail_url": "https://api.securityscorecard.io/companies/domain1.com/issues/cookie_missing_http_only/"
+			}, {
+				"type": "waf_detected_v2",
+				"count": 3,
+				"severity": "info",
+				"total_score_impact": 0,
+				"detail_url": "https://api.securityscorecard.io/companies/domain1.com/issues/waf_detected_v2/"
+			}, {
+				"type": "hsts_incorrect",
+				"count": 15,
+				"severity": "medium",
+				"total_score_impact": 3.312154300968416,
+				"detail_url": "https://api.securityscorecard.io/companies/domain1.com/issues/hsts_incorrect/"
+			}, {
+				"type": "x_frame_options_incorrect",
+				"count": 11,
+				"severity": "low",
+				"total_score_impact": 1.072526376230627,
+				"detail_url": "https://api.securityscorecard.io/companies/domain1.com/issues/x_frame_options_incorrect/"
+			}, {
+				"type": "x_content_type_options_incorrect",
+				"count": 3,
+				"severity": "low",
+				"total_score_impact": 0.5163662619700204,
+				"detail_url": "https://api.securityscorecard.io/companies/domain1.com/issues/x_content_type_options_incorrect/"
+			}, {
+				"type": "unsafe_sri_v2",
+				"count": 3,
+				"severity": "info",
+				"total_score_impact": 0,
+				"detail_url": "https://api.securityscorecard.io/companies/domain1.com/issues/unsafe_sri_v2/"
+			}]
+		}, {
+			"name": "cubit_score",
+			"score": 100,
+			"grade": "A",
+			"grade_url": "https://s3.amazonaws.com/ssc-static/grades/factor_a.svg",
+			"issue_summary": [{
+				"type": "typosquat",
+				"count": 8,
+				"severity": "info",
+				"total_score_impact": 0,
+				"detail_url": "https://api.securityscorecard.io/companies/domain1.com/issues/typosquat/"
+			}]
+		}, {
+			"name": "dns_health",
+			"score": 100,
+			"grade": "A",
+			"grade_url": "https://s3.amazonaws.com/ssc-static/grades/factor_a.svg",
+			"issue_summary": []
+		}],
+		"total": 3
+	},
+	"factor_score_severity_positive": {
+		"entries": [{
+			"name": "application_security",
+			"score": 58,
+			"grade": "F",
+			"grade_url": "https://s3.amazonaws.com/ssc-static/grades/factor_f.svg",
+			"issue_summary": [{
+				"type": "waf_detected",
+				"count": 3,
+				"severity": "positive",
+				"total_score_impact": 0,
+				"detail_url": "https://api.securityscorecard.io/companies/domain1.com/issues/waf_detected/"
+			}]
+		}, {
+			"name": "cubit_score",
+			"score": 100,
+			"grade": "A",
+			"grade_url": "https://s3.amazonaws.com/ssc-static/grades/factor_a.svg",
+			"issue_summary": []
+		}, {
+			"name": "dns_health",
+			"score": 100,
+			"grade": "A",
+			"grade_url": "https://s3.amazonaws.com/ssc-static/grades/factor_a.svg",
+			"issue_summary": []
+		}],
+		"total": 3
+	},
+	"factor_score_severity_low_high": {
+		"entries": [{
+			"name": "application_security",
+			"score": 58,
+			"grade": "F",
+			"grade_url": "https://s3.amazonaws.com/ssc-static/grades/factor_f.svg",
+			"issue_summary": [
+				{
+					"type": "domain_missing_https",
+					"count": 1,
+					"severity": "high",
+					"total_score_impact": 1.9752854719369566,
+					"detail_url": "https://api.securityscorecard.io/companies/domain1.com/issues/domain_missing_https/"
+				},
+				{
+					"type": "cookie_missing_http_only",
+					"count": 1,
+					"severity": "low",
+					"total_score_impact": 0.23445749731544652,
+					"detail_url": "https://api.securityscorecard.io/companies/domain1.com/issues/cookie_missing_http_only/"
+				},
+				{
+					"type": "x_frame_options_incorrect",
+					"count": 11,
+					"severity": "low",
+					"total_score_impact": 1.072526376230627,
+					"detail_url": "https://api.securityscorecard.io/companies/domain1.com/issues/x_frame_options_incorrect/"
+				},
+				{
+					"type": "x_content_type_options_incorrect",
+					"count": 3,
+					"severity": "low",
+					"total_score_impact": 0.5163662619700204,
+					"detail_url": "https://api.securityscorecard.io/companies/domain1.com/issues/x_content_type_options_incorrect/"
+				}
+			]
+		}, {
+			"name": "cubit_score",
+			"score": 100,
+			"grade": "A",
+			"grade_url": "https://s3.amazonaws.com/ssc-static/grades/factor_a.svg",
+			"issue_summary": [{
+				"type": "typosquat",
+				"count": 8,
+				"severity": "info",
+				"total_score_impact": 0,
+				"detail_url": "https://api.securityscorecard.io/companies/domain1.com/issues/typosquat/"
+			}]
+		}, {
+			"name": "dns_health",
+			"score": 100,
+			"grade": "A",
+			"grade_url": "https://s3.amazonaws.com/ssc-static/grades/factor_a.svg",
+			"issue_summary": []
+		}],
+		"total": 3
+	},
+	"historical_score": {
+		"entries": [{
+				"domain": "domain1.com",
+				"score": 81,
+				"date": "2021-07-01T00:00:00.000Z"
+			},
+			{
+				"domain": "domain1.com",
+				"score": 81,
+				"date": "2021-07-02T00:00:00.000Z"
+			},
+			{
+				"domain": "domain1.com",
+				"score": 81,
+				"date": "2021-07-03T00:00:00.000Z"
+			},
+			{
+				"domain": "domain1.com",
+				"score": 81,
+				"date": "2021-07-04T00:00:00.000Z"
+			},
+			{
+				"domain": "domain1.com",
+				"score": 81,
+				"date": "2021-07-05T00:00:00.000Z"
+			},
+			{
+				"domain": "domain1.com",
+				"score": 81,
+				"date": "2021-07-06T00:00:00.000Z"
+			},
+			{
+				"domain": "domain1.com",
+				"score": 81,
+				"date": "2021-07-07T00:00:00.000Z"
+			},
+			{
+				"domain": "domain1.com",
+				"score": 81,
+				"date": "2021-07-08T00:00:00.000Z"
+			}
+		]
+	},
+	"historical_score_daily": {
+		"entries": [{
+				"domain": "domain1.com",
+				"score": 81,
+				"date": "2021-07-01T00:00:00.000Z"
+			},
+			{
+				"domain": "domain1.com",
+				"score": 81,
+				"date": "2021-07-02T00:00:00.000Z"
+			},
+			{
+				"domain": "domain1.com",
+				"score": 81,
+				"date": "2021-07-03T00:00:00.000Z"
+			},
+			{
+				"domain": "domain1.com",
+				"score": 81,
+				"date": "2021-07-04T00:00:00.000Z"
+			}
+		]
+	},
+	"historical_scores_weekly": {
+		"entries": [{
+				"domain": "domain1.com",
+				"score": 81,
+				"date": "2021-07-03T00:00:00.000Z"
+			},
+			{
+				"domain": "domain1.com",
+				"score": 81,
+				"date": "2021-07-10T00:00:00.000Z"
+			},
+			{
+				"domain": "domain1.com",
+				"score": 81,
+				"date": "2021-07-17T00:00:00.000Z"
+			},
+			{
+				"domain": "domain1.com",
+				"score": 81,
+				"date": "2021-07-24T00:00:00.000Z"
+			},
+			{
+				"domain": "domain1.com",
+				"score": 81,
+				"date": "2021-07-31T00:00:00.000Z"
+			}
+		]
+	},
+	"historical_factor_score": {
+		"entries": [{
+			"domain": "domain1.com",
+			"factors": [{
+				"name": "application_security",
+				"score": 58
+			}, {
+				"name": "cubit_score",
+				"score": 100
+			}, {
+				"name": "dns_health",
+				"score": 100
+			}, {
+				"name": "endpoint_security",
+				"score": 88
+			}, {
+				"name": "hacker_chatter",
+				"score": 100
+			}, {
+				"name": "ip_reputation",
+				"score": 100
+			}, {
+				"name": "leaked_information",
+				"score": 100
+			}, {
+				"name": "network_security",
+				"score": 70
+			}, {
+				"name": "patching_cadence",
+				"score": 86
+			}, {
+				"name": "social_engineering",
+				"score": 100
+			}],
+			"date": "2021-07-01T00:00:00.000Z"
+		}, {
+			"domain": "domain1.com",
+			"factors": [{
+				"name": "application_security",
+				"score": 58
+			}, {
+				"name": "cubit_score",
+				"score": 100
+			}, {
+				"name": "dns_health",
+				"score": 100
+			}, {
+				"name": "endpoint_security",
+				"score": 88
+			}, {
+				"name": "hacker_chatter",
+				"score": 100
+			}, {
+				"name": "ip_reputation",
+				"score": 100
+			}, {
+				"name": "leaked_information",
+				"score": 100
+			}, {
+				"name": "network_security",
+				"score": 70
+			}, {
+				"name": "patching_cadence",
+				"score": 86
+			}, {
+				"name": "social_engineering",
+				"score": 100
+			}],
+			"date": "2021-07-02T00:00:00.000Z"
+		}, {
+			"domain": "domain1.com",
+			"factors": [{
+				"name": "application_security",
+				"score": 58
+			}, {
+				"name": "cubit_score",
+				"score": 100
+			}, {
+				"name": "dns_health",
+				"score": 100
+			}, {
+				"name": "endpoint_security",
+				"score": 88
+			}, {
+				"name": "hacker_chatter",
+				"score": 100
+			}, {
+				"name": "ip_reputation",
+				"score": 100
+			}, {
+				"name": "leaked_information",
+				"score": 100
+			}, {
+				"name": "network_security",
+				"score": 70
+			}, {
+				"name": "patching_cadence",
+				"score": 86
+			}, {
+				"name": "social_engineering",
+				"score": 100
+			}],
+			"date": "2021-07-03T00:00:00.000Z"
+		}, {
+			"domain": "domain1.com",
+			"factors": [{
+				"name": "application_security",
+				"score": 58
+			}, {
+				"name": "cubit_score",
+				"score": 100
+			}, {
+				"name": "dns_health",
+				"score": 100
+			}, {
+				"name": "endpoint_security",
+				"score": 88
+			}, {
+				"name": "hacker_chatter",
+				"score": 100
+			}, {
+				"name": "ip_reputation",
+				"score": 100
+			}, {
+				"name": "leaked_information",
+				"score": 100
+			}, {
+				"name": "network_security",
+				"score": 70
+			}, {
+				"name": "patching_cadence",
+				"score": 86
+			}, {
+				"name": "social_engineering",
+				"score": 100
+			}],
+			"date": "2021-07-04T00:00:00.000Z"
+		}, {
+			"domain": "domain1.com",
+			"factors": [{
+				"name": "application_security",
+				"score": 58
+			}, {
+				"name": "cubit_score",
+				"score": 100
+			}, {
+				"name": "dns_health",
+				"score": 100
+			}, {
+				"name": "endpoint_security",
+				"score": 88
+			}, {
+				"name": "hacker_chatter",
+				"score": 100
+			}, {
+				"name": "ip_reputation",
+				"score": 100
+			}, {
+				"name": "leaked_information",
+				"score": 100
+			}, {
+				"name": "network_security",
+				"score": 70
+			}, {
+				"name": "patching_cadence",
+				"score": 86
+			}, {
+				"name": "social_engineering",
+				"score": 100
+			}],
+			"date": "2021-07-05T00:00:00.000Z"
+		}, {
+			"domain": "domain1.com",
+			"factors": [{
+				"name": "application_security",
+				"score": 58
+			}, {
+				"name": "cubit_score",
+				"score": 100
+			}, {
+				"name": "dns_health",
+				"score": 100
+			}, {
+				"name": "endpoint_security",
+				"score": 88
+			}, {
+				"name": "hacker_chatter",
+				"score": 100
+			}, {
+				"name": "ip_reputation",
+				"score": 100
+			}, {
+				"name": "leaked_information",
+				"score": 100
+			}, {
+				"name": "network_security",
+				"score": 70
+			}, {
+				"name": "patching_cadence",
+				"score": 86
+			}, {
+				"name": "social_engineering",
+				"score": 100
+			}],
+			"date": "2021-07-06T00:00:00.000Z"
+		}, {
+			"domain": "domain1.com",
+			"factors": [{
+				"name": "application_security",
+				"score": 58
+			}, {
+				"name": "cubit_score",
+				"score": 100
+			}, {
+				"name": "dns_health",
+				"score": 100
+			}, {
+				"name": "endpoint_security",
+				"score": 88
+			}, {
+				"name": "hacker_chatter",
+				"score": 100
+			}, {
+				"name": "ip_reputation",
+				"score": 100
+			}, {
+				"name": "leaked_information",
+				"score": 100
+			}, {
+				"name": "network_security",
+				"score": 70
+			}, {
+				"name": "patching_cadence",
+				"score": 86
+			}, {
+				"name": "social_engineering",
+				"score": 100
+			}],
+			"date": "2021-07-07T00:00:00.000Z"
+		}, {
+			"domain": "domain1.com",
+			"factors": [{
+				"name": "application_security",
+				"score": 58
+			}, {
+				"name": "cubit_score",
+				"score": 100
+			}, {
+				"name": "dns_health",
+				"score": 100
+			}, {
+				"name": "endpoint_security",
+				"score": 88
+			}, {
+				"name": "hacker_chatter",
+				"score": 100
+			}, {
+				"name": "ip_reputation",
+				"score": 100
+			}, {
+				"name": "leaked_information",
+				"score": 100
+			}, {
+				"name": "network_security",
+				"score": 70
+			}, {
+				"name": "patching_cadence",
+				"score": 86
+			}, {
+				"name": "social_engineering",
+				"score": 100
+			}],
+			"date": "2021-07-08T00:00:00.000Z"
+		}]
+	},
+	"historical_factor_score_daily": {
+		"entries": [{
+				"domain": "domain1.com",
+				"score": 81,
+				"date": "2021-07-01T00:00:00.000Z"
+			},
+			{
+				"domain": "domain1.com",
+				"score": 81,
+				"date": "2021-07-02T00:00:00.000Z"
+			},
+			{
+				"domain": "domain1.com",
+				"score": 81,
+				"date": "2021-07-03T00:00:00.000Z"
+			},
+			{
+				"domain": "domain1.com",
+				"score": 81,
+				"date": "2021-07-04T00:00:00.000Z"
+			}
+		]
+	},
+	"historical_factor_scores_weekly": {
+		"entries": [{
+				"domain": "domain1.com",
+				"score": 81,
+				"date": "2021-07-03T00:00:00.000Z"
+			},
+			{
+				"domain": "domain1.com",
+				"score": 81,
+				"date": "2021-07-10T00:00:00.000Z"
+			},
+			{
+				"domain": "domain1.com",
+				"score": 81,
+				"date": "2021-07-17T00:00:00.000Z"
+			},
+			{
+				"domain": "domain1.com",
+				"score": 81,
+				"date": "2021-07-24T00:00:00.000Z"
+			},
+			{
+				"domain": "domain1.com",
+				"score": 81,
+				"date": "2021-07-31T00:00:00.000Z"
+			}
+		]
+	},
+	"create_score_alert": {
+		"id": "1"
+	},
+	"create_grade_alert": {
+		"id": "1"
+	},
+	"services": {
+		"total": 3,
+		"entries": [{
+			"vendor_domain": "vendor1.com",
+			"client_domain": "domain1.com",
+			"categories": ["nameserver_provider"]
+		}, {
+			"vendor_domain": "vendor2.com",
+			"client_domain": "domain1.com",
+			"categories": ["nameserver_provider"]
+		}, {
+			"vendor_domain": "vendor3.com",
+			"client_domain": "domain1.com",
+			"categories": ["mail_provider"]
+		}]
+	}
+}

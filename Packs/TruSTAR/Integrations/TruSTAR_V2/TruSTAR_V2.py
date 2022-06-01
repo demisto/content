@@ -1,3 +1,5 @@
+from typing import Tuple
+
 import demistomock as demisto
 from CommonServerPython import *
 
@@ -29,6 +31,7 @@ class Utils(object):
     @staticmethod
     def date_to_unix(timestamp):
         d = dateparser.parse(timestamp)
+        assert d is not None, f'could not parse {timestamp}'
         return int(d.strftime("%s")) * 1000
 
 
@@ -90,9 +93,9 @@ class ContextManager(object):
         xsoar_file_indicator = Common.File(**{k: v for k, v in args.items() if k})
         return xsoar_file_indicator
 
-    def _get_xsoar_indicator(self, ts_indicator):
+    def _get_xsoar_indicator_and_readable_output(self, ts_indicator) -> Tuple[Common.Indicator, str]:
         """
-        Returns a XSoar Indicator with DBotScore embedded. Indicators can be:
+        Returns a XSoar Indicator with DBotScore embedded and their human readable. Indicators can be:
         - Common.File
         - Common.IP
         - Common.URL
@@ -101,18 +104,20 @@ class ContextManager(object):
 
         indicator_type = ts_indicator.get('indicatorType')
         if indicator_type == "CVE":
-            return Common.CVE(ts_indicator.get('value'), None, None, None, None)  # Marked as mandatory positional args
+            return (Common.CVE(ts_indicator.get('value'), None, None, None, None),
+                    f'Fetched CVE {ts_indicator.get("value")} details')
 
         dbot_score = self._get_dbot_score(ts_indicator)
         if indicator_type in self.FILE_TYPES:
-            return self._get_xsoar_file_indicator(ts_indicator, dbot_score)
+            return (self._get_xsoar_file_indicator(ts_indicator, dbot_score),
+                    f'Fetched File {ts_indicator.get("value")} details')
 
         XSOARIndicator = self.INDICATOR_TYPES.get(indicator_type)
         xsoar_indicator = XSOARIndicator(
             ts_indicator.get('value'),
             dbot_score=dbot_score
         ) if XSOARIndicator is not None else None
-        return xsoar_indicator
+        return xsoar_indicator, f'Fetched {indicator_type} {ts_indicator.get("value")} details'
 
     def _remove_priority_level(self, indicator_dict):
         """  Removes priority level from indicator. It is a deprecated field """
@@ -126,24 +131,32 @@ class ContextManager(object):
         Handles logic to return an entry context with xsoar and non xsoar indicators
         on their corresponding contexts.
         """
+        context_results: List[dict] = []
         indicators = [self.convert_indicator_timestamps(d) for d in indicators]
         indicators = [self._remove_priority_level(d) for d in indicators]
         xsoar_indicators = [
-            self._get_xsoar_indicator(d)
+            self._get_xsoar_indicator_and_readable_output(d)
             for d in indicators
             if d.get('indicatorType') not in {'EMAIL_ADDRESS', 'REGISTRY_KEY', 'MALWARE', 'CIDR_BLOCK'}
         ]
+        for xsoar_ioc, hr in xsoar_indicators:
+            context_results.append(CommandResults(
+                indicator=xsoar_ioc,
+                readable_output=hr
+            ).to_context())
 
         standard_context = self.get_non_xsoar_standard_context(indicators)
         results = CommandResults(
             outputs_prefix=f'TruSTAR.{context}',
             outputs_key_field='value',
             outputs=indicators,
-            indicators=xsoar_indicators
         )
         context = results.to_context()
         context['EntryContext'].update(standard_context)
-        return context
+
+        # insert the TruStar result as the first item in results
+        context_results.insert(0, context)
+        return context_results
 
     def convert_indicator_timestamps(self, indicator):
         """ Converts indicator timestamp fields. """
@@ -854,7 +867,7 @@ class TrustarClient:
                 'page_size': limit,
                 'from_time': Utils.date_to_unix(from_time) if from_time else None,
                 'to_time': Utils.date_to_unix(to_time) if to_time else None}
-        response = self.client.get_phishing_indicators_page(**args)
+        response = self.client.get_phishing_indicators_page(**args)  # pylint: disable=E1123
         if not response:
             return 'No phishing indicators were found.'
 
@@ -883,7 +896,7 @@ class TrustarClient:
                 'page_size': limit,
                 'from_time': Utils.date_to_unix(from_time) if from_time else None,
                 'to_time': Utils.date_to_unix(to_time) if to_time else None}
-        response = self.client.get_phishing_submissions_page(**args)
+        response = self.client.get_phishing_submissions_page(**args)  # pylint: disable=E1123
         if not response.items:
             return 'No phishing submissions were found.'
 

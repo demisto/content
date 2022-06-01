@@ -59,7 +59,7 @@ def execute_command(name, args=None):
         return None
 
 
-def search_indicators(query):
+def search_indicators(fromDate='', toDate='', query='', size=None, page=None, value=None):
     query_list = re.split(r'\W+', query)
     investigation_id = int(query_list[-1])
     source_brands = query_list[1]

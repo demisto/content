@@ -1,18 +1,24 @@
 {
     "name": "Palo Alto Networks Cortex XDR - Investigation and Response",
-    "description": "This Content Pack automates Cortex XDR incident response, and includes custom Cortex XDR incident views and layouts to aid analyst investigations.",
+    "description": "Automates Cortex XDR incident response, and includes custom Cortex XDR incident views and layouts to aid analyst investigations.",
     "support": "xsoar",
-    "currentVersion": "2.4.1",
+    "currentVersion": "4.6.2",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "created": "2020-03-11T13:16:53Z",
+    "videos": [
+        "https://www.youtube.com/watch?v=ium2969zgn8"
+    ],
+    "itemPrefix": [
+        "XDR"
+    ],
     "categories": [
         "Endpoint",
         "Data Enrichment & Threat Intelligence"
     ],
     "tags": [
-        "Recommended by Cortex XSOAR"
+        "Incident Mirroring"
     ],
     "useCases": [
         "Malware"
@@ -22,61 +28,65 @@
         "apt"
     ],
     "dependencies": {
-        "EWSMailSender": {
+        "ServiceNow": {
             "mandatory": false,
-            "display_name": "EWS Mail Sender"
-        },
-        "MicrosoftGraphListener": {
-            "mandatory": false,
-            "display_name": "Microsoft Graph Mail Single User"
-        },
-        "MailSenderNew": {
-            "mandatory": false,
-            "display_name": "Mail Sender (New)"
-        },
-        "CommonTypes": {
-            "mandatory": true,
-            "display_name": "Common Types"
+            "display_name": "ServiceNow"
         },
         "CommonPlaybooks": {
             "mandatory": true,
             "display_name": "Common Playbooks"
         },
-        "XDR_iocs": {
-            "mandatory": true,
-            "display_name": "Cortex XDR - IOC"
-        },
         "CommonScripts": {
-            "mandatory": true,
+            "mandatory": false,
             "display_name": "Common Scripts"
         },
-        "Gmail": {
-            "mandatory": false,
-            "display_name": "Gmail"
+        "CommonTypes": {
+            "mandatory": true,
+            "display_name": "Common Types"
         },
-        "DemistoRESTAPI": {
+        "Active_Directory_Query": {
             "mandatory": false,
-            "display_name": "Demisto REST API"
+            "display_name": "Active Directory Query"
+        },
+        "AWS-IAM": {
+            "mandatory": false,
+            "display_name": "AWS - IAM"
         },
         "PANWComprehensiveInvestigation": {
             "mandatory": false,
             "display_name": "PANW Comprehensive Investigation"
         },
-        "GmailSingleUser": {
+        "CoreAlertFields": {
+            "mandatory": true,
+            "display_name": "Core Alert Fields"
+        },
+        "MalwareInvestigationAndResponse": {
             "mandatory": false,
-            "display_name": "Gmail Single User (Beta)"
+            "display_name": "Malware Investigation and Response"
         },
         "AutoFocus": {
             "mandatory": false,
             "display_name": "AutoFocus"
         },
-        "MicrosoftGraphMail": {
+        "Jira": {
             "mandatory": false,
-            "display_name": "Microsoft Graph Mail"
-        },
-        "PortScan": {
-            "mandatory": false,
-            "display_name": "Port Scan"
+            "display_name": "Atlassian Jira"
         }
-    }
+    },
+    "marketplaces": [
+        "xsoar"
+    ],
+    "displayedImages": [
+        "ServiceNow",
+        "CommonPlaybooks",
+        "CommonScripts",
+        "CommonTypes",
+        "Active_Directory_Query",
+        "AWS-IAM",
+        "PANWComprehensiveInvestigation",
+        "CoreAlertFields",
+        "MalwareInvestigationAndResponse",
+        "AutoFocus",
+        "Jira"
+    ]
 }

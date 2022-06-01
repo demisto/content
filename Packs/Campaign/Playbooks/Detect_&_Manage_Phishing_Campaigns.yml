@@ -1,0 +1,1232 @@
+id: Detect & Manage Phishing Campaigns
+version: -1
+name: Detect & Manage Phishing Campaigns
+description: |-
+  This playbook is used to find, create and manage phishing campaigns. When a number of similar phishing incidents exist in the system, the playbook can be used to do the following:
+  1. Find and link related incidents to the same phishing attack (a phishing campaign).
+  2. Search for an existing Phishing Campaign incident, or create a new incident for the linked Phishing incidents.
+  3. Link all detected phishing incidents to the Phishing Campaign incident that was found or that was created previously.
+  4. Update the Phishing Campaign incident with the latest data about the campaign, and update all related phishing incidents to indicate that they are part of the campaign.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 96a08d15-9f90-4314-8404-2a5fe60e3e74
+    type: start
+    task:
+      id: 96a08d15-9f90-4314-8404-2a5fe60e3e74
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "30"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": -50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: dea6d568-f6a7-4fbc-89a1-181da70c9773
+    type: regular
+    task:
+      id: dea6d568-f6a7-4fbc-89a1-181da70c9773
+      version: -1
+      name: Search for similar incidents
+      description: Find a campaign of emails based on textual similarity.
+      scriptName: FindEmailCampaign
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      emailBody:
+        complex:
+          root: inputs.emailBody
+      emailBodyHTML:
+        complex:
+          root: inputs.emailBodyHTML
+      emailFrom:
+        complex:
+          root: inputs.emailFrom
+      emailSubject:
+        complex:
+          root: inputs.emailSubject
+      execution-timeout:
+        simple: "9000"
+      existingIncidentsLookback:
+        complex:
+          root: inputs.existingIncidentsLookback
+      fieldsToDisplay:
+        complex:
+          root: inputs.fieldsToDisplay
+      incidentTypeFieldName:
+        complex:
+          root: inputs.incidentTypeFieldName
+      incidentTypes:
+        complex:
+          root: inputs.incidentTypes
+      includeSelf:
+        simple: "true"
+      limit:
+        complex:
+          root: inputs.limit
+      maxIncidentsToReturn:
+        complex:
+          root: inputs.maxIncidentsToReturn
+      minIncidentsForCampaign:
+        complex:
+          root: inputs.minIncidentsForCampaign
+      minUniqueRecipients:
+        complex:
+          root: inputs.minUniqueRecipients
+      query:
+        complex:
+          root: inputs.query
+      statusScope:
+        complex:
+          root: inputs.statusScope
+      threshold:
+        complex:
+          root: inputs.threshold
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 640
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 1a9803be-d5d9-487d-8849-f838bcb8ef15
+    type: condition
+    task:
+      id: 1a9803be-d5d9-487d-8849-f838bcb8ef15
+      version: -1
+      name: Were similar incidents found?
+      description: Checks whether the email was found to be part of a bigger phishing
+        campaign.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isTrue
+          left:
+            value:
+              simple: EmailCampaign.isCampaignFound
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 1640dfa4-a4b1-4199-894e-560c6486f2ce
+    type: regular
+    task:
+      id: 1640dfa4-a4b1-4199-894e-560c6486f2ce
+      version: -1
+      name: Search for an existing campaign incident in XSOAR
+      description: Get the incident campaign's ID for the campaign that is linked
+        to at least one of the given incidents.
+      scriptName: IsIncidentPartOfCampaign
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      CampaignIncidentType:
+        simple: Phishing Campaign
+      IncidentIDs:
+        complex:
+          root: EmailCampaign.incidents
+          accessor: id
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 1230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 25eca832-bd91-4574-88cd-5c160ee1a9e5
+    type: regular
+    task:
+      id: 25eca832-bd91-4574-88cd-5c160ee1a9e5
+      version: -1
+      name: Create a new campaign incident
+      description: Create a new incident for the phishing campaign.
+      script: Builtin|||createNewIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      name:
+        simple: Phishing Campaign - ${incident.name}
+      type:
+        simple: Phishing Campaign
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 730,
+          "y": 1620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: cdc4d170-de3d-45e0-8bac-70a669bf2191
+    type: regular
+    task:
+      id: cdc4d170-de3d-45e0-8bac-70a669bf2191
+      version: -1
+      name: Update the campaign with new incident data
+      description: |-
+        Copying EmailCampaign context from current incident to other existing incident.
+        This script runs with elevated permissions.
+        Cortex XSOAR recommends using the built-in RBAC functionality to limit access to only those users requiring access to this script.
+      scriptName: SetPhishingCampaignDetails
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      id:
+        complex:
+          root: CreatedIncidentID
+      retry-count:
+        simple: "0"
+      retry-interval:
+        simple: "10"
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 730,
+          "y": 1960
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: c3405aa2-e455-41fc-80fb-c393a4f4a149
+    type: condition
+    task:
+      id: c3405aa2-e455-41fc-80fb-c393a4f4a149
+      version: -1
+      name: Is there an existing campaign incident?
+      description: Checks whether any of the similar phishing incidents are currently
+        linked to an existing phishing campaign.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: ExistingCampaignID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 1410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 571eafa4-5bad-4632-888c-6cdca60a8b89
+    type: title
+    task:
+      id: 571eafa4-5bad-4632-888c-6cdca60a8b89
+      version: -1
+      name: Not A Campaign
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "15"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1200,
+          "y": 1080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: dbac7d01-7029-4680-8853-f5f93e786cd7
+    type: regular
+    task:
+      id: dbac7d01-7029-4680-8853-f5f93e786cd7
+      version: -1
+      name: Update the campaign with new incident data
+      description: |-
+        Copying EmailCampaign context from current incident to other existing incident.
+        This script runs with elevated permissions.
+        Cortex XSOAR recommends using the built-in RBAC functionality to limit access to only those users requiring access to this script.
+      scriptName: SetPhishingCampaignDetails
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      id:
+        complex:
+          root: ExistingCampaignID
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ExistingCampaignID
+                iscontext: true
+          transformers:
+          - operator: uniq
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 200,
+          "y": 1620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 2a6a9377-03c3-4fbf-8f0e-9022c90a7890
+    type: regular
+    task:
+      id: 2a6a9377-03c3-4fbf-8f0e-9022c90a7890
+      version: -1
+      name: Investigate new campaign incident
+      description: Start investigation of the campaign incident so that the data can
+        be changed.
+      script: Builtin|||investigate
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      id:
+        complex:
+          root: CreatedIncidentID
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 730,
+          "y": 1780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: e824c80a-1df8-4bb2-8314-aba3961a9e27
+    type: regular
+    task:
+      id: e824c80a-1df8-4bb2-8314-aba3961a9e27
+      version: -1
+      name: Link the phishing incidents to the campaign incident
+      description: Links the phishing incidents that were found in the campaign, to
+        the phishing campaign incident.
+      script: Builtin|||linkIncidents
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      incidentId:
+        complex:
+          root: ExistingCampaignID
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ExistingCampaignID
+                iscontext: true
+          transformers:
+          - operator: FirstArrayElement
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: CreatedIncidentID
+                iscontext: true
+      linkedIncidentIDs:
+        complex:
+          root: EmailCampaign.incidents
+          accessor: id
+          transformers:
+          - operator: uniq
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 130,
+          "y": 2500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: bf08e4d5-db2c-4f32-88c4-b2bff0bd09db
+    type: condition
+    task:
+      id: bf08e4d5-db2c-4f32-88c4-b2bff0bd09db
+      version: -1
+      name: Can the found incidents be linked to the campaign?
+      description: Checks whether the detected Phishing incidents can be linked to
+        the Phishing Campaign incident by checking if the AutomaticallyLinkIncidents
+        playbook input is set to True.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "23"
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.AutomaticallyLinkIncidents
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 2310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 54a5ca08-5659-4aa4-85cb-dd5bff80d59f
+    type: title
+    task:
+      id: 54a5ca08-5659-4aa4-85cb-dd5bff80d59f
+      version: -1
+      name: Resume Campaign Detections
+      description: Releases the phishing campaign lock to allow other phishing incidents
+        to detect and find campaigns.
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+      - "32"
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1200,
+          "y": 3290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: efa98d6f-d321-4719-8858-adc0daafd732
+    type: title
+    task:
+      id: efa98d6f-d321-4719-8858-adc0daafd732
+      version: -1
+      name: Phishing Campaign Detected
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 1080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 77e030e4-b3ab-4a48-81d7-2f9344916111
+    type: regular
+    task:
+      id: 77e030e4-b3ab-4a48-81d7-2f9344916111
+      version: -1
+      name: Update additional campaign layout sections
+      description: Updates the EmailCampaignSummary, EmailCampaignMutualIndicators
+        and EmailCampaignCanvas fields in the Phishing Campaign incident.
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      emailcampaigncanvas:
+        complex:
+          root: incident
+          accessor: emailcampaigncanvas
+      emailcampaignmutualindicators:
+        complex:
+          root: incident
+          accessor: emailcampaignmutualindicators
+      emailcampaignsnippets:
+        complex:
+          root: incident
+          accessor: emailcampaignsnippets
+      emailcampaignsummary:
+        complex:
+          root: incident
+          accessor: emailcampaignsummary
+      id:
+        complex:
+          root: ExistingCampaignID
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ExistingCampaignID
+                iscontext: true
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 200,
+          "y": 1780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: cb766233-14f3-499d-8f81-ad484901bd6c
+    type: regular
+    task:
+      id: cb766233-14f3-499d-8f81-ad484901bd6c
+      version: -1
+      name: Update additional campaign layout sections
+      description: Updates the EmailCampaignSummary, EmailCampaignMutualIndicators
+        and EmailCampaignCanvas fields in the Phishing Campaign incident.
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      emailcampaigncanvas:
+        complex:
+          root: incident
+          accessor: emailcampaigncanvas
+      emailcampaignmutualindicators:
+        complex:
+          root: incident
+          accessor: emailcampaignmutualindicators
+      emailcampaignsnippets:
+        complex:
+          root: incident
+          accessor: emailcampaignsnippets
+      emailcampaignsummary:
+        complex:
+          root: incident
+          accessor: emailcampaignsummary
+      id:
+        complex:
+          root: CreatedIncidentID
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 730,
+          "y": 2130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: dd0e0421-a858-44ad-8af1-c10f8050e6ad
+    type: condition
+    task:
+      id: dd0e0421-a858-44ad-8af1-c10f8050e6ad
+      version: -1
+      name: Can the found incidents be closed?
+      description: Checks whether the Phishing incidents that were detected can be
+        automatically closed. If the IncludeSelf parameter is set to True, the current
+        incident will also be closed.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "15"
+      "yes":
+      - "21"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.AutomaticallyCloseIncidents
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 2860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 937adf0c-aafe-4b00-80b5-5e82086c1ada
+    type: regular
+    task:
+      id: 937adf0c-aafe-4b00-80b5-5e82086c1ada
+      version: -1
+      name: Close all found phishing incidents
+      description: Closes all the phishing incidents that were found to be part of
+        the campaign.
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      closeReason:
+        simple: Part of a phishing campaign.
+      id:
+        complex:
+          root: EmailCampaign.incidents
+          accessor: id
+          transformers:
+          - operator: uniq
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 3060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 30f54b1e-f139-461d-8660-0ae632beecb1
+    type: regular
+    task:
+      id: 30f54b1e-f139-461d-8660-0ae632beecb1
+      version: -1
+      name: Mark incidents as part of the campaign
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      id:
+        complex:
+          root: EmailCampaign.incidents
+          accessor: id
+          transformers:
+          - operator: uniq
+      partofcampaign:
+        complex:
+          root: ExistingCampaignID
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ExistingCampaignID
+                iscontext: true
+          transformers:
+          - operator: FirstArrayElement
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: CreatedIncidentID
+                iscontext: true
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 2690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: a4f2e248-ec23-490c-84a2-d73d14fd4b9b
+    type: condition
+    task:
+      id: a4f2e248-ec23-490c-84a2-d73d14fd4b9b
+      version: -1
+      name: Is the Demsito Lock integration enabled?
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "1"
+      "yes":
+      - "27"
+    scriptarguments:
+      brandname:
+        simple: Demisto Lock
+    results:
+    - brandInstances
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 150,
+          "y": 240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 5b05490e-96f4-4032-84ff-b2a1bc739610
+    type: regular
+    task:
+      id: 5b05490e-96f4-4032-84ff-b2a1bc739610
+      version: -1
+      name: Lock campaign detection
+      description: Locks phishing incidents before searching campaigns to prevent
+        them from all being unable to find an existing campaign at the same time,
+        and creating multiple new campaign incidents.
+      script: '|||demisto-lock-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      execution-timeout:
+        simple: "9000"
+      info:
+        simple: Locks phishing incidents before searching campaigns to prevent them
+          from all being unable to find an existing campaign at the same time, and
+          creating multiple new campaign incidents.
+      name:
+        simple: Phishing - Campaign Detection
+      timeout:
+        simple: "9000"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 150,
+          "y": 450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: e1fe8eaf-f6bf-41b1-8e3f-360465ac25db
+    type: regular
+    task:
+      id: e1fe8eaf-f6bf-41b1-8e3f-360465ac25db
+      version: -1
+      name: Unlock campaign detection
+      description: Allows more phishing campaigns to be detected again.
+      script: '|||demisto-lock-release'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      name:
+        simple: Phishing - Campaign Detection
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 960,
+          "y": 3620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 009dbbe0-1090-4d46-84c9-a2596df628f7
+    type: condition
+    task:
+      id: 009dbbe0-1090-4d46-84c9-a2596df628f7
+      version: -1
+      name: Is the Demsito Lock integration enabled?
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "32"
+      "yes":
+      - "28"
+    scriptarguments:
+      brandname:
+        simple: Demisto Lock
+    results:
+    - brandInstances
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 960,
+          "y": 3440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: afa6aad3-6c3d-47a7-8cdb-895cc4019d7c
+    type: title
+    task:
+      id: afa6aad3-6c3d-47a7-8cdb-895cc4019d7c
+      version: -1
+      name: Pause Further Campaign Detections
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "26"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 150,
+          "y": 90
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: fb6a1586-e3f4-472f-898a-516cf7e647eb
+    type: title
+    task:
+      id: fb6a1586-e3f4-472f-898a-516cf7e647eb
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1200,
+          "y": 3820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "13_12_yes": 0.46,
+      "20_15_#default#": 0.53,
+      "26_1_#default#": 0.53,
+      "26_27_yes": 0.6,
+      "29_32_#default#": 0.32,
+      "2_17_yes": 0.55,
+      "2_8_#default#": 0.44
+    },
+    "paper": {
+      "dimensions": {
+        "height": 3935,
+        "width": 1450,
+        "x": 130,
+        "y": -50
+      }
+    }
+  }
+inputs:
+- key: AutomaticallyLinkIncidents
+  value:
+    simple: "True"
+  required: false
+  description: Whether to automatically link the incidents that make up the campaign,
+    to the phishing campaign incident. Can be True (default) or False. It is recommended
+    not to change the default.
+  playbookInputQuery:
+- key: incidentTypeFieldName
+  value:
+    simple: type
+  required: false
+  description: The name of the incident field in which the incident type is stored.
+    Default is "type". Change this argument only if you're using a custom field for
+    specifying the incident type.
+  playbookInputQuery:
+- key: incidentTypes
+  value:
+    simple: Phishing
+  required: false
+  description: A comma-separated list of incident types by which to filter. Specify
+    "None" to search through all incident types By default, the value is "Phishing"
+    because the Phishing incident type is used out of the box.
+  playbookInputQuery:
+- key: existingIncidentsLookback
+  value:
+    simple: 7 days ago
+  required: false
+  description: 'The date from which to search for similar incidents. Date format is
+    the same as in the incidents query page. For example: "3 days ago", "2019-01-01T00:00:00
+    +0200".'
+  playbookInputQuery:
+- key: query
+  value: {}
+  required: false
+  description: Additional text by which to query incidents to find similar Phishing
+    incidents. Uses the same language to query incidents in the UI.
+  playbookInputQuery:
+- key: limit
+  value:
+    simple: "1000"
+  required: false
+  description: The maximum number of incidents to fetch. Determines how many incidents
+    can be checked for similarity at the time of execution.
+  playbookInputQuery:
+- key: emailSubject
+  value:
+    simple: emailsubject
+  required: false
+  description: The name of the incident field that contains the email subject. By
+    default this is `emailsubject` (because the email subject is stored under `${incident.emailsubject}`.
+  playbookInputQuery:
+- key: emailBody
+  value:
+    simple: emailbody
+  required: false
+  description: The name of the incident field that contains the email body.
+  playbookInputQuery:
+- key: emailBodyHTML
+  value:
+    simple: emailbodyhtml
+  required: false
+  description: The name of the incident field that contains the HTML version of the
+    email body.
+  playbookInputQuery:
+- key: emailFrom
+  value:
+    simple: emailfrom
+  required: false
+  description: The name of the incident field that contains the email sender.
+  playbookInputQuery:
+- key: statusScope
+  value:
+    simple: All
+  required: false
+  description: Whether to compare the new incident to closed incidents, non closed
+    incidents, or all incidents. Can be "All", "ClosedOnly", or "NonClosedOnly". Default
+    is "All".
+  playbookInputQuery:
+- key: threshold
+  value:
+    simple: "0.8"
+  required: false
+  description: The threshold to consider an incident as similar. The range of values
+    is 0-1. If needed, make small adjustments and continue to evaluate the required
+    value. It is recommended not to change the default value of `0.8`.|
+  playbookInputQuery:
+- key: maxIncidentsToReturn
+  value:
+    simple: "200"
+  required: false
+  description: The maximum number of incidents to display as part of a campaign. If
+    a campaign includes a higher number of incidents, the results will contain only
+    these amounts of incidents.
+  playbookInputQuery:
+- key: minIncidentsForCampaign
+  value:
+    simple: "3"
+  required: false
+  description: The minimum number of incidents to consider as a campaign. For example,
+    if you specify `10`, but only `9` similar incidents are found, the script will
+    not find them as part of a campaign.|
+  playbookInputQuery:
+- key: minUniqueRecipients
+  value:
+    simple: "2"
+  required: false
+  description: The minimum number of unique recipients of similar email incidents
+    to consider as a campaign. as a campaign.
+  playbookInputQuery:
+- key: fieldsToDisplay
+  value:
+    simple: id,name,similarity,emailfrom,recipients,severity,status,occurred
+  required: false
+  description: |-
+    A comma-separated list of fields to display. For example, "emailclassification,closereason". If a list of fields is provided, and a campaign is detected, these incidents fields will be displayed.
+    Note - removing the "emailfrom", "recipients", or "severity" fields from this list will affect dynamic sections displayed in the campaign layout and render them useless.
+  playbookInputQuery:
+- key: AutomaticallyCloseIncidents
+  value:
+    simple: "False"
+  required: false
+  description: Whether to automatically close the incidents that make up the campaign.
+    Can be True or False.
+  playbookInputQuery:
+outputs: []
+tests:
+- Phishing Investigation - Generic v2 - Campaign Test
+fromversion: 6.0.0

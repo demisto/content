@@ -10,6 +10,7 @@ import contextlib
 import traceback
 import xml.etree.ElementTree as ElementTree
 import dateparser
+from os import path
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -266,9 +267,9 @@ SALESFORCE_QUERIES: Dict[str, str] = {
 # in seconds
 REQUEST_TIMEOUT_MAX_VALUE = 120
 
-AVAILABLE_FIELD_LIST = ["category_id", "queue_id", "staff_id", "status_id", "urgency_id", "client_id"]
+AVAILABLE_FIELD_LIST = ["category_id", "queue_id", "staff_id", "status_id", "urgency_id", "client_id", 'impact_id']
 DEFAULT_INCIDENT_ARGUMENTS = ['client_id', 'description', 'open_datetime', 'due_datetime', 'queue_id', 'template_id',
-                              'category_id', 'urgency_id', 'status_id', 'staff_id']
+                              'category_id', 'urgency_id', 'status_id', 'staff_id', 'impact_id']
 
 ALL_INSTANCE_TYPE: Dict[str, str] = {
     'all_classes': 'All Classes',
@@ -353,7 +354,7 @@ QUEUE_TYPES = {
     'Incident/Service Request': 'BMCServiceDesk__Incident__c'
 }
 
-SOAP_LOGIN_URL = f'https://login.salesforce.com/services/Soap/u/{LOGIN_API_VERSION}'
+SOAP_LOGIN_URL = ''
 
 
 class Client(BaseClient):
@@ -456,6 +457,7 @@ class Client(BaseClient):
             demisto.setIntegrationContext(integration_context)
             return integration_context['sessionId']
         else:
+            demisto.debug(f'RemedyForce Login server returned: {resp.text}')
             raise DemistoException(MESSAGES['AUTHENTICATION_CONFIG_ERROR'])
 
     def get_salesforce_session(self):
@@ -1656,6 +1658,7 @@ def process_attachment_record(record: Dict[str, Any]) -> Dict[str, Any]:
     :return: processed attachment record for markdown
     """
     date_time = dateparser.parse(record.get('ContentDocument', {}).get('CreatedDate', ''))
+    assert date_time is not None
     date = date_time.strftime(DISPLAY_DATE_FORMAT)
     download_url = demisto.params()['url'] + URL_SUFFIX['DOWNLOAD_ATTACHMENT'].format(
         record.get('ContentDocumentId', ''))
@@ -1697,6 +1700,7 @@ def process_notes_record(record: Dict[str, Any]) -> Dict[str, str]:
     :return: list
     """
     date_time = dateparser.parse(record.get('CreatedDate', ''))
+    assert date_time is not None
     date = date_time.strftime(DISPLAY_DATE_FORMAT)
     notes = {
         'Note': record.get('BMCServiceDesk__note__c', ''),
@@ -2751,11 +2755,20 @@ def bmc_remedy_service_request_get_command(client: Client, args: Dict[str, Any])
         return HR_MESSAGES["NO_SERVICE_REQUEST_DETAILS_FOUND"]
 
 
+def init_globals(params):
+    global SOAP_LOGIN_URL
+    auth_url = params.get('auth_url')
+    if auth_url:
+        SOAP_LOGIN_URL = path.join(auth_url, f'services/Soap/u/{LOGIN_API_VERSION}')
+    else:
+        SOAP_LOGIN_URL = f'https://login.salesforce.com/services/Soap/u/{LOGIN_API_VERSION}'
+
+
 def main():
     """
         PARSE AND VALIDATE INTEGRATION PARAMS
     """
-
+    global SOAP_LOGIN_URL
     # Commands dictionary
     commands: Dict[str, Callable] = {
         'bmc-remedy-service-request-definition-get': bmc_remedy_service_request_definition_get_command,
@@ -2784,28 +2797,29 @@ def main():
     command = demisto.command()
     LOG(f'Command being called is {command}')
     try:
-
+        params = demisto.params()
+        init_globals(params)
         # Username and password from credentials
-        username = demisto.params().get('username')
-        password = demisto.params().get('password')
+        username = params.get('username')
+        password = params.get('password')
 
         # Get the service API base url
-        base_url = demisto.params()['url']
+        base_url = params['url']
 
         # Certificate verification setting
-        verify_certificate = not demisto.params().get('insecure', False)
+        verify_certificate = not params.get('insecure', False)
 
         # System proxy settings
-        proxy = demisto.params().get('proxy', False)
+        proxy = params.get('proxy', False)
 
         # Get request timeout
         request_timeout = get_request_timeout()
 
         # Validating params for fetch-incidents.
-        validate_params_for_fetch_incidents(demisto.params())
+        validate_params_for_fetch_incidents(params)
 
         # Get first fetch time from integration params.
-        first_fetch_time = demisto.params().get('first_fetch')
+        first_fetch_time = params.get('first_fetch')
 
         # getting numeric value from string representation
         start_time, _ = parse_date_range(first_fetch_time, date_format=DATE_FORMAT, utc=True)

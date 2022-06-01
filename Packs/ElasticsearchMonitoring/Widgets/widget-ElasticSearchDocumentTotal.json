@@ -1,0 +1,25 @@
+{
+    "id": "es-docs-total",
+    "version": -1,
+    "fromVersion": "6.1.0",
+    "modified": "2021-01-12T08:16:15.255813Z",
+    "name": "Elasticsearch Current Total Documents",
+    "dataType": "system",
+    "widgetType": "number",
+    "query": "es-doc.total",
+    "isPredefined": true,
+    "description": "Elasticsearch total amount of documents in XSOAR indices",
+    "dateRange": {
+        "fromDate": "0001-01-01T00:00:00Z",
+        "toDate": "0001-01-01T00:00:00Z",
+        "period": {
+            "by": "",
+            "byTo": "",
+            "byFrom": "",
+            "toValue": null,
+            "fromValue": null,
+            "field": ""
+        },
+        "fromDateLicense": "0001-01-01T00:00:00Z"
+    }
+}

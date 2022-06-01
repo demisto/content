@@ -1,9 +1,9 @@
 Use the AutoFocus Feeds integration to fetch indicators from AutoFocus.
 For more information click [here](https://docs.paloaltonetworks.com/autofocus/autofocus-admin/autofocus-feeds.html).
 This Feed supports the AutoFocus Custom Feed and the AutoFocus Samples Feed.
-To ingest the Daily Feed, use the [AutoFocus Daily Feed](https://xsoar.pan.dev/docs/reference/integrations/auto-focus-daily-feed). 
+TIM customers that upgraded to version 6.2 or above, can have the API Key pre-configured in their main account so no additional input is needed. To use this feature, upgrade your license so it includes the license key.
 
-## Configure AutoFocus Feed on Demisto
+## Configure AutoFocus Feed on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for AutoFocus Feed.
@@ -12,8 +12,8 @@ To ingest the Daily Feed, use the [AutoFocus Daily Feed](https://xsoar.pan.dev/d
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | feed | The fetch indicators. | False |
-| indicator_feeds | The indicator feed. Choose the requested indicator feeds. The Custom Feeds and Daily Threat Feed. | True |
-| api_key | The AutoFocus API key. | True |
+| indicator_feeds | The indicator feed. Choose the requested indicator feeds. The Custom Feeds and Samples Feed. | True |
+| api_key | API Key. | False |
 | custom_feed_urls | The URL for the custom feed to fetch. This applies only in cases where a Custom Feed is requested. | False |
 | scope_type | The scope of the samples to be fetched. | False |
 | sample_query | The query that will be used to fetch the samples. | False |
@@ -24,6 +24,7 @@ To ingest the Daily Feed, use the [AutoFocus Daily Feed](https://xsoar.pan.dev/d
 | feedExpirationInterval | The interval after which the feed expires. | False |
 | feedFetchInterval | The feed fetch interval. | False |
 | feedBypassExclusionList | Whether to bypass exclusion list. | False |
+| override_default_credentials | Override default credentials | False |
 | insecure | Whether to trust any certificate (not secure). | False |
 | proxy | Whether to use the system proxy settings. | False |
 
@@ -60,7 +61,7 @@ You can go to AutoFocus UI -> Search -> Sample -> Advanced -> Create your desire
 }`
 
 ## Commands
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### Get Indicators
@@ -92,7 +93,7 @@ There is no context output for this command.
 ### Indicators from AutoFocus:
 |Value|Type|
 |---|---|
-| demisto\<Span\>.com | Domain |
+| XSOAR\<Span\>.com | Domain |
 | {file hash} | File |
 | 8.8.8.8 | IP |
 | demsito\<Span\>.com/some/aditional/path | URL |
@@ -103,8 +104,9 @@ To bring the next batch of indicators run:
 
 ## Demo Video
 <video controls>
-    <source src="https://github.com/demisto/content/raw/3e9401284a518efa66d9b66bb5c1b5e0e61dbdb5/Packs/FeedAutofocus/Integrations/FeedAutofocus/demo_video/AutoFocus_Feed_demo.mp4"
+    <source src="https://github.com/demisto/content-assets/raw/7fd9e45c4d809dc1a41521c66828733dafe82148/Assets/FeedAutofocus/AutoFocus_Feed_demo.mp4"
             type="video/mp4"/>
-    Sorry, your browser doesn't support embedded videos. You can download the video at: https://github.com/demisto/content/raw/3e9401284a518efa66d9b66bb5c1b5e0e61dbdb5/Packs/FeedAutofocus/Integrations/FeedAutofocus/demo_video/AutoFocus_Feed_demo.mp4 
+    Sorry, your browser doesn't support embedded videos. You can download the video at: https://github.com/demisto/content-assets/raw/7fd9e45c4d809dc1a41521c66828733dafe82148/Assets/FeedAutofocus/AutoFocus_Feed_demo.mp4 
 </video>
+
 **Note:** The video instructs users to click the **_API** link to get the JSON query of the *Autofocus Samples Search*. An easier option to get the JSON query is available via the **Export Search** button.

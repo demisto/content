@@ -1,0 +1,136 @@
+{
+  "description": "",
+  "feed": false,
+  "id": "Rubrik Polaris Radar - Mapping",
+  "mapping": {
+    "Rubrik Radar": {
+      "dontMapEventToLabels": false,
+      "internalMapping": {
+        "Rubrik CDM Cluster ID": {
+          "complex": null,
+          "simple": "cluster.id"
+        },
+        "Rubrik CDM Cluster Name": {
+          "complex": null,
+          "simple": "cluster.name"
+        },
+        "Rubrik Polaris Activity Series ID": {
+          "complex": {
+            "accessor": "",
+            "filters": [],
+            "root": "activitySeriesId",
+            "transformers": []
+          },
+          "simple": ""
+        },
+        "Rubrik Polaris Analysis Pipeline": {
+          "complex": null,
+          "simple": "message"
+        },
+        "Rubrik Polaris Analysis Progress": {
+          "complex": null,
+          "simple": "progress"
+        },
+        "Rubrik Polaris CDM Cluster ID": {
+          "complex": null,
+          "simple": "cluster.id"
+        },
+        "Rubrik Polaris CDM Cluster Name": {
+          "complex": null,
+          "simple": "cluster.name"
+        },
+        "Rubrik Polaris Cluster Location Path": {
+          "complex": null,
+          "simple": "location"
+        },
+        "Rubrik Polaris Event Completed": {
+          "complex": null,
+          "simple": "eventCompleted"
+        },
+        "Rubrik Polaris Event ID": {
+          "complex": null,
+          "simple": "id"
+        },
+        "Rubrik Polaris FID": {
+          "complex": null,
+          "simple": "fid"
+        },
+        "Rubrik Polaris Last Activity Status": {
+          "complex": {
+            "accessor": "",
+            "filters": [],
+            "root": "lastActivityStatus",
+            "transformers": []
+          },
+          "simple": ""
+        },
+        "Rubrik Polaris Last Updated": {
+          "complex": {
+            "accessor": "",
+            "filters": [],
+            "root": "lastUpdated",
+            "transformers": []
+          },
+          "simple": ""
+        },
+        "Rubrik Polaris Message": {
+          "complex": null,
+          "simple": "message"
+        },
+        "Rubrik Polaris Object ID": {
+          "complex": {
+            "accessor": "",
+            "filters": [],
+            "root": "objectId",
+            "transformers": []
+          },
+          "simple": ""
+        },
+        "Rubrik Polaris Object Name": {
+          "complex": {
+            "accessor": "",
+            "filters": [],
+            "root": "objectName",
+            "transformers": []
+          },
+          "simple": ""
+        },
+        "Rubrik Polaris Object Type": {
+          "complex": {
+            "accessor": "",
+            "filters": [],
+            "root": "objectType",
+            "transformers": []
+          },
+          "simple": ""
+        },
+        "Rubrik Polaris Start Time": {
+          "complex": null,
+          "simple": "startTime"
+        },
+        "severity": {
+          "complex": {
+            "accessor": "",
+            "filters": [],
+            "root": "severity",
+            "transformers": []
+          },
+          "simple": ""
+        }
+      }
+    },
+    "dbot_classification_incident_type_all": {
+      "dontMapEventToLabels": false,
+      "internalMapping": {
+        "Hostnames": {
+          "complex": null,
+          "simple": "objectName"
+        }
+      }
+    }
+  },
+  "name": "Rubrik Polaris Radar - Mapping",
+  "type": "mapping-incoming",
+  "version": -1,
+  "fromVersion": "6.0.0"
+}

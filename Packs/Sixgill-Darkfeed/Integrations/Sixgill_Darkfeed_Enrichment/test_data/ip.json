@@ -1,0 +1,41 @@
+{
+  "items": [
+    {
+      "created": "2020-09-11T21:11:21.670Z",
+      "description": "IP address was listed as an Emotet C2 server",
+      "external_reference": [
+        {
+          "description": "Mitre attack tactics and technique reference",
+          "mitre_attack_tactic": "Command and Control",
+          "mitre_attack_tactic_id": "TA0011",
+          "mitre_attack_tactic_url": "https://attack.mitre.org/tactics/TA0011/",
+          "source_name": "mitre-attack"
+        }
+      ],
+      "id": "indicator--f518b066-003d-4eb2-9783-ece9898d8a82",
+      "labels": [
+        "malicious-activity",
+        "cnc",
+        "c2",
+        "malware",
+        "emotet",
+        "Command and Control"
+      ],
+      "lang": "en",
+      "modified": "2020-09-11T21:11:21.670Z",
+      "pattern": "[ipv4-addr:value = '8.8.8.8']",
+      "sixgill_actor": "<SIXGILL_ACTOR>",
+      "sixgill_confidence": 90,
+      "sixgill_feedid": "darkfeed_005",
+      "sixgill_feedname": "emotet_c2s",
+      "sixgill_postid": "<SIXGILL_POST_ID>",
+      "sixgill_posttitle": "<SIXGILL_POST_TITLE>",
+      "sixgill_severity": 80,
+      "sixgill_source": "<SIXGILL_SOURCE>",
+      "spec_version": "2.0",
+      "type": "indicator",
+      "valid_from": "2020-09-11T21:04:44Z"
+    }
+  ],
+  "total": 1
+}

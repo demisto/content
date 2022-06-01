@@ -223,7 +223,33 @@ exampleUsers = [
                 "helpSnippetDisabled": False,
                 "homepage": "",
                 "id": "admin",
-                "image": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJAAAACQCAYAAADnRuK4AAAACXBIWXMAABYlAAAWJQFJUiTwAAAFeElEQVR42u2dO1MbVxSAj2whIZAQHlWksSrcwKAMVWjYNLhiRjOkSYXyC7z5BfE/iNKmYWlchRnNyE2oRKO0y5DGaiI3pokcbRYNelopCDNOeGmlXS269/v6BcH9dPace+4jMhwOhwIwJk/4FwACAQIBAgECASAQIBAgECAQAAIBAgECAQIBIBAgECAQIBAAAgECAQIBAgECASAQIBAgECAQAAIBAgECAQIBIBAEQfSxfJBK74NY7ZrYg4ac9huMzD1sRDOSj2XFTKzLciQW6meJhH3AlN1viNmqyknvHDM8ko7E5PXCppiJdT0Fsto1+e6iggkTsh9fFStl6JUDIY9/HHZqUrw80ycC2f2GGE5ZnGGX0feRP559K9mnKfUjkNmqIk8AFNvTj0JTF8juN0iYA6LUqasvkNV5x0gHxPtPF1P/nVOfB7IfmONJR2JSWtoRY+6LmR/QgluRw05NaWmnHoEeen1ZKWPm5WkOu1rIE0oEeoh8LDvz8hhOWZvZdHphyINAyINAyEMOpCe6z6oTgZCHCCRy1Zy1Ou9uTBNsz61IIf5CCvOryINAN6kPXMm7x3fmHye9cznpnUuxfSal1I4vzUbkUeQVVh+4kmsejZS8nvYbkmseSX3gThzpvmweIY8KAuXdY08D6Qy7knePJ5KHNUyKCGS1a2OVzaf9hljtGvJoL9AEXX2vzyKPgkn0JGuKvDxrtqry0+XvmKJiDjQNkAeBAIEAgXxme24llGdBEYEK8RehPAuqCDS/KhvRjOfnNqIZ3/tiCDSjlFI7kvZwuEA6EpNSaodRR6Arsk9TYi/vjRSJNqIZsZf3pr5zE4FmRKKDpHFrcrw9tyIHSQN5AkKZ9UCF+VVyGyIQIBAgEAACAQIBAgECASAQIBAg0AiUunVGBYHu5qHFXAW3IpXeB0ZmRph6LywXzdy7K8IZduVr5y0jQwS6I8KwGjAw0iFcvDJ1gXLRDGuSAyKMw0lDSaKLi1uhfFtUx0ys6SFQLpqR4uIWI+4j+/FVfSKQyNUCsIOkwcj7wEY0I8VkOF9ILpybcV4l1kKN5qELdA1XXo7O8ydJycezYs6vh77O+9EI9FiJ/PnzxK+XSno39LtNlcuBdEls7eU9ZeUR4ZzowDhIGlrsEkEgn1HpuioECqGc9usoYXIgDfOdSnpXu92vRCAf+GFhU14vbGr5tyPQhPmOlTJm/pI8BAqB50+SUlp6KbkxzihCIM3ZnluR0tJLped3SKID4lViTemZZSJQgOgyOYhAASTLlfSu9vkOAnmkOewq3wydFLrxQBINCAQIBAikCXa/IdmPb8a6ufAhrHZNsh/fiK3JslztkujmsCu5v36R958uRETkx8WvxEys+/Kzi5dn8n3rNxG5anXYz75RvnrTSqDmsCuGU76xaH8/vipWypjoZxfcihx2/hvRdJgC0OoVZl5Ub93xcdipieGUpTnGVd7XUv5fHpGrC37Niyo5kBLytKq3DvI1J71zMZyyp3vl6wNXDKd87562w05NzJa6EmnxCvNy6/KobQu73xDDKY98b72qfTQtIlAumhn5MAfn31fSfRWa1a55kicdiSnbR9Mmia4PXMm7x552vd5WoX1eaY2C6gvttavC8n//6mkf/ucV2m2V1n3osPBMy2bqOCJcJ9rjiKcy2nbjvb6KvODn5CQCPfLqzGxVR06GR0mWi4tbWq1a1H49kNdyfNLyH4Go0LSrtBAooApNl0oLgQKq0HSptBAogApNp0oLgXys0HSstBDIpwqN/WEINHaFJiLaVloI5EOFJiJsLkQg8Bu29QACAQIBAgECASAQIBAgECAQAAIBAgECAQIBIBAgECAQIBAAAgECAQLBLPMPFxalhUpzvrEAAAAASUVORK5CYII=",  # noqa E501
+                "image": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJAAAACQCAYAAADnRuK4AAAACXBIWXMAAB"
+                         "YlAAAWJQFJUiTwAAAFeElEQVR42u2dO1MbVxSAj2whIZAQHlWksSrcwKAMVWjYNLhiRjOkSYXyC7"
+                         "z5BfE/iNKmYWlchRnNyE2oRKO0y5DGaiI3pokcbRYNelopCDNOeGmlXS269/v6BcH9dPace+4jM"
+                         "hwOhwIwJk/4FwACAQIBAgECASAQIBAgECAQAAIBAgECAQIBIBAgECAQIBAAAgECAQIBAgECASAQIB"
+                         "AgECAQAAIBAgECAQIBIBAEQfSxfJBK74NY7ZrYg4ac9huMzD1sRDOSj2XFTKzLciQW6meJhH3AlN1"
+                         "viNmqyknvHDM8ko7E5PXCppiJdT0Fsto1+e6iggkTsh9fFStl6JUDIY9/HHZqUrw80ycC2f2GGE5Zn"
+                         "GGX0feRP559K9mnKfUjkNmqIk8AFNvTj0JTF8juN0iYA6LUqasvkNV5x0gHxPtPF1P/nVOfB7IfmON"
+                         "JR2JSWtoRY+6LmR/QgluRw05NaWmnHoEeen1ZKWPm5WkOu1rIE0oEeoh8LDvz8hhOWZvZdHphyINAyI"
+                         "NAyEMOpCe6z6oTgZCHCCRy1Zy1Ou9uTBNsz61IIf5CCvOryINAN6kPXMm7x3fmHye9cznpnUuxfSal1I"
+                         "4vzUbkUeQVVh+4kmsejZS8nvYbkmseSX3gThzpvmweIY8KAuXdY08D6Qy7knePJ5KHNUyKCGS1a2OVza"
+                         "f9hljtGvJoL9AEXX2vzyKPgkn0JGuKvDxrtqry0+XvmKJiDjQNkAeBAIEAgXxme24llGdBEYEK8RehPAu"
+                         "qCDS/KhvRjOfnNqIZ3/tiCDSjlFI7kvZwuEA6EpNSaodRR6Arsk9TYi/vjRSJNqIZsZf3pr5zE4FmRKK"
+                         "DpHFrcrw9tyIHSQN5AkKZ9UCF+VVyGyIQIBAgEAACAQIBAgECASAQIBAg0AiUunVGBYHu5qHFXAW3IpX"
+                         "eB0ZmRph6LywXzdy7K8IZduVr5y0jQwS6I8KwGjAw0iFcvDJ1gXLRDGuSAyKMw0lDSaKLi1uhfFtUx0"
+                         "ys6SFQLpqR4uIWI+4j+/FVfSKQyNUCsIOkwcj7wEY0I8VkOF9ILpybcV4l1kKN5qELdA1XXo7O8ydJ"
+                         "ycezYs6vh77O+9EI9FiJ/PnzxK+XSno39LtNlcuBdEls7eU9ZeUR4ZzowDhIGlrsEkEgn1HpuioEC"
+                         "qGc9usoYXIgDfOdSnpXu92vRCAf+GFhU14vbGr5tyPQhPmOlTJm/pI8BAqB50+SUlp6KbkxzihCIM"
+                         "3ZnluR0tJLped3SKID4lViTemZZSJQgOgyOYhAASTLlfSu9vkOAnmkOewq3wydFLrxQBINCAQIBAik"
+                         "CXa/IdmPb8a6ufAhrHZNsh/fiK3JslztkujmsCu5v36R958uRETkx8WvxEys+/Kzi5dn8n3rNxG5"
+                         "anXYz75RvnrTSqDmsCuGU76xaH8/vipWypjoZxfcihx2/hvRdJgC0OoVZl5Ub93xcdipieGUpTnG"
+                         "Vd7XUv5fHpGrC37Niyo5kBLytKq3DvI1J71zMZyyp3vl6wNXDKd87562w05NzJa6EmnxCvNy6/Ko"
+                         "bQu73xDDKY98b72qfTQtIlAumhn5MAfn31fSfRWa1a55kicdiSnbR9Mmia4PXMm7x552vd5WoX1"
+                         "eaY2C6gvttavC8n//6mkf/ucV2m2V1n3osPBMy2bqOCJcJ9rjiKcy2nbjvb6KvODn5CQCPfLqzGx"
+                         "R06GR0mWi4tbWq1a1H49kNdyfNLyH4Go0LSrtBAooApNl0oLgQKq0HSptBAogApNp0oLgXys0HSst"
+                         "BDIpwqN/WEINHaFJiLaVloI5EOFJiJsLkQg8Bu29QACAQIBAgECASAQIBAgECAQAAIBAgECAQIBIB"
+                         "AgECAQIBAAAgECAQLBLPMPFxalhUpzvrEAAAAASUVORK5CYII=",
+                # noqa E501
                 "investigationPage": "",
                 "lastLogin": "0001-01-01T00:00:00Z",
                 "name": "Admin Dude",
@@ -317,7 +343,9 @@ exampleUsers = [
         "File": "",
         "FileID": "",
         "FileMetadata": None,
-        "HumanReadable": "## Users\nUsername|Email|Name|Phone|Roles\n-|-|-|-|-\nadmin|admintest@demisto.com|Admin Dude|\\+650-123456|demisto: \\[Administrator\\]\n",  # noqa E501
+        "HumanReadable": "## Users\nUsername|Email|Name|Phone|Roles\n-|-|-|-|-\nadmin|admintest@demisto.com|Admin Dude|"
+                         "\\+650-123456|demisto: \\[Administrator\\]\n",
+        # noqa E501
         "ID": "",
         "IgnoreAutoExtract": False,
         "ImportantEntryContext": None,
@@ -380,8 +408,22 @@ exampleDemistoUrls = {
     "warRoom": "https://test-address:8443/#/WarRoom/7ab2ac46-4142-4af8-8cbe-538efb4e63d6",
     "workPlan": "https://test-address:8443/#/WorkPlan/7ab2ac46-4142-4af8-8cbe-538efb4e63d6",
 }
+exampleAutoFocusApiKey = '1234'
 
 callingContext = {}  # type: dict
+
+contentSecrets = {
+    "WildFire-Reports": {
+        "token": "<ReplaceWithToken>"
+    },
+    "AutoFocusTagsFeed": {
+        "api_key": "<ReplaceWithApiKey>"
+    },
+    "Http_Connector": {
+        "token": "<ReplaceWithToken>",
+        "url": "<ReplaceWithURL>"
+    }
+}
 
 
 def params():
@@ -428,12 +470,13 @@ def log(msg):
     logging.getLogger().info(msg)
 
 
-def get(obj, field):
+def get(obj, field, defaultParam=None):
     """Extracts field value from nested object
 
     Args:
       obj (dict): The object to extract the field from
       field (str): The field to extract from the object, given in dot notation
+      defaultParam (object): The default value to return in case the field doesn't exist in obj
 
     Returns:
       str: The value of the extracted field
@@ -444,7 +487,7 @@ def get(obj, field):
         if obj and part in obj:
             obj = obj[part]
         else:
-            return None
+            return defaultParam
     return obj
 
 
@@ -570,8 +613,20 @@ def results(results):
     Returns:
       None: No data returned
 
+    An example of results argument:
+    ```
+    {
+        Type: EntryType.NOTE,
+        Contents: data,
+        ContentsFormat: EntryFormat.JSON,
+        HumanReadable: md,
+        ReadableContentsFormat: EntryFormat.MARKDOWN,
+        EntryContext: context,
+        Tags: [tag1, tag2]
+    }
+    ```
     """
-    if type(results) is dict and results.get("contents"):
+    if isinstance(results, dict) and results.get("contents"):
         results = results.get("contents")
     log("demisto results: {}".format(json.dumps(results, indent=4, sort_keys=True)))
 
@@ -713,7 +768,8 @@ def getIntegrationContextVersioned(refresh=False):
     Retrieves the versioned IntegrationContext object
 
     Args:
-      refresh (bool): Whether to get the integration context straight from the DB and not from the instance memory. (Default value = False) # noqa
+      refresh (bool): Whether to get the integration context straight from the DB and not from the instance memory.
+       (Default value = False) # noqa
 
     Returns:
       dict: IntegrationContext versioned object
@@ -734,7 +790,7 @@ def incidents(incidents=None):
 
     """
     if incidents is None:
-        return exampleIncidents[0]['Contents']['data']
+        return exampleIncidents[0]['Contents']['data']  # type: ignore[index]
     else:
         return results(
             {"Type": 1, "Contents": json.dumps(incidents), "ContentsFormat": "json"}
@@ -742,7 +798,9 @@ def incidents(incidents=None):
 
 
 def incident():
-    """Retrieves the current incident
+    """Retrieves the current incident and all its fields (e.g. name, type).
+    The incident custom fields will be populated as a `dict` under the CustomFields attribute
+    (for example the `filename` custom field can be retrieved using `demisto.incident()['CustomFields'].get('filename')`).
 
     Returns:
       dict: dict representing an incident object
@@ -785,6 +843,19 @@ def demistoUrls():
     return exampleDemistoUrls
 
 
+def getAutoFocusApiKey():
+    """Retrieves the AutoFocus API Key related to this Cortex XSOAR License.
+    You can use this API Key in all AutoFocus integrations and Feeds.
+    This command is not available on tenants.
+
+
+    Returns:
+      str: String containing the API Key
+
+    """
+    return exampleAutoFocusApiKey
+
+
 def dt(obj=None, trnsfrm=None):
     """Extracts field from object using DT language syntax
 
@@ -824,7 +895,8 @@ def mirrorInvestigation(id, mirrorType, autoClose=False):
     Args:
       id (str): Incident ID to mirror
       mirrorType (str): Contains mirror type and mirror direction separated by colon, e.g. all:both
-      autoClose (bool): Whether to close the investigation when the mirrored channel is closed/archived (Default value = False)
+      autoClose (bool): Whether to close the investigation when the mirrored channel is closed/archived
+       (Default value = False)
 
     Returns:
       None: No data returned
@@ -833,12 +905,14 @@ def mirrorInvestigation(id, mirrorType, autoClose=False):
     return ""
 
 
-def updateModuleHealth(error):
+def updateModuleHealth(data, is_error=False):
     """(Integration only)
-    Updated integration module health with given error message
+    Updated integration module health with given message
 
     Args:
-      error (str): The error message to display in the integration module health
+      data (Union[str, dict]): Either the message to display in the integration module health,
+        or a dictionary containing the "eventsPulled" field (number).
+      is_error (bool): Whether or not to display it as an error message in the fetch history.
 
     Returns:
       None: No data returned
@@ -944,12 +1018,13 @@ def integrationInstance():
     return ""
 
 
-def createIndicators(indicators_batch):
+def createIndicators(indicators_batch, noUpdate=False):
     """(Integration only)
     Creates indicators from given indicator objects batch
 
     Args:
       indicators_batch (list): List of indicators objects to create
+      noUpdate (bool): No update on fetched feed (no new indicators to fetch), Available from Server version 6.5.0.
 
     Returns:
       None: No data returned
@@ -958,8 +1033,11 @@ def createIndicators(indicators_batch):
     return ""
 
 
-def searchIndicators(fromdate='', query='', size=100, page=0, todate='', value=''):
-    """Searches for indicators according to given query
+def searchIndicators(fromDate='', query='', size=100, page=0, toDate='', value='', searchAfter=None,
+                     populateFields=None):
+    """Searches for indicators according to given query.
+    If using Elasticsearch with Cortex XSOAR 6.1 or later,
+    the searchAfter argument must be used instead of the page argument.
 
     Args:
       fromdate (str): The start date to search from (Default value = '')
@@ -968,10 +1046,32 @@ def searchIndicators(fromdate='', query='', size=100, page=0, todate='', value='
       page (int): Response paging (Default value = 0)
       todate (str): The end date to search until to (Default value = '')
       value (str): The indicator value to search (Default value = '')
+      searchAfter (str): Use the last searchIndicators() outputs for search batch (Default value = None)
+      populateFields (str): Comma separated fields to filter (e.g. "value,type")
 
     Returns:
       dict: Object contains the search results
 
+    You can searchIndicators one batch at a time, without needing to load all indicators at once, by adding the argument
+    searchAfter after the demisto.executeCommand.
+    When you run a search for the query type:IP, the return value includes searchAfter
+    ```
+    >>> demisto.executeCommand(searchIndicators, "query": 'type:IP', "size" :1000})
+    {
+        "iocs": [],
+        "searchAfter": [1596106239679, dd7aa6abfcb3adf793922618005b2ad5],
+        "total": 7432
+    }
+    ```
+    You can then use the returned value of searchAfter to iterate over all batches.
+    ```
+    >>> res = demisto.executeCommand("searchIndicators", {"query" : 'type:IP', "size" : 1000})
+    >>> search_after_title = 'searchAfter'
+    >>> while search_after_title in res and res[search_after_title] is not None:
+    >>>     demisto.results(res)
+    >>>     res = demisto.executeCommand("searchIndicators",
+    >>>                                 {"query" : 'type:IP', "size" : 1000, "searchAfter" : res[search_after_title]})
+    ```
     """
     return {}
 
@@ -995,3 +1095,213 @@ def getLicenseID():
 
     """
     return ''
+
+
+def mapObject(obj, mapper, mapper_type):
+    """Mapping an object using chosen mapper
+
+    Returns:
+      dict: the obj after mapping
+
+    """
+    return obj
+
+
+def getModules():
+    return {}
+
+
+def get_incidents():
+    return {}
+
+
+def internalHttpRequest(method, uri, body=None):
+    """Run an internal HTTP request to the XSOAR server. The request runs with the permissions of the
+    executing user, when a command is being executed manually (such as via the War Room or when browsing a widget).
+    When run via a playbook, will run with a readonly user with limited permissions isolated to the current incident only.
+    Available for both Integrations and Scripts starting from Server version 6.1.
+
+    Args:
+        method (str): HTTP method such as: GET or POST
+        uri (str): Server uri to request. For example: "/contentpacks/marketplace/HelloWorld".
+        body Optional[str]: Optional body for a POST request. Defaults to None.
+
+    Returns:
+        dict: dict cotainnig the following fields:
+        * statusCode (int): HTTP status code such as 200
+        * status (str): HTTP status line such as: "200 OK"
+        * body (str): response body
+        * headers (dict): dict of headers. Each key is a header name with an array of values.
+          For example: `"headers": {"Content-Type": ["text/plain; charset=utf-8"]}`
+    """
+    return {
+        "statusCode": 404,
+        "status": "404 Not Found",
+        "body": "This is a mock. Your request was not found.",
+        "headers": {
+            "X-Xss-Protection": [
+                "1; mode=block"
+            ],
+            "X-Content-Type-Options": [
+                "nosniff"
+            ],
+            "Strict-Transport-Security": [
+                "max-age=10886400000000000; includeSubDomains"
+            ],
+            "Date": [
+                "Wed, 27 Jan 2021 17:11:16 GMT"
+            ],
+            "X-Frame-Options": [
+                "DENY"
+            ],
+            "Content-Type": [
+                "text/plain; charset=utf-8"
+            ]
+        },
+    }
+
+
+def parentEntry():
+    """
+    Retrieves information regarding the war room entry from which the method runs
+
+    Returns:
+      dict: information regarding the current war room entry
+
+    """
+    return {}
+
+
+def getLastMirrorRun():
+    """(Integration only)
+    Retrieves the LastMirrorRun object
+
+    Returns:
+      dict: LastMirrorRun object
+
+    """
+    return {}
+
+
+def setLastMirrorRun(obj):
+    """(Integration only)
+    Stores given object in the LastMirrorRun object
+
+    Args:
+      obj (dict): The object to store
+
+    Returns:
+      None: No data returned
+
+    """
+    return None
+
+
+def searchRelationships(args):
+    """
+    Retrieves Indicators Relationship data according to given filters.
+    Args:
+      args (dict): The relationships filter object.
+        Should contain a "filter" item, holding any of the relationship filters, E.g.:
+        - size (int)
+        - relationshipNames (List[str])
+        - entities (List[str])
+        - entityTypes (List[str])
+        - excludedEntities (List[str])
+        - query (str)
+        - fromDate (str)
+        - toDate (str)
+        - searchAfter (List[str])
+        - searchBefore (List[str])
+        - sort (List[Dict[str, Any]])
+
+    Returns:
+       (dict): The Relationship Search response.
+
+    Example (partial results):
+    ```
+    >>> demisto.searchRelationships({"filter": {"entities": ["8.8.8.8", "google.com"], "size": 2}})
+        {
+        "total": 2,
+        "data": [
+            {
+                "id": "27",
+                "entityA": "8.8.8.8",
+                "entityAFamily": "Indicator",
+                "entityAType": "IP",
+                "name": "contains",
+                "reverseName": "part-of",
+                "entityB": "1.1.1.1",
+                "entityBFamily": "Indicator",
+                "entityBType": "IP",
+                "type": "IndicatorToIndicator",
+                "createdInSystem": "2022-04-04T16:29:04.417942+03:00",
+                "sources": [
+                    {
+                        "reliability": "C - Fairly reliable",
+                    }
+                ]
+            },
+            {
+                "id": "26",
+                "entityA": "google.com",
+                "entityAFamily": "Indicator",
+                "entityAType": "Domain",
+                "name": "related-to",
+                "reverseName": "related-to",
+                "entityB": "bing.com",
+                "entityBFamily": "Indicator",
+                "entityBType": "Domain",
+                "type": "IndicatorToIndicator",
+                "createdInSystem": "2022-04-04T16:23:39.863033+03:00",
+                "updatedInSystemBySource": "2022-04-04T16:23:39.862853+03:00",
+                "sources": [
+                    {
+                        "reliability": "C - Fairly reliable",
+                    }
+                ]
+            }
+        ],
+        "SearchAfter": [
+            " \u0001\u0016q-\u0006`Uy'p",
+            "26"
+        ],
+        "SearchBefore": [
+            " \u0001\u0016q-\u0012\u0001\u0004n\u0013p",
+            "27"
+        ]
+    }
+    ```
+    """
+    return {'data': []}
+
+
+def _apiCall(name, params=None, data=None):
+    """
+    Special apiCall to internal xdr api. Only available to OOB content.
+
+    Args:
+        name: name of the api (currently only wfReportIncorrectVerdict is supported)
+        params: url query args to pass. Use a dictionary such as: `{"key":"value"}
+        data: POST data as a string. Make sure to json.dumps.
+        Note: if data is empty then a GET request is performed instead of a POST.
+
+    Returns:
+        dict: The response of the api call
+
+    """
+    return {}
+
+
+def getLicenseCustomField(key):
+    """
+    Get a custom field from content XSOAR configuration (can only be run in system integrations)
+
+    Args:
+        key (str): The key name inside the content object to search for.
+
+    Returns:
+        str: the value stored in content object that matced the given key.
+    """
+
+    return get(contentSecrets, key)

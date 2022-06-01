@@ -1,0 +1,27 @@
+{
+    "autorun": true,
+    "color": "#FF979A",
+    "days": 0,
+    "daysR": 0,
+    "default": false,
+    "detached": false,
+    "disabled": false,
+    "extractSettings": {
+        "fieldCliNameToExtractSettings": {},
+        "mode": "Specific"
+    },
+    "hours": 0,
+    "hoursR": 0,
+    "id": "Armorblox Outbound Threat",
+    "locked": false,
+    "name": "Armorblox Outbound Threat",
+    "onChangeRepAlg": 0,
+    "playbookId": "Armorblox Needs Review",
+    "readonly": false,
+    "reputationCalc": 0,
+    "system": false,
+    "version": -1,
+    "weeks": 0,
+    "weeksR": 0,
+    "fromVersion": "6.0.0"
+}

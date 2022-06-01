@@ -2,10 +2,8 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
-import traceback
 
-
-def find_largest_input_or_output(all_args_list):
+def find_largest_input_or_output(all_args_list) -> dict:
     max_arg = {'Size(MB)': 0}
     for arg in all_args_list:
         if arg.get('Size(MB)') > max_arg.get('Size(MB)'):
@@ -14,7 +12,7 @@ def find_largest_input_or_output(all_args_list):
     return max_arg
 
 
-def get_largest_inputs_and_outputs(inputs_and_outputs, largest_inputs_and_outputs, incident_id):
+def get_largest_inputs_and_outputs(inputs_and_outputs, largest_inputs_and_outputs, incident_id) -> None:
     inputs = []
     outputs = []
     urls = demisto.demistoUrls()
@@ -35,8 +33,8 @@ def get_largest_inputs_and_outputs(inputs_and_outputs, largest_inputs_and_output
                         'TaskID': f"[{task_id}]({task_url})",
                         'TaskName': task.get('name'),
                         'Name': output.get('name'),
-                        'Size(MB)': output.get('size'),
-                        "InputOrOutput": 'Output'
+                        'Size(MB)': float(output.get('size', 0)) / 1024,
+                        "InputOrOutput": 'Output',
                     })
 
             else:
@@ -47,8 +45,8 @@ def get_largest_inputs_and_outputs(inputs_and_outputs, largest_inputs_and_output
                         'TaskID': f"[{task_id}]({task_url})",
                         'TaskName': task.get('name'),
                         'Name': arg.get('name'),
-                        'Size(MB)': arg.get('size'),
-                        'InputOrOutput': "Input"
+                        'Size(MB)': float(arg.get('size', 0)) / 1024,
+                        'InputOrOutput': "Input",
                     })
     if inputs:
         largest_inputs_and_outputs.append(find_largest_input_or_output(inputs))
@@ -57,29 +55,52 @@ def get_largest_inputs_and_outputs(inputs_and_outputs, largest_inputs_and_output
         largest_inputs_and_outputs.append(find_largest_input_or_output(outputs))
 
 
-def get_extra_data_from_investigations(investigations):
+def get_extra_data_from_investigations(investigations: list) -> list:
     largest_inputs_and_outputs: List = []
     for inv in investigations:
-        inputs_and_outputs = demisto.executeCommand('getInvPlaybookMetaData',
-                                                    args={
-                                                        "incidentId": inv.get('IncidentID')
-                                                    })[0].get('Contents').get('tasks')
-        get_largest_inputs_and_outputs(inputs_and_outputs, largest_inputs_and_outputs, inv.get('IncidentID'))
+        raw_output = demisto.executeCommand('getInvPlaybookMetaData',
+                                            args={
+                                                "incidentId": inv.get('IncidentID'),
+                                            })
+        if is_error(raw_output):
+            raise DemistoException(f'Failed to run getInvPlaybookMetaData:\n{get_error(raw_output)}')
 
+        inputs_and_outputs = raw_output[0].get('Contents', {}).get('tasks')
+        get_largest_inputs_and_outputs(inputs_and_outputs, largest_inputs_and_outputs, inv.get('IncidentID'))
     return largest_inputs_and_outputs
 
 
 def main():
     try:
-        raw_output = demisto.executeCommand('GetLargestInvestigations_copy', args={'from': demisto.args().get('from'),
-                                                                                   'to': demisto.args().get('to'),
-                                                                                   'table_result': 'true'})
+        args: Dict = demisto.args()
+        if is_demisto_version_ge("6.2.0"):
+            deprecate_msg = "Warning: This script has been deprecated. Please checkout the System Diagnostic page " \
+                            "for an alternative."
+            if not argToBoolean(args.get('ignore_deprecated')):
+                raise DemistoException(deprecate_msg)
+            else:
+                demisto.info(deprecate_msg)
+        is_table_result = argToBoolean(args.get('table_result', False))
+        raw_output = demisto.executeCommand('GetLargestInvestigations',
+                                            args={
+                                                'from': args.get('from'),
+                                                'to': args.get('to'),
+                                                'table_result': 'true',
+                                                'ignore_deprecated': 'true',
+                                            })
+        if is_error(raw_output):
+            raise DemistoException(f'Failed to run GetLargestInvestigations:\n{get_error(raw_output)}')
+
         investigations = raw_output[0].get('Contents', {}).get('data')
-        demisto.results(tableToMarkdown('Largest Inputs And Outputs In Incidents',
-                                        get_extra_data_from_investigations(investigations)))
-    except Exception:
-        demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute GetLargestInputsAndOuputsInIncidents. Error: {traceback.format_exc()}')
+        data = get_extra_data_from_investigations(investigations)
+
+        if not is_table_result:
+            return_results(tableToMarkdown('Largest Inputs And Outputs In Incidents', data))
+        else:
+            return_results(data)
+
+    except Exception as exc:
+        return_error(f'Failed to execute GetLargestInputsAndOuputsInIncidents.\nError: {exc}', error=exc)
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

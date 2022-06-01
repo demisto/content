@@ -1,0 +1,36 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Shadow IT"
+    ],
+    "caseInsensitive": true,
+    "cliName": "shadowitservicepurpose",
+    "closeForm": false,
+    "content": true,
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_shadowitservicepurpose",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Shadow IT Service Purpose",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "selectValues": [
+        "Marketing",
+        "Sales",
+        "Business Development",
+        "Engineering",
+        "Other"
+    ],
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "multiSelect",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": true,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

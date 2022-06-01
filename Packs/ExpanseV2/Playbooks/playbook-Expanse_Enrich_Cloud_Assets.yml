@@ -1,0 +1,904 @@
+id: Expanse Enrich Cloud Assets
+version: -1
+contentitemexportablefields:
+  contentitemfields: {}
+name: Expanse Enrich Cloud Assets
+description: |-
+  Subplaybook for Handle Expanse Incident playbooks.
+  This Playbook is meant to be used as a subplaybook to enrich Public Cloud Assets (i.e. IP addresses and FQDNs) by:
+  - Searching the corresponding Region and Service by correlating the provided IPs with IP range feeds retrieved from Public Cloud Providers (require TIM and Public Cloud feeds such as AWS Feed integrations to be enabled).
+  - Searching IPs and FQDNs in Prisma Cloud inventory (requires Prisma Cloud).
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: fc1987a8-7ca8-4eca-84c3-74956c9795d1
+    type: start
+    task:
+      id: fc1987a8-7ca8-4eca-84c3-74956c9795d1
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "146"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2050,
+          "y": -70
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "37":
+    id: "37"
+    taskid: 77125d17-2c04-4a2d-8aac-a5966553b72e
+    type: playbook
+    task:
+      id: 77125d17-2c04-4a2d-8aac-a5966553b72e
+      version: -1
+      name: Prisma Cloud - Find Public Cloud Resource by Public IP
+      description: Find a Public Cloud resource by Public IP using Prisma Cloud inventory
+      playbookName: Prisma Cloud - Find Public Cloud Resource by Public IP
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "147"
+    scriptarguments:
+      CloudProvider:
+        complex:
+          root: inputs.Provider
+      PublicIPAddress:
+        complex:
+          root: inputs.IP
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 990,
+          "y": 630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+  "38":
+    id: "38"
+    taskid: a6ab6b14-5c39-499a-8d70-44b4e9b90fce
+    type: playbook
+    task:
+      id: a6ab6b14-5c39-499a-8d70-44b4e9b90fce
+      version: -1
+      name: Prisma Cloud - Find Public Cloud Resource by FQDN
+      description: Find a Public Cloud resources by FQDN using Prisma Cloud inventory
+      playbookName: Prisma Cloud - Find Public Cloud Resource by FQDN
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "147"
+    scriptarguments:
+      CloudProvider:
+        complex:
+          root: inputs.Provider
+      FQDN:
+        complex:
+          root: inputs.FQDN
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1670,
+          "y": 630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+  "39":
+    id: "39"
+    taskid: 5caa0615-7696-4ba3-8069-549f930716be
+    type: condition
+    task:
+      id: 5caa0615-7696-4ba3-8069-549f930716be
+      version: -1
+      name: Is there a FQDN?
+      description: Check whether any FQDN is present.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "147"
+      "yes":
+      - "38"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.FQDN
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1930,
+          "y": 450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "142":
+    id: "142"
+    taskid: ced4197e-44fd-425d-8bd1-dfa0bb95e998
+    type: playbook
+    task:
+      id: ced4197e-44fd-425d-8bd1-dfa0bb95e998
+      version: -1
+      name: Find Cloud IP Address Region and Service
+      description: Find Region and Service for IP Address belonging to Public Cloud,
+        using Indicators (CIDRs)
+      playbookName: Expanse Find Cloud IP Address Region and Service
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "143"
+    scriptarguments:
+      AWSIndicatorTags:
+        complex:
+          root: inputs.AWSIndicatorTags
+      AzureIndicatorTags:
+        complex:
+          root: inputs.AzureIndicatorTags
+      GCPIndicatorTags:
+        complex:
+          root: inputs.GCPIndicatorTags
+      Provider:
+        complex:
+          root: inputs.Provider
+      ip:
+        complex:
+          root: inputs.IP
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 3190,
+          "y": 395
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "143":
+    id: "143"
+    taskid: ed54ec92-008d-4e56-8349-b108825cdeb6
+    type: condition
+    task:
+      id: ed54ec92-008d-4e56-8349-b108825cdeb6
+      version: -1
+      name: Found Indicator?
+      description: Check whether an indicator is found.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "147"
+      "yes":
+      - "145"
+      - "160"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: MatchingCIDRIndicator
+                accessor: value
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 3190,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "144":
+    id: "144"
+    taskid: 179e8ec4-f637-4f00-8b0d-2d8a37de871e
+    type: regular
+    task:
+      id: 179e8ec4-f637-4f00-8b0d-2d8a37de871e
+      version: -1
+      name: Set Incident Region and Service
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "147"
+    scriptarguments:
+      accountid: {}
+      accountname: {}
+      addLabels: {}
+      agentid: {}
+      app: {}
+      appendMultiSelect: {}
+      assetid: {}
+      assigneduser: {}
+      assignmentgroup: {}
+      attachmentcount: {}
+      attachmentextension: {}
+      attachmenthash: {}
+      attachmentid: {}
+      attachmentname: {}
+      attachmentsize: {}
+      attachmenttype: {}
+      blockedaction: {}
+      bugtraq: {}
+      caller: {}
+      city: {}
+      closeNotes: {}
+      closeReason: {}
+      cloudservice: {}
+      commandline: {}
+      costcenter: {}
+      costcentercode: {}
+      country: {}
+      countryname: {}
+      criticalassets: {}
+      customFields:
+        complex:
+          root: IncidentRegionAndServiceQuery
+      cve: {}
+      cvss: {}
+      dbotMirrorDirection: {}
+      dbotMirrorId: {}
+      dbotMirrorInstance: {}
+      dbotMirrorTags: {}
+      dbotprediction: {}
+      dbotpredictionprobability: {}
+      dbottextsuggestionhighlighted: {}
+      deleteEmptyField: {}
+      department: {}
+      dest: {}
+      desthostname: {}
+      destinationhostname: {}
+      destinationip: {}
+      destinationnetwork: {}
+      destinationport: {}
+      destntdomain: {}
+      destos: {}
+      details: {}
+      detectedexternalhosts: {}
+      detectedexternalips: {}
+      detectedinternalhosts: {}
+      detectedinternalips: {}
+      detectedusers: {}
+      detectionendtime: {}
+      detectionid: {}
+      detectionupdatetime: {}
+      detectionurl: {}
+      deviceexternalip: {}
+      devicehash: {}
+      devicelocalip: {}
+      devicemodel: {}
+      devicename: {}
+      displayname: {}
+      duration: {}
+      email: {}
+      emailauthenticitycheck: {}
+      emailbcc: {}
+      emailbody: {}
+      emailbodyformat: {}
+      emailbodyhtml: {}
+      emailcc: {}
+      emailclassification: {}
+      emailclientname: {}
+      emailfrom: {}
+      emailheaders: {}
+      emailhtml: {}
+      emailinreplyto: {}
+      emailkeywords: {}
+      emailmessageid: {}
+      emailreceived: {}
+      emailreplyto: {}
+      emailreturnpath: {}
+      emailsenderip: {}
+      emailsize: {}
+      emailsource: {}
+      emailsubject: {}
+      emailto: {}
+      emailtocount: {}
+      emailurlclicked: {}
+      employeedisplayname: {}
+      employeeemail: {}
+      employeemanageremail: {}
+      escalation: {}
+      eventaction: {}
+      eventid: {}
+      eventtype: {}
+      expanseactivitystatus: {}
+      expanseasset: {}
+      expanseassetorganizationunit: {}
+      expanseassetowner: {}
+      expanseassignee: {}
+      expansebusinessunits: {}
+      expansecategory: {}
+      expansecertificate: {}
+      expansecreated: {}
+      expansedomain: {}
+      expansegeolocation: {}
+      expanseinitialevidence: {}
+      expanseip: {}
+      expanseissueid: {}
+      expanseissuetype: {}
+      expanselatestevidence: {}
+      expanselatestevidencegeolocation: {}
+      expansemlfeatures: {}
+      expansemodified: {}
+      expanseport: {}
+      expansepriority: {}
+      expanseprogressstatus: {}
+      expanseprotocol: {}
+      expanseprovider: {}
+      expanseregion: {}
+      expanseservice: {}
+      expanseshadowit: {}
+      expansetags: {}
+      externaladdresses: {}
+      filehash: {}
+      filename: {}
+      filepath: {}
+      filesize: {}
+      firstname: {}
+      firstseen: {}
+      givenname: {}
+      helloworldid: {}
+      helloworldstatus: {}
+      helloworldtype: {}
+      hostname: {}
+      id: {}
+      incomingmirrorerror: {}
+      infectedhosts: {}
+      internaladdresses: {}
+      investigationstage: {}
+      isolated: {}
+      jobcode: {}
+      jobfamily: {}
+      jobfunction: {}
+      labels: {}
+      lastmodifiedby: {}
+      lastmodifiedon: {}
+      lastname: {}
+      lastseen: {}
+      leadership: {}
+      location: {}
+      locationregion: {}
+      logsource: {}
+      macaddress: {}
+      maliciousbehavior: {}
+      malwarefamily: {}
+      malwarename: {}
+      manageremailaddress: {}
+      managername: {}
+      md5: {}
+      mobiledevicemodel: {}
+      mobilephone: {}
+      name: {}
+      occurred: {}
+      os: {}
+      osversion: {}
+      outgoingmirrorerror: {}
+      owner: {}
+      parentprocessid: {}
+      personalemail: {}
+      phase: {}
+      phishingsubtype: {}
+      phonenumber: {}
+      pid: {}
+      policydeleted: {}
+      policydescription: {}
+      policydetails: {}
+      policyid: {}
+      policyrecommendation: {}
+      policyremediable: {}
+      policyseverity: {}
+      policytype: {}
+      prismacloudid: {}
+      prismacloudreason: {}
+      prismacloudrules: {}
+      prismacloudstatus: {}
+      prismacloudtime: {}
+      protocol: {}
+      protocols: {}
+      quarantined: {}
+      rating: {}
+      region: {}
+      regionid: {}
+      replacePlaybook: {}
+      reporteremailaddress: {}
+      resourceapiname: {}
+      resourcecloudtype: {}
+      resourceid: {}
+      resourcename: {}
+      resourcetype: {}
+      riskrating: {}
+      riskscore: {}
+      roles: {}
+      rrn: {}
+      samaccountname: {}
+      severity: {}
+      sha256: {}
+      shadowitaccountowneremail: {}
+      shadowitaccountownername: {}
+      shadowitbilledtocorp: {}
+      shadowitcertificate: {}
+      shadowitcloudaccountid: {}
+      shadowitcloudaccounttype: {}
+      shadowitfqdn: {}
+      shadowitip: {}
+      shadowitorganizationalunit: {}
+      shadowitoucontactemail: {}
+      shadowitoucontactname: {}
+      shadowitport: {}
+      shadowitprovider: {}
+      shadowitregion: {}
+      shadowitrisk: {}
+      shadowitsactionedservice: {}
+      shadowitsensitivedata: {}
+      shadowitservice: {}
+      shadowitservicepurpose: {}
+      shadowitsource: {}
+      shadowitusersuggestions: {}
+      signature: {}
+      skuname: {}
+      skutier: {}
+      sla: {}
+      slaField: {}
+      sourcehostname: {}
+      sourceip: {}
+      sourcenetwork: {}
+      sourceport: {}
+      sourceusername: {}
+      src: {}
+      srchostname: {}
+      srcntdomain: {}
+      srcos: {}
+      srcuser: {}
+      state: {}
+      streetaddress: {}
+      subcategory: {}
+      subscriptionassignedby: {}
+      subscriptioncreatedby: {}
+      subscriptioncreatedon: {}
+      subscriptiondescription: {}
+      subscriptionid: {}
+      subscriptionname: {}
+      subscriptiontype: {}
+      subscriptionupdatedby: {}
+      subscriptionupdatedon: {}
+      subtype: {}
+      surname: {}
+      systemdefault: {}
+      systems: {}
+      targetfirewallversion: {}
+      tenantname: {}
+      terminatedaction: {}
+      threatactor: {}
+      ticketcloseddate: {}
+      ticketnumber: {}
+      ticketopeneddate: {}
+      title: {}
+      triggeredsecurityprofile: {}
+      type: {}
+      uniqueports: {}
+      urlsslverification: {}
+      user: {}
+      useraccountcontrol: {}
+      username: {}
+      vendorid: {}
+      vendorproduct: {}
+      vpcid: {}
+      vulnerabilitycategory: {}
+      workphone: {}
+      xdralertcount: {}
+      xdralerts: {}
+      xdrassigneduseremail: {}
+      xdrassigneduserprettyname: {}
+      xdrdescription: {}
+      xdrdetectiontime: {}
+      xdrfileartifacts: {}
+      xdrhighseverityalertcount: {}
+      xdrhostcount: {}
+      xdrincidentid: {}
+      xdrlowseverityalertcount: {}
+      xdrmediumseverityalertcount: {}
+      xdrnetworkartifacts: {}
+      xdrnotes: {}
+      xdrresolvecomment: {}
+      xdrstatus: {}
+      xdrstatusv2: {}
+      xdrurl: {}
+      xdrusercount: {}
+      zipcode: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3620,
+          "y": 920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "145":
+    id: "145"
+    taskid: bc9ef03b-a6bf-4fb5-8c73-d08ad10c0ee5
+    type: regular
+    task:
+      id: bc9ef03b-a6bf-4fb5-8c73-d08ad10c0ee5
+      version: -1
+      name: Link Indicator
+      description: commands.local.cmd.associate.indicator
+      script: Builtin|||associateIndicatorToIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "147"
+    scriptarguments:
+      id:
+        complex:
+          root: MatchingCIDRIndicator
+          accessor: id
+      incidentId:
+        complex:
+          root: incident
+          accessor: id
+      value:
+        simple: ${MatchingCIDRIndicator}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3190,
+          "y": 920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "146":
+    id: "146"
+    taskid: 65a1f874-59f0-4de4-8c12-933de46f246e
+    type: title
+    task:
+      id: 65a1f874-59f0-4de4-8c12-933de46f246e
+      version: -1
+      name: Public Cloud Enrichment
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "39"
+      - "161"
+      - "162"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2050,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "147":
+    id: "147"
+    taskid: 51d48b58-21cb-4734-809c-995e732f6a95
+    type: title
+    task:
+      id: 51d48b58-21cb-4734-809c-995e732f6a95
+      version: -1
+      name: Done Public Cloud Enrichment
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2050,
+          "y": 1090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "160":
+    id: "160"
+    taskid: 5a1893fb-5e1b-4150-8200-d8a2b676c2d9
+    type: regular
+    task:
+      id: 5a1893fb-5e1b-4150-8200-d8a2b676c2d9
+      version: -1
+      name: Create formatted string for Set Incident
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "144"
+    scriptarguments:
+      append: {}
+      key:
+        simple: IncidentRegionAndServiceQuery
+      stringify: {}
+      value:
+        complex:
+          root: MatchingCIDRIndicator
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: MatchingCIDRIndicator.CustomFields
+                iscontext: true
+          transformers:
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: CustomFields
+          - operator: jmespath
+            args:
+              expression:
+                value:
+                  simple: '{"expanseregion": region, "expanseservice": service} '
+          - operator: Stringify
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: '""'
+              toReplace:
+                value:
+                  simple: "null"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3620,
+          "y": 750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "161":
+    id: "161"
+    taskid: 4a7d2703-1890-497a-8909-4aab02fd711a
+    type: condition
+    task:
+      id: 4a7d2703-1890-497a-8909-4aab02fd711a
+      version: -1
+      name: Is there an IP?
+      description: Check whether an IP is present.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "147"
+      "yes":
+      - "37"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.IP
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1290,
+          "y": 450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "162":
+    id: "162"
+    taskid: b9dfe0cb-97b0-48d6-8119-c28c88c01a59
+    type: condition
+    task:
+      id: b9dfe0cb-97b0-48d6-8119-c28c88c01a59
+      version: -1
+      name: Update incident?
+      description: Check whether the incident has to be updated.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "147"
+      "yes":
+      - "142"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.Update Incident
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 2780,
+          "y": 220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+system: true
+view: |-
+  {
+    "linkLabelsPosition": {
+      "161_147_#default#": 0.11,
+      "39_147_#default#": 0.31
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1225,
+        "width": 3010,
+        "x": 990,
+        "y": -70
+      }
+    }
+  }
+inputs:
+- key: IP
+  value:
+    complex:
+      root: incident
+      accessor: expanseip
+  required: false
+  description: IP to enrich
+  playbookInputQuery:
+- key: FQDN
+  value:
+    complex:
+      root: incident
+      accessor: expansedomain
+  required: false
+  description: FQDN to enrich
+  playbookInputQuery:
+- key: Provider
+  value:
+    complex:
+      root: incident
+      accessor: expanseprovider
+  required: false
+  description: Cloud Provider
+  playbookInputQuery:
+- key: AWSIndicatorTags
+  value:
+    simple: AWS
+  required: false
+  description: Tags to identify AWS IP Ranges
+  playbookInputQuery:
+- key: GCPIndicatorTags
+  value:
+    simple: GCP
+  required: false
+  description: Tags to identify GCP IP Ranges
+  playbookInputQuery:
+- key: AzureIndicatorTags
+  value:
+    simple: Azure
+  required: false
+  description: Tags to identify Azure IP Ranges
+  playbookInputQuery:
+- key: Update Incident
+  value:
+    simple: "True"
+  required: false
+  description: |-
+    Flag to check whether to update incident
+
+    Update means:
+    - Set Expanse Region and Expanse Service to the values found from indicators
+    - Link found indicators to the incident
+  playbookInputQuery:
+outputs:
+- contextPath: PrismaCloud.Attribution
+  description: Prisma Cloud Asset Attribution
+  type: unknown
+tests:
+- No tests
+fromversion: 6.0.0

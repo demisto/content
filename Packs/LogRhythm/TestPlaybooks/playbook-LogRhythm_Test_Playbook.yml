@@ -47,13 +47,16 @@ tasks:
       - "10"
     scriptarguments:
       alarm-id:
-        simple: ${inputs.alarm_id}
+        complex:
+          root: AlarmID
+          transformers:
+          - operator: FirstArrayElement
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 162.5,
-          "y": 370
+          "y": 720
         }
       }
     note: false
@@ -75,7 +78,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+      - "22"
     scriptarguments:
       all:
         simple: "yes"
@@ -113,7 +116,8 @@ tasks:
       - "11"
     scriptarguments:
       alarm-id:
-        simple: ${inputs.alarm_id}
+        complex:
+          root: AlarmID
       comments:
         simple: test
     separatecontext: false
@@ -121,7 +125,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 720
+          "y": 1070
         }
       }
     note: false
@@ -146,14 +150,14 @@ tasks:
       - "21"
     scriptarguments:
       alarm-id:
-        simple: ${inputs.alarm_id}
-      include-raw-log: {}
+        complex:
+          root: AlarmID
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 162.5,
-          "y": 1070
+          "y": 1420
         }
       }
     note: false
@@ -168,7 +172,7 @@ tasks:
     task:
       id: 7df19295-cf3a-4af1-8af7-f165cc9e9ff2
       version: -1
-      name: Get alarms
+      name: Get alarms with start and end date
       script: '|||lr-get-alarms'
       type: regular
       iscommand: true
@@ -192,7 +196,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 1595
+          "y": 1945
         }
       }
     note: false
@@ -217,8 +221,8 @@ tasks:
       - "15"
     scriptarguments:
       alarm-id:
-        simple: ${inputs.alarm_id}
-      comments: {}
+        complex:
+          root: AlarmID
       status:
         simple: New
     separatecontext: false
@@ -226,7 +230,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 1945
+          "y": 2295
         }
       }
     note: false
@@ -251,8 +255,8 @@ tasks:
       - "16"
     scriptarguments:
       alarm-id:
-        simple: ${inputs.alarm_id}
-      comments: {}
+        complex:
+          root: AlarmID
       status:
         simple: Closed
     separatecontext: false
@@ -260,7 +264,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 2295
+          "y": 2645
         }
       }
     note: false
@@ -284,7 +288,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 3170
+          "y": 3520
         }
       }
     note: false
@@ -322,13 +326,13 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: inputs.alarm_id
+              simple: AlarmID
             iscontext: true
     view: |-
       {
         "position": {
           "x": 162.5,
-          "y": 545
+          "y": 895
         }
       }
     note: false
@@ -366,7 +370,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 895
+          "y": 1245
         }
       }
     note: false
@@ -395,18 +399,13 @@ tasks:
       - - operator: isExists
           left:
             value:
-              simple: LogRhythm.Alarm.Event.ClassificationName
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: LogRhythm.Alarm.Event.ImpactedHostName
+              simple: LogRhythm.Alarm.Event
             iscontext: true
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1420
+          "y": 1770
         }
       }
     note: false
@@ -439,13 +438,13 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: inputs.alarm_id
+              simple: AlarmID
             iscontext: true
     view: |-
       {
         "position": {
           "x": 162.5,
-          "y": 1770
+          "y": 2120
         }
       }
     note: false
@@ -483,7 +482,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 2120
+          "y": 2470
         }
       }
     note: false
@@ -521,7 +520,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 2470
+          "y": 2820
         }
       }
     note: false
@@ -562,7 +561,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 2645
+          "y": 2995
         }
       }
     note: false
@@ -594,7 +593,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 2820
+          "y": 3170
         }
       }
     note: false
@@ -632,7 +631,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 2995
+          "y": 3345
         }
       }
     note: false
@@ -669,7 +668,80 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 1245
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: 61fed595-7c2a-475f-8602-a376b0dd7c7c
+    type: regular
+    task:
+      id: 61fed595-7c2a-475f-8602-a376b0dd7c7c
+      version: -1
+      name: Get alarms with time farme
+      script: '|||lr-get-alarms'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      all-users:
+        simple: "true"
+      status:
+        simple: New
+      time_frame:
+        simple: LastWeek
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "23":
+    id: "23"
+    taskid: 98e052d2-c1b9-4c73-8fbf-4cad84f6ee2d
+    type: regular
+    task:
+      id: 98e052d2-c1b9-4c73-8fbf-4cad84f6ee2d
+      version: -1
+      name: Set alarm Id
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      key:
+        simple: AlarmID
+      value:
+        complex:
+          root: LogRhythm.Alarm
+          accessor: ID
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 545
         }
       }
     note: false
@@ -683,19 +755,13 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 3185,
+        "height": 3535,
         "width": 492.5,
         "x": 50,
         "y": 50
       }
     }
   }
-inputs:
-- key: alarm_id
-  value:
-    simple: "1150"
-  required: false
-  description: ""
-  playbookInputQuery:
+inputs: []
 outputs: []
 fromversion: 5.0.0

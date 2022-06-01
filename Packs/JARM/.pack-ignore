@@ -1,0 +1,5 @@
+[file:layoutscontainer-JARM_Indicator_Layout.json]
+ignore=BA101
+
+[file:indicatorfield-JARM_Hosts.json]
+ignore=BA116

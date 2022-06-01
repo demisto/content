@@ -1,0 +1,56 @@
+category: Endpoint
+commonfields:
+  id: YodaSpeak
+  version: -1
+configuration:
+- defaultvalue: https://api.funtranslations.com/translate/
+  display: Base URL of the service
+  name: url
+  required: true
+  type: 0
+- displaypassword: API Key
+  additionalinfo: The API Key to use for connection
+  name: credentials
+  required: false
+  hiddenusername: true
+  type: 9
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: An integration to translate English to Yodish.
+display: YodaSpeak
+name: YodaSpeak
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: The English text to translate
+      isArray: false
+      name: text
+      required: true
+      secret: false
+    deprecated: false
+    description: Use this command to translate English text.
+    execution: false
+    name: yoda-speak-translate
+    outputs:
+    - contextPath: YodaSpeak.Phrase.Translation
+      description: The translated text, in Yodish.
+      type: String
+    - contextPath: YodaSpeak.Phrase.Original
+      description: The original (English) text we translated.
+      type: String
+  isfetch: false
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.9.9.25564
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

@@ -119,34 +119,37 @@ def remove_backslash(url: str) -> str:
     return url
 
 
-def url_command(client: Client, **kwargs) -> CommandResults:
+def url_command(client: Client, **kwargs) -> List[CommandResults]:
     data = get_integration_context()
     if _is_reload_needed(client, data):
         reload_command(client)
         data = get_integration_context()
 
-    url_object_list = []
+    command_results: List[CommandResults] = []
     if not data:
         raise DemistoException("Data was not saved correctly to the integration context.")
 
     url_list_from_user = argToList(kwargs.get('url'))
-    markdown = "### OpenPhish Database - URL Query\n"
     urls_in_db = data.get('list', [])
     for url in url_list_from_user:
         url_fixed = remove_backslash(url)
         if url_fixed in urls_in_db:
             dbotscore = Common.DBotScore.BAD
             desc = 'Match found in OpenPhish database'
-            markdown += f"#### Found matches for given URL {url}\n"
+            markdown = f"#### Found matches for given URL {url}\n"
         else:
             dbotscore = Common.DBotScore.NONE
             desc = ""
-            markdown += f"#### No matches for URL {url}\n"
+            markdown = f"#### No matches for URL {url}\n"
 
         dbot = Common.DBotScore(url, DBotScoreType.URL, 'OpenPhish', dbotscore, desc)
-        url_object_list.append(Common.URL(url, dbot))
+        url_object = Common.URL(url, dbot)
+        command_results.append(CommandResults(
+            indicator=url_object,
+            readable_output=markdown,
+        ))
 
-    return CommandResults(indicators=url_object_list, readable_output=markdown)
+    return command_results
 
 
 def reload_command(client: Client, **kwargs) -> CommandResults:
@@ -178,6 +181,7 @@ def main():
 
     # get the service API url
     base_url = "http://openphish.com"
+    https_base_url = "https://openphish.com"
 
     commands = {
         'url': url_command,
@@ -191,8 +195,9 @@ def main():
         hours_to_refresh = float(hours_to_refresh)
         use_ssl = not user_params.get('insecure', False)
         use_proxy = user_params.get('proxy', False)
+        use_https = user_params.get('https', False)
         client = Client(
-            url=base_url,
+            url=https_base_url if use_https else base_url,
             use_ssl=use_ssl,
             use_proxy=use_proxy,
             fetch_interval_hours=hours_to_refresh)

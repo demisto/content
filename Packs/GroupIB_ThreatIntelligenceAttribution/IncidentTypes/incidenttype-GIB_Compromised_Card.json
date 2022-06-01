@@ -1,0 +1,34 @@
+{
+    "autorun": true,
+    "color": "#8052f3",
+    "days": 0,
+    "daysR": 0,
+    "default": false,
+    "detached": false,
+    "disabled": false,
+    "extractSettings": {
+        "fieldCliNameToExtractSettings": {
+            "gibrelatedindicatorsdata": {
+                "extractAsIsIndicatorTypeId": "",
+                "extractIndicatorTypesIDs": [],
+                "isExtractingAllIndicatorTypes": true
+            }
+        },
+        "mode": "Specific"
+    },
+    "hours": 0,
+    "hoursR": 0,
+    "id": "GIB Compromised Card",
+    "layout": "GIB Compromised Card Layout",
+    "locked": false,
+    "name": "GIB Compromised Card",
+    "onChangeRepAlg": 2,
+    "playbookId": "Incident Postprocessing - Group-IB Threat Intelligence & Attribution",
+    "readonly": false,
+    "reputationCalc": 2,
+    "system": false,
+    "version": -1,
+    "weeks": 0,
+    "weeksR": 0,
+    "fromVersion": "6.0.0"
+}

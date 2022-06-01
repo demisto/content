@@ -1,0 +1,30 @@
+{
+ "associatedToAll": false,
+ "associatedTypes": [
+  "Darktrace Model Breach"
+ ],
+ "caseInsensitive": true,
+ "cliName": "darktracedeviceip",
+ "closeForm": false,
+ "content": true,
+ "description": "IP address associated with device in Darktrace",
+ "editForm": true,
+ "group": 0,
+ "hidden": false,
+ "id": "incident_darktracedeviceip",
+ "isReadOnly": false,
+ "locked": false,
+ "name": "Darktrace Device IP",
+ "neverSetAsRequired": false,
+ "ownerOnly": false,
+ "required": false,
+ "sla": 0,
+ "system": false,
+ "threshold": 72,
+ "type": "shortText",
+ "unmapped": false,
+ "unsearchable": false,
+ "useAsKpi": false,
+ "version": -1,
+ "fromVersion": "6.0.0"
+}

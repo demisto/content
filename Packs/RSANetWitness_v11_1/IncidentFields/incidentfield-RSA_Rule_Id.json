@@ -1,0 +1,30 @@
+{
+    "id": "incident_rsaruleid",
+    "version": -1,
+    "modified": "2021-12-23T17:16:31.449895+02:00",
+    "name": "RSA Rule Id",
+    "ownerOnly": false,
+    "cliName": "rsaruleid",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "Netwitness Incident"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.0.0"
+}

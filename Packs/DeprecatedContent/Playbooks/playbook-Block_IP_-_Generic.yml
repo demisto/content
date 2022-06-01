@@ -460,7 +460,7 @@ inputs:
 - key: IPBlacklistMiner
   value: {}
   required: false
-  description: The name of the IP blacklist Miner in  Minemeld.
+  description: The name of the IP block list Miner in  Minemeld.
 - key: IP
   value: {}
   required: false
@@ -526,4 +526,5 @@ outputs:
 - contextPath: CheckpointFWRule.Hits.Value
   description: Value of hits.
 tests:
-- block_indicators_-_generic_-_test
+- No test - Deprecated playbook
+deprecated: true

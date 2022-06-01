@@ -2,9 +2,12 @@ commonfields:
   id: illuminate
   version: -1
 name: illuminate
-display: illuminate
+display: illuminate (Deprecated)
 category: Data Enrichment & Threat Intelligence
-description: This integration utilizes AnalystPlatform's illuminate system to enrich Demisto indicators with data provided by the illuminate REST API, such as actor and malware information, activity and reported dates, evidence and hit counts, and more.
+description: Deprecated. Use Analyst1 integration instead.
+deprecated: true
+tests:
+  - No Tests - Deprecated
 configuration:
 - display: illuminate API Credentials (username/password)
   name: credentials
@@ -569,7 +572,7 @@ script:
       description: The AlienVault OTX vendor.
       type: String
     description: Queries the illuminate REST API and enriches the given URL with illuminate indicator data.
-  dockerimage: demisto/python3:3.7.5.5420
+  dockerimage: demisto/python3:3.9.5.21272
   runonce: false
   subtype: python3
 fromversion: 5.0.0

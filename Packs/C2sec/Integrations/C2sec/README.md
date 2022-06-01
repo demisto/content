@@ -7,7 +7,7 @@
 <strong>C2SEC-Domain Scan</strong><span> </span>- scans domains and waits for the full response from the C2sec irisk service.</li>
 </ul>
 <h2>
-<a id="Configure_C2sec_irisk_on_Demisto_6"></a>Configure C2sec irisk on Demisto</h2>
+<a id="Configure_C2sec_irisk_on_Demisto_6"></a>Configure C2sec irisk on Cortex XSOAR</h2>
 <ol>
 <li>Navigate to<span> </span><strong>Settings</strong><span> </span>&gt;<span> </span><strong>Integrations</strong><span> </span>&gt;<span> </span><strong>Servers &amp; Services</strong>.</li>
 <li>Search for C2sec irisk.</li>
@@ -26,7 +26,7 @@
 </ol>
 <h2>
 <a id="Commands_20"></a>Commands</h2>
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ol>
 <li><a href="#h_d792fb42-2504-4bc4-b174-6422ccdfa7a6" target="_self">Add a domain to a portfolio: irisk-add-domain</a></li>
 <li><a href="#h_93a605e6-1ab9-4349-80c9-5968792eea44" target="_self">Get the status of a scan: irisk-get-scan-status</a></li>

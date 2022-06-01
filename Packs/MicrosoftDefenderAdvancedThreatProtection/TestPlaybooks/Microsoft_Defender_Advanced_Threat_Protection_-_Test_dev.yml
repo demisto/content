@@ -1,0 +1,81 @@
+id: Microsoft Defender Advanced Threat Protection - Test dev
+version: -1
+name: Microsoft Defender Advanced Threat Protection - Test dev
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: d197f7cc-2dc8-47b9-95fe-b8a5a07128df
+    type: start
+    task:
+      id: d197f7cc-2dc8-47b9-95fe-b8a5a07128df
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+  '1':
+    id: '1'
+    taskid: 6408bbf1-b8bd-454d-8af2-32bbfc759989
+    type: regular
+    task:
+      id: 6408bbf1-b8bd-454d-8af2-32bbfc759989
+      version: -1
+      name: set playbook to Microsoft Defender Advanced Threat Protection - Test
+      description: set playbook for current incident to Microsoft Defender Advanced Threat Protection - Test
+      script: Builtin|||setPlaybook
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      incidentId:
+        simple: ${incident.id}
+      name:
+        simple: Microsoft Defender Advanced Threat Protection - Test
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 275,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0
+description: ''

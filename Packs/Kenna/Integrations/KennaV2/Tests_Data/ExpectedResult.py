@@ -124,3 +124,47 @@ GET_ASSETS_VULNERABILITIES_EXPECTED = {
         }
     ]
 }
+
+GET_CONNECTOR_RUNS_EXPECTED = {'Kenna.ConnectorRunsList(val.ID === obj.ID)':
+                               [
+                                   {
+                                       'ID': 1462281,
+                                       'StartTime': '2020-12-21T06:32:03.000Z',
+                                       'EndTime': '2020-12-21T07:52:28.000Z',
+                                       'Success': True,
+                                       'TotalPayload': 6819,
+                                       'ProcessedPayload': None,
+                                       'FailedPayload': 0,
+                                       'ProcessedAssets': 6456,
+                                       'AssetsWithTagsReset': 0,
+                                       'ProcessedScannerVulnerabilities': 651063,
+                                       'UpdatedScannerVulnerabilities': 21033,
+                                       'CreatedScannerVulnerabilities': 0,
+                                       'ClosedScannerVulnerabilities': 0,
+                                       'AutoclosedScannerVulnerabilities': 0,
+                                       'ReopenedScannerVulnerabilities': 0,
+                                       'ClosedVulnerabilities': 0,
+                                       'AutoclosedVulnerabilities': 0,
+                                       'ReopenedVulnerabilities': 0
+                                   },
+                                   {'ID': 1460258,
+                                    'StartTime': '2020-12-20T06:32:05.000Z',
+                                    'EndTime': '2020-12-20T07:48:42.000Z',
+                                    'Success': True,
+                                    'TotalPayload': 6819,
+                                    'ProcessedPayload': None,
+                                    'FailedPayload': 0,
+                                    'ProcessedAssets': 6456,
+                                    'AssetsWithTagsReset': 0,
+                                    'ProcessedScannerVulnerabilities': 651063,
+                                    'UpdatedScannerVulnerabilities': 21033,
+                                    'CreatedScannerVulnerabilities': 0,
+                                    'ClosedScannerVulnerabilities': 0,
+                                    'AutoclosedScannerVulnerabilities': 0,
+                                    'ReopenedScannerVulnerabilities': 0,
+                                    'ClosedVulnerabilities': 0,
+                                    'AutoclosedVulnerabilities': 0,
+                                    'ReopenedVulnerabilities': 0
+                                    }
+                               ]
+                               }

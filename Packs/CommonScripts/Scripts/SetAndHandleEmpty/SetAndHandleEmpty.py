@@ -19,8 +19,9 @@ def main():
     args = demisto.args()
     value = args.get('value')
     key = args.get('key')
+    force = args.get('force') == 'true'
     value = get_value(value, args.get('stringify') == 'true')
-    if value:
+    if value or force:
         human_readable = f'Key {key} set'
         context_entry = {key: value}
     else:
@@ -28,9 +29,12 @@ def main():
         context_entry = {}
 
     if args.get('append') == 'false' and context_entry:
-        demisto.executeCommand('DeleteContext', {'key': key})
+        demisto.executeCommand('DeleteContext', {'key': key, 'subplaybook': 'auto'})
 
-    return_outputs(human_readable, context_entry)
+    return_results(CommandResults(
+        readable_output=human_readable,
+        outputs=context_entry,
+    ))
 
 
 if __name__ in ('__builtin__', 'builtins'):

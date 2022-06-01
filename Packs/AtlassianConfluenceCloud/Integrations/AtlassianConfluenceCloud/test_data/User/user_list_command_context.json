@@ -1,0 +1,34 @@
+[
+  {
+      "type": "known",
+      "accountId": "1238568455dsfsdf5555",
+      "publicName": "John doe",
+      "profilePicture": {
+        "path": "/wiki/aa-avatar/1238568455dsfsdf5555",
+        "width": 48,
+        "height": 48,
+        "isDefault": false
+      },
+      "displayName": "John doe",
+      "isExternalCollaborator": false,
+      "_links": {
+        "self": "https://xsoar-bd.atlassian.net/wiki/rest/api/user?accountId=1238568455dsfsdf5555"
+      }
+  },
+  {
+      "type": "known",
+      "accountId": "12345-6789-12345-6789-12345-6789-12345",
+      "publicName": "Confluence dummy",
+      "profilePicture": {
+        "path": "/wiki/aa-avatar/12345-6789-12345-6789-12345-6789-12345",
+        "width": 48,
+        "height": 48,
+        "isDefault": false
+      },
+      "displayName": "Confluence dummy",
+      "isExternalCollaborator": false,
+      "_links": {
+        "self": "https://xsoar-bd.atlassian.net/wiki/rest/api/user?accountId=12345-6789-12345-6789-12345-6789-12345"
+      }
+  }
+]

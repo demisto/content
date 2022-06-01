@@ -65,7 +65,7 @@ args:
   required: false
   secret: false
 comment: |-
-  Deprecated. The recommended way to generate documentation is via the demisto-sdk. 
+  Deprecated. The recommended way to generate documentation is via the demisto-sdk.
   See: https://xsoar.pan.dev/docs/integrations/integration-docs
 commonfields:
   id: DocumentationAutomation
@@ -84,3 +84,4 @@ fromversion: 5.0.0
 deprecated: true
 tests:
 - No tests (auto formatted)
+dockerimage: demisto/python:2.7.18.20958

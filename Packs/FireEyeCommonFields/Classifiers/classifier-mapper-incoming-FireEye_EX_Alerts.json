@@ -1,0 +1,265 @@
+{
+    "description": "Maps FireEye EX alerts.",
+    "feed": false,
+    "id": "FireEye EX - Incoming Mapper",
+    "mapping": {
+        "FireEye EX Alert": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Alert Acknowledgement": {
+                    "simple": "ack"
+                },
+                "Alert Action": {
+                    "simple": "action"
+                },
+                "Alert ID": {
+                    "simple": "id"
+                },
+                "Alert Malicious": {
+                    "simple": "malicious"
+                },
+                "Alert Name": {
+                    "simple": "name"
+                },
+                "Alert URL": {
+                    "simple": "alertUrl"
+                },
+                "Appliance ID": {
+                    "simple": "applianceId"
+                },
+                "Application Id": {
+                    "simple": "appliance"
+                },
+                "Detection URL": {
+                    "complex": {
+                        "accessor": "url",
+                        "filters": [],
+                        "root": "explanation.malwareDetected.malware",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "item": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "src.url"
+                                        }
+                                    }
+                                },
+                                "operator": "append"
+                            }
+                        ]
+                    }
+                },
+                "Email CC": {
+                    "simple": "dst.smtpCc"
+                },
+                "Email From": {
+                    "simple": "src.smtpMailFrom"
+                },
+                "Email Headers": {
+                    "simple": "smtpMessage.smtpHeader"
+                },
+                "Email Message ID": {
+                    "simple": "smtpMessage.id"
+                },
+                "Email Subject": {
+                    "simple": "smtpMessage.subject"
+                },
+                "Email To": {
+                    "simple": "dst.smtpTo"
+                },
+                "FireEye Email Queue ID": {
+                    "simple": "smtpMessage.queueId"
+                },
+                "FireEye Email Source Domain": {
+                    "simple": "src.domain"
+                },
+                "FireEye Infection ID": {
+                    "complex": null,
+                    "simple": "rootInfection"
+                },
+                "FireEye Malware Information": {
+                    "simple": "explanation.malwareDetected.malware"
+                },
+                "FireEye Malware Info": {
+                    "simple": "explanation.malwareDetected.malware"
+                },
+                "MD5": {
+                    "simple": "explanation.malwareDetected.malware.md5Sum"
+                },
+                "Malware Name": {
+                    "simple": "explanation.malwareDetected.malware.name"
+                },
+                "SHA256": {
+                    "simple": "explanation.malwareDetected.malware.sha256"
+                },
+                "Sensor Name": {
+                    "simple": "sensor"
+                },
+                "UUID": {
+                    "simple": "uuid"
+                },
+                "Vendor Product": {
+                    "simple": "product"
+                },
+                "occurred": {
+                    "simple": "occurred"
+                },
+                "severity": {
+                    "complex": {
+                        "filters": [],
+                        "root": "severity",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "limit": {},
+                                    "replaceWith": {
+                                        "value": {
+                                            "simple": "1"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "value": {
+                                            "simple": "MINR"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {},
+                                    "replaceWith": {
+                                        "value": {
+                                            "simple": "4"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "value": {
+                                            "simple": "CRIT"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {},
+                                    "replaceWith": {
+                                        "value": {
+                                            "simple": "3"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "value": {
+                                            "simple": "MAJR"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            }
+                        ]
+                    }
+                }
+            }
+        },
+        "Phishing Alerts": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Alert Action": {
+                    "simple": "action"
+                },
+                "Email CC": {
+                    "simple": "dst.smtpCc"
+                },
+                "Email From": {
+                    "simple": "src.smtpMailFrom"
+                },
+                "Email Headers": {
+                    "simple": "smtpMessage.smtpHeader"
+                },
+                "Email Message ID": {
+                    "simple": "smtpMessage.id"
+                },
+                "Email Queue ID": {
+                    "simple": "smtpMessage.queueId"
+                },
+                "Email Source Domain": {
+                    "simple": "src.domain"
+                },
+                "Email Subject": {
+                    "simple": "smtpMessage.subject"
+                },
+                "Email To": {
+                    "simple": "dst.smtpTo"
+                },
+                "UUID": {
+                    "simple": "uuid"
+                },
+                "occurred": {
+                    "simple": "occurred"
+                },
+                "severity": {
+                    "complex": {
+                        "filters": [],
+                        "root": "severity",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "limit": {},
+                                    "replaceWith": {
+                                        "value": {
+                                            "simple": "1"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "value": {
+                                            "simple": "minr"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {},
+                                    "replaceWith": {
+                                        "value": {
+                                            "simple": "4"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "value": {
+                                            "simple": "crit"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {},
+                                    "replaceWith": {
+                                        "value": {
+                                            "simple": "3"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "value": {
+                                            "simple": "majr"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+    },
+    "name": "FireEye EX - Incoming Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

@@ -1,0 +1,2201 @@
+id: Export Indicators Performance Test
+version: -1
+fromversion: 6.0.0
+name: Export Indicators Performance Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: d46d8c57-adc5-4d9f-8041-61abf9e265de
+    type: start
+    task:
+      id: d46d8c57-adc5-4d9f-8041-61abf9e265de
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 0d33c153-3724-4420-8842-d9babebbbdf1
+    type: regular
+    task:
+      id: 0d33c153-3724-4420-8842-d9babebbbdf1
+      version: -1
+      name: Clear Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      all:
+        simple: "yes"
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: d4984ef3-40b4-4f98-8a30-9747f9d4aa60
+    type: title
+    task:
+      id: d4984ef3-40b4-4f98-8a30-9747f9d4aa60
+      version: -1
+      name: 10,000 Indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "29"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: d7213dc0-aa6a-4e23-8a93-8376952c3675
+    type: playbook
+    task:
+      id: d7213dc0-aa6a-4e23-8a93-8376952c3675
+      version: -1
+      name: EDL Performance Test - Concurrency
+      playbookName: EDL Performance Test - Concurrency
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      "n":
+        simple: ${inputs.n}
+      url:
+        complex:
+          root: ServerURL
+          transformers:
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ?n=10000
+      z:
+        simple: ${inputs.z}
+    separatecontext: false
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 6e42cb79-07e6-4d6d-82ae-a7e39953fb94
+    type: playbook
+    task:
+      id: 6e42cb79-07e6-4d6d-82ae-a7e39953fb94
+      version: -1
+      name: EDL Performance Test - Concurrency
+      playbookName: EDL Performance Test - Concurrency
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      url:
+        complex:
+          root: ServerURL
+          transformers:
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ?n=50000
+    separatecontext: false
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6785
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: c53d0967-8768-47bf-8f50-a43c9c63b011
+    type: title
+    task:
+      id: c53d0967-8768-47bf-8f50-a43c9c63b011
+      version: -1
+      name: 50,000 Indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "38"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5065
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 780cef3a-54cc-454b-86ae-2f0088d3ef5c
+    type: title
+    task:
+      id: 780cef3a-54cc-454b-86ae-2f0088d3ef5c
+      version: -1
+      name: 100,000 Indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "48"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: b82a5814-3e67-4d8f-8534-5b8f1c399c75
+    type: playbook
+    task:
+      id: b82a5814-3e67-4d8f-8534-5b8f1c399c75
+      version: -1
+      name: EDL Performance Test - Concurrency
+      playbookName: EDL Performance Test - Concurrency
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      url:
+        complex:
+          root: ServerURL
+          transformers:
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ?n=70000
+    separatecontext: false
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: b2899e54-56cc-4e4b-883c-759185050b62
+    type: regular
+    task:
+      id: b2899e54-56cc-4e4b-883c-759185050b62
+      version: -1
+      name: Set Small Outputs
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      key:
+        simple: EISHey.Small
+      value:
+        complex:
+          root: HeyConcurrency
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4715
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: aca29f1f-4ddb-461c-8c5c-15428b3b54a9
+    type: regular
+    task:
+      id: aca29f1f-4ddb-461c-8c5c-15428b3b54a9
+      version: -1
+      name: Clear HeyConcurrency Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      all:
+        simple: "no"
+      key:
+        simple: HeyConcurrency
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: c83e35cb-8cd6-46f5-87ba-e6cfe49d786c
+    type: regular
+    task:
+      id: c83e35cb-8cd6-46f5-87ba-e6cfe49d786c
+      version: -1
+      name: Set Medium Outputs
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      key:
+        simple: EISHey.Medium
+      value:
+        simple: ${HeyConcurrency}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6960
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: f3b91778-e7fa-4316-8a80-62c418d1d0e5
+    type: regular
+    task:
+      id: f3b91778-e7fa-4316-8a80-62c418d1d0e5
+      version: -1
+      name: Clear HeyConcurrency Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      all:
+        simple: "no"
+      key:
+        simple: HeyConcurrency
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7135
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: a0eaa2d5-5b91-48e5-8f51-23553f13819b
+    type: regular
+    task:
+      id: a0eaa2d5-5b91-48e5-8f51-23553f13819b
+      version: -1
+      name: Set Large Outputs
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "60"
+    scriptarguments:
+      key:
+        simple: EISHey.Large
+      value:
+        simple: ${HeyConcurrency}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9205
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 93453bc6-07f2-4ae9-86ca-8c349efc76c1
+    type: regular
+    task:
+      id: 93453bc6-07f2-4ae9-86ca-8c349efc76c1
+      version: -1
+      name: Check IP Is Ready
+      description: Returns, whether there're, are enough indicators in the system.
+      scriptName: VerifyEnoughIndicators
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      query:
+        simple: type:IP
+      size:
+        simple: ${inputs.iocs_in_xsoar}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: d3545de9-88ab-47d2-8648-645eceadb048
+    type: condition
+    task:
+      id: d3545de9-88ab-47d2-8648-645eceadb048
+      version: -1
+      name: Verify IP Is Ready
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "17"
+      "yes":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isTrue
+          left:
+            value:
+              simple: IndicatorsCheck.ConditionMet
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: 93a61f66-caf3-46ca-84a4-b60e381c26f2
+    type: regular
+    task:
+      id: 93a61f66-caf3-46ca-84a4-b60e381c26f2
+      version: -1
+      name: Clear Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      all:
+        simple: "yes"
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: e9f15b0c-23c6-434d-8e4b-2fde44740a7b
+    type: playbook
+    task:
+      id: e9f15b0c-23c6-434d-8e4b-2fde44740a7b
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      AdditionalPollingCommandArgNames:
+        simple: size
+      AdditionalPollingCommandArgValues:
+        simple: ${inputs.iocs_in_xsoar}
+      Ids:
+        simple: type:IP
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: query
+      PollingCommandName:
+        simple: VerifyEnoughIndicators
+      Timeout:
+        simple: "10"
+      dt:
+        simple: IndicatorsCheck(val.ConditionMet !== true).Query
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: 30729d95-3995-4c29-82b2-32c26e82cd6c
+    type: regular
+    task:
+      id: 30729d95-3995-4c29-82b2-32c26e82cd6c
+      version: -1
+      name: Check Domain Is Ready
+      description: Returns, whether there're, are enough indicators in the system.
+      scriptName: VerifyEnoughIndicators
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      query:
+        simple: type:Domain
+      size:
+        simple: ${inputs.iocs_in_xsoar}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: 8f82b2c6-fd5d-431b-8c3f-f1cf8a4fe99a
+    type: condition
+    task:
+      id: 8f82b2c6-fd5d-431b-8c3f-f1cf8a4fe99a
+      version: -1
+      name: Verify Domain Is Ready
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "21"
+      "yes":
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isTrue
+          left:
+            value:
+              simple: IndicatorsCheck.ConditionMet
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: 4ab98bde-d164-40e7-8e35-9350b20eb27e
+    type: regular
+    task:
+      id: 4ab98bde-d164-40e7-8e35-9350b20eb27e
+      version: -1
+      name: Clear Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      all:
+        simple: "yes"
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
+    taskid: 4d1ff927-2394-47b2-8fc4-19de9c61b3e0
+    type: playbook
+    task:
+      id: 4d1ff927-2394-47b2-8fc4-19de9c61b3e0
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      AdditionalPollingCommandArgNames:
+        simple: size
+      AdditionalPollingCommandArgValues:
+        simple: ${inputs.iocs_in_xsoar}
+      Ids:
+        simple: type:Domain
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: query
+      PollingCommandName:
+        simple: VerifyEnoughIndicators
+      Timeout:
+        simple: "10"
+      dt:
+        simple: IndicatorsCheck(val.ConditionMet !== true).Query
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: 63575462-972d-43f3-8c6e-7c0d8d6e4780
+    type: regular
+    task:
+      id: 63575462-972d-43f3-8c6e-7c0d8d6e4780
+      version: -1
+      name: Check URL Is Ready
+      description: Returns, whether there're, are enough indicators in the system.
+      scriptName: VerifyEnoughIndicators
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      query:
+        simple: type:URL
+      size:
+        simple: ${inputs.iocs_in_xsoar}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "23":
+    id: "23"
+    taskid: 3ed94f39-429d-4a61-8fa8-5247f561dc5e
+    type: regular
+    task:
+      id: 3ed94f39-429d-4a61-8fa8-5247f561dc5e
+      version: -1
+      name: Clear Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      all:
+        simple: "yes"
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "24":
+    id: "24"
+    taskid: 939fd39b-2d6d-489a-8148-35a04bb21191
+    type: condition
+    task:
+      id: 939fd39b-2d6d-489a-8148-35a04bb21191
+      version: -1
+      name: Verify URL Is Ready
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "25"
+      "yes":
+      - "23"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isTrue
+          left:
+            value:
+              simple: IndicatorsCheck.ConditionMet
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "25":
+    id: "25"
+    taskid: efb18f91-0b3b-4980-8a86-ea2326276060
+    type: playbook
+    task:
+      id: efb18f91-0b3b-4980-8a86-ea2326276060
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      AdditionalPollingCommandArgNames:
+        simple: size
+      AdditionalPollingCommandArgValues:
+        simple: ${inputs.iocs_in_xsoar}
+      Ids:
+        simple: type:URL
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: query
+      PollingCommandName:
+        simple: VerifyEnoughIndicators
+      Timeout:
+        simple: "10"
+      dt:
+        simple: IndicatorsCheck(val.ConditionMet !== true).Query
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "27":
+    id: "27"
+    taskid: a11bb5b6-340e-4b86-8b90-0e22bb274f94
+    type: regular
+    task:
+      id: a11bb5b6-340e-4b86-8b90-0e22bb274f94
+      version: -1
+      name: Set URL
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      key:
+        simple: ServerURL
+      value:
+        complex:
+          root: ServerURL
+          accessor: URL
+          transformers:
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: /instance/execute/
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: inputs.edl_name
+                iscontext: true
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: /
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "28":
+    id: "28"
+    taskid: 4a666f95-d265-4967-8867-6df133c97eb5
+    type: regular
+    task:
+      id: 4a666f95-d265-4967-8867-6df133c97eb5
+      version: -1
+      name: Get Server URL
+      description: Get the Server URL.
+      scriptName: GetServerURL
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "29":
+    id: "29"
+    taskid: dd29e3ec-ceec-4f9e-83ae-446c273ef91d
+    type: regular
+    task:
+      id: dd29e3ec-ceec-4f9e-83ae-446c273ef91d
+      version: -1
+      name: Send URL Export Indicators Query
+      description: Sends http request. Returns the response as json.
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      method:
+        simple: GET
+      url:
+        complex:
+          root: ServerURL
+          transformers:
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ?n=10000&q=type:URL
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2965
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "30":
+    id: "30"
+    taskid: ba10ccdb-52b4-47bd-81a5-24d2d47d64ec
+    type: condition
+    task:
+      id: ba10ccdb-52b4-47bd-81a5-24d2d47d64ec
+      version: -1
+      name: Assert Search Time OK
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "33"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: lessThanOrEqual
+          left:
+            value:
+              complex:
+                root: HttpRequest.Response.Headers
+                accessor: X-Exportindicators-Query-Time-Secs
+                transformers:
+                - operator: round
+            iscontext: true
+          right:
+            value:
+              simple: "18"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "31":
+    id: "31"
+    taskid: a62c6278-4eb8-43fb-8c42-c84d56f1563d
+    type: regular
+    task:
+      id: a62c6278-4eb8-43fb-8c42-c84d56f1563d
+      version: -1
+      name: Send IP Export Indicators Query
+      description: Sends http request. Returns the response as json.
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      method:
+        simple: GET
+      url:
+        complex:
+          root: ServerURL
+          transformers:
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ?n=10000&q=type:IP
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "32":
+    id: "32"
+    taskid: eb4405e8-4730-425d-877d-94f19c79fabd
+    type: condition
+    task:
+      id: eb4405e8-4730-425d-877d-94f19c79fabd
+      version: -1
+      name: Assert Search Time OK
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "34"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: lessThanOrEqual
+          left:
+            value:
+              complex:
+                root: HttpRequest.Response.Headers
+                accessor: X-Exportindicators-Query-Time-Secs
+                transformers:
+                - operator: round
+            iscontext: true
+          right:
+            value:
+              simple: "18"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3665
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "33":
+    id: "33"
+    taskid: e5b0d0a7-49e2-4f60-8d33-3a57fa11ad53
+    type: regular
+    task:
+      id: e5b0d0a7-49e2-4f60-8d33-3a57fa11ad53
+      version: -1
+      name: Clear Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      all:
+        simple: "no"
+      key:
+        simple: ${HttpRequest}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3315
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "34":
+    id: "34"
+    taskid: 29e8924f-fa96-4cc1-8967-f18afbca9a88
+    type: regular
+    task:
+      id: 29e8924f-fa96-4cc1-8967-f18afbca9a88
+      version: -1
+      name: Clear Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      all:
+        simple: "no"
+      key:
+        simple: ${HttpRequest}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "35":
+    id: "35"
+    taskid: e8ef8ca6-d494-4703-84b2-a1d9104ddb50
+    type: regular
+    task:
+      id: e8ef8ca6-d494-4703-84b2-a1d9104ddb50
+      version: -1
+      name: Send Domain Export Indicators Query
+      description: Sends http request. Returns the response as json.
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "36"
+    scriptarguments:
+      method:
+        simple: GET
+      url:
+        complex:
+          root: ServerURL
+          transformers:
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ?n=10000&q=type:Domain
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4015
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "36":
+    id: "36"
+    taskid: 15b468dc-d923-44e9-8de3-43addff86a18
+    type: condition
+    task:
+      id: 15b468dc-d923-44e9-8de3-43addff86a18
+      version: -1
+      name: Assert Search Time OK
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "57"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: lessThanOrEqual
+          left:
+            value:
+              complex:
+                root: HttpRequest.Response.Headers
+                accessor: X-Exportindicators-Query-Time-Secs
+                transformers:
+                - operator: round
+            iscontext: true
+          right:
+            value:
+              simple: "18"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "38":
+    id: "38"
+    taskid: 17d56296-f8b0-4a53-8660-6e46f9408cfd
+    type: regular
+    task:
+      id: 17d56296-f8b0-4a53-8660-6e46f9408cfd
+      version: -1
+      name: Send URL Export Indicators Query
+      description: Sends http request. Returns the response as json.
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "39"
+    scriptarguments:
+      method:
+        simple: GET
+      url:
+        complex:
+          root: ServerURL
+          transformers:
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ?n=50000&q=type:URL
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "39":
+    id: "39"
+    taskid: 8e271206-96e9-47ad-82e0-87d39a79db4f
+    type: condition
+    task:
+      id: 8e271206-96e9-47ad-82e0-87d39a79db4f
+      version: -1
+      name: Assert Search Time OK
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "40"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: lessThanOrEqual
+          left:
+            value:
+              complex:
+                root: HttpRequest.Response.Headers
+                accessor: X-Exportindicators-Query-Time-Secs
+                transformers:
+                - operator: round
+            iscontext: true
+          right:
+            value:
+              simple: "30"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5385
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "40":
+    id: "40"
+    taskid: 06349b5e-bd6e-439d-851f-c8f7a64583e0
+    type: regular
+    task:
+      id: 06349b5e-bd6e-439d-851f-c8f7a64583e0
+      version: -1
+      name: Clear Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "41"
+    scriptarguments:
+      all:
+        simple: "no"
+      key:
+        simple: ${HttpRequest}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "41":
+    id: "41"
+    taskid: 6df537b3-58de-428f-88e1-02ba42d847eb
+    type: regular
+    task:
+      id: 6df537b3-58de-428f-88e1-02ba42d847eb
+      version: -1
+      name: Send IP Export Indicators Query
+      description: Sends http request. Returns the response as json.
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "42"
+    scriptarguments:
+      method:
+        simple: GET
+      url:
+        complex:
+          root: ServerURL
+          transformers:
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ?n=50000&q=type:IP
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5735
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "42":
+    id: "42"
+    taskid: d68f28f3-2591-4366-837c-7ff9311d2f87
+    type: condition
+    task:
+      id: d68f28f3-2591-4366-837c-7ff9311d2f87
+      version: -1
+      name: Assert Search Time OK
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "43"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: lessThanOrEqual
+          left:
+            value:
+              complex:
+                root: HttpRequest.Response.Headers
+                accessor: X-Exportindicators-Query-Time-Secs
+                transformers:
+                - operator: round
+            iscontext: true
+          right:
+            value:
+              simple: "30"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "43":
+    id: "43"
+    taskid: 36d8f6d6-3154-4f76-85ac-fc21b08315c6
+    type: regular
+    task:
+      id: 36d8f6d6-3154-4f76-85ac-fc21b08315c6
+      version: -1
+      name: Clear Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "44"
+    scriptarguments:
+      all:
+        simple: "no"
+      key:
+        simple: ${HttpRequest}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6085
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "44":
+    id: "44"
+    taskid: a51da106-4412-4cf1-8bc2-c766995e780a
+    type: regular
+    task:
+      id: a51da106-4412-4cf1-8bc2-c766995e780a
+      version: -1
+      name: Send Domain Export Indicators Query
+      description: Sends http request. Returns the response as json.
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "45"
+    scriptarguments:
+      method:
+        simple: GET
+      url:
+        complex:
+          root: ServerURL
+          transformers:
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ?n=50000&q=type:Domain
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "45":
+    id: "45"
+    taskid: c1b2d279-b958-4df7-82e1-7bc14f9690ed
+    type: condition
+    task:
+      id: c1b2d279-b958-4df7-82e1-7bc14f9690ed
+      version: -1
+      name: Assert Search Time OK
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "58"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: lessThanOrEqual
+          left:
+            value:
+              complex:
+                root: HttpRequest.Response.Headers
+                accessor: X-Exportindicators-Query-Time-Secs
+                transformers:
+                - operator: round
+            iscontext: true
+          right:
+            value:
+              simple: "30"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6435
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "48":
+    id: "48"
+    taskid: 42850ea2-3b84-4b5b-89c4-6b50464a9458
+    type: regular
+    task:
+      id: 42850ea2-3b84-4b5b-89c4-6b50464a9458
+      version: -1
+      name: Send URL Export Indicators Query
+      description: Sends http request. Returns the response as json.
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "49"
+    scriptarguments:
+      method:
+        simple: GET
+      url:
+        complex:
+          root: ServerURL
+          transformers:
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ?n=70000&q=type:URL
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7455
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "49":
+    id: "49"
+    taskid: adaaf0cc-d652-4598-8ea7-fbfdf8ccc820
+    type: condition
+    task:
+      id: adaaf0cc-d652-4598-8ea7-fbfdf8ccc820
+      version: -1
+      name: Assert Search Time OK
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "50"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: lessThanOrEqual
+          left:
+            value:
+              complex:
+                root: HttpRequest.Response.Headers
+                accessor: X-Exportindicators-Query-Time-Secs
+                transformers:
+                - operator: round
+            iscontext: true
+          right:
+            value:
+              simple: "70"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "50":
+    id: "50"
+    taskid: 722b0355-3cc4-4e3e-8649-b6624b7cf669
+    type: regular
+    task:
+      id: 722b0355-3cc4-4e3e-8649-b6624b7cf669
+      version: -1
+      name: Clear Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "51"
+    scriptarguments:
+      all:
+        simple: "no"
+      key:
+        simple: ${HttpRequest}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7805
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "51":
+    id: "51"
+    taskid: 441f6046-2f45-4c41-8b0d-0a45abe19ff6
+    type: regular
+    task:
+      id: 441f6046-2f45-4c41-8b0d-0a45abe19ff6
+      version: -1
+      name: Send IP Export Indicators Query
+      description: Sends http request. Returns the response as json.
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "52"
+    scriptarguments:
+      method:
+        simple: GET
+      url:
+        complex:
+          root: ServerURL
+          transformers:
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ?n=70000&q=type:IP
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7980
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "52":
+    id: "52"
+    taskid: 119eccde-d46b-4385-8d93-ebd9186189a7
+    type: condition
+    task:
+      id: 119eccde-d46b-4385-8d93-ebd9186189a7
+      version: -1
+      name: Assert Search Time OK
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "53"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: lessThanOrEqual
+          left:
+            value:
+              complex:
+                root: HttpRequest.Response.Headers
+                accessor: X-Exportindicators-Query-Time-Secs
+                transformers:
+                - operator: round
+            iscontext: true
+          right:
+            value:
+              simple: "70"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8155
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "53":
+    id: "53"
+    taskid: 71296b97-639e-4532-8100-b2c78644b2af
+    type: regular
+    task:
+      id: 71296b97-639e-4532-8100-b2c78644b2af
+      version: -1
+      name: Clear Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "54"
+    scriptarguments:
+      all:
+        simple: "no"
+      key:
+        simple: ${HttpRequest}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "54":
+    id: "54"
+    taskid: d2c85f68-2902-4359-826d-72bb2063a01c
+    type: regular
+    task:
+      id: d2c85f68-2902-4359-826d-72bb2063a01c
+      version: -1
+      name: Send Domain Export Indicators Query
+      description: Sends http request. Returns the response as json.
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "55"
+    scriptarguments:
+      method:
+        simple: GET
+      url:
+        complex:
+          root: ServerURL
+          transformers:
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ?n=70000&q=type:Domain
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8505
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "55":
+    id: "55"
+    taskid: 8e5bad3d-42d6-4487-8eb9-e49352512ec0
+    type: condition
+    task:
+      id: 8e5bad3d-42d6-4487-8eb9-e49352512ec0
+      version: -1
+      name: Assert Search Time OK
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "59"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: lessThanOrEqual
+          left:
+            value:
+              complex:
+                root: HttpRequest.Response.Headers
+                accessor: X-Exportindicators-Query-Time-Secs
+                transformers:
+                - operator: round
+            iscontext: true
+          right:
+            value:
+              simple: "70"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "56":
+    id: "56"
+    taskid: 3ff04784-bc28-4625-89b9-402301e355a8
+    type: title
+    task:
+      id: 3ff04784-bc28-4625-89b9-402301e355a8
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9555
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "57":
+    id: "57"
+    taskid: cf6acd8d-8ec2-4ac3-86d4-1aed7b4a86e9
+    type: regular
+    task:
+      id: cf6acd8d-8ec2-4ac3-86d4-1aed7b4a86e9
+      version: -1
+      name: Clear Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      all:
+        simple: "no"
+      key:
+        simple: ${HttpRequest}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4365
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "58":
+    id: "58"
+    taskid: da8bc18c-e685-4562-8cdd-5d1349833e12
+    type: regular
+    task:
+      id: da8bc18c-e685-4562-8cdd-5d1349833e12
+      version: -1
+      name: Clear Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      all:
+        simple: "no"
+      key:
+        simple: ${HttpRequest}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "59":
+    id: "59"
+    taskid: 971b85e6-a33d-4ddd-8e0f-c5858910ca7f
+    type: regular
+    task:
+      id: 971b85e6-a33d-4ddd-8e0f-c5858910ca7f
+      version: -1
+      name: Clear Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      all:
+        simple: "no"
+      key:
+        simple: ${HttpRequest}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8855
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "60":
+    id: "60"
+    taskid: 5fc02456-5a46-402c-83a0-97dad093dde2
+    type: regular
+    task:
+      id: 5fc02456-5a46-402c-83a0-97dad093dde2
+      version: -1
+      name: Clear HeyConcurrency Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "56"
+    scriptarguments:
+      all:
+        simple: "no"
+      key:
+        simple: HeyConcurrency
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 9570,
+        "width": 492.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: edl_name
+  value:
+    simple: eis
+  required: false
+  description: EDL instance URL.
+  playbookInputQuery:
+- key: z
+  value: {}
+  required: false
+  description: Duration of application to send requests.
+  playbookInputQuery:
+- key: "n"
+  value: {}
+  required: false
+  description: The number of requests to run. Default is 200.
+  playbookInputQuery:
+- key: iocs_in_xsoar
+  value:
+    simple: "70000"
+  required: false
+  description: Expected number of indicators in the system.
+  playbookInputQuery:
+outputs: []
+description: ''

@@ -1,3 +1,4 @@
+Deprecated. Use the "ExtraHop - Ticket Tracking v2" playbook instead.
 Links the Demisto incident back to the ExtraHop detection that created it for ticket tracking purposes.
 
 ## Dependencies
@@ -5,14 +6,14 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 This playbook does not use any sub-playbooks.
-e
+
 ### Integrations
-* Builtin
+This playbook does not use any integrations.
 
 ### Scripts
-* AssignAnalystToIncident
-* Exists
 * SearchIncidentsV2
+* Exists
+* AssignAnalystToIncident
 
 ### Commands
 * extrahop-track-ticket
@@ -20,12 +21,11 @@ e
 
 ## Playbook Inputs
 ---
-There are no inputs for this playbook.
+
+| **Name** | **Description** | **Default Value** | **Required** |
+| --- | --- | --- | --- |
+| OnCall | Set to true to assign only user that is currently on shift. Requires Cortex XSOAR v5.5 or later. | false | Optional |
 
 ## Playbook Outputs
 ---
 There are no outputs for this playbook.
-
-## Playbook Image
----
-![ExtraHop_Ticket_Tracking](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/ExtraHop_Ticket_Tracking.png)

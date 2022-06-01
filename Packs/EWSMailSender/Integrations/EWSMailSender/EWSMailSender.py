@@ -2,7 +2,7 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
-from cStringIO import StringIO
+from io import StringIO
 import logging
 import warnings
 import traceback
@@ -59,6 +59,7 @@ from exchangelib.version import EXCHANGE_2007, EXCHANGE_2010, EXCHANGE_2010_SP2,
     EXCHANGE_2016  # noqa: E402
 from exchangelib import HTMLBody, Message, FileAttachment, Account, IMPERSONATION, Credentials, Configuration, NTLM, \
     BASIC, DIGEST, Version, DELEGATE  # noqa: E402
+from exchangelib.errors import ErrorItemNotFound, UnauthorizedError  # noqa: E402
 
 IS_TEST_MODULE = False
 
@@ -100,28 +101,70 @@ def exchangelib_cleanup():
                 protocol.thread_pool.terminate()
                 del protocol.__dict__["thread_pool"]
             else:
-                demisto.info('Thread pool not found (ignoring terminate) in protcol dict: {}'.format(dir(protocol.__dict__)))
+                demisto.info(
+                    'Thread pool not found (ignoring terminate) in protcol dict: {}'.format(dir(protocol.__dict__)))
         except Exception as ex:
             demisto.error("Error with thread_pool.terminate, ignoring: {}".format(ex))
 
 
 def get_account(account_email):
-    return Account(
-        primary_smtp_address=account_email, autodiscover=False, config=config, access_type=ACCESS_TYPE,
-    )
+    for i in range(1, 4):
+        response = Account(
+            primary_smtp_address=account_email, autodiscover=False, config=config, access_type=ACCESS_TYPE,
+        )
+        try:
+            response.root  # Check if you have access to root directory
+            return response
+        except UnauthorizedError:
+            demisto.debug("Got unauthorized error, This is attempt number {}".format(i))
+            continue
+    return response
 
 
-def send_email_to_mailbox(account, to, subject, body, bcc=None, cc=None, reply_to=None, html_body=None, attachments=[]):
+def send_email_to_mailbox(
+    account: Account,
+    to: List[str],
+    subject: str,
+    body: str,
+    bcc: List[str],
+    cc: List[str],
+    reply_to: List[str],
+    html_body: Optional[str] = None,
+    attachments: Optional[List[str]] = None,
+    raw_message: Optional[str] = None,
+    from_address: Optional[str] = None
+):
+    """
+    Send an email to a mailbox.
+
+    Args:
+        account (Account): account from which to send an email.
+        to (list[str]): a list of emails to send an email.
+        subject (str): subject of the mail.
+        body (str): body of the email.
+        reply_to (list[str]): list of emails of which to reply to from the sent email.
+        bcc (list[str]): list of email addresses for the 'bcc' field.
+        cc (list[str]): list of email addresses for the 'cc' field.
+        html_body (str): HTML formatted content (body) of the email to be sent. This argument
+            overrides the "body" argument.
+        attachments (list[str]): list of names of attachments to send.
+        raw_message (str): Raw email message from MimeContent type.
+        from_address (str): the email address from which to reply.
+    """
+    if not attachments:
+        attachments = []
     message_body = HTMLBody(html_body) if html_body else body
     m = Message(
         account=account,
+        mime_content=raw_message.encode('UTF-8') if raw_message else None,
         folder=account.sent,
         cc_recipients=cc,
         bcc_recipients=bcc,
         subject=subject,
         body=message_body,
         to_recipients=to,
-        reply_to=reply_to
+        reply_to=reply_to,
+        author=from_address
     )
     if account.protocol.version.build <= EXCHANGE_2010_SP2:
         m.save()
@@ -132,6 +175,26 @@ def send_email_to_mailbox(account, to, subject, body, bcc=None, cc=None, reply_t
         for attachment in attachments:
             m.attach(attachment)
         m.send_and_save()
+    return m
+
+
+def send_email_reply_to_mailbox(account, inReplyTo, to, body, subject=None, bcc=None, cc=None, html_body=None,
+                                attachments=[]):
+    item_to_reply_to = account.inbox.get(id=inReplyTo)
+    if isinstance(item_to_reply_to, ErrorItemNotFound):
+        raise Exception(item_to_reply_to)
+
+    subject = subject or item_to_reply_to.subject
+    message_body = HTMLBody(html_body) if html_body else body
+    reply = item_to_reply_to.create_reply(subject='Re: ' + subject, body=message_body, to_recipients=to, cc_recipients=cc,
+                                          bcc_recipients=bcc)
+    reply = reply.save(account.drafts)
+    m = account.inbox.get(id=reply.id)
+
+    for attachment in attachments:
+        m.attach(attachment)
+    m.send()
+
     return m
 
 
@@ -165,14 +228,41 @@ def collect_manual_attachments(manualAttachObj):
 
 
 def send_email(to, subject, body="", bcc=None, cc=None, replyTo=None, htmlBody=None,
-               attachIDs="", attachCIDs="", attachNames="", from_mailbox=None, manualAttachObj=None):
+               attachIDs="", attachCIDs="", attachNames="", from_mailbox=None, manualAttachObj=None,
+               raw_message=None, from_address=None):
     account = get_account(from_mailbox or ACCOUNT_EMAIL)
-    bcc = bcc.split(",") if bcc else None
-    cc = cc.split(",") if cc else None
-    to = to.split(",") if to else None
+    bcc: List[str] = argToList(bcc)
+    cc: List[str] = argToList(cc)
+    to: List[str] = argToList(to)
+    reply_to: List[str] = argToList(replyTo)
     manualAttachObj = manualAttachObj if manualAttachObj is not None else []
     subject = subject[:252] + '...' if len(subject) > 255 else subject
 
+    attachments, attachments_names = process_attachments(attachCIDs, attachIDs, attachNames, manualAttachObj)
+
+    send_email_to_mailbox(
+        account=account, to=to, subject=subject, body=body, bcc=bcc, cc=cc, reply_to=reply_to,
+        html_body=htmlBody, attachments=attachments, raw_message=raw_message, from_address=from_address
+    )
+    result_object = {
+        'from': account.primary_smtp_address,
+        'to': to,
+        'subject': subject,
+        'attachments': attachments_names
+    }
+
+    return {
+        'Type': entryTypes['note'],
+        'Contents': result_object,
+        'ContentsFormat': formats['json'],
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': tableToMarkdown('Sent email', result_object),
+    }
+
+
+def process_attachments(attachCIDs="", attachIDs="", attachNames="", manualAttachObj=None):
+    if manualAttachObj is None:
+        manualAttachObj = []
     file_entries_for_attachments = []  # type: list
     attachments_names = []  # type: list
 
@@ -214,12 +304,25 @@ def send_email(to, subject, body="", bcc=None, cc=None, replyTo=None, htmlBody=N
         file_path = res["path"]
         with open(file_path, 'rb') as f:
             attachments.append(FileAttachment(content=f.read(), name=attachment_name))
+    return attachments, attachments_names
 
-    send_email_to_mailbox(account, to, subject, body, bcc, cc, replyTo, htmlBody, attachments)
+
+def reply_email(to, inReplyTo, body="", subject="", bcc=None, cc=None, htmlBody=None, attachIDs="", attachCIDs="",
+                attachNames="", from_mailbox=None, manualAttachObj=None):
+    account = get_account(from_mailbox or ACCOUNT_EMAIL)
+    bcc = bcc.split(",") if bcc else None
+    cc = cc.split(",") if cc else None
+    to = to.split(",") if to else None
+    manualAttachObj = manualAttachObj if manualAttachObj is not None else []
+    subject = subject[:252] + '...' if len(subject) > 255 else subject
+
+    attachments, attachments_names = process_attachments(attachCIDs, attachIDs, attachNames, manualAttachObj)
+
+    send_email_reply_to_mailbox(account, inReplyTo, to, body, subject, bcc, cc, htmlBody, attachments)
     result_object = {
         'from': account.primary_smtp_address,
         'to': to,
-        'subject': subject.encode('utf-8'),
+        'subject': subject,
         'attachments': attachments_names
     }
 
@@ -266,6 +369,8 @@ def prepare():
 
 
 def prepare_args(d):
+    if "from" in d:
+        d['from_address'] = d.pop('from')
     return dict((k.replace("-", "_"), v) for k, v in d.items())
 
 
@@ -273,7 +378,7 @@ def test_module():
     global IS_TEST_MODULE
     IS_TEST_MODULE = True
     BaseProtocol.TIMEOUT = 20
-    get_account(ACCOUNT_EMAIL)
+    get_account(ACCOUNT_EMAIL).root
     demisto.results('ok')
 
 
@@ -299,6 +404,8 @@ def main():
             test_module()
         elif demisto.command() == 'send-mail':
             demisto.results(send_email(**args))
+        elif demisto.command() == 'reply-mail':
+            demisto.results(reply_email(**args))
     except Exception as e:
         import time
 
@@ -339,5 +446,5 @@ def main():
 
 
 # python2 uses __builtin__ python3 uses builtins
-if __name__ == "__builtin__" or __name__ == "builtins":
+if __name__ == "__builtin__" or __name__ == "builtins" or __name__ == "__main__":
     main()

@@ -1,16 +1,16 @@
 <!-- HTML_DOC -->
 <h2>Overview</h2>
 <hr>
-<p>Use the Cisco Stealthwatch Cloud integration to manage threats to your networks.</p>
-<p>This integration was integrated and tested with Cisco Stealthwatch Cloud v1.0.0.</p>
+<p>Use the Cisco Secure Cloud Analytics (Stealthwatch Cloud) integration to manage threats to your networks.</p>
+<p>This integration was integrated and tested with Cisco Secure Cloud Analytics (Stealthwatch Cloud) v1.0.0.</p>
 <h2>Use cases</h2>
 <hr>
 <ol>
 <li>Fetch incidents</li>
-<li>Block domains (Blacklist)</li>
+<li>Block domains (Block list)</li>
 <li>Update alerts</li>
 </ol>
-<h2>Configure Stealthwatch Cloud on Demisto</h2>
+<h2>Configure Cisco Secure Cloud Analytics (Stealthwatch Cloud) on Cortex XSOAR</h2>
 <hr>
 <ol>
 <li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>
@@ -31,7 +31,7 @@
 </ol>
 <h2>Commands</h2>
 <hr>
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ol>
 <li><a href="#h_46121017251544340041243">Get information for an alert: sw-show-alert</a></li>
 <li><a href="#h_146688479731544340044713">Update an alert: sw-update-alert</a></li>
@@ -415,7 +415,7 @@
 </code></pre>
 <h3 id="h_1721575142041544340053332">4. Block a domain or IP</h3>
 <hr>
-<p>Adds a domain or IP to the blacklist.</p>
+<p>Adds a domain or IP to the block list.</p>
 <h5>Base Command</h5>
 <pre><code>sw-block-domain-or-ip</code></pre>
 <h5>Input</h5>
@@ -430,12 +430,12 @@
 <tbody>
 <tr>
 <td style="width: 218px;">domain</td>
-<td style="width: 363px;">Domain to add to the blacklist</td>
+<td style="width: 363px;">Domain to add to the block list</td>
 <td style="width: 127px;">Optional</td>
 </tr>
 <tr>
 <td style="width: 218px;">ip</td>
-<td style="width: 363px;">IP to add to the blacklist</td>
+<td style="width: 363px;">IP to add to the block list</td>
 <td style="width: 127px;">Optional</td>
 </tr>
 </tbody>
@@ -488,7 +488,7 @@
 <pre><code>!sw-block-domain-or-ip domain=test.com</code></pre>
 <h3 id="h_9208148722681544340078867">5. Unblock a domain</h3>
 <hr>
-<p>Removes a domain from the blacklist.</p>
+<p>Removes a domain from the block list.</p>
 <h5>Base Command</h5>
 <pre><code>sw-unblock-domain</code></pre>
 <h5>Input</h5>
@@ -503,7 +503,7 @@
 <tbody>
 <tr>
 <td style="width: 131px;">id</td>
-<td style="width: 506px;">ID of the domain to remove from the blacklist. You can find the <em>id</em> by running the <em>sw-list-blocked-domains</em> command.</td>
+<td style="width: 506px;">ID of the domain to remove from the block list. You can find the <em>id</em> by running the <em>sw-list-blocked-domains</em> command.</td>
 <td style="width: 71px;">True</td>
 </tr>
 </tbody>

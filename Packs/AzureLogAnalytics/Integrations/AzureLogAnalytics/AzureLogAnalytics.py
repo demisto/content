@@ -12,7 +12,7 @@ requests.packages.urllib3.disable_warnings()
 
 APP_NAME = 'ms-azure-log-analytics'
 
-API_VERSION = '2020-03-01-preview'
+API_VERSION = '2021-06-01'
 
 AUTHORIZATION_ERROR_MSG = 'There was a problem in retrieving an updated access token.\n'\
                           'The response from the server did not contain the expected content.'
@@ -27,10 +27,11 @@ AZURE_MANAGEMENT_RESOURCE = 'https://management.azure.com'
 
 class Client:
     def __init__(self, self_deployed, refresh_token, auth_and_token_url, enc_key, redirect_uri, auth_code,
-                 subscription_id, resource_group_name, workspace_name, verify, proxy):
+                 subscription_id, resource_group_name, workspace_name, verify, proxy, certificate_thumbprint,
+                 private_key):
 
         tenant_id = refresh_token if self_deployed else ''
-        refresh_token = (demisto.getIntegrationContext().get('current_refresh_token') or refresh_token)
+        refresh_token = get_integration_context().get('current_refresh_token') or refresh_token
         base_url = f'https://management.azure.com/subscriptions/{subscription_id}/resourceGroups/' \
             f'{resource_group_name}/providers/Microsoft.OperationalInsights/workspaces/{workspace_name}'
         self.ms_client = MicrosoftClient(
@@ -50,11 +51,13 @@ class Client:
             auth_code=auth_code,
             ok_codes=(200, 204, 400, 401, 403, 404, 409),
             multi_resource=True,
-            resources=[AZURE_MANAGEMENT_RESOURCE, LOG_ANALYTICS_RESOURCE]
+            resources=[AZURE_MANAGEMENT_RESOURCE, LOG_ANALYTICS_RESOURCE],
+            certificate_thumbprint=certificate_thumbprint,
+            private_key=private_key
         )
 
     def http_request(self, method, url_suffix=None, full_url=None, params=None,
-                     data=None, resource=None):
+                     data=None, resource=None, timeout=10):
         if not params:
             params = {}
         if not full_url:
@@ -66,7 +69,8 @@ class Client:
                                           json_data=data,
                                           params=params,
                                           resp_type='response',
-                                          resource=resource)
+                                          resource=resource,
+                                          timeout=timeout)
 
         if res.status_code in (200, 204) and not res.text:
             return res
@@ -148,11 +152,18 @@ def test_connection(client, params):
     if params.get('self_deployed', False) and not params.get('auth_code'):
         return_error('You must enter an authorization code in a self-deployed configuration.')
     client.ms_client.get_access_token(AZURE_MANAGEMENT_RESOURCE)  # If fails, MicrosoftApiModule returns an error
+    try:
+        execute_query_command(client, {'query': 'Usage | take 1'})
+    except Exception as e:
+        return_error('Could not authorize to `api.loganalytics.io` resource. This could be due to one of the following:'
+                     '\n1. Workspace ID is wrong.'
+                     '\n2. Missing necessary grant IAM privileges in your workspace to the AAD Application.', e)
     return_outputs('```✅ Success!```')
 
 
 def execute_query_command(client, args):
     query = args.get('query')
+    timeout = int(args.get('timeout', 10))
     workspace_id = demisto.params().get('workspaceID')
     full_url = f'https://api.loganalytics.io/v1/workspaces/{workspace_id}/query'
 
@@ -165,7 +176,7 @@ def execute_query_command(client, args):
     remove_nulls_from_dictionary(data)
 
     response = client.http_request('POST', full_url=full_url, data=data,
-                                   resource=LOG_ANALYTICS_RESOURCE)
+                                   resource=LOG_ANALYTICS_RESOURCE, timeout=timeout)
 
     output = []
 
@@ -304,19 +315,32 @@ def main():
     params = demisto.params()
 
     LOG(f'Command being called is {demisto.command()}')
+
     try:
+        self_deployed = params.get('self_deployed', False)
+        enc_key = params.get('enc_key')
+        certificate_thumbprint = params.get('certificate_thumbprint')
+        private_key = params.get('private_key')
+        if not self_deployed and not enc_key:
+            raise DemistoException('Key must be provided. For further information see '
+                                   'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')  # noqa: E501
+        elif not enc_key and not (certificate_thumbprint and private_key):
+            raise DemistoException('Key or Certificate Thumbprint and Private Key must be provided.')
+
         client = Client(
-            self_deployed=params.get('self_deployed', False),
+            self_deployed=self_deployed,
             auth_and_token_url=params.get('auth_id'),
             refresh_token=params.get('refresh_token'),
-            enc_key=params.get('enc_key'),
+            enc_key=enc_key,
             redirect_uri=params.get('redirect_uri', ''),
             auth_code=params.get('auth_code'),
             subscription_id=params.get('subscriptionID'),
             resource_group_name=params.get('resourceGroupName'),
             workspace_name=params.get('workspaceName'),
             verify=not params.get('insecure', False),
-            proxy=params.get('proxy', False)
+            proxy=params.get('proxy', False),
+            certificate_thumbprint=certificate_thumbprint,
+            private_key=private_key,
         )
 
         commands = {

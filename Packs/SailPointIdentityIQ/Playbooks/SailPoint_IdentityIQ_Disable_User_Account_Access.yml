@@ -1,0 +1,634 @@
+id: SailPoint IdentityIQ Disable User Account Access
+version: -1
+name: SailPoint IdentityIQ Disable User Account Access
+description: "Checks if the risk score of an identity exceeds a set threshold of 500\
+  \ and disables the accounts."
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: fe08bb86-e06f-4a0c-88c8-a3fbe2ae1f23
+    type: start
+    task:
+      id: fe08bb86-e06f-4a0c-88c8-a3fbe2ae1f23
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: d619c184-12aa-405c-877f-2e97db01875d
+    type: regular
+    task:
+      id: d619c184-12aa-405c-877f-2e97db01875d
+      version: -1
+      name: Get Identities By Incident Details Email
+      description: Search identities by search/filter parameters (id, email, risk
+        & active) using IdentityIQ SCIM API's.
+      script: '|||identityiq-search-identities'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      active: {}
+      email:
+        simple: ${incident.details}
+      id: {}
+      risk: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 31a79536-3538-4fcd-8692-9e344ccee781
+    type: regular
+    task:
+      id: 31a79536-3538-4fcd-8692-9e344ccee781
+      version: -1
+      name: Get Account
+      description: Fetch accounts by search/filter parameters (id, display_name, last_refresh,
+        native_identity, last_target_agg, identity_name & application_name) using
+        IdentityIQ SCIM API's.
+      script: '|||identityiq-get-accounts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      application_name: {}
+      display_name: {}
+      id: {}
+      identity_name:
+        simple: ${IdentityIQ.Identity.userName}
+      last_refresh: {}
+      last_target_agg: {}
+      native_identity: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 33a3d334-94c1-43b7-81c3-973ad4a73d2d
+    type: condition
+    task:
+      id: 33a3d334-94c1-43b7-81c3-973ad4a73d2d
+      version: -1
+      name: If Risk Greater Than 500
+      description: If Risk Greater Than 500
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: IdentityIQ.Identity.sailpointUser.riskScore
+            iscontext: true
+          right:
+            value:
+              simple: "500"
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 44abe31e-875a-43d7-8cc2-2ccaa9f6d64d
+    type: regular
+    task:
+      id: 44abe31e-875a-43d7-8cc2-2ccaa9f6d64d
+      version: -1
+      name: High Risk (Risk higher than 500)
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      value:
+        simple: Over 500
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 7443cd86-3d21-4467-8a57-5707d946edec
+    type: regular
+    task:
+      id: 7443cd86-3d21-4467-8a57-5707d946edec
+      version: -1
+      name: Low Risk (Risk lower than 500)
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      value:
+        simple: Less Risk User
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 10df2814-9e78-4921-89ed-8321fbf98726
+    type: regular
+    task:
+      id: 10df2814-9e78-4921-89ed-8321fbf98726
+      version: -1
+      name: Set Incident Severity To High
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      accountid: {}
+      accountname: {}
+      addLabels: {}
+      agentid: {}
+      alertid: {}
+      alertname: {}
+      app: {}
+      appendMultiSelect: {}
+      applicationid: {}
+      applicationname: {}
+      assetid: {}
+      assigneduser: {}
+      assignmentgroup: {}
+      attachmentcount: {}
+      attachmentextension: {}
+      attachmenthash: {}
+      attachmentid: {}
+      attachmentname: {}
+      attachmentsize: {}
+      attachmenttype: {}
+      blockedaction: {}
+      bugtraq: {}
+      caller: {}
+      categorycount: {}
+      city: {}
+      closeNotes: {}
+      closeReason: {}
+      closetime: {}
+      closingreason: {}
+      closinguser: {}
+      cloudservice: {}
+      commandline: {}
+      compliancenotes: {}
+      costcenter: {}
+      costcentercode: {}
+      country: {}
+      countryname: {}
+      criticalassets: {}
+      customFields: {}
+      cve: {}
+      cvss: {}
+      cvssavailabilityrequirement: {}
+      cvsscollateraldamagepotential: {}
+      cvssconfidentialityrequirement: {}
+      cvssintegrityrequirement: {}
+      dbotMirrorDirection: {}
+      dbotMirrorId: {}
+      dbotMirrorInstance: {}
+      dbotMirrorTags: {}
+      dbotprediction: {}
+      dbotpredictionprobability: {}
+      dbottextsuggestionhighlighted: {}
+      deleteEmptyField: {}
+      department: {}
+      dest: {}
+      desthostname: {}
+      destinationgeolocation: {}
+      destinationhostname: {}
+      destinationip: {}
+      destinationips: {}
+      destinationipv6: {}
+      destinationmacaddress: {}
+      destinationnetwork: {}
+      destinationport: {}
+      destntdomain: {}
+      destos: {}
+      details: {}
+      detectedexternalhosts: {}
+      detectedexternalips: {}
+      detectedinternalhosts: {}
+      detectedinternalips: {}
+      detectedusers: {}
+      detectionendtime: {}
+      detectionid: {}
+      detectionupdatetime: {}
+      detectionurl: {}
+      deviceexternalip: {}
+      devicehash: {}
+      devicelocalip: {}
+      devicemodel: {}
+      devicename: {}
+      devicetime: {}
+      displayname: {}
+      dnsname: {}
+      dstports: {}
+      duration: {}
+      email: {}
+      emailauthenticitycheck: {}
+      emailbcc: {}
+      emailbody: {}
+      emailbodyformat: {}
+      emailbodyhtml: {}
+      emailcc: {}
+      emailclassification: {}
+      emailclientname: {}
+      emailfrom: {}
+      emailheaders: {}
+      emailhtml: {}
+      emailhtmlimage: {}
+      emailinreplyto: {}
+      emailkeywords: {}
+      emaillabels: {}
+      emaillatestmessage: {}
+      emailmessageid: {}
+      emailreceived: {}
+      emailreplyto: {}
+      emailreturnpath: {}
+      emailsenderip: {}
+      emailsize: {}
+      emailsource: {}
+      emailsubject: {}
+      emailto: {}
+      emailtocount: {}
+      emailurlclicked: {}
+      employeedisplayname: {}
+      employeeemail: {}
+      employeemanageremail: {}
+      errorcode: {}
+      errormessage: {}
+      escalation: {}
+      eventaction: {}
+      eventdescriptions: {}
+      eventid: {}
+      eventnames: {}
+      events: {}
+      eventtype: {}
+      externaladdresses: {}
+      filehash: {}
+      filename: {}
+      filepath: {}
+      filesize: {}
+      firstname: {}
+      firstseen: {}
+      followup: {}
+      givenname: {}
+      helloworldid: {}
+      helloworldstatus: {}
+      helloworldtype: {}
+      highlevelcategories: {}
+      hostname: {}
+      id: {}
+      incomingmirrorerror: {}
+      infectedhosts: {}
+      internaladdresses: {}
+      investigationstage: {}
+      isolated: {}
+      jobcode: {}
+      jobfamily: {}
+      jobfunction: {}
+      labels: {}
+      lastmodifiedby: {}
+      lastmodifiedon: {}
+      lastname: {}
+      lastseen: {}
+      lastupdatetime: {}
+      leadership: {}
+      listofrulesevent: {}
+      location: {}
+      locationregion: {}
+      logsource: {}
+      logsourcename: {}
+      logsourcetype: {}
+      lowlevelcategoriesevents: {}
+      macaddress: {}
+      maliciousbehavior: {}
+      malwarefamily: {}
+      malwarename: {}
+      manageremailaddress: {}
+      managername: {}
+      md5: {}
+      mobiledevicemodel: {}
+      mobilephone: {}
+      name: {}
+      numberoflogsources: {}
+      occurred: {}
+      os: {}
+      osversion: {}
+      outgoingmirrorerror: {}
+      owner: {}
+      parentprocessid: {}
+      personalemail: {}
+      phase: {}
+      phishingsubtype: {}
+      phonenumber: {}
+      pid: {}
+      policydeleted: {}
+      policydescription: {}
+      policydetails: {}
+      policyid: {}
+      policyrecommendation: {}
+      policyremediable: {}
+      policyseverity: {}
+      policytype: {}
+      postnatdestinationip: {}
+      postnatdestinationport: {}
+      postnatsourceip: {}
+      postnatsourceport: {}
+      prenatdestinationport: {}
+      prenatsourceip: {}
+      prenatsourceport: {}
+      protocol: {}
+      protocolevent: {}
+      protocols: {}
+      quarantined: {}
+      rating: {}
+      rawevent: {}
+      region: {}
+      regionid: {}
+      replacePlaybook: {}
+      reporteremailaddress: {}
+      resourceid: {}
+      resourcename: {}
+      resourcetype: {}
+      riskrating: {}
+      riskscore: {}
+      roles: {}
+      samaccountname: {}
+      severity:
+        simple: High
+      sha256: {}
+      signature: {}
+      skuname: {}
+      skutier: {}
+      sla: {}
+      slaField: {}
+      sourcegeolocation: {}
+      sourcehostname: {}
+      sourceip: {}
+      sourceips: {}
+      sourceipv6: {}
+      sourcemacaddress: {}
+      sourcenetwork: {}
+      sourceport: {}
+      sourceusername: {}
+      src: {}
+      srchostname: {}
+      srcntdomain: {}
+      srcos: {}
+      srcports: {}
+      srcuser: {}
+      starttime: {}
+      state: {}
+      streetaddress: {}
+      subcategory: {}
+      subtype: {}
+      surname: {}
+      systems: {}
+      technicalowner: {}
+      technicalownercontact: {}
+      technicaluser: {}
+      tenantname: {}
+      terminatedaction: {}
+      threatactor: {}
+      ticketcloseddate: {}
+      ticketnumber: {}
+      ticketopeneddate: {}
+      title: {}
+      trafficdirection: {}
+      triggeredsecurityprofile: {}
+      type: {}
+      uniqueports: {}
+      urlsslverification: {}
+      user: {}
+      useraccountcontrol: {}
+      userid: {}
+      username: {}
+      usernames: {}
+      vendorid: {}
+      vendorproduct: {}
+      vulnerabilitycategory: {}
+      workphone: {}
+      zipcode: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 2a560618-b3e9-4203-8354-9e2c68ad0149
+    type: regular
+    task:
+      id: 2a560618-b3e9-4203-8354-9e2c68ad0149
+      version: -1
+      name: Close Investigation
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      emailclassification: {}
+      id: {}
+      incomingmirrorerror: {}
+      outgoingmirrorerror: {}
+      phishingsubtype: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 282b63a5-d53d-4bd8-8481-5adeea9a3f78
+    type: regular
+    task:
+      id: 282b63a5-d53d-4bd8-8481-5adeea9a3f78
+      version: -1
+      name: Waiting For Manual Review For User Risk
+      description: Waiting For Manual Review For User Risk
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: a0ffa275-3e22-46e7-82d1-f66758b5d0ce
+    type: regular
+    task:
+      id: a0ffa275-3e22-46e7-82d1-f66758b5d0ce
+      version: -1
+      name: Disable Account
+      description: Disable account's active status by id using IdentityIQ SCIM API's.
+      script: '|||identityiq-disable-account'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      id:
+        simple: ${IdentityIQ.Account.id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1465,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: email
+  value: {}
+  required: false
+  description: "Email of the Identity."
+  playbookInputQuery:
+outputs: []
+fromversion: 6.0.0
+tests:
+- SailPointIdentityIQ-Test

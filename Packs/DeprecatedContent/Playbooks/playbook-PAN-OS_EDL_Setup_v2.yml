@@ -855,3 +855,4 @@ outputs:
   description: Name of the EDL.
 tests:
 - No test
+deprecated: true

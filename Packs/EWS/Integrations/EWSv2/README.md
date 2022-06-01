@@ -1,6 +1,7 @@
 <!-- HTML_DOC -->
 <p>Exchange Web Services (EWS) provides the functionality to enable client applications to communicate with the Exchange server. EWS provides access to much of the same data that is made available through Microsoft OfficeOutlook.</p>
 <p>The EWS v2 integration implants EWS leading services. The integration allows getting information on emails and activities in a target mailbox, and some active operations on the mailbox such as deleting emails and attachments or moving emails from folder to folder.</p>
+<p><b>Note:</b> EWS v2 does not support Multi-Factor Authentication (MFA). If using MFA, use EWS O365 (see <code>https://xsoar.pan.dev/docs/reference/integrations/ewso365</code>) or if you have Graph Outlook use O365 Outlook Mail (Using Graph API) (see <code>https://xsoar.pan.dev/docs/reference/integrations/microsoft-graph-mail</code>) or O365 Outlook Mail Single User (Using Graph API) (see <code>https://xsoar.pan.dev/docs/reference/integrations/microsoft-graph-mail-single-user</code>).</p>
 <h2>EWS v2 Playbook</h2>
 <ul>
 <li>Office 365 Search and Delete</li>
@@ -32,7 +33,7 @@
 <p>Delete email items from a mailbox.<br> First, make sure you obtain the email item ID. The item ID can be obtained with one of the integration’s search commands.<br> Use the<span> </span><code>ews-delete-items</code><span> command </span>to delete one or more items from the target mailbox in a single action.<br> A less common use case is to remove emails that were marked as malicious from a user’s mailbox.<br> You can delete the items permanently (hard delete), or delete the items (soft delete), so they can be recovered by running the<span> </span><code>ews-recover-messages</code> command.</p>
 </li>
 </ul>
-<h2>Configure EWS v2 on Demisto</h2>
+<h2>Configure EWS v2 on Cortex XSOAR</h2>
 <ol>
 <li>Navigate to<span> </span><strong>Settings</strong><span> </span>&gt;<span> </span><strong>Integrations</strong><span> </span>&gt;<span> </span><strong>Servers &amp; Services</strong>.</li>
 <li>Search for EWS v2.</li>
@@ -43,7 +44,7 @@
 <li>
 <strong>Email address</strong><span> </span>The email address</li>
 <li>
-<strong>Password</strong><span> </span>The password of the account. Use the API Key if working with Multi-Factor Authentication.</li>
+<strong>Password</strong><span> </span>The password of the account.</li>
 <li>
 <strong>Email address from which to fetch incidents</strong><span> </span>This argument can take various user accounts in your organization. Usually is used as phishing mailbox.<br> Note: To use this functionality, your account must have impersonation rights or delegation for the account specified. In the case of impersonation, make sure to check the<span> </span><code>Has impersonation rights</code><span> </span>checkbox in the instance settings. For more information on impersonation rights see ‘Additional Info’ section below.</li>
 <li><strong>Name of the folder from which to fetch incidents (supports Exchange Folder ID and sub-folders e.g. Inbox/Phishing)</strong></li>
@@ -51,6 +52,7 @@
 <li><strong>Has impersonation rights</strong></li>
 <li><strong>Use system proxy settings</strong></li>
 <li><strong>Fetch incidents</strong></li>
+<li><strong>First fetch timestamp</strong></li>
 <li><strong>Mark fetched emails as read</strong></li>
 <li>
 <strong>Incident type</strong><br> ┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉<br> ‎ Manual Mode<br> <code>In case the auto-discovery process failed, you will need to configure manually the exchange server endpoint, domain\username for exchange on-premise and enter exchange server version</code>
@@ -58,7 +60,7 @@
 <li>
 <strong>Exchange Server Hostname or IP address</strong><span> </span>For office 365 use<span> </span><code>https://outlook.office365.com/EWS/Exchange.asmx/</code><span> </span>and for exchange on-premise<span> </span><code>https://&lt;ip&gt;/EWS/Exchange.asmx/</code>
 </li>
-<li><strong>DOMAIN\USERNAME (e.g. DEMISTO.INT\admin)</strong></li>
+<li><strong>DOMAIN\USERNAME (e.g. XSOAR.INT\admin)</strong></li>
 <li><strong>Exchange Server Version (On-Premise only. Supported versions: 2007, 2010, 2010_SP2, 2013, and 2016)</strong></li>
 <li>
 <strong>Trust any certificate (not secure)</strong><br> ┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉<br> ‎ Advanced Mode<br> Override Authentication Type (NTLM, Basic, or Digest)._</li>
@@ -68,13 +70,15 @@
 <li>Click<span> </span><strong>Test</strong><span> </span>to validate the URLs, token, and connection.</li>
 </ol>
 <h2>Fetched Incidents Data</h2>
-<p>The integration imports email messages from the destination folder in the target mailbox as incidents. If the message contains any attachments, they are uploaded to the War Room as files. If the attachment is an email, Demisto fetches information about the attached email and downloads all of its attachments (if there are any) as files.</p>
+<p>The integration imports email messages from the destination folder in the target mailbox as incidents. If the message contains any attachments, they are uploaded to the War Room as files. If the attachment is an email, Cortex XSOAR fetches information about the attached email and downloads all of its attachments (if there are any) as files.</p>
 <p>To use Fetch incidents, configure a new instance and select the<span> </span><code>Fetches incidents</code><span> </span>option in the instance settings.</p>
 <p>IMPORTANT: The initial fetch interval is the previous 10 minutes. If no emails were fetched before from the destination folder- all emails from 10 minutes prior to the instance configuration and up to the current time will be fetched. Additionally moving messages manually to the destination folder will not trigger fetch incident. Define rules on phishing/target mailbox instead of moving messages manually.</p>
+<p>You can configure the ``First fetch timestamp`` field to determine how much time back you want to fetch incidents.
+<p>Notice that it might required to set the ``Timeout`` field to a higher value.</p>
 <p>Pay special attention to the following fields in the instance settings:</p>
 <p><code>Email address from which to fetch incidents</code><span> </span>– mailbox to fetch incidents from.<br> <code>Name of the folder from which to fetch incidents</code><span> </span>– use this field to configure the destination folder from where emails should be fetched. The default is Inbox folder. Please note, if Exchange is configured with an international flavor `Inbox` will be named according to the configured language.<br> <code>Has impersonation rights</code><span> </span>– mark this option if you set the target mailbox to an account different than your personal account. Otherwise Delegation access will be used instead of Impersonation.<br> Find more information on impersonation or delegation rights at ‘Additional Info’ section below.</p>
 <h2>Commands</h2>
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ol>
 <li><a href="#h_22ec0bbb-12b3-4f1c-9159-b1a4daa114c7" target="_self">Get the attachments of an item: ews-get-attachment</a></li>
 <li><a href="#h_cae18768-1dd5-4cd1-b2c9-abfd0e7787f3" target="_self">Delete the attachments of an item: ews-delete-attachment</a></li>
@@ -390,6 +394,7 @@
 <h3 id="h_7bdec9fe-e3d9-4645-8da4-337ee3798a84">3. Get a list of searchable mailboxes</h3>
 <hr>
 <p>Returns a list of searchable mailboxes.</p>
+<p>Note: We recommend that you do not run this command if you have over 1M mailboxes.</p>
 <h5>Required Permissions</h5>
 <p>Requires eDiscovery permissions to the Exchange Server. For more information see the <a href="https://technet.microsoft.com/en-us/library/dd298059(v=exchg.160).aspx" target="_blank" rel="nofollow noopener">Microsoft documentation</a>.</p>
 <h5>Base Command</h5>
@@ -476,6 +481,7 @@
 <p>Searches over multiple mailboxes or all Exchange mailboxes. The maximum number of mailboxes that can be searched is 20,000. Use either the mailbox-search-scope command or the email-addresses command to search specific mailboxes.</p>
 <h5>Required Permissions</h5>
 <p>Requires eDiscovery permissions to the Exchange Server. For more information, see the <a href="https://technet.microsoft.com/en-us/library/dd298059(v=exchg.160).aspx" target="_blank" rel="nofollow noopener">Microsoft documentation</a>.</p>
+<p>Note: If you have over 1M mailboxes, you should limit the number of mailboxes to search by defining the mailbox-search-scope argument before running this command.</p>
 <h5>Base Command</h5>
 <p><code>ews-search-mailboxes</code></p>
 <h5>Input</h5>
@@ -2759,6 +2765,40 @@
     }
 }
 </pre>
+
+
+
+### ews-get-items-as-eml
+***
+Retrieves items by item ID and uploads it's content as eml file.
+
+
+#### Base Command
+
+`ews-get-items-as-eml`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| item-id | The item ID of item to upload as and EML file. | Required | 
+| target-mailbox | The mailbox in which this email was found. If empty, the default mailbox is used. Otherwise the user might require impersonation rights to this mailbox. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| File.Size | String | The size of the file. | 
+| File.SHA1 | String | The SHA1 hash of the file. | 
+| File.SHA256 | String | The SHA256 hash of the file. | 
+| File.SHA512 | String | The SHA512 hash of the file. | 
+| File.Name | String | The name of the file. | 
+| File.SSDeep | String | The SSDeep hash of the file. | 
+| File.EntryID | String | EntryID of the file | 
+| File.Info | String | Information about the file. | 
+| File.Type | String | The file type. | 
+| File.MD5 | String | The MD5 hash of the file. | 
+| File.Extension | String | The extension of the file. | 
 <h2>Additional Information</h2>
 <hr>
 <h4>EWS Permissions</h4>
@@ -2797,3 +2837,5 @@
 <p> </p>
 <h4>New-Compliance Search</h4>
 <p>The EWS v2 integration uses remote ps-session to run commands of compliance search as part of Office 365. To check if your account can connect to Office 365 Security &amp; Compliance Center via powershell, check the following<span> </span><a href="https://docs.microsoft.com/en-us/powershell/exchange/office-365-scc/connect-to-scc-powershell/connect-to-scc-powershell?view=exchange-ps" rel="nofollow">steps</a>. New-Compliance search is a long-running task which has no limitation of searched mailboxes and therefore the suggestion is to use<span> </span><code>Office 365 Search and Delete</code>playbook. New-Compliance search returns statistics of matched content search query and doesn't return preview of found emails in contrast to<span> </span><code>ews-search-mailboxes</code><span> </span>command.</p>
+<h2>Troubleshooting</h2>
+For troubleshooting information, see the <a href="https://xsoar.pan.dev/docs/reference/articles/EWS_V2_Troubleshooting" target="_blank" rel="noopener">EWS V2 Troubleshooting</a>.

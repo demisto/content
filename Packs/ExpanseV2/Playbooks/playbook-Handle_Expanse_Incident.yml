@@ -1,0 +1,5971 @@
+id: Handle Expanse Incident
+version: -1
+contentitemexportablefields:
+  contentitemfields: {}
+name: Handle Expanse Incident
+description: |-
+  Main Playbook to Handle Expanse Incidents.
+
+  There are several phases:
+  1. Enrichment: all the related information from the incident is extracted, and related indicators (IP, CIDR, Domain, DomainGlob, Certificate) are created and enriched.
+  2. Validation: the found IP and FQDN are correlated with the information available in other products:
+    - Firewall logs from Cortex Data Lake, Panorama, and Splunk.
+    - User information from Active Directory.
+    - Public IP address from AWS/GCP/Azure public IP feeds to identify the Public Cloud region and service (i.e., us-west-1 on AWS EC2).
+    - IP and FQDN from Prisma Cloud inventory.
+  3. Shadow IT check: based on the information found, the playbook can suggest whether the discovered issue corresponds to an asset that is known to the InfoSec team (i.e., there are firewall logs present, or the asset is protected by Prisma Cloud, or is part of an IP range associated to the company).
+  4. Attribution: based on the information collected above, the analyst is prompted to assign this issue to an Organization Unit, which is a group within the company with a specific owner. The analyst can choose from existing Organization Units (stored in an XSOAR list) or define a new one.
+  5. Response: depending on the issue type, several remediation actions can be automatically and manually performed, such as:
+      - Tagging the asset in Expanse with a specific Organization Unit tag.
+      - Blocking the service on PAN-OS (if a firewall is deployed in front of the service).
+      - Creating a new Shadow IT issue (if the asset is detected to be Shadow IT and the analyst confirms it)
+      - Adding the service to a Vulnerability Management system
+      - Linking the incident to a related Prisma Cloud alert for the asset (if the asset is found under Prisma Cloud inventory)
+      - Bringing rogue cloud accounts under management
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 1008efd6-a73d-4810-8d0a-a1eaacc9df84
+    type: start
+    task:
+      id: 1008efd6-a73d-4810-8d0a-a1eaacc9df84
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "163"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1327.5,
+          "y": -2870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 9b6f637c-0380-4f67-8840-3a7749195308
+    type: condition
+    task:
+      id: 9b6f637c-0380-4f67-8840-3a7749195308
+      version: -1
+      name: Are there Expanse Asset Tags for this incident?
+      description: Check whether Expanse asset tags are present in this incident.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "2"
+    separatecontext: false
+    defaultassigneecomplex: {}
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: ExpanseDeviceGroupAssetTags
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1930,
+          "y": 7260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 5ea61de4-7445-44a2-829b-e5d0e9b788b5
+    type: title
+    task:
+      id: 5ea61de4-7445-44a2-829b-e5d0e9b788b5
+      version: -1
+      name: Use Device Groups from Expanse Asset Tags
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1580,
+          "y": 7440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 35c2de8d-64ef-403d-831c-de57756781cb
+    type: title
+    task:
+      id: 35c2de8d-64ef-403d-831c-de57756781cb
+      version: -1
+      name: Search Device Groups from Logs
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1930,
+          "y": 7900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: ab96f9e3-a659-4f43-80d5-b0c48daf413f
+    type: regular
+    task:
+      id: ab96f9e3-a659-4f43-80d5-b0c48daf413f
+      version: -1
+      name: Find Possible Device Groups
+      description: Set a value in context under the key you entered. If no value is
+        entered, the script doesn't do anything.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: TargetFirewalls
+      stringify: {}
+      value:
+        complex:
+          root: Expanse.AttributionDevice
+          filters:
+          - - operator: isTrue
+              left:
+                value:
+                  simple: Expanse.AttributionDevice.exposing_service
+                iscontext: true
+              ignorecase: true
+          - - operator: greaterThan
+              left:
+                value:
+                  simple: Expanse.AttributionDevice.sightings
+                iscontext: true
+              right:
+                value:
+                  simple: "0"
+          transformers:
+          - operator: Stringify
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: devicegroup
+              toReplace:
+                value:
+                  simple: device-group
+          - operator: ParseJSON
+          - operator: jmespath
+            args:
+              expression:
+                value:
+                  simple: '{deviceGroup: devicegroup, source: ''From Logs'', sightings:sightings}'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1930,
+          "y": 8020
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: ed51d697-ea57-4ef7-8f57-87fa3c855bf2
+    type: title
+    task:
+      id: ed51d697-ea57-4ef7-8f57-87fa3c855bf2
+      version: -1
+      name: Set Up Context Variables
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "12"
+      - "65"
+      - "173"
+      - "203"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1327.5,
+          "y": -2140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 6f9303dd-b30b-4fbd-8714-f67ba241756e
+    type: condition
+    task:
+      id: 6f9303dd-b30b-4fbd-8714-f67ba241756e
+      version: -1
+      name: Is Incident Priority Above AutoRemediation Threshold?
+      description: Check whether incident priority is above the autoremediation threshold.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "14"
+      "yes":
+      - "124"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: incident.severity
+            iscontext: true
+          right:
+            value:
+              simple: inputs.MinPriorityForAutoRemediation
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1355,
+          "y": 6735
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: f5a254b4-3211-471f-8c13-16f1ccddb01e
+    type: title
+    task:
+      id: f5a254b4-3211-471f-8c13-16f1ccddb01e
+      version: -1
+      name: Done Network Remediation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "75"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 917.5,
+          "y": 11835
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 04afdd02-9e0d-4ec7-8f31-aac057589255
+    type: condition
+    task:
+      id: 04afdd02-9e0d-4ec7-8f31-aac057589255
+      version: -1
+      name: Is Issue AutoRemediable with PAN-OS? (On-premise and has IP:Port)
+      description: Check whether the issue can be auto-remediated with PAN-OS (on-premise
+        and IP/port found).
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "14"
+      "Yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: expanseip
+            iscontext: true
+      - - operator: InRange
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: expanseport
+            iscontext: true
+          right:
+            value:
+              simple: 1,65535
+      - - operator: inList
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: expanseprotocol
+            iscontext: true
+          right:
+            value:
+              simple: tcp,udp
+          ignorecase: true
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: expanseprovider
+            iscontext: true
+          right:
+            value:
+              simple: On Prem
+    view: |-
+      {
+        "position": {
+          "x": 917.5,
+          "y": 6530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 3add9f3a-cb7b-4313-8dc9-82c8d682bd1a
+    type: condition
+    task:
+      id: 3add9f3a-cb7b-4313-8dc9-82c8d682bd1a
+      version: -1
+      name: Block ${incident.expanseip}:${incident.expanseport}/${incident.expanseprotocol}
+        on ${TargetDG} ?
+      description: Ask the user for confirmation on whether to block the service.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ✅ Yes:
+      - "24"
+      ❌ No:
+      - "14"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1930,
+          "y": 10915
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 9c7a7514-3c2e-4bf3-8717-452bcd94fa9e
+    type: regular
+    task:
+      id: 9c7a7514-3c2e-4bf3-8717-452bcd94fa9e
+      version: -1
+      name: Transpose Firewall TagList
+      description: Set a value in context under the key you entered. If no value is
+        entered, the script doesn't do anything.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "207"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: FirewallTagListTransposed
+      stringify: {}
+      value:
+        complex:
+          root: FirewallTagList
+          transformers:
+          - operator: DT
+            args:
+              dt:
+                value:
+                  simple: ".=foo(val);function foo(aa) {\nresult = [];\nfor (const\
+                    \ o of Object.keys(aa)) { \n  result.push({\"tag\":aa[o], \"dg\"\
+                    : o});\n}\nreturn result;\n}"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1580,
+          "y": 7565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 985ff29c-d355-4d3b-887b-cccd87fca1e4
+    type: regular
+    task:
+      id: 985ff29c-d355-4d3b-887b-cccd87fca1e4
+      version: -1
+      name: Extract XSOAR Incident Tags from Expanse
+      description: Set a value in context under the key you entered. If no value is
+        entered, the script doesn't do anything.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "159"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: ExpanseXSOARIssueTags
+      stringify: {}
+      value:
+        complex:
+          root: incident.expansetags
+          filters:
+          - - operator: startWith
+              left:
+                value:
+                  simple: incident.expansetags
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.TagPrefix
+                iscontext: true
+          transformers:
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 917.5,
+          "y": -1825
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: 2267b70b-e186-4259-8a10-9084f0139106
+    type: regular
+    task:
+      id: 2267b70b-e186-4259-8a10-9084f0139106
+      version: -1
+      name: Manual Block on Network
+      description: Perform manual block on the network.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 917.5,
+          "y": 11225
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 72662aac-860c-47a3-868c-a92515f00aff
+    type: title
+    task:
+      id: 72662aac-860c-47a3-868c-a92515f00aff
+      version: -1
+      name: Manual Network Remediation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "13"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 917.5,
+          "y": 11100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: 506da85c-e36e-414e-8242-210ff46b8ecc
+    type: condition
+    task:
+      id: 506da85c-e36e-414e-8242-210ff46b8ecc
+      version: -1
+      name: Suggested Device Groups found?
+      description: Check whether a target device group is found.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "196"
+      "yes":
+      - "66"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: TargetFirewalls
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1930,
+          "y": 8185
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: 275a0fa2-01ab-46a6-8168-7ca30a43389d
+    type: collection
+    task:
+      id: 275a0fa2-01ab-46a6-8168-7ca30a43389d
+      version: -1
+      name: Choose Device Group to enforce policy
+      description: Ask the user on which Device Group to enforce the policy change.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "119"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1930,
+          "y": 8915
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        simple: Analyst
+      subject:
+        simple: Choose target Device Group
+      body:
+        simple: Choose target Device Group
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: What Device Group do you want to apply the configuration on?
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - complex:
+            root: FirewallTagList
+            transformers:
+            - operator: jmespath
+              args:
+                expression:
+                  value:
+                    simple: keys(@)
+        - simple: ➕ Add New
+        - simple: "\U0001F525 Firewall Only (No Panorama)"
+        - simple: ❌ Manual Configuration
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Choose Device Group
+        readonly: false
+      title: Choose Device Group
+      description: Choose Device Group
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: 065cae1e-98c6-4bc4-8255-a01b0de0a079
+    type: title
+    task:
+      id: 065cae1e-98c6-4bc4-8255-a01b0de0a079
+      version: -1
+      name: DG Tagging
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "120"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2722.5,
+          "y": 9245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: 3f8edbf9-6e4a-433a-87c2-85a5e9e9b4c0
+    type: title
+    task:
+      id: 3f8edbf9-6e4a-433a-87c2-85a5e9e9b4c0
+      version: -1
+      name: Start Validation
+      description: Start validation of incident.
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "36"
+      - "34"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1327.5,
+          "y": 30
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "23":
+    id: "23"
+    taskid: 193fccf6-be21-41b7-832d-f2c830d37a67
+    type: playbook
+    task:
+      id: 193fccf6-be21-41b7-832d-f2c830d37a67
+      version: -1
+      name: PAN-OS - Block Destination Service
+      description: This playbook blocks a Destination IP and Service (TCP or UDP port)
+        by creating a rule for a specific Device Group on PAN-OS.
+      playbookName: PAN-OS - Block Destination Service
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      AutoCommit:
+        complex:
+          root: inputs.AutoCommit
+      DeviceGroup:
+        complex:
+          root: TargetDG
+      IP:
+        complex:
+          root: incident
+          accessor: expanseip
+      LogForwarding:
+        complex:
+          root: inputs.LogForwarding
+      Port:
+        complex:
+          root: incident
+          accessor: expanseport
+          transformers:
+          - operator: Stringify
+      Protocol:
+        complex:
+          root: incident
+          accessor: expanseprotocol
+          transformers:
+          - operator: toLowerCase
+      RuleNamePrefix:
+        simple: xsoar-rule-
+      ServiceNamePrefix:
+        simple: xsoar-service-
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+      forEach: true
+    view: |-
+      {
+        "position": {
+          "x": 2455,
+          "y": 11590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+  "24":
+    id: "24"
+    taskid: 9694f7c1-1d42-48ad-8c4e-e8fd75b0de54
+    type: title
+    task:
+      id: 9694f7c1-1d42-48ad-8c4e-e8fd75b0de54
+      version: -1
+      name: Block Service
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "25"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2252.5,
+          "y": 11100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "25":
+    id: "25"
+    taskid: e6be8ac9-db6f-42c7-8e9c-bb4260415639
+    type: regular
+    task:
+      id: e6be8ac9-db6f-42c7-8e9c-bb4260415639
+      version: -1
+      name: Get PAN-OS Version
+      description: Show firewall device software version.
+      script: '|||panorama-show-device-version'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      target: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2252.5,
+          "y": 11225
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+  "26":
+    id: "26"
+    taskid: 20db97fc-df12-4c13-88aa-04aa4c1ccb77
+    type: condition
+    task:
+      id: 20db97fc-df12-4c13-88aa-04aa4c1ccb77
+      version: -1
+      name: Firewall or Panorama?
+      description: Check whether the target device is a firewall or Panorama.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "27"
+      Panorama:
+      - "23"
+    separatecontext: false
+    conditions:
+    - label: Panorama
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Panorama.Device.Info
+                accessor: Model
+            iscontext: true
+          right:
+            value:
+              simple: panorama
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 2252.5,
+          "y": 11380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "27":
+    id: "27"
+    taskid: c103330a-5b2e-4c76-8382-7d76132b0426
+    type: playbook
+    task:
+      id: c103330a-5b2e-4c76-8382-7d76132b0426
+      version: -1
+      name: PAN-OS - Block Destination Service
+      description: This playbook blocks a destination IP and service (TCP or UDP port)
+        by creating a rule for a specific Device Group on PAN-OS.
+      playbookName: PAN-OS - Block Destination Service
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      AutoCommit:
+        complex:
+          root: inputs.AutoCommit
+      DeviceGroup: {}
+      IP:
+        complex:
+          root: incident
+          accessor: expanseip
+      LogForwarding:
+        complex:
+          root: inputs.LogForwarding
+      Port:
+        complex:
+          root: incident
+          accessor: expanseport
+          transformers:
+          - operator: Stringify
+      Protocol:
+        complex:
+          root: incident
+          accessor: expanseprotocol
+          transformers:
+          - operator: toLowerCase
+      RuleNamePrefix:
+        simple: xsoar-rule-
+      ServiceNamePrefix:
+        simple: xsoar-service-
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+      forEach: true
+    view: |-
+      {
+        "position": {
+          "x": 2040,
+          "y": 11590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+  "28":
+    id: "28"
+    taskid: 3fcf3526-af1c-4d0f-8f96-8e2073db66c4
+    type: title
+    task:
+      id: 3fcf3526-af1c-4d0f-8f96-8e2073db66c4
+      version: -1
+      name: Enrichment
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "167"
+      - "141"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1327.5,
+          "y": -710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "29":
+    id: "29"
+    taskid: 4a500f51-ffc1-4698-8e41-b0b0bf96b87f
+    type: title
+    task:
+      id: 4a500f51-ffc1-4698-8e41-b0b0bf96b87f
+      version: -1
+      name: Done Enrichment
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "22"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1327.5,
+          "y": -120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "30":
+    id: "30"
+    taskid: 16a2ecf7-7e46-42fc-897f-1c270fb4bdd0
+    type: title
+    task:
+      id: 16a2ecf7-7e46-42fc-897f-1c270fb4bdd0
+      version: -1
+      name: Remediation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "81"
+      - "82"
+      - "84"
+      - "109"
+      - "211"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 917.5,
+          "y": 6070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "34":
+    id: "34"
+    taskid: cbe9a476-b64e-4a7e-8d42-b18cd4fef20b
+    type: playbook
+    task:
+      id: cbe9a476-b64e-4a7e-8d42-b18cd4fef20b
+      version: -1
+      name: Expanse Attribution
+      description: |
+        Sub-playbook for Handle Expanse Incident playbooks. Given an Expanse Issue IP, Issue Provider, Issue Domain, Issue Port, and Issue Protocol, hunts for internal activity related to the detected service. The playbook looks for logs on Splunk, Cortex Data Lake, and Panorama. Returns a list of potential owner BUs, owner Users, Device, and Notes.
+      playbookName: Expanse Attribution
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "147"
+    scriptarguments:
+      Asset: {}
+      Domain:
+        complex:
+          root: incident
+          accessor: expansedomain
+      IP:
+        complex:
+          root: incident
+          accessor: expanseip
+      InternalIPRange: {}
+      NumberOfDaysInThePast:
+        complex:
+          root: inputs.NumberOfDaysInThePast
+      Port:
+        complex:
+          root: incident
+          accessor: expanseport
+      Protocol:
+        complex:
+          root: incident
+          accessor: expanseprotocol
+      Provider:
+        complex:
+          root: incident
+          accessor: expanseprovider
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1740,
+          "y": 180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "36":
+    id: "36"
+    taskid: 99913e03-d8a7-49c2-879d-8530328b4f81
+    type: condition
+    task:
+      id: 99913e03-d8a7-49c2-879d-8530328b4f81
+      version: -1
+      name: Is Issue Related To Cloud Asset?
+      description: Check whether the asset is on-premise or cloud.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "147"
+      "yes":
+      - "180"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEqualString
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: expanseprovider
+            iscontext: true
+          right:
+            value:
+              simple: On Prem
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 1327.5,
+          "y": 180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "40":
+    id: "40"
+    taskid: c2531997-2bd4-4e5a-8a56-15aa71062754
+    type: regular
+    task:
+      id: c2531997-2bd4-4e5a-8a56-15aa71062754
+      version: -1
+      name: Suggest possible Shadow IT
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "158"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: SuggestedShadowITAnswer
+      stringify: {}
+      value:
+        simple: "Yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 907.5,
+          "y": 1835
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "48":
+    id: "48"
+    taskid: 82e89a1e-cd28-4d41-88df-3862cd4ba841
+    type: collection
+    task:
+      id: 82e89a1e-cd28-4d41-88df-3862cd4ba841
+      version: -1
+      name: 'Ask: What Is The Organization Unit?'
+      description: Ask the user to perform attribution.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "88"
+      - "136"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1317.5,
+          "y": 2595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        simple: Analyst
+      subject:
+        simple: '** not used **'
+      body:
+        complex:
+          root: incident
+          accessor: id
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'Input needed to help attribution in Expanse Issue'
+              suffix: {}
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Select the Organization Unit owning this asset
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - complex:
+            root: OUToOwnerList
+            transformers:
+            - operator: jmespath
+              args:
+                expression:
+                  value:
+                    simple: keys(@)
+        - simple: ❓Unknown
+        - simple: ➕ Add New
+        - simple: ❌ Invalid
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Select the Organization Unit owning this asset.
+        readonly: false
+      - id: "1"
+        label: ""
+        labelarg:
+          complex:
+            root: SuggestedShadowITAnswer
+            transformers:
+            - operator: If-Then-Else
+              args:
+                else:
+                  value:
+                    simple: Automatic analysis suggests that the asset is not Shadow
+                      IT. Is the asset Shadow IT?
+                equals:
+                  value:
+                    simple: "Yes"
+                then:
+                  value:
+                    simple: Automatic analysis identified the asset as a possible
+                      Shadow IT asset. Is the asset Shadow IT?
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - simple: "No"
+        - simple: ❓Undecided
+        - simple: "Yes"
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Decide whether this a Shadow IT asset
+        readonly: false
+      title: Analysis of Asset Attribution
+      description: |-
+        Playbook automatically collected details from different sources to help the identification of the owner of the asset. Check the Evidence board for additional details that could help in your investigation.
+
+        To continue your investigation, decide:
+        - the **Organization Unit** this asset belongs to. This will be used for notifications and remediations actions. If you don't know, you can select *Unknown*. If the asset doesn't belong to your organization, select *Invalid*. If the OU is not listed, select *Add New* to add a new OU.
+        - if the asset should be considered **Shadow IT**.
+      sender: Your SOC team
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+  "49":
+    id: "49"
+    taskid: d4fbc043-bdcf-4e67-8587-a5c1218d1617
+    type: regular
+    task:
+      id: d4fbc043-bdcf-4e67-8587-a5c1218d1617
+      version: -1
+      name: Set Organization Unit
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "93"
+    scriptarguments:
+      expanseassetorganizationunit:
+        complex:
+          root: Analysis of Asset Attribution.Answers
+          accessor: "0"
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1317.5,
+          "y": 3060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "53":
+    id: "53"
+    taskid: 8d8d914a-b2b6-4f72-8d8c-8f07d7a82944
+    type: title
+    task:
+      id: 8d8d914a-b2b6-4f72-8d8c-8f07d7a82944
+      version: -1
+      name: Done Vulnerability Assessment
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "75"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -277.5,
+          "y": 7490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "56":
+    id: "56"
+    taskid: 3ee3588e-017f-449c-83d5-2968d3a171b0
+    type: condition
+    task:
+      id: 3ee3588e-017f-449c-83d5-2968d3a171b0
+      version: -1
+      name: Is Asset Organization Unit Known?
+      description: Check the attributed Organization Unit.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "83"
+      "yes":
+      - "58"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: notContainsString
+          left:
+            value:
+              simple: incident.expanseassetorganizationunit
+            iscontext: true
+          right:
+            value:
+              simple: Unknown
+          ignorecase: true
+      - - operator: notContainsString
+          left:
+            value:
+              simple: incident.expanseassetorganizationunit
+            iscontext: true
+          right:
+            value:
+              simple: Invalid
+    view: |-
+      {
+        "position": {
+          "x": 572.5,
+          "y": 6965
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "58":
+    id: "58"
+    taskid: a3915f7e-e23c-4129-88e8-52f600a52218
+    type: regular
+    task:
+      id: a3915f7e-e23c-4129-88e8-52f600a52218
+      version: -1
+      name: Notify OU Owner
+      description: Send an email.
+      script: '|||send-mail'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "83"
+    scriptarguments:
+      additionalHeader: {}
+      attachCIDs: {}
+      attachIDs: {}
+      attachNames: {}
+      bcc: {}
+      body:
+        complex:
+          root: inputs.OwnerNotificationBody
+      cc: {}
+      htmlBody: {}
+      raw_message: {}
+      replyTo: {}
+      subject:
+        complex:
+          root: inputs.OwnerNotificationSubject
+      templateParams: {}
+      to:
+        complex:
+          root: OUToOwnerList
+          transformers:
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: incident.expanseassetorganizationunit
+                iscontext: true
+          - operator: ParseJSON
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: email
+      transientFile: {}
+      transientFileCID: {}
+      transientFileContent: {}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 272.5,
+          "y": 7210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "59":
+    id: "59"
+    taskid: 75e0bf72-f042-4fcf-81e4-55104cffd8ae
+    type: condition
+    task:
+      id: 75e0bf72-f042-4fcf-81e4-55104cffd8ae
+      version: -1
+      name: Check for Possible Shadow IT?
+      description: Check if the incident is a possible Shadow IT incident.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "133"
+      Possible:
+      - "40"
+    separatecontext: false
+    conditions:
+    - label: Possible
+      condition:
+      - - operator: isEmpty
+          left:
+            value:
+              complex:
+                root: ShadowITCondition
+                filters:
+                - - operator: isTrue
+                    left:
+                      value:
+                        simple: ShadowITCondition.value
+                      iscontext: true
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1317.5,
+          "y": 1610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "62":
+    id: "62"
+    taskid: a4824548-dcb7-4620-84e5-9756441dbd1e
+    type: title
+    task:
+      id: a4824548-dcb7-4620-84e5-9756441dbd1e
+      version: -1
+      name: Shadow IT
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "154"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1327.5,
+          "y": 780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "63":
+    id: "63"
+    taskid: 7c06554c-dc59-4f03-8b9b-07934c3c3a63
+    type: title
+    task:
+      id: 7c06554c-dc59-4f03-8b9b-07934c3c3a63
+      version: -1
+      name: Organization Unit
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "68"
+      - "69"
+      - "70"
+      - "108"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1317.5,
+          "y": 2215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "65":
+    id: "65"
+    taskid: e9486c6a-b7c9-4ddf-8148-6b3838a68b94
+    type: regular
+    task:
+      id: e9486c6a-b7c9-4ddf-8148-6b3838a68b94
+      version: -1
+      name: Extract List of Low Confidence Discovery tags from PB Inputs
+      description: Set a value in context under the key you entered. If no value is
+        entered, the script doesn't do anything.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: IPRangeLowConfidenceTag
+      stringify: {}
+      value:
+        complex:
+          root: inputs.IPRangeLowConfidenceTagList
+          transformers:
+          - operator: splitAndTrim
+            args:
+              delimiter:
+                value:
+                  simple: ','
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1327.5,
+          "y": -1825
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "66":
+    id: "66"
+    taskid: 83c42d46-aa1f-487f-8d55-78d141fd5249
+    type: regular
+    task:
+      id: 83c42d46-aa1f-487f-8d55-78d141fd5249
+      version: -1
+      name: Print Target Device Group suggestions
+      description: Convert an array to a nice table display. Usually, from the context.
+      scriptName: ToTable
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "196"
+    scriptarguments:
+      columns: {}
+      data:
+        complex:
+          root: TargetFirewalls
+      title:
+        simple: Possible target Device Groups for Remediation
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2200,
+          "y": 8440
+        }
+      }
+    note: true
+    evidencedata:
+      description:
+        simple: Potential PAN-OS Target Device Groups
+      customfields: {}
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "67":
+    id: "67"
+    taskid: 56fedbbc-df14-4b7f-8936-82d0dc80e7f4
+    type: regular
+    task:
+      id: 56fedbbc-df14-4b7f-8936-82d0dc80e7f4
+      version: -1
+      name: Set Target Device Group based on user input
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "169"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: TargetDG
+      stringify: {}
+      value:
+        complex:
+          root: Choose Device Group.Answers
+          accessor: "0"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2292.5,
+          "y": 9690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "68":
+    id: "68"
+    taskid: 2291687a-990b-48a8-8315-06a64ce0cb3b
+    type: regular
+    task:
+      id: 2291687a-990b-48a8-8315-06a64ce0cb3b
+      version: -1
+      name: Print Target Users suggestions
+      description: Convert an array to a nice table display. Usually, from the context.
+      tags:
+      - ExpanseSuggestion
+      scriptName: ToTable
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "48"
+    scriptarguments:
+      columns: {}
+      data:
+        complex:
+          root: Expanse
+          accessor: AttributionUser
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty:
+                value:
+                  simple: "true"
+              defaultValue:
+                value:
+                  simple: '**NOTFOUND**'
+          - operator: DT
+            args:
+              dt:
+                value:
+                  simple: .=foo(val);function foo(aa) { if(val == '**NOTFOUND**')
+                    { return [{"value":"No results found"}]} else return val;}
+      title:
+        simple: List of users who connected to the asset in the past ${inputs.NumberOfDaysInThePast}
+          days
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1317.5,
+          "y": 2420
+        }
+      }
+    note: true
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "69":
+    id: "69"
+    taskid: 2d521c0e-0e30-4123-80d6-8edf702abeab
+    type: regular
+    task:
+      id: 2d521c0e-0e30-4123-80d6-8edf702abeab
+      version: -1
+      name: Print Target IP suggestions
+      description: Convert an array to a nice table display. Usually, from the context.
+      tags:
+      - ExpanseSuggestion
+      scriptName: ToTable
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "48"
+    scriptarguments:
+      columns: {}
+      data:
+        complex:
+          root: Expanse
+          accessor: AttributionIP
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty:
+                value:
+                  simple: "true"
+              defaultValue:
+                value:
+                  simple: '**NOTFOUND**'
+          - operator: DT
+            args:
+              dt:
+                value:
+                  simple: .=foo(val);function foo(aa) { if(val == '**NOTFOUND**')
+                    { return [{"value":"No results found"}]} else return val;}
+      title:
+        simple: List of Source IPs that connected to the asset in the past ${inputs.NumberOfDaysInThePast}
+          days
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 917.5,
+          "y": 2420
+        }
+      }
+    note: true
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "70":
+    id: "70"
+    taskid: ece8c5e3-2ab9-450f-8b22-93b0f1466ee2
+    type: regular
+    task:
+      id: ece8c5e3-2ab9-450f-8b22-93b0f1466ee2
+      version: -1
+      name: Print Target Devices suggestions
+      description: Convert an array to a nice table display. Usually, from the context.
+      tags:
+      - ExpanseSuggestion
+      scriptName: ToTable
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "48"
+    scriptarguments:
+      columns: {}
+      data:
+        complex:
+          root: Expanse
+          accessor: AttributionDevice
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty:
+                value:
+                  simple: "true"
+              defaultValue:
+                value:
+                  simple: '**NOTFOUND**'
+          - operator: DT
+            args:
+              dt:
+                value:
+                  simple: .=foo(val);function foo(aa) { if(val == '**NOTFOUND**')
+                    { return [{"value":"No results found"}]} else return val;}
+      title:
+        simple: List of Devices that permitted traffic to asset in the past ${inputs.NumberOfDaysInThePast}
+          days
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1735,
+          "y": 2420
+        }
+      }
+    note: true
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "73":
+    id: "73"
+    taskid: e672fa05-4240-4420-8632-e9f30f31a20b
+    type: condition
+    task:
+      id: e672fa05-4240-4420-8632-e9f30f31a20b
+      version: -1
+      name: Is this shadow IT?
+      description: Check if the incident is marked as Shadow IT.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "86"
+      "yes":
+      - "177"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isTrue
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: expanseshadowit
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 3240,
+          "y": 6220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "74":
+    id: "74"
+    taskid: 7faace73-d807-4e6e-8a71-201c1422eeee
+    type: regular
+    task:
+      id: 7faace73-d807-4e6e-8a71-201c1422eeee
+      version: -1
+      name: Create Shadow IT Incident
+      description: commands.local.cmd.create.inc
+      script: Builtin|||createNewIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "105"
+    scriptarguments:
+      name:
+        complex:
+          root: incident
+          accessor: expanseip
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'Shadow IT Detected by Expanse on IP: '
+              suffix: {}
+      severity:
+        complex:
+          root: incident
+          accessor: severity
+      type:
+        complex:
+          root: inputs.ShadowITIncidentType
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2520,
+          "y": 6680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "75":
+    id: "75"
+    taskid: ca90a949-472f-4c5c-8cad-4279365af9ec
+    type: title
+    task:
+      id: ca90a949-472f-4c5c-8cad-4279365af9ec
+      version: -1
+      name: Close Investigation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "76"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 917.5,
+          "y": 13470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "76":
+    id: "76"
+    taskid: 07671ff1-24b1-436c-8b6f-862a6b32ee80
+    type: condition
+    task:
+      id: 07671ff1-24b1-436c-8b6f-862a6b32ee80
+      version: -1
+      name: Close Investigation?
+      description: Ask the user whether to close the investigation.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ✅ Yes:
+      - "77"
+      ❌ No:
+      - "78"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 917.5,
+          "y": 13615
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "77":
+    id: "77"
+    taskid: 8bba46af-ec09-4f22-86d3-920ab1683349
+    type: regular
+    task:
+      id: 8bba46af-ec09-4f22-86d3-920ab1683349
+      version: -1
+      name: Close Investigation
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "78"
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      emailclassification: {}
+      id: {}
+      incomingmirrorerror: {}
+      outgoingmirrorerror: {}
+      phishingsubtype: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1230,
+          "y": 13840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "78":
+    id: "78"
+    taskid: e1314de8-85aa-40de-8808-cb4975d6c9f7
+    type: title
+    task:
+      id: e1314de8-85aa-40de-8808-cb4975d6c9f7
+      version: -1
+      name: All done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 917.5,
+          "y": 14090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "81":
+    id: "81"
+    taskid: bc1fc0b9-7607-43c7-8057-471ba1d629b9
+    type: title
+    task:
+      id: bc1fc0b9-7607-43c7-8057-471ba1d629b9
+      version: -1
+      name: Vulnerability Assessment
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "210"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -277.5,
+          "y": 6830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "82":
+    id: "82"
+    taskid: 460f200a-e66b-4673-8de2-e799bf5685e2
+    type: title
+    task:
+      id: 460f200a-e66b-4673-8de2-e799bf5685e2
+      version: -1
+      name: Notification Flow
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "56"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 572.5,
+          "y": 6830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "83":
+    id: "83"
+    taskid: f5110bdb-fbb0-4a07-81fe-28c93d734e47
+    type: title
+    task:
+      id: f5110bdb-fbb0-4a07-81fe-28c93d734e47
+      version: -1
+      name: Done Notification
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "75"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 572.5,
+          "y": 7490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "84":
+    id: "84"
+    taskid: 9cdcf6b0-d3a2-4dc5-8440-6890feb17363
+    type: title
+    task:
+      id: 9cdcf6b0-d3a2-4dc5-8440-6890feb17363
+      version: -1
+      name: Network Remediation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 917.5,
+          "y": 6375
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "85":
+    id: "85"
+    taskid: 7a42ea55-78cf-4763-8b59-69cb9c7c96e6
+    type: title
+    task:
+      id: 7a42ea55-78cf-4763-8b59-69cb9c7c96e6
+      version: -1
+      name: Shadow IT
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "73"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3240,
+          "y": 6070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "86":
+    id: "86"
+    taskid: 12c8ea49-d163-49e6-840e-5ea51ae03038
+    type: title
+    task:
+      id: 12c8ea49-d163-49e6-840e-5ea51ae03038
+      version: -1
+      name: Done Shadow IT
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "75"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3240,
+          "y": 7490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "88":
+    id: "88"
+    taskid: 6a8a48ca-b9c8-4554-8e56-eb149bacc0bf
+    type: condition
+    task:
+      id: 6a8a48ca-b9c8-4554-8e56-eb149bacc0bf
+      version: -1
+      name: Should Add New OU?
+      description: Determine if a new OU has to be added.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "49"
+      "yes":
+      - "204"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              simple: Analysis of Asset Attribution.Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: Add New
+    view: |-
+      {
+        "position": {
+          "x": 1317.5,
+          "y": 2840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "89":
+    id: "89"
+    taskid: 0432d418-3284-4fba-82a2-b1cb3e1af98e
+    type: collection
+    task:
+      id: 0432d418-3284-4fba-82a2-b1cb3e1af98e
+      version: -1
+      name: Add New OU
+      description: Collect new OU details from the user.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "90"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2070,
+          "y": 3145
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+        simple: Add New OU
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Organization Unit Name
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      - id: "1"
+        label: ""
+        labelarg:
+          simple: Expanse Tag
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: The tag to be used on Expanse to tag assets belonging to this Organization
+          Unit.
+        readonly: false
+      - id: "2"
+        label: ""
+        labelarg:
+          simple: Organization Unit Asset Owner Name
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      - id: "3"
+        label: ""
+        labelarg:
+          simple: Organization Unit Asset Owner Email
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Add New Organization Unit
+      description: Specify the Organization Unit name, name, and email of the asset
+        owner.
+      sender: Your SOC team
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+  "90":
+    id: "90"
+    taskid: 3c2457ff-8f48-4fc7-879e-a64a12921c89
+    type: regular
+    task:
+      id: 3c2457ff-8f48-4fc7-879e-a64a12921c89
+      version: -1
+      name: Save New Organization Unit to List
+      description: Adds/Replaces a key in key/value store backed by an XSOAR list.
+      scriptName: AddKeyToList
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "190"
+    scriptarguments:
+      allowDups: {}
+      append:
+        simple: "true"
+      keyName:
+        complex:
+          root: Add New Organization Unit.Answers
+          accessor: "0"
+      listName:
+        simple: ${inputs.OrganizationUnitsToOwnerName}
+      value:
+        complex:
+          root: Add New Organization Unit.Answers
+          accessor: "2"
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: '{"name": "'
+              suffix:
+                value:
+                  simple: '", "email": "'
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: Add New Organization Unit.Answers.3
+                iscontext: true
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: '"}'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2070,
+          "y": 3300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "91":
+    id: "91"
+    taskid: ff6fac08-0b89-4f9d-8f52-b48ec659a360
+    type: regular
+    task:
+      id: ff6fac08-0b89-4f9d-8f52-b48ec659a360
+      version: -1
+      name: Set Organization Unit
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "93"
+    scriptarguments:
+      expanseassetorganizationunit:
+        complex:
+          root: Add New Organization Unit.Answers
+          accessor: "0"
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2070,
+          "y": 4250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "93":
+    id: "93"
+    taskid: cc42a7d9-9ae2-4e41-8907-fbe20f95d256
+    type: title
+    task:
+      id: cc42a7d9-9ae2-4e41-8907-fbe20f95d256
+      version: -1
+      name: Done Organization Unit
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "85"
+      - "165"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1260,
+          "y": 4450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "94":
+    id: "94"
+    taskid: c2022652-c1b8-46ff-8721-2aa3864bcc90
+    type: regular
+    task:
+      id: c2022652-c1b8-46ff-8721-2aa3864bcc90
+      version: -1
+      name: Save New Organization Tag to List
+      description: Adds/Replaces a key in key/value store backed by an XSOAR list.
+      scriptName: AddKeyToList
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "192"
+    scriptarguments:
+      allowDups: {}
+      append:
+        simple: "false"
+      keyName:
+        complex:
+          root: Add New Organization Unit.Answers
+          accessor: "0"
+      listName:
+        simple: ${inputs.OrganizationUnitsToTagName}
+      value:
+        complex:
+          root: Add New Organization Unit.Answers
+          accessor: "1"
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: ou-
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: inputs.TagPrefix
+                iscontext: true
+              suffix: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2070,
+          "y": 3765
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "95":
+    id: "95"
+    taskid: cf338360-9de5-4966-8b94-1eb9abac675f
+    type: regular
+    task:
+      id: cf338360-9de5-4966-8b94-1eb9abac675f
+      version: -1
+      name: Create Tag in Expanse (if it doesn't exist already)
+      description: Create a new tag in Expanse.
+      script: '|||expanse-create-tag'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "205"
+    scriptarguments:
+      description:
+        simple: Created by Contex XSOAR for Organization Unit tagging
+      name:
+        complex:
+          root: AssetTag
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 5280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "96":
+    id: "96"
+    taskid: 8b64cf86-4670-4219-8c04-714c91a9d542
+    type: condition
+    task:
+      id: 8b64cf86-4670-4219-8c04-714c91a9d542
+      version: -1
+      name: Do We Have Tag To Use?
+      description: Branch depending on the OU.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "166"
+      invalid:
+      - "104"
+      known-ou:
+      - "103"
+    separatecontext: false
+    conditions:
+    - label: known-ou
+      condition:
+      - - operator: isNotEqualString
+          left:
+            value:
+              complex:
+                root: OUToTagList
+                transformers:
+                - operator: getField
+                  args:
+                    field:
+                      value:
+                        simple: incident.expanseassetorganizationunit
+                      iscontext: true
+                - operator: SetIfEmpty
+                  args:
+                    applyIfEmpty: {}
+                    defaultValue:
+                      value:
+                        simple: '**NoTag**'
+            iscontext: true
+          right:
+            value:
+              simple: '**NoTag**'
+    - label: invalid
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              simple: incident.expanseassetorganizationunit
+            iscontext: true
+          right:
+            value:
+              simple: Invalid
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 4930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "99":
+    id: "99"
+    taskid: 560ef1e9-c503-4293-8c0d-dbb98f0e69c4
+    type: regular
+    task:
+      id: 560ef1e9-c503-4293-8c0d-dbb98f0e69c4
+      version: -1
+      name: Tag Assets on Expanse with AssetTag
+      description: Assign tags to asset.
+      script: '|||expanse-assign-tags-to-asset'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "175"
+    scriptarguments:
+      asset_id:
+        complex:
+          root: incident.expanseasset
+          accessor: id
+      asset_type:
+        complex:
+          root: incident.expanseasset
+          accessor: assettype
+      tag_names:
+        complex:
+          root: AssetTag
+      tagnames:
+        complex:
+          root: AssetTag
+      tags: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 5600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "103":
+    id: "103"
+    taskid: 7fbc57e0-2611-4c34-808e-2add895463ce
+    type: regular
+    task:
+      id: 7fbc57e0-2611-4c34-808e-2add895463ce
+      version: -1
+      name: Set AssetTag with Known OU Tag
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "95"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: AssetTag
+      stringify: {}
+      value:
+        complex:
+          root: OUToTagList
+          transformers:
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: incident.expanseassetorganizationunit
+                iscontext: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 5110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "104":
+    id: "104"
+    taskid: 542b77c5-165b-492f-8e40-c173351539fa
+    type: regular
+    task:
+      id: 542b77c5-165b-492f-8e40-c173351539fa
+      version: -1
+      name: Set AssetTag with Invalid Tag from Inputs
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "95"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: AssetTag
+      stringify: {}
+      value:
+        complex:
+          root: inputs.InvalidTag
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 5110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "105":
+    id: "105"
+    taskid: b9cd17b9-f981-4123-86b7-769495f2b21e
+    type: regular
+    task:
+      id: b9cd17b9-f981-4123-86b7-769495f2b21e
+      version: -1
+      name: Link Incidents
+      description: commands.local.cmd.linkIncidents
+      script: Builtin|||linkIncidents
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "179"
+    scriptarguments:
+      action:
+        simple: link
+      incidentId: {}
+      linkedIncidentIDs:
+        complex:
+          root: CreatedIncidentID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2520,
+          "y": 6845
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "106":
+    id: "106"
+    taskid: 62086ed0-c83a-4b80-8a17-59960bf67d07
+    type: regular
+    task:
+      id: 62086ed0-c83a-4b80-8a17-59960bf67d07
+      version: -1
+      name: Copy Suggestion Notes to Created Incident
+      description: Copy notes from current incident to a remote incident.
+      scriptName: CopyNotesToIncident
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "86"
+    scriptarguments:
+      tags:
+        simple: ExpanseSuggestion
+      target_incident:
+        complex:
+          root: CreatedIncidentID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2520,
+          "y": 7165
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "108":
+    id: "108"
+    taskid: f5a4d24b-4946-4d0d-89c5-a212abee3893
+    type: regular
+    task:
+      id: f5a4d24b-4946-4d0d-89c5-a212abee3893
+      version: -1
+      name: Print Prisma Cloud suggestions
+      description: Convert an array to a nice table display. Usually, from the context.
+      tags:
+      - ExpanseSuggestion
+      scriptName: ToTable
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "48"
+    scriptarguments:
+      columns: {}
+      data:
+        complex:
+          root: PrismaCloud
+          accessor: Attribution
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty:
+                value:
+                  simple: "true"
+              defaultValue:
+                value:
+                  simple: '**NOTFOUND**'
+          - operator: DT
+            args:
+              dt:
+                value:
+                  simple: .=foo(val);function foo(aa) { if(val == '**NOTFOUND**')
+                    { return [{"value":"No results found"}]} else return val;}
+      title:
+        simple: List of related assets discovered in Prisma Cloud
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 2420
+        }
+      }
+    note: true
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "109":
+    id: "109"
+    taskid: 00974652-fb70-4dc2-89b7-4de40f1ad02f
+    type: title
+    task:
+      id: 00974652-fb70-4dc2-89b7-4de40f1ad02f
+      version: -1
+      name: Prisma Cloud Alert Detection
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "110"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1150,
+          "y": 6830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "110":
+    id: "110"
+    taskid: c51fddaa-2d87-4acc-8a84-a271a6cc9c3d
+    type: condition
+    task:
+      id: c51fddaa-2d87-4acc-8a84-a271a6cc9c3d
+      version: -1
+      name: Are assets in Prisma Cloud found?
+      description: Check whether assets are found in Prisma Cloud.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "111"
+      "yes":
+      - "172"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PrismaCloud
+                accessor: Attribution
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -1150,
+          "y": 6965
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "111":
+    id: "111"
+    taskid: fe00331b-ae7d-4f7c-8e4e-8229d41652ee
+    type: title
+    task:
+      id: fe00331b-ae7d-4f7c-8e4e-8229d41652ee
+      version: -1
+      name: Done Prisma Cloud Alert Detection
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "75"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1150,
+          "y": 7490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "116":
+    id: "116"
+    taskid: e1235d66-732a-4610-8656-67cacba27c09
+    type: regular
+    task:
+      id: e1235d66-732a-4610-8656-67cacba27c09
+      version: -1
+      name: Create DG Tag in Expanse (if it doesn't already exist)
+      description: Create a new tag in Expanse.
+      script: '|||expanse-create-tag'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "206"
+    scriptarguments:
+      description:
+        simple: Created by XSOAR for Device Group tagging
+      name:
+        complex:
+          root: DGTagValue
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2465,
+          "y": 10175
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "118":
+    id: "118"
+    taskid: 8950dfdd-442e-4095-89a6-000399015d09
+    type: regular
+    task:
+      id: 8950dfdd-442e-4095-89a6-000399015d09
+      version: -1
+      name: Save DG Tag to List
+      description: Adds/Replaces a key in key/value store backed by an XSOAR list.
+      scriptName: AddKeyToList
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "169"
+    scriptarguments:
+      allowDups: {}
+      append:
+        simple: "false"
+      keyName:
+        complex:
+          root: TargetDG
+      listName:
+        complex:
+          root: inputs.FirewallTagListName
+      value:
+        complex:
+          root: DGTagValue
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2722.5,
+          "y": 9840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "119":
+    id: "119"
+    taskid: b03e7efb-90e2-42be-8d49-e1936986e881
+    type: condition
+    task:
+      id: b03e7efb-90e2-42be-8d49-e1936986e881
+      version: -1
+      name: Determine Target
+      description: Determine the target Device Group.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ADD-NEW:
+      - "18"
+      MANUAL:
+      - "14"
+      NO-PANORAMA:
+      - "10"
+      known-device-group:
+      - "199"
+    separatecontext: false
+    conditions:
+    - label: ADD-NEW
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              complex:
+                root: Choose Device Group.Answers
+                accessor: "0"
+            iscontext: true
+          right:
+            value:
+              simple: Add New
+    - label: MANUAL
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              complex:
+                root: Choose Device Group.Answers
+                accessor: "0"
+            iscontext: true
+          right:
+            value:
+              simple: Manual Configuration
+    - label: NO-PANORAMA
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              complex:
+                root: Choose Device Group.Answers
+                accessor: "0"
+            iscontext: true
+          right:
+            value:
+              simple: Firewall Only (No Panorama)
+    - label: known-device-group
+      condition:
+      - - operator: isNotEqualString
+          left:
+            value:
+              complex:
+                root: FirewallTagList
+                transformers:
+                - operator: getField
+                  args:
+                    field:
+                      value:
+                        simple: Choose Device Group.Answers.0
+                      iscontext: true
+                - operator: SetIfEmpty
+                  args:
+                    applyIfEmpty: {}
+                    defaultValue:
+                      value:
+                        simple: '**NoTag**'
+            iscontext: true
+          right:
+            value:
+              simple: '**NoTag**'
+    view: |-
+      {
+        "position": {
+          "x": 1930,
+          "y": 9070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "120":
+    id: "120"
+    taskid: 1a616bb3-db30-468f-8309-227c65fb037d
+    type: collection
+    task:
+      id: 1a616bb3-db30-468f-8309-227c65fb037d
+      version: -1
+      name: Insert Device Group name and tag
+      description: Collect Device Group information from user.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "140"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2722.5,
+          "y": 9370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        simple: Analyst
+      subject:
+        simple: Select Device Group Name and Tag
+      body:
+        simple: Select Device Group Name and Tag
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Insert Device Group Name
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: The Device Group must be managed by Panorama.
+        readonly: false
+      - id: "1"
+        label: ""
+        labelarg:
+          simple: Insert Expanse Tag (without prefix)
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: The tag name will be added to the Expanse assets (prefix will be
+          added automatically)
+        readonly: false
+      title: Choose Device Group Name and Tag
+      description: Insert Device Group name to enforce this policy, and the corresponding
+        tag to attach to the asset.
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+  "121":
+    id: "121"
+    taskid: cab3d5ba-d6f4-42dc-8bdd-4a2c38ff9716
+    type: regular
+    task:
+      id: cab3d5ba-d6f4-42dc-8bdd-4a2c38ff9716
+      version: -1
+      name: Refresh Assets to sync updated tags
+      description: |
+        Script to refresh tags and attribution reasons of assets inside Expanse Issue. The script should be used inside the Expanse Issue incident context.
+      scriptName: ExpanseRefreshIssueAssets
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "174"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2465,
+          "y": 10620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "122":
+    id: "122"
+    taskid: 4bacc0bd-6870-429b-8c65-5657561e44ef
+    type: regular
+    task:
+      id: 4bacc0bd-6870-429b-8c65-5657561e44ef
+      version: -1
+      name: Extract All Asset Tags from Expanse
+      description: Set a value in context under the key you entered. If no value is
+        entered, the script doesn't do anything.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "123"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: ExpanseAllAssetTags
+      stringify: {}
+      value:
+        complex:
+          root: incident.expanseasset
+          accessor: tags
+          transformers:
+          - operator: DT
+            args:
+              dt:
+                value:
+                  simple: .=foo(val);function foo(aa) { return aa.split('\n');}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": -1490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "123":
+    id: "123"
+    taskid: b23604c4-fe43-41e0-8a8e-db104fceaf6a
+    type: regular
+    task:
+      id: b23604c4-fe43-41e0-8a8e-db104fceaf6a
+      version: -1
+      name: Extract only XSOAR-related Asset Tags
+      description: Set a value in context under the key you entered. If no value is
+        entered, the script doesn't do anything.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: ExpanseXSOARAssetTags
+      stringify: {}
+      value:
+        complex:
+          root: ExpanseAllAssetTags
+          filters:
+          - - operator: startWith
+              left:
+                value:
+                  simple: ExpanseAllAssetTags
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.TagPrefix
+                iscontext: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": -1310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "124":
+    id: "124"
+    taskid: af3d17db-75bf-49d4-81dc-ff0d34c36e6e
+    type: regular
+    task:
+      id: af3d17db-75bf-49d4-81dc-ff0d34c36e6e
+      version: -1
+      name: Set Device Group Tag Prefix
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "125"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: XSOARTagDGPrefix
+      stringify: {}
+      value:
+        complex:
+          root: inputs.TagPrefix
+          transformers:
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: dg-
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1930,
+          "y": 6925
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "125":
+    id: "125"
+    taskid: 30abc613-b3d9-4d6f-81fa-02a6c0e87590
+    type: regular
+    task:
+      id: 30abc613-b3d9-4d6f-81fa-02a6c0e87590
+      version: -1
+      name: Find Device Group Tags
+      description: Set a value in context under the key you entered. If no value is
+        entered, the script doesn't do anything.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: ExpanseDeviceGroupAssetTags
+      stringify: {}
+      value:
+        complex:
+          root: ExpanseXSOARAssetTags
+          filters:
+          - - operator: startWith
+              left:
+                value:
+                  simple: ExpanseXSOARAssetTags
+                iscontext: true
+              right:
+                value:
+                  simple: XSOARTagDGPrefix
+                iscontext: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1930,
+          "y": 7095
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "133":
+    id: "133"
+    taskid: 532c3fcd-30ec-42d3-8cda-5dd09fdf7985
+    type: regular
+    task:
+      id: 532c3fcd-30ec-42d3-8cda-5dd09fdf7985
+      version: -1
+      name: Suggest No Shadow IT
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "158"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: SuggestedShadowITAnswer
+      stringify: {}
+      value:
+        simple: "No"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1740,
+          "y": 1835
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "135":
+    id: "135"
+    taskid: cc54e024-f6c9-422a-8171-a323117cb48f
+    type: regular
+    task:
+      id: cc54e024-f6c9-422a-8171-a323117cb48f
+      version: -1
+      name: Set Shadow IT flag based on User response
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "93"
+    scriptarguments:
+      expanseshadowit:
+        complex:
+          root: Analysis of Asset Attribution.Answers
+          accessor: "1"
+          transformers:
+          - operator: If-Then-Else
+            args:
+              else:
+                value:
+                  simple: "false"
+              equals:
+                value:
+                  simple: "Yes"
+              then:
+                value:
+                  simple: "true"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 3060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "136":
+    id: "136"
+    taskid: 36f3913e-55ef-4fe3-832b-5e8e8a150ffb
+    type: condition
+    task:
+      id: 36f3913e-55ef-4fe3-832b-5e8e8a150ffb
+      version: -1
+      name: Did User reply to the Shadow IT question?
+      description: Check whether user answered the Shadow IT question.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "93"
+      "yes":
+      - "135"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: notContainsString
+          left:
+            value:
+              complex:
+                root: Analysis of Asset Attribution.Answers
+                accessor: "1"
+            iscontext: true
+          right:
+            value:
+              simple: Undecided
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 917.5,
+          "y": 2840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "140":
+    id: "140"
+    taskid: 1418a447-df74-49cb-8ac2-06370420db90
+    type: regular
+    task:
+      id: 1418a447-df74-49cb-8ac2-06370420db90
+      version: -1
+      name: Set Device Group Tag Value
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "198"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: DGTagValue
+      stringify: {}
+      value:
+        complex:
+          root: Choose Device Group Name and Tag.Answers
+          accessor: "1"
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: dg-
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: inputs.TagPrefix
+                iscontext: true
+              suffix: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2722.5,
+          "y": 9530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "141":
+    id: "141"
+    taskid: b989e2da-8fe0-4a5e-8df3-b668f51e31b7
+    type: regular
+    task:
+      id: b989e2da-8fe0-4a5e-8df3-b668f51e31b7
+      version: -1
+      name: Get Expanse Comments
+      description: Retrieve issue comments (subset of updates).
+      script: '|||expanse-get-issue-comments'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      created_after: {}
+      issue_id:
+        complex:
+          root: incident
+          accessor: expanseissueid
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1327.5,
+          "y": -510
+        }
+      }
+    note: true
+    evidencedata:
+      description:
+        simple: Issue Comments in Expanse
+      customfields: {}
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "147":
+    id: "147"
+    taskid: a19be9d7-17bc-49aa-8451-bab96a06bbbc
+    type: title
+    task:
+      id: a19be9d7-17bc-49aa-8451-bab96a06bbbc
+      version: -1
+      name: Done Validation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "62"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1327.5,
+          "y": 600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "151":
+    id: "151"
+    taskid: 5d7bffcf-41f8-45a4-8d78-d94c5b5697b6
+    type: regular
+    task:
+      id: 5d7bffcf-41f8-45a4-8d78-d94c5b5697b6
+      version: -1
+      name: 'Set Shadow IT Condition variable: On Prisma Cloud?'
+      description: Set a value in context under the key you entered. If no value is
+        entered, the script doesn't do anything.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "155"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: ShadowITCondition
+      stringify: {}
+      value:
+        complex:
+          root: PrismaCloud
+          accessor: Attribution
+          transformers:
+          - operator: count
+          - operator: If-Then-Else
+            args:
+              else:
+                value:
+                  simple: '{"condition":"Asset found on Prisma Cloud", "value":true}'
+              equals:
+                value:
+                  simple: "0"
+              then:
+                value:
+                  simple: '{"condition":"Asset found on Prisma Cloud", "value":false}'
+          - operator: ParseJSON
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 1080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "152":
+    id: "152"
+    taskid: 9bb82cdb-fdda-4119-8bda-8e2e915a60c8
+    type: regular
+    task:
+      id: 9bb82cdb-fdda-4119-8bda-8e2e915a60c8
+      version: -1
+      name: 'Set Shadow IT Condition variable: On-premise high confidence to True'
+      description: Set a value in context under the key you entered. If no value is
+        entered, the script doesn't do anything.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "155"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: ShadowITCondition
+      stringify: {}
+      value:
+        complex:
+          root: UNEXISTINGFIELD
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: '{"condition":"Asset is On-premise with high confidence", "value":true}'
+          - operator: ParseJSON
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 907.5,
+          "y": 1260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "153":
+    id: "153"
+    taskid: f49a3ed8-ebf4-4d4e-8348-2c5cd5250f2e
+    type: regular
+    task:
+      id: f49a3ed8-ebf4-4d4e-8348-2c5cd5250f2e
+      version: -1
+      name: 'Set Shadow IT Condition variable: any Firewall exposing service?'
+      description: Set a value in context under the key you entered. If no value is
+        entered, the script doesn't do anything.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "155"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: ShadowITCondition
+      stringify: {}
+      value:
+        complex:
+          root: Expanse.AttributionDevice
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Expanse.AttributionDevice.exposing_service
+                iscontext: true
+              right:
+                value:
+                  simple: "true"
+              ignorecase: true
+          transformers:
+          - operator: count
+          - operator: If-Then-Else
+            args:
+              else:
+                value:
+                  simple: '{"condition":"Found Firewall exposing service", "value":true}'
+              equals:
+                value:
+                  simple: "0"
+              then:
+                value:
+                  simple: '{"condition":"Found Firewall exposing service", "value":false}'
+          - operator: ParseJSON
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2150,
+          "y": 1080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "154":
+    id: "154"
+    taskid: efdb0bc4-2194-4468-8c26-a918db621b90
+    type: title
+    task:
+      id: efdb0bc4-2194-4468-8c26-a918db621b90
+      version: -1
+      name: Set up Shadow IT Condition Variables for report
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "151"
+      - "153"
+      - "156"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1327.5,
+          "y": 910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "155":
+    id: "155"
+    taskid: afd4c44f-ecf7-4c27-838e-ed624c9df7f4
+    type: title
+    task:
+      id: afd4c44f-ecf7-4c27-838e-ed624c9df7f4
+      version: -1
+      name: Done Setting up Shadow IT Conditions for Report
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "59"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1317.5,
+          "y": 1460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "156":
+    id: "156"
+    taskid: 1d6190dd-1064-4d23-8a6a-a2ce77abef2d
+    type: condition
+    task:
+      id: 1d6190dd-1064-4d23-8a6a-a2ce77abef2d
+      version: -1
+      name: On-prem with high confidence?
+      description: Check whether the asset is marked as on-premise with a high degree
+        of confidence.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "157"
+      "yes":
+      - "152"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: expanseprovider
+            iscontext: true
+          right:
+            value:
+              simple: On Prem
+      - - operator: isEqualNumber
+          left:
+            value:
+              complex:
+                root: ExpanseAllAssetTags
+                filters:
+                - - operator: inList
+                    left:
+                      value:
+                        simple: ExpanseAllAssetTags
+                      iscontext: true
+                    right:
+                      value:
+                        simple: IPRangeLowConfidenceTag
+                      iscontext: true
+                transformers:
+                - operator: count
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+    view: |-
+      {
+        "position": {
+          "x": 1327.5,
+          "y": 1090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "157":
+    id: "157"
+    taskid: 4308b346-0765-43f1-85a5-111f3d42fee2
+    type: regular
+    task:
+      id: 4308b346-0765-43f1-85a5-111f3d42fee2
+      version: -1
+      name: 'Set Shadow IT Condition variable: On-premise high confidence to False'
+      description: Set a value in context under the key you entered. If no value is
+        entered, the script doesn't do anything.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "155"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: ShadowITCondition
+      stringify: {}
+      value:
+        complex:
+          root: UNEXISTINGFIELD
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: '{"condition":"Asset is On-premise with high confidence", "value":false}'
+          - operator: ParseJSON
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1735,
+          "y": 1260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "158":
+    id: "158"
+    taskid: 69f6337b-78e5-4ff7-8d05-d8d88346cf9b
+    type: regular
+    task:
+      id: 69f6337b-78e5-4ff7-8d05-d8d88346cf9b
+      version: -1
+      name: Generate Report for Attribution
+      description: 'Print '
+      scriptName: ExpansePrintSuggestions
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "63"
+    scriptarguments:
+      expanse_asset_tags:
+        complex:
+          root: ExpanseAllAssetTags
+      expanse_business_units:
+        complex:
+          root: incident
+          accessor: expansebusinessunits
+      expanse_devices:
+        complex:
+          root: Expanse
+          accessor: AttributionDevice
+      expanse_ips:
+        complex:
+          root: Expanse
+          accessor: AttributionIP
+      expanse_issue_tags:
+        complex:
+          root: incident
+          accessor: expansetags
+      expanse_users:
+        complex:
+          root: Expanse
+          accessor: AttributionUser
+      fqdn:
+        complex:
+          root: incident
+          accessor: expansedomain
+      ip:
+        complex:
+          root: incident
+          accessor: expanseip
+      port:
+        complex:
+          root: incident
+          accessor: expanseport
+      prisma_cloud_assets:
+        complex:
+          root: PrismaCloud
+          accessor: Attribution
+      provider:
+        complex:
+          root: incident
+          accessor: expanseprovider
+      region:
+        complex:
+          root: incident
+          accessor: expanseregion
+      service:
+        complex:
+          root: incident
+          accessor: expanseservice
+      shadow_it:
+        complex:
+          root: ShadowITCondition
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1317.5,
+          "y": 2020
+        }
+      }
+    note: true
+    evidencedata:
+      description:
+        simple: Expanse Enrichment Information
+      customfields: {}
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "159":
+    id: "159"
+    taskid: 15400f99-2244-49bd-8c36-e38c3b6656c0
+    type: regular
+    task:
+      id: 15400f99-2244-49bd-8c36-e38c3b6656c0
+      version: -1
+      name: 'Extract XSOAR Incident Tags related to OU Attribtion '
+      description: Set a value in context under the key you entered. If no value is
+        entered, the script doesn't do anything.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      append: {}
+      key:
+        simple: ExpanseXSOAROUIssueTags
+      stringify: {}
+      value:
+        complex:
+          root: incident.expansetags
+          filters:
+          - - operator: StringContainsArray
+              left:
+                value:
+                  simple: incident.expansetags
+                iscontext: true
+              right:
+                value:
+                  simple: -ou-
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 917.5,
+          "y": -1650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "161":
+    id: "161"
+    taskid: c8d403a6-ff70-4c85-8174-c8499674199f
+    type: regular
+    task:
+      id: c8d403a6-ff70-4c85-8174-c8499674199f
+      version: -1
+      name: Set Progress Status to Investigating in Expanse Issue
+      description: Update Expanse Issue.
+      script: '|||expanse-update-issue'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "162"
+    scriptarguments:
+      issue_id:
+        complex:
+          root: incident
+          accessor: expanseissueid
+      update_type:
+        simple: ProgressStatus
+      value:
+        simple: Investigating
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1740,
+          "y": -2530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "162":
+    id: "162"
+    taskid: 9c6684f0-90e2-4f79-809f-d2669c6f6a20
+    type: regular
+    task:
+      id: 9c6684f0-90e2-4f79-809f-d2669c6f6a20
+      version: -1
+      name: Add "Being investigated by XSOAR" comment to Expanse Issue
+      description: Update Expanse Issue.
+      script: '|||expanse-update-issue'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      issue_id:
+        complex:
+          root: incident
+          accessor: expanseissueid
+      update_type:
+        simple: Comment
+      value:
+        simple: This issue is being investigated by the SOC through Cortex XSOAR
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1740,
+          "y": -2370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "163":
+    id: "163"
+    taskid: 6d1e3151-65f8-4e41-8cb6-4dd208ff16d0
+    type: condition
+    task:
+      id: 6d1e3151-65f8-4e41-8cb6-4dd208ff16d0
+      version: -1
+      name: Are we writing to Expanse?
+      description: Determine whether the playbook should write data back to Expanse.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "161"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.WriteToExpanse
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 1327.5,
+          "y": -2730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "164":
+    id: "164"
+    taskid: c9a0f514-5ae5-4008-8343-afd9899cb2e4
+    type: condition
+    task:
+      id: c9a0f514-5ae5-4008-8343-afd9899cb2e4
+      version: -1
+      name: Are we writing to Expanse?
+      description: Determine whether the playbook should write data back to Expanse.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "166"
+      "yes":
+      - "96"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.WriteToExpanse
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 917.5,
+          "y": 4730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "165":
+    id: "165"
+    taskid: 7c7ce247-900d-4c78-8bb5-43064a2fc696
+    type: title
+    task:
+      id: 7c7ce247-900d-4c78-8bb5-43064a2fc696
+      version: -1
+      name: Tag Assets
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "164"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 917.5,
+          "y": 4595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "166":
+    id: "166"
+    taskid: 79b07a85-b985-4b90-82d2-0b04baf49b53
+    type: title
+    task:
+      id: 79b07a85-b985-4b90-82d2-0b04baf49b53
+      version: -1
+      name: Done Tagging
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "30"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 917.5,
+          "y": 5935
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "167":
+    id: "167"
+    taskid: f72a6612-3b8e-4445-8537-653a87ec0ea9
+    type: playbook
+    task:
+      id: f72a6612-3b8e-4445-8537-653a87ec0ea9
+      version: -1
+      name: Extract and Enrich Expanse Indicators
+      description: Extract and Enrich Indicators (CIDRs, IPs, Certificates, and Domains)
+        from an Expanse issue.
+      playbookName: Extract and Enrich Expanse Indicators
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      Create Indicators:
+        simple: "true"
+      Expanse Assets:
+        complex:
+          root: incident
+          accessor: expanseasset
+      Expanse IP:
+        complex:
+          root: incident
+          accessor: expanseip
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1735,
+          "y": -510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "169":
+    id: "169"
+    taskid: f8b61946-090a-4c4f-8fe0-febb7ec01792
+    type: condition
+    task:
+      id: f8b61946-090a-4c4f-8fe0-febb7ec01792
+      version: -1
+      name: Are we writing to Expanse?
+      description: Determine whether the playbook should write data back to Expanse.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "116"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.WriteToExpanse
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 2722.5,
+          "y": 10000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "172":
+    id: "172"
+    taskid: 2264cd03-bf1f-4fa0-8580-9819728cfdeb
+    type: playbook
+    task:
+      id: 2264cd03-bf1f-4fa0-8580-9819728cfdeb
+      version: -1
+      name: Prisma Cloud Correlate Alerts
+      description: Search alerts in Prisma Cloud for a specific asset ID and, if present
+        in Cortex XSOAR, link them.
+      playbookName: Prisma Cloud Correlate Alerts
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "111"
+    scriptarguments:
+      Link Incidents:
+        simple: "True"
+      Prisma Cloud Attribution:
+        complex:
+          root: PrismaCloud
+          accessor: Attribution
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": -1450,
+          "y": 7210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+  "173":
+    id: "173"
+    taskid: e60b1b5d-b1f0-4c95-8436-87cc51ed844c
+    type: regular
+    task:
+      id: e60b1b5d-b1f0-4c95-8436-87cc51ed844c
+      version: -1
+      name: Refresh Assets
+      description: |
+        Script to refresh tags and attribution reasons of assets inside Expanse Issue. The script should be used inside the Expanse Issue incident context.
+      scriptName: ExpanseRefreshIssueAssets
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "208"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": -1825
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "174":
+    id: "174"
+    taskid: bc7057f5-f45b-472f-86b6-0afff7918e5d
+    type: title
+    task:
+      id: bc7057f5-f45b-472f-86b6-0afff7918e5d
+      version: -1
+      name: Done DG Tagging
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2465,
+          "y": 10775
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "175":
+    id: "175"
+    taskid: 8f08965f-8e3e-4df5-8f6e-8498b3397c56
+    type: regular
+    task:
+      id: 8f08965f-8e3e-4df5-8f6e-8498b3397c56
+      version: -1
+      name: Refresh Assets to sync updated tags
+      description: |
+        Script to refresh tags and attribution reasons of assets inside Expanse Issue. The script should be used inside the Expanse Issue incident context.
+      scriptName: ExpanseRefreshIssueAssets
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "166"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 5750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "177":
+    id: "177"
+    taskid: d383a16d-3967-4a69-86db-5725d23cd386
+    type: condition
+    task:
+      id: d383a16d-3967-4a69-86db-5725d23cd386
+      version: -1
+      name: Create Shadow IT Incident automatically?
+      description: If the ShadowITIncidentType input is set, an incident of this type
+        is automatically created and notes are copied to it.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "178"
+      "yes":
+      - "74"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.ShadowITIncidentType
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 2980,
+          "y": 6420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "178":
+    id: "178"
+    taskid: 33c7c0d2-dca5-4183-8749-2c11f70ffa3d
+    type: regular
+    task:
+      id: 33c7c0d2-dca5-4183-8749-2c11f70ffa3d
+      version: -1
+      name: Manually create Shadow IT Incident
+      description: Manually create an incident to handle the Shadow IT investigation.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "86"
+    separatecontext: false
+    defaultassigneecomplex: {}
+    view: |-
+      {
+        "position": {
+          "x": 2980,
+          "y": 6680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "179":
+    id: "179"
+    taskid: 8e789bb5-819a-4972-89a1-d5c6a07420f2
+    type: regular
+    task:
+      id: 8e789bb5-819a-4972-89a1-d5c6a07420f2
+      version: -1
+      name: Set Shadow IT Pack Incident Fields
+      description: If the Shadow IT content pack is enabled and the Shadow IT incident
+        fields are provided, this task sets the fields accordingly. If the pack is
+        not enabled, no change happens.
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "106"
+    scriptarguments:
+      id:
+        complex:
+          root: CreatedIncidentID
+      shadowitcertificate:
+        complex:
+          root: incident
+          accessor: expansecertificate
+      shadowitfqdn:
+        complex:
+          root: incident
+          accessor: expansedomain
+      shadowitip:
+        complex:
+          root: incident
+          accessor: expanseip
+      shadowitorganizationalunit:
+        complex:
+          root: incident
+          accessor: expanseassetorganizationunit
+      shadowitoucontactemail:
+        complex:
+          root: lists
+          accessor: ExpanseOrganizationUnitsToOwner
+          transformers:
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: incident.expanseassetorganizationunit
+                iscontext: true
+          - operator: ParseJSON
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: email
+      shadowitoucontactname:
+        complex:
+          root: lists
+          accessor: ExpanseOrganizationUnitsToOwner
+          transformers:
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: incident.expanseassetorganizationunit
+                iscontext: true
+          - operator: ParseJSON
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: name
+      shadowitport:
+        complex:
+          root: incident
+          accessor: expanseport
+      shadowitprovider:
+        complex:
+          root: incident
+          accessor: expanseprovider
+      shadowitsource:
+        simple: Expanse
+      shadowitusersuggestions:
+        complex:
+          root: Expanse.AttributionUser
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Expanse.AttributionUser
+                iscontext: true
+          transformers:
+          - operator: jmespath
+            args:
+              expression:
+                value:
+                  simple: '{name: username, email: mail, notes: join('' '', [''Found
+                    '', to_string(sightings), '' log entries''])}'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2520,
+          "y": 7010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "180":
+    id: "180"
+    taskid: 57fc2fe1-0481-4baf-8887-c35570879bee
+    type: playbook
+    task:
+      id: 57fc2fe1-0481-4baf-8887-c35570879bee
+      version: -1
+      name: Expanse Enrich Cloud Assets
+      playbookName: Expanse Enrich Cloud Assets
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "147"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 917.5,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "184":
+    id: "184"
+    taskid: 4d7d2792-847f-4e37-8291-5bfb939f52e7
+    type: regular
+    task:
+      id: 4d7d2792-847f-4e37-8291-5bfb939f52e7
+      version: -1
+      name: Save OU To Tag List
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "201"
+    scriptarguments:
+      append: {}
+      key:
+        simple: OUToTagList
+      stringify: {}
+      value:
+        complex:
+          root: ParsedList
+          transformers:
+          - operator: LastArrayElement
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1735,
+          "y": -1650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "187":
+    id: "187"
+    taskid: d72e671b-5e83-4d81-8833-1f8997170eca
+    type: regular
+    task:
+      id: d72e671b-5e83-4d81-8833-1f8997170eca
+      version: -1
+      name: Save OU To Owner List
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "202"
+    scriptarguments:
+      append: {}
+      key:
+        simple: OUToOwnerList
+      stringify: {}
+      value:
+        complex:
+          root: ParsedList
+          transformers:
+          - operator: LastArrayElement
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1735,
+          "y": -1310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "188":
+    id: "188"
+    taskid: 57c54be6-3fb1-4002-87fb-c16596af91e2
+    type: regular
+    task:
+      id: 57c54be6-3fb1-4002-87fb-c16596af91e2
+      version: -1
+      name: Save Firewall Tag List
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      append: {}
+      key:
+        simple: FirewallTagList
+      stringify: {}
+      value:
+        complex:
+          root: ParsedList
+          transformers:
+          - operator: LastArrayElement
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1735,
+          "y": -960
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "190":
+    id: "190"
+    taskid: 7199b11d-1c6f-41fd-8447-78f9e78e82dc
+    type: regular
+    task:
+      id: 7199b11d-1c6f-41fd-8447-78f9e78e82dc
+      version: -1
+      name: Reload OU To Owner List
+      description: commands.local.cmd.list.get
+      script: Builtin|||getList
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "191"
+    scriptarguments:
+      extend-context:
+        simple: TempListText.OUToOwner=.
+      listName:
+        simple: ${inputs.OrganizationUnitsToOwnerName}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2070,
+          "y": 3460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "191":
+    id: "191"
+    taskid: dc076e3e-45e1-4156-8406-9f5d33df2a8f
+    type: regular
+    task:
+      id: dc076e3e-45e1-4156-8406-9f5d33df2a8f
+      version: -1
+      name: Set OU To Owner List
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "94"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: OUToOwnerList
+      stringify: {}
+      value:
+        complex:
+          root: TempListText
+          accessor: OUToOwner
+          transformers:
+          - operator: ParseJSON
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2070,
+          "y": 3610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "192":
+    id: "192"
+    taskid: 3ac22aab-71aa-4115-89fa-61e3639748e3
+    type: regular
+    task:
+      id: 3ac22aab-71aa-4115-89fa-61e3639748e3
+      version: -1
+      name: Reload OU To Tag List
+      description: commands.local.cmd.list.get
+      script: Builtin|||getList
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "193"
+    scriptarguments:
+      extend-context:
+        simple: TempListText.OUToTag=.
+      listName:
+        simple: ${inputs.OrganizationUnitsToTagName}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2070,
+          "y": 3935
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "193":
+    id: "193"
+    taskid: a1183b9f-e758-4407-801a-2042e3467706
+    type: regular
+    task:
+      id: a1183b9f-e758-4407-801a-2042e3467706
+      version: -1
+      name: Set OU To Tag List
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "91"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: OUToTagList
+      stringify: {}
+      value:
+        complex:
+          root: TempListText
+          accessor: OUToTag
+          transformers:
+          - operator: ParseJSON
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2070,
+          "y": 4090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "194":
+    id: "194"
+    taskid: 513f93bf-5374-42e3-82d1-da6b90079fc5
+    type: regular
+    task:
+      id: 513f93bf-5374-42e3-82d1-da6b90079fc5
+      version: -1
+      name: Tag Assets on Expanse
+      description: Assign tags to Asset.
+      script: '|||expanse-assign-tags-to-asset'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "121"
+    scriptarguments:
+      asset_id:
+        complex:
+          root: incident.expanseasset
+          accessor: id
+      asset_type:
+        complex:
+          root: incident.expanseasset
+          accessor: assettype
+      tag_names:
+        complex:
+          root: DGTagValue
+      tagnames:
+        complex:
+          root: NewDGTagName
+      tags: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2465,
+          "y": 10470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "196":
+    id: "196"
+    taskid: b125cd5b-f1c7-4b45-8de1-28afc08fd2cf
+    type: regular
+    task:
+      id: b125cd5b-f1c7-4b45-8de1-28afc08fd2cf
+      version: -1
+      name: Reload Device Group List
+      description: commands.local.cmd.list.get
+      script: Builtin|||getList
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "197"
+    scriptarguments:
+      extend-context:
+        simple: TempListText.FirewallDG=.
+      listName:
+        complex:
+          root: inputs.FirewallTagListName
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1930,
+          "y": 8615
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "197":
+    id: "197"
+    taskid: 98af48f7-d8d6-4f15-8d9d-f66b22d97310
+    type: regular
+    task:
+      id: 98af48f7-d8d6-4f15-8d9d-f66b22d97310
+      version: -1
+      name: Set Firewall Tag List
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: FirewallTagList
+      stringify: {}
+      value:
+        complex:
+          root: TempListText
+          accessor: FirewallDG
+          transformers:
+          - operator: ParseJSON
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1930,
+          "y": 8765
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "198":
+    id: "198"
+    taskid: fd41d924-2b39-447d-81bb-e8c56dba6b41
+    type: regular
+    task:
+      id: fd41d924-2b39-447d-81bb-e8c56dba6b41
+      version: -1
+      name: Set Target Device Group
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "118"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: TargetDG
+      stringify: {}
+      value:
+        complex:
+          root: Choose Device Group Name and Tag.Answers
+          accessor: "0"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2722.5,
+          "y": 9690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "199":
+    id: "199"
+    taskid: 0ca7a015-d8ab-46d4-84a4-537e63d0f84d
+    type: regular
+    task:
+      id: 0ca7a015-d8ab-46d4-84a4-537e63d0f84d
+      version: -1
+      name: Set Device Group Tag Value
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "67"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: DGTagValue
+      stringify: {}
+      value:
+        complex:
+          root: FirewallTagList
+          transformers:
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: Choose Device Group.Answers.0
+                iscontext: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2292.5,
+          "y": 9530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "200":
+    id: "200"
+    taskid: abbd91dc-9220-4174-85f8-6389bbeb1951
+    type: playbook
+    task:
+      id: abbd91dc-9220-4174-85f8-6389bbeb1951
+      version: -1
+      name: Expanse Load-Create List
+      playbookName: Expanse Load-Create List
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "184"
+    scriptarguments:
+      ListName:
+        simple: ${inputs.OrganizationUnitsToTagName}
+      ListValues:
+        simple: '{}'
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1735,
+          "y": -1825
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "201":
+    id: "201"
+    taskid: 6fab6d35-f47e-4676-8623-5f6c11d158a0
+    type: playbook
+    task:
+      id: 6fab6d35-f47e-4676-8623-5f6c11d158a0
+      version: -1
+      name: Expanse Load-Create List
+      playbookName: Expanse Load-Create List
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "187"
+    scriptarguments:
+      ListName:
+        simple: ${inputs.OrganizationUnitsToOwnerName}
+      ListValues:
+        simple: '{}'
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1735,
+          "y": -1490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "202":
+    id: "202"
+    taskid: 16fbd4a9-9b8c-49ff-8038-5683015346a3
+    type: playbook
+    task:
+      id: 16fbd4a9-9b8c-49ff-8038-5683015346a3
+      version: -1
+      name: Expanse Load-Create List
+      playbookName: Expanse Load-Create List
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "188"
+    scriptarguments:
+      ListName:
+        simple: ${inputs.FirewallTagListName}
+      ListValues:
+        simple: '{}'
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1735,
+          "y": -1130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "203":
+    id: "203"
+    taskid: f2c454a1-bbc2-4f56-8aae-2a6946f4716c
+    type: title
+    task:
+      id: f2c454a1-bbc2-4f56-8aae-2a6946f4716c
+      version: -1
+      name: Load/Create Lists
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "200"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1735,
+          "y": -1965
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "204":
+    id: "204"
+    taskid: cf098d34-c8dd-4cf8-81f0-bdcea99c097e
+    type: title
+    task:
+      id: cf098d34-c8dd-4cf8-81f0-bdcea99c097e
+      version: -1
+      name: Add new OU
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "89"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2070,
+          "y": 3020
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "205":
+    id: "205"
+    taskid: 562bf6e0-9f5d-4bbb-8d94-674696119db8
+    type: regular
+    task:
+      id: 562bf6e0-9f5d-4bbb-8d94-674696119db8
+      version: -1
+      name: Refresh Assets to make sure IDs are in sync
+      description: |
+        Script to refresh tags and attribution reasons of assets inside Expanse Issue. The script should be used inside the Expanse Issue incident context.
+      scriptName: ExpanseRefreshIssueAssets
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "99"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 5440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "206":
+    id: "206"
+    taskid: 148c3795-74ea-44e7-87e7-79b6c9389f17
+    type: regular
+    task:
+      id: 148c3795-74ea-44e7-87e7-79b6c9389f17
+      version: -1
+      name: Refresh Assets to make sure IDs are in sync
+      description: |
+        Script to refresh tags and attribution reasons of assets inside Expanse Issue. The script should be used inside the Expanse Issue incident context.
+      scriptName: ExpanseRefreshIssueAssets
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "194"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2465,
+          "y": 10320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "207":
+    id: "207"
+    taskid: fd8c09e4-2646-4119-80a6-374806c494dd
+    type: regular
+    task:
+      id: fd8c09e4-2646-4119-80a6-374806c494dd
+      version: -1
+      name: Set Target Device Groups from Expanse Tags
+      description: Set a value in context under the key you entered. If no value is
+        entered, the script doesn't do anything.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: TargetFirewalls
+      stringify:
+        simple: "false"
+      value:
+        complex:
+          root: FirewallTagListTransposed
+          filters:
+          - - operator: inList
+              left:
+                value:
+                  simple: FirewallTagListTransposed.tag
+                iscontext: true
+              right:
+                value:
+                  simple: ExpanseDeviceGroupAssetTags
+                iscontext: true
+          transformers:
+          - operator: jmespath
+            args:
+              expression:
+                value:
+                  simple: '{deviceGroup:dg, source: ''From Expanse Tags'', sightings:''N/A''}'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1580,
+          "y": 7720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "208":
+    id: "208"
+    taskid: 40abcb80-e9f1-4e5a-8ed0-a5a242473736
+    type: condition
+    task:
+      id: 40abcb80-e9f1-4e5a-8ed0-a5a242473736
+      version: -1
+      name: Are there Expanse Asset Tags?
+      description: Check whether there are any Expanse asset tags.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "28"
+      "yes":
+      - "122"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: incident.expanseasset
+                accessor: tags
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": -1650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "210":
+    id: "210"
+    taskid: c3f3a453-7955-4c27-84ef-51ea21da93d2
+    type: playbook
+    task:
+      id: c3f3a453-7955-4c27-84ef-51ea21da93d2
+      version: -1
+      name: Expanse VM Enrich
+      playbookName: Expanse VM Enrich
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "53"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": -277.5,
+          "y": 7145
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "211":
+    id: "211"
+    taskid: 481f60dd-4d8f-4d3b-8a15-1ae43675eaa2
+    type: title
+    task:
+      id: 481f60dd-4d8f-4d3b-8a15-1ae43675eaa2
+      version: -1
+      name: Handle Unmanaged Cloud
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "212"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1960,
+          "y": 6830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "212":
+    id: "212"
+    taskid: 25abce72-3208-4b12-842d-df3fdc762f99
+    type: playbook
+    task:
+      id: 25abce72-3208-4b12-842d-df3fdc762f99
+      version: -1
+      name: Expanse Unmanaged Cloud
+      playbookName: Expanse Unmanaged Cloud
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "213"
+    scriptarguments:
+      ExpanseCloudManagedEmailBody:
+        simple: "Infosec has identified a security issue on a cloud service we believe\
+          \ may belong to you or your team. This asset or service does not appear\
+          \ to be behind proper compliance controls. \n\nPlease get in touch with\
+          \ your Infosec team to define proper remediation access."
+      ExpanseCloudManagedIPv4:
+        complex:
+          root: ${incident.labels
+          accessor: ip}
+      ExpanseCloudManagedIssueId:
+        complex:
+          root: ${incident
+          accessor: expanseissueid}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": -1960,
+          "y": 7210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "213":
+    id: "213"
+    taskid: 109e7303-a8f1-483e-8c75-ab59df78152a
+    type: title
+    task:
+      id: 109e7303-a8f1-483e-8c75-ab59df78152a
+      version: -1
+      name: Done Unmanaged Cloud
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "75"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1960,
+          "y": 7505
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "10_14_❌ No": 0.29,
+      "119_10_NO-PANORAMA": 0.11,
+      "119_14_MANUAL": 0.11,
+      "119_199_known-device-group": 0.51,
+      "15_196_#default#": 0.42,
+      "176_29_#default#": 0.25,
+      "177_178_#default#": 0.62,
+      "1_3_#default#": 0.2,
+      "208_28_#default#": 0.32,
+      "26_23_Panorama": 0.65,
+      "26_27_#default#": 0.62,
+      "36_147_#default#": 0.46,
+      "73_86_#default#": 0.11,
+      "76_78_❌ No": 0.27,
+      "96_166_#default#": 0.4,
+      "9_14_#default#": 0.69
+    },
+    "paper": {
+      "dimensions": {
+        "height": 17025,
+        "width": 5580,
+        "x": -1960,
+        "y": -2870
+      }
+    }
+  }
+inputs:
+- key: MinPriorityForAutoRemediation
+  value:
+    simple: "5"
+  required: false
+  description: |-
+    Minimum Incident Priority for Auto Remediation:
+    1 - Low
+    2 - Medium
+    3 - High
+    4 - Critical
+    5 - Disable AutoRemediation
+  playbookInputQuery:
+- key: FirewallTagListName
+  value:
+    simple: ExpanseTagsToPANOSDeviceGroup
+  required: false
+  description: Name of the Cortex XSOAR list that contains the mapping between Expanse tags and
+    XSOAR PANOS instances.
+  playbookInputQuery:
+- key: TagPrefix
+  value:
+    simple: xsoar-
+  required: false
+  description: Prefix for XSOAR related Expanse tags.
+  playbookInputQuery:
+- key: LogForwarding
+  value: {}
+  required: false
+  description: PAN-OS Log Forwarding Profile Name.
+  playbookInputQuery:
+- key: AutoCommit
+  value:
+    simple: "False"
+  required: false
+  description: |-
+    Panorama Auto Commit:
+    True - enable AutoCommit
+    False - disable AutoCommit
+  playbookInputQuery:
+- key: IPRangeLowConfidenceTagList
+  value:
+    simple: low confidence
+  required: false
+  description: Comma-separated list of tags to be used to identify IP ranges attributed
+    with low confidence.
+  playbookInputQuery:
+- key: InvalidTag
+  value:
+    simple: xsoar-invalid
+  required: false
+  description: Tag to be used for Expanse assets that do not belong to org (set when
+    the analyst selects Invalid in the OU data collection).
+  playbookInputQuery:
+- key: WriteToExpanse
+  value:
+    simple: "True"
+  required: false
+  description: Write data back to Expanse?
+  playbookInputQuery:
+- key: OwnerNotificationSubject
+  value:
+    simple: New security issue on a public service owned by your team
+  required: false
+  description: Subject of the email to send to the OU Owner.
+  playbookInputQuery:
+- key: OwnerNotificationBody
+  value:
+    simple: Infosec identified a security issue on a service owned by your team and
+      exposed on Internet. Get in touch with your Infosec team to define proper
+      remediation access.
+  required: false
+  description: Body of the email to send to the OU Owner.
+  playbookInputQuery:
+- key: ShadowITIncidentType
+  value:
+    simple: Shadow IT
+  required: false
+  description: If set, specifies the type of Incident that gets automatically created
+    during the Shadow IT flow. If not set, the Incident is to be created manually.
+  playbookInputQuery:
+- key: OrganizationUnitsToOwnerName
+  value:
+    simple: ExpanseOrganizationUnitsToOwner
+  required: false
+  description: Name of the Cortex XSOAR list that contains the mapping between OU and owners.
+  playbookInputQuery:
+- key: OrganizationUnitsToTagName
+  value:
+    simple: ExpanseOrganizationUnitsToTag
+  required: false
+  description: Name of the Cortex XSOAR list that contains the mapping between OU and Tag names.
+  playbookInputQuery:
+- key: NumberOfDaysInThePast
+  value:
+    simple: "75"
+  required: false
+  description: The number of days to go back in time when searching logs.
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests
+fromversion: 6.0.0

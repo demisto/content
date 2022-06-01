@@ -1,0 +1,752 @@
+{
+    "fromDate": "0001-01-01T00:00:00Z",
+    "fromDateLicense": "0001-01-01T00:00:00Z",
+    "id": "Troubleshooting Playbooks",
+    "layout": [
+        {
+            "forceRange": false,
+            "h": 3,
+            "i": "04861930-c371-11eb-b24f-ffb4c998ecaa",
+            "id": "04861930-c371-11eb-b24f-ffb4c998ecaa",
+            "reflectDimensions": true,
+            "w": 4,
+            "widget": {
+                "category": "",
+                "commitMessage": "",
+                "dataType": "tasks",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "fromServerVersion": "",
+                "id": "tasks-errors",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2021-06-02T07:05:55.249376908Z",
+                "name": "Task execution errors",
+                "packID": "",
+                "params": {
+                    "groupBy": [
+                        "taskName"
+                    ],
+                    "keys": [
+                        "sum|1"
+                    ],
+                    "referenceLine": {},
+                    "showGraphValues": false,
+                    "showOthers": true,
+                    "tableColumns": [
+                        {
+                            "isDefault": true,
+                            "key": "count",
+                            "position": 0
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "data",
+                            "position": 1
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "floatData",
+                            "position": 2
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "groups",
+                            "position": 3
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "name",
+                            "position": 4
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "color",
+                            "position": 5
+                        }
+                    ],
+                    "valuesFormat": "abbreviated",
+                    "xAxisLabel": "",
+                    "yAxisLabel": ""
+                },
+                "prevName": "Task execution errors",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "state:Error",
+                "shouldCommit": false,
+                "size": 5,
+                "sort": null,
+                "sortValues": null,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 13,
+                "widgetType": "pie"
+            },
+            "x": 4,
+            "y": 0
+        },
+        {
+            "forceRange": false,
+            "h": 1,
+            "i": "33f6dfb0-c371-11eb-b24f-ffb4c998ecaa",
+            "id": "33f6dfb0-c371-11eb-b24f-ffb4c998ecaa",
+            "reflectDimensions": true,
+            "w": 2,
+            "widget": {
+                "category": "",
+                "commitMessage": "",
+                "dataType": "metrics",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "description": "Failed Playbooks runs",
+                "fromServerVersion": "",
+                "id": "number-of-failed-playbooks",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2021-06-02T07:07:32.317641694Z",
+                "name": "Failed Playbooks runs",
+                "packID": "",
+                "params": {
+                    "colors": {
+                        "isEnabled": false,
+                        "items": {
+                            "#1DB846": {
+                                "value": 0
+                            },
+                            "#D13C3C": {
+                                "value": 6
+                            },
+                            "#EF9700": {
+                                "value": 5
+                            }
+                        },
+                        "type": "above"
+                    },
+                    "groupBy": [],
+                    "keys": [
+                        "sum|errorCount"
+                    ],
+                    "tableColumns": [],
+                    "valuesFormat": "abbreviated"
+                },
+                "prevName": "Failed Playbooks runs",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "type:playbook",
+                "shouldCommit": false,
+                "size": 0,
+                "sort": null,
+                "sortValues": null,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 4,
+                "widgetType": "trend"
+            },
+            "x": 10,
+            "y": 0
+        },
+        {
+            "forceRange": false,
+            "h": 3,
+            "i": "0a8812b0-c372-11eb-b24f-ffb4c998ecaa",
+            "id": "0a8812b0-c372-11eb-b24f-ffb4c998ecaa",
+            "reflectDimensions": true,
+            "w": 4,
+            "widget": {
+                "category": "",
+                "commitMessage": "",
+                "dataType": "metrics",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "fromServerVersion": "",
+                "id": "average-runtime-by-incident-type-per-playbook-top-5",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2021-06-02T07:13:32.445787786Z",
+                "name": "Average runtime by Incident Type per Playbook (top 5)",
+                "packID": "",
+                "params": {
+                    "groupBy": [
+                        "name",
+                        "incidentType"
+                    ],
+                    "keys": [
+                        "avg|duration"
+                    ],
+                    "referenceLine": {
+                        "type": "avg"
+                    },
+                    "showGraphValues": true,
+                    "showOthers": false,
+                    "tableColumns": [
+                        {
+                            "isDefault": true,
+                            "key": "count",
+                            "position": 0
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "data",
+                            "position": 1
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "floatData",
+                            "position": 2
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "groups",
+                            "position": 3
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "name",
+                            "position": 4
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "color",
+                            "position": 5
+                        }
+                    ],
+                    "valuesFormat": "minutes",
+                    "xAxisLabel": "Playbook name",
+                    "yAxisLabel": ""
+                },
+                "prevName": "Average runtime by Incident Type per Playbook (top 5)",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "type:playbook",
+                "shouldCommit": false,
+                "size": 5,
+                "sort": null,
+                "sortValues": null,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 14,
+                "widgetType": "column"
+            },
+            "x": 0,
+            "y": 3
+        },
+        {
+            "forceRange": false,
+            "h": 1,
+            "i": "cfe0c1b0-c377-11eb-b24f-ffb4c998ecaa",
+            "id": "cfe0c1b0-c377-11eb-b24f-ffb4c998ecaa",
+            "reflectDimensions": true,
+            "w": 2,
+            "widget": {
+                "category": "",
+                "commitMessage": "",
+                "dataType": "tasks",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "fromServerVersion": "",
+                "id": "number-of-failed-manual-tasks",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2021-06-02T07:54:48.329462649Z",
+                "name": "Failed Manual Tasks",
+                "packID": "",
+                "params": {
+                    "groupBy": [],
+                    "keys": [
+                        "sum|1"
+                    ]
+                },
+                "prevName": "Failed Manual Tasks",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "taskName:* state:Error automated:F",
+                "shouldCommit": false,
+                "size": 0,
+                "sort": null,
+                "sortValues": null,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 5,
+                "widgetType": "number"
+            },
+            "x": 8,
+            "y": 0
+        },
+        {
+            "forceRange": false,
+            "h": 3,
+            "i": "dd7bf250-c380-11eb-b24f-ffb4c998ecaa",
+            "id": "dd7bf250-c380-11eb-b24f-ffb4c998ecaa",
+            "reflectDimensions": true,
+            "w": 4,
+            "widget": {
+                "category": "",
+                "commitMessage": "",
+                "dataType": "metrics",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 30,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "description": "Playbook run errors",
+                "fromServerVersion": "",
+                "id": "playbooks-with-errors",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2021-06-02T08:59:38.304497702Z",
+                "name": "Playbook run errors",
+                "packID": "",
+                "params": {
+                    "groupBy": [
+                        "name"
+                    ],
+                    "keys": [
+                        "sum|errorCount"
+                    ],
+                    "referenceLine": {
+                        "type": "avg"
+                    },
+                    "showGraphValues": false,
+                    "showOthers": true,
+                    "tableColumns": [
+                        {
+                            "isDefault": true,
+                            "key": "count",
+                            "position": 0
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "data",
+                            "position": 1
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "floatData",
+                            "position": 2
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "groups",
+                            "position": 3
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "name",
+                            "position": 4
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "color",
+                            "position": 5
+                        }
+                    ],
+                    "valuesFormat": "abbreviated",
+                    "xAxisLabel": "",
+                    "yAxisLabel": ""
+                },
+                "prevName": "Playbook run errors",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "type:playbook and errorCount:\u003e0",
+                "shouldCommit": false,
+                "size": 5,
+                "sort": null,
+                "sortValues": null,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 13,
+                "widgetType": "pie"
+            },
+            "x": 0,
+            "y": 0
+        },
+        {
+            "forceRange": false,
+            "h": 3,
+            "i": "f5b7d830-c456-11eb-a5eb-eb8c1272658e",
+            "id": "f5b7d830-c456-11eb-a5eb-eb8c1272658e",
+            "reflectDimensions": true,
+            "w": 4,
+            "widget": {
+                "category": "",
+                "commitMessage": "Widget imported",
+                "dataType": "tasks",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "fromServerVersion": "",
+                "id": "executions-by-status-per-manual-tasks-top-5",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2021-06-03T10:32:11.910815214Z",
+                "name": "Executions by status per Manual Tasks (top 5)",
+                "packID": "",
+                "params": {
+                    "groupBy": [
+                        "taskName",
+                        "state"
+                    ],
+                    "keys": [
+                        "sum|1"
+                    ],
+                    "referenceLine": {
+                        "type": "avg"
+                    },
+                    "tableColumns": [
+                        {
+                            "isDefault": true,
+                            "key": "count",
+                            "position": 0
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "data",
+                            "position": 1
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "floatData",
+                            "position": 2
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "groups",
+                            "position": 3
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "name",
+                            "position": 4
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "color",
+                            "position": 5
+                        }
+                    ],
+                    "xAxisLabel": "Task names",
+                    "yAxisLabel": "Count"
+                },
+                "prevName": "Executions by status per Manual Tasks (top 5)",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "taskName:* automated:F",
+                "shouldCommit": true,
+                "size": 5,
+                "sort": null,
+                "sortValues": null,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 5,
+                "widgetType": "column"
+            },
+            "x": 4,
+            "y": 3
+        },
+        {
+            "forceRange": false,
+            "h": 3,
+            "i": "02ceacb0-c457-11eb-a5eb-eb8c1272658e",
+            "id": "02ceacb0-c457-11eb-a5eb-eb8c1272658e",
+            "reflectDimensions": true,
+            "w": 4,
+            "widget": {
+                "category": "",
+                "commitMessage": "",
+                "dataType": "tasks",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "fromServerVersion": "",
+                "id": "executions-by-status-per-automated-tasks-top-5",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2021-06-03T10:32:34.189169383Z",
+                "name": "Executions by status per Automated Tasks (top 5)",
+                "packID": "",
+                "params": {
+                    "groupBy": [
+                        "taskName",
+                        "state"
+                    ],
+                    "keys": [
+                        "sum|1"
+                    ],
+                    "referenceLine": {
+                        "type": "avg"
+                    },
+                    "tableColumns": [
+                        {
+                            "isDefault": true,
+                            "key": "count",
+                            "position": 0
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "data",
+                            "position": 1
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "floatData",
+                            "position": 2
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "groups",
+                            "position": 3
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "name",
+                            "position": 4
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "color",
+                            "position": 5
+                        }
+                    ],
+                    "xAxisLabel": "Task names",
+                    "yAxisLabel": "Count"
+                },
+                "prevName": "Executions by status per Automated Tasks (top 5)",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "taskName:* automated:T",
+                "shouldCommit": false,
+                "size": 5,
+                "sort": null,
+                "sortValues": null,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 10,
+                "widgetType": "column"
+            },
+            "x": 8,
+            "y": 3
+        },
+        {
+            "forceRange": false,
+            "h": 2,
+            "i": "354320d0-c458-11eb-a1d3-231dd86e2d26",
+            "id": "354320d0-c458-11eb-a1d3-231dd86e2d26",
+            "reflectDimensions": true,
+            "w": 4,
+            "widget": {
+                "category": "",
+                "commitMessage": "",
+                "dataType": "tasks",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "fromServerVersion": "",
+                "id": "Manual_Tasks_count_auto_vs_manual",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2021-06-03T10:41:06.249878754Z",
+                "name": "Failed Tasks Auto vs Manual",
+                "packID": "",
+                "params": {
+                    "customGroupBy": [
+                        {
+                            "Automated": {
+                                "conditions": [
+                                    [
+                                        {
+                                            "field": "automated",
+                                            "operator": "isTrue",
+                                            "type": "boolean"
+                                        }
+                                    ]
+                                ],
+                                "name": "Automated"
+                            },
+                            "Manual": {
+                                "conditions": [
+                                    [
+                                        {
+                                            "field": "automated",
+                                            "operator": "isFalse",
+                                            "type": "boolean"
+                                        }
+                                    ]
+                                ],
+                                "name": "Manual"
+                            }
+                        }
+                    ],
+                    "groupBy": [
+                        "automated"
+                    ],
+                    "keys": [
+                        "sum|1"
+                    ],
+                    "showOthers": false,
+                    "tableColumns": [
+                        {
+                            "isDefault": true,
+                            "key": "count",
+                            "position": 0
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "data",
+                            "position": 1
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "floatData",
+                            "position": 2
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "groups",
+                            "position": 3
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "name",
+                            "position": 4
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "color",
+                            "position": 5
+                        }
+                    ]
+                },
+                "prevName": "Failed Tasks Auto vs Manual",
+                "primaryTerm": 5,
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "taskName:* and state:Error",
+                "sequenceNumber": 29456569,
+                "shouldCommit": false,
+                "size": 0,
+                "sort": null,
+                "sortValues": [
+                    "598762"
+                ],
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 3,
+                "widgetType": "pie"
+            },
+            "x": 8,
+            "y": 1
+        }
+    ],
+    "name": "Troubleshooting Playbooks",
+    "period": {
+        "by": "",
+        "byFrom": "days",
+        "byTo": "",
+        "field": "",
+        "fromValue": 7,
+        "toValue": null
+    },
+    "toDate": "0001-01-01T00:00:00Z",
+    "version": -1,
+    "fromVersion": "6.2.0",
+    "description": "Troubleshooting Playbooks",
+    "isPredefined": true
+}

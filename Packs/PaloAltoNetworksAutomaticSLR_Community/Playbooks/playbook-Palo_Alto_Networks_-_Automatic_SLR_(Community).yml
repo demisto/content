@@ -1,0 +1,245 @@
+id: Palo Alto Networks - Automatic SLR (Community)
+fromversion: "5.0.0"
+version: -1
+name: Palo Alto Networks - Automatic SLR (Community)
+description: Initial default playbook to run the Palo Alto Networks Automatic SLR
+  (Community) Integration
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 853efb2e-d314-4bfe-858a-592a469853a4
+    type: start
+    task:
+      id: 853efb2e-d314-4bfe-858a-592a469853a4
+      version: -1
+      name: ""
+      description: None
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 20cab3ca-595b-462a-833e-78f3ecd7554d
+    type: regular
+    task:
+      id: 20cab3ca-595b-462a-833e-78f3ecd7554d
+      version: -1
+      name: Initiate stats_dump.tar.gz generation
+      description: Initiates the stats_dump.tar.gz generation job on the target firewall
+      script: Palo Alto Networks Automatic SLR (Community)|||autoslr-ngfw-generate
+      type: regular
+      iscommand: true
+      brand: Palo Alto Networks Automatic SLR (Community)
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 687840ba-919e-4ea6-8528-5dbad3a55c3a
+    type: regular
+    task:
+      id: 687840ba-919e-4ea6-8528-5dbad3a55c3a
+      version: -1
+      name: Check generation job status
+      description: Checks the status of the stats_dump.tar.gz generation job, returns
+        true when completed
+      script: Palo Alto Networks Automatic SLR (Community)|||autoslr-ngfw-check
+      type: regular
+      iscommand: true
+      brand: Palo Alto Networks Automatic SLR (Community)
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      job_id:
+        simple: ${AutoSLR.generate.job_id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 9ff75113-cdf8-4822-8cb9-b72071284b11
+    type: regular
+    task:
+      id: 9ff75113-cdf8-4822-8cb9-b72071284b11
+      version: -1
+      name: Download stats_dump.tar.gz
+      description: Downloads the stats_dump.tar.gz from the target firewall
+      script: Palo Alto Networks Automatic SLR (Community)|||autoslr-ngfw-download
+      type: regular
+      iscommand: true
+      brand: Palo Alto Networks Automatic SLR (Community)
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      job_id:
+        simple: ${AutoSLR.generate.job_id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    evidencedata:
+      description:
+        simple: Stats_dump.tar.gz Download
+      customfields: {}
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 6df5580f-8d8f-4211-81f6-39eff48eee8c
+    type: regular
+    task:
+      id: 6df5580f-8d8f-4211-81f6-39eff48eee8c
+      version: -1
+      name: Upload to PANW
+      description: Uploads the stats_dump.tar.gz to Palo Alto Networks
+      script: Palo Alto Networks Automatic SLR (Community)|||autoslr-csp-upload
+      type: regular
+      iscommand: true
+      brand: Palo Alto Networks Automatic SLR (Community)
+    scriptarguments:
+      input_file:
+        simple: ${InfoFile.EntryID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: f2e5460f-2bab-4647-85e4-a64cab5fd606
+    type: regular
+    task:
+      id: f2e5460f-2bab-4647-85e4-a64cab5fd606
+      version: -1
+      name: Cleanup Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+      - "1"
+    scriptarguments:
+      all: {}
+      index: {}
+      key:
+        simple: ${AutoSLR}, ${InfoFile}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: a0ba200e-8cac-4c2b-834f-807330471c9e
+    type: regular
+    task:
+      id: a0ba200e-8cac-4c2b-834f-807330471c9e
+      version: -1
+      name: Get System Info
+      description: Retrieve information about the firewall
+      script: Palo Alto Networks Automatic SLR (Community)|||autoslr-ngfw-system-info
+      type: regular
+      iscommand: true
+      brand: Palo Alto Networks Automatic SLR (Community)
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+    note: true
+    evidencedata:
+      description:
+        simple: System Info Data
+      customfields: {}
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 940,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+- No tests (auto formatted)

@@ -1,3 +1,9 @@
+[file:Phishing_-_Core_-_Test_-_Actual_Incident.yml]
+ignore=auto-test
+
+[file:Phishing_v2_-_Test_-_Actual_Incident.yml]
+ignore=auto-test
+
 [file:Get_Original_Email_-_EWS.yml]
 ignore=BA101
 
@@ -8,7 +14,7 @@ ignore=BA101
 ignore=BA101
 
 [file:Phishing.yml]
-ignore=BA101
+ignore=BA101,BA110
 
 [file:incidentfield-Email_Return_Path.json]
 ignore=IF107
@@ -120,3 +126,20 @@ ignore=IF107
 
 [file:Phishing]
 ignore=PA116
+
+[file:layoutscontainer-Phishing.json]
+ignore=BA101
+
+[file:FindDuplicateEmailIncidents.yml]
+ignore=SC105
+
+[file:incidentfield-Email_Internal_Message_ID.json]
+ignore=IF115
+
+[file:incidentfield-reported_email_origin.json]
+ignore=IF116
+
+[known_words]
+CheckEmailAuthenticity
+DeleteReportedEmail
+GetBrandDeleteReportedEmail

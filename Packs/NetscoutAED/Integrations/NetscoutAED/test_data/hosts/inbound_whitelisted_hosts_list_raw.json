@@ -1,0 +1,17 @@
+{
+    "whitelisted-hosts": [
+        {
+            "annotation": [
+                "whitelisted inbound"
+            ],
+            "cid": [
+                -1
+            ],
+            "hostAddress": "6.6.6.6",
+            "pgid": [
+                -1
+            ],
+            "updateTime": 1615814171
+        }
+    ]
+}

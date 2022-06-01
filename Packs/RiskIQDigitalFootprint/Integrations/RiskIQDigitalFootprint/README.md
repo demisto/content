@@ -16,7 +16,7 @@ This integration was integrated and tested with enterprise version of RiskIQDigi
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### df-asset-connections
 ***
@@ -1062,7 +1062,7 @@ Retrieve the asset of the specified UUID or type and name from Global Inventory.
 | RiskIQDigitalFootprint.Asset.assetHostCore.firstSeen | Date | Date and Time when the host was first observed on the asset. | 
 | RiskIQDigitalFootprint.Asset.assetHostCore.lastSeen | Date | Date and Time when the host was most recently observed on the asset. | 
 | RiskIQDigitalFootprint.Asset.assetHostCore.count | Number | Number of times the host was observed on the asset. | 
-| RiskIQDigitalFootprint.Asset.assetHostCore.blacklistSequenceCount | Number | Black list sequence count of the host observed on the asset. | 
+| RiskIQDigitalFootprint.Asset.assetHostCore.blacklistSequenceCount | Number | Block list sequence count of the host observed on the asset. | 
 | RiskIQDigitalFootprint.Asset.assetHostCore.phishSequenceCount | Number | Phish sequence count of the host observed on the asset. | 
 | RiskIQDigitalFootprint.Asset.assetHostCore.malwareSequenceCount | Number | Malware sequence count of the host observed on the asset. | 
 | RiskIQDigitalFootprint.Asset.assetHostCore.spamSequenceCount | Number | Spam sequence count of the host observed on the asset. | 

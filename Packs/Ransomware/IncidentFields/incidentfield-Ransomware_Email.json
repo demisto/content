@@ -1,0 +1,32 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Post Intrusion Ransomware"
+    ],
+    "caseInsensitive": true,
+    "cliName": "ransomwareemail",
+    "closeForm": false,
+    "content": true,
+    "description": "Email address for communication with the ransomware operators group",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_ransomwareemail",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Ransomware Email",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "selectValues": [],
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "multiSelect",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.0.0",
+    "openEnded": true
+}

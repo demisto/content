@@ -1,0 +1,262 @@
+id: Delete Context Subplaybook Test
+version: -1
+name: Delete Context Subplaybook Test
+fromversion: 5.0.0
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 463e6b2b-7ae8-4bde-8a2f-4dddc78d7df9
+    type: start
+    task:
+      id: 463e6b2b-7ae8-4bde-8a2f-4dddc78d7df9
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+  "1":
+    id: "1"
+    taskid: 08fdeeaf-4b19-4203-8697-dc4147f8b190
+    type: regular
+    task:
+      id: 08fdeeaf-4b19-4203-8697-dc4147f8b190
+      version: -1
+      name: Set A
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      append: {}
+      key:
+        simple: A
+      stringify: {}
+      value:
+        simple: a1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+  "2":
+    id: "2"
+    taskid: edf02ca5-467e-4174-80dd-e4d318e65314
+    type: regular
+    task:
+      id: edf02ca5-467e-4174-80dd-e4d318e65314
+      version: -1
+      name: Delete all context (subplaybook)
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+  "3":
+    id: "3"
+    taskid: 6db8fc32-02ce-4931-8749-ec08e1b2562e
+    type: regular
+    task:
+      id: 6db8fc32-02ce-4931-8749-ec08e1b2562e
+      version: -1
+      name: Set A
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      append: {}
+      key:
+        simple: A
+      stringify: {}
+      value:
+        simple: a1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+  "4":
+    id: "4"
+    taskid: e92cd240-8af1-4d16-843a-5ff86bc4b91a
+    type: regular
+    task:
+      id: e92cd240-8af1-4d16-843a-5ff86bc4b91a
+      version: -1
+      name: Delete all context (auto)
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook:
+        simple: auto
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+  "5":
+    id: "5"
+    taskid: d5f9c46b-8e37-45f7-8c21-a3ec9a405141
+    type: condition
+    task:
+      id: d5f9c46b-8e37-45f7-8c21-a3ec9a405141
+      version: -1
+      name: Ensure A doesn't exist
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotExists
+          left:
+            value:
+              simple: A
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+  "6":
+    id: "6"
+    taskid: ef35463d-e62e-4ced-87f5-30f785ab2ad9
+    type: condition
+    task:
+      id: ef35463d-e62e-4ced-87f5-30f785ab2ad9
+      version: -1
+      name: Ensure A doesn't exist
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotExists
+          left:
+            value:
+              simple: A
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: a8f3aa41-7e1b-4085-86af-f008a55dc439
+    type: title
+    task:
+      id: a8f3aa41-7e1b-4085-86af-f008a55dc439
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1260,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

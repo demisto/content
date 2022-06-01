@@ -49,6 +49,3 @@ This playbook does not use any integrations.
 | UniqueBiometricDataBreached | Set a flag indicating that the breach contains PII of unique biometric data. | unknown |
 | Analyst review.Answers.1 | Explain, in your words, the incident origin, what you have checked, and any information related to this incident. | longText |
 
-## Playbook Image
----
-![Illinois - Breach Notification](Insert the link to your image here)

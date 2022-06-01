@@ -1,0 +1,17 @@
+{
+  "Incident name": null,
+  "Tags": "",
+  "Severity": null,
+  "Incident ID": null,
+  "Categories": "",
+  "Impacted entities": "",
+  "Active alerts": "0 / 0",
+  "Service sources": "",
+  "Detection sources": "",
+  "First activity": "",
+  "Last activity": "",
+  "Status": null,
+  "Assigned to": "Unassigned",
+  "Classification": "Not set",
+  "Device groups": ""
+}

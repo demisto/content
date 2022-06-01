@@ -1,0 +1,30 @@
+{
+ "id": "incident_techniqueaffectedassets",
+ "version": -1,
+ "fromVersion": "6.0.0",
+ "modified": "2020-10-26T15:50:15.639787271Z",
+ "name": "Technique Affected Assets",
+ "ownerOnly": false,
+ "cliName": "techniqueaffectedassets",
+ "type": "number",
+ "closeForm": false,
+ "editForm": true,
+ "required": false,
+ "neverSetAsRequired": false,
+ "isReadOnly": false,
+ "useAsKpi": false,
+ "locked": false,
+ "system": false,
+ "content": true,
+ "group": 0,
+ "hidden": false,
+ "associatedTypes": [
+  "XM Cyber Technique"
+ ],
+ "associatedToAll": false,
+ "unmapped": false,
+ "unsearchable": false,
+ "caseInsensitive": true,
+ "sla": 0,
+ "threshold": 72
+}

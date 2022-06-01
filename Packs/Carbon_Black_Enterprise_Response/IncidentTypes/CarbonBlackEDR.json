@@ -1,0 +1,23 @@
+{
+    "id": "Carbon Black EDR",
+    "version": -1,
+    "name": "Carbon Black EDR",
+    "prevName": "Carbon Black EDR",
+    "color": "#F8C89A",
+    "playbookId": "Carbon Black EDR - Enrich Process",
+    "hours": 0,
+    "days": 0,
+    "weeks": 0,
+    "hoursR": 0,
+    "daysR": 0,
+    "weeksR": 0,
+    "system": false,
+    "readonly": false,
+    "default": false,
+    "autorun": false,
+    "disabled": false,
+    "reputationCalc": 0,
+    "onChangeRepAlg": 0,
+    "layout": "Carbon Black EDR Incidents",
+    "fromVersion": "5.5.0"
+}

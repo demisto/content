@@ -1,0 +1,193 @@
+id: FireMon Create Policy Planner Ticket
+version: -1
+fromversion: 6.0.0
+description: Creates a new Policy Planner Ticket for PolicyPlanner in FMOS box.
+name: FireMon Create Policy Planner Ticket
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 35b4a2d3-4658-48f9-8b03-16bfc62dc693
+    type: start
+    task:
+      id: 35b4a2d3-4658-48f9-8b03-16bfc62dc693
+      description: Starts the playbook.
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 11c46959-b4e1-435e-81c3-e49916190755
+    type: title
+    task:
+      id: 11c46959-b4e1-435e-81c3-e49916190755
+      description: Closes the playbook.
+      version: -1
+      name: Close
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: e84dafce-b553-4f6c-8008-c361db725bce
+    type: regular
+    task:
+      id: e84dafce-b553-4f6c-8008-c361db725bce
+      version: -1
+      name: create-pp-ticket
+      description: Creates a ticket in policy planner application
+      script: '|||firemon-create-pp-ticket'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      domain_id:
+        simple: ${incident.domainid}
+      due_date:
+        simple: ${incident.ppticketduedate}
+      priority:
+        simple: ${incident.priority}
+      requirement:
+        simple: ${incident.requirements}
+      workflow_name:
+        simple: ${incident.workflowname}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 92f81e13-2240-4174-864a-824c7f543380
+    type: condition
+    task:
+      id: 92f81e13-2240-4174-864a-824c7f543380
+      version: -1
+      name: Is FireMon Integration available
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "5"
+      "yes":
+      - "6"
+    scriptarguments:
+      brandname:
+        simple: FireMonSecurityManager
+    results:
+    - brandInstances
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 560,
+        "width": 492.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: Domain Id
+  value:
+    complex:
+      root: incident
+      accessor: domainid
+  required: true
+  description: Enter Domain Id (Integer)
+  playbookInputQuery: null
+- key: Workflow Name
+  value:
+    complex:
+      root: incident
+      accessor: workflowname
+  required: true
+  description: Enter Workflow Name
+  playbookInputQuery: null
+- key: Requirements
+  value:
+    complex:
+      root: incident
+      accessor: requirements
+  required: true
+  description: Enter list of Requirements containing Sources, Service, Destinations
+    and Action
+  playbookInputQuery: null
+- key: Priority
+  value:
+    complex:
+      root: incident
+      accessor: priority
+  required: true
+  description: Set the Priority
+  playbookInputQuery: null
+- key: Due Date
+  value:
+    complex:
+      root: incident
+      accessor: ppticketduedate
+  required: true
+  description: 'Enter Due date '
+  playbookInputQuery: null
+outputs: []
+tests:
+- No tests (auto formatted)

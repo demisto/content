@@ -1,0 +1,363 @@
+category: Utilities
+commonfields:
+  id: PowerShell Remoting
+  version: -1
+configuration:
+- additionalinfo: Fully Qualified Domain Name suffix to be added to the hostname. For example mydomain.local
+  display: Domain
+  name: domain
+  required: false
+  type: 0
+- display: DNS
+  additionalinfo: Optional IP address of a DNS server the integration will use to resolve your hosts. Use this setting when the host linux machine uses a different DNS from the Windows machines you are targeting.
+  name: dns
+  required: false
+  type: 0
+- additionalinfo: Username in the target machine. This can be a local or domain user with administrative privileges
+  display: Username
+  name: credentials
+  required: true
+  type: 9
+- additionalinfo: Hostname or IP address to use as a test for the integration connectivity.
+  display: Test Host
+  name: host
+  required: false
+  type: 0
+- defaultvalue: Negotiate
+  display: Authentication Method
+  hidden: false
+  name: auth_method
+  options:
+  - Negotiate
+  - Basic
+  required: true
+  type: 15
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use SSL (HTTPS)
+  name: ssl
+  required: false
+  type: 8
+description: "PowerShell Remoting is a comprehensive built-in remoting subsystem that is a\
+  \ part of Microsoft's native Windows management framework (WMF) and Windows remote\
+  \ management (WinRM).\nThis feature allows you to handle most remoting tasks in\
+  \ any configuration you might encounter by creating a remote PowerShell session\
+  \ to Windows hosts and executing commands in the created session.\nThe integration\
+  \ includes out-of-the-box commands which supports agentless forensics for remote\
+  \ hosts."
+display: PowerShell Remoting (Beta)
+name: PowerShell Remoting
+script:
+  commands:
+  - arguments:
+    - description: 'A single hostname or IP address on which to run the command.'
+      isArray: false
+      name: host
+      required: true
+    - description: PowerShell commands (can be single or multiple in order of execution)
+        to run on the target machine.
+      name: command
+      required: true
+    description: Executes remote PowerShell commands on a single host.
+    execution: true
+    name: ps-remote-command
+    outputs:
+    - contextPath: PsRemote.Host
+      description: The host on which the command was invoked.
+      type: string
+    - contextPath: PsRemote.FQDN
+      description: The Fully Qualified Domain Name of the host on which the command was invoked.
+      type: string
+    - contextPath: PsRemote.CommandResult
+      description: The result of the command run from the target machine.
+      type: list
+    - contextPath: PsRemote.CommandName
+      description: The command sent to the target machine, used as an ID of that query.
+      type: string
+    - contextPath: PsRemote.UTCTime
+      description: Time the command finished execution in UTC time.
+      type: string
+  - arguments:
+    - description: 'Hostname or the IP address on which to run the command.'
+      isArray: false
+      name: host
+      required: true
+    - description: The path of the file to download.
+      name: path
+      required: true
+    - name: zip_file
+      defaultValue: "false"
+      description: 'Whether to compress the file. Possible values: "true" and "false". Default is "false".'
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+    - name: check_hash
+      defaultValue: "false"
+      description: 'Whether to compare the value of the original file with the downloaded file and
+        return an error if any differences are found. Possible values: "true" and "false". Default is "false".'
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+    - auto: PREDEFINED
+      description: 'Whether to use the host as a prefix for the name of the downloaded version of the file. Possible values: "true" and "false". Default is "false".'
+      name: host_prefix
+      defaultValue: "false"
+      predefined:
+      - "true"
+      - "false"
+    description: Downloads a file from the remote endpoint.
+    name: ps-remote-download-file
+    outputs:
+    - contextPath: PsRemoteDownloadedFile.Host
+      description: The host from which the file was downloaded.
+      type: string
+    - contextPath: PsRemoteDownloadedFile.FQDN
+      description: The Fully Qualified Domain Name of the host from which the file was downloaded.
+      type: string
+    - contextPath: PsRemoteDownloadedFile.FileName
+      description: File name.
+      type: String
+    - contextPath: PsRemoteDownloadedFile.FileSize
+      description: File size.
+      type: Number
+    - contextPath: PsRemoteDownloadedFile.FileMD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: PsRemoteDownloadedFile.FileSHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: PsRemoteDownloadedFile.FileSHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: PsRemoteDownloadedFile.FileExtension
+      description: The extension of the file.
+      type: String
+    - contextPath: File.Size
+      description: The size of the file in bytes.
+      type: Number
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: File.SHA512
+      description: The SHA512 hash of the file.
+      type: String
+    - contextPath: File.Name
+      description: The full file name.
+      type: String
+    - contextPath: File.SSDeep
+      description: The ssdeep hash of the file.
+      type: String
+    - contextPath: File.EntryID
+      description: The ID for locating the file in the War Room.
+      type: String
+    - contextPath: File.Info
+      description: The file information.
+      type: String
+    - contextPath: File.Type
+      description: The file type.
+      type: String
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: File.Extension
+      description: 'The file extension, for example: "txt".'
+      type: String
+  - arguments:
+    - description: 'A single hostname or IP address on which to run the command.'
+      name: host
+      required: true
+    - description: The path of the file to upload.
+      name: path
+      required: true
+    - description: The file entry ID to upload.
+      name: entry_id
+      required: true
+    - auto: PREDEFINED
+      defaultValue: "false"
+      description: 'Whether to compress the file before upload. Possible values: "true" and "false". Default is "false".'
+      name: zip_file
+      predefined:
+      - "true"
+      - "false"
+    - auto: PREDEFINED
+      defaultValue: "false"
+      description: 'Whether to compare the values of the original file and uploaded file and
+        return an error if any differences are found. Possible values: "true" and "false". Default is "false".'
+      name: check_hash
+      predefined:
+      - "true"
+      - "false"
+    description: Uploads a file to the remote endpoint.
+    name: ps-remote-upload-file
+    outputs:
+    - contextPath: PsRemoteUploadedFile.FileName
+      description: File name.
+      type: String
+    - contextPath: PsRemoteUploadedFile.FilePath
+      description: File path in the remote server.
+      type: String
+    - contextPath: PsRemoteUploadedFile.FileSize
+      description: File size.
+      type: Number
+    - contextPath: PsRemoteUploadedFile.FileMD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: PsRemoteUploadedFile.FileSHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: PsRemoteUploadedFile.FileSHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: PsRemoteUploadedFile.FileExtension
+      description: The extension of the file.
+      type: String
+    - contextPath: PsRemoteUploadedFile.Host
+      description: The host to which the file was uploaded.
+      type: string
+    - contextPath: PsRemote.FQDN
+      description: The Fully Qualified Domain Name of the host the file was uploaded to.
+      type: string
+  - arguments:
+    - description: 'A single hostname or IP address on which to run the command.'
+      isArray: false
+      name: host
+      required: true
+    - description: The path on the hostname on which to create the ETL file. For example
+        c:\temp\myhost.etl. Default is "C:\Users\<username>\AppData\Local\Temp\NetTraces\NetTrace.etl".
+      name: etl_path
+      required: true
+    - description: 'The filter to apply when creating the ETL file. For example IPv4.Address=1.1.1.1
+        to capture traffic just from the 1.1.1.1 IP address. If no filter is specified
+        all traffic will be recorded. For more examples, see: https://docs.microsoft.com/en-us/previous-versions/windows/it-pro/windows-server-2012-r2-and-2012/jj129382(v=ws.11)#using-filters-to-limit-etl-trace-file-details.'
+      name: etl_filter
+    - defaultValue: "10"
+      description: The maximum file size for the ETL. Once the file has reached this
+        size, the capture will stop. For example 10MB. The default size is 10MB.
+      name: etl_max_size
+    - auto: PREDEFINED
+      defaultValue: "no"
+      description: 'Whether to overwrite the file in the path. Possible values: "yes" and "no". Default is "no".'
+      name: overwrite
+      predefined:
+      - "yes"
+      - "no"
+    description: This command starts the recording of an ETL file on a Windows endpoint.
+      An ETL file is just like a PCAP file which is created by the Windows Netsh command.
+    name: ps-remote-etl-create-start
+    outputs:
+    - contextPath: PsRemote.CommandResult
+      description: The start ETL command results.
+      type: string
+    - contextPath: PsRemote.EtlFileName
+      description: The name of the ETL file.
+      type: string
+    - contextPath: PsRemote.EtlFilePath
+      description: The path and name of the ETL file.
+    - contextPath: PsRemote.CommandName
+      description: The name of the command that ran on the host.
+      type: string
+    - contextPath: PsRemote.FQDN
+      description: The Full Qualified Domain Name of the host.
+      type: string
+    - contextPath: PsRemote.Host
+      description: The name of the host.
+      type: string
+  - arguments:
+    - description: 'A single Hostname or IP address on which to run the command.'
+      isArray: false
+      name: host
+      required: true
+    description: Ends the recording of an ETL file on a Windows endpoint.
+    name: ps-remote-etl-create-stop
+    outputs:
+      - contextPath: PsRemote.CommandResult
+        description: The stop ETL command results.
+        type: string
+      - contextPath: PsRemote.CommandName
+        description: The name of the command that ran on the host.
+        type: string
+      - contextPath: PsRemote.EtlFileName
+        description: The name of the ETL file.
+        type: string
+      - contextPath: PsRemote.EtlFilePath
+        description: The path and name of the ETL file.
+      - contextPath: PsRemote.Host
+        description: The host the command was invoked on.
+        type: string
+      - contextPath: PsRemote.FQDN
+        description: The Fully Qualified Domain Name of the host on which the command was invoked.
+        type: string
+  - arguments:
+    - description: 'A single hostname or IP address on which to run the command.'
+      isArray: false
+      name: host
+      required: true
+    - defaultValue: all
+      description: The registry key or hive to export. For example, reg_key_hive=`HKEY_LOCAL_MACHINE`.
+        If the user specifies "all", the entire registry will be exported.
+        Default is "all".
+      name: reg_key_hive
+    - description: The path and name on the Windows host where the registry file will
+        be created. For example, file_path=c:\hklm.reg.
+      name: file_path
+      required: true
+    description: Exports the specified registry of hive to a file.
+    name: ps-remote-export-registry
+    outputs:
+    - contextPath: PsRemote.CommandResult
+      description: The command results in the remote host - regedit for all or reg export.
+      type: string
+    - contextPath: PsRemote.RegistryFilePath
+      description: The path and name of the registry file.
+      type: string
+    - contextPath: PsRemote.RegistryFileName
+      description: The name of the registry file.
+      type: string
+    - contextPath: PsRemote.Command.Name
+      description: The name of the command that ran on the host.
+      type: string
+    - contextPath: PsRemote.Fqdn
+      description: The Full Qualified Domain Name of the host.
+      type: string
+    - contextPath: PsRemote.Host
+      description: The host on which the command was invoked.
+      type: string
+    - contextPath: PsRemote.FQDN
+      description: The Fully Qualified Domain Name of the host on which the command was invoked.
+      type: string
+  - arguments:
+    - description: 'A single hostname or IP address on which to run the command.'
+      isArray: false
+      name: host
+      required: true
+    - description: The volume from which to retrieve its master file table.
+      name: volume
+    - description: The path in which the MFT file is to be created.
+      isArray: false
+      name: output_path
+    description: Extracts the master file table from the volume.
+    name: ps-remote-export-mft
+    outputs:
+      - contextPath: PsRemote.ExportMFT
+        description: The extract master file table command result.
+      - contextPath: PsRemote.Host
+        description: The host on which the command was invoked.
+        type: string
+      - contextPath: PsRemote.FQDN
+        description: The Fully Qualified Domain Name of the host on which the command was invoked.
+        type: string
+  dockerimage: demisto/powershell-ubuntu:7.1.3.22925
+  runonce: false
+  script: ''
+  type: powershell
+fromversion: 6.0.0
+beta: true
+tests:
+- No tests (auto formatted)

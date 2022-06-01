@@ -1,0 +1,33 @@
+{
+    "id": "incident_proofpointtapheadersreplyto",
+    "version": -1,
+    "modified": "2021-05-02T12:01:14.640782839+03:00",
+    "name": "Proofpoint TAP Headers Reply To",
+    "ownerOnly": false,
+    "cliName": "proofpointtapheadersreplyto",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "Proofpoint TAP - Click Blocked",
+        "Proofpoint TAP - Click Permitted",
+        "Proofpoint TAP - Message Blocked",
+        "Proofpoint TAP - Message Delivered"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "5.0.0"
+}

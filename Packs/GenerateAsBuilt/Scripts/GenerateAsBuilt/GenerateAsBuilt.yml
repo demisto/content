@@ -1,0 +1,46 @@
+args:
+- default: false
+  description: Who has prepared this as-built.
+  isArray: false
+  name: author
+  required: true
+  secret: false
+- default: false
+  description: Whom this as-built was prepared for.
+  isArray: false
+  name: customer
+  required: true
+  secret: false
+- default: false
+  defaultValue: '7'
+  description: Days back to search for incidents.
+  isArray: false
+  name: days
+  required: false
+  secret: false
+- default: false
+  description: Maximum number of results to return - defaul 1000.
+  isArray: false
+  name: size
+  required: false
+  secret: false
+- default: false
+  description: Retrieve more information such as depdencies from a specific use case.
+  isArray: false
+  name: playbook
+  required: false
+  secret: false
+comment: Generate an as built document, as HTML, based on the running XSOAR instance.
+  Requires an instance of the Demisto API integration configured.
+commonfields:
+  id: GenerateAsBuilt
+  version: -1
+enabled: false
+name: GenerateAsBuilt
+script: '-'
+subtype: python3
+system: false
+timeout: '0'
+type: python
+fromversion: 6.0.0
+dockerimage: demisto/teams:1.0.0.20407

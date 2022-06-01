@@ -1,0 +1,245 @@
+id: Retrieve File from Endpoint - Generic V2
+version: -1
+name: Retrieve File from Endpoint - Generic V2
+description: |-
+  'This playbook retrieves a file sample from an endpoint using the following playbooks:'
+  - Get File Sample From Path - Generic v2.
+  - Get File Sample By Hash - Generic v3.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: aafd2bad-97ae-4462-85cb-8ef1cad54fc5
+    type: start
+    task:
+      id: aafd2bad-97ae-4462-85cb-8ef1cad54fc5
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "4"
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 21df4e3f-565e-48ca-8937-7106ed312e6e
+    type: title
+    task:
+      id: 21df4e3f-565e-48ca-8937-7106ed312e6e
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 912761f3-e299-4ff5-86f2-33e81bb75178
+    type: playbook
+    task:
+      id: 912761f3-e299-4ff5-86f2-33e81bb75178
+      version: -1
+      name: Get File Sample By Hash - Generic v3
+      description: |-
+        'This playbook returns a file sample correlating to a hash in the War Room using the following sub-playbooks:'
+        - Get binary file by MD5 hash from Carbon Black telemetry data - VMware Carbon Black EDR v2.
+        - Get the threat (file) attached to a specific SHA256 hash - Cylance Protect v2.
+      playbookName: Get File Sample By Hash - Generic v3
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      MD5:
+        complex:
+          root: inputs.MD5
+      SHA256:
+        complex:
+          root: inputs.SHA256
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 505,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 9f97e611-7310-4635-88ca-f80e9342e0fa
+    type: playbook
+    task:
+      id: 9f97e611-7310-4635-88ca-f80e9342e0fa
+      version: -1
+      name: Get File Sample From Path - Generic V2
+      description: |
+        This playbook returns a file sample correlating to a path into the War Rom using the following sub-playbooks:
+        inputs:
+        1) Get File Sample From Path - D2.
+        2) Get File Sample From Path - VMware Carbon Black EDR (Live Response API).
+      playbookName: Get File Sample From Path - Generic V2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      Agent_ID:
+        complex:
+          root: inputs.Agent_ID
+      Hostname:
+        complex:
+          root: inputs.Hostname
+      Path:
+        complex:
+          root: inputs.Path
+      UseD2:
+        complex:
+          root: inputs.UseD2
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 35,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 385,
+        "width": 850,
+        "x": 35,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: MD5
+  value: {}
+  required: false
+  description: The MD5 hash value for the file to retrieve.
+  playbookInputQuery:
+- key: SHA256
+  value: {}
+  required: false
+  description: The SHA256 hash value for the file to retrieve.
+  playbookInputQuery:
+- key: Hostname
+  value: {}
+  required: false
+  description: Hostname of the machine on which the file is located.
+  playbookInputQuery:
+- key: Path
+  value: {}
+  required: false
+  description: |-
+    The path of the file to retrieve.
+    For example:
+    C:\users\folder\file.txt
+  playbookInputQuery:
+- key: UseD2
+  value:
+    simple: "no"
+  required: false
+  description: |-
+    Determines whether a D2 agent will be used to retrieve the file.
+    Options:
+    no (default)
+    yes
+  playbookInputQuery:
+- key: Agent_ID
+  value: {}
+  required: false
+  description: The ID of the agent in the relevant integration (such as EDR).
+  playbookInputQuery:
+outputs:
+- contextPath: File.Size
+  description: The size of the file.
+  type: number
+- contextPath: File.Type
+  description: The type of the file.
+  type: string
+- contextPath: File.Info
+  description: General information of the file.
+  type: string
+- contextPath: File.MD5
+  description: The MD5 hash of the file.
+  type: string
+- contextPath: File.SHA1
+  description: The SHA1 hash of the file.
+  type: string
+- contextPath: File.SHA256
+  description: The SHA256 hash of the file.
+  type: string
+- contextPath: File.SHA512
+  description: The SHA512 hash of the file.
+  type: string
+- contextPath: File.EntryID
+  description: File entry ID.
+  type: string
+- contextPath: File.Extension
+  description: The file extension.
+  type: string
+- contextPath: File.Name
+  description: The file name.
+  type: string
+- contextPath: File.SSDeep
+  description: The file SSDeep.
+  type: string
+fromversion: 5.0.0
+tests:
+- Retrieve File from Endpoint - Generic V2 Test

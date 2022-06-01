@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <div class="article-body"><p>Use the Palo Alto Networks Cortex integration to query your Palo Alto Networks Cortex environment.</p>
-<p>There are several steps required to configure this integration. You will navigate between Demisto and <a href="https://apps.paloaltonetworks.com/marketplace/demisto" target="_blank" rel="noopener">Cortex Hub</a> to retrieve tokens required later in the process. Be sure to follow each procedure in order.</p>
+<p>There are several steps required to configure this integration. You will navigate between Cortex XSOAR and <a href="https://apps.paloaltonetworks.com/marketplace/demisto" target="_blank" rel="noopener">Cortex Hub</a> to retrieve tokens required later in the process. Be sure to follow each procedure in order.</p>
 <ol>
-<li><a href="#h_ed302a66-2e1a-4748-abf9-3f771021c5f0" target="_self">Activate Demisto on Palo Alto Networks Cortex Hub</a></li>
-<li><a href="#h_309d275b-0d49-4a8b-b62d-3aa3bff0bbd3" target="_self">Configure the Palo Alto Networks Cortex Integration on Demisto</a></li>
+<li><a href="#h_ed302a66-2e1a-4748-abf9-3f771021c5f0" target="_self">Activate XSOAR on Palo Alto Networks Cortex Hub</a></li>
+<li><a href="#h_309d275b-0d49-4a8b-b62d-3aa3bff0bbd3" target="_self">Configure the Palo Alto Networks Cortex Integration on XSOAR</a></li>
 </ol>
-<!-- <h2 id="h_7f333c44-f080-417c-b951-eed89f3c69dc">How to Get Your Demisto Verification Token</h2>
+<!-- <h2 id="h_7f333c44-f080-417c-b951-eed89f3c69dc">How to Get Your XSOAR Verification Token</h2>
 <p>
-  To activate Demisto on Cortex Hub, you need to copy your Demisto verification
+  To activate XSOAR on Cortex Hub, you need to copy your XSOAR verification
   token.
 </p>
 <ol>
@@ -22,15 +22,15 @@
   <li>
     Click the question mark icon and copy the verification token. You will need
     to enter this as part of
-    <a href="#h_ed302a66-2e1a-4748-abf9-3f771021c5f0" target="_self">activating Demisto on Cortex Hub</a>.
+    <a href="#h_ed302a66-2e1a-4748-abf9-3f771021c5f0" target="_self">activating XSOAR on Cortex Hub</a>.
   </li>
 </ol> -->
-<h2 id="h_ed302a66-2e1a-4748-abf9-3f771021c5f0">Activate Demisto on Palo Alto Networks Cortex Hub</h2>
+<h2 id="h_ed302a66-2e1a-4748-abf9-3f771021c5f0">Activate XSOAR on Palo Alto Networks Cortex Hub</h2>
 <ol>
 <li>Navigate to <a href="https://apps.paloaltonetworks.com/marketplace/demisto" target="_blank" rel="noopener">Palo Alto Networks Cortex Hub</a>.</li>
-<li>In the <strong>Apps from Palo Alto Networks</strong> section, locate Demisto and click <strong>Activate</strong>.</li>
+<li>In the <strong>Apps from Palo Alto Networks</strong> section, locate Cortex XSOAR and click <strong>Activate</strong>.</li>
 <li>In the upper-right corner, click the gear icon.</li>
-<li>Locate Demisto app, and click <strong>Add Instance</strong>.
+<li>Locate XSOAR app, and click <strong>Add Instance</strong>.
 <ul>
 <li><strong>Instance Name</strong> (Required): A meaningful name for the instance.</li>
 <li><strong>Description</strong> (Optional): A meaningful description for the instance.</li>
@@ -39,28 +39,28 @@
 <li><strong>Directory Sync</strong> (Required): Your Directory Sync instance.</li>
 </ul>
 </li>
-<li>In the Your Cortex Apps section, click the Demisto icon.</li>
-<li>When prompted, enter the Demisto verification token: <code>25$nhXyu4</code>.</li>
+<li>In the Your Cortex Apps section, click the XSOAR icon.</li>
+<li>When prompted, enter the XSOAR verification token: <code>25$nhXyu4</code>.</li>
 <li>Click <strong>Send</strong>, and when prompted, click <strong>Authorize</strong>.</li>
 <li>In the Request for Approval window, click <strong>Allow</strong>.</li>
-<li>When prompted, copy the Authentication Token, Authentication ID, and Authentication Key. You will need to enter this as part of <a href="#h_309d275b-0d49-4a8b-b62d-3aa3bff0bbd3" target="_self">configuring the Palo Alto Networks Cortex integration on Demisto</a>.</li>
+<li>When prompted, copy the Authentication Token, Authentication ID, and Authentication Key. You will need to enter this as part of <a href="#h_309d275b-0d49-4a8b-b62d-3aa3bff0bbd3" target="_self">configuring the Palo Alto Networks Cortex integration on XSOAR</a>.</li>
 </ol>
-<h2 id="h_309d275b-0d49-4a8b-b62d-3aa3bff0bbd3">Configure the Palo Alto Networks Cortex Integration on Demisto</h2>
+<h2 id="h_309d275b-0d49-4a8b-b62d-3aa3bff0bbd3">Configure the Palo Alto Networks Cortex Integration on XSOAR</h2>
 <ol>
 <li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>
 <li>Search for Palo Alto Networks Cortex.</li>
 <li>Click <strong>Add instance</strong>&nbsp;to create and configure a new integration instance.<br>
 <ul>
 <li><strong>Name</strong>: a textual name for the integration instance.</li>
-<li><strong> <font style="vertical-align: inherit;"> <font style="vertical-align: inherit;">Authentication Token</font> </font> </strong> <font style="vertical-align: inherit;"> <font style="vertical-align: inherit;"> : received from the <a href="#h_ed302a66-2e1a-4748-abf9-3f771021c5f0" target="_self">Activate Demisto on Palo Alto Networks Cortex Hub</a> procedure. </font> </font></li>
-<li><font style="vertical-align: inherit;"> <font style="vertical-align: inherit;"> <strong>Authentication ID</strong>:&nbsp;received from the <a href="#h_ed302a66-2e1a-4748-abf9-3f771021c5f0" target="_self">Activate Demisto on Palo Alto Networks Cortex Hub</a> procedure. </font> </font></li>
-<li><font style="vertical-align: inherit;"> <font style="vertical-align: inherit;"> <strong>Authentication Key</strong>: received from the <a href="#h_ed302a66-2e1a-4748-abf9-3f771021c5f0" target="_self">Activate Demisto on Palo Alto Networks Cortex Hub</a> procedure. </font> </font></li>
+<li><strong> <font style="vertical-align: inherit;"> <font style="vertical-align: inherit;">Authentication Token</font> </font> </strong> <font style="vertical-align: inherit;"> <font style="vertical-align: inherit;"> : received from the <a href="#h_ed302a66-2e1a-4748-abf9-3f771021c5f0" target="_self">Activate XSOAR on Palo Alto Networks Cortex Hub</a> procedure. </font> </font></li>
+<li><font style="vertical-align: inherit;"> <font style="vertical-align: inherit;"> <strong>Authentication ID</strong>:&nbsp;received from the <a href="#h_ed302a66-2e1a-4748-abf9-3f771021c5f0" target="_self">Activate XSOAR on Palo Alto Networks Cortex Hub</a> procedure. </font> </font></li>
+<li><font style="vertical-align: inherit;"> <font style="vertical-align: inherit;"> <strong>Authentication Key</strong>: received from the <a href="#h_ed302a66-2e1a-4748-abf9-3f771021c5f0" target="_self">Activate XSOAR on Palo Alto Networks Cortex Hub</a> procedure. </font> </font></li>
 </ul>
 </li>
 <li>Click&nbsp;<strong>Test</strong> to validate the integration and Demisto App Token.</li>
 </ol>
 <h2>Commands</h2>
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ol>
 <li><a href="#h_99645692961526205816030">Query logs: cortex-query-logs</a></li>
 <li><a href="#h_148841960231526208015686">Get logs for critical threats: cortex-get-critical-threat-logs</a></li>
@@ -1237,10 +1237,6 @@
 </table>
 <h3>Additional Information</h3>
 <p>If the user is using the command with field="all" then the human readable output will contain the following fields: Source Address, Destination Address, Application, Action, Rule &amp; Time Generated. If the user is using the command with fields="field1,field2,field3" then the human readable output will contain the following fields: field1, field2 &amp; field3.</p>
-<p><!-- remove the following comments to manually add an image: --> <!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- --></p>
 <h3 id="h_cf65d1a7-d7ca-4a51-8e0d-1e6dbc499a41">6. Query threat logs</h3>
 <hr>
 <p>Searches the Cortex panw.threat table, which is the threat logs table for PAN-OS/Panorama.</p>
@@ -1628,10 +1624,6 @@
 </table>
 <h3>Additional Information</h3>
 <p>If the user is using the command with field="all" then the human readable output will contain the following fields: Source Address, Destination Address, Application, Action, Rule &amp; Time Generated. If the user is using the command with fields="field1,field2,field3" then the human readable output will contain the following fields: field1, field2 &amp; field3.</p>
-<p><!-- remove the following comments to manually add an image: --> <!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- --></p>
 <h3 id="h_453996b5-7677-4812-ae96-1947d005bd1c">7. Query Traps logs</h3>
 <hr>
 <p>Searches the Cortex tms.threat table, which is the threat logs table for the Traps endpoint protection and response.</p>
@@ -2194,10 +2186,6 @@
 </table>
 <h3>Additional Information</h3>
 <p>If the user is using the command with field="all" then the human readable output will contain the following fields: Severity, Event Type, User, Agent Address, Agent Name &amp; Agent Time. If the user is using the command with fields="field1,field2,field3" then the human readable output will contain the following fields: field1, field2 &amp; field3.</p>
-<p><!-- remove the following comments to manually add an image: --> <!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- --></p>
 <h3 id="h_efdac8d4-7749-42ca-9da9-51a676dbd51f">8. Query analytics logs</h3>
 <hr>
 <p>Searches the Cortex tms.analytics table, which is the endpoint logs table for Traps Analytics.</p>
@@ -2909,9 +2897,5 @@
 </tr>
 </tbody>
 </table>
-<p><!-- remove the following comments to manually add an image: --> <!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- --></p>
 <h3>Additional Information</h3>
 <p>If the user is using the command with field="all" then the human readable output will contain the following fields: Severity, Event Type, User, Agent Address, Agent Name &amp; Agent Time. If the user is using the command with fields="field1,field2,field3" then the human readable output will contain the following fields: field1, field2 &amp; field3.</p></div>

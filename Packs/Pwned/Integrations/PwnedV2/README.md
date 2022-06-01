@@ -1,9 +1,9 @@
 ## Overview
 ---
 
-Uses the Have I Been Pwned? service to check whether email addresses, domains, or usernames were compromised in previous breaches.
+Uses the Have I Been Pwned? service to check whether email addresses, domains, or usernames were compromised in previous breaches. Uses [API v3](https://haveibeenpwned.com/api/v3).
 
-## Configure Have I Been Pwned? V2 on Demisto
+## Configure Have I Been Pwned? V2 on Cortex XSOAR
 ---
 
 1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
@@ -22,7 +22,7 @@ Uses the Have I Been Pwned? service to check whether email addresses, domains, o
 
 ## Commands
 ---
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 1. pwned-email
 2. pwned-domain
@@ -32,8 +32,6 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### 1. pwned-email
 ---
 Checks if an email address was compromised.
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
 ##### Base Command
 
 `pwned-email`
@@ -115,8 +113,6 @@ Data breached: **Email addresses,Passwords,Phone numbers,Usernames**
 ### 2. pwned-domain
 ---
 Checks if a domain was compromised.
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
 ##### Base Command
 
 `pwned-domain`
@@ -178,8 +174,6 @@ Data breached: **Email addresses,Password hints,Passwords,Usernames**
 ### 3. email
 ---
 Checks if an email address was compromised.
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
 ##### Base Command
 
 `email`
@@ -261,8 +255,6 @@ Data breached: **Email addresses,Passwords,Phone numbers,Usernames**
 ### 4. domain
 ---
 Checks if a domain was compromised.
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
 ##### Base Command
 
 `domain`
@@ -324,8 +316,6 @@ Data breached: **Email addresses,Password hints,Passwords,Usernames**
 ### 5. pwned-username
 ---
 Checks if a username was compromised.
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
 ##### Base Command
 
 `pwned-username`

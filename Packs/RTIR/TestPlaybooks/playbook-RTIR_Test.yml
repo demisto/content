@@ -56,7 +56,7 @@ tasks:
       requestor: {}
       status: {}
       subject:
-        simple: TestTicket
+        simple: TestTicket - שלום
       text: {}
     separatecontext: false
     view: |-
@@ -91,7 +91,7 @@ tasks:
       priority: {}
       status: {}
       subject:
-        simple: EditedNewTicket
+        simple: EditedNewTicket - דמיסטו
       ticket-id:
         complex:
           root: RTIR
@@ -170,7 +170,7 @@ tasks:
       status:
         simple: new
       subject:
-        simple: EditedNewTicket
+        simple: EditedNewTicket - דמיסטו
       ticket-id: {}
     separatecontext: false
     view: |-

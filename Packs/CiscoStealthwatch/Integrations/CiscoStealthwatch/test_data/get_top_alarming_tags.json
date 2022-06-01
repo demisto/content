@@ -1,0 +1,54 @@
+{
+    "data": {
+        "data": [{
+                "hostGroupIds": [
+                    1,
+                    65534
+                ],
+                "ipAddress": "x.x.x.x",
+                "sourceCategoryEvents": [{
+                    "alwaysBadCount": 0,
+                    "severity": 4.943375,
+                    "typeId": 45
+                }],
+                "sourceSecurityEvents": [],
+                "targetCategoryEvents": [],
+                "targetSecurityEvents": []
+            },
+            {
+                "hostGroupIds": [
+                    1,
+                    65534
+                ],
+                "ipAddress": "x.x.x.x",
+                "sourceCategoryEvents": [{
+                    "alwaysBadCount": 0,
+                    "severity": 4.72803125,
+                    "typeId": 45
+                }],
+                "sourceSecurityEvents": [],
+                "targetCategoryEvents": [],
+                "targetSecurityEvents": []
+            },
+            {
+                "hostGroupIds": [
+                    1,
+                    65534
+                ],
+                "ipAddress": "x.x.x.x",
+                "sourceCategoryEvents": [{
+                    "alwaysBadCount": 0,
+                    "severity": 1.0079375,
+                    "typeId": 45
+                }],
+                "sourceSecurityEvents": [],
+                "targetCategoryEvents": [],
+                "targetSecurityEvents": []
+            }
+        ],
+        "header": {
+            "endTime": "2021-02-04T13:04:25Z",
+            "startTime": "2021-02-03T13:04:25Z"
+        }
+    }
+}

@@ -1,0 +1,1220 @@
+id: T1059 - Command and Scripting Interpreter
+version: -1
+name: T1059 - Command and Scripting Interpreter
+description: "This playbook handles command and scripting interpreter alerts based on the MITRE T1059 technique.\nAn attacker might abuse command and script interpreters to execute commands, scripts, or binaries.\nMost systems come with some kind of built-in command line interface and scripting capabilities. For example, macOS and Linux distributions include some form of Unix Shell while Windows installations include the Windows Command Shell and PowerShell.\n\n\n**Attacker's Goals:**\n\nAn attacker can abuse these technologies in various ways as a means of executing arbitrary commands. Commands and scripts can be embedded in initial access payloads delivered to victims as lure documents or as secondary payloads downloaded from an existing C2. An attacker may also execute commands through interactive terminals/shells, as well as utilize various remote services to achieve remote execution.\n\n**Analysis**\n\nDue to the nature of this technique and the usage of built-in command line interfaces, the first step of the playbook is to analyze the command line. \nThe command line analysis does the following:\n- Checks and decodes base64\n- Extracts and enriches indicators from the command line\n- Checks specific arguments for malicious usage \n\n**Investigative Actions:**\nThe playbook checks for additional activity using the 'Endpoint Investigation Plan' playbook and utilizes the power of insight alerts.\n\n**Response Actions**\n\nAfter analyzing the data, the playbook's first response action is to contain the threat based on the initial data provided within the alert. In this phase, the playbook will:\n\n* Isolate the endpoint based on playbook inputs.\n\nWhen the playbook proceeds, it checks for additional activity using the 'Endpoint Investigation Plan' playbook. It then continues with the next stage, which includes, containment and eradication.\n\nThis phase executes the following containment actions:\n\n* Automatically isolates the endpoint\n\nIt then continues with the following eradication actions:\n\n* process termination"
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 8a695fbb-5cd5-4fed-8c05-2de37b374f02
+    type: start
+    task:
+      id: 8a695fbb-5cd5-4fed-8c05-2de37b374f02
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1140,
+          "y": -90
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 2eca42b7-3c92-4b5a-8395-9696e76b2eca
+    type: title
+    task:
+      id: 2eca42b7-3c92-4b5a-8395-9696e76b2eca
+      version: -1
+      name: Analysis
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "54"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1140,
+          "y": 95
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: e41ef180-47df-4fc3-8661-b9c760d51cbd
+    type: title
+    task:
+      id: e41ef180-47df-4fc3-8661-b9c760d51cbd
+      version: -1
+      name: 'Containment '
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "51"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1140,
+          "y": 1100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 93ddf2dd-f186-4e8f-8600-d63d0008f0be
+    type: title
+    task:
+      id: 93ddf2dd-f186-4e8f-8600-d63d0008f0be
+      version: -1
+      name: Finding
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "39"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1140,
+          "y": 600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 9bcab523-2706-4c67-8a92-bd215b33334a
+    type: condition
+    task:
+      id: 9bcab523-2706-4c67-8a92-bd215b33334a
+      version: -1
+      name: Manual review - was it your security vendor?
+      description: |+
+        Check the script that ran and verify:
+        Was it your security vendor? Was it a script from your IT, or a known file?
+
+
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "No":
+      - "14"
+      "Yes":
+      - "44"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 800,
+          "y": 930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 44575d80-9fe5-4a34-877a-e0aebb078ffb
+    type: regular
+    task:
+      id: 44575d80-9fe5-4a34-877a-e0aebb078ffb
+      version: -1
+      name: close alert
+      description: Closes the alert in Cortex XSIAM
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      closeReason:
+        simple: Resolved - Threat Handled
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1140,
+          "y": 2940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: c71ad1c3-4763-48f8-8924-a5829300da3a
+    type: title
+    task:
+      id: c71ad1c3-4763-48f8-8924-a5829300da3a
+      version: -1
+      name: Investigation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "50"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1140,
+          "y": 1425
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 9584a013-1f93-4b4f-8e0f-9dfc08f4fd77
+    type: title
+    task:
+      id: 9584a013-1f93-4b4f-8e0f-9dfc08f4fd77
+      version: -1
+      name: 'Remediation '
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "42"
+      - "52"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1140,
+          "y": 1960
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: 65b1e124-5960-4978-8951-db9ab7ec1b66
+    type: condition
+    task:
+      id: 65b1e124-5960-4978-8951-db9ab7ec1b66
+      version: -1
+      name: Should restore affected endpoint?
+      description: Checks if it should release the affected endpoint from isolation.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "34"
+      "yes":
+      - "43"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.AutoRestoreEndpoint
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 800,
+          "y": 2415
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: a0944a44-9352-42db-8c79-7efb05810cb0
+    type: title
+    task:
+      id: a0944a44-9352-42db-8c79-7efb05810cb0
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: efb795f3-f412-4285-86d3-c5993ab4affd
+    type: condition
+    task:
+      id: efb795f3-f412-4285-86d3-c5993ab4affd
+      version: -1
+      name: Should close alert automatically?
+      description: Whether to close the alert automatically or manually.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "29"
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.ShouldCloseAutomatically
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 800,
+          "y": 2770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: b1838b4e-9970-4c49-8018-6145798ee35d
+    type: condition
+    task:
+      id: b1838b4e-9970-4c49-8018-6145798ee35d
+      version: -1
+      name: 'Found any malicious behavior? '
+      description: Checks if malicious behavior was found.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "16"
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: CommandlineVerdict
+            iscontext: true
+          right:
+            value: {}
+    view: |-
+      {
+        "position": {
+          "x": 1140,
+          "y": 740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: 7f4600b1-e7eb-4e39-8d1f-d4a60f0f01e4
+    type: playbook
+    task:
+      id: 7f4600b1-e7eb-4e39-8d1f-d4a60f0f01e4
+      version: -1
+      name: Eradication Plan
+      description: |-
+        This playbook handles all the eradication actions available with Cortex XSIAM.
+        The playbook allows you to eradicate the incident with one of the following tasks:
+        * Reset user password
+        * Delete file
+        * Kill process (currently, the playbook supports terminating a process by name).
+
+        The playbook inputs allows you to manipulate the execution flow, please pay attention to the inputs description.
+      playbookName: Eradication Plan
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "49"
+    scriptarguments:
+      AutoEradicate:
+        simple: "false"
+      EndpointID:
+        complex:
+          root: alert
+          accessor: agentid
+      FilePath:
+        complex:
+          root: foundIncidents.CustomFields
+          accessor: initiatorpath
+      FileRemediation:
+        simple: Quarantine
+      Username:
+        complex:
+          root: foundIncidents.CustomFields
+          accessor: username
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1140,
+          "y": 2100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: 7dd85db5-f1ee-48ac-8c44-2d953ce9e43d
+    type: playbook
+    task:
+      id: 7dd85db5-f1ee-48ac-8c44-2d953ce9e43d
+      version: -1
+      name: Recovery Plan
+      description: |-
+        This playbook handles all the recovery actions available with Cortex XSIAM.
+        The playbook allows to recover  from the incident with one of the following tasks:
+        * Unisolate endpoint
+        * Restore quarantined file
+
+        The playbook inputs allows you to manipulate the execution flow, please pay attention to the inputs description.
+      playbookName: Recovery Plan
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      endpointID:
+        complex:
+          root: alert
+          accessor: agentid
+      releaseFile:
+        simple: "false"
+      unIsolateEndpoint:
+        simple: "true"
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1140,
+          "y": 2590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: b7f1d891-9d2e-4dd2-8926-5c3606a9c7f3
+    type: playbook
+    task:
+      id: b7f1d891-9d2e-4dd2-8926-5c3606a9c7f3
+      version: -1
+      name: Handle False Positive Alerts
+      description: |
+        This playbook handles false positive alerts.
+      playbookName: Handle False Positive Alerts
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      FileSHA256:
+        complex:
+          root: alert
+          accessor: initiatorsha256
+      ShouldCloseAutomatically:
+        complex:
+          root: inputs.ShouldCloseAutomatically
+      alertName:
+        complex:
+          root: alert
+          accessor: name
+      sourceIP:
+        complex:
+          root: alert
+          accessor: hostip
+      username:
+        complex:
+          root: alert
+          accessor: username
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "47":
+    id: "47"
+    taskid: 5abf6156-7dbe-4910-8f60-da9a8e92615b
+    type: playbook
+    task:
+      id: 5abf6156-7dbe-4910-8f60-da9a8e92615b
+      version: -1
+      name: Command-Line Analysis
+      description: "This playbook takes the command line from the alert and performs the following actions:\n- Checks and decodes base64\n- Extracts and enriches indicators from the command line\n- Checks specific arguments for malicious usage \nAt the end of the playbook, it sets a possible verdict for the command line, based on the finding."
+      playbookName: Command-Line Analysis
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      Commandline:
+        complex:
+          root: Core.DynamicAnalysis.internals.attributes
+          accessor: content
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: ${Core.DynamicAnalysis.internals.attributes.scriptblock_text}
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: ${Core.DynamicAnalysis.internals.attributes.original_command_line}
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: ${alert.targetprocesscmd}
+    separatecontext: false
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1140,
+          "y": 420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "48":
+    id: "48"
+    taskid: ccddf57e-2637-434a-8bb1-2ac71c2111dc
+    type: condition
+    task:
+      id: ccddf57e-2637-434a-8bb1-2ac71c2111dc
+      version: -1
+      name: Found relevant information?
+      description: Checks whether relevant information is found.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "49"
+      "yes":
+      - "27"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: foundIncidents
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1140,
+          "y": 1750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "49":
+    id: "49"
+    taskid: ec9ef19d-b6cf-4245-862b-0aecee3d7fb1
+    type: title
+    task:
+      id: ec9ef19d-b6cf-4245-862b-0aecee3d7fb1
+      version: -1
+      name: Recovery
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "28"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 800,
+          "y": 2270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "50":
+    id: "50"
+    taskid: 9a7af198-01cb-4a8c-8a67-55cf63a473a2
+    type: playbook
+    task:
+      id: 9a7af198-01cb-4a8c-8a67-55cf63a473a2
+      version: -1
+      name: Endpoint Investigation Plan
+      description: |-
+        This playbook handles all the endpoint investigation actions available with Cortex XSIAM.
+        The playbook allows you to investigate and hunt for more information using one of the following tasks:
+        * Pre-defined MITRE Tactics
+        * Host fields (Host ID)
+        * Attacker fields (Attacker IP, External host)
+        * MITRE techniques
+        * File hash (currently, the playbook supports only SHA256)
+
+        The playbook inputs allows you to manipulate the execution flow, please pay attention to the inputs description.
+      playbookName: Endpoint Investigation Plan
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "48"
+    scriptarguments:
+      HuntCnCTechniques:
+        simple: "True"
+      HuntCollectionTechniques:
+        simple: "True"
+      HuntDefenseEvasionTechniques:
+        simple: "True"
+      HuntDiscoveryTechniques:
+        simple: "True"
+      HuntExecutionTechniques:
+        simple: "True"
+      HuntImpactTechniques:
+        simple: "True"
+      HuntInitialAccessTechniques:
+        simple: "True"
+      HuntLateralMovementTechniques:
+        simple: "True"
+      HuntPersistenceTechniques:
+        simple: "True"
+      HuntPrivilegeEscalationTechniques:
+        simple: "True"
+      HuntReconnaissanceTechniques:
+        simple: "True"
+      agentID:
+        complex:
+          root: alert
+          accessor: agentid
+      timeRange:
+        simple: 2 hours ago
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1140,
+          "y": 1570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "51":
+    id: "51"
+    taskid: 54fef140-47c3-4dfb-846a-8783124320b4
+    type: playbook
+    task:
+      id: 54fef140-47c3-4dfb-846a-8783124320b4
+      version: -1
+      name: Containment Plan
+      description: |-
+        This playbook handles all the containment actions available with XSIAM.
+        The playbook allows to contain the incident with one of the following tasks:
+        * Isolate endpoint
+        * Disable account
+        * Quarantine file
+        * Block indicators
+        * Clear user session (currently, the playbook supports only Okta)
+
+        The playbook inputs allows you to manipulate the execution flow, please pay attention to the inputs description.
+      playbookName: Containment Plan
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      AutoContainment:
+        complex:
+          root: inputs.AutoContainment
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: "true"
+      BlockIndicators:
+        simple: "True"
+      ClearUserSessions:
+        simple: "False"
+      Domain:
+        complex:
+          root: ExtractedIndicators
+          accessor: Domain
+      EndpointID:
+        complex:
+          root: alert
+          accessor: agentid
+      FileContainment:
+        simple: "False"
+      FileRemediation:
+        simple: Quarantine
+      HostAutoContainment:
+        complex:
+          root: inputs.PreHostContainment
+      IAMUserDomain:
+        simple: '@demisto.com'
+      IP:
+        complex:
+          root: ExtractedIndicators
+          accessor: IP
+      URL:
+        complex:
+          root: ExtractedIndicators
+          accessor: URL
+      UserContainment:
+        simple: "False"
+    separatecontext: true
+    loop:
+      iscommand: false
+      scriptArguments:
+        AutoContainment:
+          complex:
+            root: inputs.AutoContainment
+            transformers:
+            - operator: SetIfEmpty
+              args:
+                applyIfEmpty: {}
+                defaultValue:
+                  value:
+                    simple: "true"
+        BlockIndicators:
+          simple: "True"
+        ClearUserSessions:
+          simple: "False"
+        EndpointID:
+          complex:
+            root: alert
+            accessor: agentid
+        FileContainment:
+          simple: "True"
+        FileHash:
+          complex:
+            root: alert
+            filters:
+            - - operator: isNotEqualString
+                left:
+                  value:
+                    simple: alert.initiatorpath
+                  iscontext: true
+                right:
+                  value:
+                    simple: c:\windows\explorer.exe
+                ignorecase: true
+            accessor: initiatorsha256
+            transformers:
+            - operator: SetIfEmpty
+              args:
+                applyIfEmpty: {}
+                defaultValue:
+                  value:
+                    simple: alert.targetprocesssha256
+                  iscontext: true
+        FilePath:
+          complex:
+            root: alert.initiatorpath
+            filters:
+            - - operator: isNotEqualString
+                left:
+                  value:
+                    simple: alert.initiatorpath
+                  iscontext: true
+                right:
+                  value:
+                    simple: c:\windows\explorer.exe
+                ignorecase: true
+            transformers:
+            - operator: SetIfEmpty
+              args:
+                applyIfEmpty: {}
+                defaultValue:
+                  value:
+                    simple: alert.targetprocesscmd
+                  iscontext: true
+            - operator: replaceMatch
+              args:
+                regex:
+                  value:
+                    simple: \"
+                replaceWith: {}
+            - operator: uniq
+        FileRemediation:
+          simple: Quarantine
+        HostAutoContainment:
+          simple: "false"
+        IAMUserDomain:
+          simple: '@demisto.com'
+        UserContainment:
+          simple: "False"
+        Username:
+          complex:
+            root: alert
+            accessor: username
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1140,
+          "y": 1250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "52":
+    id: "52"
+    taskid: f9aa1d02-285d-4299-8cbc-6ed55d11a413
+    type: playbook
+    task:
+      id: f9aa1d02-285d-4299-8cbc-6ed55d11a413
+      version: -1
+      name: Containment Plan
+      description: |-
+        This playbook handles all the containment actions available with XSIAM.
+        The playbook allows to contain the incident with one of the following tasks:
+        * Isolate endpoint
+        * Disable account
+        * Quarantine file
+        * Block indicators
+        * Clear user session (currently, the playbook supports only Okta)
+
+        The playbook inputs allows you to manipulate the execution flow, please pay attention to the inputs description.
+      playbookName: Containment Plan
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "49"
+    scriptarguments:
+      AutoContainment:
+        complex:
+          root: inputs.AutoContainment
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: "false"
+      BlockIndicators:
+        simple: "True"
+      ClearUserSessions:
+        simple: "False"
+      EndpointID:
+        complex:
+          root: alert
+          accessor: agentid
+      FileContainment:
+        simple: "True"
+      FileHash:
+        complex:
+          root: foundIncidents.CustomFields
+          filters:
+          - - operator: isNotEqualString
+              left:
+                value:
+                  simple: foundIncidents.CustomFields.initiatorpath
+                iscontext: true
+              right:
+                value:
+                  simple: c:\windows\explorer.exe
+              ignorecase: true
+          accessor: initiatorsha256
+      FilePath:
+        complex:
+          root: foundIncidents.CustomFields.initiatorpath
+          filters:
+          - - operator: isNotEqualString
+              left:
+                value:
+                  simple: foundIncidents.CustomFields.initiatorpath
+                iscontext: true
+              right:
+                value:
+                  simple: c:\windows\explorer.exe
+              ignorecase: true
+          transformers:
+          - operator: uniq
+      FileRemediation:
+        complex:
+          root: inputs.FileRemediation
+      HostAutoContainment:
+        complex:
+          root: inputs.HostAutoContainment
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: "false"
+      UserContainment:
+        simple: "False"
+    separatecontext: true
+    loop:
+      iscommand: false
+      scriptArguments:
+        AutoContainment:
+          complex:
+            root: inputs.AutoContainment
+            transformers:
+            - operator: SetIfEmpty
+              args:
+                applyIfEmpty: {}
+                defaultValue:
+                  value:
+                    simple: "false"
+        BlockIndicators:
+          simple: "True"
+        ClearUserSessions:
+          simple: "False"
+        EndpointID:
+          complex:
+            root: alert
+            accessor: agentid
+        FileContainment:
+          simple: "True"
+        FileHash:
+          complex:
+            root: foundIncidents.CustomFields
+            filters:
+            - - operator: isNotEqualString
+                left:
+                  value:
+                    simple: foundIncidents.CustomFields.initiatorpath
+                  iscontext: true
+                right:
+                  value:
+                    simple: c:\windows\explorer.exe
+                ignorecase: true
+            accessor: initiatorsha256
+        FilePath:
+          complex:
+            root: foundIncidents.CustomFields.initiatorpath
+            filters:
+            - - operator: isNotEqualString
+                left:
+                  value:
+                    simple: foundIncidents.CustomFields.initiatorpath
+                  iscontext: true
+                right:
+                  value:
+                    simple: c:\windows\explorer.exe
+                ignorecase: true
+            transformers:
+            - operator: uniq
+        FileRemediation:
+          complex:
+            root: inputs.FileRemediation
+        HostAutoContainment:
+          complex:
+            root: inputs.HostAutoContainment
+        IAMUserDomain:
+          simple: '@demisto.com'
+        UserContainment:
+          simple: "False"
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1580,
+          "y": 2100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "54":
+    id: "54"
+    taskid: 2af58fe8-289d-4589-80bf-e2807e68813c
+    type: regular
+    task:
+      id: 2af58fe8-289d-4589-80bf-e2807e68813c
+      version: -1
+      name: Get commandline
+      description: Returns a dynamic analysis of each alert ID.
+      script: '|||core-get-dynamic-analysis'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "47"
+    scriptarguments:
+      alert_ids:
+        complex:
+          root: alert
+          accessor: id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1140,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "16_14_No": 0.52,
+      "16_44_Yes": 0.53,
+      "28_34_#default#": 0.51,
+      "28_43_yes": 0.43,
+      "34_29_#default#": 0.25,
+      "39_14_yes": 0.5,
+      "39_16_#default#": 0.46,
+      "48_27_yes": 0.62,
+      "48_49_#default#": 0.47
+    },
+    "paper": {
+      "dimensions": {
+        "height": 3265,
+        "width": 1510,
+        "x": 450,
+        "y": -90
+      }
+    }
+  }
+inputs:
+- key: ShouldCloseAutomatically
+  value:
+    simple: "False"
+  required: false
+  description: "Whether to close the alert automatically or manually, after an analyst's review."
+  playbookInputQuery:
+- key: AutoRestoreEndpoint
+  value:
+    simple: "False"
+  required: false
+  description: Whether to execute the Recovery playbook.
+  playbookInputQuery:
+- key: AutoContainment
+  value: {}
+  required: false
+  description: "Whether to execute automatically or manually the containment plan tasks:\n* Block indicators\n* Quarantine file\n* Disable user "
+  playbookInputQuery:
+- key: PreHostContainment
+  value:
+    simple: "True"
+  required: false
+  description: Isolate the host after the Analysis phase (command-line analysis)
+  playbookInputQuery:
+- key: FileRemediation
+  value: {}
+  required: false
+  description: "Can be 'Quarantine' or 'Delete'."
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.6.0

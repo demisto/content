@@ -11,7 +11,7 @@
 <p>For more information about request response fields, see: <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/search-request-body.html#request-body-search-explain">https://www.elastic.co/guide/en/elasticsearch/reference/current/search-request-body.html#request-body-search-explain</a></p>
 <p>For more information about type mapping, see: <a href="https://www.elastic.co/guide/en/elasticsearch/reference/7.x/mapping.html#mapping-type">https://www.elastic.co/guide/en/elasticsearch/reference/7.x/mapping.html#mapping-type</a></p>
 <p>Note: Not all fields can be sorted in Elasticsearch. The fields are used to sort the results table. The supported result types are boolean, numeric, date, and keyword fields. </p>
-<h2>Configure Elasticsearch v2 on Demisto</h2>
+<h2>Configure Elasticsearch v2 on Cortex XSOAR</h2>
 <ol>
 <li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong>  &gt; <strong>Servers &amp; Services</strong>.</li>
 <li>Search for Elasticsearch v2.</li>
@@ -20,7 +20,7 @@
 <li>
 <strong>Name</strong>: a textual name for the integration instance.</li>
 <li>
-<strong>Server URL</strong>: the Elasticsearch server to which the integration connects.</li>
+<strong>Server URL</strong>: the Elasticsearch server to which the integration connects. Ensure that the URL includes the correct Elasticsearch port. By default this is 9200.</li>
 <li>
 <strong>Username and password</strong>: to log in to the server.</li>
 </ul>
@@ -40,7 +40,7 @@
 <li>Click <strong>Test</strong> to validate the new instance.</li>
 </ol>
 <h2>Commands</h2>
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ol>
 <li><a href="#h_82e92c75-e6a8-4a9f-a94a-8ef38336a017" target="_self">Query an index: es-search</a></li>
 <li><a href="#h_b54d5b7b-35d1-44f5-a347-e1079bf0bc98" target="_self">Searches an index: search</a></li>

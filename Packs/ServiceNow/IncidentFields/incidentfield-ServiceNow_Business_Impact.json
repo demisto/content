@@ -1,0 +1,33 @@
+{
+    "associatedToAll": true,
+    "caseInsensitive": true,
+    "cliName": "servicenowbusinessimpact",
+    "closeForm": false,
+    "content": true,
+    "description": "ServiceNow ticket Business Impact",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_servicenowbusinessimpact",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "ServiceNow Business Impact",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "placeholder": "1 - Critical,2 - High,3 - Non-Critical",
+    "required": false,
+    "selectValues": [
+        "1 - Critical",
+        "2 - High",
+        "3 - Non-Critical"
+    ],
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "singleSelect",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

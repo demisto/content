@@ -1,2 +1,6 @@
-[file:integration-Remedy-On-Demand.yml]
+[file:RemedyOnDemand.yml]
 ignore=IN126
+
+
+[file:RemedyOnDemand_image.png]
+ignore=IM111

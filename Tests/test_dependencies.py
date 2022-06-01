@@ -2,7 +2,7 @@ import json
 import math
 
 
-class TestVertex:
+class VertexTester:
     def __init__(self, test_name):
         self.neighbors = {}
         self.test_name = test_name
@@ -23,7 +23,7 @@ class TestVertex:
         return tests_in_component
 
 
-class TestsGraph:
+class GraphTester:
     """A graph representing the tests in Demisto and whether they use mutual integrations.
 
     Attributes:
@@ -39,14 +39,14 @@ class TestsGraph:
         for test_playbook_record in tests_data:
             playbook_name_in_record = test_playbook_record.get("playbookID")
             if playbook_name_in_record and playbook_name_in_record not in self.test_vertices:
-                new_test_vertex = TestVertex(playbook_name_in_record)
+                new_test_vertex = VertexTester(playbook_name_in_record)
                 self.test_vertices[playbook_name_in_record] = new_test_vertex
 
     def add_test_graph_neighbors(self, tests_data):
         integration_to_tests_mapping = get_integration_to_tests_mapping(tests_data)
         for integration_name in integration_to_tests_mapping:
             tests_using_integration = integration_to_tests_mapping[integration_name]
-            for i in range(len(tests_using_integration)):
+            for i in range(len(tests_using_integration)):  # pylint: disable=C0200
                 first_test_name = tests_using_integration[i]
                 first_test_vertex = self.test_vertices[first_test_name]
 
@@ -81,7 +81,7 @@ class TestsGraph:
 
 
 def get_integration_to_tests_mapping(tests_data):
-    integration_to_tests_mapping = {}
+    integration_to_tests_mapping: dict = {}
     for test_playbook_record in tests_data:
         record_playbook_name = test_playbook_record.get("playbookID", None)
         record_integrations = get_used_integrations(test_playbook_record)
@@ -108,7 +108,7 @@ def get_dependent_and_independent_integrations(tests_file_path):
 
     conf_json_obj = json.loads(conf_json_string)
 
-    integration_tests_count = {}
+    integration_tests_count: dict = {}
     for test_record in conf_json_obj["tests"]:
         integrations_used = get_used_integrations(test_record)
         for integration_name in integrations_used:
@@ -148,7 +148,7 @@ def get_test_dependencies(tests_file_path):
 
 
 def get_dependent_integrations_clusters_data(tests_file_path, dependent_tests):
-    tests_graph = TestsGraph()
+    tests_graph = GraphTester()
     tests_graph.build_tests_graph_from_conf_json(tests_file_path, dependent_tests)
     return tests_graph.clusters
 
@@ -157,7 +157,7 @@ def get_tests_allocation_for_threads(number_of_instances, tests_file_path):
     dependent_tests, independent_tests, all_tests = get_test_dependencies(tests_file_path)
     dependent_tests_clusters = get_dependent_integrations_clusters_data(tests_file_path, dependent_tests)
     dependent_tests_clusters.sort(key=len, reverse=True)  # Sort the clusters from biggest to smallest
-    tests_allocation = []
+    tests_allocation: list = []
     number_of_tests_left = len(all_tests)
     while number_of_tests_left > 0:
         allocations_left = number_of_instances - len(tests_allocation)

@@ -1,0 +1,33 @@
+{
+    "id": "incident_proofpointtapsenderip",
+    "version": -1,
+    "modified": "2021-05-02T12:36:20.038762212+03:00",
+    "name": "Proofpoint TAP Sender IP",
+    "ownerOnly": false,
+    "cliName": "proofpointtapsenderip",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "Proofpoint TAP - Click Blocked",
+        "Proofpoint TAP - Click Permitted",
+        "Proofpoint TAP - Message Blocked",
+        "Proofpoint TAP - Message Delivered"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "5.0.0"
+}

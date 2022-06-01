@@ -1,0 +1,29 @@
+{
+    "associatedTypes": [
+        "IP"
+    ],
+    "associatedToAll": false,
+    "caseInsensitive": true,
+    "cliName": "gibproxyport",
+    "closeForm": false,
+    "content": true,
+    "editForm": true,
+    "group": 2,
+    "hidden": false,
+    "id": "indicator_gibproxyport",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "GIB Proxy Port",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "number",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

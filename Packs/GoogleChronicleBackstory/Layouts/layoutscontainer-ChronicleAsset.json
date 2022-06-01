@@ -1,0 +1,399 @@
+{
+ "id": "ChronicleAsset Indicator",
+ "group": "indicator",
+ "name": "ChronicleAsset Indicator",
+ "description": "ChronicleAsset Indicator Layout",
+ "version": -1,
+ "fromVersion": "6.0.0",
+ "indicatorsDetails": {
+  "tabs": [
+   {
+    "id": "default-main",
+    "name": "Info",
+    "sections": [
+     {
+      "h": 2,
+      "i": "default-main-comments",
+      "moved": false,
+      "name": "Comments",
+      "static": false,
+      "type": "comments",
+      "w": 1,
+      "x": 2,
+      "y": 9
+     },
+     {
+      "h": 2,
+      "hideName": true,
+      "i": "default-main-relatedIncidents",
+      "moved": false,
+      "name": "Related Incidents",
+      "static": false,
+      "type": "relatedIncidents",
+      "w": 2,
+      "x": 0,
+      "y": 6
+     },
+     {
+      "displayType": "ROW",
+      "h": 2,
+      "i": "default-main-e2c8c970-a09d-11e9-8956-390f602b039a",
+      "items": [
+       {
+        "endCol": 2,
+        "fieldId": "indicatortype",
+        "height": 22,
+        "id": "indicator-type",
+        "index": 0,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "modified",
+        "height": 22,
+        "id": "indicator-modified",
+        "index": 1,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "expiration",
+        "height": 22,
+        "id": "indicator-expiration",
+        "index": 2,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "timestamp",
+        "height": 22,
+        "id": "indicator-timestamp",
+        "index": 3,
+        "sectionItemType": "field",
+        "startCol": 0
+       }
+      ],
+      "moved": false,
+      "name": "Basic Information",
+      "static": false,
+      "w": 1,
+      "x": 0,
+      "y": 2
+     },
+     {
+      "displayType": "ROW",
+      "h": 3,
+      "i": "default-main-indicatorTimeline",
+      "moved": false,
+      "name": "Timeline",
+      "static": false,
+      "type": "indicatorTimeline",
+      "w": 1,
+      "x": 2,
+      "y": 6
+     },
+     {
+      "h": 1,
+      "hideName": true,
+      "i": "default-main-reputationStatus",
+      "moved": false,
+      "name": "Reputation Status",
+      "static": false,
+      "type": "reputationStatus",
+      "w": 1,
+      "x": 1,
+      "y": 1
+     },
+     {
+      "h": 1,
+      "hideName": true,
+      "i": "default-main-expirationStatus",
+      "moved": false,
+      "name": "Expiration Status",
+      "static": false,
+      "type": "expirationStatus",
+      "w": 1,
+      "x": 0,
+      "y": 1
+     },
+     {
+      "h": 2,
+      "i": "default-main-reputationSources",
+      "moved": false,
+      "name": "Reputation",
+      "static": false,
+      "type": "reputationSources",
+      "w": 1,
+      "x": 1,
+      "y": 2
+     },
+     {
+      "h": 3,
+      "i": "default-main-sources",
+      "moved": false,
+      "name": "Sources Data",
+      "static": false,
+      "type": "sources",
+      "w": 2,
+      "x": 0,
+      "y": 8
+     },
+     {
+      "displayType": "ROW",
+      "h": 2,
+      "i": "default-main-e2c8c970-a09d-11e9-8956-390f602b039b",
+      "items": [
+       {
+        "endCol": 2,
+        "fieldId": "firstseen",
+        "height": 22,
+        "id": "indicator-first-seen",
+        "index": 0,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "lastseen",
+        "height": 22,
+        "id": "indicator-last-seen",
+        "index": 1,
+        "sectionItemType": "field",
+        "startCol": 0
+       }
+      ],
+      "moved": false,
+      "name": "Related Incidents",
+      "static": false,
+      "w": 2,
+      "x": 0,
+      "y": 4
+     },
+     {
+      "h": 1,
+      "hideName": true,
+      "i": "default-main-f1c6daa0-fbf2-11ea-b6af-bdb8c7e1e924",
+      "items": [
+
+      ],
+      "maxW": 3,
+      "minH": 1,
+      "minW": 1,
+      "moved": false,
+      "name": "Isolated Hostname",
+      "query": "ChronicleIsolatedHostnameWidgetScript",
+      "queryType": "script",
+      "static": false,
+      "type": "dynamicIndicator",
+      "w": 1,
+      "x": 0,
+      "y": 0
+     },
+     {
+      "h": 1,
+      "hideName": true,
+      "i": "default-main-2b878d70-fbf3-11ea-b6af-bdb8c7e1e924",
+      "items": [
+
+      ],
+      "maxW": 3,
+      "minH": 1,
+      "minW": 1,
+      "moved": false,
+      "name": "Isolated IP Address",
+      "query": "ChronicleIsolatedIPWidgetScript",
+      "queryType": "script",
+      "static": false,
+      "type": "dynamicIndicator",
+      "w": 1,
+      "x": 1,
+      "y": 0
+     },
+     {
+      "h": 1,
+      "hideName": true,
+      "i": "default-main-32891210-fbf3-11ea-b6af-bdb8c7e1e924",
+      "items": [
+
+      ],
+      "maxW": 3,
+      "minH": 1,
+      "minW": 1,
+      "moved": false,
+      "name": "Potentially Blocked IP Address",
+      "query": "ChroniclePotentiallyBlockedIPWidgetScript",
+      "queryType": "script",
+      "static": false,
+      "type": "dynamicIndicator",
+      "w": 1,
+      "x": 2,
+      "y": 0
+     },
+     {
+      "description": "",
+      "displayType": "ROW",
+      "h": 2,
+      "hideName": false,
+      "i": "default-main-c6227380-fbf4-11ea-a86d-df87c75fbc58",
+      "items": [
+       {
+        "endCol": 2,
+        "fieldId": "chronicleassethostname",
+        "height": 22,
+        "id": "efb96c80-fbf4-11ea-a86d-df87c75fbc58",
+        "index": 0,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "chronicleassetip",
+        "height": 22,
+        "id": "f1085ab0-fbf4-11ea-a86d-df87c75fbc58",
+        "index": 1,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "chronicleassetmac",
+        "height": 22,
+        "id": "f23b0e50-fbf4-11ea-a86d-df87c75fbc58",
+        "index": 2,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "chronicleassetproductid",
+        "height": 22,
+        "id": "f38f2ca0-fbf4-11ea-a86d-df87c75fbc58",
+        "index": 3,
+        "sectionItemType": "field",
+        "startCol": 0
+       }
+      ],
+      "maxW": 3,
+      "minH": 1,
+      "minW": 1,
+      "moved": false,
+      "name": "Chronicle Asset Identifier",
+      "static": false,
+      "w": 1,
+      "x": 2,
+      "y": 4
+     },
+     {
+      "description": "Note: This pie chart is generated by the execution of the playbook \"ChronicleAsset Investigation - Chronicle\"",
+      "h": 3,
+      "hideName": false,
+      "i": "default-main-4c350d40-fcca-11ea-b344-5b7d2616f646",
+      "items": [
+
+      ],
+      "maxW": 3,
+      "minH": 1,
+      "minW": 1,
+      "moved": false,
+      "name": "Summary of All Events",
+      "query": "ChronicleListDeviceEventsByEventTypeWidgetScript",
+      "queryType": "script",
+      "static": false,
+      "type": "dynamicIndicator",
+      "w": 1,
+      "x": 2,
+      "y": 1
+     }
+    ],
+    "type": "custom"
+   },
+   {
+    "hidden": false,
+    "id": "umdcefodqj",
+    "name": "Related Chronicle Events (Realtime)",
+    "sections": [
+     {
+      "h": 3,
+      "i": "umdcefodqj-e74761b0-fcd5-11ea-b344-5b7d2616f646",
+      "items": [
+
+      ],
+      "maxW": 3,
+      "minH": 1,
+      "minW": 1,
+      "moved": false,
+      "name": "Events for Hostname",
+      "query": "ChronicleAssetEventsForHostnameWidgetScript",
+      "queryType": "script",
+      "static": false,
+      "type": "dynamicIndicator",
+      "w": 3,
+      "x": 0,
+      "y": 0
+     },
+     {
+      "h": 3,
+      "i": "umdcefodqj-f15b39f0-fcd6-11ea-b344-5b7d2616f646",
+      "items": [
+
+      ],
+      "maxW": 3,
+      "minH": 1,
+      "minW": 1,
+      "moved": false,
+      "name": "Events for IP Address",
+      "query": "ChronicleAssetEventsForIPWidgetScript",
+      "queryType": "script",
+      "static": false,
+      "type": "dynamicIndicator",
+      "w": 3,
+      "x": 0,
+      "y": 3
+     },
+     {
+      "h": 3,
+      "i": "umdcefodqj-f5111600-fcd6-11ea-b344-5b7d2616f646",
+      "items": [
+
+      ],
+      "maxW": 3,
+      "minH": 1,
+      "minW": 1,
+      "moved": false,
+      "name": "Events for MAC Address",
+      "query": "ChronicleAssetEventsForMACWidgetScript",
+      "queryType": "script",
+      "static": false,
+      "type": "dynamicIndicator",
+      "w": 3,
+      "x": 0,
+      "y": 6
+     },
+     {
+      "h": 3,
+      "i": "umdcefodqj-0344a520-fcd7-11ea-b344-5b7d2616f646",
+      "items": [
+
+      ],
+      "maxW": 3,
+      "minH": 1,
+      "minW": 1,
+      "moved": false,
+      "name": "Events for Product ID",
+      "query": "ChronicleAssetEventsForProductIDWidgetScript",
+      "queryType": "script",
+      "static": false,
+      "type": "dynamicIndicator",
+      "w": 3,
+      "x": 0,
+      "y": 9
+     }
+    ],
+    "type": "custom"
+   }
+  ]
+ }
+}

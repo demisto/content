@@ -1,0 +1,240 @@
+{
+    "errors": null,
+    "result": {
+        "totalCount": 3,
+        "searchResults": [
+            {
+                "id": 1134600,
+                "guid": "30148549-7e45-4013-adea-ab4fd486655f",
+                "mdmChannelId": "7762992c-23bb-4176-92fd-0d4dffdd78e9",
+                "phoneNumber": null,
+                "deviceModel": "iPhone8,1",
+                "deviceName": "iPhone",
+                "platformType": "IOS",
+                "platformVersion": "13.2.3",
+                "osBuildVersion": "17B111",
+                "lastCheckin": 1603979246605,
+                "registrationState": "RETIRED",
+                "displayName": "Darko G Cloud",
+                "firstName": "Darko",
+                "lastName": "G Cloud",
+                "uid": "darkogrozdanovski+micloud@gmail.com",
+                "emailAddress": "darkogrozdanovski+micloud@gmail.com",
+                "clientVersion": "5.4.1",
+                "manufacturer": "Apple Inc.",
+                "imei": "35 664808 754860 4",
+                "imei2": null,
+                "imsi": "",
+                "locatorServiceEnabled": false,
+                "meid": "35664808754860",
+                "wifiMacAddress": "6c:96:cf:d1:c4:17",
+                "wifiMacAddressForInventory": null,
+                "systemUpdateInformation": null,
+                "serialNumber": "FK2V9A5FHFLR",
+                "altSerialNumber": null,
+                "cellularTechnology": "device__p_cellular_technology",
+                "currentCarrierNetwork": "Telekom.de",
+                "subscriberCarrierNetwork": "Telekom.de",
+                "locale": "en-de",
+                "ownershipType": "UNKNOWN",
+                "complianceState": false,
+                "roaming": false,
+                "supervised": false,
+                "udid": "udid",
+                "clientLastCheckin": 1603979244596,
+                "iccid": null,
+                "currentMcc": null,
+                "currentMnc": null,
+                "subscriberMcc": "",
+                "subscriberMnc": "",
+                "prettyModel": "iPhone 6S",
+                "policyViolationCount": 1,
+                "latitude": null,
+                "longitude": null,
+                "locationLastCapturedAt": null,
+                "lastRegistrationTime": 1599053620857,
+                "lostModeEnabled": false,
+                "multiUser": false,
+                "maxResidentUsers": null,
+                "clientDeviceIdentifier": "85657F39-2A7B-4926-8A2E-C31E71AC7D3D",
+                "availableCapacity": 21.361225,
+                "totalCapacity": 24.999844,
+                "clusterIdentifier": "CLOUD",
+                "deviceSource": "CLOUD",
+                "quarantined": false,
+                "jailbroken": false,
+                "passcodeCompliant": true,
+                "passcodeCompliantWithProfiles": true,
+                "blocked": false,
+                "locationStatusDetail": null,
+                "androidBuildFingerprint": null,
+                "androidBuildId": null,
+                "androidZebraPatchLevel": null,
+                "androidSystemUpdateStatus": null,
+                "salesCode": null,
+                "firmwareVersion": null,
+                "uptime": null,
+                "userEnrolled": false,
+                "androidWorkContainerEnabled": false,
+                "androidWorkUid": null,
+                "androidManagedByGoogle": false,
+                "fcmEnabled": false,
+                "actionExceptionCodes": [],
+                "violatedPolicies": [
+                    "Out of Contact"
+                ],
+                "supportLockMessage": true,
+                "ownerId": 55530716,
+                "kioskState": "NOT_CONFIGURED",
+                "customAttributes": {
+                    "attrs": {
+                        "demodeviceattribute1": [
+                            "true"
+                        ]
+                    }
+                },
+                "easDeviceIdentifiers": [
+                    "8GKDE86BBD0R76801P0670DC0O",
+                    "null"
+                ],
+                "appEasIdentifiers": [
+                    "null"
+                ],
+                "androidDeviceOwnerModeEnabled": false,
+                "windowsDeviceType": null,
+                "secureAppsStatus": null,
+                "secureAppsEncryptionStatus": null,
+                "secureAppsEncryptionMode": null,
+                "tpmSpecificationVersion": null,
+                "bridgeVersion": null,
+                "bridgeDeviceDataLastCapturedAt": null,
+                "lastHotfixId": null,
+                "lastHotfixInstalledOn": null,
+                "mamOnly": false,
+                "authOnly": false,
+                "ipAddress": null,
+                "depEnrolled": false,
+                "depEligible": false,
+                "mobileThreatDefenseGeneralStatus": "NA",
+                "antiPhishingGeneralStatus": "NA",
+                "samsungEfotaCapable": false,
+                "currentCountryName": null,
+                "currentCountryCode": null,
+                "homeCountryName": null,
+                "homeCountryCode": null,
+                "userPreferenceCSVHeader": null,
+                "dmPartitionId": 33533,
+                "dmPartitionName": "Default Space",
+                "entityName": "iPhone"
+            }
+        ],
+        "offset": 0,
+        "limit": 10,
+        "queryTime": 62,
+        "facetedResults": {
+            "LAST_HOTFIX_ID": {
+                "kb4561600": 1
+            },
+            "SUBSCRIBERCARRIERNETWORK": {
+                "Telekom.de": 1,
+                "UNKNOWN": 3
+            },
+            "AUTHONLY": {
+                "false": 4
+            },
+            "ANDROIDWORKPROFILEONCOMPANYOWNEDDEVICEENABLED": {
+                "false": 4
+            },
+            "ANDROIDDEVICEOWNERMODEENABLED": {
+                "false": 4
+            },
+            "PRETTYMODEL": {
+                "innotek GmbH: VirtualBox": 2,
+                "iPhone 6S": 1,
+                "Pixel": 1
+            },
+            "REGISTRATIONSTATE": {
+                "RETIRE_PENDING": 1,
+                "ACTIVE": 1,
+                "RETIRED": 2
+            },
+            "DEVICESOURCE": {
+                "cloud": 4
+            },
+            "MULTIUSER": {
+                "false": 4
+            },
+            "ACCOUNTENABLED": {
+                "true": 4
+            },
+            "ANDROIDWORKPROFILEENABLED": {
+                "false": 4
+            },
+            "KIOSKSTATE": {
+                "not_configured": 4
+            },
+            "ANDROIDSECURITYPATCHLEVEL": {
+                "2019-10-06": 1
+            },
+            "JAILBROKEN": {
+                "false": 4
+            },
+            "PLATFORMTYPE": {
+                "IOS": 1,
+                "ANDROID": 1,
+                "WINDOWS_PHONE": 2
+            },
+            "OWNERSHIPTYPE": {
+                "UNKNOWN": 4
+            },
+            "ANDROIDSAFETYNETATTESTATIONTYPE": {
+                "unknown": 4
+            },
+            "ANDROIDWORKDEVICEOWNERWITHWORKPROFILEENABLED": {
+                "false": 4
+            },
+            "COMPLIANCESTATE": {
+                "false": 4
+            },
+            "MOBILE_THREAT_DEFENSE_GENERAL_STATUS": {
+                "NA": 4
+            },
+            "SUPERVISED": {
+                "false": 4
+            },
+            "ANTIPHISHINGGENERALSTATUS": {
+                "NA": 4
+            },
+            "SECUREAPPSSTATUS": {
+                "true": 1
+            },
+            "MAMONLY": {
+                "false": 4
+            },
+            "ANDROIDMANAGEDBYGOOGLE": {
+                "false": 4
+            },
+            "ACCOUNTGROUP": {
+                "children user group": 1,
+                "all users": 4,
+                "android appconnect": 1
+            },
+            "ANDROIDWORKENABLED": {
+                "false": 4
+            },
+            "OSBUILDVERSION": {
+                "QP1A.191005.007.A3": 1,
+                "10.0.19041.264": 1,
+                "17B111": 1,
+                "10.0.19041.329": 1
+            },
+            "ROAMING": {
+                "false": 4
+            },
+            "LOSTMODEENABLED": {
+                "false": 4
+            }
+        },
+        "totalUnfilteredResultCount": 0
+    }
+}

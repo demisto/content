@@ -12,18 +12,26 @@ requests.packages.urllib3.disable_warnings()
 handle_proxy()
 
 ''' GLOBAL VARS '''
-LACEWORK_INSTANCE = demisto.params().get('lacework_instance')
+LACEWORK_ACCOUNT = demisto.params().get('lacework_account')
+LACEWORK_SUBACCOUNT = demisto.params().get('lacework_subaccount', None)
 LACEWORK_API_KEY = demisto.params()['lacework_api_key']
 LACEWORK_API_SECRET = demisto.params()['lacework_api_secret']
 LACEWORK_EVENT_SEVERITY = demisto.params()['lacework_event_severity']
 LACEWORK_EVENT_HISTORY_DAYS = demisto.params()['lacework_event_history']
 
 try:
-    lacework_client = LaceworkClient(instance=LACEWORK_INSTANCE,
-                                     api_key=LACEWORK_API_KEY,
-                                     api_secret=LACEWORK_API_SECRET)
-except Exception:
-    demisto.results("Lacework API authentication failed. Please validate Instance Name, API Key, and API Secret.")
+    if LACEWORK_SUBACCOUNT:
+        lacework_client = LaceworkClient(account=LACEWORK_ACCOUNT,
+                                         subaccount=LACEWORK_SUBACCOUNT,
+                                         api_key=LACEWORK_API_KEY,
+                                         api_secret=LACEWORK_API_SECRET)
+    else:
+        lacework_client = LaceworkClient(account=LACEWORK_ACCOUNT,
+                                         api_key=LACEWORK_API_KEY,
+                                         api_secret=LACEWORK_API_SECRET)
+except Exception as e:
+    demisto.results("Lacework API authentication failed. Please validate Account, \
+                    Sub-Account, API Key, and API Secret. Error: {}".format(e))
 
 ''' HELPER FUNCTIONS '''
 
@@ -65,7 +73,7 @@ def create_entry(title, data, ec, human_readable=None):
     }
 
 
-def format_compliance_data(compliance_data):
+def format_compliance_data(compliance_data, rec_id):
     """
     Simplify the output/contents for Compliance reports
     """
@@ -73,6 +81,14 @@ def format_compliance_data(compliance_data):
     if len(compliance_data['data']) > 0:
 
         compliance_data = compliance_data['data'][0]
+
+        # If the user wants to filter on a recommendation ID
+        if rec_id:
+            rec_id = argToList(rec_id)
+            # Iterate through all recommendations, removing irrelevant ones
+            for recommendation in compliance_data["recommendations"][:]:
+                if recommendation["REC_ID"] not in rec_id:
+                    compliance_data["recommendations"].remove(recommendation)
 
         # Build Human Readable Output
         readable_output = tableToMarkdown("Compliance Summary",
@@ -104,13 +120,14 @@ def get_aws_compliance_assessment():
     """
 
     account_id = demisto.args().get('account_id')
+    rec_id = demisto.args().get('rec_id')
     report_type = demisto.args().get('report_type', 'AWS_CIS_S3')
 
     response = lacework_client.compliance.get_latest_aws_report(account_id,
                                                                 file_format="json",
                                                                 report_type=report_type)
 
-    results = format_compliance_data(response)
+    results = format_compliance_data(response, rec_id)
     return_results(results)
 
 
@@ -121,6 +138,7 @@ def get_azure_compliance_assessment():
 
     tenant_id = demisto.args().get('tenant_id')
     subscription_id = demisto.args().get('subscription_id')
+    rec_id = demisto.args().get('rec_id')
     report_type = demisto.args().get('report_type', 'AZURE_CIS')
 
     response = lacework_client.compliance.get_latest_azure_report(tenant_id,
@@ -128,7 +146,7 @@ def get_azure_compliance_assessment():
                                                                   file_format="json",
                                                                   report_type=report_type)
 
-    results = format_compliance_data(response)
+    results = format_compliance_data(response, rec_id)
     return_results(results)
 
 
@@ -139,6 +157,7 @@ def get_gcp_compliance_assessment():
 
     organization_id = demisto.args().get('organization_id')
     project_id = demisto.args().get('project_id')
+    rec_id = demisto.args().get('rec_id')
     report_type = demisto.args().get('report_type', 'GCP_CIS')
 
     response = lacework_client.compliance.get_latest_gcp_report(organization_id,
@@ -146,7 +165,7 @@ def get_gcp_compliance_assessment():
                                                                 file_format="json",
                                                                 report_type=report_type)
 
-    results = format_compliance_data(response)
+    results = format_compliance_data(response, rec_id)
     return_results(results)
 
 
@@ -397,10 +416,14 @@ def fetch_incidents():
 
 
 try:
+    command = demisto.command()
+    demisto.debug(f'Command being called is {command}')
     if demisto.command() == 'test-module':
         # This is the call made when pressing the integration test button.
         try:
+            demisto.debug('Getting all integrations for "test-module" run')
             response = lacework_client.integrations.get_all()
+            demisto.debug(response)
             if response['ok']:
                 demisto.results('ok')
         except Exception as error:

@@ -11,11 +11,7 @@ VERIFY_CERTIFICATE = not demisto.params().get('unsecure')
 USERNAME = demisto.params()['credentials']['identifier']
 PASSWORD = demisto.params()['credentials']['password']
 
-if not demisto.params()['proxy']:
-    del os.environ['HTTP_PROXY']
-    del os.environ['HTTPS_PROXY']
-    del os.environ['http_proxy']
-    del os.environ['https_proxy']
+handle_proxy(proxy_param_name='proxy')
 
 
 def get_first(iterable, default=None):
@@ -788,7 +784,7 @@ try:
     elif demisto.command() == 'bigfix-action-stop':
         action_stop_command()
 
-    elif demisto.command():
+    elif demisto.command() == 'bigfix-query':
         query_command()
 
 except Exception as e:

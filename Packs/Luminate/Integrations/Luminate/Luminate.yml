@@ -1,0 +1,132 @@
+commonfields:
+  id: Luminate
+  version: -1
+name: Luminate
+display: Luminate
+category: Network Security
+description: Enrich your report and Respond to incidents with Luminate
+configuration:
+- display: Api Key
+  name: api_key
+  defaultvalue: ""
+  type: 4
+  required: true
+- display: Api Secret
+  name: api_secret
+  defaultvalue: ""
+  type: 4
+  required: true
+- display: Luminate API URL
+  name: luminate_api_url
+  defaultvalue: https://api.example.luminatesec.com
+  type: 0
+  required: true
+- display: Fetch incidents
+  name: isFetch
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  type: 13
+  required: false
+script:
+  script: ''
+  type: python
+  subtype: python2
+  commands:
+  - name: lum-block-user
+    arguments:
+    - name: user_email
+      required: true
+      description: User's Email
+    outputs:
+    - contextPath: Luminate.Blocked.failure
+      description: user ids and exceptions of failed operations
+      type: unknown
+    - contextPath: Luminate.Blocked.success
+      description: user ids and exceptions of operations completed successfully
+    description: Block user by its email from authenticating to Luminate
+  - name: lum-unblock-user
+    arguments:
+    - name: user_email
+      required: true
+      description: User's Email
+    outputs:
+    - contextPath: Luminate.Unblocked.success
+      description: user ids and exceptions of failed operations
+    - contextPath: Luminate.Unblocked.failure
+      description: user ids and exceptions of operations completed successfully
+    description: Unblock user by its email
+  - name: lum-destroy-user-session
+    arguments:
+    - name: user_email
+      required: true
+      description: User's Email
+    outputs:
+    - contextPath: Luminate.DestroySession.success
+      description: user ids and exceptions of failed operations
+    - contextPath: Luminate.DestroySession.failure
+      description: user ids and exceptions of operations completed successfully
+    description: Disconnect all sessions of the user
+  - name: lum-get-http-access-logs
+    arguments:
+    - name: size
+      description: The maximum number of results to return. This is limited to 1000,
+        and defaults to 1000
+    - name: free_text
+      description: 'This field accepts querys in a "Elasticsearch - Query String Syntax"
+        - this is explained fully in the following link: https://www.elastic.co/guide/en/elasticsearch/reference/5.5/query-dsl-query-string-query.html#query-string-syntax'
+    - name: from_date
+      required: true
+      description: 'Generic parsing of relative dates like: ''1 min ago'', ''2 weeks
+        ago'', ''3 months, 1 week and 1 day ago'', ''in 2 days'', ''tomorrow''. Generic
+        parsing of dates with time zones abbreviations or UTC offsets like: ''August
+        14, 2015 EST'', ''July 4, 2013 PST'', ''21 July 2013 10:15 pm +0500'' even
+        Epoch in seconds and milliseconds'
+    - name: to_date
+      description: 'Generic parsing of relative dates like: ''1 min ago'', ''2 weeks
+        ago'', ''3 months, 1 week and 1 day ago'', ''in 2 days'', ''tomorrow''. Generic
+        parsing of dates with time zones abbreviations or UTC offsets like: ''August
+        14, 2015 EST'', ''July 4, 2013 PST'', ''21 July 2013 10:15 pm +0500'' even
+        Epoch in seconds and milliseconds'
+    - name: search_after
+      description: Using search_after you may page through results.  You will need
+        to provide the search_after values of the last log line in the previous result.
+    outputs:
+    - contextPath: Luminate.AccessLogs
+      description: HTTP Access logs
+    description: Getting Access logs from for HTTP traffic
+  - name: lum-get-ssh-access-logs
+    arguments:
+    - name: size
+      description: The maximum number of results to return. This is limited to 1000,
+        and defaults to 1000
+    - name: free_text
+      description: 'This field accepts querys in a "Elasticsearch - Query String Syntax"
+        - this is explained fully in the following link: https://www.elastic.co/guide/en/elasticsearch/reference/5.5/query-dsl-query-string-query.html#query-string-syntax'
+    - name: from_date
+      required: true
+      description: 'Generic parsing of relative dates like: ''1 min ago'', ''2 weeks
+        ago'', ''3 months, 1 week and 1 day ago'', ''in 2 days'', ''tomorrow''. Generic
+        parsing of dates with time zones abbreviations or UTC offsets like: ''August
+        14, 2015 EST'', ''July 4, 2013 PST'', ''21 July 2013 10:15 pm +0500'' even
+        Epoch in seconds and milliseconds'
+    - name: to_date
+      description: 'Generic parsing of relative dates like: ''1 min ago'', ''2 weeks
+        ago'', ''3 months, 1 week and 1 day ago'', ''in 2 days'', ''tomorrow''. Generic
+        parsing of dates with time zones abbreviations or UTC offsets like: ''August
+        14, 2015 EST'', ''July 4, 2013 PST'', ''21 July 2013 10:15 pm +0500'' even
+        Epoch in seconds and milliseconds'
+    - name: search_after
+      description: Using search_after you may page through results.  You will need
+        to provide the search_after values of the last log line in the previous result.
+    outputs:
+    - contextPath: Luminate.SshAccessLogs
+      description: SSH Access logs
+    description: Getting Access logs from for SSH traffic
+  dockerimage: demisto/luminate:1.0.0.14061
+  isfetch: true
+  runonce: false
+fromversion: 5.0.0
+tests:
+- Luminate-TestPlaybook

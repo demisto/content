@@ -181,6 +181,33 @@ def test_get_incidents_by_keys():
     assert res == incident_by_keys
 
 
+def test_build_similar_keys_list():
+    """
+    Given
+        - key and value of the incident fields.
+    When
+        - build_incident_fields_query is called
+    Then
+        - Ensure that the query matches the type of the incident field: int -> ":=", str -> "=".
+    """
+    from FindSimilarIncidentsV2 import build_incident_fields_query
+
+    int_res = build_incident_fields_query({u'sla': 0})
+    assert int_res == ['sla:=0']
+
+    str_res = build_incident_fields_query({u'employeeid': u'1111'})
+    assert str_res == [u'employeeid="1111"']
+
+    list_res = build_incident_fields_query({u'test': [u'name1', 0]})
+    assert list_res == [u'test="name1"', 'test:=0']
+
+    list_res = build_incident_fields_query({u'test': []})
+    assert list_res == ['test=[]']
+
+    escape_res = build_incident_fields_query({u'test': u'"C:\\test\\escape\\sequence" test'})
+    assert escape_res == [u'test="\\"C:\\test\\escape\\sequence\\" test"']
+
+
 def test_similar_incidents_fields(mocker):
     args = dict(default_args)
     args.update({'similarIncidentFields': 'name', 'similarLabelsKeys': 'subject'})
@@ -408,6 +435,45 @@ def test_similar_context_missing_key(mocker):
 
     with pytest.raises(ValueError, match="Error: Missing context key for incident: missingKey"):
         main()
+
+
+def test_build_incident_query():
+    from FindSimilarIncidentsV2 import build_incident_query
+    res = build_incident_query('type="test"', True, '826', 'name:incident1')
+
+    assert res == '(-id:826) and (type="test" and -status:Closed) and (name:incident1)'
+
+
+def test_build_incident_query_without_similar_keys_query():
+    from FindSimilarIncidentsV2 import build_incident_query
+    res = build_incident_query('', True, '826', 'name:incident1')
+
+    assert res == '(-id:826) and (-status:Closed) and (name:incident1)'
+
+
+def test_build_incident_query_without_extra_query():
+    from FindSimilarIncidentsV2 import build_incident_query
+    res = build_incident_query('', True, '826', '')
+
+    assert res == '(-id:826) and (-status:Closed)'
+
+
+def test_build_incident_query_without_similar_keys_query_and_ignore_closed():
+    """
+    Given:
+        - Fields for creating query without similar_keys_query and ignore_closed flag.
+
+    When:
+        - Building incident query using 'build_incident_query' function.
+
+    Then:
+        - Ensure the query was created correctly and that the query string got the values needed
+          from the formating.
+    """
+    from FindSimilarIncidentsV2 import build_incident_query
+    res = build_incident_query('', False, '826', '')
+
+    assert res == '(-id:826)'
 
 
 def dt_res(context, keys_to_search):

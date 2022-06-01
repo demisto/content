@@ -1,3 +1,6 @@
+from CommonServerPython import timedelta
+from datetime import datetime
+
 RESPONSE_TICKET = {
     'parent': '', 'made_sla': 'false', 'caused_by': '', 'watch_list': '', 'upon_reject': '',
     'sys_updated_on': '2020-04-02 14:03:31',
@@ -25,6 +28,40 @@ RESPONSE_TICKET = {
     'correlation_id': '', 'location': {'link': 'demisto.com', 'value': 'test'}, 'category': 'network'
 }
 
+RESPONSE_TICKET_ASSIGNED = {
+    'result': [
+        {
+            'parent': '', 'made_sla': 'false', 'caused_by': '', 'watch_list': '', 'upon_reject': '',
+            'sys_updated_on': '2020-04-02 14:03:31',
+            'child_incidents': '', 'hold_reason': '', 'approval_history': '', 'number': 'INC0000039', 'resolved_by': '',
+            'sys_updated_by': 'admin',
+            'opened_by': {'link': 'demisto.com', 'value': 'test'},
+            'user_input': '', 'sys_created_on': '2019-09-05 00:42:29',
+            'sys_domain': {'link': 'demisto.com', 'value': 'global'}, 'state': '1', 'sys_created_by': 'admin',
+            'knowledge': 'false', 'order': '', 'calendar_stc': '', 'closed_at': '',
+            'cmdb_ci': {'link': 'demisto.com', 'value': 'test'}, 'delivery_plan': '', 'impact': '2', 'active': 'true',
+            'work_notes_list': '', 'business_service': '', 'priority': '4', 'sys_domain_path': '/', 'rfc': '',
+            'time_worked': '', 'expected_start': '', 'opened_at': '2019-09-05 00:41:01', 'business_duration': '',
+            'group_list': '', 'work_end': '', 'caller_id': {'link': 'demisto.com', 'value': 'test'},
+            'reopened_time': '', 'resolved_at': '', 'approval_set': '', 'subcategory': '', 'work_notes': '',
+            'short_description': 'Trouble getting to Oregon mail server', 'close_code': '', 'correlation_display': '',
+            'delivery_task': '', 'work_start': '', 'assignment_group': {'link': 'demisto.com', 'value': 'test'},
+            'additional_assignee_list': '', 'business_stc': '',
+            'description': 'Unable to access Oregon mail server. Is it down?', 'calendar_duration': '',
+            'close_notes': '', 'notify': '1', 'sys_class_name': 'incident',
+            'closed_by': '', 'follow_up': '', 'parent_incident': '',
+            'sys_id': 'sys_id', 'contact_type': 'phone', 'reopened_by': '', 'incident_state': '1', 'urgency': '3',
+            'problem_id': '', 'company': {'link': 'demisto.com', 'value': 'test'}, 'reassignment_count': '',
+            'u_custom_field_test': 'NYC', 'activity_due': '', 'assigned_to': {"link": "link", "value": "123"},
+            'severity': '3', 'comments': '',
+            'approval': 'not requested', 'sla_due': '2019-09-26 00:41:01',
+            'comments_and_work_notes': '', 'due_date': '',
+            'sys_mod_count': '8', 'reopen_count': '', 'sys_tags': '', 'escalation': '0', 'upon_approval': '',
+            'correlation_id': '', 'location': {'link': 'demisto.com', 'value': 'test'}, 'category': 'network'
+        }
+    ]
+}
+
 RESPONSE_TICKET_MIRROR = {'result': [{
     'parent': '', 'made_sla': 'false', 'caused_by': '', 'watch_list': '', 'upon_reject': '',
     'sys_updated_on': '2020-04-02 14:03:31',
@@ -45,6 +82,38 @@ RESPONSE_TICKET_MIRROR = {'result': [{
          "value": "8a5055c9c61122780043563ef53438e3"},
     'additional_assignee_list': '', 'business_stc': '',
     'description': 'Unable to access Oregon mail server. Is it down?', 'calendar_duration': '', 'close_notes': '',
+    'notify': '1', 'sys_class_name': 'incident', 'closed_by': '', 'follow_up': '', 'parent_incident': '',
+    'sys_id': 'sys_id', 'contact_type': 'phone', 'reopened_by': '', 'incident_state': '1', 'urgency': '3',
+    'problem_id': '', 'company': {'link': 'demisto.com', 'value': 'test'}, 'reassignment_count': '',
+    'u_custom_field_test': 'NYC', 'activity_due': '', 'assigned_to': '', 'severity': '3', 'comments': '',
+    'approval': 'not requested', 'sla_due': '2019-09-26 00:41:01', 'comments_and_work_notes': '', 'due_date': '',
+    'sys_mod_count': '8', 'reopen_count': '', 'sys_tags': '', 'escalation': '0', 'upon_approval': '',
+    'correlation_id': '', 'location': {'link': 'demisto.com', 'value': 'test'}, 'category': 'network'
+    }]
+}
+
+USER_RESPONSE = {
+    'result': {'first_name': 'Oscar', 'email': 'oscar@example.com'}}
+
+
+RESPONSE_CLOSING_TICKET_MIRROR = {'result': [{
+    'parent': '', 'made_sla': 'false', 'caused_by': '', 'watch_list': '', 'upon_reject': '',
+    'sys_updated_on': '2020-04-02 14:03:31',
+    'child_incidents': '', 'hold_reason': '', 'approval_history': '', 'number': 'INC0000039', 'resolved_by': '',
+    'sys_updated_by': 'admin',
+    'opened_by': {'link': 'demisto.com', 'value': 'test'},
+    'user_input': '', 'sys_created_on': '2019-09-05 00:42:29',
+    'sys_domain': {'link': 'demisto.com', 'value': 'global'}, 'state': '1', 'sys_created_by': 'admin',
+    'knowledge': 'false', 'order': '', 'calendar_stc': '', 'closed_at': '2019-09-10 00:41:01',
+    'cmdb_ci': {'link': 'demisto.com', 'value': 'test'}, 'delivery_plan': '', 'impact': '2', 'active': 'true',
+    'work_notes_list': '', 'business_service': '', 'priority': '4', 'sys_domain_path': '/', 'rfc': '',
+    'time_worked': '', 'expected_start': '', 'opened_at': '2019-09-05 00:41:01', 'business_duration': '',
+    'group_list': '', 'work_end': '', 'caller_id': '',
+    'reopened_time': '', 'approval_set': '', 'subcategory': '', 'work_notes': '',
+    'short_description': 'Trouble getting to Oregon mail server', 'close_code': '', 'correlation_display': '',
+    'delivery_task': '', 'work_start': '', 'assignment_group': {},
+    'additional_assignee_list': '', 'business_stc': '',
+    'description': 'Unable to access Oregon mail server. Is it down?', 'calendar_duration': '', 'close_notes': 'Test',
     'notify': '1', 'sys_class_name': 'incident', 'closed_by': '', 'follow_up': '', 'parent_incident': '',
     'sys_id': 'sys_id', 'contact_type': 'phone', 'reopened_by': '', 'incident_state': '1', 'urgency': '3',
     'problem_id': '', 'company': {'link': 'demisto.com', 'value': 'test'}, 'reassignment_count': '',
@@ -211,9 +280,9 @@ RESPONSE_CREATE_TICKET = {
         "resolved_at": "",
         "resolved_by": "",
         "rfc": "",
-        "severity": "2",
+        "severity": "3",
         "short_description": "",
-        "sla_due": "",
+        "sla_due": "2020-10-10 10:10:11",
         "state": "1",
         "subcategory": "",
         "sys_class_name": "incident",
@@ -242,6 +311,7 @@ RESPONSE_CREATE_TICKET = {
         "work_start": ""
     }
 }
+RESPONSE_CREATE_TICKET_WITH_OUT_JSON = "The ticket was successfully created."
 RESPONSE_UPDATE_TICKET_SC_REQ = {
     "result": {
         "active": "true",
@@ -416,7 +486,7 @@ RESPONSE_UPDATE_TICKET_ADDITIONAL = {
         "resolved_at": "",
         "resolved_by": "",
         "rfc": "",
-        "severity": "2",
+        "severity": "3",
         "short_description": "Trouble getting to Oregon mail server",
         "sla_due": "2019-09-26 00:41:01",
         "state": "1",
@@ -781,6 +851,100 @@ RESPONSE_QUERY_TICKETS = {
             "work_notes": "",
             "work_notes_list": "",
             "work_start": ""
+        }
+    ]
+}
+RESPONSE_QUERY_TICKETS_EXCLUDE_REFERENCE_LINK = {
+    "result": [
+        {
+            "parent": "",
+            "made_sla": "false",
+            "caused_by": "",
+            "watch_list": "",
+            "upon_reject": "",
+            "sys_updated_on": "06/08/2020 13:16:07",
+            "child_incidents": "",
+            "hold_reason": "",
+            "task_effective_number": "INC0000001",
+            "approval_history": "",
+            "number": "INC0000001",
+            "resolved_by": "System Administrator",
+            "sys_updated_by": "admin",
+            "opened_by": "Joe Employee",
+            "user_input": "",
+            "sys_created_on": "06/12/2018 10:24:13",
+            "sys_domain": "global",
+            "state": "Closed",
+            "route_reason": "",
+            "sys_created_by": "pat",
+            "knowledge": "false",
+            "order": "",
+            "calendar_stc": "7,937,181",
+            "closed_at": "07/05/2020 16:10:06",
+            "cmdb_ci": "MailServerUS",
+            "delivery_plan": "",
+            "contract": "",
+            "impact": "1 - High",
+            "active": "false",
+            "work_notes_list": "",
+            "business_service": "",
+            "priority": "1 - Critical",
+            "sys_domain_path": "/",
+            "rfc": "",
+            "time_worked": "",
+            "expected_start": "",
+            "opened_at": "06/05/2020 16:09:51",
+            "business_duration": "21 Days 21 Hours 46 Minutes",
+            "group_list": "",
+            "work_end": "",
+            "caller_id": "Fred Luddy",
+            "reopened_time": "",
+            "resolved_at": "06/08/2020 12:56:12",
+            "approval_set": "",
+            "subcategory": "",
+            "work_notes": "",
+            "universal_request": "",
+            "short_description": "Can't read email",
+            "close_code": "Closed/Resolved by Caller",
+            "correlation_display": "",
+            "delivery_task": "",
+            "work_start": "",
+            "assignment_group": "Service Desk",
+            "additional_assignee_list": "",
+            "business_stc": "1,892,781",
+            "description": "User can't access email on mail.company.com.\n\t\t",
+            "calendar_duration": "91 Days 20 Hours 46 Minutes",
+            "close_notes": "Closed before close notes were made mandatory\n\t\t",
+            "notify": "Do Not Notify",
+            "service_offering": "",
+            "sys_class_name": "Incident",
+            "closed_by": "Don Goodliffe",
+            "follow_up": "",
+            "parent_incident": "",
+            "sys_id": "9c573169c611228700193229fff72400",
+            "contact_type": "",
+            "reopened_by": "",
+            "incident_state": "Closed",
+            "urgency": "1 - High",
+            "problem_id": "PRB0000007",
+            "company": "",
+            "reassignment_count": "1",
+            "activity_due": "UNKNOWN",
+            "assigned_to": "Charlie Whitherspoon",
+            "severity": "1 - High",
+            "comments": "",
+            "approval": "",
+            "sla_due": "UNKNOWN",
+            "comments_and_work_notes": "",
+            "due_date": "",
+            "sys_mod_count": "21",
+            "reopen_count": "",
+            "sys_tags": "",
+            "escalation": "Normal",
+            "upon_approval": "",
+            "correlation_id": "",
+            "location": "2617 South Robinson Avenue, Oklahoma City,OK",
+            "category": "Network"
         }
     ]
 }
@@ -2810,7 +2974,9 @@ RESPONSE_FETCH = {
                 'cmdb_ci': {'link': 'demisto.com', 'value': 'test'}, 'delivery_plan': '', 'impact': '2',
                 'active': 'true',
                 'work_notes_list': '', 'business_service': '', 'priority': '4', 'sys_domain_path': '/', 'rfc': '',
-                'time_worked': '', 'expected_start': '', 'opened_at': '2019-09-05 00:41:01', 'business_duration': '',
+                'time_worked': '', 'expected_start': '',
+                'opened_at': '',
+                'business_duration': '',
                 'group_list': '', 'work_end': '', 'caller_id': {'link': 'demisto.com', 'value': 'test'},
                 'reopened_time': '', 'resolved_at': '', 'approval_set': '', 'subcategory': '', 'work_notes': '',
                 'short_description': 'Trouble getting to Oregon mail server', 'close_code': '',
@@ -2841,7 +3007,9 @@ RESPONSE_FETCH = {
                 'cmdb_ci': {'link': 'demisto.com', 'value': 'test'}, 'delivery_plan': '', 'impact': '2',
                 'active': 'true',
                 'work_notes_list': '', 'business_service': '', 'priority': '4', 'sys_domain_path': '/', 'rfc': '',
-                'time_worked': '', 'expected_start': '', 'opened_at': '2019-09-05 00:41:01', 'business_duration': '',
+                'time_worked': '', 'expected_start': '',
+                'opened_at': '',
+                'business_duration': '',
                 'group_list': '', 'work_end': '', 'caller_id': {'link': 'demisto.com', 'value': 'test'},
                 'reopened_time': '', 'resolved_at': '', 'approval_set': '', 'subcategory': '', 'work_notes': '',
                 'short_description': 'Trouble getting to Oregon mail server', 'close_code': '',
@@ -2930,7 +3098,7 @@ RESPONSE_FETCH_ATTACHMENTS_TICKET = {
             "made_sla": "true",
             "notify": "1",
             "number": "INC0000060",
-            "opened_at": "2016-12-12 15:19:57",
+            "opened_at": '',
             "opened_by": {
                 "link": "https://dev61466.service-now.com/api/now/table/sys_user/681ccaf9c0a8016400b98a06818d57c7",
                 "value": "681ccaf9c0a8016400b98a06818d57c7"
@@ -3021,3 +3189,26 @@ MIRROR_ENTRIES = [
      'FileID': '20eb1079-d6c3-47cf-81bf-95968f93f6d3'},
     {'type': None, 'category': None, 'contents': 'This is a comment', 'contentsFormat': None,
      'tags': ['comments', 'work_notes'], 'note': True}]
+
+MIRROR_ENTRIES_WITH_EMPTY_USERNAME = [
+    {'Contents': '', 'ContentsFormat': 'text', 'type': 3, 'File': 'test.txt',
+     'FileID': '20eb1079-d6c3-47cf-81bf-95968f93f6d3', 'user': ''},
+    {'type': None, 'category': None, 'contents': 'This is a comment', 'contentsFormat': None,
+     'tags': ['comments', 'work_notes'], 'note': True, 'user': ''}]
+
+OAUTH_PARAMS = {
+    'insecure': False,
+    'credentials': {
+        'identifier': 'user1',
+        'password:': '12345'
+    },
+    'proxy': False,
+    'client_id': 'client_id',
+    'client_secret': 'client_secret',
+    'use_oauth': True
+}
+
+RESPONSE_GENERIC_TICKET = {
+    'sys_created_by': 'svc.SecOps_SplunkPhantom',
+    'sys_class_name': 'sn_si_incident'
+}

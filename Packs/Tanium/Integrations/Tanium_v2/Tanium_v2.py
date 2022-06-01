@@ -1,11 +1,12 @@
+import json
+from typing import Dict
 
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
+import demistomock as demisto  # noqa: F401
+import urllib3
+from CommonServerPython import *  # noqa: F401
+
 
 ''' IMPORTS '''
-import json
-import urllib3
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 ''' GLOBALS/PARAMS '''
@@ -16,11 +17,13 @@ DEFAULT_COMPLETION_PERCENTAGE = "95"
 
 
 class Client(BaseClient):
-    def __init__(self, base_url, username, password, domain, **kwargs):
+    def __init__(self, base_url, username, password, domain, api_token=None, **kwargs):
         self.username = username
         self.password = password
         self.domain = domain
         self.session = ''
+        self.api_token = api_token
+        self.check_authentication()
         super(Client, self).__init__(base_url, **kwargs)
 
     def do_request(self, method, url_suffix, data=None):
@@ -28,7 +31,19 @@ class Client(BaseClient):
             self.update_session()
 
         res = self._http_request(method, url_suffix, headers={'session': self.session}, json_data=data,
-                                 resp_type='response', ok_codes=[200, 400, 403, 404])
+                                 resp_type='response', ok_codes=[200, 400, 401, 403, 404])
+
+        if res.status_code == 401:
+            if self.api_token:
+                err_msg = 'Unauthorized Error: please verify that the given API token is valid and that the IP of the ' \
+                          'client is listed in the api_token_trusted_ip_address_list global setting.\n'
+            else:
+                err_msg = ''
+            try:
+                err_msg += str(res.json())
+            except ValueError:
+                err_msg += str(res)
+            return_error(err_msg)
 
         if res.status_code == 403:
             self.update_session()
@@ -42,19 +57,38 @@ class Client(BaseClient):
         return res.json()
 
     def update_session(self):
-        body = {
-            'username': self.username,
-            'domain': self.domain,
-            'password': self.password
-        }
+        if self.api_token:
+            self.session = self.api_token
+        elif self.username and self.password:
+            body = {
+                'username': self.username,
+                'domain': self.domain,
+                'password': self.password
+            }
 
-        res = self._http_request('GET', 'session/login', json_data=body, ok_codes=[200])
+            res = self._http_request('POST', 'session/login', json_data=body, ok_codes=[200])
 
-        self.session = res.get('data').get('session')
+            self.session = res.get('data').get('session')
+        else:  # no API token and no credentials were provided, raise an error:
+            return_error('Please provide either an API Token or Username & Password.')
+
         return self.session
 
     def login(self):
         return self.update_session()
+
+    def check_authentication(self):
+        """
+        Check that the authentication process is valid, i.e. user provided either API token to use OAuth 2.0
+        authentication or user provided Username & Password for basic authentication, but not both credentials and
+        API token.
+        """
+        if self.username and self.password and self.api_token:
+            return_error('Please clear either the Credentials or the API Token fields.\n'
+                         'If you wish to use basic authentication please provide username and password, '
+                         'and leave the API Token field empty.\n'
+                         'If you wish to use OAuth 2 authentication, please provide an API Token and leave the '
+                         'Credentials and Password fields empty.')
 
     def parse_sensor_parameters(self, parameters):
         sensors = parameters.split(';')
@@ -75,14 +109,28 @@ class Client(BaseClient):
 
         return parameter_conditions
 
-    def parse_action_parameters(self, parameters):
-        parameters = parameters.split(';')
-        parameter_conditions = []
-        for param in parameters:
-            parameter_conditions.append({
-                'key': param.split('=')[0],
-                'value': param.split('=')[1]})
+    def parse_action_parameters(self, parameters: str) -> List[Any]:
+        """
+        Receives a string representing a key=value list separated by ';', and returns them as a list of dictionaries
+        Args:
+            parameters (str): string which contains keys and values
 
+        Returns:
+            parameter_conditions (List): list of dictionaries
+        """
+        parameters_list = parameters.split(';')
+        parameter_conditions: List[Dict[str, str]] = list()
+        add_to_the_previous_pram = ''
+        # Goes over the parameters from the end and any param that does not contain a key and value is added to the previous param
+        for param in reversed(parameters_list):
+            param += add_to_the_previous_pram
+            add_to_the_previous_pram = ''
+            if '=' not in param or param.startswith('='):
+                add_to_the_previous_pram = f';{param}'
+                continue
+            parameter_conditions.insert(0, {
+                'key': param.split('=', 1)[0],
+                'value': param.split('=', 1)[1]})
         return parameter_conditions
 
     def add_parameters_to_question(self, question_response, parameters):
@@ -170,8 +218,10 @@ class Client(BaseClient):
         for row in results_sets.get('rows'):
             tmp_row = {}
             for item, column in zip(row.get('data', []), columns):
-                item_value = list(map(lambda x: x.get('text', ''), item))
-                item_value = ', '.join(item_value)
+                item_value_lst = list(map(lambda x: x.get('text', ''), item))
+                if "[current result unavailable]" in item_value_lst:
+                    break
+                item_value = ', '.join(item_value_lst)
 
                 if item_value != '[no results]':
                     tmp_row[column] = item_value
@@ -514,7 +564,7 @@ class Client(BaseClient):
 
 
 def test_module(client, data_args):
-    if client.login():
+    if client.do_request('GET', 'system_status'):
         return demisto.results('ok')
     raise ValueError('Test Tanium integration failed - please check your username and password')
 
@@ -1006,6 +1056,40 @@ def delete_group(client, data_args):
     return human_readable, outputs, raw_response
 
 
+def get_action_result(client, data_args):
+    actions_ids = argToList(data_args.get('id'))
+    action_res_outputs: List = []
+    action_res_hr: List = []
+
+    for action_id in actions_ids:
+        endpoint_url = '/result_data/action/' + str(action_id)
+        raw_response = client.do_request('GET', endpoint_url)
+        try:
+            all_devices_results = raw_response['data']['result_sets'][0]['rows']
+            device_results = []
+            for device_res in all_devices_results:
+                formatted_device = {
+                    'HostName': device_res['data'][0][0]['text'],
+                    'Status': str(device_res['data'][1][0]['text']).split(':')[1],
+                    'ComputerID': device_res['cid']
+                }
+                device_results.append(formatted_device)
+            raw_response = raw_response.get('data')
+            raw_response['ID'] = action_id
+            action_res_outputs.append(raw_response)
+            if device_results:
+                action_res_hr.extend(device_results)
+        except Exception:
+            continue
+
+    human_readable = tableToMarkdown('Device Statuses', t=action_res_hr, removeNull=True,
+                                     headers=['HostName', "Status", "ComputerID"])
+
+    context = createContext(action_res_outputs, removeNull=True)
+    outputs = {'Tanium.ActionResult(val.ID && val.ID === obj.ID)': context}
+    return human_readable, outputs, action_res_outputs
+
+
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 
@@ -1020,11 +1104,12 @@ def main():
     base_url = server + '/api/v2/'
     # Should we use SSL
     use_ssl = not params.get('insecure', False)
+    api_token = params.get('api_token')
 
     # Remove proxy if not set to true in params
     handle_proxy()
     command = demisto.command()
-    client = Client(base_url, username, password, domain, verify=use_ssl)
+    client = Client(base_url, username, password, domain, api_token=api_token, verify=use_ssl)
     demisto.info(f'Command being called is {command}')
 
     commands = {
@@ -1054,7 +1139,8 @@ def main():
         'tn-create-manual-group': create_manual_group,
         'tn-get-group': get_group,
         'tn-list-groups': get_groups,
-        'tn-delete-group': delete_group
+        'tn-delete-group': delete_group,
+        'tn-get-action-result': get_action_result
     }
 
     try:

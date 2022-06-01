@@ -1,0 +1,20 @@
+{
+  "defaultIncidentType": "TheHive",
+  "feed": false,
+  "id": "TheHive - Classifier",
+  "keyTypeMap": {
+    "case": "TheHive"
+  },
+  "name": "TheHive - Classifier",
+  "propagationLabels": [
+    "all"
+  ],
+  "transformer": {
+    "complex": null,
+    "simple": "_type"
+  },
+  "type": "classification",
+  "version": -1,
+  "fromVersion": "6.0.0",
+  "description": "Default classifier for TheHive Project cases"
+}

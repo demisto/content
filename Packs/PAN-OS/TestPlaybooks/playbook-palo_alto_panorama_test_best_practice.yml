@@ -1,23 +1,30 @@
 id: Panorama Best Practise - Test
-version: -1
-vcShouldKeepItemLegacyProdMachine: false
+inputs: []
 name: Panorama Best Practise - Test
+outputs: []
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 4e69f674-8efd-4877-86a1-f6bd3268c69f
-    type: start
-    task:
-      id: 4e69f674-8efd-4877-86a1-f6bd3268c69f
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
       - "1"
+    note: false
+    quietmode: 0
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: eaf41254-df84-4080-880f-66b28b997de0
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: eaf41254-df84-4080-880f-66b28b997de0
+    timertriggers: []
+    type: start
     view: |-
       {
         "position": {
@@ -25,35 +32,33 @@ tasks:
           "y": -700
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "1":
     id: "1"
-    taskid: f4483284-a8a4-4356-85c1-d052c2f82a34
-    type: regular
-    task:
-      id: f4483284-a8a4-4356-85c1-d052c2f82a34
-      version: -1
-      name: Delete Context
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
       - "39"
+    note: false
+    quietmode: 0
     scriptarguments:
       all:
         simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Delete field from context
+      id: caa11f04-a561-4474-8ebd-bbafe7e0022f
+      iscommand: false
+      name: Delete Context
+      script: DeleteContext
+      type: regular
+      version: -1
+    taskid: caa11f04-a561-4474-8ebd-bbafe7e0022f
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -61,26 +66,28 @@ tasks:
           "y": -570
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "2":
     id: "2"
-    taskid: 9bee09cf-7e0e-427f-854a-736a41de22fc
-    type: title
-    task:
-      id: 9bee09cf-7e0e-427f-854a-736a41de22fc
-      version: -1
-      name: WildFire
-      type: title
-      iscommand: false
-      brand: ""
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
       - "3"
+    note: false
+    quietmode: 0
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 1186f285-c551-42be-8263-b8128b2f9fff
+      iscommand: false
+      name: WildFire
+      type: title
+      version: -1
+    taskid: 1186f285-c551-42be-8263-b8128b2f9fff
+    timertriggers: []
+    type: title
     view: |-
       {
         "position": {
@@ -88,31 +95,33 @@ tasks:
           "y": 555
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "3":
     id: "3"
-    taskid: 81e80063-fd2d-4658-8c21-78647253295a
-    type: regular
-    task:
-      id: 81e80063-fd2d-4658-8c21-78647253295a
-      version: -1
-      name: get-wildfire-configuration
-      description: Retrieve Wildfire Configuration
-      script: '|||panorama-get-wildfire-configuration'
-      type: regular
-      iscommand: true
-      brand: ""
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
       - "15"
+    note: false
+    quietmode: 0
     scriptarguments:
       template:
         simple: WildFire
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Panorama
+      description: Retrieves the Wildfire configuration.
+      id: 22ed0f65-5006-4d0a-852f-cb58836a1bb5
+      iscommand: true
+      name: get-wildfire-configuration
+      script: Panorama|||pan-os-get-wildfire-configuration
+      type: regular
+      version: -1
+    taskid: 22ed0f65-5006-4d0a-852f-cb58836a1bb5
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -120,28 +129,30 @@ tasks:
           "y": 710
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "4":
     id: "4"
-    taskid: 319ef234-5fd2-4e7c-8c2b-0e9b10ee579c
-    type: regular
-    task:
-      id: 319ef234-5fd2-4e7c-8c2b-0e9b10ee579c
-      version: -1
-      name: get-wildfire- best-practice
-      description: Show WildFire best practices.
-      script: '|||panorama-get-wildfire-best-practice'
-      type: regular
-      iscommand: true
-      brand: ""
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
       - "5"
+    note: false
+    quietmode: 0
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Panorama
+      description: View WildFire best practices.
+      id: fd7f868d-f7f4-4652-885b-d00db59bbe8c
+      iscommand: true
+      name: get-wildfire- best-practice
+      script: Panorama|||pan-os-get-wildfire-best-practice
+      type: regular
+      version: -1
+    taskid: fd7f868d-f7f4-4652-885b-d00db59bbe8c
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -149,37 +160,39 @@ tasks:
           "y": 1020
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "5":
-    id: "5"
-    taskid: 06561053-7f05-4bcd-892a-b1df34a28adf
-    type: condition
-    task:
-      id: 06561053-7f05-4bcd-892a-b1df34a28adf
-      version: -1
-      name: Verify outputs
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "6"
-    separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               simple: Panorama.WildFire.Schedule.Action
-            iscontext: true
+          operator: isEqualString
           right:
             value:
               simple: download-and-install
+      label: "yes"
+    id: "5"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      "yes":
+      - "6"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 1898e54e-2b05-4d90-878e-82df9c2726fc
+      iscommand: false
+      name: Verify outputs
+      type: condition
+      version: -1
+    taskid: 1898e54e-2b05-4d90-878e-82df9c2726fc
+    timertriggers: []
+    type: condition
     view: |-
       {
         "position": {
@@ -187,31 +200,34 @@ tasks:
           "y": 1180
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "6":
     id: "6"
-    taskid: 91b67ba8-19a2-474b-83d7-5f390b3a3283
-    type: regular
-    task:
-      id: 91b67ba8-19a2-474b-83d7-5f390b3a3283
-      version: -1
-      name: enforce-wildfire-best-practice
-      description: Enforce wildfire file upload to the maximum size + all file types are forwarded and update schedule.
-      script: '|||panorama-enforce-wildfire-best-practice'
-      type: regular
-      iscommand: true
-      brand: ""
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
       - "16"
+    note: false
+    quietmode: 0
     scriptarguments:
       template:
         simple: WildFire
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Panorama
+      description: Enforces wildfire best practices to upload files to the maximum
+        size, forwards all file types, and updates the schedule.
+      id: 450e1918-1ecd-4f63-819d-33c7f0b61d68
+      iscommand: true
+      name: enforce-wildfire-best-practice
+      script: Panorama|||pan-os-enforce-wildfire-best-practice
+      type: regular
+      version: -1
+    taskid: 450e1918-1ecd-4f63-819d-33c7f0b61d68
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -219,26 +235,28 @@ tasks:
           "y": 1340
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "7":
     id: "7"
-    taskid: f6874694-c51f-42c6-8f5a-0768d0e8446b
-    type: title
-    task:
-      id: f6874694-c51f-42c6-8f5a-0768d0e8446b
-      version: -1
-      name: Get Security Profiles Best Practices
-      type: title
-      iscommand: false
-      brand: ""
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
       - "8"
+    note: false
+    quietmode: 0
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 39f32452-c8f9-4fb7-8c9c-7d90dc7db797
+      iscommand: false
+      name: Get Security Profiles Best Practices
+      type: title
+      version: -1
+    taskid: 39f32452-c8f9-4fb7-8c9c-7d90dc7db797
+    timertriggers: []
+    type: title
     view: |-
       {
         "position": {
@@ -246,28 +264,30 @@ tasks:
           "y": 1675
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "8":
     id: "8"
-    taskid: 3a48ac10-453b-40bc-8bc7-7deb39bb7f3e
-    type: regular
-    task:
-      id: 3a48ac10-453b-40bc-8bc7-7deb39bb7f3e
-      version: -1
-      name: get-anti-spyware-best-practice
-      description: Show anti-spyware best practices.
-      script: '|||panorama-get-anti-spyware-best-practice'
-      type: regular
-      iscommand: true
-      brand: ""
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
       - "9"
+    note: false
+    quietmode: 0
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Panorama
+      description: Get anti-spyware best practices.
+      id: c8827578-f78d-446a-89fc-04caf49f5c06
+      iscommand: true
+      name: get-anti-spyware-best-practice
+      script: Panorama|||pan-os-get-anti-spyware-best-practice
+      type: regular
+      version: -1
+    taskid: c8827578-f78d-446a-89fc-04caf49f5c06
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -275,45 +295,47 @@ tasks:
           "y": 1815
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "9":
-    id: "9"
-    taskid: de741d23-22ef-45d4-8f9c-e6587f99594a
-    type: condition
-    task:
-      id: de741d23-22ef-45d4-8f9c-e6587f99594a
-      version: -1
-      name: Verify outputs
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "10"
-    separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               simple: Panorama.Spyware.Rule.Name
-            iscontext: true
+          operator: isEqualString
           right:
             value:
               simple: simple-critical
-      - - operator: isEqualString
-          left:
+      - - left:
+            iscontext: true
             value:
               simple: Panorama.Spyware.Rule.Severity
-            iscontext: true
+          operator: isEqualString
           right:
             value:
               simple: critical
+      label: "yes"
+    id: "9"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      "yes":
+      - "10"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 27b17f0f-0ff1-41ef-8fed-360b2c8a4a5b
+      iscommand: false
+      name: Verify outputs
+      type: condition
+      version: -1
+    taskid: 27b17f0f-0ff1-41ef-8fed-360b2c8a4a5b
+    timertriggers: []
+    type: condition
     view: |-
       {
         "position": {
@@ -321,28 +343,30 @@ tasks:
           "y": 1970
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "10":
     id: "10"
-    taskid: 4f45e9d8-e7d9-45ad-8a73-6f93b622ebf2
-    type: regular
-    task:
-      id: 4f45e9d8-e7d9-45ad-8a73-6f93b622ebf2
-      version: -1
-      name: get-file-blocking-best-practice
-      description: Show file-blocking best practices.
-      script: '|||panorama-get-file-blocking-best-practice'
-      type: regular
-      iscommand: true
-      brand: ""
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
       - "11"
+    note: false
+    quietmode: 0
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Panorama
+      description: Get file-blocking best practices.
+      id: 9dbb5c7d-9605-41ab-8398-599d8affd21e
+      iscommand: true
+      name: get-file-blocking-best-practice
+      script: Panorama|||pan-os-get-file-blocking-best-practice
+      type: regular
+      version: -1
+    taskid: 9dbb5c7d-9605-41ab-8398-599d8affd21e
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -350,39 +374,41 @@ tasks:
           "y": 2160
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "11":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Panorama.FileBlocking.Rule.Name
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Panorama.FileBlocking.Rule.Action
+          operator: isNotEmpty
+      label: "yes"
     id: "11"
-    taskid: 20e70983-5801-40e0-83de-42cedc340b0f
-    type: condition
-    task:
-      id: 20e70983-5801-40e0-83de-42cedc340b0f
-      version: -1
-      name: Verify outputs
-      type: condition
-      iscommand: false
-      brand: ""
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       "yes":
       - "12"
+    note: false
+    quietmode: 0
     separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Panorama.FileBlocking.Rule.Name
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Panorama.FileBlocking.Rule.Action
-            iscontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: a72d061f-9ff6-4a40-800d-cf92a7c16a4c
+      iscommand: false
+      name: Verify outputs
+      type: condition
+      version: -1
+    taskid: a72d061f-9ff6-4a40-800d-cf92a7c16a4c
+    timertriggers: []
+    type: condition
     view: |-
       {
         "position": {
@@ -390,31 +416,33 @@ tasks:
           "y": 2310
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "12":
     id: "12"
-    taskid: 7963cfca-92c7-4f3d-8544-69cd056b6f8c
-    type: regular
-    task:
-      id: 7963cfca-92c7-4f3d-8544-69cd056b6f8c
-      version: -1
-      name: get-security-profiles
-      description: Get information about profiles.
-      script: '|||panorama-get-security-profiles'
-      type: regular
-      iscommand: true
-      brand: ""
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
       - "13"
+    note: false
+    quietmode: 0
     scriptarguments:
       security_profile:
         simple: virus
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Panorama
+      description: Gets information for the specified security profile.
+      id: 891bd5ad-7b7c-40cf-83bf-24801a8a33a0
+      iscommand: true
+      name: get-security-profiles
+      script: Panorama|||pan-os-get-security-profiles
+      type: regular
+      version: -1
+    taskid: 891bd5ad-7b7c-40cf-83bf-24801a8a33a0
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -422,53 +450,55 @@ tasks:
           "y": 2470
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "13":
+    conditions:
+    - condition:
+      - - left:
+            value:
+              simple: ftp
+          operator: in
+          right:
+            iscontext: true
+            value:
+              simple: Panorama.Antivirus.Decoder.Name
+      - - left:
+            iscontext: true
+            value:
+              simple: Panorama.Antivirus.Decoder.Action
+          operator: isEqualString
+          right:
+            value:
+              simple: default
+      - - left:
+            iscontext: true
+            value:
+              simple: Panorama.Antivirus.Decoder.WildFire-action
+          operator: isEqualString
+          right:
+            value:
+              simple: default
+      label: "yes"
     id: "13"
-    taskid: 11225825-80ee-4972-888c-95981f5c2dd2
-    type: condition
-    task:
-      id: 11225825-80ee-4972-888c-95981f5c2dd2
-      version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      brand: ""
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       "yes":
       - "18"
+    note: false
+    quietmode: 0
     separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: in
-          left:
-            value:
-              simple: ftp
-          right:
-            value:
-              simple: Panorama.Antivirus.Decoder.Name
-            iscontext: true
-      - - operator: isEqualString
-          left:
-            value:
-              simple: Panorama.Antivirus.Decoder.Action
-            iscontext: true
-          right:
-            value:
-              simple: default
-      - - operator: isEqualString
-          left:
-            value:
-              simple: Panorama.Antivirus.Decoder.WildFire-action
-            iscontext: true
-          right:
-            value:
-              simple: default
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 8be80469-fcce-489e-8a35-f10a9cfb92b9
+      iscommand: false
+      name: Verify Outputs
+      type: condition
+      version: -1
+    taskid: 8be80469-fcce-489e-8a35-f10a9cfb92b9
+    timertriggers: []
+    type: condition
     view: |-
       {
         "position": {
@@ -476,45 +506,47 @@ tasks:
           "y": 2650
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "15":
+    conditions:
+    - condition:
+      - - left:
+            value:
+              simple: download-and-install
+          operator: in
+          right:
+            iscontext: true
+            value:
+              simple: Panorama.WildFire.Schedule.recurring.every-min.action
+      - - left:
+            value:
+              simple: pe
+          operator: in
+          right:
+            iscontext: true
+            value:
+              simple: Panorama.WildFire.Name
+      label: "yes"
     id: "15"
-    taskid: 731e55db-13a0-4c81-8108-e1b0648bfe3a
-    type: condition
-    task:
-      id: 731e55db-13a0-4c81-8108-e1b0648bfe3a
-      version: -1
-      name: Verify outputs
-      type: condition
-      iscommand: false
-      brand: ""
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       "yes":
       - "4"
+    note: false
+    quietmode: 0
     separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: in
-          left:
-            value:
-              simple: download-and-install
-          right:
-            value:
-              simple: Panorama.WildFire.Schedule.recurring.every-min.action
-            iscontext: true
-      - - operator: in
-          left:
-            value:
-              simple: pe
-          right:
-            value:
-              simple: Panorama.WildFire.Name
-            iscontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 2455c0e1-e651-4b86-8c8d-fb2dffabb8cd
+      iscommand: false
+      name: Verify outputs
+      type: condition
+      version: -1
+    taskid: 2455c0e1-e651-4b86-8c8d-fb2dffabb8cd
+    timertriggers: []
+    type: condition
     view: |-
       {
         "position": {
@@ -522,33 +554,35 @@ tasks:
           "y": 865
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "16":
     id: "16"
-    taskid: 963ca776-db8a-4bdc-8b13-d262c7119119
-    type: regular
-    task:
-      id: 963ca776-db8a-4bdc-8b13-d262c7119119
-      version: -1
-      name: Verify command success
-      description: Verify given entry contains a string
-      scriptName: VerifyHumanReadableContains
-      type: regular
-      iscommand: false
-      brand: ""
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
       - "7"
+    note: false
+    quietmode: 0
     scriptarguments:
       humanReadableEntryId:
         simple: ${lastCompletedTaskEntries}
       substring:
         simple: The schedule was updated according to the best practice.
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Verify given entry contains a string
+      id: 25dd45ef-0f5d-41ba-8aa0-42a6471639fe
+      iscommand: false
+      name: Verify command success
+      script: VerifyHumanReadableContains
+      type: regular
+      version: -1
+    taskid: 25dd45ef-0f5d-41ba-8aa0-42a6471639fe
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -556,28 +590,33 @@ tasks:
           "y": 1510
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "17":
     id: "17"
-    taskid: e1303709-d709-4f6b-8fe6-6e0d7fdc8e49
-    type: regular
-    task:
-      id: e1303709-d709-4f6b-8fe6-6e0d7fdc8e49
-      version: -1
-      name: Panorama-commit
-      description: Commits a configuration to Palo Alto Firewall or Panorama, but does not validate if the commit was successful. Committing to Panorama does not push the configuration to the Firewalls. To push the configuration, run the panorama-push-to-device-group command.
-      script: '|||panorama-commit'
-      type: regular
-      iscommand: true
-      brand: ""
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
       - "36"
+    note: false
+    quietmode: 0
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Panorama
+      description: Commits a configuration to the Palo Alto firewall or Panorama,
+        but does not validate if the commit was successful. Committing to Panorama
+        does not push the configuration to the firewalls. To push the configuration,
+        run the panorama-push-to-device-group command.
+      id: 7befe6d7-f713-48f7-813c-4215d3dc5917
+      iscommand: true
+      name: pan-os-commit
+      script: Panorama|||pan-os-commit
+      type: regular
+      version: -1
+    taskid: 7befe6d7-f713-48f7-813c-4215d3dc5917
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -585,28 +624,30 @@ tasks:
           "y": 240
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "18":
     id: "18"
-    taskid: b98f2524-c220-48e1-8bd6-f8e3a7d55b63
-    type: regular
-    task:
-      id: b98f2524-c220-48e1-8bd6-f8e3a7d55b63
-      version: -1
-      name: get-antivirus-best-practice
-      description: Show anti-virus best practices.
-      script: '|||panorama-get-antivirus-best-practice'
-      type: regular
-      iscommand: true
-      brand: ""
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
       - "19"
+    note: false
+    quietmode: 0
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Panorama
+      description: Get anti-virus best practices.
+      id: a7651f54-358e-4ebc-855e-84946916b720
+      iscommand: true
+      name: get-antivirus-best-practice
+      script: Panorama|||pan-os-get-antivirus-best-practice
+      type: regular
+      version: -1
+    taskid: a7651f54-358e-4ebc-855e-84946916b720
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -614,45 +655,47 @@ tasks:
           "y": 2820
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "19":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Panorama.Antivirus.Decoder.Action
+          operator: isEqualString
+          right:
+            value:
+              simple: default
+      - - left:
+            iscontext: true
+            value:
+              simple: Panorama.Antivirus.Decoder.WildFire-action
+          operator: isEqualString
+          right:
+            value:
+              simple: default
+      label: "yes"
     id: "19"
-    taskid: c258da8c-fdd1-415c-807c-64c9d6133727
-    type: condition
-    task:
-      id: c258da8c-fdd1-415c-807c-64c9d6133727
-      version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      brand: ""
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       "yes":
       - "20"
+    note: false
+    quietmode: 0
     separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: Panorama.Antivirus.Decoder.Action
-            iscontext: true
-          right:
-            value:
-              simple: default
-      - - operator: isEqualString
-          left:
-            value:
-              simple: Panorama.Antivirus.Decoder.WildFire-action
-            iscontext: true
-          right:
-            value:
-              simple: default
+    skipunavailable: false
+    task:
+      brand: ""
+      id: bfeecd43-03a7-4032-8614-6fd856212842
+      iscommand: false
+      name: Verify Outputs
+      type: condition
+      version: -1
+    taskid: bfeecd43-03a7-4032-8614-6fd856212842
+    timertriggers: []
+    type: condition
     view: |-
       {
         "position": {
@@ -660,28 +703,30 @@ tasks:
           "y": 3000
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "20":
     id: "20"
-    taskid: ddf31fe5-dbbe-4b32-89c0-0b18e3d5e542
-    type: regular
-    task:
-      id: ddf31fe5-dbbe-4b32-89c0-0b18e3d5e542
-      version: -1
-      name: get-vulnerability-protection-best-practice
-      description: Show vulnerability-protection best practices.
-      script: '|||panorama-get-vulnerability-protection-best-practice'
-      type: regular
-      iscommand: true
-      brand: ""
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
       - "21"
+    note: false
+    quietmode: 0
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Show vulnerability-protection best practices.
+      id: 1f09ce78-7776-4a41-8971-27a55b69b7b6
+      iscommand: true
+      name: get-vulnerability-protection-best-practice
+      script: '|||panorama-get-vulnerability-protection-best-practice'
+      type: regular
+      version: -1
+    taskid: 1f09ce78-7776-4a41-8971-27a55b69b7b6
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -689,53 +734,55 @@ tasks:
           "y": 3160
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "21":
-    id: "21"
-    taskid: 7b64ec93-82ea-4c93-85af-599464ba97cd
-    type: condition
-    task:
-      id: 7b64ec93-82ea-4c93-85af-599464ba97cd
-      version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "22"
-    separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: in
-          left:
+    - condition:
+      - - left:
             value:
               simple: simple-client-critical
+          operator: in
           right:
+            iscontext: true
             value:
               simple: Panorama.Vulnerability.Rule.Name
+      - - left:
             iscontext: true
-      - - operator: isEqualString
-          left:
             value:
               simple: Panorama.Vulnerability.Rule.Severity
-            iscontext: true
+          operator: isEqualString
           right:
             value:
               simple: critical
-      - - operator: isEqualString
-          left:
+      - - left:
+            iscontext: true
             value:
               simple: Panorama.Vulnerability.Rule.CVE
-            iscontext: true
+          operator: isEqualString
           right:
             value:
               simple: any
+      label: "yes"
+    id: "21"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      "yes":
+      - "22"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: b0cc0d80-adb6-42c9-8fcc-415aae536c31
+      iscommand: false
+      name: Verify Outputs
+      type: condition
+      version: -1
+    taskid: b0cc0d80-adb6-42c9-8fcc-415aae536c31
+    timertriggers: []
+    type: condition
     view: |-
       {
         "position": {
@@ -743,28 +790,30 @@ tasks:
           "y": 3330
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "22":
     id: "22"
-    taskid: 7a140420-b17f-422a-8a78-bf5f791904bc
-    type: regular
-    task:
-      id: 7a140420-b17f-422a-8a78-bf5f791904bc
-      version: -1
-      name: get-url-filtering-best-practice
-      description: Show URL Filtering best practices.
-      script: '|||panorama-get-url-filtering-best-practice'
-      type: regular
-      iscommand: true
-      brand: ""
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
       - "23"
+    note: false
+    quietmode: 0
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Panorama
+      description: View URL filtering best practices.
+      id: ba65cc4c-e035-4477-8614-5c2895f49fab
+      iscommand: true
+      name: get-url-filtering-best-practice
+      script: Panorama|||pan-os-get-url-filtering-best-practice
+      type: regular
+      version: -1
+    taskid: ba65cc4c-e035-4477-8614-5c2895f49fab
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -772,45 +821,47 @@ tasks:
           "y": 3490
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "23":
-    id: "23"
-    taskid: 3d04a2ae-4a46-4b9b-8e55-89fba0f38438
-    type: condition
-    task:
-      id: 3d04a2ae-4a46-4b9b-8e55-89fba0f38438
-      version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "24"
-    separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: in
-          left:
+    - condition:
+      - - left:
             value:
               simple: abortion
+          operator: in
           right:
+            iscontext: true
             value:
               simple: Panorama.URLFilter.Category.Name
+      - - left:
             iscontext: true
-      - - operator: isEqualString
-          left:
             value:
               simple: Panorama.URLFilter.Category.Action
-            iscontext: true
+          operator: isEqualString
           right:
             value:
               simple: alert
+      label: "yes"
+    id: "23"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      "yes":
+      - "24"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 000845ac-5e24-4c7e-878b-0143e112442a
+      iscommand: false
+      name: Verify Outputs
+      type: condition
+      version: -1
+    taskid: 000845ac-5e24-4c7e-878b-0143e112442a
+    timertriggers: []
+    type: condition
     view: |-
       {
         "position": {
@@ -818,26 +869,28 @@ tasks:
           "y": 3660
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "24":
     id: "24"
-    taskid: 0eb02c73-5c14-4d4f-8036-ee449257dbbe
-    type: title
-    task:
-      id: 0eb02c73-5c14-4d4f-8036-ee449257dbbe
-      version: -1
-      name: Security Profiles Creation
-      type: title
-      iscommand: false
-      brand: ""
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
       - "25"
+    note: false
+    quietmode: 0
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 551d7602-13a9-4829-8c21-840890bbf06e
+      iscommand: false
+      name: Security Profiles Creation
+      type: title
+      version: -1
+    taskid: 551d7602-13a9-4829-8c21-840890bbf06e
+    timertriggers: []
+    type: title
     view: |-
       {
         "position": {
@@ -845,31 +898,33 @@ tasks:
           "y": 3830
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "25":
     id: "25"
-    taskid: 457583cb-19b4-47f1-80f4-ce664483fc84
-    type: regular
-    task:
-      id: 457583cb-19b4-47f1-80f4-ce664483fc84
-      version: -1
-      name: create-antivirus-best-practice
-      description: Create antivirus best practice profile.
-      script: '|||panorama-create-antivirus-best-practice-profile'
-      type: regular
-      iscommand: true
-      brand: ""
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
       - "26"
+    note: false
+    quietmode: 0
     scriptarguments:
       profile_name:
         simple: test-profile
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Panorama
+      description: Creates an antivirus best practice profile.
+      id: 301badc7-874a-4d89-80cc-8205f6aa45b7
+      iscommand: true
+      name: create-antivirus-best-practice
+      script: Panorama|||pan-os-create-antivirus-best-practice-profile
+      type: regular
+      version: -1
+    taskid: 301badc7-874a-4d89-80cc-8205f6aa45b7
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -877,33 +932,35 @@ tasks:
           "y": 3940
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "26":
     id: "26"
-    taskid: 9f9cbaa3-d54d-480e-8f3e-3eeaef542131
-    type: regular
-    task:
-      id: 9f9cbaa3-d54d-480e-8f3e-3eeaef542131
-      version: -1
-      name: Verify creation succcess
-      description: Verify given entry contains a string
-      scriptName: VerifyHumanReadableContains
-      type: regular
-      iscommand: false
-      brand: ""
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
       - "27"
+    note: false
+    quietmode: 0
     scriptarguments:
       humanReadableEntryId:
         simple: ${lastCompletedTaskEntries}
       substring:
         simple: The profile test-profile was created successfully.
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Verify given entry contains a string
+      id: a77c2348-8c8b-4878-8e73-4bdd685c368f
+      iscommand: false
+      name: Verify creation succcess
+      script: VerifyHumanReadableContains
+      type: regular
+      version: -1
+    taskid: a77c2348-8c8b-4878-8e73-4bdd685c368f
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -911,31 +968,33 @@ tasks:
           "y": 4110
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "27":
     id: "27"
-    taskid: aeadaa71-f69a-450f-82a9-ba0299d6165c
-    type: regular
-    task:
-      id: aeadaa71-f69a-450f-82a9-ba0299d6165c
-      version: -1
-      name: create-anti-spyware-best-practice
-      description: Create Anti Spyware best practice profile.
-      script: '|||panorama-create-anti-spyware-best-practice-profile'
-      type: regular
-      iscommand: true
-      brand: ""
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
       - "28"
+    note: false
+    quietmode: 0
     scriptarguments:
       profile_name:
         simple: test-profile
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Panorama
+      description: Creates an Anti-Spyware best practice profile.
+      id: ab8dbf48-07de-4720-8729-4b782caba37d
+      iscommand: true
+      name: create-anti-spyware-best-practice
+      script: Panorama|||pan-os-create-anti-spyware-best-practice-profile
+      type: regular
+      version: -1
+    taskid: ab8dbf48-07de-4720-8729-4b782caba37d
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -943,33 +1002,35 @@ tasks:
           "y": 4280
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "28":
     id: "28"
-    taskid: fbd96852-73d9-4b17-8c9a-b56ea4bca505
-    type: regular
-    task:
-      id: fbd96852-73d9-4b17-8c9a-b56ea4bca505
-      version: -1
-      name: Verify creation success
-      description: Verify given entry contains a string
-      scriptName: VerifyHumanReadableContains
-      type: regular
-      iscommand: false
-      brand: ""
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
       - "29"
+    note: false
+    quietmode: 0
     scriptarguments:
       humanReadableEntryId:
         simple: ${lastCompletedTaskEntries}
       substring:
         simple: The profile test-profile was created successfully.
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Verify given entry contains a string
+      id: e9a8f7f4-b674-4b40-8635-903cd330625a
+      iscommand: false
+      name: Verify creation success
+      script: VerifyHumanReadableContains
+      type: regular
+      version: -1
+    taskid: e9a8f7f4-b674-4b40-8635-903cd330625a
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -977,31 +1038,33 @@ tasks:
           "y": 4450
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "29":
     id: "29"
-    taskid: e77f11c4-a0a9-4e23-8599-df275e1ec4c2
-    type: regular
-    task:
-      id: e77f11c4-a0a9-4e23-8599-df275e1ec4c2
-      version: -1
-      name: create-vulnerability-best-practice
-      description: Create vulnerability protection best practice profile.
-      script: '|||panorama-create-vulnerability-best-practice-profile'
-      type: regular
-      iscommand: true
-      brand: ""
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
       - "30"
+    note: false
+    quietmode: 0
     scriptarguments:
       profile_name:
         simple: test-profile
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Panorama
+      description: Creates a vulnerability protection best practice profile.
+      id: 33a687b2-1553-4eb9-88cf-f98f2b8897cd
+      iscommand: true
+      name: create-vulnerability-best-practice
+      script: Panorama|||pan-os-create-vulnerability-best-practice-profile
+      type: regular
+      version: -1
+    taskid: 33a687b2-1553-4eb9-88cf-f98f2b8897cd
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -1009,33 +1072,35 @@ tasks:
           "y": 4630
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "30":
     id: "30"
-    taskid: 18d665dc-8db3-4327-83d5-4bd32d15d7ad
-    type: regular
-    task:
-      id: 18d665dc-8db3-4327-83d5-4bd32d15d7ad
-      version: -1
-      name: Verify creation success
-      description: Verify given entry contains a string
-      scriptName: VerifyHumanReadableContains
-      type: regular
-      iscommand: false
-      brand: ""
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
       - "31"
+    note: false
+    quietmode: 0
     scriptarguments:
       humanReadableEntryId:
         simple: ${lastCompletedTaskEntries}
       substring:
         simple: The profile test-profile was created successfully.
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Verify given entry contains a string
+      id: a9a00388-de09-4c6b-8aa7-cc30ae8903ec
+      iscommand: false
+      name: Verify creation success
+      script: VerifyHumanReadableContains
+      type: regular
+      version: -1
+    taskid: a9a00388-de09-4c6b-8aa7-cc30ae8903ec
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -1043,31 +1108,33 @@ tasks:
           "y": 4810
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "31":
     id: "31"
-    taskid: 4579eab2-ce4f-44bb-8b47-04b8c70dec7f
-    type: regular
-    task:
-      id: 4579eab2-ce4f-44bb-8b47-04b8c70dec7f
-      version: -1
-      name: create-url-filtering-best-practice
-      description: Create URL filtering best practice profile.
-      script: '|||panorama-create-url-filtering-best-practice-profile'
-      type: regular
-      iscommand: true
-      brand: ""
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
       - "32"
+    note: false
+    quietmode: 0
     scriptarguments:
       profile_name:
         simple: test-profile
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Panorama
+      description: Creates a URL filtering best practice profile.
+      id: 25875bd0-cffd-4cfb-88bb-dfee5faa42af
+      iscommand: true
+      name: create-url-filtering-best-practice
+      script: Panorama|||pan-os-create-url-filtering-best-practice-profile
+      type: regular
+      version: -1
+    taskid: 25875bd0-cffd-4cfb-88bb-dfee5faa42af
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -1075,33 +1142,35 @@ tasks:
           "y": 4980
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "32":
     id: "32"
-    taskid: 6b7c10f2-16ac-47ff-8beb-8b79f8dec2a5
-    type: regular
-    task:
-      id: 6b7c10f2-16ac-47ff-8beb-8b79f8dec2a5
-      version: -1
-      name: Verify creation success
-      description: Verify given entry contains a string
-      scriptName: VerifyHumanReadableContains
-      type: regular
-      iscommand: false
-      brand: ""
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
       - "33"
+    note: false
+    quietmode: 0
     scriptarguments:
       humanReadableEntryId:
         simple: ${lastCompletedTaskEntries}
       substring:
         simple: The profile test-profile was created successfully.
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Verify given entry contains a string
+      id: 827cf824-bba2-461f-857c-e4b23bb215f9
+      iscommand: false
+      name: Verify creation success
+      script: VerifyHumanReadableContains
+      type: regular
+      version: -1
+    taskid: 827cf824-bba2-461f-857c-e4b23bb215f9
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -1109,31 +1178,33 @@ tasks:
           "y": 5160
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "33":
     id: "33"
-    taskid: abb07dee-66cd-46dc-8c53-db3a0ad24860
-    type: regular
-    task:
-      id: abb07dee-66cd-46dc-8c53-db3a0ad24860
-      version: -1
-      name: create-file-blocking-best-practice
-      description: Create file blocking best practice profile.
-      script: '|||panorama-create-file-blocking-best-practice-profile'
-      type: regular
-      iscommand: true
-      brand: ""
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
       - "34"
+    note: false
+    quietmode: 0
     scriptarguments:
       profile_name:
         simple: test-profile
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Panorama
+      description: Creates a file blocking best practice profile.
+      id: 213a1a4f-dca6-4ab9-8c37-8cdea5a4df53
+      iscommand: true
+      name: create-file-blocking-best-practice
+      script: Panorama|||pan-os-create-file-blocking-best-practice-profile
+      type: regular
+      version: -1
+    taskid: 213a1a4f-dca6-4ab9-8c37-8cdea5a4df53
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -1141,33 +1212,35 @@ tasks:
           "y": 5330
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "34":
     id: "34"
-    taskid: fb2e8b30-56e9-4c06-849e-3127861c1184
-    type: regular
-    task:
-      id: fb2e8b30-56e9-4c06-849e-3127861c1184
-      version: -1
-      name: Verify creation success
-      description: Verify given entry contains a string
-      scriptName: VerifyHumanReadableContains
-      type: regular
-      iscommand: false
-      brand: ""
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
       - "38"
+    note: false
+    quietmode: 0
     scriptarguments:
       humanReadableEntryId:
         simple: ${lastCompletedTaskEntries}
       substring:
         simple: The profile test-profile was created successfully.
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Verify given entry contains a string
+      id: 7f8b055f-2a3c-4821-847c-9860dfc77f2c
+      iscommand: false
+      name: Verify creation success
+      script: VerifyHumanReadableContains
+      type: regular
+      version: -1
+    taskid: 7f8b055f-2a3c-4821-847c-9860dfc77f2c
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -1175,23 +1248,25 @@ tasks:
           "y": 5510
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "35":
     id: "35"
-    taskid: d3501773-9f71-4fdf-80c7-5bcf53369802
-    type: title
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
     task:
-      id: d3501773-9f71-4fdf-80c7-5bcf53369802
-      version: -1
+      brand: ""
+      id: 2dae48ac-aeb2-45f5-8344-e3f685fa4c9f
+      iscommand: false
       name: Done
       type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
+      version: -1
+    taskid: 2dae48ac-aeb2-45f5-8344-e3f685fa4c9f
+    timertriggers: []
+    type: title
     view: |-
       {
         "position": {
@@ -1199,31 +1274,33 @@ tasks:
           "y": 6710
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "36":
     id: "36"
-    taskid: 9d9a5a79-7fc0-45df-8705-24726830911e
-    type: regular
-    task:
-      id: 9d9a5a79-7fc0-45df-8705-24726830911e
-      version: -1
-      name: wait
-      description: Sleep for X seconds
-      scriptName: Sleep
-      type: regular
-      iscommand: false
-      brand: ""
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
       - "2"
+    note: false
+    quietmode: 0
     scriptarguments:
       seconds:
         simple: "20"
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Sleep for X seconds
+      id: c2452c02-a643-42fd-8abb-3ac4ec210323
+      iscommand: false
+      name: wait
+      script: Sleep
+      type: regular
+      version: -1
+    taskid: c2452c02-a643-42fd-8abb-3ac4ec210323
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -1231,33 +1308,35 @@ tasks:
           "y": 400
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "37":
     id: "37"
-    taskid: 045b3eb2-cde6-4110-8e6a-a18edfa36140
-    type: regular
-    task:
-      id: 045b3eb2-cde6-4110-8e6a-a18edfa36140
-      version: -1
-      name: Verify creation success
-      description: Verify given entry contains a string
-      scriptName: VerifyHumanReadableContains
-      type: regular
-      iscommand: false
-      brand: ""
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
       - "43"
+    note: false
+    quietmode: 0
     scriptarguments:
       humanReadableEntryId:
         simple: ${lastCompletedTaskEntries}
       substring:
         simple: The profile test-profile was created successfully.
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Verify given entry contains a string
+      id: 4c3c0f7f-9e7b-4216-833c-3fc1dac2a5f3
+      iscommand: false
+      name: Verify creation success
+      script: VerifyHumanReadableContains
+      type: regular
+      version: -1
+    taskid: 4c3c0f7f-9e7b-4216-833c-3fc1dac2a5f3
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -1265,31 +1344,33 @@ tasks:
           "y": 5830
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "38":
     id: "38"
-    taskid: 5caa100f-2493-416c-8ed1-12357f1ad80c
-    type: regular
-    task:
-      id: 5caa100f-2493-416c-8ed1-12357f1ad80c
-      version: -1
-      name: create-wildfire-best-practice
-      description: Create WildFire analysis best practice profile.
-      script: '|||panorama-create-wildfire-best-practice-profile'
-      type: regular
-      iscommand: true
-      brand: ""
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
       - "37"
+    note: false
+    quietmode: 0
     scriptarguments:
       profile_name:
         simple: test-profile
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Panorama
+      description: Creates a WildFire analysis best practice profile.
+      id: 2caa4bee-3d98-4894-80fb-a93826c4852e
+      iscommand: true
+      name: create-wildfire-best-practice
+      script: Panorama|||pan-os-create-wildfire-best-practice-profile
+      type: regular
+      version: -1
+    taskid: 2caa4bee-3d98-4894-80fb-a93826c4852e
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -1297,28 +1378,30 @@ tasks:
           "y": 5680
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "39":
     id: "39"
-    taskid: 5cec98dc-41b4-4cd3-8783-82e266d49962
-    type: regular
-    task:
-      id: 5cec98dc-41b4-4cd3-8783-82e266d49962
-      version: -1
-      name: get-licenses
-      description: Get information about PAN-OS available licenses and their statuses.
-      script: '|||panorama-get-licenses'
-      type: regular
-      iscommand: true
-      brand: ""
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
       - "40"
+    note: false
+    quietmode: 0
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Panorama
+      description: Gets information about available PAN-OS licenses and their statuses.
+      id: a32209e4-c5d2-4955-8edf-d0ac65b53d74
+      iscommand: true
+      name: get-licenses
+      script: Panorama|||pan-os-get-licenses
+      type: regular
+      version: -1
+    taskid: a32209e4-c5d2-4955-8edf-d0ac65b53d74
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -1326,45 +1409,47 @@ tasks:
           "y": -410
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "40":
-    id: "40"
-    taskid: 4bf243e1-372a-4a11-8bb5-a7faa4a252e6
-    type: condition
-    task:
-      id: 4bf243e1-372a-4a11-8bb5-a7faa4a252e6
-      version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "41"
-    separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               simple: Panorama.License.Feature
-            iscontext: true
+          operator: isEqualString
           right:
             value:
               simple: NFR Support
-      - - operator: isEqualString
-          left:
+      - - left:
+            iscontext: true
             value:
               simple: Panorama.License.Serial
-            iscontext: true
+          operator: isEqualString
           right:
             value:
               simple: 007DEMISTO1
+      label: "yes"
+    id: "40"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      "yes":
+      - "41"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 10c32601-59a9-47a4-8815-226f9a59e288
+      iscommand: false
+      name: Verify Outputs
+      type: condition
+      version: -1
+    taskid: 10c32601-59a9-47a4-8815-226f9a59e288
+    timertriggers: []
+    type: condition
     view: |-
       {
         "position": {
@@ -1372,31 +1457,33 @@ tasks:
           "y": -250
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "41":
     id: "41"
-    taskid: e74dd4e5-6511-4c6d-877e-256ff57ef4f8
-    type: regular
-    task:
-      id: e74dd4e5-6511-4c6d-877e-256ff57ef4f8
-      version: -1
-      name: get-ssl-rules
-      description: Show ssl decryption rules under policies -> decryption -> rules
-      script: '|||panorama-get-ssl-decryption-rules'
-      type: regular
-      iscommand: true
-      brand: ""
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
       - "42"
+    note: false
+    quietmode: 0
     scriptarguments:
       pre_post:
         simple: pre-rulebase
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Panorama
+      description: Get SSL decryption rules.
+      id: 9edb17e7-12cf-4794-8833-50b6ff7a4c41
+      iscommand: true
+      name: get-ssl-rules
+      script: Panorama|||pan-os-get-ssl-decryption-rules
+      type: regular
+      version: -1
+    taskid: 9edb17e7-12cf-4794-8833-50b6ff7a4c41
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -1404,45 +1491,47 @@ tasks:
           "y": -90
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "42":
-    id: "42"
-    taskid: dda9b971-542a-4316-8809-af80d04b9118
-    type: condition
-    task:
-      id: dda9b971-542a-4316-8809-af80d04b9118
-      version: -1
-      name: Verify outputs
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "17"
-    separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               simple: Panorama.SSLRule.Name
-            iscontext: true
+          operator: isEqualString
           right:
             value:
               simple: test
-      - - operator: isEqualString
-          left:
+      - - left:
+            iscontext: true
             value:
               simple: Panorama.SSLRule.Action
-            iscontext: true
+          operator: isEqualString
           right:
             value:
               simple: no-decrypt
+      label: "yes"
+    id: "42"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      "yes":
+      - "17"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: e3940520-4940-46cf-8fcc-6770fd804a15
+      iscommand: false
+      name: Verify outputs
+      type: condition
+      version: -1
+    taskid: e3940520-4940-46cf-8fcc-6770fd804a15
+    timertriggers: []
+    type: condition
     view: |-
       {
         "position": {
@@ -1450,27 +1539,16 @@ tasks:
           "y": 80
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "43":
     id: "43"
-    taskid: e16049fe-3d39-4c41-8d14-cd5e36597cdf
-    type: regular
-    task:
-      id: e16049fe-3d39-4c41-8d14-cd5e36597cdf
-      version: -1
-      name: apply-security-profile
-      description: Apply profile to specific rules / rules with specific tag.
-      script: '|||panorama-apply-security-profile'
-      type: regular
-      iscommand: true
-      brand: ""
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
       - "44"
+    note: false
+    quietmode: 0
     scriptarguments:
       pre_post:
         simple: pre-rulebase
@@ -1481,6 +1559,20 @@ tasks:
       rule_name:
         simple: Test1
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Panorama
+      description: Apply a security profile to specific rules or rules with a specific
+        tag.
+      id: 70d99feb-b136-4585-830e-ac31c6a30aef
+      iscommand: true
+      name: apply-security-profile
+      script: Panorama|||pan-os-apply-security-profile
+      type: regular
+      version: -1
+    taskid: 70d99feb-b136-4585-830e-ac31c6a30aef
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -1488,33 +1580,35 @@ tasks:
           "y": 6020
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "44":
     id: "44"
-    taskid: d5a1667a-a578-416e-81ea-e39aae4756e6
-    type: regular
-    task:
-      id: d5a1667a-a578-416e-81ea-e39aae4756e6
-      version: -1
-      name: Verify apply success
-      description: Verify given entry contains a string
-      scriptName: VerifyHumanReadableContains
-      type: regular
-      iscommand: false
-      brand: ""
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
       - "45"
+    note: false
+    quietmode: 0
     scriptarguments:
       humanReadableEntryId:
         simple: ${lastCompletedTaskEntries}
       substring:
         simple: The profile best-practice has been applied to the rule Test1
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Verify given entry contains a string
+      id: 236e12ed-bb76-4303-82e6-695348d4fe9a
+      iscommand: false
+      name: Verify apply success
+      script: VerifyHumanReadableContains
+      type: regular
+      version: -1
+    taskid: 236e12ed-bb76-4303-82e6-695348d4fe9a
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -1522,31 +1616,33 @@ tasks:
           "y": 6200
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "45":
     id: "45"
-    taskid: 107b7f1e-efb9-4b16-8779-6adb1f73fea8
-    type: regular
-    task:
-      id: 107b7f1e-efb9-4b16-8779-6adb1f73fea8
-      version: -1
-      name: url-filtering-block-default-categories
-      description: Set default categories to block in the URL filtering profile.
-      script: '|||panorama-url-filtering-block-default-categories'
-      type: regular
-      iscommand: true
-      brand: ""
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
       - "46"
+    note: false
+    quietmode: 0
     scriptarguments:
       profile_name:
         simple: test-profile
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Panorama
+      description: Set default categories to block in the URL filtering profile.
+      id: a52595cf-a11c-4732-837b-c514af0589ed
+      iscommand: true
+      name: url-filtering-block-default-categories
+      script: Panorama|||pan-os-url-filtering-block-default-categories
+      type: regular
+      version: -1
+    taskid: a52595cf-a11c-4732-837b-c514af0589ed
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -1554,33 +1650,35 @@ tasks:
           "y": 6360
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "46":
     id: "46"
-    taskid: ff58d16f-7f4b-4b4c-8365-8e4654517d0d
-    type: regular
-    task:
-      id: ff58d16f-7f4b-4b4c-8365-8e4654517d0d
-      version: -1
-      name: Verify block success
-      description: Verify given entry contains a string
-      scriptName: VerifyHumanReadableContains
-      type: regular
-      iscommand: false
-      brand: ""
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
       - "35"
+    note: false
+    quietmode: 0
     scriptarguments:
       humanReadableEntryId:
         simple: ${lastCompletedTaskEntries}
       substring:
         simple: The default categories to block has been set successfully
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Verify given entry contains a string
+      id: 5038bae0-cf04-40b6-81d6-857960f76e6d
+      iscommand: false
+      name: Verify block success
+      script: VerifyHumanReadableContains
+      type: regular
+      version: -1
+    taskid: 5038bae0-cf04-40b6-81d6-857960f76e6d
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -1588,11 +1686,7 @@ tasks:
           "y": 6530
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
+version: -1
 view: |-
   {
     "linkLabelsPosition": {},
@@ -1605,6 +1699,4 @@ view: |-
       }
     }
   }
-inputs: []
-outputs: []
-fromversion: 5.0.0
+fromversion: 6.1.0

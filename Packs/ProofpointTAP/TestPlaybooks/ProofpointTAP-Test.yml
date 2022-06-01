@@ -1,0 +1,648 @@
+id: ProofpointTAP-Test
+version: -1
+vcShouldKeepItemLegacyProdMachine: false
+name: ProofpointTAP-Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: eaf98fa7-f0cc-44d9-8355-9b084854ea8b
+    type: start
+    task:
+      id: eaf98fa7-f0cc-44d9-8355-9b084854ea8b
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: efb7180f-9422-429a-8dc1-d7a77414413c
+    type: regular
+    task:
+      id: efb7180f-9422-429a-8dc1-d7a77414413c
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: dcb0697c-5842-48d1-882a-eaa6c189f863
+    type: regular
+    task:
+      id: dcb0697c-5842-48d1-882a-eaa6c189f863
+      version: -1
+      name: proofpoint-get-events
+      script: '|||proofpoint-get-events'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      eventTypes: {}
+      interval: {}
+      sinceSeconds:
+        simple: "200"
+      sinceTime: {}
+      threatStatus: {}
+      threatType: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: ab7eb3e0-2825-4e51-8b3f-b9efd5cd37c9
+    type: regular
+    task:
+      id: ab7eb3e0-2825-4e51-8b3f-b9efd5cd37c9
+      version: -1
+      name: proofpoint-get-forensics
+      script: '|||proofpoint-get-forensics'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      campaignId: {}
+      includeCampaignForensics: {}
+      threatId:
+        simple: 1b67f3d02612e36fc2641fff1b79771ed32066ba9808ee87a6faf3755590a232
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 49549768-17ac-474c-8fad-2f0907920c79
+    type: regular
+    task:
+      id: 49549768-17ac-474c-8fad-2f0907920c79
+      version: -1
+      name: proofpoint-get-events-clicks-blocked
+      script: '|||proofpoint-get-events-clicks-blocked'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      interval: {}
+      threat_status: {}
+      time_range:
+        simple: 1 hour
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 0da52926-5a21-44df-8026-cdd3fbf36429
+    type: regular
+    task:
+      id: 0da52926-5a21-44df-8026-cdd3fbf36429
+      version: -1
+      name: proofpoint-get-events-clicks-permitted
+      script: '|||proofpoint-get-events-clicks-permitted'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      interval: {}
+      threat_status: {}
+      time_range:
+        simple: 1 hour
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 868c38d5-a76f-4dfa-8adb-15ca5c4434fe
+    type: regular
+    task:
+      id: 868c38d5-a76f-4dfa-8adb-15ca5c4434fe
+      version: -1
+      name: proofpoint-get-events-messages-blocked
+      script: '|||proofpoint-get-events-messages-blocked'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      interval: {}
+      threat_status: {}
+      threat_type: {}
+      time_range:
+        simple: 1 hour
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 76a64850-71a3-4ba6-8965-42c0cf4c0cd0
+    type: regular
+    task:
+      id: 76a64850-71a3-4ba6-8965-42c0cf4c0cd0
+      version: -1
+      name: proofpoint-get-events-messages-delivered
+      script: '|||proofpoint-get-events-messages-delivered'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      interval: {}
+      threat_status: {}
+      threat_type: {}
+      time_range:
+        simple: 1 hour
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 22445966-6e82-4d49-8d07-18f934aef56d
+    type: regular
+    task:
+      id: 22445966-6e82-4d49-8d07-18f934aef56d
+      version: -1
+      name: proofpoint-list-issues
+      script: '|||proofpoint-list-issues'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      interval: {}
+      threat_status: {}
+      threat_type: {}
+      time_range:
+        simple: 1 hour
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: 2518f160-14ca-4e55-8af6-380c20501d75
+    type: regular
+    task:
+      id: 2518f160-14ca-4e55-8af6-380c20501d75
+      version: -1
+      name: proofpoint-list-campaigns
+      script: '|||proofpoint-list-campaigns'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      interval: {}
+      limit: {}
+      page: {}
+      time_range:
+        simple: 1 hour
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: 2f856e36-0803-4b56-8f18-e91b4882348d
+    type: regular
+    task:
+      id: 2f856e36-0803-4b56-8f18-e91b4882348d
+      version: -1
+      name: proofpoint-get-campaign
+      script: '|||proofpoint-get-campaign'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      campaign_id:
+        simple: f3ff0874-85ef-475e-b3fe-d05f97b2ed3f
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: db071c64-3731-4b2c-896b-05feae5de5d4
+    type: condition
+    task:
+      id: db071c64-3731-4b2c-896b-05feae5de5d4
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Proofpoint.Campaign.info.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Proofpoint.Campaign.info.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Proofpoint.Campaign.info.description
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: 46a43597-aed4-4cad-841e-e52e3c4a219e
+    type: regular
+    task:
+      id: 46a43597-aed4-4cad-841e-e52e3c4a219e
+      version: -1
+      name: proofpoint-list-most-attacked-users
+      script: '|||proofpoint-list-most-attacked-users'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      limit: {}
+      page: {}
+      window:
+        simple: "90"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
+    taskid: 040a5cea-0221-4f2b-84b9-1209a7fcf717
+    type: condition
+    task:
+      id: 040a5cea-0221-4f2b-84b9-1209a7fcf717
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "22"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Proofpoint.Vap.users
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Proofpoint.Vap.totalVapUsers
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Proofpoint.Vap.interval
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Proofpoint.Vap.averageAttackIndex
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Proofpoint.Vap.vapAttackIndexThreshold
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: 1cd387b9-4d74-42cf-8785-9399a06935f8
+    type: regular
+    task:
+      id: 1cd387b9-4d74-42cf-8785-9399a06935f8
+      version: -1
+      name: proofpoint-get-top-clickers
+      script: '|||proofpoint-get-top-clickers'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      limit: {}
+      page: {}
+      window:
+        simple: "90"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "24":
+    id: "24"
+    taskid: 822963a9-f382-4b23-8f26-7224a851176e
+    type: regular
+    task:
+      id: 822963a9-f382-4b23-8f26-7224a851176e
+      version: -1
+      name: proofpoint-url-decode
+      script: '|||proofpoint-url-decode'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      data:
+        simple: https://urldefense.proofpoint.com/v2/url?u=http-3A__links.mkt3337.com_ctt-3Fkn-3D3-26ms-3DMzQ3OTg3MDQS1-26r-3DMzkxNzk3NDkwMDA0S0-26b-3D0-26j-3DMTMwMjA1ODYzNQS2-26mt-3D1-26rt-3D0&d=DwMFaQ&c=Vxt5e0Osvvt2gflwSlsJ5DmPGcPvTRKLJyp031rXjhg&r=MujLDFBJstxoxZI_GKbsW7wxGM7nnIK__qZvVy6j9Wc&m=QJGhloAyfD0UZ6n8r6y9dF-khNKqvRAIWDRU_K65xPI&s=ew-rOtBFjiX1Hgv71XQJ5BEgl9TPaoWRm_Xp9Nuo8bk&e=
+      urls:
+        simple: https://urldefense.proofpoint.com/v2/url?u=http-3A__links.mkt3337.com_ctt-3Fkn-3D3-26ms-3DMzQ3OTg3MDQS1-26r-3DMzkxNzk3NDkwMDA0S0-26b-3D0-26j-3DMTMwMjA1ODYzNQS2-26mt-3D1-26rt-3D0&d=DwMFaQ&c=Vxt5e0Osvvt2gflwSlsJ5DmPGcPvTRKLJyp031rXjhg&r=MujLDFBJstxoxZI_GKbsW7wxGM7nnIK__qZvVy6j9Wc&m=QJGhloAyfD0UZ6n8r6y9dF-khNKqvRAIWDRU_K65xPI&s=ew-rOtBFjiX1Hgv71XQJ5BEgl9TPaoWRm_Xp9Nuo8bk&e=
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "25":
+    id: "25"
+    taskid: e2e48dc5-93ef-454d-8447-75d92a81f8cb
+    type: condition
+    task:
+      id: e2e48dc5-93ef-454d-8447-75d92a81f8cb
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "26"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Proofpoint.URL.encodedUrl
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Proofpoint.URL.decodedUrl
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Proofpoint.URL.success
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "26":
+    id: "26"
+    taskid: 5cd5f3ea-775a-4085-8795-a0cdcdb97441
+    type: title
+    task:
+      id: 5cd5f3ea-775a-4085-8795-a0cdcdb97441
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 5215,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

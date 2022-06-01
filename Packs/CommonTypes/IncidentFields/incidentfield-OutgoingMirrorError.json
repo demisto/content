@@ -8,7 +8,7 @@
     "description": "",
     "cliName": "outgoingmirrorerror",
     "type": "longText",
-    "closeForm": true,
+    "closeForm": false,
     "editForm": true,
     "required": false,
     "script": "",

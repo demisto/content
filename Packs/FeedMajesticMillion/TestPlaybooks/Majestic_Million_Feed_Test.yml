@@ -1,0 +1,106 @@
+id: Majestic Million Test Playbook
+version: -1
+name: Majestic Million Test Playbook
+fromversion: 5.5.0
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 1efe4dd3-1d74-4e54-82e1-9b5eb3863c01
+    type: start
+    task:
+      id: 1efe4dd3-1d74-4e54-82e1-9b5eb3863c01
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: e28dc153-18ef-4464-8aad-3e09cc7c04d0
+    type: regular
+    task:
+      id: e28dc153-18ef-4464-8aad-3e09cc7c04d0
+      version: -1
+      name: majesticmillion-get-indicators
+      description: Gets the feed indicators.
+      script: '|||majesticmillion-get-indicators'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      limit:
+        simple: "4"
+      retry-count:
+        simple: "3"
+      retry-interval:
+        simple: "360"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: fa6ca2a5-5cd5-48cb-84e3-7763ef05f47b
+    type: title
+    task:
+      id: fa6ca2a5-5cd5-48cb-84e3-7763ef05f47b
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 385,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

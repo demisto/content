@@ -1,0 +1,36 @@
+{
+  "rules": [
+    {
+      "ruleId": "ru_c5b129e4-9e20-44ad-ad23-78117bd2a2af",
+      "versionId": "ru_c5b129e4-9e20-44ad-ad23-78117bd2a2af@v_1614773287_876527000",
+      "ruleName": "malicious_extensions",
+      "metadata": {
+        "author": "analyst5",
+        "description": "Use to detects malicious extentions from email attachments.",
+        "severity": "High"
+      },
+      "ruleText": "rule malicious_extensions {\n  meta:\n    author = \"analyst5\"\n    description = \"Use to detects malicious extentions from email attachments.\"\n    severity = \"High\"\n\n  events:\n    $event.metadata.event_type = \"EMAIL_TRANSACTION\"\n    $event.about.file.mime_type = /^.*\\.(com|exe|bat|cmd|cpl|jar|js|msi|rar|reg)$/\n\n  condition:\n      $event\n    \n}\n",
+      "alertingEnabled": true,
+      "versionCreateTime": "2021-03-03T12:08:07.876527Z",
+      "compilationState": "SUCCEEDED"
+    },
+    {
+      "ruleId": "ru_d63cfaeb-23d7-4e0a-b342-5f880f6129f9",
+      "versionId": "ru_d63cfaeb-23d7-4e0a-b342-5f880f6129f9@v_1614369854_162095000",
+      "ruleName": "empire_monkey",
+      "metadata": {
+        "version": "0.01",
+        "created": "2019/04/02",
+        "category": "process_creation",
+        "product": "windows",
+        "mitre": "t1086, execution",
+        "author": "Markus Neis",
+        "description": "Detects EmpireMonkey APT reported Activity  License: https://github.com/Neo23x0/sigma/blob/master/LICENSE.Detection.Rules.md.",
+        "reference": "https://tdm.socprime.com/tdm/info/jFbYfF51ECXh"
+      },
+      "ruleText": "rule empire_monkey {\n\tmeta:\n\t\tauthor = \"Markus Neis\"\n\t\tdescription = \"Detects EmpireMonkey APT reported Activity  License: https://github.com/Neo23x0/sigma/blob/master/LICENSE.Detection.Rules.md.\"\n\t\treference = \"https://tdm.socprime.com/tdm/info/jFbYfF51ECXh\"\n\t\tversion = \"0.01\"\n\t\tcreated = \"2019/04/02\"\n\t\tcategory = \"process_creation\"\n\t\tproduct = \"windows\"\n\t\tmitre = \"t1086, execution\"\n\n\tevents:\n(re.regex($selection_cutil.target.process.command_line, `.*/i:%APPDATA%\\\\logs\\.txt scrobj\\.dll`) and (re.regex($selection_cutil.target.process.file.full_path, `.*\\\\cutil\\.exe`) or $selection_cutil.metadata.description = \"Microsoft(C) Registerserver\"))\n\n\tcondition:\n\t\t$selection_cutil\n}\n",
+      "versionCreateTime": "2021-02-26T20:04:14.162095Z",
+      "compilationState": "SUCCEEDED"
+    }
+  ]
+}

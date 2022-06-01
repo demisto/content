@@ -10,6 +10,35 @@ EXPECTED_TICKET_CONTEXT = {
     'State': '1',
     'Summary': 'Trouble getting to Oregon mail server'
 }
+
+EXPECTED_TICKET_CONTEXT_WITH_ADDITIONAL_FIELDS = {
+    'Active': 'true',
+    'CreatedOn': '2019-09-05 00:42:29',
+    'Creator': 'test',
+    'ID': 'sys_id',
+    'Number': 'INC0000039',
+    'OpenedAt': '2019-09-05 00:41:01',
+    'OpenedBy': 'test',
+    'Priority': '4 - Low',
+    'State': '1',
+    'Summary': 'Trouble getting to Oregon mail server',
+    'sys_created_by': 'admin'
+}
+
+EXPECTED_TICKET_CONTEXT_WITH_NESTED_ADDITIONAL_FIELDS = {
+    'Active': 'true',
+    'CreatedOn': '2019-09-05 00:42:29',
+    'Creator': 'test',
+    'ID': 'sys_id',
+    'Number': 'INC0000039',
+    'OpenedAt': '2019-09-05 00:41:01',
+    'OpenedBy': 'test',
+    'Priority': '4 - Low',
+    'State': '1',
+    'Summary': 'Trouble getting to Oregon mail server',
+    'opened_by': {'link': 'demisto.com'}
+}
+
 EXPECTED_MULTIPLE_TICKET_CONTEXT = [
     {
         'Active': 'true',
@@ -111,36 +140,39 @@ EXPECTED_UPDATE_TICKET = {
         'ID': 'sys_id', 'Summary': 'Trouble getting to Oregon mail server',
         'Number': 'INC0000039', 'CreatedOn': '2019-09-05 00:42:29', 'Active': 'true', 'OpenedAt': '2019-09-05 00:41:01',
         'OpenedBy': 'test', 'Creator': 'test',
-        'Priority': '4 - Low', 'State': '1'
+        'Priority': '4 - Low', 'State': '1', 'impact': '2'
     }
 }
 EXPECTED_UPDATE_TICKET_SC_REQ = {
     'ServiceNow.Ticket(val.ID===obj.ID)': {
         'ID': '1234', 'Summary': 'Microsoft Access', 'Number': 'RITM0010028', 'CreatedOn': '2020-04-16 15:33:00',
         'Active': 'true', 'OpenedAt': '2020-04-16 15:33:00', 'OpenedBy': 'admin',
-        'Creator': 'admin', 'Priority': '4 - Low', 'State': '1'
+        'Creator': 'admin', 'Priority': '4 - Low', 'State': '1', 'approval': 'requested'
     }
 }
 EXPECTED_UPDATE_TICKET_ADDITIONAL = {
     'ServiceNow.Ticket(val.ID===obj.ID)': {
         'ID': '1234', 'Summary': 'Trouble getting to Oregon mail server', 'Number': 'INC0000039',
         'CreatedOn': '2019-09-05 00:42:29', 'Active': 'true', 'OpenedAt': '2019-09-05 00:41:01',
-        'approval': 'rejected', 'OpenedBy': 'admin', 'Creator': 'admin',
-        'Priority': '5 - Planning', 'State': '1'
+        'OpenedBy': 'admin', 'Creator': 'admin',
+        'Priority': '5 - Planning', 'State': '1', 'severity': '3', 'approval': 'rejected'
     }
 }
 EXPECTED_CREATE_TICKET = {
     'Ticket(val.ID===obj.ID)': {
         'ID': 'sys_id', 'Number': 'INC0010007', 'CreatedOn': '2020-04-06 13:04:44',
         'Active': 'true', 'OpenedAt': '2020-04-06 13:04:44', 'OpenedBy': 'test',
-        'Creator': 'test', 'Priority': '5 - Planning', 'State': '1'
+        'Creator': 'test', 'Priority': '5 - Planning', 'State': '1', 'severity': '3', 'sla_due': '2020-10-10 10:10:11',
+        "description": "creating a test ticket"
     },
     'ServiceNow.Ticket(val.ID===obj.ID)': {
         'ID': 'sys_id', 'Number': 'INC0010007', 'CreatedOn': '2020-04-06 13:04:44',
         'Active': 'true', 'OpenedAt': '2020-04-06 13:04:44', 'OpenedBy': 'test',
-        'Creator': 'test', 'Priority': '5 - Planning', 'State': '1'
+        'Creator': 'test', 'Priority': '5 - Planning', 'State': '1', 'severity': '3', 'sla_due': '2020-10-10 10:10:11',
+        "description": "creating a test ticket"
     }
 }
+EXPECTED_CREATE_TICKET_WITH_OUT_JSON = {}
 EXPECTED_QUERY_TICKETS = {
     'Ticket(val.ID===obj.ID)': [
         {
@@ -174,6 +206,28 @@ EXPECTED_QUERY_TICKETS = {
          'CreatedOn': '2018-04-07 14:41:46', 'Active': 'true', 'OpenedAt': '2019-09-03 23:07:30', 'OpenedBy': 'admin',
          'Creator': 'admin', 'Assignee': 'admin', 'Priority': '1 - Critical', 'State': '2'
          }
+    ]
+}
+EXPECTED_QUERY_TICKETS_EXCLUDE_REFERENCE_LINK = {
+    'Ticket(val.ID===obj.ID)': [
+        {
+            'ID': '9c573169c611228700193229fff72400', 'Summary': "Can't read email", 'Number': 'INC0000001',
+            'CreatedOn': '06/12/2018 10:24:13', 'Active': 'false', 'CloseCode': 'Closed/Resolved by Caller',
+            'OpenedAt': '06/05/2020 16:09:51', 'ResolvedBy': 'Don Goodliffe', 'OpenedBy': 'Joe Employee',
+            'Creator': 'Joe Employee', 'Assignee': 'Charlie Whitherspoon', 'Priority': '1 - Critical', 'State': 'Closed'
+        }
+    ],
+    'ServiceNow.Ticket(val.ID===obj.ID)': [
+        {
+            'ID': '9c573169c611228700193229fff72400',
+            'Summary': "Can't read email", 'Number': 'INC0000001',
+            'CreatedOn': '06/12/2018 10:24:13', 'Active': 'false',
+            'CloseCode': 'Closed/Resolved by Caller',
+            'OpenedAt': '06/05/2020 16:09:51', 'ResolvedBy': 'Don Goodliffe',
+            'OpenedBy': 'Joe Employee', 'Creator': 'Joe Employee',
+            'Assignee': 'Charlie Whitherspoon', 'Priority': '1 - Critical',
+            'State': 'Closed'
+        }
     ]
 }
 EXPECTED_ADD_LINK_HR = '### Link successfully added to ServiceNow ticket'
@@ -325,75 +379,82 @@ EXPECTED_DOCUMENT_ROUTE = {
         }
 }
 
-EXPECTED_MAPPING = [{
-    "incident": {
-        "active": "",
-        "activity_due": "",
-        "opened_at": "",
-        "short_description": "",
-        "additional_assignee_list": "",
-        "approval": "",
-        "approval_history": "",
-        "approval_set": "",
-        "assigned_to": "",
-        "assignment_group": "",
-        "business_duration": "",
-        "business_service": "",
-        "business_stc": "",
-        "calendar_duration": "",
-        "calendar_stc": "",
-        "caller": "",
-        "caller_id": "",
-        "category": "",
-        "caused_by": "",
-        "change_type": "",
-        "close_code": "",
-        "close_notes": "",
-        "closed_at": "",
-        "closed_by": "",
-        "cmdb_ci": "",
-        "comments": "",
-        "comments_and_work_notes": "",
-        "company": "",
-        "contact_type": "",
-        "correlation_display": "",
-        "correlation_id": "",
-        "delivery_plan": "",
-        "delivery_task": "",
-        "description": "",
-        "due_date": "",
-        "expected_start": "",
-        "follow_up": "",
-        "group_list": "",
-        "hold_reason": "",
-        "impact": "",
-        "incident_state": "",
-        "knowledge": "",
-        "location": "",
-        "made_sla": "",
-        "notify": "",
-        "order": "",
-        "parent": "",
-        "parent_incident": "",
-        "priority": "",
-        "problem_id": "",
-        "resolved_at": "",
-        "resolved_by": "",
-        "rfc": "",
-        "severity": "",
-        "sla_due": "",
-        "state": "",
-        "subcategory": "",
-        "sys_tags": "",
-        "time_worked": "",
-        "title": "",
-        "type": "",
-        "urgency": "",
-        "user_input": "",
-        "watch_list": "",
-        "work_end": "",
-        "work_notes": "",
-        "work_notes_list": "",
-        "work_start": ""
-    }
-}]
+EXPECTED_MAPPING = {
+    'incident':
+        {
+            'active': '',
+            'activity_due': '',
+            'opened_at': '',
+            'short_description': '',
+            'additional_assignee_list': '',
+            'approval_history': '',
+            'approval': '',
+            'approval_set': '',
+            'assigned_to': '',
+            'assignment_group': '',
+            'business_duration': '',
+            'business_service': '',
+            'business_stc': '',
+            'change_type': '',
+            'category': '',
+            'caller': '',
+            'calendar_duration': '',
+            'calendar_stc': '',
+            'caller_id': '',
+            'caused_by': '',
+            'close_code': '',
+            'close_notes': '',
+            'closed_at': '',
+            'closed_by': '',
+            'cmdb_ci': '',
+            'comments': '',
+            'comments_and_work_notes': '',
+            'company': '',
+            'contact_type': '',
+            'correlation_display': '',
+            'correlation_id': '',
+            'delivery_plan': '',
+            'delivery_task': '',
+            'description': '',
+            'due_date': '',
+            'expected_start': '',
+            'follow_up': '',
+            'group_list': '',
+            'hold_reason': '',
+            'impact': '',
+            'incident_state': '',
+            'knowledge': '',
+            'location': '',
+            'made_sla': '',
+            'notify': '',
+            'order': '',
+            'parent': '',
+            'parent_incident': '',
+            'priority': '',
+            'problem_id': '',
+            'reassignment_count': '',
+            'reopen_count': '',
+            'resolved_at': '',
+            'resolved_by': '',
+            'rfc': '',
+            'severity': '',
+            'sla_due': '',
+            'state': '',
+            'subcategory': '',
+            'sys_tags': '',
+            'sys_updated_by': '',
+            'sys_updated_on': '',
+            'time_worked': '',
+            'title': '',
+            'type': '',
+            'urgency': '',
+            'user_input': '',
+            'watch_list': '',
+            'work_end': '',
+            'work_notes': '',
+            'work_notes_list': '',
+            'work_start': '',
+            'business_criticality': '',
+            'risk_score': ''
+        }
+}

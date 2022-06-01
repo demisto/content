@@ -7,12 +7,8 @@ import requests
 from CommonServerPython import *
 from CommonServerUserPython import *
 
-if not demisto.params().get('proxy', False):
-    del os.environ['HTTP_PROXY']
-    del os.environ['HTTPS_PROXY']
-    del os.environ['http_proxy']
-    del os.environ['https_proxy']
 
+handle_proxy()
 VERIFY_CERTIFICATE = not demisto.params().get('insecure', False)
 URL = demisto.params()['server']
 XML_NS = demisto.params()['xml_ns']
@@ -262,7 +258,7 @@ def remedy_get_ticket(service_request_id):
     nonce = os.urandom(16)
     base64_binary = base64.b64encode(nonce).decode("ascii")
     # Password_Digest = Base64 (SHA-1 (nonce + createtime + password))
-    hash_object = hashlib.sha1(nonce + req_time.encode("utf-8") + PASSWORD.encode("utf-8"))
+    hash_object = hashlib.sha1(nonce + req_time.encode("utf-8") + PASSWORD.encode("utf-8"))  # nosec
     digest_string = hash_object.digest()
     password_digest = base64.b64encode(digest_string).decode("ascii")
 
@@ -320,7 +316,7 @@ def remedy_create_ticket(details, requester_ntid, requester_email, requester_nam
     nonce = os.urandom(16)
     base64_binary = base64.b64encode(nonce).decode("ascii")
     # Password_Digest = Base64 (SHA-1 (nonce + createtime + password))
-    hash_object = hashlib.sha1(nonce + req_time.encode("utf-8") + PASSWORD.encode("utf-8"))
+    hash_object = hashlib.sha1(nonce + req_time.encode("utf-8") + PASSWORD.encode("utf-8"))  # nosec
     digest_string = hash_object.digest()
     password_digest = base64.b64encode(digest_string).decode("ascii")
 

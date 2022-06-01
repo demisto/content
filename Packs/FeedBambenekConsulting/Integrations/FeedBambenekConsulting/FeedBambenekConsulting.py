@@ -1,9 +1,9 @@
 from CommonServerPython import *
 
 name_to_url = {
-    'C2 IP Feed': 'http://osint.bambenekconsulting.com/feeds/c2-ipmasterlist.txt',
+    'C2 IP Feed': 'https://faf.bambenekconsulting.com/feeds/dga/c2-ipmasterlist.txt',
     'High-Confidence C2 IP Feed': 'http://osint.bambenekconsulting.com/feeds/c2-ipmasterlist-high.txt',
-    'C2 Domain Feed': 'http://osint.bambenekconsulting.com/feeds/c2-dommasterlist.txt',
+    'C2 Domain Feed': 'https://faf.bambenekconsulting.com/feeds/dga/c2-dommasterlist.txt',
     'High-Confidence C2 Domain Feed': 'http://osint.bambenekconsulting.com/feeds/c2-dommasterlist-high.txt',
     'DGA Domain Feed': 'https://faf.bambenekconsulting.com/feeds/dga-feed.gz',
     'High-Confidence DGA Domain Feed': 'https://faf.bambenekconsulting.com/feeds/dga-feed-high.gz',
@@ -15,25 +15,31 @@ name_to_url = {
 
 def main():
     feed_url_to_config = {
-        'http://osint.bambenekconsulting.com/feeds/c2-ipmasterlist.txt': {
+        'https://faf.bambenekconsulting.com/feeds/dga/c2-ipmasterlist.txt': {
             'fieldnames': ['value', 'description',
                            'date_created',
                            'info'],
             'indicator_type': FeedIndicatorType.IP,
+            'relationship_name': EntityRelationship.Relationships.INDICATOR_OF,
+            'relationship_entity_b_type': 'STIX Malware',
             'mapping': {
                 'description': 'description',
-                'malwarefamily': ('description', r'.*used\s+by\s(.*?)\s', None)
+                'malwarefamily': ('description', r'.*used\s+by\s(.*?)\s', None),
+                'relationship_entity_b': ('description', r'.*used\s+by\s(.*?)\s', None),
             }
         },
 
-        'http://osint.bambenekconsulting.com/feeds/c2-dommasterlist.txt': {
+        'https://faf.bambenekconsulting.com/feeds/dga/c2-dommasterlist.txt': {
             'fieldnames': ['value', 'description',
                            'date_created',
                            'info'],
             'indicator_type': FeedIndicatorType.Domain,
+            'relationship_name': EntityRelationship.Relationships.INDICATOR_OF,
+            'relationship_entity_b_type': 'STIX Malware',
             'mapping': {
                 'description': 'description',
-                'malwarefamily': ('description', r'.*used\s+by\s(.*?)\s', None)
+                'malwarefamily': ('description', r'.*used\s+by\s(.*?)\s', None),
+                'relationship_entity_b': ('description', r'.*used\s+by\s(.*?)$', None)
             }
         },
         'http://osint.bambenekconsulting.com/feeds/c2-ipmasterlist-high.txt': {
@@ -41,9 +47,12 @@ def main():
                            'date_created',
                            'info'],
             'indicator_type': FeedIndicatorType.IP,
+            'relationship_name': EntityRelationship.Relationships.INDICATOR_OF,
+            'relationship_entity_b_type': 'STIX Malware',
             'mapping': {
                 'description': 'description',
-                'malwarefamily': ('description', r'.*used\s+by\s(.*?)\s', None)
+                'malwarefamily': ('description', r'.*used\s+by\s(.*?)\s', None),
+                'relationship_entity_b': ('description', r'.*used\s+by\s(.*?)\s', None)
             }
         },
         'http://osint.bambenekconsulting.com/feeds/c2-dommasterlist-high.txt': {
@@ -51,9 +60,13 @@ def main():
                            'date_created',
                            'info'],
             'indicator_type': FeedIndicatorType.Domain,
+            'relationship_name': EntityRelationship.Relationships.INDICATOR_OF,
+            'relationship_entity_b_type': 'STIX Malware',
             'mapping': {
                 'description': 'description',
-                'malwarefamily': ('description', r'.*used\s+by\s(.*?)\s', None)
+                'malwarefamily': ('description', r'.*used\s+by\s(.*?)\s', None),
+                'relationship_entity_b': ('description', r'.*used\s+by\s(.*?)\s', None),
+
             }
         },
         'https://faf.bambenekconsulting.com/feeds/dga-feed.gz': {
@@ -61,9 +74,12 @@ def main():
                            'date_created',
                            'info'],
             'indicator_type': FeedIndicatorType.Domain,
+            'relationship_name': EntityRelationship.Relationships.INDICATOR_OF,
+            'relationship_entity_b_type': 'STIX Malware',
             'mapping': {
                 'description': 'description',
-                'malwarefamily': ('description', r'.*used\s+by\s(.*?)\s', None)
+                'malwarefamily': ('description', r'.*used\s+by\s(.*?)(\(|DGA)', None),
+                'relationship_entity_b': ('description', r'.*used\s+by\s(.*?)(\(|DGA)', None),
             },
             'is_zipped_file': True
         },
@@ -72,9 +88,12 @@ def main():
                            'date_created',
                            'info'],
             'indicator_type': FeedIndicatorType.Domain,
+            'relationship_name': EntityRelationship.Relationships.INDICATOR_OF,
+            'relationship_entity_b_type': 'STIX Malware',
             'mapping': {
                 'description': 'description',
-                'malwarefamily': ('description', r'.*used\s+by\s(.*?)\s', None)
+                'malwarefamily': ('description', r'.*used\s+by\s(.*?)\s', None),
+                'relationship_entity_b': ('description', r'.*used\s+by\s(.*?)\s', None)
             },
             'is_zipped_file': True
         },
@@ -86,8 +105,11 @@ def main():
                            'description',
                            'info'],
             'indicator_type': FeedIndicatorType.Domain,
+            'relationship_entity_b_type': FeedIndicatorType.IP,
+            'relationship_name': EntityRelationship.Relationships.RESOLVED_FROM,
             'mapping': {
-                'ipaddress': 'ip'
+                'ipaddress': 'ip',
+                'relationship_entity_b': 'ip'
             }
         },
         'https://faf.bambenekconsulting.com/feeds/dga/c2-masterlist-high.txt': {
@@ -98,8 +120,11 @@ def main():
                            'description',
                            'info'],
             'indicator_type': FeedIndicatorType.Domain,
+            'relationship_name': EntityRelationship.Relationships.RESOLVED_FROM,
+            'relationship_entity_b_type': FeedIndicatorType.IP,
             'mapping': {
-                'ipaddress': 'ip'
+                'ipaddress': 'ip',
+                'relationship_entity_b': 'ip'
             }
         },
         'https://faf.bambenekconsulting.com/feeds/sinkhole/latest.csv': {
@@ -124,5 +149,5 @@ def main():
 
 from CSVFeedApiModule import *  # noqa: E402
 
-if __name__ == '__builtin__' or __name__ == 'builtins':
+if __name__ in ('__builtin__', 'builtins', '__main__'):
     main()

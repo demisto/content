@@ -1,0 +1,130 @@
+{
+  "defaultIncidentType": "",
+  "description": "Maps incoming Guardicore incident fields.",
+  "feed": false,
+  "id": "GuardiCore Incoming Mapper",
+  "mapping": {
+    "Guardicore Incident": {
+      "dontMapEventToLabels": false,
+      "internalMapping": {
+        "GuardiCore Associated Incident Groups": {
+          "complex": null,
+          "simple": "incident_group.gname"
+        },
+        "Close Time": {
+          "complex": {
+            "accessor": "",
+            "filters": [],
+            "root": "closed_time",
+            "transformers": [
+              {
+                "args": {},
+                "operator": "TimeStampToDate"
+              }
+            ]
+          },
+          "simple": ""
+        },
+        "End Time": {
+          "complex": {
+            "accessor": "",
+            "filters": [],
+            "root": "end_time",
+            "transformers": [
+              {
+                "args": {},
+                "operator": "TimeStampToDate"
+              }
+            ]
+          },
+          "simple": ""
+        },
+        "Last Update Time": {
+          "complex": {
+            "accessor": "",
+            "filters": [],
+            "root": "last_updated_time",
+            "transformers": [
+              {
+                "args": {},
+                "operator": "TimeStampToDate"
+              }
+            ]
+          },
+          "simple": ""
+        },
+        "Source Hostname": {
+          "complex": null,
+          "simple": "source_asset.vm.name"
+        },
+        "GuardiCore Incident Type": {
+          "complex": null,
+          "simple": "incident_type"
+        },
+        "Source IP": {
+          "complex": null,
+          "simple": "source_asset.ip"
+        },
+        "Start Time": {
+          "complex": {
+            "accessor": "",
+            "filters": [],
+            "root": "start_time",
+            "transformers": [
+              {
+                "args": {},
+                "operator": "TimeStampToDate"
+              }
+            ]
+          },
+          "simple": ""
+        },
+        "severity": {
+          "complex": null,
+          "simple": "severity"
+        },
+        "Tags": {
+          "complex": null,
+          "simple": "concatenated_tags.display_name"
+        },
+        "Destination Hostname": {
+          "complex": null,
+          "simple": "destination_asset.vm.name"
+        },
+        "Destination IP": {
+          "complex": null,
+          "simple": "destination_asset.ip"
+        }
+      }
+    },
+    "dbot_classification_incident_type_all": {
+      "dontMapEventToLabels": true,
+      "internalMapping": {
+        "Destination Hostname": {
+          "complex": null,
+          "simple": "destination_asset.vm.name"
+        },
+        "Destination IP": {
+          "complex": null,
+          "simple": "destination_asset.ip"
+        },
+        "Source Hostname": {
+          "complex": null,
+          "simple": "source_asset.vm.name"
+        },
+        "Source IP": {
+          "complex": null,
+          "simple": "source_asset.ip"
+        },
+        "severity": {
+          "complex": null,
+          "simple": "severity"
+        }
+      }
+    }
+  },
+  "name": "GuardiCore Incoming Mapper",
+  "type": "mapping-incoming",
+  "version": -1,
+  "fromVersion": "6.0.0"
+}

@@ -1,0 +1,158 @@
+id: Isolate and unisolate endpoint - test
+version: -1
+name: Isolate and unisolate endpoint - test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: ca8f1562-f4b7-4968-837a-405419c787f6
+    type: start
+    task:
+      id: ca8f1562-f4b7-4968-837a-405419c787f6
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 80
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 3e4af0b2-cd8c-469c-8e7a-48e7b001b1fe
+    type: playbook
+    task:
+      id: 3e4af0b2-cd8c-469c-8e7a-48e7b001b1fe
+      version: -1
+      name: Unisolate Endpoint - Generic
+      playbookName: Unisolate Endpoint - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      Endpoint_ID:
+        simple: ${inputs.Endpoint_id}
+      Hostname: {}
+      ManualHunting.DetectedHosts: {}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: fb4cdaaa-a342-45a0-845d-cc34f0a804a1
+    type: title
+    task:
+      id: fb4cdaaa-a342-45a0-845d-cc34f0a804a1
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 9dac35b0-a165-492b-8162-79fd2fa096af
+    type: playbook
+    task:
+      id: 9dac35b0-a165-492b-8162-79fd2fa096af
+      version: -1
+      name: Isolate Endpoint - Generic V2
+      playbookName: Isolate Endpoint - Generic V2
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      Endpoint_hostname: {}
+      Endpoint_id:
+        simple: ${inputs.Endpoint_id}
+      Endpoint_ip: {}
+      ManualHunting.DetectedHosts: {}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 635,
+        "width": 380,
+        "x": 440,
+        "y": 80
+      }
+    }
+  }
+inputs:
+- key: Endpoint_id
+  value:
+    simple: 15dbb9d8f06b45fe9f61eb46e829d986
+  required: false
+  description: 'The id of the endpoint that you wish get details on. '
+  playbookInputQuery:
+outputs: []
+fromversion: 5.5.0
+description: ''

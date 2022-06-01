@@ -1,0 +1,59 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "System Diagnostics and Health Check"
+    ],
+    "caseInsensitive": true,
+    "cliName": "xsoarserverconfiguration",
+    "closeForm": false,
+    "columns": [
+        {
+            "displayName": "Key",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "key",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 300
+        },
+        {
+            "displayName": "Value",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "value",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150
+        }
+    ],
+    "content": true,
+    "defaultRows": [
+        {}
+    ],
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_xsoarserverconfiguration",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "XSOAR Server Configuration",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "grid",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.0.0",
+    "openEnded": false
+}

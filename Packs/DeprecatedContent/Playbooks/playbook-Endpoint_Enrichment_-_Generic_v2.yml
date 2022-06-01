@@ -805,3 +805,4 @@ outputs:
   type: string
 tests:
 - No Tests
+deprecated: true

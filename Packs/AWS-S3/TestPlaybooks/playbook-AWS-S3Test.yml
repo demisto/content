@@ -217,9 +217,7 @@ tasks:
     scriptarguments:
       body: {}
       filename:
-        complex:
-          root: incident
-          accessor: id
+        simple: file_to_upload
       headers: {}
       insecure: {}
       method:

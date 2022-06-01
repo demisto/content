@@ -1,0 +1,31 @@
+{
+    "id": "es-active-nodes-percentage",
+    "version": -1,
+    "fromVersion": "6.1.0",
+    "modified": "2021-01-14T11:38:28.271829Z",
+    "name": "Elasticsearch Nodes Current Usage",
+    "dataType": "system",
+    "widgetType": "number",
+    "query": "es-node.usedPercent",
+    "isPredefined": true,
+    "description": "Elasticsearch Node Current Usage %",
+    "params": {
+        "colors": {
+            "isEnabled": true,
+            "items": {
+                "#00CD33": {
+                    "value": 99
+                },
+                "#FAC100": {
+                    "value": 50
+                },
+                "#FF1B15": {
+                    "value": -1
+                }
+            },
+            "type": "above"
+        },
+        "currencySign": "%",
+        "signAlignment": "right"
+    }
+}

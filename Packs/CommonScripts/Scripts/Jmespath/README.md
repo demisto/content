@@ -6,7 +6,7 @@ Performs a JMESPath search on an input JSON format, when using a transformer.
 | --- | --- |
 | Script Type | python3 |
 | Tags | transformer, general |
-| Demisto Version | 5.0.0 |
+| Cortex XSOAR Version | 5.0.0 |
 
 ## Inputs
 ---

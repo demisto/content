@@ -1,0 +1,1679 @@
+id: Group-IB Threat Intelligence & Attribution-Test
+inputs: []
+name: Group-IB Threat Intelligence & Attribution-Test
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 631167a0-5f24-43e6-8a44-9860568c5711
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 631167a0-5f24-43e6-8a44-9860568c5711
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Delete field from context
+      id: ae747b1c-db4a-4ad2-80d7-fdc107796282
+      iscommand: false
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      version: -1
+    taskid: ae747b1c-db4a-4ad2-80d7-fdc107796282
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 180
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "16"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Group-IB Threat Intelligence & Attribution
+      description: Returns list of available collections.
+      id: 4138d935-003e-4dc4-8841-3f36fb415a86
+      iscommand: true
+      name: gibtia-get-available-collections
+      script: Group-IB Threat Intelligence & Attribution|||gibtia-get-available-collections
+      type: regular
+      version: -1
+    taskid: 4138d935-003e-4dc4-8841-3f36fb415a86
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 350
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "20"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      id:
+        simple: 08ff6bd4888a257e082dcc5d53d9b3fd3c27de8b
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Group-IB Threat Intelligence & Attribution
+      description: Command performs Group IB event lookup in compromised/imei collection
+        with provided ID.
+      id: d48cf365-e7b0-4ad7-82d8-782747c49da6
+      iscommand: true
+      name: gibtia-get-compromised-imei-info
+      script: Group-IB Threat Intelligence & Attribution|||gibtia-get-compromised-imei-info
+      type: regular
+      version: -1
+    taskid: d48cf365-e7b0-4ad7-82d8-782747c49da6
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1310
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "17"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      id:
+        simple: 5eb9ccb5081203e82ac1159e44747a6af4bb7391
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Group-IB Threat Intelligence & Attribution
+      description: Command performs Group IB event lookup in compromised/mule collection
+        with provided ID.
+      id: c0f7f60e-df38-4279-8962-a776b7acc0f9
+      iscommand: true
+      name: gibtia-get-compromised-mule-info
+      script: Group-IB Threat Intelligence & Attribution|||gibtia-get-compromised-mule-info
+      type: regular
+      version: -1
+    taskid: c0f7f60e-df38-4279-8962-a776b7acc0f9
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 740
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "22"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      id:
+        simple: c66d4fed330ac9ef7c58755a1f08a7ba89b0da13
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Group-IB Threat Intelligence & Attribution
+      description: Command performs Group IB event lookup in attacks/ddos collection
+        with provided ID.
+      id: 8a87b580-33e0-41ff-88ff-901d8cf7291c
+      iscommand: true
+      name: gibtia-get-attacks-ddos-info
+      script: Group-IB Threat Intelligence & Attribution|||gibtia-get-attacks-ddos-info
+      type: regular
+      version: -1
+    taskid: 8a87b580-33e0-41ff-88ff-901d8cf7291c
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1940
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "24"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      id:
+        simple: 59695ef7b1965600014badbd
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Group-IB Threat Intelligence & Attribution
+      description: Command performs Group IB event lookup in attacks/deface collection
+        with provided ID.
+      id: 3ec6978b-6346-4b2c-8612-79070afce502
+      iscommand: true
+      name: gibtia-get-attacks-deface-info
+      script: Group-IB Threat Intelligence & Attribution|||gibtia-get-attacks-deface-info
+      type: regular
+      version: -1
+    taskid: 3ec6978b-6346-4b2c-8612-79070afce502
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2545
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "26"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      id:
+        simple: 2dde1bda9643ba7646e30bafe0656864be28eff2
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Group-IB Threat Intelligence & Attribution
+      description: Command performs Group IB event lookup in bp/phishing and attacks/phishing
+        collections with provided ID.
+      id: 1599062a-59a1-4fc8-8813-e6eb7e22a3fd
+      iscommand: true
+      name: gibtia-get-phishing-info
+      script: Group-IB Threat Intelligence & Attribution|||gibtia-get-phishing-info
+      type: regular
+      version: -1
+    taskid: 1599062a-59a1-4fc8-8813-e6eb7e22a3fd
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3130
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "28"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      id:
+        simple: c98307ebec7c382873e643b43ca6120ef9e4ce6b
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Group-IB Threat Intelligence & Attribution
+      description: Command performs Group IB event lookup in bp/phishing_kit and attacks/phishing_kit
+        collections with provided ID.
+      id: 724bd9b1-9dae-4775-8ee4-1df068d6fbb6
+      iscommand: true
+      name: gibtia-get-phishing-kit-info
+      script: Group-IB Threat Intelligence & Attribution|||gibtia-get-phishing-kit-info
+      type: regular
+      version: -1
+    taskid: 724bd9b1-9dae-4775-8ee4-1df068d6fbb6
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3740
+        }
+      }
+  "9":
+    id: "9"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "30"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      id:
+        simple: 9c622211830b66cf43da3b4934ef6275bd3b87ea
+      isAPT:
+        simple: "false"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Group-IB Threat Intelligence & Attribution
+      description: Command performs Group IB event lookup in hi/threat (or in apt/threat
+        if the APT flag is true) collection with provided ID.
+      id: eae8cd79-0648-40d4-8148-036d84f9ec45
+      iscommand: true
+      name: gibtia-get-threat-info
+      script: Group-IB Threat Intelligence & Attribution|||gibtia-get-threat-info
+      type: regular
+      version: -1
+    taskid: eae8cd79-0648-40d4-8148-036d84f9ec45
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 4340
+        }
+      }
+  "10":
+    id: "10"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "32"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      id:
+        simple: c324e33a95949af31a66c65f49d10f8e920e8ade
+      isAPT: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Group-IB Threat Intelligence & Attribution
+      description: Command performs Group IB event lookup in hi/threat_actor (or in
+        apt/threat_actor if the APT flag is true) collection with provided ID.
+      id: 0e714742-8a8e-4e2f-8095-dae0748e3890
+      iscommand: true
+      name: gibtia-get-threat-actor-info
+      script: Group-IB Threat Intelligence & Attribution|||gibtia-get-threat-actor-info
+      type: regular
+      version: -1
+    taskid: 0e714742-8a8e-4e2f-8095-dae0748e3890
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 4930
+        }
+      }
+  "11":
+    id: "11"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "36"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      id:
+        simple: c7b817f6144c3e538bcc7c45c0fdbb79c6b021fd
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Group-IB Threat Intelligence & Attribution
+      description: Command performs Group IB event lookup in suspicious_ip/open_proxy
+        collection with provided ID.
+      id: 98e99b45-424a-4ae0-837c-db1f6dd6d4f0
+      iscommand: true
+      name: gibtia-get-suspicious-ip-open-proxy-info
+      script: Group-IB Threat Intelligence & Attribution|||gibtia-get-suspicious-ip-open-proxy-info
+      type: regular
+      version: -1
+    taskid: 98e99b45-424a-4ae0-837c-db1f6dd6d4f0
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 6140
+        }
+      }
+  "12":
+    id: "12"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "38"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      id:
+        simple: a78ecc975e74876300f6ee54d829fabf6e1fc243
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Group-IB Threat Intelligence & Attribution
+      description: Command performs Group IB event lookup in suspicious_ip/socks_proxy
+        collection with provided ID.
+      id: af6be76b-bb06-44b7-894e-74d0113fa744
+      iscommand: true
+      name: gibtia-get-suspicious-ip-socks-proxy-info
+      script: Group-IB Threat Intelligence & Attribution|||gibtia-get-suspicious-ip-socks-proxy-info
+      type: regular
+      version: -1
+    taskid: af6be76b-bb06-44b7-894e-74d0113fa744
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 6730
+        }
+      }
+  "13":
+    id: "13"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "34"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      id:
+        simple: 120.56.170.104
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Group-IB Threat Intelligence & Attribution
+      description: Command performs Group IB event lookup in suspicious_ip/tor_node
+        collection with provided ID.
+      id: 593ee8bc-3791-4a57-8170-9c69fe966e28
+      iscommand: true
+      name: gibtia-get-suspicious-ip-tor-node-info
+      script: Group-IB Threat Intelligence & Attribution|||gibtia-get-suspicious-ip-tor-node-info
+      type: regular
+      version: -1
+    taskid: 593ee8bc-3791-4a57-8170-9c69fe966e28
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 5525
+        }
+      }
+  "14":
+    id: "14"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "40"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      id:
+        simple: CVE-2021-32489
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Group-IB Threat Intelligence & Attribution
+      description: Command performs Group IB event lookup in osi/vulnerability collection
+        with provided ID.
+      id: 42c3d3b3-c343-478f-8b62-e298df041864
+      iscommand: true
+      name: gibtia-get-osi-vulnerability-info
+      script: Group-IB Threat Intelligence & Attribution|||gibtia-get-osi-vulnerability-info
+      type: regular
+      version: -1
+    taskid: 42c3d3b3-c343-478f-8b62-e298df041864
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 7315
+        }
+      }
+  "15":
+    id: "15"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "42"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      id:
+        simple: 709e997856a642ff2c5e8781c7b8a4a1dcf2d95e
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Group-IB Threat Intelligence & Attribution
+      description: Command performs Group IB event lookup in malware/cnc collection
+        by provided ID.
+      id: bffdb353-f903-4e5a-8a8a-1206a8b08230
+      iscommand: true
+      name: gibtia-get-malware-cnc-info
+      script: Group-IB Threat Intelligence & Attribution|||gibtia-get-malware-cnc-info
+      type: regular
+      version: -1
+    taskid: bffdb353-f903-4e5a-8a8a-1206a8b08230
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 7890
+        }
+      }
+  "16":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: collections
+                root: GIBTIA.OtherInfo
+          operator: containsGeneral
+          right:
+            value:
+              simple: compromised/mule
+      label: "yes"
+    id: "16"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "19"
+      "yes":
+      - "4"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Checks that compromised/mule collection available for the client.
+      id: fc4dde3b-3f5e-4700-8476-a17c127d203a
+      iscommand: false
+      name: Is compromised/mule collection available?
+      type: condition
+      version: -1
+    taskid: fc4dde3b-3f5e-4700-8476-a17c127d203a
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 520
+        }
+      }
+  "17":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: id
+                root: GIBTIA.CompromisedMule
+          operator: isEqualString
+          right:
+            value:
+              simple: 5eb9ccb5081203e82ac1159e44747a6af4bb7391
+      label: Correct
+    id: "17"
+    ignoreworker: false
+    nexttasks:
+      Correct:
+      - "19"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Checks that command returned an correct output.
+      id: bf742e4a-6a89-4985-8e8d-cfb1c9abbfc6
+      iscommand: false
+      name: Verify the results
+      type: condition
+      version: -1
+    taskid: bf742e4a-6a89-4985-8e8d-cfb1c9abbfc6
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 900
+        }
+      }
+  "18":
+    id: "18"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 5a806a99-0da7-4bb9-8507-1c9851220a7e
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: 5a806a99-0da7-4bb9-8507-1c9851220a7e
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 8250
+        }
+      }
+  "19":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: collections
+                root: GIBTIA.OtherInfo
+          operator: containsGeneral
+          right:
+            value:
+              simple: compromised/imei
+      label: "yes"
+    id: "19"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "21"
+      "yes":
+      - "3"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Checks that compromised/mule collection available for the client.
+      id: 67282a3c-92ff-4aea-8798-74f7440dbe1d
+      iscommand: false
+      name: Is compromised/imei collection available?
+      type: condition
+      version: -1
+    taskid: 67282a3c-92ff-4aea-8798-74f7440dbe1d
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1090
+        }
+      }
+  "20":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: id
+                root: GIBTIA.CompromisedIMEI
+          operator: isEqualString
+          right:
+            value:
+              simple: 08ff6bd4888a257e082dcc5d53d9b3fd3c27de8b
+      label: Correct
+    id: "20"
+    ignoreworker: false
+    nexttasks:
+      Correct:
+      - "21"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Checks that command returned an correct output.
+      id: 4c91766f-9ae0-441a-8658-b63812e11bf7
+      iscommand: false
+      name: Verify the results
+      type: condition
+      version: -1
+    taskid: 4c91766f-9ae0-441a-8658-b63812e11bf7
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1485
+        }
+      }
+  "21":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: collections
+                root: GIBTIA.OtherInfo
+          operator: containsGeneral
+          right:
+            value:
+              simple: attacks/ddos
+      label: "yes"
+    id: "21"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "23"
+      "yes":
+      - "5"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Checks that attacks/ddos collection available for the client.
+      id: b64d71db-060e-4298-8f3e-453ac6fb3c5a
+      iscommand: false
+      name: Is attacks/ddos collection available?
+      type: condition
+      version: -1
+    taskid: b64d71db-060e-4298-8f3e-453ac6fb3c5a
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1690
+        }
+      }
+  "22":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: id
+                root: GIBTIA.AttacksDDoS
+          operator: isEqualString
+          right:
+            value:
+              simple: c66d4fed330ac9ef7c58755a1f08a7ba89b0da13
+      label: Correct
+    id: "22"
+    ignoreworker: false
+    nexttasks:
+      Correct:
+      - "23"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Checks that command returned an correct output.
+      id: b4080749-1242-4b72-8fbe-46ba27d2791c
+      iscommand: false
+      name: Verify the results
+      type: condition
+      version: -1
+    taskid: b4080749-1242-4b72-8fbe-46ba27d2791c
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2105
+        }
+      }
+  "23":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: collections
+                root: GIBTIA.OtherInfo
+          operator: containsGeneral
+          right:
+            value:
+              simple: attacks/deface
+      label: "yes"
+    id: "23"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "25"
+      "yes":
+      - "6"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Checks that attacks/deface collection available for the client.
+      id: b419ded2-5003-4fb7-8699-9a2db3b6eb31
+      iscommand: false
+      name: Is attacks/deface collection available?
+      type: condition
+      version: -1
+    taskid: b419ded2-5003-4fb7-8699-9a2db3b6eb31
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2300
+        }
+      }
+  "24":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: id
+                root: GIBTIA.AttacksDeface
+          operator: isEqualString
+          right:
+            value:
+              simple: 59695ef7b1965600014badbd
+      label: Correct
+    id: "24"
+    ignoreworker: false
+    nexttasks:
+      Correct:
+      - "25"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Checks that command returned an correct output.
+      id: c4fc19a5-754a-4809-8804-d26893cdac1e
+      iscommand: false
+      name: Verify the results
+      type: condition
+      version: -1
+    taskid: c4fc19a5-754a-4809-8804-d26893cdac1e
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2715
+        }
+      }
+  "25":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: collections
+                root: GIBTIA.OtherInfo
+          operator: containsGeneral
+          right:
+            value:
+              simple: attacks/phishing
+      label: "yes"
+    id: "25"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "27"
+      "yes":
+      - "7"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Checks that attacks/phishing collection available for the client.
+      id: c4a0a3ac-235f-4fb5-8c12-9656ef40f7bf
+      iscommand: false
+      name: Is attacks/phishing collection available?
+      type: condition
+      version: -1
+    taskid: c4a0a3ac-235f-4fb5-8c12-9656ef40f7bf
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2910
+        }
+      }
+  "26":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: id
+                root: GIBTIA.Phishing
+          operator: isEqualString
+          right:
+            value:
+              simple: 2dde1bda9643ba7646e30bafe0656864be28eff2
+      label: Correct
+    id: "26"
+    ignoreworker: false
+    nexttasks:
+      Correct:
+      - "27"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Checks that command returned an correct output.
+      id: 2eb4d99d-59d1-42ab-801b-7b9d9ff4c524
+      iscommand: false
+      name: Verify the results
+      type: condition
+      version: -1
+    taskid: 2eb4d99d-59d1-42ab-801b-7b9d9ff4c524
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3305
+        }
+      }
+  "27":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: collections
+                root: GIBTIA.OtherInfo
+          operator: containsGeneral
+          right:
+            value:
+              simple: attacks/phishing_kit
+      label: "yes"
+    id: "27"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "29"
+      "yes":
+      - "8"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Checks that attacks/phishing_kit collection available for the client.
+      id: 97982ccd-ac6a-4c89-8c3b-9b407891879c
+      iscommand: false
+      name: Is attacks/phishing_kit collection available?
+      type: condition
+      version: -1
+    taskid: 97982ccd-ac6a-4c89-8c3b-9b407891879c
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3510
+        }
+      }
+  "28":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: id
+                root: GIBTIA.PhishingKit
+          operator: isEqualString
+          right:
+            value:
+              simple: c98307ebec7c382873e643b43ca6120ef9e4ce6b
+      label: Correct
+    id: "28"
+    ignoreworker: false
+    nexttasks:
+      Correct:
+      - "29"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Checks that command returned an correct output.
+      id: a2219dce-173c-4cac-851d-d1b79e3ad3be
+      iscommand: false
+      name: Verify the results
+      type: condition
+      version: -1
+    taskid: a2219dce-173c-4cac-851d-d1b79e3ad3be
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3905
+        }
+      }
+  "29":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: collections
+                root: GIBTIA.OtherInfo
+          operator: containsGeneral
+          right:
+            value:
+              simple: hi/threat
+      label: "yes"
+    id: "29"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "31"
+      "yes":
+      - "9"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Checks that hi/threat collection available for the client.
+      id: 5640c315-78b9-4a4e-8401-34357070f5fd
+      iscommand: false
+      name: Is hi/threat collection available?
+      type: condition
+      version: -1
+    taskid: 5640c315-78b9-4a4e-8401-34357070f5fd
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 4095
+        }
+      }
+  "30":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: id
+                root: GIBTIA.Threat
+          operator: isEqualString
+          right:
+            value:
+              simple: 9c622211830b66cf43da3b4934ef6275bd3b87ea
+      label: Correct
+    id: "30"
+    ignoreworker: false
+    nexttasks:
+      Correct:
+      - "31"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Checks that command returned an correct output.
+      id: bfa16485-d09a-44fd-8d05-66304e5c469b
+      iscommand: false
+      name: Verify the results
+      type: condition
+      version: -1
+    taskid: bfa16485-d09a-44fd-8d05-66304e5c469b
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 4505
+        }
+      }
+  "31":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: collections
+                root: GIBTIA.OtherInfo
+          operator: containsGeneral
+          right:
+            value:
+              simple: hi/threat_actor
+      label: "yes"
+    id: "31"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "33"
+      "yes":
+      - "10"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Checks that hi/threat_actor collection available for the client.
+      id: a69bfa76-2935-46b0-880c-3a736642a03e
+      iscommand: false
+      name: Is hi/threat_actor collection available?
+      type: condition
+      version: -1
+    taskid: a69bfa76-2935-46b0-880c-3a736642a03e
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 4695
+        }
+      }
+  "32":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: id
+                root: GIBTIA.ThreatActor
+          operator: isEqualString
+          right:
+            value:
+              simple: c324e33a95949af31a66c65f49d10f8e920e8ade
+      label: Correct
+    id: "32"
+    ignoreworker: false
+    nexttasks:
+      Correct:
+      - "33"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Checks that command returned an correct output.
+      id: 50a05eea-9124-42e5-8928-3efe613e3966
+      iscommand: false
+      name: Verify the results
+      type: condition
+      version: -1
+    taskid: 50a05eea-9124-42e5-8928-3efe613e3966
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 5105
+        }
+      }
+  "33":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: collections
+                root: GIBTIA.OtherInfo
+          operator: containsGeneral
+          right:
+            value:
+              simple: suspicious_ip/tor_node
+      label: "yes"
+    id: "33"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "35"
+      "yes":
+      - "13"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Checks that suspicious_ip/tor_node collection available for the
+        client.
+      id: 83e372d2-713d-428e-8663-83d71df66f5e
+      iscommand: false
+      name: Is suspicious_ip/tor_node collection available?
+      type: condition
+      version: -1
+    taskid: 83e372d2-713d-428e-8663-83d71df66f5e
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 5295
+        }
+      }
+  "34":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: id
+                root: GIBTIA.SuspiciousIPTorNode
+          operator: isEqualString
+          right:
+            value:
+              simple: 120.56.170.104
+      label: Correct
+    id: "34"
+    ignoreworker: false
+    nexttasks:
+      Correct:
+      - "35"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Checks that command returned an correct output.
+      id: 070da5fd-a5bb-4902-8a47-a1b86d902205
+      iscommand: false
+      name: Verify the results
+      type: condition
+      version: -1
+    taskid: 070da5fd-a5bb-4902-8a47-a1b86d902205
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 5695
+        }
+      }
+  "35":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: collections
+                root: GIBTIA.OtherInfo
+          operator: containsGeneral
+          right:
+            value:
+              simple: suspicious_ip/open_proxy
+      label: "yes"
+    id: "35"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "37"
+      "yes":
+      - "11"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Checks that suspicious_ip/open_proxy collection available for the
+        client.
+      id: e9229b64-131e-4835-8ab7-bd65180cc255
+      iscommand: false
+      name: Is suspicious_ip/open_proxy collection available?
+      type: condition
+      version: -1
+    taskid: e9229b64-131e-4835-8ab7-bd65180cc255
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 5895
+        }
+      }
+  "36":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: id
+                root: GIBTIA.SuspiciousIPOpenProxy
+          operator: isEqualString
+          right:
+            value:
+              simple: c7b817f6144c3e538bcc7c45c0fdbb79c6b021fd
+      label: Correct
+    id: "36"
+    ignoreworker: false
+    nexttasks:
+      Correct:
+      - "37"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Checks that command returned an correct output.
+      id: de375e0c-219c-4819-89f5-fcaf4e3dfef7
+      iscommand: false
+      name: Verify the results
+      type: condition
+      version: -1
+    taskid: de375e0c-219c-4819-89f5-fcaf4e3dfef7
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 6315
+        }
+      }
+  "37":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: collections
+                root: GIBTIA.OtherInfo
+          operator: containsGeneral
+          right:
+            value:
+              simple: suspicious_ip/socks_proxy
+      label: "yes"
+    id: "37"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "39"
+      "yes":
+      - "12"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Checks that suspicious_ip/socks_proxy collection available for
+        the client.
+      id: c241afe9-a4ea-4ca6-898f-bca3b504a9be
+      iscommand: false
+      name: Is suspicious_ip/socks_proxy collection available?
+      type: condition
+      version: -1
+    taskid: c241afe9-a4ea-4ca6-898f-bca3b504a9be
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 6515
+        }
+      }
+  "38":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: id
+                root: GIBTIA.SuspiciousIPSocksProxy
+          operator: isEqualString
+          right:
+            value:
+              simple: a78ecc975e74876300f6ee54d829fabf6e1fc243
+      label: Correct
+    id: "38"
+    ignoreworker: false
+    nexttasks:
+      Correct:
+      - "39"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Checks that command returned an correct output.
+      id: 6b7b0485-a973-445c-863f-a47ca09fb410
+      iscommand: false
+      name: Verify the results
+      type: condition
+      version: -1
+    taskid: 6b7b0485-a973-445c-863f-a47ca09fb410
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 6895
+        }
+      }
+  "39":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: collections
+                root: GIBTIA.OtherInfo
+          operator: containsGeneral
+          right:
+            value:
+              simple: osi/vulnerability
+      label: "yes"
+    id: "39"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "41"
+      "yes":
+      - "14"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Checks that osi/vulnerability collection available for the client.
+      id: 9b54a70e-82e7-4756-8fd4-863de32bb01d
+      iscommand: false
+      name: Is osi/vulnerability collection available?
+      type: condition
+      version: -1
+    taskid: 9b54a70e-82e7-4756-8fd4-863de32bb01d
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 7085
+        }
+      }
+  "40":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: id
+                root: GIBTIA.OSIVulnerability
+          operator: isEqualString
+          right:
+            value:
+              simple: CVE-2021-32489
+      label: Correct
+    id: "40"
+    ignoreworker: false
+    nexttasks:
+      Correct:
+      - "41"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Checks that command returned an correct output.
+      id: 7c581903-6d59-44f8-8917-cbeaf968f0b3
+      iscommand: false
+      name: Verify the results
+      type: condition
+      version: -1
+    taskid: 7c581903-6d59-44f8-8917-cbeaf968f0b3
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 7495
+        }
+      }
+  "41":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: collections
+                root: GIBTIA.OtherInfo
+          operator: containsGeneral
+          right:
+            value:
+              simple: malware/cnc
+      label: "yes"
+    id: "41"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "18"
+      "yes":
+      - "15"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Checks that malware/cnc collection available for the client.
+      id: 647446d9-d90d-4640-82d3-5dd21c96cf34
+      iscommand: false
+      name: Is malware/cnc collection available?
+      type: condition
+      version: -1
+    taskid: 647446d9-d90d-4640-82d3-5dd21c96cf34
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 7690
+        }
+      }
+  "42":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: id
+                root: GIBTIA.MalwareCNC
+          operator: isEqualString
+          right:
+            value:
+              simple: 709e997856a642ff2c5e8781c7b8a4a1dcf2d95e
+      label: Correct
+    id: "42"
+    ignoreworker: false
+    nexttasks:
+      Correct:
+      - "18"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Checks that command returned an correct output.
+      id: 98df8767-5619-4368-8cc8-a6a5b1f1fb7e
+      iscommand: false
+      name: Verify the results
+      type: condition
+      version: -1
+    taskid: 98df8767-5619-4368-8cc8-a6a5b1f1fb7e
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 8055
+        }
+      }
+version: -1
+fromversion: 6.0.0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "17_19_Correct": 0.34,
+      "20_21_Correct": 0.4,
+      "22_23_Correct": 0.34,
+      "23_6_yes": 0.6,
+      "24_25_Correct": 0.25,
+      "26_27_Correct": 0.28,
+      "28_29_Correct": 0.3,
+      "29_9_yes": 0.43,
+      "30_31_Correct": 0.28,
+      "32_33_Correct": 0.3,
+      "34_35_Correct": 0.32,
+      "36_37_Correct": 0.32,
+      "38_39_Correct": 0.31,
+      "40_41_Correct": 0.37,
+      "41_15_yes": 0.54,
+      "42_18_Correct": 0.34
+    },
+    "paper": {
+      "dimensions": {
+        "height": 8265,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }

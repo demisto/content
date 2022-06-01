@@ -1,0 +1,32 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "FireEye EX Alert",
+        "FireEye HX Alert",
+        "FireEye NX Alert",
+        "FireEye NX IPS Event"
+    ],
+    "caseInsensitive": true,
+    "cliName": "fireeyematchcount",
+    "closeForm": false,
+    "content": true,
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_fireeyematchcount",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "FireEye Match Count",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "5.0.0"
+}

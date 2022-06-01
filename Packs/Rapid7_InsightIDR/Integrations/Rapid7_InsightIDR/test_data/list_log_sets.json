@@ -1,0 +1,39 @@
+{
+    "logsets": [
+      {
+        "user_data": {},
+        "logs_info": [
+          {
+            "id": "4c1e08f2-0398-48a5-9325-ac190e2f79e8",
+            "links": [
+              {
+                "href": "https://us.rest.logs.insight.rapid7.com/management/logs/4c1e08f2-0398-48a5-9325-ac190e2f79e8",
+                "rel": "Self"
+              }
+            ],
+            "name": "My Log"
+          },
+          {
+            "id": "f15ad4cf-fe7d-4b7a-86b0-924997c1d8be",
+            "links": [
+              {
+                "href": "https://us.rest.logs.insight.rapid7.com/management/logs/f15ad4cf-fe7d-4b7a-86b0-924997c1d8be",
+                "rel": "Self"
+              }
+            ],
+            "name": "My Other Log"
+          }
+        ],
+        "description": "",
+        "id": "814241d4-a14a-4c98-b059-b30978baf951",
+        "name": "My LogSet"
+      },
+      {
+        "user_data": {},
+        "logs_info": [],
+        "description": "",
+        "id": "d25737e8-7135-4b48-b0f8-4b4b5b60b358",
+        "name": "My Empty Log Set"
+      }
+    ]
+  }

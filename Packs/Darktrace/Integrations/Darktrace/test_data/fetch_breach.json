@@ -1,0 +1,603 @@
+[
+   {
+      "creationTime":1598937620000,
+      "commentCount":0,
+      "pbid":159,
+      "time":1598937619000,
+      "model":{
+         "then":{
+            "name":"Testing::Cheese-y DNS",
+            "pid":761,
+            "phid":1451,
+            "uuid":"d04218f3-f67e-4802-9e65-bc6675e5e276",
+            "logic":{
+               "data":[
+                  2998
+               ],
+               "type":"componentList",
+               "version":1
+            },
+            "throttle":30,
+            "sharedEndpoints":false,
+            "actions":{
+               "alert":true,
+               "antigena":{
+
+               },
+               "breach":true,
+               "model":true,
+               "setPriority":false,
+               "setTag":false,
+               "setType":false
+            },
+            "tags":[
+
+            ],
+            "interval":0,
+            "sequenced":true,
+            "active":true,
+            "modified":"2020-08-07 07:26:34",
+            "activeTimes":{
+               "devices":{
+
+               },
+               "tags":{
+
+               },
+               "type":"exclusions",
+               "version":2
+            },
+            "priority":3,
+            "autoUpdatable":true,
+            "autoUpdate":true,
+            "autoSuppress":false,
+            "description":"DNS lookups for various cheese.com",
+            "behaviour":"flat",
+            "defeats":[
+
+            ],
+            "created":{
+               "by":"user.name",
+               "userID":4
+            },
+            "edited":{
+               "by":"user.name",
+               "userID":4
+            },
+            "version":3
+         },
+         "now":{
+            "name":"Testing::Cheese-y DNS",
+            "pid":761,
+            "phid":1451,
+            "uuid":"d04218f3-f67e-4802-9e65-bc6675e5e276",
+            "logic":{
+               "data":[
+                  2998
+               ],
+               "type":"componentList",
+               "version":1
+            },
+            "throttle":30,
+            "sharedEndpoints":false,
+            "actions":{
+               "alert":true,
+               "antigena":{
+
+               },
+               "breach":true,
+               "model":true,
+               "setPriority":false,
+               "setTag":false,
+               "setType":false
+            },
+            "tags":[
+
+            ],
+            "interval":0,
+            "sequenced":true,
+            "active":true,
+            "modified":"2020-08-07 07:26:34",
+            "activeTimes":{
+               "devices":{
+
+               },
+               "tags":{
+
+               },
+               "type":"exclusions",
+               "version":2
+            },
+            "priority":3,
+            "autoUpdatable":false,
+            "autoUpdate":true,
+            "autoSuppress":false,
+            "description":"DNS lookups for various cheese.com",
+            "behaviour":"flat",
+            "defeats":[
+
+            ],
+            "created":{
+               "by":"user.name",
+               "userID":4
+            },
+            "edited":{
+               "by":"user.name",
+               "userID":4
+            },
+            "message":"don't auto-suppress",
+            "version":3
+         }
+      },
+      "triggeredComponents":[
+         {
+            "time":1598937618000,
+            "cbid":177,
+            "cid":2998,
+            "chid":4199,
+            "size":1,
+            "threshold":0,
+            "interval":120,
+            "logic":{
+               "data":{
+                  "left":"A"
+               },
+               "version":"v0.1"
+            },
+            "metric":{
+               "mlid":11,
+               "name":"dnsrequests",
+               "label":"DNS Requests"
+            },
+            "triggeredFilters":[
+               {
+                  "cfid":28022,
+                  "id":"A",
+                  "filterType":"DNS host lookup",
+                  "arguments":{
+                     "value":"cheese.com"
+                  },
+                  "comparatorType":"contains",
+                  "trigger":{
+                     "value":"cheese.com"
+                  }
+               }
+            ]
+         }
+      ],
+      "score":0.729,
+      "device":{
+         "did":823,
+         "macaddress":"00:00:00:00:00:00",
+         "vendor":"",
+         "ip":"10.0.0.1",
+         "ips":[
+            {
+               "ip":"10.0.0.1",
+               "timems":1598936400000,
+               "time":"2020-09-01 05:00:00",
+               "sid":114
+            }
+         ],
+         "sid":114,
+         "hostname":"ip-10-0-0-1",
+         "firstSeen":1596758800000,
+         "lastSeen":1598938280000,
+         "typename":"server",
+         "typelabel":"Server"
+      }
+   },
+   {
+      "creationTime":1598935330000,
+      "commentCount":0,
+      "pbid":158,
+      "time":1598935329000,
+      "model":{
+         "then":{
+            "name":"Antigena::Network::Model",
+            "pid":44,
+            "phid":44,
+            "uuid":"1d02492e-941d-46d1-bdfc-7968adc01194",
+            "logic":{
+               "data":[
+                  {
+                     "cid":95,
+                     "weight":1
+                  },
+                  {
+                     "cid":94,
+                     "weight":1
+                  }
+               ],
+               "targetScore":1,
+               "type":"weightedComponentList",
+               "version":1
+            },
+            "throttle":3600,
+            "sharedEndpoints":false,
+            "actions":{
+               "alert":true,
+               "antigena":{
+                  "action":"automatic",
+                  "confirm":false,
+                  "duration":3600,
+                  "threshold":"15"
+               },
+               "breach":true,
+               "model":true,
+               "setPriority":false,
+               "setTag":false,
+               "setType":false
+            },
+            "tags":[
+
+            ],
+            "interval":3600,
+            "sequenced":false,
+            "active":true,
+            "modified":"2020-05-28 20:35:13",
+            "activeTimes":{
+               "devices":{
+
+               },
+               "tags":{
+
+               },
+               "type":"exclusions",
+               "version":2
+            },
+            "priority":4,
+            "autoUpdatable":true,
+            "autoUpdate":true,
+            "autoSuppress":false,
+            "description":"Antigena response to event",
+            "behaviour":"decreasing",
+            "defeats":[
+
+            ],
+            "created":{
+               "by":"System"
+            },
+            "edited":{
+               "by":"Nobody"
+            },
+            "version":21
+         },
+         "now":{
+            "name":"Antigena::Network::Model",
+            "pid":44,
+            "phid":44,
+            "uuid":"1d02492e-941d-46d1-bdfc-7968adc01194",
+            "logic":{
+               "data":[
+                  {
+                     "cid":95,
+                     "weight":1
+                  },
+                  {
+                     "cid":94,
+                     "weight":1
+                  }
+               ],
+               "targetScore":1,
+               "type":"weightedComponentList",
+               "version":1
+            },
+            "throttle":3600,
+            "sharedEndpoints":false,
+            "actions":{
+               "alert":true,
+               "antigena":{
+                  "action":"automatic",
+                  "confirm":false,
+                  "duration":3600,
+                  "threshold":"15"
+               },
+               "breach":true,
+               "model":true,
+               "setPriority":false,
+               "setTag":false,
+               "setType":false
+            },
+            "tags":[
+
+            ],
+            "interval":3600,
+            "sequenced":false,
+            "active":true,
+            "modified":"2020-05-28 20:35:13",
+            "activeTimes":{
+               "devices":{
+
+               },
+               "tags":{
+
+               },
+               "type":"exclusions",
+               "version":2
+            },
+            "priority":4,
+            "autoUpdatable":true,
+            "autoUpdate":true,
+            "autoSuppress":false,
+            "description":"Antigena response to event",
+            "behaviour":"decreasing",
+            "defeats":[
+
+            ],
+            "created":{
+               "by":"System"
+            },
+            "edited":{
+               "by":"Nobody"
+            },
+            "message":"Excluded from AG actions",
+            "version":21
+         }
+      },
+      "triggeredComponents":[
+         {
+            "time":1598935328000,
+            "cbid":176,
+            "cid":94,
+            "chid":94,
+            "size":2,
+            "threshold":1,
+            "interval":3600,
+            "logic":{
+               "data":{
+                  "left":{
+                     "left":"A",
+                     "operator":"AND",
+                     "right":{
+                        "left":"B",
+                        "operator":"AND",
+                        "right":{
+                           "left":"C",
+                           "operator":"AND",
+                           "right":{
+                              "left":"D",
+                              "operator":"AND",
+                              "right":{
+                                 "left":"E",
+                                 "operator":"AND",
+                                 "right":{
+                                    "left":"G",
+                                    "operator":"AND",
+                                    "right":{
+                                       "left":"H",
+                                       "operator":"AND",
+                                       "right":{
+                                          "left":"I",
+                                          "operator":"AND",
+                                          "right":{
+                                             "left":"J",
+                                             "operator":"AND",
+                                             "right":"K"
+                                          }
+                                       }
+                                    }
+                                 }
+                              }
+                           }
+                        }
+                     }
+                  },
+                  "operator":"OR",
+                  "right":{
+                     "left":"A",
+                     "operator":"AND",
+                     "right":{
+                        "left":"B",
+                        "operator":"AND",
+                        "right":{
+                           "left":"C",
+                           "operator":"AND",
+                           "right":{
+                              "left":"D",
+                              "operator":"AND",
+                              "right":{
+                                 "left":"F",
+                                 "operator":"AND",
+                                 "right":{
+                                    "left":"G",
+                                    "operator":"AND",
+                                    "right":{
+                                       "left":"H",
+                                       "operator":"AND",
+                                       "right":{
+                                          "left":"I",
+                                          "operator":"AND",
+                                          "right":{
+                                             "left":"J",
+                                             "operator":"AND",
+                                             "right":"K"
+                                          }
+                                       }
+                                    }
+                                 }
+                              }
+                           }
+                        }
+                     }
+                  }
+               },
+               "version":"v0.1"
+            },
+            "metric":{
+               "mlid":237,
+               "name":"dtmodelbreach",
+               "label":"Model"
+            },
+            "triggeredFilters":[
+               {
+                  "cfid":916,
+                  "id":"A",
+                  "filterType":"Counter seconds",
+                  "arguments":{
+                     "value":120
+                  },
+                  "comparatorType":"=",
+                  "trigger":{
+                     "value":120
+                  }
+               },
+               {
+                  "cfid":917,
+                  "id":"B",
+                  "filterType":"Strength",
+                  "arguments":{
+                     "value":50
+                  },
+                  "comparatorType":">",
+                  "trigger":{
+                     "value":"73"
+                  }
+               },
+               {
+                  "cfid":918,
+                  "id":"C",
+                  "filterType":"Message",
+                  "arguments":{
+                     "value":"compliance"
+                  },
+                  "comparatorType":"does not contain",
+                  "trigger":{
+                     "value":"Testing / Cheese-y DNS"
+                  }
+               },
+               {
+                  "cfid":919,
+                  "id":"D",
+                  "filterType":"Message",
+                  "arguments":{
+                     "value":"Test /"
+                  },
+                  "comparatorType":"does not contain",
+                  "trigger":{
+                     "value":"Testing / Cheese-y DNS"
+                  }
+               },
+               {
+                  "cfid":920,
+                  "id":"E",
+                  "filterType":"Tagged internal source",
+                  "arguments":{
+                     "value":13
+                  },
+                  "comparatorType":"has tag",
+                  "trigger":{
+                     "value":"13",
+                     "tag":{
+                        "tid":13,
+                        "expiry":0,
+                        "thid":13,
+                        "name":"Antigena All",
+                        "restricted":false,
+                        "data":{
+                           "auto":false,
+                           "color":200,
+                           "description":""
+                        },
+                        "isReferenced":true
+                     }
+                  }
+               },
+               {
+                  "cfid":922,
+                  "id":"G",
+                  "filterType":"Message",
+                  "arguments":{
+                     "value":"Anomaly Indicators /"
+                  },
+                  "comparatorType":"does not contain",
+                  "trigger":{
+                     "value":"Testing / Cheese-y DNS"
+                  }
+               },
+               {
+                  "cfid":923,
+                  "id":"H",
+                  "filterType":"Message",
+                  "arguments":{
+                     "value":"Tags /"
+                  },
+                  "comparatorType":"does not contain",
+                  "trigger":{
+                     "value":"Testing / Cheese-y DNS"
+                  }
+               },
+               {
+                  "cfid":924,
+                  "id":"I",
+                  "filterType":"Message",
+                  "arguments":{
+                     "value":"Activity Identifier /"
+                  },
+                  "comparatorType":"does not contain",
+                  "trigger":{
+                     "value":"Testing / Cheese-y DNS"
+                  }
+               },
+               {
+                  "cfid":925,
+                  "id":"J",
+                  "filterType":"Message",
+                  "arguments":{
+                     "value":"User / Key User /"
+                  },
+                  "comparatorType":"does not contain",
+                  "trigger":{
+                     "value":"Testing / Cheese-y DNS"
+                  }
+               },
+               {
+                  "cfid":926,
+                  "id":"K",
+                  "filterType":"Message",
+                  "arguments":{
+                     "value":"Inoculation /"
+                  },
+                  "comparatorType":"does not contain",
+                  "trigger":{
+                     "value":"Testing / Cheese-y DNS"
+                  }
+               },
+               {
+                  "cfid":927,
+                  "id":"d1",
+                  "filterType":"Message",
+                  "arguments":{
+
+                  },
+                  "comparatorType":"display",
+                  "trigger":{
+                     "value":"Testing / Cheese-y DNS"
+                  }
+               }
+            ]
+         }
+      ],
+      "score":0.69,
+      "device":{
+         "did":823,
+         "macaddress":"00:00:00:00:00:00",
+         "vendor":"",
+         "ip":"10.0.0.1",
+         "ips":[
+            {
+               "ip":"10.0.0.1",
+               "timems":1598936400000,
+               "time":"2020-09-01 05:00:00",
+               "sid":114
+            }
+         ],
+         "sid":114,
+         "hostname":"ip-10-0-0-1",
+         "firstSeen":1596758800000,
+         "lastSeen":1598938280000,
+         "typename":"server",
+         "typelabel":"Server"
+      }
+   }
+]

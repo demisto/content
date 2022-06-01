@@ -1,0 +1,25 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+pylint = "*"
+pytest = "*"
+pytest-mock = "*"
+requests-mock = "*"
+pytest-xdist = "*"
+pytest-json = "*"
+pytest-cov = "*"
+flake8 = "*"
+
+[packages]
+freezegun = "*"
+appdirs = "==1.4.3"
+langdetect = "==1.0.7"
+pyparsing = "==2.2.0"
+six = "==1.10.0"
+virtualenv = "==15.1.0"
+
+[requires]
+python_version = "3.9"

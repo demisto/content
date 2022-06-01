@@ -1,0 +1,184 @@
+id: Public_DNS_Feed_Test
+version: -1
+vcShouldKeepItemLegacyProdMachine: false
+name: Public_DNS_Feed_Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 2aff5544-c813-409b-84de-549ac259ee22
+    type: start
+    task:
+      id: 2aff5544-c813-409b-84de-549ac259ee22
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: ad494d6e-cec6-4bd1-8490-873642a70c58
+    type: regular
+    task:
+      id: ad494d6e-cec6-4bd1-8490-873642a70c58
+      version: -1
+      name: Get Indicators - Office 365 (IP)
+      script: '|||public-dns-get-indicators'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      limit:
+        simple: "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: ee48eac7-49e3-47d1-8946-583c6881be0c
+    type: condition
+    task:
+      id: ee48eac7-49e3-47d1-8946-583c6881be0c
+      version: -1
+      name: Assert Output
+      description: Asserts output.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Indicator.[0].rawJSON
+                accessor: type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Indicator.[0].rawJSON
+                accessor: value
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: f7994d21-be00-4276-87b2-fc546c38befa
+    type: title
+    task:
+      id: f7994d21-be00-4276-87b2-fc546c38befa
+      version: -1
+      name: Done
+      description: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 2b5ecc57-36a2-441b-8bfe-0a76c522c90d
+    type: regular
+    task:
+      id: 2b5ecc57-36a2-441b-8bfe-0a76c522c90d
+      version: -1
+      name: Delete Context
+      description: Delete field from context.
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 735,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.5.0

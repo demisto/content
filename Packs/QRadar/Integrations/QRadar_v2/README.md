@@ -1,11 +1,12 @@
-Fetch offenses as incidents and search QRadar
-This integration was integrated and tested with version 7.3.2 of QRadar
+Fetch offenses as incidents and search QRadar.
+Supports API versions until 10.0.
+This integration was integrated and tested with version 7.3.2 of QRadar.
 
 
-## Configure QRadar_v2 on Cortex XSOAR
+## Configure QRadar v2 on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for QRadar_v2.
+2. Search for QRadar v2.
 3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter** | **Description** | **Required** |
@@ -27,8 +28,11 @@ This integration was integrated and tested with version 7.3.2 of QRadar
 
 4. Click **Test** to validate the URLs, token, and connection.
 
-## Troubleshooting Performance Issues
-In some cases, you might encounter performance issues when running QRadar AQL queries from Demisto. This issue is caused by QRadar API limitations. We recommend that you test the QRadar API performance by running several cURL scripts.
+## Troubleshooting 
+This section provides information for troubleshooting performance and fetching issues.
+
+### Performance Issues
+In some cases, you might encounter performance issues when running QRadar AQL queries from Cortex XSOAR. This issue is caused by QRadar API limitations. We recommend that you test the QRadar API performance by running several cURL scripts.
 #### 1. Creating a search
 Run the following command to use the QRadar API to create a new search.Save the QUERY ID that is attached to the response for the next step.
 ```
@@ -39,6 +43,11 @@ Use the following command to use the QRadar API to check the query status (EXECU
 ```
 curl -H "SEC: <API KEY>" -X GET <QRADAR INSTANCE>/api/ariel/searches?<QUERY ID>
 ```
+
+### Fetching Issues
+If the integration fails to fetch with on a Docker timeout error and the enrichment is enabled within the integration configuration, the cause might be releated to a permissions issue with the enrichment.
+
+Adding the following advanced parameter might resolve this issue: `DOMAIN_ENRCH_FLG=False`
 
 ## Using API Token authentication
 In order to use the integration with an API token you'll first need to change the `Username / API Key (see '?')` field to `_api_token_key`. Following this step, you can now enter the API Token into the `Password` field - this value will be used as an API key.
@@ -58,6 +67,7 @@ You can apply additional (optional) filters for the fetch-incident query using t
 
 #### Reset the "last run" timestamp
 To reset fetch incidents, run `qradar-reset-last-run` - this will reset the fetch to its initial state (will try to fetch first available offense).
+**Please Note**: It is recommended to *disable* and then *enable* the QRadar instance for the reset to take effect immediately.
 
 ## Required Permissions
 * Assets - Vulnerability Management *or* Assets
@@ -69,7 +79,7 @@ To reset fetch incidents, run `qradar-reset-last-run` - this will reset the fetc
 * References (Read) - View Reference Data
 
 ## Commands
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### qradar-offenses
 ***
@@ -271,7 +281,7 @@ Searches in QRadar using AQL. It is highly recommended to use the playbook 'QRad
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query_expression | The query expressions in AQL (for more information about Ariel Query Language please review "https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.3.0/com.ibm.qradar.doc/c_aql_intro.html") | Required | 
+| query_expression | The query expressions in AQL (for more information about Ariel Query Language please review: https://www.ibm.com/docs/en/qsip/7.3.2?topic=qradar-ariel-query-language-aql ) | Required | 
 | headers | Table headers to use the human readable output (if none provided, will show all table headers) | Optional | 
 
 
@@ -1290,7 +1300,7 @@ Retrieves Domain information By ID
 
 ### qradar-upload-indicators
 ***
-Uploads indicators from Demisto to Qradar.
+Uploads indicators from Cortex XSOAR to Qradar.
 
 
 #### Base Command

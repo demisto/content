@@ -1,0 +1,435 @@
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
+description: Main playbook to upload submissions to FortiSandbox, poll for verdict
+  and retrieve report
+id: Detonate File - FortiSandbox
+inputs:
+- description: |
+    Select Files to upload (Provide File objects from upper playbook only if using this as a sub-playbook). Change FileUploadLoop-FSBX to use ${inputs.File.EntryID} instead of ${File.EntryID}
+  key: File
+  playbookInputQuery:
+  required: true
+  value: {}
+- description: |-
+    If True will retrieve PDF report of Scan
+    If False/Empty will not retrieve report
+  key: Retrieve PDF Report
+  playbookInputQuery:
+  required: false
+  value:
+    simple: "True"
+name: Detonate File - FortiSandbox
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "13"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: af34e0fa-7a23-4813-88d7-40244f331fe9
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: af34e0fa-7a23-4813-88d7-40244f331fe9
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "12"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      AdditionalPollingCommandArgNames: {}
+      AdditionalPollingCommandArgValues: {}
+      Ids:
+        simple: ${FortiSandbox.Upload(val.Status == "In-Progress").JobIds}
+      Interval:
+        simple: "3"
+      PollingCommandArgName:
+        simple: job_id
+      PollingCommandName:
+        simple: fortisandbox-query-job-verdict
+      Timeout:
+        simple: "30"
+      dt:
+        simple: FortiSandbox.Upload(val.Status != "Done").JobIds
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      id: 1c93472a-1120-47f5-81c1-6d690d1aee20
+      iscommand: false
+      name: GenericPolling
+      playbookId: GenericPolling
+      type: playbook
+      version: -1
+    taskid: 1c93472a-1120-47f5-81c1-6d690d1aee20
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 925
+        }
+      }
+  "4":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.Retrieve PDF Report
+          operator: isEqualString
+          right:
+            value:
+              simple: "True"
+      label: "yes"
+    id: "4"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "5"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: ""
+      id: 2af03c55-367c-4bca-8816-0f1997c70ebc
+      iscommand: false
+      name: Check if PDF Report Needed
+      type: condition
+      version: -1
+    taskid: 2af03c55-367c-4bca-8816-0f1997c70ebc
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1275
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      query_type:
+        simple: sha256
+      query_value:
+        simple: ${FortiSandbox.Upload(val.Status && val.Status == "Done").SHA256}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: FortiSandbox
+      description: Get PDF Report of scanned item
+      id: 0dc090f3-50a1-41b8-8b86-99724e67a1fe
+      iscommand: true
+      name: Get PDF Scan Report
+      script: FortiSandbox|||fortisandbox-get-pdf-report
+      type: regular
+      version: -1
+    taskid: 0dc090f3-50a1-41b8-8b86-99724e67a1fe
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1450
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: dedb3594-bc4b-43b5-83e2-4c19f69dc085
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: dedb3594-bc4b-43b5-83e2-4c19f69dc085
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1625
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "11"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      AdditionalPollingCommandArgNames: {}
+      AdditionalPollingCommandArgValues: {}
+      Ids:
+        simple: ${FortiSandbox.Upload(val.Status == "Starting").SubmissionId(val.toLowerCase().indexOf(",")
+          === -1)}
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: submission_id
+      PollingCommandName:
+        simple: fortisandbox-jobid-from-submission
+      Timeout:
+        simple: "6"
+      dt:
+        simple: FortiSandbox.Upload(val.Status != "In-Progress").SubmissionId(val.toLowerCase().indexOf(",")
+          === -1)
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      id: 9e079cf0-b535-4ef2-8f40-7757b7b52d06
+      iscommand: false
+      name: GenericPolling
+      playbookId: GenericPolling
+      type: playbook
+      version: -1
+    taskid: 9e079cf0-b535-4ef2-8f40-7757b7b52d06
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 575
+        }
+      }
+  "10":
+    id: "10"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      forEach: true
+      iscommand: false
+      max: 100
+      wait: 3
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      ArchivePassword: {}
+      FileEntryID:
+        simple: ${File.EntryID}
+      FileSHA256:
+        simple: ${File.SHA256}
+      MalkPkg: {}
+      SkipSteps: {}
+      VM-CSV-List: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 60f6cb08-ffd5-4b2f-8f9e-0fd3a9ed6b59
+      iscommand: false
+      name: acad01ad-5822-4f4b-874a-1072e1e31521
+      playbookId: acad01ad-5822-4f4b-874a-1072e1e31521
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 60f6cb08-ffd5-4b2f-8f9e-0fd3a9ed6b59
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 400
+        }
+      }
+  "11":
+    id: "11"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      forEach: true
+      iscommand: false
+      max: 100
+      wait: 3
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      SubmissionIDs:
+        simple: ${FortiSandbox.Upload(val.Status == "Starting").SubmissionId}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 16def09f-2896-4a24-8c45-079f64ace095
+      iscommand: false
+      name: 6d811ef8-bbdf-45c7-8ceb-b21da95a3d36
+      playbookId: 6d811ef8-bbdf-45c7-8ceb-b21da95a3d36
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 16def09f-2896-4a24-8c45-079f64ace095
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 750
+        }
+      }
+  "12":
+    id: "12"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      forEach: true
+      iscommand: false
+      max: 100
+      wait: 3
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      JobIds:
+        simple: ${FortiSandbox.Upload(val.Status == "In-Progress").JobIds}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: ca70dbd1-7e3d-4614-8667-fcdb83e5b418
+      iscommand: false
+      name: b4900d98-bec2-48d5-80e0-c7c02974d5f1
+      playbookId: b4900d98-bec2-48d5-80e0-c7c02974d5f1
+      type: playbook
+      version: -1
+      description: ''
+    taskid: ca70dbd1-7e3d-4614-8667-fcdb83e5b418
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1100
+        }
+      }
+  "13":
+    id: "13"
+    ignoreworker: true
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      seconds:
+        simple: "5"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Sleep for X seconds
+      id: c28462c9-5eb9-4c19-846f-40e9168c8b79
+      iscommand: false
+      name: Sleep 5 seconds without worker to populate files
+      script: Sleep
+      type: regular
+      version: -1
+    taskid: c28462c9-5eb9-4c19-846f-40e9168c8b79
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 225
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1640,
+        "width": 492.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

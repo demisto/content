@@ -6,7 +6,7 @@ IoT RACI model script
 | --- | --- |
 | Script Type | python3 |
 | Tags | iot |
-| Demisto Version | 5.5.0 |
+| Cortex XSOAR Version | 5.5.0 |
 
 This script is using the device and incident attributes to evaluate the Responsible (R) and Informed (I) parties in the RACI model.
 

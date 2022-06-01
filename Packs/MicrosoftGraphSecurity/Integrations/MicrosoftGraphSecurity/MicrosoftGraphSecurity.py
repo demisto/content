@@ -31,10 +31,12 @@ class MsGraphClient:
     Microsoft Graph Mail Client enables authorized access to a user's Office 365 mail data in a personal account.
     """
 
-    def __init__(self, tenant_id, auth_id, enc_key, app_name, base_url, verify, proxy, self_deployed):
+    def __init__(self, tenant_id, auth_id, enc_key, app_name, base_url, verify, proxy, self_deployed,
+                 certificate_thumbprint: Optional[str] = None, private_key: Optional[str] = None):
         self.ms_client = MicrosoftClient(
             tenant_id=tenant_id, auth_id=auth_id, enc_key=enc_key, app_name=app_name, base_url=base_url, verify=verify,
-            proxy=proxy, self_deployed=self_deployed)
+            proxy=proxy, self_deployed=self_deployed, certificate_thumbprint=certificate_thumbprint,
+            private_key=private_key)
 
     def search_alerts(self, last_modified, severity, category, vendor, time_from, time_to, filter_query):
         filters = []
@@ -125,7 +127,7 @@ def fetch_incidents(client: MsGraphClient, fetch_time: str, fetch_limit: int, fi
     time_to = datetime.now().strftime(timestamp_format)
 
     # Get incidents from MS Graph Security
-    demisto.debug(f'Fetching MS Graph Security incidents. From: {time_from}. To: {time_to}\n')
+    demisto.debug(f'Fetching MS Graph Security incidents. From: {time_from}. To: {time_to}. Filter: {filter_query}')
     incidents = client.search_alerts(last_modified=None, severity=None, category=None, vendor=None, time_from=time_from,
                                      time_to=time_to, filter_query=filter_query)['value']
 
@@ -148,8 +150,6 @@ def fetch_incidents(client: MsGraphClient, fetch_time: str, fetch_limit: int, fi
             last_incident_time = demisto_incidents[-1].get('occurred')
             new_last_run.update({'time': last_incident_time})
 
-    if not demisto_incidents:
-        new_last_run.update({'time': time_to})
     demisto.setLastRun(new_last_run)
     return demisto_incidents
 
@@ -424,6 +424,11 @@ def update_alert_command(client: MsGraphClient, args):
         'MsGraph.Alert(val.ID && val.ID === obj.ID)': context
     }
     human_readable = 'Alert {} has been successfully updated.'.format(alert_id)
+    if status and provider_information in {'IPC', 'MCAS', 'Azure Sentinel'}:
+        human_readable += f'\nUpdating status for alerts from provider {provider_information} gets updated across \
+Microsoft Graph Security API integrated applications but not reflected in the provider’s management experience.\n \
+        For more details, see the \
+[Microsoft documentation](https://docs.microsoft.com/en-us/graph/api/resources/security-api-overview?view=graph-rest-1.0#alerts)'
     return human_readable, ec, context
 
 
@@ -513,6 +518,13 @@ def main():
     use_ssl = not params.get('insecure', False)
     self_deployed: bool = params.get('self_deployed', False)
     proxy = params.get('proxy', False)
+    certificate_thumbprint = params.get('certificate_thumbprint')
+    private_key = params.get('private_key')
+    if not self_deployed and not enc_key:
+        raise DemistoException('Key must be provided. For further information see '
+                               'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')
+    elif not enc_key and not (certificate_thumbprint and private_key):
+        raise DemistoException('Key or Certificate Thumbprint and Private Key must be provided.')
 
     commands = {
         'test-module': test_function,
@@ -528,10 +540,13 @@ def main():
     try:
         client: MsGraphClient = MsGraphClient(tenant_id=tenant, auth_id=auth_and_token_url, enc_key=enc_key,
                                               app_name=APP_NAME, base_url=url, verify=use_ssl, proxy=proxy,
-                                              self_deployed=self_deployed)
+                                              self_deployed=self_deployed,
+                                              certificate_thumbprint=certificate_thumbprint,
+                                              private_key=private_key,
+                                              )
         if command == "fetch-incidents":
             fetch_time = params.get('fetch_time', '1 day')
-            fetch_limit = params.get('fetch_limit', 10)
+            fetch_limit = params.get('fetch_limit', 10) or 10
             fetch_providers = params.get('fetch_providers', '')
             fetch_filter = params.get('fetch_filter', '')
             incidents = fetch_incidents(client, fetch_time=fetch_time, fetch_limit=int(fetch_limit),

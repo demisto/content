@@ -1,9 +1,10 @@
 <!-- HTML_DOC -->
+<p>Deprecated. Use Sumo Logic Cloud SIEM integration instead. For further details about the migration, visit our <a href="https://xsoar.pan.dev/docs/reference/integrations/sumo-logic-sec#migrating-from-jask-content-pack">Sumo Logic SIEM integration documentation</a>.</p>
 <h2>Overview</h2>
 <hr>
 <p>Use the JASK integration to manage entities, signals, and insights.</p>
 <p> </p>
-<h2>Configure the JASK Integration on Demisto</h2>
+<h2>Configure the JASK Integration on Cortex XSOAR</h2>
 <hr>
 <ol>
 <li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>
@@ -27,14 +28,14 @@
 <p> </p>
 <h2>Commands</h2>
 <hr>
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ol>
 <li><a href="#h_78423230251533534464758">Get details for an insight: jask-get-insight-details</a></li>
 <li><a href="#h_455075379781533534471017">Get comments for an insight: jask-get-insight-comments</a></li>
 <li><a href="#h_5004381221501533534476337">Get details for a signal: jask-get-signal-details</a></li>
 <li><a href="#h_8236589612211533534481518">Get details for an entity: jask-get-entity-details</a></li>
 <li><a href="#h_7145323282911533534488219">Get related entities: jask-get-related-entities</a></li>
-<li><a href="#h_8632925473601533534494371">Get a list of whitelisted entities: jask-get-whitelisted-entities</a></li>
+<li><a href="#h_8632925473601533534494371">Get a list of entities on allow list: jask-get-whitelisted-entities</a></li>
 <li><a href="#h_2458651614281533534504337">Search JASK insights: jask-search-insights</a></li>
 <li><a href="#h_3876303084951533534510096">Search JASK signals: jask-search-signals</a></li>
 <li><a href="#h_2402374295611533534516772">Search JASK entities: jask-search-entities</a></li>
@@ -42,6 +43,7 @@
 <p> </p>
 <h3 id="h_78423230251533534464758">1. Get details for an insight</h3>
 <hr>
+<p><i>Note:</i> This command is deprecated. Use `sumologic-sec-insight-get-details` command in Sumo Logic SIEM integration. For further details, visit our <a href="https://xsoar.pan.dev/docs/reference/integrations/sumo-logic-sec#migrating-from-jask-content-pack">Sumo Logic SIEM integration documentation</a>.</p>
 <p>Returns detailed information for a specified insight.</p>
 <p> </p>
 <h5>Base Command</h5>
@@ -166,7 +168,7 @@
 </tr>
 <tr>
 <td>Jask.Insight.RelatedEntityList.IsWhitelisted</td>
-<td>Whether or not the entity is whitelisted</td>
+<td>Whether or not the entity is on allow list</td>
 </tr>
 <tr>
 <td>Jask.Insight.RelatedEntityList.RiskScore</td>
@@ -290,6 +292,7 @@
 <p> </p>
 <h3 id="h_455075379781533534471017">2. Get comments for an insight</h3>
 <hr>
+<p><i>Note:</i> This command is deprecated. Use `sumologic-sec-insight-get-comments` command in Sumo Logic SIEM integration. For further details, visit our <a href="https://xsoar.pan.dev/docs/reference/integrations/sumo-logic-sec#migrating-from-jask-content-pack">Sumo Logic SIEM integration documentation</a>.</p>
 <p>Returns comments for a specified insight.</p>
 <p> </p>
 <h5>Base Command</h5>
@@ -356,6 +359,7 @@
 <p> </p>
 <h3 id="h_5004381221501533534476337">3. Get details for a signal</h3>
 <hr>
+<p><i>Note:</i> This command is deprecated. Use `sumologic-sec-signal-get-details` command in Sumo Logic SIEM integration. For further details, visit our <a href="https://xsoar.pan.dev/docs/reference/integrations/sumo-logic-sec#migrating-from-jask-content-pack">Sumo Logic SIEM integration documentation</a>.</p>
 <p>Returns detailed information for a specified signal.</p>
 <p> </p>
 <h5>Base Command</h5>
@@ -476,6 +480,7 @@
 <p> </p>
 <h3 id="h_8236589612211533534481518">4. Get details for an entity</h3>
 <hr>
+<p><i>Note:</i> This command is deprecated. Use `sumologic-sec-entity-get-details` command in Sumo Logic SIEM integration. For further details, visit our <a href="https://xsoar.pan.dev/docs/reference/integrations/sumo-logic-sec#migrating-from-jask-content-pack">Sumo Logic SIEM integration documentation</a>.</p>
 <p>Returns detailed information about a speficied entity.</p>
 <p> </p>
 <h5>Base Command</h5>
@@ -548,7 +553,7 @@
 </tr>
 <tr>
 <td>Jask.Entity.IsWhiteListed</td>
-<td>Whether or not the entity is whitelisted</td>
+<td>Whether or not the entity is on allow list</td>
 </tr>
 </tbody>
 </table>
@@ -579,6 +584,7 @@
 <p> </p>
 <h3 id="h_7145323282911533534488219">5. Get related entities</h3>
 <hr>
+<p><i>Note:</i> This command is deprecated and will not be supported in Sumo Logic SIEM. For further details, visit our <a href="https://xsoar.pan.dev/docs/reference/integrations/sumo-logic-sec#migrating-from-jask-content-pack">Sumo Logic SIEM integration documentation</a>.</p>
 <p>Get all related entities for the specified entity.</p>
 <p> </p>
 <h5>Base Command</h5>
@@ -659,7 +665,7 @@
 </tr>
 <tr>
 <td>Jask.RelatedEntityList.IsWhiteListed</td>
-<td>Whether or not the entity is whitelisted</td>
+<td>Whether or not the entity is on allow list</td>
 </tr>
 <tr>
 <td>Jask.RelatedEntityList.LastSeen</td>
@@ -720,9 +726,10 @@
 <h5>Human Readable Output</h5>
 <p><img src="https://user-images.githubusercontent.com/7270217/43685082-fe26e220-98b4-11e8-8050-77e37a7348c4.png" alt="image" width="752" height="197"></p>
 <p> </p>
-<h3 id="h_8632925473601533534494371">6. Get a list of whitelisted entities</h3>
+<h3 id="h_8632925473601533534494371">6. Get a list of entities on allow list</h3>
 <hr>
-<p>Returns a list of all whitelisted entities.</p>
+<p><i>Note:</i> This command is deprecated and will not be supported in Sumo Logic SIEM. For further details, visit our <a href="https://xsoar.pan.dev/docs/reference/integrations/sumo-logic-sec#migrating-from-jask-content-pack">Sumo Logic SIEM integration documentation</a>.</p>
+<p>Returns a list of all entities on allow list.</p>
 <p> </p>
 <h5>Base Command</h5>
 <p><code>jask-get-whitelisted-entities</code></p>
@@ -741,27 +748,27 @@
 <tbody>
 <tr>
 <td>Jask.Whitelisted.EntityList.Id</td>
-<td>ID of the whitelisted entity</td>
+<td>ID of the entity on allow list</td>
 </tr>
 <tr>
 <td>Jask.Whitelisted.EntityList.Name</td>
-<td>Name of the whitelisted entity</td>
+<td>Name of the entity on allow list</td>
 </tr>
 <tr>
 <td>Jask.Whitelisted.EntityList.UserName</td>
-<td>Username of the whitelisted entity</td>
+<td>Username of the entity on allow list</td>
 </tr>
 <tr>
 <td>Jask.Whitelisted.EntityList.ModelId</td>
-<td>The modelID of the whitelisted entity</td>
+<td>The modelID of the entity on allow list</td>
 </tr>
 <tr>
 <td>Jask.Whitelisted.EntityList.Timestamp</td>
-<td>Time of the whitelisted entity</td>
+<td>Time of the entity on allow list</td>
 </tr>
 <tr>
 <td>Jask.Whitelisted.EntityList.Metadata.TotalCount</td>
-<td>Number of whitelisted entities</td>
+<td>Number of entities on allow list</td>
 </tr>
 </tbody>
 </table>
@@ -808,6 +815,7 @@
 <p> </p>
 <h3 id="h_2458651614281533534504337">7. Search JASK insights</h3>
 <hr>
+<p><i>Note:</i> This command is deprecated. Use `sumologic-sec-insight-search` command in Sumo Logic SIEM integration. For further details, visit our <a href="https://xsoar.pan.dev/docs/reference/integrations/sumo-logic-sec#migrating-from-jask-content-pack">Sumo Logic SIEM integration documentation</a>.</p>
 <p>Search for JASK insights according to specific criteria.</p>
 <p> </p>
 <h5>Base Command</h5>
@@ -959,6 +967,7 @@
 <p> </p>
 <h3 id="h_3876303084951533534510096">8. Search JASK signals</h3>
 <hr>
+<p><i>Note:</i> This command is deprecated. Use `sumologic-sec-signal-search` command in Sumo Logic SIEM integration. For further details, visit our <a href="https://xsoar.pan.dev/docs/reference/integrations/sumo-logic-sec#migrating-from-jask-content-pack">Sumo Logic SIEM integration documentation</a>.</p>
 <p>Search for JASK signals according to specific criteria.</p>
 <p> </p>
 <h5>Base Command</h5>
@@ -1072,6 +1081,7 @@
 <p> </p>
 <h3 id="h_2402374295611533534516772">9. Search JASK entities</h3>
 <hr>
+<p><i>Note:</i> This command is deprecated. Use `sumologic-sec-entity-search` command in Sumo Logic SIEM integration. For further details, visit our <a href="https://xsoar.pan.dev/docs/reference/integrations/sumo-logic-sec#migrating-from-jask-content-pack">Sumo Logic SIEM integration documentation</a>.</p>
 <p>Search for JASK entities according to specific criteria.</p>
 <p> </p>
 <h5>Base Command</h5>
@@ -1164,7 +1174,7 @@
 </tr>
 <tr>
 <td>Jask.Entity.IsWhiteListed</td>
-<td>Whether or not the entity is whitelisted</td>
+<td>Whether or not the entity is on allow list</td>
 </tr>
 <tr>
 <td>Jask.Entity.Groups</td>

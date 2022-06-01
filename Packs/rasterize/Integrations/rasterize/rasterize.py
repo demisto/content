@@ -32,7 +32,7 @@ EMPTY_RESPONSE_ERROR_MSG = "There is nothing to render. This can occur when ther
                            " Please check your URL."
 DEFAULT_W, DEFAULT_H = '600', '800'
 DEFAULT_W_WIDE = '1024'
-CHROME_USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.117 Safari/537.36'  # noqa
+CHROME_USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.164 Safari/537.36'  # noqa
 DRIVER_LOG = f'{tempfile.gettempdir()}/chromedriver.log'
 DEFAULT_CHROME_OPTIONS = [
     '--no-sandbox',
@@ -48,6 +48,7 @@ DEFAULT_CHROME_OPTIONS = [
 ]
 
 USER_CHROME_OPTIONS = demisto.params().get('chrome_options', "")
+PAGES_LIMITATION = 20
 
 
 def return_err_or_warn(msg):
@@ -178,6 +179,11 @@ def rasterize(path: str, width: int, height: int, r_type: str = 'png', wait_time
 
         if r_type.lower() == 'pdf':
             output = get_pdf(driver, width, height)
+        elif r_type.lower() == 'json':
+            html = driver.page_source
+            url = driver.current_url
+            output = {'image_b64': base64.b64encode(get_image(driver, width, height)).decode('utf8'),
+                      'html': html, 'current_url': url}
         else:
             output = get_image(driver, width, height)
 
@@ -246,10 +252,10 @@ def convert_pdf_to_jpeg(path: str, max_pages: int, password: str, horizontal: bo
     :param max_pages: max pages to render
     :param password: PDF password
     :param horizontal: if True, will combine the pages horizontally
-    :return: stream of combined image
+    :return: A list of stream of combined images
     """
     demisto.debug(f'Loading file at Path: {path}')
-    input_pdf = PdfFileReader(open(path, "rb"))
+    input_pdf = PdfFileReader(open(path, "rb"), strict=False)
     pages = min(max_pages, input_pdf.numPages)
 
     with tempfile.TemporaryDirectory() as output_folder:
@@ -272,17 +278,25 @@ def convert_pdf_to_jpeg(path: str, max_pages: int, password: str, horizontal: bo
                 images.append(Image.open(os.path.join(output_folder, page)))
         min_shape = min([(np.sum(page_.size), page_.size) for page_ in images])[1]  # get the minimal width
 
-        if horizontal:
-            imgs_comb = np.hstack([np.asarray(i.resize(min_shape)) for i in images])
-        else:
-            imgs_comb = np.vstack([np.asarray(i.resize(min_shape)) for i in images])
+        # Divide the list of images into separate lists with constant length (20),
+        # due to the limitation of images in jpeg format (max size ~65,000 pixels).
+        # Create a list of lists (length == 20) of images to combine each list (20 images) to one image
+        images_matrix = [images[i:i + PAGES_LIMITATION] for i in range(0, len(images), PAGES_LIMITATION)]
 
-        imgs_comb = Image.fromarray(imgs_comb)
-        output = BytesIO()
-        imgs_comb.save(output, 'JPEG')
-        demisto.debug('Combining all pages - COMPLETED')
+        outputs = []
+        for images_list in images_matrix:
+            if horizontal:
+                imgs_comb = np.hstack([np.asarray(image.resize(min_shape)) for image in images_list])
+            else:
+                imgs_comb = np.vstack([np.asarray(image.resize(min_shape)) for image in images_list])
 
-        return output.getvalue()
+            imgs_comb = Image.fromarray(imgs_comb)
+            output = BytesIO()
+            imgs_comb.save(output, 'JPEG')  # type: ignore
+            demisto.debug('Combining all pages - COMPLETED')
+            outputs.append(output.getvalue())
+
+        return outputs
 
 
 def rasterize_command():
@@ -292,13 +306,18 @@ def rasterize_command():
     r_type = demisto.args().get('type', 'png')
     wait_time = int(demisto.args().get('wait_time', 0))
     page_load = int(demisto.args().get('max_page_load_time', DEFAULT_PAGE_LOAD_TIME))
+    file_name = demisto.args().get('file_name', 'url')
 
     if not (url.startswith('http')):
         url = f'http://{url}'
-    filename = f'url.{"pdf" if r_type == "pdf" else "png"}'  # type: ignore
+    file_name = f'{file_name}.{"pdf" if r_type == "pdf" else "png"}'  # type: ignore
 
     output = rasterize(path=url, r_type=r_type, width=w, height=h, wait_time=wait_time, max_page_load_time=page_load)
-    res = fileResult(filename=filename, data=output)
+    if r_type == 'json':
+        return_results(CommandResults(raw_response=output, readable_output="Successfully load image for url: " + url))
+        return
+
+    res = fileResult(filename=file_name, data=output)
     if r_type == 'png':
         res['Type'] = entryTypes['image']
 
@@ -310,13 +329,14 @@ def rasterize_image_command():
     entry_id = args.get('EntryID')
     w = args.get('width', DEFAULT_W).rstrip('px')
     h = args.get('height', DEFAULT_H).rstrip('px')
+    file_name = args.get('file_name', entry_id)
 
     file_path = demisto.getFilePath(entry_id).get('path')
-    filename = f'{entry_id}.pdf'
+    file_name = f'{file_name}.pdf'
 
     with open(file_path, 'rb') as f:
         output = rasterize(path=f'file://{os.path.realpath(f.name)}', width=w, height=h, r_type='pdf')
-        res = fileResult(filename=filename, data=output, file_type=entryTypes['entryInfoFile'])
+        res = fileResult(filename=file_name, data=output, file_type=entryTypes['entryInfoFile'])
         demisto.results(res)
 
 
@@ -326,14 +346,16 @@ def rasterize_email_command():
     h = demisto.args().get('height', DEFAULT_H).rstrip('px')
     offline = demisto.args().get('offline', 'false') == 'true'
     r_type = demisto.args().get('type', 'png')
+    file_name = demisto.args().get('file_name', 'email')
+    html_load = int(demisto.args().get('max_page_load_time', DEFAULT_PAGE_LOAD_TIME))
 
-    filename = f'email.{"pdf" if r_type.lower() == "pdf" else "png"}'  # type: ignore
+    file_name = f'{file_name}.{"pdf" if r_type.lower() == "pdf" else "png"}'  # type: ignore
     with open('htmlBody.html', 'w') as f:
         f.write(f'<html style="background:white";>{html_body}</html>')
     path = f'file://{os.path.realpath(f.name)}'
 
-    output = rasterize(path=path, r_type=r_type, width=w, height=h, offline_mode=offline)
-    res = fileResult(filename=filename, data=output)
+    output = rasterize(path=path, r_type=r_type, width=w, height=h, offline_mode=offline, max_page_load_time=html_load)
+    res = fileResult(filename=file_name, data=output)
     if r_type == 'png':
         res['Type'] = entryTypes['image']
 
@@ -345,18 +367,22 @@ def rasterize_pdf_command():
     password = demisto.args().get('pdfPassword')
     max_pages = int(demisto.args().get('maxPages', 30))
     horizontal = demisto.args().get('horizontal', 'false') == 'true'
+    file_name = demisto.args().get('file_name', 'image')
 
     file_path = demisto.getFilePath(entry_id).get('path')
 
-    filename = 'image.jpeg'  # type: ignore
+    file_name = f'{file_name}.jpeg'  # type: ignore
 
     with open(file_path, 'rb') as f:
-        output = convert_pdf_to_jpeg(path=os.path.realpath(f.name), max_pages=max_pages, password=password,
+        images = convert_pdf_to_jpeg(path=os.path.realpath(f.name), max_pages=max_pages, password=password,
                                      horizontal=horizontal)
-        res = fileResult(filename=filename, data=output)
-        res['Type'] = entryTypes['image']
+        results = []
+        for image in images:
+            res = fileResult(filename=file_name, data=image)
+            res['Type'] = entryTypes['image']
+            results.append(res)
 
-        demisto.results(res)
+        demisto.results(results)
 
 
 def module_test():

@@ -15,10 +15,6 @@
      "complex": null,
      "simple": "caller_id"
     },
-    "Child Incidents Count": {
-     "complex": null,
-     "simple": "child_incidents"
-    },
     "Escalation": {
      "complex": null,
      "simple": "escalation"
@@ -587,7 +583,10 @@
         "args": {
          "dayfirst": {
           "isContext": false,
-          "value": null
+           "value": {
+              "complex": null,
+              "simple": "false"
+                   }
          },
          "fuzzy": {
           "isContext": false,
@@ -602,8 +601,15 @@
        },
        {
         "args": {
-
+          "formatter": {
+            "isContext": false,
+            "value": null
+          }
         },
+						"operator": "FormattedDateToEpoch"
+					},
+					{
+						"args": {},
         "operator": "TimeStampToDate"
        }
       ]
@@ -729,7 +735,10 @@
         "args": {
          "dayfirst": {
           "isContext": false,
-          "value": null
+          "value": {
+											"complex": null,
+											"simple": "false"
+										}
          },
          "fuzzy": {
           "isContext": false,
@@ -777,7 +786,10 @@
         "args": {
          "dayfirst": {
           "isContext": false,
-          "value": null
+          "value": {
+											"complex": null,
+											"simple": "false"
+										}
          },
          "fuzzy": {
           "isContext": false,
@@ -906,7 +918,10 @@
         "args": {
          "dayfirst": {
           "isContext": false,
-          "value": null
+          "value": {
+											"complex": null,
+											"simple": "false"
+										}
          },
          "fuzzy": {
           "isContext": false,
@@ -1085,7 +1100,10 @@
         "args": {
          "dayfirst": {
           "isContext": false,
-          "value": null
+          "value": {
+											"complex": null,
+											"simple": "false"
+										}
          },
          "fuzzy": {
           "isContext": false,

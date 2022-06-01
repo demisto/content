@@ -1,0 +1,22 @@
+{
+    "modified": "2020-10-21T19:58:39Z",
+    "synced": "2021-01-29T04:30:46.907Z",
+    "displayName": "BASIC_DIRECT",
+    "source": {
+        "id": "2c9180876ff2de9601700b99e5fb51c6",
+        "name": "Basic Direct"
+    },
+    "privileged": false,
+    "identityCount": null,
+    "description": null,
+    "attribute": "Roles",
+    "value": "BASIC_DIRECT",
+    "schema": "group",
+    "id": "2c9180846ff7e56b01700bb399f60eaa",
+    "name": "BASIC_DIRECT",
+    "pod": "stg-uswest",
+    "org": "sailpoint-idn",
+    "tags": null,
+    "_type": "entitlement",
+    "type": "entitlement"
+}

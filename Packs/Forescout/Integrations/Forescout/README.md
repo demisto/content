@@ -1,6 +1,6 @@
 <!-- HTML_DOC -->
 <div class="cl-preview-section">
-<p>Forescout is Unified device visibility and control platform for IT and OT security.</p>
+<p>Forescout CounterACT is Unified device visibility and control platform for IT and OT security.</p>
 </div>
 <div class="cl-preview-section">
 <h2 id="detailed-information">Detailed Information</h2>
@@ -9,10 +9,10 @@
 <p>Read this section and perform all necessary steps before you configure an integration instance.</p>
 </div>
 <div class="cl-preview-section">
-<h3>Forescout Module Requirements</h3>
-<p>Before you can use this integration in Demisto, you need to enable certain modules in your Forescout environment.</p>
+<h3>Forescout CounterACT Module Requirements</h3>
+<p>Before you can use this integration in Cortex XSOAR, you need to enable certain modules in your Forescout CounterACT environment.</p>
 <ol>
-<li>In the Forescout console, from the navigation bar select<span> </span><em>Tools &gt; Options</em>.</li>
+<li>In the Forescout CounterACT console, from the navigation bar select<span> </span><em>Tools &gt; Options</em>.</li>
 <li>In the dialog that appears, from the categories section on the left, click<span> </span><em>Modules</em>.</li>
 <li>In the main area of the dialog, from the drop-down menu, select<span> </span><em>Open Integration Module</em>. Make sure that the integration module and the following submodules are installed and enabled:<span> </span><em>Data Exchange (DEX)</em><span> </span>and<span> </span><em>Web API</em><span> </span>are all installed and enabled. If they aren't, install and enable them.</li>
 </ol>
@@ -21,29 +21,29 @@
 <p><strong>url</strong><br> This is the network address of the Forescout Enterprise Manager or standalone Appliance. (The host on which the the Forescout Appliance is hosted.) For example, if the Forescout Appliance is hosted at the IP address<span> </span><em>192.168.10.23</em>, then you enter<span> </span><em><a href="https://192.168.10.23/" rel="nofollow">https://192.168.10.23</a></em>.</p>
 <p><strong>Web API Username</strong><span> </span>and<span> </span><strong>Password</strong><br> The credentials entered here should be those created in the Forescout console for the<span> </span><em>Web API</em>.</p>
 <ol>
-<li>In the Forescout console, from the top navigation bar, click<span> </span><em>Tools &gt; Options</em>.</li>
+<li>In the Forescout CounterACT console, from the top navigation bar, click<span> </span><em>Tools &gt; Options</em>.</li>
 <li>From the dialog that appears, in the categories section on the left, click<span> </span><em>Web API</em>, and select<span> </span><em>User Settings</em>.</li>
-<li>Create a username and password by clicking the<span> </span><em>Add</em><span> </span>button, and completing the fields. These are the credentials that you will enter when configuring the Demisto-Forescout integration:<span> </span><em>Web API Username</em><span> </span>and<span> </span><em>Password</em>.</li>
+<li>Create a username and password by clicking the<span> </span><em>Add</em><span> </span>button, and completing the fields. These are the credentials that you will enter when configuring the Cortex XSOAR-Forescout integration:<span> </span><em>Web API Username</em><span> </span>and<span> </span><em>Password</em>.</li>
 <li>Select<span> </span><em>Client IPs</em><span> </span>towards the top of the main area of the dialog, next to<span> </span><em>User Settings</em>.</li>
-<li>Add the IP address where your Demisto instance is hosted or allow requests from all IP addresses to make sure that requests made by the Demisto-Forescout integration will be permitted.</li>
+<li>Add the IP address where your Cortex XSOAR instance is hosted or allow requests from all IP addresses to make sure that requests made by the Cortex XSOAR-Forescout integration will be permitted.</li>
 <li>Click the<span> </span><em>Apply</em><span> </span>button to save the changes you made.</li>
 </ol>
 <p><strong>Data Exchange (DEX) Username</strong><span> </span>and<span> </span><strong>Password</strong><br> The credentials entered here should be those created in the Forescout console for<span> </span><em>Data Exchange (DEX)</em>.</p>
 <ol>
-<li>In the Forescout console, from the top navigation bar, click<span> </span><em>Tools &gt; Options</em>.</li>
+<li>In the Forescout CounterACT console, from the top navigation bar, click<span> </span><em>Tools &gt; Options</em>.</li>
 <li>From the dialog that appears, in the categories section on the left, click<span> </span><em>Data Exchange (DEX)</em>.</li>
 <li>Select<span> </span><em>CounterACT Web Service &gt; Accounts</em>.</li>
 <li>Create a username and password by clicking the<span> </span><em>Add</em><span> </span>button, and completing the fields.<span> </span><strong>Note</strong>: The value you entered for the<span> </span><em>Name</em><span> </span>field in the account-creation pop-up window is the value that you should enter for the<span> </span><em>Data Exchange (DEX) Account</em><span> </span>configuration parameter.</li>
 <li>Click the<span> </span><em>Apply</em><span> </span>button to save the changes you made.</li>
 </ol>
-<p>The username and password entered in the account-creation dialog are the credentials that you will enter when configuring the Demisto-Forescout integration:<span> </span><em>Data Exchange (DEX) Username</em><span> </span>and<span> </span><em>Password</em>.</p>
+<p>The username and password entered in the account-creation dialog are the credentials that you will enter when configuring the Cortex XSOAR-Forescout integration:<span> </span><em>Data Exchange (DEX) Username</em><span> </span>and<span> </span><em>Password</em>.</p>
 <p><strong>Data Exchange (DEX) Account</strong><br> The<span> </span><strong>Data Exchange (DEX)</strong><span> </span>credentials<span> </span><strong><em>Name</em></strong><span> </span>field. This can be found by navigating to<span> </span><strong>Tools &gt; Options &gt; Data Exchange (DEX) &gt; CounterACT Web Service &gt; Accounts</strong>.</p>
 <h3>
 <a id="user-content-important-usage-notes" class="anchor" href="https://github.com/demisto/content/blob/284b80afd53fdc12ff18a6953a888f5a0abed67d/Integrations/Forescout/Forescout_description.md#important-usage-notes" aria-hidden="true"></a>Important Usage Notes</h3>
-<p>This integration allows the user to update host properties and Forescout Lists. To create Forescout properties, which can then be updated using the Demisto-Forescout integration, from the Forescout console, navigate to<span> </span><strong>Tools &gt; Options &gt; Data Exchange (DEX) &gt; CounterACT Web Console &gt; Properties</strong>. This is where you create new properties. Make sure to associate the properties with the account you created, and which you used in the configuration parameters of the Forescout integration in Demisto. Lists must also be defined and created in the Forescout console before you can update them using the Demisto-Forescout integration. For more information, reference the<span> </span><em>Defining and Managing Lists</em><span> </span>section in the<span> </span><a href="https://www.forescout.com/wp-content/uploads/2018/04/CounterACT_Administration_Guide_8.0.pdf" rel="nofollow">Forescout Administration Guide</a>.</p>
+<p>This integration allows the user to update host properties and Forescout Lists. To create Forescout properties, which can then be updated using the Cortex XSOAR-Forescout integration, from the Forescout console, navigate to<span> </span><strong>Tools &gt; Options &gt; Data Exchange (DEX) &gt; CounterACT Web Console &gt; Properties</strong>. This is where you create new properties. Make sure to associate the properties with the account you created, and which you used in the configuration parameters of the Forescout integration in Cortex XSOAR. Lists must also be defined and created in the Forescout console before you can update them using the Cortex XSOAR-Forescout integration. For more information, reference the<span> </span><em>Defining and Managing Lists</em><span> </span>section in the<span> </span><a href="https://www.forescout.com/wp-content/uploads/2018/04/CounterACT_Administration_Guide_8.0.pdf" rel="nofollow">Forescout Administration Guide</a>.</p>
 </div>
 <div class="cl-preview-section">
-<h2 id="configure-forescout-on-demisto">Configure Forescout on Demisto</h2>
+<h2 id="configure-forescout-on-demisto">Configure Forescout on Cortex XSOAR</h2>
 </div>
 <div class="cl-preview-section">
 <ol>
@@ -57,6 +57,7 @@
 <li><strong>Web API Username (see Detailed Instructions (?))</strong></li>
 <li><strong>Data Exchange (DEX) Username (see Detailed Instructions (?))</strong></li>
 <li><strong>Data Exchange (DEX) Account (see Detailed Instructions (?))</strong></li>
+<li><strong>HTTP Timeout (default is 60 seconds)</strong></li>
 <li><strong>Trust any certificate (not secure)</strong></li>
 <li><strong>Use system proxy settings</strong></li>
 </ul>
@@ -70,7 +71,7 @@
 <h2 id="commands">Commands</h2>
 </div>
 <div class="cl-preview-section">
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 </div>
 <div class="cl-preview-section">
 <ol>
@@ -181,86 +182,86 @@
 <pre>{
     "Forescout.Host": [
         {
-            "MACAddress": "000c29e9e452", 
-            "IPAddress": "192.168.1.44", 
+            "MACAddress": "000c29e9e452",
+            "IPAddress": "192.168.1.44",
             "ID": "3232235820"
-        }, 
+        },
         {
-            "MACAddress": "000c297cc5ae", 
-            "IPAddress": "192.168.1.125", 
+            "MACAddress": "000c297cc5ae",
+            "IPAddress": "192.168.1.125",
             "ID": "3232235901"
-        }, 
+        },
         {
-            "MACAddress": "005056a1ad60", 
-            "IPAddress": "192.168.1.52", 
+            "MACAddress": "005056a1ad60",
+            "IPAddress": "192.168.1.52",
             "ID": "3232235828"
-        }, 
+        },
         {
-            "MACAddress": "000c29497e4e", 
-            "IPAddress": "192.168.1.119", 
+            "MACAddress": "000c29497e4e",
+            "IPAddress": "192.168.1.119",
             "ID": "3232235895"
-        }, 
+        },
         {
-            "MACAddress": "000000000000", 
-            "IPAddress": "192.168.1.8", 
+            "MACAddress": "000000000000",
+            "IPAddress": "192.168.1.8",
             "ID": "3232235784"
-        }, 
+        },
         {
-            "MACAddress": null, 
-            "IPAddress": "192.168.1.1", 
+            "MACAddress": null,
+            "IPAddress": "192.168.1.1",
             "ID": "3232235777"
-        }, 
+        },
         {
-            "MACAddress": "005056b1488d", 
-            "IPAddress": "192.168.1.31", 
+            "MACAddress": "005056b1488d",
+            "IPAddress": "192.168.1.31",
             "ID": "3232235807"
-        }, 
+        },
         {
-            "MACAddress": "005056b1a93f", 
-            "IPAddress": "192.168.1.17", 
+            "MACAddress": "005056b1a93f",
+            "IPAddress": "192.168.1.17",
             "ID": "3232235793"
-        }, 
+        },
         {
-            "MACAddress": null, 
-            "IPAddress": "192.168.1.212", 
+            "MACAddress": null,
+            "IPAddress": "192.168.1.212",
             "ID": "3232235988"
         }
-    ], 
+    ],
     "Endpoint": [
         {
-            "MACAddress": "000c29e9e452", 
+            "MACAddress": "000c29e9e452",
             "IPAddress": "192.168.1.44"
-        }, 
+        },
         {
-            "MACAddress": "000c297cc5ae", 
+            "MACAddress": "000c297cc5ae",
             "IPAddress": "192.168.1.125"
-        }, 
+        },
         {
-            "MACAddress": "005056a1ad60", 
+            "MACAddress": "005056a1ad60",
             "IPAddress": "192.168.1.52"
-        }, 
+        },
         {
-            "MACAddress": "000c29497e4e", 
+            "MACAddress": "000c29497e4e",
             "IPAddress": "192.168.1.119"
-        }, 
+        },
         {
-            "MACAddress": "000000000000", 
+            "MACAddress": "000000000000",
             "IPAddress": "192.168.1.8"
-        }, 
+        },
         {
-            "MACAddress": null, 
+            "MACAddress": null,
             "IPAddress": "192.168.1.1"
-        }, 
+        },
         {
-            "MACAddress": "005056b1488d", 
+            "MACAddress": "005056b1488d",
             "IPAddress": "192.168.1.31"
-        }, 
+        },
         {
-            "MACAddress": "005056b1a93f", 
+            "MACAddress": "005056b1a93f",
             "IPAddress": "192.168.1.17"
-        }, 
+        },
         {
-            "MACAddress": null, 
+            "MACAddress": null,
             "IPAddress": "192.168.1.212"
         }
     ]
@@ -428,69 +429,69 @@
 <pre>{
     "Forescout.HostField": [
         {
-            "Name": "nbthost", 
-            "Type": "string", 
-            "Description": "Indicates the NetBIOS hostname of the host.", 
+            "Name": "nbthost",
+            "Type": "string",
+            "Description": "Indicates the NetBIOS hostname of the host.",
             "Label": "NetBIOS Hostname"
-        }, 
+        },
         {
-            "Name": "hostname", 
-            "Type": "string", 
-            "Description": "Indicates the DNS name of the host.", 
+            "Name": "hostname",
+            "Type": "string",
+            "Description": "Indicates the DNS name of the host.",
             "Label": "DNS Name"
-        }, 
+        },
         {
-            "Name": "aws_instance_public_dns", 
-            "Type": "string", 
-            "Description": "The public hostname of the EC2 instance, which resolves to the public IP address or Elastic IP address of the instance.", 
+            "Name": "aws_instance_public_dns",
+            "Type": "string",
+            "Description": "The public hostname of the EC2 instance, which resolves to the public IP address or Elastic IP address of the instance.",
             "Label": "EC2 Public DNS"
-        }, 
+        },
         {
-            "Name": "dhcp_hostname", 
-            "Type": "string", 
-            "Description": "The device Host Name as advertised by DHCP", 
+            "Name": "dhcp_hostname",
+            "Type": "string",
+            "Description": "The device Host Name as advertised by DHCP",
             "Label": "DHCP Hostname"
-        }, 
+        },
         {
-            "Name": "linux_hostname", 
-            "Type": "string", 
-            "Description": "Indicates a hostname. Use of this property requires that the host is managed by CounterACT via SecureConnector or remotely.", 
+            "Name": "linux_hostname",
+            "Type": "string",
+            "Description": "Indicates a hostname. Use of this property requires that the host is managed by CounterACT via SecureConnector or remotely.",
             "Label": "Linux Hostname"
-        }, 
+        },
         {
-            "Name": "mac_hostname", 
-            "Type": "string", 
-            "Description": "Indicates a hostname. Use of this property requires that the host is managed by CounterACT via SecureConnector or remotely.", 
+            "Name": "mac_hostname",
+            "Type": "string",
+            "Description": "Indicates a hostname. Use of this property requires that the host is managed by CounterACT via SecureConnector or remotely.",
             "Label": "Macintosh Hostname"
-        }, 
+        },
         {
-            "Name": "sw_hostname", 
-            "Type": "string", 
-            "Description": "The switch name as defined in the switch", 
+            "Name": "sw_hostname",
+            "Type": "string",
+            "Description": "The switch name as defined in the switch",
             "Label": "Switch Hostname"
-        }, 
+        },
         {
-            "Name": "wifi_end_point_host_name", 
-            "Type": "string", 
-            "Description": "", 
+            "Name": "wifi_end_point_host_name",
+            "Type": "string",
+            "Description": "",
             "Label": "WiFi End Point Hostname"
-        }, 
+        },
         {
-            "Name": "vmware_guest_host", 
-            "Type": "string", 
-            "Description": "Indicates the hostname of the guest operating system. VMware Tools must be running on the endpoint to resolve this property.", 
+            "Name": "vmware_guest_host",
+            "Type": "string",
+            "Description": "Indicates the hostname of the guest operating system. VMware Tools must be running on the endpoint to resolve this property.",
             "Label": "Virtual Machine Guest Hostname"
-        }, 
+        },
         {
-            "Name": "vmware_esxi_hostname", 
-            "Type": "string", 
-            "Description": "Indicates the hostname of the ESXi server.", 
+            "Name": "vmware_esxi_hostname",
+            "Type": "string",
+            "Description": "Indicates the hostname of the ESXi server.",
             "Label": "VMware ESXi Server Name"
-        }, 
+        },
         {
-            "Name": "wifi_client_hostname", 
-            "Type": "string", 
-            "Description": "Indicates the user name of the client.", 
+            "Name": "wifi_client_hostname",
+            "Type": "string",
+            "Description": "Indicates the user name of the client.",
             "Label": "WLAN Client Username"
         }
     ]
@@ -914,12 +915,12 @@
 <div class="cl-preview-section">
 <pre>{
     "Forescout.Host": {
-        "MACAddress": null, 
-        "IPAddress": "192.168.1.212", 
+        "MACAddress": null,
+        "IPAddress": "192.168.1.212",
         "ID": "3232235988"
-    }, 
+    },
     "Endpoint": {
-        "MACAddress": null, 
+        "MACAddress": null,
         "IPAddress": "192.168.1.212"
     }
 }
@@ -1021,150 +1022,150 @@
 <pre>{
     "Forescout.Policy": [
         {
-            "Name": "Primary Classification", 
-            "Description": "", 
+            "Name": "Primary Classification",
+            "Description": "",
             "Rule": [
                 {
-                    "Name": "CounterACT Devices", 
-                    "Description": "", 
+                    "Name": "CounterACT Devices",
+                    "Description": "",
                     "ID": "-1203369125012565008"
-                }, 
+                },
                 {
-                    "Name": "NAT Devices", 
-                    "Description": "When a device is NAT, its other classifications may be inaccurate. Therefore, we put the NAT detection first.", 
+                    "Name": "NAT Devices",
+                    "Description": "When a device is NAT, its other classifications may be inaccurate. Therefore, we put the NAT detection first.",
                     "ID": "-5021668745466479821"
-                }, 
+                },
                 {
-                    "Name": "Printers", 
-                    "Description": "", 
+                    "Name": "Printers",
+                    "Description": "",
                     "ID": "-275357014618763061"
-                }, 
+                },
                 {
-                    "Name": "VoIP Devices", 
-                    "Description": "", 
+                    "Name": "VoIP Devices",
+                    "Description": "",
                     "ID": "4202614624411873493"
-                }, 
+                },
                 {
-                    "Name": "Networking Equipment", 
-                    "Description": "", 
+                    "Name": "Networking Equipment",
+                    "Description": "",
                     "ID": "195929949297431248"
-                }, 
+                },
                 {
-                    "Name": "Storage", 
-                    "Description": "", 
+                    "Name": "Storage",
+                    "Description": "",
                     "ID": "-6750955562195414496"
-                }, 
+                },
                 {
-                    "Name": "Windows", 
-                    "Description": "", 
+                    "Name": "Windows",
+                    "Description": "",
                     "ID": "-6030907744367556977"
-                }, 
+                },
                 {
-                    "Name": "Macintosh", 
-                    "Description": "", 
+                    "Name": "Macintosh",
+                    "Description": "",
                     "ID": "2278199708439440583"
-                }, 
+                },
                 {
-                    "Name": "Linux\\Unix", 
-                    "Description": "", 
+                    "Name": "Linux\\Unix",
+                    "Description": "",
                     "ID": "-7562731206926229799"
-                }, 
+                },
                 {
-                    "Name": "Mobile Devices", 
-                    "Description": "", 
+                    "Name": "Mobile Devices",
+                    "Description": "",
                     "ID": "4030118542035508409"
-                }, 
+                },
                 {
-                    "Name": "Approved Misc Devices", 
-                    "Description": "", 
+                    "Name": "Approved Misc Devices",
+                    "Description": "",
                     "ID": "168049340370707647"
-                }, 
+                },
                 {
-                    "Name": "Multiple Profile Matches", 
-                    "Description": "Endpoints matching this sub-rule could not have either their Function or Operating System determined due to conflicting profile matches.\n\nInvestigate the devices in this sub-rule and either manually classify them or build additional sub-rules to classify them based on patterns you observe. View the values Suggested Function and Suggested Operating System properties to discover the conflicting profile matches.", 
+                    "Name": "Multiple Profile Matches",
+                    "Description": "Endpoints matching this sub-rule could not have either their Function or Operating System determined due to conflicting profile matches.\n\nInvestigate the devices in this sub-rule and either manually classify them or build additional sub-rules to classify them based on patterns you observe. View the values Suggested Function and Suggested Operating System properties to discover the conflicting profile matches.",
                     "ID": "8701509617393717735"
-                }, 
+                },
                 {
-                    "Name": "Other Known Function", 
-                    "Description": "", 
+                    "Name": "Other Known Function",
+                    "Description": "",
                     "ID": "-642863379250182254"
-                }, 
+                },
                 {
-                    "Name": "Other Known Operating System", 
-                    "Description": "", 
+                    "Name": "Other Known Operating System",
+                    "Description": "",
                     "ID": "-4200038946418694277"
-                }, 
+                },
                 {
-                    "Name": "Other Known Vendor", 
-                    "Description": "", 
+                    "Name": "Other Known Vendor",
+                    "Description": "",
                     "ID": "150826048313755731"
-                }, 
+                },
                 {
-                    "Name": "Unclassified", 
-                    "Description": "", 
+                    "Name": "Unclassified",
+                    "Description": "",
                     "ID": "-8959326502596556700"
                 }
-            ], 
+            ],
             "ID": "2101168655015691125"
-        }, 
+        },
         {
-            "Name": "Corporate/Guest Control", 
-            "Description": "", 
+            "Name": "Corporate/Guest Control",
+            "Description": "",
             "Rule": [
                 {
-                    "Name": "Corporate Hosts", 
-                    "Description": "", 
+                    "Name": "Corporate Hosts",
+                    "Description": "",
                     "ID": "2240420499151482925"
-                }, 
+                },
                 {
-                    "Name": "Signed-in Guests", 
-                    "Description": "", 
+                    "Name": "Signed-in Guests",
+                    "Description": "",
                     "ID": "1248354759835029874"
-                }, 
+                },
                 {
-                    "Name": "Guest Hosts", 
-                    "Description": "", 
+                    "Name": "Guest Hosts",
+                    "Description": "",
                     "ID": "9151906460028315616"
                 }
-            ], 
+            ],
             "ID": "-7733328397206852516"
-        }, 
+        },
         {
-            "Name": "Antivirus Compliance", 
-            "Description": "", 
+            "Name": "Antivirus Compliance",
+            "Description": "",
             "Rule": [
                 {
-                    "Name": "Not Manageable", 
-                    "Description": "Optional step: Make Windows machines managable by installing the Secure Connector", 
+                    "Name": "Not Manageable",
+                    "Description": "Optional step: Make Windows machines managable by installing the Secure Connector",
                     "ID": "7661917523791823306"
-                }, 
+                },
                 {
-                    "Name": "AV Not Installed", 
-                    "Description": "Antivirus is not installed.", 
+                    "Name": "AV Not Installed",
+                    "Description": "Antivirus is not installed.",
                     "ID": "-2012169476997908764"
-                }, 
+                },
                 {
-                    "Name": "AV Not Running", 
-                    "Description": "Antivirus is not running.", 
+                    "Name": "AV Not Running",
+                    "Description": "Antivirus is not running.",
                     "ID": "8013197435392890209"
-                }, 
+                },
                 {
-                    "Name": "AV Not Updated", 
-                    "Description": "Antivirus is not updated.", 
+                    "Name": "AV Not Updated",
+                    "Description": "Antivirus is not updated.",
                     "ID": "6048295467368903309"
-                }, 
+                },
                 {
-                    "Name": "Compliant", 
-                    "Description": "", 
+                    "Name": "Compliant",
+                    "Description": "",
                     "ID": "-7389372863827790785"
                 }
-            ], 
+            ],
             "ID": "-4928940807449738209"
-        }, 
+        },
         {
-            "Name": "sadfsafg", 
-            "Description": "asdf", 
-            "Rule": [], 
+            "Name": "sadfsafg",
+            "Description": "asdf",
+            "Rule": [],
             "ID": "267720461254861999"
         }
     ]

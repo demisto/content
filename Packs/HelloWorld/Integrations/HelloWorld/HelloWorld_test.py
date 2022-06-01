@@ -206,14 +206,15 @@ def test_scan_results(mocker, requests_mock):
 
     response = scan_results_command(client, args)
 
-    assert response.outputs == mock_response
-    assert response.outputs_prefix == 'HelloWorld.Scan'
-    assert response.outputs_key_field == 'scan_id'
+    assert response[0].outputs == mock_response
+    assert response[0].outputs_prefix == 'HelloWorld.Scan'
+    assert response[0].outputs_key_field == 'scan_id'
 
     # This command also returns Common.CVE data
-    assert isinstance(response.indicators, list)
-    assert len(response.indicators) > 0
-    assert isinstance(response.indicators[0], Common.CVE)
+    assert isinstance(response, list)
+    assert len(response) > 1
+    for i in range(1, len(response)):
+        assert isinstance(response[i].indicator, Common.CVE)
 
 
 def test_search_alerts(requests_mock):
@@ -339,7 +340,7 @@ def test_ip(requests_mock):
     the output of the command function with the expected output.
     """
     from HelloWorld import Client, ip_reputation_command
-    from CommonServerPython import Common
+    from CommonServerPython import Common, DBotScoreReliability
 
     ip_to_check = '151.1.1.1'
     mock_response = util_load_json('test_data/ip_reputation.json')
@@ -359,17 +360,16 @@ def test_ip(requests_mock):
         'threshold': 65,
     }
 
-    response = ip_reputation_command(client, args, 65)
+    response = ip_reputation_command(client, args, 65, DBotScoreReliability.C)
 
-    assert response.outputs[0] == mock_response
-    assert response.outputs_prefix == 'HelloWorld.IP'
-    assert response.outputs_key_field == 'ip'
+    assert response[0].outputs == mock_response
+    assert response[0].outputs_prefix == 'HelloWorld.IP'
+    assert response[0].outputs_key_field == 'ip'
 
     # This command also returns Common.IP data
-    assert isinstance(response.indicators, list)
-    assert len(response.indicators) == 1
-    assert isinstance(response.indicators[0], Common.IP)
-    assert response.indicators[0].ip == ip_to_check
+    assert isinstance(response, list)
+    assert isinstance(response[0].indicator, Common.IP)
+    assert response[0].indicator.ip == ip_to_check
 
 
 def test_domain(requests_mock):
@@ -380,7 +380,7 @@ def test_domain(requests_mock):
     the output of the command function with the expected output.
     """
     from HelloWorld import Client, domain_reputation_command
-    from CommonServerPython import Common
+    from CommonServerPython import Common, DBotScoreReliability
 
     domain_to_check = 'google.com'
     mock_response = util_load_json('test_data/domain_reputation.json')
@@ -400,7 +400,7 @@ def test_domain(requests_mock):
         'threshold': 65,
     }
 
-    response = domain_reputation_command(client, args, 65)
+    response = domain_reputation_command(client, args, 65, DBotScoreReliability.C)
 
     # We modify the timestamps from the raw mock_response of the API, because the
     # integration changes the format from timestamp to ISO8601.
@@ -408,15 +408,14 @@ def test_domain(requests_mock):
     mock_response['creation_date'] = '1997-09-15T04:00:00.000Z'
     mock_response['updated_date'] = '2019-09-09T15:39:04.000Z'
 
-    assert response.outputs[0] == mock_response
-    assert response.outputs_prefix == 'HelloWorld.Domain'
-    assert response.outputs_key_field == 'domain'
+    assert response[0].outputs == mock_response
+    assert response[0].outputs_prefix == 'HelloWorld.Domain'
+    assert response[0].outputs_key_field == 'domain'
 
     # This command also returns Common.Domain data
-    assert isinstance(response.indicators, list)
-    assert len(response.indicators) == 1
-    assert isinstance(response.indicators[0], Common.Domain)
-    assert response.indicators[0].domain == domain_to_check
+    assert isinstance(response, list)
+    assert isinstance(response[0].indicator, Common.Domain)
+    assert response[0].indicator.domain == domain_to_check
 
 
 def test_fetch_incidents(requests_mock):

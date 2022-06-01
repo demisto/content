@@ -1,0 +1,14 @@
+!trustwave-seg-get-version
+!trustwave-seg-statistics time_range="1 day ago"
+!trustwave-seg-list-servers
+!trustwave-seg-get-server server_id="1"
+!trustwave-seg-automatic-config-backup-list
+!trustwave-seg-automatic-config-backup-run
+!trustwave-seg-automatic-config-backup-restore name="MailMarshal-10.0.1-ManualBackup_05-May-2021-05-25-31" timeout=200
+!trustwave-seg-list-classifications
+!trustwave-seg-list-alerts
+!trustwave-seg-list-quarantine-folders
+!trustwave-seg-list-quarantine-folders-with-day-info
+!trustwave-seg-list-day-info-by-quarantine-folder folder_id=1006
+!trustwave-seg-find-quarantine-message max_rows=10 time_range="3 month"
+!trustwave-seg-spiderlabs-forward-quarantine-message-as-spam block_number=106098471075840 edition=607ef9ae0000 folder_id=1006 is_spam="true" message_name=B607ef9ac0000 recipient=test@example.com server_id=1 spam_report_notification_from_address="This is a spam" time_logged=1618934189 spam_report_message="This is a spam"

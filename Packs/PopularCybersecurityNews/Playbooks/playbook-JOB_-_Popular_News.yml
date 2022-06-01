@@ -1,0 +1,457 @@
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
+description: Playbook can be run ad-hoc or as a Job to fetch results from Popular
+  News sites
+id: JOB - Popular News
+inputs:
+- description: "Set to false or leave empty to ignore fetching news from site"
+  key: KrebsOnSecurity
+  playbookInputQuery:
+  required: false
+  value:
+    simple: "true"
+- description: "Set to false or leave empty to ignore fetching news from site"
+  key: ThreatPost
+  playbookInputQuery:
+  required: false
+  value:
+    simple: "true"
+- description: "Set to false or leave empty to ignore fetching news from site"
+  key: TheHackerNews
+  playbookInputQuery:
+  required: false
+  value:
+    simple: "true"
+name: JOB - Popular News
+outputs: []
+quiet: true
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "5"
+      - "8"
+      - "7"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 6a102a96-1df3-42cc-8015-4720f8ea8a4b
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 6a102a96-1df3-42cc-8015-4720f8ea8a4b
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 620,
+          "y": -30
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    reputationcalc: 1
+    scriptarguments:
+      columns:
+        simple: Article,Date,Link,Source
+      context_path:
+        simple: News
+      grid_id:
+        simple: customnewsgrid
+      keys: {}
+      overwrite: {}
+      sort_by: {}
+      unpack_nested_elements: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Creates a Grid table from items or key-value pairs.
+      id: 5d407bc2-13e4-4d41-84b9-4e261f6dca2c
+      iscommand: false
+      name: Populate News to Grid
+      scriptName: SetGridField
+      type: regular
+      version: -1
+    taskid: 5d407bc2-13e4-4d41-84b9-4e261f6dca2c
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 695
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      all: {}
+      index: {}
+      key:
+        simple: News
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Delete field from context
+      id: d36d263c-4d65-410a-8872-bb30348a8650
+      iscommand: false
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      version: -1
+    taskid: d36d263c-4d65-410a-8872-bb30348a8650
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 870
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      emailclassification: {}
+      id: {}
+      phishingsubtype: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.close.inv
+      id: 1ca39d91-2f14-4e97-89c7-aef61b72eb7b
+      iscommand: true
+      name: Close
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: 1ca39d91-2f14-4e97-89c7-aef61b72eb7b
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 1025
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: d9209834-4e51-4e8f-897f-fa13f55750e3
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: 'Done'
+    taskid: d9209834-4e51-4e8f-897f-fa13f55750e3
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 1240
+        }
+      }
+  "5":
+    id: "5"
+    taskid: f48c44d8-3059-4972-8c00-51993d77c5ae
+    type: condition
+    task:
+      id: f48c44d8-3059-4972-8c00-51993d77c5ae
+      version: -1
+      name: Get Vendor - Krebs on Security
+      description: Gets the playbook input for vendor and checks condition
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "11"
+      Get News from vendor:
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: Get News from vendor
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.KrebsOnSecurity
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 1bf948d8-57f1-4700-81cb-7562f5caff39
+    type: regular
+    task:
+      id: 1bf948d8-57f1-4700-81cb-7562f5caff39
+      version: -1
+      name: Get News Krebs on Security
+      description: Gets news from Krebs on Security
+      script: Popular News|||get-news-KrebsOnSecurity
+      type: regular
+      iscommand: true
+      brand: Popular News
+    nexttasks:
+      '#none#':
+      - "1"
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -70,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 4fb05232-9b7e-4fab-8cc8-1ff6da08cd11
+    type: condition
+    task:
+      id: 4fb05232-9b7e-4fab-8cc8-1ff6da08cd11
+      version: -1
+      name: Get Vendor - The Hacker News
+      description: Gets  the playbook input for vendor and checks condition
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "11"
+      Get News from vendor:
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: Get News from vendor
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.TheHackerNews
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+    view: |-
+      {
+        "position": {
+          "x": 1140,
+          "y": 160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: f99d1473-c3a2-40bc-86d2-2d9f779ba60a
+    type: condition
+    task:
+      id: f99d1473-c3a2-40bc-86d2-2d9f779ba60a
+      version: -1
+      name: Get Vendor - Threat Post
+      description: Gets  the playbook input for vendor and checks condition
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "11"
+      Get News from vendor:
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: Get News from vendor
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.ThreatPost
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+    view: |-
+      {
+        "position": {
+          "x": 620,
+          "y": 160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 332045c7-c82d-4ac6-8e8f-22e4708a00cc
+    type: regular
+    task:
+      id: 332045c7-c82d-4ac6-8e8f-22e4708a00cc
+      version: -1
+      name: Get News Threat Post
+      description: Gets news from Threatpost
+      script: Popular News|||get-news-Threatpost
+      type: regular
+      iscommand: true
+      brand: Popular News
+    nexttasks:
+      '#none#':
+      - "1"
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 380,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 6976b9b1-1409-4f8c-88ee-5a3abbe2e096
+    type: regular
+    task:
+      id: 6976b9b1-1409-4f8c-88ee-5a3abbe2e096
+      version: -1
+      name: Get News The Hacker News
+      description: Gets news from The Hacker News
+      script: Popular News|||get-news-TheHackerNews
+      type: regular
+      iscommand: true
+      brand: Popular News
+    nexttasks:
+      '#none#':
+      - "1"
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 43bb5429-654b-47b7-814d-a75b5e169294
+      iscommand: false
+      name: Skip Vendor
+      type: title
+      version: -1
+      description: 'Skips the vendor based on playbook input'
+    taskid: 43bb5429-654b-47b7-814d-a75b5e169294
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 1730,
+          "y": 340
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1335,
+        "width": 2180,
+        "x": -70,
+        "y": -30
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0
+marketplaces:
+  - xsoar

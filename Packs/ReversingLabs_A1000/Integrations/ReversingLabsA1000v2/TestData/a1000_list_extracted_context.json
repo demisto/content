@@ -1,0 +1,129 @@
+{
+    "Type": 1,
+    "ContentsFormat": "json",
+    "Contents": {
+        "a1000_list_extracted_report": {
+            "count": 2,
+            "next": null,
+            "previous": null,
+            "results": [
+                {
+                    "id": 63184,
+                    "parent_relationship": null,
+                    "sample": {
+                        "id": 1316,
+                        "sha1": "4260284ce14278c397aaf6f389c1609b0ab0ce51",
+                        "type_display": "Text/XML",
+                        "category": "other",
+                        "file_type": "Text",
+                        "file_subtype": "XML",
+                        "identification_name": "",
+                        "identification_version": "",
+                        "file_size": 381,
+                        "extracted_file_count": 0,
+                        "local_first_seen": "2019-03-12T13:09:12.890450Z",
+                        "local_last_seen": "2021-06-14T11:25:05.545267Z",
+                        "threat_status": "known",
+                        "trust_factor": 0,
+                        "threat_level": 0,
+                        "threat_name": null
+                    },
+                    "filename": "0",
+                    "path": "binary_layer/resource/0",
+                    "container_sha1": null
+                },
+                {
+                    "id": 63185,
+                    "parent_relationship": null,
+                    "sample": {
+                        "id": 32708,
+                        "sha1": "848899ad7d2afabfb64806cc9ef8d7d1a3f77641",
+                        "type_display": "PE/Exe",
+                        "category": "application",
+                        "file_type": "PE",
+                        "file_subtype": "Exe",
+                        "identification_name": "",
+                        "identification_version": "",
+                        "file_size": 620530,
+                        "extracted_file_count": 0,
+                        "local_first_seen": "2021-06-11T08:20:15.750918Z",
+                        "local_last_seen": "2021-06-14T11:25:05.545267Z",
+                        "threat_status": "malicious",
+                        "trust_factor": 5,
+                        "threat_level": 5,
+                        "threat_name": "Win32.Trojan.Graftor"
+                    },
+                    "filename": "1",
+                    "path": "binary_layer/overlay/1",
+                    "container_sha1": null
+                }
+            ]
+        }
+    },
+    "HumanReadable": "### Extracted files\n|SHA1|Name|Path|Info|Size|Local First|Local Last|Malware Status|Trust|Threat Name|Threat Level|\n|---|---|---|---|---|---|---|---|---|---|---|\n| 4260284ce14278c397aaf6f389c1609b0ab0ce51 | 0 | binary_layer/resource/0 | Text/XML | 381 | 2019-03-12T13:09:12.890450Z | 2021-06-14T11:25:05.545267Z | known | 0 |  | 0 |\n| 848899ad7d2afabfb64806cc9ef8d7d1a3f77641 | 1 | binary_layer/overlay/1 | PE/Exe | 620530 | 2021-06-11T08:20:15.750918Z | 2021-06-14T11:25:05.545267Z | malicious | 5 | Win32.Trojan.Graftor | 5 |\n",
+    "EntryContext": {
+        "ReversingLabs": {
+            "a1000_list_extracted_report": {
+                "count": 2,
+                "next": null,
+                "previous": null,
+                "results": [
+                    {
+                        "id": 63184,
+                        "parent_relationship": null,
+                        "sample": {
+                            "id": 1316,
+                            "sha1": "4260284ce14278c397aaf6f389c1609b0ab0ce51",
+                            "type_display": "Text/XML",
+                            "category": "other",
+                            "file_type": "Text",
+                            "file_subtype": "XML",
+                            "identification_name": "",
+                            "identification_version": "",
+                            "file_size": 381,
+                            "extracted_file_count": 0,
+                            "local_first_seen": "2019-03-12T13:09:12.890450Z",
+                            "local_last_seen": "2021-06-14T11:25:05.545267Z",
+                            "threat_status": "known",
+                            "trust_factor": 0,
+                            "threat_level": 0,
+                            "threat_name": null
+                        },
+                        "filename": "0",
+                        "path": "binary_layer/resource/0",
+                        "container_sha1": null
+                    },
+                    {
+                        "id": 63185,
+                        "parent_relationship": null,
+                        "sample": {
+                            "id": 32708,
+                            "sha1": "848899ad7d2afabfb64806cc9ef8d7d1a3f77641",
+                            "type_display": "PE/Exe",
+                            "category": "application",
+                            "file_type": "PE",
+                            "file_subtype": "Exe",
+                            "identification_name": "",
+                            "identification_version": "",
+                            "file_size": 620530,
+                            "extracted_file_count": 0,
+                            "local_first_seen": "2021-06-11T08:20:15.750918Z",
+                            "local_last_seen": "2021-06-14T11:25:05.545267Z",
+                            "threat_status": "malicious",
+                            "trust_factor": 5,
+                            "threat_level": 5,
+                            "threat_name": "Win32.Trojan.Graftor"
+                        },
+                        "filename": "1",
+                        "path": "binary_layer/overlay/1",
+                        "container_sha1": null
+                    }
+                ]
+            }
+        }
+    },
+    "IndicatorTimeline": [],
+    "IgnoreAutoExtract": false,
+    "Note": false,
+    "Relationships": []
+}

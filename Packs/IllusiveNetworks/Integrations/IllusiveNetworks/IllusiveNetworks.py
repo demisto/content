@@ -166,9 +166,11 @@ def fetch_incidents(client, last_run, first_fetch_time, has_forensics):
         incident_type = 'None'
         if len(item['incidentTypes']) > 0:
             incident_type = str(item['incidentTypes'][0])
+        incident_create_time_date = (dateparser.parse(incident_created_time))
+        assert incident_create_time_date is not None
         incident = {
             'name': "Illusive Attack Management detected an incident of type " + incident_type,
-            'occurred': (dateparser.parse(incident_created_time)).strftime('%Y-%m-%dT%H:%M:%SZ'),
+            'occurred': incident_create_time_date.strftime('%Y-%m-%dT%H:%M:%SZ'),
             'rawJSON': json.dumps(item)
         }
         incidents.append(incident)
@@ -584,7 +586,7 @@ def delete_deceptive_servers_command(client: Client, args: dict) -> Tuple:
 def get_incidents_command(client: Client, args: dict) -> Tuple:
     incident_id = args.get("incident_id")
     has_forensics = args.get("has_forensics", None)
-    host_names = argToList(args.get('host_names'))
+    host_names = argToList(args.get('hostnames'))
     limit = args.get("limit", 10)
     offset = args.get("offset", 0)
     start_date = args.get("start_date", None)

@@ -1,6 +1,6 @@
 <!-- HTML_DOC -->
 <p>AWS CloudTrail is a service that enables governance, compliance, operational auditing, and risk auditing of your AWS account. With CloudTrail, you can log, continuously monitor, and retain account activity related to actions across your AWS infrastructure. CloudTrail provides event history of your AWS account activity, including actions taken through the AWS Management Console, AWS SDKs, command line tools, and other AWS services. This event history simplifies security analysis, resource change tracking, and troubleshooting. For more information, see the <a href="https://aws.amazon.com/cloudtrail/" target="_blank" rel="noopener">AWS CloudTrail documentation</a>.</p>
-<h2>Configure AWS CloudTrail on Demisto</h2>
+<h2>Configure AWS CloudTrail on Cortex XSOAR</h2>
 <ol>
 <li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>
 <li>Search for AWS - CloudTrail.</li>
@@ -18,7 +18,7 @@
 <li>Click <strong>Test</strong> to validate the URLs, token, and connection.</li>
 </ol>
 <h2>Commands</h2>
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ol>
 <li><a href="#h_589060726551537170698921">Create a trail: aws-cloudtrail-create-trail</a></li>
 <li><a href="#h_3520194191261537170708997">Delete a trail: aws-cloudtrail-delete-trail</a></li>

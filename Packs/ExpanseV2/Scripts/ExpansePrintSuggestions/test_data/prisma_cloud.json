@@ -1,0 +1,36 @@
+[
+    {
+        "accountId": "12345",
+        "accountName": "aws-user-personal",
+        "cloudType": "aws",
+        "fqdn": [
+            "application-lb-654321.us-west-2.elb.amazonaws.com"
+        ],
+        "hasAlert": false,
+        "id": "arn:aws:elasticloadbalancing:us-west-2:12345:loadbalancer/app/application-lb/1398164320221c02",
+        "ip": null,
+        "regionId": "us-west-2",
+        "resourceName": "application-lb",
+        "resourceType": "Managed Load Balancer",
+        "rrn": "rrn::managedLb:us-west-2:12345:b38d940663c047b02c2116be49695cf353976dff:arn%3Aaws%3Aelasticloadbalancing%3Aus-east-1%3A12345%3Aloadbalancer%2Fapp%2Fapplication-lb%2F1398164320221c02",
+        "service": "Amazon Elastic Load Balancing"
+    },
+    {
+        "accountId": "12345",
+        "accountName": "aws-user-personal",
+        "cloudType": "aws",
+        "fqdn": [
+            "ec2-198-51-101-1.us-west-2.compute.amazonaws.com"
+        ],
+        "hasAlert": false,
+        "id": "i-3219831792378",
+        "ip": [
+            "198.51.101.1"
+        ],
+        "regionId": "us-west-2",
+        "resourceName": "testvm",
+        "resourceType": "Instance",
+        "rrn": "rrn::instance:us-west-2:12345:9db2db5fdba47606863c8da86d3ae594fb5aee2b:i-999999999",
+        "service": "Amazon EC2"
+    }
+]

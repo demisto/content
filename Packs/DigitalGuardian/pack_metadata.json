@@ -2,7 +2,7 @@
     "name": "Digital Guardian",
     "description": "Digital Guardian ARC Watchlist Integration",
     "support": "partner",
-    "currentVersion": "1.0.2",
+    "currentVersion": "1.0.14",
     "author": "Digital Guardian",
     "url": "https://digitalguardian.com",
     "email": "support@digitalguardian.com",
@@ -15,5 +15,10 @@
     "keywords": [],
     "githubUser": [
         "MattHulse"
+    ],
+    "certification": "certified",
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
     ]
 }

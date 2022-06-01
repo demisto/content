@@ -24,10 +24,14 @@
  "group": 0,
  "hidden": false,
  "associatedTypes": [
-  "Phishing"
+  "Phishing",
+  "Phishing Alerts",
+  "Email Communication"
  ],
  "systemAssociatedTypes": [
-  "Phishing"
+  "Phishing",
+  "Phishing Alerts",
+  "Email Communication"
  ],
  "associatedToAll": false,
  "unmapped": false,

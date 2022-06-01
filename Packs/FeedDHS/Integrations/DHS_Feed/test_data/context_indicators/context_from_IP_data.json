@@ -1,0 +1,38 @@
+[
+    {
+        "value": "2.2.2.2",
+        "tlp": "color",
+        "type": "IP",
+        "reportedby": "source"
+    },
+    {
+        "value": "3.3.3.3",
+        "tlp": "color",
+        "type": "IP",
+        "reportedby": "source"
+    },
+    {
+        "value": "4.4.4.4",
+        "tlp": "color",
+        "type": "IP",
+        "reportedby": "source"
+    },
+    {
+        "value": "5.5.5.5",
+        "tlp": "color",
+        "type": "IP",
+        "reportedby": "source"
+    },
+    {
+        "value": "6.6.6.6",
+        "tlp": "color",
+        "type": "IP",
+        "reportedby": "source"
+    },
+    {
+        "value": "7.7.7.7",
+        "tlp": "color",
+        "type": "IP",
+        "reportedby": "source"
+    }
+]

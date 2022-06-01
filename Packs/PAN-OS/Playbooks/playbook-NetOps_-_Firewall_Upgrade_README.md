@@ -13,7 +13,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any scripts.
 
 ### Commands
-* panorama-show-device-version
+* pan-os-show-device-version
 
 ## Playbook Inputs
 ---

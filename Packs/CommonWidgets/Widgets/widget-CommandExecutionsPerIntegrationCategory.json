@@ -1,0 +1,74 @@
+{
+    "size": 5,
+    "dataType": "metrics",
+    "params": {
+        "groupBy": [
+            "category"
+        ],
+        "keys": [
+            "sum|executionCount"
+        ],
+        "showGraphValues": false,
+        "showOthers": false,
+        "tableColumns": [
+            {
+                "isDefault": true,
+                "key": "count",
+                "position": 0
+            },
+            {
+                "isDefault": true,
+                "key": "data",
+                "position": 1
+            },
+            {
+                "isDefault": true,
+                "key": "floatData",
+                "position": 2
+            },
+            {
+                "isDefault": true,
+                "key": "groups",
+                "position": 3
+            },
+            {
+                "isDefault": true,
+                "key": "name",
+                "position": 4
+            },
+            {
+                "isDefault": true,
+                "key": "pivot",
+                "position": 5
+            },
+            {
+                "isDefault": true,
+                "key": "color",
+                "position": 6
+            }
+        ],
+        "valuesFormat": "regular"
+    },
+    "query": "type:integration",
+    "modified": "2021-05-31T13:08:12.515578789Z",
+    "name": "Command executions per Integration Category",
+    "dateRange": {
+        "fromDate": "0001-01-01T00:00:00Z",
+        "toDate": "0001-01-01T00:00:00Z",
+        "period": {
+            "by": "",
+            "byTo": "",
+            "byFrom": "days",
+            "toValue": null,
+            "fromValue": 7,
+            "field": ""
+        },
+        "fromDateLicense": "0001-01-01T00:00:00Z"
+    },
+    "isPredefined": true,
+    "version": -1,
+    "id": "command-executions-per-integration-category",
+    "widgetType": "pie",
+    "fromVersion": "6.2.0",
+    "description": "Command executions per Integration Category"
+}

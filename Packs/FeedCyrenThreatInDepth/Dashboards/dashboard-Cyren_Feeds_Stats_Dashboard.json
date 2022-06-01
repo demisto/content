@@ -1,0 +1,1926 @@
+{
+    "fromDate": "0001-01-01T00:00:00Z",
+    "fromDateLicense": "0001-01-01T00:00:00Z",
+    "id": "Cyren Threat InDepth Dashboard",
+    "layout": [
+        {
+            "forceRange": false,
+            "h": 3,
+            "i": "755b4e20-5100-11eb-a4a4-8bf565f09c0e",
+            "id": "755b4e20-5100-11eb-a4a4-8bf565f09c0e",
+            "w": 4,
+            "widget": {
+                "category": "",
+                "commitMessage": "",
+                "dataType": "indicators",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 30,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "fromServerVersion": "",
+                "id": "d4bcda36-7899-4901-8ec6-c448c7354efb",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2021-01-07T16:55:48.833260946+01:00",
+                "name": "Cyren Top Phishing Targets",
+                "packID": "",
+                "params": {
+                    "groupBy": [
+                        "cyrenphishingbrands"
+                    ],
+                    "tableColumns": [
+                        {
+                            "isDefault": true,
+                            "key": "indicator_type",
+                            "position": 1,
+                            "width": 120
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "value",
+                            "position": 2,
+                            "width": 300
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "score",
+                            "position": 4,
+                            "width": 120
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "firstSeen",
+                            "position": 5,
+                            "width": 275
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "lastSeen",
+                            "position": 6,
+                            "width": 275
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "timestamp",
+                            "position": 8,
+                            "width": 190
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "relatedIncCount",
+                            "position": 9,
+                            "width": 150
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "sourceBrands",
+                            "position": 12,
+                            "width": 175
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "sourceInstances",
+                            "position": 13,
+                            "width": 175
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "expirationStatus",
+                            "position": 14,
+                            "width": 175
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "expiration",
+                            "position": 15,
+                            "width": 190
+                        }
+                    ]
+                },
+                "prevName": "Cyren Top Phishing Targets",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "-cyrenphishingbrands:\"\" ",
+                "shouldCommit": false,
+                "size": 0,
+                "sort": null,
+                "sortValues": null,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 2,
+                "widgetType": "pie"
+            },
+            "x": 4,
+            "y": 3
+        },
+        {
+            "forceRange": false,
+            "h": 3,
+            "i": "de4ef580-518c-11eb-bfad-11bf20467295",
+            "id": "de4ef580-518c-11eb-bfad-11bf20467295",
+            "w": 8,
+            "widget": {
+                "category": "",
+                "commitMessage": "",
+                "dataType": "indicators",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "fromServerVersion": "",
+                "id": "75ad48f6-81b6-4c27-89f4-5d7db7e6c592",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2021-01-08T09:41:33.858769828+01:00",
+                "name": "Cyren Threat InDepth Indicators",
+                "packID": "",
+                "params": {
+                    "groupBy": [
+                        "calculatedTime(d)",
+                        "type"
+                    ],
+                    "tableColumns": [
+                        {
+                            "isDefault": true,
+                            "key": "indicator_type",
+                            "position": 1,
+                            "width": 120
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "value",
+                            "position": 2,
+                            "width": 300
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "score",
+                            "position": 4,
+                            "width": 120
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "firstSeen",
+                            "position": 5,
+                            "width": 275
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "lastSeen",
+                            "position": 6,
+                            "width": 275
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "timestamp",
+                            "position": 8,
+                            "width": 190
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "relatedIncCount",
+                            "position": 9,
+                            "width": 150
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "sourceBrands",
+                            "position": 12,
+                            "width": 175
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "sourceInstances",
+                            "position": 13,
+                            "width": 175
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "expirationStatus",
+                            "position": 14,
+                            "width": 175
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "expiration",
+                            "position": 15,
+                            "width": 190
+                        }
+                    ]
+                },
+                "prevName": "Cyren Malware File Indicators",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "sourceBrands:CyrenThreatInDepth",
+                "shouldCommit": false,
+                "size": 0,
+                "sort": null,
+                "sortValues": null,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "line"
+            },
+            "x": 0,
+            "y": 11
+        },
+        {
+            "forceRange": false,
+            "h": 3,
+            "i": "20370f50-518d-11eb-bfad-11bf20467295",
+            "id": "20370f50-518d-11eb-bfad-11bf20467295",
+            "w": 4,
+            "widget": {
+                "category": "",
+                "commitMessage": "",
+                "dataType": "indicators",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "fromServerVersion": "",
+                "id": "75ad48f6-81b6-4c27-89f4-5d7db7e6c592",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2021-01-08T09:41:33.858769828+01:00",
+                "name": "Cyren Malware File Indicators",
+                "packID": "",
+                "params": {
+                    "groupBy": [
+                        "calculatedTime(d)",
+                        "score"
+                    ],
+                    "tableColumns": [
+                        {
+                            "isDefault": true,
+                            "key": "indicator_type",
+                            "position": 1,
+                            "width": 120
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "value",
+                            "position": 2,
+                            "width": 300
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "score",
+                            "position": 4,
+                            "width": 120
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "firstSeen",
+                            "position": 5,
+                            "width": 275
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "lastSeen",
+                            "position": 6,
+                            "width": 275
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "timestamp",
+                            "position": 8,
+                            "width": 190
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "relatedIncCount",
+                            "position": 9,
+                            "width": 150
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "sourceBrands",
+                            "position": 12,
+                            "width": 175
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "sourceInstances",
+                            "position": 13,
+                            "width": 175
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "expirationStatus",
+                            "position": 14,
+                            "width": 175
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "expiration",
+                            "position": 15,
+                            "width": 190
+                        }
+                    ]
+                },
+                "prevName": "Cyren Malware File Indicators",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "type:File and sourceBrands:CyrenThreatInDepth",
+                "shouldCommit": false,
+                "size": 0,
+                "sort": null,
+                "sortValues": null,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "line"
+            },
+            "x": 4,
+            "y": 17
+        },
+        {
+            "forceRange": false,
+            "h": 3,
+            "i": "a7589b60-518e-11eb-bfad-11bf20467295",
+            "id": "a7589b60-518e-11eb-bfad-11bf20467295",
+            "w": 4,
+            "widget": {
+                "category": "",
+                "commitMessage": "",
+                "dataType": "indicators",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "fromServerVersion": "",
+                "id": "83ee6b6b-7439-45de-821d-ceed0dfb2e43",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2021-01-08T09:54:17.18047745+01:00",
+                "name": "Cyren Phishing and Fraud URL Indicators",
+                "packID": "",
+                "params": {
+                    "groupBy": [
+                        "calculatedTime(d)",
+                        "score"
+                    ],
+                    "tableColumns": [
+                        {
+                            "isDefault": true,
+                            "key": "indicator_type",
+                            "position": 1,
+                            "width": 120
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "value",
+                            "position": 2,
+                            "width": 300
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "score",
+                            "position": 4,
+                            "width": 120
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "firstSeen",
+                            "position": 5,
+                            "width": 275
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "lastSeen",
+                            "position": 6,
+                            "width": 275
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "timestamp",
+                            "position": 8,
+                            "width": 190
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "relatedIncCount",
+                            "position": 9,
+                            "width": 150
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "sourceBrands",
+                            "position": 12,
+                            "width": 175
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "sourceInstances",
+                            "position": 13,
+                            "width": 175
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "expirationStatus",
+                            "position": 14,
+                            "width": 175
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "expiration",
+                            "position": 15,
+                            "width": 190
+                        }
+                    ]
+                },
+                "prevName": "Cyren Phishing and Fraud URL Indicators",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "type:URL and sourceBrands:CyrenThreatInDepth and tags:phishing",
+                "shouldCommit": false,
+                "size": 0,
+                "sort": null,
+                "sortValues": null,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "line"
+            },
+            "x": 0,
+            "y": 14
+        },
+        {
+            "forceRange": false,
+            "h": 3,
+            "i": "c089e300-518e-11eb-bfad-11bf20467295",
+            "id": "c089e300-518e-11eb-bfad-11bf20467295",
+            "w": 4,
+            "widget": {
+                "category": "",
+                "commitMessage": "",
+                "dataType": "indicators",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "fromServerVersion": "",
+                "id": "4db1e490-b70e-4e2e-8806-84003d1bf9ec",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2021-01-08T09:55:08.877627102+01:00",
+                "name": "Cyren Malware URL Indicators",
+                "packID": "",
+                "params": {
+                    "groupBy": [
+                        "calculatedTime(d)",
+                        "score"
+                    ],
+                    "tableColumns": [
+                        {
+                            "isDefault": true,
+                            "key": "indicator_type",
+                            "position": 1,
+                            "width": 120
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "value",
+                            "position": 2,
+                            "width": 300
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "score",
+                            "position": 4,
+                            "width": 120
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "firstSeen",
+                            "position": 5,
+                            "width": 275
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "lastSeen",
+                            "position": 6,
+                            "width": 275
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "timestamp",
+                            "position": 8,
+                            "width": 190
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "relatedIncCount",
+                            "position": 9,
+                            "width": 150
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "sourceBrands",
+                            "position": 12,
+                            "width": 175
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "sourceInstances",
+                            "position": 13,
+                            "width": 175
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "expirationStatus",
+                            "position": 14,
+                            "width": 175
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "expiration",
+                            "position": 15,
+                            "width": 190
+                        }
+                    ]
+                },
+                "prevName": "Cyren Malware URL Indicators",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "type:URL and sourceBrands:CyrenThreatInDepth and tags:malware",
+                "shouldCommit": false,
+                "size": 0,
+                "sort": null,
+                "sortValues": null,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "line"
+            },
+            "x": 4,
+            "y": 14
+        },
+        {
+            "forceRange": false,
+            "h": 3,
+            "i": "dd685420-518e-11eb-bfad-11bf20467295",
+            "id": "dd685420-518e-11eb-bfad-11bf20467295",
+            "w": 4,
+            "widget": {
+                "category": "",
+                "commitMessage": "",
+                "dataType": "indicators",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "fromServerVersion": "",
+                "id": "7430d7f6-4766-4b81-881d-af0a71111ad8",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2021-01-08T09:55:55.543345782+01:00",
+                "name": "Cyren IP Reputation Indicators",
+                "packID": "",
+                "params": {
+                    "groupBy": [
+                        "calculatedTime(d)",
+                        "score"
+                    ],
+                    "tableColumns": [
+                        {
+                            "isDefault": true,
+                            "key": "indicator_type",
+                            "position": 1,
+                            "width": 120
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "value",
+                            "position": 2,
+                            "width": 300
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "score",
+                            "position": 4,
+                            "width": 120
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "firstSeen",
+                            "position": 5,
+                            "width": 275
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "lastSeen",
+                            "position": 6,
+                            "width": 275
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "timestamp",
+                            "position": 8,
+                            "width": 190
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "relatedIncCount",
+                            "position": 9,
+                            "width": 150
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "sourceBrands",
+                            "position": 12,
+                            "width": 175
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "sourceInstances",
+                            "position": 13,
+                            "width": 175
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "expirationStatus",
+                            "position": 14,
+                            "width": 175
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "expiration",
+                            "position": 15,
+                            "width": 190
+                        }
+                    ]
+                },
+                "prevName": "Cyren IP Reputation Indicators",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "type:IP and sourceBrands:CyrenThreatInDepth ",
+                "shouldCommit": false,
+                "size": 0,
+                "sort": null,
+                "sortValues": null,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "line"
+            },
+            "x": 0,
+            "y": 17
+        },
+        {
+            "forceRange": false,
+            "h": 2,
+            "i": "8c6c65d0-54da-11eb-96bf-65e1b02f490d",
+            "id": "8c6c65d0-54da-11eb-96bf-65e1b02f490d",
+            "w": 4,
+            "widget": {
+                "category": "",
+                "commitMessage": "",
+                "dataType": "indicators",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "fromServerVersion": "",
+                "id": "5eb8627c-eb73-46db-86bb-ae7b066b133c",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2021-01-12T14:29:28.838759555+01:00",
+                "name": "Indicators found in incidents by Cyren",
+                "packID": "",
+                "params": {
+                    "groupBy": [
+                        "type",
+                        "score"
+                    ],
+                    "tableColumns": [
+                        {
+                            "isDefault": true,
+                            "key": "indicator_type",
+                            "position": 1,
+                            "width": 120
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "value",
+                            "position": 2,
+                            "width": 300
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "score",
+                            "position": 4,
+                            "width": 120
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "firstSeen",
+                            "position": 5,
+                            "width": 275
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "lastSeen",
+                            "position": 6,
+                            "width": 275
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "timestamp",
+                            "position": 8,
+                            "width": 190
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "relatedIncCount",
+                            "position": 9,
+                            "width": 150
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "sourceBrands",
+                            "position": 12,
+                            "width": 175
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "sourceInstances",
+                            "position": 13,
+                            "width": 175
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "expirationStatus",
+                            "position": 14,
+                            "width": 175
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "expiration",
+                            "position": 15,
+                            "width": 190
+                        }
+                    ]
+                },
+                "prevName": "Incidents enriched by Cyren",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "sourceBrands:CyrenThreatInDepth incident.created:\u003e=\"2000-01-01T00:00:00 +0000\"",
+                "shouldCommit": false,
+                "size": 0,
+                "sort": null,
+                "sortValues": null,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "pie"
+            },
+            "x": 4,
+            "y": 1
+        },
+        {
+            "forceRange": false,
+            "h": 2,
+            "i": "10bd71e0-558e-11eb-a9e0-8f7ac133a22a",
+            "id": "10bd71e0-558e-11eb-a9e0-8f7ac133a22a",
+            "w": 2,
+            "widget": {
+                "category": "",
+                "commitMessage": "",
+                "dataType": "indicators",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "fromServerVersion": "",
+                "id": "cac8447b-f165-484b-8b8f-03b41814eb85",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2021-01-13T12:00:04.87605166+01:00",
+                "name": "Cyren Total Indicators",
+                "packID": "",
+                "params": {
+                    "colors": {
+                        "isEnabled": false,
+                        "items": {
+
+                        },
+                        "type": "above"
+                    },
+                    "tableColumns": [
+                        {
+                            "isDefault": true,
+                            "key": "indicator_type",
+                            "position": 1,
+                            "width": 120
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "value",
+                            "position": 2,
+                            "width": 300
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "score",
+                            "position": 4,
+                            "width": 120
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "firstSeen",
+                            "position": 5,
+                            "width": 275
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "lastSeen",
+                            "position": 6,
+                            "width": 275
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "timestamp",
+                            "position": 8,
+                            "width": 190
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "relatedIncCount",
+                            "position": 9,
+                            "width": 150
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "sourceBrands",
+                            "position": 12,
+                            "width": 175
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "sourceInstances",
+                            "position": 13,
+                            "width": 175
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "expirationStatus",
+                            "position": 14,
+                            "width": 175
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "expiration",
+                            "position": 15,
+                            "width": 190
+                        }
+                    ]
+                },
+                "prevName": "Cyren Total Indicators",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "sourceBrands:CyrenThreatInDepth",
+                "shouldCommit": false,
+                "size": 0,
+                "sort": null,
+                "sortValues": null,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "trend"
+            },
+            "x": 0,
+            "y": 1
+        },
+        {
+            "forceRange": false,
+            "h": 2,
+            "i": "16fe8cb0-558e-11eb-a9e0-8f7ac133a22a",
+            "id": "16fe8cb0-558e-11eb-a9e0-8f7ac133a22a",
+            "w": 2,
+            "widget": {
+                "category": "",
+                "commitMessage": "",
+                "dataType": "indicators",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "fromServerVersion": "",
+                "id": "88ed6c38-2cde-42cc-8722-22a0a4603fca",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2021-01-12T14:48:38.128610947+01:00",
+                "name": "Cyren Related Indicators",
+                "packID": "",
+                "params": {
+                    "colors": {
+                        "isEnabled": false,
+                        "items": {
+
+                        },
+                        "type": "above"
+                    },
+                    "tableColumns": [
+                        {
+                            "isDefault": true,
+                            "key": "indicator_type",
+                            "position": 1,
+                            "width": 120
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "value",
+                            "position": 2,
+                            "width": 300
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "score",
+                            "position": 4,
+                            "width": 120
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "firstSeen",
+                            "position": 5,
+                            "width": 275
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "lastSeen",
+                            "position": 6,
+                            "width": 275
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "timestamp",
+                            "position": 8,
+                            "width": 190
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "relatedIncCount",
+                            "position": 9,
+                            "width": 150
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "sourceBrands",
+                            "position": 12,
+                            "width": 175
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "sourceInstances",
+                            "position": 13,
+                            "width": 175
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "expirationStatus",
+                            "position": 14,
+                            "width": 175
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "expiration",
+                            "position": 15,
+                            "width": 190
+                        }
+                    ]
+                },
+                "prevName": "Cyren related Indicators",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "cyrensourcetags:related and -cyrensourcetags:primary",
+                "shouldCommit": false,
+                "size": 0,
+                "sort": null,
+                "sortValues": null,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "trend"
+            },
+            "x": 2,
+            "y": 1
+        },
+        {
+            "forceRange": false,
+            "h": 2,
+            "i": "5613fe80-558e-11eb-a9e0-8f7ac133a22a",
+            "id": "5613fe80-558e-11eb-a9e0-8f7ac133a22a",
+            "w": 4,
+            "widget": {
+                "category": "",
+                "commitMessage": "",
+                "dataType": "indicators",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "fromServerVersion": "",
+                "id": "a08026c9-7034-459a-8680-57fbfe011a9a",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2021-01-12T14:50:33.732325828+01:00",
+                "name": "Cyren Detection Categories",
+                "packID": "",
+                "params": {
+                    "groupBy": [
+                        "cyrendetectioncategories"
+                    ],
+                    "tableColumns": [
+                        {
+                            "isDefault": true,
+                            "key": "indicator_type",
+                            "position": 1,
+                            "width": 120
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "value",
+                            "position": 2,
+                            "width": 300
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "score",
+                            "position": 4,
+                            "width": 120
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "firstSeen",
+                            "position": 5,
+                            "width": 275
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "lastSeen",
+                            "position": 6,
+                            "width": 275
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "timestamp",
+                            "position": 8,
+                            "width": 190
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "relatedIncCount",
+                            "position": 9,
+                            "width": 150
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "sourceBrands",
+                            "position": 12,
+                            "width": 175
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "sourceInstances",
+                            "position": 13,
+                            "width": 175
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "expirationStatus",
+                            "position": 14,
+                            "width": 175
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "expiration",
+                            "position": 15,
+                            "width": 190
+                        }
+                    ]
+                },
+                "prevName": "Cyren Detection Categories",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "sourceBrands:CyrenThreatInDepth and -cyrendetectioncategories:\"\"",
+                "shouldCommit": false,
+                "size": 0,
+                "sort": null,
+                "sortValues": null,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "bar"
+            },
+            "x": 4,
+            "y": 9
+        },
+        {
+            "forceRange": false,
+            "h": 2,
+            "i": "57120d90-558e-11eb-a9e0-8f7ac133a22a",
+            "id": "57120d90-558e-11eb-a9e0-8f7ac133a22a",
+            "w": 4,
+            "widget": {
+                "category": "",
+                "commitMessage": "",
+                "dataType": "indicators",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "fromServerVersion": "",
+                "id": "32d5229c-dde6-45a6-8297-06e9ccf89b6e",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2021-01-12T14:52:01.161997462+01:00",
+                "name": "Cyren Detection Methods",
+                "packID": "",
+                "params": {
+                    "groupBy": [
+                        "cyrendetectionmethods"
+                    ],
+                    "tableColumns": [
+                        {
+                            "isDefault": true,
+                            "key": "indicator_type",
+                            "position": 1,
+                            "width": 120
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "value",
+                            "position": 2,
+                            "width": 300
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "score",
+                            "position": 4,
+                            "width": 120
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "firstSeen",
+                            "position": 5,
+                            "width": 275
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "lastSeen",
+                            "position": 6,
+                            "width": 275
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "timestamp",
+                            "position": 8,
+                            "width": 190
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "relatedIncCount",
+                            "position": 9,
+                            "width": 150
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "sourceBrands",
+                            "position": 12,
+                            "width": 175
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "sourceInstances",
+                            "position": 13,
+                            "width": 175
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "expirationStatus",
+                            "position": 14,
+                            "width": 175
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "expiration",
+                            "position": 15,
+                            "width": 190
+                        }
+                    ]
+                },
+                "prevName": "Cyren Detection Methods",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "sourceBrands:CyrenThreatInDepth and -cyrendetectionmethods:\"\" and -cyrendetectionmethods:null",
+                "shouldCommit": false,
+                "size": 0,
+                "sort": null,
+                "sortValues": null,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "bar"
+            },
+            "x": 0,
+            "y": 9
+        },
+        {
+            "forceRange": false,
+            "h": 3,
+            "i": "c86de730-55a6-11eb-bf70-1f5646c5d458",
+            "id": "c86de730-55a6-11eb-bf70-1f5646c5d458",
+            "w": 8,
+            "widget": {
+                "category": "",
+                "commitMessage": "",
+                "dataType": "indicators",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "fromServerVersion": "",
+                "id": "27b7dfc8-e4d6-4fa7-8e0a-fff4986fd844",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2021-01-13T12:09:33.673172772+01:00",
+                "name": "Cyren Top Risky IPs",
+                "packID": "",
+                "params": {
+                    "tableColumns": [
+                        {
+                            "displayed": true,
+                            "isDefault": true,
+                            "key": "value",
+                            "width": 300
+                        },
+                        {
+                            "displayed": true,
+                            "isDefault": true,
+                            "key": "relatedIncCount",
+                            "width": 150
+                        },
+                        {
+                            "displayed": true,
+                            "key": "Cyren IP Risk",
+                            "width": 200
+                        },
+                        {
+                            "displayed": true,
+                            "isDefault": true,
+                            "key": "lastSeen",
+                            "width": 275
+                        },
+                        {
+                            "displayed": true,
+                            "key": "Last Seen By Source",
+                            "width": 200
+                        }
+                    ]
+                },
+                "prevName": "Cyren Top Active IPs",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "sourceBrands:CyrenThreatInDepth and type:IP and cyreniprisk:\u003e=80",
+                "shouldCommit": false,
+                "size": 0,
+                "sort": null,
+                "sortValues": null,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "table"
+            },
+            "x": 0,
+            "y": 20
+        },
+        {
+            "forceRange": false,
+            "h": 3,
+            "i": "b6660210-55a7-11eb-bf70-1f5646c5d458",
+            "id": "b6660210-55a7-11eb-bf70-1f5646c5d458",
+            "w": 4,
+            "widget": {
+                "category": "",
+                "commitMessage": "",
+                "dataType": "indicators",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "fromServerVersion": "",
+                "id": "1445164c-5e97-4b46-852b-127aba83f86e",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2021-01-13T15:03:56.121596885+01:00",
+                "name": "Cyren Top Phishing Industries",
+                "packID": "",
+                "params": {
+                    "groupBy": [
+                        "cyrenindustries"
+                    ],
+                    "tableColumns": [
+                        {
+                            "isDefault": true,
+                            "key": "indicator_type",
+                            "position": 1,
+                            "width": 120
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "value",
+                            "position": 2,
+                            "width": 300
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "score",
+                            "position": 4,
+                            "width": 120
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "firstSeen",
+                            "position": 5,
+                            "width": 275
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "lastSeen",
+                            "position": 6,
+                            "width": 275
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "timestamp",
+                            "position": 8,
+                            "width": 190
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "relatedIncCount",
+                            "position": 9,
+                            "width": 150
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "sourceBrands",
+                            "position": 12,
+                            "width": 175
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "sourceInstances",
+                            "position": 13,
+                            "width": 175
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "expirationStatus",
+                            "position": 14,
+                            "width": 175
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "expiration",
+                            "position": 15,
+                            "width": 190
+                        }
+                    ]
+                },
+                "prevName": "Cyren Top Phishing Industries",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "-cyrenindustries:\"\" and -cyrenphishingbrands:\"\"",
+                "shouldCommit": false,
+                "size": 0,
+                "sort": null,
+                "sortValues": null,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "pie"
+            },
+            "x": 0,
+            "y": 3
+        },
+        {
+            "forceRange": false,
+            "h": 1,
+            "i": "a5ea6570-55ac-11eb-bf70-1f5646c5d458",
+            "id": "a5ea6570-55ac-11eb-bf70-1f5646c5d458",
+            "w": 8,
+            "widget": {
+                "category": "utility",
+                "commitMessage": "",
+                "dataType": "incidents",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": null,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "fromServerVersion": "5.0.0",
+                "id": "",
+                "isPredefined": false,
+                "itemVersion": "1.0.5",
+                "modified": "2020-11-17T12:49:04.973913554+01:00",
+                "name": "Text Widget",
+                "packID": "CommonWidgets",
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "params": {
+                    "tableColumns": [
+                        {
+                            "isDefault": true,
+                            "key": "id",
+                            "position": 0,
+                            "width": 110
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "name",
+                            "position": 2,
+                            "width": 300
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "type",
+                            "position": 3,
+                            "width": 200
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "severity",
+                            "position": 4,
+                            "width": 80
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "status",
+                            "position": 5,
+                            "width": 80
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "owner",
+                            "position": 6,
+                            "width": 160
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "roles",
+                            "position": 7,
+                            "width": 160
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "playbookId",
+                            "position": 8,
+                            "width": 150
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "occurred",
+                            "position": 9,
+                            "width": 200
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "dueDate",
+                            "position": 10,
+                            "width": 200
+                        }
+                    ],
+                    "text": "# Cyren Threat InDepth Feed Stats\n\nThis demo dashboard focusses on an overview of all indicators provided by Cyren Threat InDepth. "
+                },
+                "prevName": "Text Widget",
+                "propagationLabels": [
+
+                ],
+                "query": "",
+                "shouldCommit": false,
+                "size": 0,
+                "sort": null,
+                "sortValues": null,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 0,
+                "widgetType": "text"
+            },
+            "x": 0,
+            "y": 0
+        },
+        {
+            "forceRange": false,
+            "h": 3,
+            "i": "4b7f1d90-662f-11eb-bc66-ed821875743d",
+            "id": "4b7f1d90-662f-11eb-bc66-ed821875743d",
+            "w": 4,
+            "widget": {
+                "category": "",
+                "commitMessage": "",
+                "dataType": "indicators",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "fromServerVersion": "",
+                "id": "1a3af32d-0056-48bd-86a2-ae5de4dc6d73",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2021-02-03T15:54:59.014860515+01:00",
+                "name": "Cyren Top Countries",
+                "packID": "",
+                "params": {
+                    "groupBy": [
+                        "cyrencountryname",
+                        "score"
+                    ],
+                    "tableColumns": [
+                        {
+                            "isDefault": true,
+                            "key": "indicator_type",
+                            "position": 1,
+                            "width": 120
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "value",
+                            "position": 2,
+                            "width": 300
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "score",
+                            "position": 4,
+                            "width": 120
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "firstSeen",
+                            "position": 5,
+                            "width": 275
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "lastSeen",
+                            "position": 6,
+                            "width": 275
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "timestamp",
+                            "position": 8,
+                            "width": 190
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "relatedIncCount",
+                            "position": 9,
+                            "width": 150
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "sourceBrands",
+                            "position": 12,
+                            "width": 175
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "sourceInstances",
+                            "position": 13,
+                            "width": 175
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "expirationStatus",
+                            "position": 14,
+                            "width": 175
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "expiration",
+                            "position": 15,
+                            "width": 190
+                        }
+                    ]
+                },
+                "prevName": "Cyren Top Countries",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "sourceBrands:CyrenThreatInDepth -cyrencountryname:\"\"",
+                "shouldCommit": false,
+                "size": 0,
+                "sort": null,
+                "sortValues": null,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "pie"
+            },
+            "x": 4,
+            "y": 6
+        },
+        {
+            "forceRange": false,
+            "h": 3,
+            "i": "c9027690-662f-11eb-bc66-ed821875743d",
+            "id": "c9027690-662f-11eb-bc66-ed821875743d",
+            "w": 4,
+            "widget": {
+                "category": "",
+                "commitMessage": "",
+                "dataType": "indicators",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "fromServerVersion": "",
+                "id": "265480f1-3ac9-48a9-8a44-5659c26f5b23",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2021-02-03T15:58:33.435875812+01:00",
+                "name": "Cyren Top Malware Families",
+                "packID": "",
+                "params": {
+                    "groupBy": [
+                        "cyrenmalwarefamily"
+                    ],
+                    "tableColumns": [
+                        {
+                            "isDefault": true,
+                            "key": "indicator_type",
+                            "position": 1,
+                            "width": 120
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "value",
+                            "position": 2,
+                            "width": 300
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "score",
+                            "position": 4,
+                            "width": 120
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "firstSeen",
+                            "position": 5,
+                            "width": 275
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "lastSeen",
+                            "position": 6,
+                            "width": 275
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "timestamp",
+                            "position": 8,
+                            "width": 190
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "relatedIncCount",
+                            "position": 9,
+                            "width": 150
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "sourceBrands",
+                            "position": 12,
+                            "width": 175
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "sourceInstances",
+                            "position": 13,
+                            "width": 175
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "expirationStatus",
+                            "position": 14,
+                            "width": 175
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "expiration",
+                            "position": 15,
+                            "width": 190
+                        }
+                    ]
+                },
+                "prevName": "Cyren Top Malware Families",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "sourceBrands:CyrenThreatInDepth -cyrenmalwarefamily:\"\"",
+                "shouldCommit": false,
+                "size": 0,
+                "sort": null,
+                "sortValues": null,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "pie"
+            },
+            "x": 0,
+            "y": 6
+        }
+    ],
+    "name": "Cyren Threat InDepth Dashboard",
+    "period": {
+        "by": "",
+        "byFrom": "days",
+        "byTo": "",
+        "field": "",
+        "fromValue": 7,
+        "toValue": null
+    },
+    "toDate": "0001-01-01T00:00:00Z",
+    "version": -1,
+    "fromVersion": "6.0.0",
+    "description": "This dashboard provides general information about the data pulled from Cyren Threat InDepth. The dashboard can be used directly as new dashboard or individual widgets can be added to existing dashboards.",
+    "isPredefined": true
+}

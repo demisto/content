@@ -1,5 +1,5 @@
 DEPRECATED. Use "PAN-OS EDL Setup v3" playbook instead. Configures an external dynamic list in PAN-OS.
-In the event that the file exists on the web server, it will sync it to demisto. Then it will create an EDL object and a matching rule.
+In the event that the file exists on the web server, it will sync it to Cortex XSOAR. Then it will create an EDL object and a matching rule.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.

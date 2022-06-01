@@ -1,0 +1,150 @@
+[
+    {
+        "CustomFields": {
+            "firstseenbysource": "2021-05-02T11:03:19.191095Z",
+            "lastseenbysource": "2021-05-02T11:03:19.191107Z",
+            "revoked": true,
+            "description": "Test"
+        },
+        "createdInSystem": "2021-05-02T11:03:19.6949691Z",
+        "entityA": "1.1.1.1",
+        "entityAFamily": "Indicator",
+        "entityAType": "IP",
+        "entityB": "2.2.2.2",
+        "entityBFamily": "Indicator",
+        "entityBType": "IP",
+        "id": "7ed6656f4c2aaa8f0cbc5cb83606be44",
+        "modified": "2021-05-02T11:03:19.694968637Z",
+        "name": "related to",
+        "primaryTerm": 1,
+        "reverseName": "related to",
+        "sortValues": [
+            "1619953399694",
+            "7ed6656f4c2aaa8f0cbc5cb83606be43"
+        ],
+        "sources": [
+            {
+                "CustomFields": {
+                    "firstseenbysource": "2021-05-02T11:03:19.191095Z",
+                    "lastseenbysource": "2021-05-02T11:03:19.191107Z",
+                    "revoked": true
+                },
+                "brand": "XSOAR",
+                "createdInSystem": "2021-05-02T11:03:19.694918187Z",
+                "instance": "XSOAR",
+                "reliability": "F - Reliability cannot be judged",
+                "updatedInSystem": "2021-05-02T11:03:19.694918187Z"
+            }
+        ],
+        "type": "indicatorToIndicator",
+        "updatedInSystemBySource": "2021-05-02T11:03:19.694918187Z",
+        "version": 1
+    },
+    {
+        "CustomFields": {},
+        "createdInSystem": "2021-05-02T11:03:19.6949691Z",
+        "entityA": "1.1.1.1",
+        "entityAFamily": "Indicator",
+        "entityAType": "IP",
+        "entityB": "3.3.3.3",
+        "entityBFamily": "Indicator",
+        "entityBType": "IP",
+        "id": "7ed6656f4c2aaa8f0cbc5cb83606be45",
+        "modified": "2021-05-02T11:03:19.694968637Z",
+        "name": "related to",
+        "primaryTerm": 1,
+        "reverseName": "related to",
+        "sortValues": [
+            "1619953399694",
+            "7ed6656f4c2aaa8f0cbc5cb83606be43"
+        ],
+        "sources": [
+            {
+                "CustomFields": {},
+                "brand": "XSOAR",
+                "createdInSystem": "2021-05-02T11:03:19.694918187Z",
+                "instance": "XSOAR",
+                "reliability": "F - Reliability cannot be judged",
+                "updatedInSystem": "2021-05-02T11:03:19.694918187Z"
+            }
+        ],
+        "type": "indicatorToIndicator",
+        "updatedInSystemBySource": "2021-05-02T11:03:19.694918187Z",
+        "version": 1
+    },
+    {
+        "CustomFields": {
+            "firstseenbysource": "2021-05-02T11:03:19.191095Z",
+            "lastseenbysource": "2021-05-02T11:03:19.191107Z"
+        },
+        "createdInSystem": "2021-05-02T11:03:19.6949691Z",
+        "entityA": "1.1.1.1",
+        "entityAFamily": "Indicator",
+        "entityAType": "IP",
+        "entityB": "4.4.4.4",
+        "entityBFamily": "Indicator",
+        "entityBType": "IP",
+        "id": "7ed6656f4c2aaa8f0cbc5cb83606be46",
+        "modified": "2021-05-02T11:03:19.694968637Z",
+        "name": "related to",
+        "primaryTerm": 1,
+        "reverseName": "related to",
+        "sortValues": [
+            "1619953399694",
+            "7ed6656f4c2aaa8f0cbc5cb83606be43"
+        ],
+        "sources": [
+            {
+                "CustomFields": {
+                    "firstseenbysource": "2021-05-02T11:03:19.191095Z",
+                    "lastseenbysource": "2021-05-02T11:03:19.191107Z"
+                },
+                "brand": "XSOAR",
+                "createdInSystem": "2021-05-02T11:03:19.694918187Z",
+                "instance": "XSOAR",
+                "reliability": "F - Reliability cannot be judged",
+                "updatedInSystem": "2021-05-02T11:03:19.694918187Z"
+            }
+        ],
+        "type": "indicatorToIndicator",
+        "updatedInSystemBySource": "2021-05-02T11:03:19.694918187Z",
+        "version": 1
+    },
+    {
+        "CustomFields": {
+            "firstseenbysource": "2021-05-02T11:03:19.191095Z",
+            "lastseenbysource": "2021-05-02T11:03:19.191107Z"
+        },
+        "createdInSystem": "2021-05-02T11:03:19.6949691Z",
+        "entityA": "1.1.1.1",
+        "entityAFamily": "Indicator",
+        "entityAType": "IP",
+        "entityB": "6.6.6.6",
+        "entityBFamily": "Indicator",
+        "entityBType": "IP",
+        "id": "7ed6656f4c2aaa8f0cbc5cb83606be47",
+        "modified": "2021-05-02T11:03:19.694968637Z",
+        "name": "related to",
+        "primaryTerm": 1,
+        "reverseName": "related to",
+        "sortValues": [
+            "1619953399694",
+            "7ed6656f4c2aaa8f0cbc5cb83606be43"
+        ],
+        "sources": [
+            {
+                "CustomFields": {
+                    "firstseenbysource": "2021-05-02T11:03:19.191095Z",
+                    "lastseenbysource": "2021-05-02T11:03:19.191107Z"
+                },
+                "brand": "XSOAR",
+                "createdInSystem": "2021-05-02T11:03:19.694918187Z",
+                "instance": "XSOAR",
+                "updatedInSystem": "2021-05-02T11:03:19.694918187Z"
+            }
+        ],
+        "type": "indicatorToIndicator",
+        "updatedInSystemBySource": "2021-05-02T11:03:19.694918187Z",
+        "version": 1
+    }
+]

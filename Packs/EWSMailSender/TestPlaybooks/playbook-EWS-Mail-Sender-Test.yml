@@ -5,17 +5,17 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 2b2a114b-c31b-44ce-8bff-6006f277b5c5
+    taskid: 21aaed67-8b83-4255-8f91-5686ea984c61
     type: start
     task:
-      id: 2b2a114b-c31b-44ce-8bff-6006f277b5c5
+      id: 21aaed67-8b83-4255-8f91-5686ea984c61
       version: -1
       name: ""
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
+      - "8"
     separatecontext: false
     view: |-
       {
@@ -28,12 +28,15 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 4b63e939-ec84-4b3a-88c7-203f759781b7
+    taskid: 5c5c9851-198d-4275-8860-8886f4dc899a
     type: regular
     task:
-      id: 4b63e939-ec84-4b3a-88c7-203f759781b7
+      id: 5c5c9851-198d-4275-8860-8886f4dc899a
       version: -1
       name: Test send mail
       script: EWS Mail Sender|||send-mail
@@ -61,19 +64,22 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 370
+          "y": 545
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 44946c92-e960-47e0-8f28-675114a3b09b
+    taskid: 371db546-d62c-437e-8ae5-b5d62b48cde1
     type: regular
     task:
-      id: 44946c92-e960-47e0-8f28-675114a3b09b
+      id: 371db546-d62c-437e-8ae5-b5d62b48cde1
       version: -1
       name: Get file
       scriptName: http
@@ -104,19 +110,22 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 195
+          "y": 370
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: ff3324de-1bbf-4383-8752-256b41299b7d
+    taskid: 81e8e117-3c88-42c4-8bab-e87a8e9fbe91
     type: title
     task:
-      id: ff3324de-1bbf-4383-8752-256b41299b7d
+      id: 81e8e117-3c88-42c4-8bab-e87a8e9fbe91
       version: -1
       name: Test success after failure
       type: title
@@ -130,19 +139,22 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 530
+          "y": 720
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 78b0169e-4bc0-48fb-83a1-188e381c1f22
+    taskid: 0c7e82c3-ac71-42ae-801d-9d492d673f7c
     type: regular
     task:
-      id: 78b0169e-4bc0-48fb-83a1-188e381c1f22
+      id: 0c7e82c3-ac71-42ae-801d-9d492d673f7c
       version: -1
       name: Send Bad Email (Should fail)
       description: Sends an email using EWS.
@@ -173,19 +185,22 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 670
+          "y": 865
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: a1a6dcf6-c315-4bbb-8b2e-8acf2b5ae609
+    taskid: 1ce3f82a-9aea-4edc-8891-ee721c063342
     type: regular
     task:
-      id: a1a6dcf6-c315-4bbb-8b2e-8acf2b5ae609
+      id: 1ce3f82a-9aea-4edc-8891-ee721c063342
       version: -1
       name: Send Good Email
       script: EWS Mail Sender|||send-mail
@@ -211,19 +226,60 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 860
+          "y": 1040
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 3e9a3f05-6619-4700-86e7-57ca4e3ae7e3
+    type: regular
+    task:
+      id: 3e9a3f05-6619-4700-86e7-57ca4e3ae7e3
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 905,
+        "height": 1085,
         "width": 380,
         "x": 50,
         "y": 50

@@ -4,7 +4,7 @@
 <p>RSA NetWitness Endpoint provides deep visibility beyond basic endpoint security solutions by monitoring and collecting activity across all of your endpoints—on and off your network.<br>Use this integration to access to information about endpoints, modules, and indicators.</p>
 <p>This integration was integrated and tested with RSA NetWitness Endpoint v4.0.</p>
 <p> </p>
-<h2>Configure RSA NetWitness Endpoint on Demisto</h2>
+<h2>Configure RSA NetWitness Endpoint on Cortex XSOAR</h2>
 <hr>
 <ol>
 <li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>
@@ -23,7 +23,7 @@
 </ol>
 <h2>Commands</h2>
 <hr>
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.<br>After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.<br>After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ol>
 <li>Get GUIDs for multiple machines: netwitness-get-machines</li>
 <li>Get the GUID for a single machine: netwitness-get-machine</li>
@@ -1271,9 +1271,9 @@
 </tbody>
 </table>
 <h3> </h3>
-<h3>6. Blacklist IP addresses</h3>
+<h3>6. Block list IP addresses</h3>
 <hr>
-<p>Add a list of IP addresses to blacklist.</p>
+<p>Add a list of IP addresses to block list.</p>
 <h5>Base Command</h5>
 <pre><code>netwitness-blacklist-ips</code></pre>
 <h5>Input</h5>
@@ -1311,7 +1311,7 @@
 }</pre>
 </div>
 <h5>Human Readable Output</h5>
-<h3>IPs Successfully Blacklisted</h3>
+<h3>IPs Successfully Block listed</h3>
 <table>
 <thead>
 <tr>
@@ -1325,9 +1325,9 @@
 </tbody>
 </table>
 <h3> </h3>
-<h3>7. Blacklist domains</h3>
+<h3>7. Block list domains</h3>
 <hr>
-<p>Add a list of domains to blacklist.</p>
+<p>Add a list of domain block list.</p>
 <h5>Base Command</h5>
 <pre><code>netwitness-blacklist-domains</code></pre>
 <h5>Input</h5>
@@ -1365,7 +1365,7 @@
 }</pre>
 </div>
 <h5>Human Readable Output</h5>
-<h3>Domains Successfully Blacklisted</h3>
+<h3>Domains Successfully Block listed</h3>
 <table>
 <thead>
 <tr>

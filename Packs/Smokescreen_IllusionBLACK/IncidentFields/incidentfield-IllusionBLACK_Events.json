@@ -1,90 +1,80 @@
 {
- "associatedToAll": false,
- "associatedTypes": [
-  "IllusionBLACK"
- ],
- "breachScript": "",
- "caseInsensitive": true,
- "cliName": "illusionblackevents",
- "closeForm": false,
- "columns": [
-  {
-   "displayName": "",
-   "fieldCalcScript": "",
-   "isDefault": true,
-   "isReadOnly": false,
-   "key": "columnheader1",
-   "required": false,
-   "script": "",
-   "selectValues": null,
-   "type": "shortText",
-   "width": 150
-  },
-  {
-   "displayName": "",
-   "fieldCalcScript": "",
-   "isDefault": true,
-   "isReadOnly": false,
-   "key": "columnheader2",
-   "required": false,
-   "script": "",
-   "selectValues": null,
-   "type": "shortText",
-   "width": 150
-  },
-  {
-   "displayName": "",
-   "fieldCalcScript": "",
-   "isDefault": true,
-   "isReadOnly": false,
-   "key": "columnheader3",
-   "required": false,
-   "script": "",
-   "selectValues": null,
-   "type": "shortText",
-   "width": 150
-  }
- ],
- "content": true,
- "defaultRows": [
-  {
-
-  },
-  {
-
-  },
-  {
-
-  }
- ],
- "description": "",
- "editForm": true,
- "fieldCalcScript": "",
- "group": 0,
- "hidden": false,
- "id": "incident_illusionblackevents",
- "isReadOnly": false,
- "locked": false,
- "name": "IllusionBLACK Events",
- "neverSetAsRequired": false,
- "ownerOnly": false,
- "placeholder": "",
- "required": false,
- "script": "",
- "selectValues": [
-
- ],
- "sla": 0,
- "sortValues": null,
- "system": false,
- "systemAssociatedTypes": null,
- "threshold": 72,
- "type": "grid",
- "unmapped": false,
- "unsearchable": false,
- "useAsKpi": false,
- "validatedError": "",
- "validationRegex": "",
- "version": -1,
- "fromVersion": "5.0.0"
+    "associatedToAll": false,
+    "associatedTypes": [
+        "IllusionBLACK"
+    ],
+    "breachScript": "",
+    "caseInsensitive": true,
+    "cliName": "illusionblackevents",
+    "closeForm": false,
+    "columns": [
+        {
+            "displayName": "",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "columnheader1",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150
+        },
+        {
+            "displayName": "",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "columnheader2",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150
+        },
+        {
+            "displayName": "",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "columnheader3",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150
+        }
+    ],
+    "content": true,
+    "defaultRows": [
+        {},
+        {},
+        {}
+    ],
+    "description": "",
+    "editForm": true,
+    "fieldCalcScript": "",
+    "group": 0,
+    "hidden": false,
+    "id": "incident_illusionblackevents",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "IllusionBLACK Events",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "placeholder": "",
+    "required": false,
+    "script": "",
+    "selectValues": [],
+    "sla": 0,
+    "system": false,
+    "systemAssociatedTypes": null,
+    "threshold": 72,
+    "type": "grid",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "validationRegex": "",
+    "version": -1,
+    "fromVersion": "5.0.0"
 }

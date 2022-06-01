@@ -3,9 +3,14 @@
 	"associatedTypes": [
 		"Prisma Cloud",
 		"GCP Compute Engine Misconfiguration",
+		"GCP Kubernetes Engine Misconfiguration",
 		"AWS CloudTrail Misconfiguration",
 		"AWS IAM Policy Misconfiguration",
-		"AWS EC2 Instance Misconfiguration"
+		"AWS EC2 Instance Misconfiguration",
+		"Azure AKS Misconfiguration",
+		"Azure SQL Misconfiguration",
+		"Azure Network Misconfiguration",
+		"Azure Storage Misconfiguration"
 	],
 	"breachScript": "",
 	"caseInsensitive": true,

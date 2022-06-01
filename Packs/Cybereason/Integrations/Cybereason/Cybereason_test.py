@@ -1,5 +1,7 @@
+from CommonServerPython import *
+import json
+import io
 import demistomock as demisto
-
 
 """ API RAW RESULTS """
 
@@ -239,6 +241,58 @@ FILE_OUTPUTS = {
     }
 }
 
+
+def util_load_json(path):
+    with io.open(path, mode='r', encoding='utf-8') as f:
+        return json.loads(f.read())
+
+
+def test_login_failed(requests_mock, mocker):
+    """
+    Given:
+        - Cybereason instance with invalid credentials
+
+    When:
+        - Running test module
+
+    Then:
+        - Ensure an indicative error is returned that authorization failed
+    """
+    login_failed_html = """<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Cybereason | Login</title>
+    <base href="/">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="favicon.ico">
+<link rel="shortcut icon" href="favicon.ico"><link href="public/vendors_c29907a62751511cc002.css" rel="stylesheet"><link href="public/login_62faa8ec0f21f2d2949f.css" rel="stylesheet"></head>  # noqa: E501
+<body class="cbr-theme-dark">
+    <app-login></app-login>
+<script type="text/javascript" src="public/vendors_c29907a62751511cc002.js"></script><script type="text/javascript" src="public/login_62faa8ec0f21f2d2949f.js"></script></body>  # noqa: E501
+</html>
+""".encode('utf-8')
+    mocker.patch.object(demisto, 'params', return_value={
+        'server': 'http://server',
+        'credentials': {
+            'identifier': 'username',
+            'password': 'password'
+        },
+        'proxy': True
+    })
+    mocker.patch.object(demisto, 'command', return_value='test-module')
+    return_error_mock = mocker.patch('Cybereason.return_error')
+    requests_mock.post('http://server/login.html', content=login_failed_html)
+    requests_mock.post('http://server/rest/visualsearch/query/simple', content=login_failed_html)
+    requests_mock.get('http://server/logout')
+    from Cybereason import main
+    main()
+    assert return_error_mock.call_count == 1
+    err_msg = return_error_mock.call_args[0][0]
+    assert 'Failed to process the API response. Authentication failed, verify the credentials are correct.' in err_msg
+
+
 params = {
     'server': 'https://integration.cybereason.net:8443',
     'credentials': {'credentials': {'sshkey': 'shelly'}},
@@ -260,3 +314,21 @@ def test_query_file(mocker):
     assert 'Cybereason file query results' in result[0]['HumanReadable']
     assert result[0]['EntryContext']['Cybereason.File(val.MD5 && val.MD5===obj.MD5 || val.SHA1 && '
                                      'val.SHA1===obj.SHA1)'][0]['Machine'] == 'desktop-p0m5vad'
+
+
+def test_malop_processes_command(mocker):
+    from Cybereason import malop_processes_command
+
+    mocker.patch.object(demisto, 'params', return_value=params)
+    mocker.patch.object(demisto, 'args', return_value={"malopGuids": ["11.-6236127207710541535"]})
+    raw_response = util_load_json('test_files/malop_processes_raw_response.json')
+    mocker.patch('Cybereason.malop_processes', return_value=raw_response)
+    mocker.patch.object(demisto, 'results')
+    malop_processes_command()
+    result = demisto.results.call_args[0]
+
+    assert result[0].get('ContentsFormat', '') == 'json'
+    assert 'Cybereason Malop Processes' in result[0].get('HumanReadable', '')
+    assert dict_safe_get(result[0], ['EntryContext', 'Process'], [])[0].get('Name', '') == 'bdata.bin'
+    assert dict_safe_get(result[0], ['EntryContext', 'Process'], [])[0].get('SHA1', '') ==\
+           'f56238da9fbfa3864d443a85bb80743bd2415682'

@@ -1,0 +1,31 @@
+{
+    "id": "incident_cofensetriagereportreportedat",
+    "version": -1,
+    "modified": "2021-06-02T20:14:43.112925674+05:30",
+    "name": "Cofense Triage Report Reported At",
+    "ownerOnly": false,
+    "description": "Date and time, in ISO 8601 format, when the reporter reported the email.",
+    "cliName": "cofensetriagereportreportedat",
+    "type": "date",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "Cofense Triage Report"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.0.0"
+}

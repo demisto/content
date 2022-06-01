@@ -1,0 +1,141 @@
+{
+	"$schema": "https://json-schema.org/draft/2020-12/schema",
+	"$id": "https://github.com/demisto/content/tree/master/Packs/TAXIIServer/doc_files/XSOAR_indicator_schema.json",
+	"title": "XSOAR Indicator",
+	"description": "Raw export of an XSOAR indicator",
+	"type": "object",
+	"properties":{
+		"id": {
+			"description": "The unique identifier used by XSOAR for the object",
+			"type": "string"
+		},
+		"version": {
+			"description": "The indicator version number (ascending)",
+			"type": "integer"
+		},
+		"modified": {
+			"description": "The date the object was modified in the system (any change)",
+			"type": "string",
+			"format": "date-time"
+		},
+		"sortValues": {
+			"description": "inner use - not relevant",
+			"type": ["string", "null"]	
+		},
+		"timestamp": {
+			"description": "When the object was created in the system",
+			"type": "string",
+			"format": "date-time"
+		},
+		"indicator_type": {
+			"description": "Type of the indicator",
+			"type": "string"
+		},
+		"value": {
+			"description": "The value of the object",
+			"type": "string"
+		},
+		"sourceInstances": {
+			"description": "Instances with enriched data about the object",
+			"type": "array",
+			"items": {
+				"type": "string"
+			}
+		},
+		"sourceBrands": {
+			"description": "Which integrations enhanced the object",
+			"type": "array",
+			"items": {
+				"type": "string"
+			}
+		},
+		"investigationIDs": {
+			"description": "Referance IDs to relevant incident investigations",
+			"type": "array",
+			"items": {
+				"type": "string"
+			}
+		},
+		"lastSeen": {
+			"description": "When was the object last seen as part of an investigation",
+			"type": "string",
+			"format": "date-time"
+		},
+		"firstSeen": {
+			"description": "When was the object first seen as part of an investigation",
+			"type": "string",
+			"format": "date-time"
+		},
+		"firstSeenEntryID": {
+			"description": "first time this object has been seen in the platform Entry ID",
+			"type": "string"
+		},
+		"score": {
+			"description": "The object score in the system ranging from 1-3 (benign, suspicious, malicious",
+			"type": "integer"
+		},
+		"CustomFields": {
+			"description": "All custom fields associated with the object",
+			"type": "object"
+		},
+		"insightCache": {
+			"description": "All the data retrieved from all instances about the object",
+			"type": "object",
+			"properties": {
+				"id": {
+					"description": "The insightCache ID, for internal use",
+					"type": "string"
+				},
+				"version": {
+					"description": " The version of the cache",
+					"type": "integer"
+				},
+				"modified": {
+					"description": "When was the cache modified",
+					"type": "string",
+					"format": "date-time"
+				},
+				"sortValues": {
+					"description": "For internal use",
+					"type": ["string", "null"]
+				},
+				"scores": {
+					"description": "The data retrieved from all instances",
+					"type": "object"
+				}
+			}
+		},
+		"moduleToFeedMap": {
+			"description": "Mapping of the data to XSOAR fields",
+			"type": "object"
+		},
+		"expirationStatus": {
+			"description": "Is the object active or expired",
+			"type": "string",
+			"enum": ["active", "expired"]
+		},
+		"expirationSource": {
+			"description": "Expiration data for the object as set by the latest change",
+			"type": "object"
+		},
+		"calculatedTime": {
+			"description": "The latest time between last seen and created",
+			"type": "string",
+			"format": "date-time"
+		},
+		"lastReputationRun": {
+			"description": "The last time an enrichment ran on the object",
+			"type": "string",
+			"format": "date-time"
+		},
+		"modifiedTime": {
+			"description": "The last time the object was modified via a feed",
+			"type": "string",
+			"format": "date-time"
+		},
+		"aggregatedReliability": {
+			"description": "The reliability of an object after enrichment and aggregation",
+			"type": "string"
+		}
+	}
+}

@@ -20,14 +20,6 @@
                         "items": [
                             {
                                 "endCol": 2,
-                                "fieldId": "companypropertyreturned",
-                                "height": 24,
-                                "id": "1b81eb20-2262-11ea-8a11-ffe8edda1b4a",
-                                "index": 0,
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
                                 "fieldId": "companypropertystatus",
                                 "height": 24,
                                 "id": "35478350-271f-11ea-a5c1-8d0530e6b525",
@@ -177,14 +169,6 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "deviceaccountwiped",
-                                "height": 24,
-                                "id": "9e40c950-21b3-11ea-aaad-594c31b0b40a",
-                                "index": 2,
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
                                 "fieldId": "oktaaccountstatus",
                                 "height": 24,
                                 "id": "ab4bde00-21b3-11ea-aaad-594c31b0b40a",
@@ -208,14 +192,6 @@
                         "hideName": false,
                         "i": "qdjwqktnvs-9b645c50-21be-11ea-95fc-6bfcf7f8d70f",
                         "items": [
-                            {
-                                "endCol": 2,
-                                "fieldId": "googlepasswordreset",
-                                "height": 24,
-                                "id": "10054410-21b1-11ea-aaad-594c31b0b40a",
-                                "index": 0,
-                                "startCol": 0
-                            },
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
@@ -250,32 +226,6 @@
                                 "height": 24,
                                 "id": "c3543600-21b3-11ea-aaad-594c31b0b40a",
                                 "index": 3,
-                                "startCol": 0
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "googleaccountmailhold",
-                                "height": 24,
-                                "id": "dd71d970-21b3-11ea-aaad-594c31b0b40a",
-                                "index": 4,
-                                "listId": "qdjwqktnvs-0bb08ff0-21b1-11ea-aaad-594c31b0b40a",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "googleaccountdrivehold",
-                                "height": 24,
-                                "id": "e23b6f70-21b3-11ea-aaad-594c31b0b40a",
-                                "index": 4,
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "adminrolesrevoked",
-                                "height": 24,
-                                "id": "d961a860-21b3-11ea-aaad-594c31b0b40a",
-                                "index": 4,
                                 "startCol": 0
                             },
                             {
@@ -333,14 +283,6 @@
                                 "height": 55,
                                 "id": "c8925fc0-21b3-11ea-aaad-594c31b0b40a",
                                 "index": 0,
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "activedirectorypasswordreset",
-                                "height": 55,
-                                "id": "15046900-21b1-11ea-aaad-594c31b0b40a",
-                                "index": 1,
                                 "startCol": 0
                             },
                             {

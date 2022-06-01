@@ -1,0 +1,30 @@
+{
+    "id": "incident_processname",
+    "version": -1,
+    "modified": "2021-05-30T15:53:44.066994+03:00",
+    "name": "Process Name",
+    "ownerOnly": false,
+    "cliName": "processname",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedToAll": true,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "5.5.0",
+    "marketplaces": [
+        "xsoar"
+    ]
+}

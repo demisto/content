@@ -1,7 +1,6 @@
 <!-- HTML_DOC -->
 <h2>Overview</h2>
-<p>Use the SkyFormation integration to execute remediation actions on cloud applications when threats are detected by the SIEM and to activate SkyFormation automated remediation responses from a playbook using the cloud connector.</p>
-<p>This integration works for SkyFormation v2.2 and later. It was integrated and tested with SkyFormation v2.2.6.</p>
+<p>Deprecated. Vendor has declared end of life for this integration. No available replacement.</p>
 <h5>Limitations</h5>
 <ul>
 <li>Not all actions are supported, only the commands listed in the <a href="#h_30483980971528705313167">Use Cases</a>.</li>
@@ -25,8 +24,8 @@
 </ul>
 <hr>
 <h2>Field Examples</h2>
-<p>A SIEM detects a potential "account compromised" in a cloud app (example: Office 365). The alert triggered is fetched by Demisto which identifies the alert name and executes the playbook<br> to suspend the Office 365 user until an incident check is performed.</p>
-<p>A SIEM detects that a user who has left the company is still using a cloud app (example: Salesforce). The alert triggered is fetched by Demisto which identifies the alert name and executes the playbook to suspend the Salesforce user until an incident check is performed.</p>
+<p>A SIEM detects a potential "account compromised" in a cloud app (example: Office 365). The alert triggered is fetched by Cortex XSOAR which identifies the alert name and executes the playbook<br> to suspend the Office 365 user until an incident check is performed.</p>
+<p>A SIEM detects that a user who has left the company is still using a cloud app (example: Salesforce). The alert triggered is fetched by Cortex XSOAR which identifies the alert name and executes the playbook to suspend the Salesforce user until an incident check is performed.</p>
 <hr>
 <h2 id="h_16612523431528700689806">Prerequisites</h2>
 <p>Verify the following:</p>
@@ -41,7 +40,7 @@
 <li>Query/users that should be configured (+ required permissions for that user): As explained above</li>
 </ol>
 <hr>
-<h2>Configure SkyFormation on Demisto</h2>
+<h2>Configure SkyFormation on Cortex XSOAR</h2>
 <ol>
 <li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>
 <li>Search for SkyFormation.</li>

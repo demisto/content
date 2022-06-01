@@ -1,3 +1,5 @@
+Deprecated. Use ***MITRE ATT&CK v2*** instead.
+
 Use the MITRE ATT&CK Feed integration to fetch indicators from MITRE ATT&CK.
 For more information click [here](https://www.mitre.org/capabilities/cybersecurity/overview/cybersecurity-blog/attck%E2%84%A2-content-available-in-stix%E2%84%A2-20-via).
 

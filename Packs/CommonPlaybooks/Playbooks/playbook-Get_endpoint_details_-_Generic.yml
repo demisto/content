@@ -1,0 +1,674 @@
+id: Get endpoint details - Generic
+version: -1
+contentitemexportablefields:
+  contentitemfields: {}
+name: Get endpoint details - Generic
+description: "This playbook uses the generic command !endpoint to retrieve details\
+  \ on a specific endpoint.\nThis command currently supports the following integrations:\n\
+  - Palo Alto Networks Cortex XDR - Investigation and Response.\n- CrowdStrike Falcon. "
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 9716b204-62a4-450c-8253-26271fde0c01
+    type: start
+    task:
+      id: 9716b204-62a4-450c-8253-26271fde0c01
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 54bb9713-a67d-4c97-8422-65d5c9ae1b88
+    type: condition
+    task:
+      id: 54bb9713-a67d-4c97-8422-65d5c9ae1b88
+      version: -1
+      name: Is the endpoint id was provided?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.Endpoint_id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 7ad4b670-6c2b-47f3-8475-0cff052ec80c
+    type: regular
+    task:
+      id: 7ad4b670-6c2b-47f3-8475-0cff052ec80c
+      version: -1
+      name: Get endpoint by ID
+      description: Returns information about an endpoint.
+      script: '|||endpoint'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      id:
+        simple: ${inputs.Endpoint_id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 55202260-763a-4ab5-854b-e3d732645504
+    type: condition
+    task:
+      id: 55202260-763a-4ab5-854b-e3d732645504
+      version: -1
+      name: Is the hostname provided?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.Endpoint_hostname
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1710,
+          "y": 570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 9b85faf0-0d1f-41cc-858c-47a1011746cd
+    type: regular
+    task:
+      id: 9b85faf0-0d1f-41cc-858c-47a1011746cd
+      version: -1
+      name: Get endpoint by hostname
+      description: Returns information about an endpoint.
+      script: '|||endpoint'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      hostname:
+        simple: ${inputs.Endpoint_hostname}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1710,
+          "y": 780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 1eed6e13-e39f-45f2-86f0-021a16a24a66
+    type: title
+    task:
+      id: 1eed6e13-e39f-45f2-86f0-021a16a24a66
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: d118de51-1c82-4f69-8454-61f80edd0741
+    type: condition
+    task:
+      id: d118de51-1c82-4f69-8454-61f80edd0741
+      version: -1
+      name: Is the endpoint IP provided?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.Endpoint_ip
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 2840,
+          "y": 770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 3fdf2df6-ea67-4639-8ef1-2f32d783f32e
+    type: regular
+    task:
+      id: 3fdf2df6-ea67-4639-8ef1-2f32d783f32e
+      version: -1
+      name: Get endpoint by IP
+      description: Returns information about an endpoint.
+      script: '|||endpoint'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      ip:
+        simple: ${inputs.Endpoint_ip}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3110,
+          "y": 1005
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: e2f57f23-a132-41f2-8ceb-3a84c652333b
+    type: condition
+    task:
+      id: e2f57f23-a132-41f2-8ceb-3a84c652333b
+      version: -1
+      name: Is the endpoint details retrieved by ID?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ${Endpoint.ID}
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 21ed3ecb-a998-4ef0-8864-3dbd44e89a89
+    type: condition
+    task:
+      id: 21ed3ecb-a998-4ef0-8864-3dbd44e89a89
+      version: -1
+      name: Is agent ID provided?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.Endpoint_id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 790,
+          "y": 980
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 90239616-0624-4464-8b2b-ff9b92ab5069
+    type: regular
+    task:
+      id: 90239616-0624-4464-8b2b-ff9b92ab5069
+      version: -1
+      name: Set endpoint ID to context
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Endpoint.ID
+      value:
+        simple: ${inputs.Endpoint_id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1140,
+          "y": 1160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: f40bcf3f-0570-41e3-8c97-fe26908b3a13
+    type: condition
+    task:
+      id: f40bcf3f-0570-41e3-8c97-fe26908b3a13
+      version: -1
+      name: 'Is the endpoint details retrieved by hostname? '
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "12"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ${Endpoint.Hostname}
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1710,
+          "y": 980
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 645a04bf-3e22-407e-873d-f571a05b5225
+    type: condition
+    task:
+      id: 645a04bf-3e22-407e-873d-f571a05b5225
+      version: -1
+      name: Was hostname provided?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.Endpoint_hostname
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1820,
+          "y": 1210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: eecde4bf-341f-4347-8192-c9067f63727e
+    type: regular
+    task:
+      id: eecde4bf-341f-4347-8192-c9067f63727e
+      version: -1
+      name: Set endpoint hostname to context
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      key:
+        simple: Endpoint.Hostname
+      value:
+        simple: ${inputs.Endpoint_hostname}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1950,
+          "y": 1450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: c6f50e01-1671-422d-8a29-90c685e03e48
+    type: condition
+    task:
+      id: c6f50e01-1671-422d-8a29-90c685e03e48
+      version: -1
+      name: Is the endpoint details retrieved by IP?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "17"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ${Endpoint.IPAddress}
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 3110,
+          "y": 1210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: e40edb78-b5f5-4b04-82e5-92693f2e7bfc
+    type: regular
+    task:
+      id: e40edb78-b5f5-4b04-82e5-92693f2e7bfc
+      version: -1
+      name: Set endpoint IP to context
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Endpoint.IPAddress
+      value:
+        simple: ${inputs.Endpoint_ip}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3870,
+          "y": 1650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: 3ab69c5f-8c2b-4ef7-81a1-6fafd368c9ec
+    type: condition
+    task:
+      id: 3ab69c5f-8c2b-4ef7-81a1-6fafd368c9ec
+      version: -1
+      name: Was endpoint IP provided?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.Endpoint_ip
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 3370,
+          "y": 1410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+system: true
+view: |-
+  {
+    "linkLabelsPosition": {
+      "11_5_yes": 0.22,
+      "12_5_#default#": 0.17,
+      "14_5_yes": 0.2,
+      "17_5_#default#": 0.1,
+      "1_2_yes": 0.52,
+      "1_3_#default#": 0.51,
+      "3_4_yes": 0.46,
+      "3_6_#default#": 0.5,
+      "6_7_yes": 0.46,
+      "9_5_#default#": 0.26
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1975,
+        "width": 3800,
+        "x": 450,
+        "y": 130
+      }
+    }
+  }
+inputs:
+- key: Endpoint_id
+  value: {}
+  required: false
+  description: 'The ID of the endpoint that you want to get details about. '
+  playbookInputQuery:
+- key: Endpoint_ip
+  value: {}
+  required: false
+  description: 'The IP of the endpoint that you want to get details about. '
+  playbookInputQuery:
+- key: Endpoint_hostname
+  value: {}
+  required: false
+  description: 'The hostname of the endpoint that you want to get details about. '
+  playbookInputQuery:
+outputs:
+- contextPath: Endpoint.Hostname
+  description: The endpoint's hostname.
+  type: string
+- contextPath: Endpoint.OS
+  description: The endpoint's operation system.
+  type: string
+- contextPath: Endpoint.IPAddress
+  description: The endpoint's IP address.
+  type: string
+- contextPath: Endpoint.ID
+  description: The endpoint's ID.
+  type: string
+- contextPath: Endpoint.Status
+  description: The endpoint's status.
+  type: string
+- contextPath: Endpoint.IsIsolated
+  description: Endpoint isolation status.
+  type: string
+- contextPath: Endpoint.MACAddress
+  description: Endpoint MAC address.
+  type: string
+- contextPath: Endpoint.Vendor
+  description: The integration name of the endpoint vendor.
+  type: string
+tests:
+- Get endpoint details - Generic - test
+fromversion: 5.5.0

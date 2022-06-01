@@ -1,0 +1,174 @@
+{
+    "brandName": "mnemonicMDR",
+    "fromVersion": "5.0.0",
+    "toVersion": "5.9.9",
+    "unclassifiedCases": {},
+    "version": -1,
+    "id": "b8bcb3b6-2c60-4f0d-8e2b-2d90eb700445",
+    "keyTypeMap": {
+        "argus_case": "Argus Case"
+    },
+    "transformer": {
+        "complex": {
+            "accessor": "",
+            "filters": [
+                [
+                    {
+                        "ignoreCase": false,
+                        "left": {
+                            "isContext": true,
+                            "value": {
+                                "complex": null,
+                                "simple": "service.shortName"
+                            }
+                        },
+                        "operator": "isEqualString",
+                        "right": {
+                            "isContext": false,
+                            "value": {
+                                "complex": null,
+                                "simple": "ids"
+                            }
+                        }
+                    },
+                    {
+                        "ignoreCase": false,
+                        "left": {
+                            "isContext": true,
+                            "value": {
+                                "complex": null,
+                                "simple": "service.shortName"
+                            }
+                        },
+                        "operator": "isEqualString",
+                        "right": {
+                            "isContext": false,
+                            "value": {
+                                "complex": null,
+                                "simple": "support"
+                            }
+                        }
+                    },
+                    {
+                        "ignoreCase": false,
+                        "left": {
+                            "isContext": true,
+                            "value": {
+                                "complex": null,
+                                "simple": "service.shortName"
+                            }
+                        },
+                        "operator": "isEqualString",
+                        "right": {
+                            "isContext": false,
+                            "value": {
+                                "complex": null,
+                                "simple": "administrative"
+                            }
+                        }
+                    },
+                    {
+                        "ignoreCase": false,
+                        "left": {
+                            "isContext": true,
+                            "value": {
+                                "complex": null,
+                                "simple": "service.shortName"
+                            }
+                        },
+                        "operator": "isEqualString",
+                        "right": {
+                            "isContext": false,
+                            "value": {
+                                "complex": null,
+                                "simple": "vulnscan"
+                            }
+                        }
+                    }
+                ]
+            ],
+            "root": "service.shortName",
+            "transformers": [
+                {
+                    "args": {
+                        "regex": {
+                            "isContext": false,
+                            "value": {
+                                "complex": null,
+                                "simple": ".*"
+                            }
+                        },
+                        "replaceWith": {
+                            "isContext": false,
+                            "value": {
+                                "complex": null,
+                                "simple": "argus_case"
+                            }
+                        }
+                    },
+                    "operator": "replaceMatch"
+                }
+            ]
+        },
+        "simple": ""
+    },
+    "mapping": {
+        "Argus Case": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Argus Case Category": {
+                    "complex": null,
+                    "simple": "category.shortName"
+                },
+                "Argus Case ID": {
+                    "complex": null,
+                    "simple": "id"
+                },
+                "Argus Case Service": {
+                    "complex": null,
+                    "simple": "service.shortName"
+                },
+                "Argus Case Type": {
+                    "complex": null,
+                    "simple": "type"
+                },
+                "Argus Customer ID": {
+                    "complex": null,
+                    "simple": "customer.id"
+                }
+            }
+        },
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "category": {
+                    "complex": {
+                        "accessor": "name",
+                        "filters": [],
+                        "root": "category",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "occurred": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "createdTimestamp",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "severity": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "priority",
+                        "transformers": []
+                    },
+                    "simple": ""
+                }
+            }
+        }
+    }
+}

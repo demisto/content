@@ -1,127 +1,14 @@
+import botocore.exceptions
+
 import demistomock as demisto
 from CommonServerPython import *
 from datetime import datetime, date
-import boto3
-from botocore.config import Config
-from botocore.parsers import ResponseParserError
 import urllib3.util
 
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-# Initiating params object for efficiency
-params = demisto.params()
-
-AWS_DEFAULT_REGION = None
-AWS_ROLE_ARN = params.get('roleArn')
-AWS_ROLE_SESSION_NAME = params.get('roleSessionName')
-AWS_ROLE_SESSION_DURATION = params.get('sessionDuration')
-AWS_ROLE_POLICY = None
-AWS_ACCESS_KEY_ID = params.get('access_key')
-AWS_SECRET_ACCESS_KEY = params.get('secret_key')
-VERIFY_CERTIFICATE = not params.get('insecure', True)
-proxies = handle_proxy(proxy_param_name='proxy', checkbox_default_value=False)
-config = Config(
-    connect_timeout=1,
-    retries=dict(
-        max_attempts=5
-    ),
-    proxies=proxies
-)
-
-
-def aws_session(service='iam', region=None, roleArn=None, roleSessionName=None,
-                roleSessionDuration=None,
-                rolePolicy=None):
-    kwargs = {}
-    if roleArn and roleSessionName is not None:
-        kwargs.update({
-            'RoleArn': roleArn,
-            'RoleSessionName': roleSessionName,
-        })
-    elif AWS_ROLE_ARN and AWS_ROLE_SESSION_NAME is not None:
-        kwargs.update({
-            'RoleArn': AWS_ROLE_ARN,
-            'RoleSessionName': AWS_ROLE_SESSION_NAME,
-        })
-
-    if roleSessionDuration is not None:
-        kwargs.update({'DurationSeconds': int(roleSessionDuration)})
-    elif AWS_ROLE_SESSION_DURATION is not None:
-        kwargs.update({'DurationSeconds': int(AWS_ROLE_SESSION_DURATION)})
-
-    if rolePolicy is not None:
-        kwargs.update({'Policy': rolePolicy})
-    elif AWS_ROLE_POLICY is not None:
-        kwargs.update({'Policy': AWS_ROLE_POLICY})
-    if kwargs and AWS_ACCESS_KEY_ID is None:
-
-        if AWS_ACCESS_KEY_ID is None:
-            sts_client = boto3.client('sts', config=config, verify=VERIFY_CERTIFICATE)
-            sts_response = sts_client.assume_role(**kwargs)
-            if region is not None:
-                client = boto3.client(
-                    service_name=service,
-                    region_name=region,
-                    aws_access_key_id=sts_response['Credentials']['AccessKeyId'],
-                    aws_secret_access_key=sts_response['Credentials']['SecretAccessKey'],
-                    aws_session_token=sts_response['Credentials']['SessionToken'],
-                    verify=VERIFY_CERTIFICATE,
-                    config=config
-                )
-            else:
-                client = boto3.client(
-                    service_name=service,
-                    region_name=AWS_DEFAULT_REGION,
-                    aws_access_key_id=sts_response['Credentials']['AccessKeyId'],
-                    aws_secret_access_key=sts_response['Credentials']['SecretAccessKey'],
-                    aws_session_token=sts_response['Credentials']['SessionToken'],
-                    verify=VERIFY_CERTIFICATE,
-                    config=config
-                )
-    elif AWS_ACCESS_KEY_ID and AWS_ROLE_ARN:
-        sts_client = boto3.client(
-            service_name='sts',
-            aws_access_key_id=AWS_ACCESS_KEY_ID,
-            aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
-            verify=VERIFY_CERTIFICATE,
-            config=config
-        )
-        kwargs.update({
-            'RoleArn': AWS_ROLE_ARN,
-            'RoleSessionName': AWS_ROLE_SESSION_NAME,
-        })
-        sts_response = sts_client.assume_role(**kwargs)
-        client = boto3.client(
-            service_name=service,
-            region_name=AWS_DEFAULT_REGION,
-            aws_access_key_id=sts_response['Credentials']['AccessKeyId'],
-            aws_secret_access_key=sts_response['Credentials']['SecretAccessKey'],
-            aws_session_token=sts_response['Credentials']['SessionToken'],
-            verify=VERIFY_CERTIFICATE,
-            config=config
-        )
-    else:
-        if region is not None:
-            client = boto3.client(
-                service_name=service,
-                region_name=region,
-                aws_access_key_id=AWS_ACCESS_KEY_ID,
-                aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
-                verify=VERIFY_CERTIFICATE,
-                config=config
-            )
-        else:
-            client = boto3.client(
-                service_name=service,
-                region_name=AWS_DEFAULT_REGION,
-                aws_access_key_id=AWS_ACCESS_KEY_ID,
-                aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
-                verify=VERIFY_CERTIFICATE,
-                config=config
-            )
-
-    return client
+SERVICE = 'iam'
 
 
 class DatetimeEncoder(json.JSONEncoder):
@@ -135,11 +22,38 @@ class DatetimeEncoder(json.JSONEncoder):
         return json.JSONEncoder.default(self, obj)
 
 
-def create_user(args):
-    client = aws_session(
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+def get_limit(args):
+    """
+    Args:
+        args: Args input for command, this function uses limit, page and page_size
+
+    Returns:
+        - limit - how many items to request from AWS - IAM API.
+        - is_manual - whether manual pagination is active (using page and page_size)
+        - page_size - used when manual pagination is active, to bring the relevant number of results from the data.
+
+    """
+    limit = arg_to_number(str(args.get("limit"))) if "limit" in args else None
+    page = arg_to_number(str(args.get("page"))) if "page" in args else None
+    page_size = arg_to_number(str(args.get("page_size"))) if "page_size" in args else None
+
+    if limit is None:
+        if page is not None and page_size is not None:
+            if page <= 0:
+                raise Exception('Chosen page number must be greater than 0')
+            limit = page_size * page
+            return limit, True, page_size
+        else:
+            limit = 50
+    return limit, False, page_size
+
+
+def create_user(args, aws_client):  # pragma: no cover
+    client = aws_client.aws_session(
+        service=SERVICE,
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
     kwargs = {'UserName': args.get('userName')}
     if args.get('path'):
@@ -159,11 +73,12 @@ def create_user(args):
     return_outputs(human_readable, ec)
 
 
-def create_login_profile(args):
-    client = aws_session(
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+def create_login_profile(args, aws_client):  # pragma: no cover
+    client = aws_client.aws_session(
+        service=SERVICE,
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
     kwargs = {
         'UserName': args.get('userName'),
@@ -178,11 +93,12 @@ def create_login_profile(args):
         demisto.results("Login Profile Was Created For user {0} ".format(args.get('userName')))
 
 
-def get_user(args):
-    client = aws_session(
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+def get_user(args, aws_client):  # pragma: no cover
+    client = aws_client.aws_session(
+        service=SERVICE,
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
     response = client.get_user(UserName=args.get('userName'))
     user = response['User']
@@ -198,11 +114,12 @@ def get_user(args):
     return_outputs(human_readable, ec)
 
 
-def list_users(args):
-    client = aws_session(
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+def list_users(args, aws_client):  # pragma: no cover
+    client = aws_client.aws_session(
+        service=SERVICE,
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
     data = []
     paginator = client.get_paginator('list_users')
@@ -220,11 +137,12 @@ def list_users(args):
     return_outputs(human_readable, ec)
 
 
-def update_user(args):
-    client = aws_session(
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+def update_user(args, aws_client):  # pragma: no cover
+    client = aws_client.aws_session(
+        service=SERVICE,
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
     kwargs = {'UserName': args.get('oldUserName')}
     if args.get('newUserName'):
@@ -238,22 +156,24 @@ def update_user(args):
             "Changed UserName {0} To: {1}".format(args.get('oldUserName'), args.get('newUserName')))
 
 
-def delete_user(args):
-    client = aws_session(
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+def delete_user(args, aws_client):  # pragma: no cover
+    client = aws_client.aws_session(
+        service=SERVICE,
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
     response = client.delete_user(UserName=args.get('userName'))
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:
         demisto.results('The User {0} has been deleted'.format(args.get('userName')))
 
 
-def update_login_profile(args):
-    client = aws_session(
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+def update_login_profile(args, aws_client):  # pragma: no cover
+    client = aws_client.aws_session(
+        service=SERVICE,
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
     response = client.update_login_profile(
         Password=args.get('newPassword'),
@@ -264,11 +184,12 @@ def update_login_profile(args):
         demisto.results("The user {0} Password was changed".format(args.get('userName')))
 
 
-def create_group(args):
-    client = aws_session(
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+def create_group(args, aws_client):  # pragma: no cover
+    client = aws_client.aws_session(
+        service=SERVICE,
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
     kwargs = {'GroupName': args.get('groupName')}
     if args.get('path') is not None:
@@ -288,11 +209,12 @@ def create_group(args):
     return_outputs(human_readable, ec)
 
 
-def list_groups(args):
-    client = aws_session(
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+def list_groups(args, aws_client):  # pragma: no cover
+    client = aws_client.aws_session(
+        service=SERVICE,
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
     data = []
     paginator = client.get_paginator('list_groups')
@@ -310,11 +232,12 @@ def list_groups(args):
     return_outputs(human_readable, ec)
 
 
-def list_groups_for_user(args):
-    client = aws_session(
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+def list_groups_for_user(args, aws_client):  # pragma: no cover
+    client = aws_client.aws_session(
+        service=SERVICE,
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
     data = []
     response = client.list_groups_for_user(UserName=args.get('userName'))
@@ -333,11 +256,12 @@ def list_groups_for_user(args):
     return_outputs(human_readable, ec)
 
 
-def add_user_to_group(args):
-    client = aws_session(
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+def add_user_to_group(args, aws_client):  # pragma: no cover
+    client = aws_client.aws_session(
+        service=SERVICE,
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
     response = client.add_user_to_group(
         GroupName=args.get('groupName'),
@@ -349,11 +273,12 @@ def add_user_to_group(args):
                                                                                   'groupName')))
 
 
-def create_access_key(args):
-    client = aws_session(
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+def create_access_key(args, aws_client):  # pragma: no cover
+    client = aws_client.aws_session(
+        service=SERVICE,
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
     response = client.create_access_key(UserName=args.get('userName'))
     AccessKey = response['AccessKey']
@@ -370,11 +295,12 @@ def create_access_key(args):
     return_outputs(human_readable, ec)
 
 
-def update_access_key(args):
-    client = aws_session(
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+def update_access_key(args, aws_client):  # pragma: no cover
+    client = aws_client.aws_session(
+        service=SERVICE,
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
     response = client.update_access_key(
         UserName=args.get('userName'),
@@ -387,11 +313,12 @@ def update_access_key(args):
                                                                    args.get('status')))
 
 
-def list_access_key_for_user(args):
-    client = aws_session(
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+def list_access_key_for_user(args, aws_client):  # pragma: no cover
+    client = aws_client.aws_session(
+        service=SERVICE,
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
     data = []
     response = client.list_access_keys(UserName=args.get('userName'))
@@ -408,11 +335,12 @@ def list_access_key_for_user(args):
     return_outputs(human_readable, ec)
 
 
-def list_policies(args):
-    client = aws_session(
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+def list_policies(args, aws_client):  # pragma: no cover
+    client = aws_client.aws_session(
+        service=SERVICE,
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
     data = []
     response = client.list_policies(
@@ -436,11 +364,12 @@ def list_policies(args):
     return_outputs(human_readable, ec)
 
 
-def list_roles(args):
-    client = aws_session(
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+def list_roles(args, aws_client):  # pragma: no cover
+    client = aws_client.aws_session(
+        service=SERVICE,
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
     data = []
     output = []
@@ -462,11 +391,12 @@ def list_roles(args):
     return_outputs(human_readable, ec)
 
 
-def attach_policy(args):
-    client = aws_session(
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+def attach_policy(args, aws_client):  # pragma: no cover
+    client = aws_client.aws_session(
+        service=SERVICE,
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
     if args.get('type') == 'User':
         response = client.attach_user_policy(
@@ -489,11 +419,12 @@ def attach_policy(args):
             "Policy was attached to {0}: {1} ".format(args.get('type'), args.get('entityName')))
 
 
-def detach_policy(args):
-    client = aws_session(
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+def detach_policy(args, aws_client):  # pragma: no cover
+    client = aws_client.aws_session(
+        service=SERVICE,
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
     if args.get('type') == 'User':
         response = client.detach_user_policy(
@@ -515,33 +446,36 @@ def detach_policy(args):
             "Policy was detached from {0}: {1} ".format(args.get('type'), args.get('entityName')))
 
 
-def delete_login_profile(args):
-    client = aws_session(
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+def delete_login_profile(args, aws_client):  # pragma: no cover
+    client = aws_client.aws_session(
+        service=SERVICE,
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
     response = client.delete_login_profile(UserName=args.get('userName'))
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:
         demisto.results("The user {0} login profile has been deleted".format(args.get('userName')))
 
 
-def delete_group(args):
-    client = aws_session(
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+def delete_group(args, aws_client):  # pragma: no cover
+    client = aws_client.aws_session(
+        service=SERVICE,
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
     response = client.delete_group(GroupName=args.get('groupName'))
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:
         demisto.results("The Group {0} has been deleted".format(args.get('groupName')))
 
 
-def remove_user_from_group(args):
-    client = aws_session(
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+def remove_user_from_group(args, aws_client):  # pragma: no cover
+    client = aws_client.aws_session(
+        service=SERVICE,
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
     response = client.remove_user_from_group(
         GroupName=args.get('groupName'),
@@ -553,11 +487,12 @@ def remove_user_from_group(args):
                                                                       args.get('groupName')))
 
 
-def delete_access_key(args):
-    client = aws_session(
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+def delete_access_key(args, aws_client):  # pragma: no cover
+    client = aws_client.aws_session(
+        service=SERVICE,
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
     kwargs = {
         'UserName': args.get('userName'),
@@ -569,11 +504,12 @@ def delete_access_key(args):
         demisto.results("The Access Key was deleted")
 
 
-def create_instance_profile(args):
-    client = aws_session(
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+def create_instance_profile(args, aws_client):  # pragma: no cover
+    client = aws_client.aws_session(
+        service=SERVICE,
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
     kwargs = {'InstanceProfileName': args.get('instanceProfileName')}
     if args.get('path') is not None:
@@ -594,11 +530,12 @@ def create_instance_profile(args):
     return_outputs(human_readable, ec)
 
 
-def delete_instance_profile(args):
-    client = aws_session(
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+def delete_instance_profile(args, aws_client):  # pragma: no cover
+    client = aws_client.aws_session(
+        service=SERVICE,
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
     response = client.delete_instance_profile(InstanceProfileName=args.get('instanceProfileName'))
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:
@@ -606,11 +543,12 @@ def delete_instance_profile(args):
             "The InstanceProfile: {0} was deleted".format(args.get('instanceProfileName')))
 
 
-def list_instance_profiles(args):
-    client = aws_session(
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+def list_instance_profiles(args, aws_client):  # pragma: no cover
+    client = aws_client.aws_session(
+        service=SERVICE,
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
     output = []
     data = []
@@ -631,11 +569,12 @@ def list_instance_profiles(args):
     return_outputs(human_readable, ec)
 
 
-def add_role_to_instance_profile(args):
-    client = aws_session(
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+def add_role_to_instance_profile(args, aws_client):  # pragma: no cover
+    client = aws_client.aws_session(
+        service=SERVICE,
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
     kwargs = {
         'InstanceProfileName': args.get('instanceProfileName'),
@@ -650,11 +589,12 @@ def add_role_to_instance_profile(args):
         )
 
 
-def remove_role_from_instance_profile(args):
-    client = aws_session(
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+def remove_role_from_instance_profile(args, aws_client):  # pragma: no cover
+    client = aws_client.aws_session(
+        service=SERVICE,
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
     kwargs = {
         'InstanceProfileName': args.get('instanceProfileName'),
@@ -669,11 +609,12 @@ def remove_role_from_instance_profile(args):
                                                                                   'instanceProfileName')))
 
 
-def list_instance_profiles_for_role(args):
-    client = aws_session(
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+def list_instance_profiles_for_role(args, aws_client):  # pragma: no cover
+    client = aws_client.aws_session(
+        service=SERVICE,
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
     output = []
     data = []
@@ -695,11 +636,12 @@ def list_instance_profiles_for_role(args):
     return_outputs(human_readable, ec)
 
 
-def get_instance_profile(args):
-    client = aws_session(
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+def get_instance_profile(args, aws_client):  # pragma: no cover
+    client = aws_client.aws_session(
+        service=SERVICE,
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
     response = client.get_instance_profile(InstanceProfileName=args.get('instanceProfileName'))
     instanceProfile = response['InstanceProfile']
@@ -716,11 +658,12 @@ def get_instance_profile(args):
     return_outputs(human_readable, ec)
 
 
-def get_role(args):
-    client = aws_session(
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+def get_role(args, aws_client):  # pragma: no cover
+    client = aws_client.aws_session(
+        service=SERVICE,
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
     response = client.get_role(RoleName=args.get('roleName'))
     role = response['Role']
@@ -738,11 +681,12 @@ def get_role(args):
     return_outputs(human_readable, ec)
 
 
-def delete_role(args):
-    client = aws_session(
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+def delete_role(args, aws_client):  # pragma: no cover
+    client = aws_client.aws_session(
+        service=SERVICE,
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
     response = client.delete_role(RoleName=args.get('roleName'))
 
@@ -750,11 +694,12 @@ def delete_role(args):
         demisto.results("The Role: {0} was deleted".format(args.get('roleName')))
 
 
-def create_role(args):
-    client = aws_session(
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+def create_role(args, aws_client):  # pragma: no cover
+    client = aws_client.aws_session(
+        service=SERVICE,
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
 
     kwargs = {
@@ -783,11 +728,12 @@ def create_role(args):
     return_outputs(human_readable, ec)
 
 
-def create_policy(args):
-    client = aws_session(
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+def create_policy(args, aws_client):  # pragma: no cover
+    client = aws_client.aws_session(
+        service=SERVICE,
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
 
     kwargs = {
@@ -815,11 +761,12 @@ def create_policy(args):
     return_outputs(human_readable, ec)
 
 
-def delete_policy(args):
-    client = aws_session(
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+def delete_policy(args, aws_client):  # pragma: no cover
+    client = aws_client.aws_session(
+        service=SERVICE,
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
     response = client.delete_policy(PolicyArn=args.get('policyArn'))
 
@@ -827,11 +774,12 @@ def delete_policy(args):
         demisto.results("The Policy: {0} was deleted".format(args.get('policyArn')))
 
 
-def create_policy_version(args):
-    client = aws_session(
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+def create_policy_version(args, aws_client):  # pragma: no cover
+    client = aws_client.aws_session(
+        service=SERVICE,
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
 
     kwargs = {
@@ -855,11 +803,12 @@ def create_policy_version(args):
     return_outputs(human_readable, ec)
 
 
-def delete_policy_version(args):
-    client = aws_session(
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+def delete_policy_version(args, aws_client):  # pragma: no cover
+    client = aws_client.aws_session(
+        service=SERVICE,
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
     kwargs = {
         'PolicyArn': args.get('policyArn'),
@@ -871,11 +820,12 @@ def delete_policy_version(args):
         demisto.results("The Policy Version was deleted")
 
 
-def list_policy_versions(args):
-    client = aws_session(
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+def list_policy_versions(args, aws_client):  # pragma: no cover
+    client = aws_client.aws_session(
+        service=SERVICE,
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
     data = []
     response = client.list_policy_versions(PolicyArn=args.get('policyArn'))
@@ -891,11 +841,12 @@ def list_policy_versions(args):
     return_outputs(human_readable, ec)
 
 
-def get_policy_version(args):
-    client = aws_session(
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+def get_policy_version(args, aws_client):  # pragma: no cover
+    client = aws_client.aws_session(
+        service=SERVICE,
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
     data = []
     kwargs = {
@@ -916,11 +867,12 @@ def get_policy_version(args):
     return_outputs(human_readable, ec)
 
 
-def set_default_policy_version(args):
-    client = aws_session(
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+def set_default_policy_version(args, aws_client):  # pragma: no cover
+    client = aws_client.aws_session(
+        service=SERVICE,
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
     kwargs = {
         'PolicyArn': args.get('policyArn'),
@@ -931,11 +883,12 @@ def set_default_policy_version(args):
         demisto.results("The Default Policy Version was set to {0}".format(args.get('versionId')))
 
 
-def create_account_alias(args):
-    client = aws_session(
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+def create_account_alias(args, aws_client):  # pragma: no cover
+    client = aws_client.aws_session(
+        service=SERVICE,
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
     kwargs = {'AccountAlias': args.get('accountAlias')}
     response = client.create_account_alias(**kwargs)
@@ -943,11 +896,12 @@ def create_account_alias(args):
         demisto.results("The Account Alias was created")
 
 
-def delete_account_alias(args):
-    client = aws_session(
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+def delete_account_alias(args, aws_client):  # pragma: no cover
+    client = aws_client.aws_session(
+        service=SERVICE,
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
     kwargs = {'AccountAlias': args.get('accountAlias')}
     response = client.delete_account_alias(**kwargs)
@@ -955,11 +909,12 @@ def delete_account_alias(args):
         demisto.results("The Account Alias was deleted")
 
 
-def get_account_password_policy(args):
-    client = aws_session(
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+def get_account_password_policy(args, aws_client):  # pragma: no cover
+    client = aws_client.aws_session(
+        service=SERVICE,
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
     response = client.get_account_password_policy()
     data = response['PasswordPolicy']
@@ -969,11 +924,12 @@ def get_account_password_policy(args):
     return_outputs(human_readable, ec)
 
 
-def update_account_password_policy(args):
-    client = aws_session(
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+def update_account_password_policy(args, aws_client):  # pragma: no cover
+    client = aws_client.aws_session(
+        service=SERVICE,
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
     try:
         response = client.get_account_password_policy()
@@ -1010,112 +966,388 @@ def update_account_password_policy(args):
         demisto.results("The Account Password Policy was updated")
 
 
-def test_function():
-    client = aws_session()
+def list_role_policies(args, aws_client):  # pragma: no cover
+    client = aws_client.aws_session(
+        service=SERVICE,
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
+    )
+    kwargs = {'RoleName': args.get('roleName')}
+    response = client.list_role_policies(**kwargs)
+    response = json.dumps(response, default=datetime_to_string)
+    response = json.loads(response)
+    outputs = {
+        'AWS.IAM.Roles(val.RoleName && val.RoleName === obj.RoleName).Policies':
+            response.get('PolicyNames')}
+    del response['ResponseMetadata']
+    table_header = 'AWS IAM Role Policies for {}'.format(args.get('roleName'))
+    human_readable = aws_table_to_markdown(response, table_header)
+    return_outputs(human_readable, outputs, response)
+
+
+def get_role_policy(args, aws_client):  # pragma: no cover
+    client = aws_client.aws_session(
+        service=SERVICE,
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
+    )
+    kwargs = {
+        'RoleName': args.get('roleName'),
+        'PolicyName': args.get('policyName')
+    }
+    response = client.get_role_policy(**kwargs)
+    response = json.dumps(response, default=datetime_to_string)
+    response = json.loads(response)
+    outputs = {
+        'AWS.IAM.Roles(val.RoleName && val.RoleName === obj.RoleName)':
+            response}
+    del response['ResponseMetadata']
+    table_header = 'AWS IAM Role Policy for {}'.format(args.get('roleName'))
+    human_readable = aws_table_to_markdown(response, table_header)
+    return_outputs(human_readable, outputs, response)
+
+
+def get_policy(args, aws_client):   # pragma: no cover
+    client = aws_client.aws_session(
+        service=SERVICE,
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
+    )
+    kwargs = {
+        'PolicyArn': args.get('policyArn')
+    }
+    response = client.get_policy(**kwargs)
+    response = json.dumps(response, default=datetime_to_string)
+    response = json.loads(response)
+    outputs = {
+        'AWS.IAM.Policy(val.PolicyName && val.PolicyName === obj.PolicyName)':
+            response.get('Policy')}
+    del response['ResponseMetadata']
+    table_header = 'AWS IAM Policy for {}'.format(args.get('policyArn'))
+    human_readable = aws_table_to_markdown(response, table_header)
+    return_outputs(human_readable, outputs, response)
+
+
+def list_user_policies(args, aws_client):
+    client = aws_client.aws_session(
+        service=SERVICE,
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
+    )
+    user_name = args.get('userName', "")
+    marker = args.get('marker', None)
+    limit, is_manual, page_size = get_limit(args)
+
+    kwargs = {
+        'UserName': user_name,
+        'MaxItems': limit
+    }
+    if marker:
+        kwargs.update({'Marker': marker})
+
+    response = client.list_user_policies(**kwargs)
+    data = response.get('PolicyNames', [])
+    marker = response.get('Marker', None)
+
+    if is_manual and page_size and len(data) > page_size:
+        data = data[-1 * page_size:]
+
+    policy_data = [{
+        'UserName': user_name,
+        'PolicyName': policy,
+    } for policy in data]
+
+    ec = {}
+    if policy_data:
+        ec = {'AWS.IAM.UserPolicies(val.PolicyName && val.UserName && val.PolicyName === obj.PolicyName && '
+              'val.UserName === obj.UserName)': policy_data,
+              'AWS.IAM.Users(val.UserName === \'{}\').InlinePoliciesMarker'.format(user_name): marker}
+
+    human_readable = tableToMarkdown('AWS IAM Policies for user {}'.format(user_name),
+                                     headers=["PolicyNames"],
+                                     headerTransform=pascalToSpace,
+                                     t=data)
+    return_outputs(human_readable, ec, response)
+
+
+def list_attached_user_policies(args, aws_client):
+    client = aws_client.aws_session(
+        service=SERVICE,
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
+    )
+
+    user_name = args.get('userName')
+    marker = args.get('marker')
+    limit, is_manual, page_size = get_limit(args)
+
+    kwargs = {
+        'UserName': user_name,
+        'MaxItems': limit
+    }
+    if marker:
+        kwargs.update({'Marker': marker})
+
+    response = client.list_attached_user_policies(**kwargs)
+    data = response.get('AttachedPolicies', [])
+    marker = response.get('Marker', None)
+
+    if is_manual and page_size is not None and len(data) > page_size:
+        data = data[-1 * page_size:]
+
+    policy_data = [{
+        'UserName': user_name,
+        'PolicyArn': policy.get('PolicyArn'),
+        'PolicyName': policy.get('PolicyName')
+    } for policy in data]
+
+    ec = {}
+    if policy_data:
+        ec = {'AWS.IAM.AttachedUserPolicies(val.PolicyArn && val.UserName && val.PolicyArn === obj.PolicyArn && '
+              'val.UserName === obj.UserName)': policy_data,
+              'AWS.IAM.Users(val.UserName === \'{}\').AttachedPoliciesMarker'.format(user_name): marker}
+
+    human_readable = tableToMarkdown('AWS IAM Attached Policies for user {}'.format(user_name),
+                                     headers=['PolicyName', 'PolicyArn'],
+                                     headerTransform=pascalToSpace,
+                                     t=data)
+
+    return_outputs(human_readable, ec, response)
+
+
+def list_attached_group_policies(args, aws_client):
+    client = aws_client.aws_session(
+        service=SERVICE,
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
+    )
+
+    group_name = args.get('groupName')
+    marker = args.get('marker')
+    limit, is_manual, page_size = get_limit(args)
+
+    kwargs = {
+        'GroupName': group_name,
+        'MaxItems': limit
+    }
+    if marker:
+        kwargs.update({'Marker': marker})
+
+    response = client.list_attached_group_policies(**kwargs)
+    data = response.get('AttachedPolicies', [])
+    marker = response.get('Marker')
+
+    if is_manual and page_size and len(data) > page_size:
+        data = data[-1 * args.get('page_size'):]
+
+    policy_data = [{
+        'GroupName': group_name,
+        'PolicyArn': policy.get('PolicyArn'),
+        'PolicyName': policy.get('PolicyName')
+    } for policy in data]
+
+    ec = {}
+    if policy_data:
+        ec = {'AWS.IAM.AttachedGroupPolicies(val.PolicyArn && val.GroupName && val.PolicyArn === obj.PolicyArn && '
+              'val.GroupName === obj.GroupName)': policy_data,
+              'AWS.IAM.Groups(val.GroupName === \'{}\').AttachedPoliciesMarker'.format(group_name): marker}
+
+    human_readable = tableToMarkdown('AWS IAM Attached Policies for group {}'.format(group_name),
+                                     headers=['PolicyName', 'PolicyArn'],
+                                     headerTransform=pascalToSpace,
+                                     t=data)
+
+    return_outputs(human_readable, ec, response)
+
+
+def get_user_login_profile(args, aws_client):
+    client = aws_client.aws_session(
+        service=SERVICE,
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
+    )
+    user_name = args.get('userName')
+    kwargs = {
+        'UserName': user_name
+    }
+
+    try:
+        response = client.get_login_profile(**kwargs)
+        user_profile = response['LoginProfile']
+        create_date = datetime_to_string(user_profile.get('CreateDate')) or user_profile.get('CreateDate')
+        data = {
+            'UserName': user_profile.get('UserName'),
+            'LoginProfile': {
+                'CreateDate': create_date,
+                'PasswordResetRequired': user_profile.get('PasswordResetRequired')
+            }
+        }
+
+        ec = {'AWS.IAM.Users(val.UserName && val.UserName === obj.UserName)': data}
+
+        human_readable = tableToMarkdown('AWS IAM Login Profile for user {}'.format(user_name),
+                                         t=data.get('LoginProfile'),
+                                         headers=['CreateDate', 'PasswordResetRequired'],
+                                         removeNull=True,
+                                         headerTransform=pascalToSpace)
+
+        response['LoginProfile'].update({'CreateDate': create_date})
+        return_outputs(human_readable, ec, response)
+    except botocore.exceptions.ClientError as error:
+        if error.response.get('ResponseMetadata', {}).get('HTTPStatusCode') == 404:
+            return_outputs(tableToMarkdown('AWS IAM Login Profile for user {}'.format(user_name), t={}))
+        else:
+            raise error
+
+
+def test_function(aws_client):
+    client = aws_client.aws_session(service=SERVICE)
     response = client.list_users()
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:
         demisto.results('ok')
 
 
-'''EXECUTION BLOCK'''
-try:
-    LOG('Command being called is {command}'.format(command=demisto.command()))
-    if demisto.command() == 'test-module':
-        test_function()
-    elif demisto.command() == 'aws-iam-create-user':
-        create_user(demisto.args())
-    elif demisto.command() == 'aws-iam-create-login-profile':
-        create_login_profile(demisto.args())
-    elif demisto.command() == 'aws-iam-get-user':
-        get_user(demisto.args())
-    elif demisto.command() == 'aws-iam-list-users':
-        list_users(demisto.args())
-    elif demisto.command() == 'aws-iam-update-user':
-        update_user(demisto.args())
-    elif demisto.command() == 'aws-iam-delete-user':
-        delete_user(demisto.args())
-    elif demisto.command() == 'aws-iam-update-login-profile':
-        update_login_profile(demisto.args())
-    elif demisto.command() == 'aws-iam-create-group':
-        create_group(demisto.args())
-    elif demisto.command() == 'aws-iam-list-groups':
-        list_groups(demisto.args())
-    elif demisto.command() == 'aws-iam-list-groups-for-user':
-        list_groups_for_user(demisto.args())
-    elif demisto.command() == 'aws-iam-create-access-key':
-        create_access_key(demisto.args())
-    elif demisto.command() == 'aws-iam-update-access-key':
-        update_access_key(demisto.args())
-    elif demisto.command() == 'aws-iam-list-access-keys-for-user':
-        list_access_key_for_user(demisto.args())
-    elif demisto.command() == 'aws-iam-list-policies':
-        list_policies(demisto.args())
-    elif demisto.command() == 'aws-iam-list-roles':
-        list_roles(demisto.args())
-    elif demisto.command() == 'aws-iam-attach-policy':
-        attach_policy(demisto.args())
-    elif demisto.command() == 'aws-iam-detach-policy':
-        detach_policy(demisto.args())
-    elif demisto.command() == 'aws-iam-delete-login-profile':
-        delete_login_profile(demisto.args())
-    elif demisto.command() == 'aws-iam-add-user-to-group':
-        add_user_to_group(demisto.args())
-    elif demisto.command() == 'aws-iam-delete-group':
-        delete_group(demisto.args())
-    elif demisto.command() == 'aws-iam-remove-user-from-group':
-        remove_user_from_group(demisto.args())
-    elif demisto.command() == 'aws-iam-delete-access-key':
-        delete_access_key(demisto.args())
-    elif demisto.command() == 'aws-iam-create-instance-profile':
-        create_instance_profile(demisto.args())
-    elif demisto.command() == 'aws-iam-delete-instance-profile':
-        delete_instance_profile(demisto.args())
-    elif demisto.command() == 'aws-iam-list-instance-profiles':
-        list_instance_profiles(demisto.args())
-    elif demisto.command() == 'aws-iam-add-role-to-instance-profile':
-        add_role_to_instance_profile(demisto.args())
-    elif demisto.command() == 'aws-iam-remove-role-from-instance-profile':
-        remove_role_from_instance_profile(demisto.args())
-    elif demisto.command() == 'aws-iam-list-instance-profiles-for-role':
-        list_instance_profiles_for_role(demisto.args())
-    elif demisto.command() == 'aws-iam-get-instance-profile':
-        get_instance_profile(demisto.args())
-    elif demisto.command() == 'aws-iam-get-role':
-        get_role(demisto.args())
-    elif demisto.command() == 'aws-iam-delete-role':
-        delete_role(demisto.args())
-    elif demisto.command() == 'aws-iam-create-role':
-        create_role(demisto.args())
-    elif demisto.command() == 'aws-iam-create-policy':
-        create_policy(demisto.args())
-    elif demisto.command() == 'aws-iam-delete-policy':
-        delete_policy(demisto.args())
-    elif demisto.command() == 'aws-iam-create-policy-version':
-        create_policy_version(demisto.args())
-    elif demisto.command() == 'aws-iam-delete-policy-version':
-        delete_policy_version(demisto.args())
-    elif demisto.command() == 'aws-iam-list-policy-versions':
-        list_policy_versions(demisto.args())
-    elif demisto.command() == 'aws-iam-get-policy-version':
-        get_policy_version(demisto.args())
-    elif demisto.command() == 'aws-iam-set-default-policy-version':
-        set_default_policy_version(demisto.args())
-    elif demisto.command() == 'aws-iam-create-account-alias':
-        create_account_alias(demisto.args())
-    elif demisto.command() == 'aws-iam-delete-account-alias':
-        delete_account_alias(demisto.args())
-    elif demisto.command() == 'aws-iam-get-account-password-policy':
-        get_account_password_policy(demisto.args())
-    elif demisto.command() == 'aws-iam-update-account-password-policy':
-        update_account_password_policy(demisto.args())
+def main():     # pragma: no cover
+    params = demisto.params()
+    aws_default_region = params.get('defaultRegion')
+    aws_role_arn = params.get('roleArn')
+    aws_role_session_name = params.get('roleSessionName')
+    aws_role_session_duration = params.get('sessionDuration')
+    aws_role_policy = None
+    aws_access_key_id = params.get('access_key')
+    aws_secret_access_key = params.get('secret_key')
+    verify_certificate = not params.get('insecure', True)
+    timeout = params.get('timeout')
+    retries = params.get('retries') or 5
 
-except ResponseParserError as e:
-    return_error(
-        'Could not connect to the AWS endpoint. Please check that the region is valid.\n {error}'.format(
-            error=type(e)))
-    LOG(str(e))
+    validate_params(aws_default_region, aws_role_arn, aws_role_session_name, aws_access_key_id,
+                    aws_secret_access_key)
 
-except Exception as e:
-    LOG(str(e))
-    return_error('Error has occurred in the AWS IAM Integration: {code}\n {message}'.format(
-        code=type(e), message=str(e)))
+    aws_client = AWSClient(aws_default_region, aws_role_arn, aws_role_session_name, aws_role_session_duration,
+                           aws_role_policy, aws_access_key_id, aws_secret_access_key, verify_certificate, timeout,
+                           retries)
+    command = demisto.command()
+    args = demisto.args()
+
+    try:
+        LOG('Command being called is {command}'.format(command=command))
+        if command == 'test-module':
+            test_function(aws_client)
+        elif command == 'aws-iam-create-user':
+            create_user(args, aws_client)
+        elif command == 'aws-iam-create-login-profile':
+            create_login_profile(args, aws_client)
+        elif command == 'aws-iam-get-user':
+            get_user(args, aws_client)
+        elif command == 'aws-iam-list-users':
+            list_users(args, aws_client)
+        elif command == 'aws-iam-update-user':
+            update_user(args, aws_client)
+        elif command == 'aws-iam-delete-user':
+            delete_user(args, aws_client)
+        elif command == 'aws-iam-update-login-profile':
+            update_login_profile(args, aws_client)
+        elif command == 'aws-iam-create-group':
+            create_group(args, aws_client)
+        elif command == 'aws-iam-list-groups':
+            list_groups(args, aws_client)
+        elif command == 'aws-iam-list-groups-for-user':
+            list_groups_for_user(args, aws_client)
+        elif command == 'aws-iam-create-access-key':
+            create_access_key(args, aws_client)
+        elif command == 'aws-iam-update-access-key':
+            update_access_key(args, aws_client)
+        elif command == 'aws-iam-list-access-keys-for-user':
+            list_access_key_for_user(args, aws_client)
+        elif command == 'aws-iam-list-policies':
+            list_policies(args, aws_client)
+        elif command == 'aws-iam-list-roles':
+            list_roles(args, aws_client)
+        elif command == 'aws-iam-attach-policy':
+            attach_policy(args, aws_client)
+        elif command == 'aws-iam-detach-policy':
+            detach_policy(args, aws_client)
+        elif command == 'aws-iam-delete-login-profile':
+            delete_login_profile(args, aws_client)
+        elif command == 'aws-iam-add-user-to-group':
+            add_user_to_group(args, aws_client)
+        elif command == 'aws-iam-delete-group':
+            delete_group(args, aws_client)
+        elif command == 'aws-iam-remove-user-from-group':
+            remove_user_from_group(args, aws_client)
+        elif command == 'aws-iam-delete-access-key':
+            delete_access_key(args, aws_client)
+        elif command == 'aws-iam-create-instance-profile':
+            create_instance_profile(args, aws_client)
+        elif command == 'aws-iam-delete-instance-profile':
+            delete_instance_profile(args, aws_client)
+        elif command == 'aws-iam-list-instance-profiles':
+            list_instance_profiles(args, aws_client)
+        elif command == 'aws-iam-add-role-to-instance-profile':
+            add_role_to_instance_profile(args, aws_client)
+        elif command == 'aws-iam-remove-role-from-instance-profile':
+            remove_role_from_instance_profile(args, aws_client)
+        elif command == 'aws-iam-list-instance-profiles-for-role':
+            list_instance_profiles_for_role(args, aws_client)
+        elif command == 'aws-iam-get-instance-profile':
+            get_instance_profile(args, aws_client)
+        elif command == 'aws-iam-get-role':
+            get_role(args, aws_client)
+        elif command == 'aws-iam-delete-role':
+            delete_role(args, aws_client)
+        elif command == 'aws-iam-create-role':
+            create_role(args, aws_client)
+        elif command == 'aws-iam-create-policy':
+            create_policy(args, aws_client)
+        elif command == 'aws-iam-delete-policy':
+            delete_policy(args, aws_client)
+        elif command == 'aws-iam-create-policy-version':
+            create_policy_version(args, aws_client)
+        elif command == 'aws-iam-delete-policy-version':
+            delete_policy_version(args, aws_client)
+        elif command == 'aws-iam-list-policy-versions':
+            list_policy_versions(args, aws_client)
+        elif command == 'aws-iam-get-policy-version':
+            get_policy_version(args, aws_client)
+        elif command == 'aws-iam-set-default-policy-version':
+            set_default_policy_version(args, aws_client)
+        elif command == 'aws-iam-create-account-alias':
+            create_account_alias(args, aws_client)
+        elif command == 'aws-iam-delete-account-alias':
+            delete_account_alias(args, aws_client)
+        elif command == 'aws-iam-get-account-password-policy':
+            get_account_password_policy(args, aws_client)
+        elif command == 'aws-iam-update-account-password-policy':
+            update_account_password_policy(args, aws_client)
+        elif command == 'aws-iam-list-role-policies':
+            list_role_policies(args, aws_client)
+        elif command == 'aws-iam-get-role-policy':
+            get_role_policy(args, aws_client)
+        elif command == 'aws-iam-get-policy':
+            get_policy(args, aws_client)
+        elif command == 'aws-iam-list-user-policies':
+            list_user_policies(args, aws_client)
+        elif command == 'aws-iam-list-attached-user-policies':
+            list_attached_user_policies(args, aws_client)
+        elif command == 'aws-iam-list-attached-group-policies':
+            list_attached_group_policies(args, aws_client)
+        elif command == 'aws-iam-get-user-login-profile':
+            get_user_login_profile(args, aws_client)
+
+    except Exception as e:
+        LOG(str(e))
+        return_error('Error has occurred in the AWS IAM Integration: {code}\n {message}'.format(
+            code=type(e), message=str(e)))
+
+
+from AWSApiModule import *  # noqa: E402
+
+if __name__ in ('__builtin__', 'builtins', '__main__'):
+    main()

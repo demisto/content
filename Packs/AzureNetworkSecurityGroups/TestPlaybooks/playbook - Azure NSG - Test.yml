@@ -1,0 +1,557 @@
+id: Azure NSG - Test
+version: -1
+name: Azure NSG - Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: ace8381d-7903-42b4-84f0-92c1e65571c7
+    type: start
+    task:
+      id: ace8381d-7903-42b4-84f0-92c1e65571c7
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 65
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 8bd2fbdf-dc35-477d-81c1-5548dc87a310
+    type: regular
+    task:
+      id: 8bd2fbdf-dc35-477d-81c1-5548dc87a310
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 225
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 934800e8-693d-4e7b-825b-37abb24a7e57
+    type: regular
+    task:
+      id: 934800e8-693d-4e7b-825b-37abb24a7e57
+      version: -1
+      name: List Rules
+      description: List all rules of a certain securtity group
+      script: '|||azure-nsg-security-rules-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      security_group_name:
+        simple: alerts-nsg
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: d9622833-e8de-4bce-8c5c-2659827ed43f
+    type: condition
+    task:
+      id: d9622833-e8de-4bce-8c5c-2659827ed43f
+      version: -1
+      name: Check if rule exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: AzureNSG.Rules.name
+            iscontext: true
+          right:
+            value:
+              simple: DemistoRule
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 925
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: feef6d74-c157-44e8-8e7f-e070c1c890ca
+    type: regular
+    task:
+      id: feef6d74-c157-44e8-8e7f-e070c1c890ca
+      version: -1
+      name: Delete Rule
+      description: Delete a security rule
+      script: '|||azure-nsg-security-rule-delete'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      security_group_name:
+        simple: alerts-nsg
+      security_rule_name:
+        simple: DemistoRule
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: bb7c8e1e-f614-45d7-8f3e-a6a86688678a
+    type: regular
+    task:
+      id: bb7c8e1e-f614-45d7-8f3e-a6a86688678a
+      version: -1
+      name: Create Rule
+      description: Create a security rule
+      script: '|||azure-nsg-security-rule-create'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      action:
+        simple: Allow
+      description: {}
+      destination:
+        simple: 2.2.2.2
+      destination_ports: {}
+      direction:
+        simple: Inbound
+      priority: {}
+      protocol:
+        simple: Any
+      security_group_name:
+        simple: alerts-nsg
+      security_rule_name:
+        simple: DemistoRule
+      source:
+        simple: 1.1.1.1
+      source_ports: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1275
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 8b597e5e-6732-4017-8ada-c940febc5083
+    type: regular
+    task:
+      id: 8b597e5e-6732-4017-8ada-c940febc5083
+      version: -1
+      name: Update Rule
+      description: Update a security rule. If one does not exist, it'll be created.
+      script: '|||azure-nsg-security-rule-update'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      action: {}
+      description: {}
+      destination: {}
+      destination_ports: {}
+      direction: {}
+      priority:
+        simple: "1234"
+      protocol: {}
+      security_group_name:
+        simple: alerts-nsg
+      security_rule_name:
+        simple: DemistoRule
+      source: {}
+      source_ports:
+        simple: 8080,9000,15-20
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1625
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 1c442370-4e30-4d3a-87a3-2c8a984115fb
+    type: regular
+    task:
+      id: 1c442370-4e30-4d3a-87a3-2c8a984115fb
+      version: -1
+      name: Get Rule
+      description: Get a specific rule
+      script: '|||azure-nsg-security-rule-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      security_group_name:
+        simple: alerts-nsg
+      security_rule_name:
+        simple: DemistoRule
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1975
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: a2f463ca-8454-44fc-8786-ef4439f544dc
+    type: regular
+    task:
+      id: a2f463ca-8454-44fc-8786-ef4439f544dc
+      version: -1
+      name: Delete rule
+      description: Delete a security rule
+      script: '|||azure-nsg-security-rule-delete'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      security_group_name:
+        simple: alerts-nsg
+      security_rule_name:
+        simple: DemistoRule
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 0b5f28fa-f468-4afa-8816-152ab323fb9a
+    type: regular
+    task:
+      id: 0b5f28fa-f468-4afa-8816-152ab323fb9a
+      version: -1
+      name: List security groups
+      description: List all network security groups
+      script: '|||azure-nsg-security-groups-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: b85c0c02-79ba-4b2c-8d21-c5002bce10f5
+    type: condition
+    task:
+      id: b85c0c02-79ba-4b2c-8d21-c5002bce10f5
+      version: -1
+      name: Check alerts-nsg is a security group
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: AzureNSG.SecurityGroup.name
+            iscontext: true
+          right:
+            value:
+              simple: alerts-nsg
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 575
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 771f23bd-b068-4ef0-8f93-a22783b4f73c
+    type: condition
+    task:
+      id: 771f23bd-b068-4ef0-8f93-a22783b4f73c
+      version: -1
+      name: Check outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: AzureNSG.Rule.name
+            iscontext: true
+          right:
+            value:
+              simple: DemistoRule
+      - - operator: isEqualString
+          left:
+            value:
+              simple: AzureNSG.Rule.sourceAddressPrefix
+            iscontext: true
+          right:
+            value:
+              simple: 1.1.1.1
+      - - operator: isEqualString
+          left:
+            value:
+              simple: AzureNSG.Rule.destinationAddressPrefix
+            iscontext: true
+          right:
+            value:
+              simple: 2.2.2.2
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: b087c7ba-3bdb-4c03-81dd-22dc3f2271ea
+    type: condition
+    task:
+      id: b087c7ba-3bdb-4c03-81dd-22dc3f2271ea
+      version: -1
+      name: Check Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: AzureNSG.Rule.sourcePortRanges
+            iscontext: true
+          right:
+            value:
+              simple: "8080"
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: AzureNSG.Rule.sourcePortRanges
+            iscontext: true
+          right:
+            value:
+              simple: "9000"
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: AzureNSG.Rule.sourcePortRanges
+            iscontext: true
+          right:
+            value:
+              simple: 15-20
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: 73061b32-2792-4cf8-890b-fb0a56c5cf02
+    type: title
+    task:
+      id: 73061b32-2792-4cf8-890b-fb0a56c5cf02
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2325
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2325,
+        "width": 492.5,
+        "x": 50,
+        "y": 65
+      }
+    }
+  }
+inputs:
+- key: ""
+  value:
+    simple: גגכ
+  required: false
+  description: ""
+  playbookInputQuery:
+outputs: []
+fromversion: 5.0.0
+description: ''

@@ -1,0 +1,30 @@
+{
+ "id": "incident_argustagid",
+ "version": -1,
+ "modified": "2020-11-04T02:53:26.194668038-05:00",
+ "name": "Argus Tag ID",
+ "ownerOnly": false,
+ "cliName": "argustagid",
+ "type": "number",
+ "closeForm": false,
+ "editForm": true,
+ "required": false,
+ "neverSetAsRequired": false,
+ "isReadOnly": false,
+ "useAsKpi": false,
+ "locked": false,
+ "system": false,
+ "content": true,
+ "group": 0,
+ "hidden": false,
+ "associatedToAll": false,
+ "associatedTypes": [
+  "Argus Case"
+ ],
+ "unmapped": false,
+ "unsearchable": false,
+ "caseInsensitive": true,
+ "sla": 0,
+ "threshold": 72,
+ "fromVersion": "5.0.0"
+}

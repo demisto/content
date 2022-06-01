@@ -1,0 +1,30 @@
+{
+    "id": "incident_devsecopsanalysisid",
+    "version": -1,
+    "modified": "2020-06-07T12:45:05.429437657+04:00",
+    "name": "DevSecOps Analysis ID",
+    "ownerOnly": false,
+    "cliName": "devsecopsanalysisid",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "DevSecOps New Git PR"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.0.0"
+}

@@ -1,4 +1,17 @@
-from GmailSingleUser import Client
+import json
+import pytest
+import demistomock as demisto
+
+from GmailSingleUser import Client, send_mail_command
+from email.utils import parsedate_to_datetime
+
+
+@pytest.fixture
+def gmail_client(mocker):
+    client = Client()
+    mocker.patch.object(client, 'get_access_token', return_value='token')
+    return client
+
 
 MOCK_MAIL_NO_LABELS = {
     u'internalDate': u'1572251535000',
@@ -131,34 +144,49 @@ EXPECTED_GMAIL_CONTEXT = {
 }
 
 
-def test_timestamp_to_date():
-    client = Client()
-    valid_timestamp = '1566819604000'
-    valid_header_date = "Mon, 26 Aug 2019 14:40:04 +0300"
-    # this does contain the utc time change
-    invalid_header_date = "25 Aug 2019 06:25:38"
-    # this does contain the utc time change
-    semi_valid_header_date = "26 Aug 2019 14:40:04 +0300"
-    assert str(client.create_base_time(valid_timestamp, valid_header_date)) == "Mon, 26 Aug 2019 14:40:04 +0300"
-    assert str(client.create_base_time(valid_timestamp, semi_valid_header_date)) == "Mon, 26 Aug 2019 14:40:04 +0300"
-    assert str(client.create_base_time(valid_timestamp, invalid_header_date)) == "Mon, 26 Aug 2019 11:40:04 -0000"
-
-
-def test_move_to_gmt():
-    client = Client()
-    valid_header_date = "Mon, 26 Aug 2019 14:40:04 +0300"
-    no_utc_header_date = "Mon, 26 Aug 2019 14:40:04 -0000"
-    assert str(client.move_to_gmt(valid_header_date)) == "2019-08-26T11:40:04Z"
-    assert str(client.move_to_gmt(no_utc_header_date)) == "2019-08-26T14:40:04Z"
+def test_header_to_date():
+    valid_header_date = Client.get_date_from_email_header("Mon, 26 Aug 2019 14:40:04 +0300")
+    semi_valid_header_date = Client.get_date_from_email_header("26 Aug 2019 14:40:04 +0300")
+    header_date_no_tz = Client.get_date_from_email_header("26 Aug 2019 11:40:04")
+    header_x_received = Client.get_date_from_email_header('by 2002:a17:90a:77cb:0:0:0:0 with SMTP id e11csp4670216pjs;        '
+                                                          'Mon, 26 Aug 2019 03:40:04 -0800 (PST)')
+    # all should be the same
+    assert valid_header_date == semi_valid_header_date
+    assert valid_header_date == header_date_no_tz
+    assert header_x_received == valid_header_date
 
 
 def test_no_label_mail_context_creation():
     client = Client()
-    context_gmail, _, _ = client.get_email_context(MOCK_MAIL_NO_LABELS, "some_mail")
+    context_gmail, _, _, occurred, is_internal = client.get_email_context(MOCK_MAIL_NO_LABELS, "some_mail")
+    assert int(occurred.timestamp()) == 1572251535
+    assert is_internal
     assert context_gmail.get('Labels') == EXPECTED_GMAIL_CONTEXT.get('Labels')
     assert context_gmail.get('To') == EXPECTED_GMAIL_CONTEXT.get('To')
     assert context_gmail.get('From') == EXPECTED_GMAIL_CONTEXT.get('From')
     assert context_gmail.get('Subject') == EXPECTED_GMAIL_CONTEXT.get('Subject')
+
+
+def test_extract_occurred_no_headers():
+    occurred, is_valid = Client.get_occurred_date({
+        'payload': {
+            'headers': [{'name': 'stam', 'value': 'stam'}]
+        },
+        'internalDate': '1610642469000'
+    })
+    assert is_valid
+    assert occurred.timestamp() == 1610642469
+
+
+def test_no_date_mail():
+    with open('test_data/email_no_date.json', 'r') as f:
+        msg = json.load(f)
+    client = Client()
+    context_gmail, _, _, occurred, is_valid = client.get_email_context(msg, "some_mail")
+    # check that the x-received date was usd
+    assert occurred.timestamp() == parsedate_to_datetime('Mon, 21 Dec 2020 12:11:57 -0800').timestamp()
+    assert is_valid
+    assert context_gmail.get('Date') == 'Mon, 21 Dec 2020 12:11:57 -0800'
 
 
 def test_generate_auth_link():
@@ -167,3 +195,44 @@ def test_generate_auth_link():
     assert link.startswith('https://accounts.google.com/o/oauth2/v2/auth?')
     assert challange in link
     assert 'code_challenge_method=S256' in link
+
+
+SEND_EMAIL_ARGS = [
+    {"subject": "test", "to": "test@gmail.com", "body": "hello"},
+    {"subject": "test", "to": "test@gmail.com", "htmlBody": "<h1>test</h1>"}
+]
+
+
+@pytest.mark.parametrize("command_args", SEND_EMAIL_ARGS)
+def test_send_mail(gmail_client, mocker, command_args):
+    """
+    Given:
+        - send mail command arguments
+
+    When:
+        - executing the send mail function
+
+    Then:
+        - a valid entry is returned
+    """
+    mocker.patch.object(
+        gmail_client, 'send_email_request', return_value={'id': '123', 'threadId': '123', 'labelIds': ['SENT']}
+    )
+    mocker.patch.object(demisto, 'args', return_value=command_args)
+
+    send_email_entry = send_mail_command(client=gmail_client)
+    context_output = send_email_entry['EntryContext']
+    assert 'Gmail.SentMail(val.ID && val.Type && val.ID == obj.ID && val.Type == obj.Type)' in context_output
+    context_output = context_output['Gmail.SentMail(val.ID && val.Type && val.ID == obj.ID && val.Type == obj.Type)'][0]
+
+    assert context_output.get('To') == command_args.get('to')
+    assert context_output.get('Subject') == command_args.get('subject')
+    assert context_output.get('Body') == command_args.get('body')
+    assert context_output.get('BodyHTML') == command_args.get('htmlBody')
+    assert context_output.get('Mailbox') == command_args.get("to")
+
+    markdown_table = send_email_entry['HumanReadable']
+    assert 'Gmail' in markdown_table
+    assert command_args.get('to') in markdown_table
+    assert command_args.get('subject') in markdown_table
+    assert 'SENT' in markdown_table

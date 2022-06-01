@@ -1,0 +1,70 @@
+{
+    "description": "Maps Splunk ES outgoing fields.",
+    "feed": false,
+    "id": "Splunk - Notable Generic Outgoing Mapper",
+    "mapping": {
+        "Splunk Notable Generic": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "urgency": {
+                    "complex": null,
+                    "simple": "notableurgency"
+                },
+			  	"reviewer": {
+					"simple": "",
+					"complex": {
+						"filters": [],
+						"root": "splunknotablereviewer",
+						"transformers": [
+							{
+								"operator": "FirstArrayElement"
+							}
+						]
+					}
+				}
+			}
+        },
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "status": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "notablestatus",
+						"transformers": [
+							{
+								"args": {
+									"input_values": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "New,In Progress,Pending,Resolved,Closed"
+										}
+									},
+									"mapped_values": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "1,2,3,4,5"
+										}
+									}
+								},
+								"operator": "MapValuesTransformer"
+							}
+						]
+					},
+					"simple": ""
+                },
+                "urgency": {
+                    "complex": null,
+                    "simple": "notableurgency"
+                }
+            }
+        }
+    },
+    "name": "Splunk - Notable Generic Outgoing Mapper",
+    "type": "mapping-outgoing",
+    "version": -1,
+    "fromVersion": "6.2.0"
+}

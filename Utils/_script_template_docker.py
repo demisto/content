@@ -1,5 +1,0 @@
-%%COMMONSCRIPT%%
-
-%%USERSCRIPT%%
-
-%%SCRIPT%%

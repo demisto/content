@@ -1,7 +1,6 @@
 import json
-from datetime import datetime
-
 import pytest
+from datetime import datetime
 from ProofpointTAP_v2 import fetch_incidents, Client, ALL_EVENTS, ISSUES_EVENTS, get_events_command
 
 MOCK_URL = "http://123-fake-api.com"
@@ -63,7 +62,9 @@ MOCK_DELIVERED_MESSAGE = {
     "sender": "e99d7ed5580193f36a51f597bc2c0210@evil.zz",
     "senderIP": "192.0.2.255",
     "spamScore": 4,
-    "subject": "Please find a totally safe invoice attached."
+    "subject": "Please find a totally safe invoice attached.",
+    "toAddresses": "xx@xxx.com",
+    "xmailer": None
 }
 
 MOCK_BLOCKED_MESSAGE = {
@@ -124,7 +125,10 @@ MOCK_BLOCKED_MESSAGE = {
     "sender": "e99d7ed5580193f36a51f597bc2c0210@evil.zz",
     "senderIP": "192.0.2.255",
     "spamScore": 4,
-    "subject": "Please find a totally safe invoice attached."
+    "subject": "Please find a totally safe invoice attached.",
+    "toAddresses": "xx@xxx.com",
+    "xmailer": None
+
 }
 
 MOCK_PERMITTED_CLICK = {
@@ -318,6 +322,60 @@ def test_fetch_limit(requests_mock, mocker):
     assert next_run['last_fetch'] == '2010-01-01T00:00:00Z'
     assert len(incidents) == 1
     assert not remained
+
+
+def test_fetch_incidents_with_encoding(requests_mock, mocker):
+    """
+    Given:
+        - Message with latin chars in its subject
+        - Raw JSON encoding param set to latin-1
+
+    When:
+        - Running fetch incidents
+
+    Then:
+        - Ensure subject is returned properly in the raw JSON
+    """
+    mocker.patch(
+        'ProofpointTAP_v2.get_now',
+        return_value=get_mocked_time()
+    )
+    mocker.patch(
+        'ProofpointTAP_v2.parse_date_range',
+        return_value=("2010-01-01T00:00:00Z", 'never mind')
+    )
+    requests_mock.get(
+        MOCK_URL + '/v2/siem/all?format=json&interval=2010-01-01T00%3A00%3A00Z%2F2010-01-01T00%3A00%3A00Z',
+        json={
+            "messagesDelivered": [
+                {
+                    'subject': 'p\u00c3\u00a9rdida',
+                    'messageTime': '2010-01-30T00:00:59.000Z',
+                },
+            ],
+        },
+    )
+
+    client = Client(
+        proofpoint_url=MOCK_URL,
+        api_version='v2',
+        service_principal='user1',
+        secret='123',
+        verify=False,
+        proxies=None,
+    )
+
+    _, incidents, _ = fetch_incidents(
+        client=client,
+        last_run={},
+        first_fetch_time='3 month',
+        event_type_filter=ALL_EVENTS,
+        threat_status='',
+        threat_type='',
+        raw_json_encoding='latin-1',
+    )
+
+    assert json.loads(incidents[0]['rawJSON'])['subject'] == 'pérdida'
 
 
 FETCH_TIMES_MOCK = [
@@ -746,3 +804,283 @@ class TestGetForensics:
         report = reports[0]
         assert all(report)
         assert self.FORENSICS_REPORT == report
+
+
+def load_mock_response(file_name: str) -> str:
+    """
+    Load mock file that simulates an API response.
+
+    Args:
+        file_name (str): Name of the mock response JSON file to return.
+
+    Returns:
+        str: Mock file content.
+
+    """
+    with open(f'test_data/{file_name}', mode='r', encoding='utf-8') as mock_file:
+        return mock_file.read()
+
+
+def test_get_clicks_command(requests_mock):
+    """
+        Scenario: Retrieves clicks to malicious URLs blocked and permitted in the specified time period.
+        Given:
+         - User has provided valid credentials and arguments.
+        When:
+         - A get-clicks command is called and there is clicks in the response.
+        Then:
+         - Ensure number of items is correct.
+         - Ensure outputs prefix is correct.
+         - Ensure a sample value from the API matches what is generated in the context.
+
+    """
+    from ProofpointTAP_v2 import Client, get_clicks_command
+    requests_mock.get(f'{MOCK_URL}/v2/siem/clicks/blocked',
+                      json={'queryEndTime': '2021-03-23T14:00:00Z', 'clicksBlocked': [MOCK_BLOCKED_CLICK]})
+    requests_mock.get(f'{MOCK_URL}/v2/siem/clicks/permitted',
+                      json={'queryEndTime': '2021-03-23T14:00:00Z', 'clicksPermitted': [MOCK_PERMITTED_CLICK]})
+
+    client = Client(
+        proofpoint_url=MOCK_URL,
+        api_version="v2",
+        service_principal="user1",
+        secret="123",
+        verify=False,
+        proxies=None
+    )
+    blocked_result = get_clicks_command(client, True, "3 days")
+    permitted_result = get_clicks_command(client, False, "3 days")
+    assert len(blocked_result.outputs) == 1
+    assert blocked_result.outputs_prefix == 'Proofpoint.ClicksBlocked'
+    assert blocked_result.outputs[0].get('messageID') == '4444'
+    assert len(permitted_result.outputs) == 1
+    assert permitted_result.outputs_prefix == 'Proofpoint.ClicksPermitted'
+    assert permitted_result.outputs[0].get('messageID') == '3333'
+
+
+def test_get_messages_command(requests_mock):
+    """
+        Scenario: Retrieves messages to malicious URLs blocked and delivered in the specified time period.
+        Given:
+         - User has provided valid credentials and arguments.
+        When:
+         - A get-messages command is called and there is messages in the response.
+        Then:
+         - Ensure number of items is correct.
+         - Ensure outputs prefix is correct.
+         - Ensure a sample value from the API matches what is generated in the context.
+
+    """
+    from ProofpointTAP_v2 import Client, get_messages_command
+    requests_mock.get(f'{MOCK_URL}/v2/siem/messages/blocked',
+                      json={'queryEndTime': '2021-03-23T14:00:00Z', 'messagesBlocked': [MOCK_BLOCKED_MESSAGE]})
+    requests_mock.get(f'{MOCK_URL}/v2/siem/messages/delivered',
+                      json={'queryEndTime': '2021-03-23T14:00:00Z', 'messagesDelivered': [MOCK_DELIVERED_MESSAGE]})
+
+    client = Client(
+        proofpoint_url=MOCK_URL,
+        api_version="v2",
+        service_principal="user1",
+        secret="123",
+        verify=False,
+        proxies=None
+    )
+    blocked_result = get_messages_command(client, True, "3 days")
+    delivered_result = get_messages_command(client, False, "3 days")
+    assert len(blocked_result.outputs) == 1
+    assert blocked_result.outputs_prefix == 'Proofpoint.MessagesBlocked'
+    assert blocked_result.outputs[0].get('messageID') == "2222@evil.zz"
+    assert len(delivered_result.outputs) == 1
+    assert delivered_result.outputs_prefix == 'Proofpoint.MessagesDelivered'
+    assert delivered_result.outputs[0].get('messageID') == "1111@evil.zz"
+
+
+def test_list_campaigns_command(requests_mock):
+    """
+        Scenario: Retrieves a list of IDs of campaigns active in a time window.
+        Given:
+         - User has provided valid credentials.
+        When:
+         - A list-campaign-ids command is called and there is campaigns in the response.
+        Then:
+         - Ensure number of items is correct.
+         - Ensure outputs prefix is correct.
+         - Ensure a sample value from the API matches what is generated in the context.
+
+    """
+    from ProofpointTAP_v2 import Client, list_campaigns_command
+    mock_response = json.loads(load_mock_response('campaigns.json'))
+    requests_mock.get(f'{MOCK_URL}/v2/campaign/ids', json=mock_response)
+    client = Client(
+        proofpoint_url=MOCK_URL,
+        api_version="v2",
+        service_principal="user1",
+        secret="123",
+        verify=False,
+        proxies=None
+    )
+    result = list_campaigns_command(client, "3 days")
+    assert len(result.outputs) == 2
+    assert result.outputs_prefix == 'Proofpoint.Campaign'
+    assert result.outputs[0].get('id') == "f3ff0874-85ef-475e-b3fe-d05f97b2ed3f"
+    assert result.outputs[0].get('lastUpdatedAt') == "2021-03-25T10:37:46.000Z"
+
+
+def test_get_campaign(requests_mock):
+    """
+        Scenario: Retrieves information for a given campaign.
+        Given:
+         - User has provided valid credentials and argument.
+        When:
+         - A get-campaign command is called and there is a campaign in the response.
+        Then:
+         - Ensure number of items is correct.
+         - Ensure outputs prefix is correct.
+         - Ensure a sample value from the API matches what is generated in the context.
+
+    """
+    from ProofpointTAP_v2 import Client, get_campaign_command
+    mock_response = json.loads(load_mock_response('campaign_information.json'))
+    requests_mock.get(f'{MOCK_URL}/v2/campaign/1', json=mock_response)
+    client = Client(
+        proofpoint_url=MOCK_URL,
+        api_version="v2",
+        service_principal="user1",
+        secret="123",
+        verify=False,
+        proxies=None
+    )
+    result = get_campaign_command(client, "1")
+    assert len(result.outputs) == 7
+    assert result.outputs_prefix == 'Proofpoint.Campaign'
+    assert result.outputs.get('info').get('id') == "aa9b3d62-4d72-4ebc-8f39-3da3833e7038"
+
+
+def test_list_most_attacked_users_command(requests_mock):
+    """
+        Scenario: Retrieves a list of the most attacked users in the organization for a given period.
+        Given:
+         - User has provided valid credentials and argument.
+        When:
+         - A get-vap command is called and there is a attacked people in the response.
+        Then:
+         - Ensure number of items is correct.
+         - Ensure outputs prefix is correct.
+         - Ensure a sample value from the API matches what is generated in the context.
+
+    """
+    from ProofpointTAP_v2 import Client, list_most_attacked_users_command
+    mock_response = json.loads(load_mock_response('most_attacked_users.json'))
+    requests_mock.get(f'{MOCK_URL}/v2/people/vap', json=mock_response)
+    client = Client(
+        proofpoint_url=MOCK_URL,
+        api_version="v2",
+        service_principal="user1",
+        secret="123",
+        verify=False,
+        proxies=None
+    )
+    result = list_most_attacked_users_command(client, "")
+    assert len(result.outputs) == 5
+    assert result.outputs_prefix == 'Proofpoint.Vap'
+    assert result.outputs.get('users')[0].get('identity').get('guid') == "88e36bf359-99e8-7e53-f58a-6df8b430be6d"
+    assert result.outputs.get('totalVapUsers') == 2
+
+
+def test_get_top_clickers_command(requests_mock):
+    """
+        Scenario: Retrieves a list of the top clickers in the organization for a given period.
+        Given:
+         - User has provided valid credentials and argument.
+        When:
+         - A get_top_clickers command is called and there is clickers in the response.
+        Then:
+         - Ensure number of items is correct.
+         - Ensure outputs prefix is correct.
+         - Ensure a sample value from the API matches what is generated in the context.
+
+    """
+    from ProofpointTAP_v2 import Client, get_top_clickers_command
+    mock_response = json.loads(load_mock_response('top_clickers.json'))
+    requests_mock.get(f'{MOCK_URL}/v2/people/top-clickers', json=mock_response)
+    client = Client(
+        proofpoint_url=MOCK_URL,
+        api_version="v2",
+        service_principal="user1",
+        secret="123",
+        verify=False,
+        proxies=None
+    )
+    result = get_top_clickers_command(client, "")
+    assert len(result.outputs) == 3
+    assert result.outputs_prefix == 'Proofpoint.Topclickers'
+    assert result.outputs.get('users')[1].get('identity').get('guid') == "b4077fsv0e-3a2e-767f-7315-c049f831cc95"
+    assert result.outputs.get('totalTopClickers') == 2
+
+
+def test_url_decode(requests_mock):
+    """
+        Scenario: Decode URLs that have been rewritten by TAP to their original, target URL.
+        Given:
+         - User has provided valid credentials and arguments.
+        When:
+         - A url-decode command is called.
+        Then:
+         - Ensure number of items is correct.
+         - Ensure outputs prefix is correct.
+         - Ensure a sample value from the API matches what is generated in the context.
+
+    """
+    from ProofpointTAP_v2 import Client, url_decode_command
+    mock_response = json.loads(load_mock_response('url_decode.json'))
+    requests_mock.post(f'{MOCK_URL}/v2/url/decode', json=mock_response)
+    client = Client(
+        proofpoint_url=MOCK_URL,
+        api_version="v2",
+        service_principal="user1",
+        secret="123",
+        verify=False,
+        proxies=None
+    )
+    result = url_decode_command(client, "")
+    assert len(result.outputs) == 2
+    assert result.outputs_prefix == 'Proofpoint.URL'
+    assert result.outputs[1].get('decodedUrl') == "http://www.bouncycastle.org/"
+
+
+def test_list_issues_command(requests_mock):
+    """
+        Scenario: Retrieves events for clicks to malicious URLs permitted and messages delivered in the specified time period.
+        Given:
+         - User has provided valid credentials and arguments.
+        When:
+         - A list_issues command is called and there is clicks and messages in the response.
+        Then:
+         - Ensure number of items is correct.
+         - Ensure outputs prefix is correct.
+         - Ensure a sample value from the API matches what is generated in the context.
+
+    """
+    from ProofpointTAP_v2 import Client, list_issues_command
+    requests_mock.get(f'{MOCK_URL}/v2/siem/issues',
+                      json={"queryEndTime": "2021-04-16T14:00:00Z", "messagesDelivered": [MOCK_DELIVERED_MESSAGE],
+                            "clicksPermitted": [MOCK_PERMITTED_CLICK]})
+    client = Client(
+        proofpoint_url=MOCK_URL,
+        api_version="v2",
+        service_principal="user1",
+        secret="123",
+        verify=False,
+        proxies=None
+    )
+    result = list_issues_command(client, "3 days")
+    messages_result = result[0]
+    clicks_result = result[1]
+
+    assert len(clicks_result.outputs) == 1
+    assert clicks_result.outputs_prefix == 'Proofpoint.ClicksPermitted'
+    assert clicks_result.outputs[0].get('messageID') == '3333'
+
+    assert len(messages_result.outputs) == 1
+    assert messages_result.outputs_prefix == 'Proofpoint.MessagesDelivered'
+    assert messages_result.outputs[0].get('messageID') == "1111@evil.zz"

@@ -1,0 +1,113 @@
+[
+  {
+    "id": "1297733",
+    "type": "report",
+    "attributes": {
+      "title": "Do not use depreciated function isSecure",
+      "state": "new",
+      "created_at": "2021-08-10T07:17:41.923Z",
+      "vulnerability_information": "## Summary:\nThe depreciated function isSecure is not compatible with for SSL verification.\n\n## Impact\n\nSSL verification will fail regardless of certificate authenticity.",
+      "last_reporter_activity_at": "2021-08-10T07:17:42.048Z",
+      "first_program_activity_at": "2021-08-10T07:17:42.048Z",
+      "last_program_activity_at": "2021-08-10T07:17:42.048Z",
+      "last_public_activity_at": "2021-08-10T07:17:42.048Z",
+      "last_activity_at": "2021-08-10T07:17:42.048Z"
+    },
+    "relationships": {
+      "reporter": {
+        "data": {
+          "id": "1878386",
+          "type": "user",
+          "attributes": {
+            "username": "jahnvi_crest",
+            "name": "Jahnvi",
+            "disabled": false,
+            "created_at": "2021-08-02T09:27:56.324Z",
+            "profile_picture": {
+              "62x62": "/assets/avatars/default-71a302d706457f3d3a31eb30fa3e73e6cf0b1d677b8fa218eaeaffd67ae97918.png",
+              "82x82": "/assets/avatars/default-71a302d706457f3d3a31eb30fa3e73e6cf0b1d677b8fa218eaeaffd67ae97918.png",
+              "110x110": "/assets/avatars/default-71a302d706457f3d3a31eb30fa3e73e6cf0b1d677b8fa218eaeaffd67ae97918.png",
+              "260x260": "/assets/avatars/default-71a302d706457f3d3a31eb30fa3e73e6cf0b1d677b8fa218eaeaffd67ae97918.png"
+            },
+            "hackerone_triager": false
+          }
+        }
+      },
+      "program": {
+        "data": {
+          "id": "53994",
+          "type": "program",
+          "attributes": {
+            "handle": "something_h1b",
+            "created_at": "2021-08-09T13:39:20.342Z",
+            "updated_at": "2021-08-10T09:29:56.853Z"
+          }
+        }
+      },
+      "severity": {
+        "data": {
+          "id": "1185951",
+          "type": "severity",
+          "attributes": {
+            "rating": "medium",
+            "author_type": "User",
+            "user_id": 1878386,
+            "created_at": "2021-08-10T07:17:41.970Z",
+            "score": 6.2,
+            "attack_complexity": "high",
+            "attack_vector": "adjacent",
+            "availability": "none",
+            "confidentiality": "high",
+            "integrity": "low",
+            "privileges_required": "high",
+            "user_interaction": "none",
+            "scope": "changed"
+          }
+        }
+      },
+      "weakness": {
+        "data": {
+          "id": "20",
+          "type": "weakness",
+          "attributes": {
+            "name": "Use of Inherently Dangerous Function",
+            "description": "The program calls a function that can never be guaranteed to work safely.",
+            "external_id": "cwe-242",
+            "created_at": "2017-01-05T01:51:19.000Z"
+          }
+        }
+      },
+      "custom_field_values": {
+        "data": [
+          {
+            "id": "198319",
+            "type": "custom-field-value",
+            "attributes": {
+              "value": "true",
+              "created_at": "2021-08-10T07:17:41.929Z",
+              "updated_at": "2021-08-10T07:17:41.929Z"
+            },
+            "relationships": {
+              "custom_field_attribute": {
+                "data": {
+                  "id": "1362",
+                  "type": "custom-field-attribute",
+                  "attributes": {
+                    "field_type": "Checkbox",
+                    "label": "Urgent",
+                    "internal": false,
+                    "required": false,
+                    "helper_text": "Is the report urgent in need to be resolved?",
+                    "checkbox_text": "Yes",
+                    "created_at": "2021-08-10T07:14:39.477Z",
+                    "updated_at": "2021-08-10T07:14:39.477Z"
+                  }
+                }
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+]

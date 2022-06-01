@@ -2,7 +2,7 @@
     "name": "Accessdata",
     "description": "Use the Accessdata integration to protect against and provide additional visibility into phishing and other malicious email attacks.",
     "support": "partner",
-    "currentVersion": "1.0.0",
+    "currentVersion": "1.0.11",
     "author": "Accessdata",
     "url": "https://support.accessdata.com/hc/en-us",
     "email": "support@accessdata.com",
@@ -15,5 +15,10 @@
     "keywords": [],
     "githubUser": [
         "Ngobo"
+    ],
+    "certification": "certified",
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
     ]
 }

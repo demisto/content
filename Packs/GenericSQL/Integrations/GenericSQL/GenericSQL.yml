@@ -11,6 +11,7 @@ configuration:
   - MySQL
   - PostgreSQL
   - Microsoft SQL Server
+  - Microsoft SQL Server - MS ODBC Driver
   - Oracle
   required: true
   type: 15
@@ -170,7 +171,7 @@ script:
     description: Running a sql query
     execution: false
     name: sql-command
-  dockerimage: demisto/genericsql:1.1.0.11281
+  dockerimage: demisto/genericsql:1.1.0.26235
   feed: false
   isfetch: false
   longRunning: false

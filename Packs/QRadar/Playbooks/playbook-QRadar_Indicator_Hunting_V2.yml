@@ -619,29 +619,31 @@ tasks:
       - '6'
     separatecontext: false
     conditions:
-    - label: 'yes'
+    - label: "yes"
       condition:
       - - operator: isExists
           left:
             value:
-              simple: modules.brand
+              complex:
+                root: modules
+                filters:
+                - - operator: inList
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: QRadar,QRadar_v2,QRadar v3
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
             iscontext: true
-      - - operator: isEqualString
-          left:
-            value:
-              simple: modules.brand
-            iscontext: true
-          right:
-            value:
-              simple: QRadar
-      - - operator: isEqualString
-          left:
-            value:
-              simple: modules.state
-            iscontext: true
-          right:
-            value:
-              simple: active
     view: |-
       {
         "position": {
@@ -2336,7 +2338,7 @@ tasks:
       query_expression:
         complex:
           root: File
-          accessor: SHA1
+          accessor: MD5
           transformers:
           - operator: replaceMatch
             args:

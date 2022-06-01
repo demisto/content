@@ -1,0 +1,151 @@
+id: FireEye Central Management - Test
+fromversion: 5.5.0
+version: -1
+name: FireEye Central Management - Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 610cd349-9a8d-45b4-8554-fbf5d76e0bd7
+    type: start
+    task:
+      id: 610cd349-9a8d-45b4-8554-fbf5d76e0bd7
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 57d811e0-b6bc-49f9-89c4-73ac83c576af
+    type: regular
+    task:
+      id: 57d811e0-b6bc-49f9-89c4-73ac83c576af
+      version: -1
+      name: fireeye-cm-get-reports - ipsTopNAttack
+      description: Returns reports on selected alerts.
+      script: '|||fireeye-cm-get-reports'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      limit:
+        simple: "100"
+      report_type:
+        simple: ipsTopNAttack
+      retry-count:
+        simple: "3"
+      retry-interval:
+        simple: "22"
+      timeout:
+        simple: "90"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: b9d8b297-072e-4576-8ebf-aad2115358df
+    type: regular
+    task:
+      id: b9d8b297-072e-4576-8ebf-aad2115358df
+      version: -1
+      name: fireeye-cm-get-reports alertDetailsReport
+      description: Returns reports on selected alerts.
+      script: '|||fireeye-cm-get-reports'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      alert_id:
+        simple: "564"
+      report_type:
+        simple: alertDetailsReport
+      retry-count:
+        simple: "3"
+      retry-interval:
+        simple: "24"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 050df621-6425-431f-8e28-868c9c7cf0c0
+    type: title
+    task:
+      id: 050df621-6425-431f-8e28-868c9c7cf0c0
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 560,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+description: tpb for FE CM

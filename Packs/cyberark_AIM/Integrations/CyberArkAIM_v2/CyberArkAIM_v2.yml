@@ -23,7 +23,8 @@ configuration:
   name: safe
   required: true
   type: 0
-- display: A comma-separated list of credential names in the safe
+- display: A comma-separated list of credential names in the safe.
+  additionalinfo: Partial names are not supported. If left empty, no credentials will be fetched.
   hidden: false
   name: credential_names
   required: false
@@ -33,18 +34,20 @@ configuration:
   name: credentials
   required: false
   type: 9
-- additionalinfo: Add a certificate file in text format to use to connect to the CyberArk AIM server.
+- additionalinfo: Add a certificate file in text format to use to connect to the CyberArk
+    AIM server.
   display: Certificate File as Text
   hidden: false
   name: cert_text
   required: false
   type: 12
-- additionalinfo: Add a key file in text format to use to connect to the CyberArk AIM server.
+- additionalinfo: Add a key file in text format to use to connect to the CyberArk
+    AIM server.
   display: Key File as Text
   hidden: false
   name: key_text
   required: false
-  type: 0
+  type: 4
 - defaultvalue: 'true'
   display: Fetch credentials
   name: isFetchCredentials
@@ -58,13 +61,15 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: The CyberArk Application Identity Manager (AIM) provides a secure safe in which to store your account credentials. Use this integration to retrieve the account credentials in CyberArk AIM.
+description: The CyberArk Application Identity Manager (AIM) provides a secure safe
+  in which to store your account credentials. Use this integration to retrieve the
+  account credentials in CyberArk AIM.
 display: CyberArk AIM v2
 name: CyberArkAIM v2
 script:
   commands:
   - deprecated: false
-    description: Lists all available credentials.
+    description: Lists all available credentials according to the list of credential names configured.
     execution: false
     name: cyberark-aim-list-credentials
     outputs:
@@ -83,7 +88,7 @@ script:
     - contextPath: CyberArkAIM.Name
       description: The credential name of the account.
       type: String
-  dockerimage: demisto/ntlm:1.0.0.10980
+  dockerimage: demisto/ntlm:1.0.0.24037
   feed: false
   isfetch: false
   longRunning: false

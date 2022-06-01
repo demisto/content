@@ -1,0 +1,32 @@
+{
+    "id": "incident_saassecurityassetname",
+    "description": "Unique name of the asset. **Item Name** on SaaS Security.",
+    "version": -1,
+    "modified": "2021-10-27T22:55:43.638896605Z",
+    "fromVersion": "6.0.0",
+    "name": "Saas Security Asset Name",
+    "ownerOnly": false,
+    "cliName": "saassecurityassetname",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Saas Security Incident"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72
+}

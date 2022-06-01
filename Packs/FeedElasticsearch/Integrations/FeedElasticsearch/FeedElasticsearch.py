@@ -225,7 +225,7 @@ def fetch_indicators_command(client, feed_type, src_val, src_type, default_type,
             # ensure batch sizes don't exceed 2000
             for b in batch(enrch_batch, batch_size=2000):
                 demisto.createIndicators(b)
-    demisto.setLastRun({'time': now.timestamp() * 1000})
+    demisto.setLastRun({'time': int(now.timestamp() * 1000)})
 
 
 def get_last_fetch_timestamp(last_fetch, time_method, fetch_time):

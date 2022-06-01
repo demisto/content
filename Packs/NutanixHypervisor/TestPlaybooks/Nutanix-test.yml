@@ -1,0 +1,805 @@
+id: Nutanix-test
+version: -1
+name: Nutanix-test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 9d7af2b9-4a58-43ae-8621-421f6c243c35
+    type: start
+    task:
+      id: 9d7af2b9-4a58-43ae-8621-421f6c243c35
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 358eb0be-c8e4-429f-8702-45e660b348b8
+    type: regular
+    task:
+      id: 358eb0be-c8e4-429f-8702-45e660b348b8
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: b54eb97b-9e58-40c3-8a58-4ec267094014
+    type: regular
+    task:
+      id: b54eb97b-9e58-40c3-8a58-4ec267094014
+      version: -1
+      name: Nutanix Get hosts
+      description: Get the list of physical hosts configured in the cluster.
+      script: '|||nutanix-hypervisor-hosts-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      filter: {}
+      limit: {}
+      page: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: c0af0911-6d2d-496b-89b0-66a616d42180
+    type: regular
+    task:
+      id: c0af0911-6d2d-496b-89b0-66a616d42180
+      version: -1
+      name: Nutanix Get VMs
+      description: Get a list of virtual machines.
+      script: '|||nutanix-hypervisor-vms-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      filter: {}
+      length: {}
+      offset: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: f19244eb-cdc2-4e1a-87a4-ec9ee538aaf3
+    type: regular
+    task:
+      id: f19244eb-cdc2-4e1a-87a4-ec9ee538aaf3
+      version: -1
+      name: Nutanix Get Alerts
+      description: Gets the list of alerts generated in the cluster that matches the
+        filters. Nutanix fetches the latest alerts created if there are more than
+        the defined maximum number of alerts.
+      script: '|||nutanix-hypervisor-alerts-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      acknowledged: {}
+      alert_type_ids: {}
+      auto_resolved: {}
+      end_time: {}
+      entity_types: {}
+      impact_types: {}
+      limit: {}
+      page: {}
+      resolved: {}
+      severity: {}
+      start_time: {}
+      verbose: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 9302ff13-54b6-4ee8-85f3-379100efd9a7
+    type: regular
+    task:
+      id: 9302ff13-54b6-4ee8-85f3-379100efd9a7
+      version: -1
+      name: Nutanix Acknowledge Alert
+      description: Acknowledges the alert with the specified alert_id.
+      script: '|||nutanix-hypervisor-alert-acknowledge'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      alert_id:
+        complex:
+          root: NutanixHypervisor.Alerts
+          accessor: id
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 8033ca07-e44e-4c62-80fe-5f5dc157ddba
+    type: regular
+    task:
+      id: 8033ca07-e44e-4c62-80fe-5f5dc157ddba
+      version: -1
+      name: Nutanix Resolve Alert
+      description: Resolve alert with the specified alert_id.
+      script: '|||nutanix-hypervisor-alert-resolve'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      alert_id:
+        complex:
+          root: NutanixHypervisor.Alerts
+          accessor: id
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: c9f9595a-9a43-48b2-8b4c-0ebe76e3b555
+    type: regular
+    task:
+      id: c9f9595a-9a43-48b2-8b4c-0ebe76e3b555
+      version: -1
+      name: Nutanix Acknowledge Alerts By Filters
+      description: Acknowledge alerts using a filters.
+      script: '|||nutanix-hypervisor-alerts-acknowledge-by-filter'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      classifications: {}
+      end_time: {}
+      entity_type_ids: {}
+      entity_types: {}
+      impact_types: {}
+      limit: {}
+      severity: {}
+      start_time: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: e387cd32-9be7-45df-81b9-43570f348d88
+    type: regular
+    task:
+      id: e387cd32-9be7-45df-81b9-43570f348d88
+      version: -1
+      name: Nutanix Resolve Alerts By Filters
+      description: Resolve alerts using a filters.
+      script: '|||nutanix-hypervisor-alerts-resolve-by-filter'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      classifications: {}
+      end_time: {}
+      entity_type_ids: {}
+      entity_types: {}
+      impact_types: {}
+      limit: {}
+      severity: {}
+      start_time: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: 8c66a2f1-ce7c-4052-844d-19f1dfe2c569
+    type: title
+    task:
+      id: 8c66a2f1-ce7c-4052-844d-19f1dfe2c569
+      version: -1
+      name: Playbook Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2995
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 5d2ac25c-69c0-4c44-86ba-02f8af10a5af
+    type: playbook
+    task:
+      id: 5d2ac25c-69c0-4c44-86ba-02f8af10a5af
+      version: -1
+      name: Nutanix Change Virtual Machine Power State
+      description: Use this playbook to perform a power status change for a virtual
+        machine, and wait until the power status change task is completed. This playbook
+        receives the desired power status, calls the Nutanix service to perform the
+        power status change, and continuously polls by running the nutanix-hypervisor-task-results-get
+        command on the task ID provided as an output from Nutanix to power the status
+        change operation.
+      playbookName: Nutanix Change Virtual Machine Power State
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      host_uuid:
+        complex:
+          root: NutanixHypervisor.Host
+          accessor: uuid
+          transformers:
+          - operator: FirstArrayElement
+      interval:
+        simple: "1"
+      timeout:
+        simple: "10"
+      transition:
+        simple: POWERCYCLE
+      vm_uuid:
+        complex:
+          root: NutanixHypervisor.VM
+          accessor: uuid
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: 7aeb0409-2ecf-4083-8fa3-723303496df1
+    type: condition
+    task:
+      id: 7aeb0409-2ecf-4083-8fa3-723303496df1
+      version: -1
+      name: Check Nutanix Host Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: NutanixHypervisor.Host.hypervisor_full_name
+            iscontext: true
+          right:
+            value:
+              simple: Nutanix 20190916.276
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: NutanixHypervisor.Host.host_type
+            iscontext: true
+          right:
+            value:
+              simple: HYPER_CONVERGED
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: NutanixHypervisor.Host.hypervisor_type
+            iscontext: true
+          right:
+            value:
+              simple: kKvm
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: NutanixHypervisor.Host.name
+            iscontext: true
+          right:
+            value:
+              simple: NTNX-386a5fb4-A
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: 6b5fae41-6be1-4d8c-8bf1-67ce6971048a
+    type: condition
+    task:
+      id: 6b5fae41-6be1-4d8c-8bf1-67ce6971048a
+      version: -1
+      name: Check Nutanix VMs Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: NutanixHypervisor.VM.name
+            iscontext: true
+          right:
+            value:
+              simple: CentOS7_Test
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: NutanixHypervisor.VM.host_uuid
+            iscontext: true
+          right:
+            value:
+              simple: 59bc015e-a22d-41ab-9ce2-a96164955e8d
+      - - operator: isEqualString
+          left:
+            value:
+              simple: NutanixHypervisor.VM.uuid
+            iscontext: true
+          right:
+            value:
+              simple: 16c3d845-dc54-4fb1-bfc8-7671dd230967
+      - - operator: isEqualString
+          left:
+            value:
+              simple: NutanixHypervisor.VM.timezone
+            iscontext: true
+          right:
+            value:
+              simple: UTC
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: ffdea59f-1f77-4545-8719-4417a48e0e22
+    type: condition
+    task:
+      id: ffdea59f-1f77-4545-8719-4417a48e0e22
+      version: -1
+      name: Check Nutanix Alerts Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: NutanixHypervisor.Alerts.classifications
+            iscontext: true
+          right:
+            value:
+              simple: Cluster
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: NutanixHypervisor.Alerts.alert_type_uuid
+            iscontext: true
+          right:
+            value:
+              simple: A140001
+      - - operator: isEqualString
+          left:
+            value:
+              simple: NutanixHypervisor.Alerts.impact_types
+            iscontext: true
+          right:
+            value:
+              simple: SystemIndicator
+      - - operator: isEqualString
+          left:
+            value:
+              simple: NutanixHypervisor.Alerts.severity
+            iscontext: true
+          right:
+            value:
+              simple: kInfo
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: 9c5a79e2-bedc-4684-8c8d-6f0bc268b8d0
+    type: condition
+    task:
+      id: 9c5a79e2-bedc-4684-8c8d-6f0bc268b8d0
+      version: -1
+      name: Check Nutanix Acknowledge Alert Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: NutanixHypervisor.AcknowledgedAlerts.id
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: NutanixHypervisor.Alerts
+                accessor: id
+                transformers:
+                - operator: FirstArrayElement
+            iscontext: true
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: NutanixHypervisor.AcknowledgedAlerts.successful
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: eaf81163-0a4f-4315-8edf-0f224f799304
+    type: condition
+    task:
+      id: eaf81163-0a4f-4315-8edf-0f224f799304
+      version: -1
+      name: Nutanix Resolve Alert Check Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: NutanixHypervisor.ResolvedAlerts.id
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: NutanixHypervisor.Alerts
+                accessor: id
+                transformers:
+                - operator: FirstArrayElement
+            iscontext: true
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: NutanixHypervisor.ResolvedAlerts.successful
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: df908897-0668-45e2-84ff-68547427404f
+    type: condition
+    task:
+      id: df908897-0668-45e2-84ff-68547427404f
+      version: -1
+      name: Check Nutanix Acknowledge Alerts By Filters Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: NutanixHypervisor.AcknowledgedFilterAlerts.num_successful_updates
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: NutanixHypervisor.AcknowledgedFilterAlerts.num_failed_updates
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
+    taskid: dbc3e2d9-6c2a-4995-8eed-7e6839167946
+    type: condition
+    task:
+      id: dbc3e2d9-6c2a-4995-8eed-7e6839167946
+      version: -1
+      name: Check Nutanix Resolve Alerts By Filters Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: NutanixHypervisor.ResolvedFilterAlerts.num_successful_updates
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: NutanixHypervisor.ResolvedFilterAlerts.num_failed_updates
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 3010,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0
+description: Nutanix Test Playbook

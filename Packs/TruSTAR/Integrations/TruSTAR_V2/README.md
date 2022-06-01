@@ -17,7 +17,7 @@ This integration was integrated and tested with version 0.3.31 of TruSTAR v2
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### trustar-search-indicators
 ***
@@ -1690,7 +1690,7 @@ Provides structured summaries about indicators, which are derived from intellige
 
 ### trustar-get-whitelisted-indicators
 ***
-Gets a list of indicators that the user’s company has whitelisted.
+Gets a list of indicators that the user’s company has added to allow list.
 
 
 #### Base Command
@@ -2653,7 +2653,7 @@ Searches for all reports that contain the given search term.
 
 ### trustar-add-to-whitelist
 ***
-Whitelist a list of indicator values for the user’s company.
+Add to allow list a list of indicator values for the user’s company.
 
 
 #### Base Command
@@ -2663,7 +2663,7 @@ Whitelist a list of indicator values for the user’s company.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| indicators | CSV of indicators to whitelist, i.e. evil.com,101.43.52.224 | Required | 
+| indicators | CSV of indicators to add to allow list, i.e. evil.com,101.43.52.224 | Required | 
 
 
 #### Context Output
@@ -2680,11 +2680,11 @@ There is no context output for this command.
 
 #### Human Readable Output
 
->['8.8.8.8'] added to the whitelist successfully
+>['8.8.8.8'] added to the allow list successfully
 
 ### trustar-remove-from-whitelist
 ***
-Delete an indicator from the user’s company whitelist.
+Delete an indicator from the user’s company allow list.
 
 
 #### Base Command
@@ -2713,7 +2713,7 @@ There is no context output for this command.
 
 #### Human Readable Output
 
->8.8.8.8 removed from the whitelist successfully
+>8.8.8.8 removed from the allow list successfully
 
 
 ### trustar-get-phishing-submissions

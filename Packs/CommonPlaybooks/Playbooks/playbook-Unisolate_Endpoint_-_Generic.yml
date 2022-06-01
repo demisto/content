@@ -1,0 +1,305 @@
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
+description: "This playbook unisolates endpoints according to the endpoint ID or host name\
+  \ provided in the playbook.\nIt currently supports the following integrations:\n\
+  - Carbon Black Response\n- Cortex XDR\n- Crowdstrike Falcon\n- FireEye HX \n- Cybereason\n- \
+  Microsoft Defender For Endpoint"
+id: Unisolate Endpoint - Generic
+inputs:
+- description: The endpoint ID/device ID/sensor ID/agent ID that you want to unisolate.
+  key: Endpoint_ID
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: The host name of the endpoint to unisolate (using Cybereason or FireEyeHX).
+  key: Hostname
+  playbookInputQuery:
+  required: false
+  value: {}
+name: Unisolate Endpoint - Generic
+outputs:
+- contextPath: MicrosoftATP.MachineAction.ID
+  description: The machine action ID.
+  type: string
+- contextPath: MicrosoftATP.NonUnisolateList
+  description: The machine IDs that will not be released from isolation.
+  type: string
+- contextPath: MicrosoftATP.UnisolateList
+  description: The machine IDs that were released from isolation.
+  type: string
+- contextPath: MicrosoftATP.IncorrectIDs
+  description: Incorrect device IDs entered.
+  type: string
+- contextPath: MicrosoftATP.IncorrectHostnames
+  description: Incorrect device host names entered.
+  type: string
+- contextPath: MicrosoftATP.IncorrectIPs
+  description: Incorrect device IPs entered.
+  type: string
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '2'
+      - '1'
+      - '4'
+      - '5'
+      - '6'
+      - '7'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 2a0f3a1c-748a-4019-87d4-87a90fbe5bfb
+      iscommand: false
+      name: ''
+      version: -1
+      description: ''
+    taskid: 2a0f3a1c-748a-4019-87d4-87a90fbe5bfb
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 1125,\n    \"y\": 50\n  }\n}"
+  '1':
+    id: '1'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ''
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - '3'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      Endpoint_ID:
+        simple: ${inputs.Endpoint_ID}
+    separatecontext: true
+    skipunavailable: true
+    task:
+      brand: ''
+      description: This playbook unisolates sensors according to the sensor ID that
+        is provided in the playbook input.
+      id: 9d1f172a-43e5-4280-8512-2f6321eb961a
+      iscommand: false
+      name: Carbon Black Response - Unisolate Endpoint
+      playbookName: Carbon Black Response - Unisolate Endpoint
+      type: playbook
+      version: -1
+    taskid: 9d1f172a-43e5-4280-8512-2f6321eb961a
+    timertriggers: []
+    type: playbook
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 195\n  }\n}"
+  '2':
+    id: '2'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ''
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - '3'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      Endpoint_ID:
+        simple: ${inputs.Endpoint_ID}
+    separatecontext: true
+    skipunavailable: true
+    task:
+      brand: ''
+      description: This playbook unisolates endpoints according to the endpoint ID
+        that is provided in the playbook input.
+      id: 5e5a85db-5761-4c8f-8c70-6833a2200a04
+      iscommand: false
+      name: Cortex XDR - Unisolate Endpoint
+      playbookName: Cortex XDR - Unisolate Endpoint
+      type: playbook
+      version: -1
+    taskid: 5e5a85db-5761-4c8f-8c70-6833a2200a04
+    timertriggers: []
+    type: playbook
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 195\n  }\n}"
+  '3':
+    id: '3'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: a42fe062-acbe-448c-82c4-f7cdfdf15b82
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: a42fe062-acbe-448c-82c4-f7cdfdf15b82
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 1125,\n    \"y\": 370\n  }\n}"
+  '4':
+    id: '4'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ''
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - '3'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      Endpoint_id:
+        simple: ${inputs.Endpoint_ID}
+    separatecontext: true
+    skipunavailable: true
+    task:
+      brand: ''
+      description: This playbook unisolates devices according to the device ID that
+        was provided in the playbook input.
+      id: a108aa9f-d9b9-4594-8f9f-7176e0ea21eb
+      iscommand: false
+      name: Crowdstrike Falcon - Unisolate Endpoint
+      playbookId: Crowdstrike Falcon - Unisolate Endpoint
+      type: playbook
+      version: -1
+    taskid: a108aa9f-d9b9-4594-8f9f-7176e0ea21eb
+    timertriggers: []
+    type: playbook
+    view: "{\n  \"position\": {\n    \"x\": 910,\n    \"y\": 195\n  }\n}"
+  '5':
+    id: '5'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ''
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - '3'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      Endpoint_id:
+        simple: ${inputs.Endpoint_ID}
+      Hostname:
+        simple: ${inputs.Hostname}
+    separatecontext: true
+    skipunavailable: true
+    task:
+      brand: ''
+      description: This playbook unisolates endpoints according to the hostname/endpoint
+        ID that is provided by the playbook input.
+      id: 80b6c790-1aef-4d56-8d48-8b0446ac6e31
+      iscommand: false
+      name: FireEye HX - Unisolate Endpoint
+      playbookName: FireEye HX - Unisolate Endpoint
+      type: playbook
+      version: -1
+    taskid: 80b6c790-1aef-4d56-8d48-8b0446ac6e31
+    timertriggers: []
+    type: playbook
+    view: "{\n  \"position\": {\n    \"x\": 1340,\n    \"y\": 195\n  }\n}"
+  '6':
+    id: '6'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ''
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - '3'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      Hostname:
+        simple: ${inputs.Hostname}
+    separatecontext: true
+    skipunavailable: true
+    task:
+      brand: ''
+      description: This playbook unisolates endpoints according to the hostname that
+        is provided by the playbook input.
+      id: d075f33e-0924-4fd0-89c8-6dd42358041d
+      iscommand: false
+      name: Unisolate Endpoint - Cybereason
+      playbookName: Unisolate Endpoint - Cybereason
+      type: playbook
+      version: -1
+    taskid: d075f33e-0924-4fd0-89c8-6dd42358041d
+    timertriggers: []
+    type: playbook
+    view: "{\n  \"position\": {\n    \"x\": 1770,\n    \"y\": 195\n  }\n}"
+  '7':
+    id: '7'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ''
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - '3'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      Device_id:
+        simple: ${inputs.Endpoint_ID}
+      Hostname:
+        simple: ${inputs.Hostname}
+    separatecontext: true
+    skipunavailable: true
+    task:
+      brand: ''
+      id: 5a7d5a0f-34fe-40fd-8cb8-b3bca5aff19e
+      iscommand: false
+      name: Microsoft Defender For Endpoint - Unisolate Endpoint
+      playbookId: Microsoft Defender For Endpoint - Unisolate Endpoint
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 5a7d5a0f-34fe-40fd-8cb8-b3bca5aff19e
+    timertriggers: []
+    type: playbook
+    view: "{\n  \"position\": {\n    \"x\": 2200,\n    \"y\": 195\n  }\n}"
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 385,\n      \"width\": 2530,\n      \"x\": 50,\n      \"y\": 50\n\
+  \    }\n  }\n}"
+tests:
+- Isolate and unisolate endpoint - test
+fromversion: 5.5.0

@@ -36,7 +36,7 @@ class TestFetchIndicators:
         Then:
         - update last run with latest collection fetch time
         """
-        mock_client = Taxii2FeedClient(url='', collection_to_fetch='default', proxies=[], verify=False)
+        mock_client = Taxii2FeedClient(url='', collection_to_fetch='default', proxies=[], verify=False, objects_to_fetch='')
         default_id = 1
         nondefault_id = 2
         mock_client.collections = [MockCollection(default_id, 'default'), MockCollection(nondefault_id, 'not_default')]
@@ -64,7 +64,7 @@ class TestFetchIndicators:
         - update last run with latest collection fetch time
         - don't update collection that wasn't fetched from
         """
-        mock_client = Taxii2FeedClient(url='', collection_to_fetch='default', proxies=[], verify=False)
+        mock_client = Taxii2FeedClient(url='', collection_to_fetch='default', proxies=[], verify=False, objects_to_fetch='')
         default_id = 1
         nondefault_id = 2
         mock_client.collections = [MockCollection(default_id, 'default'), MockCollection(nondefault_id, 'not_default')]
@@ -94,7 +94,7 @@ class TestFetchIndicators:
         - fetch 14 indicators
         - update last run with latest collection fetch time
         """
-        mock_client = Taxii2FeedClient(url='', collection_to_fetch=None, proxies=[], verify=False)
+        mock_client = Taxii2FeedClient(url='', collection_to_fetch=None, proxies=[], verify=False, objects_to_fetch='')
         default_id = 1
         nondefault_id = 2
         mock_client.collections = [MockCollection(default_id, 'default'), MockCollection(nondefault_id, 'not_default')]
@@ -121,7 +121,7 @@ class TestFetchIndicators:
         - fetch 7 indicators
         - update last run with latest collection fetch time
         """
-        mock_client = Taxii2FeedClient(url='', collection_to_fetch=None, proxies=[], verify=False)
+        mock_client = Taxii2FeedClient(url='', collection_to_fetch=None, proxies=[], verify=False, objects_to_fetch='')
         id_1 = 1
         id_2 = 2
         mock_client.collections = [MockCollection(id_1, 'a'), MockCollection(id_2, 'b')]
@@ -133,6 +133,17 @@ class TestFetchIndicators:
         assert last_run.get(mock_client.collections[1]) == 'test'
 
 
+def test_get_collections_function():
+    mock_client = Taxii2FeedClient(url='', collection_to_fetch=None, proxies=[], verify=False, objects_to_fetch='')
+    mock_client.collections = [MockCollection("first id", 'first name'), MockCollection("second id", 'second name')]
+
+    result = get_collections_command(mock_client)
+
+    assert len(result.outputs) == 2
+    assert result.outputs[0] == {"Name": "first name", "ID": "first id"}
+    assert result.outputs[1] == {"Name": "second name", "ID": "second id"}
+
+
 class TestHelperFunctions:
     def test_try_parse_integer(self):
         assert try_parse_integer(None, '') is None
@@ -141,35 +152,75 @@ class TestHelperFunctions:
         with pytest.raises(DemistoException, match='parse failure'):
             try_parse_integer('a', 'parse failure')
 
-    class TestGetAddedAfter:
-        """Scenario: Test get_added_after"""
-        def test_get_filter_added_after(self):
+    class TestAssertIncrementalFeedParams:
+        """Scenario: Test assert_incremental_feed_params raises appropriate errors"""
+
+        def test_both_params_are_false(self):
             """
-            Scenario: User decides to override added_after filter param
+            Scenario: Both params are False
 
             Given:
             - fetch_full_feed is false
-            - user overrides added_after filter
-            - last fetch time is set
+            - feedIncremental is false
 
             When:
-            - calling get_added_after
+            - calling assert_incremental_feed_params
 
             Then:
-            - return user determined added_after
+            - raise appropriate error
+            """
+            fetch_full_feed = is_incremental_feed = False
+            with pytest.raises(DemistoException) as e:
+                assert_incremental_feed_params(fetch_full_feed, is_incremental_feed)
+                assert "'Full Feed Fetch' cannot be disabled when 'Incremental Feed' is disabled." in str(e)
+
+        def test_both_params_are_true(self):
+            """
+            Scenario: Both params are True
+
+            Given:
+            - fetch_full_feed is true
+            - feedIncremental is true
+
+            When:
+            - calling assert_incremental_feed_params
+
+            Then:
+            - raise appropriate error
+            """
+            fetch_full_feed = is_incremental_feed = True
+            with pytest.raises(DemistoException) as e:
+                assert_incremental_feed_params(fetch_full_feed, is_incremental_feed)
+                assert "'Full Feed Fetch' cannot be enabled when 'Incremental Feed' is enabled." in str(e)
+
+        def test_params_have_different_values(self):
+            """
+            Scenario: Both params are False
+
+            Given:
+            - fetch_full_feed is false / true
+            - feedIncremental is true / false
+
+            When:
+            - calling assert_incremental_feed_params
+
+            Then:
+            - don't raise any error
             """
             fetch_full_feed = False
-            last_fetch_time = 'last_fetch_mock'
-            initial_interval = 'initial_mock'
-            original_added_after = 'original added_after'
-            full_filter_args = {'added_after': original_added_after}
+            is_incremental_feed = True
+            assert_incremental_feed_params(fetch_full_feed, is_incremental_feed)
 
-            assert get_added_after(fetch_full_feed, initial_interval, last_fetch_time,
-                                   full_filter_args) == original_added_after
+            fetch_full_feed = True
+            is_incremental_feed = False
+            assert_incremental_feed_params(fetch_full_feed, is_incremental_feed)
+
+    class TestGetAddedAfter:
+        """Scenario: Test get_added_after"""
 
         def test_get_last_fetch_time(self):
             """
-            Scenario: Incremental feed and last fetch is set
+            Scenario: fetch_full_feed and last fetch is set
 
             Given:
             - fetch_full_feed is false
@@ -184,10 +235,8 @@ class TestHelperFunctions:
             fetch_full_feed = False
             last_fetch_time = 'last_fetch_mock'
             initial_interval = 'initial_mock'
-            full_filter_args = {}
 
-            assert get_added_after(fetch_full_feed, initial_interval, last_fetch_time,
-                                   full_filter_args) == last_fetch_time
+            assert get_added_after(fetch_full_feed, initial_interval, last_fetch_time) == last_fetch_time
 
         def test_get_initial_interval__fetch_full_feed_true(self):
             """
@@ -207,10 +256,8 @@ class TestHelperFunctions:
             fetch_full_feed = True
             last_fetch_time = 'last_fetch_mock'
             initial_interval = 'initial_mock'
-            full_filter_args = {}
 
-            assert get_added_after(fetch_full_feed, initial_interval, last_fetch_time,
-                                   full_filter_args) == initial_interval
+            assert get_added_after(fetch_full_feed, initial_interval, last_fetch_time) == initial_interval
 
         def test_get_initial_interval__fetch_full_feed_false(self):
             """
@@ -230,7 +277,5 @@ class TestHelperFunctions:
             fetch_full_feed = False
             last_fetch_time = None
             initial_interval = 'initial_mock'
-            full_filter_args = {}
 
-            assert get_added_after(fetch_full_feed, initial_interval, last_fetch_time,
-                                   full_filter_args) == initial_interval
+            assert get_added_after(fetch_full_feed, initial_interval, last_fetch_time) == initial_interval

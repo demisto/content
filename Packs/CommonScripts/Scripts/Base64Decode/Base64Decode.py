@@ -6,7 +6,7 @@ import base64
 
 def decode(value):
     decoded_bytes = base64.urlsafe_b64decode(str(value))
-    res = str(decoded_bytes)
+    res = decoded_bytes.decode(errors='ignore')
 
     outputs = {
         "Base64":

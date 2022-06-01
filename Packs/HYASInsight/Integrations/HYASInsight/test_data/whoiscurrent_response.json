@@ -1,0 +1,31 @@
+[
+  {
+    "abuse_emails": [
+      ""
+    ],
+    "address": [],
+    "city": [],
+    "country": [
+      "Canada"
+    ],
+    "domain": "hyas.com",
+    "domain_2tld": "hyas.com",
+    "domain_created_datetime": "2001-05-01T23:42:14",
+    "domain_expires_datetime": "2026-05-01T23:42:14",
+    "domain_updated_datetime": "2020-06-30T15:43:39",
+    "email": [],
+    "idn_name": "",
+    "nameserver": [
+      "n1.domaincontrol.com",
+      "n2.domaincontrol.com"
+    ],
+    "organization": [
+      "HYAS Infosec Inc."
+    ],
+    "phone": [],
+    "registrar": "GoDaddy.com, LLC",
+    "state": [
+      "British Columbia"
+    ]
+  }
+]

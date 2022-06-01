@@ -256,10 +256,18 @@ class Client:
                     # Try and map the field
                     value_type = value['type']
                     value_name = value['name']
+
                     if value_type == "list":
                         indicator['fields'][field] = "\n".join(indicator['rawJSON'][value_name])
                     else:
-                        indicator['fields'][field] = indicator['rawJSON'][value_name]
+                        if value_name in ['created', 'modified']:
+                            indicator['fields'][field] = handle_multiple_dates_in_one_field(
+                                value_name, indicator['rawJSON'][value_name]
+                            )
+
+                        else:
+                            indicator['fields'][field] = indicator['rawJSON'][value_name]
+
                 except KeyError:
                     # If the field does not exist in the indicator
                     # then move on
@@ -267,6 +275,25 @@ class Client:
                 except Exception as err:
                     demisto.error(f"Error when mapping Mitre Fields - {err}")
         return indicators
+
+
+def handle_multiple_dates_in_one_field(field_name: str, field_value: str):
+    """Parses datetime fields to handle one value or more
+
+    Args:
+        field_name (str): The field name that holds the data (created/modified).
+        field_value (str): Raw value returned from feed.
+
+    Returns:
+        str. One datetime value (min/max) according to the field name.
+    """
+    dates_as_string = field_value.splitlines()
+    dates_as_datetime = [datetime.strptime(date, '%Y-%m-%dT%H:%M:%S.%fZ') for date in dates_as_string]
+
+    if field_name == 'created':
+        return f"{min(dates_as_datetime).strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3]}Z"
+    else:
+        return f"{max(dates_as_datetime).strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3]}Z"
 
 
 def test_module(client):
@@ -328,13 +355,13 @@ def search_command(client, args):
     return_list_md: List[Dict] = list()
     entries = list()
     all_indicators: List[Dict] = list()
-    page = 0
     size = 1000
-    raw_data = demisto.searchIndicators(query=f'type:"{client.indicatorType}"', page=page, size=size)
+    search_indicators = IndicatorsSearcher()
+
+    raw_data = search_indicators.search_indicators_by_version(query=f'type:"{client.indicatorType}"', size=size)
     while len(raw_data.get('iocs', [])) > 0:
         all_indicators.extend(raw_data.get('iocs', []))
-        page += 1
-        raw_data = demisto.searchIndicators(query=f'type:"{client.indicatorType}"', page=page, size=size)
+        raw_data = search_indicators.search_indicators_by_version(query=f'type:"{client.indicatorType}"', size=size)
 
     for indicator in all_indicators:
         custom_fields = indicator.get('CustomFields', {})
@@ -377,19 +404,21 @@ def reputation_command(client, args):
     demisto_urls = demisto.demistoUrls()
     indicator_url = demisto_urls.get('server') + "/#/indicator/"
     all_indicators: List[Dict] = list()
-    page = 0
     size = 1000
-    raw_data: dict = demisto.searchIndicators(query=f'type:"{client.indicatorType}" value:{input_indicator}',
-                                              page=page, size=size)
+    search_indicators = IndicatorsSearcher()
+
+    raw_data: dict = search_indicators.search_indicators_by_version(
+        query=f'type:"{client.indicatorType}" value:{input_indicator}', size=size)
+
     if raw_data.get('total') == 0:
         md = 'No indicators found.'
         ec = {}
     else:
         while len(raw_data.get('iocs', [])) > 0:
             all_indicators.extend(raw_data.get('iocs', []))
-            page += 1
-            raw_data = demisto.searchIndicators(query=f'type:"{client.indicatorType}" value:{input_indicator}',
-                                                page=page, size=size)
+            raw_data = search_indicators.search_indicators_by_version(
+                query=f'type:"{client.indicatorType}" value:{input_indicator}', size=size)
+
         for indicator in all_indicators:
             custom_fields = indicator.get('CustomFields', {})
 

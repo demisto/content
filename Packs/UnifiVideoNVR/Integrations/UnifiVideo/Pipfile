@@ -1,0 +1,34 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+pylint = "*"
+pytest = "*"
+pytest-mock = "*"
+requests-mock = "*"
+pytest-xdist = "*"
+pytest-json = "*"
+flake8 = "*"
+
+[packages]
+asn1crypto = "==0.24.0"
+cryptography = "==2.1.4"
+enum34 = "==1.1.6"
+idna = "==2.6"
+ipaddress = "==1.0.17"
+keyring = "==10.6.0"
+"keyrings.alt" = "==3.0"
+numpy = "==1.16.6"
+opencv-python = "==4.2.0.32"
+pycrypto = "==2.6.1"
+python-dateutil = "==2.8.1"
+pyxdg = "==0.25"
+six = "==1.11.0"
+unifi-video = "==0.1.7"
+PyGObject = "==3.26.1"
+SecretStorage = "==2.3.1"
+
+[requires]
+python_version = "2.7"

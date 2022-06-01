@@ -1,0 +1,62 @@
+[
+   {
+      "id":13,
+      "name":"user1",
+      "type":null,
+      "created_on":"02/09/2018 10:00:00",
+      "department":null,
+      "description":null,
+      "resource":"Linux",
+      "domain":"com",
+      "high_risk":null,
+      "is_orphan":"No",
+      "is_reassigned":null,
+      "risk_score":0,
+      "updated_on":null
+   },
+   {
+      "id":1,
+      "name":"user2",
+      "type":null,
+      "created_on":"02/09/2017 10:00:00",
+      "department":null,
+      "description":null,
+      "resource":"Linux",
+      "domain":"com",
+      "high_risk":null,
+      "is_orphan":"No",
+      "is_reassigned":null,
+      "risk_score":0,
+      "updated_on":null
+   },
+   {
+      "id":2,
+      "name":"user3",
+      "type":null,
+      "created_on":"02/09/2017 10:00:00",
+      "department":null,
+      "description":null,
+      "resource":"Linux",
+      "domain":"com",
+      "high_risk":null,
+      "is_orphan":"No",
+      "is_reassigned":null,
+      "risk_score":0,
+      "updated_on":null
+   },
+   {
+      "id":14,
+      "name":"user4",
+      "type":null,
+      "created_on":"02/09/2018 10:00:00",
+      "department":null,
+      "description":null,
+      "resource":"Linux",
+      "domain":"com",
+      "high_risk":null,
+      "is_orphan":"No",
+      "is_reassigned":null,
+      "risk_score":62,
+      "updated_on":null
+   }
+]

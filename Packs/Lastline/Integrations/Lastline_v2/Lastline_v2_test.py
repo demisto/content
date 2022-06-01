@@ -1,6 +1,7 @@
 import pytest
 from Lastline_v2 import *
 
+from CommonServerPython import DemistoException
 
 data_test_hash_type_checker = [
     ('4e492e797ccfc808715c2278484517b1', 'md5'),
@@ -69,3 +70,106 @@ def test_get_report_context(path):
             json_obj = json_obj.read()
             out_dict = json.loads(json_obj)
         get_report_context(out_dict)
+
+
+def test_credentials_not_part_of_params(mocker):
+    """
+        Given:
+            - Valid api-key and token
+
+        When:
+            - testing connect to integration, using API key and API token only.
+            (Without username and password.)
+
+        Then:
+            - validating that main finishes successfully without raising an error
+
+        """
+    mocker.patch.object(demisto, 'params', return_value={'url': 'testurl.com',
+                                                         'api_key': 'apikey',
+                                                         'api_token': 'apitoken'})
+    mocker.patch.object(demisto, 'command', return_value='test-module')
+    mocker.patch.object(Client, 'get_task_list', return_value=('Human readable', {}, {}))
+    assert main() is None
+
+
+def test_connect_with_credentials(mocker):
+    """
+    Given:
+        - Valid credentials
+
+    When:
+        - Running the integration test module, using valid credentials: email and password.
+
+    Then:
+        - validating no error is raised.
+
+    """
+    mocker.patch.object(demisto, 'command', return_value='test-module')
+    mocker.patch.object(Client, 'get_task_list', return_value=('Human readable', {}, {}))
+    client = Client(base_url='testurl.com', api_params={}, credentials={'username': 'identifier',
+                                                                        'password': 'password'})
+    assert client.test_module_command() == ('ok', {}, {})
+
+
+def raise_exception():
+    raise DemistoException('Authentication Error.')
+
+
+@pytest.mark.parametrize('params', [{'url': 'testurl.com',
+                                     'credentials': {'identifier': 'identifier',
+                                                     'password': 'password'}},
+                                    {'url': 'testurl.com',
+                                     'api_key': 'apikey',
+                                     'api_token': 'apitoken'},
+                                    ])
+def test_test_module_wrong_credentials(mocker, params):
+    """
+    Given:
+        - Case a: wrong user and password
+        - Case b: wrong API token and key
+
+    When:
+        - Running the integration test module
+
+    Then:
+        - Validating the right error message raised
+
+    """
+    mocker.patch.object(demisto, 'params', return_value=params)
+    mocker.patch.object(demisto, 'command', return_value='test-module')
+    mocker.patch.object(Client, 'get_task_list', side_effect=raise_exception)
+    api_params = {
+        'key': params.get('api_key'),
+        'api_token': params.get('api_token')
+    }
+    client = Client(base_url=params.get('url'), api_params=api_params, credentials=params.get('credentials'))
+    with pytest.raises(DemistoException, match='Authentication Error.'):
+        client.test_module_command()
+
+
+def test_upload_file_with_csv_type(mocker):
+    """
+    Given:
+        - Valid params and a csv file to upload
+
+    When:
+        - Running the integration upload-file command
+
+    Then:
+        - Validating that the login API endpoint was called
+    """
+    params = {
+        'url': 'testurl.com',
+        'credentials': {
+            'identifier': 'identifier',
+            'password': 'password'
+        }
+    }
+
+    client = Client(base_url=params.get('url'), credentials=params.get('credentials'), api_params={'EntryID': '1234@'})
+    mocker.patch.object(demisto, 'getFilePath', return_value={'id': id, 'path': 'test/test.csv', 'name': 'test.csv'})
+    post_mock = mocker.patch.object(requests.Session, 'post')
+    mocker.patch('builtins.open')
+    client.upload_file()
+    assert 'papi/login' in post_mock.call_args_list[0][0][0]

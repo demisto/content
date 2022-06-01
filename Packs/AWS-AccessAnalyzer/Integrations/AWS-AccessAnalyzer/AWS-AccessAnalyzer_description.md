@@ -1,7 +1,7 @@
 Before you can use AWS Access Analyzer, you need to perform several configuration steps in your AWS environment.
 
 ### Prerequisites
-- Attach an instance profile with the required permissions to the Demisto server or engine that is running on your AWS environment.
+- Attach an instance profile with the required permissions to the XSOAR server or engine that is running on your AWS environment.
 - Instance Profile requires minimum permission: sts:AssumeRole.
 - Instance Profile requires permission to assume the roles needed by the AWS integrations.
 

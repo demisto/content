@@ -1,0 +1,16 @@
+!lp-get-incidents ts_from=1610700720 ts_to=1610700900 limit=5
+!lp-get-incident-data date=1610700740.2248185 incident_id=8a676c39450e099b3512961d71ec4f7d incident_obj_id=600157c44a2018070b627f6a
+!lp-get-incident-states ts_from="1610700720" ts_to="1610700900" limit=5
+!lp-add-incident-comment comment="Example comment" incident_obj_id=600157c44a2018070b627f6a
+!lp-assign-incidents incident_obj_ids="600157c44a2018070b627f6a,6001583c4a2018070b627f6b" new_assignee=5bebd9fdd8aaa42840edc853
+!lp-resolve-incidents incident_obj_ids="600157c44a2018070b627f6a,6001583c4a2018070b627f6b"
+!lp-close-incidents incident_obj_ids="600157c44a2018070b627f6a,6001583c4a2018070b627f6b"
+!lp-reopen-incidents incident_obj_ids="600157c44a2018070b627f6a,6001583c4a2018070b627f6b"
+!lp-get-users
+!lp-get-users-preference
+!lp-get-logpoints
+!lp-get-repos
+!lp-get-devices
+!lp-get-livesearches
+!lp-get-searchid query="| chart count() by col_type" limit=5 time_range="Last 30 minutes"
+!lp-search-logs search_id=29023c62-12f4-4771-b988-067284a0e0c5

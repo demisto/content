@@ -463,10 +463,10 @@ tasks:
       }
   "22":
     id: "22"
-    taskid: email_phishing
+    taskid: 1f4bba74-3847-4c9f-b515-03ceb965ab32
     type: regular
     task:
-      id: email_phishing
+      id: 1f4bba74-3847-4c9f-b515-03ceb965ab32
       version: -1
       description: ""
       name: Consider this email as phishing and move to "Response Section"

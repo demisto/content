@@ -1,0 +1,318 @@
+id: Tripwire Incident IP Enrichment
+version: -1
+name: Tripwire Incident IP Enrichment
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: e6130655-e1de-4d3f-8178-e52808817f7f
+    type: start
+    task:
+      id: e6130655-e1de-4d3f-8178-e52808817f7f
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 61d47a9d-b68f-490a-8f31-733726449e07
+    type: regular
+    task:
+      id: 61d47a9d-b68f-490a-8f31-733726449e07
+      version: -1
+      name: get node by id
+      description: Returns a list of all nodes or those that match the provided filter
+        criteria.
+      script: '|||tripwire-nodes-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      node_ips: {}
+      node_mac_adresses: {}
+      node_names: {}
+      node_oids:
+        complex:
+          root: Tripwire.Versions
+          accessor: nodeId
+      node_os_names: {}
+      page_limit: {}
+      page_start: {}
+      tags: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 647f9e5b-5532-4794-8766-129404f7bc9e
+    type: regular
+    task:
+      id: 647f9e5b-5532-4794-8766-129404f7bc9e
+      version: -1
+      name: set incidents ip
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      accountid: {}
+      accountname: {}
+      addLabels: {}
+      agentid: {}
+      app: {}
+      appendMultiSelect: {}
+      appendTags: {}
+      assetid: {}
+      assigneduser: {}
+      assignmentgroup: {}
+      blockedaction: {}
+      bugtraq: {}
+      caller: {}
+      city: {}
+      closeNotes: {}
+      closeReason: {}
+      cloudservice: {}
+      commandline: {}
+      costcenter: {}
+      costcentercode: {}
+      country: {}
+      countryname: {}
+      criticalassets: {}
+      customFields: {}
+      cve: {}
+      cvss: {}
+      dbotMirrorDirection: {}
+      dbotMirrorId: {}
+      dbotMirrorInstance: {}
+      dbotMirrorTags: {}
+      deleteEmptyField: {}
+      department: {}
+      dest: {}
+      desthostname: {}
+      destinationhostname: {}
+      destinationip: {}
+      destinationnetwork: {}
+      destinationport: {}
+      destntdomain: {}
+      destos: {}
+      details: {}
+      detectedexternalhosts: {}
+      detectedexternalips: {}
+      detectedinternalhosts: {}
+      detectedinternalips: {}
+      detectedusers: {}
+      detectionendtime: {}
+      detectionid: {}
+      detectionupdatetime: {}
+      detectionurl: {}
+      deviceexternalip: {}
+      devicehash: {}
+      devicelocalip:
+        complex:
+          root: Tripwire.Nodes
+          accessor: ipAddresses
+      devicemodel: {}
+      devicename: {}
+      displayname: {}
+      duration: {}
+      email: {}
+      employeedisplayname: {}
+      employeeemail: {}
+      employeemanageremail: {}
+      escalation: {}
+      eventaction: {}
+      eventid: {}
+      eventtype: {}
+      externaladdresses: {}
+      filehash: {}
+      filename: {}
+      filepath: {}
+      filesize: {}
+      firstname: {}
+      firstseen: {}
+      givenname: {}
+      googledriveactivityaddedparents: {}
+      googledriveactivityaddedpermissions: {}
+      googledriveactivityassignedcurrentuser: {}
+      googledriveactivityassigneddeleteduser: {}
+      googledriveactivityassignedpersonname: {}
+      googledriveactivityassignedunknownuser: {}
+      googledriveactivityassignmentsubtype: {}
+      googledriveactivitycopiedfoldertype: {}
+      googledriveactivitycopieditemisfile: {}
+      googledriveactivitycopieditemname: {}
+      googledriveactivitycopieditemtitle: {}
+      googledriveactivitycopiedshareddrivename: {}
+      googledriveactivitycopiedshareddrivetitle: {}
+      googledriveactivitycreatednew: {}
+      googledriveactivitydeletetype: {}
+      googledriveactivitydlpchangetype: {}
+      googledriveactivityidentifiedas: {}
+      googledriveactivitymentionedusers: {}
+      googledriveactivitynewtitle: {}
+      googledriveactivityoldtitle: {}
+      googledriveactivitypostsubtype: {}
+      googledriveactivityreferencetype: {}
+      googledriveactivityremovedparents: {}
+      googledriveactivityremovedpermissions: {}
+      googledriveactivityrestoretype: {}
+      googledriveactivityrestrictionchanges: {}
+      googledriveactivitysuggestionsubtype: {}
+      googledriveactivitytargets: {}
+      googledriveactivityuploaded: {}
+      id: {}
+      incomingmirrorerror: {}
+      internaladdresses: {}
+      investigationstage: {}
+      isolated: {}
+      jobcode: {}
+      jobfamily: {}
+      jobfunction: {}
+      labels: {}
+      lastmodifiedby: {}
+      lastmodifiedon: {}
+      lastname: {}
+      lastseen: {}
+      leadership: {}
+      location: {}
+      locationregion: {}
+      logsource: {}
+      macaddress: {}
+      manageremailaddress: {}
+      managername: {}
+      md5: {}
+      mobiledevicemodel: {}
+      mobilephone: {}
+      name: {}
+      occurred: {}
+      os: {}
+      osversion: {}
+      outgoingmirrorerror: {}
+      owner: {}
+      personalemail: {}
+      phase: {}
+      phonenumber: {}
+      pid: {}
+      policydeleted: {}
+      policydescription: {}
+      policydetails: {}
+      policyid: {}
+      policyrecommendation: {}
+      policyremediable: {}
+      policyseverity: {}
+      policytype: {}
+      protocol: {}
+      protocols: {}
+      rating: {}
+      region: {}
+      regionid: {}
+      replacePlaybook: {}
+      resourceid: {}
+      resourcename: {}
+      resourcetype: {}
+      riskrating: {}
+      riskscore: {}
+      roles: {}
+      samaccountname: {}
+      severity: {}
+      sha256: {}
+      signature: {}
+      skuname: {}
+      skutier: {}
+      sla: {}
+      slaField: {}
+      sourcehostname: {}
+      sourceip: {}
+      sourcenetwork: {}
+      sourceport: {}
+      sourceusername: {}
+      src: {}
+      srchostname: {}
+      srcntdomain: {}
+      srcos: {}
+      srcuser: {}
+      state: {}
+      streetaddress: {}
+      subcategory: {}
+      subtype: {}
+      surname: {}
+      systems: {}
+      tenantname: {}
+      ticketcloseddate: {}
+      ticketnumber: {}
+      ticketopeneddate: {}
+      title: {}
+      triggeredsecurityprofile: {}
+      type: {}
+      uniqueports: {}
+      urlsslverification: {}
+      useraccountcontrol: {}
+      username: {}
+      vendorid: {}
+      vendorproduct: {}
+      vulnerabilitycategory: {}
+      workphone: {}
+      xsoarReadOnlyRoles: {}
+      zipcode: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 505,
+        "width": 390,
+        "x": 440,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0
+tests:
+- TestplaybookTripwire
+description: Enrich the IP of a node.

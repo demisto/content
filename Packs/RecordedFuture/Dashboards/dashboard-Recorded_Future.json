@@ -1,0 +1,735 @@
+{
+    "id": "Recorded Future",
+    "version": -1,
+    "fromDate": "0001-01-01T00:00:00Z",
+    "toDate": "0001-01-01T00:00:00Z",
+    "period": {
+        "by": "",
+        "byTo": "",
+        "byFrom": "days",
+        "toValue": null,
+        "fromValue": 7,
+        "field": ""
+    },
+    "fromDateLicense": "0001-01-01T00:00:00Z",
+    "name": "Recorded Future",
+    "layout": [
+        {
+            "id": "4f6523c0-1dd5-11eb-a1f2-99ef200b5045",
+            "forceRange": false,
+            "x": 0,
+            "y": 0,
+            "i": "4f6523c0-1dd5-11eb-a1f2-99ef200b5045",
+            "w": 5,
+            "h": 2,
+            "widget": {
+                "id": "365e74cd-7385-4c56-858d-caaacc3bb1e7",
+                "version": 2,
+                "modified": "2020-11-03T13:05:54.880730808Z",
+                "sortValues": null,
+                "packID": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "name": "Incidents from Recorded Future",
+                "prevName": "Incidents from Recorded Future",
+                "dataType": "incidents",
+                "widgetType": "column",
+                "query": "indicator.sourceBrands:\"Recorded Future v2\"",
+                "sort": null,
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 7,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "groupBy": [
+                        "type"
+                    ],
+                    "tableColumns": [
+                        {
+                            "isDefault": true,
+                            "key": "id",
+                            "position": 0,
+                            "width": 110
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "name",
+                            "position": 2,
+                            "width": 300
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "type",
+                            "position": 3,
+                            "width": 200
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "severity",
+                            "position": 4,
+                            "width": 80
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "status",
+                            "position": 5,
+                            "width": 80
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "owner",
+                            "position": 6,
+                            "width": 160
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "roles",
+                            "position": 7,
+                            "width": 160
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "playbookId",
+                            "position": 8,
+                            "width": 150
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "occurred",
+                            "position": 9,
+                            "width": 200
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "dueDate",
+                            "position": 10,
+                            "width": 200
+                        }
+                    ]
+                },
+                "size": 0,
+                "category": ""
+            }
+        },
+        {
+            "id": "cef5f8a0-1dd8-11eb-a1f2-99ef200b5045",
+            "forceRange": false,
+            "x": 0,
+            "y": 2,
+            "i": "cef5f8a0-1dd8-11eb-a1f2-99ef200b5045",
+            "w": 5,
+            "h": 2,
+            "widget": {
+                "id": "",
+                "version": 0,
+                "modified": "0001-01-01T00:00:00Z",
+                "sortValues": null,
+                "packID": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "name": "Recorded Future indicators reputation",
+                "prevName": "",
+                "dataType": "indicators",
+                "widgetType": "column",
+                "query": "sourceBrands:\"Recorded Future v2\" -reputation:None",
+                "sort": null,
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 7,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "groupBy": [
+                        "score"
+                    ],
+                    "tableColumns": [
+                        {
+                            "isDefault": true,
+                            "key": "indicator_type",
+                            "position": 1,
+                            "width": 120
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "value",
+                            "position": 2,
+                            "width": 300
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "score",
+                            "position": 4,
+                            "width": 120
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "firstSeen",
+                            "position": 5,
+                            "width": 275
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "lastSeen",
+                            "position": 6,
+                            "width": 275
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "timestamp",
+                            "position": 8,
+                            "width": 190
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "relatedIncCount",
+                            "position": 9,
+                            "width": 150
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "sourceBrands",
+                            "position": 12,
+                            "width": 175
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "sourceInstances",
+                            "position": 13,
+                            "width": 175
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "expirationStatus",
+                            "position": 14,
+                            "width": 175
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "expiration",
+                            "position": 15,
+                            "width": 190
+                        }
+                    ]
+                },
+                "size": 0,
+                "category": ""
+            }
+        },
+        {
+            "id": "63b51560-1dda-11eb-a1f2-99ef200b5045",
+            "forceRange": false,
+            "x": 0,
+            "y": 4,
+            "i": "63b51560-1dda-11eb-a1f2-99ef200b5045",
+            "w": 5,
+            "h": 2,
+            "widget": {
+                "id": "1410fb62-4b59-4986-841c-ede63462f481",
+                "version": 1,
+                "modified": "2020-11-03T13:42:11.107009286Z",
+                "sortValues": null,
+                "packID": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "name": "Case Status",
+                "prevName": "Reason incident was closed for Recorded Future incidents ",
+                "dataType": "incidents",
+                "widgetType": "column",
+                "query": "indicator.sourceBrands:\"Recorded Future v2\"",
+                "sort": null,
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 7,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "groupBy": [
+                        "closeReason"
+                    ],
+                    "tableColumns": [
+                        {
+                            "isDefault": true,
+                            "key": "id",
+                            "position": 0,
+                            "width": 110
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "name",
+                            "position": 2,
+                            "width": 300
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "type",
+                            "position": 3,
+                            "width": 200
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "severity",
+                            "position": 4,
+                            "width": 80
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "status",
+                            "position": 5,
+                            "width": 80
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "owner",
+                            "position": 6,
+                            "width": 160
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "roles",
+                            "position": 7,
+                            "width": 160
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "playbookId",
+                            "position": 8,
+                            "width": 150
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "occurred",
+                            "position": 9,
+                            "width": 200
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "dueDate",
+                            "position": 10,
+                            "width": 200
+                        }
+                    ]
+                },
+                "size": 0,
+                "category": ""
+            }
+        },
+        {
+            "id": "768843e0-2336-11eb-bbd2-9f59aa0ff40c",
+            "forceRange": false,
+            "x": 5,
+            "y": 0,
+            "i": "768843e0-2336-11eb-bbd2-9f59aa0ff40c",
+            "w": 5,
+            "h": 2,
+            "widget": {
+                "id": "0ea9fffb-bb59-4e9c-89c0-904aa31b2d3a",
+                "version": 1,
+                "modified": "2020-11-09T08:43:02.957755401Z",
+                "sortValues": null,
+                "packID": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "name": "# of Detected Indicators",
+                "prevName": "Suspicious and bad indicators",
+                "dataType": "indicators",
+                "widgetType": "column",
+                "query": "(reputation:Suspicious OR reputation:Bad) AND sourceBrands:\"Recorded Future v2\"",
+                "sort": null,
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 7,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "groupBy": [
+                        "type"
+                    ],
+                    "tableColumns": [
+                        {
+                            "isDefault": true,
+                            "key": "indicator_type",
+                            "position": 1,
+                            "width": 120
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "value",
+                            "position": 2,
+                            "width": 300
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "score",
+                            "position": 4,
+                            "width": 120
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "firstSeen",
+                            "position": 5,
+                            "width": 275
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "lastSeen",
+                            "position": 6,
+                            "width": 275
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "timestamp",
+                            "position": 8,
+                            "width": 190
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "relatedIncCount",
+                            "position": 9,
+                            "width": 150
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "sourceBrands",
+                            "position": 12,
+                            "width": 175
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "sourceInstances",
+                            "position": 13,
+                            "width": 175
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "expirationStatus",
+                            "position": 14,
+                            "width": 175
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "expiration",
+                            "position": 15,
+                            "width": 190
+                        }
+                    ]
+                },
+                "size": 0,
+                "category": ""
+            }
+        },
+        {
+            "id": "e4e3c910-233e-11eb-ad46-6d9267982569",
+            "forceRange": false,
+            "x": 5,
+            "y": 2,
+            "i": "e4e3c910-233e-11eb-ad46-6d9267982569",
+            "w": 5,
+            "h": 2,
+            "widget": {
+                "id": "243fe549-fc21-4656-80a3-c6b76a708581",
+                "version": 1,
+                "modified": "2020-11-10T10:24:13.03970094Z",
+                "sortValues": null,
+                "packID": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "name": "# of Threats Assessed",
+                "prevName": "Threat assessed indicators",
+                "dataType": "indicators",
+                "widgetType": "pie",
+                "query": "-threatassessment:\"\"",
+                "sort": null,
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 7,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "groupBy": [
+                        "threatassessment"
+                    ],
+                    "tableColumns": [
+                        {
+                            "isDefault": true,
+                            "key": "indicator_type",
+                            "position": 1,
+                            "width": 120
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "value",
+                            "position": 2,
+                            "width": 300
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "score",
+                            "position": 4,
+                            "width": 120
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "firstSeen",
+                            "position": 5,
+                            "width": 275
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "lastSeen",
+                            "position": 6,
+                            "width": 275
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "timestamp",
+                            "position": 8,
+                            "width": 190
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "relatedIncCount",
+                            "position": 9,
+                            "width": 150
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "sourceBrands",
+                            "position": 12,
+                            "width": 175
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "sourceInstances",
+                            "position": 13,
+                            "width": 175
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "expirationStatus",
+                            "position": 14,
+                            "width": 175
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "expiration",
+                            "position": 15,
+                            "width": 190
+                        }
+                    ]
+                },
+                "size": 0,
+                "category": ""
+            }
+        },
+        {
+            "id": "cb51aab0-2368-11eb-9d11-571b94c03c95",
+            "forceRange": false,
+            "x": 5,
+            "y": 4,
+            "i": "cb51aab0-2368-11eb-9d11-571b94c03c95",
+            "w": 5,
+            "h": 2,
+            "widget": {
+                "id": "7de227b8-27ae-44cc-8c13-f5c6f7e350ae",
+                "version": 1,
+                "modified": "2020-11-10T12:55:15.993246499Z",
+                "sortValues": null,
+                "packID": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "name": "Top Risk Rules",
+                "prevName": "Indicators with Risk rules",
+                "dataType": "indicators",
+                "widgetType": "pie",
+                "query": "-riskrules:\"\"",
+                "sort": null,
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 7,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "groupBy": [
+                        "riskrules"
+                    ],
+                    "tableColumns": [
+                        {
+                            "isDefault": true,
+                            "key": "indicator_type",
+                            "position": 1,
+                            "width": 120
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "value",
+                            "position": 2,
+                            "width": 300
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "score",
+                            "position": 4,
+                            "width": 120
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "firstSeen",
+                            "position": 5,
+                            "width": 275
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "lastSeen",
+                            "position": 6,
+                            "width": 275
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "timestamp",
+                            "position": 8,
+                            "width": 190
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "relatedIncCount",
+                            "position": 9,
+                            "width": 150
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "sourceBrands",
+                            "position": 12,
+                            "width": 175
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "sourceInstances",
+                            "position": 13,
+                            "width": 175
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "expirationStatus",
+                            "position": 14,
+                            "width": 175
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "expiration",
+                            "position": 15,
+                            "width": 190
+                        }
+                    ]
+                },
+                "size": 0,
+                "category": ""
+            }
+        }
+    ],
+    "fromVersion": "5.0.0",
+    "description": "",
+    "isPredefined": true
+}

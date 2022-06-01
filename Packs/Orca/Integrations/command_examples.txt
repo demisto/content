@@ -1,0 +1,2 @@
+!orca-get-asset asset_unique_id=vm_77777d777777_i-77bcc77efd8777777
+!orca-get-alerts alert_type=malware

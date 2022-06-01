@@ -25,9 +25,14 @@
  "hidden": false,
  "associatedTypes": [
   "Phishing",
+  "Phishing Alerts",
   "Email Communication"
  ],
- "systemAssociatedTypes": null,
+ "systemAssociatedTypes": [
+  "Email Communication",
+  "Phishing",
+  "Phishing Alerts"
+ ],
  "associatedToAll": false,
  "unmapped": false,
  "unsearchable": false,

@@ -211,32 +211,6 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "additionalcommunicatingips",
-                                "height": 55,
-                                "id": "50259d80-77e5-11ea-885d-370e171ed58d",
-                                "index": 0,
-                                "listId": "mvzri1qwnj-3b5cb910-77e5-11ea-885d-370e171ed58d",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "additionalcommunicatinghosts",
-                                "height": 55,
-                                "id": "41aa08e0-77e5-11ea-885d-370e171ed58d",
-                                "index": 0,
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "associateddomains",
-                                "height": 55,
-                                "id": "80aa9db0-77e6-11ea-885d-370e171ed58d",
-                                "index": 0,
-                                "startCol": 0
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 2,
                                 "fieldId": "infectedhostnames",
                                 "height": 55,
                                 "id": "8365c610-77e6-11ea-885d-370e171ed58d",
@@ -353,14 +327,6 @@
                                 "height": 24,
                                 "id": "374ebac0-78bd-11ea-86e7-8f6061b4d88c",
                                 "index": 0,
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "scannedports",
-                                "height": 24,
-                                "id": "e2b8fb60-78bc-11ea-86e7-8f6061b4d88c",
-                                "index": 1,
                                 "startCol": 0
                             },
                             {

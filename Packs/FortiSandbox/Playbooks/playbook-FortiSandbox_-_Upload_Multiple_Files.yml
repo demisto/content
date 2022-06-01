@@ -1,0 +1,123 @@
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
+description: Playbook used to upload files to FortiSandbox
+id: FortiSandbox - Upload Multiple Files
+inputs:
+- description: ""
+  key: FileEntryID
+  playbookInputQuery:
+  required: true
+  value: {}
+- description: ""
+  key: FileSHA256
+  playbookInputQuery:
+  required: true
+  value: {}
+- description: ""
+  key: ArchivePassword
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: ""
+  key: VM-CSV-List
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: Default is 0
+  key: MalkPkg
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: ""
+  key: SkipSteps
+  playbookInputQuery:
+  required: false
+  value: {}
+name: FortiSandbox - Upload Multiple Files
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 0035034c-9d10-45f4-896a-02744a8e6ccb
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 0035034c-9d10-45f4-896a-02744a8e6ccb
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      archive_password:
+        simple: ${inputs.ArchivePassword}
+      file_entry_id:
+        simple: ${inputs.FileEntryID}
+      malpkg:
+        simple: ${inputs.MalkPkg}
+      sha256:
+        simple: ${inputs.FileSHA256}
+      skip_steps:
+        simple: ${inputs.SkipSteps}
+      vm_csv_list:
+        simple: ${inputs.VM-CSV-List}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Upload file (on-demand submit)
+      id: e179557c-7ee1-4b21-8a61-91c47a923d42
+      iscommand: true
+      name: FortiSandbox Upload Multiple Files
+      script: '|||fortisandbox-upload-file'
+      type: regular
+      version: -1
+    taskid: e179557c-7ee1-4b21-8a61-91c47a923d42
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 275,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

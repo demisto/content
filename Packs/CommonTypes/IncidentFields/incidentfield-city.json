@@ -22,10 +22,24 @@
  "content": true,
  "group": 0,
  "hidden": false,
- "associatedTypes": [
-  "GDPR Data Breach"
- ],
- "systemAssociatedTypes": null,
+"associatedTypes": [
+	"GDPR Data Breach",
+	"IAM - New Hire",
+	"IAM - Terminate User",
+	"IAM - Update User",
+	"User Profile",
+	"IAM - Sync User",
+	"IAM - Rehire User"
+],
+"systemAssociatedTypes":[
+	"GDPR Data Breach",
+	"IAM - New Hire",
+	"IAM - Terminate User",
+	"IAM - Update User",
+	"User Profile",
+	"IAM - Sync User",
+	"IAM - Rehire User"
+],
  "associatedToAll": false,
  "unmapped": false,
  "unsearchable": false,

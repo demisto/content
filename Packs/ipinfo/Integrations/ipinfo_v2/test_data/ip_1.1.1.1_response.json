@@ -1,0 +1,13 @@
+{
+  "ip": "1.1.1.1",
+  "hostname": "one.one.one.one",
+  "anycast": true,
+  "city": "Miami",
+  "region": "Florida",
+  "country": "US",
+  "loc": "25.7867,-80.1800",
+  "org": "AS13335 Cloudflare, Inc.",
+  "postal": "33132",
+  "timezone": "America/New_York",
+  "readme": "https://ipinfo.io/missingauth"
+}

@@ -1,0 +1,282 @@
+description: Test playbook
+id: Microsoft_365_Defender-Test
+inputs: []
+fromversion: 5.5.0
+name: Microsoft_365_Defender-Test
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 9093d0c7-777f-4c13-8bdb-093a431fecd6
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 9093d0c7-777f-4c13-8bdb-093a431fecd6
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 970
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      limit:
+        simple: "3"
+      timeout:
+        simple: "120"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 47e1f4d3-c15e-4820-8c8a-60cc87603a21
+      iscommand: true
+      name: microsoft-365-defender-incidents-list
+      script: '|||microsoft-365-defender-incidents-list'
+      type: regular
+      version: -1
+    taskid: 47e1f4d3-c15e-4820-8c8a-60cc87603a21
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1190
+        }
+      }
+  "7":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Microsoft365Defender.Incident.incidentId
+          operator: isNotEmpty
+      label: "yes"
+    id: "7"
+    ignoreworker: false
+    nexttasks:
+      "yes":
+      - "8"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 4112c7f9-eb14-413e-868b-712b7a985b5d
+      iscommand: false
+      name: Verify Outputs
+      type: condition
+      version: -1
+    taskid: 4112c7f9-eb14-413e-868b-712b7a985b5d
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1400
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      id:
+        simple: ${Microsoft365Defender.Incident.incidentId}
+      timeout:
+        simple: "120"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 1a081c79-80ef-456a-81dd-1c7d0c8eb658
+      iscommand: true
+      name: microsoft-365-defender-incident-update
+      script: '|||microsoft-365-defender-incident-update'
+      type: regular
+      version: -1
+    taskid: 1a081c79-80ef-456a-81dd-1c7d0c8eb658
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1600
+        }
+      }
+  "9":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Microsoft365Defender.Incident.incidentId
+          operator: isNotEmpty
+      label: "yes"
+    id: "9"
+    ignoreworker: false
+    nexttasks:
+      "yes":
+      - "10"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: c87cabaa-9e19-4b6c-83e9-1b2fb664724a
+      iscommand: false
+      name: Verify Outputs
+      type: condition
+      version: -1
+    taskid: c87cabaa-9e19-4b6c-83e9-1b2fb664724a
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1800
+        }
+      }
+  "10":
+    id: "10"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "11"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      query:
+        simple: AlertInfo | limit 3
+      timeout:
+        simple: "120"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: e557514d-7fa3-46c9-879f-3198f400ba20
+      iscommand: true
+      name: microsoft-365-defender-advanced-hunting
+      script: '|||microsoft-365-defender-advanced-hunting'
+      type: regular
+      version: -1
+    taskid: e557514d-7fa3-46c9-879f-3198f400ba20
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2000
+        }
+      }
+  "11":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Microsoft365Defender.Hunt.query
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Microsoft365Defender.Hunt.results.
+          operator: isNotEmpty
+      label: "yes"
+    id: "11"
+    ignoreworker: false
+    nexttasks:
+      "yes":
+      - "12"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 2d1ea64d-6192-4cd2-8f98-7fdbb6c72e8d
+      iscommand: false
+      name: Verify Outputs
+      type: condition
+      version: -1
+    taskid: 2d1ea64d-6192-4cd2-8f98-7fdbb6c72e8d
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2200
+        }
+      }
+  "12":
+    id: "12"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: f8b62de7-0274-48a4-86a2-2e26dd6ff68a
+      iscommand: false
+      name: Test Done
+      type: title
+      version: -1
+      description: ''
+    taskid: f8b62de7-0274-48a4-86a2-2e26dd6ff68a
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2400
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1495,
+        "width": 380,
+        "x": 50,
+        "y": 970
+      }
+    }
+  }

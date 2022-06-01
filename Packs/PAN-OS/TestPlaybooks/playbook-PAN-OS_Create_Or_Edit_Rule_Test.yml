@@ -1,6 +1,7 @@
 id: PAN-OS Create Or Edit Rule Test
 version: -1
 name: PAN-OS Create Or Edit Rule Test
+description: Used in the palo_alto_panorama_test_pb Test playbook, hence skipped in the pack ignore.
 starttaskid: "0"
 tasks:
   "0":
@@ -125,7 +126,7 @@ tasks:
       id: b80be511-9f8f-4316-82f0-c27e6f70b668
       version: -1
       name: Get Rules
-      script: '|||panorama-list-rules'
+      script: '|||pan-os-list-rules'
       type: regular
       iscommand: true
       brand: ""
@@ -194,7 +195,7 @@ tasks:
       id: 196bb267-5b16-45e5-807e-f99430704363
       version: -1
       name: Get Rules
-      script: '|||panorama-list-rules'
+      script: '|||pan-os-list-rules'
       type: regular
       iscommand: true
       brand: ""
@@ -272,7 +273,7 @@ tasks:
       id: 971cdd47-6022-4c4c-8499-e8fb587b356a
       version: -1
       name: delete rule
-      script: '|||panorama-delete-rule'
+      script: '|||pan-os-delete-rule'
       type: regular
       iscommand: true
       brand: ""
@@ -463,7 +464,7 @@ tasks:
       id: cb6871c1-99ef-43c5-8b37-9055827b302c
       version: -1
       name: Get Rules
-      script: '|||panorama-list-rules'
+      script: '|||pan-os-list-rules'
       type: regular
       iscommand: true
       brand: ""
@@ -800,4 +801,4 @@ inputs:
   required: false
   description: ""
 outputs: []
-fromversion: 5.0.0
+fromversion: "6.1.0"

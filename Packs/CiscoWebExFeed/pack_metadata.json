@@ -1,0 +1,20 @@
+{
+    "name": "Cisco WebEx Feed",
+    "description": "Whitelist feed for Cisco WebEx using a screen scrape of the website.",
+    "support": "community",
+    "currentVersion": "1.1.4",
+    "author": "scottbrumley",
+    "url": "",
+    "email": "",
+    "created": "2020-10-11T15:40:43Z",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
+}

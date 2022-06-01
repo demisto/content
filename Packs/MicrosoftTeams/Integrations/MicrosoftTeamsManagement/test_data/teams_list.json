@@ -1,0 +1,37 @@
+{
+    "@odata.context": "https://graph.microsoft.com/beta/$metadata#groups",
+    "value": [
+        {
+            "id": "02bd9fd6-8f93-4758-87c3-1fb73740a315",
+            "description": "Welcome to the HR Taskforce team.",
+            "displayName": "HR Taskforce",
+            "groupTypes": [
+                "Unified"
+            ],
+            "mailEnabled": true,
+            "mailNickname": "HRTaskforce",
+            "resourceBehaviorOptions": [],
+            "resourceProvisioningOptions": [
+                "Team"
+            ],
+            "securityEnabled": false,
+            "visibility": "Private"
+        },
+        {
+            "id": "8090c93e-ba7c-433e-9f39-08c7ba07c0b3",
+            "description": "Welcome to the team that we've assembled to launch our product.",
+            "displayName": "X1050 Launch Team",
+            "groupTypes": [
+                "Unified"
+            ],
+            "mailEnabled": true,
+            "mailNickname": "X1050LaunchTeam",
+            "resourceBehaviorOptions": [],
+            "resourceProvisioningOptions": [
+                "Team"
+            ],
+            "securityEnabled": false,
+            "visibility": "Private"
+        }
+    ]
+}

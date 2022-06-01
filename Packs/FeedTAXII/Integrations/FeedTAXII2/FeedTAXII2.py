@@ -1,8 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-
-from typing import Any, Tuple, Optional
+from typing import Any, Tuple
 
 """ CONSTANT VARIABLES """
 
@@ -29,6 +28,12 @@ def try_parse_integer(
     return res
 
 
+def assert_incremental_feed_params(fetch_full_feed, is_incremental_feed):
+    if fetch_full_feed == is_incremental_feed:
+        toggle_value = 'enabled' if fetch_full_feed else 'disabled'
+        raise DemistoException(f"'Full Feed Fetch' cannot be {toggle_value} when 'Incremental Feed' is {toggle_value}.")
+
+
 """ COMMAND FUNCTIONS """
 
 
@@ -50,7 +55,6 @@ def fetch_indicators_command(
     limit,
     last_run_ctx,
     fetch_full_feed: bool = False,
-    filter_args: Optional[dict] = None,
 ) -> Tuple[list, dict]:
     """
     Fetch indicators from TAXII 2 server
@@ -59,22 +63,17 @@ def fetch_indicators_command(
     :param limit: upper limit of indicators to fetch
     :param last_run_ctx: last run dict with {collection_id: last_run_time string}
     :param fetch_full_feed: when set to true, will ignore last run, and try to fetch the entire feed
-    :param filter_args: filter args requested by the user
     :return: indicators in cortex TIM format
     """
     if initial_interval:
         initial_interval, _ = parse_date_range(
             initial_interval, date_format=TAXII_TIME_FORMAT
         )
-    if filter_args is None:
-        filter_args = {}
+
     last_fetch_time = (
         last_run_ctx.get(client.collection_to_fetch.id)
         if client.collection_to_fetch
         else None
-    )
-    filter_args["added_after"] = get_added_after(
-        fetch_full_feed, initial_interval, last_fetch_time, filter_args
     )
 
     if client.collection_to_fetch is None:
@@ -84,49 +83,46 @@ def fetch_indicators_command(
         indicators: list = []
         for collection in client.collections:
             client.collection_to_fetch = collection
-            filter_args["added_after"] = get_added_after(
+            added_after = get_added_after(
                 fetch_full_feed, initial_interval, last_run_ctx.get(collection.id)
             )
-            fetched_iocs = client.build_iterator(limit, **filter_args)
+            fetched_iocs = client.build_iterator(limit, added_after=added_after)
             indicators.extend(fetched_iocs)
+            last_run_ctx[collection.id] = client.last_fetched_indicator__modified
             if limit >= 0:
                 limit -= len(fetched_iocs)
                 if limit <= 0:
                     break
-            last_run_ctx[collection.id] = client.last_fetched_indicator__modified
     else:
         # fetch from a single collection
-        indicators = client.build_iterator(limit, **filter_args)
+        added_after = get_added_after(fetch_full_feed, initial_interval, last_fetch_time)
+        indicators = client.build_iterator(limit, added_after=added_after)
         last_run_ctx[client.collection_to_fetch.id] = (
             client.last_fetched_indicator__modified
             if client.last_fetched_indicator__modified
-            else filter_args.get("added_after")
+            else added_after
         )
     return indicators, last_run_ctx
 
 
 def get_added_after(
-    fetch_full_feed, initial_interval, last_fetch_time=None, filter_args=None
+    fetch_full_feed, initial_interval, last_fetch_time=None
 ):
     """
     Creates the added_after param, or extracts it from the filter_args
     :param fetch_full_feed: when set to true, will limit added_after
     :param initial_interval: initial_interval if no
     :param last_fetch_time: last_fetch time value (str)
-    :param filter_args: set of filter_args defined by the user to be merged with added_after
     :return: added_after
     """
     if fetch_full_feed:
         return initial_interval
 
-    if not filter_args or "added_after" not in filter_args:
-        return last_fetch_time or initial_interval
-
-    return filter_args["added_after"]
+    return last_fetch_time or initial_interval
 
 
 def get_indicators_command(
-    client, raw="false", limit=10, added_after=None, filter_args=None
+    client, raw="false", limit=10, added_after=None
 ):
     """
     Fetch indicators from TAXII 2 server
@@ -134,15 +130,13 @@ def get_indicators_command(
     :param raw: When set to "true" will return only rawJSON
     :param limit: upper limit of indicators to fetch
     :param (Optional) added_after: added after time string in parse_date_range format
-    :param (Optional) filter_args: filter to be used for taxii poll
     :return: indicators in cortex TIM format
     """
+
     limit = try_parse_integer(limit)
-    filter_args = handle_filter_arg(filter_args)
-    if added_after and "added_after" not in filter_args:
+    if added_after:
         added_after, _ = parse_date_range(added_after, date_format=TAXII_TIME_FORMAT)
-        filter_args["added_after"] = added_after
-    raw = raw == "true"
+    raw = argToBoolean(raw)
 
     if client.collection_to_fetch is None:
         # fetch all collections
@@ -151,7 +145,7 @@ def get_indicators_command(
         indicators: list = []
         for collection in client.collections:
             client.collection_to_fetch = collection
-            fetched_iocs = client.build_iterator(limit, **filter_args)
+            fetched_iocs = client.build_iterator(limit, added_after=added_after)
             indicators.extend(fetched_iocs)
             if limit >= 0:
                 limit -= len(fetched_iocs)
@@ -159,7 +153,7 @@ def get_indicators_command(
                     break
 
     else:
-        indicators = client.build_iterator(limit=limit, **filter_args)
+        indicators = client.build_iterator(limit=limit, added_after=added_after)
 
     if raw:
         demisto.results({"indicators": [x.get("rawJSON") for x in indicators]})
@@ -207,30 +201,9 @@ def reset_fetch_command(client):
     )
 
 
-def handle_filter_arg(filter_args=None, delimiter="="):
-    """
-    Transforms filter arguments (str) to a dict to be used by build_iterator
-    :param filter_args: filter_args as typed by the user in the filter_args param
-    :param delimiter: delimiter to use between filter_key and filter_val
-    :return: filter_args dict with type:indicator {filter_key: filter_value}
-
-    """
-    # add filter for indicator types by default
-    filter_dict = {"type": "indicator"}
-    if filter_args:
-        filter_args = argToList(filter_args)
-        try:
-            for arg in filter_args:
-                key, val = arg.split(delimiter)
-                filter_dict[key] = val
-        except ValueError:
-            raise DemistoException(
-                "Encountered an error while trying to parse filter_args, please make sure you entered them in the correct format"
-            )
-    return filter_dict
-
-
 def main():
+    objects_types = ['report', 'indicator', 'malware', 'campaign', 'attack-pattern',
+                     'course-of-action', 'intrusion-set', 'tool', 'threat-actor', 'infrastructure']
     params = demisto.params()
     args = demisto.args()
     url = params.get("url")
@@ -248,24 +221,31 @@ def main():
 
     initial_interval = params.get("initial_interval")
     fetch_full_feed = params.get("fetch_full_feed") or False
+    is_incremental_feed = params.get('feedIncremental') or False
     limit = try_parse_integer(params.get("limit") or -1)
     limit_per_request = try_parse_integer(params.get("limit_per_request"))
-    filter_args = handle_filter_arg(params.get("filter_args"))
+    certificate = params.get('certificate', None)
+    key = params.get('key', None)
+    objects_to_fetch = argToList(params.get('objects_to_fetch') or objects_types)
 
     command = demisto.command()
     demisto.info(f"Command being called in {CONTEXT_PREFIX} is {command}")
     try:
+        assert_incremental_feed_params(fetch_full_feed, is_incremental_feed)
         client = Taxii2FeedClient(
             url=url,
             collection_to_fetch=collection_to_fetch,
             proxies=proxies,
             verify=verify_certificate,
+            objects_to_fetch=objects_to_fetch,
             skip_complex_mode=skip_complex_mode,
             username=username,
             password=password,
             tags=feed_tags,
             limit_per_request=limit_per_request,
-            tlp_color=tlp_color
+            tlp_color=tlp_color,
+            certificate=certificate,
+            key=key,
         )
         client.initialise()
         commands = {
@@ -281,19 +261,19 @@ def main():
         elif demisto.command() == "fetch-indicators":
             if fetch_full_feed:
                 limit = -1
-            integration_ctx = demisto.getIntegrationContext() or {}
-            (indicators, integration_ctx) = fetch_indicators_command(
+
+            last_run_indicators = get_feed_last_run()
+            (indicators, last_run_indicators) = fetch_indicators_command(
                 client,
                 initial_interval,
                 limit,
-                integration_ctx,
+                last_run_indicators,
                 fetch_full_feed,
-                filter_args,
             )
             for iter_ in batch(indicators, batch_size=2000):
                 demisto.createIndicators(iter_)
 
-            demisto.setIntegrationContext(integration_ctx)
+            set_feed_last_run(last_run_indicators)
         else:
             return_results(commands[command](client, **args))  # type: ignore[operator]
 

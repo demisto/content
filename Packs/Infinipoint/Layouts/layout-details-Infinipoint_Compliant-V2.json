@@ -888,24 +888,6 @@
        },
        {
         "endCol": 2,
-        "fieldId": "infinipointdeviceid",
-        "height": 22,
-        "id": "6b8721b0-d713-11ea-9d77-ab03e81b1944",
-        "index": 1,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "infinipointcompliancestate",
-        "height": 22,
-        "id": "6a324010-d713-11ea-9d77-ab03e81b1944",
-        "index": 2,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
         "fieldId": "infinipointpolicyname",
         "height": 22,
         "id": "7127b6c0-d713-11ea-9d77-ab03e81b1944",

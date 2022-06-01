@@ -88,14 +88,14 @@ tasks:
               complex:
                 root: modules
                 filters:
-                - - operator: isEqualString
+                - - operator: inList
                     left:
                       value:
                         simple: modules.brand
                       iscontext: true
                     right:
                       value:
-                        simple: QRadar
+                        simple: QRadar,QRadar_v2,QRadar v3
                 - - operator: isEqualString
                     left:
                       value:
@@ -104,7 +104,6 @@ tasks:
                     right:
                       value:
                         simple: active
-                accessor: brand
             iscontext: true
     view: |-
       {
@@ -303,6 +302,14 @@ tasks:
                     right:
                       value:
                         simple: approved_black
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: playbookQuery.CustomFields.tags
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Sha256
                 accessor: value
             iscontext: true
     view: |-
@@ -749,7 +756,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: Sha1
+                  simple: Sha256
           accessor: value
           transformers:
           - operator: uniq
@@ -920,8 +927,7 @@ inputs:
   description: The name of the QRadar Sha1 reference set to insert the data in to.
   playbookInputQuery: null
 - key: QRadarSha256ReferenceSetName
-  value:
-    simple: Demisto Demo Sha256
+  value: {}
   required: false
   description: The name of the QRadar Sha256 reference set to insert the data in to.
   playbookInputQuery: null

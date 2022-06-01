@@ -1,0 +1,32 @@
+{
+ "id": "incident_fireeyenxeventcveid",
+ "version": -1,
+ "modified": "2020-08-26T20:27:11.157372701+05:30",
+ "name": "FireEye NX Event CVE ID",
+ "ownerOnly": false,
+ "placeholder": "CVE ID of the event.",
+ "description": "CVE ID of the event.",
+ "cliName": "fireeyenxeventcveid",
+ "type": "shortText",
+ "closeForm": false,
+ "editForm": false,
+ "required": false,
+ "neverSetAsRequired": false,
+ "isReadOnly": false,
+ "useAsKpi": false,
+ "locked": false,
+ "system": false,
+ "content": true,
+ "group": 0,
+ "hidden": false,
+ "associatedTypes": [
+  "FireEye NX IPS Event"
+ ],
+ "associatedToAll": false,
+ "unmapped": false,
+ "unsearchable": false,
+ "caseInsensitive": true,
+ "sla": 0,
+ "threshold": 72,
+ "fromVersion": "5.0.0"
+}

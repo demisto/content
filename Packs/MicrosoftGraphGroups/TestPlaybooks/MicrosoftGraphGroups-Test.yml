@@ -7,7 +7,6 @@ tasks:
     id: "0"
     taskid: e05b1592-66dd-400f-89ab-f748adfdf873
     type: start
-    description: ""
     task:
       id: e05b1592-66dd-400f-89ab-f748adfdf873
       version: -1
@@ -21,13 +20,15 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 50,
           "y": 50
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "1":
     id: "1"
     taskid: 788358d6-2cee-4005-8885-b05ba51562e7
@@ -57,13 +58,15 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 50,
           "y": 515
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "2":
     id: "2"
     taskid: 0b910e9d-65c5-488e-8abf-63f0f1c98d3a
@@ -102,13 +105,15 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 50,
           "y": 690
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "8":
     id: "8"
     taskid: eba78487-6a5d-441e-8dd4-b6560db27283
@@ -125,7 +130,6 @@ tasks:
     nexttasks:
       '#none#':
       - "15"
-      - "20"
     scriptarguments:
       group_id:
         complex:
@@ -144,13 +148,15 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 50,
           "y": 865
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "9":
     id: "9"
     taskid: d835ad57-1342-4543-8203-f0d24a0bba0d
@@ -160,20 +166,21 @@ tasks:
       version: -1
       name: Done!
       type: title
-      description: ""
       iscommand: false
       brand: ""
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 1885
+          "x": 50,
+          "y": 2585
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "10":
     id: "10"
     taskid: f8d6f04c-8158-491b-8a5f-b0e2ebdf5d24
@@ -201,13 +208,15 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 50,
           "y": 195
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "14":
     id: "14"
     taskid: 133655f6-8def-43b1-8080-ed5256b6aa5c
@@ -232,13 +241,15 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 1710
+          "x": 50,
+          "y": 2410
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "15":
     id: "15"
     taskid: f63f6f33-ab4d-42b6-8b2e-d9e0de1c0be1
@@ -254,7 +265,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "17"
+      - "20"
     scriptarguments:
       next_link: {}
       order_by: {}
@@ -269,6 +280,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "16":
     id: "16"
     taskid: 3c84982d-0350-435d-8660-3a94e554f14a
@@ -287,13 +300,15 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 50,
           "y": 370
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "17":
     id: "17"
     taskid: 33e708c4-bd79-4a36-82e0-08a22179c519
@@ -307,18 +322,20 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "18"
+      - "22"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 1215
+          "x": 50,
+          "y": 1565
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "18":
     id: "18"
     taskid: a8b61dee-134a-44c9-8ce0-65a1c90515b0
@@ -344,13 +361,15 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 1360
+          "x": 50,
+          "y": 2060
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "19":
     id: "19"
     taskid: 6387e7ff-47cb-4abe-8ecc-3af270250496
@@ -376,13 +395,15 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 1535
+          "x": 50,
+          "y": 2235
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "20":
     id: "20"
     taskid: 321e26d7-c603-4b26-87ef-784aeb3664c3
@@ -398,7 +419,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "17"
+      - "21"
     scriptarguments:
       filter:
         simple: startswith(displayName,'T')
@@ -410,20 +431,131 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1040
+          "x": 50,
+          "y": 1215
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
+    taskid: af000ec3-20c9-4332-8899-697041df2dc2
+    type: regular
+    task:
+      id: af000ec3-20c9-4332-8899-697041df2dc2
+      version: -1
+      name: List Group Members
+      description: Lists group members.
+      script: '|||msgraph-groups-list-members'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      filter: {}
+      group_id:
+        simple: 489080f2-98c3-4993-84ec-fa0aac622b2e
+      next_link: {}
+      top: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: 5fa062b2-9306-4fa3-89f4-4ed64ca1a66d
+    type: condition
+    task:
+      id: 5fa062b2-9306-4fa3-89f4-4ed64ca1a66d
+      version: -1
+      name: Checks whether a member is in group
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "18"
+      "yes":
+      - "23"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: MSGraphGroups.Members.ID
+            iscontext: true
+          right:
+            value:
+              simple: 2827c1e7-edb6-4529-b50d-25984e968637
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "23":
+    id: "23"
+    taskid: 0c5b7445-59b1-440c-8cb8-ffedefd7e352
+    type: regular
+    task:
+      id: 0c5b7445-59b1-440c-8cb8-ffedefd7e352
+      version: -1
+      name: Remove member
+      description: Remove a member from a group.
+      script: '|||msgraph-groups-remove-member'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      group_id:
+        simple: 489080f2-98c3-4993-84ec-fa0aac622b2e
+      user_id:
+        simple: 2827c1e7-edb6-4529-b50d-25984e968637
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 270,
+          "y": 1880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1900,
-        "width": 810,
+        "height": 2600,
+        "width": 600,
         "x": 50,
         "y": 50
       }

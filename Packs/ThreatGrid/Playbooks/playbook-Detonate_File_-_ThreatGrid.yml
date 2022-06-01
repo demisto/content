@@ -575,9 +575,9 @@ outputs:
 - contextPath: DBotScore.Score
   description: The actual score
   type: number
-- contextPath: Sample.State
+- contextPath: ThreatGrid.Sample.State
   description: The sample state.
-- contextPath: Sample.ID
+- contextPath: ThreatGrid.Sample.ID
   description: The sample ID.
 fromversion: 5.0.0
 tests:

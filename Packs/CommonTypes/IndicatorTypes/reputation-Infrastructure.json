@@ -1,0 +1,40 @@
+{
+    "id": "Infrastructure",
+    "version": -1,
+    "modified": "2021-05-02T14:25:14.918549+03:00",
+    "shouldCommit": false,
+    "regex": "",
+    "details": "Infrastructure",
+    "prevDetails": "Infrastructure",
+    "system": false,
+    "locked": false,
+    "disabled": false,
+    "file": false,
+    "updateAfter": 0,
+    "mergeContext": false,
+    "manualMapping": {
+        "aliases": {
+            "simple": "Infrastructure.aliases",
+            "complex": null
+        },
+        "description": {
+            "simple": "Infrastructure.description",
+            "complex": null
+        },
+        "infrastructuretypes": {
+            "simple": "Infrastructure.infrastructuretypes",
+            "complex": null
+        },
+        "killchainphases": {
+            "simple": "Infrastructure.killchainphases",
+            "complex": null
+        },
+        "stixid": {
+            "simple": "Infrastructure.stixid",
+            "complex": null
+        }
+    },
+    "expiration": 0,
+    "layout": "Infrastructure",
+    "fromVersion": "5.5.0"
+}

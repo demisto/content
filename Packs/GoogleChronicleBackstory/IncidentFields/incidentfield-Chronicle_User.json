@@ -1,0 +1,35 @@
+{
+    "id": "incident_chronicleuser",
+    "version": -1,
+    "modified": "2021-01-18T14:04:51.857939861+05:30",
+    "name": "Chronicle User",
+    "ownerOnly": false,
+    "description": "The unique identifier of the user.",
+    "placeholder": "The unique identifier of the user.",
+    "cliName": "chronicleuser",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": false,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "Chronicle User Alert"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "5.0.0",
+    "marketplaces": [
+       "xsoar"
+    ]
+}

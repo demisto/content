@@ -1,0 +1,33 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Splunk Notable Generic"
+    ],
+    "caseInsensitive": true,
+    "cliName": "notabledrilldown",
+    "closeForm": false,
+    "content": true,
+    "description": "The result of the drilldown search.",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_notabledrilldown",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Notable Drilldown",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "markdown",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

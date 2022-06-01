@@ -1,0 +1,72 @@
+{
+    "size": 5,
+    "dataType": "tasks",
+    "params": {
+        "groupBy": [
+            "taskName",
+            "state"
+        ],
+        "keys": [
+            "sum|1"
+        ],
+        "referenceLine": {
+            "type": "avg"
+        },
+        "tableColumns": [
+            {
+                "isDefault": true,
+                "key": "count",
+                "position": 0
+            },
+            {
+                "isDefault": true,
+                "key": "data",
+                "position": 1
+            },
+            {
+                "isDefault": true,
+                "key": "floatData",
+                "position": 2
+            },
+            {
+                "isDefault": true,
+                "key": "groups",
+                "position": 3
+            },
+            {
+                "isDefault": true,
+                "key": "name",
+                "position": 4
+            },
+            {
+                "isDefault": true,
+                "key": "color",
+                "position": 5
+            }
+        ],
+        "xAxisLabel": "Task names",
+        "yAxisLabel": "Count"
+    },
+    "query": "taskName:* automated:T",
+    "modified": "2021-06-03T10:32:34.189169383Z",
+    "name": "Executions by status per Automated Tasks (top 5)",
+    "dateRange": {
+        "fromDate": "0001-01-01T00:00:00Z",
+        "toDate": "0001-01-01T00:00:00Z",
+        "period": {
+            "by": "",
+            "byTo": "",
+            "byFrom": "days",
+            "toValue": null,
+            "fromValue": 7,
+            "field": ""
+        },
+        "fromDateLicense": "0001-01-01T00:00:00Z"
+    },
+    "isPredefined": true,
+    "version": -1,
+    "id": "executions-by-status-per-automated-tasks-top-5",
+    "widgetType": "column",
+    "fromVersion": "6.2.0",
+    "description": "Executions by status per Automated Tasks (top 5)"
+}

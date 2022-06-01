@@ -1,0 +1,17 @@
+{
+    "description": "The suggested classifier for the CCTV incident type",
+    "feed": false,
+    "id": "UnifiVideo_classifier",
+    "keyTypeMap": {
+        "fullTimeRecording": "CCTV",
+        "motionRecording": "CCTV"
+    },
+    "name": "UnifiVideo_classifier",
+    "transformer": {
+        "complex": null,
+        "simple": "event"
+    },
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

@@ -1,0 +1,23 @@
+{
+    "name": "Web Scraper",
+    "description": "Web Scrap websites and html pages matching a navigation tree.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Ayman Mahmoud",
+    "url": "",
+    "email": "amahmoud@paloaltonetworks.com",
+    "categories": [
+        "IT Services"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "devEmail": [
+        "amahmoud@paloaltonetworks.com"
+    ],
+    "githubUser": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
+}

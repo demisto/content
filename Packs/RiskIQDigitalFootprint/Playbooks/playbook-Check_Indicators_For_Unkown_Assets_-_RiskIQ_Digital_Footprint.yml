@@ -1,0 +1,407 @@
+id: Check Indicators For Unknown Assets - RiskIQ Digital Footprint
+version: -1
+name: Check Indicators For Unknown Assets - RiskIQ Digital Footprint
+description: |-
+  This playbook receives indicators from its parent playbook and checks if the indicator is an unknown or a known asset in the RiskIQ Digital Footprint inventory and gives out a list of the unknown as well as known assets. This playbook cannot be run in quiet mode. This playbook needs to be used with caution as it might use up the integration’s API license when running for large amounts of indicators.
+  Supported integration:
+  - RiskIQ Digital Footprint
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: dabf4a38-4b23-47e9-8914-924775694a51
+    type: start
+    task:
+      id: dabf4a38-4b23-47e9-8914-924775694a51
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 760,
+          "y": -400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: bb2f491b-e3a4-4ba1-8a87-b0b814b5581d
+    type: regular
+    task:
+      id: bb2f491b-e3a4-4ba1-8a87-b0b814b5581d
+      version: -1
+      name: Get Asset Details
+      description: Retrieve the asset of the specified UUID or type and name from
+        Global Inventory.
+      script: '|||df-get-asset'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      global: {}
+      name:
+        complex:
+          root: inputs.asset_name
+      recent: {}
+      type:
+        complex:
+          root: inputs.asset_type
+      uuid: {}
+      size: {}
+    reputationcalc: 3
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 40
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 46036d18-eafa-478a-890e-cb7ce59d3ed3
+    type: condition
+    task:
+      id: 46036d18-eafa-478a-890e-cb7ce59d3ed3
+      version: -1
+      name: Is the asset a known asset?
+      description: Checks if the indicator is a known asset by verifying if its state
+        fetched from its details was "CONFIRMED".
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "17"
+      "yes":
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: RiskIQDigitalFootprint
+                filters:
+                - - operator: isNotEmpty
+                    left:
+                      value:
+                        simple: RiskIQDigitalFootprint.Asset.state
+                      iscontext: true
+                accessor: Asset.state
+            iscontext: true
+          right:
+            value:
+              simple: CONFIRMED
+    view: |-
+      {
+        "position": {
+          "x": 280,
+          "y": 360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 223a4b12-a3d3-4ff5-8334-ddba9fc38a20
+    type: title
+    task:
+      id: 223a4b12-a3d3-4ff5-8334-ddba9fc38a20
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 760,
+          "y": 700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: a1eceed7-ed6e-4239-8ace-d3e75f26c2ba
+    type: condition
+    task:
+      id: a1eceed7-ed6e-4239-8ace-d3e75f26c2ba
+      version: -1
+      name: Is RiskIQ Digital Footprint integration enabled?
+      description: Checks whether there is an active instance of the RiskIQ Digital
+        Footprint integration enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "19"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: RiskIQDigitalFootprint
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 760,
+          "y": -280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: deb257a8-8eb8-4a21-8f98-26631c2ad199
+    type: condition
+    task:
+      id: deb257a8-8eb8-4a21-8f98-26631c2ad199
+      version: -1
+      name: Is the asset not found in the RiskIQ Digital Footprint inventory?
+      description: Checks if the given indicator is present in the RiskIQ Digital
+        Footprint inventory or not by checking if Get asset details step returns an
+        error.
+      scriptName: isError
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "2"
+      "yes":
+      - "17"
+    scriptarguments:
+      entryId:
+        complex:
+          root: lastCompletedTaskEntries
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: c57aab25-72e5-4412-8e5d-bde994c6bedd
+    type: regular
+    task:
+      id: c57aab25-72e5-4412-8e5d-bde994c6bedd
+      version: -1
+      name: Add asset to the unknown asset list
+      description: Sets the asset information to the UnknownAssets key.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: UnknownAssets
+      stringify: {}
+      value:
+        simple: '{"Asset Name": "${inputs.asset_name}", "Asset Type": "${inputs.asset_type}",
+          "Should the asset be added? Yes or No": "No"}'
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 520,
+          "y": 530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: 12219cb7-94db-41af-863b-68820945c668
+    type: regular
+    task:
+      id: 12219cb7-94db-41af-863b-68820945c668
+      version: -1
+      name: Add asset to the known asset list
+      description: Sets the asset information to the KnownAssets key.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: KnownAssets
+      stringify: {}
+      value:
+        simple: '{"Asset Name": "${inputs.asset_name}", "Asset Type": "${inputs.asset_type}",
+          "Operation to be performed on the asset: Update or Remove or None": "None",
+          "Action to be performed on the asset property: Add or Update or Remove":
+          "Add", "Asset State: Candidate or Approved Inventory or Requires Investigation
+          or Dependencies or Monitor Only": "", "Asset Priority: High or Medium or
+          Low or None": "", "Is the asset an enterprise asset? true or false": "",
+          "Brands of the asset": "", "Organizations of the asset": "", "Tags of the
+          asset": "", "Affected target asset types": ""}'
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 100,
+          "y": 530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: 50138542-59b9-4c13-8adc-05b4aae7fcd7
+    type: regular
+    task:
+      id: 50138542-59b9-4c13-8adc-05b4aae7fcd7
+      version: -1
+      name: Clean "RiskIQDigitalFootprint" key from the context
+      description: Delete "RiskIQDigitalFootprint" field from the context.
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all: {}
+      index: {}
+      key:
+        simple: RiskIQDigitalFootprint
+      keysToKeep: {}
+      subplaybook:
+        simple: auto
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "7_6_#default#": 0.46
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1165,
+        "width": 1040,
+        "x": 100,
+        "y": -400
+      }
+    }
+  }
+inputs:
+- key: asset_name
+  value: {}
+  required: true
+  description: Name of the asset.
+  playbookInputQuery:
+- key: asset_type
+  value: {}
+  required: true
+  description: 'Type of the asset. Possible values: Domain, Host, IP Address, IP Block,
+    ASN, Page, SSL Cert, Contact.'
+  playbookInputQuery:
+outputs:
+- contextPath: UnknownAssets
+  description: The list of indicators that are identified as unknown assets.
+  type: unknown
+- contextPath: KnownAssets
+  description: The list of indicators that are identified as known assets.
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

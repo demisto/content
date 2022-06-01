@@ -1,0 +1,19 @@
+!thycotic-secret-create name="xsoarSecret" secretTemplateId="6003" siteId="1" checkOutEnabled=true folderId=3 machine_item="my-machine" username_item="my-username" password_item="XXXXXX@@@@@####"
+!thycotic-secret-search-name search_name=xsoarSecret
+!thycotic-secret-search filter.folderId=3 filter.includeSubFolders=true filter.searchField=name filter.searchText=xsoar
+!thycotic-secret-get secret_id=2
+!thycotic-secret-username-get secret_id=2
+!thycotic-secret-password-get secret_id=2
+!thycotic-secret-password-update secret_id=2 newpassword=12345
+!thycotic-secret-checkout secret_id=2
+!thycotic-secret-checkin secret_id=2
+!thycotic-secret-rpc-changepassword secret_id=4 newPassword="Test000"
+!thycotic-secret-delete id=2
+!thycotic-folder-create foldername="xsoarFolderTest" foldertypeid="1" parentfolderid="3"
+!thycotic-folder-search foldername="xsoarFolderTest"
+!thycotic-folder-update id=4 folderName="SafexsoarTest"
+!thycotic-folder-delete folder_id="4"
+!thycotic-user-create displayName="xsoarUserTest1" password="1234567890" userName="XSOAR" emailAddress="ff@ff.com"
+!thycotic-user-search filter.searchFields="userName" filter.searchText="xsoarUser"
+!thycotic-user-update id="10" displayName="XsoarNew" password="0987654321"
+!thycotic-user-delete id="10"

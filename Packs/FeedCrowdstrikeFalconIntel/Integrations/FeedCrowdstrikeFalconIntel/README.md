@@ -16,6 +16,7 @@ The CrowdStrike intelligence team tracks the activities of threat actor groups a
 | feedExpirationInterval |  | False |
 | feedIncremental | Incremental feed | False |
 | feedFetchInterval | Feed fetch interval | False |
+| limit | Number of top indicators to fetch from the feed | False |
 | feedBypassExclusionList | Bypass exclusion list | False |
 | insecure | Trust any certificate \(not secure\) | False |
 | proxy | Use system proxy settings | False |
@@ -27,7 +28,7 @@ The CrowdStrike intelligence team tracks the activities of threat actor groups a
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### crowdstrike-falcon-intel-get-indicators
 ***

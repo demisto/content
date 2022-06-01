@@ -1,6 +1,6 @@
 {
   "Type": 1,
-  "Contents": [
+  "Contents":
     {
       "configuredName": "Phishing-Suspected",
       "customCategory": true,
@@ -12,7 +12,7 @@
       "urls": [],
       "val": 144
     }
-  ],
+  ,
   "ContentsFormat": "json",
   "ReadableContentsFormat": "markdown",
   "HumanReadable": "Removed the following URL addresses to category CUSTOM_1:\n- demisto.com\n- dbot.com\n- www.demisto22.com\n",
@@ -24,3 +24,4 @@
     }
   }
 }
+

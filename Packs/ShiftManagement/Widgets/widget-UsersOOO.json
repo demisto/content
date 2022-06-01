@@ -1,0 +1,11 @@
+{
+  "id": "UsersOOO",
+  "name": "Out of office users",
+  "dataType": "scripts",
+  "widgetType": "text",
+  "query": "GetUsersOOO",
+  "version": -1,
+  "description": "Details of the users that are currently out of office",
+  "isPredefined": true,
+  "fromVersion": "5.5.0"
+}

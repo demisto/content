@@ -1,0 +1,158 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "mandiant-automated-defense-incoming-mapper",
+    "mapping": {
+        "Mandiant Automated Defense Incident": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "MAD Accounts": {
+                    "complex": null,
+                    "simple": "accounts"
+                },
+                "MAD Asset Criticality": {
+                    "complex": null,
+                    "simple": "assetCriticality"
+                },
+                "MAD Assets": {
+                    "complex": null,
+                    "simple": "assets"
+                },
+                "MAD Assigned Users": {
+                    "complex": null,
+                    "simple": "assignedUsers"
+                },
+                "MAD Attack Stage": {
+                    "complex": null,
+                    "simple": "attackStage"
+                },
+                "MAD Attack Tactic": {
+                    "complex": null,
+                    "simple": "attackTactic"
+                },
+                "MAD Close URL": {
+                    "complex": null,
+                    "simple": "closeURL"
+                },
+                "MAD Description": {
+                    "complex": null,
+                    "simple": "description"
+                },
+                "MAD Domains": {
+                    "complex": null,
+                    "simple": "domains"
+                },
+                "MAD Escalation Reasons": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "escalationreasons",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "MAD Event Count": {
+                    "complex": null,
+                    "simple": "eventCount"
+                },
+                "MAD External Systems": {
+                    "complex": null,
+                    "simple": "externalsystems"
+                },
+                "MAD Feedback Comments": {
+                    "complex": null,
+                    "simple": "feedback.comments"
+                },
+                "MAD Feedback Outcome": {
+                    "complex": null,
+                    "simple": "feedback.outcome"
+                },
+                "MAD Feedback Time Updated": {
+                    "complex": null,
+                    "simple": "feedback.timeUpdated"
+                },
+                "MAD Feedback User Id": {
+                    "complex": null,
+                    "simple": "feedback.userId"
+                },
+                "MAD File Hashes": {
+                    "complex": null,
+                    "simple": "hashes"
+                },
+                "MAD First Event Time": {
+                    "complex": null,
+                    "simple": "firstEventTime"
+                },
+                "MAD Incident Id": {
+                    "complex": null,
+                    "simple": "incidentId"
+                },
+                "MAD Last Event Time": {
+                    "complex": null,
+                    "simple": "lastEventTime"
+                },
+                "MAD Malware": {
+                    "complex": null,
+                    "simple": "malware"
+                },
+                "MAD Status": {
+                    "complex": null,
+                    "simple": "status"
+                },
+                "MAD Probability": {
+                    "complex": null,
+                    "simple": "probability"
+                },
+                "MAD Internal Tenant Id": {
+                    "complex": null,
+                    "simple": "tenantIdRespond"
+                },
+                "MAD Signatures": {
+                    "complex": null,
+                    "simple": "signatures"
+                },
+                "MAD External Tenant Id": {
+                    "complex": null,
+                    "simple": "tenantId"
+                },
+                "MAD Time Generated": {
+                    "complex": null,
+                    "simple": "timeGenerated"
+                },
+                "Title": {
+                    "complex": null,
+                    "simple": "title"
+                },
+                "MAD URL": {
+                    "complex": null,
+                    "simple": "URL"
+                },
+                "severity": {
+                    "complex": null,
+                    "simple": "severity"
+                }
+            }
+        },
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "dbotMirrorDirection": {
+                    "complex": null,
+                    "simple": "dbotMirrorDirection"
+                },
+                "dbotMirrorId": {
+                    "complex": null,
+                    "simple": "respondRemoteId"
+                },
+                "dbotMirrorInstance": {
+                    "complex": null,
+                    "simple": "dbotMirrorInstance"
+                }
+            }
+        }
+    },
+    "name": "Mandiant Automated Defense Incoming Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

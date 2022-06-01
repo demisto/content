@@ -1,10 +1,10 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
+from typing import List, Tuple, Optional
 
 # IMPORTS
 import requests
-from typing import List, Tuple, Optional
+from CommonServerUserPython import *
+
+from CommonServerPython import *
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -44,60 +44,23 @@ class Client(BaseClient):
         indicator_list = res.text.split('\n')
         return indicator_list
 
-    def get_ip_type(self, indicator):
+    @staticmethod
+    def find_indicator_type(indicator: str) -> str:
         """
-        Indicates the correct IP of the given indicator.
+        Get the type of the indicator.
+
         Args:
-            indicator: (str) Will be checked according to it the type will be returned.
+            indicator (str): The indicator whose type we want to check.
+
         Returns:
-            Indicator Type of the given value.
+            str: The type of the indicator.
         """
-        if re.match(ipv4cidrRegex, indicator):
-            return FeedIndicatorType.CIDR
-
-        elif re.match(ipv6cidrRegex, indicator):
-            return FeedIndicatorType.IPv6CIDR
-
-        elif re.match(ipv4Regex, indicator):
-            return FeedIndicatorType.IP
-
-        elif re.match(ipv6Regex, indicator):
-            return FeedIndicatorType.IPv6
-
-        else:
-            return None
-
-    def find_indicator_type(self, indicator):
-        """Infer the type of the indicator.
-        Args:
-            indicator(str): The indicator whose type we want to check.
-        Returns:
-            str. The type of the indicator.
-        """
-
-        # trying to catch X.X.X.X:portNum
-        if ':' in indicator and '/' not in indicator:
-            sub_indicator = indicator.split(':', 1)[0]
-            ip_type = self.get_ip_type(sub_indicator)
-            if ip_type:
-                return ip_type
-
-        ip_type = self.get_ip_type(indicator)
-        if ip_type:
-            # catch URLs of type X.X.X.X/path/url or X.X.X.X:portNum/path/url
-            if '/' in indicator and (ip_type not in [FeedIndicatorType.IPv6CIDR, FeedIndicatorType.CIDR]):
-                return FeedIndicatorType.URL
-
-            else:
-                return ip_type
-
+        if re.match(urlRegex, indicator):
+            return FeedIndicatorType.URL
+        elif ip_type := FeedIndicatorType.ip_to_indicator_type(indicator):
+            return ip_type
         elif re.match(sha256Regex, indicator):
             return FeedIndicatorType.File
-
-        # in AutoFocus, URLs include a path while domains do not - so '/' is a good sign for us to catch URLs.
-        elif '/' in indicator:
-            return FeedIndicatorType.URL
-
         else:
             return FeedIndicatorType.Domain
 
@@ -237,17 +200,19 @@ def main():
     params = demisto.params()
     feed_tags = argToList(params.get('feedTags'))
     tlp_color = params.get('tlp_color')
-    client = Client(api_key=params.get('api_key'),
-                    insecure=params.get('insecure'))
 
     command = demisto.command()
     demisto.info(f'Command being called is {command}')
-    # Switch case
+
     commands = {
         'test-module': module_test_command,
         'autofocus-daily-get-indicators': get_indicators_command
     }
     try:
+        auto_focus_key_retriever = AutoFocusKeyRetriever(params.get('api_key'))
+        client = Client(api_key=auto_focus_key_retriever.key,
+                        insecure=params.get('insecure'))
+
         if demisto.command() == 'fetch-indicators':
             indicators = fetch_indicators_command(client, feed_tags, tlp_color)
             # we submit the indicators in batches

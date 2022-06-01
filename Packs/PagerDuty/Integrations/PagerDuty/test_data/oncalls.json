@@ -1,0 +1,60 @@
+{
+  "oncalls": [
+    {
+      "user": {
+        "id": "PT23IWX",
+        "type": "user_reference",
+        "summary": "Tim Wright",
+        "self": "https://api.pagerduty.com/users/PT23IWX",
+        "html_url": "https://subdomain.pagerduty.com/users/PT23IWX"
+      },
+      "schedule": {
+        "id": "PI7DH85",
+        "type": "schedule_reference",
+        "summary": "Daily Engineering Rotation",
+        "self": "https://api.pagerduty.com/schedules/PI7DH85",
+        "html_url": "https://subdomain.pagerduty.com/schedules/PI7DH85"
+      },
+      "escalation_policy": {
+        "id": "PT20YPA",
+        "type": "escalation_policy_reference",
+        "summary": "Engineering Escalation Policy",
+        "self": "https://api.pagerduty.com/escalation_policies/PT20YPA",
+        "html_url": "https://subdomain.pagerduty.com/escalation_policies/PT20YPA"
+      },
+      "escalation_level": 2,
+      "start": "2015-03-06T15:28:51-05:00",
+      "end": "2015-03-07T15:28:51-05:00"
+    },
+    {
+      "user": {
+        "id": "PT23IUI",
+        "type": "user_reference",
+        "summary": "Tina Wright",
+        "self": "https://api.pagerduty.com/users/PT23IUI",
+        "html_url": "https://subdomain.pagerduty.com/users/PT23IUI"
+      },
+      "schedule": {
+        "id": "PA7DH85",
+        "type": "schedule_reference",
+        "summary": "SecOps Engineering Rotation",
+        "self": "https://api.pagerduty.com/schedules/PA7DH85",
+        "html_url": "https://subdomain.pagerduty.com/schedules/PA7DH85"
+      },
+      "escalation_policy": {
+        "id": "PT20YPA",
+        "type": "escalation_policy_reference",
+        "summary": "Engineering Escalation Policy",
+        "self": "https://api.pagerduty.com/escalation_policies/PT20YPA",
+        "html_url": "https://subdomain.pagerduty.com/escalation_policies/PT20YPA"
+      },
+      "escalation_level": 2,
+      "start": "2015-03-06T15:28:51-05:00",
+      "end": "2015-03-07T15:28:51-05:00"
+    }
+  ],
+  "limit": 25,
+  "offset": 0,
+  "more": false,
+  "total": null
+}

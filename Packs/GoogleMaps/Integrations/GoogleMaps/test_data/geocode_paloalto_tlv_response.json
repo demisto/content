@@ -1,0 +1,74 @@
+{
+  "results": [
+    {
+      "address_components": [
+        {
+          "long_name": "94a",
+          "short_name": "94a",
+          "types": [
+            "street_number"
+          ]
+        },
+        {
+          "long_name": "Yigal Alon Street",
+          "short_name": "Yigal Alon St",
+          "types": [
+            "route"
+          ]
+        },
+        {
+          "long_name": "Tel Aviv-Yafo",
+          "short_name": "Tel Aviv-Yafo",
+          "types": [
+            "locality",
+            "political"
+          ]
+        },
+        {
+          "long_name": "Tel Aviv District",
+          "short_name": "Tel Aviv District",
+          "types": [
+            "administrative_area_level_1",
+            "political"
+          ]
+        },
+        {
+          "long_name": "Israel",
+          "short_name": "IL",
+          "types": [
+            "country",
+            "political"
+          ]
+        },
+        {
+          "long_name": "6789155",
+          "short_name": "6789155",
+          "types": [
+            "postal_code"
+          ]
+        }
+      ],
+      "formatted_address": "Yigal Alon St 94a, Tel Aviv-Yafo, 6789155, Israel",
+      "geometry": {
+        "location": {
+          "lat": 32.0688581,
+          "lng": 34.7940206
+        },
+        "location_type": "ROOFTOP",
+        "viewport": {
+          "northeast": {
+            "lat": 32.0702070802915,
+            "lng": 34.7953695802915
+          },
+          "southwest": {
+            "lat": 32.0675091197085,
+            "lng": 34.7926716197085
+          }
+        }
+      },
+      "place_id": "ChIJPVB6sZ9LHRUROjqVuK_uTbg", "plus_code": {
+      "compound_code": "3Q9V+GJ Tel Aviv-Yafo, Israel", "global_code": "8G4P3Q9V+GJ"
+    }, "types": [
+      "establishment", "point_of_interest"
+    ]}], "status": "OK"
+}

@@ -1,0 +1,31 @@
+{
+    "id": "incident_cofensetriagereportprocessedat",
+    "version": -1,
+    "modified": "2021-06-02T20:14:19.067116493+05:30",
+    "name": "Cofense Triage Report Processed At",
+    "ownerOnly": false,
+    "description": "Date and time, in ISO 8601 format, when the reported email was processed. If the reported email is still in Inbox or Recon, the response contains a null value.",
+    "cliName": "cofensetriagereportprocessedat",
+    "type": "date",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "Cofense Triage Report"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.0.0"
+}

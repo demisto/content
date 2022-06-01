@@ -1,4 +1,3 @@
-elasticcommonfields: {}
 id: DbotPredictOufOfTheBoxTest
 version: -1
 name: DbotPredictOufOfTheBoxTest
@@ -7,11 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: e2db382a-939c-41e7-8520-d3e3d9b7f315
+    taskid: ae5d8fff-3436-4e05-8961-b42b53bd5821
     type: start
     task:
-      elasticcommonfields: {}
-      id: e2db382a-939c-41e7-8520-d3e3d9b7f315
+      id: ae5d8fff-3436-4e05-8961-b42b53bd5821
       version: -1
       name: ""
       iscommand: false
@@ -34,11 +32,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: 3c4a437b-9c9c-43b5-8d13-d8641587b077
+    taskid: 6429b7e5-d71b-4d73-8afb-f6c8fa03dd93
     type: regular
     task:
-      elasticcommonfields: {}
-      id: 3c4a437b-9c9c-43b5-8d13-d8641587b077
+      id: 6429b7e5-d71b-4d73-8afb-f6c8fa03dd93
       version: -1
       name: Clear Context
       description: Delete field from context
@@ -71,11 +68,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: 64b551fa-6c41-4856-89ba-04f168e0e782
+    taskid: a59bc19d-c6b3-4159-86c2-f3932d3b24f7
     type: regular
     task:
-      elasticcommonfields: {}
-      id: 64b551fa-6c41-4856-89ba-04f168e0e782
+      id: a59bc19d-c6b3-4159-86c2-f3932d3b24f7
       version: -1
       name: Predict Using Out Of The Box Model
       scriptName: DBotPredictOutOfTheBox
@@ -100,7 +96,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 720
+          "y": 1070
         }
       }
     note: false
@@ -110,11 +106,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: b938a13c-ba9f-454e-8418-21496f794394
+    taskid: f46b6fc1-6b99-4bc4-8b21-90807210bfae
     type: condition
     task:
-      elasticcommonfields: {}
-      id: b938a13c-ba9f-454e-8418-21496f794394
+      id: f46b6fc1-6b99-4bc4-8b21-90807210bfae
       version: -1
       name: Check Prediction
       type: condition
@@ -147,7 +142,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 895
+          "y": 1245
         }
       }
     note: false
@@ -157,11 +152,10 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: 416d87d9-5b9f-4fb5-884e-6a81aeba8c88
+    taskid: 6c7db9ac-0377-4cc1-8f0b-62e5ba136313
     type: title
     task:
-      elasticcommonfields: {}
-      id: 416d87d9-5b9f-4fb5-884e-6a81aeba8c88
+      id: 6c7db9ac-0377-4cc1-8f0b-62e5ba136313
       version: -1
       name: Done
       type: title
@@ -172,7 +166,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1070
+          "y": 1420
         }
       }
     note: false
@@ -182,14 +176,14 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: 8b49572a-0b69-4ea4-82cc-39a39235938f
+    taskid: 33ae6a41-19ed-498e-887a-8bd1f5929437
     type: regular
     task:
-      elasticcommonfields: {}
-      id: 8b49572a-0b69-4ea4-82cc-39a39235938f
+      id: 33ae6a41-19ed-498e-887a-8bd1f5929437
       version: -1
       name: Load Automation's Docker
-      description: Predict phishing incidents using the out-of-the-box pretrained model.
+      description: Predict phishing incidents using the out-of-the-box pretrained
+        model.
       scriptName: DBotPredictOutOfTheBox
       type: regular
       iscommand: false
@@ -223,11 +217,10 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: efed33b9-745c-4bfc-84fe-102cdf1731bf
+    taskid: 4a26aadb-376e-451b-8cb0-a97abf64ae5a
     type: regular
     task:
-      elasticcommonfields: {}
-      id: efed33b9-745c-4bfc-84fe-102cdf1731bf
+      id: 4a26aadb-376e-451b-8cb0-a97abf64ae5a
       version: -1
       name: Wait for automation
       description: Sleep for X seconds
@@ -237,7 +230,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
+      - "7"
     scriptarguments:
       seconds:
         simple: "60"
@@ -254,12 +247,87 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+  "7":
+    id: "7"
+    taskid: bf5571cb-b2c2-46c5-8a85-49c3cbb4c841
+    type: regular
+    task:
+      id: bf5571cb-b2c2-46c5-8a85-49c3cbb4c841
+      version: -1
+      name: 'Load Automation''s Docker #2'
+      description: Predict phishing incidents using the out-of-the-box pretrained
+        model.
+      scriptName: DBotPredictOutOfTheBox
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      confidenceThreshold: {}
+      emailBody:
+        simple: test
+      emailBodyHTML: {}
+      emailSubject: {}
+      labelProbabilityThreshold: {}
+      minTextLength: {}
+      returnError: {}
+      setIncidentFields: {}
+      topWordsLimit: {}
+      wordThreshold: {}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: b06c64ee-8178-4d67-8995-e9de309463b4
+    type: regular
+    task:
+      id: b06c64ee-8178-4d67-8995-e9de309463b4
+      version: -1
+      name: 'Wait for automation #2'
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      seconds:
+        simple: "60"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1085,
+        "height": 1435,
         "width": 380,
         "x": 50,
         "y": 50

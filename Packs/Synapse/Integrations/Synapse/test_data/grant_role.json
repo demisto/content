@@ -1,0 +1,18 @@
+{
+    "status": "ok",
+    "result": {
+        "type": "user",
+        "iden": "01f39e62cdff72b3abf65e1b4f3667de",
+        "name": "testuser",
+        "rules": [],
+        "roles": [
+            "ff7afe8c4df42771d09d9b4d14fc5068",
+            "f45bacf3583360ce3d92cd52f6369da8"
+        ],
+        "admin": false,
+        "email": null,
+        "locked": false,
+        "archived": false,
+        "authgates": {}
+    }
+}

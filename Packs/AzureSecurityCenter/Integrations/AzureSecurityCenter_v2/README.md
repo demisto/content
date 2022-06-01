@@ -24,9 +24,9 @@ For more details about the authentication used in this integration, see [Microso
       - Microsoft.Security/informationProtectionPolicies/read
       - Microsoft.Security/locations/jitNetworkAccessPolicies/*
       - Microsoft.Security/locations/jitNetworkAccessPolicies/initiate/action
-    * Select the Azure Secruity Center application.
+    * Select the Azure Security Center application.
 
-## Configure Azure Security Center v2 on Demisto
+## Configure Azure Security Center v2 on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations**   > **Servers & Services**.
 2. Search for Azure Security Center v2.
@@ -47,7 +47,7 @@ For more details about the authentication used in this integration, see [Microso
 Some commands require a subscription ID parameter in order to run.
 You can find your organization's subscriptions list in the ***Microsoft Azure Portal > Subscriptions*** or by running the ***azure-list-subscriptions*** command.
 
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
   After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 1. azure-sc-list-alert
@@ -61,6 +61,7 @@ You can execute these commands from the Demisto CLI, as part of an automation, o
 9. azure-list-subscriptions
 10. azure-sc-list-location
 11. azure-sc-get-alert
+12. azure-get-secure-score
 
 ### 1. azure-sc-list-alert
 
@@ -582,3 +583,84 @@ Get an alert that is associated a resource group or a subscription.
 ## Additional Information
 
 For more information regarding roles, see [the microsoft documentation.](https://docs.microsoft.com/en-us/azure/role-based-access-control/role-assignments-portal)
+
+### 12. azure-get-secure-score
+***
+Retrieve the Secure Score for the provided subscription and score name
+
+
+#### Base Command
+
+`azure-get-secure-score`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| secure_score_name | description. Possible values are: . Default is ascScore. | Optional | 
+| subscription_id | The subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions command. If not specified, the default subscription ID is used. Possible values are: . | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.Securescore.displayName | String | The initiative’s name. | 
+| Azure.Securescore.score.max | String | The max score of the Securescore. | 
+| Azure.Securescore.score.current | String | The current score of the Securescore. | 
+| Azure.Securescore.score.percentage | String | The Ratio of the current score divided by the maximum. | 
+| Azure.Securescore.weight | String | The relative weight for each subscription. | 
+
+
+#### Command Example
+```!azure-get-secure-score```
+
+#### Context Example
+```json
+{
+    "Azure": {
+        "Securescore": {
+            "displayName": "ASC score",
+            "score": {
+                "current": 14.51,
+                "max": 58,
+                "percentage": 0.2502
+            },
+            "weight": 199
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Azure Security Center - Secure Score
+>|displayName|score|weight|
+>|---|---|---|
+>| ASC score | max: 58<br/>current: 14.51<br/>percentage: 0.2502 | 199 |
+
+
+### 13. azure-sc-update-alert
+***
+Update an alert's state.
+
+
+#### Base Command
+
+`azure-sc-update-alert`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| resource_group_name | The name of the resource group within the user's subscription. The name is case insensitive. | Optional | 
+| asc_location | The location where Azure Security Center stores the data of the subscription. Run the 'azure-sc-list-location' command to get the ascLocation. This command requires the resourceGroupName argument. | Required | 
+| alert_id | The alert ID. | Required | 
+| subscription_id | The subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions command. If not specified, the default subscription ID is used. | Optional | 
+| alert_update_action_type | The update action type. Possible values are: dismiss. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AzureSecurityCenter.Alert.ActionTaken | string | The action that was taken on the alert. | 
+| AzureSecurityCenter.Alert.ID | string | The alert ID. | 

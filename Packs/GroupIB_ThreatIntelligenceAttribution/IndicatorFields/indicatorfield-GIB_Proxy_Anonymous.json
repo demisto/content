@@ -1,0 +1,30 @@
+{
+   "associatedTypes": [
+        "IP"
+    ],
+    "associatedToAll": false,
+    "caseInsensitive": true,
+    "cliName": "gibproxyanonymous",
+    "closeForm": false,
+    "content": true,
+    "description": "Level of anonymous",
+    "editForm": true,
+    "group": 2,
+    "hidden": false,
+    "id": "indicator_gibproxyanonymous",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "GIB Proxy Anonymous",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

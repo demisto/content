@@ -152,7 +152,7 @@ tasks:
       id: 1057f59f-3a58-486c-8c2d-95fc59aa9158
       version: -1
       name: polygon-analysis-info
-      description: Get TDS Polygon analysis info
+      description: Get THF Polygon analysis info
       script: Group-IB TDS Polygon|||polygon-analysis-info
       type: regular
       iscommand: true
@@ -300,7 +300,7 @@ tasks:
       id: 282385ad-a465-47b0-8450-c794cbbd8f74
       version: -1
       name: polygon-export-report
-      description: Export an archive with TDS Polygon report to War Room
+      description: Export an archive with THF Polygon report to War Room
       script: Group-IB TDS Polygon|||polygon-export-report
       type: regular
       iscommand: true

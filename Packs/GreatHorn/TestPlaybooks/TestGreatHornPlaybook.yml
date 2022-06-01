@@ -1,0 +1,894 @@
+id: TestGreatHornPlaybook
+name: TestGreatHornPlaybook
+version: -1
+fromversion: 6.0.0
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: 48be3d75-7265-468c-81ed-90afea4cdf79
+    type: start
+    task:
+      id: 48be3d75-7265-468c-81ed-90afea4cdf79
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 50}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '1':
+    id: 1
+    taskid: 4996a186-6acb-4fe9-8ee5-61ed552096a6
+    type: regular
+    task:
+      id: 4996a186-6acb-4fe9-8ee5-61ed552096a6
+      version: -1
+      name: DeleteContext
+      description: 'Delete context data'
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '2'
+    scriptarguments:
+      all:
+        simple: yes
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '2':
+    id: 2
+    taskid: 092a703f-b1af-43ca-8045-cf888779d897
+    type: regular
+    task:
+      id: 092a703f-b1af-43ca-8045-cf888779d897
+      version: -1
+      name: gh-get-message
+      description: 'Get a message'
+      script: '|||gh-get-message'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '3'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '3':
+    id: '3'
+    taskid: 7f5c8b5b-9944-4f52-8559-9990c4993f7e
+    type: condition
+    task:
+      id: 7f5c8b5b-9944-4f52-8559-9990c4993f7e
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '4'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GreatHorn.Message.eventId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GreatHorn.Message.origin
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GreatHorn.Message.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GreatHorn.Message.xMailer
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GreatHorn.Message.sourcePath
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GreatHorn.Message.ip
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GreatHorn.Message.bodyOnlyWhitespace
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GreatHorn.Message.collector
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GreatHorn.Message.dkim
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GreatHorn.Message.spf
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GreatHorn.Message.contentHash
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GreatHorn.Message.violations
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GreatHorn.Message.workflow
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GreatHorn.Message.targets
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GreatHorn.Message.source
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GreatHorn.Message.location
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GreatHorn.Message.quarReleasedBy
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GreatHorn.Message.quarDeleted
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GreatHorn.Message.quarDeletedBy
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GreatHorn.Message.quarDenied
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GreatHorn.Message.subject
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GreatHorn.Message.xAuthResults
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GreatHorn.Message.dmarc
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GreatHorn.Message.returnPath
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GreatHorn.Message.received
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GreatHorn.Message.replyTo
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GreatHorn.Message.timestamp
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GreatHorn.Message.flag
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GreatHorn.Message.homographScore
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GreatHorn.Message.owlScore
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GreatHorn.Message.anomalyScore
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GreatHorn.Message.authScore
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GreatHorn.Message.remediation
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GreatHorn.Message.quarantined
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GreatHorn.Message.quarExpired
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GreatHorn.Message.quarReleaseRequested
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GreatHorn.Message.quarReleased
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GreatHorn.Message.displayName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GreatHorn.Message.country
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GreatHorn.Message.region
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GreatHorn.Message.authenticationResults
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GreatHorn.Message.messageId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GreatHorn.Message.headers
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GreatHorn.Message.links.resolvedUrl
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GreatHorn.Message.links.text
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GreatHorn.Message.links.url
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GreatHorn.Message.links.tags
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '4':
+    id: 4
+    taskid: f5cea698-e0ae-4994-83da-116e692aff95
+    type: regular
+    task:
+      id: f5cea698-e0ae-4994-83da-116e692aff95
+      version: -1
+      name: gh-search-message
+      description: ''
+      script: '|||gh-search-message'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '5'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '5':
+    id: '5'
+    taskid: 98220355-1518-4494-8c9e-00f0bc1e25d3
+    type: condition
+    task:
+      id: 98220355-1518-4494-8c9e-00f0bc1e25d3
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '6'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GreatHorn.Message.eventId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GreatHorn.Message.origin
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GreatHorn.Message.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GreatHorn.Message.xMailer
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GreatHorn.Message.sourcePath
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GreatHorn.Message.ip
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GreatHorn.Message.bodyOnlyWhitespace
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GreatHorn.Message.collector
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GreatHorn.Message.dkim
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GreatHorn.Message.spf
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GreatHorn.Message.contentHash
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GreatHorn.Message.violations
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GreatHorn.Message.workflow
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GreatHorn.Message.targets
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GreatHorn.Message.source
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GreatHorn.Message.location
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GreatHorn.Message.quarReleasedBy
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GreatHorn.Message.quarDeleted
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GreatHorn.Message.quarDeletedBy
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GreatHorn.Message.quarDenied
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GreatHorn.Message.subject
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GreatHorn.Message.xAuthResults
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GreatHorn.Message.dmarc
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GreatHorn.Message.returnPath
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GreatHorn.Message.received
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GreatHorn.Message.replyTo
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GreatHorn.Message.timestamp
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GreatHorn.Message.flag
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GreatHorn.Message.homographScore
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GreatHorn.Message.owlScore
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GreatHorn.Message.anomalyScore
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GreatHorn.Message.authScore
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GreatHorn.Message.remediation
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GreatHorn.Message.quarantined
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GreatHorn.Message.quarExpired
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GreatHorn.Message.quarReleaseRequested
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GreatHorn.Message.quarReleased
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GreatHorn.Message.displayName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GreatHorn.Message.country
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GreatHorn.Message.region
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GreatHorn.Message.authenticationResults
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GreatHorn.Message.messageId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GreatHorn.Message.headers
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GreatHorn.Message.links.resolvedUrl
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GreatHorn.Message.links.text
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GreatHorn.Message.links.url
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GreatHorn.Message.links.tags
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 1000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '6':
+    id: 6
+    taskid: 75cb7655-a663-42f5-8dba-7e32f784bec9
+    type: regular
+    task:
+      id: 75cb7655-a663-42f5-8dba-7e32f784bec9
+      version: -1
+      name: gh-remediate-message
+      description: ''
+      script: '|||gh-remediate-message'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '7'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 1200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '7':
+    id: '7'
+    taskid: c0cded62-48b6-4477-8a38-589817d1aa8d
+    type: condition
+    task:
+      id: c0cded62-48b6-4477-8a38-589817d1aa8d
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '8'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GreatHorn.Remediation.action
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GreatHorn.Remediation.eventId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GreatHorn.Remediation.reason
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GreatHorn.Remediation.success
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 1400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '8':
+    id: 8
+    taskid: 99881495-a3b0-4792-82f4-0ac0a0a24ed0
+    type: regular
+    task:
+      id: 99881495-a3b0-4792-82f4-0ac0a0a24ed0
+      version: -1
+      name: gh-revert-remediate-message
+      description: ''
+      script: '|||gh-revert-remediate-message'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '9'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 1600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '9':
+    id: '9'
+    taskid: 704e2a09-34c4-41b3-8ade-f6d2756c97fb
+    type: condition
+    task:
+      id: 704e2a09-34c4-41b3-8ade-f6d2756c97fb
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '10'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GreatHorn.Remediation.action
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GreatHorn.Remediation.eventId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GreatHorn.Remediation.reason
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GreatHorn.Remediation.success
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 1800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '10':
+    id: 10
+    taskid: 75a88617-b65c-4298-8ebd-a6a337c2619d
+    type: regular
+    task:
+      id: 75a88617-b65c-4298-8ebd-a6a337c2619d
+      version: -1
+      name: gh-get-policy
+      description: ''
+      script: '|||gh-get-policy'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '11'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 2000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '11':
+    id: '11'
+    taskid: faefdb34-8e0b-4252-81d0-dceb34660ec0
+    type: condition
+    task:
+      id: faefdb34-8e0b-4252-81d0-dceb34660ec0
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '12'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GreatHorn.Policy.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GreatHorn.Policy.enabled
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GreatHorn.Policy.config
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GreatHorn.Policy.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GreatHorn.Policy.description
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 2200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '12':
+    id: 12
+    taskid: c7c7d190-44d6-464a-8d97-790791a686cb
+    type: regular
+    task:
+      id: c7c7d190-44d6-464a-8d97-790791a686cb
+      version: -1
+      name: gh-set-policy
+      description: ''
+      script: '|||gh-set-policy'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '13'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 2400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '13':
+    id: '13'
+    taskid: 1d2ce8cb-2a1e-4146-ad25-40a981f09d37
+    type: condition
+    task:
+      id: 1d2ce8cb-2a1e-4146-ad25-40a981f09d37
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '14'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GreatHorn.Policy.id
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 2600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '14':
+    id: '14'
+    taskid: a8611c6f-1151-43f8-8a24-a7a4737266fc
+    type: title
+    task:
+      id: a8611c6f-1151-43f8-8a24-a7a4737266fc
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 2800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+view: '{"linkLabelsPosition": {}, "paper": {"dimensions": {"height": 200, "width":
+  380, "x": 50, "y": 50}}}'
+inputs: []
+outputs: []

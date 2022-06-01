@@ -39,8 +39,9 @@ class Client(BaseClient):
     Should only do requests and return data.
     """
 
-    def __init__(self, url: str, use_ssl: bool, use_proxy: bool, auth_token=None):
+    def __init__(self, url: str, use_ssl: bool, use_proxy: bool, auth_token=None, reliability=DBotScoreReliability.C):
         self.auth_token = auth_token
+        self.reliability = reliability
         super().__init__(url, verify=use_ssl, proxy=use_proxy, headers={'Accept': 'application/json'})
         if self.auth_token:
             self._headers.update({'Authorization': 'Bearer ' + self.auth_token})
@@ -248,7 +249,8 @@ def ip_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
                            'Address': report.get('ip_addr', '')}
 
         dbot_score = {'Indicator': report.get('ip_addr', ''), 'Type': 'ip', 'Vendor': 'Maltiverse',
-                      'Score': calculate_score(positive_detections, report.get('classification', ''), threshold)}
+                      'Score': calculate_score(positive_detections, report.get('classification', ''), threshold),
+                      'Reliability': client.reliability}
 
         maltiverse_ip = {**blacklist_context, **additional_info}
 
@@ -293,7 +295,7 @@ def url_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
         if 'NotFound' in report:
             markdown += f'No results found for {url}'
             dbot_score = {'Indicator': url, 'Type': 'Url', 'Vendor': 'Maltiverse',
-                          'Score': 0}
+                          'Score': 0, 'Reliability': client.reliability}
             context[DBOT_SCORE_KEY].append(dbot_score)
             break
         positive_detections = len(report.get('blacklist', []))
@@ -308,7 +310,8 @@ def url_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
                    }
 
         dbot_score = {'Indicator': url, 'Type': 'Url', 'Vendor': 'Maltiverse',
-                      'Score': calculate_score(positive_detections, report.get('classification', ''), threshold)}
+                      'Score': calculate_score(positive_detections, report.get('classification', ''), threshold),
+                      'Reliability': client.reliability}
 
         maltiverse_url = {string_to_context_key(field): report.get(field, '') for field in
                           ['classification', 'modification_time', 'creation_time', 'hostname', 'domain', 'tld']}
@@ -381,7 +384,8 @@ def domain_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any
                                                      range(len(report.get('blacklist', [])))]}
 
         dbot_score = {'Indicator': domain, 'Type': 'Domain', 'Vendor': 'Maltiverse',
-                      'Score': calculate_score(positive_detections, report.get('classification', ''), threshold)}
+                      'Score': calculate_score(positive_detections, report.get('classification', ''), threshold),
+                      'Reliability': client.reliability}
 
         resolvedIP_info = {
             'ResolvedIP':
@@ -409,7 +413,7 @@ def domain_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any
         markdown += f'Domain Creation Time: **{report.get("creation_time", "")}**\n'
         markdown += f'Domain Modification Time: **{report.get("modification_time", "")}**\n'
         markdown += f'Maltiverse Classification: **{report.get("classification", "")}**\n'
-        markdown += f'Doamin Resolved IP: {[report["resolved_ip"][i]["ip_addr"] for i in range(len(report["resolved_ip"]))]}'
+        markdown += f'Domain Resolved IP: {[report["resolved_ip"][i]["ip_addr"] for i in range(len(report["resolved_ip"]))]}'
 
         reports.append(report)
 
@@ -439,7 +443,7 @@ def file_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
         if 'NotFound' in report:
             markdown += f'No results found for file hash {file}'
             dbot_score = {'Indicator': file, 'Type': 'File', 'Vendor': 'Maltiverse',
-                          'Score': 0}
+                          'Score': 0, 'Reliability': client.reliability}
             context[DBOT_SCORE_KEY].append(dbot_score)
             break
         positive_detections = len(report.get('blacklist', []))
@@ -454,7 +458,7 @@ def file_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
                    'Size': report.get('size', ''),
                    'Type': report.get('type', ''),
                    'Extension': (report['filename'][0]).split('.')[-1],
-                   'Path': report['process_list'][0]['normalizedpath'],
+                   'Path': report.get('process_list', [{}])[0].get('normalizedpath'),
                    'Tags': create_tags(report.get('tag', '')),
                    'ThreatTypes': {'threatcategory': [blacklist_context['Blacklist'][i]['Description'] for i in
                                                       range(len(report.get('blacklist', [])))]}
@@ -462,11 +466,11 @@ def file_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
 
         dbot_score = {'Indicator': file, 'Type': 'File', 'Vendor': 'Maltiverse',
                       'Score': calculate_score(positive_detections, report.get('classification', ''), threshold,
-                                               len(report.get('antivirus', [])))}
+                                               len(report.get('antivirus', []))), 'Reliability': client.reliability}
 
         process_list = {
             'ProcessList': {
-                string_to_context_key(field): report['process_list'][0][field] for field in
+                string_to_context_key(field): report.get('process_list', [{}])[0].get(field) for field in
                 ['name', 'normalizedpath', 'sha256', 'uid']
             }
         }
@@ -510,10 +514,18 @@ def main():
     params = demisto.params()
     server_url = params.get('server_url') if params.get('server_url') else SERVER_URL
 
+    reliability = params.get('integrationReliability', 'C - Fairly reliable')
+
+    if DBotScoreReliability.is_valid_type(reliability):
+        reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
+    else:
+        return_error("Please provide a valid value for the Source Reliability parameter.")
+
     client = Client(url=server_url,
                     use_ssl=not params.get('insecure', False),
                     use_proxy=params.get('proxy', False),
-                    auth_token=params.get('api_key', None))
+                    auth_token=params.get('api_key', None),
+                    reliability=reliability)
 
     commands = {
         'ip': ip_command,

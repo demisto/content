@@ -1,0 +1,5 @@
+[file:Anomali_Enterprise.yml]
+ignore=BA108,BA109
+
+[file:README.md]
+ignore=RM104

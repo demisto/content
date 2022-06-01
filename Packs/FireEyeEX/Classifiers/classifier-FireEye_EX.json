@@ -1,0 +1,15 @@
+{
+  "name": "FireEye Email Security - Classifier",
+  "type": "classification",
+  "id": "FireEye Email Security - Classifier",
+  "description": "Classifies FireEye Email Security Alerts.",
+  "keyTypeMap": {
+    "EMAIL_MPS": "FireEye EX Alert"
+  },
+  "transformer": {
+    "complex": null,
+    "simple": "product"
+  },
+  "version": -1,
+  "fromVersion": "6.0.0"
+}

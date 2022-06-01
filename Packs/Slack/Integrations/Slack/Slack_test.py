@@ -4,8 +4,8 @@ import threading
 
 import pytest
 import slack
+from slack.web.slack_response import SlackResponse
 
-import demistomock as demisto
 from CommonServerPython import *
 
 import datetime
@@ -141,7 +141,6 @@ CONVERSATIONS = '''[{
     "num_members": 4
 }]'''
 
-
 BOT = '''{
     "ok": true,
     "url": "https://subarachnoid.slack.com/",
@@ -218,12 +217,12 @@ BLOCK_JSON = [{
 }, {
     'type': 'actions',
     'elements': [{
-            'type': 'button',
-            'text': {
-                'type': 'plain_text',
-                'emoji': True,
-                'text': 'yes'
-            },
+        'type': 'button',
+        'text': {
+            'type': 'plain_text',
+            'emoji': True,
+            'text': 'yes'
+        },
         'style': 'primary',
         'value': '{\"entitlement\": \"e95cb5a1-e394-4bc5-8ce0-508973aaf298@22|43\", \"reply\": \"Thanks bro\"}',
     }, {
@@ -309,6 +308,61 @@ PAYLOAD_JSON = r'''
      ]
   }
 '''
+
+SLACK_RESPONSE = SlackResponse(client=None, http_verb='', api_url='', req_args={}, data={'ts': 'cool'}, headers={},
+                               status_code=0)
+SLACK_RESPONSE_2 = SlackResponse(client=None, http_verb='', api_url='', req_args={}, data={'cool': 'cool'}, headers={},
+                                 status_code=0)
+
+
+def test_exception_in_invite_to_mirrored_channel(mocker):
+    import Slack
+    from Slack import check_for_mirrors
+    new_user = {
+        'name': 'perikles',
+        'profile': {
+            'email': 'perikles@acropoli.com',
+        },
+        'id': 'U012B3CUI'
+    }
+
+    def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
+        users = {'members': js.loads(USERS)}
+        users['members'].append(new_user)
+        return users
+
+    # Set
+    mirrors = js.loads(MIRRORS)
+    mirrors.append({
+        'channel_id': 'new_group',
+        'channel_name': 'channel',
+        'investigation_id': '999',
+        'mirror_type': 'all',
+        'mirror_direction': 'both',
+        'mirror_to': 'group',
+        'auto_close': True,
+        'mirrored': False
+    })
+
+    set_integration_context({
+        'mirrors': js.dumps(mirrors),
+        'users': USERS,
+        'conversations': CONVERSATIONS,
+        'bot_id': 'W12345678'
+    })
+
+    mocker.patch.object(slack.WebClient, 'api_call', side_effect=api_call)
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
+    mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
+    mocker.patch.object(demisto, 'mirrorInvestigation', return_value=[{'email': 'spengler@ghostbusters.example.com',
+                                                                       'username': 'spengler'},
+                                                                      {'email': 'perikles@acropoli.com',
+                                                                       'username': 'perikles'}])
+    mocker.patch.object(Slack, 'invite_to_mirrored_channel', side_effect=Exception)
+    mocker.patch.object(demisto, 'error')
+    check_for_mirrors()
+    assert demisto.setIntegrationContext.call_count != 0
+    assert demisto.error.call_args[0][0] == 'Could not invite investigation users to the mirrored channel: '
 
 
 def get_integration_context():
@@ -493,8 +547,10 @@ class TestGetConversationByName:
         - Check if the right conversation returned
         - Check that a API command was called.
         """
+
         def get_context():
             return {}
+
         from Slack import get_conversation_by_name
 
         self.set_conversation_mock(mocker, get_context=get_context)
@@ -1821,7 +1877,7 @@ async def test_translate_create_newline_json(mocker):
 
     demisto_user = {'id': 'demisto_user'}
 
-    json_message =\
+    json_message = \
         '''```
             create incident json={
             "name":"xyz",
@@ -2717,7 +2773,7 @@ def test_send_request_with_severity(mocker):
     mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
     mocker.patch.object(demisto, 'results')
     mocker.patch.object(slack.WebClient, 'api_call', side_effect=api_call)
-    mocker.patch.object(Slack, 'send_message', return_value={'ts': 'cool'})
+    mocker.patch.object(Slack, 'send_message', return_value=SLACK_RESPONSE)
 
     # Arrange
     Slack.slack_send()
@@ -2742,7 +2798,7 @@ def test_send_request_with_severity(mocker):
     assert send_args[4] == '!!!'
     assert send_args[5] == ''
 
-    assert results[0]['Contents'] == 'Message sent to Slack successfully.\nThread ID is: cool'
+    assert results[0]['HumanReadable'] == 'Message sent to Slack successfully.\nThread ID is: cool'
 
 
 def test_send_request_with_notification_channel(mocker):
@@ -2771,7 +2827,7 @@ def test_send_request_with_notification_channel(mocker):
     mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
     mocker.patch.object(demisto, 'results')
     mocker.patch.object(slack.WebClient, 'api_call', side_effect=api_call)
-    mocker.patch.object(Slack, 'send_message', return_value={'ts': 'cool'})
+    mocker.patch.object(Slack, 'send_message', return_value=SLACK_RESPONSE)
 
     # Arrange
     Slack.slack_send()
@@ -2797,7 +2853,7 @@ def test_send_request_with_notification_channel(mocker):
     assert send_args[4] == '!!!'
     assert send_args[5] == ''
 
-    assert results[0]['Contents'] == 'Message sent to Slack successfully.\nThread ID is: cool'
+    assert results[0]['HumanReadable'] == 'Message sent to Slack successfully.\nThread ID is: cool'
 
 
 @pytest.mark.parametrize('notify', [False, True])
@@ -2824,7 +2880,7 @@ def test_send_request_with_notification_channel_as_dest(mocker, notify):
     mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
     mocker.patch.object(demisto, 'results')
     mocker.patch.object(slack.WebClient, 'api_call', side_effect=api_call)
-    mocker.patch.object(Slack, 'send_message', return_value={'ts': 'cool'})
+    mocker.patch.object(Slack, 'send_message', return_value=SLACK_RESPONSE)
 
     # Arrange
     Slack.slack_send()
@@ -2850,7 +2906,7 @@ def test_send_request_with_notification_channel_as_dest(mocker, notify):
     assert send_args[4] == '!!!'
     assert send_args[5] == ''
 
-    assert results[0]['Contents'] == 'Message sent to Slack successfully.\nThread ID is: cool'
+    assert results[0]['HumanReadable'] == 'Message sent to Slack successfully.\nThread ID is: cool'
 
 
 def test_send_request_with_entitlement(mocker):
@@ -2879,7 +2935,7 @@ def test_send_request_with_entitlement(mocker):
     mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
     mocker.patch.object(demisto, 'results')
     mocker.patch.object(slack.WebClient, 'api_call', side_effect=api_call)
-    mocker.patch.object(Slack, 'send_message', return_value={'ts': 'cool'})
+    mocker.patch.object(Slack, 'send_message', return_value=SLACK_RESPONSE)
     mocker.patch.object(Slack, 'get_current_utc_time', return_value=datetime.datetime(2019, 9, 26, 18, 38, 25))
     questions = [{
         'thread': 'cool',
@@ -2914,7 +2970,7 @@ def test_send_request_with_entitlement(mocker):
     assert send_args[4] == 'hi test@demisto.com'
     assert send_args[5] == ''
 
-    assert results[0]['Contents'] == 'Message sent to Slack successfully.\nThread ID is: cool'
+    assert results[0]['HumanReadable'] == 'Message sent to Slack successfully.\nThread ID is: cool'
 
     assert demisto.getIntegrationContext()['questions'] == js.dumps(questions)
 
@@ -2945,7 +3001,7 @@ def test_send_request_with_entitlement_blocks(mocker):
     mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
     mocker.patch.object(demisto, 'results')
     mocker.patch.object(slack.WebClient, 'api_call', side_effect=api_call)
-    mocker.patch.object(Slack, 'send_message', return_value={'ts': 'cool'})
+    mocker.patch.object(Slack, 'send_message', return_value=SLACK_RESPONSE)
     mocker.patch.object(Slack, 'get_current_utc_time', return_value=datetime.datetime(2019, 9, 26, 18, 38, 25))
     questions = [{
         'thread': 'cool',
@@ -2980,7 +3036,7 @@ def test_send_request_with_entitlement_blocks(mocker):
     assert send_args[4] == ''
     assert send_args[6] == js.dumps(BLOCK_JSON)
 
-    assert results[0]['Contents'] == 'Message sent to Slack successfully.\nThread ID is: cool'
+    assert results[0]['HumanReadable'] == 'Message sent to Slack successfully.\nThread ID is: cool'
 
     assert demisto.getIntegrationContext()['questions'] == js.dumps(questions)
 
@@ -3012,8 +3068,9 @@ def test_send_request_with_entitlement_blocks_message(mocker):
     mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
     mocker.patch.object(demisto, 'results')
     mocker.patch.object(slack.WebClient, 'api_call', side_effect=api_call)
-    mocker.patch.object(Slack, 'send_message', return_value={'ts': 'cool'})
+    mocker.patch.object(Slack, 'send_message', return_value=SLACK_RESPONSE)
     mocker.patch.object(Slack, 'get_current_utc_time', return_value=datetime.datetime(2019, 9, 26, 18, 38, 25))
+
     questions = [{
         'thread': 'cool',
         'entitlement': 'e95cb5a1-e394-4bc5-8ce0-508973aaf298@22|43',
@@ -3047,7 +3104,7 @@ def test_send_request_with_entitlement_blocks_message(mocker):
     assert send_args[4] == 'wat up'
     assert send_args[6] == js.dumps(BLOCK_JSON)
 
-    assert results[0]['Contents'] == 'Message sent to Slack successfully.\nThread ID is: cool'
+    assert results[0]['HumanReadable'] == 'Message sent to Slack successfully.\nThread ID is: cool'
 
     assert demisto.getIntegrationContext()['questions'] == js.dumps(questions)
 
@@ -3072,7 +3129,7 @@ def test_send_to_user_lowercase(mocker):
     mocker.patch.object(demisto, 'results')
     mocker.patch.object(slack.WebClient, 'api_call', side_effect=api_call)
     mocker.patch.object(Slack, 'send_file', return_value='neat')
-    mocker.patch.object(Slack, 'send_message', return_value={'ts': 'cool'})
+    mocker.patch.object(Slack, 'send_message', return_value=SLACK_RESPONSE)
 
     # Arrange
 
@@ -3099,7 +3156,7 @@ def test_send_to_user_lowercase(mocker):
     assert send_args[4] == 'hi'
     assert send_args[5] == ''
 
-    assert results[0]['Contents'] == 'Message sent to Slack successfully.\nThread ID is: cool'
+    assert results[0]['HumanReadable'] == 'Message sent to Slack successfully.\nThread ID is: cool'
 
 
 def test_send_request_with_severity_user_doesnt_exist(mocker, capfd):
@@ -3128,7 +3185,7 @@ def test_send_request_with_severity_user_doesnt_exist(mocker, capfd):
     mocker.patch.object(demisto, 'setIntegrationContext')
     mocker.patch.object(demisto, 'results')
     mocker.patch.object(slack.WebClient, 'api_call', side_effect=api_call)
-    mocker.patch.object(Slack, 'send_message', return_value={'ts': 'cool'})
+    mocker.patch.object(Slack, 'send_message', return_value=SLACK_RESPONSE)
 
     # Arrange
     with capfd.disabled():
@@ -3154,7 +3211,7 @@ def test_send_request_with_severity_user_doesnt_exist(mocker, capfd):
     assert send_args[4] == '!!!'
     assert send_args[5] == ''
 
-    assert results[0]['Contents'] == 'Message sent to Slack successfully.\nThread ID is: cool'
+    assert results[0]['HumanReadable'] == 'Message sent to Slack successfully.\nThread ID is: cool'
 
 
 def test_send_request_no_user(mocker, capfd):
@@ -3176,7 +3233,7 @@ def test_send_request_no_user(mocker, capfd):
     return_error_mock = mocker.patch(RETURN_ERROR_TARGET, side_effect=InterruptedError())
     mocker.patch.object(slack.WebClient, 'api_call', side_effect=api_call)
     mocker.patch.object(Slack, 'send_file', return_value='neat')
-    mocker.patch.object(Slack, 'send_message', return_value='cool')
+    mocker.patch.object(Slack, 'send_message', return_value=SLACK_RESPONSE)
 
     # Arrange
 
@@ -3223,7 +3280,7 @@ def test_send_request_no_severity(mocker):
     mocker.patch.object(demisto, 'results')
     return_error_mock = mocker.patch(RETURN_ERROR_TARGET, side_effect=InterruptedError())
     mocker.patch.object(slack.WebClient, 'api_call', side_effect=api_call)
-    mocker.patch.object(Slack, 'send_message', return_value={'ts': 'cool'})
+    mocker.patch.object(Slack, 'send_message', return_value=SLACK_RESPONSE)
 
     # Arrange
     with pytest.raises(InterruptedError):
@@ -3268,7 +3325,7 @@ def test_send_request_zero_severity(mocker):
     mocker.patch.object(demisto, 'results')
     return_error_mock = mocker.patch(RETURN_ERROR_TARGET, side_effect=InterruptedError())
     mocker.patch.object(slack.WebClient, 'api_call', side_effect=api_call)
-    mocker.patch.object(Slack, 'send_message', return_value={'ts': 'cool'})
+    mocker.patch.object(Slack, 'send_message', return_value=SLACK_RESPONSE)
 
     # Arrange
     with pytest.raises(InterruptedError):
@@ -4207,3 +4264,281 @@ def test_fail_connect_threads(mocker):
         time.sleep(0.5)
     assert return_error_mock.call_count == 8
     assert threading.active_count() < 6  # we shouldn't have more than 5 threads (1 + 4 max size of executor)
+
+
+def test_slack_send_filter_one_mirror_tag(mocker):
+    # When filtered_tags parameter contains the same tag as the entry tag - slack_send method should send the message
+    import Slack
+
+    mocker.patch.object(demisto, 'results')
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
+    mocker.patch.object(Slack, 'slack_send_request', return_value=SLACK_RESPONSE_2)
+
+    mocker.patch.object(demisto, 'args', return_value={'to': 'demisto', 'messageType': 'mirrorEntry',
+                                                       'entryObject': {'tags': ['tag1']}})
+
+    mocker.patch.object(demisto, 'params', return_value={'filtered_tags': 'tag1'})
+    Slack.slack_send()
+    assert demisto.results.mock_calls[0][1][0]['HumanReadable'] == 'Message sent to Slack successfully.\nThread ID is: None'
+
+
+def test_slack_send_filter_no_mirror_tags(mocker):
+    # When filtered_tags parameter is empty slack_send method should send the message
+    import Slack
+
+    mocker.patch.object(demisto, 'results')
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
+    mocker.patch.object(Slack, 'slack_send_request', return_value=SLACK_RESPONSE_2)
+
+    mocker.patch.object(demisto, 'args', return_value={'to': 'demisto', 'messageType': 'mirrorEntry',
+                                                       'entryObject': {'tags': ['tag1']}})
+
+    mocker.patch.object(demisto, 'params', return_value={'filtered_tags': ''})
+    Slack.slack_send()
+    assert demisto.results.mock_calls[0][1][0]['HumanReadable'] == 'Message sent to Slack successfully.\nThread ID is: None'
+
+
+def test_slack_send_filter_no_entry_tags(mocker):
+    # When filtered_tags parameter contains one tag to filter messages and the entry have no tags -
+    # slack_send method should exit and demisto.results.mock_calls should be empty
+    import Slack
+
+    mocker.patch.object(demisto, 'results')
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
+    mocker.patch.object(Slack, 'slack_send_request', return_value={'cool': 'cool'})
+
+    mocker.patch.object(demisto, 'args', return_value={'to': 'demisto', 'messageType': 'mirrorEntry',
+                                                       'entryObject': {'tags': []}})
+
+    mocker.patch.object(demisto, 'params', return_value={'filtered_tags': 'tag1'})
+    Slack.slack_send()
+    assert demisto.results.mock_calls == []
+
+
+def test_send_message_to_destinations_non_strict():
+    """
+    Given:
+        Blocks with non-strict json
+
+    When:
+        Sending message
+
+    Then:
+        No error is raised
+    """
+    from Slack import send_message_to_destinations
+    blocks = """[
+                  {
+                      "type": "section",
+                      "text": {
+                          "type": "mrkdwn",
+                          "text": "*<${incident.siemlink}|${incident.name}>*\n${incident.details}"
+                      }
+                  },
+                  {
+                      "type": "section",
+                      "fields": [
+                          {
+                              "type": "mrkdwn",
+                              "text": "*Account ID:*\n${incident.accountid} "
+                          }
+                      ]
+                  },
+                  {
+                      "type": "actions",
+                      "elements": [
+                          {
+                              "type": "button",
+                              "text": {
+                                  "type": "plain_text",
+                                  "text": "Acknowledge"
+                              },
+                              "value": "ack"
+                          }
+                      ]
+                  }
+              ]"""
+    send_message_to_destinations([], "", "", blocks=blocks)  # No destinations, no response
+
+
+class TestFilterConversations:
+    @staticmethod
+    def set_conversation_mock(mocker, get_context=get_integration_context):
+        mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_context)
+        mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
+        mocker.patch.object(slack.WebClient, 'api_call', return_value={'channels': js.loads(CONVERSATIONS)})
+
+    def test_filter_conversations_with_name_exists_in_context(self, mocker):
+        """
+        Given:
+        - filter name set to 'general'
+
+        When:
+        - 'general' conversation exists in context
+
+        Then:
+        - Check if the 'general' conversation was returned
+        - Check that no API command was called.
+        """
+        from Slack import filter_conversations
+        self.set_conversation_mock(mocker)
+
+        conversation_name = 'general'
+        conversations = filter_conversations(name=conversation_name)
+
+        # Assertions
+        assert len(conversations) == 1
+        assert conversation_name == conversations[0]['name']
+        assert slack.WebClient.api_call.call_count == 0
+
+    def test_get_conversation_by_name_exists_in_api_call(self, mocker):
+        """
+        Given:
+        - filter name set to 'general'
+
+        When:
+        - 'general' conversation not exists in context, but does in the API
+
+        Then:
+        - Check if the 'general' conversation was returned
+        - Check that a API command was called.
+        """
+
+        def get_context():
+            return {}
+
+        from Slack import filter_conversations
+
+        self.set_conversation_mock(mocker, get_context=get_context)
+
+        conversation_name = 'general'
+        conversations = filter_conversations(name=conversation_name)
+
+        # Assertions
+        assert conversation_name == conversations[0]['name']
+        assert slack.WebClient.api_call.call_count == 1
+
+        # Find that 'general' conversation has been added to context
+        conversations = json.loads(demisto.setIntegrationContext.call_args[0][0]['conversations'])
+        filtered = list(filter(lambda c: c['name'] == conversation_name, conversations))
+        assert filtered, 'Could not find the \'general\' conversation in the context'
+
+    def test_get_conversation_by_name_not_exists(self, mocker):
+        """
+        Given:
+        - Conversation name known not to exist
+
+        When:
+        - Conversation does not exist.
+
+        Then:
+        - Check no conversation was returned.
+        - Check that a API command was called.
+        """
+        from Slack import filter_conversations
+        self.set_conversation_mock(mocker)
+
+        conversation_name = 'no exists'
+        conversations = filter_conversations(name=conversation_name)
+        assert not conversations
+        assert slack.WebClient.api_call.call_count == 1
+
+    def test_filter_conversations_with_regex_name_exists_in_context(self, mocker):
+        """
+        Given:
+        - filter name set to '^general$'
+
+        When:
+        - 'general' conversation exists in context
+
+        Then:
+        - Check if the 'general' conversation was returned
+        - Check that no API command was called.
+        """
+        from Slack import filter_conversations
+        self.set_conversation_mock(mocker)
+
+        conversation_name = '^general$'
+        conversations = filter_conversations(name=conversation_name)
+
+        # Assertions
+        assert len(conversations) == 1
+        assert conversations[0]['name'] == 'general'
+        assert slack.WebClient.api_call.call_count == 0
+
+    def test_filter_conversations_with_no_args(self, mocker):
+        """
+        Given:
+        - No arguments passed to function
+
+        Then:
+        - Check if all conversation were returned
+        """
+        from Slack import filter_conversations
+        self.set_conversation_mock(mocker)
+
+        conversations = filter_conversations()
+
+        assert len(conversations) == len(js.loads(CONVERSATIONS))
+
+    def test_filter_conversations_with_is_archived_false_arg(self, mocker):
+        """
+        Given:
+        - filter is_archived set to False
+
+        Then:
+        - The first conversation's name is 'general'
+        """
+        from Slack import filter_conversations
+        self.set_conversation_mock(mocker)
+
+        conversations = filter_conversations(is_archived=False)
+
+        assert conversations[0]['name'] == 'general'
+
+    def test_filter_conversations_with_is_general_arg(self, mocker):
+        """
+        Given:
+        - filter is_general set to True
+
+        Then:
+        - Only one conversation is returned
+        - The only conversation's name is 'general'
+        """
+        from Slack import filter_conversations
+        self.set_conversation_mock(mocker)
+
+        conversations = filter_conversations(is_general=True)
+
+        assert len(conversations) == 1
+        assert conversations[0]['name'] == 'general'
+
+    def test_filter_conversations_with_is_general_false_arg(self, mocker):
+        """
+        Given:
+        - filter is_general set to False
+
+        Then:
+        - All conversations except one (named 'general') was returned
+        """
+        from Slack import filter_conversations
+        self.set_conversation_mock(mocker)
+
+        conversations = filter_conversations(is_general=False)
+
+        assert len(conversations) == (len(js.loads(CONVERSATIONS)) - 1)
+
+    def test_filter_conversations_with_is_private_false_arg(self, mocker):
+        """
+        Given:
+        - filter is_private set to False
+
+        Then:
+        - The first conversation's name is 'general'
+        """
+        from Slack import filter_conversations
+        self.set_conversation_mock(mocker)
+
+        conversations = filter_conversations(is_private=False)
+
+        assert conversations[0]['name'] == 'general'

@@ -1,0 +1,1569 @@
+id: Threat Hunting - Chronicle
+version: -1
+name: Threat Hunting - Chronicle
+description: |-
+  Use this playbook to investigate and remediate suspicious IOC domain matches with recent activity found in the enterprise. This playbook also creates indicators for the entities fetched, as well as investigating and enriching them.
+  Supported Integrations:
+  - Chronicle
+  - Whois
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 87313577-983d-47dd-8453-9b416fe38139
+    type: start
+    task:
+      id: 87313577-983d-47dd-8453-9b416fe38139
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "39"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 630,
+          "y": -1250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 1a253f24-7df9-4e69-8224-583728926782
+    type: regular
+    task:
+      id: 1a253f24-7df9-4e69-8224-583728926782
+      version: -1
+      name: Extract domain from incident details
+      description: Extracts domain and its details from the Chronicle IOC Domain match
+        response.
+      scriptName: ExtractDomainFromIOCDomainMatchRes
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      json_response:
+        complex:
+          root: incident
+          accessor: details
+    reputationcalc: 3
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 630,
+          "y": -985
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: Chronicle Domain Name
+      output:
+        complex:
+          root: ChronicleIOCDomainMatches
+          accessor: Domain
+    - incidentfield: Chronicle IOC Ingest Time
+      output:
+        complex:
+          root: ChronicleIOCDomainMatches
+          accessor: IOCIngestTime
+    - incidentfield: Chronicle First Seen
+      output:
+        complex:
+          root: ChronicleIOCDomainMatches
+          accessor: FirstSeen
+    - incidentfield: Chronicle Last Seen
+      output:
+        complex:
+          root: ChronicleIOCDomainMatches
+          accessor: LastSeen
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 036b8334-9875-41c2-8385-23123956a109
+    type: title
+    task:
+      id: 036b8334-9875-41c2-8385-23123956a109
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 630,
+          "y": 2520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: ca72e4c1-dc88-4c4a-8ac8-f24b4b8e360d
+    type: regular
+    task:
+      id: ca72e4c1-dc88-4c4a-8ac8-f24b4b8e360d
+      version: -1
+      name: Get whois information for the Domain
+      description: Enriches whois details for the fetched domain.
+      script: '|||whois'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "43"
+    scriptarguments:
+      query:
+        complex:
+          root: Domain
+          accessor: Name
+    reputationcalc: 3
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 630,
+          "y": 570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: a5311e81-4d2a-4af0-8ea1-6a7c9a8c4938
+    type: regular
+    task:
+      id: a5311e81-4d2a-4af0-8ea1-6a7c9a8c4938
+      version: -1
+      name: Get the list of assets which accessed the suspicious domain
+      description: Returns a list of the assets that accessed the suspicious domain
+        during the specified time.
+      script: '|||gcb-assets'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      artifact_value:
+        complex:
+          root: Domain
+          accessor: Name
+      end_time: {}
+      page_size: {}
+      preset_time_range:
+        simple: Last 30 days
+      start_time: {}
+    reputationcalc: 3
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -70,
+          "y": 585
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 22b55a61-ccb8-4dd9-84df-c8ae30c08ca3
+    type: collection
+    task:
+      id: 22b55a61-ccb8-4dd9-84df-c8ae30c08ca3
+      version: -1
+      name: Manually review the fetched entities for blocking
+      description: Review the incident and context data to decide if the fetched entities
+        should be blocked.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 210,
+          "y": 1865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body: {}
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: |-
+            Do you want to block the following entities:
+            Domain(s): ${Domain.Name}
+            URL(s): ${DomainToURL}
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options:
+        - "Yes"
+        - "No"
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Select 'Yes' to block the listed entities, 'No' otherwise.
+        readonly: false
+      title: Permission to block the fetched entities
+      description: ""
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 55d00b48-168f-495c-814b-4df9b563ef97
+    type: regular
+    task:
+      id: 55d00b48-168f-495c-814b-4df9b563ef97
+      version: -1
+      name: Close investigation
+      description: Closes the current incident.
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      code42alerttype: {}
+      emailclassification: {}
+      id:
+        complex:
+          root: incident
+          accessor: id
+      phishingsubtype: {}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 630,
+          "y": 2370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 6026ac60-48f2-42e6-8c8d-15a89648721b
+    type: regular
+    task:
+      id: 6026ac60-48f2-42e6-8c8d-15a89648721b
+      version: -1
+      name: Create domain indicator
+      description: Creates a new indicator for the fetched domain.
+      script: Builtin|||createNewIndicator
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "37"
+    scriptarguments:
+      accounttype: {}
+      actor: {}
+      admincountry: {}
+      adminemail: {}
+      adminname: {}
+      adminphone: {}
+      asn: {}
+      associatedfilenames: {}
+      associations: {}
+      biosversion: {}
+      campaign: {}
+      chronicleassethostname: {}
+      chronicleassetip: {}
+      chronicleassetmac: {}
+      chronicleassetproductid: {}
+      creationdate: {}
+      customFields: {}
+      cvedescription: {}
+      cvemodified: {}
+      cvss: {}
+      description: {}
+      detectionengines: {}
+      devicemodel: {}
+      dhcpserver: {}
+      displayname: {}
+      dns: {}
+      domainname: {}
+      domainstatus: {}
+      emailaddress: {}
+      employeehealthstatus: {}
+      employeeresponsestatus: {}
+      entryid: {}
+      expirationdate: {}
+      feedrelatedindicators: {}
+      fileextension: {}
+      filetype: {}
+      firstname: {}
+      firstseenbysource: {}
+      geocountry: {}
+      geolocation: {}
+      groups: {}
+      hostname: {}
+      imphash: {}
+      indicatoridentification: {}
+      internal: {}
+      ipaddress: {}
+      jobtitle: {}
+      lastname: {}
+      lastseenbysource: {}
+      macaddress: {}
+      malwarefamily: {}
+      md5: {}
+      memory: {}
+      merge: {}
+      mitrealiases: {}
+      mitrecontributors: {}
+      mitredatasources: {}
+      mitredefensebypassed: {}
+      mitredescription: {}
+      mitredetection: {}
+      mitreextendedaliases: {}
+      mitreexternalreferences: {}
+      mitreid: {}
+      mitreimpacttype: {}
+      mitrekillchainphases: {}
+      mitrelabels: {}
+      mitrename: {}
+      mitrepermissionsrequired: {}
+      mitreplatforms: {}
+      mitresystemrequirements: {}
+      mitretype: {}
+      mitreversion: {}
+      name: {}
+      namefield: {}
+      nameservers: {}
+      office365category: {}
+      office365expressroute: {}
+      office365required: {}
+      operatingsystem: {}
+      operatingsystemversion: {}
+      organization: {}
+      organizationalunitou: {}
+      osversion: {}
+      path: {}
+      port: {}
+      positivedetections: {}
+      processor: {}
+      processors: {}
+      published: {}
+      quarantined: {}
+      recordedfutureevidencedetails: {}
+      region: {}
+      registrantcountry: {}
+      registrantemail: {}
+      registrantname: {}
+      registrantphone: {}
+      registrarabuseemail: {}
+      registrarabusephone: {}
+      registrarname: {}
+      relatedIncidents: {}
+      reportedby: {}
+      reputation: {}
+      riskiqassetaddedtoinventory: {}
+      riskiqassetbrands: {}
+      riskiqassetconfidence: {}
+      riskiqassetcves: {}
+      riskiqassetenterpriseasset: {}
+      riskiqassetfirstseen: {}
+      riskiqassetinventorystatus: {}
+      riskiqassetlastseen: {}
+      riskiqassetlastupdated: {}
+      riskiqassetorganizations: {}
+      riskiqassetpriority: {}
+      riskiqassettags: {}
+      riskiqassettype: {}
+      riskiqassetuuid: {}
+      seenNow: {}
+      service: {}
+      sha1: {}
+      sha256: {}
+      sha512: {}
+      signatureauthentihash: {}
+      signaturecopyright: {}
+      signaturedescription: {}
+      signaturefileversion: {}
+      signatureinternalname: {}
+      signed: {}
+      siscategory: {}
+      sisexpiration: {}
+      sismalwaretype: {}
+      sismatchtype: {}
+      size: {}
+      source: {}
+      sourceTimeStamp: {}
+      sourceoriginalseverity: {}
+      ssdeep: {}
+      subdomains: {}
+      tags: {}
+      threattypes: {}
+      trafficlightprotocol: {}
+      type:
+        simple: Domain
+      updateddate: {}
+      username: {}
+      value:
+        complex:
+          root: Domain
+          accessor: Name
+      xdrstatus: {}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 630,
+          "y": -820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: b8de1a30-38c1-4f3e-8269-ee24c093c933
+    type: playbook
+    task:
+      id: b8de1a30-38c1-4f3e-8269-ee24c093c933
+      version: -1
+      name: PAN-OS - Block Domain - External Dynamic List
+      description: |-
+        This playbook blocks Domains using Palo Alto Networks Panorama or Firewall External Dynamic Lists.
+        It checks if the EDL configuration is in place with the 'PAN-OS EDL Setup' sub-playbook
+        (otherwise the list will be configured), and adds the input Domains to the relevant lists.
+      playbookName: PAN-OS - Block Domain - External Dynamic List
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      AutoCommit:
+        simple: "No"
+      Domain:
+        complex:
+          root: Domain
+          accessor: Name
+          transformers:
+          - operator: uniq
+      DomainListName:
+        simple: Demisto Remediation - Domain EDL
+      EDLServerIP: {}
+      LogForwarding: {}
+      pre-post-rulebase:
+        simple: pre-rulebase
+      rule-position: {}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": -560,
+          "y": 2195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: 7bfa05f6-ccd4-48f8-87e5-7c91e72b9308
+    type: condition
+    task:
+      id: 7bfa05f6-ccd4-48f8-87e5-7c91e72b9308
+      version: -1
+      name: Is the user willing to block the entities?
+      description: Indicates if the user is willing to block the fetched entities.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "16"
+      - "34"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Permission to block the fetched entities
+                accessor: Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: "Yes"
+    view: |-
+      {
+        "position": {
+          "x": 210,
+          "y": 2025
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "23":
+    id: "23"
+    taskid: fbc0072d-ecfd-43a0-8b94-642b3a12c463
+    type: regular
+    task:
+      id: fbc0072d-ecfd-43a0-8b94-642b3a12c463
+      version: -1
+      name: Create ChronicleAsset for sightings
+      description: Creates new indicators of type "ChronicleAsset" for the fetched
+        Hostname sightings.
+      script: Builtin|||createNewIndicator
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "36"
+      - "35"
+    scriptarguments:
+      accounttype: {}
+      actor: {}
+      admincountry: {}
+      adminemail: {}
+      adminname: {}
+      adminphone: {}
+      asn: {}
+      associatedfilenames: {}
+      associations: {}
+      biosversion: {}
+      campaign: {}
+      chronicleassethostname:
+        complex:
+          root: GoogleChronicleBackstory
+          accessor: Asset.HostName
+      chronicleassetip:
+        complex:
+          root: GoogleChronicleBackstory
+          accessor: Asset.IpAddress
+      chronicleassetmac:
+        complex:
+          root: GoogleChronicleBackstory
+          accessor: Asset.MacAddress
+      chronicleassetproductid:
+        complex:
+          root: GoogleChronicleBackstory
+          accessor: Asset.ProductId
+      creationdate: {}
+      customFields: {}
+      cvedescription: {}
+      cvemodified: {}
+      cvss: {}
+      description: {}
+      detectionengines: {}
+      devicemodel: {}
+      dhcpserver: {}
+      displayname: {}
+      dns: {}
+      domainname: {}
+      domainstatus: {}
+      emailaddress: {}
+      employeehealthstatus: {}
+      employeeresponsestatus: {}
+      entryid: {}
+      expirationdate: {}
+      feedrelatedindicators: {}
+      fileextension: {}
+      filetype: {}
+      firstname: {}
+      firstseenbysource: {}
+      geocountry: {}
+      geolocation: {}
+      groups: {}
+      hostname: {}
+      imphash: {}
+      indicatoridentification: {}
+      internal: {}
+      ipaddress: {}
+      jobtitle: {}
+      lastname: {}
+      lastseenbysource: {}
+      macaddress: {}
+      malwarefamily: {}
+      md5: {}
+      memory: {}
+      merge: {}
+      mitrealiases: {}
+      mitrecontributors: {}
+      mitredatasources: {}
+      mitredefensebypassed: {}
+      mitredescription: {}
+      mitredetection: {}
+      mitreextendedaliases: {}
+      mitreexternalreferences: {}
+      mitreid: {}
+      mitreimpacttype: {}
+      mitrekillchainphases: {}
+      mitrelabels: {}
+      mitrename: {}
+      mitrepermissionsrequired: {}
+      mitreplatforms: {}
+      mitresystemrequirements: {}
+      mitretype: {}
+      mitreversion: {}
+      name: {}
+      namefield: {}
+      nameservers: {}
+      office365category: {}
+      office365expressroute: {}
+      office365required: {}
+      operatingsystem: {}
+      operatingsystemversion: {}
+      organization: {}
+      organizationalunitou: {}
+      osversion: {}
+      path: {}
+      port: {}
+      positivedetections: {}
+      processor: {}
+      processors: {}
+      published: {}
+      quarantined: {}
+      recordedfutureevidencedetails: {}
+      region: {}
+      registrantcountry: {}
+      registrantemail: {}
+      registrantname: {}
+      registrantphone: {}
+      registrarabuseemail: {}
+      registrarabusephone: {}
+      registrarname: {}
+      relatedIncidents: {}
+      reportedby: {}
+      reputation: {}
+      riskiqassetaddedtoinventory: {}
+      riskiqassetbrands: {}
+      riskiqassetconfidence: {}
+      riskiqassetcves: {}
+      riskiqassetenterpriseasset: {}
+      riskiqassetfirstseen: {}
+      riskiqassetinventorystatus: {}
+      riskiqassetlastseen: {}
+      riskiqassetlastupdated: {}
+      riskiqassetorganizations: {}
+      riskiqassetpriority: {}
+      riskiqassettags: {}
+      riskiqassettype: {}
+      riskiqassetuuid: {}
+      seenNow: {}
+      service: {}
+      sha1: {}
+      sha256: {}
+      sha512: {}
+      signatureauthentihash: {}
+      signaturecopyright: {}
+      signaturedescription: {}
+      signaturefileversion: {}
+      signatureinternalname: {}
+      signed: {}
+      siscategory: {}
+      sisexpiration: {}
+      sismalwaretype: {}
+      sismatchtype: {}
+      size: {}
+      source: {}
+      sourceTimeStamp: {}
+      sourceoriginalseverity: {}
+      ssdeep: {}
+      subdomains: {}
+      tags: {}
+      threattypes: {}
+      trafficlightprotocol: {}
+      type:
+        simple: ChronicleAsset
+      updateddate: {}
+      username: {}
+      value:
+        complex:
+          root: AssetIdentifiers
+      xdrstatus: {}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -540,
+          "y": 1140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 1
+  "24":
+    id: "24"
+    taskid: b74d799a-52cc-48cf-8206-96c416306249
+    type: condition
+    task:
+      id: b74d799a-52cc-48cf-8206-96c416306249
+      version: -1
+      name: Is Asset found?
+      description: Checks if any sightings are fetched from the output of the previous
+        task.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "43"
+      "Yes":
+      - "47"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: GoogleChronicleBackstory
+                accessor: Asset
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -70,
+          "y": 760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "28":
+    id: "28"
+    taskid: b60efd31-3767-42d9-8b1b-fdd121356004
+    type: regular
+    task:
+      id: b60efd31-3767-42d9-8b1b-fdd121356004
+      version: -1
+      name: Calculate reputation of the domain
+      description: Calculates the reputation of the fetched domain.
+      script: '|||domain'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "40"
+    scriptarguments:
+      domain:
+        complex:
+          root: ChronicleIOCDomainMatches
+          accessor: Domain
+    reputationcalc: 1
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 630,
+          "y": -505
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: Chronicle DBot Score
+      output:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Indicator
+                iscontext: true
+              right:
+                value:
+                  simple: GoogleChronicleBackstory.Domain.IoCQueried
+                iscontext: true
+          - - operator: isNotEqualString
+              left:
+                value:
+                  simple: DBotScore.Vendor
+                iscontext: true
+              right:
+                value:
+                  simple: Manual
+              ignorecase: true
+          accessor: Score
+    skipunavailable: false
+    quietmode: 0
+  "29":
+    id: "29"
+    taskid: c7d3303d-c344-497f-800a-060797c197f9
+    type: regular
+    task:
+      id: c7d3303d-c344-497f-800a-060797c197f9
+      version: -1
+      name: Create URL indicators
+      description: Creates new indicators of type "URL" for the URLs converted from
+        the domain by printing them in the war room.
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "38"
+    scriptarguments:
+      value:
+        complex:
+          root: DomainToURL
+    reputationcalc: 3
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 630,
+          "y": -60
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "30":
+    id: "30"
+    taskid: b951588b-1aee-4b49-8308-629e2262a051
+    type: condition
+    task:
+      id: b951588b-1aee-4b49-8308-629e2262a051
+      version: -1
+      name: Is Chronicle integration enabled?
+      description: Checks whether there is an active instance of the Chronicle integration
+        enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "43"
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Google Chronicle Backstory
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 210,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "31":
+    id: "31"
+    taskid: 72703888-dbaa-4a76-8e5d-6435801545ef
+    type: condition
+    task:
+      id: 72703888-dbaa-4a76-8e5d-6435801545ef
+      version: -1
+      name: Is Whois integration enabled?
+      description: Checks whether there is an active instance of the Whois integration
+        enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "43"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Whois
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 630,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "32":
+    id: "32"
+    taskid: 848b6b0a-c283-47ff-84cf-0397c59b0090
+    type: condition
+    task:
+      id: 848b6b0a-c283-47ff-84cf-0397c59b0090
+      version: -1
+      name: Is Chronicle Auto Block Entities field set to "Yes" or "No"?
+      description: Checks whether the "Chronicle Auto Block Entities" incident field
+        is set to "Yes" or "No".
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      "no":
+      - "9"
+      "yes":
+      - "16"
+      - "34"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.auto_block_entities
+            iscontext: true
+          right:
+            value:
+              simple: "Yes"
+          ignorecase: true
+    - label: "no"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.auto_block_entities
+            iscontext: true
+          right:
+            value:
+              simple: "No"
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 210,
+          "y": 1700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "34":
+    id: "34"
+    taskid: 8ddeae5b-ca2e-4c46-80ba-ceda4ff71a0a
+    type: playbook
+    task:
+      id: 8ddeae5b-ca2e-4c46-80ba-ceda4ff71a0a
+      version: -1
+      name: Block URL - Generic
+      playbookName: Block URL - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      AutoCommit:
+        simple: "No"
+      CustomURLCategory:
+        simple: Demisto Remediation - Malicious URLs
+      EDLServerIP: {}
+      LogForwarding: {}
+      URL:
+        complex:
+          root: DomainToURL
+          transformers:
+          - operator: uniq
+      URLBlacklistMiner: {}
+      URLListName:
+        simple: Demisto Remediation - URL EDL
+      categories: {}
+      device-group: {}
+      type: {}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": -170,
+          "y": 2195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "35":
+    id: "35"
+    taskid: 935bf7e2-a0e7-4351-827a-077e717f792b
+    type: playbook
+    task:
+      id: 935bf7e2-a0e7-4351-827a-077e717f792b
+      version: -1
+      name: IP Enrichment - Generic v2
+      playbookName: IP Enrichment - Generic v2
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "43"
+    scriptarguments:
+      IP:
+        complex:
+          root: GoogleChronicleBackstory
+          accessor: Asset.IpAddress
+          transformers:
+          - operator: uniq
+      InternalRange: {}
+      ResolveIP:
+        simple: "True"
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": -300,
+          "y": 1340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "36":
+    id: "36"
+    taskid: f37c2091-4eb2-4aae-8769-dc1b3d27c412
+    type: playbook
+    task:
+      id: f37c2091-4eb2-4aae-8769-dc1b3d27c412
+      version: -1
+      name: Endpoint Enrichment - Generic v2.1
+      playbookName: Endpoint Enrichment - Generic v2.1
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "43"
+    scriptarguments:
+      Hostname:
+        complex:
+          root: GoogleChronicleBackstory
+          accessor: Asset.HostName
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": -810,
+          "y": 1340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "37":
+    id: "37"
+    taskid: dc8d7c17-4451-4da0-85b8-0b094625731b
+    type: playbook
+    task:
+      id: dc8d7c17-4451-4da0-85b8-0b094625731b
+      version: -1
+      name: Domain Enrichment - Generic v2
+      playbookName: Domain Enrichment - Generic v2
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      Domain:
+        complex:
+          root: Domain
+          accessor: Name
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 630,
+          "y": -660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "38":
+    id: "38"
+    taskid: 4430a67a-6d6e-4e8d-8871-63dcc427570d
+    type: playbook
+    task:
+      id: 4430a67a-6d6e-4e8d-8871-63dcc427570d
+      version: -1
+      name: URL Enrichment - Generic v2
+      playbookName: URL Enrichment - Generic v2
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "41"
+      - "42"
+    scriptarguments:
+      Rasterize:
+        simple: "True"
+      URL:
+        complex:
+          root: DomainToURL
+          transformers:
+          - operator: uniq
+      VerifyURL:
+        simple: "False"
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 630,
+          "y": 105
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "39":
+    id: "39"
+    taskid: cbd9b72a-2b03-4b49-8fe3-4935be3a56d7
+    type: title
+    task:
+      id: cbd9b72a-2b03-4b49-8fe3-4935be3a56d7
+      version: -1
+      name: Extract Domain and perform enrichment
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 630,
+          "y": -1115
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "40":
+    id: "40"
+    taskid: 96b529a3-ba1b-4140-8300-943f718d6b27
+    type: title
+    task:
+      id: 96b529a3-ba1b-4140-8300-943f718d6b27
+      version: -1
+      name: Convert Domain to URLs and perform enrichment
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "46"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 630,
+          "y": -350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "41":
+    id: "41"
+    taskid: 84ca7790-1581-4865-864c-d64da9a674da
+    type: title
+    task:
+      id: 84ca7790-1581-4865-864c-d64da9a674da
+      version: -1
+      name: Fetch assets that accessed the Domain and perform enrichment
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "30"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 210,
+          "y": 280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "42":
+    id: "42"
+    taskid: 5df2608a-2bfb-4d1a-811c-a4213279194f
+    type: title
+    task:
+      id: 5df2608a-2bfb-4d1a-811c-a4213279194f
+      version: -1
+      name: Fetch Whois information for the Domain
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "31"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 630,
+          "y": 280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "43":
+    id: "43"
+    taskid: ab6b0b97-7953-46b2-804f-39dca8c1b632
+    type: title
+    task:
+      id: ab6b0b97-7953-46b2-804f-39dca8c1b632
+      version: -1
+      name: Block the suspicious Domain and URLs
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "32"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 210,
+          "y": 1575
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "46":
+    id: "46"
+    taskid: 9e09d268-3e12-453a-859d-e0b3a35bee4f
+    type: regular
+    task:
+      id: 9e09d268-3e12-453a-859d-e0b3a35bee4f
+      version: -1
+      name: Convert Domain to URLs
+      description: Converts Domain(s) to URL(s).
+      scriptName: ConvertDomainToURLs
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      domains:
+        complex:
+          root: Domain
+          accessor: Name
+          transformers:
+          - operator: uniq
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 630,
+          "y": -220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "47":
+    id: "47"
+    taskid: a23ded47-d452-44e3-8198-47aee162cbf9
+    type: regular
+    task:
+      id: a23ded47-d452-44e3-8198-47aee162cbf9
+      version: -1
+      name: Collect all asset identifiers
+      description: Collect all asset identifiers - Hostname, IP address and MAC address
+        in the context.
+      scriptName: ChronicleAssetIdentifierScript
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      artifact_identifiers:
+        complex:
+          root: GoogleChronicleBackstory
+          accessor: Asset
+      artifict_identifiers:
+        complex:
+          root: GoogleChronicleBackstory
+          accessor: Asset
+    reputationcalc: 3
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -540,
+          "y": 970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "20_16_yes": 0.82,
+      "20_9_#default#": 0.22,
+      "24_43_#default#": 0.3,
+      "30_43_#default#": 0.17,
+      "30_7_yes": 0.49,
+      "31_43_#default#": 0.21,
+      "32_34_yes": 0.59,
+      "32_8_#default#": 0.5,
+      "32_9_no": 0.51
+    },
+    "paper": {
+      "dimensions": {
+        "height": 3835,
+        "width": 1820,
+        "x": -810,
+        "y": -1250
+      }
+    }
+  }
+inputs:
+- key: auto_block_entities
+  value:
+    complex:
+      root: incident
+      filters:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: incident.chronicleautoblockentities
+            iscontext: true
+      accessor: chronicleautoblockentities
+  required: false
+  description: Autoblock the detected suspicious Domain(s) and URL(s). You can set
+    this as 'Yes' or 'No' manually here or you can set it into a custom incident field
+    'Chronicle Auto Block Entities' using mapping classification from integration
+    configuration.
+  playbookInputQuery:
+outputs: []
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

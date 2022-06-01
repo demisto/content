@@ -1,0 +1,220 @@
+description: This playbook retrieves a specified EML/MSG file directly from Mimecast.
+id: Get Email From Email Gateway - Mimecast
+inputs:
+- description: The message ID provided by Mimecast.
+  key: MessageID
+  playbookInputQuery:
+  required: false
+  value: {}
+name: Get Email From Email Gateway - Mimecast
+outputs:
+- contextPath: Mimecast.Message.ID
+  description: The Message ID.
+- contextPath: Mimecast.Message.Subject
+  description: The message subject.
+- contextPath: Mimecast.Message.HeaderDate
+  description: The date of the message as defined in the message headers.
+- contextPath: Mimecast.Message.Size
+  description: The message size.
+- contextPath: Mimecast.Message.From
+  description: The message sender as defined in the message header.
+- contextPath: Mimecast.Message.ReplyTo
+  description: The value of the Reply-To header.
+- contextPath: Mimecast.Message.EnvelopeFrom
+  description: The message sender as defined in the message envelope.
+- contextPath: Mimecast.Message.Processed
+  description: The date the message was processed by Mimecast in ISO 8601 format.
+- contextPath: Mimecast.Message.HasHtmlBody
+  description: Whether the message has an HTML body part.
+- contextPath: Mimecast.Message.To.EmailAddress
+  description: The message recipient.
+- contextPath: Mimecast.Message.CC.EmailAddress
+  description: Each CC recipient of the message.
+- contextPath: Mimecast.Message.Headers.Name
+  description: The header's name.
+- contextPath: Mimecast.Message.Headers.Values
+  description: The header's value.
+- contextPath: Mimecast.Message.Attachments.FileName
+  description: the message attachment's file name.
+- contextPath: Mimecast.Message.Attachments.SHA256
+  description: The message attachment's SHA256.
+- contextPath: Mimecast.Message.Attachments.ID
+  description: The message attachment's ID.
+- contextPath: Mimecast.Message.Attachments.Size
+  description: The message attachment's file size.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 8f9f05e8-c505-4131-81b3-0ee47fd0edc9
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 8f9f05e8-c505-4131-81b3-0ee47fd0edc9
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -140
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      context:
+        simple: RECEIVED
+      messageID:
+        complex:
+          root: inputs.MessageID
+      part:
+        simple: message
+      type:
+        simple: PLAIN
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: MimecastV2
+      description: Get the contents or metadata of a given message.
+      id: 8ec1a452-f214-4df4-8bd1-61015c66bbee
+      iscommand: true
+      name: Retrieve Email File
+      script: MimecastV2|||mimecast-get-message
+      type: regular
+      version: -1
+    taskid: 8ec1a452-f214-4df4-8bd1-61015c66bbee
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 2329b150-3fca-42ed-8a1a-579c76e62818
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: 2329b150-3fca-42ed-8a1a-579c76e62818
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 430
+        }
+      }
+  "3":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: brand
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: startWith
+                    right:
+                      value:
+                        simple: Mimecast
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+      label: "yes"
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Checks if Mimecast is enabled.
+      id: 73937151-e5b9-4180-8868-d12ba42153c7
+      iscommand: false
+      name: Is Mimecast enabled?
+      type: condition
+      version: -1
+    taskid: 73937151-e5b9-4180-8868-d12ba42153c7
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 20
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "3_1_yes": 0.59
+    },
+    "paper": {
+      "dimensions": {
+        "height": 635,
+        "width": 380,
+        "x": 450,
+        "y": -140
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

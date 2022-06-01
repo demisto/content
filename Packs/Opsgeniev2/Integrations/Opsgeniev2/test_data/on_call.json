@@ -1,0 +1,18 @@
+{
+    "data": {
+        "_parent": {
+            "enabled": true,
+            "id": "092748e8-c17d-4e53-99da-e84345f06a90",
+            "name": "Test_schedule"
+        },
+        "onCallParticipants": [
+            {
+                "id": "7f072844-38a7-4de7-b2ff-2a51ffbabe7b",
+                "name": "notreal@spaghetti.com",
+                "type": "user"
+            }
+        ]
+    },
+    "requestId": "1bfdf498-aaac-4282-9a98-7f318f2ab32e",
+    "took": 0.021
+}

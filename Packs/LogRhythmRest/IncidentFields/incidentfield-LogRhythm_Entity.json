@@ -1,0 +1,30 @@
+{
+ "associatedToAll": false,
+ "caseInsensitive": true,
+ "cliName": "logrhythmentity",
+ "closeForm": false,
+ "content": true,
+ "description": "LogRhythm Entity",
+ "editForm": true,
+ "group": 0,
+ "hidden": false,
+ "id": "incident_logrhythmentity",
+ "isReadOnly": false,
+ "locked": false,
+ "name": "LogRhythm Entity",
+ "neverSetAsRequired": false,
+ "ownerOnly": false,
+ "required": false,
+ "sla": 0,
+ "system": false,
+ "threshold": 72,
+ "type": "shortText",
+ "unmapped": false,
+ "unsearchable": false,
+ "useAsKpi": false,
+ "associatedTypes": [
+  "Logrhythm Alarm"
+ ],
+ "version": -1,
+ "fromVersion": "5.5.0"
+}

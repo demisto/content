@@ -1,0 +1,293 @@
+id: DbotAverageScore-Test
+version: -1
+name: DbotAverageScore-Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: f8a82f61-25a5-4c2f-8be6-d7a70cc5f52f
+    type: start
+    task:
+      id: f8a82f61-25a5-4c2f-8be6-d7a70cc5f52f
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: e6a5bbcd-280e-4d33-8ab6-0eca3672f6c3
+    type: regular
+    task:
+      id: e6a5bbcd-280e-4d33-8ab6-0eca3672f6c3
+      version: -1
+      name: Set
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      key:
+        simple: DBotScore
+      value:
+        simple: '{"Indicator": "8.8.8.8", "Score": 1, "Type": "ip", "Vendor": "Dummy"}'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: e2e24d65-296e-4eee-87ad-92f8ef748b0a
+    type: regular
+    task:
+      id: e2e24d65-296e-4eee-87ad-92f8ef748b0a
+      version: -1
+      name: DBotAverageScore
+      description: Calculates average score for each indicator from context
+      scriptName: DBotAverageScore
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 9a492887-a8b6-442c-8254-fda615d74f45
+    type: condition
+    task:
+      id: 9a492887-a8b6-442c-8254-fda615d74f45
+      version: -1
+      name: Verify Context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotAvgScore.Indicator
+            iscontext: true
+          right:
+            value:
+              simple: 8.8.8.8
+      - - operator: isEqualNumber
+          left:
+            value:
+              simple: DBotAvgScore.Score
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 413505c8-a17c-41ec-88af-a8a304189046
+    type: regular
+    task:
+      id: 413505c8-a17c-41ec-88af-a8a304189046
+      version: -1
+      name: Set
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: DBotScore
+      value:
+        simple: '{"Indicator": "8.8.8.8", "Score": 3, "Type": "ip", "Vendor": "Dummy2"}'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 755
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 58d6b701-668a-4739-8eb5-e6a620a74761
+    type: regular
+    task:
+      id: 58d6b701-668a-4739-8eb5-e6a620a74761
+      version: -1
+      name: DBotAverageScore
+      description: Calculates average score for each indicator from context
+      scriptName: DBotAverageScore
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 68dfa38f-1f19-4b07-8131-4a734d93632b
+    type: condition
+    task:
+      id: 68dfa38f-1f19-4b07-8131-4a734d93632b
+      version: -1
+      name: Verify Context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotAvgScore.Indicator
+            iscontext: true
+          right:
+            value:
+              simple: 8.8.8.8
+      - - operator: isEqualNumber
+          left:
+            value:
+              simple: DBotAvgScore.Score
+            iscontext: true
+          right:
+            value:
+              simple: "2"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 4fd6a2ed-844a-493b-8092-55f272c179e5
+    type: title
+    task:
+      id: 4fd6a2ed-844a-493b-8092-55f272c179e5
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1345,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0
+description: Test playbook for the DBotAverageScore script.

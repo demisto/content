@@ -1,0 +1,179 @@
+id: Cyberpion Domain State
+version: -1
+name: Cyberpion Domain State
+description: Allows analyst to get basic information about the domain
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 48191b21-6aaa-4fd3-8434-5f3aac29dd06
+    type: start
+    task:
+      id: 48191b21-6aaa-4fd3-8434-5f3aac29dd06
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: a3d4210b-33f7-49a2-83e5-29f6696a1e17
+    type: regular
+    task:
+      id: a3d4210b-33f7-49a2-83e5-29f6696a1e17
+      version: -1
+      name: cyberpion-get-domain-state
+      description: Retrieves domain's info and current state
+      script: Cyberpion|||cyberpion-get-domain-state
+      type: regular
+      iscommand: true
+      brand: Cyberpion
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      domain:
+        simple: ${incident.cyberpionasset}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    evidencedata:
+      description:
+        simple: This result is an evidence
+      customfields: {}
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: ecb5c8a2-7b19-4fb5-8e13-cf2946f8b0d4
+    type: title
+    task:
+      id: ecb5c8a2-7b19-4fb5-8e13-cf2946f8b0d4
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: c335ef8b-6ac2-4261-8ec2-63efa88e99d3
+    type: regular
+    task:
+      id: c335ef8b-6ac2-4261-8ec2-63efa88e99d3
+      version: -1
+      name: Wait for manual review
+      description: |-
+        Steps:
+        #Review evidence
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 9e6bfced-fcfa-4f58-80c0-a777cc2556bb
+    type: regular
+    task:
+      id: 9e6bfced-fcfa-4f58-80c0-a777cc2556bb
+      version: -1
+      name: Close investigation
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      emailclassification: {}
+      id: {}
+      incomingmirrorerror: {}
+      outgoingmirrorerror: {}
+      phishingsubtype: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 735,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+- Cyberpion-Test
+fromversion: 6.0.0

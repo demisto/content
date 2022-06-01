@@ -1,0 +1,334 @@
+id: Generic Webhook - Test
+version: -1
+vcShouldKeepItemLegacyProdMachine: false
+name: Generic Webhook - Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 70c82575-965e-4fe1-82fa-fd160908f479
+    type: start
+    task:
+      id: 70c82575-965e-4fe1-82fa-fd160908f479
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 1e4e6562-50f4-4895-8321-bb4d3963c84a
+    type: regular
+    task:
+      id: 1e4e6562-50f4-4895-8321-bb4d3963c84a
+      version: -1
+      name: Trigger the webhook
+      description: Sends http request. Returns the response as json.
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      body:
+        simple: '{"name":"webhook"}'
+      headers:
+        simple: Authorization:token
+      method:
+        simple: POST
+      url:
+        simple: http://localhost:9000
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: ed4acac5-5f67-4f70-823e-bd56b99fadf8
+    type: regular
+    task:
+      id: ed4acac5-5f67-4f70-823e-bd56b99fadf8
+      version: -1
+      name: Search the incident
+      description: Searches Demisto incidents
+      scriptName: SearchIncidentsV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      name:
+        simple: webhook
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: ac6cae19-629e-4372-8620-ee537f79c25d
+    type: condition
+    task:
+      id: ac6cae19-629e-4372-8620-ee537f79c25d
+      version: -1
+      name: Verify incident was created successfully
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: foundIncidents.id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 84802530-89ee-4ca8-8eb2-339899de1a5e
+    type: regular
+    task:
+      id: 84802530-89ee-4ca8-8eb2-339899de1a5e
+      version: -1
+      name: Close webhook triggered incident
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      id:
+        simple: ${foundIncidents.id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 231d0f93-ee6a-4335-8dff-99ae78e946c4
+    type: regular
+    task:
+      id: 231d0f93-ee6a-4335-8dff-99ae78e946c4
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: ccaef695-050b-4212-8a20-2b61e3511939
+    type: condition
+    task:
+      id: ccaef695-050b-4212-8a20-2b61e3511939
+      version: -1
+      name: Verify Success HTTP Response
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              simple: HttpRequest.Response.StatusCode
+            iscontext: true
+          right:
+            value:
+              simple: "200"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 0102897a-8451-4150-8c15-30c27d589383
+    type: regular
+    task:
+      id: 0102897a-8451-4150-8c15-30c27d589383
+      version: -1
+      name: Sleep 10 seconds to let the webserver spin up
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      seconds:
+        simple: "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: b2a34874-e4de-49a0-8786-15886d23264b
+    type: regular
+    task:
+      id: b2a34874-e4de-49a0-8786-15886d23264b
+      version: -1
+      name: Sleep 10 seconds before searching the incident
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      seconds:
+        simple: "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1465,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.5.0

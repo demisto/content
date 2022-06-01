@@ -1,0 +1,83 @@
+{
+    "id": "2c918084740346d5017408d79229489e",
+    "name": "testy.testerson@sailpoint.com",
+    "displayName": "testy.testerson@sailpoint.com",
+    "firstName": "testy.testerson@sailpoint.com",
+    "lastName": "testy.testerson@sailpoint.com",
+    "email": "testy.testerson@sailpoint.com",
+    "created": "2020-08-19T22:29:39.498Z",
+    "modified": "2021-02-04T02:03:11.294Z",
+    "inactive": false,
+    "protected": false,
+    "status": "UNREGISTERED",
+    "employeeNumber": "7a736361-6c65-7200-7363-696d005d7d1a",
+    "isManager": false,
+    "identityProfile": {
+        "id": "2c9180887372d217017408d3c85d0b20",
+        "name": "Basic Users"
+    },
+    "source": {
+        "id": "2c91808a737cf404017408d28c1e77a2",
+        "name": "Basic"
+    },
+    "attributes": {
+        "uid": "7a736361-6c65-7200-7363-696d005d7d1a",
+        "firstname": "testy.testerson@sailpoint.com",
+        "cloudAuthoritativeSource": "2c91808a737cf404017408d28c1e77a2",
+        "cloudStatus": "UNREGISTERED",
+        "iplanet-am-user-alias-list": [],
+        "displayName": "testy.testerson@sailpoint.com",
+        "internalCloudStatus": "UNREGISTERED",
+        "identificationNumber": "7a736361-6c65-7200-7363-696d005d7d1a",
+        "email": "testy.testerson@sailpoint.com",
+        "lastname": "testy.testerson@sailpoint.com"
+    },
+    "accounts": [
+        {
+            "id": "2c918084740346d5017408d7922a489f",
+            "name": "testy.testerson@sailpoint.com",
+            "accountId": "7a736361-6c65-7200-7363-696d005d7d1a",
+            "source": {
+                "id": "2c91808a737cf404017408d28c1e77a2",
+                "name": "Basic",
+                "type": "SCIM 2.0"
+            },
+            "disabled": false,
+            "locked": false,
+            "privileged": false,
+            "manuallyCorrelated": false,
+            "entitlementAttributes": {},
+            "created": "2020-08-19T22:29:39.498Z"
+        },
+        {
+            "id": "2c918084740346d601740c98765a306e",
+            "name": "testy.testerson@sailpoint.com",
+            "accountId": "testy.testerson@sailpoint.com",
+            "source": {
+                "id": "2c91808563f9f8b40163fa9734d3029f",
+                "name": "IdentityNow",
+                "type": "IdentityNowConnector"
+            },
+            "disabled": false,
+            "locked": false,
+            "privileged": false,
+            "manuallyCorrelated": false,
+            "entitlementAttributes": {},
+            "created": "2020-08-20T15:59:12.475Z"
+        }
+    ],
+    "accountCount": 2,
+    "appCount": 0,
+    "accessCount": 0,
+    "entitlementCount": 0,
+    "roleCount": 0,
+    "accessProfileCount": 0,
+    "ownsCount": 0,
+    "tags": [],
+    "tagsCount": 0,
+    "pod": "stg-uswest",
+    "org": "sailpoint-idn",
+    "synced": "2021-02-04T02:03:11.475Z",
+    "_type": "identity",
+    "type": "identity"
+}

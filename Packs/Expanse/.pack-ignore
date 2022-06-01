@@ -1,5 +1,14 @@
 [file:Expanse_Incident_Playbook.yml]
-ignore=BA101
+ignore=BA101,BA110
 
 [file:Expanse.yml]
 ignore=IN126
+
+[file:README.md]
+ignore=RM102,RM104
+
+[file:layoutscontainer-Expanse_Appearance.json]
+ignore=BA101
+
+[file:layoutscontainer-Expanse_Behavior.json]
+ignore=BA101

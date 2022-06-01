@@ -7,12 +7,23 @@ args:
   secret: false
 - default: false
   defaultValue: phishing_model
-  description: 'The name in which the ML model will be saved '
+  description: The model name in which the ML model will be saved.
   isArray: false
   name: modelName
   required: false
   secret: false
-comment: 'Imports a file that contains am ML model. '
+- auto: PREDEFINED
+  default: false
+  defaultValue: mlModel
+  description: The method for storing the imported model.
+  isArray: false
+  name: modelStoreType
+  predefined:
+  - mlModel
+  - list
+  required: false
+  secret: false
+comment: 'Imports a file that contains an ML model. '
 commonfields:
   id: ImportMLModel
   version: -1
@@ -25,7 +36,7 @@ tags:
 - ml
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.8.2.6981
+dockerimage: demisto/python3:3.9.7.24076
 runas: DBotWeakRole
 runonce: false
 tests:

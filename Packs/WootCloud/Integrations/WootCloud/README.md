@@ -6,9 +6,6 @@ This integration was integrated and tested with version 1.0 of WootCloud
 ## WootCloud Playbook
 ---
 
-## Use Cases
----
-
 ## Configure WootCloud on XSOAR
 ---
 
@@ -28,7 +25,7 @@ This integration was integrated and tested with version 1.0 of WootCloud
 
 ## Commands
 ---
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 1. wootcloud-get-pkt-alerts
 2. wootcloud-get-bt-alerts
@@ -237,8 +234,7 @@ list packet alerts generated in requested time span
 ### 2. wootcloud-get-bt-alerts
 ---
 list bluetooth alerts generated in requested time span
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
+
 ##### Base Command
 
 `wootcloud-get-bt-alerts`
@@ -305,8 +301,7 @@ list bluetooth alerts generated in requested time span
 ### 3. wootcloud-get-anomaly-alerts
 ---
 list anomaly alerts generated in requested time span
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
+
 ##### Base Command
 
 `wootcloud-get-anomaly-alerts`
@@ -870,8 +865,7 @@ retrieve single packet alert given packet id
 ### 5. wootcloud-fetch-bluetooth-alert
 ---
 retrieve single bluetooth alert given packet id
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
+
 ##### Base Command
 
 `wootcloud-fetch-bluetooth-alert`
@@ -920,8 +914,7 @@ retrieve single bluetooth alert given packet id
 ### 6. wootcloud-fetch-anomaly-alert
 ---
 retrieve single anomaly alert given packet id
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
+
 ##### Base Command
 
 `wootcloud-fetch-anomaly-alert`

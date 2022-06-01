@@ -1,0 +1,33 @@
+{
+    "size": 0,
+    "dataType": "metrics",
+    "params": {
+        "keys": [
+            "avg|duration"
+        ],
+        "tableColumns": [],
+        "valuesFormat": "minutes"
+    },
+    "query": "type:playbook",
+    "modified": "2021-05-23T13:48:55.453348232Z",
+    "name": "Average runtime for Playbooks",
+    "dateRange": {
+        "fromDate": "0001-01-01T00:00:00Z",
+        "toDate": "0001-01-01T00:00:00Z",
+        "period": {
+            "by": "",
+            "byTo": "",
+            "byFrom": "days",
+            "toValue": null,
+            "fromValue": 7,
+            "field": ""
+        },
+        "fromDateLicense": "0001-01-01T00:00:00Z"
+    },
+    "isPredefined": true,
+    "version": -1,
+    "id": "total-average-playbook-runtime-in-seconds",
+    "description": "Average runtime for Playbooks",
+    "widgetType": "duration",
+    "fromVersion": "6.2.0"
+}

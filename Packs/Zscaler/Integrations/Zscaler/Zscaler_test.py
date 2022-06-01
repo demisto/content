@@ -1,5 +1,6 @@
 import demistomock as demisto
 import CommonServerPython
+from CommonServerPython import urljoin
 import pytest
 import json
 import requests_mock
@@ -9,16 +10,24 @@ class ResponseMock:
     def __init__(self, response):
         self._json = response
         self.content = json.dumps(response)
+        self.status_code = 200
 
     def json(self):
         return self._json
+
+
+class ObjectMocker(dict):
+    __getattr__ = dict.__getitem__
+    __setattr__ = dict.__setitem__
+    __delattr__ = dict.__delitem__
 
 
 def run_command_test(command_func, args, response_path, expected_result_path, mocker):
     with open(response_path, 'r') as response_f:
         response = ResponseMock(json.load(response_f))
     mocker.patch('Zscaler.http_request', return_value=response)
-    if command_func.__name__ == 'url_lookup':
+    if command_func.__name__ in ['url_lookup', 'get_users_command', 'set_user_command',
+                                 'get_departments_command', 'get_usergroups_command']:
         res = command_func(args)
     else:
         res = command_func(**args)
@@ -52,10 +61,24 @@ def test_url_command(mocker):
     """url"""
     import Zscaler
     run_command_test(command_func=Zscaler.url_lookup,
-                     args={'url': 'www.demisto22.com'},
+                     args={'url': 'https://www.demisto-news.com,https://www.demisto-search.com'},
                      response_path='test_data/responses/url.json',
                      expected_result_path='test_data/results/url.json',
                      mocker=mocker)
+
+
+def test_url_fails_unknown_error_code(mocker, requests_mock):
+    """url"""
+    import Zscaler
+    Zscaler.BASE_URL = 'http://cloud/api/v1'
+
+    requests_mock.post(urljoin(Zscaler.BASE_URL, 'urlLookup'), status_code=501)
+    args = {'url': 'https://www.demisto-news.com,https://www.demisto-search.com'}
+
+    try:
+        Zscaler.url_lookup(args)
+    except Exception as ex:
+        assert 'following error: 501' in str(ex)
 
 
 def test_url_command_with_urlClassificationsWithSecurityAlert(mocker):
@@ -112,9 +135,40 @@ def test_get_categories(mocker):
     # zscaler-get-categories
     import Zscaler
     run_command_test(command_func=Zscaler.get_categories_command,
-                     args={'display_url': 'true'},
+                     args={'args': {'displayURL': 'true'}},
                      response_path='test_data/responses/categories2.json',
                      expected_result_path='test_data/results/get_categories.json',
+                     mocker=mocker)
+
+
+def test_get_categories_custom_only(mocker):
+    # zscaler-get-categories
+    import Zscaler
+    run_command_test(command_func=Zscaler.get_categories_command,
+                     args={'args': {'displayURL': 'true', 'custom_only': True}},
+                     response_path='test_data/responses/categories2.json',
+                     expected_result_path='test_data/results/get_categories.json',
+                     mocker=mocker)
+
+
+@pytest.mark.parametrize('display_url, get_ids_and_names_only', [(False, True), (True, True)])
+def test_get_categories_ids_and_names_only(mocker, display_url, get_ids_and_names_only):
+    # zscaler-get-categories retrieve only categories IDs and names (without urls)
+    import Zscaler
+    run_command_test(command_func=Zscaler.get_categories_command,
+                     args={'args': {'displayURL': display_url, 'get_ids_and_names_only': get_ids_and_names_only}},
+                     response_path='test_data/responses/categories2_no_urls.json',
+                     expected_result_path='test_data/results/get_categories_no_urls.json',
+                     mocker=mocker)
+
+
+def test_url_quota_command(mocker):
+    # zscaler-url-quota
+    import Zscaler
+    run_command_test(command_func=Zscaler.url_quota_command,
+                     args={},
+                     response_path='test_data/responses/url_quota.json',
+                     expected_result_path='test_data/results/url_quota.json',
                      mocker=mocker)
 
 
@@ -126,6 +180,98 @@ def test_get_blacklist(mocker):
                      response_path='test_data/responses/blacklist_urls.json',
                      expected_result_path='test_data/results/blacklist.json',
                      mocker=mocker)
+
+
+def test_get_blacklist_filter(requests_mock):
+    """
+    Given:
+        - The `filter` arg set to `url`
+        - API response with a URL and IP
+
+    When:
+        - Running the get-blacklist command
+
+    Then:
+        - Ensure only the URL is returned
+    """
+    import Zscaler
+    api_res = {
+        'blacklistUrls': [
+            'demisto.com',
+            '8.8.8.8',
+        ],
+    }
+    requests_mock.get(
+        'http://cloud/api/v1/security/advanced',
+        json=api_res,
+    )
+    args = {
+        'filter': 'url',
+    }
+    cmd_res = Zscaler.get_blacklist_command(args)
+    assert cmd_res['Contents'] == [api_res['blacklistUrls'][0]]
+
+
+def test_get_blacklist_query(requests_mock):
+    """
+    Given:
+        - The `query` arg set to `demisto`
+        - API response with a URL and IP
+
+    When:
+        - Running the get-blacklist command
+
+    Then:
+        - Ensure only the URL (which contains `demisto`) is returned
+    """
+    import Zscaler
+    api_res = {
+        'blacklistUrls': [
+            'demisto.com',
+            '8.8.8.8',
+        ],
+    }
+    requests_mock.get(
+        'http://cloud/api/v1/security/advanced',
+        json=api_res,
+    )
+    args = {
+        'query': 'demisto',
+    }
+    cmd_res = Zscaler.get_blacklist_command(args)
+    assert cmd_res['Contents'] == [api_res['blacklistUrls'][0]]
+
+
+def test_get_blacklist_query_and_filter(requests_mock):
+    """
+    Given:
+        - The `filter` arg set to `ip`
+        - The `query` arg set to `8.8.*.8`
+        - API response with a URL and IP
+
+    When:
+        - Running the get-blacklist command
+
+    Then:
+        - Ensure only the IP is returned
+    """
+    import Zscaler
+    api_res = {
+        'blacklistUrls': [
+            'demisto.com',
+            '8.8.8.8',
+        ],
+    }
+    requests_mock.get(
+        'http://cloud/api/v1/security/advanced',
+        json=api_res,
+    )
+    args = {
+        'filter': 'ip',
+        'query': '8.8.*.8',
+    }
+    cmd_res = Zscaler.get_blacklist_command(args)
+    assert cmd_res['Contents'] == [api_res['blacklistUrls'][1]]
 
 
 def test_get_whitelist(mocker):
@@ -143,6 +289,8 @@ test_data = [
     ('https://madeup.fake.com/css?family=blah:1,2,3', 'true', ['madeup.fake.com/css?family=blah:1', '2', '3']),
     ('https://madeup.fake.com/css?family=blah:1,2,3', 'false', ['madeup.fake.com/css?family=blah:1,2,3'])
 ]
+
+
 # disable-secrets-detection-end
 
 
@@ -180,3 +328,205 @@ def test_url_multiple_arg(url, multiple, expected_data):
     request_data = m.last_request.json()
     assert len(request_data) == len(expected_data)
     assert request_data == expected_data
+
+
+def test_login__active_session(mocker):
+    """
+    Scenario: test login with an active session
+
+    Given:
+     - User has authorization to login
+     - There is an active session
+    When:
+     - login is called
+    Then:
+     - No login request is done
+     - Result is as expected
+    """
+    import Zscaler
+    mock_id = 'mock_id'
+    mocker.patch.object(demisto, 'debug')
+    mocker.patch.object(Zscaler, 'get_integration_context', return_value={Zscaler.SESSION_ID_KEY: mock_id})
+    mocker.patch.object(Zscaler, 'test_module')
+    Zscaler.login()
+
+    assert Zscaler.DEFAULT_HEADERS['cookie'] == mock_id
+
+
+def test_login__no_active_session(mocker):
+    """
+    Scenario: test login when there is no active session
+
+    Given:
+     - User has authorization to login
+     - There is an active session
+    When:
+     - User wishes to login using login command
+    Then:
+     - Result is as expected
+    """
+    import Zscaler
+    mock_header = 'JSESSIONID=MOCK_ID; Path=/; Secure; HttpOnly'
+    Zscaler.API_KEY = 'Lcb38EvjtZVc'
+    mocker.patch.object(demisto, 'debug')
+    mocker.patch.object(Zscaler, 'get_integration_context', return_value={})
+    mocker.patch.object(Zscaler, 'test_module')
+    mocker.patch.object(Zscaler, 'http_request', return_value=ObjectMocker({'headers': {'Set-Cookie': mock_header}}))
+    Zscaler.login()
+
+    assert Zscaler.DEFAULT_HEADERS['cookie'] == 'JSESSIONID=MOCK_ID'
+
+
+def test_login_command(mocker):
+    """
+    Scenario: test successful login command
+
+    Given:
+     - User provided valid credentials
+     - Integration context is empty
+    When:
+     - zscaler-login command is called
+    Then:
+     - Ensure logout is not called
+     - Ensure login is called
+     - Ensure readable output is as expected
+    """
+    import Zscaler
+    mocker.patch.object(demisto, 'debug')
+    mocker.patch.object(Zscaler, 'get_integration_context', return_value={})
+    logout_mock = mocker.patch.object(Zscaler, 'logout')
+    login_mock = mocker.patch.object(Zscaler, 'login')
+    raw_res = Zscaler.login_command()
+
+    assert not logout_mock.called
+    assert login_mock.called
+    assert raw_res.readable_output == 'Zscaler session created successfully.'
+
+
+def test_login_command__load_from_context(mocker):
+    """
+    Scenario: test successful login command attempt with load from the context
+
+    Given:
+     - User has provided valid credentials
+     - Integration context has a previous session
+    When:
+     - zscaler-login command is called
+    Then:
+     - Ensure logout is called
+     - Ensure login is called
+     - Ensure readable output is as expected
+    """
+    import Zscaler
+    mocker.patch.object(demisto, 'debug')
+    mocker.patch.object(Zscaler, 'get_integration_context', return_value={Zscaler.SESSION_ID_KEY: 'test_key'})
+    logout_mock = mocker.patch.object(Zscaler, 'logout')
+    login_mock = mocker.patch.object(Zscaler, 'login')
+    raw_res = Zscaler.login_command()
+
+    assert logout_mock.called
+    assert login_mock.called
+    assert raw_res.readable_output == 'Zscaler session created successfully.'
+
+
+def test_logout_command__no_context(mocker):
+    """
+    Scenario: logout when there's no active session
+
+    Given:
+     - There is no active session
+    When:
+     - logout command is performed
+    Then:
+     - Return readable output detailing no action was performed
+    """
+    import Zscaler
+    mocker.patch.object(Zscaler, 'get_integration_context', return_value={})
+    raw_res = Zscaler.logout_command()
+    assert raw_res.readable_output == 'No API session was found. No action was performed.'
+
+
+def test_logout_command__happy_context(mocker):
+    """
+    Scenario: logout when there's an active session
+
+    Given:
+     - There is an active session
+    When:
+     - logout command is performed
+    Then:
+     - Return readable output detailing logout was performed
+    """
+    import Zscaler
+    mocker.patch.object(Zscaler, 'get_integration_context', return_value={Zscaler.SESSION_ID_KEY: 'test_key'})
+    mocker.patch.object(Zscaler, 'logout', return_value=ResponseMock({}))
+    raw_res = Zscaler.logout_command()
+    assert raw_res.readable_output == "API session logged out of Zscaler successfully."
+
+
+def test_logout_command__context_expired(mocker):
+    """
+    Scenario: fail to logout with AuthorizationError when there's an active session
+
+    Given:
+     - There is an active session
+    When:
+     - logout command is performed
+     - logout action fails with AuthorizationError
+    Then:
+     - Return readable output detailing no logout was done
+    """
+    import Zscaler
+    mocker.patch.object(Zscaler, 'get_integration_context', return_value={Zscaler.SESSION_ID_KEY: 'test_key'})
+    mocker.patch.object(Zscaler, 'logout', side_effect=Zscaler.AuthorizationError(''))
+    raw_res = Zscaler.logout_command()
+    assert raw_res.readable_output == "API session is not authenticated. No action was performed."
+
+
+def test_get_users_command(mocker):
+    """zscaler-get-users"""
+    import Zscaler
+    run_command_test(command_func=Zscaler.get_users_command,
+                     args={'pageSize': '100'},
+                     response_path='test_data/responses/get_users.json',
+                     expected_result_path='test_data/results/get_users.json',
+                     mocker=mocker)
+
+
+def test_set_user_command(mocker):
+    """zscaler-update-user"""
+    import Zscaler
+    user_json = """{
+    "department": {"id": "12","name": "user test"},
+    "email": "user@test.com",
+    "groups": [{"id": 13,"name": "name_test"}],
+    "id": 11,
+    "name": "name.test.com"
+    }"""
+
+    run_command_test(command_func=Zscaler.set_user_command,
+                     args={'id': '11',
+                           'user': user_json},
+                     response_path='test_data/responses/set_user.json',
+                     expected_result_path='test_data/results/set_user.json',
+                     mocker=mocker)
+
+
+def test_get_departments_command(mocker):
+    """zscaler-get-departments"""
+    import Zscaler
+    run_command_test(command_func=Zscaler.get_departments_command,
+                     args={'pageSize': '1'},
+                     response_path='test_data/responses/get_departments.json',
+                     expected_result_path='test_data/results/get_departments.json',
+                     mocker=mocker)
+
+
+def test_get_usergroups_command(mocker):
+    """zscaler-get-usergroups"""
+    import Zscaler
+    run_command_test(command_func=Zscaler.get_usergroups_command,
+                     args={'pageSize': '100'},
+                     response_path='test_data/responses/get_usergroups.json',
+                     expected_result_path='test_data/results/get_usergroups.json',
+                     mocker=mocker)

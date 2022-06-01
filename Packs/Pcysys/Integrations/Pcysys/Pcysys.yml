@@ -31,7 +31,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: An Integration with Pentera by Pcysys
+description: Automate remediation actions based on Pentera, the Automated Security Validation Platform, proactively exposing high-risk vulnerabilities
 display: Pentera
 name: Pentera
 script:
@@ -138,7 +138,7 @@ script:
     - contextPath: Pentera.TaskRun.FullActionReport.Status
       description: 'The status of the action. Can be: success, failed, canceled, no_results'
       type: String
-  dockerimage: demisto/pyjwt3:1.0.0.4946
+  dockerimage: demisto/pyjwt3:1.0.0.23674
   feed: false
   isfetch: false
   longRunning: false

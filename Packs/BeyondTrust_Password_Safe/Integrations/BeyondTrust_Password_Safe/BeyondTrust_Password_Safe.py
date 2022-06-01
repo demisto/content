@@ -69,8 +69,8 @@ def http_request(method: str, suffix_url: str, data=None):
             data=data,  # type: ignore
             headers=HEADERS
         )
-    except requests.exceptions.SSLError:
-        ssl_error = 'Could not connect to BeyondTrust: Could not verify certificate.'
+    except requests.exceptions.SSLError as e:
+        ssl_error = f'Could not connect to BeyondTrust, SSL error: {e}'
         return return_error(ssl_error)
     except (requests.exceptions.ConnectionError, requests.exceptions.Timeout,
             requests.exceptions.TooManyRedirects, requests.exceptions.RequestException) as e:
@@ -86,7 +86,7 @@ def http_request(method: str, suffix_url: str, data=None):
             txt = ERR_DICT[txt]
         elif res.status_code == 401:
             txt = 'Wrong credentials.'
-        return_error(f'Error in API call to BeyondSafe Integration [{res.status_code}] - {txt})')
+        return_error(f'Error in API call to BeyondTrust Integration [{res.status_code}] - {txt})')
     try:
         return res.json()
     except ValueError:
@@ -144,7 +144,7 @@ def get_managed_accounts():
 
         })
 
-    entry_context = {'BeyondTrust.Account(val.AccountID === obj.AccountID)': managed_accounts}
+    entry_context = {'BeyondTrust.Account(val.AccountId && val.AccountId === obj.AccountId)': managed_accounts}
 
     return_outputs(tableToMarkdown('BeyondTrust Managed Accounts', data, headers, removeNull=True), entry_context,
                    managed_accounts)
@@ -394,7 +394,8 @@ def fetch_credentials():
         item = {
             'SystemId': account.get('SystemId'),
             'AccountId': account.get('AccountId'),
-            'DurationMinutes': duration_minutes
+            'DurationMinutes': duration_minutes,
+            'ConflictOption': 'reuse'
         }
 
         release_id = create_release_request(str(item))
@@ -406,9 +407,9 @@ def fetch_credentials():
             'password': password,
             'name': system_name + '_' + account_name
         })
-
     if identifier:
         credentials = list(filter(lambda c: c.get('name', '') == identifier, credentials))
+        demisto.debug("Amount of credentials for identifier: {} is {}".format(identifier, len(credentials)))
 
     demisto.credentials(credentials)
 

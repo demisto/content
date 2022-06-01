@@ -1,0 +1,35 @@
+{
+  "data": {
+    "activityScore": 0,
+    "firstSeen": null,
+    "hostname": "win10-admin.b.test.com",
+    "id": "_hostname-win10--admin.b.test.com",
+    "inventory": [
+      {
+        "computerName": "win10-admin",
+        "groups": [],
+        "hostname": "Win10-Admin.b.test.com",
+        "ip": [],
+        "location": null,
+        "mac": null,
+        "metadata": {},
+        "natIp": [],
+        "normalizedComputerName": null,
+        "normalizedHostname": "win10-admin.b.test.com",
+        "os": "Windows 10 Enterprise",
+        "osVersion": "10.0 (18363)",
+        "parsedTime": "2021-05-21 17:12:35.219000",
+        "source": "Active Directory",
+        "timestamp": "2021-05-21 17:12:35.219000",
+        "uniqueId": "{ad35d87d-b51a-4565-9e2a-33da84be14be}"
+      }
+    ],
+    "isWhitelisted": false,
+    "lastSeen": "2021-04-29T18:10:58.397000",
+    "name": "win10-admin.b.test.com",
+    "os": null,
+    "relatedEntities": [],
+    "tags": []
+  },
+  "errors": []
+}

@@ -1,0 +1,284 @@
+{
+ "detailsV2": {
+  "tabs": [
+   {
+    "id": "summary",
+    "name": "Legacy Summary",
+    "type": "summary"
+   },
+   {
+    "id": "caseinfoid",
+    "name": "Incident Info",
+    "sections": [
+     {
+      "displayType": "ROW",
+      "h": 2,
+      "i": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+      "isVisible": true,
+      "items": [
+       {
+        "endCol": 2,
+        "fieldId": "type",
+        "height": 22,
+        "id": "incident-type-field",
+        "index": 0,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "severity",
+        "height": 22,
+        "id": "incident-severity-field",
+        "index": 1,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "owner",
+        "height": 22,
+        "id": "incident-owner-field",
+        "index": 2,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "sourcebrand",
+        "height": 22,
+        "id": "incident-sourceBrand-field",
+        "index": 3,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "sourceinstance",
+        "height": 22,
+        "id": "incident-sourceInstance-field",
+        "index": 4,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "playbookid",
+        "height": 22,
+        "id": "incident-playbookId-field",
+        "index": 6,
+        "sectionItemType": "field",
+        "startCol": 0
+       }
+      ],
+      "maxW": 3,
+      "minH": 1,
+      "minW": 1,
+      "moved": false,
+      "name": "Case Details",
+      "static": false,
+      "w": 1,
+      "x": 0,
+      "y": 0
+     },
+     {
+      "h": 2,
+      "i": "caseinfoid-61263cc0-98b1-11e9-97d7-ed26ef9e46c8",
+      "maxW": 3,
+      "minH": 1,
+      "minW": 1,
+      "moved": false,
+      "name": "Notes",
+      "static": false,
+      "type": "notes",
+      "w": 1,
+      "x": 0,
+      "y": 4
+     },
+     {
+      "displayType": "ROW",
+      "h": 2,
+      "i": "caseinfoid-6aabad20-98b1-11e9-97d7-ed26ef9e46c8",
+      "maxW": 3,
+      "minH": 1,
+      "minW": 1,
+      "moved": false,
+      "name": "Work Plan",
+      "static": false,
+      "type": "workplan",
+      "w": 1,
+      "x": 0,
+      "y": 6
+     },
+     {
+      "displayType": "ROW",
+      "h": 8,
+      "hideItemTitleOnlyOne": true,
+      "hideName": false,
+      "i": "caseinfoid-71fda740-4daa-11eb-bddf-c74bdbd811d3",
+      "items": [
+       {
+        "endCol": 4,
+        "fieldId": "troubleshootsummary",
+        "height": 44,
+        "id": "790ebc40-4daa-11eb-bddf-c74bdbd811d3",
+        "index": 0,
+        "sectionItemType": "field",
+        "startCol": 0
+       }
+      ],
+      "maxW": 3,
+      "minH": 1,
+      "minW": 1,
+      "moved": false,
+      "name": "Troubleshooting Summary",
+      "static": false,
+      "w": 2,
+      "x": 1,
+      "y": 0
+     },
+     {
+      "h": 2,
+      "i": "caseinfoid-391ba260-4daf-11eb-bddf-c74bdbd811d3",
+      "items": [
+
+      ],
+      "maxW": 3,
+      "minH": 1,
+      "minW": 1,
+      "moved": false,
+      "name": "Evidence",
+      "static": false,
+      "type": "evidence",
+      "w": 1,
+      "x": 0,
+      "y": 2
+     }
+    ],
+    "type": "custom"
+   },
+   {
+    "id": "warRoom",
+    "name": "War Room",
+    "type": "warRoom"
+   },
+   {
+    "id": "workPlan",
+    "name": "Work Plan",
+    "type": "workPlan"
+   },
+   {
+    "id": "evidenceBoard",
+    "name": "Evidence Board",
+    "type": "evidenceBoard"
+   },
+   {
+    "id": "relatedIncidents",
+    "name": "Related Incidents",
+    "type": "relatedIncidents"
+   },
+   {
+    "id": "canvas",
+    "name": "Canvas",
+    "type": "canvas"
+   }
+  ]
+ },
+ "edit": {
+  "sections": [
+   {
+    "description": "",
+    "fields": [
+     {
+      "fieldId": "incident_name",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_occurred",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_reminder",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_owner",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_roles",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_type",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_severity",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_playbookid",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_labels",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_phase",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_details",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_attachment",
+      "isVisible": true
+     }
+    ],
+    "isVisible": true,
+    "name": "Basic Information",
+    "query": null,
+    "queryType": "",
+    "readOnly": false,
+    "type": ""
+   },
+   {
+    "description": "To use the Troubleshooting Incident, you must have a configured [Demisto REST API integration](https://xsoar.pan.dev/docs/reference/articles/integrations-and-incident-health-check#1-demisto-rest-api-integration)",
+    "fields": [
+     {
+      "fieldId": "incident_troubleshoottype",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_instancename",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_runwithinsecure",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_commandline",
+      "isVisible": true
+     }
+    ],
+    "isVisible": true,
+    "name": "Troubleshooting",
+    "query": null,
+    "queryType": "",
+    "readOnly": false,
+    "type": ""
+   }
+  ]
+ },
+ "group": "incident",
+ "id": "Integration Troubleshooting Layout",
+ "name": "Integration Troubleshooting Layout",
+ "system": false,
+ "version": -1,
+ "fromVersion": "6.0.0",
+ "description": "Use this layout to view the Troubleshooting summary and files."
+}

@@ -1,0 +1,46 @@
+{
+    "data": {
+        "activitySeriesConnection": {
+            "edges": [
+                {
+                    "node": {
+                        "id": 132157378,
+                        "fid": "69823a5e-cd42-5728-a760-89fd6242a1a6",
+                        "activitySeriesId": "2371d76e-98aa-52a2-8a96-4515d42a9dc6",
+                        "lastUpdated": "2020-12-23T15:27:40.389Z",
+                        "lastActivityType": "Anomaly",
+                        "lastActivityStatus": "Success",
+                        "objectId": "VirtualMachine:::02b245f1-d12f-421e-85eb-3c0a2d739cc7-vm-236846",
+                        "objectName": "am2-scotholo-w1",
+                        "objectType": "VmwareVm",
+                        "severity": "Critical",
+                        "progress": "100%",
+                        "cluster": {
+                            "id": "82699c41-4260-4825-a6d7-46b4cc33d0a6",
+                            "name": "amer2-rbk01"
+                        },
+                        "activityConnection": {
+                            "nodes": [
+                                {
+                                    "id": "aa58c10f-14b5-4bc6-91da-3615b05731e9",
+                                    "message": "Detected anomalous filesystem activity with High confidence and High levels of encryption (File Change: 2466 Added, 194 Modified, 2416 Removed)",
+                                    "severity": "Critical",
+                                    "time": "2021-02-09T21:46:14.257Z"
+                                }
+                            ]
+                        }
+                    }
+                }
+            ],
+            "pageInfo": {
+                "endCursor": "Y3Vyc29yOmFjdGl2aXR5U2VyaWVzOkxhc3RVcGRhdGVkOjpMYXN0VXBkYXRlZDo6MjAyMS0wMi0xOVQxNDozMDowMC44NzVaOjoyMDIxLTAyLTE5VDE0OjMwOjAwLjg3NVo6OjEzNjM1OTE5Nw==",
+                "hasNextPage": false
+            }
+        },
+        "featureFlag": {
+            "name": "DataClassificationEnabled",
+            "variant": true,
+            "__typename": "FeatureFlag"
+        }
+    }
+}

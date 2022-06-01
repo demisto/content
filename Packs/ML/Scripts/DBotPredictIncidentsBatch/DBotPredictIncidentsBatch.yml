@@ -1,0 +1,119 @@
+args:
+- default: false
+  description: Additional text by which to query incidents.
+  isArray: false
+  name: query
+  required: false
+  secret: false
+- default: false
+  defaultValue: Phishing
+  description: A comma-separated list of incident types by which to filter.
+  isArray: false
+  name: incidentTypes
+  required: false
+  secret: false
+- default: false
+  description: 'The start date by which to filter incidents. Date format will be the
+    same as in the incidents query page (valid strings exaple: "3 days ago", ""2019-01-01T00:00:00
+    +0200")'
+  isArray: false
+  name: fromDate
+  required: false
+  secret: false
+- default: false
+  description: 'The end date by which to filter incidents. Date format will be the
+    same as in the incidents query page (valid strings exaple: "3 days ago", ""2019-01-01T00:00:00
+    +0200")'
+  isArray: false
+  name: toDate
+  required: false
+  secret: false
+- default: false
+  defaultValue: '3000'
+  description: The maximum number of incidents to fetch.
+  isArray: false
+  name: limit
+  required: false
+  secret: false
+- default: false
+  description: The field name with the label. Supports a comma-separated list, the
+    first non-empty value will be taken.
+  isArray: false
+  name: tagField
+  required: true
+  secret: false
+- default: false
+  description: If non-empty, hash every word with this seed.
+  isArray: false
+  name: hashSeed
+  required: false
+  secret: false
+- default: false
+  defaultValue: '*'
+  description: 'A comma-separated list of email tags values and mapping. The script
+    considers only the tags specified in this field. You can map a label to another
+    value by using this format: LABEL:MAPPED_LABEL. For example, for 4 values in email
+    tag: malicious, credentials harvesting, inner communitcation, external legit email,
+    unclassified. While training, we want to ignore "unclassified" tag, and refer
+    to "credentials harvesting" as "malicious" too. Also, we want to merge "inner
+    communitcation" and "external legit email" to one tag called "non-malicious".
+    The input will be: malicious, credentials harvesting:malicious, inner communitcation:non-malicious,
+    external legit email:non-malicious'
+  isArray: false
+  name: phishingLabels
+  required: false
+  secret: false
+- default: false
+  description: The model name to store in the system.
+  isArray: false
+  name: modelName
+  required: true
+  secret: false
+- default: false
+  defaultValue: emailsubject
+  description: Incident field name with the email subject.
+  isArray: false
+  name: emailsubject
+  required: false
+  secret: false
+- default: false
+  defaultValue: emailbody
+  description: Incident field name with the email body (text).
+  isArray: false
+  name: emailbody
+  required: false
+  secret: false
+- default: false
+  defaultValue: emailbodyhtml
+  description: Incident field name with the email body (html).
+  isArray: false
+  name: emailbodyhtml
+  required: false
+  secret: false
+- default: false
+  defaultValue: dbotprediction,dbotpredictionprobability
+  description: A comma-separated list of fields in the object to poplulate.
+  isArray: false
+  name: populateFields
+  required: false
+  secret: false
+comment: Apply a trained ML model on multiple incidents at once, to compare incidents
+  how the incidents were labeled by analysts, to the predictions of the model. This
+  script is aimed to help evaluate a trained model using past incidents.
+commonfields:
+  id: DBotPredictIncidentsBatch
+  version: -1
+enabled: false
+name: DBotPredictIncidentsBatch
+script: '-'
+subtype: python3
+system: false
+tags:
+- phishing
+- ml
+timeout: '0'
+type: python
+dockerimage: demisto/ml:1.0.0.23334
+fromversion: 5.0.0
+tests:
+- VerifyOOBV2Predictions-Test

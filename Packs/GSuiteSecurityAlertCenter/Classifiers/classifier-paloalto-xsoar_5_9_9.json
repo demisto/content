@@ -1,0 +1,167 @@
+{
+    "brandName": "G Suite Security Alert Center",
+    "custom": true,
+    "defaultIncidentType": "G Suite Security Alert Center",
+    "feed": false,
+    "id": "9f3ad01d-0019-4061-82e1-d207bafe3454",
+    "isDefault": false,
+    "keyTypeMap": {
+        "type.googleapis.com/google.apps.alertcenter.type.AccountWarning": "G Suite Security Alert Center",
+        "type.googleapis.com/google.apps.alertcenter.type.ActivityRule": "G Suite Security Alert Center",
+        "type.googleapis.com/google.apps.alertcenter.type.AppMakerSqlSetupNotification": "G Suite Security Alert Center",
+        "type.googleapis.com/google.apps.alertcenter.type.BadWhitelist": "G Suite Security Alert Center",
+        "type.googleapis.com/google.apps.alertcenter.type.DeviceCompromised": "G Suite Security Alert Center",
+        "type.googleapis.com/google.apps.alertcenter.type.DlpRuleViolation": "G Suite Security Alert Center",
+        "type.googleapis.com/google.apps.alertcenter.type.DomainWideTakeoutInitiated": "G Suite Security Alert Center",
+        "type.googleapis.com/google.apps.alertcenter.type.GoogleOperations": "G Suite Security Alert Center",
+        "type.googleapis.com/google.apps.alertcenter.type.MailPhishing": "G Suite Security Alert Center",
+        "type.googleapis.com/google.apps.alertcenter.type.StateSponsoredAttack": "G Suite Security Alert Center",
+        "type.googleapis.com/google.apps.alertcenter.type.SuspiciousActivity": "G Suite Security Alert Center"
+    },
+    "mapping": {
+        "G Suite Security Alert Center": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "GSuiteSAC Start Time": {
+                    "complex": null,
+                    "simple": "startTime"
+                },
+                "GSuiteSAC Update Time": {
+                    "complex": null,
+                    "simple": "updateTime"
+                },
+                "GSuiteSAC Alert ID": {
+                    "complex": null,
+                    "simple": "alertId"
+                },
+                "GSuiteSAC Alert Source": {
+                    "complex": null,
+                    "simple": "source"
+                },
+                "GSuiteSAC Alert Status": {
+                    "complex": null,
+                    "simple": "metadata.status"
+                },
+                "GSuiteSAC Alert Type": {
+                    "complex": null,
+                    "simple": "type"
+                },
+                "GSuiteSAC Create Time": {
+                    "complex": null,
+                    "simple": "createTime"
+                },
+                "GSuiteSAC Customer ID": {
+                    "complex": null,
+                    "simple": "customerId"
+                },
+                "GSuiteSAC Deleted": {
+                    "complex": null,
+                    "simple": "deleted"
+                },
+                "GSuiteSAC End Time": {
+                    "complex": null,
+                    "simple": "endTime"
+                },
+                "GSuiteSAC Etag": {
+                    "complex": null,
+                    "simple": "etag"
+                },
+                "GSuiteSAC Feedback Create Time": {
+                    "complex": {
+                        "accessor": "createTime",
+                        "filters": [
+
+                        ],
+                        "root": "feedback",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "GSuiteSAC Feedback Email": {
+                    "complex": {
+                        "accessor": "email",
+                        "filters": [
+
+                        ],
+                        "root": "feedback",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "GSuiteSAC Feedback ID": {
+                    "complex": {
+                        "accessor": "feedbackId",
+                        "filters": [
+
+                        ],
+                        "root": "feedback",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "GSuiteSAC Feedback Type": {
+                    "complex": {
+                        "accessor": "type",
+                        "filters": [
+
+                        ],
+                        "root": "feedback",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "GSuiteSAC Security Investigation Tool Link": {
+                    "complex": null,
+                    "simple": "securityInvestigationToolLink"
+                },
+                "GSuiteSAC Alert Severity": {
+                    "complex": null,
+                    "simple": "metadata.severity"
+                }
+            }
+        }
+    },
+    "transformer": {
+        "complex": {
+            "accessor": "@type",
+            "filters": [
+                [
+                    {
+                        "ignoreCase": false,
+                        "left": {
+                            "isContext": true,
+                            "value": {
+                                "complex": null,
+                                "simple": "data.@type"
+                            }
+                        },
+                        "operator": "containsGeneral",
+                        "right": {
+                            "isContext": false,
+                            "value": {
+                                "complex": null,
+                                "simple": "google.apps.alertcenter"
+                            }
+                        }
+                    }
+                ]
+            ],
+            "root": "data",
+            "transformers": [
+
+            ]
+        },
+        "simple": ""
+    },
+    "version": -1,
+    "fromVersion": "5.0.0",
+    "toVersion": "5.9.9"
+}

@@ -1,0 +1,627 @@
+{
+    "createdDate": "2021-08-18T09:44:17+0000",
+    "createdBy": {
+        "id": "1",
+        "domainId": 1,
+        "username": "Test",
+        "firstName": "Test",
+        "lastName": "Test",
+        "displayName": "Test Test",
+        "email": "test@example.com",
+        "passwordExpired": false,
+        "locked": false,
+        "expired": false,
+        "enabled": true,
+        "lastLogin": "2021-08-18T09:43:37+0000",
+        "previousLogin": "2021-08-18T09:26:13+0000"
+    },
+    "lastModifiedDate": "2021-08-18T09:44:18+0000",
+    "lastModifiedBy": {
+        "id": "1",
+        "domainId": 1,
+        "username": "Test",
+        "firstName": "Test",
+        "lastName": "Test",
+        "displayName": "Test Test",
+        "email": "test@example.com",
+        "passwordExpired": false,
+        "locked": false,
+        "expired": false,
+        "enabled": true,
+        "lastLogin": "2021-08-18T09:43:37+0000",
+        "previousLogin": "2021-08-18T09:26:13+0000"
+    },
+    "id": "282",
+    "businessKey": "CM-114",
+    "businessKeySequence": 114,
+    "workflowVersion": {
+        "createdDate": "2021-05-14T13:01:10+0000",
+        "createdBy": {
+            "id": "1",
+            "domainId": 1,
+            "username": "Test",
+            "firstName": "Test",
+            "lastName": "Test",
+            "displayName": "Test Test",
+            "email": "test@example.com",
+            "passwordExpired": false,
+            "locked": false,
+            "expired": false,
+            "enabled": true,
+            "lastLogin": "2021-08-18T09:43:37+0000",
+            "previousLogin": "2021-08-18T09:26:13+0000"
+        },
+        "lastModifiedDate": "2021-05-14T13:01:11+0000",
+        "lastModifiedBy": {
+            "id": "1",
+            "domainId": 1,
+            "username": "Test",
+            "firstName": "Test",
+            "lastName": "Test",
+            "displayName": "Test Test",
+            "email": "test@example.com",
+            "passwordExpired": false,
+            "locked": false,
+            "expired": false,
+            "enabled": true,
+            "lastLogin": "2021-08-18T09:43:37+0000",
+            "previousLogin": "2021-08-18T09:26:13+0000"
+        },
+        "id": "7",
+        "workflow": {
+            "createdDate": "2021-05-11T06:46:42+0000",
+            "createdBy": {
+                "id": "1",
+                "domainId": 1,
+                "username": "Test",
+                "firstName": "Test",
+                "lastName": "Test",
+                "displayName": "Test Test",
+                "email": "test@example.com",
+                "passwordExpired": false,
+                "locked": false,
+                "expired": false,
+                "enabled": true,
+                "lastLogin": "2021-08-18T09:43:37+0000",
+                "previousLogin": "2021-08-18T09:26:13+0000"
+            },
+            "lastModifiedDate": "2021-05-21T13:46:41+0000",
+            "lastModifiedBy": {
+                "id": "1",
+                "domainId": 1,
+                "username": "Test",
+                "firstName": "Test",
+                "lastName": "Test",
+                "displayName": "Test Test",
+                "email": "test@example.com",
+                "passwordExpired": false,
+                "locked": false,
+                "expired": false,
+                "enabled": true,
+                "lastLogin": "2021-08-18T09:43:37+0000",
+                "previousLogin": "2021-08-18T09:26:13+0000"
+            },
+            "id": "3",
+            "domainId": 1,
+            "domainName": "Enterprise",
+            "name": "WF",
+            "pluginGroupId": "wf.pp",
+            "pluginArtifactId": "access-request",
+            "latestPluginVersion": "0.0.0-SNAPSHOT",
+            "disabled": false,
+            "config": {
+                "name": "WF",
+                "_a_designTask": {
+                    "tasks": {
+                        "visible": false
+                    },
+                    "changes": {
+                        "visible": true,
+                        "editable": true,
+                        "validate": {
+                            "changes": true,
+                            "requirement": true
+                        },
+                        "ruleChange": {
+                            "visible": true
+                        },
+                        "objectChange": {
+                            "visible": true
+                        },
+                        "changePlanner": {
+                            "visible": true,
+                            "autoSelect": {
+                                "forceSelection": true,
+                                "selectionMethod": "HITCOUNT"
+                            },
+                            "addressMatchingScope": "INTERSECTS",
+                            "suggestedDeviceGroupId": 1,
+                            "autoRunSuggestedDevices": true
+                        },
+                        "generalChange": {
+                            "visible": true
+                        },
+                        "importRequirements": {
+                            "visible": false
+                        }
+                    },
+                    "analysis": {
+                        "visible": false
+                    },
+                    "comments": {
+                        "visible": true,
+                        "editable": true
+                    },
+                    "exportPdf": {
+                        "visible": true
+                    },
+                    "attachments": {
+                        "visible": true,
+                        "editable": true
+                    },
+                    "taskHistory": {
+                        "visible": true
+                    },
+                    "ticketHistory": {
+                        "visible": true
+                    },
+                    "verificationAssistant": {
+                        "visible": false
+                    }
+                },
+                "createDateSortDir": false,
+                "_a_editRequestTask": {
+                    "tasks": {
+                        "visible": false
+                    },
+                    "changes": {
+                        "visible": true,
+                        "editable": true,
+                        "validate": {
+                            "changes": false,
+                            "requirement": true
+                        },
+                        "changePlanner": {
+                            "visible": false,
+                            "autoSelect": {
+                                "forceSelection": true,
+                                "selectionMethod": "NONE"
+                            },
+                            "addressMatchingScope": "INTERSECTS",
+                            "suggestedDeviceGroupId": 1,
+                            "autoRunSuggestedDevices": true
+                        },
+                        "importRequirements": {
+                            "visible": true
+                        }
+                    },
+                    "analysis": {
+                        "visible": false
+                    },
+                    "comments": {
+                        "visible": true,
+                        "editable": true
+                    },
+                    "exportPdf": {
+                        "visible": true
+                    },
+                    "attachments": {
+                        "visible": true,
+                        "editable": true
+                    },
+                    "taskHistory": {
+                        "visible": true
+                    },
+                    "ticketHistory": {
+                        "visible": true
+                    },
+                    "verificationAssistant": {
+                        "visible": false
+                    }
+                },
+                "_st_autoDesignChange": {
+                    "serviceTask": "AUTO_DESIGN_CHANGE_TASK",
+                    "AUTO_DESIGN_CHANGE_TASK": {
+                        "execute": true,
+                        "autoSelect": {
+                            "forceSelection": true,
+                            "selectionMethod": "NONE"
+                        },
+                        "deviceGroupId": 1,
+                        "accessExistsCheck": false,
+                        "addressMatchingScope": "INTERSECTS",
+                        "modifyRecommendationBehavior": "MODIFY"
+                    }
+                }
+            }
+        },
+        "pluginVersion": "0.0.0-SNAPSHOT",
+        "buildDate": "2021-05-12T11:39:33+0000",
+        "fmWorkflowEngine": true
+    },
+    "status": "Edit Request",
+    "assignee": {
+        "id": "1",
+        "domainId": 1,
+        "username": "Test",
+        "firstName": "Test",
+        "lastName": "Test",
+        "displayName": "Test Test",
+        "email": "test@example.com",
+        "passwordExpired": false,
+        "locked": false,
+        "expired": false,
+        "enabled": true,
+        "lastLogin": "2021-08-18T09:43:37+0000",
+        "previousLogin": "2021-08-18T09:26:13+0000"
+    },
+    "variables": {
+        "summary": "Request Test06",
+        "businessNeed": "",
+        "priority": "Low",
+        "dueDate": "2021-08-26 03:50:17",
+        "applicationName": "",
+        "customer": "",
+        "externalTicketId": "",
+        "notes": "",
+        "requesterName": "System Administrator",
+        "requesterEmail": "",
+        "applicationOwner": "",
+        "integrationRecord": "",
+        "carbonCopy": [
+            ""
+        ]
+    },
+    "workflowPacketTasks": [
+        {
+            "createdDate": "2021-08-18T09:44:18+0000",
+            "createdBy": {
+                "id": "1",
+                "domainId": 1,
+                "username": "Test",
+                "firstName": "Test",
+                "lastName": "Test",
+                "displayName": "Test Test",
+                "email": "test@example.com",
+                "passwordExpired": false,
+                "locked": false,
+                "expired": false,
+                "enabled": true,
+                "lastLogin": "2021-08-18T09:43:37+0000",
+                "previousLogin": "2021-08-18T09:26:13+0000"
+            },
+            "lastModifiedDate": "2021-08-18T09:44:18+0000",
+            "lastModifiedBy": {
+                "id": "1",
+                "domainId": 1,
+                "username": "Test",
+                "firstName": "Test",
+                "lastName": "Test",
+                "displayName": "Test Test",
+                "email": "test@example.com",
+                "passwordExpired": false,
+                "locked": false,
+                "expired": false,
+                "enabled": true,
+                "lastLogin": "2021-08-18T09:43:37+0000",
+                "previousLogin": "2021-08-18T09:26:13+0000"
+            },
+            "id": "1",
+            "workflowTask": {
+                "createdDate": "2021-05-14T13:01:10+0000",
+                "createdBy": {
+                    "id": "1",
+                    "domainId": 1,
+                    "username": "Test",
+                    "firstName": "Test",
+                    "lastName": "Test",
+                    "displayName": "Test Test",
+                    "email": "test@example.com",
+                    "passwordExpired": false,
+                    "locked": false,
+                    "expired": false,
+                    "enabled": true,
+                    "lastLogin": "2021-08-18T09:43:37+0000",
+                    "previousLogin": "2021-08-18T09:26:13+0000"
+                },
+                "lastModifiedDate": "2021-05-14T13:01:10+0000",
+                "lastModifiedBy": {
+                    "id": "1",
+                    "domainId": 1,
+                    "username": "Test",
+                    "firstName": "Test",
+                    "lastName": "Test",
+                    "displayName": "Test Test",
+                    "email": "test@example.com",
+                    "passwordExpired": false,
+                    "locked": false,
+                    "expired": false,
+                    "enabled": true,
+                    "lastLogin": "2021-08-18T09:43:37+0000",
+                    "previousLogin": "2021-08-18T09:26:13+0000"
+                },
+                "id": 88,
+                "workflowVersion": {
+                    "createdDate": "2021-05-14T13:01:10+0000",
+                    "createdBy": {
+                        "id": "1",
+                        "domainId": 1,
+                        "username": "Test",
+                        "firstName": "Test",
+                        "lastName": "Test",
+                        "displayName": "Test Test",
+                        "email": "test@example.com",
+                        "passwordExpired": false,
+                        "locked": false,
+                        "expired": false,
+                        "enabled": true,
+                        "lastLogin": "2021-08-18T09:43:37+0000",
+                        "previousLogin": "2021-08-18T09:26:13+0000"
+                    },
+                    "lastModifiedDate": "2021-05-14T13:01:11+0000",
+                    "lastModifiedBy": {
+                        "id": "1",
+                        "domainId": 1,
+                        "username": "Test",
+                        "firstName": "Test",
+                        "lastName": "Test",
+                        "displayName": "Test Test",
+                        "email": "test@example.com",
+                        "passwordExpired": false,
+                        "locked": false,
+                        "expired": false,
+                        "enabled": true,
+                        "lastLogin": "2021-08-18T09:43:37+0000",
+                        "previousLogin": "2021-08-18T09:26:13+0000"
+                    },
+                    "id": 7,
+                    "workflow": {
+                        "createdDate": "2021-05-11T06:46:42+0000",
+                        "createdBy": {
+                            "id": "1",
+                            "domainId": 1,
+                            "username": "Test",
+                            "firstName": "Test",
+                            "lastName": "Test",
+                            "displayName": "Test Test",
+                            "email": "test@example.com",
+                            "passwordExpired": false,
+                            "locked": false,
+                            "expired": false,
+                            "enabled": true,
+                            "lastLogin": "2021-08-18T09:43:37+0000",
+                            "previousLogin": "2021-08-18T09:26:13+0000"
+                        },
+                        "lastModifiedDate": "2021-05-21T13:46:41+0000",
+                        "lastModifiedBy": {
+                            "id": "1",
+                            "domainId": 1,
+                            "username": "Test",
+                            "firstName": "Test",
+                            "lastName": "Test",
+                            "displayName": "Test Test",
+                            "email": "test@example.com",
+                            "passwordExpired": false,
+                            "locked": false,
+                            "expired": false,
+                            "enabled": true,
+                            "lastLogin": "2021-08-18T09:43:37+0000",
+                            "previousLogin": "2021-08-18T09:26:13+0000"
+                        },
+                        "id": 3,
+                        "domainId": 1,
+                        "domainName": "Enterprise",
+                        "name": "Access Req WF",
+                        "pluginGroupId": "com.fm.wf.pp",
+                        "pluginArtifactId": "access-request",
+                        "latestPluginVersion": "0.0.0-SNAPSHOT",
+                        "disabled": false,
+                        "config": {
+                            "name": "Access Req WF",
+                            "_a_designTask": {
+                                "tasks": {
+                                    "visible": false
+                                },
+                                "changes": {
+                                    "visible": true,
+                                    "editable": true,
+                                    "validate": {
+                                        "changes": true,
+                                        "requirement": true
+                                    },
+                                    "ruleChange": {
+                                        "visible": true
+                                    },
+                                    "objectChange": {
+                                        "visible": true
+                                    },
+                                    "changePlanner": {
+                                        "visible": true,
+                                        "autoSelect": {
+                                            "forceSelection": true,
+                                            "selectionMethod": "HITCOUNT"
+                                        },
+                                        "addressMatchingScope": "INTERSECTS",
+                                        "suggestedDeviceGroupId": 1,
+                                        "autoRunSuggestedDevices": true
+                                    },
+                                    "generalChange": {
+                                        "visible": true
+                                    },
+                                    "importRequirements": {
+                                        "visible": false
+                                    }
+                                },
+                                "analysis": {
+                                    "visible": false
+                                },
+                                "comments": {
+                                    "visible": true,
+                                    "editable": true
+                                },
+                                "exportPdf": {
+                                    "visible": true
+                                },
+                                "attachments": {
+                                    "visible": true,
+                                    "editable": true
+                                },
+                                "taskHistory": {
+                                    "visible": true
+                                },
+                                "ticketHistory": {
+                                    "visible": true
+                                },
+                                "verificationAssistant": {
+                                    "visible": false
+                                }
+                            },
+                            "createDateSortDir": false,
+                            "_a_editRequestTask": {
+                                "tasks": {
+                                    "visible": false
+                                },
+                                "changes": {
+                                    "visible": true,
+                                    "editable": true,
+                                    "validate": {
+                                        "changes": false,
+                                        "requirement": true
+                                    },
+                                    "changePlanner": {
+                                        "visible": false,
+                                        "autoSelect": {
+                                            "forceSelection": true,
+                                            "selectionMethod": "NONE"
+                                        },
+                                        "addressMatchingScope": "INTERSECTS",
+                                        "suggestedDeviceGroupId": 1,
+                                        "autoRunSuggestedDevices": true
+                                    },
+                                    "importRequirements": {
+                                        "visible": true
+                                    }
+                                },
+                                "analysis": {
+                                    "visible": false
+                                },
+                                "comments": {
+                                    "visible": true,
+                                    "editable": true
+                                },
+                                "exportPdf": {
+                                    "visible": true
+                                },
+                                "attachments": {
+                                    "visible": true,
+                                    "editable": true
+                                },
+                                "taskHistory": {
+                                    "visible": true
+                                },
+                                "ticketHistory": {
+                                    "visible": true
+                                },
+                                "verificationAssistant": {
+                                    "visible": false
+                                }
+                            },
+                            "_st_autoDesignChange": {
+                                "serviceTask": "AUTO_DESIGN_CHANGE_TASK",
+                                "AUTO_DESIGN_CHANGE_TASK": {
+                                    "execute": true,
+                                    "autoSelect": {
+                                        "forceSelection": true,
+                                        "selectionMethod": "NONE"
+                                    },
+                                    "deviceGroupId": 1,
+                                    "accessExistsCheck": false,
+                                    "addressMatchingScope": "INTERSECTS",
+                                    "modifyRecommendationBehavior": "MODIFY"
+                                }
+                            }
+                        }
+                    },
+                    "pluginVersion": "0.0.0-SNAPSHOT",
+                    "buildDate": "2021-05-12T11:39:33+0000",
+                    "fmWorkflowEngine": true
+                },
+                "name": "Edit Request",
+                "description": "Task used to collect additional information, including Requirement Details.",
+                "key": "_a_editRequestTask",
+                "type": "USER"
+            },
+            "assignee": {
+                "id": "1",
+                "domainId": 1,
+                "username": "Test",
+                "firstName": "Test",
+                "lastName": "Test",
+                "displayName": "Test Test",
+                "email": "test@example.com",
+                "passwordExpired": false,
+                "locked": false,
+                "expired": false,
+                "enabled": true,
+                "lastLogin": "2021-08-18T09:43:37+0000",
+                "previousLogin": "2021-08-18T09:26:13+0000"
+            }
+        }
+    ],
+    "policyPlanRequirements": [
+        {
+            "createdDate": "2021-08-18T09:44:18+0000",
+            "createdBy": {
+                "id": "1",
+                "domainId": 1,
+                "username": "Test",
+                "firstName": "Test",
+                "lastName": "Test",
+                "displayName": "Test Test",
+                "email": "test@example.com",
+                "passwordExpired": false,
+                "locked": false,
+                "expired": false,
+                "enabled": true,
+                "lastLogin": "2021-08-18T09:43:37+0000",
+                "previousLogin": "2021-08-18T09:26:13+0000"
+            },
+            "lastModifiedDate": "2021-08-18T09:44:18+0000",
+            "lastModifiedBy": {
+                "id": "1",
+                "domainId": 1,
+                "username": "Test",
+                "firstName": "Test",
+                "lastName": "Test",
+                "displayName": "Test Test",
+                "email": "test@example.com",
+                "passwordExpired": false,
+                "locked": false,
+                "expired": false,
+                "enabled": true,
+                "lastLogin": "2021-08-18T09:43:37+0000",
+                "previousLogin": "2021-08-18T09:26:13+0000"
+            },
+            "id": "307",
+            "workflowPacketId": 282,
+            "requirementType": "RULE",
+            "changes": [],
+            "childKey": "add_access",
+            "businessKey": "REQ-001",
+            "businessKeySequence": 1,
+            "variables": {},
+            "apps": [],
+            "destinations": [
+                "2.2.2.2"
+            ],
+            "services": [
+                "http"
+            ],
+            "sources": [
+                "1.1.1.1"
+            ],
+            "users": [],
+            "action": "ACCEPT"
+        }
+    ]
+}

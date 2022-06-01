@@ -1,0 +1,12 @@
+!ip ip=98.136.103.23
+!url url="http://www.fotoidea.com/sport/4x4_san_ponso/slides/IMG_0068.html/url_list"
+!domain domain=ahnlab.myfw.us
+!file file=6c5360d41bd2b14b1565f5b18e5c203cf512e493
+!alienvault-search-ipv6 ip=2001:4860:4860::8888
+!alienvault-search-hostname hostname=demisto.com
+!alienvault-search-cve cve_id=CVE-2014-0160
+!alienvault-get-related-urls-by-indicator indicator=8.8.8.8 indicator_type=IPv4
+!alienvault-get-related-hashes-by-indicator indicator=8.8.8.8 indicator_type=IPv4
+!alienvault-get-passive-dns-data-by-indicator indicator=8.8.8.8 indicator_type=IPv4
+!alienvault-search-pulses page=1
+!alienvault-get-pulse-details pulse_id=57204e9b3c4c3e015d93cb12

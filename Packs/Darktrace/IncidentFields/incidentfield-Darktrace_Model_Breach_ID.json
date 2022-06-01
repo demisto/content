@@ -1,0 +1,30 @@
+{
+ "associatedToAll": false,
+ "associatedTypes": [
+  "Darktrace Model Breach"
+ ],
+ "caseInsensitive": true,
+ "cliName": "darktracemodelbreachid",
+ "closeForm": false,
+ "content": true,
+ "description": "Darktrace Model Breach ID (PBID) of the breached model",
+ "editForm": true,
+ "group": 0,
+ "hidden": false,
+ "id": "incident_darktracemodelbreachid",
+ "isReadOnly": false,
+ "locked": false,
+ "name": "Darktrace Model Breach ID",
+ "neverSetAsRequired": false,
+ "ownerOnly": false,
+ "required": false,
+ "sla": 0,
+ "system": false,
+ "threshold": 72,
+ "type": "number",
+ "unmapped": false,
+ "unsearchable": false,
+ "useAsKpi": false,
+ "version": -1,
+ "fromVersion": "6.0.0"
+}

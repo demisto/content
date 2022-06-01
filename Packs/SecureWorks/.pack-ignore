@@ -1,2 +1,12 @@
-[file:integration-SecureWorks.yml]
+[file:SecureWorks.yml]
 ignore=IN126
+
+[file:README.md]
+ignore=RM104
+
+
+[file:SecureWorks_image.png]
+ignore=IM111
+
+[file:TaegisXDR_image.png]
+ignore=IM111

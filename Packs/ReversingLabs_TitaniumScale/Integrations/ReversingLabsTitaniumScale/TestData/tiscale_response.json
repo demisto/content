@@ -1,0 +1,63 @@
+{
+    "tc_report": [
+        {
+            "info": {
+                "file": {
+                    "file_subtype": "Exe",
+                    "entropy": 6.60580452906475,
+                    "file_type": "PE",
+                    "file_name": "1651bd83-3242-43e4-8084-26de8937ca81_36441651bd83-3242-43e4-8084-26de8937ca81",
+                    "hashes": [
+                        {
+                            "name": "md5",
+                            "value": "8b84009488f7254a2be3c4409bcf286a"
+                        },
+                        {
+                            "name": "rha0",
+                            "value": "42f8f3d9c5a7044a0895c89f27c1d9cdc2777511"
+                        },
+                        {
+                            "name": "sha1",
+                            "value": "848899ad7d2afabfb64806cc9ef8d7d1a3f77641"
+                        },
+                        {
+                            "name": "sha256",
+                            "value": "91ad1155d57e91caa994da40fff6048eb8c10fcf9a6c1b7d5a393f605d718acc"
+                        }
+                    ],
+                    "file_path": "/scratch/1651bd83-3242-43e4-8084-26de8937ca81_36441651bd83-3242-43e4-8084-26de8937ca81",
+                    "size": 620530
+                }
+            },
+            "indicators": [
+                {
+                    "priority": 1,
+                    "category": 12,
+                    "description": "Contains references to executable file extensions."
+                }
+            ],
+            "classification": {
+                "propagated": false,
+                "scan_results": [
+                    {
+                        "result": "Win32.Trojan.Graftor",
+                        "type": "cloud",
+                        "name": "TitaniumCloud",
+                        "classification": 3,
+                        "factor": 5
+                    }
+                ],
+                "classification": 3,
+                "factor": 5
+            },
+            "metadata": {
+                "application": {
+                    "capabilities": 0
+                }
+            }
+        }
+    ],
+    "submitted": 1624487864,
+    "task_id": 15794,
+    "processed": 1624487865
+}

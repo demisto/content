@@ -1,0 +1,126 @@
+{
+    "brandName": "Nutanix Hypervisor",
+    "custom": true,
+    "id": "NutanixHypervisor",
+    "isDefault": false,
+    "mapping": {
+        "Nutanix Hypervisor Alert": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Acknowledged": {
+                    "complex": null,
+                    "simple": "acknowledged"
+                },
+                "Acknowledged By Username": {
+                    "complex": null,
+                    "simple": "acknowledged_by_username"
+                },
+                "Alert Closing User": {
+                    "complex": null,
+                    "simple": "resolved_by_username"
+                },
+                "Alert Name": {
+                    "complex": null,
+                    "simple": "alert_title"
+                },
+                "Alert Type UUID": {
+                    "complex": null,
+                    "simple": "alert_type_uuid"
+                },
+                "Check ID": {
+                    "complex": null,
+                    "simple": "check_id"
+                },
+                "Classifications": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+
+                        ],
+                        "root": "classifications",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Cluster UUID": {
+                    "complex": null,
+                    "simple": "cluster_uuid"
+                },
+                "Last Seen": {
+                    "complex": null,
+                    "simple": "last_occurrence"
+                },
+                "Message": {
+                    "complex": null,
+                    "simple": "message"
+                },
+                "Operation Type": {
+                    "complex": null,
+                    "simple": "operation_type"
+                },
+                "Resolved": {
+                    "complex": null,
+                    "simple": "resolved"
+                },
+                "Ticket Acknowledged Date": {
+                    "complex": null,
+                    "simple": "acknowledged_time"
+                },
+                "Ticket Closed Date": {
+                    "complex": null,
+                    "simple": "resolved_time"
+                },
+                "Ticket Opened Date": {
+                    "complex": null,
+                    "simple": "created_time"
+                },
+                "severity": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+
+                        ],
+                        "root": "severity",
+                        "transformers": [
+                            {
+                                "args": {
+
+                                },
+                                "operator": "toLowerCase"
+                            },
+                            {
+                                "args": {
+                                    "input_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "\"kaudit,kinfo,kwarning,kcritical\""
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "\"Low,Informational,Medium,Critical\""
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                }
+            }
+        }
+    },
+    "transformer": {
+        "complex": null,
+        "simple": ""
+    },
+    "version": -1,
+    "toVersion": "5.9.9",
+    "fromVersion": "5.0.0"
+}

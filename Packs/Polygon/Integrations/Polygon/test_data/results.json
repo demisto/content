@@ -5,14 +5,17 @@
         "Contents": "F100",
         "HumanReadable": "### File uploaded successfully\n|EntryID|FileName|ID|Status|\n|---|---|---|---|\n| 12345 | abc | F100 | In Progress |\n",
         "EntryContext": {
-            "Polygon.Analysis(val.ID == obj.ID)": {
+            "Polygon.Analysis(val.ID && val.ID == obj.ID)": {
                 "ID": "F100",
                 "EntryID": "12345",
                 "FileName": "abc",
                 "Status": "In Progress"
             }
         },
-        "IndicatorTimeline": []
+        "IndicatorTimeline": [],
+        "Relationships": [],
+        "IgnoreAutoExtract": false,
+        "Note": false
     },
     "upload_url_results": {
         "Type": 1,
@@ -20,13 +23,16 @@
         "Contents": "U100",
         "HumanReadable": "### Url uploaded successfully\n|ID|Status|URL|\n|---|---|---|\n| U100 | In Progress | http://test.com |\n",
         "EntryContext": {
-            "Polygon.Analysis(val.ID == obj.ID)": {
+            "Polygon.Analysis(val.ID && val.ID == obj.ID)": {
                 "ID": "U100",
                 "URL": "http://test.com",
                 "Status": "In Progress"
             }
         },
-        "IndicatorTimeline": []
+        "IndicatorTimeline": [],
+        "Relationships": [],
+        "IgnoreAutoExtract": false,
+        "Note": false
     },
     "analysis_info_results": [
         {
@@ -83,7 +89,7 @@
             },
             "HumanReadable": "### Analysis F2118597\n|ID|MD5|Name|SHA1|SHA256|Size|Status|\n|---|---|---|---|---|---|---|\n| F2118597 | ba9fe2cb8ee2421ea24a55306ce9d923 | link.pdf | 44b3f79dfd7c5861501a19a3bac89f544c7ff815 | 0d1b77c84c68c50932e28c3462a1962916abbbebb456ce654751ab401aa37697 | 36375 | In Progress |\n",
             "EntryContext": {
-                "Polygon.Analysis(val.ID == obj.ID)": {
+                "Polygon.Analysis(val.ID && val.ID == obj.ID)": {
                     "ID": "F2118597",
                     "Status": "In Progress",
                     "Result": null,
@@ -94,7 +100,10 @@
                     "SHA256": "0d1b77c84c68c50932e28c3462a1962916abbbebb456ce654751ab401aa37697"
                 }
             },
-            "IndicatorTimeline": []
+            "IndicatorTimeline": [],
+            "Relationships": [],
+            "IgnoreAutoExtract": false,
+            "Note": false
         }
     ],
     "serialized_report": {
@@ -116,128 +125,142 @@
             "SHA256": "34ce805b7131eda3cec905dfd4e2708ab07dd3f038345b2ba9df51eb8fc915eb",
             "Type": "ASCII text, with no line terminators",
             "Malicious": {
-                "Vendor": "Group-IB TDS Polygon",
+                "Vendor": "Group-IB THF Polygon",
                 "Description": "Verdict probability: 68.0%, iocs: JS:Trojan.Agent.DQBF"
-            }
+            },
+            "Hashes": [
+                {"type":  "MD5", "value": "9b52c8a74353d82ef1ebca42c9a7358c"},
+                {"type": "SHA1", "value": "eb57446af5846faa28a726a8b7d43ce5a7fcbd55"},
+                {"type": "SHA256", "value": "34ce805b7131eda3cec905dfd4e2708ab07dd3f038345b2ba9df51eb8fc915eb"}]
         },
         "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": {
             "Indicator": "9b52c8a74353d82ef1ebca42c9a7358c",
             "Type": "file",
-            "Vendor": "Group-IB TDS Polygon",
+            "Vendor": "Group-IB THF Polygon",
             "Score": 3
         }
     },
     "packages_indicators": [{
-        "File(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 || val.SHA256 && val.SHA256 == obj.SHA256 || val.SHA512 && val.SHA512 == obj.SHA512 || val.CRC32 && val.CRC32 == obj.CRC32 || val.CTPH && val.CTPH == obj.CTPH || val.SSDeep && val.SSDeep == obj.SSDeep)": {
+        "File(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 || val.SHA256 && val.SHA256 == obj.SHA256 || val.SHA512 && val.SHA512 == obj.SHA512 || val.CRC32 && val.CRC32 == obj.CRC32 || val.CTPH && val.CTPH == obj.CTPH || val.SSDeep && val.SSDeep == obj.SSDeep)":[ {
             "Name": "url.txt",
             "MD5": "9b52c8a74353d82ef1ebca42c9a7358c",
             "SHA1": "eb57446af5846faa28a726a8b7d43ce5a7fcbd55",
             "SHA256": "34ce805b7131eda3cec905dfd4e2708ab07dd3f038345b2ba9df51eb8fc915eb",
-            "Type": "ASCII text, with no line terminators"
-        },
-        "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": {
+            "Type": "ASCII text, with no line terminators",
+            "Hashes": [
+                {"type":  "MD5", "value": "9b52c8a74353d82ef1ebca42c9a7358c"},
+                {"type": "SHA1", "value": "eb57446af5846faa28a726a8b7d43ce5a7fcbd55"},
+                {"type": "SHA256", "value": "34ce805b7131eda3cec905dfd4e2708ab07dd3f038345b2ba9df51eb8fc915eb"}]
+        }],
+        "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": [{
             "Indicator": "eb57446af5846faa28a726a8b7d43ce5a7fcbd55",
             "Type": "file",
-            "Vendor": "Group-IB TDS Polygon",
+            "Vendor": "Group-IB THF Polygon",
             "Score": 0
-        }
-    },
-    {
-        "File(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 || val.SHA256 && val.SHA256 == obj.SHA256 || val.SHA512 && val.SHA512 == obj.SHA512 || val.CRC32 && val.CRC32 == obj.CRC32 || val.CTPH && val.CTPH == obj.CTPH || val.SSDeep && val.SSDeep == obj.SSDeep)": {
+        }]}
+  ,
+      {"File(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 || val.SHA256 && val.SHA256 == obj.SHA256 || val.SHA512 && val.SHA512 == obj.SHA512 || val.CRC32 && val.CRC32 == obj.CRC32 || val.CTPH && val.CTPH == obj.CTPH || val.SSDeep && val.SSDeep == obj.SSDeep)": [{
             "Name": "tmpwDwvW_",
             "MD5": "9b52c8a74353d82ef1ebca42c9a7358c",
             "SHA1": "eb57446af5846faa28a726a8b7d43ce5a7fcbd55",
             "SHA256": "34ce805b7131eda3cec905dfd4e2708ab07dd3f038345b2ba9df51eb8fc915eb",
-            "Type": "ASCII text, with no line terminators"
-        },
-        "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": {
+            "Type": "ASCII text, with no line terminators",
+          "Hashes": [
+                {"type":  "MD5", "value": "9b52c8a74353d82ef1ebca42c9a7358c"},
+                {"type": "SHA1", "value": "eb57446af5846faa28a726a8b7d43ce5a7fcbd55"},
+                {"type": "SHA256", "value": "34ce805b7131eda3cec905dfd4e2708ab07dd3f038345b2ba9df51eb8fc915eb"}]
+        }],
+        "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": [{
             "Indicator": "eb57446af5846faa28a726a8b7d43ce5a7fcbd55",
             "Type": "file",
-            "Vendor": "Group-IB TDS Polygon",
+            "Vendor": "Group-IB THF Polygon",
             "Score": 0
-        }
+        }]
     }],
-    "network_indicators": [{
-        "Domain(val.Name && val.Name == obj.Name)": {
+    "network_indicators": [
+      {
+        "Domain(val.Name && val.Name == obj.Name)": [{
             "Name": "svettenkirch.de",
             "DNS": "217.114.216.252"
-        },
-        "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": {
+        }],
+        "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": [{
             "Indicator": "svettenkirch.de",
             "Type": "domain",
-            "Vendor": "Group-IB TDS Polygon",
+            "Vendor": "Group-IB THF Polygon",
             "Score": 0
-        }
-    },
-    {
-        "Domain(val.Name && val.Name == obj.Name)": {
+        }]
+      },
+      {
+        "Domain(val.Name && val.Name == obj.Name)": [{
             "Name": "super.esu.as",
             "DNS": "79.98.29.14"
-        },
-        "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": {
+        }],
+        "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": [{
             "Indicator": "super.esu.as",
             "Type": "domain",
-            "Vendor": "Group-IB TDS Polygon",
+            "Vendor": "Group-IB THF Polygon",
             "Score": 0
-        }
+        }]
     },
     {
-        "IP(val.Address && val.Address == obj.Address)": {
+        "IP(val.Address && val.Address == obj.Address)": [{
             "Address": "8.8.8.8"
-        },
-        "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": {
+        }],
+        "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": [{
             "Indicator": "8.8.8.8",
             "Type": "ip",
-            "Vendor": "Group-IB TDS Polygon",
+            "Vendor": "Group-IB THF Polygon",
             "Score": 0
-        }
+        }]
     },
     {
-        "IP(val.Address && val.Address == obj.Address)": {
+        "IP(val.Address && val.Address == obj.Address)": [{
             "Address": "79.98.29.14"
-        },
-        "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": {
+        }],
+        "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": [{
             "Indicator": "79.98.29.14",
             "Type": "ip",
-            "Vendor": "Group-IB TDS Polygon",
+            "Vendor": "Group-IB THF Polygon",
             "Score": 0
-        }
+        }]
     },
     {
-        "IP(val.Address && val.Address == obj.Address)": {
+        "IP(val.Address && val.Address == obj.Address)": [{
             "Address": "217.114.216.252"
-        },
-        "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": {
+        }],
+        "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)":[ {
             "Indicator": "217.114.216.252",
             "Type": "ip",
-            "Vendor": "Group-IB TDS Polygon",
+            "Vendor": "Group-IB THF Polygon",
             "Score": 0
-        }
+        }]
     },
     {
-        "IP(val.Address && val.Address == obj.Address)": {
+        "IP(val.Address && val.Address == obj.Address)": [{
             "Address": "217.114.216.252"
-        },
-        "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": {
+        }],
+        "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)":[ {
             "Indicator": "217.114.216.252",
             "Type": "ip",
-            "Vendor": "Group-IB TDS Polygon",
+            "Vendor": "Group-IB THF Polygon",
             "Score": 0
-        }
+        }]
     },
     {
-        "URL(val.Data && val.Data == obj.Data)": {
+        "URL(val.Data && val.Data == obj.Data)": [{
             "Data": "http://super.esu.as/wp-content/themes/twentyeleven/inc/images/msg.jpg"
-        },
-        "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": {
+        }],
+        "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": [{
             "Indicator": "http://super.esu.as/wp-content/themes/twentyeleven/inc/images/msg.jpg",
             "Type": "url",
-            "Vendor": "Group-IB TDS Polygon",
+            "Vendor": "Group-IB THF Polygon",
             "Score": 0
-        }
+        }]
     }],
-    "monitor_indicators": [{
-        "Process": {
+    "monitor_indicators": [
+      {
+        "Process": [
+          {
             "Name": "wscript.exe",
             "PID": "972",
             "Hostname": null,
@@ -250,24 +273,25 @@
             "Parent": null,
             "Sibling": null,
             "Child": null
-        }
-    },
+          }
+        ]
+      },
     {
-        "RegistryKey": {
+        "RegistryKey": [{
             "Path": "\\REGISTRY\\MACHINE\\SOFTWARE\\Microsoft\\Tracing\\wscript_RASAPI32\\EnableFileTracing",
             "Name": null,
             "Value": "0"
         }
-    },
+    ]},
     {
-        "RegistryKey": {
+        "RegistryKey": [{
             "Path": "\\REGISTRY\\MACHINE\\SOFTWARE\\Microsoft\\Tracing\\wscript_RASAPI32\\EnableConsoleTracing",
             "Name": null,
             "Value": "0"
         }
-    },
+    ]},
     {
-        "Process": {
+        "Process": [{
             "Name": "(null)",
             "PID": "4",
             "Hostname": null,
@@ -281,7 +305,7 @@
             "Sibling": null,
             "Child": null
         }
-    }],
+    ]}],
     "file_reputation_results": [{
         "Type": 1,
         "ContentsFormat": "json",
@@ -299,17 +323,20 @@
                 {
                     "SHA1": "44b3f79dfd7c5861501a19a3bac89f544c7ff815",
                     "Malicious": {
-                        "Vendor": "Group-IB TDS Polygon",
-                        "Description": "TDS Polygon score: 21.0, Trojan"
-                    }
+                        "Vendor": "Group-IB THF Polygon",
+                        "Description": "THF Polygon score: 21.0, Trojan"
+                    },
+                    "Hashes": [
+                        {"type": "SHA1", "value": "44b3f79dfd7c5861501a19a3bac89f544c7ff815"}
+                    ]
                 }],
             "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": [{
                 "Indicator": "44b3f79dfd7c5861501a19a3bac89f544c7ff815",
                 "Type": "file",
-                "Vendor": "Group-IB TDS Polygon",
+                "Vendor": "Group-IB THF Polygon",
                 "Score": 3
             }],
-            "Polygon.Analysis(val.SHA1 == obj.SHA1)": {
+            "Polygon.Analysis(val.SHA1 && val.SHA1 == obj.SHA1)": {
                 "SHA1": "44b3f79dfd7c5861501a19a3bac89f544c7ff815",
                 "Found": true,
                 "Verdict": true,
@@ -319,6 +346,9 @@
                 ]
             }
         },
-        "IndicatorTimeline": []
+        "IndicatorTimeline": [],
+        "Relationships": [],
+        "IgnoreAutoExtract": false,
+        "Note": false
     }]
 }

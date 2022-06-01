@@ -3,9 +3,11 @@ This script will be appended to each server script before being executed.
 Please notice that to add custom common code, add it to the CommonServerUserPython script.
 Note that adding code to CommonServerUserPython can override functions in CommonServerPython
 """
+# If you change this section, make sure you update the line offset magic number
 from __future__ import print_function
 
 import base64
+import gc
 import json
 import logging
 import os
@@ -14,20 +16,171 @@ import socket
 import sys
 import time
 import traceback
+import types
+import urllib
+import gzip
 from random import randint
 import xml.etree.cElementTree as ET
 from collections import OrderedDict
 from datetime import datetime, timedelta
 from abc import abstractmethod
+from distutils.version import LooseVersion
+from threading import Lock
+from inspect import currentframe
 
 import demistomock as demisto
+import warnings
+
+
+def __line__():
+    cf = currentframe()
+    return cf.f_back.f_lineno
+
+
+# 42 - The line offset from the beggining of the file.
+_MODULES_LINE_MAPPING = {
+    'CommonServerPython': {'start': __line__() - 42, 'end': float('inf')},
+}
+
+
+def register_module_line(module_name, start_end, line, wrapper=0):
+    """
+        Register a module in the line mapping for the traceback line correction algorithm.
+
+        :type module_name: ``str``
+        :param module_name: The name of the module. (required)
+
+        :type start_end: ``str``
+        :param start_end: Whether to register the line as the start or the end of the module.
+            Possible values: start, end. (required)
+
+        :type line: ``int``
+        :param line: the line number to record. (required)
+
+        :type wrapper: ``int``
+        :param wrapper: Wrapper size (used for inline replacements with headers such as ApiModules). (optional)
+
+        :return: None
+        :rtype: ``None``
+    """
+    global _MODULES_LINE_MAPPING
+    default_module_info = {'start': 0, 'start_wrapper': 0, 'end': float('inf'), 'end_wrapper': float('inf')}
+    try:
+        if start_end not in ('start', 'end'):
+            raise ValueError('Invalid start_end argument. Acceptable values are: start, end.')
+        if not isinstance(line, int) or line < 0:
+            raise ValueError('Invalid line argument. Expected non-negative integer, '
+                             'got {}({})'.format(type(line), line))
+
+        _MODULES_LINE_MAPPING.setdefault(module_name, default_module_info).update(
+            {start_end: line, '{}_wrapper'.format(start_end): line + wrapper}
+        )
+    except Exception as exc:
+        demisto.info(
+            'failed to register module line. '
+            'module: "{}" start_end: "{}" line: "{}".\nError: {}'.format(module_name, start_end, line, exc))
+
+
+def _find_relevant_module(line):
+    """
+    Find which module contains the given line number.
+
+    :type line: ``int``
+    :param trace_str: Line number to search. (required)
+
+    :return: The name of the module.
+    :rtype: ``str``
+    """
+    global _MODULES_LINE_MAPPING
+
+    relevant_module = ''
+    for module, info in _MODULES_LINE_MAPPING.items():
+        if info['start'] <= line <= info['end']:
+            if not relevant_module:
+                relevant_module = module
+            elif info['start'] > _MODULES_LINE_MAPPING[relevant_module]['start']:
+                relevant_module = module
+
+    return relevant_module
+
+
+def fix_traceback_line_numbers(trace_str):
+    """
+    Fixes the given traceback line numbers.
+
+    :type trace_str: ``str``
+    :param trace_str: The traceback string to edit. (required)
+
+    :return: The new formated traceback.
+    :rtype: ``str``
+    """
+    for number in re.findall(r'line (\d+)', trace_str):
+        line_num = int(number)
+        module = _find_relevant_module(line_num)
+        if module:
+            module_start_line = _MODULES_LINE_MAPPING.get(module, {'start': 0})['start']
+            actual_number = line_num - module_start_line
+
+            # in case of ApiModule injections, adjust the line numbers of the code after the injection.
+            for module_info in _MODULES_LINE_MAPPING.values():
+                block_start = module_info.get('start_wrapper', module_info['start'])
+                block_end = module_info.get('end_wrapper', module_info['end'])
+                if block_start > module_start_line and block_end < line_num:
+                    actual_number -= block_end - block_start
+
+            # a traceback line is of the form: File "<string>", line 8853, in func5
+            trace_str = trace_str.replace(
+                'File "<string>", line {},'.format(number),
+                'File "<{}>", line {},'.format(module, actual_number)
+            )
+
+    return trace_str
+
+
+OS_LINUX = False
+OS_MAC = False
+OS_WINDOWS = False
+if sys.platform.startswith('linux'):
+    OS_LINUX = True
+elif sys.platform.startswith('darwin'):
+    OS_MAC = True
+elif sys.platform.startswith('win32'):
+    OS_WINDOWS = True
+
+
+class WarningsHandler(object):
+    #    Wrapper to handle warnings. We use a class to cleanup after execution
+
+    @staticmethod
+    def handle_warning(message, category, filename, lineno, file=None, line=None):
+        try:
+            msg = warnings.formatwarning(message, category, filename, lineno, line)
+            demisto.info("python warning: " + msg)
+        except Exception:
+            # ignore the warning if it can't be handled for some reason
+            pass
+
+    def __init__(self):
+        self.org_handler = warnings.showwarning
+        warnings.showwarning = WarningsHandler.handle_warning
+
+    def __del__(self):
+        warnings.showwarning = self.org_handler
+
+
+_warnings_handler = WarningsHandler()
+# ignore warnings from logging as a result of not being setup
+logging.raiseExceptions = False
 
 # imports something that can be missed from docker image
 try:
     import requests
     from requests.adapters import HTTPAdapter
     from urllib3.util import Retry
-    from typing import Optional, List, Any
+    from typing import Optional, Dict, List, Any, Union, Set
+
+    import dateparser  # type: ignore
+    from datetime import timezone  # type: ignore
 except Exception:
     if sys.version_info[0] < 3:
         # in python 2 an exception in the imports might still be raised even though it is caught.
@@ -37,16 +190,25 @@ except Exception:
 CONTENT_RELEASE_VERSION = '0.0.0'
 CONTENT_BRANCH_NAME = 'master'
 IS_PY3 = sys.version_info[0] == 3
-
+PY_VER_MINOR = sys.version_info[1]
+STIX_PREFIX = "STIX "
 # pylint: disable=undefined-variable
+
+ZERO = timedelta(0)
+HOUR = timedelta(hours=1)
+
+# The max number of profiling related rows to print to the log on memory dump
+PROFILING_DUMP_ROWS_LIMIT = 20
+
+
 if IS_PY3:
     STRING_TYPES = (str, bytes)  # type: ignore
     STRING_OBJ_TYPES = (str,)
+
 else:
     STRING_TYPES = (str, unicode)  # type: ignore # noqa: F821
     STRING_OBJ_TYPES = STRING_TYPES  # type: ignore
 # pylint: enable=undefined-variable
-
 
 # DEPRECATED - use EntryType enum instead
 entryTypes = {
@@ -64,6 +226,18 @@ entryTypes = {
     'widget': 17
 }
 
+ENDPOINT_STATUS_OPTIONS = [
+    'Online',
+    'Offline'
+]
+
+ENDPOINT_ISISOLATED_OPTIONS = [
+    'Yes',
+    'No',
+    'Pending isolation',
+    'Pending unisolation'
+]
+
 
 class EntryType(object):
     """
@@ -80,7 +254,9 @@ class EntryType(object):
     IMAGE = 7
     PLAYGROUND_ERROR = 8
     ENTRY_INFO_FILE = 9
+    VIDEO_FILE = 10
     WARNING = 11
+    STATIC_VIDEO_FILE = 12
     MAP_ENTRY_TYPE = 15
     WIDGET = 17
 
@@ -95,6 +271,20 @@ class IncidentStatus(object):
     ACTIVE = 1
     DONE = 2
     ARCHIVE = 3
+
+
+class IncidentSeverity(object):
+    """
+    Enum: contains all the incident severity types
+    :return: None
+    :rtype: ``None``
+    """
+    UNKNOWN = 0
+    INFO = 0.5
+    LOW = 1
+    MEDIUM = 2
+    HIGH = 3
+    CRITICAL = 4
 
 
 # DEPRECATED - use EntryFormat enum instead
@@ -161,6 +351,12 @@ class DBotScoreType(object):
     DBotScoreType.DOMAIN
     DBotScoreType.URL
     DBotScoreType.CVE
+    DBotScoreType.ACCOUNT
+    DBotScoreType.CRYPTOCURRENCY
+    DBotScoreType.EMAIL
+    DBotScoreType.ATTACKPATTERN
+    DBotScoreType.CUSTOM
+
     :return: None
     :rtype: ``None``
     """
@@ -169,6 +365,14 @@ class DBotScoreType(object):
     DOMAIN = 'domain'
     URL = 'url'
     CVE = 'cve'
+    ACCOUNT = 'account'
+    CIDR = 'cidr',
+    DOMAINGLOB = 'domainglob'
+    CERTIFICATE = 'certificate'
+    CRYPTOCURRENCY = 'cryptocurrency'
+    EMAIL = 'email'
+    ATTACKPATTERN = 'attackpattern'
+    CUSTOM = 'custom'
 
     def __init__(self):
         # required to create __init__ for create_server_docs.py purpose
@@ -183,8 +387,70 @@ class DBotScoreType(object):
             DBotScoreType.FILE,
             DBotScoreType.DOMAIN,
             DBotScoreType.URL,
-            DBotScoreType.CVE
+            DBotScoreType.CVE,
+            DBotScoreType.ACCOUNT,
+            DBotScoreType.CIDR,
+            DBotScoreType.DOMAINGLOB,
+            DBotScoreType.CERTIFICATE,
+            DBotScoreType.CRYPTOCURRENCY,
+            DBotScoreType.EMAIL,
+            DBotScoreType.ATTACKPATTERN,
+            DBotScoreType.CUSTOM,
         )
+
+
+class DBotScoreReliability(object):
+    """
+    Enum: Source reliability levels
+    Values are case sensitive
+
+    :return: None
+    :rtype: ``None``
+    """
+
+    A_PLUS = 'A+ - 3rd party enrichment'
+    A = 'A - Completely reliable'
+    B = 'B - Usually reliable'
+    C = 'C - Fairly reliable'
+    D = 'D - Not usually reliable'
+    E = 'E - Unreliable'
+    F = 'F - Reliability cannot be judged'
+
+    def __init__(self):
+        # required to create __init__ for create_server_docs.py purpose
+        pass
+
+    @staticmethod
+    def is_valid_type(_type):
+        # type: (str) -> bool
+
+        return _type in (
+            DBotScoreReliability.A_PLUS,
+            DBotScoreReliability.A,
+            DBotScoreReliability.B,
+            DBotScoreReliability.C,
+            DBotScoreReliability.D,
+            DBotScoreReliability.E,
+            DBotScoreReliability.F,
+        )
+
+    @staticmethod
+    def get_dbot_score_reliability_from_str(reliability_str):
+        if reliability_str == DBotScoreReliability.A_PLUS:
+            return DBotScoreReliability.A_PLUS
+        elif reliability_str == DBotScoreReliability.A:
+            return DBotScoreReliability.A
+        elif reliability_str == DBotScoreReliability.B:
+            return DBotScoreReliability.B
+        elif reliability_str == DBotScoreReliability.C:
+            return DBotScoreReliability.C
+        elif reliability_str == DBotScoreReliability.D:
+            return DBotScoreReliability.D
+        elif reliability_str == DBotScoreReliability.E:
+            return DBotScoreReliability.E
+        elif reliability_str == DBotScoreReliability.F:
+            return DBotScoreReliability.F
+        raise Exception("Please use supported reliability only.")
 
 
 INDICATOR_TYPE_TO_CONTEXT_KEY = {
@@ -255,8 +521,8 @@ class FeedIndicatorType(object):
         :type ip: ``str``
         :param ip: IP address to get it's indicator type.
 
-        :rtype: ``str``
         :return:: Indicator type from FeedIndicatorType, or None if invalid IP address.
+        :rtype: ``str``
         """
         if re.match(ipv4cidrRegex, ip):
             return FeedIndicatorType.CIDR
@@ -272,6 +538,122 @@ class FeedIndicatorType(object):
 
         else:
             return None
+
+    @staticmethod
+    def indicator_type_by_server_version(indicator_type):
+        """Returns the indicator type of the input by the server version.
+        If the server version is 6.2 and greater, remove the STIX prefix of the type
+
+        :type indicator_type: ``str``
+        :param indicator_type: Type of an indicator.
+
+        :return:: Indicator type .
+        :rtype: ``str``
+        """
+        if is_demisto_version_ge("6.2.0") and indicator_type.startswith(STIX_PREFIX):
+            return indicator_type[len(STIX_PREFIX):]
+        return indicator_type
+
+
+# -------------------------------- Threat Intel Objects ----------------------------------- #
+
+class ThreatIntel:
+    """
+    XSOAR Threat Intel Objects
+    :return: None
+    :rtype: ``None``
+    """
+
+    class ObjectsNames(object):
+        """
+        Enum: Threat Intel Objects names.
+        :return: None
+        :rtype: ``None``
+        """
+        CAMPAIGN = 'Campaign'
+        ATTACK_PATTERN = 'Attack Pattern'
+        REPORT = 'Report'
+        MALWARE = 'Malware'
+        COURSE_OF_ACTION = 'Course of Action'
+        INTRUSION_SET = 'Intrusion Set'
+        TOOL = 'Tool'
+        THREAT_ACTOR = 'Threat Actor'
+        INFRASTRUCTURE = 'Infrastructure'
+
+    class ObjectsScore(object):
+        """
+        Enum: Threat Intel Objects Score.
+        :return: None
+        :rtype: ``None``
+        """
+        CAMPAIGN = 3
+        ATTACK_PATTERN = 2
+        REPORT = 3
+        MALWARE = 3
+        COURSE_OF_ACTION = 0
+        INTRUSION_SET = 3
+        TOOL = 2
+        THREAT_ACTOR = 3
+        INFRASTRUCTURE = 2
+
+    class KillChainPhases(object):
+        """
+        Enum: Kill Chain Phases names.
+        :return: None
+        :rtype: ``None``
+        """
+        BUILD_CAPABILITIES = "Build Capabilities"
+        PRIVILEGE_ESCALATION = "Privilege Escalation"
+        ADVERSARY_OPSEC = "Adversary Opsec"
+        CREDENTIAL_ACCESS = "Credential Access"
+        EXFILTRATION = "Exfiltration"
+        LATERAL_MOVEMENT = "Lateral Movement"
+        DEFENSE_EVASION = "Defense Evasion"
+        PERSISTENCE = "Persistence"
+        COLLECTION = "Collection"
+        IMPACT = "Impact"
+        INITIAL_ACCESS = "Initial Access"
+        DISCOVERY = "Discovery"
+        EXECUTION = "Execution"
+        INSTALLATION = "Installation"
+        DELIVERY = "Delivery"
+        WEAPONIZATION = "Weaponization"
+        ACT_ON_OBJECTIVES = "Actions on Objectives"
+        COMMAND_AND_CONTROL = "Command \u0026 Control"
+
+
+def is_debug_mode():
+    """Return if this script/command was passed debug-mode=true option
+
+    :return: true if debug-mode is enabled
+    :rtype: ``bool``
+    """
+    # use `hasattr(demisto, 'is_debug')` to ensure compatibility with server version <= 4.5
+    return hasattr(demisto, 'is_debug') and demisto.is_debug
+
+
+def get_schedule_metadata(context):
+    """
+        Get the entry schedule metadata if available
+
+        :type context: ``dict``
+        :param context: Context in which the command was executed.
+
+        :return: Dict with metadata of scheduled entry
+        :rtype: ``dict``
+    """
+    schedule_metadata = {}
+    parent_entry = context.get('ParentEntry', {})
+    if parent_entry:
+        schedule_metadata = assign_params(
+            is_polling=True if parent_entry.get('polling') else False,
+            polling_command=parent_entry.get('pollingCommand'),
+            polling_args=parent_entry.get('pollingArgs'),
+            times_ran=int(parent_entry.get('timesRan', 0)) + 1,
+            start_date=parent_entry.get('startDate'),
+            end_date=parent_entry.get('endingDate')
+        )
+    return schedule_metadata
 
 
 def auto_detect_indicator_type(indicator_value):
@@ -324,16 +706,41 @@ def auto_detect_indicator_type(indicator_value):
         return FeedIndicatorType.File
 
     try:
-        no_cache_extract = tldextract.TLDExtract(cache_file=False, suffix_list_urls=None)
+        tldextract_version = tldextract.__version__
+        if LooseVersion(tldextract_version) < '3.0.0':
+            no_cache_extract = tldextract.TLDExtract(cache_file=False, suffix_list_urls=None)
+        else:
+            no_cache_extract = tldextract.TLDExtract(cache_dir=False, suffix_list_urls=None)
+
         if no_cache_extract(indicator_value).suffix:
             if '*' in indicator_value:
                 return FeedIndicatorType.DomainGlob
             return FeedIndicatorType.Domain
 
     except Exception:
-        pass
+        demisto.debug('tldextract failed to detect indicator type. indicator value: {}'.format(indicator_value))
 
+    demisto.debug('Failed to detect indicator type. Indicator value: {}'.format(indicator_value))
     return None
+
+
+def add_http_prefix_if_missing(address=''):
+    """
+        This function adds `http://` prefix to the proxy address in case it is missing.
+
+        :type address: ``string``
+        :param address: Proxy address.
+
+        :return: proxy address after the 'http://' prefix was added, if needed.
+        :rtype: ``string``
+    """
+    PROXY_PREFIXES = ['http://', 'https://', 'socks5://', 'socks5h://', 'socks4://', 'socks4a://']
+    if not address:
+        return ''
+    for prefix in PROXY_PREFIXES:
+        if address.startswith(prefix):
+            return address
+    return 'http://' + address
 
 
 def handle_proxy(proxy_param_name='proxy', checkbox_default_value=False, handle_insecure=True,
@@ -358,19 +765,19 @@ def handle_proxy(proxy_param_name='proxy', checkbox_default_value=False, handle_
         :type insecure_param_name: ``string``
         :param insecure_param_name: Name of insecure param. If None will search insecure and unsecure
 
-        :rtype: ``dict``
         :return: proxies dict for the 'proxies' parameter of 'requests' functions
+        :rtype: ``dict``
     """
     proxies = {}  # type: dict
     if demisto.params().get(proxy_param_name, checkbox_default_value):
+        ensure_proxy_has_http_prefix()
         proxies = {
             'http': os.environ.get('HTTP_PROXY') or os.environ.get('http_proxy', ''),
             'https': os.environ.get('HTTPS_PROXY') or os.environ.get('https_proxy', '')
         }
     else:
-        for k in ('HTTP_PROXY', 'HTTPS_PROXY', 'http_proxy', 'https_proxy'):
-            if k in os.environ:
-                del os.environ[k]
+        skip_proxy()
+
     if handle_insecure:
         if insecure_param_name is None:
             param_names = ('insecure', 'unsecure')
@@ -378,10 +785,47 @@ def handle_proxy(proxy_param_name='proxy', checkbox_default_value=False, handle_
             param_names = (insecure_param_name,)  # type: ignore[assignment]
         for p in param_names:
             if demisto.params().get(p, False):
-                for k in ('REQUESTS_CA_BUNDLE', 'CURL_CA_BUNDLE'):
-                    if k in os.environ:
-                        del os.environ[k]
+                skip_cert_verification()
+
     return proxies
+
+
+def skip_proxy():
+    """
+    The function deletes the proxy environment vars in order to http requests to skip routing through proxy
+
+    :return: None
+    :rtype: ``None``
+    """
+    for k in ('HTTP_PROXY', 'HTTPS_PROXY', 'http_proxy', 'https_proxy'):
+        if k in os.environ:
+            del os.environ[k]
+
+
+def ensure_proxy_has_http_prefix():
+    """
+    The function checks if proxy environment vars are missing http/https prefixes, and adds http if so.
+
+    :return: None
+    :rtype: ``None``
+    """
+    for k in ('HTTP_PROXY', 'HTTPS_PROXY', 'http_proxy', 'https_proxy'):
+        if k in os.environ:
+            proxy_env_var = os.getenv(k)
+            if proxy_env_var:
+                os.environ[k] = add_http_prefix_if_missing(os.environ[k])
+
+
+def skip_cert_verification():
+    """
+    The function deletes the self signed certificate env vars in order to http requests to skip certificate validation.
+
+    :return: None
+    :rtype: ``None``
+    """
+    for k in ('REQUESTS_CA_BUNDLE', 'CURL_CA_BUNDLE'):
+        if k in os.environ:
+            del os.environ[k]
 
 
 def urljoin(url, suffix=""):
@@ -402,8 +846,8 @@ def urljoin(url, suffix=""):
         :type suffix: ``string``
         :param suffix: the second part of the url
 
-        :rtype: ``string``
         :return: Full joined url
+        :rtype: ``string``
     """
     if url[-1:] != "/":
         url = url + "/"
@@ -914,6 +1358,40 @@ def remove_empty_elements(d):
         return {k: v for k, v in ((k, remove_empty_elements(v)) for k, v in d.items()) if not empty(v)}
 
 
+class SmartGetDict(dict):
+    """A dict that when called with get(key, default) will return the default passed
+    value, even if there is a value of "None" in the place of the key. Example with built-in dict:
+    ```
+    >>> d = {}
+    >>> d['test'] = None
+    >>> d.get('test', 1)
+    >>> print(d.get('test', 1))
+    None
+    ```
+    Example with SmartGetDict:
+    ```
+    >>> d = SmartGetDict()
+    >>> d['test'] = None
+    >>> d.get('test', 1)
+    >>> print(d.get('test', 1))
+    1
+    ```
+
+    :return: SmartGetDict
+    :rtype: ``SmartGetDict``
+
+    """
+    def get(self, key, default=None):
+        res = dict.get(self, key)
+        if res is not None:
+            return res
+        return default
+
+
+if (not os.getenv('COMMON_SERVER_NO_AUTO_PARAMS_REMOVE_NULLS')) and hasattr(demisto, 'params') and demisto.params():
+    demisto.callingContext['params'] = SmartGetDict(demisto.params())
+
+
 def aws_table_to_markdown(response, table_header):
     """
     Converts a raw response from AWS into a markdown formatted table. This function checks to see if
@@ -931,7 +1409,9 @@ def aws_table_to_markdown(response, table_header):
                     response[list(response.keys())[0]], list):
                 if isinstance(response[list(response.keys())[0]], list):
                     list_response = response[list(response.keys())[0]]
-                    if isinstance(list_response[0], str):
+                    if not list_response:
+                        human_readable = tableToMarkdown(table_header, list_response)
+                    elif isinstance(list_response[0], str):
                         human_readable = tableToMarkdown(
                             table_header, response)
                     else:
@@ -947,6 +1427,19 @@ def aws_table_to_markdown(response, table_header):
     else:
         human_readable = tableToMarkdown(table_header, response)
     return human_readable
+
+
+def stringEscape(st):
+    """
+       Escape newline chars in the given string.
+
+       :type st: ``str``
+       :param st: The string to be modified (required).
+
+       :return: A modified string.
+       :rtype: ``str``
+    """
+    return st.replace('\r', '\\r').replace('\n', '\\n').replace('\t', '\\t')
 
 
 def stringUnEscape(st):
@@ -976,16 +1469,18 @@ class IntegrationLogger(object):
       :rtype: ``None``
     """
 
-    def __init__(self):
+    def __init__(self, debug_logging=False):
         self.messages = []  # type: list
         self.write_buf = []  # type: list
         self.replace_strs = []  # type: list
+        self.curl = []  # type: list
         self.buffering = True
+        self.debug_logging = debug_logging
         # if for some reason you don't want to auto add credentials.password to replace strings
         # set the os env COMMON_SERVER_NO_AUTO_REPLACE_STRS. Either in CommonServerUserPython, or docker env
         if (not os.getenv('COMMON_SERVER_NO_AUTO_REPLACE_STRS') and hasattr(demisto, 'getParam')):
             # add common params
-            sensitive_params = ('key', 'private', 'password', 'secret', 'token', 'credentials')
+            sensitive_params = ('key', 'private', 'password', 'secret', 'token', 'credentials', 'service_account')
             if demisto.params():
                 self._iter_sensistive_dict_obj(demisto.params(), sensitive_params)
 
@@ -993,6 +1488,9 @@ class IntegrationLogger(object):
         for (k, v) in dict_obj.items():
             if isinstance(v, dict):  # credentials object case. recurse into the object
                 self._iter_sensistive_dict_obj(v, sensitive_params)
+                if v.get('identifier') and v.get('password'):  # also add basic auth case
+                    basic_auth = '{}:{}'.format(v.get('identifier'), v.get('password'))
+                    self.add_replace_strs(b64_encode(basic_auth))
             elif isinstance(v, STRING_OBJ_TYPES):
                 k_lower = k.lower()
                 for p in sensitive_params:
@@ -1002,7 +1500,6 @@ class IntegrationLogger(object):
     def encode(self, message):
         try:
             res = str(message)
-            res = stringUnEscape(res)
         except UnicodeEncodeError as exception:
             # could not decode the message
             # if message is an Exception, try encode the exception's message
@@ -1021,15 +1518,34 @@ class IntegrationLogger(object):
         text = self.encode(message)
         if self.buffering:
             self.messages.append(text)
+            if self.debug_logging:
+                demisto.debug(text)
         else:
             demisto.info(text)
+        return text
 
     def add_replace_strs(self, *args):
         '''
             Add strings which will be replaced when logging.
             Meant for avoiding passwords and so forth in the log.
         '''
-        to_add = [self.encode(a) for a in args if a]
+        to_add = []
+        for a in args:
+            if a:
+                a = self.encode(a)
+                to_add.append(stringEscape(a))
+                to_add.append(stringUnEscape(a))
+                js = json.dumps(a)
+                if js.startswith('"'):
+                    js = js[1:]
+                if js.endswith('"'):
+                    js = js[:-1]
+                to_add.append(js)
+                if IS_PY3:
+                    to_add.append(urllib.parse.quote_plus(a))  # type: ignore[attr-defined]
+                else:
+                    to_add.append(urllib.quote_plus(a))
+
         self.replace_strs.extend(to_add)
 
     def set_buffering(self, state):
@@ -1048,8 +1564,57 @@ class IntegrationLogger(object):
             text = 'Full Integration Log:\n' + '\n'.join(self.messages)
             if verbose:
                 demisto.log(text)
-            demisto.info(text)
+            if not self.debug_logging:  # we don't print out if in debug_logging as already all message where printed
+                demisto.info(text)
             self.messages = []
+
+    def build_curl(self, text):
+        """
+        Parses the HTTP client "send" log messages and generates cURL queries out of them.
+
+        :type text: ``str``
+        :param text: The HTTP client log message.
+
+        :return: No data returned
+        :rtype: ``None``
+        """
+        http_methods = ['GET', 'POST', 'PUT', 'DELETE', 'PATCH']
+        data = text.split("send: b'")[1]
+        if data and data[0] in {'{', '<'}:
+            # it is the request url query params/post body - will always come after we already have the url and headers
+            # `<` is for xml body
+            self.curl[-1] += "-d '{}".format(data)
+        elif any(http_method in data for http_method in http_methods):
+            method = ''
+            url = ''
+            headers = []
+            headers_to_skip = ['Content-Length', 'User-Agent', 'Accept-Encoding', 'Connection']
+            request_parts = repr(data).split('\\\\r\\\\n')  # splitting lines on repr since data is a bytes-string
+            for line, part in enumerate(request_parts):
+                if line == 0:
+                    method, url, _ = part[1:].split()  # ignoring " at first char
+                elif line != len(request_parts) - 1:  # ignoring the last line which is empty
+                    if part.startswith('Host:'):
+                        _, host = part.split('Host: ')
+                        url = 'https://{}{}'.format(host, url)
+                    else:
+                        if any(header_to_skip in part for header_to_skip in headers_to_skip):
+                            continue
+                        headers.append(part)
+            curl_headers = ''
+            for header in headers:
+                if header:
+                    curl_headers += '-H "{}" '.format(header)
+            curl = 'curl -X {} {} {}'.format(method, url, curl_headers)
+            if demisto.params().get('proxy'):
+                proxy_address = os.environ.get('https_proxy')
+                if proxy_address:
+                    curl += '--proxy {} '.format(proxy_address)
+            else:
+                curl += '--noproxy "*" '
+            if demisto.params().get('insecure'):
+                curl += '-k '
+            self.curl.append(curl)
 
     def write(self, msg):
         # same as __call__ but allows IntegrationLogger to act as a File like object.
@@ -1067,6 +1632,11 @@ class IntegrationLogger(object):
                 self.messages.append(text)
             else:
                 demisto.info(text)
+                if is_debug_mode() and text.startswith('send:'):
+                    try:
+                        self.build_curl(text)
+                    except Exception as e:  # should fail silently
+                        demisto.debug('Failed generating curl - {}'.format(str(e)))
             self.write_buf = []
 
     def print_override(self, *args, **kwargs):
@@ -1088,7 +1658,7 @@ a logger for python integrations:
 use LOG(<message>) to add a record to the logger (message can be any object with __str__)
 use LOG.print_log() to display all records in War-Room and server log.
 """
-LOG = IntegrationLogger()
+LOG = IntegrationLogger(debug_logging=is_debug_mode())
 
 
 def formatAllArgs(args, kwds):
@@ -1121,30 +1691,35 @@ def logger(func):
 
     def func_wrapper(*args, **kwargs):
         LOG('calling {}({})'.format(func.__name__, formatAllArgs(args, kwargs)))
-        return func(*args, **kwargs)
+        ret_val = func(*args, **kwargs)
+        if is_debug_mode():
+            LOG('Return value [{}]: {}'.format(func.__name__, str(ret_val)))
+        return ret_val
 
     return func_wrapper
 
 
-def formatCell(data, is_pretty=True):
+def formatCell(data, is_pretty=True, json_transform=None):
     """
        Convert a given object to md while decending multiple levels
 
-       :type data: ``str`` or ``list``
+
+       :type data: ``str`` or ``list`` or ``dict``
        :param data: The cell content (required)
 
        :type is_pretty: ``bool``
        :param is_pretty: Should cell content be prettified (default is True)
 
+       :type json_transform: ``JsonTransformer``
+       :param json_transform: The Json transform object to transform the data
+
        :return: The formatted cell content as a string
        :rtype: ``str``
     """
-    if isinstance(data, STRING_TYPES):
-        return data
-    elif isinstance(data, dict):
-        return '\n'.join([u'{}: {}'.format(k, flattenCell(v, is_pretty)) for k, v in data.items()])
-    else:
-        return flattenCell(data, is_pretty)
+    if json_transform is None:
+        json_transform = JsonTransformer(flatten=True)
+
+    return json_transform.json_to_str(data, is_pretty)
 
 
 def flattenCell(data, is_pretty=True):
@@ -1192,7 +1767,7 @@ def FormatIso8601(t):
     return t.strftime("%Y-%m-%dT%H:%M:%S")
 
 
-def argToList(arg, separator=','):
+def argToList(arg, separator=',', transform=None):
     """
        Converts a string representation of args to a python list
 
@@ -1202,18 +1777,49 @@ def argToList(arg, separator=','):
        :type separator: ``str``
        :param separator: A string separator to separate the strings, the default is a comma.
 
+       :type transform: ``callable``
+       :param transform: A function transformer to transfer the returned list arguments.
+
        :return: A python list of args
        :rtype: ``list``
     """
     if not arg:
         return []
+
+    result = []
     if isinstance(arg, list):
-        return arg
-    if isinstance(arg, STRING_TYPES):
+        result = arg
+    elif isinstance(arg, STRING_TYPES):
         if arg[0] == '[' and arg[-1] == ']':
-            return json.loads(arg)
-        return [s.strip() for s in arg.split(separator)]
-    return [arg]
+            result = json.loads(arg)
+        else:
+            result = [s.strip() for s in arg.split(separator)]
+    else:
+        result = [arg]
+
+    if transform:
+        return [transform(s) for s in result]
+
+    return result
+
+
+def remove_duplicates_from_list_arg(args, field):
+    """
+        Removes duplicates from a list after calling argToList.
+        For example: args: {'ids': "1,2,1"}, field='ids'
+        The return output will be ["1", "2"]
+
+        :type args: ``dict``
+        :param args: Args to be converted (required)
+
+        :type field: ``str``
+        :param field: Field in args to be converted into list without duplicates (required)
+
+        :return: A python list of args without duplicates
+        :rtype: ``list``
+    """
+    convert_to_list = argToList(args.get(field))
+    return list(set(convert_to_list))
 
 
 def argToBoolean(value):
@@ -1292,7 +1898,169 @@ def appendContext(key, data, dedup=False):
         demisto.setContext(key, data)
 
 
-def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=False, metadata=None):
+def url_to_clickable_markdown(data, url_keys):
+    """
+    Turn the given urls fields in to clickable url, used for the markdown table.
+
+    :type data: ``[Union[str, List[Any], Dict[str, Any]]]``
+    :param data: a dictionary or a list containing data with some values that are urls
+
+    :type url_keys: ``List[str]``
+    :param url_keys: the keys of the url's wished to turn clickable
+
+    :return: markdown format for clickable url
+    :rtype: ``[Union[str, List[Any], Dict[str, Any]]]``
+    """
+
+    if isinstance(data, list):
+        data = [url_to_clickable_markdown(item, url_keys) for item in data]
+
+    elif isinstance(data, dict):
+        data = {key: create_clickable_url(value) if key in url_keys else url_to_clickable_markdown(data[key], url_keys)
+                for key, value in data.items()}
+
+    return data
+
+
+def create_clickable_url(url):
+    """
+    Make the given url clickable when in markdown format by concatenating itself, with the proper brackets
+
+    :type url: ``Union[List[str], str]``
+    :param url: the url of interest or a list of urls
+
+    :return: markdown format for clickable url
+    :rtype: ``str``
+
+    """
+    if not url:
+        return None
+    elif isinstance(url, list):
+        return ['[{}]({})'.format(item, item) for item in url]
+    return '[{}]({})'.format(url, url)
+
+
+class JsonTransformer:
+    """
+    A class to transform a json to
+
+    :type flatten: ``bool``
+    :param flatten: Should we flatten the json using `flattenCell` (for BC)
+
+    :type keys: ``Set[str]``
+    :param keys: Set of keys to keep
+
+    :type is_nested: ``bool``
+    :param is_nested: If look for nested
+
+    :type func: ``Callable``
+    :param func: A function to parse the json
+
+    :return: None
+    :rtype: ``None``
+    """
+
+    def __init__(self, flatten=False, keys=None, is_nested=False, func=None):
+        """
+        Constructor for JsonTransformer
+
+        :type flatten: ``bool``
+        :param flatten:  Should we flatten the json using `flattenCell` (for BC)
+
+        :type keys: ``Iterable[str]``
+        :param keys: an iterable of relevant keys list from the json. Notice we save it as a set in the class
+
+        :type is_nested: ``bool``
+        :param is_nested: Whether to search in nested keys or not
+
+        :type func: ``Callable``
+        :param func: A function to parse the json
+        """
+        if keys is None:
+            keys = []
+        self.keys = set(keys)
+        self.is_nested = is_nested
+        self.func = func
+        self.flatten = flatten
+
+    def json_to_str(self, json_input, is_pretty=True):
+        if self.func:
+            return self.func(json_input)
+        if isinstance(json_input, STRING_TYPES):
+            return json_input
+        if self.flatten:
+            if not isinstance(json_input, dict):
+                return flattenCell(json_input, is_pretty)
+            return '\n'.join(
+                [u'{key}: {val}'.format(key=k, val=flattenCell(v, is_pretty)) for k, v in json_input.items()])  # for BC
+
+        str_lst = []
+        prev_path = []  # type: ignore
+        for path, key, val in self.json_to_path_generator(json_input):
+            str_path = ''
+            full_tabs = '\t' * len(path)
+            if path != prev_path:  # need to construct tha `path` string only of it changed from the last one
+                common_prefix_index = len(os.path.commonprefix((prev_path, path)))  # type: ignore
+                path_suffix = path[common_prefix_index:]
+
+                str_path_lst = []
+                for i, p in enumerate(path_suffix):
+                    is_list = isinstance(p, int)
+                    tabs = (common_prefix_index + i) * '\t'
+                    path_value = p if not is_list else '-'
+                    delim = ':\n' if not is_list else ''
+                    str_path_lst.append('{tabs}**{path_value}**{delim}'.format(tabs=tabs, path_value=path_value, delim=delim))
+                str_path = ''.join(str_path_lst)
+                prev_path = path
+                if path and isinstance(path[-1], int):
+                    # if it is a beginning of a list, there is only one tab left
+                    full_tabs = '\t'
+
+            str_lst.append(
+                '{path}{tabs}***{key}***: {val}'.format(path=str_path, tabs=full_tabs, key=key, val=flattenCell(val, is_pretty)))
+
+        return '\n'.join(str_lst)
+
+    def json_to_path_generator(self, json_input, path=None):
+        """
+        :type json_input: ``list`` or ``dict``
+        :param json_input: The json input to transform
+        :type path: ``List[str + int]``
+        :param path: The path of the key, value pair inside the json
+
+        :rtype ``Tuple[List[str + int], str, str]``
+        :return:  A tuple. the second and third elements are key, values, and the first is their path in the json
+        """
+        if path is None:
+            path = []
+        is_in_path = not self.keys or any(p for p in path if p in self.keys)
+        if isinstance(json_input, dict):
+            for k, v in json_input.items():
+                if is_in_path or k in self.keys:  # found data to return
+                    # recurse until finding a primitive value
+                    if not isinstance(v, dict) and not isinstance(v, list):
+                        yield path, k, v
+                    else:
+                        for res in self.json_to_path_generator(v, path + [k]):  # this is yield from for python2 BC
+                            yield res
+
+                elif self.is_nested:
+                    # recurse all the json_input to find the relevant data
+                    for res in self.json_to_path_generator(v, path + [k]):  # this is yield from for python2 BC
+                        yield res
+
+        if isinstance(json_input, list):
+            if not json_input or (not isinstance(json_input[0], list) and not isinstance(json_input[0], dict)):
+                # if the items of the lists are primitive, put the values in one line
+                yield path, 'values', ', '.join(json_input)
+            else:
+                for i, item in enumerate(json_input):
+                    for res in self.json_to_path_generator(item, path + [i]):  # this is yield from for python2 BC
+                        yield res
+
+
+def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=False, metadata=None, url_keys=None,
+                    date_fields=None, json_transform_mapping=None, is_auto_json_transform=False):
     """
        Converts a demisto table in JSON form to a Markdown table
 
@@ -1303,21 +2071,36 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
        :param t: The JSON table - List of dictionaries with the same keys or a single dictionary (required)
 
        :type headers: ``list`` or ``string``
-       :keyword headers: A list of headers to be presented in the output table (by order). If string will be passed
+       :param headers: A list of headers to be presented in the output table (by order). If string will be passed
             then table will have single header. Default will include all available headers.
 
        :type headerTransform: ``function``
-       :keyword headerTransform: A function that formats the original data headers (optional)
+       :param headerTransform: A function that formats the original data headers (optional)
 
        :type removeNull: ``bool``
-       :keyword removeNull: Remove empty columns from the table. Default is False
+       :param removeNull: Remove empty columns from the table. Default is False
 
        :type metadata: ``str``
        :param metadata: Metadata about the table contents
 
+       :type url_keys: ``list``
+       :param url_keys: a list of keys in the given JSON table that should be turned in to clickable
+
+       :type date_fields: ``list``
+       :param date_fields: A list of date fields to format the value to human-readable output.
+
+        :type json_transform_mapping: ``Dict[str, JsonTransformer]``
+        :param json_transform_mapping: A mapping between a header key to corresponding JsonTransformer
+
+        :type is_auto_json_transform: ``bool``
+        :param is_auto_json_transform: Boolean to try to auto transform complex json
+
        :return: A string representation of the markdown table
        :rtype: ``str``
     """
+    # Turning the urls in the table to clickable
+    if url_keys:
+        t = url_to_clickable_markdown(t, url_keys)
 
     mdResult = ''
     if name:
@@ -1330,6 +2113,11 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
         mdResult += '**No entries.**\n'
         return mdResult
 
+    if not headers and isinstance(t, dict) and len(t.keys()) == 1:
+        # in case of a single key, create a column table where each element is in a different row.
+        headers = list(t.keys())
+        t = list(t.values())[0]
+
     if not isinstance(t, list):
         t = [t]
 
@@ -1337,11 +2125,11 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
         headers = [headers]
 
     if not isinstance(t[0], dict):
-        # the table cotains only simple objects (strings, numbers)
+        # the table contains only simple objects (strings, numbers)
         # should be only one header
         if headers and len(headers) > 0:
             header = headers[0]
-            t = map(lambda item: dict((h, item) for h in [header]), t)
+            t = [{header: item} for item in t]
         else:
             raise Exception("Missing headers param for tableToMarkdown. Example: headers=['Some Header']")
 
@@ -1352,14 +2140,19 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
 
     if removeNull:
         headers_aux = headers[:]
-        for header in headers_aux:
+        for header in headers:
             if all(obj.get(header) in ('', None, [], {}) for obj in t):
-                headers.remove(header)
+                headers_aux.remove(header)
+        headers = headers_aux
+
+    if not json_transform_mapping:
+        json_transform_mapping = {header: JsonTransformer(flatten=not is_auto_json_transform) for header in
+                                  headers}
 
     if t and len(headers) > 0:
         newHeaders = []
         if headerTransform is None:  # noqa
-            def headerTransform(s): return s  # noqa
+            def headerTransform(s): return stringEscapeMD(s, True, True)  # noqa
         for header in headers:
             newHeaders.append(headerTransform(header))
         mdResult += '|'
@@ -1371,8 +2164,18 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
         sep = '---'
         mdResult += '|' + '|'.join([sep] * len(headers)) + '|\n'
         for entry in t:
-            vals = [stringEscapeMD((formatCell(entry.get(h, ''), False) if entry.get(h) is not None else ''),
+            entry_copy = entry.copy()
+            if date_fields:
+                for field in date_fields:
+                    try:
+                        entry_copy[field] = datetime.fromtimestamp(int(entry_copy[field]) / 1000).strftime('%Y-%m-%d %H:%M:%S')
+                    except Exception:
+                        pass
+
+            vals = [stringEscapeMD((formatCell(entry_copy.get(h, ''), False,
+                                               json_transform_mapping.get(h)) if entry_copy.get(h) is not None else ''),
                                    True, True) for h in headers]
+
             # this pipe is optional
             mdResult += '| '
             try:
@@ -1398,13 +2201,13 @@ def createContextSingle(obj, id=None, keyTransform=None, removeNull=False):
     :param obj: The data to be added to the context (required)
 
     :type id: ``str``
-    :keyword id: The ID of the context entry
+    :param id: The ID of the context entry
 
     :type keyTransform: ``function``
-    :keyword keyTransform: A formatting function for the markdown table headers
+    :param keyTransform: A formatting function for the markdown table headers
 
     :type removeNull: ``bool``
-    :keyword removeNull: True if empty columns should be removed, false otherwise
+    :param removeNull: True if empty columns should be removed, false otherwise
 
     :return: The converted context list
     :rtype: ``list``
@@ -1436,13 +2239,13 @@ def createContext(data, id=None, keyTransform=None, removeNull=False):
         :param data: The data to be added to the context (required)
 
         :type id: ``str``
-        :keyword id: The ID of the context entry
+        :param id: The ID of the context entry
 
         :type keyTransform: ``function``
-        :keyword keyTransform: A formatting function for the markdown table headers
+        :param keyTransform: A formatting function for the markdown table headers
 
         :type removeNull: ``bool``
-        :keyword removeNull: True if empty columns should be removed, false otherwise
+        :param removeNull: True if empty columns should be removed, false otherwise
 
         :return: The converted context list
         :rtype: ``list``
@@ -1568,7 +2371,7 @@ def flattenTable(tableDict):
     return [flattenRow(row) for row in tableDict]
 
 
-MARKDOWN_CHARS = r"\`*_{}[]()#+-!"
+MARKDOWN_CHARS = r"\`*_{}[]()#+-!|"
 
 
 def stringEscapeMD(st, minimal_escaping=False, escape_multiline=False):
@@ -1593,7 +2396,7 @@ def stringEscapeMD(st, minimal_escaping=False, escape_multiline=False):
         st = st.replace('\n', '<br>')  # Unix
 
     if minimal_escaping:
-        for c in '|':
+        for c in ('|', '`'):
             st = st.replace(c, '\\' + c)
     else:
         st = "".join(["\\" + str(c) if c in MARKDOWN_CHARS else str(c) for c in st])
@@ -1891,7 +2694,16 @@ def get_integration_name():
     :return: Calling integration's name
     :rtype: ``str``
     """
-    return demisto.callingContext.get('IntegrationBrand')
+    return demisto.callingContext.get('context', {}).get('IntegrationBrand', '')
+
+
+def get_script_name():
+    """
+    Getting calling script name
+    :return: Calling script name
+    :rtype: ``str``
+    """
+    return demisto.callingContext.get('context', {}).get('ScriptName', '')
 
 
 class Common(object):
@@ -1904,6 +2716,19 @@ class Common(object):
         def to_context(self):
             pass
 
+        @staticmethod
+        def create_context_table(data):
+            """
+            Gets a list of items of a specific class (such as CommunityNotes, Publications etc) and returns a context
+            list.
+            """
+            table = []
+
+            for item in data:
+                table.append(item.to_context())
+
+            return table
+
     class DBotScore(object):
         """
         DBotScore class
@@ -1915,13 +2740,20 @@ class Common(object):
         :param indicator_type: use DBotScoreType class
 
         :type integration_name: ``str``
-        :param integration_name: integration name
+        :param integration_name: For integrations - The class will automatically determine the integration name.
+                                For scripts - The class will use the given integration name.
 
         :type score: ``DBotScore``
         :param score: DBotScore.NONE, DBotScore.GOOD, DBotScore.SUSPICIOUS, DBotScore.BAD
 
         :type malicious_description: ``str``
         :param malicious_description: if the indicator is malicious and have explanation for it then set it to this field
+
+        :type reliability: ``DBotScoreReliability``
+        :param reliability: use DBotScoreReliability class
+
+        :type message: ``str``
+        :param message: Used to message on the api response, for example: When return api response is "Not found".
 
         :return: None
         :rtype: ``None``
@@ -1936,19 +2768,30 @@ class Common(object):
 
         CONTEXT_PATH_PRIOR_V5_5 = 'DBotScore'
 
-        def __init__(self, indicator, indicator_type, integration_name, score, malicious_description=None):
+        def __init__(self, indicator, indicator_type, integration_name='', score=None, malicious_description=None,
+                     reliability=None, message=None):
 
             if not DBotScoreType.is_valid_type(indicator_type):
                 raise TypeError('indicator_type must be of type DBotScoreType enum')
 
             if not Common.DBotScore.is_valid_score(score):
-                raise TypeError('indicator_type must be of type DBotScore enum')
+                raise TypeError('indicator `score` must be of type DBotScore enum')
+
+            if reliability and not DBotScoreReliability.is_valid_type(reliability):
+                raise TypeError('reliability must be of type DBotScoreReliability enum')
 
             self.indicator = indicator
             self.indicator_type = indicator_type
-            self.integration_name = integration_name or get_integration_name()
+            # For integrations - The class will automatically determine the integration name.
+            if demisto.callingContext.get('integration'):
+                context_integration_name = get_integration_name()
+                self.integration_name = context_integration_name if context_integration_name else integration_name
+            else:
+                self.integration_name = integration_name
             self.score = score
             self.malicious_description = malicious_description
+            self.reliability = reliability
+            self.message = message
 
         @staticmethod
         def is_valid_score(score):
@@ -1967,24 +2810,150 @@ class Common(object):
                 return Common.DBotScore.CONTEXT_PATH_PRIOR_V5_5
 
         def to_context(self):
-            return {
-                Common.DBotScore.get_context_path(): {
-                    'Indicator': self.indicator,
-                    'Type': self.indicator_type,
-                    'Vendor': self.integration_name,
-                    'Score': self.score
-                }
+            dbot_context = {
+                'Indicator': self.indicator,
+                'Type': self.indicator_type,
+                'Vendor': self.integration_name,
+                'Score': self.score
             }
+
+            if self.reliability:
+                dbot_context['Reliability'] = self.reliability
+
+            if self.message:
+                dbot_context['Message'] = self.message
+
+            ret_value = {
+                Common.DBotScore.get_context_path(): dbot_context
+            }
+            return ret_value
+
+        def to_readable(self):
+            dbot_score_to_text = {0: 'Unknown',
+                                  1: 'Good',
+                                  2: 'Suspicious',
+                                  3: 'Bad'}
+            return dbot_score_to_text.get(self.score, 'Undefined')
+
+    class CustomIndicator(Indicator):
+
+        def __init__(self, indicator_type, value, dbot_score, data, context_prefix):
+            """
+            :type indicator_type: ``Str``
+            :param indicator_type: The name of the indicator type.
+
+            :type value: ``Any``
+            :param value: The value of the indicator.
+
+            :type dbot_score: ``DBotScore``
+            :param dbot_score: If custom indicator has a score then create and set a DBotScore object.
+
+            :type data: ``Dict(Str,Any)``
+            :param data: A dictionary containing all the param names and their values.
+
+            :type context_prefix: ``Str``
+            :param context_prefix: Will be used as the context path prefix.
+
+            :return: None
+            :rtype: ``None``
+            """
+            if hasattr(DBotScoreType, indicator_type.upper()):
+                raise ValueError('Creating a custom indicator type with an existing type name is not allowed')
+            if not value:
+                raise ValueError('value is mandatory for creating the indicator')
+            if not context_prefix:
+                raise ValueError('context_prefix is mandatory for creating the indicator')
+
+            self.CONTEXT_PATH = '{context_prefix}(val.value && val.value == obj.value)'.\
+                format(context_prefix=context_prefix)
+
+            self.value = value
+
+            if not isinstance(dbot_score, Common.DBotScore):
+                raise ValueError('dbot_score must be of type DBotScore')
+
+            self.dbot_score = dbot_score
+            self.indicator_type = indicator_type
+            self.data = data
+            INDICATOR_TYPE_TO_CONTEXT_KEY[indicator_type.lower()] = indicator_type.capitalize()
+
+            for key in self.data:
+                setattr(self, key, data[key])
+
+        def to_context(self):
+            custom_context = {
+                'value': self.value
+            }
+
+            custom_context.update(self.data)
+
+            ret_value = {
+                self.CONTEXT_PATH: custom_context
+            }
+
+            if self.dbot_score:
+                ret_value.update(self.dbot_score.to_context())
+            ret_value[Common.DBotScore.get_context_path()]['Type'] = self.indicator_type
+
+            return ret_value
 
     class IP(Indicator):
         """
-        IP indicator class - https://xsoar.pan.dev/docs/context-standards#ip
+        IP indicator class - https://xsoar.pan.dev/docs/integrations/context-standards-mandatory#ip
 
         :type ip: ``str``
         :param ip: IP address
 
         :type asn: ``str``
         :param asn: The autonomous system name for the IP address, for example: "AS8948".
+
+        :type as_owner: ``str``
+        :param as_owner: The autonomous system owner of the IP.
+
+        :type region: ``str``
+        :param region: The region in which the IP is located.
+
+        :type port: ``str``
+        :param port: Ports that are associated with the IP.
+
+        :type internal: ``bool``
+        :param internal: Whether or not the IP is internal or external.
+
+        :type updated_date: ``date``
+        :param updated_date: The date that the IP was last updated.
+
+        :type registrar_abuse_name: ``str``
+        :param registrar_abuse_name: The name of the contact for reporting abuse.
+
+        :type registrar_abuse_address: ``str``
+        :param registrar_abuse_address: The address of the contact for reporting abuse.
+
+        :type registrar_abuse_country: ``str``
+        :param registrar_abuse_country: The country of the contact for reporting abuse.
+
+        :type registrar_abuse_network: ``str``
+        :param registrar_abuse_network: The network of the contact for reporting abuse.
+
+        :type registrar_abuse_phone: ``str``
+        :param registrar_abuse_phone: The phone number of the contact for reporting abuse.
+
+        :type registrar_abuse_email: ``str``
+        :param registrar_abuse_email: The email address of the contact for reporting abuse.
+
+        :type campaign: ``str``
+        :param campaign: The campaign associated with the IP.
+
+        :type traffic_light_protocol: ``str``
+        :param traffic_light_protocol: The Traffic Light Protocol (TLP) color that is suitable for the IP.
+
+        :type community_notes: ``CommunityNotes``
+        :param community_notes: Notes on the IP that were given by the community.
+
+        :type publications: ``Publications``
+        :param publications: Publications on the ip that was published.
+
+        :type threat_types: ``ThreatTypes``
+        :param threat_types: Threat types that are associated with the file.
 
         :type hostname: ``str``
         :param hostname: The hostname that is mapped to this IP address.
@@ -2007,25 +2976,96 @@ class Common(object):
         :type positive_engines: ``int``
         :param positive_engines: The number of engines that positively detected the indicator as malicious.
 
+        :type organization_name: ``str``
+        :param organization_name: The organization of the IP
+
+        :type organization_type: ``str``
+        :param organization_type:The organization type of the IP
+
+        :type tags: ``str``
+        :param tags: Tags of the IP.
+
+        :type malware_family: ``str``
+        :param malware_family: The malware family associated with the IP.
+
+        :type feed_related_indicators: ``FeedRelatedIndicators``
+        :param feed_related_indicators: List of indicators that are associated with the IP.
+
+        :type relationships: ``list of EntityRelationship``
+        :param relationships: List of relationships of the indicator.
+
+        :type blocked: ``boolean``
+        :param blocked: Is the indicator blocked.
+
+        :type description: ``str``
+        :param description: A general description of the indicator
+
+        :type stix_id: ``str``
+        :param stix_id: The STIX id representing the indicator
+
+        :type whois_records: ``WhoisRecord``
+        :param whois_records: List of whois records
+
         :type dbot_score: ``DBotScore``
         :param dbot_score: If IP has a score then create and set a DBotScore object.
 
         :return: None
         :rtype: ``None``
         """
+
         CONTEXT_PATH = 'IP(val.Address && val.Address == obj.Address)'
 
-        def __init__(self, ip, dbot_score, asn=None, hostname=None, geo_latitude=None, geo_longitude=None,
-                     geo_country=None, geo_description=None, detection_engines=None, positive_engines=None):
+        def __init__(self, ip, dbot_score, asn=None, as_owner=None, region=None, port=None, internal=None,
+                     updated_date=None, registrar_abuse_name=None, registrar_abuse_address=None,
+                     registrar_abuse_country=None, registrar_abuse_network=None, registrar_abuse_phone=None,
+                     registrar_abuse_email=None, campaign=None, traffic_light_protocol=None,
+                     community_notes=None, publications=None, threat_types=None,
+                     hostname=None, geo_latitude=None, geo_longitude=None,
+                     geo_country=None, geo_description=None, detection_engines=None, positive_engines=None,
+                     organization_name=None, organization_type=None, feed_related_indicators=None, tags=None,
+                     malware_family=None, relationships=None, blocked=None, description=None, stix_id=None,
+                     whois_records=None):
+
+            # Main value of the indicator
             self.ip = ip
-            self.asn = asn
-            self.hostname = hostname
+
+            # Core custom fields - IP
+            self.blocked = blocked
+            self.community_notes = community_notes
+            self.description = description
+            self.tags = tags
+            self.geo_country = geo_country
             self.geo_latitude = geo_latitude
             self.geo_longitude = geo_longitude
-            self.geo_country = geo_country
+            self.internal = internal
+            self.stix_id = stix_id
+            self.traffic_light_protocol = traffic_light_protocol
+            self.whois_records = whois_records
+
+            # Other custom fields
+            self.asn = asn
+            self.as_owner = as_owner
+            self.region = region
+            self.port = port
+            self.updated_date = updated_date
+            self.registrar_abuse_name = registrar_abuse_name
+            self.registrar_abuse_address = registrar_abuse_address
+            self.registrar_abuse_country = registrar_abuse_country
+            self.registrar_abuse_network = registrar_abuse_network
+            self.registrar_abuse_phone = registrar_abuse_phone
+            self.registrar_abuse_email = registrar_abuse_email
+            self.campaign = campaign
+            self.publications = publications
+            self.threat_types = threat_types
+            self.hostname = hostname
             self.geo_description = geo_description
             self.detection_engines = detection_engines
             self.positive_engines = positive_engines
+            self.organization_name = organization_name
+            self.organization_type = organization_type
+            self.feed_related_indicators = feed_related_indicators
+            self.malware_family = malware_family
+            self.relationships = relationships
 
             if not isinstance(dbot_score, Common.DBotScore):
                 raise ValueError('dbot_score must be of type DBotScore')
@@ -2037,8 +3077,66 @@ class Common(object):
                 'Address': self.ip
             }
 
+            if self.blocked:
+                ip_context['Blocked'] = self.blocked
+
             if self.asn:
                 ip_context['ASN'] = self.asn
+
+            if self.as_owner:
+                ip_context['ASOwner'] = self.as_owner
+
+            if self.region:
+                ip_context['Region'] = self.region
+
+            if self.port:
+                ip_context['Port'] = self.port
+
+            if self.internal:
+                ip_context['Internal'] = self.internal
+
+            if self.stix_id:
+                ip_context['STIXID'] = self.stix_id
+
+            if self.updated_date:
+                ip_context['UpdatedDate'] = self.updated_date
+
+            if self.registrar_abuse_name or self.registrar_abuse_address or self.registrar_abuse_country or \
+                    self.registrar_abuse_network or self.registrar_abuse_phone or self.registrar_abuse_email:
+                ip_context['Registrar'] = {'Abuse': {}}
+                if self.registrar_abuse_name:
+                    ip_context['Registrar']['Abuse']['Name'] = self.registrar_abuse_name
+                if self.registrar_abuse_address:
+                    ip_context['Registrar']['Abuse']['Address'] = self.registrar_abuse_address
+                if self.registrar_abuse_country:
+                    ip_context['Registrar']['Abuse']['Country'] = self.registrar_abuse_country
+                if self.registrar_abuse_network:
+                    ip_context['Registrar']['Abuse']['Network'] = self.registrar_abuse_network
+                if self.registrar_abuse_phone:
+                    ip_context['Registrar']['Abuse']['Phone'] = self.registrar_abuse_phone
+                if self.registrar_abuse_email:
+                    ip_context['Registrar']['Abuse']['Email'] = self.registrar_abuse_email
+
+            if self.campaign:
+                ip_context['Campaign'] = self.campaign
+
+            if self.description:
+                ip_context['Description'] = self.description
+
+            if self.traffic_light_protocol:
+                ip_context['TrafficLightProtocol'] = self.traffic_light_protocol
+
+            if self.community_notes:
+                ip_context['CommunityNotes'] = self.create_context_table(self.community_notes)
+
+            if self.publications:
+                ip_context['Publications'] = self.create_context_table(self.publications)
+
+            if self.threat_types:
+                ip_context['ThreatTypes'] = self.create_context_table(self.threat_types)
+
+            if self.whois_records:
+                ip_context['WhoisRecords'] = self.create_context_table(self.whois_records)
 
             if self.hostname:
                 ip_context['Hostname'] = self.hostname
@@ -2055,17 +3153,40 @@ class Common(object):
                 if self.geo_description:
                     ip_context['Geo']['Description'] = self.geo_description
 
-            if self.detection_engines:
+            if self.organization_name or self.organization_type:
+                ip_context['Organization'] = {}
+
+                if self.organization_name:
+                    ip_context['Organization']['Name'] = self.organization_name
+
+                if self.organization_type:
+                    ip_context['Organization']['Type'] = self.organization_type
+
+            if self.detection_engines is not None:
                 ip_context['DetectionEngines'] = self.detection_engines
 
-            if self.positive_engines:
+            if self.positive_engines is not None:
                 ip_context['PositiveDetections'] = self.positive_engines
+
+            if self.feed_related_indicators:
+                ip_context['FeedRelatedIndicators'] = self.create_context_table(self.feed_related_indicators)
+
+            if self.tags:
+                ip_context['Tags'] = self.tags
+
+            if self.malware_family:
+                ip_context['MalwareFamily'] = self.malware_family
 
             if self.dbot_score and self.dbot_score.score == Common.DBotScore.BAD:
                 ip_context['Malicious'] = {
                     'Vendor': self.dbot_score.integration_name,
                     'Description': self.dbot_score.malicious_description
                 }
+
+            if self.relationships:
+                relationships_context = [relationship.to_context() for relationship in self.relationships if
+                                         relationship.to_context()]
+                ip_context['Relationships'] = relationships_context
 
             ret_value = {
                 Common.IP.CONTEXT_PATH: ip_context
@@ -2113,9 +3234,298 @@ class Common(object):
                 'OriginalName': self.original_name,
             }
 
+    class FeedRelatedIndicators(object):
+        """
+        FeedRelatedIndicators class
+         Implements Subject Indicators that are associated with Another indicator
+
+        :type value: ``str``
+        :param value: Indicators that are associated with the indicator.
+
+        :type indicator_type: ``str``
+        :param indicator_type: The type of the indicators that are associated with the indicator.
+
+        :type description: ``str``
+        :param description: The description of the indicators that are associated with the indicator.
+
+        :return: None
+        :rtype: ``None``
+        """
+
+        def __init__(self, value=None, indicator_type=None, description=None):
+            self.value = value
+            self.indicator_type = indicator_type
+            self.description = description
+
+        def to_context(self):
+            return {
+                'value': self.value,
+                'type': self.indicator_type,
+                'description': self.description
+            }
+
+    class ExternalReference(object):
+        """
+        ExternalReference class
+        Class to represent a single instance of an external reference for an indicator type.
+
+        :type source_name: ``str``
+        :param source_name: The name of the source referenced.
+
+        :type source_id: ``str``
+        :param source_id: The ID of the object in the external source.
+
+        :return: None
+        :rtype: ``None``
+        """
+
+        def __init__(self, source_name=None, source_id=None):
+            self.source_name = source_name
+            self.source_id = source_id
+
+        def to_context(self):
+            return {
+                'sourcename': self.source_name,
+                'sourceid': self.source_id,
+            }
+
+    class Certificates(object):
+        """
+        Certificates class
+        Class to represent a single instance of a certificate for an indicator type.
+
+        :type issued_to: ``str``
+        :param issued_to: Who was the certificated issued to
+
+        :type issued_by: ``str``
+        :param issued_by: Who issued the certificate
+
+        :type valid_from: ``str``
+        :param valid_from: Since when is the certificate valid
+
+        :type valid_to: ``str``
+        :param valid_to: Till when is the certificate valid
+
+        :return: None
+        :rtype: ``None``
+        """
+
+        def __init__(self, issued_to=None, issued_by=None, valid_from=None, valid_to=None):
+            self.issued_to = issued_to
+            self.issued_by = issued_by
+            self.valid_from = valid_from
+            self.valid_to = valid_to
+
+        def to_context(self):
+            return {
+                'issuedto': self.issued_to,
+                'issuedby': self.issued_by,
+                'validfrom': self.valid_from,
+                'validto': self.valid_to
+            }
+
+    class Hash(object):
+        """
+        Hash class
+        Class to represent a single instance of a hash for an indicator type.
+
+        :type hash_type: ``str``
+        :param hash_type: The type of the hash.
+
+        :type hash_value: ``str``
+        :param hash_value: The value of the hash.
+
+        :return: None
+        :rtype: ``None``
+        """
+
+        def __init__(self, hash_type=None, hash_value=None):
+            self.hash_type = hash_type
+            self.hash_value = hash_value
+
+        def to_context(self):
+            return {
+                'type': self.hash_type,
+                'value': self.hash_value,
+            }
+
+    class CommunityNotes(object):
+        """
+        CommunityNotes class
+         Implements Subject Community Notes of a indicator
+
+        :type note: ``str``
+        :param note: Notes on the indicator that were given by the community.
+
+        :type timestamp: ``Timestamp``
+        :param timestamp: The time in which the note was published.
+
+        :return: None
+        :rtype: ``None``
+        """
+
+        def __init__(self, note=None, timestamp=None):
+            self.note = note
+            self.timestamp = timestamp
+
+        def to_context(self):
+            return {
+                'note': self.note,
+                'timestamp': self.timestamp,
+            }
+
+    class Publications(object):
+        """
+        Publications class
+         Implements Subject Publications of a indicator
+
+        :type source: ``str``
+        :param source: The source in which the article was published.
+
+        :type title: ``str``
+        :param title: The name of the article.
+
+        :type link: ``str``
+        :param link: A link to the original article.
+
+        :type timestamp: ``Timestamp``
+        :param timestamp: The time in which the article was published.
+
+        :return: None
+        :rtype: ``None``
+        """
+
+        def __init__(self, source=None, title=None, link=None, timestamp=None):
+            self.source = source
+            self.title = title
+            self.link = link
+            self.timestamp = timestamp
+
+        def to_context(self):
+            return {
+                'source': self.source,
+                'title': self.title,
+                'link': self.link,
+                'timestamp': self.timestamp,
+            }
+
+    class Behaviors(object):
+        """
+        Behaviors class
+         Implements Subject Behaviors of a indicator
+
+        :type details: ``str``
+        :param details:
+
+        :type action: ``str``
+        :param action:
+
+        :return: None
+        :rtype: ``None``
+        """
+
+        def __init__(self, details=None, action=None):
+            self.details = details
+            self.action = action
+
+        def to_context(self):
+            return {
+                'details': self.details,
+                'title': self.action,
+            }
+
+    class ThreatTypes(object):
+        """
+        ThreatTypes class
+         Implements Subject ThreatTypes of a indicator
+
+        :type threat_category: ``str``
+        :param threat_category: The threat category associated to this indicator by the source vendor. For example,
+         Phishing, Control, TOR, etc.
+
+        :type threat_category_confidence: ``str``
+        :param threat_category_confidence: Threat Category Confidence is the confidence level provided by the vendor
+         for the threat type category
+         For example a confidence of 90 for threat type category "malware" means that the vendor rates that this
+         is 90% confidence of being a malware.
+
+        :return: None
+        :rtype: ``None``
+        """
+
+        def __init__(self, threat_category=None, threat_category_confidence=None):
+            self.threat_category = threat_category
+            self.threat_category_confidence = threat_category_confidence
+
+        def to_context(self):
+            return {
+                'threatcategory': self.threat_category,
+                'threatcategoryconfidence': self.threat_category_confidence,
+            }
+
+    class WhoisRecord(object):
+        """
+        WhoisRecord class
+        Class to represent a single instance of a record for an indicator type.
+
+        :type whois_record_type: ``str``
+        :param whois_record_type: The type of the whois record.
+
+        :type whois_record_value: ``str``
+        :param whois_record_value: The value of the whois record.
+
+        :type whois_record_date: ``Timestamp``
+        :param whois_record_date: when was the whois record fetched
+
+        :return: None
+        :rtype: ``None``
+        """
+
+        def __init__(self, whois_record_type=None, whois_record_value=None, whois_record_date=None):
+            self.whois_record_type = whois_record_type
+            self.whois_record_value = whois_record_value
+            self.whois_record_date = whois_record_date
+
+        def to_context(self):
+            return {
+                'key': self.whois_record_type,
+                'value': self.whois_record_value,
+                'date': self.whois_record_date
+            }
+
+    class DNSRecord(object):
+        """
+        DNSRecord class
+        Class to represent a single instance of a record for an indicator type.
+
+        :type dns_record_type: ``str``
+        :param dns_record_type: The type of the DNS record.
+
+        :type dns_record_data: ``str``
+        :param dns_record_data: The value of the whois record.
+
+        :type dns_ttl: ``str``
+        :param dns_ttl: The record TTL
+
+        :return: None
+        :rtype: ``None``
+        """
+
+        def __init__(self, dns_record_type=None, dns_ttl=None, dns_record_data=None):
+            self.dns_record_type = dns_record_type
+            self.dns_ttl = dns_ttl
+            self.dns_record_data = dns_record_data
+
+        def to_context(self):
+            return {
+                'type': self.dns_record_type,
+                'ttl': self.dns_ttl,
+                'data': self.dns_record_data
+            }
+
     class File(Indicator):
         """
-        File indicator class - https://xsoar.pan.dev/docs/context-standards#file
+        File indicator class - https://xsoar.pan.dev/docs/integrations/context-standards-mandatory#file
         :type name: ``str``
         :param name: The full file name (including file extension).
 
@@ -2170,8 +3580,59 @@ class Common(object):
         :type tags: ``str``
         :param tags: Tags of the file.
 
+        :type feed_related_indicators: ``FeedRelatedIndicators``
+        :param feed_related_indicators: List of indicators that are associated with the file.
+
+        :type malware_family: ``str``
+        :param malware_family: The malware family associated with the File.
+
+        :type campaign: ``str``
+        :param campaign:
+
+        :type traffic_light_protocol: ``str``
+        :param traffic_light_protocol:
+
+        :type community_notes: ``CommunityNotes``
+        :param community_notes:  Notes on the file that were given by the community.
+
+        :type publications: ``Publications``
+        :param publications: Publications on the file that was published.
+
+        :type threat_types: ``ThreatTypes``
+        :param threat_types: Threat types that are associated with the file.
+
+        :type imphash: ``str``
+        :param imphash: The Imphash hash of the file.
+
+        :type quarantined: ``bool``
+        :param quarantined: Is the file quarantined or not.
+
+        :type organization: ``str``
+        :param organization: The organization of the file.
+
+        :type associated_file_names: ``str``
+        :param associated_file_names: File names that are known as associated to the file.
+
+        :type behaviors: ``Behaviors``
+        :param behaviors: list of behaviors associated with the file.
+
+        :type relationships: ``list of EntityRelationship``
+        :param relationships: List of relationships of the indicator.
+
         :type dbot_score: ``DBotScore``
         :param dbot_score: If file has a score then create and set a DBotScore object
+
+        :type creation_date: ``str``
+        :param creation_date: The date the file was created.
+
+        :type description: ``str``
+        :param description: File description.
+
+        :type hashes: ``Hash``
+        :param hashes: List of hashes associated with the file.
+
+        :type stix_id: ``str``
+        :param stix_id: File assigned STIX ID.
 
         :rtype: ``None``
         :return: None
@@ -2183,76 +3644,176 @@ class Common(object):
 
         def __init__(self, dbot_score, name=None, entry_id=None, size=None, md5=None, sha1=None, sha256=None,
                      sha512=None, ssdeep=None, extension=None, file_type=None, hostname=None, path=None, company=None,
-                     product_name=None, digital_signature__publisher=None, signature=None, actor=None, tags=None):
+                     product_name=None, digital_signature__publisher=None, signature=None, actor=None, tags=None,
+                     feed_related_indicators=None, malware_family=None, imphash=None, quarantined=None, campaign=None,
+                     associated_file_names=None, traffic_light_protocol=None, organization=None, community_notes=None,
+                     publications=None, threat_types=None, behaviors=None, relationships=None,
+                     creation_date=None, description=None, hashes=None, stix_id=None):
 
-            self.name = name
-            self.entry_id = entry_id
-            self.size = size
+            # Main value of a file (Hashes)
             self.md5 = md5
+            self.imphash = imphash
             self.sha1 = sha1
             self.sha256 = sha256
             self.sha512 = sha512
             self.ssdeep = ssdeep
+            self.hashes = hashes
+
+            # Core custom fields for File type
+            self.associated_file_names = associated_file_names
+            self.community_notes = community_notes
+            self.creation_date = creation_date
+            self.description = description
             self.extension = extension
             self.file_type = file_type
-            self.hostname = hostname
             self.path = path
+            self.quarantined = quarantined
+            self.size = size
+            self.stix_id = stix_id
+            self.tags = tags
+            self.traffic_light_protocol = traffic_light_protocol
+
+            # Other custom fields
+            self.name = name
+            self.entry_id = entry_id
+            self.hostname = hostname
             self.company = company
             self.product_name = product_name
             self.digital_signature__publisher = digital_signature__publisher
             self.signature = signature
             self.actor = actor
-            self.tags = tags
+            self.organization = organization
+            self.feed_related_indicators = feed_related_indicators
+            self.malware_family = malware_family
+            self.campaign = campaign
+            self.publications = publications
+            self.threat_types = threat_types
+            self.behaviors = behaviors
 
+            # XSOAR Fields
+            self.relationships = relationships
             self.dbot_score = dbot_score
 
         def to_context(self):
-            file_context = {}
+            file_context = {'Hashes': []}  # type: dict
 
             if self.name:
                 file_context['Name'] = self.name
+
+            if self.hashes:
+                file_context['Hashes'] = self.create_context_table(self.hashes)
+
             if self.entry_id:
                 file_context['EntryID'] = self.entry_id
+
             if self.size:
                 file_context['Size'] = self.size
+
             if self.md5:
                 file_context['MD5'] = self.md5
+                file_context['Hashes'].append({'type': 'MD5',
+                                               'value': self.md5})
+
             if self.sha1:
                 file_context['SHA1'] = self.sha1
+                file_context['Hashes'].append({'type': 'SHA1',
+                                               'value': self.sha1})
+
             if self.sha256:
                 file_context['SHA256'] = self.sha256
+                file_context['Hashes'].append({'type': 'SHA256',
+                                               'value': self.sha256})
+
             if self.sha512:
                 file_context['SHA512'] = self.sha512
+                file_context['Hashes'].append({'type': 'SHA512',
+                                               'value': self.sha512})
+
             if self.ssdeep:
                 file_context['SSDeep'] = self.ssdeep
+                file_context['Hashes'].append({'type': 'SSDeep',
+                                               'value': self.ssdeep})
+
             if self.extension:
                 file_context['Extension'] = self.extension
+
             if self.file_type:
                 file_context['Type'] = self.file_type
+
             if self.hostname:
                 file_context['Hostname'] = self.hostname
+
             if self.path:
                 file_context['Path'] = self.path
+
             if self.company:
                 file_context['Company'] = self.company
+
             if self.product_name:
                 file_context['ProductName'] = self.product_name
+
             if self.digital_signature__publisher:
                 file_context['DigitalSignature'] = {
                     'Published': self.digital_signature__publisher
                 }
+
             if self.signature:
                 file_context['Signature'] = self.signature.to_context()
+
             if self.actor:
                 file_context['Actor'] = self.actor
+
             if self.tags:
                 file_context['Tags'] = self.tags
+
+            if self.feed_related_indicators:
+                file_context['FeedRelatedIndicators'] = self.create_context_table(self.feed_related_indicators)
+
+            if self.malware_family:
+                file_context['MalwareFamily'] = self.malware_family
+
+            if self.campaign:
+                file_context['Campaign'] = self.campaign
+
+            if self.traffic_light_protocol:
+                file_context['TrafficLightProtocol'] = self.traffic_light_protocol
+
+            if self.community_notes:
+                file_context['CommunityNotes'] = self.create_context_table(self.community_notes)
+
+            if self.publications:
+                file_context['Publications'] = self.create_context_table(self.publications)
+
+            if self.threat_types:
+                file_context['ThreatTypes'] = self.create_context_table(self.threat_types)
+
+            if self.imphash:
+                file_context['Imphash'] = self.imphash
+                file_context['Hashes'].append({'type': 'Imphash',
+                                               'value': self.imphash})
+
+            if self.quarantined:
+                file_context['Quarantined'] = self.quarantined
+
+            if self.organization:
+                file_context['Organization'] = self.organization
+
+            if self.associated_file_names:
+                file_context['AssociatedFileNames'] = self.associated_file_names
+
+            if self.behaviors:
+                file_context['Behavior'] = self.create_context_table(self.behaviors)
 
             if self.dbot_score and self.dbot_score.score == Common.DBotScore.BAD:
                 file_context['Malicious'] = {
                     'Vendor': self.dbot_score.integration_name,
                     'Description': self.dbot_score.malicious_description
                 }
+
+            if self.relationships:
+                relationships_context = [relationship.to_context() for relationship in self.relationships if
+                                         relationship.to_context()]
+                file_context['Relationships'] = relationships_context
 
             ret_value = {
                 Common.File.CONTEXT_PATH: file_context
@@ -2265,30 +3826,78 @@ class Common(object):
 
     class CVE(Indicator):
         """
-        CVE indicator class - https://xsoar.pan.dev/docs/context-standards#cve
+        CVE indicator class - https://xsoar.pan.dev/docs/integrations/context-standards-mandatory#cve
         :type id: ``str``
         :param id: The ID of the CVE, for example: "CVE-2015-1653".
+
         :type cvss: ``str``
         :param cvss: The CVSS of the CVE, for example: "10.0".
+
         :type published: ``str``
         :param published: The timestamp of when the CVE was published.
+
         :type modified: ``str``
         :param modified: The timestamp of when the CVE was last modified.
+
         :type description: ``str``
         :param description: A description of the CVE.
+
+        :type relationships: ``list of EntityRelationship``
+        :param relationships: List of relationships of the indicator.
+
+        :type stix_id: ``str``
+        :param stix_id: CVE sitx id.
+
+        :type cvss_version: ``str``
+        :param cvss_version: The CVE CVSS version used.
+
+        :type cvss_score: ``str``
+        :param cvss_score: The CVE CVSS Score.
+
+        :type cvss_vector: ``str``
+        :param cvss_vector: CVE full cvss vector.
+
+        :type cvss_table: ``str``
+        :param cvss_table: CVE CVSS Table used to fill the different parts of the vector.
+
+        :type community_notes: ``str``
+        :param community_notes: Community notes about the CVE.
+
+        :type tags: ``str``
+        :param tags: Tags attached to the CVE.
+
+        :type traffic_light_protocol: ``str``
+        :param traffic_light_protocol: The CVE tlp color.
+
         :return: None
         :rtype: ``None``
         """
         CONTEXT_PATH = 'CVE(val.ID && val.ID == obj.ID)'
 
-        def __init__(self, id, cvss, published, modified, description):
+        def __init__(self, id, cvss, published, modified, description, relationships=None, stix_id=None,
+                     cvss_version=None, cvss_score=None, cvss_vector=None, cvss_table=None, community_notes=None,
+                     tags=None, traffic_light_protocol=None):
             # type (str, str, str, str, str) -> None
 
+            # Main indicator value
             self.id = id
+
+            # Core custom fields
+            self.community_notes = community_notes
             self.cvss = cvss
-            self.published = published
-            self.modified = modified
+            self.cvss_version = cvss_version
+            self.cvss_score = cvss_score
+            self.cvss_vector = cvss_vector
+            self.cvss_table = cvss_table
             self.description = description
+            self.modified = modified
+            self.published = published
+            self.stix_id = stix_id
+            self.tags = tags
+            self.traffic_light_protocol = traffic_light_protocol
+
+            # XSOAR Fields
+            self.relationships = relationships
             self.dbot_score = Common.DBotScore(
                 indicator=id,
                 indicator_type=DBotScoreType.CVE,
@@ -2298,11 +3907,24 @@ class Common(object):
 
         def to_context(self):
             cve_context = {
-                'ID': self.id
+                'ID': self.id,
+                'CVSS': {},
             }
 
             if self.cvss:
-                cve_context['CVSS'] = self.cvss
+                cve_context['CVSS']['Score'] = self.cvss
+
+            elif self.cvss_score:
+                cve_context['CVSS']['Score'] = self.cvss_score
+
+            if self.cvss_version:
+                cve_context['CVSS']['Version'] = self.cvss_version
+
+            if self.cvss_vector:
+                cve_context['CVSS']['Vector'] = self.cvss_vector
+
+            if self.cvss_table:
+                cve_context['CVSS']['Table'] = self.cvss_table
 
             if self.published:
                 cve_context['Published'] = self.published
@@ -2313,6 +3935,23 @@ class Common(object):
             if self.description:
                 cve_context['Description'] = self.description
 
+            if self.stix_id:
+                cve_context['STIXID'] = self.stix_id
+
+            if self.relationships:
+                relationships_context = [relationship.to_context() for relationship in self.relationships if
+                                         relationship.to_context()]
+                cve_context['Relationships'] = relationships_context
+
+            if self.community_notes:
+                cve_context['CommunityNotes'] = self.create_context_table(self.community_notes)
+
+            if self.tags:
+                cve_context['Tags'] = self.tags
+
+            if self.traffic_light_protocol:
+                cve_context['TrafficLightProtocol'] = self.traffic_light_protocol
+
             ret_value = {
                 Common.CVE.CONTEXT_PATH: cve_context
             }
@@ -2322,9 +3961,105 @@ class Common(object):
 
             return ret_value
 
+    class EMAIL(Indicator):
+        """
+        EMAIL indicator class
+
+        :type address ``str``
+        :param address: The email's address.
+
+        :type domain: ``str``
+        :param domain: The domain of the Email.
+
+        :type blocked: ``bool``
+        :param blocked: Whether the email address is blocked.
+
+        :type relationships: ``list of EntityRelationship``
+        :param relationships: List of relationships of the indicator.
+
+        :type description: ``str``
+        :param description: Description of the email address.
+
+        :type internal: ``bool``
+        :param internal: Is the email an internal address.
+
+        :type stix_id: ``str``
+        :param stix_id: The email assigned STIX ID.
+
+        :type tags: ``str``
+        :param tags: tags relevant to the email.
+
+        :type traffic_light_protocol: ``str``
+        :param traffic_light_protocol: The email address tlp color.
+
+        :return: None
+        :rtype: ``None``
+        """
+        CONTEXT_PATH = 'Email(val.Address && val.Address == obj.Address)'
+
+        def __init__(self, address, dbot_score, domain=None, blocked=None, relationships=None, description=None,
+                     internal=None, stix_id=None, tags=None, traffic_light_protocol=None):
+            # type (str, str, bool) -> None
+
+            # Main indicator value
+            self.address = address
+
+            # Core custom fields
+            self.blocked = blocked
+            self.description = description
+            self.internal = internal
+            self.stix_id = stix_id
+            self.tags = tags
+            self.traffic_light_protocol = traffic_light_protocol
+
+            # Deprecated
+            self.domain = domain
+
+            # XSOAR Fields
+            self.dbot_score = dbot_score
+            self.relationships = relationships
+
+        def to_context(self):
+            email_context = {
+                'Address': self.address
+            }
+
+            if self.blocked:
+                email_context['Blocked'] = self.blocked
+
+            if self.domain:
+                email_context['Domain'] = self.domain
+
+            if self.description:
+                email_context['Description'] = self.description
+
+            if self.internal:
+                email_context['Internal'] = self.internal
+
+            if self.stix_id:
+                email_context['STIXID'] = self.stix_id
+
+            if self.tags:
+                email_context['Tags'] = self.tags
+
+            if self.traffic_light_protocol:
+                email_context['TrafficLightProtocol'] = self.traffic_light_protocol
+
+            if self.relationships:
+                relationships_context = [relationship.to_context() for relationship in self.relationships if
+                                         relationship.to_context()]
+                email_context['Relationships'] = relationships_context
+
+            ret_value = {
+                Common.EMAIL.CONTEXT_PATH: email_context
+            }
+            if self.dbot_score:
+                ret_value.update(self.dbot_score.to_context())
+            return ret_value
+
     class URL(Indicator):
         """
-        URL indicator - https://xsoar.pan.dev/docs/context-standards#url
+        URL indicator - https://xsoar.pan.dev/docs/integrations/context-standards-mandatory#url
         :type url: ``str``
         :param url: The URL
 
@@ -2337,20 +4072,107 @@ class Common(object):
         :type category: ``str``
         :param category: The category associated with the indicator.
 
+        :type feed_related_indicators: ``FeedRelatedIndicators``
+        :param feed_related_indicators: List of indicators that are associated with the URL.
+
+        :type malware_family: ``str``
+        :param malware_family: The malware family associated with the URL.
+
+        :type tags: ``str``
+        :param tags: Tags of the URL.
+
+        :type port: ``str``
+        :param port: Ports that are associated with the URL.
+
+        :type internal: ``bool``
+        :param internal: Whether or not the URL is internal or external.
+
+        :type campaign: ``str``
+        :param campaign: The campaign associated with the URL.
+
+        :type traffic_light_protocol: ``str``
+        :param traffic_light_protocol: The Traffic Light Protocol (TLP) color that is suitable for the URL.
+
+        :type threat_types: ``ThreatTypes``
+        :param threat_types: Threat types that are associated with the file.
+
+        :type asn: ``str``
+        :param asn: The autonomous system name for the URL, for example: 'AS8948'.
+
+        :type as_owner: ``str``
+        :param as_owner: The autonomous system owner of the URL.
+
+        :type geo_country: ``str``
+        :param geo_country: The country in which the URL is located.
+
+        :type organization: ``str``
+        :param organization: The organization of the URL.
+
+        :type community_notes: ``CommunityNotes``
+        :param community_notes:  List of notes on the URL that were given by the community.
+
+        :type publications: ``Publications``
+        :param publications: List of publications on the URL that was published.
+
+        :type relationships: ``list of EntityRelationship``
+        :param relationships: List of relationships of the indicator.
+
         :type dbot_score: ``DBotScore``
         :param dbot_score: If URL has reputation then create DBotScore object
+
+        :type blocked: ``bool``
+        :param blocked: Is the URL blocked.
+
+        :type certificates: ``Certificates``
+        :param certificates: A list of certificates associated with the url.
+
+        :type description: ``str``
+        :param description: A description of the URL.
+
+        :type stix_id: ``str``
+        :param stix_id: The URL STIX ID.
 
         :return: None
         :rtype: ``None``
         """
         CONTEXT_PATH = 'URL(val.Data && val.Data == obj.Data)'
 
-        def __init__(self, url, dbot_score, detection_engines=None, positive_detections=None, category=None):
+        def __init__(self, url, dbot_score, detection_engines=None, positive_detections=None, category=None,
+                     feed_related_indicators=None, tags=None, malware_family=None, port=None, internal=None,
+                     campaign=None, traffic_light_protocol=None, threat_types=None, asn=None, as_owner=None,
+                     geo_country=None, organization=None, community_notes=None, publications=None, relationships=None,
+                     blocked=None, certificates=None, description=None, stix_id=None):
+
+            # Main indicator value
             self.url = url
+
+            # Core custom fields
+            self.blocked = blocked
+            self.certificates = certificates
+            self.community_notes = community_notes
+            self.description = description
+            self.internal = internal
+            self.stix_id = stix_id
+            self.tags = tags
+            self.traffic_light_protocol = traffic_light_protocol
+
+            # Additional custom fields
             self.detection_engines = detection_engines
             self.positive_detections = positive_detections
             self.category = category
+            self.feed_related_indicators = feed_related_indicators
+            self.malware_family = malware_family
+            self.port = port
+            self.campaign = campaign
+            self.threat_types = threat_types
+            self.asn = asn
+            self.as_owner = as_owner
+            self.geo_country = geo_country
+            self.organization = organization
+            self.publications = publications
 
+            # XSOAR Fields
+            self.relationships = relationships
             self.dbot_score = dbot_score
 
         def to_context(self):
@@ -2358,20 +4180,79 @@ class Common(object):
                 'Data': self.url
             }
 
-            if self.detection_engines:
+            if self.blocked:
+                url_context['Blocked'] = self.blocked
+
+            if self.certificates:
+                url_context['Certificates'] = self.create_context_table(self.certificates)
+
+            if self.description:
+                url_context['Description'] = self.description
+
+            if self.stix_id:
+                url_context['STIXID'] = self.stix_id
+
+            if self.detection_engines is not None:
                 url_context['DetectionEngines'] = self.detection_engines
 
-            if self.positive_detections:
+            if self.positive_detections is not None:
                 url_context['PositiveDetections'] = self.positive_detections
 
             if self.category:
                 url_context['Category'] = self.category
+
+            if self.feed_related_indicators:
+                url_context['FeedRelatedIndicators'] = self.create_context_table(self.feed_related_indicators)
+
+            if self.tags:
+                url_context['Tags'] = self.tags
+
+            if self.malware_family:
+                url_context['MalwareFamily'] = self.malware_family
+
+            if self.port:
+                url_context['Port'] = self.port
+
+            if self.internal:
+                url_context['Internal'] = self.internal
+
+            if self.campaign:
+                url_context['Campaign'] = self.campaign
+
+            if self.traffic_light_protocol:
+                url_context['TrafficLightProtocol'] = self.traffic_light_protocol
+
+            if self.threat_types:
+                url_context['ThreatTypes'] = self.create_context_table(self.threat_types)
+
+            if self.asn:
+                url_context['ASN'] = self.asn
+
+            if self.as_owner:
+                url_context['ASOwner'] = self.as_owner
+
+            if self.geo_country:
+                url_context['Geo'] = {'Country': self.geo_country}
+
+            if self.organization:
+                url_context['Organization'] = self.organization
+
+            if self.community_notes:
+                url_context['CommunityNotes'] = self.create_context_table(self.community_notes)
+
+            if self.publications:
+                url_context['Publications'] = self.create_context_table(self.publications)
 
             if self.dbot_score and self.dbot_score.score == Common.DBotScore.BAD:
                 url_context['Malicious'] = {
                     'Vendor': self.dbot_score.integration_name,
                     'Description': self.dbot_score.malicious_description
                 }
+
+            if self.relationships:
+                relationships_context = [relationship.to_context() for relationship in self.relationships if
+                                         relationship.to_context()]
+                url_context['Relationships'] = relationships_context
 
             ret_value = {
                 Common.URL.CONTEXT_PATH: url_context
@@ -2384,26 +4265,67 @@ class Common(object):
 
     class Domain(Indicator):
         """ ignore docstring
-        Domain indicator - https://xsoar.pan.dev/docs/context-standards#domain
+        Domain indicator - https://xsoar.pan.dev/docs/integrations/context-standards-mandatory#domain
+
+        :type whois_records: ``WhoisRecord``
+        :param whois_records: List of whois records
+
+        :type description: ``str``
+        :param description: A description of the Domain.
+
+        :type stix_id: ``str``
+        :param stix_id: The domain STIX ID.
+
+        :type blocked: ``bool``
+        :param blocked: Is the domain blocked.
+
+        :type certificates: ``Certificates``
+        :param certificates: The certificates belonging to the domain.
+
+        :type dns_records: ``DNSRecord``
+        :param dns_records: A list of DNS records for the domain.
         """
         CONTEXT_PATH = 'Domain(val.Name && val.Name == obj.Name)'
 
         def __init__(self, domain, dbot_score, dns=None, detection_engines=None, positive_detections=None,
                      organization=None, sub_domains=None, creation_date=None, updated_date=None, expiration_date=None,
-                     domain_status=None, name_servers=None,
+                     domain_status=None, name_servers=None, feed_related_indicators=None, malware_family=None,
                      registrar_name=None, registrar_abuse_email=None, registrar_abuse_phone=None,
                      registrant_name=None, registrant_email=None, registrant_phone=None, registrant_country=None,
-                     admin_name=None, admin_email=None, admin_phone=None, admin_country=None):
+                     admin_name=None, admin_email=None, admin_phone=None, admin_country=None, tags=None,
+                     domain_idn_name=None, port=None,
+                     internal=None, category=None, campaign=None, traffic_light_protocol=None, threat_types=None,
+                     community_notes=None, publications=None, geo_location=None, geo_country=None, geo_description=None,
+                     tech_country=None, tech_name=None, tech_email=None, tech_organization=None, billing=None,
+                     whois_records=None, relationships=None, description=None, stix_id=None, blocked=None,
+                     certificates=None, dns_records=None,):
+
+            # Main indicator value
             self.domain = domain
+
+            # Core custom fields
+            self.blocked = blocked
+            self.certificates = certificates
+            self.community_notes = community_notes
+            self.creation_date = creation_date
+            self.description = description
+            self.dns_records = dns_records
+            self.expiration_date = expiration_date
+            self.internal = internal
+            self.stix_id = stix_id
+            self.tags = tags
+            self.traffic_light_protocol = traffic_light_protocol
+            self.whois_records = whois_records
+
+            # Additional custom fields
             self.dns = dns
             self.detection_engines = detection_engines
             self.positive_detections = positive_detections
             self.organization = organization
             self.sub_domains = sub_domains
-            self.creation_date = creation_date
             self.updated_date = updated_date
-            self.expiration_date = expiration_date
 
+            # Whois related records - Registrar
             self.registrar_name = registrar_name
             self.registrar_abuse_email = registrar_abuse_email
             self.registrar_abuse_phone = registrar_abuse_phone
@@ -2418,9 +4340,29 @@ class Common(object):
             self.admin_phone = admin_phone
             self.admin_country = admin_country
 
+            self.tech_country = tech_country
+            self.tech_name = tech_name
+            self.tech_organization = tech_organization
+            self.tech_email = tech_email
+            self.billing = billing
+
+            # Additional custom records (none core)
             self.domain_status = domain_status
             self.name_servers = name_servers
+            self.feed_related_indicators = feed_related_indicators
+            self.malware_family = malware_family
+            self.domain_idn_name = domain_idn_name
+            self.port = port
+            self.category = category
+            self.campaign = campaign
+            self.threat_types = threat_types
+            self.publications = publications
+            self.geo_location = geo_location
+            self.geo_country = geo_country
+            self.geo_description = geo_description
 
+            # XSOAR Fields
+            self.relationships = relationships
             self.dbot_score = dbot_score
 
         def to_context(self):
@@ -2432,10 +4374,10 @@ class Common(object):
             if self.dns:
                 domain_context['DNS'] = self.dns
 
-            if self.detection_engines:
+            if self.detection_engines is not None:
                 domain_context['DetectionEngines'] = self.detection_engines
 
-            if self.positive_detections:
+            if self.positive_detections is not None:
                 domain_context['PositiveDetections'] = self.positive_detections
 
             if self.registrar_name or self.registrar_abuse_email or self.registrar_abuse_phone:
@@ -2490,14 +4432,81 @@ class Common(object):
                 domain_context['NameServers'] = self.name_servers
                 whois_context['NameServers'] = domain_context['NameServers']
 
+            if self.tags:
+                domain_context['Tags'] = self.tags
+
+            if self.feed_related_indicators:
+                domain_context['FeedRelatedIndicators'] = self.create_context_table(self.feed_related_indicators)
+
+            if self.whois_records:
+                domain_context['WhoisRecords'] = self.create_context_table(self.whois_records)
+
+            if self.malware_family:
+                domain_context['MalwareFamily'] = self.malware_family
+
             if self.dbot_score and self.dbot_score.score == Common.DBotScore.BAD:
                 domain_context['Malicious'] = {
                     'Vendor': self.dbot_score.integration_name,
                     'Description': self.dbot_score.malicious_description
                 }
 
+            if self.domain_idn_name:
+                domain_context['DomainIDNName'] = self.domain_idn_name
+
+            if self.port:
+                domain_context['Port'] = self.port
+
+            if self.internal:
+                domain_context['Internal'] = self.internal
+
+            if self.category:
+                domain_context['Category'] = self.category
+
+            if self.campaign:
+                domain_context['Campaign'] = self.campaign
+
+            if self.traffic_light_protocol:
+                domain_context['TrafficLightProtocol'] = self.traffic_light_protocol
+
+            if self.threat_types:
+                domain_context['ThreatTypes'] = self.create_context_table(self.threat_types)
+
+            if self.community_notes:
+                domain_context['CommunityNotes'] = self.create_context_table(self.community_notes)
+
+            if self.publications:
+                domain_context['Publications'] = self.create_context_table(self.publications)
+
+            if self.geo_location or self.geo_country or self.geo_description:
+                domain_context['Geo'] = {}
+                if self.geo_location:
+                    domain_context['Geo']['Location'] = self.geo_location
+                if self.geo_country:
+                    domain_context['Geo']['Country'] = self.geo_country
+                if self.geo_description:
+                    domain_context['Geo']['Description'] = self.geo_description
+
+            if self.tech_country or self.tech_name or self.tech_organization or self.tech_email:
+                domain_context['Tech'] = {}
+                if self.tech_country:
+                    domain_context['Tech']['Country'] = self.tech_country
+                if self.tech_name:
+                    domain_context['Tech']['Name'] = self.tech_name
+                if self.tech_organization:
+                    domain_context['Tech']['Organization'] = self.tech_organization
+                if self.tech_email:
+                    domain_context['Tech']['Email'] = self.tech_email
+
+            if self.billing:
+                domain_context['Billing'] = self.billing
+
             if whois_context:
                 domain_context['WHOIS'] = whois_context
+
+            if self.relationships:
+                relationships_context = [relationship.to_context() for relationship in self.relationships if
+                                         relationship.to_context()]
+                domain_context['Relationships'] = relationships_context
 
             ret_value = {
                 Common.Domain.CONTEXT_PATH: domain_context
@@ -2506,17 +4515,33 @@ class Common(object):
             if self.dbot_score:
                 ret_value.update(self.dbot_score.to_context())
 
+            if self.dns_records:
+                domain_context['DNSRecords'] = self.create_context_table(self.dns_records)
+
+            if self.stix_id:
+                domain_context['STIXID'] = self.stix_id
+
+            if self.description:
+                domain_context['Description'] = self.description
+
+            if self.stix_id:
+                domain_context['Blocked'] = self.blocked
+
+            if self.certificates:
+                domain_context['Certificates'] = self.create_context_table(self.certificates)
+
             return ret_value
 
     class Endpoint(Indicator):
         """ ignore docstring
-        Endpoint indicator - https://xsoar.pan.dev/docs/integrations/context-standards#endpoint
+        Endpoint indicator - https://xsoar.pan.dev/docs/integrations/context-standards-mandatory#endpoint
         """
         CONTEXT_PATH = 'Endpoint(val.ID && val.ID == obj.ID)'
 
         def __init__(self, id, hostname=None, ip_address=None, domain=None, mac_address=None,
                      os=None, os_version=None, dhcp_server=None, bios_version=None, model=None,
-                     memory=None, processors=None, processor=None):
+                     memory=None, processors=None, processor=None, relationships=None, vendor=None, status=None,
+                     is_isolated=None):
             self.id = id
             self.hostname = hostname
             self.ip_address = ip_address
@@ -2530,6 +4555,10 @@ class Common(object):
             self.memory = memory
             self.processors = processors
             self.processor = processor
+            self.vendor = vendor
+            self.status = status
+            self.is_isolated = is_isolated
+            self.relationships = relationships
 
         def to_context(self):
             endpoint_context = {
@@ -2572,11 +4601,1424 @@ class Common(object):
             if self.processor:
                 endpoint_context['Processor'] = self.processor
 
+            if self.relationships:
+                relationships_context = [relationship.to_context() for relationship in self.relationships if
+                                         relationship.to_context()]
+                endpoint_context['Relationships'] = relationships_context
+
+            if self.vendor:
+                endpoint_context['Vendor'] = self.vendor
+
+            if self.status:
+                if self.status not in ENDPOINT_STATUS_OPTIONS:
+                    raise ValueError('Status does not have a valid value such as: Online or Offline')
+                endpoint_context['Status'] = self.status
+
+            if self.is_isolated:
+                if self.is_isolated not in ENDPOINT_ISISOLATED_OPTIONS:
+                    raise ValueError('Is Isolated does not have a valid value such as: Yes, No, Pending'
+                                     ' isolation or Pending unisolation')
+                endpoint_context['IsIsolated'] = self.is_isolated
+
             ret_value = {
                 Common.Endpoint.CONTEXT_PATH: endpoint_context
             }
 
             return ret_value
+
+    class Account(Indicator):
+        """
+        Account indicator - https://xsoar.pan.dev/docs/integrations/context-standards-recommended#account
+
+        :type blocked: ``boolean``
+        :param blocked: Is the indicator blocked.
+
+        :type community_notes: ``CommunityNotes``
+        :param community_notes: Notes on the Account that were given by the community.
+
+        :type dbot_score: ``DBotScore``
+        :param dbot_score: If account has reputation then create DBotScore object
+
+        :type creation_date: ``str``
+        :param creation_date: The date the account was created
+
+        :type description: ``str``
+        :param description: Description of the account
+
+        :type stix_id: ``str``
+        :param stix_id: STIX ID for the account
+
+        :type tags: ``str``
+        :param tags: List of tags related to the account.
+
+        :type traffic_light_protocol: ``str``
+        :param traffic_light_protocol: The account indicator tlp color
+
+        :type user_id: ``str``
+        :param user_id: The account associated user id.
+
+        :return: None
+        :rtype: ``None``
+        """
+        CONTEXT_PATH = 'Account(val.id && val.id == obj.id)'
+
+        def __init__(self, id, type=None, username=None, display_name=None, groups=None,
+                     domain=None, email_address=None, telephone_number=None, office=None, job_title=None,
+                     department=None, country=None, state=None, city=None, street=None, is_enabled=None,
+                     dbot_score=None, relationships=None, blocked=None, community_notes=None, creation_date=None,
+                     description=None, stix_id=None, tags=None, traffic_light_protocol=None, user_id=None):
+
+            self.id = id
+            self.type = type
+            self.blocked = blocked
+            self.community_notes = community_notes
+            self.creation_date = creation_date
+            self.description = description
+            self.stix_id = stix_id
+            self.username = username
+            self.display_name = display_name
+            self.groups = groups
+            self.domain = domain
+            self.email_address = email_address
+            self.telephone_number = telephone_number
+            self.office = office
+            self.job_title = job_title
+            self.department = department
+            self.country = country
+            self.state = state
+            self.city = city
+            self.street = street
+            self.is_enabled = is_enabled
+            self.tags = tags
+            self.traffic_light_protocol = traffic_light_protocol
+            self.user_id = user_id
+            self.relationships = relationships
+
+            if not isinstance(dbot_score, Common.DBotScore):
+                raise ValueError('dbot_score must be of type DBotScore')
+
+            self.dbot_score = dbot_score
+
+        def to_context(self):
+            account_context = {
+                'Id': self.id
+            }
+
+            if self.type:
+                account_context['Type'] = self.type
+
+            if self.blocked:
+                account_context['Blocked'] = self.blocked
+
+            if self.creation_date:
+                account_context['CreationDate'] = self.creation_date
+
+            irrelevent = ['CONTEXT_PATH', 'to_context', 'dbot_score', 'Id', 'create_context_table']
+            details = [detail for detail in dir(self) if not detail.startswith('__') and detail not in irrelevent]
+
+            for detail in details:
+                if self.__getattribute__(detail):
+                    if detail == 'email_address':
+                        account_context['Email'] = {
+                            'Address': self.email_address
+                        }
+                    else:
+                        Detail = camelize_string(detail, '_')
+                        account_context[Detail] = self.__getattribute__(detail)
+
+            if self.dbot_score and self.dbot_score.score == Common.DBotScore.BAD:
+                account_context['Malicious'] = {
+                    'Vendor': self.dbot_score.integration_name,
+                    'Description': self.dbot_score.malicious_description
+                }
+
+            if self.relationships:
+                relationships_context = [relationship.to_context() for relationship in self.relationships if
+                                         relationship.to_context()]
+                account_context['Relationships'] = relationships_context
+
+            if self.community_notes:
+                account_context['CommunityNotes'] = self.create_context_table(self.community_notes)
+
+            ret_value = {
+                Common.Account.CONTEXT_PATH: account_context
+            }
+
+            if self.dbot_score:
+                ret_value.update(self.dbot_score.to_context())
+
+            return ret_value
+
+    class Cryptocurrency(Indicator):
+        """
+        Cryptocurrency indicator - https://xsoar.pan.dev/docs/integrations/context-standards-mandatory#cryptocurrency
+        :type address: ``str``
+        :param address: The Cryptocurrency address
+
+        :type address_type: ``str``
+        :param address_type: The Cryptocurrency type - e.g. `bitcoin`.
+
+        :type dbot_score: ``DBotScore``
+        :param dbot_score:  If the address has reputation then create DBotScore object.
+
+        :return: None
+        :rtype: ``None``
+        """
+        CONTEXT_PATH = 'Cryptocurrency(val.Address && val.Address == obj.Address)'
+
+        def __init__(self, address, address_type, dbot_score):
+            self.address = address
+            self.address_type = address_type
+
+            self.dbot_score = dbot_score
+
+        def to_context(self):
+            crypto_context = {
+                'Address': self.address,
+                'AddressType': self.address_type
+            }
+
+            if self.dbot_score and self.dbot_score.score == Common.DBotScore.BAD:
+                crypto_context['Malicious'] = {
+                    'Vendor': self.dbot_score.integration_name,
+                    'Description': self.dbot_score.malicious_description
+                }
+
+            ret_value = {
+                Common.Cryptocurrency.CONTEXT_PATH: crypto_context
+            }
+
+            if self.dbot_score:
+                ret_value.update(self.dbot_score.to_context())
+
+            return ret_value
+
+    class AttackPattern(Indicator):
+        """
+        Attack Pattern indicator
+
+        :type stix_id: ``str``
+        :param stix_id: The Attack Pattern STIX ID
+
+        :type kill_chain_phases: ``str``
+        :param kill_chain_phases: The Attack Pattern kill chain phases.
+
+        :type first_seen_by_source: ``str``
+        :param first_seen_by_source: The Attack Pattern first seen by source
+
+        :type description: ``str``
+        :param description: The Attack Pattern description
+
+        :type operating_system_refs: ``str``
+        :param operating_system_refs: The operating system refs of the Attack Pattern.
+
+        :type publications: ``str``
+        :param publications: The Attack Pattern publications
+
+        :type mitre_id: ``str``
+        :param mitre_id: The Attack Pattern kill mitre id.
+
+        :type tags: ``str``
+        :param tags: The Attack Pattern kill tags.
+
+        :type dbot_score: ``DBotScore``
+        :param dbot_score:  If the address has reputation then create DBotScore object.
+
+        :type traffic_light_protocol: ``str``
+        :param traffic_light_protocol: The Traffic Light Protocol (TLP) color that is suitable for the AP.
+
+        :type community_notes: ``CommunityNotes``
+        :param community_notes:  A list of community notes for the AP.
+
+        :type external_references: ``ExternalReference``
+        :param external_references:  A list of id's and description of the AP via external refs.
+
+        :type value: ``str``
+        :param value: The Attack Pattern value (name) - example: "Plist File Modification"
+
+        :return: None
+        :rtype: ``None``
+        """
+        CONTEXT_PATH = 'AttackPattern(val.value && val.value == obj.value)'
+
+        def __init__(self, stix_id, kill_chain_phases=None, first_seen_by_source=None, description=None,
+                     operating_system_refs=None, publications=None, mitre_id=None, tags=None,
+                     traffic_light_protocol=None, dbot_score=None, community_notes=None, external_references=None, value=None):
+
+            self.community_notes = community_notes
+            self.description = description
+            self.external_references = external_references
+            self.first_seen_by_source = first_seen_by_source
+            self.kill_chain_phases = kill_chain_phases
+            self.mitre_id = mitre_id
+            self.operating_system_refs = operating_system_refs
+            self.publications = publications
+            self.stix_id = stix_id
+            self.tags = tags
+            self.traffic_light_protocol = traffic_light_protocol
+            self.value = value
+            self.dbot_score = dbot_score
+
+        def to_context(self):
+            attack_pattern_context = {
+                'STIXID': self.stix_id,
+                "KillChainPhases": self.kill_chain_phases,
+                "FirstSeenBySource": self.first_seen_by_source,
+                'OperatingSystemRefs': self.operating_system_refs,
+                "Publications": self.publications,
+                "MITREID": self.mitre_id,
+                "Value": self.value,
+                "Tags": self.tags,
+                "Description": self.description
+            }
+
+            if self.external_references:
+                attack_pattern_context['ExternalReferences'] = self.create_context_table(self.external_references)
+
+            if self.traffic_light_protocol:
+                attack_pattern_context['TrafficLightProtocol'] = self.traffic_light_protocol
+
+            if self.dbot_score and self.dbot_score.score == Common.DBotScore.BAD:
+                attack_pattern_context['Malicious'] = {
+                    'Vendor': self.dbot_score.integration_name,
+                    'Description': self.dbot_score.malicious_description
+                }
+
+            ret_value = {
+                Common.AttackPattern.CONTEXT_PATH: attack_pattern_context
+            }
+
+            if self.dbot_score:
+                ret_value.update(self.dbot_score.to_context())
+
+            return ret_value
+
+    class CertificatePublicKey(object):
+        """
+        CertificatePublicKey class
+        Defines an X509  PublicKey used in Common.Certificate
+
+        :type algorithm: ``str``
+        :param algorithm: The encryption algorithm: DSA, RSA, EC or UNKNOWN (Common.CertificatePublicKey.Algorithm enum)
+
+        :type length: ``int``
+        :param length: The length of the public key
+
+        :type publickey: ``Optional[str]``
+        :param publickey: publickey
+
+        :type p: ``Optional[str]``
+        :param p: P parameter used in DSA algorithm
+
+        :type q: ``Optional[str]``
+        :param q: Q parameter used in DSA algorithm
+
+        :type g: ``Optional[str]``
+        :param g: G parameter used in DSA algorithm
+
+        :type modulus: ``Optional[str]``
+        :param modulus: modulus parameter used in RSA algorithm
+
+        :type modulus: ``Optional[int]``
+        :param modulus: exponent parameter used in RSA algorithm
+
+        :type x: ``Optional[str]``
+        :param x: X parameter used in EC algorithm
+
+        :type y: ``Optional[str]``
+        :param y: Y parameter used in EC algorithm
+
+        :type curve: ``Optional[str]``
+        :param curve: curve parameter used in EC algorithm
+
+        :return: None
+        :rtype: ``None``
+        """
+        class Algorithm(object):
+            """
+            Algorithm class to enumerate available algorithms
+
+            :return: None
+            :rtype: ``None``
+            """
+            DSA = "DSA"
+            RSA = "RSA"
+            EC = "EC"
+            UNKNOWN = "Unknown Algorithm"
+
+            @staticmethod
+            def is_valid_type(_type):
+                return _type in (
+                    Common.CertificatePublicKey.Algorithm.DSA,
+                    Common.CertificatePublicKey.Algorithm.RSA,
+                    Common.CertificatePublicKey.Algorithm.EC,
+                    Common.CertificatePublicKey.Algorithm.UNKNOWN
+                )
+
+        def __init__(
+            self,
+            algorithm,  # type: str
+            length,  # type: int
+            publickey=None,  # type: str
+            p=None,  # type: str
+            q=None,  # type: str
+            g=None,  # type: str
+            modulus=None,  # type: str
+            exponent=None,  # type: int
+            x=None,  # type: str
+            y=None,  # type: str
+            curve=None  # type: str
+        ):
+
+            if not Common.CertificatePublicKey.Algorithm.is_valid_type(algorithm):
+                raise TypeError('algorithm must be of type Common.CertificatePublicKey.Algorithm enum')
+
+            self.algorithm = algorithm
+            self.length = length
+            self.publickey = publickey
+            self.p = p
+            self.q = q
+            self.g = g
+            self.modulus = modulus
+            self.exponent = exponent
+            self.x = x
+            self.y = y
+            self.curve = curve
+
+        def to_context(self):
+            publickey_context = {
+                'Algorithm': self.algorithm,
+                'Length': self.length
+            }
+
+            if self.publickey:
+                publickey_context['PublicKey'] = self.publickey
+
+            if self.algorithm == Common.CertificatePublicKey.Algorithm.DSA:
+                if self.p:
+                    publickey_context['P'] = self.p
+                if self.q:
+                    publickey_context['Q'] = self.q
+                if self.g:
+                    publickey_context['G'] = self.g
+
+            elif self.algorithm == Common.CertificatePublicKey.Algorithm.RSA:
+                if self.modulus:
+                    publickey_context['Modulus'] = self.modulus
+                if self.exponent:
+                    publickey_context['Exponent'] = self.exponent
+
+            elif self.algorithm == Common.CertificatePublicKey.Algorithm.EC:
+                if self.x:
+                    publickey_context['X'] = self.x
+                if self.y:
+                    publickey_context['Y'] = self.y
+                if self.curve:
+                    publickey_context['Curve'] = self.curve
+
+            elif self.algorithm == Common.CertificatePublicKey.Algorithm.UNKNOWN:
+                pass
+
+            return publickey_context
+
+    class GeneralName(object):
+        """
+        GeneralName class
+        Implements GeneralName interface from rfc5280
+        Enumerates the available General Name Types
+
+        :type gn_type: ``str``
+        :param gn_type: General Name Type
+
+        :type gn_value: ``str``
+        :param gn_value: General Name Value
+
+        :return: None
+        :rtype: ``None``
+        """
+        OTHERNAME = 'otherName'
+        RFC822NAME = 'rfc822Name'
+        DNSNAME = 'dNSName'
+        DIRECTORYNAME = 'directoryName'
+        UNIFORMRESOURCEIDENTIFIER = 'uniformResourceIdentifier'
+        IPADDRESS = 'iPAddress'
+        REGISTEREDID = 'registeredID'
+
+        @staticmethod
+        def is_valid_type(_type):
+            return _type in (
+                Common.GeneralName.OTHERNAME,
+                Common.GeneralName.RFC822NAME,
+                Common.GeneralName.DNSNAME,
+                Common.GeneralName.DIRECTORYNAME,
+                Common.GeneralName.UNIFORMRESOURCEIDENTIFIER,
+                Common.GeneralName.IPADDRESS,
+                Common.GeneralName.REGISTEREDID
+            )
+
+        def __init__(
+            self,
+            gn_value,  # type: str
+            gn_type  # type: str
+        ):
+            if not Common.GeneralName.is_valid_type(gn_type):
+                raise TypeError(
+                    'gn_type must be of type Common.GeneralName enum'
+                )
+            self.gn_type = gn_type
+            self.gn_value = gn_value
+
+        def to_context(self):
+            return {
+                'Type': self.gn_type,
+                'Value': self.gn_value
+            }
+
+        def get_value(self):
+            return self.gn_value
+
+    class CertificateExtension(object):
+        """
+        CertificateExtension class
+        Defines an X509 Certificate Extensions used in Common.Certificate
+
+
+        :type extension_type: ``str``
+        :param extension_type: The type of Extension (from Common.CertificateExtension.ExtensionType enum, or "Other)
+
+        :type critical: ``bool``
+        :param critical: Whether the extension is marked as critical
+
+        :type extension_name: ``Optional[str]``
+        :param extension_name: Name of the extension
+
+        :type oid: ``Optional[str]``
+        :param oid: OID of the extension
+
+        :type subject_alternative_names: ``Optional[List[Common.CertificateExtension.SubjectAlternativeName]]``
+        :param subject_alternative_names: Subject Alternative Names
+
+        :type authority_key_identifier: ``Optional[Common.CertificateExtension.AuthorityKeyIdentifier]``
+        :param authority_key_identifier: Authority Key Identifier
+
+        :type digest: ``Optional[str]``
+        :param digest: digest for Subject Key Identifier extension
+
+        :type digital_signature: ``Optional[bool]``
+        :param digital_signature: Digital Signature usage for Key Usage extension
+
+        :type content_commitment: ``Optional[bool]``
+        :param content_commitment: Content Commitment usage for Key Usage extension
+
+        :type key_encipherment: ``Optional[bool]``
+        :param key_encipherment: Key Encipherment usage for Key Usage extension
+
+        :type data_encipherment: ``Optional[bool]``
+        :param data_encipherment: Data Encipherment usage for Key Usage extension
+
+        :type key_agreement: ``Optional[bool]``
+        :param key_agreement: Key Agreement usage for Key Usage extension
+
+        :type key_cert_sign: ``Optional[bool]``
+        :param key_cert_sign: Key Cert Sign usage for Key Usage extension
+
+        :type usages: ``Optional[List[str]]``
+        :param usages: Usages for Extended Key Usage extension
+
+        :type distribution_points: ``Optional[List[Common.CertificateExtension.DistributionPoint]]``
+        :param distribution_points: Distribution Points
+
+        :type certificate_policies: ``Optional[List[Common.CertificateExtension.CertificatePolicy]]``
+        :param certificate_policies: Certificate Policies
+
+        :type authority_information_access: ``Optional[List[Common.CertificateExtension.AuthorityInformationAccess]]``
+        :param authority_information_access: Authority Information Access
+
+        :type basic_constraints: ``Optional[Common.CertificateExtension.BasicConstraints]``
+        :param basic_constraints: Basic Constraints
+
+        :type signed_certificate_timestamps: ``Optional[List[Common.CertificateExtension.SignedCertificateTimestamp]]``
+        :param signed_certificate_timestamps: (PreCertificate)Signed Certificate Timestamps
+
+        :type value: ``Optional[Union[str, List[Any], Dict[str, Any]]]``
+        :param value: Raw value of the Extension (used for "Other" type)
+
+        :return: None
+        :rtype: ``None``
+        """
+        class SubjectAlternativeName(object):
+            """
+            SubjectAlternativeName class
+            Implements Subject Alternative Name extension interface
+
+            :type gn: ``Optional[Common.GeneralName]``
+            :param gn: General Name Type provided as Common.GeneralName
+
+            :type gn_type: ``Optional[str]``
+            :param gn_type: General Name Type provided as string
+
+            :type gn_value: ``Optional[str]``
+            :param gn_value: General Name Value provided as string
+
+            :return: None
+            :rtype: ``None``
+            """
+            def __init__(
+                self,
+                gn=None,  # type: Optional[Common.GeneralName]
+                gn_type=None,  # type: Optional[str]
+                gn_value=None  # type: Optional[str]
+            ):
+                if gn:
+                    self.gn = gn
+                elif gn_type and gn_value:
+                    self.gn = Common.GeneralName(
+                        gn_value=gn_value,
+                        gn_type=gn_type
+                    )
+                else:
+                    raise ValueError('either GeneralName or gn_type/gn_value required to inizialize SubjectAlternativeName')
+
+            def to_context(self):
+                return self.gn.to_context()
+
+            def get_value(self):
+                return self.gn.get_value()
+
+        class AuthorityKeyIdentifier(object):
+            """
+            AuthorityKeyIdentifier class
+            Implements Authority Key Identifier extension interface
+
+            :type issuer: ``Optional[List[Common.GeneralName]]``
+            :param issuer: Issuer list
+
+            :type serial_number: ``Optional[str]``
+            :param serial_number: Serial Number
+
+            :type key_identifier: ``Optional[str]``
+            :param key_identifier: Key Identifier
+
+            :return: None
+            :rtype: ``None``
+            """
+            def __init__(
+                self,
+                issuer=None,  # type: Optional[List[Common.GeneralName]]
+                serial_number=None,  # type: Optional[str]
+                key_identifier=None  # type: Optional[str]
+            ):
+                self.issuer = issuer
+                self.serial_number = serial_number
+                self.key_identifier = key_identifier
+
+            def to_context(self):
+                authority_key_identifier_context = {}  # type: Dict[str, Any]
+
+                if self.issuer:
+                    authority_key_identifier_context['Issuer'] = self.issuer,
+
+                if self.serial_number:
+                    authority_key_identifier_context["SerialNumber"] = self.serial_number
+                if self.key_identifier:
+                    authority_key_identifier_context["KeyIdentifier"] = self.key_identifier
+
+                return authority_key_identifier_context
+
+        class DistributionPoint(object):
+            """
+            DistributionPoint class
+            Implements Distribution Point extension interface
+
+            :type full_name: ``Optional[List[Common.GeneralName]]``
+            :param full_name: Full Name list
+
+            :type relative_name: ``Optional[str]``
+            :param relative_name: Relative Name
+
+            :type crl_issuer: ``Optional[List[Common.GeneralName]]``
+            :param crl_issuer: CRL Issuer
+
+            :type reasons: ``Optional[List[str]]``
+            :param reasons: Reason list
+
+            :return: None
+            :rtype: ``None``
+            """
+            def __init__(
+                self,
+                full_name=None,  # type: Optional[List[Common.GeneralName]]
+                relative_name=None,  # type:  Optional[str]
+                crl_issuer=None,  # type: Optional[List[Common.GeneralName]]
+                reasons=None  # type: Optional[List[str]]
+            ):
+                self.full_name = full_name
+                self.relative_name = relative_name
+                self.crl_issuer = crl_issuer
+                self.reasons = reasons
+
+            def to_context(self):
+                distribution_point_context = {}  # type: Dict[str, Union[List, str]]
+                if self.full_name:
+                    distribution_point_context["FullName"] = [fn.to_context() for fn in self.full_name]
+                if self.relative_name:
+                    distribution_point_context["RelativeName"] = self.relative_name
+                if self.crl_issuer:
+                    distribution_point_context["CRLIssuer"] = [ci.to_context() for ci in self.crl_issuer]
+                if self.reasons:
+                    distribution_point_context["Reasons"] = self.reasons
+
+                return distribution_point_context
+
+        class CertificatePolicy(object):
+            """
+            CertificatePolicy class
+            Implements Certificate Policy extension interface
+
+            :type policy_identifier: ``str``
+            :param policy_identifier: Policy Identifier
+
+            :type policy_qualifiers: ``Optional[List[str]]``
+            :param policy_qualifiers: Policy Qualifier list
+
+            :return: None
+            :rtype: ``None``
+            """
+            def __init__(
+                self,
+                policy_identifier,  # type: str
+                policy_qualifiers=None  # type: Optional[List[str]]
+            ):
+                self.policy_identifier = policy_identifier
+                self.policy_qualifiers = policy_qualifiers
+
+            def to_context(self):
+                certificate_policies_context = {
+                    "PolicyIdentifier": self.policy_identifier
+                }  # type: Dict[str, Union[List, str]]
+
+                if self.policy_qualifiers:
+                    certificate_policies_context["PolicyQualifiers"] = self.policy_qualifiers
+
+                return certificate_policies_context
+
+        class AuthorityInformationAccess(object):
+            """
+            AuthorityInformationAccess class
+            Implements Authority Information Access extension interface
+
+            :type access_method: ``str``
+            :param access_method: Access Method
+
+            :type access_location: ``Common.GeneralName``
+            :param access_location: Access Location
+
+            :return: None
+            :rtype: ``None``
+            """
+            def __init__(
+                self,
+                access_method,  # type: str
+                access_location  # type: Common.GeneralName
+            ):
+                self.access_method = access_method
+                self.access_location = access_location
+
+            def to_context(self):
+                return {
+                    "AccessMethod": self.access_method,
+                    "AccessLocation": self.access_location.to_context()
+                }
+
+        class BasicConstraints(object):
+            """
+            BasicConstraints class
+            Implements Basic Constraints extension interface
+
+            :type ca: ``bool``
+            :param ca: Certificate Authority
+
+            :type path_length: ``int``
+            :param path_length: Path Length
+
+            :return: None
+            :rtype: ``None``
+            """
+            def __init__(
+                self,
+                ca,  # type: bool
+                path_length=None  # type: int
+            ):
+                self.ca = ca
+                self.path_length = path_length
+
+            def to_context(self):
+                basic_constraints_context = {
+                    "CA": self.ca
+                }  # type: Dict[str, Union[str, int]]
+
+                if self.path_length:
+                    basic_constraints_context["PathLength"] = self.path_length
+
+                return basic_constraints_context
+
+        class SignedCertificateTimestamp(object):
+            """
+            SignedCertificateTimestamp class
+            Implementsinterface for  "SignedCertificateTimestamp" extensions
+
+            :type entry_type: ``str``
+            :param entry_type: Entry Type (from Common.CertificateExtension.SignedCertificateTimestamp.EntryType enum)
+
+            :type version: ``str``
+            :param version: Version
+
+            :type log_id: ``str``
+            :param log_id: Log ID
+
+            :type timestamp: ``str``
+            :param timestamp: Timestamp (ISO8601 string representation in UTC)
+
+            :return: None
+            :rtype: ``None``
+            """
+            class EntryType(object):
+                """
+                EntryType class
+                Enumerates Entry Types for SignedCertificateTimestamp class
+
+                :return: None
+                :rtype: ``None``
+                """
+                PRECERTIFICATE = "PreCertificate"
+                X509CERTIFICATE = "X509Certificate"
+
+                @staticmethod
+                def is_valid_type(_type):
+                    return _type in (
+                        Common.CertificateExtension.SignedCertificateTimestamp.EntryType.PRECERTIFICATE,
+                        Common.CertificateExtension.SignedCertificateTimestamp.EntryType.X509CERTIFICATE
+                    )
+
+            def __init__(
+                self,
+                entry_type,  # type: str
+                version,  # type: int
+                log_id,  # type: str
+                timestamp  # type: str
+            ):
+
+                if not Common.CertificateExtension.SignedCertificateTimestamp.EntryType.is_valid_type(entry_type):
+                    raise TypeError(
+                        'entry_type must be of type Common.CertificateExtension.SignedCertificateTimestamp.EntryType enum'
+                    )
+
+                self.entry_type = entry_type
+                self.version = version
+                self.log_id = log_id
+                self.timestamp = timestamp
+
+            def to_context(self):
+                timestamps_context = {}  # type: Dict[str, Any]
+
+                timestamps_context['Version'] = self.version
+                timestamps_context["LogId"] = self.log_id
+                timestamps_context["Timestamp"] = self.timestamp
+                timestamps_context["EntryType"] = self.entry_type
+
+                return timestamps_context
+
+        class ExtensionType(object):
+            """
+            ExtensionType class
+            Enumerates Extension Types for Common.CertificatExtension class
+
+            :return: None
+            :rtype: ``None``
+            """
+            SUBJECTALTERNATIVENAME = "SubjectAlternativeName"
+            AUTHORITYKEYIDENTIFIER = "AuthorityKeyIdentifier"
+            SUBJECTKEYIDENTIFIER = "SubjectKeyIdentifier"
+            KEYUSAGE = "KeyUsage"
+            EXTENDEDKEYUSAGE = "ExtendedKeyUsage"
+            CRLDISTRIBUTIONPOINTS = "CRLDistributionPoints"
+            CERTIFICATEPOLICIES = "CertificatePolicies"
+            AUTHORITYINFORMATIONACCESS = "AuthorityInformationAccess"
+            BASICCONSTRAINTS = "BasicConstraints"
+            SIGNEDCERTIFICATETIMESTAMPS = "SignedCertificateTimestamps"
+            PRESIGNEDCERTIFICATETIMESTAMPS = "PreCertSignedCertificateTimestamps"
+            OTHER = "Other"
+
+            @staticmethod
+            def is_valid_type(_type):
+                return _type in (
+                    Common.CertificateExtension.ExtensionType.SUBJECTALTERNATIVENAME,
+                    Common.CertificateExtension.ExtensionType.AUTHORITYKEYIDENTIFIER,
+                    Common.CertificateExtension.ExtensionType.SUBJECTKEYIDENTIFIER,
+                    Common.CertificateExtension.ExtensionType.KEYUSAGE,
+                    Common.CertificateExtension.ExtensionType.EXTENDEDKEYUSAGE,
+                    Common.CertificateExtension.ExtensionType.CRLDISTRIBUTIONPOINTS,
+                    Common.CertificateExtension.ExtensionType.CERTIFICATEPOLICIES,
+                    Common.CertificateExtension.ExtensionType.AUTHORITYINFORMATIONACCESS,
+                    Common.CertificateExtension.ExtensionType.BASICCONSTRAINTS,
+                    Common.CertificateExtension.ExtensionType.SIGNEDCERTIFICATETIMESTAMPS,
+                    Common.CertificateExtension.ExtensionType.PRESIGNEDCERTIFICATETIMESTAMPS,
+                    Common.CertificateExtension.ExtensionType.OTHER  # for extensions that are not handled explicitly
+                )
+
+        def __init__(
+            self,
+            extension_type,  # type: str
+            critical,  # type: bool
+            oid=None,  # type: Optional[str]
+            extension_name=None,  # type: Optional[str]
+            subject_alternative_names=None,  # type: Optional[List[Common.CertificateExtension.SubjectAlternativeName]]
+            authority_key_identifier=None,  # type: Optional[Common.CertificateExtension.AuthorityKeyIdentifier]
+            digest=None,  # type: str
+            digital_signature=None,  # type: Optional[bool]
+            content_commitment=None,  # type: Optional[bool]
+            key_encipherment=None,  # type: Optional[bool]
+            data_encipherment=None,  # type: Optional[bool]
+            key_agreement=None,  # type: Optional[bool]
+            key_cert_sign=None,  # type: Optional[bool]
+            crl_sign=None,  # type: Optional[bool]
+            usages=None,  # type: Optional[List[str]]
+            distribution_points=None,  # type: Optional[List[Common.CertificateExtension.DistributionPoint]]
+            certificate_policies=None,  # type: Optional[List[Common.CertificateExtension.CertificatePolicy]]
+            authority_information_access=None,  # type: Optional[List[Common.CertificateExtension.AuthorityInformationAccess]]
+            basic_constraints=None,  # type: Optional[Common.CertificateExtension.BasicConstraints]
+            signed_certificate_timestamps=None,  # type: Optional[List[Common.CertificateExtension.SignedCertificateTimestamp]]
+            value=None  # type: Optional[Union[str, List[Any], Dict[str, Any]]]
+        ):
+            if not Common.CertificateExtension.ExtensionType.is_valid_type(extension_type):
+                raise TypeError('algorithm must be of type Common.CertificateExtension.ExtensionType enum')
+
+            self.extension_type = extension_type
+            self.critical = critical
+
+            if self.extension_type == Common.CertificateExtension.ExtensionType.SUBJECTALTERNATIVENAME:
+                self.subject_alternative_names = subject_alternative_names
+                self.oid = "2.5.29.17"
+                self.extension_name = "subjectAltName"
+
+            elif self.extension_type == Common.CertificateExtension.ExtensionType.SUBJECTKEYIDENTIFIER:
+                if not digest:
+                    raise ValueError('digest is mandatory for SubjectKeyIdentifier extension')
+                self.digest = digest
+                self.oid = "2.5.29.14"
+                self.extension_name = "subjectKeyIdentifier"
+
+            elif self.extension_type == Common.CertificateExtension.ExtensionType.KEYUSAGE:
+                self.digital_signature = digital_signature
+                self.content_commitment = content_commitment
+                self.key_encipherment = key_encipherment
+                self.data_encipherment = data_encipherment
+                self.key_agreement = key_agreement
+                self.key_cert_sign = key_cert_sign
+                self.crl_sign = crl_sign
+                self.oid = "2.5.29.15"
+                self.extension_name = "keyUsage"
+
+            elif self.extension_type == Common.CertificateExtension.ExtensionType.EXTENDEDKEYUSAGE:
+                if not usages:
+                    raise ValueError('usages is mandatory for ExtendedKeyUsage extension')
+                self.usages = usages
+                self.oid = "2.5.29.37"
+                self.extension_name = "extendedKeyUsage"
+
+            elif self.extension_type == Common.CertificateExtension.ExtensionType.AUTHORITYKEYIDENTIFIER:
+                self.authority_key_identifier = authority_key_identifier
+                self.oid = "2.5.29.35"
+                self.extension_name = "authorityKeyIdentifier"
+
+            elif self.extension_type == Common.CertificateExtension.ExtensionType.CRLDISTRIBUTIONPOINTS:
+                self.distribution_points = distribution_points
+                self.oid = "2.5.29.31"
+                self.extension_name = "cRLDistributionPoints"
+
+            elif self.extension_type == Common.CertificateExtension.ExtensionType.CERTIFICATEPOLICIES:
+                self.certificate_policies = certificate_policies
+                self.oid = "2.5.29.32"
+                self.extension_name = "certificatePolicies"
+
+            elif self.extension_type == Common.CertificateExtension.ExtensionType.AUTHORITYINFORMATIONACCESS:
+                self.authority_information_access = authority_information_access
+                self.oid = "1.3.6.1.5.5.7.1.1"
+                self.extension_name = "authorityInfoAccess"
+
+            elif self.extension_type == Common.CertificateExtension.ExtensionType.BASICCONSTRAINTS:
+                self.basic_constraints = basic_constraints
+                self.oid = "2.5.29.19"
+                self.extension_name = "basicConstraints"
+
+            elif self.extension_type == Common.CertificateExtension.ExtensionType.PRESIGNEDCERTIFICATETIMESTAMPS:
+                self.signed_certificate_timestamps = signed_certificate_timestamps
+                self.oid = "1.3.6.1.4.1.11129.2.4.2"
+                self.extension_name = "signedCertificateTimestampList"
+
+            elif self.extension_type == Common.CertificateExtension.ExtensionType.SIGNEDCERTIFICATETIMESTAMPS:
+                self.signed_certificate_timestamps = signed_certificate_timestamps
+                self.oid = "1.3.6.1.4.1.11129.2.4.5"
+                self.extension_name = "signedCertificateTimestampList"
+
+            elif self.extension_type == Common.CertificateExtension.ExtensionType.OTHER:
+                self.value = value
+
+            # override oid, extension_name if provided as inputs
+            if oid:
+                self.oid = oid
+            if extension_name:
+                self.extension_name = extension_name
+
+        def to_context(self):
+            extension_context = {
+                "OID": self.oid,
+                "Name": self.extension_name,
+                "Critical": self.critical
+            }  # type: Dict[str, Any]
+
+            if (
+                self.extension_type == Common.CertificateExtension.ExtensionType.SUBJECTALTERNATIVENAME
+                and self.subject_alternative_names is not None
+            ):
+                extension_context["Value"] = [san.to_context() for san in self.subject_alternative_names]
+
+            elif (
+                self.extension_type == Common.CertificateExtension.ExtensionType.AUTHORITYKEYIDENTIFIER
+                and self.authority_key_identifier is not None
+            ):
+                extension_context["Value"] = self.authority_key_identifier.to_context()
+
+            elif (
+                self.extension_type == Common.CertificateExtension.ExtensionType.SUBJECTKEYIDENTIFIER
+                and self.digest is not None
+            ):
+                extension_context["Value"] = {
+                    "Digest": self.digest
+                }
+
+            elif self.extension_type == Common.CertificateExtension.ExtensionType.KEYUSAGE:
+                key_usage = {}  # type: Dict[str, bool]
+                if self.digital_signature:
+                    key_usage["DigitalSignature"] = self.digital_signature
+                if self.content_commitment:
+                    key_usage["ContentCommitment"] = self.content_commitment
+                if self.key_encipherment:
+                    key_usage["KeyEncipherment"] = self.key_encipherment
+                if self.data_encipherment:
+                    key_usage["DataEncipherment"] = self.data_encipherment
+                if self.key_agreement:
+                    key_usage["KeyAgreement"] = self.key_agreement
+                if self.key_cert_sign:
+                    key_usage["KeyCertSign"] = self.key_cert_sign
+                if self.crl_sign:
+                    key_usage["CrlSign"] = self.crl_sign
+
+                if key_usage:
+                    extension_context["Value"] = key_usage
+
+            elif (
+                self.extension_type == Common.CertificateExtension.ExtensionType.EXTENDEDKEYUSAGE
+                and self.usages is not None
+            ):
+                extension_context["Value"] = {
+                    "Usages": [u for u in self.usages]
+                }
+
+            elif (
+                self.extension_type == Common.CertificateExtension.ExtensionType.CRLDISTRIBUTIONPOINTS
+                and self.distribution_points is not None
+            ):
+                extension_context["Value"] = [dp.to_context() for dp in self.distribution_points]
+
+            elif (
+                self.extension_type == Common.CertificateExtension.ExtensionType.CERTIFICATEPOLICIES
+                and self.certificate_policies is not None
+            ):
+                extension_context["Value"] = [cp.to_context() for cp in self.certificate_policies]
+
+            elif (
+                self.extension_type == Common.CertificateExtension.ExtensionType.AUTHORITYINFORMATIONACCESS
+                and self.authority_information_access is not None
+            ):
+                extension_context["Value"] = [aia.to_context() for aia in self.authority_information_access]
+
+            elif (
+                self.extension_type == Common.CertificateExtension.ExtensionType.BASICCONSTRAINTS
+                and self.basic_constraints is not None
+            ):
+                extension_context["Value"] = self.basic_constraints.to_context()
+
+            elif (
+                self.extension_type in [
+                    Common.CertificateExtension.ExtensionType.SIGNEDCERTIFICATETIMESTAMPS,
+                    Common.CertificateExtension.ExtensionType.PRESIGNEDCERTIFICATETIMESTAMPS
+                ]
+                and self.signed_certificate_timestamps is not None
+            ):
+                extension_context["Value"] = [sct.to_context() for sct in self.signed_certificate_timestamps]
+
+            elif (
+                self.extension_type == Common.CertificateExtension.ExtensionType.OTHER
+                and self.value is not None
+            ):
+                extension_context["Value"] = self.value
+
+            return extension_context
+
+    class Certificate(Indicator):
+        """
+        Implements the X509 Certificate interface
+        Certificate indicator - https://xsoar.pan.dev/docs/integrations/context-standards-mandatory#certificate
+
+        :type subject_dn: ``str``
+        :param subject_dn: Subject Distinguished Name
+
+        :type dbot_score: ``DBotScore``
+        :param dbot_score: If Certificate has a score then create and set a DBotScore object.
+
+        :type name: ``Optional[Union[str, List[str]]]``
+        :param name: Name (if not provided output is calculated from SubjectDN and SAN)
+
+        :type issuer_dn: ``Optional[str]``
+        :param issuer_dn: Issuer Distinguished Name
+
+        :type serial_number: ``Optional[str]``
+        :param serial_number: Serial Number
+
+        :type validity_not_after: ``Optional[str]``
+        :param validity_not_after: Certificate Expiration Timestamp (ISO8601 string representation)
+
+        :type validity_not_before: ``Optional[str]``
+        :param validity_not_before: Initial Certificate Validity Timestamp (ISO8601 string representation)
+
+        :type sha512: ``Optional[str]``
+        :param sha512: The SHA-512 hash of the certificate in binary encoded format (DER)
+
+        :type sha256: ``Optional[str]``
+        :param sha256: The SHA-256 hash of the certificate in binary encoded format (DER)
+
+        :type sha1: ``Optional[str]``
+        :param sha1: The SHA-1 hash of the certificate in binary encoded format (DER)
+
+        :type md5: ``Optional[str]``
+        :param md5: The MD5 hash of the certificate in binary encoded format (DER)
+
+        :type publickey: ``Optional[Common.CertificatePublicKey]``
+        :param publickey: Certificate Public Key
+
+        :type spki_sha256: ``Optional[str]``
+        :param sha1: The SHA-256 hash of the SPKI
+
+        :type signature_algorithm: ``Optional[str]``
+        :param signature_algorithm: Signature Algorithm
+
+        :type signature: ``Optional[str]``
+        :param signature: Certificate Signature
+
+        :type subject_alternative_name: \
+        ``Optional[List[Union[str,Dict[str, str],Common.CertificateExtension.SubjectAlternativeName]]]``
+        :param subject_alternative_name: Subject Alternative Name list
+
+        :type extensions: ``Optional[List[Common.CertificateExtension]]`
+        :param extensions: Certificate Extension List
+
+        :type pem: ``Optional[str]``
+        :param pem: PEM encoded certificate
+
+        :return: None
+        :rtype: ``None``
+        """
+        CONTEXT_PATH = 'Certificate(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 || ' \
+                       'val.SHA256 && val.SHA256 == obj.SHA256 || val.SHA512 && val.SHA512 == obj.SHA512)'
+
+        def __init__(
+            self,
+            subject_dn,  # type: str
+            dbot_score=None,  # type: Optional[Common.DBotScore]
+            name=None,  # type: Optional[Union[str, List[str]]]
+            issuer_dn=None,  # type: Optional[str]
+            serial_number=None,  # type: Optional[str]
+            validity_not_after=None,  # type: Optional[str]
+            validity_not_before=None,  # type: Optional[str]
+            sha512=None,  # type: Optional[str]
+            sha256=None,  # type: Optional[str]
+            sha1=None,  # type: Optional[str]
+            md5=None,  # type: Optional[str]
+            publickey=None,  # type: Optional[Common.CertificatePublicKey]
+            spki_sha256=None,  # type: Optional[str]
+            signature_algorithm=None,  # type: Optional[str]
+            signature=None,  # type: Optional[str]
+            subject_alternative_name=None, \
+            # type: Optional[List[Union[str,Dict[str, str],Common.CertificateExtension.SubjectAlternativeName]]]
+            extensions=None,  # type: Optional[List[Common.CertificateExtension]]
+            pem=None  # type: Optional[str]
+
+        ):
+
+            self.subject_dn = subject_dn
+            self.dbot_score = dbot_score
+
+            self.name = None
+            if name:
+                if isinstance(name, str):
+                    self.name = [name]
+                elif isinstance(name, list):
+                    self.name = name
+                else:
+                    raise TypeError('certificate name must be of type str or List[str]')
+
+            self.issuer_dn = issuer_dn
+            self.serial_number = serial_number
+            self.validity_not_after = validity_not_after
+            self.validity_not_before = validity_not_before
+
+            self.sha512 = sha512
+            self.sha256 = sha256
+            self.sha1 = sha1
+            self.md5 = md5
+
+            if publickey and not isinstance(publickey, Common.CertificatePublicKey):
+                raise TypeError('publickey must be of type Common.CertificatePublicKey')
+            self.publickey = publickey
+
+            self.spki_sha256 = spki_sha256
+
+            self.signature_algorithm = signature_algorithm
+            self.signature = signature
+
+            # if subject_alternative_name is set and is a list
+            # make sure it is a list of strings, dicts of strings or SAN Extensions
+            if (
+                subject_alternative_name
+                and isinstance(subject_alternative_name, list)
+                and not all(
+                    isinstance(san, str)
+                    or isinstance(san, dict)
+                    or isinstance(san, Common.CertificateExtension.SubjectAlternativeName)
+                    for san in subject_alternative_name)
+            ):
+                raise TypeError(
+                    'subject_alternative_name must be list of str or Common.CertificateExtension.SubjectAlternativeName'
+                )
+            self.subject_alternative_name = subject_alternative_name
+
+            if (
+                extensions
+                and not isinstance(extensions, list)
+                and any(isinstance(e, Common.CertificateExtension) for e in extensions)  # type: ignore
+            ):
+                raise TypeError('extensions must be of type List[Common.CertificateExtension]')
+            self.extensions = extensions
+
+            self.pem = pem
+
+            if not isinstance(dbot_score, Common.DBotScore):
+                raise ValueError('dbot_score must be of type DBotScore')
+
+        def to_context(self):
+            certificate_context = {
+                "SubjectDN": self.subject_dn
+            }  # type: Dict[str, Any]
+
+            san_list = []  # type: List[Dict[str, str]]
+            if self.subject_alternative_name:
+                for san in self.subject_alternative_name:
+                    if isinstance(san, str):
+                        san_list.append({
+                            'Value': san
+                        })
+                    elif isinstance(san, dict):
+                        san_list.append(san)
+                    elif(isinstance(san, Common.CertificateExtension.SubjectAlternativeName)):
+                        san_list.append(san.to_context())
+
+            elif self.extensions:  # autogenerate it from extensions
+                for ext in self.extensions:
+                    if (
+                        ext.extension_type == Common.CertificateExtension.ExtensionType.SUBJECTALTERNATIVENAME
+                        and ext.subject_alternative_names is not None
+                    ):
+                        for san in ext.subject_alternative_names:
+                            san_list.append(san.to_context())
+
+            if san_list:
+                certificate_context['SubjectAlternativeName'] = san_list
+
+            if self.name:
+                certificate_context["Name"] = self.name
+            else:  # autogenerate it
+                name = set()  # type: Set[str]
+                # add subject alternative names
+                if san_list:
+                    name = set([
+                        sn['Value'] for sn in san_list
+                        if (
+                            'Value' in sn
+                            and (
+                                'Type' not in sn
+                                or sn['Type'] in (Common.GeneralName.DNSNAME, Common.GeneralName.IPADDRESS)
+                            )
+                        )
+                    ])
+
+                # subject_dn is RFC4515 escaped
+                # replace \, and \+ with the long escaping \2c and \2b
+                long_escaped_subject_dn = self.subject_dn.replace("\\,", "\\2c")
+                long_escaped_subject_dn = long_escaped_subject_dn.replace("\\+", "\\2b")
+                # we then split RDN (separated by ,) and multi-valued RDN (sep by +)
+                rdns = long_escaped_subject_dn.replace('+', ',').split(',')
+                cn = next((rdn for rdn in rdns if rdn.startswith('CN=')), None)
+                if cn:
+                    name.add(cn.split('=', 1)[-1])
+
+                if name:
+                    certificate_context["Name"] = sorted(list(name))
+
+            if self.issuer_dn:
+                certificate_context["IssuerDN"] = self.issuer_dn
+
+            if self.serial_number:
+                certificate_context["SerialNumber"] = self.serial_number
+
+            if self.validity_not_before:
+                certificate_context["ValidityNotBefore"] = self.validity_not_before
+
+            if self.validity_not_after:
+                certificate_context["ValidityNotAfter"] = self.validity_not_after
+
+            if self.sha512:
+                certificate_context["SHA512"] = self.sha512
+
+            if self.sha256:
+                certificate_context["SHA256"] = self.sha256
+
+            if self.sha1:
+                certificate_context["SHA1"] = self.sha1
+
+            if self.md5:
+                certificate_context["MD5"] = self.md5
+
+            if self.publickey and isinstance(self.publickey, Common.CertificatePublicKey):
+                certificate_context["PublicKey"] = self.publickey.to_context()
+
+            if self.spki_sha256:
+                certificate_context["SPKISHA256"] = self.spki_sha256
+
+            sig = {}  # type: Dict[str, str]
+            if self.signature_algorithm:
+                sig["Algorithm"] = self.signature_algorithm
+            if self.signature:
+                sig["Signature"] = self.signature
+            if sig:
+                certificate_context["Signature"] = sig
+
+            if self.extensions:
+                certificate_context["Extension"] = [e.to_context() for e in self.extensions]
+
+            if self.pem:
+                certificate_context["PEM"] = self.pem
+
+            if self.dbot_score and self.dbot_score.score == Common.DBotScore.BAD:
+                certificate_context['Malicious'] = {
+                    'Vendor': self.dbot_score.integration_name,
+                    'Description': self.dbot_score.malicious_description
+                }
+
+            ret_value = {
+                Common.Certificate.CONTEXT_PATH: certificate_context
+            }
+
+            if self.dbot_score:
+                ret_value.update(self.dbot_score.to_context())
+
+            return ret_value
+
+
+class ScheduledCommand:
+    """
+    ScheduledCommand configuration class
+    Holds the scheduled command configuration for the command result - managing the way the command should be polled.
+
+    :type command: ``str``
+    :param command: The command that'll run after next_run_in_seconds has passed.
+
+    :type next_run_in_seconds: ``int``
+    :param next_run_in_seconds: How long to wait before executing the command.
+
+    :type args: ``Optional[Dict[str, Any]]``
+    :param args: Arguments to use when executing the command.
+
+    :type timeout_in_seconds: ``Optional[int]``
+    :param timeout_in_seconds: Number of seconds until the polling sequence will timeout.
+
+    :return: None
+    :rtype: ``None``
+    """
+    VERSION_MISMATCH_ERROR = 'This command is not supported by this XSOAR server version. Please update your server ' \
+                             'version to 6.2.0 or later.'
+
+    def __init__(
+            self,
+            command,  # type: str
+            next_run_in_seconds,  # type: int
+            args=None,  # type: Optional[Dict[str, Any]]
+            timeout_in_seconds=None,  # type: Optional[int]
+    ):
+        self.raise_error_if_not_supported()
+        self._command = command
+        if next_run_in_seconds < 10:
+            demisto.info('ScheduledCommandConfiguration provided value for next_run_in_seconds: '
+                         '{} is '.format(next_run_in_seconds) + 'too low - minimum interval is 10 seconds. '
+                                                                'next_run_in_seconds was set to 10 seconds.')
+            next_run_in_seconds = 10
+        self._next_run = str(next_run_in_seconds)
+        self._args = args
+        self._timeout = str(timeout_in_seconds) if timeout_in_seconds else None
+
+    @staticmethod
+    def raise_error_if_not_supported():
+        if not is_demisto_version_ge('6.2.0'):
+            raise DemistoException(ScheduledCommand.VERSION_MISMATCH_ERROR)
+
+    def to_results(self):
+        """
+        Returns the result dictionary of the polling command
+        """
+        return assign_params(
+            PollingCommand=self._command,
+            NextRun=self._next_run,
+            PollingArgs=self._args,
+            Timeout=self._timeout
+        )
+
+
+def camelize_string(src_str, delim='_', upper_camel=True):
+    """
+    Transform snake_case to CamelCase
+
+    :type src_str: ``str``
+    :param src_str: snake_case string to convert.
+
+    :type delim: ``str``
+    :param delim: indicator category.
+
+    :type upper_camel: ``bool``
+    :param upper_camel: When True then transforms string to camel case with the first letter capitalised
+                        (for example: demisto_content to DemistoContent), otherwise the first letter will not be capitalised
+                        (for example: demisto_content to demistoContent).
+
+    :return: A CammelCase string.
+    :rtype: ``str``
+    """
+    if not src_str:  # empty string
+        return ""
+    components = src_str.split(delim)
+    camelize_without_first_char = ''.join(map(lambda x: x.title(), components[1:]))
+    if upper_camel:
+        return components[0].title() + camelize_without_first_char
+    else:
+        return components[0].lower() + camelize_without_first_char
 
 
 class IndicatorsTimeline:
@@ -2625,6 +6067,518 @@ class IndicatorsTimeline:
         self.indicators_timeline = timelines
 
 
+def arg_to_number(arg, arg_name=None, required=False):
+    # type: (Any, Optional[str], bool) -> Optional[int]
+
+    """Converts an XSOAR argument to a Python int
+
+    This function is used to quickly validate an argument provided to XSOAR
+    via ``demisto.args()`` into an ``int`` type. It will throw a ValueError
+    if the input is invalid. If the input is None, it will throw a ValueError
+    if required is ``True``, or ``None`` if required is ``False.
+
+    :type arg: ``Any``
+    :param arg: argument to convert
+
+    :type arg_name: ``str``
+    :param arg_name: argument name
+
+    :type required: ``bool``
+    :param required:
+        throws exception if ``True`` and argument provided is None
+
+    :return:
+        returns an ``int`` if arg can be converted
+        returns ``None`` if arg is ``None`` and required is set to ``False``
+        otherwise throws an Exception
+    :rtype: ``Optional[int]``
+    """
+
+    if arg is None or arg == '':
+        if required is True:
+            if arg_name:
+                raise ValueError('Missing "{}"'.format(arg_name))
+            else:
+                raise ValueError('Missing required argument')
+
+        return None
+
+    arg = encode_string_results(arg)
+
+    if isinstance(arg, str):
+        if arg.isdigit():
+            return int(arg)
+
+        try:
+            return int(float(arg))
+        except Exception:
+            if arg_name:
+                raise ValueError('Invalid number: "{}"="{}"'.format(arg_name, arg))
+            else:
+                raise ValueError('"{}" is not a valid number'.format(arg))
+    if isinstance(arg, int):
+        return arg
+
+    if arg_name:
+        raise ValueError('Invalid number: "{}"="{}"'.format(arg_name, arg))
+    else:
+        raise ValueError('"{}" is not a valid number'.format(arg))
+
+
+def arg_to_datetime(arg, arg_name=None, is_utc=True, required=False, settings=None):
+    # type: (Any, Optional[str], bool, bool, dict) -> Optional[datetime]
+
+    """Converts an XSOAR argument to a datetime
+
+    This function is used to quickly validate an argument provided to XSOAR
+    via ``demisto.args()`` into an ``datetime``. It will throw a ValueError if the input is invalid.
+    If the input is None, it will throw a ValueError if required is ``True``,
+    or ``None`` if required is ``False.
+
+    :type arg: ``Any``
+    :param arg: argument to convert
+
+    :type arg_name: ``str``
+    :param arg_name: argument name
+
+    :type is_utc: ``bool``
+    :param is_utc: if True then date converted as utc timezone, otherwise will convert with local timezone.
+
+    :type required: ``bool``
+    :param required:
+        throws exception if ``True`` and argument provided is None
+
+    :type settings: ``dict``
+    :param settings: If provided, passed to dateparser.parse function.
+
+    :return:
+        returns an ``datetime`` if conversion works
+        returns ``None`` if arg is ``None`` and required is set to ``False``
+        otherwise throws an Exception
+    :rtype: ``Optional[datetime]``
+    """
+
+    if arg is None:
+        if required is True:
+            if arg_name:
+                raise ValueError('Missing "{}"'.format(arg_name))
+            else:
+                raise ValueError('Missing required argument')
+        return None
+
+    if isinstance(arg, str) and arg.isdigit() or isinstance(arg, (int, float)):
+        # timestamp is a str containing digits - we just convert it to int
+        ms = float(arg)
+        if ms > 2000000000.0:
+            # in case timestamp was provided as unix time (in milliseconds)
+            ms = ms / 1000.0
+
+        if is_utc:
+            return datetime.utcfromtimestamp(ms).replace(tzinfo=timezone.utc)
+        else:
+            return datetime.fromtimestamp(ms)
+    if isinstance(arg, str):
+        # we use dateparser to handle strings either in ISO8601 format, or
+        # relative time stamps.
+        # For example: format 2019-10-23T00:00:00 or "3 days", etc
+        if settings:
+            date = dateparser.parse(arg, settings=settings)
+        else:
+            date = dateparser.parse(arg, settings={'TIMEZONE': 'UTC'})
+
+        if date is None:
+            # if d is None it means dateparser failed to parse it
+            if arg_name:
+                raise ValueError('Invalid date: "{}"="{}"'.format(arg_name, arg))
+            else:
+                raise ValueError('"{}" is not a valid date'.format(arg))
+
+        return date
+
+    if arg_name:
+        raise ValueError('Invalid date: "{}"="{}"'.format(arg_name, arg))
+    else:
+        raise ValueError('"{}" is not a valid date'.format(arg))
+
+
+# -------------------------------- Relationships----------------------------------- #
+
+
+class EntityRelationship:
+    """
+    XSOAR entity relationship.
+
+    :type name: ``str``
+    :param name: Relationship name.
+
+    :type relationship_type: ``str``
+    :param relationship_type: Relationship type. (e.g. IndicatorToIndicator...).
+
+    :type entity_a: ``str``
+    :param entity_a: A value, A aka source of the relationship.
+
+    :type entity_a_family: ``str``
+    :param entity_a_family: Entity family of A, A aka source of the relationship. (e.g. Indicator...)
+
+    :type entity_a_type: ``str``
+    :param entity_a_type: Entity A type, A aka source of the relationship. (e.g. IP/URL/...).
+
+    :type entity_b: ``str``
+    :param entity_b: B value, B aka destination of the relationship.
+
+    :type entity_b_family: ``str``
+    :param entity_b_family: Entity family of B, B aka destination of the relationship. (e.g. Indicator...)
+
+    :type entity_b_type: ``str``
+    :param entity_b_type: Entity B type, B aka destination of the relationship. (e.g. IP/URL/...).
+
+    :type source_reliability: ``str``
+    :param source_reliability: Source reliability.
+
+    :type fields: ``dict``
+    :param fields: Custom fields. (Optional)
+
+    :type brand: ``str``
+    :param brand: Source brand name. (Optional)
+
+    :return: None
+    :rtype: ``None``
+    """
+
+    class RelationshipsTypes(object):
+        """
+        Relationships Types objects.
+
+        :return: None
+        :rtype: ``None``
+        """
+        # dict which keys is a relationship type and the value is the reverse type.
+        RELATIONSHIP_TYPES = ['IndicatorToIndicator']
+
+        @staticmethod
+        def is_valid_type(_type):
+            # type: (str) -> bool
+
+            return _type in EntityRelationship.RelationshipsTypes.RELATIONSHIP_TYPES
+
+    class RelationshipsFamily(object):
+        """
+        Relationships Family object list.
+
+        :return: None
+        :rtype: ``None``
+
+        """
+
+        INDICATOR = ["Indicator"]
+
+        @staticmethod
+        def is_valid_type(_type):
+            # type: (str) -> bool
+
+            return _type in EntityRelationship.RelationshipsFamily.INDICATOR
+
+    class Relationships(object):
+
+        """
+        Enum: Relations names and their reverse
+
+        :return: None
+        :rtype: ``None``
+        """
+        APPLIED = 'applied'
+        ATTACHMENT_OF = 'attachment-of'
+        ATTACHES = 'attaches'
+        ATTRIBUTE_OF = 'attribute-of'
+        ATTRIBUTED_BY = 'attributed-by'
+        ATTRIBUTED_TO = 'attributed-to'
+        AUTHORED_BY = 'authored-by'
+        BEACONS_TO = 'beacons-to'
+        BUNDLED_IN = 'bundled-in'
+        BUNDLES = 'bundles'
+        COMMUNICATED_WITH = 'communicated-with'
+        COMMUNICATED_BY = 'communicated-by'
+        COMMUNICATES_WITH = 'communicates-with'
+        COMPROMISES = 'compromises'
+        CONTAINS = 'contains'
+        CONTROLS = 'controls'
+        CREATED_BY = 'created-by'
+        CREATES = 'creates'
+        DELIVERED_BY = 'delivered-by'
+        DELIVERS = 'delivers'
+        DOWNLOADS = 'downloads'
+        DOWNLOADS_FROM = 'downloads-from'
+        DROPPED_BY = 'dropped-by'
+        DROPS = 'drops'
+        DUPLICATE_OF = 'duplicate-of'
+        EMBEDDED_IN = 'embedded-in'
+        EMBEDS = 'embeds'
+        EXECUTED = 'executed'
+        EXECUTED_BY = 'executed-by'
+        EXFILTRATES_TO = 'exfiltrates-to'
+        EXPLOITS = 'exploits'
+        HAS = 'has'
+        HOSTED_ON = 'hosted-on'
+        HOSTS = 'hosts'
+        IMPERSONATES = 'impersonates'
+        INDICATED_BY = 'indicated-by'
+        INDICATOR_OF = 'indicator-of'
+        INJECTED_FROM = 'injected-from'
+        INJECTS_INTO = 'injects-into'
+        INVESTIGATES = 'investigates'
+        IS_ALSO = 'is-also'
+        MITIGATED_BY = 'mitigated-by'
+        MITIGATES = 'mitigates'
+        ORIGINATED_FROM = 'originated-from'
+        OWNED_BY = 'owned-by'
+        OWNS = 'owns'
+        PART_OF = 'part-of'
+        RELATED_TO = 'related-to'
+        REMEDIATES = 'remediates'
+        RESOLVED_BY = 'resolved-by'
+        RESOLVED_FROM = 'resolved-from'
+        RESOLVES_TO = 'resolves-to'
+        SEEN_ON = 'seen-on'
+        SENT = 'sent'
+        SENT_BY = 'sent-by'
+        SENT_FROM = 'sent-from'
+        SENT_TO = 'sent-to'
+        SIMILAR_TO = 'similar-to'
+        SUB_DOMAIN_OF = 'sub-domain-of'
+        SUB_TECHNIQUE_OF = 'subtechnique-of'
+        PARENT_TECHNIQUE_OF = 'parent-technique-of'
+        SUPRA_DOMAIN_OF = 'supra-domain-of'
+        TARGETED_BY = 'targeted-by'
+        TARGETS = 'targets'
+        TYPES = 'Types'
+        UPLOADED_TO = 'uploaded-to'
+        USED_BY = 'used-by'
+        USED_ON = 'used-on'
+        USES = 'uses'
+        VARIANT_OF = 'variant-of'
+
+        RELATIONSHIPS_NAMES = {'applied': 'applied-on',
+                               'attachment-of': 'attaches',
+                               'attaches': 'attachment-of',
+                               'attribute-of': 'owns',
+                               'attributed-by': 'attributed-to',
+                               'attributed-to': 'attributed-by',
+                               'authored-by': 'author-of',
+                               'beacons-to': 'communicated-by',
+                               'bundled-in': 'bundles',
+                               'bundles': 'bundled-in',
+                               'communicated-with': 'communicated-by',
+                               'communicated-by': 'communicates-with',
+                               'communicates-with': 'communicated-by',
+                               'compromises': 'compromised-by',
+                               'contains': 'part-of',
+                               'controls': 'controlled-by',
+                               'created-by': 'creates',
+                               'creates': 'created-by',
+                               'delivered-by': 'delivers',
+                               'delivers': 'delivered-by',
+                               'downloads': 'downloaded-by',
+                               'downloads-from': 'hosts',
+                               'dropped-by': 'drops',
+                               'drops': 'dropped-by',
+                               'duplicate-of': 'duplicate-of',
+                               'embedded-in': 'embeds',
+                               'embeds': 'embedded-on',
+                               'executed': 'executed-by',
+                               'executed-by': 'executes',
+                               'exfiltrates-to': 'exfiltrated-from',
+                               'exploits': 'exploited-by',
+                               'has': 'seen-on',
+                               'hosted-on': 'hosts',
+                               'hosts': 'hosted-on',
+                               'impersonates': 'impersonated-by',
+                               'indicated-by': 'indicator-of',
+                               'indicator-of': 'indicated-by',
+                               'injected-from': 'injects-into',
+                               'injects-into': 'injected-from',
+                               'investigates': 'investigated-by',
+                               'is-also': 'is-also',
+                               'mitigated-by': 'mitigates',
+                               'mitigates': 'mitigated-by',
+                               'originated-from': 'source-of',
+                               'owned-by': 'owns',
+                               'owns': 'owned-by',
+                               'part-of': 'contains',
+                               'related-to': 'related-to',
+                               'remediates': 'remediated-by',
+                               'resolved-by': 'resolves-to',
+                               'resolved-from': 'resolves-to',
+                               'resolves-to': 'resolved-from',
+                               'seen-on': 'has',
+                               'sent': 'attached-to',
+                               'sent-by': 'sent',
+                               'sent-from': 'received-by',
+                               'sent-to': 'received-by',
+                               'similar-to': 'similar-to',
+                               'sub-domain-of': 'supra-domain-of',
+                               'supra-domain-of': 'sub-domain-of',
+                               'subtechnique-of': 'parent-technique-of',
+                               'parent-technique-of': 'subtechnique-of',
+                               'targeted-by': 'targets',
+                               'targets': 'targeted-by',
+                               'Types': 'Reverse',
+                               'uploaded-to': 'hosts',
+                               'used-by': 'uses',
+                               'used-on': 'targeted-by',
+                               'uses': 'used-by',
+                               'variant-of': 'variant-of'}
+
+        @staticmethod
+        def is_valid(_type):
+            """
+            :type _type: ``str``
+            :param _type: the data to be returned and will be set to context
+
+            :return: Is the given type supported
+            :rtype: ``bool``
+            """
+            return _type in EntityRelationship.Relationships.RELATIONSHIPS_NAMES.keys()
+
+        @staticmethod
+        def get_reverse(name):
+            """
+            :type name: ``str``
+            :param name: Relationship name
+
+            :return: Returns the reversed relationship name
+            :rtype: ``str``
+            """
+
+            return EntityRelationship.Relationships.RELATIONSHIPS_NAMES[name]
+
+    def __init__(self, name, entity_a, entity_a_type, entity_b, entity_b_type,
+                 reverse_name='', relationship_type='IndicatorToIndicator', entity_a_family='Indicator',
+                 entity_b_family='Indicator', source_reliability="", fields=None, brand=""):
+
+        # Relationship
+        if not EntityRelationship.Relationships.is_valid(name):
+            raise ValueError("Invalid relationship: " + name)
+        self._name = name
+
+        if reverse_name:
+            if not EntityRelationship.Relationships.is_valid(reverse_name):
+                raise ValueError("Invalid reverse relationship: " + reverse_name)
+            self._reverse_name = reverse_name
+        else:
+            self._reverse_name = EntityRelationship.Relationships.get_reverse(name)
+
+        if not EntityRelationship.RelationshipsTypes.is_valid_type(relationship_type):
+            raise ValueError("Invalid relationship type: " + relationship_type)
+        self._relationship_type = relationship_type
+
+        # Entity A - Source
+        self._entity_a = entity_a
+
+        self._entity_a_type = entity_a_type
+
+        if not EntityRelationship.RelationshipsFamily.is_valid_type(entity_a_family):
+            raise ValueError("Invalid entity A Family type: " + entity_a_family)
+        self._entity_a_family = entity_a_family
+
+        # Entity B - Destination
+        if not entity_b:
+            demisto.info(
+                "WARNING: Invalid entity B - Relationships will not be created to entity A {} with relationship name {}".format(
+                    str(entity_a), str(name)))
+        self._entity_b = entity_b
+
+        self._entity_b_type = entity_b_type
+
+        if not EntityRelationship.RelationshipsFamily.is_valid_type(entity_b_family):
+            raise ValueError("Invalid entity B Family type: " + entity_b_family)
+        self._entity_b_family = entity_b_family
+
+        # Custom fields
+        if fields:
+            self._fields = fields
+        else:
+            self._fields = {}
+
+        # Source
+        if brand:
+            self._brand = brand
+        else:
+            self._brand = ''
+
+        if source_reliability:
+            if not DBotScoreReliability.is_valid_type(source_reliability):
+                raise ValueError("Invalid source reliability value", source_reliability)
+            self._source_reliability = source_reliability
+        else:
+            self._source_reliability = ''
+
+    def to_entry(self):
+        """ Convert object to XSOAR entry
+        :return: XSOAR entry representation.
+        :rtype: ``dict``
+        """
+        entry = {}
+
+        if self._entity_b:
+            entry = {
+                "name": self._name,
+                "reverseName": self._reverse_name,
+                "type": self._relationship_type,
+                "entityA": self._entity_a,
+                "entityAFamily": self._entity_a_family,
+                "entityAType": self._entity_a_type,
+                "entityB": self._entity_b,
+                "entityBFamily": self._entity_b_family,
+                "entityBType": self._entity_b_type,
+                "fields": self._fields,
+            }
+            if self._source_reliability:
+                entry["reliability"] = self._source_reliability
+            if self._brand:
+                entry["brand"] = self._brand
+        return entry
+
+    def to_indicator(self):
+        """ Convert object to XSOAR entry
+        :return: XSOAR entry representation.
+        :rtype: ``dict``
+        """
+        indicator_relationship = {}
+
+        if self._entity_b:
+            indicator_relationship = {
+                "name": self._name,
+                "reverseName": self._reverse_name,
+                "type": self._relationship_type,
+                "entityA": self._entity_a,
+                "entityAFamily": self._entity_a_family,
+                "entityAType": self._entity_a_type,
+                "entityB": self._entity_b,
+                "entityBFamily": self._entity_b_family,
+                "entityBType": self._entity_b_type,
+                "fields": self._fields,
+            }
+        return indicator_relationship
+
+    def to_context(self):
+        """ Convert object to XSOAR context
+        :return: XSOAR context representation.
+        :rtype: ``dict``
+        """
+        indicator_relationship_context = {}
+
+        if self._entity_b:
+            indicator_relationship_context = {
+                "Relationship": self._name,
+                "EntityA": self._entity_a,
+                "EntityAType": self._entity_a_type,
+                "EntityB": self._entity_b,
+                "EntityBType": self._entity_b_type,
+            }
+
+        return indicator_relationship_context
+
+
 class CommandResults:
     """
     CommandResults class - use to return results to warroom
@@ -2642,7 +6596,10 @@ class CommandResults:
     :param outputs: the data to be returned and will be set to context
 
     :type indicators: ``list``
-    :param indicators: must be list of Indicator types, like Common.IP, Common.URL, Common.File, etc.
+    :param indicators: DEPRECATED: use 'indicator' instead.
+
+    :type indicator: ``Common.Indicator``
+    :param indicator: single indicator like Common.IP, Common.URL, Common.File, etc.
 
     :type readable_output: ``str``
     :param readable_output: (Optional) markdown string that will be presented in the warroom, should be human readable -
@@ -2655,17 +6612,53 @@ class CommandResults:
     :type indicators_timeline: ``IndicatorsTimeline``
     :param indicators_timeline: must be an IndicatorsTimeline. used by the server to populate an indicator's timeline.
 
+    :type ignore_auto_extract: ``bool``
+    :param ignore_auto_extract: must be a boolean, default value is False. Used to prevent AutoExtract on output.
+
+    :type relationships: ``list of EntityRelationship``
+    :param relationships: List of relationships of the indicator.
+
+    :type mark_as_note: ``bool``
+    :param mark_as_note: must be a boolean, default value is False. Used to mark entry as note.
+
+    :type entry_type: ``int`` code of EntryType
+    :param entry_type: type of return value, see EntryType
+
+    :type scheduled_command: ``ScheduledCommand``
+    :param scheduled_command: manages the way the command should be polled.
+
     :return: None
     :rtype: ``None``
     """
 
-    def __init__(self, outputs_prefix=None, outputs_key_field=None, outputs=None, indicators=None, readable_output=None,
-                 raw_response=None, indicators_timeline=None):
-        # type: (str, object, object, list, str, object, IndicatorsTimeline) -> None
+    def __init__(self, outputs_prefix=None,
+                 outputs_key_field=None,
+                 outputs=None,
+                 indicators=None,
+                 readable_output=None,
+                 raw_response=None,
+                 indicators_timeline=None,
+                 indicator=None,
+                 ignore_auto_extract=False,
+                 mark_as_note=False,
+                 scheduled_command=None,
+                 relationships=None,
+                 entry_type=None,
+                 content_format=None,
+                 ):
+        # type: (str, object, object, list, str, object, IndicatorsTimeline, Common.Indicator, bool, bool, ScheduledCommand, list, int, str) -> None  # noqa: E501
         if raw_response is None:
             raw_response = outputs
+        if outputs is not None and not isinstance(outputs, dict) and not outputs_prefix:
+            raise ValueError('outputs_prefix is missing')
+        if indicators and indicator:
+            raise ValueError('indicators is DEPRECATED, use only indicator')
+        if entry_type is None:
+            entry_type = EntryType.NOTE
 
-        self.indicators = indicators
+        self.indicators = indicators  # type: Optional[List[Common.Indicator]]
+        self.indicator = indicator  # type: Optional[Common.Indicator]
+        self.entry_type = entry_type  # type: int
 
         self.outputs_prefix = outputs_prefix
 
@@ -2683,22 +6676,34 @@ class CommandResults:
             raise TypeError('outputs_key_field must be of type str or list')
 
         self.outputs = outputs
-
         self.raw_response = raw_response
         self.readable_output = readable_output
         self.indicators_timeline = indicators_timeline
+        self.ignore_auto_extract = ignore_auto_extract
+        self.mark_as_note = mark_as_note
+        self.scheduled_command = scheduled_command
+        self.relationships = relationships
+
+        if content_format is not None and not EntryFormat.is_valid_type(content_format):
+            raise TypeError('content_format {} is invalid, see CommonServerPython.EntryFormat'.format(content_format))
+        self.content_format = content_format
 
     def to_context(self):
         outputs = {}  # type: dict
+        relationships = []  # type: list
         if self.readable_output:
             human_readable = self.readable_output
         else:
             human_readable = None  # type: ignore[assignment]
         raw_response = None  # type: ignore[assignment]
         indicators_timeline = []  # type: ignore[assignment]
+        ignore_auto_extract = False  # type: bool
+        mark_as_note = False  # type: bool
 
-        if self.indicators:
-            for indicator in self.indicators:
+        indicators = [self.indicator] if self.indicator else self.indicators
+
+        if indicators:
+            for indicator in indicators:
                 context_outputs = indicator.to_context()
 
                 for key, value in context_outputs.items():
@@ -2710,16 +6715,22 @@ class CommandResults:
         if self.raw_response:
             raw_response = self.raw_response
 
+        if self.ignore_auto_extract:
+            ignore_auto_extract = True
+
+        if self.mark_as_note:
+            mark_as_note = True
+
         if self.indicators_timeline:
             indicators_timeline = self.indicators_timeline.indicators_timeline
 
-        if self.outputs is not None:
+        if self.outputs is not None and self.outputs != []:
             if not self.readable_output:
                 # if markdown is not provided then create table by default
                 human_readable = tableToMarkdown('Results', self.outputs)
             if self.outputs_prefix and self._outputs_key_field:
                 # if both prefix and key field provided then create DT key
-                formatted_outputs_key = ' && '.join(['val.{0} == obj.{0}'.format(key_field)
+                formatted_outputs_key = ' && '.join(['val.{0} && val.{0} == obj.{0}'.format(key_field)
                                                      for key_field in self._outputs_key_field])
                 outputs_key = '{0}({1})'.format(self.outputs_prefix, formatted_outputs_key)
                 outputs[outputs_key] = self.outputs
@@ -2727,21 +6738,32 @@ class CommandResults:
                 outputs_key = '{}'.format(self.outputs_prefix)
                 outputs[outputs_key] = self.outputs
             else:
-                outputs = self.outputs  # type: ignore[assignment]
+                outputs.update(self.outputs)  # type: ignore[call-overload]
 
-        content_format = EntryFormat.JSON
-        if isinstance(raw_response, STRING_TYPES) or isinstance(raw_response, int):
-            content_format = EntryFormat.TEXT
+        if self.relationships:
+            relationships = [relationship.to_entry() for relationship in self.relationships if relationship.to_entry()]
+
+        # using a local variable to avoid changing the object's attribute, see discussion on PR #18544.
+        content_format = self.content_format
+        if content_format is None:
+            if isinstance(raw_response, STRING_TYPES + (int,)):
+                content_format = EntryFormat.TEXT
+            else:
+                content_format = EntryFormat.JSON
 
         return_entry = {
-            'Type': EntryType.NOTE,
+            'Type': self.entry_type,
             'ContentsFormat': content_format,
             'Contents': raw_response,
             'HumanReadable': human_readable,
             'EntryContext': outputs,
             'IndicatorTimeline': indicators_timeline,
+            'IgnoreAutoExtract': bool(ignore_auto_extract),
+            'Note': mark_as_note,
+            'Relationships': relationships,
         }
-
+        if self.scheduled_command:
+            return_entry.update(self.scheduled_command.to_results())
         return return_entry
 
 
@@ -2749,7 +6771,7 @@ def return_results(results):
     """
     This function wraps the demisto.results(), supports.
 
-    :type results: ``CommandResults`` or ``str`` or ``dict`` or ``BaseWidget``
+    :type results: ``CommandResults`` or ``str`` or ``dict`` or ``BaseWidget`` or ``list``
     :param results: A result object to return as a War-Room entry.
 
     :return: None
@@ -2760,23 +6782,38 @@ def return_results(results):
         demisto.results(None)
         return
 
-    if isinstance(results, CommandResults):
+    elif results and isinstance(results, list):
+        result_list = []
+        for result in results:
+            if isinstance(result, (dict, str)):
+                # Results of type dict or str are of the old results format and work with demisto.results()
+                result_list.append(result)
+            else:
+                # The rest are of the new format and have a corresponding function (to_context, to_display, etc...)
+                return_results(result)
+        if result_list:
+            demisto.results(result_list)
+
+    elif isinstance(results, CommandResults):
         demisto.results(results.to_context())
-        return
 
-    if isinstance(results, BaseWidget):
+    elif isinstance(results, BaseWidget):
         demisto.results(results.to_display())
-        return
 
-    if isinstance(results, GetMappingFieldsResponse):
+    elif isinstance(results, GetMappingFieldsResponse):
         demisto.results(results.extract_mapping())
-        return
 
-    if isinstance(results, GetRemoteDataResponse):
+    elif isinstance(results, GetRemoteDataResponse):
         demisto.results(results.extract_for_local())
-        return
 
-    demisto.results(results)
+    elif isinstance(results, GetModifiedRemoteDataResponse):
+        demisto.results(results.to_entry())
+
+    elif hasattr(results, 'to_entry'):
+        demisto.results(results.to_entry())
+
+    else:
+        demisto.results(results)
 
 
 # deprecated
@@ -2849,19 +6886,27 @@ def return_error(message, error='', outputs=None):
         :return: Error entry object
         :rtype: ``dict``
     """
-    is_server_handled = hasattr(demisto, 'command') and demisto.command() in ('fetch-incidents',
-                                                                              'long-running-execution',
-                                                                              'fetch-indicators')
-    if is_debug_mode() and not is_server_handled and any(sys.exc_info()):  # Checking that an exception occurred
-        message = "{}\n\n{}".format(message, traceback.format_exc())
-
-    LOG(message)
+    is_command = hasattr(demisto, 'command')
+    is_server_handled = is_command and demisto.command() in ('fetch-incidents',
+                                                             'fetch-credentials',
+                                                             'long-running-execution',
+                                                             'fetch-indicators')
+    message = LOG(message)
     if error:
         LOG(str(error))
+    if any(sys.exc_info()):  # Checking that an exception occurred
+        fixed_traceback = fix_traceback_line_numbers(traceback.format_exc())
+        LOG('\n{}'.format(fixed_traceback))
+        if is_debug_mode():
+            message = '{}\n\n{}'.format(message, fixed_traceback)
 
     LOG.print_log()
     if not isinstance(message, str):
         message = message.encode('utf8') if hasattr(message, 'encode') else str(message)
+
+    if is_command and demisto.command() == 'get-modified-remote-data':
+        if (error and not isinstance(error, NotImplementedError)) or sys.exc_info()[0] != NotImplementedError:
+            message = 'skip update. error: ' + message
 
     if is_server_handled:
         raise Exception(message)
@@ -2870,7 +6915,7 @@ def return_error(message, error='', outputs=None):
             'Type': entryTypes['error'],
             'ContentsFormat': formats['text'],
             'Contents': message,
-            'EntryContext': outputs
+            'EntryContext': outputs,
         })
         sys.exit(0)
 
@@ -2913,7 +6958,244 @@ def return_warning(message, exit=False, warning='', outputs=None, ignore_auto_ex
         sys.exit(0)
 
 
-def camelize(src, delim=' '):
+class CommandRunner:
+    """
+    Class for executing multiple commands and save the results of each command.
+
+    :return: None
+    :rtype: ``None``
+    """
+    class Command:
+        """
+        Data class with the data required to execute a command.
+
+        :return: None
+        :rtype: ``None``
+        """
+        def __init__(self, commands, args_lst, brand=None, instance=None):
+            """
+
+            :param commands: The commands list or a single command
+            :type commands: str + List[str]
+            :param args_lst: The args list or a single args
+            :type args_lst: List[Dict] + Dict
+            :param brand: The brand to use
+            :type brand: str
+            :param instance: The instance to use
+            :type instance: str
+            """
+            if isinstance(commands, str) and isinstance(args_lst, dict):
+                commands = [commands]
+                args_lst = [args_lst]
+            if isinstance(commands, str) and isinstance(args_lst, list):
+                commands = [commands for _ in range(len(args_lst))]
+            self._is_valid(commands, args_lst)
+            self.commands = commands
+            self.args_lst = args_lst
+            if brand:
+                for args in self.args_lst:
+                    args.update({'using-brand': brand})
+            if instance:
+                for args in self.args_lst:
+                    args.update({'using': instance})
+
+        @staticmethod
+        def _is_valid(commands, args_lst):
+            """
+            Error handling of the given arguments
+            :param commands: list of commands
+            :param args_lst: list of args
+            :return:
+            """
+            if not isinstance(commands, list):
+                raise DemistoException('Expected "commands" argument to be a list. received: {}'.format(type(commands)))
+            if not isinstance(args_lst, list):
+                raise DemistoException('Expected "args_lst" argument to be a list. received: {}'.format(type(args_lst)))
+            if len(commands) != len(args_lst):
+                raise DemistoException('"commands" and "args_lst" should be in the same size')
+
+    class Result:
+        """
+        Class for the result of the command.
+
+        :return: None
+        :rtype: ``None``
+        """
+        def __init__(self, command, args, brand, instance, result):
+            """
+            :param command: command that was run.
+            :type command ``str``
+            :param args: args that was run.
+            :type args: ``dict``
+            :param brand: The brand that was used.
+            :type brand: ``str``
+            :param instance: The instance that was used.
+            :type instance: ``str``
+            :param result: The result of the command.
+            :type result: ``object``
+            """
+            self.command = command
+            self.args = args
+            self.brand = brand
+            self.instance = instance
+            self.result = result
+
+    @staticmethod
+    def execute_commands(command, extract_contents=True):
+        """
+        Runs the `demisto.executeCommand()` and gets all the results, including the errors, returned from the command.
+
+        :type command: ``Command``
+        :param command: The commands to run. (required)
+
+        :type extract_contents: ``bool``
+        :param extract_contents: Whether to extract Contents part of the results. Default is True.
+
+        :return: A tuple of two lists: the command results list and command errors list.
+        :rtype: ``Tuple[List[ResultWrapper], List[ResultWrapper]]``
+        """
+        results, errors = [], []
+        for command, args in zip(command.commands, command.args_lst):
+            try:
+                demisto.debug(' '.join(('calling', command, 'with args=', ','.join(args))))
+                execute_command_results = demisto.executeCommand(command, args)
+                for res in execute_command_results:
+                    brand_name = res.get('Brand', 'Unknown') if isinstance(res, dict) else 'Unknown'
+                    module_name = res.get('ModuleName', 'Unknown') if isinstance(res, dict) else 'Unknown'
+                    if is_error(res):
+                        error = get_error(res)
+                        demisto.debug('error: ' + error)
+                        errors.append(CommandRunner.Result(command, args, brand_name, module_name, error))
+                    else:
+                        if extract_contents:
+                            res = res.get('Contents', {})
+                        if res is None:
+                            res = {}
+                        results.append(CommandRunner.Result(command, args, brand_name, module_name, res))
+            except ValueError as e:
+                # We expect this error when the command is not supported.
+                demisto.debug('demisto.executeCommand received an error because the command is not supported:'
+                              ' {e}'.format(e=str(e)))
+        return results, errors
+
+    @staticmethod
+    def run_commands_with_summary(commands):
+        """
+        Given a list of commands, return a list of results (to pass to return_results).
+        In addition, it will create a `CommandResult` of the summary of the commands, which is a `readable_output`.
+
+        :param commands: A list of commands.
+        :type commands: ``List[Command]``
+        :return: list of results
+        """
+        full_results, full_errors = [], []
+        for command in commands:
+            results, errors = CommandRunner.execute_commands(command, extract_contents=False)
+            full_results.extend(results)
+            full_errors.extend(errors)
+
+        summary_md = CommandRunner.get_results_summary(full_results, full_errors)
+        command_results = [res.result for res in full_results]
+        if not command_results:
+            if full_errors:  # no results were given but there are errors
+                errors = ["{instance}: {msg}".format(instance=err.instance, msg=err.result) for err in full_errors]
+                error_msg = '\n'.join(['Script failed. The following errors were encountered: '] + errors)
+            else:
+                error_msg = 'The commands that run are not supported in this Instance. ' \
+                            'Try to configure the integrations in XSOAR settings.'
+            raise DemistoException(error_msg)
+
+        command_results.append(CommandResults(readable_output=summary_md))
+        return command_results
+
+    @staticmethod
+    def get_results_summary(results, errors):
+        """
+        Get a Human Readable result for all the results of the commands.
+        :param results: list of returned results
+        :param errors: list of returned errors
+        :return: `CommandResults` of HumanReadable that summarizes the results and errors.
+        """
+        results_summary_table = []
+        headers = ['Instance', 'Command', 'Result', 'Comment']
+        for res in results:
+            # don't care about using arg in command
+            res.args.pop('using', None)
+            res.args.pop('using-brand', None)
+            command = {'command': res.command,
+                       'args': res.args}
+            results_summary_table.append({'Instance': '***{brand}***: {instance}'.format(brand=res.brand,
+                                                                                         instance=res.instance),
+                                          'Command': command,
+                                          'Result': 'Success',
+                                          'Comment': None})
+
+        for err in errors:
+            # don't care about using arg in command
+            err.args.pop('using', None)
+            err.args.pop('using-brand', None)
+            command = {'command': err.command,
+                       'args': err.args}
+            results_summary_table.append({'Instance': '***{brand}***: {instance}'.format(brand=err.brand,
+                                                                                         instance=err.instance),
+                                          'Command': command,
+                                          'Result': 'Error',
+                                          'Comment': err.result})
+        summary_md = tableToMarkdown('Results Summary', results_summary_table, headers=headers, is_auto_json_transform=True)
+        return summary_md
+
+
+def execute_command(command, args, extract_contents=True, fail_on_error=True):
+    """
+    Runs the `demisto.executeCommand()` function and checks for errors.
+
+    :type command: ``str``
+    :param command: The command to run. (required)
+
+    :type args: ``dict``
+    :param args: The command arguments. (required)
+
+    :type extract_contents: ``bool``
+    :param extract_contents: Whether to return only the Contents part of the results. Default is True.
+
+    :type fail_on_error: ``bool``
+    :param fail_on_error: Whether to fail the command when receiving an error from the command. Default is True.
+
+    :return: The command results.
+    :rtype:
+        - When `fail_on_error` is True - ``list`` or ``dict`` or ``str``.
+        - When `fail_on_error` is False -``bool`` and ``str``.
+
+    Note:
+    For backward compatibility, only when `fail_on_error` is set to False, two values will be returned.
+    """
+    if not hasattr(demisto, 'executeCommand'):
+        raise DemistoException('Cannot run demisto.executeCommand() from integrations.')
+
+    res = demisto.executeCommand(command, args)
+    if is_error(res):
+        error_message = get_error(res)
+        if fail_on_error:
+            return_error('Failed to execute {}. Error details:\n{}'.format(command, error_message))
+        else:
+            return False, error_message
+
+    if not extract_contents:
+        if fail_on_error:
+            return res
+        else:
+            return True, res
+
+    contents = [entry.get('Contents', {}) for entry in res]
+    contents = contents[0] if len(contents) == 1 else contents
+
+    if fail_on_error:
+        return contents
+
+    return True, contents
+
+
+def camelize(src, delim=' ', upper_camel=True):
     """
         Convert all keys of a dictionary (or list of dictionaries) to CamelCase (with capital first letter)
 
@@ -2923,6 +7205,11 @@ def camelize(src, delim=' '):
         :type delim: ``str``
         :param delim: The delimiter between two words in the key (e.g. delim=' ' for "Start Date"). Default ' '.
 
+        :type upper_camel: ``bool``
+        :param upper_camel: When True then transforms dictionary keys to camel case with the first letter capitalised
+                            (for example: demisto_content to DemistoContent), otherwise the first letter will not be capitalised
+                            (for example: demisto_content to demistoContent).
+
         :return: The dictionary (or list of dictionaries) with the keys in CamelCase.
         :rtype: ``dict`` or ``list``
     """
@@ -2931,10 +7218,14 @@ def camelize(src, delim=' '):
         if callable(getattr(src_str, "decode", None)):
             src_str = src_str.decode('utf-8')
         components = src_str.split(delim)
-        return ''.join(map(lambda x: x.title(), components))
+        camelize_without_first_char = ''.join(map(lambda x: x.title(), components[1:]))
+        if upper_camel:
+            return components[0].title() + camelize_without_first_char
+        else:
+            return components[0].lower() + camelize_without_first_char
 
     if isinstance(src, list):
-        return [camelize(phrase, delim) for phrase in src]
+        return [camelize(phrase, delim, upper_camel=upper_camel) for phrase in src]
     return {camelize_str(key): value for key, value in src.items()}
 
 
@@ -2986,13 +7277,12 @@ regexFlags = re.M  # Multi line matching
 # else, use re.match({regex_format},str)
 
 ipv4Regex = r'\b((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b([^\/]|$)'
-ipv4cidrRegex = r'\b(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(?:\[\.\]|\.)){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(\/([0-9]|[1-2][0-9]|3[0-2]))\b'  # noqa: E501
+ipv4cidrRegex = r'^([0-9]{1,3}\.){3}[0-9]{1,3}(\/([0-9]|[1-2][0-9]|3[0-2]))$'
 ipv6Regex = r'\b(?:(?:[0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,7}:|(?:[0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|(?:[0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|(?:[0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|(?:[0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:(?:(:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))\b'  # noqa: E501
-ipv6cidrRegex = r'\b(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))(\/(12[0-8]|1[0-1][0-9]|[1-9][0-9]|[0-9]))\b'  # noqa: E501
-emailRegex = r'\b[^@]+@[^@]+\.[^@]+\b'
+ipv6cidrRegex = r'^s*((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3})|:))|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3})|:))|(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:)))(%.+)?s*(\/([0-9]|[1-9][0-9]|1[0-1][0-9]|12[0-8]))$'  # noqa: E501
+emailRegex = r'''(?:[a-z0-9!#$%&'*+/=?^_\x60{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_\x60{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])'''  # noqa: E501
 hashRegex = r'\b[0-9a-fA-F]+\b'
-urlRegex = r'(?:(?:https?|ftp|hxxps?):\/\/|www\[?\.\]?|ftp\[?\.\]?)(?:[-\w\d]+\[?\.\]?)+[-\w\d]+(?::\d+)?' \
-           r'(?:(?:\/|\?)[-\w\d+&@#\/%=~_$?!\-:,.\(\);]*[\w\d+&@#\/%=~_$\(\);])?'
+urlRegex = r'(?i)((?:(?:https?|ftps?|hxxps?|sftp|meows):\/\/|www\[?\.\]?|ftp\[?\.\]?|(?:(?:https?|ftps?|hxxps?|sftp|meows):\/\/www\[?\.\]?))(((25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)(\[?\.\]?[A-Za-z]{2,6})?)|(([A-Za-z0-9\S]\.|[A-Za-z0-9][A-Za-z0-9-]{0,61}[A-Za-z0-9]\[?\.\]?){1,3}[A-Za-z]{2,6})|(0\[?x\]?[0-9a-fA-F]{8})|([0-7]{4}\.[0-7]{4}\.[0-7]{4}\.[0-7]{4})|([0-9]{1,10}))($|\/\S+|\/$|:[0-9]{1,5}($|\/\S*))|^(((25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?))(\/([0-9]|[12][0-9]|3[0-2])\/\S+|\/[A-Za-z]\S*|\/([3-9]{2}|[0-9]{3,})\S*|(:[0-9]{1,5}\/\S+))$)|(([A-Za-z0-9\S]\.|[A-Za-z0-9][A-Za-z0-9-]{0,61}[A-Za-z0-9]\[?\.\]?){1,3}[A-Za-z]{2,6}(((\/\S+))|(:[0-9]{1,5}\/\S+))$)|\b(?:(?:[0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,7}:|(?:[0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|(?:[0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|(?:[0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|(?:[0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:(?:(:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))\b((\/([0-9]|[1-5][0-9]|6[0-4])\/\S+|\/[A-Za-z]\S*|\/((6[5-9]|[7-9][0-9])|[0-9]{3,}|65)\S*|(:[0-9]{1,5}\/\S+))$))'  # noqa: E501
 cveRegex = r'(?i)^cve-\d{4}-([1-9]\d{4,}|\d{4})$'
 md5Regex = re.compile(r'\b[0-9a-fA-F]{32}\b', regexFlags)
 sha1Regex = re.compile(r'\b[0-9a-fA-F]{40}\b', regexFlags)
@@ -3005,12 +7295,17 @@ pascalRegex = re.compile('([A-Z]?[a-z]+)')
 # ############################## REGEX FORMATTING end ###############################
 
 
-def underscoreToCamelCase(s):
+def underscoreToCamelCase(s, upper_camel=True):
     """
        Convert an underscore separated string to camel case
 
        :type s: ``str``
        :param s: The string to convert (e.g. hello_world) (required)
+
+       :type upper_camel: ``bool``
+       :param upper_camel: When True then transforms dictionarykeys to camel case with the first letter capitalised
+                           (for example: demisto_content to DemistoContent), otherwise the first letter will not be capitalised
+                           (for example: demisto_content to demistoContent).
 
        :return: The converted string (e.g. HelloWorld)
        :rtype: ``str``
@@ -3019,7 +7314,11 @@ def underscoreToCamelCase(s):
         return s
 
     components = s.split('_')
-    return ''.join(x.title() for x in components)
+    camel_without_first_char = ''.join(x.title() for x in components[1:])
+    if upper_camel:
+        return components[0].title() + camel_without_first_char
+    else:
+        return components[0].lower() + camel_without_first_char
 
 
 def camel_case_to_underscore(s):
@@ -3062,10 +7361,8 @@ def pascalToSpace(s):
     if not isinstance(s, STRING_OBJ_TYPES):
         return s
 
-    tokens = pascalRegex.findall(s)
-    for t in tokens:
-        # double space to handle capital words like IP/URL/DNS that not included in the regex
-        s = s.replace(t, ' {} '.format(t.title()))
+    # double space to handle capital words like IP/URL/DNS that not included in the regex
+    s = re.sub(pascalRegex, lambda match: r' {} '.format(match.group(1).title()), s)
 
     # split and join: to remove double spacing caused by previous workaround
     s = ' '.join(s.split())
@@ -3108,6 +7405,8 @@ def string_to_context_key(string):
 
 def parse_date_range(date_range, date_format=None, to_timestamp=False, timezone=0, utc=True):
     """
+        THIS FUNCTTION IS DEPRECATED - USE dateparser.parse instead
+
       Parses date_range string to a tuple date strings (start, end). Input must be in format 'number date_range_unit')
       Examples: (2 hours, 4 minutes, 6 month, 1 day, etc.)
 
@@ -3330,26 +7629,31 @@ def is_demisto_version_ge(version, build_number=''):
     :return: True if running within a Server version greater or equal than the passed version
     :rtype: ``bool``
     """
+    server_version = {}
     try:
         server_version = get_demisto_version()
-        return \
-            server_version.get('version') >= version and \
-            (not build_number or server_version.get('buildNumber') >= build_number)
+        if server_version.get('version') > version:
+            return True
+        elif server_version.get('version') == version:
+            if build_number:
+                return int(server_version.get('buildNumber')) >= int(build_number)  # type: ignore[arg-type]
+            return True  # No build number
+        else:
+            return False
     except AttributeError:
         # demistoVersion was added in 5.0.0. We are currently running in 4.5.0 and below
         if version >= "5.0.0":
             return False
         raise
+    except ValueError:
+        # dev editions are not comparable
+        demisto.log(
+            'is_demisto_version_ge: ValueError. \n '
+            'input: server version: {} build number: {}\n'
+            'server version: {}'.format(version, build_number, server_version)
+        )
 
-
-def is_debug_mode():
-    """Return if this script/command was passed debug-mode=true option
-
-    :return: true if debug-mode is enabled
-    :rtype: ``bool``
-    """
-    # use `hasattr(demisto, 'is_debug')` to ensure compatibility with server version <= 4.5
-    return hasattr(demisto, 'is_debug') and demisto.is_debug
+        return True
 
 
 class DemistoHandler(logging.Handler):
@@ -3365,10 +7669,10 @@ class DemistoHandler(logging.Handler):
         msg = self.format(record)
         try:
             if self.int_logger:
-                self.int_logger.write(msg)
+                self.int_logger(msg)
             else:
                 demisto.debug(msg)
-        except Exception:
+        except Exception:  # noqa: disable=broad-except
             pass
 
 
@@ -3379,7 +7683,6 @@ class DebugLogger(object):
     """
 
     def __init__(self):
-        logging.raiseExceptions = False
         self.handler = None  # just in case our http_client code throws an exception. so we don't error in the __del__
         self.int_logger = IntegrationLogger()
         self.int_logger.set_buffering(False)
@@ -3393,8 +7696,8 @@ class DebugLogger(object):
             self.http_client.HTTPConnection.debuglevel = 1
             self.http_client_print = getattr(http_client, 'print', None)  # save in case someone else patched it already
             setattr(http_client, 'print', self.int_logger.print_override)
-        self.handler = DemistoHandler()
-        demisto_formatter = logging.Formatter(fmt='%(asctime)s - %(message)s', datefmt=None)
+        self.handler = DemistoHandler(self.int_logger)
+        demisto_formatter = logging.Formatter(fmt='python logging: %(levelname)s [%(name)s] - %(message)s', datefmt=None)
         self.handler.setFormatter(demisto_formatter)
         self.root_logger = logging.getLogger()
         self.prev_log_level = self.root_logger.getEffectiveLevel()
@@ -3421,15 +7724,32 @@ class DebugLogger(object):
                 setattr(self.http_client, 'print', self.http_client_print)
             else:
                 delattr(self.http_client, 'print')
+            if self.int_logger.curl:
+                for curl in self.int_logger.curl:
+                    demisto.info('cURL:\n' + curl)
 
     def log_start_debug(self):
         """
         Utility function to log start of debug mode logging
         """
-        msg = "debug-mode started.\nhttp client print found: {}.\nEnv {}.".format(self.http_client_print is not None,
-                                                                                  os.environ)
+        msg = "debug-mode started.\n#### http client print found: {}.\n#### Env {}.".format(self.http_client_print is not None,
+                                                                                            os.environ)
         if hasattr(demisto, 'params'):
-            msg += "\nParams: {}.".format(demisto.params())
+            msg += "\n#### Params: {}.".format(json.dumps(demisto.params(), indent=2))
+        calling_context = demisto.callingContext.get('context', {})
+        msg += "\n#### Docker image: [{}]".format(calling_context.get('DockerImage'))
+        brand = calling_context.get('IntegrationBrand')
+        if brand:
+            msg += "\n#### Integration: brand: [{}] instance: [{}]".format(brand, calling_context.get('IntegrationInstance'))
+        sm = get_schedule_metadata(context=calling_context)
+        if sm.get('is_polling'):
+            msg += "\n#### Schedule Metadata: scheduled command: [{}] args: [{}] times ran: [{}] scheduled: [{}] end " \
+                   "date: [{}]".format(sm.get('polling_command'),
+                                       sm.get('polling_args'),
+                                       sm.get('times_ran'),
+                                       sm.get('start_date'),
+                                       sm.get('end_date')
+                                       )
         self.int_logger.write(msg)
 
 
@@ -3442,6 +7762,21 @@ except Exception as ex:
     # Should fail silently so that if there is a problem with the logger it will
     # not affect the execution of commands and playbooks
     demisto.info('Failed initializing DebugLogger: {}'.format(ex))
+
+
+def add_sensitive_log_strs(sensitive_str):
+    """
+    Adds the received string to both LOG and DebugLogger. The logger will mask the string each time he encounters it.
+
+    :type sensitive_str: ``str``
+    :param sensitive_str: The string to be replaced.
+
+    :return: No data returned
+    :rtype: ``None``
+    """
+    if _requests_logger:
+        _requests_logger.int_logger.add_replace_strs(sensitive_str)
+    LOG.add_replace_strs(sensitive_str)
 
 
 def parse_date_string(date_string, date_format='%Y-%m-%dT%H:%M:%S'):
@@ -3633,6 +7968,32 @@ H || val.SSDeep && val.SSDeep == obj.SSDeep)': {'Malicious': {'Vendor': 'Vendor'
 
 # Will add only if 'requests' module imported
 if 'requests' in sys.modules:
+    if IS_PY3 and PY_VER_MINOR >= 10:
+        from requests.packages.urllib3.util.ssl_ import create_urllib3_context
+
+        # The ciphers string used to replace default cipher string
+
+        CIPHERS_STRING = '@SECLEVEL=1:ECDHE+AESGCM:ECDHE+CHACHA20:DHE+AESGCM:DHE+CHACHA20:ECDH+AESGCM:DH+AESGCM:' \
+                         'ECDH+AES:DH+AES:RSA+ANESGCM:RSA+AES:!aNULL:!eNULL:!MD5:!DSS'
+
+        class SSLAdapter(HTTPAdapter):
+            """
+                A wrapper used for https communication to enable ciphers that are commonly used
+                and are not enabled by default
+                :return: No data returned
+                :rtype: ``None``
+            """
+
+            def init_poolmanager(self, *args, **kwargs):
+                context = create_urllib3_context(ciphers=CIPHERS_STRING)
+                kwargs['ssl_context'] = context
+                return super(SSLAdapter, self).init_poolmanager(*args, **kwargs)
+
+            def proxy_manager_for(self, *args, **kwargs):
+                context = create_urllib3_context(ciphers=CIPHERS_STRING)
+                kwargs['ssl_context'] = context
+                return super(SSLAdapter, self).proxy_manager_for(*args, **kwargs)
+
     class BaseClient(object):
         """Client to use in integrations with powerful _http_request
         :type base_url: ``str``
@@ -3663,15 +8024,53 @@ if 'requests' in sys.modules:
         :rtype: ``None``
         """
 
-        def __init__(self, base_url, verify=True, proxy=False, ok_codes=tuple(), headers=None, auth=None):
+        REQUESTS_TIMEOUT = 60
+
+        def __init__(
+            self,
+            base_url,
+            verify=True,
+            proxy=False,
+            ok_codes=tuple(),
+            headers=None,
+            auth=None,
+            timeout=REQUESTS_TIMEOUT,
+        ):
             self._base_url = base_url
             self._verify = verify
             self._ok_codes = ok_codes
             self._headers = headers
             self._auth = auth
             self._session = requests.Session()
-            if not proxy:
-                self._session.trust_env = False
+
+            # the following condition was added to overcome the security hardening happened in Python 3.10.
+            # https://github.com/python/cpython/pull/25778
+            # https://bugs.python.org/issue43998
+
+            if IS_PY3 and PY_VER_MINOR >= 10 and not verify:
+                self._session.mount('https://', SSLAdapter())
+
+            if proxy:
+                ensure_proxy_has_http_prefix()
+            else:
+                skip_proxy()
+
+            if not verify:
+                skip_cert_verification()
+
+            # removing trailing = char from env var value added by the server
+            entity_timeout = os.getenv('REQUESTS_TIMEOUT.' + (get_integration_name() or get_script_name()), '')
+            system_timeout = os.getenv('REQUESTS_TIMEOUT', '')
+            self.timeout = float(entity_timeout or system_timeout or timeout)
+
+        def __del__(self):
+            try:
+                self._session.close()
+            except AttributeError:
+                # we ignore exceptions raised due to session not used by the client and hence do not exist in __del__
+                pass
+            except Exception:  # noqa
+                demisto.debug('failed to close BaseClient session with the following error:\n{}'.format(traceback.format_exc()))
 
         def _implement_retry(self, retries=0,
                              status_list_to_retry=None,
@@ -3716,6 +8115,10 @@ if 'requests' in sys.modules:
                 been exhausted.
             """
             try:
+                method_whitelist = "allowed_methods" if hasattr(Retry.DEFAULT, "allowed_methods") else "method_whitelist"
+                whitelist_kawargs = {
+                    method_whitelist: frozenset(['GET', 'POST', 'PUT'])
+                }
                 retry = Retry(
                     total=retries,
                     read=retries,
@@ -3723,21 +8126,33 @@ if 'requests' in sys.modules:
                     backoff_factor=backoff_factor,
                     status=retries,
                     status_forcelist=status_list_to_retry,
-                    method_whitelist=frozenset(['GET', 'POST', 'PUT']),
                     raise_on_status=raise_on_status,
-                    raise_on_redirect=raise_on_redirect
+                    raise_on_redirect=raise_on_redirect,
+                    **whitelist_kawargs
                 )
-                adapter = HTTPAdapter(max_retries=retry)
-                self._session.mount('http://', adapter)
-                self._session.mount('https://', adapter)
+                http_adapter = HTTPAdapter(max_retries=retry)
+
+                # the following condition was added to overcome the security hardening happened in Python 3.10.
+                # https://github.com/python/cpython/pull/25778
+                # https://bugs.python.org/issue43998
+
+                if self._verify:
+                    https_adapter = http_adapter
+                elif IS_PY3 and PY_VER_MINOR >= 10:
+                    https_adapter = SSLAdapter(max_retries=retry)
+                else:
+                    https_adapter = http_adapter
+
+                self._session.mount('https://', https_adapter)
+
             except NameError:
                 pass
 
-        def _http_request(self, method, url_suffix, full_url=None, headers=None, auth=None, json_data=None,
-                          params=None, data=None, files=None, timeout=10, resp_type='json', ok_codes=None,
+        def _http_request(self, method, url_suffix='', full_url=None, headers=None, auth=None, json_data=None,
+                          params=None, data=None, files=None, timeout=None, resp_type='json', ok_codes=None,
                           return_empty_response=False, retries=0, status_list_to_retry=None,
                           backoff_factor=5, raise_on_redirect=False, raise_on_status=False,
-                          error_handler=None, **kwargs):
+                          error_handler=None, empty_valid_codes=None, **kwargs):
             """A wrapper for requests lib to send our requests and handle requests and responses better.
 
             :type method: ``str``
@@ -3828,13 +8243,22 @@ if 'requests' in sys.modules:
             :type error_handler ``callable``
             :param error_handler: Given an error entery, the error handler outputs the
                 new formatted error message.
+
+            :type empty_valid_codes: ``list``
+            :param empty_valid_codes: A list of all valid status codes of empty responses (usually only 204, but
+                can vary)
+
             """
             try:
                 # Replace params if supplied
                 address = full_url if full_url else urljoin(self._base_url, url_suffix)
                 headers = headers if headers else self._headers
                 auth = auth if auth else self._auth
-                self._implement_retry(retries, status_list_to_retry, backoff_factor, raise_on_redirect, raise_on_status)
+                if retries:
+                    self._implement_retry(retries, status_list_to_retry, backoff_factor, raise_on_redirect, raise_on_status)
+                if not timeout:
+                    timeout = self.timeout
+
                 # Execute
                 res = self._session.request(
                     method,
@@ -3860,12 +8284,14 @@ if 'requests' in sys.modules:
                             # Try to parse json error response
                             error_entry = res.json()
                             err_msg += '\n{}'.format(json.dumps(error_entry))
-                            raise DemistoException(err_msg)
+                            raise DemistoException(err_msg, res=res)
                         except ValueError:
                             err_msg += '\n{}'.format(res.text)
-                            raise DemistoException(err_msg)
+                            raise DemistoException(err_msg, res=res)
 
-                is_response_empty_and_successful = (res.status_code == 204)
+                if not empty_valid_codes:
+                    empty_valid_codes = [204]
+                is_response_empty_and_successful = (res.status_code in empty_valid_codes)
                 if is_response_empty_and_successful and return_empty_response:
                     return res
 
@@ -3878,16 +8304,21 @@ if 'requests' in sys.modules:
                     if resp_type == 'content':
                         return res.content
                     if resp_type == 'xml':
-                        ET.parse(res.text)
+                        ET.fromstring(res.text)
+                    if resp_type == 'response':
+                        return res
                     return res
                 except ValueError as exception:
                     raise DemistoException('Failed to parse json object from response: {}'
-                                           .format(res.content), exception)
+                                           .format(res.content), exception, res)
             except requests.exceptions.ConnectTimeout as exception:
                 err_msg = 'Connection Timeout Error - potential reasons might be that the Server URL parameter' \
                           ' is incorrect or that the Server is not accessible from your host.'
                 raise DemistoException(err_msg, exception)
             except requests.exceptions.SSLError as exception:
+                # in case the "Trust any certificate" is already checked
+                if not self._verify:
+                    raise
                 err_msg = 'SSL Certificate Verification Failed - try selecting \'Trust any certificate\' checkbox in' \
                           ' the integration configuration.'
                 raise DemistoException(err_msg, exception)
@@ -3899,15 +8330,15 @@ if 'requests' in sys.modules:
                 # Get originating Exception in Exception chain
                 error_class = str(exception.__class__)
                 err_type = '<' + error_class[error_class.find('\'') + 1: error_class.rfind('\'')] + '>'
-                err_msg = '\nError Type: {}\nError Number: [{}]\nMessage: {}\n' \
-                          'Verify that the server URL parameter' \
+                err_msg = 'Verify that the server URL parameter' \
                           ' is correct and that you have access to the server from your host.' \
+                          '\nError Type: {}\nError Number: [{}]\nMessage: {}\n' \
                     .format(err_type, exception.errno, exception.strerror)
                 raise DemistoException(err_msg, exception)
             except requests.exceptions.RetryError as exception:
                 try:
                     reason = 'Reason: {}'.format(exception.args[0].reason.args[0])
-                except Exception:
+                except Exception:  # noqa: disable=broad-except
                     reason = ''
                 err_msg = 'Max Retries Error- Request attempts with {} retries failed. \n{}'.format(retries, reason)
                 raise DemistoException(err_msg, exception)
@@ -3956,10 +8387,10 @@ def batch(iterable, batch_size=1):
 def dict_safe_get(dict_object, keys, default_return_value=None, return_type=None, raise_return_type=True):
     """Recursive safe get query (for nested dicts and lists), If keys found return value otherwise return None or default value.
     Example:
-    >>> dict = {"something" : {"test": "A"}}
-    >>> dict_safe_get(dict,['something', 'test'])
+    >>> data = {"something" : {"test": "A"}}
+    >>> dict_safe_get(data, ['something', 'test'])
     >>> 'A'
-    >>> dict_safe_get(dict,['something', 'else'],'default value')
+    >>> dict_safe_get(data, ['something', 'else'], 'default value')
     >>> 'default value'
 
     :type dict_object: ``dict``
@@ -3971,7 +8402,7 @@ def dict_safe_get(dict_object, keys, default_return_value=None, return_type=None
     :type default_return_value: ``object``
     :param default_return_value: Value to return when no key available.
 
-    :type return_type: ``object``
+    :type return_type: ``type``
     :param return_type: Excepted return type.
 
     :type raise_return_type: ``bool``
@@ -4050,16 +8481,15 @@ def set_integration_context(context, sync=True, version=-1):
     :type sync: ``bool``
     :param sync: Whether to save the context directly to the DB.
 
-    :type version: ``int``
+    :type version: ``Any``
     :param version: The version of the context to set.
 
     :rtype: ``dict``
     :return: The new integration context
     """
-    demisto.debug('Setting integration context {}:'.format(str(context)))
+    demisto.debug('Setting integration context')
     if is_versioned_context_available():
-        context['version'] = str(version + 1)
-        demisto.debug('Updating integration context to version {}. Sync: {}'.format(version + 1, sync))
+        demisto.debug('Updating integration context with version {}. Sync: {}'.format(version, sync))
         return demisto.setIntegrationContextVersioned(context, version, sync)
     else:
         return demisto.setIntegrationContext(context)
@@ -4139,8 +8569,8 @@ def set_to_integration_context_with_retries(context, object_keys=None, sync=True
         attempt += 1
         try:
             set_integration_context(integration_context, sync, version)
-            demisto.debug('Successfully updated integration context. New version is {}.'
-                          ''.format(version + 1 if version != -1 else version))
+            demisto.debug('Successfully updated integration context with version {}.'
+                          ''.format(version))
             break
         except ValueError as ve:
             demisto.debug('Failed updating integration context with version {}: {} Attempts left - {}'
@@ -4207,13 +8637,20 @@ def update_integration_context(context, object_keys=None, sync=True):
 
 
 class DemistoException(Exception):
-    pass
+    def __init__(self, message, exception=None, res=None, *args):
+        self.res = res
+        self.message = message
+        self.exception = exception
+        super(DemistoException, self).__init__(message, exception, *args)
+
+    def __str__(self):
+        return str(self.message)
 
 
 class GetRemoteDataArgs:
     """get-remote-data args parser
     :type args: ``dict``
-    :param args: arguments for the command of the command.
+    :param args: arguments for the command.
 
     :return: No data returned
     :rtype: ``None``
@@ -4221,6 +8658,19 @@ class GetRemoteDataArgs:
 
     def __init__(self, args):
         self.remote_incident_id = args['id']
+        self.last_update = args['lastUpdate']
+
+
+class GetModifiedRemoteDataArgs:
+    """get-modified-remote-data args parser
+    :type args: ``dict``
+    :param args: arguments for the command.
+
+    :return: No data returned
+    :rtype: ``None``
+    """
+
+    def __init__(self, args):
         self.last_update = args['lastUpdate']
 
 
@@ -4265,8 +8715,29 @@ class GetRemoteDataResponse:
         :rtype: ``list``
         """
         if self.mirrored_object:
-            demisto.info('Updating object {}'.format(self.mirrored_object["id"]))
             return [self.mirrored_object] + self.entries
+
+
+class GetModifiedRemoteDataResponse:
+    """get-modified-remote-data response parser
+    :type modified_incident_ids: ``list``
+    :param modified_incident_ids: The incidents that were modified since the last check.
+
+    :return: No data returned
+    :rtype: ``None``
+    """
+
+    def __init__(self, modified_incident_ids):
+        self.modified_incident_ids = modified_incident_ids
+
+    def to_entry(self):
+        """Extracts the response
+
+        :return: List of incidents to run the get-remote-data command on.
+        :rtype: ``list``
+        """
+        demisto.info('Modified incidents: {}'.format(self.modified_incident_ids))
+        return {'Contents': self.modified_incident_ids, 'Type': EntryType.NOTE, 'ContentsFormat': EntryFormat.JSON}
 
 
 class SchemeTypeMapping:
@@ -4343,9 +8814,9 @@ class GetMappingFieldsResponse:
         :return: the mapping object for the current field.
         :rtype: ``dict``
         """
-        all_mappings = []
+        all_mappings = {}
         for scheme_types_mapping in self.scheme_types_mappings:
-            all_mappings.append(scheme_types_mapping.extract_mapping())
+            all_mappings.update(scheme_types_mapping.extract_mapping())
 
         return all_mappings
 
@@ -4570,3 +9041,1442 @@ class TableOrListWidget(BaseWidget):
             'total': len(self.data),
             'data': self.data
         })
+
+
+class IndicatorsSearcher:
+    """Used in order to search indicators by the paging or serachAfter param
+    :type page: ``int``
+    :param page: the number of page from which we start search indicators from.
+
+    :type filter_fields: ``Optional[str]``
+    :param filter_fields: comma separated fields to filter (e.g. "value,type")
+
+    :type from_date: ``Optional[str]``
+    :param from_date: the start date to search from.
+
+    :type query: ``Optional[str]``
+    :param query: indicator search query
+
+    :type to_date: ``Optional[str]``
+    :param to_date: the end date to search until to.
+
+    :type value: ``str``
+    :param value: the indicator value to search.
+
+    :type limit: ``Optional[int]``
+    :param limit: the current upper limit of the search (can be updated after init)
+
+    :return: No data returned
+    :rtype: ``None``
+    """
+    SEARCH_AFTER_TITLE = 'searchAfter'
+
+    def __init__(self,
+                 page=0,
+                 filter_fields=None,
+                 from_date=None,
+                 query=None,
+                 size=100,
+                 to_date=None,
+                 value='',
+                 limit=None):
+        # searchAfter is available in searchIndicators from version 6.1.0
+        self._can_use_search_after = is_demisto_version_ge('6.1.0')
+        # populateFields merged in https://github.com/demisto/server/pull/18398
+        self._can_use_filter_fields = is_demisto_version_ge('6.1.0', build_number='1095800')
+        self._search_after_param = None
+        self._page = page
+        self._filter_fields = filter_fields
+        self._total = None
+        self._from_date = from_date
+        self._query = query
+        self._size = size
+        self._to_date = to_date
+        self._value = value
+        self._limit = limit
+        self._total_iocs_fetched = 0
+
+    def __iter__(self):
+        return self
+
+    # python2
+    def next(self):
+        return self.__next__()
+
+    def __next__(self):
+        if self.is_search_done():
+            raise StopIteration
+        res = self.search_indicators_by_version(from_date=self._from_date,
+                                                query=self._query,
+                                                size=self._size,
+                                                to_date=self._to_date,
+                                                value=self._value)
+        fetched_len = len(res.get('iocs') or [])
+        if fetched_len == 0:
+            raise StopIteration
+        self._total_iocs_fetched += fetched_len
+        return res
+
+    @property
+    def page(self):
+        return self._page
+
+    @property
+    def total(self):
+        return self._total
+
+    @property
+    def limit(self):
+        return self._limit
+
+    @limit.setter
+    def limit(self, value):
+        self._limit = value
+
+    def is_search_done(self):
+        """
+        Return True if one of these conditions is met (else False):
+        1. self.limit is set, and it's updated to be less or equal to zero - return True
+        2. for search_after if self.total was populated by a previous search, but no self._search_after_param
+        3. for page if self.total was populated by a previous search, but page is too large
+        """
+        reached_limit = self.limit is not None and self.limit <= self._total_iocs_fetched
+        if reached_limit:
+            demisto.debug("IndicatorsSearcher has reached its limit: {}".format(self.limit))
+            # update limit to match _total_iocs_fetched value
+            if self._total_iocs_fetched > self.limit:
+                self.limit = self._total_iocs_fetched
+            return True
+        else:
+            if self.total is None:
+                return False
+            no_more_indicators = (self.total and self._search_after_param is None) if self._can_use_search_after \
+                else self.total <= self.page * self._size
+            if no_more_indicators:
+                demisto.debug("IndicatorsSearcher can not fetch anymore indicators")
+            return no_more_indicators
+
+    def search_indicators_by_version(self, from_date=None, query='', size=100, to_date=None, value=''):
+        """There are 2 cases depends on the sever version:
+        1. Search indicators using paging, raise the page number in each call.
+        2. Search indicators using searchAfter param, update the _search_after_param in each call.
+
+        :type from_date: ``Optional[str]``
+        :param from_date: the start date to search from.
+
+        :type query: ``Optional[str]``
+        :param query: indicator search query
+
+        :type size: ``int``
+        :param size: limit the number of returned results.
+
+        :type to_date: ``Optional[str]``
+        :param to_date: the end date to search until to.
+
+        :type value: ``str``
+        :param value: the indicator value to search.
+
+        :return: object contains the search results
+        :rtype: ``dict``
+        """
+        search_args = assign_params(
+            fromDate=from_date,
+            toDate=to_date,
+            query=query,
+            size=size,
+            value=value,
+            searchAfter=self._search_after_param if self._can_use_search_after else None,
+            populateFields=self._filter_fields if self._can_use_filter_fields else None,
+            # use paging as fallback when cannot use search_after
+            page=self.page if not self._can_use_search_after else None
+        )
+        res = demisto.searchIndicators(**search_args)
+        if isinstance(self._page, int):
+            self._page += 1  # advance pages
+        self._search_after_param = res.get(self.SEARCH_AFTER_TITLE)
+        self._total = res.get('total')
+        return res
+
+
+class AutoFocusKeyRetriever:
+    """AutoFocus API Key management class
+    :type api_key: ``str``
+    :param api_key: Auto Focus API key coming from the integration parameters
+    :type override_default_credentials: ``bool``
+    :param override_default_credentials: Whether to override the default credentials and use the
+     Cortex XSOAR given AutoFocus API Key
+    :return: No data returned
+    :rtype: ``None``
+    """
+    def __init__(self, api_key):
+        # demisto.getAutoFocusApiKey() is available from version 6.2.0
+        if not api_key:
+            if not is_demisto_version_ge("6.2.0"):  # AF API key is available from version 6.2.0
+                raise DemistoException('For versions earlier than 6.2.0, configure an API Key.')
+            try:
+                api_key = demisto.getAutoFocusApiKey()  # is not available on tenants
+            except ValueError as err:
+                raise DemistoException('AutoFocus API Key is only available on the main account for TIM customers. ' + str(err))
+        self.key = api_key
+
+
+def get_feed_last_run():
+    """
+    This function gets the feed's last run: from XSOAR version 6.2.0: using `demisto.getLastRun()`.
+    Before XSOAR version 6.2.0: using `demisto.getIntegrationContext()`.
+    :rtype: ``dict``
+    :return: All indicators from the feed's last run
+    """
+    if is_demisto_version_ge('6.2.0'):
+        feed_last_run = demisto.getLastRun() or {}
+        if not feed_last_run:
+            integration_ctx = demisto.getIntegrationContext()
+            if integration_ctx:
+                feed_last_run = integration_ctx
+                demisto.setLastRun(feed_last_run)
+                demisto.setIntegrationContext({})
+    else:
+        feed_last_run = demisto.getIntegrationContext() or {}
+    return feed_last_run
+
+
+def set_feed_last_run(last_run_indicators):
+    """
+    This function sets the feed's last run: from XSOAR version 6.2.0: using `demisto.setLastRun()`.
+    Before XSOAR version 6.2.0: using `demisto.setIntegrationContext()`.
+    :type last_run_indicators: ``dict``
+    :param last_run_indicators: Indicators to save in "lastRun" object.
+    :rtype: ``None``
+    :return: None
+    """
+    if is_demisto_version_ge('6.2.0'):
+        demisto.setLastRun(last_run_indicators)
+    else:
+        demisto.setIntegrationContext(last_run_indicators)
+
+
+def set_last_mirror_run(last_mirror_run):  # type: (Dict[Any, Any]) -> None
+    """
+    This function sets the last run of the mirror, from XSOAR version 6.6.0, by using `demisto.setLastMirrorRun()`.
+    Before XSOAR version 6.6.0, we don't set the given data and an exception will be raised.
+    :type last_mirror_run: ``dict``
+    :param last_mirror_run: Data to save in the "LastMirrorRun" object.
+    :rtype: ``None``
+    :return: None
+    """
+    if is_demisto_version_ge('6.6.0'):
+        demisto.setLastMirrorRun(last_mirror_run)
+    else:
+        raise DemistoException("You cannot use setLastMirrorRun as your version is below 6.6.0")
+
+
+def get_last_mirror_run():  # type: () -> Optional[Dict[Any, Any]]
+    """
+    This function gets the last run of the mirror, from XSOAR version 6.6.0, using `demisto.getLastMirrorRun()`.
+    Before XSOAR version 6.6.0, the given data is not returned and an exception will be raised.
+    :rtype: ``dict``
+    :return: A dictionary representation of the data that was already set in the previous runs (or an empty dict if
+     we did not set anything yet).
+    """
+    if is_demisto_version_ge('6.6.0'):
+        return demisto.getLastMirrorRun() or {}
+    raise DemistoException("You cannot use getLastMirrorRun as your version is below 6.6.0")
+
+
+def support_multithreading():
+    """Adds lock on the calls to the Cortex XSOAR server from the Demisto object to support integration which use multithreading.
+
+    :return: No data returned
+    :rtype: ``None``
+    """
+    global demisto
+    prev_do = demisto._Demisto__do  # type: ignore[attr-defined]
+    demisto.lock = Lock()  # type: ignore[attr-defined]
+
+    def locked_do(cmd):
+        if demisto.lock.acquire(timeout=60):  # type: ignore[call-arg,attr-defined]
+            try:
+                return prev_do(cmd)  # type: ignore[call-arg]
+            finally:
+                demisto.lock.release()  # type: ignore[attr-defined]
+        else:
+            raise RuntimeError('Failed acquiring lock')
+
+    demisto._Demisto__do = locked_do  # type: ignore[attr-defined]
+
+
+def get_tenant_account_name():
+    """Gets the tenant name from the server url.
+
+    :return: The account name.
+    :rtype: ``str``
+
+    """
+    urls = demisto.demistoUrls()
+    server_url = urls.get('server', '')
+    account_name = ''
+    if '/acc_' in server_url:
+        tenant_name = server_url.split('acc_')[-1]
+        account_name = "acc_{}".format(tenant_name) if tenant_name != "" else ""
+
+    return account_name
+
+
+def indicators_value_to_clickable(indicators):
+    """
+    Function to get the indicator url link for indicators
+
+    :type indicators: ``dict`` + List[dict]
+    :param indicators: An indicator or a list of indicators
+
+    :rtype: ``dict``
+    :return: Key is the indicator, and the value is it's url in the server
+
+    """
+    if not isinstance(indicators, (list, dict)):
+        return {}
+    if not isinstance(indicators, list):
+        indicators = [indicators]
+    res = {}
+    query = ' or '.join(['value:{indicator}'.format(indicator=indicator) for indicator in indicators])
+    indicator_searcher = IndicatorsSearcher(query=query)
+    for ioc_res in indicator_searcher:
+        for inidicator_data in ioc_res.get('iocs', []):
+            indicator = inidicator_data.get('value')
+            indicator_id = inidicator_data.get('id')
+            if not indicator or not indicator_id:
+                raise DemistoException('The response of indicator searcher is invalid')
+            indicator_url = os.path.join('#', 'indicator', indicator_id)
+            res[indicator] = '[{indicator}]({indicator_url})'.format(indicator=indicator, indicator_url=indicator_url)
+    return res
+
+
+def get_message_threads_dump(_sig, _frame):
+    """
+    Listener function to dump the threads to log info
+
+    :type _sig: ``int``
+    :param _sig: The signal number
+
+    :type _frame: ``Any``
+    :param _frame: The current stack frame
+
+    :return: Message to print.
+    :rtype: ``str``
+    """
+    code = []
+    for threadId, stack in sys._current_frames().items():
+        code.append("\n# ThreadID: %s" % threadId)
+        for filename, lineno, name, line in traceback.extract_stack(stack):
+            code.append('File: "%s", line %d, in %s' % (filename, lineno, name))
+            if line:
+                code.append("  %s" % (line.strip()))
+
+    ret_value = '\n\n--- Start Threads Dump ---\n'\
+        + '\n'.join(code)\
+        + '\n\n--- End Threads Dump ---\n'
+    return ret_value
+
+
+def get_message_memory_dump(_sig, _frame):
+    """
+    Listener function to dump the memory to log info
+
+    :type _sig: ``int``
+    :param _sig: The signal number
+
+    :type _frame: ``Any``
+    :param _frame: The current stack frame
+
+    :return: Message to print.
+    :rtype: ``str``
+    """
+    classes_dict = {}  # type: Dict[str, Dict]
+    for obj in gc.get_objects():
+        size = sys.getsizeof(obj, 0)
+        if hasattr(obj, '__class__'):
+            cls = str(obj.__class__)[8:-2]
+            if cls in classes_dict:
+                current_class = classes_dict.get(cls, {})  # type: Dict
+                current_class['count'] += 1  # type: ignore
+                current_class['size'] += size  # type: ignore
+                classes_dict[cls] = current_class
+            else:
+                current_class = {
+                    'name': cls,
+                    'count': 1,
+                    'size': size,
+                }
+                classes_dict[cls] = current_class
+
+    classes_as_list = list(classes_dict.values())
+    ret_value = '\n\n--- Start Variables Dump ---\n'
+    ret_value += get_message_classes_dump(classes_as_list)
+    ret_value += '\n--- End Variables Dump ---\n\n'
+
+    ret_value = '\n\n--- Start Variables Dump ---\n'
+    ret_value += get_message_local_vars()
+    ret_value += get_message_global_vars()
+    ret_value += '\n--- End Variables Dump ---\n\n'
+
+    ret_value += get_message_modules_sizes()
+
+    return ret_value
+
+
+def get_message_classes_dump(classes_as_list):
+    """
+    A function that returns the printable message about classes dump
+
+    :type classes_as_list: ``list``
+    :param classes_as_list: The classes to print to the log
+
+    :return: Message to print.
+    :rtype: ``str``
+    """
+
+    ret_value = '\n\n--- Start Memory Dump ---\n'
+
+    ret_value += '\n--- Start Top {} Classes by Count ---\n\n'.format(PROFILING_DUMP_ROWS_LIMIT)
+    classes_sorted_by_count = sorted(classes_as_list, key=lambda d: d['count'], reverse=True)
+    ret_value += 'Count\t\tSize\t\tName\n'
+    for current_class in classes_sorted_by_count[:PROFILING_DUMP_ROWS_LIMIT]:
+        ret_value += '{}\t\t{}\t\t{}\n'.format(current_class["count"], current_class["size"], current_class["name"])
+    ret_value += '\n--- End Top {} Classes by Count ---\n'.format(PROFILING_DUMP_ROWS_LIMIT)
+
+    ret_value += '\n--- Start Top {} Classes by Size ---\n'.format(PROFILING_DUMP_ROWS_LIMIT)
+    classes_sorted_by_size = sorted(classes_as_list, key=lambda d: d['size'], reverse=True)
+    ret_value += 'Size\t\tCount\t\tName\n'
+    for current_class in classes_sorted_by_size[:PROFILING_DUMP_ROWS_LIMIT]:
+        ret_value += '{}\t\t{}\t\t{}\n'.format(current_class["size"], current_class["count"], current_class["name"])
+    ret_value += '\n--- End Top {} Classes by Size ---\n'.format(PROFILING_DUMP_ROWS_LIMIT)
+
+    ret_value += '\n--- End Memory Dump ---\n\n'
+
+    return ret_value
+
+
+def get_message_local_vars():
+    """
+    A function that returns the printable message about local variables
+
+    :return: Message to print.
+    :rtype: ``str``
+    """
+    local_vars = list(locals().items())
+    ret_value = '\n\n--- Start Local Vars ---\n\n'
+    for current_local_var in local_vars:
+        ret_value += shorten_string_for_printing(str(current_local_var)) + '\n'
+
+    ret_value += '\n--- End Local Vars ---\n\n'
+
+    return ret_value
+
+
+def get_size_of_object(input_object):
+    """
+    A function that recursively iterate to sum size of object & members.
+
+    :type input_object: ``Any``
+    :param input_object: The object to calculate its memory footprint
+
+    :return: Size of input_object in bytes.
+    :rtype: ``int``
+    """
+    if IS_PY3 and PY_VER_MINOR >= 10:
+        from collections.abc import Mapping
+    else:
+        from collections import Mapping  # type: ignore[no-redef]
+
+    from collections import deque
+    from numbers import Number
+    # IS_PY3:
+    # ZERO_DEPTH_BASES = (str, bytes, Number, range, bytearray) if IS_PY3 else (str, bytes, Number, bytearray)
+    ZERO_DEPTH_BASES = (str, bytes, Number, bytearray)
+    MAX_LEVEL = 20
+    _seen_ids = set()
+
+    def inner(obj, level):
+        """
+        A recursion that goes deep into objects, to calculate their deep memory footprint.
+
+        :type level: ``int``
+        :param level: Current level of the recursion (object)
+
+        :return: Size of obj in bytes.
+        :rtype: ``int``
+        """
+        if level == MAX_LEVEL:
+            # Stop at MAX_LEVEL
+            return sys.getsizeof(obj)
+        obj_id = id(obj)
+        if obj_id in _seen_ids:
+            return 0
+        _seen_ids.add(obj_id)
+        size = sys.getsizeof(obj)
+        if isinstance(obj, ZERO_DEPTH_BASES):
+            pass
+        elif isinstance(obj, (tuple, list, set, deque)):
+            size += sum(inner(i, level + 1) for i in obj)
+        elif isinstance(obj, Mapping):
+            mapping_items_keys = list(getattr(obj, 'keys')())
+            for current_key in mapping_items_keys:
+                if current_key in obj:
+                    size += (inner(current_key, level + 1) + inner(obj[current_key], level + 1))
+        # Check for custom object instances - may subclass above too
+        if hasattr(obj, '__dict__'):
+            size += inner(vars(obj), level + 1)
+        return size
+    return inner(input_object, 0)
+
+
+excluded_globals = ['__name__', '__doc__', '__package__', '__loader__',
+                    '__spec__', '__annotations__', '__builtins__',
+                    '__file__', '__cached__', '_Feature',
+                    ]
+excluded_types_names = ['MagicMock',  # When running tests locally
+                        ]
+
+
+def get_message_global_vars():
+    """
+    A function that returns the printable message about global variables
+
+    :return: Message to print.
+    :rtype: ``str``
+    """
+    excluded_types = [types.ModuleType, types.FunctionType,
+                      ]
+
+    globals_dict = dict(globals())
+    globals_dict_full = {}
+    for current_key in globals_dict.keys():
+        current_value = globals_dict[current_key]
+        if not type(current_value) in excluded_types \
+                and current_key not in excluded_globals \
+                and type(current_value).__name__ not in excluded_types_names:
+            globals_dict_full[current_key] = {
+                'name': current_key,
+                'value': current_value,
+                # Deep calculation. Better than sys.getsizeof(current_value)
+                'size': get_size_of_object(current_value)
+            }
+
+    ret_value = '\n\n--- Start Top {} Globals by Size ---\n'.format(PROFILING_DUMP_ROWS_LIMIT)
+    globals_sorted_by_size = sorted(globals_dict_full.values(), key=lambda d: d['size'], reverse=True)
+    ret_value += 'Size\t\tName\t\tValue\n'
+    for current_global in globals_sorted_by_size[:PROFILING_DUMP_ROWS_LIMIT]:
+        ret_value += '{}\t\t{}\t\t{}\n'.format(current_global["size"], current_global["name"],
+                                               shorten_string_for_printing(str(current_global["value"])))
+    ret_value += '\n--- End Top {} Globals by Size ---\n'.format(PROFILING_DUMP_ROWS_LIMIT)
+
+    return ret_value
+
+
+def get_message_modules_sizes():
+    """
+    A function that returns the printable message about the loaded modules by size
+
+    :return: Message to print.
+    :rtype: ``str``
+    """
+    globals_dict = dict(globals())
+    globals_dict_full = {}
+    for current_key in globals_dict.keys():
+        current_value = globals_dict[current_key]
+        if isinstance(current_value, types.ModuleType) \
+                and current_key not in excluded_globals \
+                and type(current_value).__name__ not in excluded_types_names:
+            globals_dict_full[current_key] = {
+                'name': current_key,
+                'value': current_value,
+                # Deep calculation. Better than sys.getsizeof(current_value)
+                'size': get_size_of_object(current_value)
+            }
+
+    ret_value = '\n\n--- Start Top {} Modules by Size ---\n'.format(PROFILING_DUMP_ROWS_LIMIT)
+    globals_sorted_by_size = sorted(globals_dict_full.values(), key=lambda d: d['size'], reverse=True)
+    ret_value += 'Size\t\tName\t\tValue\n'
+    for current_global in globals_sorted_by_size[:PROFILING_DUMP_ROWS_LIMIT]:
+        ret_value += '{}\t\t{}\t\t{}\n'.format(current_global["size"], current_global["name"],
+                                               shorten_string_for_printing(str(current_global["value"])))
+    ret_value += '\n--- End Top {} Modules by Size ---\n'.format(PROFILING_DUMP_ROWS_LIMIT)
+
+    return ret_value
+
+
+def signal_handler_profiling_dump(_sig, _frame):
+    """
+    Listener function to dump the threads and memory to log info
+
+    :type _sig: ``int``
+    :param _sig: The signal number
+
+    :type _frame: ``Any``
+    :param _frame: The current stack frame
+
+    :return: No data returned
+    :rtype: ``None``
+    """
+    msg = '\n\n--- Start Profiling Dump ---\n'
+    msg += get_message_threads_dump(_sig, _frame)
+    msg += get_message_memory_dump(_sig, _frame)
+    msg += '\n--- End Profiling Dump ---\n\n'
+    LOG(msg)
+    LOG.print_log()
+
+
+def register_signal_handler_profiling_dump(signal_type=None, profiling_dump_rows_limit=PROFILING_DUMP_ROWS_LIMIT):
+    """
+    Function that registers the threads and memory dump signal listener
+
+    :type profiling_dump_rows_limit: ``int``
+    :param profiling_dump_rows_limit: The max number of profiling related rows to print to the log
+
+    :type profiling_dump_rows_limit: ``int``
+    :param profiling_dump_rows_limit: The max number of profiling related rows to print to the log
+
+    :return: No data returned
+    :rtype: ``None``
+    """
+    if OS_LINUX or OS_MAC:
+
+        import signal
+
+        globals_ = globals()
+        globals_['PROFILING_DUMP_ROWS_LIMIT'] = profiling_dump_rows_limit
+
+        requested_signal = signal_type if signal_type else signal.SIGUSR1
+        signal.signal(requested_signal, signal_handler_profiling_dump)
+    else:
+        demisto.info('Not a Linux or Mac OS, profiling using a signal is not supported.')
+
+
+def shorten_string_for_printing(source_string, max_length=64):
+    """
+    Function that removes the middle of a long str, for printint or logging.
+    If needed, it will replace the middle with '...',
+    Examples:
+    >>> shorten_string_for_printing('123456789', 9)
+    '123456789'
+    >>> shorten_string_for_printing('1234567890', 9)
+    'abc...890'
+    >>> shorten_string_for_printing('123456789012', 10)
+    '1234...012'
+
+    :type source_string: ``str``
+    :param source_string: A long str that needs shortening.
+
+    :type max_length: ``int``
+    :param max_length: Maximum length of the returned str, should be higher than 0. Default is 64.
+
+    :return:: A string no longer than max_length.
+    :rtype: ``str``
+    """
+    if not source_string or max_length < 1 or len(source_string) <= max_length:
+        return source_string
+
+    extremeties_length = int((max_length - 3) / 2)
+    if max_length % 2 == 0:
+        # even max_length. Start with one more char than at the beginning
+        ret_value = source_string[:extremeties_length + 1] \
+            + '...' \
+            + source_string[-extremeties_length:]
+        return ret_value
+    else:
+        # odd max_length
+        ret_value = source_string[:extremeties_length] \
+            + '...' \
+            + source_string[-extremeties_length:]
+        return ret_value
+
+
+class PollResult:
+    """The response object for polling functions. This object contains information about whether to run again, and what
+    the CommandResults are in case of success, or failure.
+
+    :return: PollResult
+    :rtype: ``PollResult``
+
+    """
+    def __init__(self, response, continue_to_poll=False, args_for_next_run=None, partial_result=None):
+        """
+        Constructor for PollResult
+
+        :type response: ``Any``
+        :param response: The response of the command in the event of success,
+        or in case of failure but Polling is false
+
+        :type continue_to_poll: ``Union[bool, Callable]``
+        :param continue_to_poll: An iterable of relevant keys list from the json. Notice we save it as a set in the class
+
+        :type args_for_next_run: ``Dict``
+        :param args_for_next_run: The arguments to use in the next iteration. Will use the input args in case of None
+
+        :type partial_result: ``CommandResults``
+        :param partial_result: CommandResults to return, even though we will poll again
+
+        """
+        self.response = response
+        self.continue_to_poll = continue_to_poll
+        self.args_for_next_run = args_for_next_run
+        self.partial_result = partial_result
+
+
+def polling_function(name, interval=30, timeout=600, poll_message='Fetching Results:', polling_arg_name="polling",
+                     requires_polling_arg=True):
+    """
+    To use on a function that should rerun itself
+    Commands that use this decorator must have a Polling argument, polling: true in yaml,
+    and a hidden hide_polling_output argument.
+    Commands that use this decorator should return a PollResult.
+    Will raise an DemistoException if the server version doesn't support Scheduled Commands (< 6.2.0)
+
+    :type name: ``str``
+    :param name: The name of the command
+
+    :type interval: ``int``
+    :param interval: How many seconds until the next run
+
+    :type timeout: ``int``
+    :param timeout: How long
+
+    :type poll_message: ``str``
+    :param poll_message: The message to display in the war room while polling
+
+    :type requires_polling_arg: ``bool``
+    :param requires_polling_arg: Whether a polling argument should be expected as one of the demisto args
+
+    :return: Decorator for polling functions
+    :rtype: ``Function``
+    """
+
+    def dec(func):
+        def inner(client, args):
+            if not requires_polling_arg or args.get(polling_arg_name):
+                ScheduledCommand.raise_error_if_not_supported()
+                poll_result = func(client, args)
+
+                should_poll = poll_result.continue_to_poll if isinstance(poll_result.continue_to_poll, bool) \
+                    else poll_result.continue_to_poll()
+                if not should_poll:
+                    return poll_result.response
+
+                readable_output = poll_message if not args.get('hide_polling_output') else None
+                poll_args = poll_result.args_for_next_run or args
+                poll_args['hide_polling_output'] = True
+
+                poll_response = poll_result.partial_result or CommandResults(readable_output=readable_output)
+                poll_response.scheduled_command = ScheduledCommand(command=name, next_run_in_seconds=interval,
+                                                                   args=poll_args, timeout_in_seconds=timeout)
+                return poll_response
+            else:
+                return func(client, args).response
+
+        return inner
+
+    return dec
+
+
+def get_pack_version(pack_name=''):
+    """
+    Get a pack version.
+    The version can be retrieved either by a pack name or by the calling script/integration in which
+    script/integration is part of.
+
+    To get the version of the pack in which the calling script/integration is part of,
+    just call the function without pack_name.
+
+    :type pack_name: ``str``
+    :param pack_name: the pack name as mentioned in the pack metadata file to query its version.
+            use only if querying by a pack name.
+
+    :return: The pack version in which the integration/script is part of / the version of the requested pack name in
+        case provided. in case not found returns empty string.
+    :rtype: ``str``
+    """
+    def _get_packs_by_query(_body_request):
+        packs_body_response = demisto.internalHttpRequest(
+            'POST', uri='/contentpacks/marketplace/search', body=json.dumps(body_request)
+        )
+        return _load_response(_response=packs_body_response.get('body')).get('packs') or []
+
+    def _load_response(_response):
+        try:
+            return json.loads(_response)
+        except json.JSONDecodeError:  # type: ignore[attr-defined]
+            demisto.debug('Unable to load response {response}'.format(response=_response))
+            return {}
+
+    def _extract_current_pack_version(_packs, _query_type, _entity_name):
+        # in case we have more than 1 pack returned from the search, need to make sure to retrieve the correct pack
+        if query_type == 'automation' or query_type == 'integration':
+            for pack in _packs:
+                for content_entity in (pack.get('contentItems') or {}).get(_query_type) or []:
+                    if (content_entity.get('name') or '') == _entity_name:
+                        return pack.get('currentVersion') or ''
+        else:
+            for pack in _packs:
+                if pack.get('name') == _entity_name:
+                    return pack.get('currentVersion') or ''
+        return ''
+
+    def _extract_integration_display_name(_integration_brand):
+        integrations_body_response = demisto.internalHttpRequest(
+            'POST', uri='/settings/integration/search', body=json.dumps({})
+        )
+        integrations_body_response = _load_response(_response=integrations_body_response.get('body'))
+        integrations = integrations_body_response.get('configurations') or []
+
+        for integration in integrations:
+            integration_display_name = integration.get('display')
+            if integration.get('id') == _integration_brand and integration_display_name:
+                return integration_display_name
+        return ''
+    # query by pack name
+    if pack_name:
+        entity_name = pack_name
+        body_request = {'packsQuery': entity_name}
+        query_type = 'pack'
+    # query by integration name
+    elif demisto.callingContext.get('integration'):  # True means its integration, False means its script/automation.
+        entity_name = (demisto.callingContext.get('context') or {}).get('IntegrationBrand') or ''
+        body_request = {'integrationsQuery': entity_name}
+        query_type = 'integration'
+    # query by script/automation name
+    else:
+        entity_name = (demisto.callingContext.get('context') or {}).get('ScriptName') or ''
+        body_request = {'automationQuery': entity_name}
+        query_type = 'automation'
+
+    pack_version = _extract_current_pack_version(
+        _packs=_get_packs_by_query(_body_request=body_request),
+        _query_type=query_type,
+        _entity_name=entity_name
+    )
+    if not pack_version and query_type == 'integration':
+        # handle the case where the display name of the integration is not the same as the integration brand
+        integration_display = _extract_integration_display_name(_integration_brand=entity_name)
+        if integration_display and integration_display != entity_name:
+            body_request['integrationsQuery'] = integration_display
+
+            return _extract_current_pack_version(
+                _packs=_get_packs_by_query(_body_request=body_request),
+                _query_type=query_type,
+                _entity_name=integration_display
+            )
+        return ''
+    return pack_version
+
+
+def create_indicator_result_with_dbotscore_unknown(indicator, indicator_type, reliability=None,
+                                                   context_prefix=None, address_type=None):
+    '''
+    Used for cases where the api response to an indicator is not found,
+    returns CommandResults with readable_output generic in this case, and indicator with DBotScore unknown
+
+    :type indicator: ``str``
+    :param indicator: The value of the indicator
+
+    :type indicator_type: ``DBotScoreType``
+    :param indicator_type: use DBotScoreType class [Unsupport in types CVE and ATTACKPATTERN]
+
+    :type reliability: ``DBotScoreReliability``
+    :param reliability: use DBotScoreReliability class
+
+    :type context_prefix: ``str``
+    :param context_prefix: Use only in case that the indicator is CustomIndicator
+
+    :type address_type: ``str``
+    :param address_type: Use only in case that the indicator is Cryptocurrency
+
+    :rtype: ``CommandResults``
+    :return: CommandResults
+    '''
+    if not context_prefix and (indicator_type is DBotScoreType.CUSTOM or not DBotScoreType.is_valid_type(indicator_type)):
+        raise ValueError('Indicator type is invalid')
+
+    if indicator_type in [DBotScoreType.CVE, DBotScoreType.ATTACKPATTERN]:
+        #  not supportted, because they have a fixed dbotscore
+        msg_error = 'DBotScoreType.{} is unsupported'.format(indicator_type.upper())
+        raise ValueError(msg_error)
+
+    dbot_score = Common.DBotScore(indicator=indicator,
+                                  indicator_type=indicator_type
+                                  if DBotScoreType.is_valid_type(indicator_type) else DBotScoreType.CUSTOM,
+                                  score=Common.DBotScore.NONE,
+                                  reliability=reliability,
+                                  message='No results found.')
+
+    integration_name = dbot_score.integration_name or 'Results'
+    indicator_ = None  # type: Any
+    if indicator_type is DBotScoreType.FILE:
+        if sha1Regex.match(indicator):
+            indicator_ = Common.File(dbot_score=dbot_score, sha1=indicator)
+            indicator_type = 'sha1'
+        elif sha256Regex.match(indicator):
+            indicator_ = Common.File(dbot_score=dbot_score, sha256=indicator)
+            indicator_type = 'sha256'
+        elif sha512Regex.match(indicator):
+            indicator_ = Common.File(dbot_score=dbot_score, sha512=indicator)
+            indicator_type = 'sha512'
+        elif md5Regex.match(indicator):
+            indicator_ = Common.File(dbot_score=dbot_score, md5=indicator)
+            indicator_type = 'md5'
+        else:
+            raise ValueError('This indicator -> {} is incorrect'.format(indicator))
+
+    elif indicator_type is DBotScoreType.IP:
+        indicator_ = Common.IP(ip=indicator, dbot_score=dbot_score)
+
+    elif indicator_type is DBotScoreType.URL:
+        indicator_ = Common.URL(url=indicator, dbot_score=dbot_score)
+
+    elif indicator_type is DBotScoreType.DOMAIN:
+        indicator_ = Common.Domain(domain=indicator, dbot_score=dbot_score)
+
+    elif indicator_type is DBotScoreType.EMAIL:
+        indicator_ = Common.EMAIL(address=indicator, dbot_score=dbot_score)
+
+    elif indicator_type is DBotScoreType.CERTIFICATE:
+        indicator_ = Common.Certificate(subject_dn=indicator, dbot_score=dbot_score)
+
+    elif indicator_type is DBotScoreType.ACCOUNT:
+        indicator_ = Common.Account(id=indicator, dbot_score=dbot_score)
+
+    elif indicator_type is DBotScoreType.CRYPTOCURRENCY:
+        if not address_type:
+            raise ValueError('Missing address_type parameter')
+        indicator_ = Common.Cryptocurrency(address=indicator, address_type=address_type, dbot_score=dbot_score)
+        indicator_type = address_type
+
+    else:
+        indicator_ = Common.CustomIndicator(indicator_type=indicator_type,
+                                            value=indicator,
+                                            dbot_score=dbot_score,
+                                            data={},
+                                            context_prefix=context_prefix)
+
+    indicator_type = indicator_type.upper()
+    readable_output = tableToMarkdown(name='{}:'.format(integration_name),
+                                      t={indicator_type: indicator, 'Result': 'Not found'},
+                                      headers=[indicator_type, 'Result'])
+
+    return CommandResults(readable_output=readable_output, indicator=indicator_)
+
+
+def get_fetch_run_time_range(last_run, first_fetch, look_back=0, timezone=0, date_format='%Y-%m-%dT%H:%M:%S'):
+    """
+    Calculates the time range for fetch depending the look_back argument and the previous fetch start time
+    given from the last_run object.
+
+    :type last_run: ``dict``
+    :param last_run: The LastRun object
+
+    :type first_fetch: ``str``
+    :param first_fetch: The first time to fetch, used in the first fetch of an instance
+
+    :type look_back: ``int``
+    :param look_back: The time to look back in fetch in minutes
+
+    :type timezone: ``int``
+    :param timezone: The time zone offset in hours
+
+    :type date_format: ``str``
+    :param date_format: The date format
+
+    :return: The time range (start_time, end_time) of the creation date for the incidents to fetch in the current run.
+    :rtype: ``Tuple``
+    """
+    last_run_time = last_run and 'time' in last_run and last_run['time']
+    now = get_current_time(timezone)
+    if not last_run_time:
+        last_run_time = dateparser.parse(first_fetch, settings={'TIMEZONE': 'UTC'}) + timedelta(hours=timezone)
+    else:
+        last_run_time = dateparser.parse(last_run_time, settings={'TIMEZONE': 'UTC'})
+
+    if look_back > 0:
+        if now - last_run_time < timedelta(minutes=look_back):
+            last_run_time = now - timedelta(minutes=look_back)
+
+    return last_run_time.strftime(date_format), now.strftime(date_format)
+
+
+def get_current_time(time_zone=0):
+    """
+    Gets the current time in a given timezone.
+
+    :type time_zone: ``int``
+    :param time_zone: The time zone offset in hours.
+
+    :return: The current time.
+    :rtype: ``datetime``
+    """
+    return datetime.utcnow() + timedelta(hours=time_zone)
+
+
+def filter_incidents_by_duplicates_and_limit(incidents_res, last_run, fetch_limit, id_field):
+    """
+    Removes duplicate incidents from response and returns the incidents till limit.
+    The function should be called after getting the get-incidents API response,
+    and by passing the id_field it will filter out the incidents that were already fetched
+    by checking the incident IDs that are saved from the previous fetch in the last run object
+
+    :type incidents_res: ``list``
+    :param incidents_res: The incidents from the API response
+
+    :type last_run: ``dict``
+    :param last_run: The LastRun object
+
+    :type fetch_limit: ``int``
+    :param fetch_limit: The incidents limit to return
+
+    :type id_field: ``str``
+    :param id_field: The incident id field
+
+    :return: List of incidents after filtering duplicates when len(incidents) <= limit
+    :rtype: ``list``
+    """
+    found_incidents = last_run.get('found_incident_ids', {})
+
+    incidents = []
+    for incident in incidents_res:
+        if incident[id_field] not in found_incidents:
+            incidents.append(incident)
+
+    return incidents[:fetch_limit]
+
+
+def get_latest_incident_created_time(incidents, created_time_field, date_format='%Y-%m-%dT%H:%M:%S',
+                                     increase_last_run_time=False):
+    """
+    Gets the latest incident created time
+
+    :type incidents: ``list``
+    :param incidents: List of incidents
+
+    :type created_time_field: ``str``
+    :param created_time_field: The incident created time field
+
+    :type date_format: ``str``
+    :param date_format: The date format
+
+    :type increase_last_run_time: ``bool``
+    :param increase_last_run_time: Whether to increase the last run time with one millisecond
+
+    :return: The latest incident time
+    :rtype: ``str``
+    """
+    latest_incident_time = datetime.strptime(incidents[0][created_time_field], date_format)
+
+    for incident in incidents:
+        incident_time = datetime.strptime(incident[created_time_field], date_format)
+        if incident_time > latest_incident_time:
+            latest_incident_time = incident_time
+
+    if increase_last_run_time:
+        latest_incident_time = latest_incident_time + timedelta(milliseconds=1)
+
+    return latest_incident_time.strftime(date_format)
+
+
+def remove_old_incidents_ids(found_incidents_ids, current_time, look_back):
+    """
+    Removes old incident ids from the last run object to avoid overloading.
+
+    :type found_incidents_ids: ``dict``
+    :param found_incidents_ids: Dict of incidents ids
+
+    :type current_time: ``int``
+    :param current_time: The current epoch time to compare with the existing IDs added time
+
+    :type look_back: ``int``
+    :param look_back: The look back time in minutes
+
+    :return: The new incidents ids
+    :rtype: ``dict``
+    """
+    look_back_in_seconds = look_back * 60
+    deletion_threshold_in_seconds = look_back_in_seconds * 2
+
+    new_found_incidents_ids = {}
+    for inc_id, addition_time in found_incidents_ids.items():
+
+        if current_time - addition_time < deletion_threshold_in_seconds:
+            new_found_incidents_ids[inc_id] = addition_time
+
+    return new_found_incidents_ids
+
+
+def get_found_incident_ids(last_run, incidents, look_back, id_field):
+    """
+    Gets the found incident ids from the last run object and adds the new fetched incident IDs.
+
+    :type last_run: ``dict``
+    :param last_run: The LastRun object
+
+    :type incidents: ``list``
+    :param incidents: List of incidents to add
+
+    :type look_back: ``int``
+    :param look_back: The look back time in minutes
+
+    :type id_field: ``str``
+    :param id_field: The incident id field
+
+    :return: The new incident ids.
+    :rtype: ``dict``
+    """
+
+    found_incidents = last_run.get('found_incident_ids', {})
+    current_time = int(time.time())
+
+    for incident in incidents:
+        found_incidents[incident[id_field]] = current_time
+
+    found_incidents = remove_old_incidents_ids(found_incidents, current_time, look_back)
+
+    return found_incidents
+
+
+def create_updated_last_run_object(last_run, incidents, fetch_limit, look_back, start_fetch_time, end_fetch_time,
+                                   created_time_field, date_format='%Y-%m-%dT%H:%M:%S', increase_last_run_time=False):
+    """
+    Calculates the next fetch time and limit depending the incidents result and creates an updated LastRun object
+    with the new time and limit.
+
+    :type last_run: ``dict``
+    :param last_run: The LastRun object
+
+    :type incidents: ``list``
+    :param incidents: List of the incidents result
+
+    :type fetch_limit: ``int``
+    :param fetch_limit: The fetch limit
+
+    :type look_back: ``int``
+    :param look_back: The time to look back in fetch in minutes
+
+    :type start_fetch_time: ``str``
+    :param start_fetch_time: The time the fetch started to fetch from
+
+    :type end_fetch_time: ``str``
+    :param end_fetch_time: The end time in which the fetch incidents ended
+
+    :type created_time_field: ``str``
+    :param created_time_field: The incident created time field
+
+    :type date_format: ``str``
+    :param date_format: The date format
+
+    :type increase_last_run_time: ``bool``
+    :param increase_last_run_time: Whether to increase the last run time with one millisecond
+
+    :return: The new LastRun object
+    :rtype: ``Dict``
+    """
+
+    if len(incidents) == 0:
+        new_last_run = {
+            'time': end_fetch_time,
+            'limit': fetch_limit,
+        }
+    elif len(incidents) < fetch_limit or look_back == 0:
+        latest_incident_fetched_time = get_latest_incident_created_time(incidents, created_time_field, date_format,
+                                                                        increase_last_run_time)
+        new_last_run = {
+            'time': latest_incident_fetched_time,
+            'limit': fetch_limit,
+        }
+    else:
+        new_last_run = {
+            'time': start_fetch_time,
+            'limit': last_run.get('limit', fetch_limit) + fetch_limit,
+        }
+
+    return new_last_run
+
+
+def update_last_run_object(last_run, incidents, fetch_limit, start_fetch_time, end_fetch_time, look_back,
+                           created_time_field, id_field, date_format='%Y-%m-%dT%H:%M:%S', increase_last_run_time=False):
+    """
+    Updates the LastRun object with the next fetch time and limit and with the new fetched incident IDs.
+
+    :type last_run: ``dict``
+    :param last_run: The LastRun object
+
+    :type incidents: ``list``
+    :param incidents: List of the incidents result
+
+    :type fetch_limit: ``int``
+    :param fetch_limit: The fetch limit
+
+    :type start_fetch_time: ``str``
+    :param start_fetch_time: The time the fetch started to fetch from
+
+    :type end_fetch_time: ``str``
+    :param end_fetch_time: The end time in which the fetch incidents ended
+
+    :type look_back: ``int``
+    :param look_back: The time to look back in fetch in minutes
+
+    :type created_time_field: ``str``
+    :param created_time_field: The incident created time field
+
+    :type id_field: ``str``
+    :param id_field: The incident id field
+
+    :type date_format: ``str``
+    :param date_format: The date format
+
+    :type increase_last_run_time: ``bool``
+    :param increase_last_run_time: Whether to increase the last run time with one millisecond
+
+    :return: The updated LastRun object
+    :rtype: ``Dict``
+    """
+
+    found_incidents = get_found_incident_ids(last_run, incidents, look_back, id_field)
+
+    updated_last_run = create_updated_last_run_object(last_run, incidents, fetch_limit, look_back, start_fetch_time,
+                                                      end_fetch_time, created_time_field, date_format, increase_last_run_time)
+
+    if found_incidents:
+        updated_last_run.update({'found_incident_ids': found_incidents})
+
+    last_run.update(updated_last_run)
+
+    return last_run
+
+
+# YML metadata collector mocked classes.
+class ParameterTypes:
+    """YML ConfKey key_type type.
+
+    This is an empty class, used for code autocompletion when using
+    demisto-sdk generate_yml_from_python command syntax. For more information,
+    visit the command's README.md.
+
+    :return: The ParameterTypes enum
+    :rtype: ``ParameterTypes``
+    """
+    STRING = 0
+    NUMBER = 1
+    ENCRYPTED = 4
+    BOOLEAN = 8
+    AUTH = 9
+    DOWNLOAD_LINK = 11
+    TEXT_AREA = 12
+    INCIDENT_TYPE = 13
+    TEXT_AREA_ENCRYPTED = 14
+    SINGLE_SELECT = 15
+    MULTI_SELECT = 16
+
+
+class OutputArgument:
+    """YML output argument.
+
+    This is an empty class, used for code autocompletion when using
+    demisto-sdk generate_yml_from_python command syntax. For more information,
+    visit the command's README.md.
+
+    :return: The OutputArgument object
+    :rtype: ``OutputArgument``
+    """
+    def __init__(self,
+                 name,
+                 output_type=dict,
+                 description=None,
+                 prefix=None):
+        pass
+
+
+class InputArgument:
+    """YML input argument for a command.
+
+    This is an empty class, used for code autocompletion when using
+    demisto-sdk generate_yml_from_python command syntax. For more information,
+    visit the command's README.md.
+
+    :return: The InputArgument object
+    :rtype: ``InputArgument``
+    """
+    def __init__(self,
+                 name=None,
+                 description=None,
+                 required=False,
+                 default=None,
+                 is_array=False,
+                 secret=False,
+                 execution=False,
+                 options=None,
+                 input_type=None):
+        pass
+
+
+class ConfKey:
+    """YML configuration key fields.
+
+    This is an empty class, used for code autocompletion when using
+    demisto-sdk generate_yml_from_python command syntax. For more information,
+    visit the command's README.md.
+
+    :return: The ConfKey object
+    :rtype: ``ConfKey``
+    """
+    def __init__(self,
+                 name,
+                 display=None,
+                 default_value=None,
+                 key_type=0,  # Expects ParameterType
+                 required=False,
+                 additional_info=None,
+                 options=None,
+                 input_type=None):
+        pass
+
+
+class YMLMetadataCollector:
+    """The YMLMetadataCollector class provides decorators for integration
+    functions which contain details relevant to yml generation.
+
+    This is an empty class, used for code autocompletion when using
+    demisto-sdk generate_yml_from_python command syntax. For more information,
+    visit the command's README.md.
+
+    :return: The YMLMetadataCollector object
+    :rtype: ``YMLMetadataCollector``
+    """
+    def __init__(self, integration_name, docker_image="demisto/python3:latest",
+                 description=None, category="Utilities", conf=None,
+                 is_feed=False, is_fetch=False, is_runonce=False,
+                 detailed_description=None, image=None, display=None,
+                 tests=["No tests"], fromversion="6.0.0",
+                 long_running=False, long_running_port=False, integration_type="python",
+                 integration_subtype="python3", deprecated=None, systemd=None,
+                 timeout=None, default_classifier=None,
+                 default_mapper_in=None, integration_name_x2=None, default_enabled_x2=None,
+                 default_enabled=None, verbose=False):
+        pass
+
+    def command(self, command_name, outputs_prefix=None,
+                outputs_list=None, inputs_list=None,
+                execution=None, file_output=False,
+                multiple_output_prefixes=False, deprecated=False, restore=False,
+                description=None):
+        def command_wrapper(func):
+            def get_out_info(*args, **kwargs):
+                if restore:
+                    kwargs['command_name'] = command_name
+                    kwargs['outputs_prefix'] = outputs_prefix
+                    kwargs['execution'] = execution
+                return func(*args, **kwargs)
+
+            return get_out_info
+
+        return command_wrapper
+
+
+def send_events_to_xsiam(events, vendor, product, data_format=None):
+    """
+    Send the fetched events into the XDR data-collector private api.
+
+    :type events: ``Union[str, list]``
+    :param events: The events to send to send to XSIAM server. Should be of the following:
+        1. List of strings or dicts where each string or dict represents an event.
+        2. String containing raw events separated by a new line.
+
+    :type vendor: ``str``
+    :param vendor: The vendor corresponding to the integration that originated the events.
+
+    :type product: ``str``
+    :param product: The product corresponding to the integration that originated the events.
+
+    :type data_format: ``str``
+    :param data_format: Should only be filled in case the 'events' parameter contains a string of raw
+        events in the format of 'leef' or 'cef'. In other cases the data_format will be set automatically.
+
+    :return: None
+    :rtype: ``None``
+    """
+    data = events
+    amount_of_events = 0
+
+    if not events:
+        demisto.debug('send_events_to_xsiam function received no events, skipping the API call to send events to XSIAM')
+        demisto.updateModuleHealth({'eventsPulled': amount_of_events})
+        return
+
+    # only in case we have events data to send to XSIAM we continue with this flow.
+    # Correspond to case 1: List of strings or dicts where each string or dict represents an event.
+    if isinstance(events, list):
+        amount_of_events = len(events)
+        # In case we have list of dicts we set the data_format to json and parse each dict to a stringify each dict.
+        if isinstance(events[0], dict):
+            events = [json.dumps(event) for event in events]
+            data_format = 'json'
+        # Separating each event with a new line
+        data = '\n'.join(events)
+
+    elif isinstance(events, str):
+        amount_of_events = len(events.split('\n'))
+
+    else:
+        raise DemistoException(('Unsupported type: {type_events} for the "events" parameter. Should be a string or '
+                                'list.').format(type_events=type(events)))
+    if not data_format:
+        data_format = 'text'
+
+    xsiam_api_token = demisto.getLicenseCustomField('Http_Connector.token')
+    xsiam_domain = demisto.getLicenseCustomField('Http_Connector.url')
+    xsiam_url = 'https://api-{xsiam_domain}'.format(xsiam_domain=xsiam_domain)
+    headers = {
+        'authorization': xsiam_api_token,
+        'format': data_format,
+        'product': product,
+        'vendor': vendor,
+        'content-encoding': 'gzip'
+    }
+
+    header_msg = 'Error sending new events into XSIAM. \n'
+
+    def events_error_handler(response):
+        """
+        Internal function to parse the XSIAM API errors
+        """
+        try:
+            response = response.json()
+            error = res.reason
+            if response.get('error').lower() == 'false':
+                xsiam_server_err_msg = response.get('error')
+                error += ": " + xsiam_server_err_msg
+
+        except ValueError:
+            error = '\n{}'.format(res.text)
+
+        api_call_info = (
+            'Parameters used:\n'
+            '\tURL: {xsiam_url}\n'
+            '\tHeaders: {headers}\n\n'
+            'Error received:\n\t{error}'
+        ).format(xsiam_url=xsiam_url, headers=json.dumps(headers, indent=4), error=error)
+
+        demisto.error(header_msg + api_call_info)
+        raise DemistoException(header_msg + error, DemistoException)
+
+    zipped_data = gzip.compress(data.encode('utf-8'))   # type: ignore[AttributeError,attr-defined]
+    client = BaseClient(base_url=xsiam_url)
+    res = client._http_request(method='POST', full_url=urljoin(xsiam_url, '/logs/v1/xsiam'), data=zipped_data,
+                               headers=headers,
+                               error_handler=events_error_handler)
+    if res.get('error').lower() != 'false':
+        raise DemistoException(header_msg + res.get('error'))
+
+    demisto.updateModuleHealth({'eventsPulled': amount_of_events})
+
+
+###########################################
+#     DO NOT ADD LINES AFTER THIS ONE     #
+###########################################
+register_module_line('CommonServerPython', 'end', __line__())
+register_module_line('CustomScriptIntegration', 'start', __line__())

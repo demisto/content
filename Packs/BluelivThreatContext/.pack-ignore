@@ -1,0 +1,8 @@
+[file:README.md]
+ignore=RM102
+
+[file:BluelivThreatContext.yml]
+ignore=IN136
+
+[file:BluelivThreatContext_image.png]
+ignore=IM111

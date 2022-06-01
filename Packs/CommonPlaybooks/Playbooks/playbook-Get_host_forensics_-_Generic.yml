@@ -1,0 +1,270 @@
+id: 'Get host forensics - Generic'
+version: -1
+name: 'Get host forensics - Generic'
+description: "This playbook retrieves forensics from hosts for the following integrations:\n
+- Illusive Networks \n
+- Microsoft Defender For Endpoint"
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: f20f2deb-51b2-43bc-8c19-ea19d795c1ce
+    type: start
+    task:
+      id: f20f2deb-51b2-43bc-8c19-ea19d795c1ce
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 44e2bef7-db14-418e-8899-05b87ce087c1
+    type: condition
+    task:
+      id: 44e2bef7-db14-418e-8899-05b87ce087c1
+      version: -1
+      name: Is illusive enabled
+      description: Returns 'yes' if the Illusive Networks integration is enabled.
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+      '#default#':
+      - "3"
+    scriptarguments:
+      brandname:
+        simple: IllusiveNetworks
+    results:
+    - brandInstances
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: a407e17a-7005-4b1a-87c0-00e1e1c2cae2
+    type: title
+    task:
+      id: a407e17a-7005-4b1a-87c0-00e1e1c2cae2
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 4e87acfb-c838-448f-8c35-a81c306b37bf
+    type: playbook
+    task:
+      id: 4e87acfb-c838-448f-8c35-a81c306b37bf
+      version: -1
+      name: Illusive-Collect-Forensics-On-Demand
+      playbookName: Illusive-Collect-Forensics-On-Demand
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      end_date:
+        simple: ${inputs.end_date}
+      fqdn_or_ip:
+        simple: ${inputs.fqdn_or_ip}
+      start_date:
+        simple: ${inputs.start_date}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": -30,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: c7004145-36f8-47b3-8bbf-b08852b7b00c
+    type: condition
+    task:
+      id: c7004145-36f8-47b3-8bbf-b08852b7b00c
+      version: -1
+      name: Is Microsoft Defender For Endpoint Integration Enabled?
+      description: Returns 'yes' if the Microsoft Defender for Endpoint integration brand is enabled.
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "6"
+    scriptarguments:
+      brandname:
+        simple: Microsoft Defender Advanced Threat Protection
+    results:
+    - brandInstances
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 1fb6f15e-7c4b-429b-8974-e30dcac00512
+    type: playbook
+    task:
+      id: 1fb6f15e-7c4b-429b-8974-e30dcac00512
+      version: -1
+      name: 'Microsoft Defender For Endpoint - Collect investigation package'
+      description: "This playbook simplifies retrieving investigation packages to Cortex XSOAR from supported machines (See https://docs.microsoft.com/en-us/microsoft-365/security/defender-endpoint/collect-investigation-package?view=o365-worldwide). \n\n
+      The playbook receives information about the target devices (host name, IP, and device ID), validates the devices exist, and retrieves the collection package from those machines into the Cortex XSOAR console. \n 
+      Note: This action may take time, the average package size is around ~15 MB."
+      playbookName: 'Microsoft Defender For Endpoint - Collect investigation package'
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      AutoCollectinvestigationPackege:
+        simple: "True"
+      Hostnames:
+        simple: ${inputs.fqdn_or_ip}
+      IPs:
+        simple: ${inputs.fqdn_or_ip}
+      MachineIDs:
+        simple: ${inputs.machine_ID}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 795,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 560,
+        "width": 1205,
+        "x": -30,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: fqdn_or_ip
+  value: {}
+  required: false
+  description: 'If using the Illusive Networks integration to retrieve additional forensics, provide the host fqdn_or_ip from which to get the forensics. '
+  playbookInputQuery:
+- key: start_date
+  value: {}
+  required: false
+  description: 'Date_range must be "number date_range_unit", for example 2 hours, 4 minutes, 6 months, 1 day.'
+  playbookInputQuery:
+- key: end_date
+  value: {}
+  required: false
+  description: 'Date_range must be "number date_range_unit" for example 2 hours, 4 minutes, 6 months, 1 day.'
+  playbookInputQuery:
+- key: machine_ID
+  value: {}
+  required: false
+  description: Provide the machine IDs of the systems you want to retrieve.
+  playbookInputQuery: null
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0
+contentitemexportablefields:
+  contentitemfields: {}

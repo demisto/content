@@ -1,0 +1,20 @@
+{
+    "maliciousUrls": 0,
+    "msgsBlendedThreats": 0,
+    "msgsIn": 0,
+    "msgsInternal": 0,
+    "msgsOut": 0,
+    "msgsSpam": 0,
+    "msgsVirus": 0,
+    "numQuarantined": 0,
+    "numQuarantinesPerMsg": 0,
+    "pFolders": null,
+    "pThreats": null,
+    "safeClicks": 0,
+    "unsafeClicks": 0,
+    "unsafeUrls": 0,
+    "urlsFound": 0,
+    "urlsRewritten": 0,
+    "virusDetected": 0,
+    "virusScanned": 0
+}

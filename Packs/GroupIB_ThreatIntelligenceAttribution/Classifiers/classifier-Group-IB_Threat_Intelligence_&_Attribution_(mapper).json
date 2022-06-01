@@ -1,0 +1,1442 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "Group-IB Threat Intelligence & Attribution - mapper",
+    "mapping": {
+        "GIB Brand Protection Domain": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "GIB Address": {
+                    "complex": {
+                        "accessor": "address",
+                        "filters": [],
+                        "root": "attrs",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Date Created": {
+                    "complex": {
+                        "accessor": "date_registered",
+                        "filters": [],
+                        "root": "attrs",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "add_utc_timezone": {
+                                        "isContext": false,
+                                        "value": null
+                                    },
+                                    "dayfirst": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "\"False\""
+                                        }
+                                    },
+                                    "fuzzy": {
+                                        "isContext": false,
+                                        "value": null
+                                    },
+                                    "yearfirst": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "\"True\""
+                                        }
+                                    }
+                                },
+                                "operator": "DateStringToISOFormat"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "GIB Date Expired": {
+                    "complex": {
+                        "accessor": "date_expired",
+                        "filters": [],
+                        "root": "attrs",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "add_utc_timezone": {
+                                        "isContext": false,
+                                        "value": null
+                                    },
+                                    "dayfirst": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "\"False\""
+                                        }
+                                    },
+                                    "fuzzy": {
+                                        "isContext": false,
+                                        "value": null
+                                    },
+                                    "yearfirst": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "\"True\""
+                                        }
+                                    }
+                                },
+                                "operator": "DateStringToISOFormat"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "GIB Email": {
+                    "complex": {
+                        "accessor": "email",
+                        "filters": [],
+                        "root": "attrs",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Favicon": {
+                    "complex": {
+                        "accessor": "favicon",
+                        "filters": [],
+                        "root": "attrs",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB HTML": {
+                    "complex": {
+                        "accessor": "html",
+                        "filters": [],
+                        "root": "attrs",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB ID": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "id",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Name Servers": {
+                    "complex": {
+                        "accessor": "name_server",
+                        "filters": [],
+                        "root": "attrs",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "separator": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": ", "
+                                        }
+                                    }
+                                },
+                                "operator": "join"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "GIB Person": {
+                    "complex": {
+                        "accessor": "person",
+                        "filters": [],
+                        "root": "attrs",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Phishing Domain": {
+                    "complex": {
+                        "accessor": "domain",
+                        "filters": [],
+                        "root": "attrs",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Phishing Status": {
+                    "complex": {
+                        "accessor": "status",
+                        "filters": [],
+                        "root": "attrs",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Phishing Type": {
+                    "complex": {
+                        "accessor": "type",
+                        "filters": [],
+                        "root": "attrs",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Related Indicators Data": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "relatedIndicatorsData",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Screenshot": {
+                    "complex": {
+                        "accessor": "screenshot",
+                        "filters": [],
+                        "root": "attrs",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Title": {
+                    "complex": {
+                        "accessor": "page_title",
+                        "filters": [],
+                        "root": "attrs",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Phone Number": {
+                    "complex": {
+                        "accessor": "phone",
+                        "filters": [],
+                        "root": "attrs",
+                        "transformers": []
+                    },
+                    "simple": ""
+                }
+            }
+        },
+        "GIB Brand Protection Phishing": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "GIB Date of Detection": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "dateDetected",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB ID": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "id",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Phishing Date Blocked": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "dateBlocked",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Phishing Status": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "status",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Portal Link": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "portalLink",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Related Indicators Data": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "relatedIndicatorsData",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Severity": {
+                    "complex": {
+                        "accessor": "severity",
+                        "filters": [],
+                        "root": "evaluation",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Target Brand": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "targetBrand",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Target Category": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "targetCategory",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Target Domain": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "targetDomain",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Title": {
+                    "complex": {
+                        "accessor": "title",
+                        "filters": [],
+                        "root": "phishingDomain",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "severity": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "systemSeverity",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Admiralty Code": {
+                    "complex": {
+                        "accessor": "admiraltyCode",
+                        "filters": [],
+                        "root": "evaluation",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Credibility": {
+                    "complex": {
+                        "accessor": "credibility",
+                        "filters": [],
+                        "root": "evaluation",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Reliability": {
+                    "complex": {
+                        "accessor": "reliability",
+                        "filters": [],
+                        "root": "evaluation",
+                        "transformers": []
+                    },
+                    "simple": ""
+                }
+            }
+        },
+        "GIB Brand Protection Phishing Kit": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "GIB Date Created": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "dateFirstSeen",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Date of Detection": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "dateDetected",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Downloaded From": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "downloadedFrom",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB ID": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "id",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Phishing Kit Emails": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "emails",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Phishing Kit Hash": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "hash",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Portal Link": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "portalLink",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Related Indicators Data": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "relatedIndicatorsData",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Severity": {
+                    "complex": {
+                        "accessor": "severity",
+                        "filters": [],
+                        "root": "evaluation",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Target Brand": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "targetBrand",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "severity": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "systemSeverity",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Admiralty Code": {
+                    "complex": {
+                        "accessor": "admiraltyCode",
+                        "filters": [],
+                        "root": "evaluation",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Credibility": {
+                    "complex": {
+                        "accessor": "credibility",
+                        "filters": [],
+                        "root": "evaluation",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Reliability": {
+                    "complex": {
+                        "accessor": "reliability",
+                        "filters": [],
+                        "root": "evaluation",
+                        "transformers": []
+                    },
+                    "simple": ""
+                }
+            }
+        },
+        "GIB Compromised Account": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "GIB Address": {
+                    "complex": {
+                        "accessor": "address",
+                        "filters": [],
+                        "root": "person",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Compromised Login": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "login",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Date Compromised": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "dateCompromised",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Date of Detection": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "dateDetected",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Drop Email": {
+                    "complex": {
+                        "accessor": "email",
+                        "filters": [],
+                        "root": "dropEmail",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Drop Email Domain": {
+                    "complex": {
+                        "accessor": "domain",
+                        "filters": [],
+                        "root": "dropEmail",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Email": {
+                    "complex": {
+                        "accessor": "email",
+                        "filters": [],
+                        "root": "person",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB ID": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "id",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Malware Name": {
+                    "complex": {
+                        "accessor": "name",
+                        "filters": [],
+                        "root": "malware",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Password": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "password",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Person": {
+                    "complex": {
+                        "accessor": "name",
+                        "filters": [],
+                        "root": "person",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Portal Link": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "portalLink",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Related Indicators Data": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "relatedIndicatorsData",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Severity": {
+                    "complex": {
+                        "accessor": "severity",
+                        "filters": [],
+                        "root": "evaluation",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Source": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "sourceType",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Threat Actor ID": {
+                    "complex": {
+                        "accessor": "id",
+                        "filters": [],
+                        "root": "threatActor",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Threat Actor Name": {
+                    "complex": {
+                        "accessor": "name",
+                        "filters": [],
+                        "root": "threatActor",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Threat Actor is APT": {
+                    "complex": {
+                        "accessor": "isAPT",
+                        "filters": [],
+                        "root": "threatActor",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Victim IP": {
+                    "complex": {
+                        "accessor": "ip",
+                        "filters": [],
+                        "root": "client.ipv4",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Phone Number": {
+                    "complex": {
+                        "accessor": "phone",
+                        "filters": [],
+                        "root": "person",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "severity": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "systemSeverity",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Admiralty Code": {
+                    "complex": {
+                        "accessor": "admiraltyCode",
+                        "filters": [],
+                        "root": "evaluation",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Credibility": {
+                    "complex": {
+                        "accessor": "credibility",
+                        "filters": [],
+                        "root": "evaluation",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Reliability": {
+                    "complex": {
+                        "accessor": "reliability",
+                        "filters": [],
+                        "root": "evaluation",
+                        "transformers": []
+                    },
+                    "simple": ""
+                }
+            }
+        },
+        "GIB Compromised Card": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "GIB Address": {
+                    "complex": {
+                        "accessor": "address",
+                        "filters": [],
+                        "root": "owner",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB CVV": {
+                    "complex": {
+                        "accessor": "cvv",
+                        "filters": [],
+                        "root": "cardInfo",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Card Issuer": {
+                    "complex": {
+                        "accessor": "issuer",
+                        "filters": [],
+                        "root": "cardInfo.issuer",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Card Number": {
+                    "complex": {
+                        "accessor": "number",
+                        "filters": [],
+                        "root": "cardInfo",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Card Type": {
+                    "complex": {
+                        "accessor": "type",
+                        "filters": [],
+                        "root": "cardInfo",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Card Valid Thru": {
+                    "complex": {
+                        "accessor": "validThru",
+                        "filters": [],
+                        "root": "cardInfo",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Date Compromised": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "dateCompromised",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Date of Detection": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "dateDetected",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Email": {
+                    "complex": {
+                        "accessor": "email",
+                        "filters": [],
+                        "root": "owner",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB ID": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "id",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Malware Name": {
+                    "complex": {
+                        "accessor": "name",
+                        "filters": [],
+                        "root": "malware",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Payment System": {
+                    "complex": {
+                        "accessor": "system",
+                        "filters": [],
+                        "root": "cardInfo",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Person": {
+                    "complex": {
+                        "accessor": "name",
+                        "filters": [],
+                        "root": "owner",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Portal Link": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "portalLink",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Related Indicators Data": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "relatedIndicatorsData",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Severity": {
+                    "complex": {
+                        "accessor": "severity",
+                        "filters": [],
+                        "root": "evaluation",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Source": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "sourceType",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Threat Actor ID": {
+                    "complex": {
+                        "accessor": "id",
+                        "filters": [],
+                        "root": "threatActor",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Threat Actor Name": {
+                    "complex": {
+                        "accessor": "name",
+                        "filters": [],
+                        "root": "threatActor",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Threat Actor is APT": {
+                    "complex": {
+                        "accessor": "isAPT",
+                        "filters": [],
+                        "root": "threatActor",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Phone Number": {
+                    "complex": {
+                        "accessor": "phone",
+                        "filters": [],
+                        "root": "owner",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "severity": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "systemSeverity",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Admiralty Code": {
+                    "complex": {
+                        "accessor": "admiraltyCode",
+                        "filters": [],
+                        "root": "evaluation",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Credibility": {
+                    "complex": {
+                        "accessor": "credibility",
+                        "filters": [],
+                        "root": "evaluation",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Reliability": {
+                    "complex": {
+                        "accessor": "reliability",
+                        "filters": [],
+                        "root": "evaluation",
+                        "transformers": []
+                    },
+                    "simple": ""
+                }
+            }
+        },
+        "GIB Data Breach": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "GIB Email": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "email",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "separator": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": ", "
+                                        }
+                                    }
+                                },
+                                "operator": "join"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "GIB ID": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "id",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Leak Name": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "leakName",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Password": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "password",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "separator": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": ", "
+                                        }
+                                    }
+                                },
+                                "operator": "join"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "GIB Severity": {
+                    "complex": {
+                        "accessor": "severity",
+                        "filters": [],
+                        "root": "evaluation",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "severity": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "systemSeverity",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Admiralty Code": {
+                    "complex": {
+                        "accessor": "admiraltyCode",
+                        "filters": [],
+                        "root": "evaluation",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Credibility": {
+                    "complex": {
+                        "accessor": "credibility",
+                        "filters": [],
+                        "root": "evaluation",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Reliability": {
+                    "complex": {
+                        "accessor": "reliability",
+                        "filters": [],
+                        "root": "evaluation",
+                        "transformers": []
+                    },
+                    "simple": ""
+                }
+            }
+        },
+        "GIB OSI Git Leak": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "GIB Date of Detection": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "dateDetected",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB ID": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "id",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Leaked File Name": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "name",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Portal Link": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "file",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Repository": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "repository",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Revisions": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "revisions",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Severity": {
+                    "complex": {
+                        "accessor": "severity",
+                        "filters": [],
+                        "root": "evaluation",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Source": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "source",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "severity": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "systemSeverity",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Admiralty Code": {
+                    "complex": {
+                        "accessor": "admiraltyCode",
+                        "filters": [],
+                        "root": "evaluation",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Credibility": {
+                    "complex": {
+                        "accessor": "credibility",
+                        "filters": [],
+                        "root": "evaluation",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Reliability": {
+                    "complex": {
+                        "accessor": "reliability",
+                        "filters": [],
+                        "root": "evaluation",
+                        "transformers": []
+                    },
+                    "simple": ""
+                }
+            }
+        },
+        "GIB OSI Public Leak": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "GIB Data Hash": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "hash",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Date Created": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "created",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB ID": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "id",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Leaked Data": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "data",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Link List": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "linkList",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Matches": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "matches",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Portal Link": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "portalLink",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Severity": {
+                    "complex": {
+                        "accessor": "severity",
+                        "filters": [],
+                        "root": "evaluation",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "severity": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "systemSeverity",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Admiralty Code": {
+                    "complex": {
+                        "accessor": "admiraltyCode",
+                        "filters": [],
+                        "root": "evaluation",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Credibility": {
+                    "complex": {
+                        "accessor": "credibility",
+                        "filters": [],
+                        "root": "evaluation",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Reliability": {
+                    "complex": {
+                        "accessor": "reliability",
+                        "filters": [],
+                        "root": "evaluation",
+                        "transformers": []
+                    },
+                    "simple": ""
+                }
+            }
+        },
+        "GIB Targeted Malware": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "GIB Date of Detection": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "date",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB ID": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "id",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Inject Dump": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "injectDump",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Inject MD5": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "injectMd5",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Malware Name": {
+                    "complex": {
+                        "accessor": "name",
+                        "filters": [],
+                        "root": "malware",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Portal Link": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "portalLink",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Related Indicators Data": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "relatedIndicatorsData",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Severity": {
+                    "complex": {
+                        "accessor": "severity",
+                        "filters": [],
+                        "root": "evaluation",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Source": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "source",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Threat Actor ID": {
+                    "complex": {
+                        "accessor": "id",
+                        "filters": [],
+                        "root": "threatActor",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Threat Actor Name": {
+                    "complex": {
+                        "accessor": "name",
+                        "filters": [],
+                        "root": "threatActor",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Threat Actor is APT": {
+                    "complex": {
+                        "accessor": "isAPT",
+                        "filters": [],
+                        "root": "threatActor",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "severity": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "systemSeverity",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Admiralty Code": {
+                    "complex": {
+                        "accessor": "admiraltyCode",
+                        "filters": [],
+                        "root": "evaluation",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Credibility": {
+                    "complex": {
+                        "accessor": "credibility",
+                        "filters": [],
+                        "root": "evaluation",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Reliability": {
+                    "complex": {
+                        "accessor": "reliability",
+                        "filters": [],
+                        "root": "evaluation",
+                        "transformers": []
+                    },
+                    "simple": ""
+                }
+            }
+        },
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {}
+        }
+    },
+    "name": "Group-IB Threat Intelligence & Attribution (mapper)",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

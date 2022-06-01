@@ -3,19 +3,19 @@ from CommonServerPython import DemistoException
 
 
 test_data = [
-    ('[{"Sha1Hash"},{"437"},{"Sha1Hash"}]', '\{".*?"(\},\{)".*?"\}', '@@@', '[{"Sha1Hash"@@@"437"},{"Sha1Hash"}]'),
-    ('{"1"},{"2"},{"3"},{"4"}', '\{".*?"\}(,)\{".*?"\}', ':', '{"1"}:{"2"},{"3"}:{"4"}'),
-    ('this is a test, this is another test.', '.*?(,).*?(\.)', '!', 'this is a test! this is another test!'),
-    ('a, b. c,.', '.*?(,|\.)', '!', 'a! b! c!!'),
-    ('.this is a test, this is another test.', '(\.).*?(,).*?(\.)', '!', '!this is a test! this is another test!'),
+    ('[{"Sha1Hash"},{"437"},{"Sha1Hash"}]', r'\{".*?"(\},\{)".*?"\}', '@@@', '[{"Sha1Hash"@@@"437"},{"Sha1Hash"}]'),
+    ('{"1"},{"2"},{"3"},{"4"}', r'\{".*?"\}(,)\{".*?"\}', ':', '{"1"}:{"2"},{"3"}:{"4"}'),
+    ('this is a test, this is another test.', r'.*?(,).*?(\.)', '!', 'this is a test! this is another test!'),
+    ('a, b. c,.', r'.*?(,|\.)', '!', 'a! b! c!!'),
+    ('.this is a test, this is another test.', r'(\.).*?(,).*?(\.)', '!', '!this is a test! this is another test!'),
     ('[{"UrlValue:https://sslmanageamazones.ddns.net/info.ppl.service.access/paypal"}, '
      '{"UrlValue:https://sslmanageamazones.ddns.net/info.ppl.service.access/paypal"}, '
      '{"UrlValue:https://sslmanageamazones.ddns.net/info.ppl.service.access/paypal"}]', '.*?(:).*?:\\/\\/', '":"',
      '[{"UrlValue":"https://sslmanageamazones.ddns.net/info.ppl.service.access/paypal"}, '
      '{"UrlValue":"https://sslmanageamazones.ddns.net/info.ppl.service.access/paypal"}, '
      '{"UrlValue":"https://sslmanageamazones.ddns.net/info.ppl.service.access/paypal"}]'),
-    ('string', '', 'wow', 'string'),
-    ('a, b. c,.', '.*?(!|\^)', '!', 'a, b. c,.'),
+    ('string', r'', 'wow', 'string'),
+    ('a, b. c,.', r'.*?(!|\^)', '!', 'a, b. c,.'),
 ]
 
 test_exception_data = [('string', 3, 'a'), ('string', 'hel(o', 'a')]

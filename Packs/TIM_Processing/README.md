@@ -11,7 +11,8 @@ The playbooks included in this pack help you automate repetitive tasks associate
 - Create incidents for indicators that require additional analyst review and chain of approval.
 - Run additional enrichment for indicators ingested by specific feeds.
 - Check Whois to validate domains registrant and time of creation.
+- Check if an indicator with a tag of *organizational_external_ip* has been updated and keeps or removes the tag according to the results.
+- Process indicators against IP and CIDR lists.
 
 
-_For more information, visit our [Cortex XSOAR Developer Docs](https://xsoar.pan.dev/docs/reference/playbooks)_
-
+_For more information, visit our [Cortex XSOAR Developer Docs](https://xsoar.pan.dev/docs/reference/index)._

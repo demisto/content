@@ -2,6 +2,9 @@ import random
 import string
 from typing import Dict
 
+import dateparser
+import chardet
+
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -11,13 +14,11 @@ import traceback
 import json
 import os
 import hashlib
-from datetime import timedelta
 from io import StringIO
 import logging
 import warnings
 import email
 from requests.exceptions import ConnectionError
-from collections import deque
 
 from multiprocessing import Process
 import exchangelib
@@ -64,6 +65,7 @@ warnings.filterwarnings("ignore")
 APP_NAME = "ms-ews-o365"
 FOLDER_ID_LEN = 120
 MAX_INCIDENTS_PER_FETCH = 50
+FETCH_TIME = demisto.params().get('fetch_time') or '10 minutes'
 
 # move results
 MOVED_TO_MAILBOX = "movedToMailbox"
@@ -86,11 +88,13 @@ ACTION = "action"
 MAILBOX = "mailbox"
 MAILBOX_ID = "mailboxId"
 FOLDER_ID = "id"
+TARGET_MAILBOX = 'receivedBy'
 
 # context paths
-CONTEXT_UPDATE_EWS_ITEM = "EWS.Items(val.{0} === obj.{0} || (val.{1} && obj.{1} && val.{1} === obj.{1}))".format(
-    ITEM_ID, MESSAGE_ID
-)
+CONTEXT_UPDATE_EWS_ITEM = f"EWS.Items((val.{ITEM_ID} === obj.{ITEM_ID} || " \
+                          f"(val.{MESSAGE_ID} && obj.{MESSAGE_ID} && val.{MESSAGE_ID} === obj.{MESSAGE_ID}))" \
+                          f" && val.{TARGET_MAILBOX} === obj.{TARGET_MAILBOX})"
+
 CONTEXT_UPDATE_EWS_ITEM_FOR_ATTACHMENT = "EWS.Items(val.{0} == obj.{1})".format(
     ITEM_ID, ATTACHMENT_ORIGINAL_ITEM_ID
 )
@@ -150,9 +154,6 @@ class EWSClient:
     def __init__(
             self,
             default_target_mailbox,
-            client_id,
-            client_secret,
-            tenant_id,
             folder="Inbox",
             is_public_folder=False,
             request_timeout="120",
@@ -173,6 +174,18 @@ class EWSClient:
         :param max_fetch: Max incidents per fetch
         :param insecure: Trust any certificate (not secure)
         """
+
+        client_id = kwargs.get('client_id') or kwargs.get('_client_id')
+        tenant_id = kwargs.get('tenant_id') or kwargs.get('_tenant_id')
+        client_secret = kwargs.get('client_secret') or (kwargs.get('credentials') or {}).get('password')
+
+        if not client_secret:
+            raise Exception('Key / Application Secret must be provided.')
+        elif not client_id:
+            raise Exception('ID / Application ID must be provided.')
+        elif not tenant_id:
+            raise Exception('Token / Tenant ID must be provided.')
+
         BaseProtocol.TIMEOUT = int(request_timeout)
         self.ews_server = "https://outlook.office365.com/EWS/Exchange.asmx/"
         self.ms_client = MicrosoftClient(
@@ -188,7 +201,7 @@ class EWSClient:
         )
         self.folder_name = folder
         self.is_public_folder = is_public_folder
-        self.access_type = kwargs.get('access_type') or IMPERSONATION
+        self.access_type = (kwargs.get('access_type', IMPERSONATION) or IMPERSONATION).lower()
         self.max_fetch = min(MAX_INCIDENTS_PER_FETCH, int(max_fetch))
         self.last_run_ids_queue_size = 500
         self.client_id = client_id
@@ -597,6 +610,8 @@ def prepare_args(args):
     args = dict((k.replace("-", "_"), v) for k, v in list(args.items()))
     if "is_public" in args:
         args["is_public"] = args["is_public"] == "True"
+    if "from" in args:
+        args['from_address'] = args.pop('from')
     return args
 
 
@@ -1489,7 +1504,7 @@ def get_items_from_folder(
         "receivedBy",
         "author",
         "toRecipients",
-        "id",
+        "itemId",
     ]
     readable_output = tableToMarkdown(
         "Items in folder " + folder_path, items_result, headers=hm_headers
@@ -1783,30 +1798,34 @@ def handle_template_params(template_params):
     return actual_params
 
 
-def create_message_object(to, cc, bcc, subject, body, additional_headers):
+def create_message_object(to, cc, bcc, subject, body, additional_headers, from_address, reply_to):
     """Creates the message object according to the existence of additional custom headers.
     """
     if additional_headers:
         return Message(
             to_recipients=to,
+            author=from_address,
             cc_recipients=cc,
             bcc_recipients=bcc,
             subject=subject,
+            reply_to=reply_to,
             body=body,
             **additional_headers
         )
 
     return Message(
         to_recipients=to,
+        author=from_address,
         cc_recipients=cc,
         bcc_recipients=bcc,
         subject=subject,
+        reply_to=reply_to,
         body=body
     )
 
 
 def create_message(to, subject='', body='', bcc=None, cc=None, html_body=None, attachments=None,
-                   additional_headers=None):
+                   additional_headers=None, from_address=None, reply_to=None):
     """Creates the Message object that will be sent.
 
     Args:
@@ -1818,13 +1837,15 @@ def create_message(to, subject='', body='', bcc=None, cc=None, html_body=None, a
         html_body (str): Email's html body.
         attachments (list): Files to be attached to the mail, both inline and as files.
         additional_headers (Dict): Custom headers to be added to the message.
+        from_address (str): The email address from which to reply.
+        reply_to (list): Email addresses that need to be used to reply to the message.
 
     Returns:
         Message. Message object ready to be sent.
     """
     if not html_body:
         # This is a simple text message - we cannot have CIDs here
-        message = create_message_object(to, cc, bcc, subject, body, additional_headers)
+        message = create_message_object(to, cc, bcc, subject, body, additional_headers, from_address, reply_to)
 
         for attachment in attachments:
             if not attachment.get('cid'):
@@ -1835,10 +1856,8 @@ def create_message(to, subject='', body='', bcc=None, cc=None, html_body=None, a
         html_body, html_attachments = handle_html(html_body)
         attachments += html_attachments
 
-        if body:
-            html_body = f'{body}<br/><br/>{html_body}'
-
-        message = create_message_object(to, cc, bcc, subject, HTMLBody(html_body), additional_headers)
+        message = create_message_object(to, cc, bcc, subject, HTMLBody(html_body), additional_headers, from_address,
+                                        reply_to)
 
         for attachment in attachments:
             if not attachment.get('cid'):
@@ -1883,10 +1902,11 @@ def add_additional_headers(additional_headers):
 def send_email(client: EWSClient, to, subject='', body="", bcc=None, cc=None, htmlBody=None,
                attachIDs="", attachCIDs="", attachNames="", manualAttachObj=None,
                transientFile=None, transientFileContent=None, transientFileCID=None, templateParams=None,
-               additionalHeader=None, raw_message=None):
+               additionalHeader=None, raw_message=None, from_address=None, replyTo=None):
     to = argToList(to)
     cc = argToList(cc)
     bcc = argToList(bcc)
+    reply_to = argToList(replyTo)
 
     # Basic validation - we allow pretty much everything but you have to have at least a recipient
     # We allow messages without subject and also without body
@@ -1898,7 +1918,9 @@ def send_email(client: EWSClient, to, subject='', body="", bcc=None, cc=None, ht
             to_recipients=to,
             cc_recipients=cc,
             bcc_recipients=bcc,
-            body=raw_message
+            body=raw_message,
+            author=from_address,
+            reply_to=reply_to
         )
 
     else:
@@ -1914,9 +1936,11 @@ def send_email(client: EWSClient, to, subject='', body="", bcc=None, cc=None, ht
         template_params = handle_template_params(templateParams)
         if template_params:
             body = body.format(**template_params)
-            htmlBody = htmlBody.format(**template_params)
+            if htmlBody:
+                htmlBody = htmlBody.format(**template_params)
 
-        message = create_message(to, subject, body, bcc, cc, htmlBody, attachments, additionalHeader)
+        message = create_message(to, subject, body, bcc, cc, htmlBody, attachments, additionalHeader, from_address,
+                                 reply_to)
 
     client.send_email(message)
 
@@ -2049,10 +2073,17 @@ def parse_incident_from_item(item):
                     attached_email = email.message_from_bytes(mime_content) if isinstance(mime_content, bytes) \
                         else email.message_from_string(mime_content)
                     if attachment.item.headers:
-                        attached_email_headers = [
-                            (h, " ".join(map(str.strip, v.split("\r\n"))))
-                            for (h, v) in list(attached_email.items())
-                        ]
+                        attached_email_headers = []
+                        for h, v in attached_email.items():
+                            if not isinstance(v, str):
+                                try:
+                                    v = str(v)
+                                except:  # noqa: E722
+                                    demisto.debug('cannot parse the header "{}"'.format(h))
+                                    continue
+
+                            v = ' '.join(map(str.strip, v.split('\r\n')))
+                            attached_email_headers.append((h, v))
                         for header in attachment.item.headers:
                             if (
                                     (header.name, header.value)
@@ -2060,10 +2091,21 @@ def parse_incident_from_item(item):
                                     and header.name != "Content-Type"
                             ):
                                 attached_email.add_header(header.name, header.value)
+                    attached_email_bytes = attached_email.as_bytes()
+                    chardet_detection = chardet.detect(attached_email_bytes)
+                    encoding = chardet_detection.get('encoding', 'utf-8') or 'utf-8'
+                    try:
+                        # Trying to decode using the detected encoding
+                        data = attached_email_bytes.decode(encoding)
+                    except UnicodeDecodeError:
+                        # In case the detected encoding fails apply the default encoding
+                        demisto.info(f'Could not decode attached email using detected encoding:{encoding}, retrying '
+                                     f'using utf-8.\nAttached email:\n{attached_email}')
+                        data = attached_email_bytes.decode('utf-8')
 
                     file_result = fileResult(
                         get_attachment_name(attachment.name) + ".eml",
-                        attached_email.as_string(),
+                        data,
                     )
 
                 if file_result:
@@ -2129,35 +2171,54 @@ def fetch_emails_as_incidents(client: EWSClient, last_run):
     :return:
     """
     last_run = get_last_run(client, last_run)
-
+    excluded_ids = set(last_run.get(LAST_RUN_IDS, []))
     try:
         last_emails = fetch_last_emails(
             client,
             client.folder_name,
             last_run.get(LAST_RUN_TIME),
-            last_run.get(LAST_RUN_IDS),
+            excluded_ids,
         )
 
-        ids = deque(
-            last_run.get(LAST_RUN_IDS, []), maxlen=client.last_run_ids_queue_size
-        )
         incidents = []
         incident: Dict[str, str] = {}
+        demisto.debug(f'{APP_NAME} - Started fetch with {len(last_emails)} at {last_run.get(LAST_RUN_TIME)}')
+        current_fetch_ids = set()
         for item in last_emails:
             if item.message_id:
-                ids.append(item.message_id)
+                current_fetch_ids.add(item.message_id)
                 incident = parse_incident_from_item(item)
                 incidents.append(incident)
 
                 if len(incidents) >= client.max_fetch:
                     break
 
-        last_run_time = incident.get("occurred", last_run.get(LAST_RUN_TIME))
-        if isinstance(last_run_time, EWSDateTime):
-            last_run_time = last_run_time.ewsformat()
+        demisto.debug(f'{APP_NAME} - ending fetch - got {len(incidents)} incidents.')
+
+        last_fetch_time = last_run.get(LAST_RUN_TIME)
+
+        last_incident_run_time = incident.get("occurred", last_fetch_time)
+
+        # making sure both last fetch time and the time of most recent incident are the same type for comparing.
+        if isinstance(last_incident_run_time, EWSDateTime):
+            last_incident_run_time = last_incident_run_time.ewsformat()
+
+        if isinstance(last_fetch_time, EWSDateTime):
+            last_fetch_time = last_fetch_time.ewsformat()
+
+        demisto.debug(
+            f'#### last_incident_time: {last_incident_run_time}({type(last_incident_run_time)}).'
+            f'last_fetch_time: {last_fetch_time}({type(last_fetch_time)}) ####')
+
+        # If the fetch query is not fully fetched (we didn't have any time progress) - then we keep the
+        # id's from current fetch until progress is made. This is for when max_fetch < incidents_from_query.
+        if not last_incident_run_time or not last_fetch_time or last_incident_run_time > last_fetch_time:
+            ids = current_fetch_ids
+        else:
+            ids = current_fetch_ids | excluded_ids
 
         new_last_run = {
-            LAST_RUN_TIME: last_run_time,
+            LAST_RUN_TIME: last_incident_run_time,
             LAST_RUN_FOLDER: client.folder_name,
             LAST_RUN_IDS: list(ids),
             ERROR_COUNTER: 0,
@@ -2193,18 +2254,26 @@ def fetch_last_emails(
     if since_datetime:
         qs = qs.filter(datetime_received__gte=since_datetime)
     else:
-        last_10_min = EWSDateTime.now(tz=EWSTimeZone.timezone("UTC")) - timedelta(
-            minutes=10
-        )
-        qs = qs.filter(last_modified_time__gte=last_10_min)
+        tz = EWSTimeZone('UTC')
+        first_fetch_datetime = dateparser.parse(FETCH_TIME)
+        assert first_fetch_datetime is not None
+        first_fetch_ews_datetime = EWSDateTime.from_datetime(first_fetch_datetime.replace(tzinfo=tz))
+        qs = qs.filter(last_modified_time__gte=first_fetch_ews_datetime)
     qs = qs.filter().only(*[x.name for x in Message.FIELDS])
     qs = qs.filter().order_by("datetime_received")
 
-    result = qs.all()
-    result = [x for x in result if isinstance(x, Message)]
-    if exclude_ids and len(exclude_ids) > 0:
-        exclude_ids = set(exclude_ids)
-        result = [x for x in result if x.message_id not in exclude_ids]
+    result = []
+    exclude_ids = exclude_ids if exclude_ids else set()
+    demisto.debug(f'{APP_NAME} - Exclude ID list: {exclude_ids}')
+    for item in qs:
+        if isinstance(item, Message) and item.message_id not in exclude_ids:
+            result.append(item)
+            if len(result) >= client.max_fetch:
+                break
+        else:
+            demisto.debug(f'message_id {item.message_id} was excluded. IsMessage: {isinstance(item, Message)}')
+
+    demisto.debug(f'{APP_NAME} - Got total of {len(result)} from ews query.')
     return result
 
 
@@ -2248,10 +2317,13 @@ def sub_main():
     is_test_module = False
     params = demisto.params()
     args = prepare_args(demisto.args())
-    params['default_target_mailbox'] = args.get('target_mailbox', params['default_target_mailbox'])
-    client = EWSClient(**params)
-    start_logging()
+    # client's default_target_mailbox is the authorization source for the instance
+    params['default_target_mailbox'] = args.get('target_mailbox',
+                                                args.get('source_mailbox', params['default_target_mailbox']))
+
     try:
+        client = EWSClient(**params)
+        start_logging()
         command = demisto.command()
         # commands that return a single note result
         normal_commands = {

@@ -33,7 +33,7 @@ To configure the ePO server, you need to upload the public key.
     ![click save](https://github.com/demisto/content/raw/master/Packs/McAfee_DXL/Integrations/McAfee_DXL/create_keys/img/click_save.png)
 7. Test the integration (it may take a few minutes until the key is enabled).
 
-## Configure McAfee DXL on Demisto
+## Configure McAfee DXL on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for McAfee DXL.
@@ -44,7 +44,7 @@ To configure the ePO server, you need to upload the public key.
 | broker_ca_bundle | Broker CA certificates content (see `brokercerts.crt` in the instructions). | True |
 | cert_file | Client certificates content (see `client.crt` in the instructions). | True |
 | private_key | Client private key content (e.g. `client.key`) | True |
-| broker_urls | Brokers URLs (comma separated list in the form of [ssl://]&lt;hostname&gt;[:port]). Get the hostname & port from the `brokerlist.properties` file in the instructions. Note that the broker should be reachable from the Demisto server. | True |
+| broker_urls | Brokers URLs (comma separated list in the form of [ssl://]&lt;hostname&gt;[:port]). Get the hostname & port from the `brokerlist.properties` file in the instructions. Note that the broker should be reachable from the Cortex XSOAR server. | True |
 | push_ip_topic | The topic for which to publish the 'dxl-push-ip'. | False |
 | push_url_topic | The topic for which to publish the 'dxl-push-url'. | False |
 | push_domain_topic | The topic for which to publish the 'dxl-push-domain'. | False |
@@ -52,7 +52,7 @@ To configure the ePO server, you need to upload the public key.
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### 1. Send an event to DXL
 ***

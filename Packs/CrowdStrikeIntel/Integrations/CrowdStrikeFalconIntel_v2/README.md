@@ -1,5 +1,5 @@
 Threat intelligence service by CrowdStrike focused on delivering a technical feed to help organizations better defend themselves against adversary activity.
-This integration was integrated and tested with version xx of CrowdStrike Falcon Intel v2
+
 ## Configure CrowdStrike Falcon Intel v2 on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -8,6 +8,7 @@ This integration was integrated and tested with version xx of CrowdStrike Falcon
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
+| Server URL | The server URL to which you want to connect | True |
 | credentials | Client ID | True |
 | threshold | Indicator Threshold. Minimum malicious confidence from Falcon Intel to consider the indicator malicious.\(low, medium, high\) | False |
 | proxy | Use system proxy settings | False |
@@ -15,7 +16,7 @@ This integration was integrated and tested with version xx of CrowdStrike Falcon
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### file
 ***
@@ -29,7 +30,7 @@ Check file reputation.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| file | The file hash (MD5/SHA1/SHA256) to check. | Required | 
+| file | A comma-separated list of file hashes (MD5/SHA1/SHA256) to check.| Required | 
 
 
 #### Context Output
@@ -171,7 +172,7 @@ Check the given URL reputation.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| url | The URL to be checked. | Required | 
+| url | A comma-separated list of URLs to check.| Required | 
 
 
 #### Context Output
@@ -307,7 +308,7 @@ Check the given URL reputation.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| domain | The domain to be checked. | Required | 
+| domain | A comma-seperated list of domains to check.| Required | 
 
 
 #### Context Output
@@ -427,7 +428,7 @@ Check IP reputation.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ip | The IP to check. | Required | 
+| ip | A comma-separated list of IP addresses to check.| Required | 
 
 
 #### Context Output

@@ -52,10 +52,11 @@ def aws_session(service='accessanalyzer', region=None, roleArn=None, roleSession
         kwargs.update({'Policy': rolePolicy})
     elif AWS_ROLE_POLICY is not None:
         kwargs.update({'Policy': AWS_ROLE_POLICY})
-    if kwargs and AWS_ACCESS_KEY_ID is None:
+    if kwargs and not AWS_ACCESS_KEY_ID:
 
-        if AWS_ACCESS_KEY_ID is None:
-            sts_client = boto3.client('sts', config=config, verify=VERIFY_CERTIFICATE)
+        if not AWS_ACCESS_KEY_ID:
+            sts_client = boto3.client('sts', config=config, verify=VERIFY_CERTIFICATE,
+                                      region_name=AWS_DEFAULT_REGION)
             sts_response = sts_client.assume_role(**kwargs)
             if region is not None:
                 client = boto3.client(

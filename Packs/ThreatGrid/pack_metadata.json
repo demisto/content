@@ -1,16 +1,25 @@
 {
-    "name": "Cisco Threat Grid",
+    "name": "Cisco Secure Malware Analytics",
     "description": "Query and upload samples to Cisco threat grid.",
     "support": "xsoar",
-    "currentVersion": "1.1.0",
+    "currentVersion": "1.2.12",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "created": "2020-05-03T08:08:07Z",
     "categories": [
-        "Forensics & Malware Analysis"
+        "Forensics & Malware Analysis",
+        "Threat Intelligence Management"
     ],
-    "tags": [],
+    "tags": [
+        "Relationship"
+    ],
     "useCases": [],
-    "keywords": []
+    "keywords": [
+        "ThreatGrid"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

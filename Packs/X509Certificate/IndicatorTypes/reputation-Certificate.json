@@ -1,0 +1,181 @@
+{
+    "details": "Certificate",
+    "disabled": false,
+    "expiration": 0,
+    "file": false,
+    "id": "Certificate",
+    "layout": "certificate",
+    "locked": false,
+    "manualMapping": {
+        "certificatenames": {
+            "complex": {
+                "accessor": "Name",
+                "filters": [
+
+                ],
+                "root": "Certificate",
+                "transformers": [
+                    {
+                        "args": {
+                            "separator": {
+                                "isContext": false,
+                                "value": {
+                                    "complex": null,
+                                    "simple": " "
+                                }
+                            }
+                        },
+                        "operator": "join"
+                    }
+                ]
+            },
+            "simple": ""
+        },
+        "certificatesignature": {
+            "complex": {
+                "accessor": "Signature",
+                "filters": [
+
+                ],
+                "root": "Certificate",
+                "transformers": [
+                    {
+                        "args": {
+
+                        },
+                        "operator": "ConvertKeysToTableFieldFormat"
+                    }
+                ]
+            },
+            "simple": ""
+        },
+        "extension": {
+            "complex": {
+                "accessor": "Extension",
+                "filters": [
+
+                ],
+                "root": "Certificate",
+                "transformers": [
+                    {
+                        "args": {
+
+                        },
+                        "operator": "ConvertKeysToTableFieldFormat"
+                    }
+                ]
+            },
+            "simple": ""
+        },
+        "issuerdn": {
+            "complex": {
+                "accessor": "IssuerDN",
+                "filters": [
+
+                ],
+                "root": "Certificate",
+                "transformers": [
+
+                ]
+            },
+            "simple": ""
+        },
+        "md5": {
+            "complex": null,
+            "simple": "Certificate.MD5"
+        },
+        "pem": {
+            "complex": null,
+            "simple": "Certificate.PEM"
+        },
+        "pemmd5": {
+            "complex": null,
+            "simple": "Certificate.PEMMD5"
+        },
+        "publickey": {
+            "complex": {
+                "accessor": "PublicKey",
+                "filters": [
+
+                ],
+                "root": "Certificate",
+                "transformers": [
+                    {
+                        "args": {
+
+                        },
+                        "operator": "ConvertKeysToTableFieldFormat"
+                    }
+                ]
+            },
+            "simple": ""
+        },
+        "serialnumber": {
+            "complex": null,
+            "simple": "Certificate.SerialNumber"
+        },
+        "sha1": {
+            "complex": null,
+            "simple": "Certificate.SHA1"
+        },
+        "sha256": {
+            "complex": null,
+            "simple": "Certificate.SHA256"
+        },
+        "sha512": {
+            "complex": {
+                "accessor": "SHA512",
+                "filters": [
+
+                ],
+                "root": "Certificate",
+                "transformers": [
+
+                ]
+            },
+            "simple": ""
+        },
+        "spkisha256": {
+            "complex": null,
+            "simple": "Certificate.SPKISHA256"
+        },
+        "subjectalternativenames": {
+            "complex": {
+                "accessor": "SubjectAlternativeName",
+                "filters": [
+
+                ],
+                "root": "Certificate",
+                "transformers": [
+                    {
+                        "args": {
+
+                        },
+                        "operator": "ConvertKeysToTableFieldFormat"
+                    }
+                ]
+            },
+            "simple": ""
+        },
+        "subjectdn": {
+            "complex": null,
+            "simple": "Certificate.SubjectDN"
+        },
+        "validitynotafter": {
+            "complex": null,
+            "simple": "Certificate.ValidityNotAfter"
+        },
+        "validitynotbefore": {
+            "complex": null,
+            "simple": "Certificate.ValidityNotBefore"
+        }
+    },
+    "mergeContext": false,
+    "regex": "",
+    "reputationCommand": "certificate",
+    "reputationScriptName": "CertificateReputation",
+    "system": false,
+    "updateAfter": 1,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

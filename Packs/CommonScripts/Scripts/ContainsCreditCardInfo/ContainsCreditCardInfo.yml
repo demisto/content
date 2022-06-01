@@ -1,0 +1,26 @@
+commonfields:
+  id: ContainsCreditCardInfo
+  version: -1
+name: ContainsCreditCardInfo
+script: ''
+type: javascript
+tags:
+- Utility
+- Condition
+comment: Check if a given value is true. Will return 'no' otherwise
+enabled: true
+args:
+- name: data
+  required: true
+  default: true
+  description: The data to check for credit card info in, type string
+  isArray: true
+outputs:
+- contextPath: "yes"
+  description: if value is True (either has object or string True/true)
+- contextPath: "no"
+  description: if  value is not True (either has object or string True/true)
+scripttarget: 0
+fromversion: 5.0.0
+tests:
+- No tests

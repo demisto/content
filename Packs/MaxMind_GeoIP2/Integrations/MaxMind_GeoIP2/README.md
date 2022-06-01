@@ -1,6 +1,6 @@
 <!-- HTML_DOC -->
 <p>This integration was integrated and tested with MaxMind GeoIP2 v2.1.</p>
-<h2>Configure MaxMind GeoIP2 on Demisto</h2>
+<h2>Configure MaxMind GeoIP2 on Cortex XSOAR</h2>
 <ol>
 <li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>
 <li>Search for MaxMind GeoIP2.</li>
@@ -23,7 +23,7 @@
 <li>Click <strong>Test</strong> to validate the URLs, token, and connection.</li>
 </ol>
 <h2>Commands</h2>
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ol>
 <li><a href="#h_53137430431546844848711">Check the reputation of an IP address: ip</a></li>
 </ol>

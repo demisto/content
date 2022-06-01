@@ -1,2 +1,5 @@
-[file:integration-ProtectWise.yml]
-ignore=IN126
+[file:ProtectWise.yml]
+ignore=IN126,IN145
+
+[file:ProtectWise_image.png]
+ignore=IM111

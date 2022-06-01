@@ -1,0 +1,54 @@
+commonfields:
+  id: MapRangeValues
+  version: -1
+name: MapRangeValues
+script: ''
+type: python
+tags:
+- transformer
+comment: |-
+  This script converts an input value into another value using two lists. The input value or range is searched in the first list (map_from). 
+  If it exists, the value at the same index from the second list (map_to) is returned. If there is no match, the original value is returned.
+
+  Example 1:
+
+  map_from = "1,2,3,4"
+  map_to = "4,3,2,1"
+  value = 3
+
+  Output is "2"
+
+  Example 2:
+
+  map_from = "1-3,4"
+  map_to = "5,1"
+  value = 3
+
+  Output is "5"
+enabled: true
+args:
+- name: map_from
+  required: true
+  isArray: true
+  description: A comma-separated list of values to map from.
+- name: map_to
+  required: true
+  isArray: true
+  description: A comma-separated list of values to map to.
+- name: sep
+  required: true
+  default: true
+  defaultValue: '-'
+  description: The separator between the start and end of range values.
+- name: value
+  required: true
+  description: the input value to map.
+  isArray: true
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.9.9.25564
+runas: DBotWeakRole
+fromversion: 6.1.0
+tests:
+- No tests (auto formatted)

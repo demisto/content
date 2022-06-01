@@ -1,0 +1,360 @@
+{
+ "kind": "edit",
+ "layout": {
+  "id": "Chronicle IOC Domain Matches",
+  "kind": "edit",
+  "modified": "2020-07-28T15:02:36.928329087+05:30",
+  "name": "",
+  "sections": [
+   {
+    "description": "",
+    "fields": [
+     {
+      "fieldId": "incident_name",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_occurred",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_reminder",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_owner",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_roles",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_type",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_severity",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_playbookid",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_labels",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_phase",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_details",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_attachment",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     }
+    ],
+    "id": "",
+    "isVisible": true,
+    "modified": "0001-01-01T00:00:00Z",
+    "name": "Basic Information",
+    "query": null,
+    "queryType": "",
+    "readOnly": false,
+    "sortValues": null,
+    "type": "",
+    "version": 0
+   },
+   {
+    "description": "",
+    "fields": [
+     {
+      "fieldId": "incident_chronicleautoblockentities",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     }
+    ],
+    "id": "",
+    "isVisible": true,
+    "modified": "0001-01-01T00:00:00Z",
+    "name": "Chronicle IOC Domain Matches Details",
+    "query": null,
+    "queryType": "",
+    "readOnly": false,
+    "sortValues": null,
+    "type": "",
+    "version": 0
+   },
+   {
+    "description": "",
+    "fields": [
+     {
+      "fieldId": "incident_dbotprediction",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_dbotpredictionprobability",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_destinationhostname",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_destinationnetwork",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_destinationport",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_devicehash",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_eventid",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_eventtype",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_firstname",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_investigationstage",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_lastname",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_logsource",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_mobiledevicemodel",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_niststage",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_os",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_osversion",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_phonenumber",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_protocol",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_sansstage",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_sourcenetwork",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_sourceport",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_sourceusername",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_tenantname",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_urlsslverification",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     }
+    ],
+    "id": "",
+    "isVisible": true,
+    "modified": "0001-01-01T00:00:00Z",
+    "name": "Custom Fields",
+    "query": null,
+    "queryType": "",
+    "readOnly": false,
+    "sortValues": null,
+    "type": "",
+    "version": 0
+   }
+  ],
+  "system": false,
+  "typeId": "Chronicle IOC Domain Matches",
+  "version": -1
+ },
+ "typeId": "Chronicle IOC Domain Matches",
+ "version": -1,
+ "fromVersion": "5.0.0",
+ "toVersion": "5.9.9",
+ "description": ""
+}

@@ -1,0 +1,22 @@
+args:
+- description: War room entryID of the file to read.
+  name: entryID
+  required: true
+comment: Read panic log file line by line and display warnings, fatal errors and keyword results in a table to the war room
+commonfields:
+  id: HealthCheckPanicLog
+  version: -1
+dockerimage: demisto/python3:3.10.4.29342
+enabled: true
+name: HealthCheckPanicLog
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+timeout: 600ns
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

@@ -16,7 +16,7 @@ This integration was integrated and tested with version 13 of CiscoEmailSecurity
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### cisco-email-security-report-get
 ***
@@ -463,10 +463,10 @@ Retrieves a list of entries.
 | CiscoEmailSecurity.ListEntries.Safelist.recipientAddresses | String | The safelist recipient addresses. | 
 | CiscoEmailSecurity.ListEntries.Safelist.recipientList | String | The safelist recipient list. | 
 | CiscoEmailSecurity.ListEntries.Safelist.senderAddresses | Number | The safelist sender addresses. | 
-| CiscoEmailSecurity.ListEntries.Blocklist.senderList | String | The blocklist sender list. | 
-| CiscoEmailSecurity.ListEntries.Blocklist.recipientAddresses | String | The blocklist recipient addresses. | 
-| CiscoEmailSecurity.ListEntries.Blocklist.recipientList | String | The blocklist recipient list. | 
-| CiscoEmailSecurity.ListEntries.Blocklist.senderAddresses | Number | The blocklist sender addresses. | 
+| CiscoEmailSecurity.ListEntries.Blocklist.senderList | String | The block list sender list. | 
+| CiscoEmailSecurity.ListEntries.Blocklist.recipientAddresses | String | The block list recipient addresses. | 
+| CiscoEmailSecurity.ListEntries.Blocklist.recipientList | String | The block list recipient list. | 
+| CiscoEmailSecurity.ListEntries.Blocklist.senderAddresses | Number | The bloc klist sender addresses. | 
 
 
 
