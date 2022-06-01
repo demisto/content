@@ -30,7 +30,7 @@ if [ "$?" != "0" ]; then
     echo "No such branch in infra: $UNDERSCORE_BRANCH , falling back to master"
     git clone --depth=1 https://gitlab-ci-token:${CI_JOB_TOKEN}@code.pan.run/xsoar/infra.git
 fi
-mv -r ./infra/gcp ./gcp
+mv ./infra/gcp ./gcp
 rm -rf ./infra
 
 set -e
