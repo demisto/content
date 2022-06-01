@@ -9,6 +9,14 @@ events = [{'created_at': '2022-04-17T12:31:36.667Z', 'details': {'add': 'aaa'}, 
           {'created_at': '2022-06-17T12:31:36.667Z', 'details': {'remove': 'ddd'}, 'entity_type': 'Project', 'id': '3'},
           {'created_at': '2022-06-17T12:31:36.667Z', 'id': '99'}
           ]
+events_final = [{'created_at': '2022-04-17T12:31:36.667Z',
+                 'details': {'add': 'aaa', 'action': 'add_aaa', 'action_type': 'add', 'action_category':
+                     'aaa'}, 'entity_type': 'Group', 'id': '1'},
+                {'created_at': '2022-06-17T12:31:36.667Z',
+                 'details': {'add': 'ddd', 'action': 'add_ddd', 'action_type': 'add', 'action_category':
+                     'ddd'}, 'entity_type': 'Project', 'id': '3'},
+                {'created_at': '2022-06-17T12:31:36.667Z', 'id': '99'}
+                ]
 options = IntegrationOptions.parse_obj({
     'api_key': {'credentials': {'password': 'XXXXXX'}},
     'after': '3 Days',
@@ -65,17 +73,13 @@ def test_prepare_time_for_next():
 
 
 def test_get_sorted_events_by_type():
-    assert get_events.get_sorted_events_by_type(events, True, 'Group') == [{'created_at': '2022-04-17T12:31:36.667Z',
-                                                                            'details': {'add': 'aaa'},
-                                                                            'entity_type': 'Group',
-                                                                            'id': '1'},
-                                                                           {'created_at': '2022-05-17T12:31:36.667Z',
-                                                                            'details': {'add': 'bbb'},
-                                                                            'entity_type': 'Group',
-                                                                            'id': '2'},
-                                                                           {'created_at': '2022-06-17T12:31:36.667Z',
-                                                                            'details': {'change': 'ccc'},
-                                                                            'entity_type': 'Group',
-                                                                            'id': '3'}]
-    assert get_events.get_sorted_events_by_type(events, False) == [
-        {'created_at': '2022-06-17T12:31:36.667Z', 'id': '99'}]
+    t = get_events.get_sorted_events_by_type(events_final, True, 'Group')
+    assert get_events.get_sorted_events_by_type(events_final, True, 'Group') == [
+        {'created_at': '2022-04-17T12:31:36.667Z',
+         'details': {'action': 'add_aaa',
+                     'action_category': 'aaa',
+                     'action_type': 'add',
+                     'add': 'aaa'},
+         'entity_type': 'Group',
+         'id': '1'}]
+    assert get_events.get_sorted_events_by_type(events, False) == [{'created_at': '2022-06-17T12:31:36.667Z', 'id': '99'}]
