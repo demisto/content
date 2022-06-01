@@ -368,7 +368,7 @@ tasks:
       version: -1
       name: Add the list items to the EDL
       description: Creates an internal list in Demisto and creates an external file on the web server.
-      script: '|||pan-os-edl-update'
+      script: 'Panorama|||pan-os-edl-update'
       type: regular
       iscommand: true
       brand: ''
@@ -501,7 +501,7 @@ tasks:
       version: -1
       name: Fetch Instance Info
       description: Run any command supported in the API.
-      script: '|||panorama'
+      script: 'Panorama|||pan-os'
       type: regular
       iscommand: true
       brand: ''

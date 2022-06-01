@@ -1155,7 +1155,7 @@ tasks:
       version: -1
       name: Retrieve Device Groups
       description: Run any command supported in the API.
-      script: '|||panorama'
+      script: '|||pan-os'
       type: regular
       iscommand: true
       brand: ""
