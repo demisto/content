@@ -713,6 +713,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int], 
             # convert it from the API response
             insight_timestamp = a.get('created')
             insight_id = a.get('id')
+            insight_readableid = a.get('readableId')
             # add sumoUrl to signal:
             a['sumoUrl']=craft_sumo_url(instance_endpoint,'insight',insight_id)
 
@@ -737,7 +738,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int], 
                     signal['sumoUrl'] = craft_sumo_url(instance_endpoint,'signal',signal_id)
 
                 incidents.append({
-                    'name': a.get('name', 'No name') + ' - ' + insight_id,
+                    'name': a.get('name', 'No name') + ' - ' + insight_readableid,
                     'occurred': timestamp_to_datestring(incident_created_time_ms),
                     'details': a.get('description'),
                     'severity': translate_severity(a.get('severity')),
