@@ -7005,24 +7005,10 @@ def return_warning(message, exit=False, warning='', outputs=None, ignore_auto_ex
 
 class ExecutionMetrics(object):
     """
-    ExecutionMetrics is used to collect and format metric data to be reported to the XSOAR server.
+        ExecutionMetrics is used to collect and format metric data to be reported to the XSOAR server.
     """
     def __init__(self, success=0, quota_error=0, general_error=0, auth_error=0, service_error=0, connection_error=0,
                  proxy_error=0, ssl_error=0, timeout_error=0):
-        """
-        Initializes an ExecutionMetrics object. Once initialized, you may increment each metric type according to the
-        metric you'd like to report.
-        Args:
-            success: Successful
-            quota_error: Quota Error (Rate Limited)
-            general_error: General Error
-            auth_error: Authentication Error
-            service_error: Service Error
-            connection_error: Connection Error
-            proxy_error: Proxy Error
-            ssl_error: SSL Error
-            timeout_error: Timeout Error
-        """
         self._metrics = []
         self.metrics = None
         self.success = success
@@ -7034,6 +7020,40 @@ class ExecutionMetrics(object):
         self.proxy_error = proxy_error
         self.ssl_error = ssl_error
         self.timeout_error = timeout_error
+        """
+            Initializes an ExecutionMetrics object. Once initialized, you may increment each metric type according to the
+            metric you'd like to report. Afterwards, pass the `metrics` value to CommandResults.
+  
+            :type success: ``int``
+            :param success: Quantity of Successful metrics
+
+            :type quota_error: ``int``
+            :param quota_error: Quantity of Quota Error (Rate Limited) metrics
+
+            :type general_error: ``int``
+            :param general_error: Quantity of General Error metrics
+
+            :type auth_error: ``int``
+            :param auth_error: Quantity of Authentication Error metrics
+
+            :type service_error: ``int``
+            :param service_error: Quantity of Service Error metrics
+
+            :type connection_error: ``int``
+            :param connection_error: Quantity of Connection Error metrics
+
+            :type proxy_error: ``int``
+            :param proxy_error: Quantity of Proxy Error metrics
+
+            :type ssl_error: ``int``
+            :param ssl_error: Quantity of SSL Error metrics
+
+            :type timeout_error: ``int``
+            :param timeout_error: Quantity of Timeout Error metrics
+
+            :type metrics: ``CommandResults``
+            :param metrics: Append this value to your CommandResults list to report the metrics to your server.
+        """
 
     @staticmethod
     def is_supported():
