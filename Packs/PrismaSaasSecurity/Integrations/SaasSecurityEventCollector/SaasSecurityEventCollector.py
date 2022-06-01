@@ -1,4 +1,3 @@
-import json
 
 import demistomock as demisto
 import urllib3
