@@ -55,7 +55,7 @@ class AlibabaEventsClient(IntegrationEventsClient):
         headers['Date'] = datetime.utcnow().strftime('%a, %d %b %Y %H:%M:%S GMT')
 
         signature = get_request_authorization(f'/logstores/{self.logstore_name}', self.access_key,
-                                              self.request.params.dict(by_alias=True), headers)
+                                              self.request.params.dict(by_alias=True), headers)  # type: ignore
 
         headers['Authorization'] = "LOG " + self.access_key_id + ':' + signature
         headers['x-log-date'] = headers['Date']
@@ -65,6 +65,8 @@ class AlibabaEventsClient(IntegrationEventsClient):
 
 
 class AlibabaGetEvents(IntegrationGetEvents):
+    client: AlibabaEventsClient
+
     def __init__(self, client: AlibabaEventsClient, options: IntegrationOptions):
         super().__init__(client=client, options=options)
 
@@ -139,7 +141,7 @@ def get_request_authorization(resource, key, req_params, req_headers):
 
 
 def get_alibaba_timestamp_format(value):
-    timestamp: Optional[datetime]
+    timestamp: datetime
     if isinstance(value, int):
         return value
     if not isinstance(value, datetime):
