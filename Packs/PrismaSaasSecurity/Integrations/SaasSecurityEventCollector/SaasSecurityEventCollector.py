@@ -175,10 +175,12 @@ def test_module(client: Client):
         fetched_event = response.json()
         demisto.info(f'fetched event in test-module: {fetched_event}')
         fetched_event['uuid'] = f'{uuid.uuid4()}'
-        set_to_integration_context_with_retries(context={'events': fetched_event}, object_keys=OBJECT_KEYS)
+        set_to_integration_context_with_retries(context={'events': [fetched_event]}, object_keys=OBJECT_KEYS)
         return 'ok'
     elif response.status_code == 204:
-        return 'ok'
+        demisto.info(f'context: {demisto.getIntegrationContext()}')
+        raise Exception("bla")
+        # return 'ok'
 
 
 def get_events_command(
