@@ -4,7 +4,7 @@
 2) The max-fetch/limit parameters to fetch events must be divisible by 100.
 3) **reset last fetch** has no effect.
 4) On initial activation this integration will pull events starting from one hour prior.
-5) Calling ```fetch-events``` or ```saas-security-get-events``` or ```test-module``` may take upwards of twenty seconds in some cases.
+5) Calling ```fetch-events``` or ```saas-security-get-events``` may take upwards of twenty seconds in some cases.
 
 
 Creating the Client ID and Client Secret in the SaaS Security UI:
