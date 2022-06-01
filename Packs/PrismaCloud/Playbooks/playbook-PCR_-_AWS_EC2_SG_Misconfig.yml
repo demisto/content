@@ -770,8 +770,9 @@ tasks:
     task:
       id: bf81822b-44d6-4a0d-8798-1308b75a90be
       version: -1
-      name: Is AWS - EC2 integration enabled?
-      description: Is AWS - EC2 integration enabled?
+      name: Is AWS - EC2 integration available?
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
       brand: ""
@@ -780,34 +781,12 @@ tasks:
       - "9"
       "yes":
       - "2"
+    scriptarguments:
+      brandname:
+        simple: AWS - EC2
+    results:
+    - brandInstances
     separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: AWS - EC2
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
-                accessor: brand
-            iscontext: true
     view: |-
       {
         "position": {
