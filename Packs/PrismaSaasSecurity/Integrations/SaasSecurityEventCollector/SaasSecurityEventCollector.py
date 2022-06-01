@@ -2,7 +2,6 @@ import json
 
 import demistomock as demisto
 import urllib3
-import uuid
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 import traceback
@@ -68,10 +67,10 @@ class Client(BaseClient):
         token_expiration_seconds = integration_context.get('token_expiration_seconds')
 
         if access_token and not is_token_expired(
-            token_initiate_time=float(json.loads(token_initiate_time)),
-            token_expiration_seconds=float(json.loads(token_expiration_seconds))
+            token_initiate_time=float(token_initiate_time),
+            token_expiration_seconds=float(token_expiration_seconds)
         ):
-            return json.loads(access_token)
+            return access_token
 
         # there's no token or it is expired
         access_token, token_expiration_seconds = self.get_token_request()
@@ -81,7 +80,7 @@ class Client(BaseClient):
             'token_initiate_time': time.time()
         }
         demisto.debug(f'updating access token - {integration_context}')
-        set_to_integration_context_with_retries(context=integration_context)
+        set_integration_context(context=integration_context)
 
         return access_token
 
@@ -112,17 +111,6 @@ class Client(BaseClient):
         return self.http_request(
             'GET',
             url_suffix='/api/v1/log_events_bulk',
-            resp_type='response',
-            ok_codes=[200, 204],
-        )
-
-    def get_event_request(self):
-        """
-        Get only a single event log - used only for the test-module to verify log-access api scope.
-        """
-        return self.http_request(
-            'GET',
-            url_suffix='/api/v1/log_events',
             resp_type='response',
             ok_codes=[200, 204],
         )
@@ -170,17 +158,8 @@ def test_module(client: Client):
     of api. To verify the customer have the log access scope we must try and fetch an event.
     Saves the events in the cache for fetching events.
     """
-    response = client.get_event_request()
-    if response.status_code == 200:
-        fetched_event = response.json()
-        demisto.info(f'fetched event in test-module: {fetched_event}')
-        fetched_event['uuid'] = f'{uuid.uuid4()}'
-        set_to_integration_context_with_retries(context={'events': [fetched_event]}, object_keys=OBJECT_KEYS)
-        return 'ok'
-    elif response.status_code == 204:
-        demisto.info(f'context: {demisto.getIntegrationContext()}')
-        raise Exception("bla")
-        # return 'ok'
+    client.get_token_request()
+    return 'ok'
 
 
 def get_events_command(
@@ -225,20 +204,6 @@ def fetch_events_from_saas_security(client: Client, max_fetch: int) -> List[Dict
         demisto.info(f'fetched events: ({fetched_events}), fetched events length: ({len(fetched_events)})')
         events.extend(fetched_events)
         response = client.get_events_request()
-
-    # get events fetched from test-module.
-    integration_context_events = json.loads(demisto.getIntegrationContext().get('events') or '[]')
-    demisto.info(
-        f'integration context events: {integration_context_events}, '
-        f'integration context events length {len(integration_context_events)}'
-    )
-    if integration_context_events:
-        for event in integration_context_events:
-            event.pop('uuid', None)
-        # add integration context events to the fetched events.
-        events.extend(integration_context_events)
-        # set events to zero in case there was something in the cache from the test module.
-        set_to_integration_context_with_retries(context={'events': []})
 
     return events
 
