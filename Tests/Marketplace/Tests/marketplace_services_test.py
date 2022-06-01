@@ -887,8 +887,8 @@ This is visible
         version_display_name = "1.2.3"
         build_number = "5555"
         version_changelog, _ = dummy_pack._create_changelog_entry(release_notes=release_notes,
-                                                               version_display_name=version_display_name,
-                                                               build_number=build_number, new_version=True)
+                                                                  version_display_name=version_display_name,
+                                                                  build_number=build_number, new_version=True)
 
         assert version_changelog['releaseNotes'] == "dummy release notes"
         assert version_changelog['displayName'] == f'{version_display_name} - {build_number}'
@@ -907,9 +907,8 @@ This is visible
         build_number = "5555"
         dummy_pack._is_modified = True
         version_changelog, _ = dummy_pack._create_changelog_entry(release_notes=release_notes,
-                                                               version_display_name=version_display_name,
-                                                               build_number=build_number, new_version=False,
-                                                               )
+                                                                  version_display_name=version_display_name,
+                                                                  build_number=build_number, new_version=False)
 
         assert version_changelog['releaseNotes'] == "dummy release notes"
         assert version_changelog['displayName'] == f'{version_display_name} - R{build_number}'
@@ -927,9 +926,9 @@ This is visible
         version_display_name = "1.0.0"
         build_number = "5555"
         version_changelog, _ = dummy_pack._create_changelog_entry(release_notes=release_notes,
-                                                               version_display_name=version_display_name,
-                                                               build_number=build_number, new_version=False,
-                                                               initial_release=True)
+                                                                  version_display_name=version_display_name,
+                                                                  build_number=build_number, new_version=False,
+                                                                  initial_release=True)
 
         assert version_changelog['releaseNotes'] == "dummy release notes"
 
@@ -947,8 +946,8 @@ This is visible
         build_number = "5555"
         dummy_pack._is_modified = True
         version_changelog, _ = dummy_pack._create_changelog_entry(release_notes=release_notes,
-                                                               version_display_name=version_display_name,
-                                                               build_number=build_number, new_version=False)
+                                                                  version_display_name=version_display_name,
+                                                                  build_number=build_number, new_version=False)
 
         assert version_changelog['releaseNotes'] == "dummy release notes"
         assert version_changelog['displayName'] == f'{version_display_name} - R{build_number}'
@@ -966,9 +965,111 @@ This is visible
         version_display_name = "1.0.0"
         build_number = "5555"
         dummy_pack._is_modified = False
-        version_changelog = dummy_pack._create_changelog_entry(release_notes=release_notes,
-                                                               version_display_name=version_display_name,
-                                                               build_number=build_number, new_version=False)
+        version_changelog, _ = dummy_pack._create_changelog_entry(release_notes=release_notes,
+                                                                  version_display_name=version_display_name,
+                                                                  build_number=build_number, new_version=False)
+
+        assert not version_changelog
+
+    def test_create_filtered_changelog_entry_modified_unrelated_entities(self, dummy_pack: Pack):
+        """
+           Given:
+               - Release notes entries for two differente entities types.
+               - Modified files data given from id-set.
+           When:
+               - Release notes for one entity is irrelevant for the current marketplace.
+           Then:
+               - Ensure the RN are filtered correctly.
+        """
+        release_notes = '''
+#### Integrations
+##### Integration Display Name
+- Fixed an issue
+
+#### Dashboards
+##### Dashboard Name
+- Fixed dashboard'''
+        version_display_name = "1.2.3"
+        build_number = "5555"
+        modified_data = {
+            "Integrations": [
+                {
+                    "file_path": "some/path",
+                    "display_name": "Integration Display Name"
+                }
+            ]
+        }
+        dummy_pack._is_modified = True
+        version_changelog, _ = dummy_pack._create_changelog_entry(release_notes=release_notes,
+                                                                  version_display_name=version_display_name,
+                                                                  build_number=build_number, modified_files_data=modified_data,
+                                                                  new_version=False)
+
+        assert version_changelog['releaseNotes'] == "#### Integrations\n##### Integration Display Name\n- Fixed an issue"
+
+    def test_create_filtered_changelog_entry_modified_same_entities(self, dummy_pack: Pack):
+        """
+           Given:
+               - Release notes entries for two entities of the same type.
+               - Modified files data given from id-set.
+           When:
+               - Release notes for one entity is irrelevant for the current marketplace.
+           Then:
+               - Ensure the RN are filtered correctly.
+        """
+        release_notes = '''
+#### Integrations
+##### Integration 1 Display Name
+- Fixed an issue
+##### Integration 2 Display Name
+- Fixed another issue'''
+        version_display_name = "1.2.3"
+        build_number = "5555"
+        modified_data = {
+            "Integrations": [
+                {
+                    "file_path": "some/path",
+                    "display_name": "Integration 2 Display Name"
+                }
+            ]
+        }
+        dummy_pack._is_modified = True
+        version_changelog, _ = dummy_pack._create_changelog_entry(release_notes=release_notes,
+                                                                  version_display_name=version_display_name,
+                                                                  build_number=build_number, modified_files_data=modified_data,
+                                                                  new_version=False)
+
+        assert version_changelog['releaseNotes'] == "#### Integrations\n##### Integration 2 Display Name\n- Fixed another issue"
+
+    def test_create_filtered_changelog_entry_no_related_modifications(self, dummy_pack: Pack):
+        """
+           Given:
+               - Release notes entries.
+               - Modified files data given from id-set.
+           When:
+               - Release notes are irrelevant for the current marketplace.
+           Then:
+               - Ensure the returned entry is empty.
+        """
+        release_notes = '''
+#### Integrations
+##### Integration Display Name
+- Fixed an issue'''
+        version_display_name = "1.2.3"
+        build_number = "5555"
+        modified_data = {
+            "Integrations": [
+                {
+                    "file_path": "some/path",
+                    "display_name": "Other Integration Display Name"
+                }
+            ]
+        }
+        dummy_pack._is_modified = True
+        version_changelog, _ = dummy_pack._create_changelog_entry(release_notes=release_notes,
+                                                                  version_display_name=version_display_name,
+                                                                  build_number=build_number, modified_files_data=modified_data,
+                                                                  new_version=False)
 
         assert not version_changelog
 
@@ -2460,3 +2561,195 @@ def create_rn_config_file(rn_dir: str, version: str, data: Dict):
 def create_rn_file(rn_dir: str, version: str, text: str):
     with open(f'{rn_dir}/{version}.md', 'w') as f:
         f.write(text)
+
+
+class TestDetectModified:
+    """ Test class for detect modified files. """
+
+    @pytest.fixture(scope="class")
+    def dummy_pack(self):
+        """ dummy pack fixture
+        """
+        dummy_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "test_data")
+        sample_pack = Pack(pack_name="TestPack", pack_path=dummy_path)
+        return sample_pack
+
+    @pytest.fixture(scope="class")
+    def content_repo(self):
+        class ModifiedFile:
+            a_path = 'Packs/TestPack/Integrations/integration/integration.yml'
+
+        class Commit:
+            def __init__(self, commit_hash) -> None:
+                commit_hash = commit_hash
+
+            @staticmethod
+            def diff(commit_hash):
+                return [ModifiedFile()]
+
+        class Repo:
+            @staticmethod
+            def commit(commit_hash):
+                return Commit(commit_hash)
+
+        return Repo()
+
+    def test_modified_files(self, mocker, dummy_pack: Pack, content_repo):
+        """
+           Given:
+               - Content repo with modified files.
+           When:
+               - Trying detect the modified files between commits.
+           Then:
+               - Ensure status is True
+               - Ensure the returned modified files data conteins the modified repo files.
+        """
+        open_mocker = MockOpen()
+        dummy_path = 'Irrelevant/Test/Path'
+        mocker.patch("os.path.exists", return_value=True)
+        mocker.patch("builtins.open", open_mocker)
+        open_mocker[os.path.join(dummy_path, dummy_pack.name, Pack.METADATA)].read_data = '{}'
+        # open_mocker[os.path.join(dummy_pack.path, Pack.RELEASE_NOTES, '2_0_2.md')].read_data = 'wow'
+        status, _ = dummy_pack.detect_modified(content_repo, dummy_path, 'current_hash', 'previous_hash')
+
+        assert dummy_pack._modified_files['Integrations'][0] == 'Packs/TestPack/Integrations/integration/integration.yml'
+        assert dummy_pack._is_modified
+        assert status is True
+
+class TestCheckChangesRelevanceForMarketplace:
+    """ Test class for checking the changes relevance for marketplace. """
+
+    ID_SET_MP_V2 = {
+        "integrations": [
+            {
+                "int_id_1": {
+                    "name": "Dummy name 1",
+                    "display_name": "Dummy display name 1",
+                    "file_path": "path/to/integration1"
+                }
+            },
+            {
+                "int_id_2": {
+                    "name": "Dummy name 2",
+                    "display_name": "Dummy display name 2",
+                    "file_path": "path/to/integration2"
+                }
+            }
+        ],
+        "XSIAMDashboards": [
+            {
+                "xsiam_dash_id_1": {
+                    "name": "Dummy xdash name",
+                    "display_name": "Dummy xdash display name",
+                    "file_path": "path/to/xsiamdashboard"
+                }
+            }
+        ],
+        "Dashboards": []
+    }
+
+    @pytest.fixture(scope="class")
+    def dummy_pack(self):
+        """ dummy pack fixture
+        """
+        dummy_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "test_data")
+        sample_pack = Pack(pack_name="TestPack", pack_path=dummy_path)
+        sample_pack.description = 'Sample description'
+        sample_pack.current_version = '1.0.0'
+        sample_pack._marketplaces = ['marketplacev2']
+        sample_pack._modified_files = {
+            'Integrations': [
+                'path/to/integration1',
+                'path/to/integration3'
+            ],
+            'Dashboards': [
+                'path/to/dashboard'
+            ],
+            'XSIAMDashboards': [
+                'path/to/xsiamdashboard'
+            ]
+        }
+        return sample_pack
+
+    def test_entities_filtered_correctly(self, dummy_pack: Pack):
+        """
+           Given:
+               - id-set for marketplacev2.
+           When:
+               - Modified files contains files that are not relevant for marketplacev2.
+           Then:
+               - Ensure status is True
+               - Ensure the returned modified files data as expected.
+        """
+        id_set_copy = self.ID_SET_MP_V2.copy()
+        expected_modified_files_data = {
+            "Integrations": [
+                {
+                    "name": "Dummy name 1",
+                    "display_name": "Dummy display name 1",
+                    "file_path": "path/to/integration1"
+                }
+            ],
+            "XSIAMDashboards": [
+                {
+                    "name": "Dummy xdash name",
+                    "display_name": "Dummy xdash display name",
+                    "file_path": "path/to/xsiamdashboard"
+                }
+            ]
+        }
+
+        status, modified_files_data = dummy_pack.check_changes_relevance_for_marketplace(id_set_copy)
+
+        assert status == True
+        assert modified_files_data == expected_modified_files_data
+
+    def test_changes_not_relevant_to_mp(self, dummy_pack: Pack):
+        """
+           Given:
+               - id-set for marketplacev2.
+           When:
+               - Modified files contains only files that are not relevant for marketplacev2.
+           Then:
+               - Ensure status is False
+               - Ensure the returned modified files data is empty.
+        """
+        id_set_copy = self.ID_SET_MP_V2.copy()
+        dummy_pack._modified_files = {
+            'Dashboards': [
+                'path/to/dashboard'
+            ]
+        }
+
+        status, modified_files_data = dummy_pack.check_changes_relevance_for_marketplace(id_set_copy)
+
+        assert status == False
+        assert modified_files_data == {}
+
+    def test_mappers(self, dummy_pack: Pack):
+        """
+           Given:
+               - id-set for marketplacev2 containig Mappers.
+           When:
+               - Modified files contains mappers that are under directory Classifiers.
+           Then:
+               - Ensure status is True
+               - Ensure the mapper exist in the modified files data under Classifiers.
+        """
+        id_set_copy = self.ID_SET_MP_V2.copy()
+        dummy_pack._modified_files["Classifiers"] = ["path/to/mapper"]
+        id_set_copy["Mappers"] = [{"mapper_id": {"name": "mapper name", "file_path": "path/to/mapper"}}]
+        id_set_copy["Classifiers"] = []
+        expected_modified_files_data = {
+            "Classifiers": [
+                {
+                    "name": "mapper name",
+                    "file_path": "path/to/mapper"
+                }
+            ]
+        }
+
+        status, modified_files_data = dummy_pack.check_changes_relevance_for_marketplace(id_set_copy)
+
+        assert status == True
+        assert modified_files_data == expected_modified_files_data

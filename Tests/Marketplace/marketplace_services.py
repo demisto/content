@@ -770,6 +770,7 @@ class Pack(object):
                             Changelog.DISPLAY_NAME: f'{version_display_name} - R{build_number}',
                             Changelog.RELEASED: datetime.utcnow().strftime(Metadata.DATE_FORMAT),
                             Changelog.PULL_REQUEST_NUMBERS: pull_request_numbers}
+
         if entry_result:
             return self.filter_changelog_entries_based_marketplace(entry_result, version_display_name, modified_files_data)
 
@@ -1652,10 +1653,16 @@ class Pack(object):
         """
 
         release_notes = changelog_entry.get(Changelog.RELEASE_NOTES)
-        release_notes_dict: dict[str, dict[str, str]] = merge_version_blocks(pack_versions_dict={version: release_notes},
+        release_notes_dict, _ = merge_version_blocks(pack_versions_dict={version: release_notes},
                                                                              return_str=False)
-        new_release_notes_dict: dict = {}
 
+        # If it didn't formatted into a dict it's probably because it's not written correctly according to our templates,
+        # and that might be in case it's a first release of a pack then the RN is the pack description,
+        # or if it's just a message for the customers who uses the pack.
+        if not release_notes_dict and release_notes != '':
+            return changelog_entry, False
+
+        new_release_notes_dict: dict = {}
         for pack_folder, entities_data in modified_files_data.items():
 
             rn_header = RN_HEADER_BY_PACK_FOLDER[pack_folder]
@@ -1669,10 +1676,10 @@ class Pack(object):
             if not new_release_notes_dict[rn_header]:
                 new_release_notes_dict.pop(rn_header)
 
-        if not new_release_notes_dict:
+        if not new_release_notes_dict and modified_files_data:
             return {}, True
 
-        changelog_entry[Changelog.RELEASE_NOTES] = construct_entities_block(new_release_notes_dict)
+        changelog_entry[Changelog.RELEASE_NOTES] = construct_entities_block(new_release_notes_dict).strip()
         return changelog_entry, False
 
     def create_local_changelog(self, build_index_folder_path):
