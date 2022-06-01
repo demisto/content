@@ -175,7 +175,7 @@ tasks:
     evidencedata:
       customfields: {}
       description:
-        simple: Advanced Hunting Query - Checking if there were any created scheduled tasks on the investigated device.
+        simple: Checking if there were any created scheduled tasks on the investigated device - Microsoft Defender For Endpoint
       tags:
         simple: Created Scheduled Tasks
     id: '3'
@@ -221,7 +221,7 @@ tasks:
     evidencedata:
       customfields: {}
       description:
-        simple: Microsoft Defender For Endpoint - Results on Startup User Creation query in Advanced Hunting feature.
+        simple: Results on Startup User Creation query in Advanced Hunting feature - Microsoft Defender For Endpoint
       tags:
         simple: User Creation
     id: '4'
@@ -265,7 +265,7 @@ tasks:
     evidencedata:
       customfields: {}
       description:
-        simple: Microsoft Defender For Endpoint - Results on User's Group Modification query in Advanced Hunting feature.
+        simple: Results on User's Group Modification query in Advanced Hunting feature - Microsoft Defender For Endpoint
       tags:
         simple: User's Group Modification
     id: '5'
@@ -309,7 +309,7 @@ tasks:
     evidencedata:
       customfields: {}
       description:
-        simple: Microsoft Defender For Endpoint - Results on Local Group Creation query in Advanced Hunting feature.
+        simple: Results on Local Group Creation query in Advanced Hunting feature - Microsoft Defender For Endpoint
       tags:
         simple: Local Group Creation
     id: '6'
@@ -415,7 +415,7 @@ tasks:
     evidencedata:
       customfields: {}
       description:
-        simple: Microsoft Defender For Endpoint - Results on Startup Folder Modification query in Advanced Hunting feature.
+        simple: Results on Startup Folder Modification query in Advanced Hunting feature - Microsoft Defender For Endpoint
       tags:
         simple: Startup Folder Modification
     id: '10'
@@ -461,7 +461,7 @@ tasks:
     evidencedata:
       customfields: {}
       description:
-        simple: Advanced Hunting Query - Checking if there any registry modifications on the investigated device.
+        simple: Checking if there any registry modifications on the investigated device - Microsoft Defender For Endpoint
       tags:
         simple: Registry Modification
     id: '11'
