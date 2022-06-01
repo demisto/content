@@ -48,7 +48,9 @@ def test_get_content_modules(tmp_path, requests_mock, mocker):
         json={}
     )
     from demisto_sdk.commands.common import git_util
-    mocker.patch.object(git_util)  # prevents RepoNotFoundException during import
+    mocker.patch.object(git_util, 'GitUtil')
+    mocker.patch('demisto_sdk.commands.common.tools.get_content_path', return_value='')
+
     import ValidateContent
 
     cached_modules = tmp_path / 'cached_modules'
@@ -98,7 +100,11 @@ row_and_column_adjustment_test_data = [
 
 
 @pytest.mark.parametrize('original_validation_result,expected_output', row_and_column_adjustment_test_data)
-def test_adjust_linter_row_and_col(original_validation_result, expected_output):
+def test_adjust_linter_row_and_col(mocker, original_validation_result, expected_output):
+    from demisto_sdk.commands.common import git_util
+    mocker.patch.object(git_util, 'GitUtil')
+    mocker.patch('demisto_sdk.commands.common.tools.get_content_path', return_value='')
+
     from ValidateContent import adjust_linter_row_and_col
     adjust_linter_row_and_col(original_validation_result)
     # after adjustment, the original validation result should match the expected
