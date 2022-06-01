@@ -1,6 +1,4 @@
-import boto3
 import demistomock as demisto  # noqa: F401
-from botocore.config import Config
 from CommonServerPython import *  # noqa: F401
 
 

@@ -1,5 +1,8 @@
 Amazon Web Services Simple Notification Service (SNS)
-This integration was integrated and tested with version 1.0.0 of AWS - SNS
+
+For more information regarding the AWS SNS service, please visit the official documentation found [here](https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/sns.html).
+
+For detailed instructions about setting up authentication, see: [AWS Integrations - Authentication](https://xsoar.pan.dev/docs/reference/articles/aws-integrations---authentication).
 
 ## Configure AWS - SNS on Cortex XSOAR
 
