@@ -498,7 +498,7 @@ tasks:
       task:
         simple: "17"
       user:
-        simple: ${Slack.User.Email}
+        simple: ${incident.sourceusername}
       user_display_name:
         simple: ${user_display_name}
       user_id:
@@ -1043,7 +1043,7 @@ tasks:
       task:
         simple: "39"
       user:
-        simple: ${Slack.User.Email}
+        simple: ${incident.sourceusername}
       user_display_name:
         simple: ${user_display_name}
       user_id:

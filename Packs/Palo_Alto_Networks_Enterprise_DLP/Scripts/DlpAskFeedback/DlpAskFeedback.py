@@ -89,16 +89,7 @@ def send_slack_message(entitlement, task, user_id, message):
 
 
 def send_ms_teams_message(entitlement, task, user_id, message):
-    options: list = ['Yes', 'No']
-
     investigation_id: str = demisto.investigation()['id']
-    # message: dict = {
-    #     'message_text': message,
-    #     'options': options,
-    #     'entitlement': entitlement,
-    #     'investigation_id': investigation_id,
-    #     'task_id': task
-    # }
 
     adaptive_card: dict = {
         'contentType': 'application/vnd.microsoft.card.adaptive',
@@ -110,12 +101,12 @@ def send_ms_teams_message(entitlement, task, user_id, message):
                 'width': 'Full'
             },
             'body': [
-                        {
-                            'type': 'TextBlock',
-                            'text': message,
-                            'wrap': True
-                        }
-                    ],
+                {
+                    'type': 'TextBlock',
+                    'text': message,
+                    'wrap': True
+                }
+            ],
             'actions': [
                 {
                     'type': 'Action.Submit',
@@ -142,7 +133,6 @@ def send_ms_teams_message(entitlement, task, user_id, message):
     }
 
     command_arguments: dict = {
-        # 'message': json.dumps(message),
         'adaptive_card': json.dumps(adaptive_card),
         'using-brand': 'Microsoft Teams'
     }
@@ -196,37 +186,6 @@ def main():
         message += f'Do you want to request a temporary exemption for {file_name}?'
     else:
         message += 'Please confirm if this file contains sensitive information:'
-
-    # lifetime = '1 day'
-    # expiry_date = dateparser.parse('in ' + lifetime, settings={'TIMEZONE': 'UTC'})
-    # if expiry_date:
-    #     expiry = datetime.strftime(expiry_date, DATE_FORMAT)
-
-    # entitlement_string = f'{entitlement}@{demisto.investigation().get("id")}'
-    # if task:
-    #     entitlement_string += f'|{task}'
-    #
-    # send_notification_args = {
-    #     'ignoreAddURL': 'true',
-    #     'using-brand': 'SlackV3'
-    # }
-    #
-    # reply = "Thank you for your response."
-    # blocks = json.dumps(create_blocks(message, entitlement_string, reply))
-    # send_notification_args['blocks'] = json.dumps({
-    #     'blocks': blocks,
-    #     'entitlement': entitlement_string,
-    #     'reply': reply,
-    #     'expiry': expiry,
-    #     'default_response': 'NoResponse'
-    # })
-    #
-    # to = demisto.get(args, 'user_id')
-    #
-    # if to:
-    #     send_notification_args['to'] = to
-    # else:
-    #     return_error('A user must be provided.')
 
     try:
         # demisto.results(demisto.executeCommand('send-notification', send_notification_args))

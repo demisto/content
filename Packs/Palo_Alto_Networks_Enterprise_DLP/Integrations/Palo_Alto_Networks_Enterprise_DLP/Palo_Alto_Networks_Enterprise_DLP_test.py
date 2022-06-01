@@ -4,7 +4,7 @@ import json
 
 from Palo_Alto_Networks_Enterprise_DLP import Client, fetch_incidents, \
     exemption_eligible_command, slack_bot_message_command, reset_last_run_command, parse_incident_details, \
-    parse_dlp_report, update_incident_command, main, PAN_AUTH_URL
+    parse_dlp_report, update_incident_command, main, PAN_AUTH_URL, fetch_notifications
 
 DLP_URL = 'https://api.dlp.paloaltonetworks.com/v1'
 
@@ -86,25 +86,25 @@ INCIDENT_JSON = {
 }
 
 CREDENTIALS = {
-            'credential': '',
-            'credentials': {
-                'id': '',
-                'locked': False,
-                'modified': '0001-01-01T00:00:00Z',
-                'name': '',
-                'password': '',
-                'sortValues': None,
-                'sshkey': '',
-                'sshkeyPass': '',
-                'user': '',
-                'vaultInstanceId': '',
-                'version': 0,
-                'workgroup': ''
-            },
-            'identifier': '',
-            'password': '',
-            'passwordChanged': False
-        }
+    'credential': '',
+    'credentials': {
+        'id': '',
+        'locked': False,
+        'modified': '0001-01-01T00:00:00Z',
+        'name': '',
+        'password': '',
+        'sortValues': None,
+        'sshkey': '',
+        'sshkeyPass': '',
+        'user': '',
+        'vaultInstanceId': '',
+        'version': 0,
+        'workgroup': ''
+    },
+    'identifier': '',
+    'password': '',
+    'passwordChanged': False
+}
 
 
 def test_update_incident(requests_mock, mocker):
@@ -129,6 +129,32 @@ def test_update_incident(requests_mock, mocker):
 
     assert results['Contents'] == {'feedback': 'CONFIRMED_SENSITIVE', 'success': True}
     assert request.text == json.dumps({"user_id": user_id, "report_id": "A12345", "service_name": 'ngfw'})
+
+
+def test_update_incident_with_error_details(requests_mock, mocker):
+    incident_id = 'abcdefg12345'
+    user_id = 'someone@somewhere.com'
+    args = {
+        'incident_id': incident_id,
+        'feedback': 'SEND_NOTIFICATION_FAILURE',
+        'user_id': user_id,
+        'region': 'us',
+        'report_id': 'A12345',
+        'dlp_channel': 'ngfw',
+        'error_details': 'Something went wrong'
+    }
+
+    requests_mock.post(f'{DLP_URL}/public/incident-feedback/{incident_id}?feedback_type=SEND_NOTIFICATION_FAILURE&region=us')
+    client = Client(DLP_URL, CREDENTIALS, False, None)
+    mocker.patch.object(demisto, 'results')
+
+    results = update_incident_command(client, args).to_context()
+
+    request = requests_mock.last_request
+
+    assert results['Contents'] == {'feedback': 'SEND_NOTIFICATION_FAILURE', 'success': True}
+    assert request.text == json.dumps({"user_id": user_id, "report_id": "A12345", "service_name": 'ngfw',
+                                       'error_details': 'Something went wrong'})
 
 
 def test_get_dlp_report(requests_mock, mocker):
@@ -162,6 +188,15 @@ def test_get_dlp_incidents(requests_mock):
     client = Client(DLP_URL, CREDENTIALS, False, None)
     result = client.get_dlp_incidents(regions='us')
     assert result == {'us': []}
+
+
+def test_fetch_notifications(requests_mock, mocker):
+    requests_mock.get(f'{DLP_URL}/public/incident-notifications?regions=us', json={'us': []})
+    incident_mock = mocker.patch.object(demisto, 'createIncidents')
+
+    client = Client(DLP_URL, CREDENTIALS, False, None)
+    fetch_notifications(client, 'us')
+    assert incident_mock.call_args[0][0] == []
 
 
 def test_refresh_token(requests_mock, mocker):
@@ -200,6 +235,7 @@ def test_refresh_token(requests_mock, mocker):
 
         assert client.access_token == 'abc'
 
+
 def test_refresh_token_with_client_credentials(requests_mock, mocker):
     credentials = {
         'credential': 'test credentials',
@@ -224,6 +260,39 @@ def test_refresh_token_with_client_credentials(requests_mock, mocker):
     requests_mock.post(PAN_AUTH_URL, json={'access_token': 'abc'})
     client._refresh_token_with_client_credentials()
     assert client.access_token == 'abc'
+
+
+def test_handle_403(requests_mock, mocker):
+    credentials = {
+        'credential': 'test credentials',
+        'credentials': {
+            'id': 'test credentials',
+            'locked': False,
+            'name': 'test credentials',
+            'password': 'test-pass',
+            'sortValues': None,
+            'sshkey': '',
+            'sshkeyPass': '',
+            'user': 'test-user',
+            'vaultInstanceId': '',
+            'version': 1,
+            'workgroup': ''
+        },
+        'identifier': 'test-user',
+        'password': 'test-pass',
+        'passwordChanged': False
+    }
+    client = Client(DLP_URL, credentials, False, None)
+    credentials_mocker = mocker.patch.object(client, '_refresh_token_with_client_credentials')
+    response_mock = mocker.MagicMock()
+    type(response_mock).status_code = mocker.PropertyMock(return_value=403)
+    client._handle_403_errors(response_mock)
+    credentials_mocker.assert_called_with()
+
+    client = Client(DLP_URL, CREDENTIALS, False, None)
+    tokens_mocker = mocker.patch.object(client, '_refresh_token')
+    client._handle_403_errors(response_mock)
+    tokens_mocker.assert_called_with()
 
 
 def test_fetch_incidents(requests_mock, mocker):
@@ -285,3 +354,10 @@ def test_parse_incident_details():
     compressed_str = 'QlpoOTFBWSZTWVnl2RYAAKIfgFAFfBBEAoAKv+ffqjAA2CIpoZGjEDTIZBpgGGRpppkYTIwTQGBiSp/pTZGqe1T8qMQaaeo9Nqm3YdNAidgNoZcFEJmTIP+V1xQohhqNsWERYRnKAc3TlogFoteml94kUR+lVJzjB9uhEqOgfBMrQh34ox8qYCCQo2n9WoNceFBvtSCAfMeY7sIAvtXhGQZ7UToozWEQwedzu/MRtoFMK8+ucpSbK4O7zRnPU82E9etuWR5AtmDQF5muuAczVDMFREJd+AEsRAKqdBdyRThQkFnl2RY='  # noqa: E501
     details = parse_incident_details(compressed_str)
     assert details['app_details'] == {'name': 'Microsoft OneDrive'}
+
+
+def test_query_sleep_time(requests_mock):
+    requests_mock.get(f'{DLP_URL}/public/seconds-between-incident-notifications-pull', json=10)
+    client = Client(DLP_URL, CREDENTIALS, False, None)
+    time = client.query_for_sleep_time()
+    assert time == 10

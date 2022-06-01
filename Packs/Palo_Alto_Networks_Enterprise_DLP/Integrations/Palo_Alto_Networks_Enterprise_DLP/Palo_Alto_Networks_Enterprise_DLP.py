@@ -89,18 +89,18 @@ class Client(BaseClient):
         credentials = f'{client_id}:{client_secret}'
         auth_header = f'Basic {b64_encode(credentials)}'
         headers = {
-             'Authorization': auth_header,
-             'Content-Type': 'application/x-www-form-urlencoded'
-         }
+            'Authorization': auth_header,
+            'Content-Type': 'application/x-www-form-urlencoded'
+        }
 
         payload = 'grant_type=client_credentials'
         try:
             r = self._http_request(
-                 full_url=PAN_AUTH_URL,
-                 method='POST',
-                 headers=headers,
-                 data=payload,
-                 ok_codes=[200, 201, 204]
+                full_url=PAN_AUTH_URL,
+                method='POST',
+                headers=headers,
+                data=payload,
+                ok_codes=[200, 201, 204]
             )
             new_token = r.get('access_token')
             if new_token:
@@ -250,7 +250,6 @@ class Client(BaseClient):
         url = f'{UPDATE_INCIDENT_URL}/{incident_id}?feedback_type={feedback.value}&region={region}'
         return self._post_dlp_api_call(url, payload)
 
-
     def query_for_sleep_time(self):
         resp, status = self._get_dlp_api_call(SLEEP_TIME_URL)
         return resp
@@ -382,7 +381,8 @@ def update_incident_command(client: Client, args: dict) -> CommandResults:
     dlp_channel = args.get('dlp_channel', '')
     error_details = args.get('error_details')
     feedback_enum = FeedbackStatus[feedback.upper()]
-    result_json, status = client.update_dlp_incident(incident_id, feedback_enum, user_id, region, report_id, dlp_channel, error_details)
+    result_json, status = client.update_dlp_incident(incident_id, feedback_enum, user_id, region, report_id,
+                                                     dlp_channel, error_details)
 
     output = {
         'feedback': feedback_enum.value,
@@ -473,6 +473,28 @@ def is_reset_triggered():
     return False
 
 
+def fetch_notifications(client: Client, regions: str):
+    integration_context = demisto.getIntegrationContext()
+    access_token = integration_context.get(ACCESS_TOKEN)
+    if access_token:
+        client.set_access_token(access_token)
+
+    incidents = fetch_incidents(
+        client=client,
+        regions=regions
+    )
+    print_debug_msg(f"Received {len(incidents)} incidents")
+    if not is_reset_triggered():
+        demisto.createIncidents(incidents)
+        new_ctx = {
+            ACCESS_TOKEN: client.access_token,
+            'samples': incidents
+        }
+        demisto.setIntegrationContext(new_ctx)
+    elif len(incidents) > 0:
+        print_debug_msg(f"Skipped {len(incidents)} incidents because of reset")
+
+
 def long_running_execution_command(client: Client, params: Dict):
     """
     Long running execution of fetching incidents from Palo Alto Networks Enterprise DLP.
@@ -487,26 +509,8 @@ def long_running_execution_command(client: Client, params: Dict):
     last_time_sleep_interval_queries = math.floor(datetime.now().timestamp())
     while True:
         try:
-            integration_context = demisto.getIntegrationContext()
             current_time = math.floor(datetime.now().timestamp())
-            access_token = integration_context.get(ACCESS_TOKEN)
-            if access_token:
-                client.set_access_token(access_token)
-
-            incidents = fetch_incidents(
-                client=client,
-                regions=regions
-            )
-            print_debug_msg(f"Received {len(incidents)} incidents")
-            if not is_reset_triggered():
-                demisto.createIncidents(incidents)
-                new_ctx = {
-                    ACCESS_TOKEN: client.access_token,
-                    'samples': incidents
-                }
-                demisto.setIntegrationContext(new_ctx)
-            elif len(incidents) > 0:
-                print_debug_msg(f"Skipped {len(incidents)} incidents because of reset")
+            fetch_notifications(client, regions)
 
             if current_time - last_time_sleep_interval_queries > 5 * 60:
                 overriden_sleep_time = client.query_for_sleep_time()
