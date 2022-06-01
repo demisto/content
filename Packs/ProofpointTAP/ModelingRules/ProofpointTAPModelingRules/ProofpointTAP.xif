@@ -1,0 +1,16 @@
+[MODEL: dataset=, model=Email]
+alter XDM.Email.cc =
+XDM.Email.sender =
+XDM.Email.message_id =
+XDM.Email.attachment.filename =
+XDM.Email.attachment.md5 =
+XDM.Email.attachment.sha256 =
+XDM.Email.delivery_timestamp =
+XDM.Email.recipients =
+XDM.Email.return_path =
+XDM.Email.Server.host.ipv4_addresses =
+XDM.Email.subject =
+XDM.Email.threat.original_threat_id = coalesce ()
+XDM.Email.threat.subcategory =
+XDM.Email.Client.host.ipv4_addresses =
+XDM.Email.observation_timestamp =
