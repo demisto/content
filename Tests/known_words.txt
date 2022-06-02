@@ -180,3 +180,4 @@ XDR
 CommandRunner
 AttackPattern
 Parses
+Demisto-SDK
