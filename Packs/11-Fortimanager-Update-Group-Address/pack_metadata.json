@@ -1,0 +1,17 @@
+{
+    "name": "11-Fortimanager-update-group-address",
+    "description": "Playbook to add more address objects to address group on FortiManager. It can be used in playbook to block several C2C, IP blacklist on FortiManager",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Tran Quoc Dat",
+    "url": "",
+    "email": "",
+    "created": "2022-06-02T18:43:18Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "dattq88"
+    ]
+}

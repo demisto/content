@@ -1,0 +1,355 @@
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: c029160a-c38b-4bb3-800e-38bcb7d072ff
+    propagationLabels:
+    - all
+    toServerVersion: ""
+id: 95622bfb-1891-44c1-8473-78d3b8ecf308
+inputs:
+- description: ""
+  key: adom
+  playbookInputQuery: null
+  required: false
+  value:
+    simple: fw
+- description: ""
+  key: ip-object
+  playbookInputQuery: null
+  required: false
+  value:
+    simple: 192.168.7.11
+- description: ""
+  key: groupname
+  playbookInputQuery: null
+  required: false
+  value:
+    simple: xsoar
+name: 11-Fortimanager-update-group-address
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 14260300-3f35-42c1-8835-132e0229cd9d
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 14260300-3f35-42c1-8835-132e0229cd9d
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 65
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      address_group:
+        complex:
+          root: inputs.groupname
+      adom:
+        simple: ${inputs.adom}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: FortiManager
+      description: List ADOM IPv4 address groups.
+      id: 1564d323-540f-48a7-8052-1a2a42d7b131
+      iscommand: true
+      name: fortimanager-address-group-list
+      script: FortiManager|||fortimanager-address-group-list
+      type: regular
+      version: -1
+    taskid: 1564d323-540f-48a7-8052-1a2a42d7b131
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 400
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+      id: d784244e-2408-436a-870e-7118ca4b64b9
+      iscommand: false
+      name: cleancontext
+      scriptName: DeleteContext
+      type: regular
+      version: -1
+    taskid: d784244e-2408-436a-870e-7118ca4b64b9
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 225
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      subject:
+        complex:
+          accessor: member
+          root: FortiManager.AddressGroup
+          transformers:
+          - operator: ConvertToSingleElementArray
+      to:
+        simple: dattran@paloaltonetworks.com
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Send an email
+      id: 1e535f1a-4c0c-4dec-8173-1c31c2d4b122
+      iscommand: true
+      name: send-me
+      script: '|||send-mail'
+      type: regular
+      version: -1
+    taskid: 1e535f1a-4c0c-4dec-8173-1c31c2d4b122
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 50
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    note: false
+    quietmode: 0
+    scriptarguments:
+      group-member:
+        simple: ${FortiManager.AddressGroup.member}
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 7d900b3d-e49b-41d1-8088-15581e92ef4d
+      iscommand: false
+      name: 11-fortimanager-update-group
+      playbookId: 41014589-7fb0-4586-8e85-1ac9cc489e33
+      type: playbook
+      version: -1
+    taskid: 7d900b3d-e49b-41d1-8088-15581e92ef4d
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 50
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      adom:
+        simple: ${inputs.adom}
+      member:
+        complex:
+          root: group-members
+          transformers:
+          - args:
+              limit: {}
+              replaceWith: {}
+              toReplace:
+                value:
+                  simple: '['
+            operator: replace
+          - args:
+              limit: {}
+              replaceWith: {}
+              toReplace:
+                value:
+                  simple: '"'
+            operator: replace
+          - args:
+              limit: {}
+              replaceWith: {}
+              toReplace:
+                value:
+                  simple: ']'
+            operator: replace
+          - args:
+              limit: {}
+              replaceWith: {}
+              toReplace:
+                value:
+                  simple: ' '
+            operator: replace
+      name:
+        simple: ${inputs.groupname}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Create a new address group.
+      id: 02f0f7c5-6fb9-4bd9-88ce-6f84784084ca
+      iscommand: true
+      name: fortimanager-address-update
+      script: '|||fortimanager-address-group-update'
+      type: regular
+      version: -1
+    taskid: 02f0f7c5-6fb9-4bd9-88ce-6f84784084ca
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 750
+        }
+      }
+  "9":
+    id: "9"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 3c9edde9-d8d7-4b9f-8eef-44f57e94f825
+      iscommand: false
+      name: Untitled Task
+      type: title
+      version: -1
+    taskid: 3c9edde9-d8d7-4b9f-8eef-44f57e94f825
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 925
+        }
+      }
+  "10":
+    id: "10"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: group-members
+      stringify:
+        simple: "false"
+      value:
+        simple: ${FortiManager.AddressGroup.member}, ${inputs.ip-object}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 270fbe2b-64dd-44f8-8e31-7db2827a241e
+      iscommand: false
+      name: set-1
+      scriptName: Set
+      type: regular
+      version: -1
+    taskid: 270fbe2b-64dd-44f8-8e31-7db2827a241e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 575
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 940,
+        "width": 1240,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
