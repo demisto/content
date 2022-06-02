@@ -152,7 +152,6 @@ def test_module(client: Client):
     """
     # if 401 will be raised, that means that the credentials are invalid an exception will be raised.
     client.get_token_request()
-    fetch_events_from_saas_security(client, 100)
     return 'ok'
 
 
