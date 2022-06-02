@@ -5,6 +5,7 @@
 3) **reset last fetch** has no effect.
 4) On initial activation this integration will pull events starting from one hour prior.
 5) Using the ```saas-security-get-events``` command may take upwards of twenty seconds in some cases.
+6) In some rare cases more than ```max_fetch``` events could be fetched.
 
 
 Creating the Client ID and Client Secret in the SaaS Security UI:

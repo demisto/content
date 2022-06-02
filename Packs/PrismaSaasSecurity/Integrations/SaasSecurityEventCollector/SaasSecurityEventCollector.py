@@ -190,16 +190,14 @@ def fetch_events_from_saas_security(client: Client, max_fetch: Optional[int] = N
     Fetches events from the saas-security queue.
     """
     events: List[Dict] = []
-    more_events_available, reached_max_fetch = True, True
+    reached_max_fetch = True
 
-    #  if max fetch is None, all events will be fetched until there aren't anymore in the queue.
-    while reached_max_fetch and more_events_available:
+    #  if max fetch is None, all events will be fetched until there aren't anymore in the queue (until we get 204)
+    while reached_max_fetch:
         response = client.get_events_request()
-        try:
-            fetched_events = response.json().get('events') or []
-        except JSONDecodeError:
-            fetched_events = []
-        more_events_available = response.status_code == 200
+        if response.status_code == 204:  # if we got 204, it means not events in the queue, hence breaking.
+            break
+        fetched_events = response.json().get('events') or []
         demisto.info(f'fetched events: ({fetched_events}), fetched events length: ({len(fetched_events)})')
         events.extend(fetched_events)
         if max_fetch:
