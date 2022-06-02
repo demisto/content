@@ -1,3 +1,4 @@
+from ctypes import Union
 import re
 import os
 import sys
@@ -305,7 +306,7 @@ def aggregate_release_notes(pack_name: str, pack_versions_dict: dict, pack_metad
             f'{pack_release_notes}')
 
 
-def merge_version_blocks(pack_versions_dict: dict, return_str: bool = True) -> Tuple[str, str]:
+def merge_version_blocks(pack_versions_dict: dict, return_str: bool = True) -> Tuple[Union[str, dict], str]:
     """
     merge several pack release note versions into a single block.
 

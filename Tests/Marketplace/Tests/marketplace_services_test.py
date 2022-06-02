@@ -1074,7 +1074,7 @@ This is visible
         assert not version_changelog
 
     @pytest.mark.parametrize('release_notes, upload_marketplace, expected_result', [
-('''
+        ('''
 <~XSIAM>
 #### Integrations
 ##### Integration Display Name
@@ -1084,7 +1084,7 @@ This is visible
 #### Scripts
 ##### Script Name
 - Fixed script''', 'xsoar', "#### Scripts\n##### Script Name\n- Fixed script"),
-('''
+        ('''
 #### Integrations
 <~XSIAM>
 ##### Integration Display Name
@@ -1094,7 +1094,7 @@ This is visible
 #### Scripts
 ##### Script Name
 - Fixed script''', 'xsoar', "#### Scripts\n##### Script Name\n- Fixed script"),
-('''
+        ('''
 #### Integrations
 ##### Integration Display Name
 <~XSIAM>
@@ -1104,7 +1104,7 @@ This is visible
 #### Scripts
 ##### Script Name
 - Fixed script''', 'xsoar', "#### Scripts\n##### Script Name\n- Fixed script"),
-('''
+        ('''
 #### Integrations
 ##### Integration Display Name
 <~XSOAR>
@@ -1114,7 +1114,7 @@ This is visible
 #### Scripts
 ##### Script Name
 - Fixed script''', 'marketplacev2', "#### Scripts\n##### Script Name\n- Fixed script"),
-('''
+        ('''
 #### Integrations
 ##### Integration Display Name
 <~XSIAM>
@@ -1126,7 +1126,7 @@ This is visible
 <~XSIAM>
 - Fixed script
 </~XSIAM>''', 'xsoar', ''),
-('''
+        ('''
 #### Integrations
 ##### Integration Display Name
 <~XSIAM>
@@ -1136,8 +1136,9 @@ This is visible
 #### Scripts
 ##### Script Name
 - Fixed script''', 'marketplacev2',
-"#### Integrations\n##### Integration Display Name\n- Fixed an issue\n\n#### Scripts\n##### Script Name\n- Fixed script"),
-('''
+            "#### Integrations\n##### Integration Display Name\n- Fixed an issue\n\n#### Scripts\n##### Script Name\n\
+            - Fixed script"),
+        ('''
 #### Integrations
 <~XSOAR>
 ##### Integration Display Name
@@ -1147,9 +1148,11 @@ This is visible
 #### Scripts
 ##### Script Name
 - Fixed script''', 'xsoar',
-"#### Integrations\n##### Integration Display Name\n- Fixed an issue\n\n#### Scripts\n##### Script Name\n- Fixed script")
+            "#### Integrations\n##### Integration Display Name\n- Fixed an issue\n\n#### Scripts\n##### Script Name\n\
+            - Fixed script")
     ])
-    def test_create_filtered_changelog_entry_by_mp_tags(self, dummy_pack: Pack, release_notes, upload_marketplace, expected_result):
+    def test_create_filtered_changelog_entry_by_mp_tags(self, dummy_pack: Pack, release_notes, upload_marketplace,
+                                                        expected_result):
         """
            Given:
                - Release notes entries with wrapping tags to filter for the irrelevant marketplace for some of them.

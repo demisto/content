@@ -1509,7 +1509,7 @@ class Pack(object):
             logging.info(f"Loading changelog for {self._pack_name} pack")
             changelog_index_path = os.path.join(index_folder_path, self._pack_name, Pack.CHANGELOG_JSON)
 
-            changelog = {}
+            changelog: dict = {}
             if os.path.exists(changelog_index_path):
                 changelog, changelog_latest_rn_version, changelog_latest_rn = \
                     self.get_changelog_latest_rn(changelog_index_path)
@@ -1665,7 +1665,7 @@ class Pack(object):
         release_notes = self.cat_rn_by_tags(changelog_entry.get(Changelog.RELEASE_NOTES))
         # Convert the RN entries to a Dict
         release_notes_dict, _ = merge_version_blocks(pack_versions_dict={version: release_notes},
-                                                                         return_str=False)
+                                                     return_str=False)
 
         # If it didn't formatted into a dict it's probably because it's not written correctly according to our templates,
         # and that might be in case it's a first release of a pack then the RN is the pack description,
@@ -1676,8 +1676,9 @@ class Pack(object):
         # Filters out the entity_header or/and entity_name if all its names or/and entries were wrapping by tags
         new_release_notes_dict: dict = {}
         for entity_header, entity_entry in release_notes_dict.items():
-            entity_entry = {name: entry for name, entry in entity_entry.items() if name != '[special_msg]' and entry not in ['', '\n']}
-            
+            entity_entry = {name: entry for name, entry in entity_entry.items()
+                            if name != '[special_msg]' and entry not in ['', '\n']}
+
             if entity_entry:
                 new_release_notes_dict[entity_header] = entity_entry
 
@@ -1694,7 +1695,7 @@ class Pack(object):
             # Filters the RN entries by the entity display name
             display_names = [entity['display_name'] for entity in entities_data]
             filtered_entries = {display_name: rn_desc for display_name, rn_desc in new_release_notes_dict[rn_header].items()
-                                    if display_name in display_names}
+                                if display_name in display_names}
 
             if filtered_entries:
                 filtered_release_notes_dict[rn_header] = filtered_entries
@@ -1707,7 +1708,7 @@ class Pack(object):
         changelog_entry[Changelog.RELEASE_NOTES] = construct_entities_block(filtered_release_notes_dict).strip()
         return changelog_entry, False
 
-    def cat_rn_by_tags(self, release_notes: str):
+    def cat_rn_by_tags(self, release_notes):
         """
         Filters out RN the sub-entries that are wrapped by tags.
 
