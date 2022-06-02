@@ -6,6 +6,8 @@ BRANCH=$2
 if [[ $(git diff origin/master -- ${FILE_TO_CHECK}) ]]; then
     # Checks if part of the branch's changes
     if [[ -z $(git diff origin/master..."$BRANCH" --name-only -- ${FILE_TO_CHECK}) ]]; then
+        # using printf & STDIN instead of command argument to support new lines in the message.
+        # pick a ranadom cow-file
         printf "ERROR: %s has been changed.\nMerge from master" "${FILE_TO_CHECK}" | /usr/games/cowsay -n -f "$(ls /usr/share/cowsay/cows | shuf | head -1)"
         if [[ $BRANCH =~ pull/[0-9]+ ]]; then
           echo "Run ./Utils/git_pull_master_into_fork.sh or merge manually from upstream demisto content"

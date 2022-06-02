@@ -54,7 +54,6 @@
     if [[ -n "${DEMISTO_SDK_NIGHTLY}" || -n "${NIGHTLY}" || -n "${BUCKET_UPLOAD}" || -n "${SLACK_JOB}" ]]; then
       echo "running nightly or bucket upload, skipping files up-to-date validation"
     else
-      apt-get install -y cowsay # move to docker
       ./Tests/scripts/is_file_up_to_date.sh .gitlab $CI_COMMIT_BRANCH
       ./Tests/scripts/is_file_up_to_date.sh dev-requirements-py2.txt $CI_COMMIT_BRANCH
       ./Tests/scripts/is_file_up_to_date.sh dev-requirements-py3.txt $CI_COMMIT_BRANCH
