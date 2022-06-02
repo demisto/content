@@ -774,6 +774,7 @@ class Pack(object):
                             Changelog.PULL_REQUEST_NUMBERS: pull_request_numbers}
 
         if entry_result:
+            logging.info(f"Starting filtering entry for pack {self._pack_name} with version {version_display_name}")
             return self.filter_changelog_entries_based_marketplace(entry_result, version_display_name, modified_files_data)
 
         return entry_result, False
@@ -1029,7 +1030,7 @@ class Pack(object):
 
                     if modified_file_path_parts[1] and modified_file_path_parts[1] == self._pack_name:
                         if not is_ignored_pack_file(modified_file_path_parts):
-                            logging.info(f"Detected modified files in {self._pack_name} pack")
+                            logging.info(f"Detected modified files in {self._pack_name} pack - {modified_file.a_path}")
                             task_status, pack_was_modified = True, True
                             modified_rn_files_paths.append(modified_file.a_path)
 
@@ -1680,6 +1681,7 @@ class Pack(object):
                             if name != '[special_msg]' and entry not in ['', '\n']}
 
             if entity_entry:
+                logging.info(f"Found relevant entries after filtering by tags - {entity_entry}")
                 new_release_notes_dict[entity_header] = entity_entry
 
         # Filters the entries by the modified files display names given from id-set
@@ -1698,6 +1700,7 @@ class Pack(object):
                                 if display_name in display_names}
 
             if filtered_entries:
+                logging.info(f"Found relevant entries after filtering by display_name - {filtered_entries}")
                 filtered_release_notes_dict[rn_header] = filtered_entries
 
         # If all the entries were filtered then the pack probably irrelevant to the current marketplace
@@ -1721,17 +1724,20 @@ class Pack(object):
 
         def remove_tags_section_from_rn(release_notes, marketplace, mp_tags_regex):
             start_tag, end_tag = TAGS_BY_MP[marketplace]
+            logging.info(f"Filtering release notes by tags {start_tag}-{end_tag} for pack "
+                         f"{self._pack_name} in marketplace {marketplace}")
             if start_tag in release_notes and end_tag in release_notes and marketplace not in self.marketplaces:
                 return re.sub(mp_tags_regex, '', release_notes)
             else:
-                return release_notes.replace(start_tag, '').replace(end_tag, '')
+                return release_notes.replace(f"{start_tag}\n", '').replace(f"{end_tag}\n", '')
 
         # Filters out by XSIAM tags
         release_notes = remove_tags_section_from_rn(release_notes, XSIAM_MP, XSIAM_TAGS_SECTION_REGEX)
 
         # Filters out by XSOAR tags
         release_notes = remove_tags_section_from_rn(release_notes, XSOAR_MP, XSOAR_TAGS_SECTION_REGEX)
-
+        logging.info(f"RN result after filteing for pack {self._pack_name} in marketplace {self.marketplaces}\n"
+                     f"- {release_notes}")
         return release_notes
 
     def create_local_changelog(self, build_index_folder_path):
