@@ -1,4 +1,4 @@
-[MODEL: dataset="oracle_oracle_raw", model="Auth"]
+[MODEL: dataset="redhat_linux_raw", model="Auth"]
 alter pri_value = to_integer(arrayindex(regextract(_raw_log , "^\<(\d{0,2})") ,0))
 | alter facility_val = floor(divide(pri_value,8))
 | alter facility = if(facility_val = 0,        "kern" ,facility_val = 1,        "user" ,facility_val = 2,        "mail" ,facility_val = 3,        "daemon" ,facility_val = 4,        "auth" ,facility_val = 5,        "syslog" ,facility_val = 6,        "lpr" ,facility_val = 7,        "news" ,facility_val = 8,        "uucp" ,facility_val = 9,        "cron" ,facility_val = 10,        "authpriv" ,facility_val = 11,        "ftp" ,facility_val = 12,        "ntp" ,facility_val = 13,        "security" ,facility_val = 14,        "console" ,facility_val = 15,        "solaris-cron" ,facility_val = 16, "local")
@@ -28,7 +28,7 @@ alter pri_value = to_integer(arrayindex(regextract(_raw_log , "^\<(\d{0,2})") ,0
 
 
 
-[MODEL: dataset="oracle_oracle_raw", model="Endpoint"]
+[MODEL: dataset="redhat_linux_raw", model="Endpoint"]
 alter pri_value = to_integer(arrayindex(regextract(_raw_log , "^\<(\d{0,2})") ,0))
 | alter facility_val = floor(divide(pri_value,8))
 | alter facility = if(facility_val = 0,        "kern" ,facility_val = 1,        "user" ,facility_val = 2,        "mail" ,facility_val = 3,        "daemon" ,facility_val = 4,        "auth" ,facility_val = 5,        "syslog" ,facility_val = 6,        "lpr" ,facility_val = 7,        "news" ,facility_val = 8,        "uucp" ,facility_val = 9,        "cron" ,facility_val = 10,        "authpriv" ,facility_val = 11,        "ftp" ,facility_val = 12,        "ntp" ,facility_val = 13,        "security" ,facility_val = 14,        "console" ,facility_val = 15,        "solaris-cron" ,facility_val = 16, "local")
