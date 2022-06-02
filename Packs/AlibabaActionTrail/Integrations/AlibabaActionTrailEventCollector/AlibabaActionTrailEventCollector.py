@@ -145,7 +145,7 @@ def get_alibaba_timestamp_format(value):
     if isinstance(value, int):
         return value
     if not isinstance(value, datetime):
-        timestamp = dateparser.parse(value)
+        timestamp = dateparser.parse(value)  # type: ignore
     return int(time.mktime(timestamp.timetuple()))
 
 
