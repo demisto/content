@@ -10,7 +10,7 @@ from abc import ABC
 from typing import Any, Callable, Optional
 
 from enum import Enum
-from pydantic import BaseConfig, BaseModel, AnyUrl, validator  # type: ignore[E0611, E0611, E0611]
+from pydantic import BaseConfig, BaseModel, AnyUrl, validator, Field  # type: ignore[E0611, E0611, E0611]
 from requests.auth import HTTPBasicAuth
 import requests
 import dateparser
@@ -73,12 +73,12 @@ class Credentials(BaseModel):
     password: str
 
 
-def set_authorization(request: IntegrationHTTPRequest, auth_credentials):
+def set_authorization(request: IntegrationHTTPRequest, auth_credendtials):
     """Automatic authorization.
     Supports {Authorization: Bearer __token__}
     or Basic Auth.
     """
-    creds = Credentials.parse_obj(auth_credentials)
+    creds = Credentials.parse_obj(auth_credendtials)
     if creds.password and creds.identifier:
         request.auth = HTTPBasicAuth(creds.identifier, creds.password)
     auth = {'Authorization': f'Bearer {creds.password}'}
@@ -91,8 +91,8 @@ def set_authorization(request: IntegrationHTTPRequest, auth_credentials):
 class IntegrationOptions(BaseModel):
     """Add here any option you need to add to the logic"""
 
-    proxy: bool = False
-    limit: int = 1000
+    proxy: Optional[bool] = False
+    limit: Optional[int] = Field(None, ge=1)
 
 
 class IntegrationEventsClient(ABC):
@@ -130,7 +130,7 @@ class IntegrationEventsClient(ABC):
             return response
         except Exception as exc:
             msg = f'something went wrong with the http call {exc}'
-            LOG(msg)
+            demisto.debug(msg)
             raise DemistoException(msg) from exc
 
     def _skip_cert_verification(
@@ -157,8 +157,14 @@ class IntegrationGetEvents(ABC):
         stored = []
         for logs in self._iter_events():
             stored.extend(logs)
-            if len(stored) >= self.options.limit:
-                return stored[:self.options.limit]
+            if self.options.limit:
+                demisto.debug(
+                    f'{self.options.limit=} reached. \
+                    slicing from {len(logs)=}. \
+                    limit must be presented ONLY in commands and not in fetch-events.'
+                )
+                if len(stored) >= self.options.limit:
+                    return stored[: self.options.limit]
         return stored
 
     def call(self) -> requests.Response:
