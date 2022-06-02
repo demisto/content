@@ -85,27 +85,13 @@ def custom_indicator_creation(client: Client) -> CommandResults:
         data=data,
         context_prefix='custom',
     )
-
-    # Create a relationship
-    relationships = [EntityRelationship(
-        name='impersonates',
-        entity_a='0.0.0.0',
-        entity_a_type='IP',
-        entity_b=indicator_value,
-        entity_b_type=custom_indicator,
-        source_reliability='B - Usually reliable',
-        brand='XSOAR'
-    )]
-
-    custom_indicator.relationships = relationships
-
     # Return a CommandResults object containing the CustomIndicator object created
     return CommandResults(
         readable_output='custom_value',
         outputs=result,
         outputs_prefix='Demo.Result',
         outputs_key_field='test_key_field',
-        indicator=custom_indicator
+        indicator=custom_indicator,
     )
 
 
