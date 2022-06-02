@@ -702,12 +702,12 @@ inputs:
   description: The SHA256 hash to search for.
   playbookInputQuery:
 outputs:
-- contextPath: AttackPattern.MITREID
-  description: The MITRE ID of the attack pattern.
-  type: string
-- contextPath: AttackPattern.KillChainPhases
-  description: The kill chain phases of the attack pattern.
-  type: string
+- contextPath: AttackPattern
+  description: The MITRE Attack pattern information.
+  type: unknown
+- contextPath: MITREATTACK
+  description: Full MITRE data for the attack pattern.
+  type: unknown
 - contextPath: NonFoundHashes
   description: A list of hashes that are not found in the sandboxes.
   type: string
