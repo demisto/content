@@ -1,4 +1,4 @@
-[MODEL: dataset=, model=Email]
+[MODEL: dataset=proofpoint_tap_raw, model=Email]
 alter XDM.Email.cc = ccAddresses,
 XDM.Email.sender = fromAddress,
 XDM.Email.original_event_id = GUID,
