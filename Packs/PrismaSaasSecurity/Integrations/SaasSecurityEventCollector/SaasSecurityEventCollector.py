@@ -1,10 +1,10 @@
-
 import demistomock as demisto
 import urllib3
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 import traceback
 from typing import Dict, Tuple
+from json import JSONDecodeError
 
 # Disable insecure warnings
 urllib3.disable_warnings()  # pylint: disable=no-member
@@ -153,6 +153,7 @@ def test_module(client: Client):
     """
     # if 401 will be raised, that means that the credentials are invalid an exception will be raised.
     client.get_token_request()
+    fetch_events_from_saas_security(client, 100)
     return 'ok'
 
 
@@ -184,7 +185,7 @@ def get_events_command(
     return 'No events were found.'
 
 
-def fetch_events_from_saas_security(client: Client, max_fetch: Optional[int]) -> List[Dict]:
+def fetch_events_from_saas_security(client: Client, max_fetch: Optional[int] = None) -> List[Dict]:
     """
     Fetches events from the saas-security queue.
     """
@@ -194,7 +195,10 @@ def fetch_events_from_saas_security(client: Client, max_fetch: Optional[int]) ->
     #  if max fetch is None, all events will be fetched until there aren't anymore in the queue.
     while reached_max_fetch and more_events_available:
         response = client.get_events_request()
-        fetched_events = response.json().get('events') or []
+        try:
+            fetched_events = response.json().get('events') or []
+        except JSONDecodeError:
+            fetched_events = []
         more_events_available = response.status_code == 200
         demisto.info(f'fetched events: ({fetched_events}), fetched events length: ({len(fetched_events)})')
         events.extend(fetched_events)
