@@ -1,5 +1,5 @@
 {
-    "name": "Dropbox Events Collector",
+    "name": "Dropbox",
     "description": "Use the Dropbox integration to fetch events",
     "support": "xsoar",
     "currentVersion": "1.0.0",

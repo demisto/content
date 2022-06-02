@@ -1,0 +1,81 @@
+{
+    "offset": 0,
+    "limit": 1000,
+    "total": 3,
+    "records": [
+        {
+            "id": 11127,
+            "summary": "User added to group",
+            "created": "2022-05-24T14:08:20.177+0000",
+            "category": "group management",
+            "eventSource": "",
+            "objectItem": {
+                "name": "jira-servicemanagement-users",
+                "typeName": "GROUP",
+                "parentId": "10000",
+                "parentName": "com.atlassian.crowd.directory.IdentityPlatformRemoteDirectory"
+            },
+            "associatedItems": [
+                {
+                    "id": "ug:33561fdc-beb3-438d-ab97-bb83b29860a3",
+                    "name": "ug:33561fdc-beb3-438d-ab97-bb83b29860a3",
+                    "typeName": "USER",
+                    "parentId": "10000",
+                    "parentName": "com.atlassian.crowd.directory.IdentityPlatformRemoteDirectory"
+                }
+            ]
+        },
+        {
+            "id": 11126,
+            "summary": "User added to group",
+            "created": "2022-05-24T14:08:20.093+0000",
+            "category": "group management",
+            "eventSource": "",
+            "objectItem": {
+                "name": "jira-software-users",
+                "typeName": "GROUP",
+                "parentId": "10000",
+                "parentName": "com.atlassian.crowd.directory.IdentityPlatformRemoteDirectory"
+            },
+            "associatedItems": [
+                {
+                    "id": "ug:33561fdc-beb3-438d-ab97-bb83b29860a3",
+                    "name": "ug:33561fdc-beb3-438d-ab97-bb83b29860a3",
+                    "typeName": "USER",
+                    "parentId": "10000",
+                    "parentName": "com.atlassian.crowd.directory.IdentityPlatformRemoteDirectory"
+                }
+            ]
+        },
+        {
+            "id": 11125,
+            "summary": "User updated",
+            "created": "2022-05-24T14:08:19.923+0000",
+            "category": "user management",
+            "eventSource": "",
+            "objectItem": {
+                "id": "ug:33561fdc-beb3-438d-ab97-bb83b29860a3",
+                "name": "ug:33561fdc-beb3-438d-ab97-bb83b29860a3",
+                "typeName": "USER",
+                "parentId": "10000",
+                "parentName": "IDP Directory"
+            },
+            "changedValues": [
+                {
+                    "fieldName": "Active / Inactive",
+                    "changedFrom": "Inactive",
+                    "changedTo": "Active"
+                }
+            ],
+            "associatedItems": [
+                {
+                    "id": "ug:33561fdc-beb3-438d-ab97-bb83b29860a3",
+                    "name": "ug:33561fdc-beb3-438d-ab97-bb83b29860a3",
+                    "typeName": "USER",
+                    "parentId": "10000",
+                    "parentName": "IDP Directory"
+                }
+            ]
+        }
+    ]
+}
