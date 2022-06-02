@@ -15,10 +15,10 @@ This playbook includes the following tasks:
 
 **More information:**
 
-[Guidance for CVE-2022-30190 Microsoft Support Diagnostic Tool Vulnerability
-](https://msrc-blog.microsoft.com/2022/05/30/guidance-for-cve-2022-30190-microsoft-support-diagnostic-tool-vulnerability/)
+[Prevention, Hunting and Playbooks for MSDT Zero-Day (CVE-2022-30190)
+](https://www.paloaltonetworks.com/blog/security-operations/prevention-hunting-and-playbooks-for-msdt-zero-day-cve-2022-30190/)
 
 **Note:** This is a beta playbook, which lets you implement and test pre-release software. Since the playbook is beta, it might contain bugs. Updates to the pack during the beta phase might include non-backward compatible features. We appreciate your feedback on the quality and usability of the pack to help us identify issues, fix them, and continually improve.
 
 
-![CVE-2022-30190 - MSDT RCE](https://raw.githubusercontent.com/demisto/content/b3a0674bdf063de2404a3090fe866b15d4848c71/Packs/CVE_2022_30190/doc_files/CVE-2022-30190_-_MSDT_RCE.png)
+![CVE-2022-30190 - MSDT RCE](https://raw.githubusercontent.com/demisto/content/8895e8b967ee7d664276bd31df5af849e2c9a603/Packs/CVE_2022_30190/doc_files/CVE-2022-30190_-_MSDT_RCE.png)
