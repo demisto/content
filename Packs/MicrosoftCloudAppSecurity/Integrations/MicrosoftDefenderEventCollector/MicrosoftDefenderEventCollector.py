@@ -248,7 +248,7 @@ class DefenderClient(IntegrationEventsClient):
         super().__init__(request, options)
 
     def set_request_filter(self, after: Any):
-        self.request.params['filters'] = json.dumps({"date": {"gte": after+1}})
+        self.request.params['filters'] = json.dumps({"date": {"gte": after + 1}})
 
     def authenticate(self):
         self.authenticator.set_authorization(self.request)
@@ -351,7 +351,7 @@ def main(command: str, demisto_params: dict):
         after = demisto_params.get('after')
         if after and not isinstance(after, int):
             timestamp = dateparser.parse(after)
-            after = int(timestamp.timestamp() * 1000)
+            after = int(timestamp.timestamp() * 1000)  # type: ignore
 
         options = IntegrationOptions.parse_obj(demisto_params)
         request = DefenderHTTPRequest.parse_obj(demisto_params)
