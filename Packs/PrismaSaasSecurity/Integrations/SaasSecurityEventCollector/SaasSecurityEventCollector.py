@@ -153,7 +153,6 @@ def test_module(client: Client):
     """
     # if 401 will be raised, that means that the credentials are invalid an exception will be raised.
     client.get_token_request()
-    fetch_events_from_saas_security(client, 100)
     return 'ok'
 
 
@@ -190,18 +189,19 @@ def fetch_events_from_saas_security(client: Client, max_fetch: Optional[int] = N
     Fetches events from the saas-security queue.
     """
     events: List[Dict] = []
-    reached_max_fetch = True
+    under_max_fetch = True
 
     #  if max fetch is None, all events will be fetched until there aren't anymore in the queue (until we get 204)
-    while reached_max_fetch:
+    while under_max_fetch:
         response = client.get_events_request()
         if response.status_code == 204:  # if we got 204, it means there aren't events in the queue, hence breaking.
             break
         fetched_events = response.json().get('events') or []
-        demisto.info(f'fetched events: ({fetched_events}), fetched events length: ({len(fetched_events)})')
+        demisto.info(f'fetched events length: ({len(fetched_events)})')
+        demisto.debug(f'fetched events: ({fetched_events})')
         events.extend(fetched_events)
         if max_fetch:
-            reached_max_fetch = len(events) < max_fetch
+            under_max_fetch = len(events) < max_fetch
 
     return events
 
