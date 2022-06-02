@@ -1137,7 +1137,7 @@ This is visible
 ##### Script Name
 - Fixed script''', 'marketplacev2',
             "#### Integrations\n##### Integration Display Name\n- Fixed an issue\n\n#### Scripts\n##### Script Name\n\
-            - Fixed script"),
+- Fixed script"),
         ('''
 #### Integrations
 <~XSOAR>
@@ -1149,7 +1149,7 @@ This is visible
 ##### Script Name
 - Fixed script''', 'xsoar',
             "#### Integrations\n##### Integration Display Name\n- Fixed an issue\n\n#### Scripts\n##### Script Name\n\
-            - Fixed script")
+- Fixed script")
     ])
     def test_create_filtered_changelog_entry_by_mp_tags(self, dummy_pack: Pack, release_notes, upload_marketplace,
                                                         expected_result):

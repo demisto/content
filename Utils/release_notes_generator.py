@@ -1,4 +1,3 @@
-from ctypes import Union
 import re
 import os
 import sys
@@ -6,7 +5,7 @@ import json
 import glob
 import argparse
 from datetime import datetime
-from typing import Dict, Tuple
+from typing import Dict, Tuple, Union
 import logging
 
 from packaging.version import Version

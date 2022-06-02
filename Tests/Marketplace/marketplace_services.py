@@ -1675,7 +1675,7 @@ class Pack(object):
 
         # Filters out the entity_header or/and entity_name if all its names or/and entries were wrapping by tags
         new_release_notes_dict: dict = {}
-        for entity_header, entity_entry in release_notes_dict.items():
+        for entity_header, entity_entry in release_notes_dict.items():  # type: ignore[union-attr]
             entity_entry = {name: entry for name, entry in entity_entry.items()
                             if name != '[special_msg]' and entry not in ['', '\n']}
 
