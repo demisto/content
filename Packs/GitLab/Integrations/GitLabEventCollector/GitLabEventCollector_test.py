@@ -9,6 +9,14 @@ events = [{'created_at': '2022-04-17T12:31:36.667Z', 'details': {'add': 'aaa'}, 
           {'created_at': '2022-06-17T12:31:36.667Z', 'details': {'remove': 'ddd'}, 'entity_type': 'Project', 'id': '3'},
           {'created_at': '2022-06-17T12:31:36.667Z', 'id': '99'}
           ]
+events_final = [{'created_at': '2022-04-17T12:31:36.667Z',
+                 'details': {'add': 'aaa', 'action': 'add_aaa', 'action_type': 'add', 'action_category':
+                     'aaa'}, 'entity_type': 'Group', 'id': '1'},  # noqa: E128
+                {'created_at': '2022-06-17T12:31:36.667Z',
+                 'details': {'add': 'ddd', 'action': 'add_ddd', 'action_type': 'add', 'action_category':
+                     'ddd'}, 'entity_type': 'Project', 'id': '3'},  # noqa: E128
+                {'created_at': '2022-06-17T12:31:36.667Z', 'id': '99'}
+                ]
 options = IntegrationOptions.parse_obj({
     'api_key': {'credentials': {'password': 'XXXXXX'}},
     'after': '3 Days',
@@ -31,9 +39,22 @@ get_events = GetEvents(client, options)
 
 
 def test_get_last_run():
-    assert GetEvents.get_last_run(events) == {'groups': '2022-06-17T12:31:36.668000',
-                                              'projects': '2022-06-17T12:31:36.668000',
-                                              'events': '2022-06-17T12:31:36.668000'}
+    assert GetEvents.get_last_run(events, {}) == {'groups': '2022-06-17T12:31:36.668000',
+                                                  'projects': '2022-06-17T12:31:36.668000',
+                                                  'events': '2022-06-17T12:31:36.668000'}
+
+    assert GetEvents.get_last_run([], {'groups': '2022-06-17T12:31:36.668000',
+                                       'projects': '2022-06-17T12:31:36.668000',
+                                       'events': '2022-06-17T12:31:36.668000'}) == {
+               'groups': '2022-06-17T12:31:36.668000',  # noqa: E126
+               'projects': '2022-06-17T12:31:36.668000',
+               'events': '2022-06-17T12:31:36.668000'}
+    assert GetEvents.get_last_run(events[3:], {'groups': '2022-06-17T12:31:36.666000',
+                                               'projects': '2022-06-17T12:31:36.668000',
+                                               'events': '2022-06-17T12:31:36.668000'}) == {
+               'groups': '2022-06-17T12:31:36.666000',  # noqa: E126
+               'projects': '2022-06-17T12:31:36.668000',
+               'events': '2022-06-17T12:31:36.668000'}
 
 
 def test_reformat_details():
@@ -49,3 +70,16 @@ def test_reformat_details():
 def test_prepare_time_for_next():
     assert get_events.prepare_time_for_next('2022-06-17T12:31:36.667Z') == '2022-06-17T12:31:36.668000'
     assert get_events.prepare_time_for_next('2022-06-17T12:31:36.669Z') == '2022-06-17T12:31:36.670000'
+
+
+def test_get_sorted_events_by_type():
+    assert get_events.get_sorted_events_by_type(events_final, True, 'Group') == [
+        {'created_at': '2022-04-17T12:31:36.667Z',
+         'details': {'action': 'add_aaa',
+                     'action_category': 'aaa',
+                     'action_type': 'add',
+                     'add': 'aaa'},
+         'entity_type': 'Group',
+         'id': '1'}]
+    assert get_events.get_sorted_events_by_type(events, False) == [
+        {'created_at': '2022-06-17T12:31:36.667Z', 'id': '99'}]
