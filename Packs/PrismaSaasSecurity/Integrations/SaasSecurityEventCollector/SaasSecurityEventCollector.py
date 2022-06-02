@@ -4,7 +4,6 @@ from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-impor
 from CommonServerUserPython import *  # noqa
 import traceback
 from typing import Dict, Tuple
-from json import JSONDecodeError
 
 # Disable insecure warnings
 urllib3.disable_warnings()  # pylint: disable=no-member
@@ -153,6 +152,7 @@ def test_module(client: Client):
     """
     # if 401 will be raised, that means that the credentials are invalid an exception will be raised.
     client.get_token_request()
+    fetch_events_from_saas_security(client, 100)
     return 'ok'
 
 
