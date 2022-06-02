@@ -9,10 +9,10 @@
     "Threat Intelligence"
   ],
   "Getting Started":[
+    "Malware Investigation and Response",
     "Phishing",
     "CaseManagement-Generic",
     "ShiftManagement",
-    "Malware", 
     "TIM_Processing", 
     "TIM_SIEM",
     "HelloWorld",
