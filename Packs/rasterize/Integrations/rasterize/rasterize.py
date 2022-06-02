@@ -35,6 +35,8 @@ EMPTY_RESPONSE_ERROR_MSG = "There is nothing to render. This can occur when ther
                            " Please check your URL."
 DEFAULT_W, DEFAULT_H = '600', '800'
 DEFAULT_W_WIDE = '1024'
+MAX_FULLSCREEN_W = 8000
+MAX_FULLSCREEN_H = 8000
 CHROME_USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.164 Safari/537.36'  # noqa
 DRIVER_LOG = f'{tempfile.gettempdir()}/chromedriver.log'
 DEFAULT_CHROME_OPTIONS = [
@@ -168,7 +170,7 @@ def rasterize(path: str, width: int, height: int, r_type: str = 'png', wait_time
     :param r_type: result type: .png/.pdf
     :param wait_time: time in seconds to wait before taking a screenshot
     :param max_page_load_time: amount of time to wait for a page load to complete before throwing an error
-    :param full_screen: when set to True, the screenshot will take the whole page
+    :param full_screen: when set to True, the snapshot will take the whole page
     """
     driver = init_driver(offline_mode)
     page_load_time = max_page_load_time if max_page_load_time > 0 else DEFAULT_PAGE_LOAD_TIME
@@ -215,33 +217,44 @@ def get_image(driver, width: int, height: int, full_screen: bool):
     Uses the Chrome driver to generate an image out of a currently loaded path
     :param width: desired snapshot width in pixels
     :param height: desired snapshot height in pixels
-    :param full_screen: when set to True, the screenshot will take the whole page
+    :param full_screen: when set to True, the snapshot will take the whole page
+                        (safeguard limits defined in MAX_FULLSCREEN_W, MAX_FULLSCREEN_H)
     :return: .png file of the loaded path
     """
     demisto.debug('Capturing screenshot')
 
-    # Set windows size
-    driver.set_window_size(width, height)
-
     if full_screen:
-        #calculate the width and height using the scrollbar of the window
-        calc_width = driver.execute_script('return document.body.parentNode.scrollWidth')
-        calc_height = driver.execute_script('return document.body.parentNode.scrollHeight')
-        if calc_width <= 0 or calc_width >= 10000:
+        # Calculates the width and height using the scrollbar of the window (considering the safeguard limits)
+        calc_width = min(driver.execute_script('return document.body.parentNode.scrollWidth'), MAX_FULLSCREEN_W)
+        calc_height = min(driver.execute_script('return document.body.parentNode.scrollHeight'), MAX_FULLSCREEN_H)
+
+        # Verify that the calculated width is bigger than the given width:
+        if calc_width <= width:
+            demisto.debug(f'The calculated width {calc_width} is smaller than the desired width.'
+                          f' Uses the desired width {width}')
             calc_width = width
-            demisto.error("Guardrail width, using default width")
-        if calc_height <= 0 or calc_height >= 10000:
+
+        # Verify that the calculated height is bigger than the given height:
+        if calc_height <= height:
+            demisto.debug(f'The calculated height {calc_height} is smaller than the desired height.'
+                          f' Uses the desired height {height}')
             calc_height = height
-            demisto.error("Guardrail height, using default height")
-        #Reset window size
+
+        # Reset window size
         driver.set_window_size(calc_width, calc_height)
-        #this can throw an exception of height 0 if the html contains only javascript 
+
+        # This can throw an exception of height 0 if the html contains only javascript
         try:
-            #Screenshot the content of the tag HTML to avoid multiple footer
+            # Screenshot the content of the tag HTML to avoid multiple footer
             image = driver.find_element_by_tag_name('html').screenshot_as_png
+
         except WebDriverException as ex:
+            demisto.error(f'Unexpected WebDriverException in driver - Error: {ex}')
             image = driver.get_screenshot_as_png()
+
     else:
+        # Snapshot size is determined according to width and height
+        driver.set_window_size(width, height)
         image = driver.get_screenshot_as_png()
 
     driver.quit()
@@ -331,13 +344,17 @@ def convert_pdf_to_jpeg(path: str, max_pages: int, password: str, horizontal: bo
 
 def rasterize_command():
     url = demisto.getArg('url')
-    w = demisto.args().get('width', DEFAULT_W_WIDE).rstrip('px')
-    h = demisto.args().get('height', DEFAULT_H).rstrip('px')
+    w = arg_to_number(demisto.args().get('width', DEFAULT_W_WIDE).rstrip('px'))
+    h = arg_to_number(demisto.args().get('height', DEFAULT_H).rstrip('px'))
     r_type = demisto.args().get('type', 'png')
     wait_time = int(demisto.args().get('wait_time', 0))
     page_load = int(demisto.args().get('max_page_load_time', DEFAULT_PAGE_LOAD_TIME))
     file_name = demisto.args().get('file_name', 'url')
     full_screen = argToBoolean(demisto.args().get('full_screen', False))
+
+    # Checks that the width and height are not greater than the safeguard limit:
+    w = min(w, MAX_FULLSCREEN_W)
+    h = min(h, MAX_FULLSCREEN_H)
 
     if not (url.startswith('http')):
         url = f'http://{url}'
@@ -359,10 +376,14 @@ def rasterize_command():
 def rasterize_image_command():
     args = demisto.args()
     entry_id = args.get('EntryID')
-    w = args.get('width', DEFAULT_W).rstrip('px')
-    h = args.get('height', DEFAULT_H).rstrip('px')
+    w = arg_to_number(args.get('width', DEFAULT_W).rstrip('px'))
+    h = arg_to_number(args.get('height', DEFAULT_H).rstrip('px'))
     file_name = args.get('file_name', entry_id)
     full_screen = argToBoolean(demisto.args().get('full_screen', False))
+
+    # Checks that the width and height are not greater than the safeguard limit:
+    w = min(w, MAX_FULLSCREEN_W)
+    h = min(h, MAX_FULLSCREEN_H)
 
     file_path = demisto.getFilePath(entry_id).get('path')
     file_name = f'{file_name}.pdf'
@@ -376,13 +397,17 @@ def rasterize_image_command():
 
 def rasterize_email_command():
     html_body = demisto.args().get('htmlBody')
-    w = demisto.args().get('width', DEFAULT_W).rstrip('px')
-    h = demisto.args().get('height', DEFAULT_H).rstrip('px')
+    w = arg_to_number(demisto.args().get('width', DEFAULT_W).rstrip('px'))
+    h = arg_to_number(demisto.args().get('height', DEFAULT_H).rstrip('px'))
     offline = demisto.args().get('offline', 'false') == 'true'
     r_type = demisto.args().get('type', 'png')
     file_name = demisto.args().get('file_name', 'email')
     html_load = int(demisto.args().get('max_page_load_time', DEFAULT_PAGE_LOAD_TIME))
     full_screen = argToBoolean(demisto.args().get('full_screen', False))
+
+    # Checks that the width and height are not greater than the safeguard limit:
+    w = min(w, MAX_FULLSCREEN_W)
+    h = min(h, MAX_FULLSCREEN_H)
 
     file_name = f'{file_name}.{"pdf" if r_type.lower() == "pdf" else "png"}'  # type: ignore
     with open('htmlBody.html', 'w') as f:

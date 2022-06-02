@@ -63,7 +63,7 @@ script:
     - auto: PREDEFINED
       defaultValue: 'False'
       description: Get the full page using scrollbar max value, you can in some case
-        specify a width value to display more information
+        specify a width value to display more information.
       name: full_screen
       predefined:
       - 'True'
@@ -100,7 +100,7 @@ script:
     - auto: PREDEFINED
       defaultValue: 'False'
       description: Get the full page using scrollbar max value, you can in some case
-        specify a width value to display more information
+        specify a width value to display more information.
       name: full_screen
       predefined:
       - 'True'
@@ -125,7 +125,7 @@ script:
     - auto: PREDEFINED
       defaultValue: 'False'
       description: Get the full page using scrollbar max value, you can in some case
-        specify a width value to display more information
+        specify a width value to display more information.
       name: full_screen
       predefined:
       - 'True'
