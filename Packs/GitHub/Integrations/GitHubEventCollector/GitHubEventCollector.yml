@@ -68,7 +68,7 @@ script:
     description: Manual command to fetch events and display them.
     execution: false
     name: github-get-events
-  dockerimage: demisto/fastapi:1.0.0.29406
+  dockerimage: demisto/fastapi:1.0.0.29740
   runonce: false
   isfetchevents: true
   subtype: python3
