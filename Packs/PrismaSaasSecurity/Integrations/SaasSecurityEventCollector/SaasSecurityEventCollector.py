@@ -191,6 +191,7 @@ def fetch_events_from_saas_security(client: Client, max_fetch: Optional[int]) ->
     events: List[Dict] = []
     more_events_available, reached_max_fetch = True, True
 
+    #  if max fetch is None, all events will be fetched until there aren't anymore in the queue.
     while reached_max_fetch and more_events_available:
         response = client.get_events_request()
         fetched_events = response.json().get('events') or []
