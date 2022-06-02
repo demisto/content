@@ -22,6 +22,16 @@ BASE_PACK_DEPENDENCY_DICT = {
 
 
 SIEM_RULES_OBJECTS = ['ParsingRule', 'ModelingRule', 'CorrelationRule']
+XSIAM_MP = "marketplacev2"
+XSOAR_MP = "xsoar"
+XSIAM_START_TAG = "<~XSIAM>"
+XSIAM_END_TAG = "</~XSIAM>"
+XSOAR_START_TAG = "<~XSOAR>"
+XSOAR_END_TAG = "</~XSOAR>"
+TAGS_BY_MP = {
+    XSIAM_MP: (XSIAM_START_TAG, XSIAM_END_TAG),
+    XSOAR_MP: (XSOAR_START_TAG, XSOAR_END_TAG)
+}
 
 
 class BucketUploadFlow(object):

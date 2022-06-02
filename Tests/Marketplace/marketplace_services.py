@@ -26,11 +26,13 @@ from google.cloud import storage
 import Tests.Marketplace.marketplace_statistics as mp_statistics
 from Tests.Marketplace.marketplace_constants import PackFolders, Metadata, GCPConfig, BucketUploadFlow, PACKS_FOLDER, \
     PackTags, PackIgnored, Changelog, BASE_PACK_DEPENDENCY_DICT, SIEM_RULES_OBJECTS, PackStatus, PACK_FOLDERS_TO_ID_SET_KEYS, \
-    RN_HEADER_BY_PACK_FOLDER, CONTENT_ROOT_PATH
+    RN_HEADER_BY_PACK_FOLDER, CONTENT_ROOT_PATH, XSOAR_MP, XSIAM_MP, TAGS_BY_MP
 from Utils.release_notes_generator import aggregate_release_notes_for_marketplace, merge_version_blocks, construct_entities_block
 from Tests.scripts.utils import logging_wrapper as logging
 
 PULL_REQUEST_PATTERN = '\(#(\d+)\)'
+XSIAM_TAGS_SECTION_REGEX = '<~XSIAM>[\w\W]*</~XSIAM>'
+XSOAR_TAGS_SECTION_REGEX = '<~XSOAR>[\w\W]*</~XSOAR>'
 
 
 class Pack(object):
@@ -1640,8 +1642,14 @@ class Pack(object):
 
     def filter_changelog_entries_based_marketplace(self, changelog_entry: dict, version: str, modified_files_data: dict):
         """
-        Filters the changelog entries by the entities that are given from id-set,
-        this is to avoid rn entries for entities that are not relevant to the current marketplace.
+        Filters the changelog entries by the entities that are given from id-set.
+        This is to avoid RN entries/changes/messages that are not relevant to the current marketplace.
+
+        The filter is done in two parts:
+        1. Filter the entry by marketplace intended tags.
+        2. Filter by the entity display name if it doesn't exist in id-set.
+
+        If there are not entries after filtering then the pack will be skipped and not be uploaded.
 
         Args:
             changelog_entry: The version changelog object.
@@ -1649,12 +1657,15 @@ class Pack(object):
             modified_files_data: The data from id_set for the modified entities.
 
         Returns:
-            (bool) Whether the pack is not updated because the changes are not relevant to the current marketplace.
+            (dict) The filtered changelog entry.
+            (bool) Whether the pack is not updated because the entries are not relevant to the current marketplace.
         """
 
-        release_notes = changelog_entry.get(Changelog.RELEASE_NOTES)
+        # Filters the RN entries by marketplace tags if exist
+        release_notes = self.cat_rn_by_tags(changelog_entry.get(Changelog.RELEASE_NOTES))
+        # Convert the RN entries to a Dict
         release_notes_dict, _ = merge_version_blocks(pack_versions_dict={version: release_notes},
-                                                                             return_str=False)
+                                                                         return_str=False)
 
         # If it didn't formatted into a dict it's probably because it's not written correctly according to our templates,
         # and that might be in case it's a first release of a pack then the RN is the pack description,
@@ -1662,25 +1673,65 @@ class Pack(object):
         if not release_notes_dict and release_notes != '':
             return changelog_entry, False
 
+        # Filters out the entity_header or/and entity_name if all its names or/and entries were wrapping by tags
         new_release_notes_dict: dict = {}
+        for entity_header, entity_entry in release_notes_dict.items():
+            entity_entry = {name: entry for name, entry in entity_entry.items() if name != '[special_msg]' and entry not in ['', '\n']}
+            
+            if entity_entry:
+                new_release_notes_dict[entity_header] = entity_entry
+
+        # Filters the entries by the modified files display names given from id-set
+        filtered_release_notes_dict: dict = {}
         for pack_folder, entities_data in modified_files_data.items():
 
             rn_header = RN_HEADER_BY_PACK_FOLDER[pack_folder]
-            display_names = [entity['display_name'] for entity in entities_data]
+
+            # This might be if the entity was filtered by the tags
+            if rn_header not in new_release_notes_dict:
+                continue
 
             # Filters the RN entries by the entity display name
-            new_release_notes_dict[rn_header] = \
-                {display_name: rn_desc for display_name, rn_desc in release_notes_dict[rn_header].items()
-                    if display_name in display_names}
+            display_names = [entity['display_name'] for entity in entities_data]
+            filtered_entries = {display_name: rn_desc for display_name, rn_desc in new_release_notes_dict[rn_header].items()
+                                    if display_name in display_names}
 
-            if not new_release_notes_dict[rn_header]:
-                new_release_notes_dict.pop(rn_header)
+            if filtered_entries:
+                filtered_release_notes_dict[rn_header] = filtered_entries
 
-        if not new_release_notes_dict and modified_files_data:
+        # If all the entries were filtered then the pack probably irrelevant to the current marketplace
+        if not filtered_release_notes_dict and modified_files_data:
             return {}, True
 
-        changelog_entry[Changelog.RELEASE_NOTES] = construct_entities_block(new_release_notes_dict).strip()
+        # Convert the RN dict to string
+        changelog_entry[Changelog.RELEASE_NOTES] = construct_entities_block(filtered_release_notes_dict).strip()
         return changelog_entry, False
+
+    def cat_rn_by_tags(self, release_notes: str):
+        """
+        Filters out RN the sub-entries that are wrapped by tags.
+
+        Args:
+            release_notes(str): The release notes entry.
+
+        Return:
+            (str) The RN entry after filtering.
+        """
+
+        def remove_tags_section_from_rn(release_notes, marketplace, mp_tags_regex):
+            start_tag, end_tag = TAGS_BY_MP[marketplace]
+            if start_tag in release_notes and end_tag in release_notes and marketplace not in self.marketplaces:
+                return re.sub(mp_tags_regex, '', release_notes)
+            else:
+                return release_notes.replace(start_tag, '').replace(end_tag, '')
+
+        # Filters out by XSIAM tags
+        release_notes = remove_tags_section_from_rn(release_notes, XSIAM_MP, XSIAM_TAGS_SECTION_REGEX)
+
+        # Filters out by XSOAR tags
+        release_notes = remove_tags_section_from_rn(release_notes, XSOAR_MP, XSOAR_TAGS_SECTION_REGEX)
+
+        return release_notes
 
     def create_local_changelog(self, build_index_folder_path):
         """ Copies the pack index changelog.json file to the pack path

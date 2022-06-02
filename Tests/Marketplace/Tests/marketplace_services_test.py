@@ -1073,6 +1073,127 @@ This is visible
 
         assert not version_changelog
 
+    @pytest.mark.parametrize('release_notes, upload_marketplace, expected_result', [
+('''
+<~XSIAM>
+#### Integrations
+##### Integration Display Name
+- Fixed an issue
+</~XSIAM>
+
+#### Scripts
+##### Script Name
+- Fixed script''', 'xsoar', "#### Scripts\n##### Script Name\n- Fixed script"),
+('''
+#### Integrations
+<~XSIAM>
+##### Integration Display Name
+- Fixed an issue
+</~XSIAM>
+
+#### Scripts
+##### Script Name
+- Fixed script''', 'xsoar', "#### Scripts\n##### Script Name\n- Fixed script"),
+('''
+#### Integrations
+##### Integration Display Name
+<~XSIAM>
+- Fixed an issue
+</~XSIAM>
+
+#### Scripts
+##### Script Name
+- Fixed script''', 'xsoar', "#### Scripts\n##### Script Name\n- Fixed script"),
+('''
+#### Integrations
+##### Integration Display Name
+<~XSOAR>
+- Fixed an issue
+</~XSOAR>
+
+#### Scripts
+##### Script Name
+- Fixed script''', 'marketplacev2', "#### Scripts\n##### Script Name\n- Fixed script"),
+('''
+#### Integrations
+##### Integration Display Name
+<~XSIAM>
+- Fixed an issue
+</~XSIAM>
+
+#### Scripts
+##### Script Name
+<~XSIAM>
+- Fixed script
+</~XSIAM>''', 'xsoar', ''),
+('''
+#### Integrations
+##### Integration Display Name
+<~XSIAM>
+- Fixed an issue
+</~XSIAM>
+
+#### Scripts
+##### Script Name
+- Fixed script''', 'marketplacev2',
+"#### Integrations\n##### Integration Display Name\n- Fixed an issue\n\n#### Scripts\n##### Script Name\n- Fixed script"),
+('''
+#### Integrations
+<~XSOAR>
+##### Integration Display Name
+- Fixed an issue
+</~XSOAR>
+
+#### Scripts
+##### Script Name
+- Fixed script''', 'xsoar',
+"#### Integrations\n##### Integration Display Name\n- Fixed an issue\n\n#### Scripts\n##### Script Name\n- Fixed script")
+    ])
+    def test_create_filtered_changelog_entry_by_mp_tags(self, dummy_pack: Pack, release_notes, upload_marketplace, expected_result):
+        """
+           Given:
+               - Release notes entries with wrapping tags to filter for the irrelevant marketplace for some of them.
+                 Case 1: XSIAM tags are wrapping including the entity header.
+                 Case 2: XSIAM tags are wrapping the entity display name and the entry.
+                 Case 3: XSIAM tags are wrapping only the RN entry.
+                 Case 4: Same as case 3 but for XSOAR tags and marketplacev2.
+                 Case 5: All entities in RN have wrapping tags in their entries.
+                 Case 6: XSIAM tags are wrapping the entry but for marketplacev2 (only the tags should be removed).
+                 Case 7: Same as case 6 but for XSOAR tags and xsoar marketplace.
+           When:
+               - Creating changelog entry and filtering the entries by the tags.
+           Then:
+               - Cases 1-5: Ensure the RN are filtered correctly including the headers / display names if needed.
+               - Cases 6-7: Ensure just the tags are removed from RN and not entries.
+        """
+        version_display_name = "1.2.3"
+        build_number = "5555"
+        modified_data = {
+            "Integrations": [
+                {
+                    "file_path": "some/path",
+                    "display_name": "Integration Display Name"
+                }
+            ],
+            "Scripts": [
+                {
+                    "file_path": "some/path",
+                    "display_name": "Script Name"
+                }
+            ]
+        }
+        dummy_pack._marketplaces = [upload_marketplace]
+        dummy_pack._is_modified = True
+        version_changelog, _ = dummy_pack._create_changelog_entry(release_notes=release_notes,
+                                                                  version_display_name=version_display_name,
+                                                                  build_number=build_number, modified_files_data=modified_data,
+                                                                  new_version=False)
+
+        if not expected_result:
+            assert not version_changelog
+        else:
+            assert version_changelog['releaseNotes'] == expected_result
+
     @staticmethod
     def dummy_pack_changelog(changelog_data):
         temp_changelog_file = os.path.join(os.getcwd(), 'dummy_changelog.json')
@@ -2616,6 +2737,7 @@ class TestDetectModified:
         assert dummy_pack._is_modified
         assert status is True
 
+
 class TestCheckChangesRelevanceForMarketplace:
     """ Test class for checking the changes relevance for marketplace. """
 
@@ -2701,7 +2823,7 @@ class TestCheckChangesRelevanceForMarketplace:
 
         status, modified_files_data = dummy_pack.check_changes_relevance_for_marketplace(id_set_copy)
 
-        assert status == True
+        assert status is True
         assert modified_files_data == expected_modified_files_data
 
     def test_changes_not_relevant_to_mp(self, dummy_pack: Pack):
@@ -2723,7 +2845,7 @@ class TestCheckChangesRelevanceForMarketplace:
 
         status, modified_files_data = dummy_pack.check_changes_relevance_for_marketplace(id_set_copy)
 
-        assert status == False
+        assert status is False
         assert modified_files_data == {}
 
     def test_mappers(self, dummy_pack: Pack):
@@ -2751,5 +2873,5 @@ class TestCheckChangesRelevanceForMarketplace:
 
         status, modified_files_data = dummy_pack.check_changes_relevance_for_marketplace(id_set_copy)
 
-        assert status == True
+        assert status is True
         assert modified_files_data == expected_modified_files_data
