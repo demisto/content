@@ -88,8 +88,8 @@ class GetEvents:
         """
         events: list = self.make_sdk_call()
         while True:
-            yield events
             self.client.set_next_run_filter(events[-1]['timestamp'], self.request_order[0])
+            yield events
             events = self.make_sdk_call()
             try:
                 assert events
