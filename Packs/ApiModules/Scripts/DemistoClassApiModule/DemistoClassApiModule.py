@@ -167,7 +167,7 @@ class DemistoScript:
                 raise RuntimeError('Timeout acquiring stdout lock')
         try:
             json.dump(cmd, sys.stdout)
-            sys.stdout.write('\\n')
+            sys.stdout.write('\n')
             sys.stdout.flush()
         finally:
             if lock is not None:
@@ -181,7 +181,7 @@ class DemistoScript:
         try:
             # Watch out, there is a duplicate copy of this method
             json.dump(cmd, sys.stdout)
-            sys.stdout.write('\\n')
+            sys.stdout.write('\n')
             sys.stdout.flush()
             data = globals()['__readWhileAvailable']()
             error_index = data.find(SERVER_ERROR_MARKER)
@@ -476,7 +476,7 @@ class DemistoIntegration:
                 raise RuntimeError('Timeout acquiring stdout lock')
         try:
             json.dump(cmd, sys.stdout)
-            sys.stdout.write('\\n')
+            sys.stdout.write('\n')
             sys.stdout.flush()
         finally:
             if lock is not None:
@@ -490,7 +490,7 @@ class DemistoIntegration:
         try:
             # Watch out, there is a duplicate copy of this method
             json.dump(cmd, sys.stdout)
-            sys.stdout.write('\\n')
+            sys.stdout.write('\n')
             sys.stdout.flush()
             data = globals()['__readWhileAvailable']()
             error_index = data.find(SERVER_ERROR_MARKER)
