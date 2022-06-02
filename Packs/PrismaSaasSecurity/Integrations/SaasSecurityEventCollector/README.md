@@ -18,7 +18,7 @@ the challenges of:
     | Client Secret | The SaaS Security Secret ID. | True |
     | Trust any certificate (not secure) | By default, SSL verification is enabled. If selected, the connection isn’t secure and all requests return an SSL error because the certificate cannot be verified. | False |
     | Use system proxy settings | Uses the system proxy server to communicate with the  integration. If not selected, the integration will not use the system proxy server. | False |
-    | The maximum number of events per fetch. | The maximum number of events to get. Must be divisible by 100 due to Saas-Security api limitations, Default is 100 | False |
+    | The maximum number of events per fetch. | The maximum number of events to fetch every time fetch is being executed. This number must be divisible by 100 due to Saas-Security api limitations. Default is 1000. In case this is empty, all available events will be fetched. | False |
     | The vendor corresponding to the integration that produced the events. | The name of the vendor to name the dataset after. Default is paloaltonetworks | False |
     | The product corresponding to the integration that produced the events. | The name of the product to name the dataset after. Default is saassecurity | False |
 
@@ -44,11 +44,13 @@ Note: For more information see the [SaaS Security Administrator's Guide](https:/
 2) The max-fetch/limit parameters to fetch events must be divisible by 100.
 3) **reset last fetch** has no effect.
 4) On initial activation this integration will pull events starting from one hour prior.
-5) Calling ```fetch-events``` or ```saas-security-get-events``` may take upwards of twenty seconds in some cases.
+5) Using the ```saas-security-get-events``` command may take upwards of twenty seconds in some cases.
 
 ## Fetch Events
 Requires the scope of *api_access* in order to fetch log events. See [Documentation](https://docs.paloaltonetworks.com/saas-security/saas-security-admin/saas-security-api/syslog-and-api-integration/api-client-integration/api-client-authentication/retrieve-a-token#idd543d5f0-c56e-4899-957f-74f921fd0976)
 Since those events are saved only 1 hour at cache, it is highly recommended giving *Events Fetch Interval* in minutes rather than hours.
+
+In case not stating a max fetch in the integration parameters, all available events will be fetched.
 
 Log types could be one of policy_violation, activity_monitoring, remediation, incident, and admin_audit.
 Every type returns a different api response that is unique.
@@ -178,7 +180,7 @@ Manual command to fetch events and display them.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of events to get. Must be divisible by 100 due to Saas-Security api limitations. Default is 100. | Optional | 
+| limit | The maximum number of events to get. Must be divisible by 100 due to Saas-Security api limitations. Default is 1000. | Optional | 
 | should_push_events | Set this argument to True in order to create events, otherwise the command will only display them. *If setting to 'False' The returned events will be lost.* Possible values are: True, False. Default is False. | Required | 
 
 

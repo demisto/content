@@ -131,16 +131,17 @@ def is_token_expired(token_initiate_time: float, token_expiration_seconds: float
     return time.time() - token_initiate_time >= token_expiration_seconds - 60
 
 
-def validate_limit(limit: int):
+def validate_limit(limit: Optional[int]):
     """
     Validate that the limit/max fetch is a number divisible by the MAX_EVENTS_PER_REQUEST (100) and that it is not
     a negative number.
     """
-    if limit % MAX_EVENTS_PER_REQUEST != 0:
-        raise DemistoException(f'fetch limit parameter should be divisible by {MAX_EVENTS_PER_REQUEST}')
+    if limit:
+        if limit % MAX_EVENTS_PER_REQUEST != 0:
+            raise DemistoException(f'fetch limit parameter should be divisible by {MAX_EVENTS_PER_REQUEST}')
 
-    if limit <= 0:
-        raise DemistoException('fetch limit parameter cannot be negative number or zero')
+        if limit <= 0:
+            raise DemistoException('fetch limit parameter cannot be negative number or zero')
 
 
 ''' COMMAND FUNCTIONS '''
@@ -183,20 +184,21 @@ def get_events_command(
     return 'No events were found.'
 
 
-def fetch_events_from_saas_security(client: Client, max_fetch: int) -> List[Dict]:
+def fetch_events_from_saas_security(client: Client, max_fetch: Optional[int]) -> List[Dict]:
     """
     Fetches events from the saas-security queue.
-
-    If the test-module produced any events, take them from the cache as well.
     """
     events: List[Dict] = []
-    response = client.get_events_request()
+    more_events_available, reached_max_fetch = True, True
 
-    while len(events) < max_fetch and response.status_code == 200:
+    while reached_max_fetch and more_events_available:
+        response = client.get_events_request()
         fetched_events = response.json().get('events') or []
+        more_events_available = response.status_code == 200
         demisto.info(f'fetched events: ({fetched_events}), fetched events length: ({len(fetched_events)})')
         events.extend(fetched_events)
-        response = client.get_events_request()
+        if max_fetch:
+            reached_max_fetch = len(events) < max_fetch
 
     return events
 
@@ -209,7 +211,7 @@ def main() -> None:
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     args = demisto.args()
-    max_fetch = arg_to_number(args.get('limit') or params.get('max_fetch')) or 100
+    max_fetch = arg_to_number(args.get('limit') or params.get('max_fetch'))
     validate_limit(max_fetch)
     vendor, product = params.get('vendor'), params.get('product')
 

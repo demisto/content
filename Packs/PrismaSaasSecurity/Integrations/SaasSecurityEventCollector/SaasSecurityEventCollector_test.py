@@ -168,6 +168,45 @@ class TestFetchEvents:
             ],
             create_events(start_id=1, end_id=300, should_dump=False)
         ),
+        (
+            None,
+            [
+                MockedResponse(status_code=200, text=create_events(start_id=1, end_id=100)),
+                MockedResponse(status_code=200, text=create_events(start_id=101, end_id=200)),
+                MockedResponse(status_code=200, text=create_events(start_id=201, end_id=300)),
+                MockedResponse(status_code=204),
+                MockedResponse(status_code=200, text=create_events(start_id=301, end_id=400))
+            ],
+            create_events(start_id=1, end_id=300, should_dump=False)
+        ),
+        (
+            None,
+            [
+                MockedResponse(status_code=200, text=create_events(start_id=1, end_id=100)),
+                MockedResponse(status_code=200, text=create_events(start_id=101, end_id=200)),
+                MockedResponse(status_code=200, text=create_events(start_id=201, end_id=300)),
+                MockedResponse(status_code=200, text=create_events(start_id=301, end_id=400)),
+                MockedResponse(status_code=200, text=create_events(start_id=401, end_id=500)),
+                MockedResponse(status_code=200, text=create_events(start_id=501, end_id=600)),
+                MockedResponse(status_code=200, text=create_events(start_id=601, end_id=700)),
+                MockedResponse(status_code=200, text=create_events(start_id=701, end_id=800)),
+                MockedResponse(status_code=200, text=create_events(start_id=801, end_id=900)),
+                MockedResponse(status_code=200, text=create_events(start_id=901, end_id=1000)),
+                MockedResponse(status_code=200, text=create_events(start_id=1001, end_id=1100)),
+                MockedResponse(status_code=200, text=create_events(start_id=1101, end_id=1200)),
+                MockedResponse(status_code=200, text=create_events(start_id=1201, end_id=1300)),
+                MockedResponse(status_code=200, text=create_events(start_id=1301, end_id=1400)),
+                MockedResponse(status_code=200, text=create_events(start_id=1401, end_id=1500)),
+                MockedResponse(status_code=200, text=create_events(start_id=1501, end_id=1600)),
+                MockedResponse(status_code=200, text=create_events(start_id=1601, end_id=1700)),
+                MockedResponse(status_code=200, text=create_events(start_id=1701, end_id=1800)),
+                MockedResponse(status_code=200, text=create_events(start_id=1801, end_id=1900)),
+                MockedResponse(status_code=200, text=create_events(start_id=1901, end_id=2000)),
+                MockedResponse(status_code=200, text=create_events(start_id=2001, end_id=2043)),
+                MockedResponse(status_code=204)
+            ],
+            create_events(start_id=1, end_id=2043, should_dump=False)
+        ),
     ]
 
     @pytest.mark.parametrize('max_fetch, queue, expected_events', EVENTS_DATA)
@@ -180,8 +219,10 @@ class TestFetchEvents:
         When -
             fetching events.
 
-        Then -
-           make sure the correct events are fetched according to the queue and max fetch.
+        Then
+          - make sure the correct events are fetched according to the queue and max fetch.
+          - make sure in case max fetch is empty that all available events will be fetched.
+
         """
         from SaasSecurityEventCollector import fetch_events_from_saas_security
         mocker.patch.object(Client, 'http_request', side_effect=queue)
@@ -203,6 +244,7 @@ class TestFetchEvents:
           - make sure in case where there are no events to fetch, a proper message will be returned.
           - make sure that the send_events_to_xsiam was called in case should_push_events is True
           - make sure that the send_events_to_xsiam was not called in case should_push_events is False
+          - make sure in case max fetch is empty that all available events will be fetched.
         """
         import SaasSecurityEventCollector
 
@@ -235,6 +277,7 @@ class TestFetchEvents:
         Then
            - make sure the correct events are fetched according to the queue and max fetch.
            - make sure the send_events_to_xsiam was called with the correct events.
+           - make sure in case max fetch is empty that all available events will be fetched.
         """
         import SaasSecurityEventCollector
 
