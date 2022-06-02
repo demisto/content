@@ -156,7 +156,7 @@ script:
       name: file_name
     description: Converts a PDF file to an image file.
     name: rasterize-pdf
-  dockerimage: demisto/chromium:1.0.0.30047
+  dockerimage: demisto/chromium:1.0.0.30170
   runonce: false
   script: ''
   subtype: python3
