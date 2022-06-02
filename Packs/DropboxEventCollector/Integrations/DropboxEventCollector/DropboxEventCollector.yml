@@ -15,8 +15,7 @@ configuration:
   type: 0
 - defaultvalue: 500
   display: |
-    The maximum amount of events to fetch for each page. 
-    If you're encountering timeouts, consider decrease this value. range 500.
+    If you're encountering timeouts, consider decreasing this value. The maximum is 500.
   name: limit
   required: false
   type: 0
