@@ -387,7 +387,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -563,14 +563,11 @@ tasks:
         complex:
           root: csfalconx.resource.FindReport
           filters:
-          - - operator: isEqualString
+          - - operator: isEmpty
               left:
                 value:
-                  simple: csfalconx.resource.FindReport.Result
+                  simple: csfalconx.resource.FindReport.reportIds
                 iscontext: true
-              right:
-                value:
-                  simple: Not found
           accessor: sha256
           transformers:
           - operator: uniq
