@@ -70,7 +70,7 @@ configuration:
   required: false
   type: 4
   hidden: true
-description: Integration to GitHub API
+description: Integration to GitHub API.
 display: GitHub
 name: GitHub
 script:

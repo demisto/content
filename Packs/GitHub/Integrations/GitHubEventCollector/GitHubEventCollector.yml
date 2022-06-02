@@ -4,7 +4,7 @@ commonfields:
 name: Github Event Collector
 display: Github Event Collector
 category: Analytics & SIEM
-description: Github logs event collector integration for XSIAM.
+description: Github logs event collector integration for XSIAM
 configuration:
 - display: Server URL (e.g. 'https://api.github.com/orgs/XXXXX/audit-log')
   name: url
