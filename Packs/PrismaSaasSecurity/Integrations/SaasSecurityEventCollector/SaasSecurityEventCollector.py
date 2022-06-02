@@ -157,7 +157,7 @@ def test_module(client: Client):
 
 
 def get_events_command(
-    client: Client, args: Dict, max_fetch: int, vendor='paloaltonetworks', product='saassecurity'
+    client: Client, args: Dict, max_fetch: Optional[int], vendor='paloaltonetworks', product='saassecurity'
 ) -> Union[str, CommandResults]:
     """
     Fetches events from the saas-security queue and return them to the war-room.
