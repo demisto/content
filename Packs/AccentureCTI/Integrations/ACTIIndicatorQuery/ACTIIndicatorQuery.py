@@ -474,6 +474,7 @@ def fundamental_uuid_command(client: Client, args: dict, reliability: DBotScoreR
     """
     uuid: str = str(args.get('uuid'))
     res = {}
+    display_name = ''
     try:
         res = client.threat_indicator_search(url_suffix=f'/v0/{uuid}')
     except Exception as e:
@@ -485,6 +486,9 @@ def fundamental_uuid_command(client: Client, args: dict, reliability: DBotScoreR
             raise e
     indicator = None
     analysis_info = {}
+    readableOutput = {}
+    result_link = ''
+    filtered_relationship = ''
     if len(res):
         dbot_score = _calculate_dbot_score(res.get('severity', 0))
         desc = 'Match found in Accenture CTI database'
@@ -531,7 +535,6 @@ def fundamental_uuid_command(client: Client, args: dict, reliability: DBotScoreR
         if analysis:
             analysis_info["Analysis"] = analysis
 
-        result_link = ''
         filtered_relationship = None
         relationships = res.get('links', '')
         if indicator_type.lower() == 'malware_family':
