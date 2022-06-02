@@ -1021,7 +1021,7 @@ def add_indicator_as_false_positive_command(
         return data
     else:
         results = CommandResults(
-            readable_output=tableToMarkdown("Result", data, removeNull=True),
+            readable_output=tableToMarkdown("Indicator False Positive", data, removeNull=True),
             outputs_prefix="CTIX.IndicatorFalsePositive",
             outputs=data,
             raw_response=data,
@@ -1050,7 +1050,7 @@ def add_ioc_manual_review_command(
         return data
     else:
         results = CommandResults(
-            readable_output=tableToMarkdown("Result", data, removeNull=True),
+            readable_output=tableToMarkdown("IOC Manual Review", data, removeNull=True),
             outputs_prefix="CTIX.IOCManualReview",
             outputs=data,
             raw_response=data,
@@ -1073,7 +1073,7 @@ def deprecate_ioc_command(client: Client, args: dict) -> CommandResults:
         return data
     else:
         results = CommandResults(
-            readable_output=tableToMarkdown("Result", data, removeNull=True),
+            readable_output=tableToMarkdown("Deprecate IOC", data, removeNull=True),
             outputs_prefix="CTIX.DeprecateIOC",
             outputs=data,
             raw_response=data,
@@ -1105,7 +1105,7 @@ def add_analyst_tlp_command(client: Client, args: dict) -> CommandResults:
         return data
     else:
         results = CommandResults(
-            readable_output=tableToMarkdown("Result", data, removeNull=True),
+            readable_output=tableToMarkdown("Add Analyst TLP", data, removeNull=True),
             outputs_prefix="CTIX.AddAnalystTLP",
             outputs=data,
             raw_response=data,
@@ -1137,7 +1137,7 @@ def add_analyst_score_command(client: Client, args: dict) -> CommandResults:
         return data
     else:
         results = CommandResults(
-            readable_output=tableToMarkdown("Result", data, removeNull=True),
+            readable_output=tableToMarkdown("Add Analyst Score", data, removeNull=True),
             outputs_prefix="CTIX.AddAnalystScore",
             outputs=data,
             raw_response=data,
@@ -1195,7 +1195,7 @@ def tag_indicator_updation_command(
         return data
     else:
         results = CommandResults(
-            readable_output=tableToMarkdown("Result", data, removeNull=True),
+            readable_output=tableToMarkdown("Tag Indicator Updation", data, removeNull=True),
             outputs_prefix="CTIX.TagUpdation",
             outputs=data,
             raw_response=data,
@@ -1224,7 +1224,7 @@ def search_for_tag_command(client: Client, args: Dict[str, Any]) -> CommandResul
         return data
     else:
         results = CommandResults(
-            readable_output=tableToMarkdown("Result", data, removeNull=True),
+            readable_output=tableToMarkdown("Search for Tag", data, removeNull=True),
             outputs_prefix="CTIX.SearchTag",
             outputs=data,
             raw_response=data,
@@ -1256,7 +1256,7 @@ def get_indicator_details_command(
         return data
     else:
         results = CommandResults(
-            readable_output=tableToMarkdown("Result", data, removeNull=True),
+            readable_output=tableToMarkdown("Get Indicator Details", data, removeNull=True),
             outputs_prefix="CTIX.IndicatorDetails",
             outputs=data,
             raw_response=data,
@@ -1285,7 +1285,7 @@ def get_indicator_tags_command(client: Client, args: Dict[str, Any]) -> CommandR
         return data
     else:
         results = CommandResults(
-            readable_output=tableToMarkdown("Result", data, removeNull=True),
+            readable_output=tableToMarkdown("Get Indicator Tags", data, removeNull=True),
             outputs_prefix="CTIX.IndicatorTags",
             outputs=data,
             raw_response=data,
@@ -1316,7 +1316,7 @@ def get_indicator_relations_command(
         return data
     else:
         results = CommandResults(
-            readable_output=tableToMarkdown("Result", data, removeNull=True),
+            readable_output=tableToMarkdown("Get Indicator Relations", data, removeNull=True),
             outputs_prefix="CTIX.IndicatorRelations",
             outputs=data,
             raw_response=data,
@@ -1353,7 +1353,7 @@ def get_indicator_observations_command(
         return data
     else:
         results = CommandResults(
-            readable_output=tableToMarkdown("Result", data, removeNull=True),
+            readable_output=tableToMarkdown("Get Indicator Observations", data, removeNull=True),
             outputs_prefix="CTIX.IndicatorObservations",
             outputs=data,
             raw_response=data,
@@ -1393,7 +1393,7 @@ def get_conversion_feed_source_command(
         return data
     else:
         results = CommandResults(
-            readable_output=tableToMarkdown("Result", data, removeNull=True),
+            readable_output=tableToMarkdown("Conversion Feed Source", data, removeNull=True),
             outputs_prefix="CTIX.ConversionFeedSource",
             outputs=data,
             raw_response=data,

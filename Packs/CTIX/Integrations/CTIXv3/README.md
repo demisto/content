@@ -137,7 +137,7 @@ Delete a tag with given tag_name
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CTIX.Result.result | string | Status | 
+| CTIX.DeleteTag.result | string | Status | 
 
 #### Command Example
 ```!ctix-delete-tag tag_name=xsoar_test_trial```
@@ -564,7 +564,7 @@ Enrichment tools listing API
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CTIX.Result.message | unknown | Indicator change result | 
+| CTIX.IndicatorFalsePositive.message | unknown | Indicator change result | 
 
 #### Command Example
 ```!ctix-add-indicator-as-false-positive object_ids=19176d96-716d-48aa-af15-dfeff22e72e2,531e47a6-d7cd-47be-ae21-a3260518d4a5 object_type=indicator```
@@ -594,7 +594,7 @@ Adds ioc to manual review bulk api
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CTIX.Result.message | unknown | IOC Manual Review result | 
+| CTIX.IOCManualReview.message | unknown | IOC Manual Review result | 
 
 #### Command Example
 ```!ctix-ioc-manual-review object_ids=f3064a83-304e-4801-bec2-2f26a432bfd2,0aced40d-9a83-46cd-a92b-0c776c92594c object_type=indicator```
@@ -626,7 +626,7 @@ Deprecate ioc bulk api
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CTIX.Result | unknown | Result of the IOC deprecation request | 
+| CTIX.DeprecateIOC | unknown | Result of the IOC deprecation request | 
 
 #### Command Example
 ```!ctix-deprecate-ioc object_ids=f3064a83-304e-4801-bec2-2f26a432bfd2,0aced40d-9a83-46cd-a92b-0c776c92594c object_type=indicator```
@@ -659,7 +659,7 @@ Add Analyst TLP
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CTIX.Result | unknown | Result of the addition of analyst TLP | 
+| CTIX.AddAnalystTLP | unknown | Result of the addition of analyst TLP | 
 
 #### Command Example
 ```!ctix-add-analyst-tlp object_id=19176d96-716d-48aa-af15-dfeff22e72e2 object_type=indicator data={\"analyst_tlp\":\"GREEN\"}```
@@ -692,7 +692,7 @@ Add Analyst Score for a Threat data
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CTIX.Result | unknown | Result of adding analyst score to threat data | 
+| CTIX.AddAnalystScore | unknown | Result of adding analyst score to threat data | 
 
 #### Command Example
 ```!ctix-add-analyst-score data={"analyst_score":10} object_id=19176d96-716d-48aa-af15-dfeff22e72e2 object_type=indicator```
@@ -812,7 +812,7 @@ Adding Tag to Indicator
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CTIX.Result.meesage | unknown | Result of the add indicator tag request | 
+| CTIX.TagUpdation.meesage | unknown | Result of the add indicator tag request | 
 
 #### Command Example
 ```!ctix-add-tag-indicator object_id=19176d96-716d-48aa-af15-dfeff22e72e2 object_type=indicator tag_id=fb35000b-82e7-4440-8f18-8b63bba5b372```
@@ -848,7 +848,7 @@ Remove Tag From Indicator
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CTIX.Result.message | unknown | Result of the remove indicator tag request | 
+| CTIX.TagUpdation.message | unknown | Result of the remove indicator tag request | 
 
 #### Command Example
 ```!ctix-remove-tag-from-indicator object_id=19176d96-716d-48aa-af15-dfeff22e72e2 object_type=indicator tag_id=fb35000b-82e7-4440-8f18-8b63bba5b372```
@@ -881,14 +881,14 @@ Search for tag
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CTIX.Result.colour_code | unknown | Colour code of the tag | 
-| CTIX.Result.created | number | Timestamp of when the tag was created | 
-| CTIX.Result.created_by | unknown | details of the person who created the tag | 
-| CTIX.Result.id | string | ID of the tag | 
-| CTIX.Result.modified | number | Timestamp of when the tag was modified | 
-| CTIX.Result.modified_by | unknown | Details of the person who modified the tag | 
-| CTIX.Result.name | unknown | Name of the tag | 
-| CTIX.Result.type | unknown | type of the tag | 
+| CTIX.SearchTag.colour_code | unknown | Colour code of the tag | 
+| CTIX.SearchTag.created | number | Timestamp of when the tag was created | 
+| CTIX.SearchTag.created_by | unknown | details of the person who created the tag | 
+| CTIX.SearchTag.id | string | ID of the tag | 
+| CTIX.SearchTag.modified | number | Timestamp of when the tag was modified | 
+| CTIX.SearchTag.modified_by | unknown | Details of the person who modified the tag | 
+| CTIX.SearchTag.name | unknown | Name of the tag | 
+| CTIX.SearchTag.type | unknown | type of the tag | 
 
 #### Command Example
 ```!ctix-search-for-tag q=xsoar_test_trial```
@@ -927,40 +927,40 @@ Get Indicator Details
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CTIX.Result.aliases | string | Aliases of the tag if any | 
-| CTIX.Result.analyst_description | string | Analyst description provided if any | 
-| CTIX.Result.analyst_score | number | Analyst score of the indicator | 
-| CTIX.Result.analyst_tlp | string | Analyst provided TLP on the indicator | 
-| CTIX.Result.asn | string | ASN of the indicator | 
-| CTIX.Result.attribute_field | string | Attribute field of the indicator | 
-| CTIX.Result.attribute_value | string | Attribute value of the indicator | 
-| CTIX.Result.base_type | string | Base type of the indicator | 
-| CTIX.Result.confidence_score | number | Confidence score of the IOC | 
-| CTIX.Result.confidence_type | string | Confidence type of the IOC | 
-| CTIX.Result.country | string | Country of origin of the IOC | 
-| CTIX.Result.created | number | Timestamp of when the indicator was created | 
-| CTIX.Result.ctix_created | number | Timestamp of when the indicator was created in CTIX | 
-| CTIX.Result.ctix_modified | number | Timestamp of when the indicator was modified in CTIX | 
-| CTIX.Result.ctix_score | number | CTIX score of the indicator | 
-| CTIX.Result.ctix_tlp | string | CTIX assigned TLP of the indicator | 
-| CTIX.Result.defang_analyst_description | string | Defanged analyst description of the indicator | 
-| CTIX.Result.description | string | Description of the indicator | 
-| CTIX.Result.fang_analyst_description | string | Fang analyst description of the indicator | 
-| CTIX.Result.first_seen | number | Timestamp of then the indicator was first seen | 
-| CTIX.Result.last_seen | number | Timestamp of then the indicator was last seen | 
-| CTIX.Result.modified | number | Timestamp of then the indicator was modified | 
-| CTIX.Result.name | string | Name of the indicator | 
-| CTIX.Result.pattern | string | STIX pattern of the indicator | 
-| CTIX.Result.pattern_type | string | pattern type of the indicator | 
-| CTIX.Result.pattern_version | string | STIX pattern version | 
-| CTIX.Result.sources | unknown | Sources of the indicator | 
-| CTIX.Result.sub_type | string | Sub type of the indicator | 
-| CTIX.Result.tld | string | TLD of the indicator | 
-| CTIX.Result.tlp | string | TLP of the indicator | 
-| CTIX.Result.type | string | Type of the indicator | 
-| CTIX.Result.types | string | Types of the indicator | 
-| CTIX.Result.valid_from | number | Timestamp of the indicator from then it was valid | 
-| CTIX.Result.valid_until | unknown | Timestamp of the indicator till  | 
+| CTIX.IndicatorDetails.aliases | string | Aliases of the tag if any | 
+| CTIX.IndicatorDetails.analyst_description | string | Analyst description provided if any | 
+| CTIX.IndicatorDetails.analyst_score | number | Analyst score of the indicator | 
+| CTIX.IndicatorDetails.analyst_tlp | string | Analyst provided TLP on the indicator | 
+| CTIX.IndicatorDetails.asn | string | ASN of the indicator | 
+| CTIX.IndicatorDetails.attribute_field | string | Attribute field of the indicator | 
+| CTIX.IndicatorDetails.attribute_value | string | Attribute value of the indicator | 
+| CTIX.IndicatorDetails.base_type | string | Base type of the indicator | 
+| CTIX.IndicatorDetails.confidence_score | number | Confidence score of the IOC | 
+| CTIX.IndicatorDetails.confidence_type | string | Confidence type of the IOC | 
+| CTIX.IndicatorDetails.country | string | Country of origin of the IOC | 
+| CTIX.IndicatorDetails.created | number | Timestamp of when the indicator was created | 
+| CTIX.IndicatorDetails.ctix_created | number | Timestamp of when the indicator was created in CTIX | 
+| CTIX.IndicatorDetails.ctix_modified | number | Timestamp of when the indicator was modified in CTIX | 
+| CTIX.IndicatorDetails.ctix_score | number | CTIX score of the indicator | 
+| CTIX.IndicatorDetails.ctix_tlp | string | CTIX assigned TLP of the indicator | 
+| CTIX.IndicatorDetails.defang_analyst_description | string | Defanged analyst description of the indicator | 
+| CTIX.IndicatorDetails.description | string | Description of the indicator | 
+| CTIX.IndicatorDetails.fang_analyst_description | string | Fang analyst description of the indicator | 
+| CTIX.IndicatorDetails.first_seen | number | Timestamp of then the indicator was first seen | 
+| CTIX.IndicatorDetails.last_seen | number | Timestamp of then the indicator was last seen | 
+| CTIX.IndicatorDetails.modified | number | Timestamp of then the indicator was modified | 
+| CTIX.IndicatorDetails.name | string | Name of the indicator | 
+| CTIX.IndicatorDetails.pattern | string | STIX pattern of the indicator | 
+| CTIX.IndicatorDetails.pattern_type | string | pattern type of the indicator | 
+| CTIX.IndicatorDetails.pattern_version | string | STIX pattern version | 
+| CTIX.IndicatorDetails.sources | unknown | Sources of the indicator | 
+| CTIX.IndicatorDetails.sub_type | string | Sub type of the indicator | 
+| CTIX.IndicatorDetails.tld | string | TLD of the indicator | 
+| CTIX.IndicatorDetails.tlp | string | TLP of the indicator | 
+| CTIX.IndicatorDetails.type | string | Type of the indicator | 
+| CTIX.IndicatorDetails.types | string | Types of the indicator | 
+| CTIX.IndicatorDetails.valid_from | number | Timestamp of the indicator from then it was valid | 
+| CTIX.IndicatorDetails.valid_until | unknown | Timestamp of the indicator till  | 
 
 #### Command Example
 ```!ctix-get-indicator-details object_id=20067ec2-8ad1-470e-b0bb-3c4a72b15883 object_type=indicator```
@@ -1005,19 +1005,19 @@ Get Indicator Tags
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CTIX.Result.notes | unknown | Notes on the indicator's tag | 
-| CTIX.Result.is_deprecated | boolean | If the indicator's tag deprecated or not | 
-| CTIX.Result.is_revoked | boolean | If the indicator's tag revoked or not | 
-| CTIX.Result.ctix_created | number | Timestamp of when the Indicator tag was created in CTIX | 
-| CTIX.Result.is_false_positive | boolean | If the indicator's tag is false positive or not | 
-| CTIX.Result.name | string | Name of the indicator | 
-| CTIX.Result.is_reviewed | boolean | If the indicator reviewed or not | 
-| CTIX.Result.is_whitelisted | boolean | If the indicator whitelisted or not | 
-| CTIX.Result.is_under_review | boolean | If the indicator is under review or not | 
-| CTIX.Result.is_watchlist | boolean | If the indicator is under watchlist or not | 
-| CTIX.Result.tags | unknown | Tags of the indicator | 
-| CTIX.Result.sub_type | unknown | Sub type of the indicator | 
-| CTIX.Result.type | unknown | Type of Indicator | 
+| CTIX.IndicatorTags.notes | unknown | Notes on the indicator's tag | 
+| CTIX.IndicatorTags.is_deprecated | boolean | If the indicator's tag deprecated or not | 
+| CTIX.IndicatorTags.is_revoked | boolean | If the indicator's tag revoked or not | 
+| CTIX.IndicatorTags.ctix_created | number | Timestamp of when the Indicator tag was created in CTIX | 
+| CTIX.IndicatorTags.is_false_positive | boolean | If the indicator's tag is false positive or not | 
+| CTIX.IndicatorTags.name | string | Name of the indicator | 
+| CTIX.IndicatorTags.is_reviewed | boolean | If the indicator reviewed or not | 
+| CTIX.IndicatorTags.is_whitelisted | boolean | If the indicator whitelisted or not | 
+| CTIX.IndicatorTags.is_under_review | boolean | If the indicator is under review or not | 
+| CTIX.IndicatorTags.is_watchlist | boolean | If the indicator is under watchlist or not | 
+| CTIX.IndicatorTags.tags | unknown | Tags of the indicator | 
+| CTIX.IndicatorTags.sub_type | unknown | Sub type of the indicator | 
+| CTIX.IndicatorTags.type | unknown | Type of Indicator | 
 
 #### Command Example
 ```!ctix-get-indicator-tags object_id=20067ec2-8ad1-470e-b0bb-3c4a72b15883 object_type=indicator```
@@ -1074,9 +1074,9 @@ Get Indicator Relations
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CTIX.Result.relationship_type | unknown | Indicator relation types | 
-| CTIX.Result.sources | unknown | Indicator sources | 
-| CTIX.Result.target_ref | unknown | Indicator target reference  | 
+| CTIX.IndicatorRelations.relationship_type | unknown | Indicator relation types | 
+| CTIX.IndicatorRelations.sources | unknown | Indicator sources | 
+| CTIX.IndicatorRelations.target_ref | unknown | Indicator target reference  | 
 
 #### Command Example
 ```!ctix-get-indicator-relations object_id=20067ec2-8ad1-470e-b0bb-3c4a72b15883 object_type=indicator```
@@ -1134,30 +1134,30 @@ Get Indicator Observations
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CTIX.Result.custom_attributes | unknown | Custom attributes if any | 
-| CTIX.Result.ctix_modified | number | Timestamp when indicator was modified in CTIX | 
-| CTIX.Result.created | number | Timestamp when indicator was created | 
-| CTIX.Result.pattern_type | string | Pattern type of Indicator | 
-| CTIX.Result.modified | number | Timestamp when indicator was modified  | 
-| CTIX.Result.ctix_created | number | Timestamp when indicator was created in CTIX | 
-| CTIX.Result.pattern_version | string | STIX Pattern version of indicator | 
-| CTIX.Result.confidence | string | Confidence level of the indicator | 
-| CTIX.Result.valid_from | number | Timestamp when indicator was valid from | 
-| CTIX.Result.pattern | string | STIX pattern | 
-| CTIX.Result.fang_description | string | FANG description  | 
-| CTIX.Result.defang_description | string | DEFANG description | 
-| CTIX.Result.spec_version | string | STIX Spec version | 
-| CTIX.Result.tags | unknown | Tags attached to the indicator | 
-| CTIX.Result.received_id | string | STIX ID when indicator was received | 
-| CTIX.Result.types | unknown | STIX Types attached to the indicator | 
-| CTIX.Result.source | unknown | STIX source of the indicator | 
-| CTIX.Result.id | string | id of the indicator | 
-| CTIX.Result.valid_until | number | Timestamp till when the indicator is valid | 
-| CTIX.Result.sco_object_id | unknown | SCO object ID | 
-| CTIX.Result.unique_hash | unknown | unique hash of the indicator | 
-| CTIX.Result.description | unknown | description of the indicator | 
-| CTIX.Result.granular_markings | unknown | Granular Markings if any | 
-| CTIX.Result.collection | unknown | Collection details of the indicator | 
+| CTIX.IndicatorObservations.custom_attributes | unknown | Custom attributes if any | 
+| CTIX.IndicatorObservations.ctix_modified | number | Timestamp when indicator was modified in CTIX | 
+| CTIX.IndicatorObservations.created | number | Timestamp when indicator was created | 
+| CTIX.IndicatorObservations.pattern_type | string | Pattern type of Indicator | 
+| CTIX.IndicatorObservations.modified | number | Timestamp when indicator was modified  | 
+| CTIX.IndicatorObservations.ctix_created | number | Timestamp when indicator was created in CTIX | 
+| CTIX.IndicatorObservations.pattern_version | string | STIX Pattern version of indicator | 
+| CTIX.IndicatorObservations.confidence | string | Confidence level of the indicator | 
+| CTIX.IndicatorObservations.valid_from | number | Timestamp when indicator was valid from | 
+| CTIX.IndicatorObservations.pattern | string | STIX pattern | 
+| CTIX.IndicatorObservations.fang_description | string | FANG description  | 
+| CTIX.IndicatorObservations.defang_description | string | DEFANG description | 
+| CTIX.IndicatorObservations.spec_version | string | STIX Spec version | 
+| CTIX.IndicatorObservations.tags | unknown | Tags attached to the indicator | 
+| CTIX.IndicatorObservations.received_id | string | STIX ID when indicator was received | 
+| CTIX.IndicatorObservations.types | unknown | STIX Types attached to the indicator | 
+| CTIX.IndicatorObservations.source | unknown | STIX source of the indicator | 
+| CTIX.IndicatorObservations.id | string | id of the indicator | 
+| CTIX.IndicatorObservations.valid_until | number | Timestamp till when the indicator is valid | 
+| CTIX.IndicatorObservations.sco_object_id | unknown | SCO object ID | 
+| CTIX.IndicatorObservations.unique_hash | unknown | unique hash of the indicator | 
+| CTIX.IndicatorObservations.description | unknown | description of the indicator | 
+| CTIX.IndicatorObservations.granular_markings | unknown | Granular Markings if any | 
+| CTIX.IndicatorObservations.collection | unknown | Collection details of the indicator | 
 
 #### Command Example
 ```!ctix-get-indicator-observations object_id=20067ec2-8ad1-470e-b0bb-3c4a72b15883 object_type=indicator```
@@ -1244,10 +1244,10 @@ Get Indicator Observations
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CTIX.Result.created | number | Indicator creation timestamp | 
-| CTIX.Result.id | string | ID of the indicator | 
-| CTIX.Result.name | string | name of the indicator | 
-| CTIX.Result.taxii_option | string | TAXII option | 
+| CTIX.ConversionFeedSource.created | number | Indicator creation timestamp | 
+| CTIX.ConversionFeedSource.id | string | ID of the indicator | 
+| CTIX.ConversionFeedSource.name | string | name of the indicator | 
+| CTIX.ConversionFeedSource.taxii_option | string | TAXII option | 
 
 #### Command Example
 ```!ctix-get-conversion-feed-source object_id=20067ec2-8ad1-470e-b0bb-3c4a72b15883 object_type=indicator```

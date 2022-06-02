@@ -1,7 +1,7 @@
 commonfields:
   id: CTIX v3
   version: -1
-fromversion: 6.2.0
+fromversion: 5.0.0
 name: CTIX v3
 display: CTIX v3
 category: Data Enrichment & Threat Intelligence
@@ -53,7 +53,8 @@ script:
       - pink
       - light-red
       - grey
-      description: New tag's name for the defined colour. If no colour selected, colour grey will be given
+      description: New tag's name for the defined colour. If no colour selected, colour
+        grey will be given
     outputs:
     - contextPath: CTIX.Tag.name
       description: Name of the tag
@@ -110,7 +111,7 @@ script:
       required: true
       description: Name of the tag
     outputs:
-    - contextPath: CTIX.Result.result
+    - contextPath: CTIX.DeleteTag.result
       description: Status
       type: string
     description: Delete a tag with given tag_name
@@ -443,7 +444,7 @@ script:
       - x509-certificate
       description: Type of object
     outputs:
-    - contextPath: CTIX.Result.message
+    - contextPath: CTIX.IndicatorFalsePositive.message
       description: Indicator change result
       type: unknown
   - name: ctix-ioc-manual-review
@@ -496,7 +497,7 @@ script:
       - x509-certificate
       description: object type
     outputs:
-    - contextPath: CTIX.Result.message
+    - contextPath: CTIX.IOCManualReview.message
       description: IOC Manual Review result
       type: unknown
     description: Adds ioc to manual review bulk api
@@ -510,7 +511,7 @@ script:
       required: true
       description: object type
     outputs:
-    - contextPath: CTIX.Result
+    - contextPath: CTIX.DeprecateIOC
       description: Result of the IOC deprecation request
     description: Deprecate ioc bulk api
   - name: ctix-add-analyst-tlp
@@ -526,7 +527,7 @@ script:
       required: true
       description: data
     outputs:
-    - contextPath: CTIX.Result
+    - contextPath: CTIX.AddAnalystTLP
       description: Result of the addition of analyst TLP
     description: Add Analyst TLP
   - name: ctix-add-analyst-score
@@ -541,7 +542,7 @@ script:
       required: true
       description: data
     outputs:
-    - contextPath: CTIX.Result
+    - contextPath: CTIX.AddAnalystScore
       description: Result of adding analyst score to threat data
     description: Add Analyst Score for a Threat data
   - name: ctix-saved-result-set
@@ -677,7 +678,7 @@ script:
       description: tag id
       isArray: true
     outputs:
-    - contextPath: CTIX.Result.meesage
+    - contextPath: CTIX.TagUpdation.meesage
       description: Result of the add indicator tag request
     description: Adding Tag to Indicator
   - name: ctix-remove-tag-from-indicator
@@ -699,7 +700,7 @@ script:
       description: tag_id
       isArray: true
     outputs:
-    - contextPath: CTIX.Result.message
+    - contextPath: CTIX.TagUpdation.message
       description: Result of the remove indicator tag request
     description: Remove Tag From Indicator
   - name: ctix-search-for-tag
@@ -714,26 +715,26 @@ script:
     - name: q
       description: query
     outputs:
-    - contextPath: CTIX.Result.colour_code
+    - contextPath: CTIX.SearchTag.colour_code
       description: Colour code of the tag
       type: unknown
-    - contextPath: CTIX.Result.created
+    - contextPath: CTIX.SearchTag.created
       description: Timestamp of when the tag was created
       type: number
-    - contextPath: CTIX.Result.created_by
+    - contextPath: CTIX.SearchTag.created_by
       description: details of the person who created the tag
       type: unknown
-    - contextPath: CTIX.Result.id
+    - contextPath: CTIX.SearchTag.id
       description: ID of the tag
       type: string
-    - contextPath: CTIX.Result.modified
+    - contextPath: CTIX.SearchTag.modified
       description: Timestamp of when the tag was modified
       type: number
-    - contextPath: CTIX.Result.modified_by
+    - contextPath: CTIX.SearchTag.modified_by
       description: Details of the person who modified the tag
-    - contextPath: CTIX.Result.name
+    - contextPath: CTIX.SearchTag.name
       description: Name of the tag
-    - contextPath: CTIX.Result.type
+    - contextPath: CTIX.SearchTag.type
       description: type of the tag
     description: Search for tag
   - name: ctix-get-indicator-details
@@ -750,105 +751,105 @@ script:
     - name: object_type
       description: object type
     outputs:
-    - contextPath: CTIX.Result.aliases
+    - contextPath: CTIX.IndicatorDetails.aliases
       description: Aliases of the tag if any
       type: string
-    - contextPath: CTIX.Result.analyst_description
+    - contextPath: CTIX.IndicatorDetails.analyst_description
       description: Analyst description provided if any
       type: string
-    - contextPath: CTIX.Result.analyst_score
+    - contextPath: CTIX.IndicatorDetails.analyst_score
       description: Analyst score of the indicator
       type: number
-    - contextPath: CTIX.Result.analyst_tlp
+    - contextPath: CTIX.IndicatorDetails.analyst_tlp
       description: Analyst provided TLP on the indicator
       type: string
-    - contextPath: CTIX.Result.asn
+    - contextPath: CTIX.IndicatorDetails.asn
       description: ASN of the indicator
       type: string
-    - contextPath: CTIX.Result.attribute_field
+    - contextPath: CTIX.IndicatorDetails.attribute_field
       description: Attribute field of the indicator
       type: string
-    - contextPath: CTIX.Result.attribute_value
+    - contextPath: CTIX.IndicatorDetails.attribute_value
       description: Attribute value of the indicator
       type: string
-    - contextPath: CTIX.Result.base_type
+    - contextPath: CTIX.IndicatorDetails.base_type
       description: Base type of the indicator
       type: string
-    - contextPath: CTIX.Result.confidence_score
+    - contextPath: CTIX.IndicatorDetails.confidence_score
       description: Confidence score of the IOC
       type: number
-    - contextPath: CTIX.Result.confidence_type
+    - contextPath: CTIX.IndicatorDetails.confidence_type
       description: Confidence type of the IOC
       type: string
-    - contextPath: CTIX.Result.country
+    - contextPath: CTIX.IndicatorDetails.country
       description: Country of origin of the IOC
       type: string
-    - contextPath: CTIX.Result.created
+    - contextPath: CTIX.IndicatorDetails.created
       description: Timestamp of when the indicator was created
       type: number
-    - contextPath: CTIX.Result.ctix_created
+    - contextPath: CTIX.IndicatorDetails.ctix_created
       description: Timestamp of when the indicator was created in CTIX
       type: number
-    - contextPath: CTIX.Result.ctix_modified
+    - contextPath: CTIX.IndicatorDetails.ctix_modified
       description: Timestamp of when the indicator was modified in CTIX
       type: number
-    - contextPath: CTIX.Result.ctix_score
+    - contextPath: CTIX.IndicatorDetails.ctix_score
       description: CTIX score of the indicator
       type: number
-    - contextPath: CTIX.Result.ctix_tlp
+    - contextPath: CTIX.IndicatorDetails.ctix_tlp
       description: CTIX assigned TLP of the indicator
       type: string
-    - contextPath: CTIX.Result.defang_analyst_description
+    - contextPath: CTIX.IndicatorDetails.defang_analyst_description
       description: Defanged analyst description of the indicator
       type: string
-    - contextPath: CTIX.Result.description
+    - contextPath: CTIX.IndicatorDetails.description
       description: Description of the indicator
       type: string
-    - contextPath: CTIX.Result.fang_analyst_description
+    - contextPath: CTIX.IndicatorDetails.fang_analyst_description
       description: Fang analyst description of the indicator
       type: string
-    - contextPath: CTIX.Result.first_seen
+    - contextPath: CTIX.IndicatorDetails.first_seen
       description: Timestamp of then the indicator was first seen
       type: number
-    - contextPath: CTIX.Result.last_seen
+    - contextPath: CTIX.IndicatorDetails.last_seen
       description: Timestamp of then the indicator was last seen
       type: number
-    - contextPath: CTIX.Result.modified
+    - contextPath: CTIX.IndicatorDetails.modified
       description: Timestamp of then the indicator was modified
       type: number
-    - contextPath: CTIX.Result.name
+    - contextPath: CTIX.IndicatorDetails.name
       description: Name of the indicator
       type: string
-    - contextPath: CTIX.Result.pattern
+    - contextPath: CTIX.IndicatorDetails.pattern
       description: STIX pattern of the indicator
       type: string
-    - contextPath: CTIX.Result.pattern_type
+    - contextPath: CTIX.IndicatorDetails.pattern_type
       description: pattern type of the indicator
       type: string
-    - contextPath: CTIX.Result.pattern_version
+    - contextPath: CTIX.IndicatorDetails.pattern_version
       description: STIX pattern version
       type: string
-    - contextPath: CTIX.Result.sources
+    - contextPath: CTIX.IndicatorDetails.sources
       description: Sources of the indicator
-    - contextPath: CTIX.Result.sub_type
+    - contextPath: CTIX.IndicatorDetails.sub_type
       description: Sub type of the indicator
       type: string
-    - contextPath: CTIX.Result.tld
+    - contextPath: CTIX.IndicatorDetails.tld
       description: TLD of the indicator
       type: string
-    - contextPath: CTIX.Result.tlp
+    - contextPath: CTIX.IndicatorDetails.tlp
       description: TLP of the indicator
       type: string
-    - contextPath: CTIX.Result.type
+    - contextPath: CTIX.IndicatorDetails.type
       description: Type of the indicator
       type: string
-    - contextPath: CTIX.Result.types
+    - contextPath: CTIX.IndicatorDetails.types
       description: Types of the indicator
       type: string
-    - contextPath: CTIX.Result.valid_from
+    - contextPath: CTIX.IndicatorDetails.valid_from
       description: Timestamp of the indicator from then it was valid
       type: number
-    - contextPath: CTIX.Result.valid_until
+    - contextPath: CTIX.IndicatorDetails.valid_until
       description: 'Timestamp of the indicator till '
     description: Get Indicator Details
   - name: ctix-get-indicator-tags
@@ -865,41 +866,41 @@ script:
       description: page size
       defaultValue: '10'
     outputs:
-    - contextPath: CTIX.Result.notes
+    - contextPath: CTIX.IndicatorTags.notes
       description: Notes on the indicator's tag
       type: unknown
-    - contextPath: CTIX.Result.is_deprecated
+    - contextPath: CTIX.IndicatorTags.is_deprecated
       description: If the indicator's tag deprecated or not
       type: boolean
-    - contextPath: CTIX.Result.is_revoked
+    - contextPath: CTIX.IndicatorTags.is_revoked
       description: If the indicator's tag revoked or not
       type: boolean
-    - contextPath: CTIX.Result.ctix_created
+    - contextPath: CTIX.IndicatorTags.ctix_created
       description: Timestamp of when the Indicator tag was created in CTIX
       type: number
-    - contextPath: CTIX.Result.is_false_positive
+    - contextPath: CTIX.IndicatorTags.is_false_positive
       description: If the indicator's tag is false positive or not
       type: boolean
-    - contextPath: CTIX.Result.name
+    - contextPath: CTIX.IndicatorTags.name
       description: Name of the indicator
       type: string
-    - contextPath: CTIX.Result.is_reviewed
+    - contextPath: CTIX.IndicatorTags.is_reviewed
       description: If the indicator reviewed or not
       type: boolean
-    - contextPath: CTIX.Result.is_whitelisted
+    - contextPath: CTIX.IndicatorTags.is_whitelisted
       description: If the indicator allowed or not
       type: boolean
-    - contextPath: CTIX.Result.is_under_review
+    - contextPath: CTIX.IndicatorTags.is_under_review
       description: If the indicator is under review or not
       type: boolean
-    - contextPath: CTIX.Result.is_watchlist
+    - contextPath: CTIX.IndicatorTags.is_watchlist
       description: If the indicator is under watchlist or not
       type: boolean
-    - contextPath: CTIX.Result.tags
+    - contextPath: CTIX.IndicatorTags.tags
       description: Tags of the indicator
-    - contextPath: CTIX.Result.sub_type
+    - contextPath: CTIX.IndicatorTags.sub_type
       description: Sub type of the indicator
-    - contextPath: CTIX.Result.type
+    - contextPath: CTIX.IndicatorTags.type
       description: Type of Indicator
     description: Get Indicator Tags
   - name: ctix-get-indicator-relations
@@ -915,11 +916,11 @@ script:
     - name: object_type
       description: object type
     outputs:
-    - contextPath: CTIX.Result.relationship_type
+    - contextPath: CTIX.IndicatorRelations.relationship_type
       description: Indicator relation types
-    - contextPath: CTIX.Result.sources
+    - contextPath: CTIX.IndicatorRelations.sources
       description: Indicator sources
-    - contextPath: CTIX.Result.target_ref
+    - contextPath: CTIX.IndicatorRelations.target_ref
       description: 'Indicator target reference '
     description: Get Indicator Relations
   - name: ctix-get-indicator-observations
@@ -933,68 +934,68 @@ script:
     - name: object_type
       description: object type
     outputs:
-    - contextPath: CTIX.Result.custom_attributes
+    - contextPath: CTIX.IndicatorObservations.custom_attributes
       description: Custom attributes if any
-    - contextPath: CTIX.Result.ctix_modified
+    - contextPath: CTIX.IndicatorObservations.ctix_modified
       description: Timestamp when indicator was modified in CTIX
       type: number
-    - contextPath: CTIX.Result.created
+    - contextPath: CTIX.IndicatorObservations.created
       description: Timestamp when indicator was created
       type: number
-    - contextPath: CTIX.Result.pattern_type
+    - contextPath: CTIX.IndicatorObservations.pattern_type
       description: Pattern type of Indicator
       type: string
-    - contextPath: CTIX.Result.modified
+    - contextPath: CTIX.IndicatorObservations.modified
       description: 'Timestamp when indicator was modified '
       type: number
-    - contextPath: CTIX.Result.ctix_created
+    - contextPath: CTIX.IndicatorObservations.ctix_created
       description: Timestamp when indicator was created in CTIX
       type: number
-    - contextPath: CTIX.Result.pattern_version
+    - contextPath: CTIX.IndicatorObservations.pattern_version
       description: STIX Pattern version of indicator
       type: string
-    - contextPath: CTIX.Result.confidence
+    - contextPath: CTIX.IndicatorObservations.confidence
       description: Confidence level of the indicator
       type: string
-    - contextPath: CTIX.Result.valid_from
+    - contextPath: CTIX.IndicatorObservations.valid_from
       description: Timestamp when indicator was valid from
       type: number
-    - contextPath: CTIX.Result.pattern
+    - contextPath: CTIX.IndicatorObservations.pattern
       description: STIX pattern
       type: string
-    - contextPath: CTIX.Result.fang_description
+    - contextPath: CTIX.IndicatorObservations.fang_description
       description: 'FANG description '
       type: string
-    - contextPath: CTIX.Result.defang_description
+    - contextPath: CTIX.IndicatorObservations.defang_description
       description: DEFANG description
       type: string
-    - contextPath: CTIX.Result.spec_version
+    - contextPath: CTIX.IndicatorObservations.spec_version
       description: STIX Spec version
       type: string
-    - contextPath: CTIX.Result.tags
+    - contextPath: CTIX.IndicatorObservations.tags
       description: Tags attached to the indicator
-    - contextPath: CTIX.Result.received_id
+    - contextPath: CTIX.IndicatorObservations.received_id
       description: STIX ID when indicator was received
       type: string
-    - contextPath: CTIX.Result.types
+    - contextPath: CTIX.IndicatorObservations.types
       description: STIX Types attached to the indicator
-    - contextPath: CTIX.Result.source
+    - contextPath: CTIX.IndicatorObservations.source
       description: STIX source of the indicator
-    - contextPath: CTIX.Result.id
+    - contextPath: CTIX.IndicatorObservations.id
       description: id of the indicator
       type: string
-    - contextPath: CTIX.Result.valid_until
+    - contextPath: CTIX.IndicatorObservations.valid_until
       description: Timestamp till when the indicator is valid
       type: number
-    - contextPath: CTIX.Result.sco_object_id
+    - contextPath: CTIX.IndicatorObservations.sco_object_id
       description: SCO object ID
-    - contextPath: CTIX.Result.unique_hash
+    - contextPath: CTIX.IndicatorObservations.unique_hash
       description: unique hash of the indicator
-    - contextPath: CTIX.Result.description
+    - contextPath: CTIX.IndicatorObservations.description
       description: description of the indicator
-    - contextPath: CTIX.Result.granular_markings
+    - contextPath: CTIX.IndicatorObservations.granular_markings
       description: Granular Markings if any
-    - contextPath: CTIX.Result.collection
+    - contextPath: CTIX.IndicatorObservations.collection
       description: Collection details of the indicator
     description: Get Indicator Observations
   - name: ctix-get-conversion-feed-source
@@ -1011,16 +1012,16 @@ script:
     - name: object_type
       description: object type
     outputs:
-    - contextPath: CTIX.Result.created
+    - contextPath: CTIX.ConversionFeedSource.created
       description: Indicator creation timestamp
       type: number
-    - contextPath: CTIX.Result.id
+    - contextPath: CTIX.ConversionFeedSource.id
       description: ID of the indicator
       type: string
-    - contextPath: CTIX.Result.name
+    - contextPath: CTIX.ConversionFeedSource.name
       description: name of the indicator
       type: string
-    - contextPath: CTIX.Result.taxii_option
+    - contextPath: CTIX.ConversionFeedSource.taxii_option
       description: TAXII option
       type: string
   - name: ctix-get-lookup-threat-data
@@ -1144,5 +1145,3 @@ script:
   runonce: false
   subtype: python3
 
-tests:
-- No tests (auto formatted)
