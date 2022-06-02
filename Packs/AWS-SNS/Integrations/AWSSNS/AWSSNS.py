@@ -2,8 +2,6 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 
-
-
 def create_entry(title, data, ec):
     return {
         'ContentsFormat': formats['json'],
@@ -226,5 +224,3 @@ from AWSApiModule import *  # noqa: E402
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
-
-

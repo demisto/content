@@ -7,8 +7,7 @@ configuration:
   name: defaultRegion
   required: false
   type: 0
-- additionalinfo: When using Access Key and Secret Key, there is no need to use Role
-    Arn
+- additionalinfo: When using Access Key and Secret Key, there is no need to use Role Arn
   display: Role Arn
   name: roleArn
   required: false
@@ -29,19 +28,13 @@ configuration:
   name: sessionDuration
   required: false
   type: 0
-- additionalinfo: The time in seconds till a timeout exception is reached. You can
-    specify just the read timeout (for example 60) or also the connect timeout followed
-    after a comma (for example 60,10). If a connect timeout is not specified, a default
-    of 10 second will be used.
+- additionalinfo: The time in seconds till a timeout exception is reached. You can specify just the read timeout (for example 60) or also the connect timeout followed after a comma (for example 60,10). If a connect timeout is not specified, a default of 10 second will be used.
   display: Timeout
   name: timeout
   required: false
   type: 0
-- additionalinfo: 'The maximum number of retry attempts when connection or throttling
-    errors are encountered. Set to 0 to disable retries. The default value is 5 and
-    the limit is 10. Note: Increasing the number of retries will increase the execution
-    time.'
-  defaultvalue: "5"
+- additionalinfo: 'The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time.'
+  defaultvalue: '5'
   display: Retries
   name: retries
   required: false
@@ -80,31 +73,24 @@ script:
     - description: The endpoint that you want to receive notifications.
       name: endpoint
     - auto: PREDEFINED
-      description: Sets whether the response from the Subscribe request includes the
-        subscription ARN, even if the subscription is not yet confirmed.
+      description: Sets whether the response from the Subscribe request includes the subscription ARN, even if the subscription is not yet confirmed.
       name: returnSubscriptionArn
       predefined:
-      - "True"
-      - "False"
-    - description: The policy that defines how Amazon SNS retries failed deliveries
-        to HTTP/S endpoints.
+      - 'True'
+      - 'False'
+    - description: The policy that defines how Amazon SNS retries failed deliveries to HTTP/S endpoints.
       name: deliveryPolicy
-    - description: The simple JSON object that lets your subscriber receive only a
-        subset of messages, rather than receiving every message published to the topic.
+    - description: The simple JSON object that lets your subscriber receive only a subset of messages, rather than receiving every message published to the topic.
       name: filterPolicy
     - auto: PREDEFINED
-      description: When set to true , enables raw message delivery to Amazon SQS or
-        HTTP/S endpoints.
+      description: When set to true , enables raw message delivery to Amazon SQS or HTTP/S endpoints.
       name: rawMessageDelivery
       predefined:
-      - "True"
-      - "False"
-    - description: When specified, sends undeliverable messages to the specified Amazon
-        SQS dead-letter queue.
+      - 'True'
+      - 'False'
+    - description: When specified, sends undeliverable messages to the specified Amazon SQS dead-letter queue.
       name: redrivePolicy
-    - description: 'The ARN of the IAM role that has the following: 1. Permission
-        to write to the Kinesis Data Firehose delivery stream 2. Amazon SNS listed
-        as a trusted entity'
+    - description: 'The ARN of the IAM role that has the following: 1. Permission to write to the Kinesis Data Firehose delivery stream 2. Amazon SNS listed as a trusted entity'
       name: subscriptionRoleArn
     - description: The AWS Region, if not specified the default region will be used.
       name: region
@@ -112,14 +98,9 @@ script:
       name: roleArn
     - description: An identifier for the assumed role session.
       name: roleSessionName
-    - description: The duration, in seconds, of the role session. The value can range
-        from 900 seconds (15 minutes) up to the maximum session duration setting for
-        the role.
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       name: roleSessionDuration
-    description: Subscribes an endpoint to an Amazon SNS topic. If the endpoint type
-      is HTTP/S or email, or if the endpoint and the topic are not in the same Amazon
-      Web Services account, the endpoint owner must run the ConfirmSubscription action
-      to confirm the subscription.
+    description: Subscribes an endpoint to an Amazon SNS topic. If the endpoint type is HTTP/S or email, or if the endpoint and the topic are not in the same Amazon Web Services account, the endpoint owner must run the ConfirmSubscription action to confirm the subscription.
     name: aws-sns-create-subscription
     outputs:
     - contextPath: AWS.SNS.Subscriptions.SubscriptionArn
@@ -134,9 +115,7 @@ script:
       name: roleArn
     - description: An identifier for the assumed role session.
       name: roleSessionName
-    - description: The duration, in seconds, of the role session. The value can range
-        from 900 seconds (15 minutes) up to the maximum session duration setting for
-        the role.
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       name: roleSessionDuration
     description: Returns a list of the requester's topics.
     name: aws-sns-list-topics
@@ -145,24 +124,18 @@ script:
       description: The Topic ARN
       type: string
   - arguments:
-    - description: The topic you want to publish to. If you don't specify a value
-        for the TopicArn parameter, you must specify a value for the PhoneNumber or
-        TargetArn parameters.
+    - description: The topic you want to publish to. If you don't specify a value for the TopicArn parameter, you must specify a value for the PhoneNumber or TargetArn parameters.
       name: topicArn
-    - description: If you don't specify a value for the TargetArn parameter, you must
-        specify a value for the PhoneNumber or TopicArn parameters.
+    - description: If you don't specify a value for the TargetArn parameter, you must specify a value for the PhoneNumber or TopicArn parameters.
       name: targetArn
-    - description: The phone number to which you want to deliver an SMS message. Use
-        E.164 format.
+    - description: The phone number to which you want to deliver an SMS message. Use E.164 format.
       name: phoneNumber
     - description: The message you want to send.
       name: message
       required: true
-    - description: Optional parameter to be used as the "Subject" line when the message
-        is delivered to email endpoints.
+    - description: Optional parameter to be used as the "Subject" line when the message is delivered to email endpoints.
       name: subject
-    - description: Set MessageStructure to json if you want to send a different message
-        for each protocol.
+    - description: Set MessageStructure to json if you want to send a different message for each protocol.
       name: messageStructure
     - description: This parameter applies only to FIFO (first-in-first-out) topics.
       name: messageDeduplicationId
@@ -174,13 +147,9 @@ script:
       name: roleArn
     - description: An identifier for the assumed role session.
       name: roleSessionName
-    - description: The duration, in seconds, of the role session. The value can range
-        from 900 seconds (15 minutes) up to the maximum session duration setting for
-        the role.
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       name: roleSessionDuration
-    description: Sends a message to an Amazon SNS topic, a text message (SMS message)
-      directly to a phone number, or a message to a mobile platform endpoint (when
-      you specify the TargetArn ).
+    description: Sends a message to an Amazon SNS topic, a text message (SMS message) directly to a phone number, or a message to a mobile platform endpoint (when you specify the TargetArn ).
     name: aws-sns-send-message
     outputs:
     - contextPath: AWS.SNS.SentMessages
@@ -190,8 +159,7 @@ script:
     - description: The name of the new topic.
       name: topicName
       required: true
-    - description: The policy that defines how Amazon SNS retries failed deliveries
-        to HTTP/S endpoints.
+    - description: The policy that defines how Amazon SNS retries failed deliveries to HTTP/S endpoints.
       name: deliveryPolicy
     - description: The display name to use for a topic with SMS subscriptions.
       name: displayName
@@ -199,32 +167,27 @@ script:
       description: Set to true to create a FIFO topic.
       name: fifoTopic
       predefined:
-      - "true"
-      - "false"
-    - description: The policy that defines who can access your topic. By default,
-        only the topic owner can publish or subscribe to the topic.
+      - 'true'
+      - 'false'
+    - description: The policy that defines who can access your topic. By default, only the topic owner can publish or subscribe to the topic.
       name: policy
-    - description: The ID of an Amazon Web Services managed customer master key (CMK)
-        for Amazon SNS or a custom CMK.
+    - description: The ID of an Amazon Web Services managed customer master key (CMK) for Amazon SNS or a custom CMK.
       name: kmsMasterKeyId
     - auto: PREDEFINED
       description: Enables content-based deduplication.
       name: contentBasedDeduplication
       predefined:
-      - "True"
-      - "False"
+      - 'True'
+      - 'False'
     - description: The AWS Region, if not specified the default region will be used.
       name: region
     - description: The Amazon Resource Name (ARN) of the role to assume.
       name: roleArn
     - description: An identifier for the assumed role session.
       name: roleSessionName
-    - description: The duration, in seconds, of the role session. The value can range
-        from 900 seconds (15 minutes) up to the maximum session duration setting for
-        the role.
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       name: roleSessionDuration
-    description: Creates a new a topic to which notifications can be published. You
-      can specify the attribute to create FIFO topic.
+    description: Creates a new a topic to which notifications can be published. You can specify the attribute to create FIFO topic.
     name: aws-sns-create-topic
     outputs:
     - contextPath: AWS.SNS.Topic.TopicArn
@@ -239,9 +202,7 @@ script:
       name: roleArn
     - description: An identifier for the assumed role session.
       name: roleSessionName
-    - description: The duration, in seconds, of the role session. The value can range
-        from 900 seconds (15 minutes) up to the maximum session duration setting for
-        the role.
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       name: roleSessionDuration
     description: Deletes a topic and all its subscriptions.
     name: aws-sns-delete-topic
@@ -257,12 +218,9 @@ script:
       name: roleArn
     - description: An identifier for the assumed role session.
       name: roleSessionName
-    - description: The duration, in seconds, of the role session. The value can range
-        from 900 seconds (15 minutes) up to the maximum session duration setting for
-        the role.
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       name: roleSessionDuration
-    description: Returns a list of the subscriptions to a specific topic. Each call
-      returns a limited list of subscriptions, up to 100.
+    description: Returns a list of the subscriptions to a specific topic. Each call returns a limited list of subscriptions, up to 100.
     name: aws-sns-list-subscriptions-by-topic
     outputs:
     - contextPath: AWS.SNS.Subscriptions.SubscriptionArn
@@ -272,4 +230,6 @@ script:
   script: ''
   subtype: python2
   type: python
-sourcemoduleid: AWS - SQS
+fromversion: 6.5.0
+tests:
+- No tests (auto formatted)
