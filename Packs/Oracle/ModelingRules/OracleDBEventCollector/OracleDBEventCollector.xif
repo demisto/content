@@ -9,7 +9,7 @@ XDM.Audit.reason = SQL_TEXT;
 filter ACTION_NAME in ("ALTER SESSION","ALTER USER","LOGON","LOGOFF","LOGOFF BY CLEANUP")
 | alter XDM.Auth.session_id = SESSIONID,
 XDM.Auth.Client.user.username = OS_USERNAME,
-XDM.Auth.ntlm.dns_hostname = USERHOST,
+XDM.Auth.Client.host.hostname = USERHOST,
 XDM.Auth.logon.type = AUTHENTICATION_TYPE,
 XDM.Auth.Client.application.name = CLIENT_PROGRAM_NAME,
 XDM.Auth.event_timestamp = EVENT_TIMESTAMP_UTC,
