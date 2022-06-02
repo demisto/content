@@ -1,0 +1,16 @@
+[MODEL: dataset=Brocade_MLX_ICX_raw , model=Network]
+| alter XDM.Network.event_timestamp = regextract(_raw_log , "\<\d+\>(\w+\s\d+\s\d+\:\d+\:\d+)\s" )
+| alter XDM.Network.Observer.name = regextract(_raw_log , "\<\d+\>\w+\s\d+\s\d+\:\d+\:\d+\s([A-Za-z0-9-_]+)\s" )
+| alter XDM.Network.original_event_type = regextract(_raw_log , "\d{2}\:\d{2}\:\d{2}\s\S+\s(\w+)\:" )
+| alter XDM.Network.original_event_sub_type = regextract(_raw_log , "[A-Z]+[a-z]*\:\s(\S+\s\w+)" )
+| alter XDM.Network.Source.user.username = regextract(_raw_log , "by\s([a-zA-Z0-9-_\s]+)from" )
+// create XDM.Network.Source.ipv4 field
+| alter src_ip1 = regextract(_raw_log , "src\sIP\s(\d+\.\d+\.\d+\.\d+)\s" )
+    ,src_ip2 = regextract(_raw_log , "intruder\sIP:\s+(\d+\.\d+\.\d+\.\d+)" )
+    ,src_ip3 = regextract(_raw_log , "from\stelnet\sclient\s(\d+\.\d+\.\d+\.\d+)" )
+| alter XDM.Network.Source.ipv4 = coalesce(src_ip1, src_ip2, src_ip3)
+| fields - src_ip1, src_ip2, src_ip3
+// end create XDM.Network.Source.ipv4 field
+| alter XDM.Network.Source.host.mac_addresses = regextract(_raw_log , "\sMAC\s(\S+)\s" )
+| alter XDM.Network.outcome = regextract(_raw_log , "\s(\w+)\,\s\d+\sattempt\(s\)" )
+| alter XDM.Network.Destination.process.command_line = regextract(_raw_log , "CLI\sCMD\:\s\"([^\"]+)\"" )
