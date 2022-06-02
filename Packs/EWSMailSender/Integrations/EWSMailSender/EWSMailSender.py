@@ -35,23 +35,6 @@ _fix_getpass = FixGetPass()
 
 warnings.filterwarnings("ignore")
 
-# LOGGING
-log_stream = None
-log_handler = None
-
-
-def start_logging():
-    logging.raiseExceptions = False
-    global log_stream
-    global log_handler
-    if log_stream is None:
-        log_stream = StringIO()
-        log_handler = logging.StreamHandler(stream=log_stream)
-        log_handler.setFormatter(logging.Formatter(logging.BASIC_FORMAT))
-        logger = logging.getLogger()
-        logger.addHandler(log_handler)
-        logger.setLevel(logging.DEBUG)
-
 
 import exchangelib  # noqa: E402
 from exchangelib.protocol import BaseProtocol, NoVerifyHTTPAdapter  # noqa: E402
@@ -84,6 +67,25 @@ VERSIONS = {
     '2013': EXCHANGE_2013,
     '2016': EXCHANGE_2016
 }
+
+
+config = None  # type: ignore
+# LOGGING
+log_stream = None
+log_handler = None
+
+
+def start_logging():
+    logging.raiseExceptions = False
+    global log_stream
+    global log_handler
+    if log_stream is None:
+        log_stream = StringIO()
+        log_handler = logging.StreamHandler(stream=log_stream)
+        log_handler.setFormatter(logging.Formatter(logging.BASIC_FORMAT))
+        logger = logging.getLogger()
+        logger.addHandler(log_handler)
+        logger.setLevel(logging.DEBUG)
 
 
 # NOTE: Same method used in EWSv2
@@ -186,9 +188,11 @@ def send_email_reply_to_mailbox(account, inReplyTo, to, body, subject=None, bcc=
 
     subject = subject or item_to_reply_to.subject
     message_body = HTMLBody(html_body) if html_body else body
-    m = item_to_reply_to.create_reply(subject='Re: ' + subject, body=message_body, to_recipients=to, cc_recipients=cc,
-                                      bcc_recipients=bcc)
-    m = m.save(account.drafts)
+    reply = item_to_reply_to.create_reply(subject='Re: ' + subject, body=message_body, to_recipients=to, cc_recipients=cc,
+                                          bcc_recipients=bcc)
+    reply = reply.save(account.drafts)
+    m = account.inbox.get(id=reply.id)
+
     for attachment in attachments:
         m.attach(attachment)
     m.send()
@@ -225,13 +229,17 @@ def collect_manual_attachments(manualAttachObj):
     return attachments
 
 
+def get_none_empty_addresses(addresses_ls):
+    return [adress for adress in addresses_ls if adress]
+
+
 def send_email(to, subject, body="", bcc=None, cc=None, replyTo=None, htmlBody=None,
                attachIDs="", attachCIDs="", attachNames="", from_mailbox=None, manualAttachObj=None,
                raw_message=None, from_address=None):
     account = get_account(from_mailbox or ACCOUNT_EMAIL)
-    bcc: List[str] = argToList(bcc)
-    cc: List[str] = argToList(cc)
-    to: List[str] = argToList(to)
+    bcc: List[str] = get_none_empty_addresses(argToList(bcc))
+    cc: List[str] = get_none_empty_addresses(argToList(cc))
+    to: List[str] = get_none_empty_addresses(argToList(to))
     reply_to: List[str] = argToList(replyTo)
     manualAttachObj = manualAttachObj if manualAttachObj is not None else []
     subject = subject[:252] + '...' if len(subject) > 255 else subject
@@ -378,9 +386,6 @@ def test_module():
     BaseProtocol.TIMEOUT = 20
     get_account(ACCOUNT_EMAIL).root
     demisto.results('ok')
-
-
-config = None  # type: ignore
 
 
 def main():
