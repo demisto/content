@@ -7,6 +7,10 @@ default:
       - /builds/xsoar/content/artifacts/*
     when: always
 
+  services:
+    - name: hessingd/cowsay:randomized-1.0.0
+      alias: cowsay
+
 stages:
   - unittests-and-validations
   - create-instances

@@ -95,6 +95,7 @@ references:
   container_config: &container_config
     docker:
       - image: devdemisto/content-build:3.0.0.27109  # disable-secrets-detection
+      - image: hessingd/cowsay:randomized-1.0.0
         auth:
           username: $DOCKERHUB_USER
           password: $DOCKERHUB_PASSWORD
