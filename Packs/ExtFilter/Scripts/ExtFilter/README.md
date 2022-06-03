@@ -214,7 +214,7 @@ You can make filters with comlex and combination conditions for the context data
   When you use DT, you must set `ctx_demisto`, `ctx_inputs`, `ctx_lists` and `ctx_incident` of the parameters for the data to which DT accesses.
   
 | *Parameter* | *Data Source* | *Value* | *Description* |
-| - | - | - | - |
+| --- | --- | --- | --- |
 | ctx_demisto | From Previous Tasks | . | Enable to access the context data |
 | ctx_inputs | From Previous Tasks | inputs | Enable to access the input parameters to sub playbooks and use `${inputs.}` |
 | ctx_lists | From Previous Tasks | list | Enable to access the `list` data and use `${list.}` |
@@ -7515,7 +7515,7 @@ Returns an string in JSON which is encoded the entire value.
 > **Filter Format**: `dict[str,Any]`
 
 | *Parameter* | *Data Type* | *Description* |
-| - | - | - |
+| --- | --- | --- |
 | indent | int | The number of spaces per indent (Default: None) |
 
 #### Example 1
@@ -7576,7 +7576,7 @@ Encodes each element and returns a set of JSON-encoded string.
 > **Filter Format**: `dict[str,Any]`
 
 | *Parameter* | *Data Type* | *Description* |
-| - | - | - |
+| --- | --- | --- |
 | indent | int | The number of spaces per indent (Default: None) |
 
 #### Example 1
@@ -7646,7 +7646,7 @@ Returns a set of JSON decoded-values from the each element.
 > **Filter Format**: `dict[str,Any]`
 
 | *Parameter* | *Data Type* | *Description* |
-| - | - | - |
+| --- | --- | --- |
 (parameter is currently not required)
 
 #### Example 1
@@ -7689,7 +7689,7 @@ Encodes each element and returns a set of BASE64-encoded string.
 > **Filter Format**: `dict[str,Any]`
 
 | *Parameter* | *Data Type* | *Description* |
-| - | - | - |
+| --- | --- | --- |
 (parameter is currently not required)
 
 #### Example 1
@@ -7728,7 +7728,7 @@ Returns a set of BASE64 decoded-values from the each element.
 > **Filter Format**: `dict[str,Any]`
 
 | *Parameter* | *Data Type* | *Description* |
-| - | - | - |
+| --- | --- | --- |
 (parameter is currently not required)
 
 #### Example 1
@@ -7767,7 +7767,7 @@ Create a set of secure hash value for each element.
 > **Filter Format**: `dict[str,Any]`
 
 | *Parameter* | *Data Type* | *Description* |
-| - | - | - |
+| --- | --- | --- |
 | algorithm | string | Secure hash algorithm (Default: sha256). See python hashlib for algorithm names. |
 
 #### Example 1
@@ -8045,10 +8045,11 @@ If `if` condition is not given or returns any value, `then` operation is execute
 > **Filter Format**: `dict[str,Any]`
 
 | *Parameter* | *Data Type* | *Description* |
-| - | - | - |
+| --- | --- | --- |
 | if | expressions | (Optional) `if` condition |
 | then | expressions | Conditions to execute if `if` condition is not given or returns any value. |
 | else | expressions | (Optional) Conditions to execute if `if` returns `null`. |
+| lhs | expressions | (Optional) The value used for the `if` condition instead of the current element. |
 
 
 #### Example 1
@@ -8175,6 +8176,42 @@ If `if` condition is not given or returns any value, `then` operation is execute
       10
     ]
 
+#### Example 4
+##### Input
+    [
+      "a.dat",
+      "b.exe",
+      "c.txt"
+    ]
+
+##### Filter
+> **Operator**: if-then-else
+
+> **Path**: 
+
+> **ctx_demisto**: (in dictionaly, not string)
+
+    {
+      "enable_filter": true
+    }
+
+> **Filter**:
+
+    {
+      "if": {
+        "===": true
+      },
+      "then": {
+        "ends with": ".exe"
+      },
+      "lhs": "${enable_filter}"
+    }
+
+##### Output
+    [
+      "b.exe"
+    ]
+
 </details>
 
 
@@ -8188,7 +8225,7 @@ If any of `expressions` doesn't match the value, `default` operation is executed
 > **Filter Format**: `dict[str,Any]`
 
 | *Parameter* | *Data Type* | *Description* |
-| - | - | - |
+| --- | --- | --- |
 | switch | dict[&lt;label&gt;, expressions] | (Optional) Patterns of conditions. |
 | default | expressions | (Optional) Conditions to execute if it doesn't match all the `switch` conditions. |
 | &lt;label&gt;| expressions | (Optional) Conditions to execute if it matches the conditions given in the label. |
@@ -8356,7 +8393,7 @@ Returns a set of &lt;value&gt; of each element. A value is &lt;value&gt; for `di
 > **Filter Format**: `dict[str,Any]`
 
 | *Parameter* | *Data Type* | *Description* |
-| - | - | - |
+| --- | --- | --- |
 (parameter is currently not required)
 
 #### Example 1
@@ -8441,7 +8478,7 @@ Returns a set of &lt;key&gt; of each `dict` element.
 > **Filter Format**: `dict[str,Any]`
 
 | *Parameter* | *Data Type* | *Description* |
-| - | - | - |
+| --- | --- | --- |
 (parameter is currently not required)
 
 #### Example 1
@@ -8491,7 +8528,7 @@ Returns a set of &lt;value&gt; of all the elements in the tree.
 > **Filter Format**: `dict[str,Any]`
 
 | *Parameter* | *Data Type* | *Description* |
-| - | - | - |
+| --- | --- | --- |
 (parameter is currently not required)
 
 #### Example 1
@@ -8545,7 +8582,7 @@ Returns a set of &lt;key&gt; of all the `dict` elements in the tree.
 > **Filter Format**: `dict[str,Any]`
 
 | *Parameter* | *Data Type* | *Description* |
-| - | - | - |
+| --- | --- | --- |
 (parameter is currently not required)
 
 #### Example 1
@@ -8601,7 +8638,7 @@ Raises an exception and exit with the value filtered at the operator. This opera
 > **Filter Format**: `dict[str,Any]`
 
 | *Parameter* | *Data Type* | *Description* |
-| - | - | - |
+| --- | --- | --- |
 (parameter is currently not required)
 
 #### Example 1
@@ -8628,7 +8665,7 @@ Returns an string which is decoded with the email header encoding manner.
 > **Filter Format**: `dict[str,Any]`
 
 | *Parameter* | *Data Type* | *Description* |
-| - | - | - |
+| --- | --- | --- |
 (parameter is currently not required)
 
 #### Example 1
@@ -8680,7 +8717,7 @@ Returns the data given in "matched" if matched, "unmatch" otherwise.
 > **Filter Format**: `dict[str,Any]`
 
 | *Parameter* | *Data Type* | *Description* |
-| - | - | - |
+| --- | --- | --- |
 | pattern | str | A pattern text in regex. |
 | matched | Any | The data to return when matched. capture groups such as \1 are supported. |
 | unmatched | Any | (Optional) The data to return when unmatched. If not specified, the value given will return. |
