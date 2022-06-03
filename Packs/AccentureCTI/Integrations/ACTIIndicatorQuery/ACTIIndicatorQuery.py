@@ -702,9 +702,20 @@ def getThreatReport_command(doc_search_client: Client, args: dict, reliability: 
         result = {}
         ia_ir_uuid: str = str(args.get('uuid'))
         result = doc_search_client.threat_indicator_search(url_suffix=f'/v0/{ia_ir_uuid}')
+        indicator_value = result.get('key', '')
+        relationships = result.get('links', '')
+        indicator_type = result.get('type', '')
+
         custom_indicator, iair_link = _ia_ir_extract(result, reliability)
+        if relationships and indicator_type == "intelligence_alert":
+            filtered_relationship = acti_create_relationship(indicator_value, 'intelligence_alert', relationships)
+            custom_indicator.to_context()["relationships"] = filtered_relationship
+        if relationships and indicator_type=="intelligence_report":
+            filtered_relationship = acti_create_relationship(indicator_value, 'intelligence_report', relationships)
+            custom_indicator.to_context()["relationships"] = filtered_relationship
         return CommandResults(indicator=custom_indicator, raw_response=result,
-                              readable_output=f"Report has been fetched!\nUUID: {result['uuid']}\nLink to view report: {iair_link}") # noqa
+                              readable_output=f"Report has been fetched!\nUUID: {result['uuid']}\nLink to view report: {iair_link}",
+                              relationships=filtered_relationship)
 
     except Exception as e:
         if 'Failed to parse json object from response' in e.args[0]:
