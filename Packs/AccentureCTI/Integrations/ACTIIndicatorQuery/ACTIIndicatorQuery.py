@@ -705,7 +705,7 @@ def getThreatReport_command(doc_search_client: Client, args: dict, reliability: 
         indicator_value = result.get('key', '')
         relationships = result.get('links', '')
         indicator_type = result.get('type', '')
-
+        filtered_relationship = None
         custom_indicator, iair_link = _ia_ir_extract(result, reliability)
         if relationships and indicator_type == "intelligence_alert":
             filtered_relationship = acti_create_relationship(indicator_value, 'intelligence_alert', relationships)
