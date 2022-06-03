@@ -1442,7 +1442,7 @@ def test_get_file_category_value_handles_hyphenated_case():
 
 
 def test_client_lazily_inits_sdk(mocker, code42_sdk_mock):
-    sdk_factory_mock = mocker.patch("py42.sdk.from_local_account")
+    sdk_factory_mock = mocker.patch("py42.sdk.from_jwt_provider")
     response_json_mock = """{"total": 1, "users": [{"username": "Test"}]}"""
     code42_sdk_mock.users.get_by_username.return_value = create_mock_code42_sdk_response(
         mocker, response_json_mock

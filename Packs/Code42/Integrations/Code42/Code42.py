@@ -148,7 +148,7 @@ class Code42Client(BaseClient):
         super().__init__(base_url, verify=verify, proxy=proxy)
         self._base_url = base_url
         self._auth = auth
-        self._sdk = None
+        self._sdk = sdk
 
         if not proxy:
             _clear_env_var_if_exists('HTTP_PROXY')
