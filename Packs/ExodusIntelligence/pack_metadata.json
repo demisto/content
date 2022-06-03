@@ -1,0 +1,31 @@
+{
+    "name": "Exodus Intelligence EVE Platform",
+    "description": "Exodus Intelligence's EVE platform provides access to the latest vulnerabilities available.",
+    "support": "partner",
+    "currentVersion": "1.0.0",
+    "author": "Exodus Intelligence LLC",
+    "url": "",
+    "email": "eng@exodusintel.com",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "an-hel"
+    ],
+    "dependencies": {
+        "CommonTypes": {
+            "mandatory": true,
+            "display_name": "Common Types"
+        }
+    },
+    "displayedImages": [
+        "CommonTypes"
+    ]
+}
