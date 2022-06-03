@@ -488,7 +488,7 @@ def fundamental_uuid_command(client: Client, args: dict, reliability: DBotScoreR
     analysis_info = {}
     readableOutput = {}
     result_link = ''
-    filtered_relationship = ''
+    filtered_relationship = None
     if len(res):
         dbot_score = _calculate_dbot_score(res.get('severity', 0))
         desc = 'Match found in Accenture CTI database'
@@ -535,7 +535,6 @@ def fundamental_uuid_command(client: Client, args: dict, reliability: DBotScoreR
         if analysis:
             analysis_info["Analysis"] = analysis
 
-        filtered_relationship = None
         relationships = res.get('links', '')
         if indicator_type.lower() == 'malware_family':
             dbot = Common.DBotScore(indicator_value, DBotScoreType.CUSTOM, 'ACTI Indicator Query', dbot_score, desc, reliability)
