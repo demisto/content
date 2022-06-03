@@ -1,0 +1,25 @@
+{
+    "name": "UmbrellaReporting",
+    "description": "Cisco Umbrella Reporting v2 integration",
+    "support": "partner",
+    "currentVersion": "1.0.0",
+    "author": "Wipro",
+    "url": "https://www.wipro.com/cybersecurity/#contact-us",
+    "email": "deepansh.sood1@wipro.com",
+    "categories": [
+        "Network Security"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "devEmail": [
+        "deepansh.sood1@wipro.com"
+    ],
+    "githubUser": [
+        "https://github.com/rootbid"
+    ]
+}

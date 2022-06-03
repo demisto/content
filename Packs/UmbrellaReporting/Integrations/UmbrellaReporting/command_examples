@@ -1,0 +1,10 @@
+umbrella-get-summary:
+
+!umbrella-get-summary 
+!umbrella-get-summary start="-2days" end="now"
+!umbrella-get-summary start="1639146300000" end="1639146300000"
+
+umbrella-list-top-threats:
+
+!umbrella-list-top-threats start="-2days" end="now"
+!umbrella-list-top-threats start="1639146300000" end="1639146300000"

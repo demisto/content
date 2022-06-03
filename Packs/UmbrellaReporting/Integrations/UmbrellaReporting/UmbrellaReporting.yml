@@ -1,0 +1,92 @@
+category: Network Security
+commonfields:
+  id: Cisco Umbrella Reporting
+  version: -1
+configuration:
+- defaultvalue: https://management.api.umbrella.com/auth/v2/oauth2/token
+  display: Cisco Token URL
+  name: token_url
+  required: true
+  type: 0
+- display: Organization ID
+  name: orgId
+  required: true
+  type: 0
+- defaultvalue: https://reports.api.umbrella.com/v2
+  display: Cisco Reporting v2 URL
+  name: url
+  required: true
+  type: 0
+- display: API Key
+  name: apiKey
+  required: true
+  type: 4
+- display: API Secret
+  name: apiSecret
+  required: true
+  type: 4
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Fetch reports from Cisco Umbrella that provides visibility into your core network and security activities and Umbrella logs.
+display: Cisco Umbrella Reporting
+name: Cisco Umbrella Reporting
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: 'A timestamp or relative time string (for example: -1days). Filter for data that appears after this time.'
+      isArray: false
+      name: from
+      required: true
+      secret: false
+    - default: false
+      description: 'A timestamp or relative time string (for example: now).Filter for data that appears before this time.'
+      isArray: false
+      name: to
+      required: true
+      secret: false
+    deprecated: false
+    description: Get a summary of top identities, destinations, URLs, categories, threats, threat types, events and IPs being observed in your organization within a specific timeframe.
+    execution: false
+    name: umbrella-get-summary
+    outputs:
+    - contextPath: UmbrellaReporting.Summary
+      description: Summary of activity observed
+      type: Dict
+  - arguments:
+    - default: false
+      description: 'A timestamp or relative time string (for example: -1days). Filter for data that appears after this time.'
+      isArray: false
+      name: from
+      required: true
+      secret: false
+    - default: false
+      description: 'A timestamp or relative time string (for example: now).Filter for data that appears before this time.'
+      isArray: false
+      name: to
+      required: true
+      secret: false
+    deprecated: false
+    description: List top threats within timeframe. Returns both DNS and Proxy data.
+    execution: false
+    name: umbrella-list-top-threats
+    outputs:
+    - contextPath: UmbrellaReporting.TopThreats
+      description: Threats observed from dns/proxy data
+      type: List[Dict]
+  isfetch: false
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/oauthlib:1.0.0.23674
+autoUpdateDockerImage: true
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
