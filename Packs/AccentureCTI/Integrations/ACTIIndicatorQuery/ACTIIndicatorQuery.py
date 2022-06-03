@@ -540,21 +540,21 @@ def fundamental_uuid_command(client: Client, args: dict, reliability: DBotScoreR
             dbot = Common.DBotScore(indicator_value, DBotScoreType.CUSTOM, 'ACTI Indicator Query', dbot_score, desc, reliability)
             indicator = Common.CustomIndicator('ACTI Malware Family', indicator_value, dbot, analysis_info, 'ACTI_MalwareFamily')
             if relationships:
-                filtered_relationship = acti_create_relationship(indicator_value, 'Malware Family', relationships)
+                filtered_relationship = acti_create_relationship(indicator_value, 'malware_family', relationships)
                 indicator.to_context()["relationships"] = filtered_relationship
             result_link = MALWARE_FAMILY_URL + res.get('uuid', '')
         elif indicator_type.lower() == 'threat_group':
             dbot = Common.DBotScore(indicator_value, DBotScoreType.CUSTOM, 'ACTI Indicator Query', dbot_score, desc, reliability)
             indicator = Common.CustomIndicator('ACTI Threat Group', indicator_value, dbot, analysis_info, 'ACTI_ThreatGroup')
             if relationships:
-                filtered_relationship = acti_create_relationship(indicator_value, 'Threat Group', relationships)
+                filtered_relationship = acti_create_relationship(indicator_value, 'threat_group', relationships)
                 indicator.to_context()["relationships"] = filtered_relationship
             result_link = THREAT_GROUP_URL + res.get('uuid', '')
         elif indicator_type.lower() == 'threat_actor':
             dbot = Common.DBotScore(indicator_value, DBotScoreType.CUSTOM, 'ACTI Indicator Query', dbot_score, desc, reliability)
             indicator = Common.CustomIndicator('ACTI Threat Actor', indicator_value, dbot, analysis_info, 'ACTI_ThreatActor')
             if relationships:
-                filtered_relationship = acti_create_relationship(indicator_value, 'Threat Actor', relationships)
+                filtered_relationship = acti_create_relationship(indicator_value, 'threat_actor', relationships)
                 indicator.to_context()["relationships"] = filtered_relationship
             result_link = THREAT_ACTOR_URL + res.get('uuid', '')
         elif indicator_type.lower() == 'threat_campaign':
@@ -562,7 +562,7 @@ def fundamental_uuid_command(client: Client, args: dict, reliability: DBotScoreR
             indicator = Common.CustomIndicator('ACTI Threat Campaign', indicator_value, dbot, analysis_info,
                                                'ACTI_ThreatCampaign')
             if relationships:
-                filtered_relationship = acti_create_relationship(indicator_value, 'Threat Campaign', relationships)
+                filtered_relationship = acti_create_relationship(indicator_value, 'threat_campaign', relationships)
                 indicator.to_context()["relationships"] = filtered_relationship
             result_link = THREAT_CAMPAIGN_URL + res.get('uuid', '')
     return CommandResults(indicator=indicator,
@@ -710,11 +710,11 @@ def getThreatReport_command(doc_search_client: Client, args: dict, reliability: 
         if relationships and indicator_type == "intelligence_alert":
             filtered_relationship = acti_create_relationship(indicator_value, 'intelligence_alert', relationships)
             custom_indicator.to_context()["relationships"] = filtered_relationship
-        if relationships and indicator_type=="intelligence_report":
+        if relationships and indicator_type == "intelligence_report":
             filtered_relationship = acti_create_relationship(indicator_value, 'intelligence_report', relationships)
             custom_indicator.to_context()["relationships"] = filtered_relationship
         return CommandResults(indicator=custom_indicator, raw_response=result,
-                              readable_output=f"Report has been fetched!\nUUID: {result['uuid']}\nLink to view report: {iair_link}",
+                              readable_output=f"Report has been fetched!\nUUID: {result['uuid']}\nLink to view report: {iair_link}",  # noqa: E501
                               relationships=filtered_relationship)
 
     except Exception as e:
