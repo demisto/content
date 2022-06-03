@@ -8,7 +8,7 @@ configuration:
   name: console_url
   required: true
   type: 0
-- display: Username
+- display: API Client ID
   name: credentials
   required: true
   type: 9
@@ -869,7 +869,7 @@ script:
       - contextPath: Code42.WatchlistUsers.AddedTime
         description: The datetime the user was added to the watchlist.
         type: datetime
-  dockerimage: demisto/py42:1.0.0.29662
+  dockerimage: demisto/py42:1.0.0.30372
   feed: false
   isfetch: true
   longRunning: false
