@@ -181,7 +181,7 @@ Manual command to fetch events and display them.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of events to get. Must be divisible by 100 due to Saas-Security api limitations. Default is 1000. | Optional | 
+| limit | The maximum number of events to get. Must be divisible by 100 due to Saas-Security api limitations. Overrides the max-fetch parameter of the integration. | Optional | 
 | should_push_events | Set this argument to True in order to create events, otherwise the command will only display them. *If setting to 'False' The returned events will be lost.* Possible values are: True, False. Default is False. | Required | 
 
 

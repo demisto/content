@@ -221,7 +221,7 @@ class TestFetchEvents:
 
         Then
           - make sure the correct events are fetched according to the queue and max fetch.
-          - make sure in case max fetch is empty that all available events will be fetched.
+          - make sure in case max fetch is None that all available events will be fetched.
 
         """
         from SaasSecurityEventCollector import fetch_events_from_saas_security

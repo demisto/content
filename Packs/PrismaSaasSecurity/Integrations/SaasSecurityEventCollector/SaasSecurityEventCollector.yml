@@ -1,6 +1,6 @@
 category: Analytics & SIEM
 commonfields:
-  id: Saas Security Event Collector
+  id: SaaS Security Event Collector
   version: -1
 configuration:
 - additionalinfo: 'The instance configuration URL based on the server location: <br/>US:
@@ -26,7 +26,7 @@ configuration:
   required: false
   type: 8
 - display: The maximum number of events per fetch.
-  additionalinfo: The maximum number of events to fetch every time fetch is being executed. This number must be divisible by 100 due to Saas-Security api limitations. Default is 1000. In case this is empty, all available events will be fetched.
+  additionalinfo: The maximum number of events to fetch every time fetch is being executed. This number must be divisible by 100 due to SaaS-Security api limitations. Default is 1000. In case this is empty, all available events will be fetched.
   defaultvalue: 1000
   name: max_fetch
   required: false
@@ -40,9 +40,9 @@ configuration:
   type: 0
   defaultvalue: saassecurity
   required: false
-description: Palo Alto Networks Saas Security Event Collector integration for XSIAM.
-display: Saas Security Event Collector
-name: Saas Security Event Collector
+description: Palo Alto Networks SaaS Security Event Collector integration for XSIAM.
+display: SaaS Security Event Collector
+name: SaaS Security Event Collector
 script:
   commands:
   - deprecated: false
@@ -51,8 +51,7 @@ script:
     name: saas-security-get-events
     arguments:
       - name: limit
-        description: The maximum number of events to get. Must be divisible by 100 due to Saas-Security api limitations. Default is 1000.
-        defaultValue: 1000
+        description: The maximum number of events to get. Must be divisible by 100 due to SaaS-Security api limitations. Overrides the max-fetch parameter of the integration.
       - auto: PREDEFINED
         defaultValue: 'False'
         description: Set this argument to True in order to create events, otherwise the command will only display them. *If setting to 'False' The returned events will be lost.*
