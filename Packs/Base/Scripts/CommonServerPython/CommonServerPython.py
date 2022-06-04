@@ -10446,7 +10446,7 @@ def send_events_to_xsiam(events, vendor, product, data_format=None):
         """
         try:
             response = response.json()
-            error = res.reason
+            error = response.reason
             if response.get('error').lower() == 'false':
                 xsiam_server_err_msg = response.get('error')
                 error += ": " + xsiam_server_err_msg
