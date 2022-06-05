@@ -88,7 +88,8 @@ class GetEvents:
         """
         events: list = self.make_sdk_call()
         while True:
-            self.client.set_next_run_filter(events[-1]['timestamp'], self.request_order[0])
+            if events:
+                self.client.set_next_run_filter(events[-1]['timestamp'], self.request_order[0])
             yield events
             events = self.make_sdk_call()
             try:
@@ -152,8 +153,8 @@ def create_api_call(host: str, integration_key: str, secrete_key: str):  # pragm
 
 def main():  # pragma: no cover
     try:
-        demisto_params = demisto.params() | demisto.args()
-        last_run = demisto.getLastRun()
+        demisto_params = demisto.params() #| demisto.args()
+        last_run = {}#demisto.getLastRun()
         request_order = last_run.get('request_order',
                                      [LogType.AUTHENTICATION, LogType.ADMINISTRATION, LogType.TELEPHONY])
         if 'after' not in last_run:
@@ -170,7 +171,7 @@ def main():  # pragma: no cover
 
         get_events = GetEvents(client, request_order)
 
-        command = demisto.command()
+        command = 'fetch-events'#demisto.command()
 
         if command == 'test-module':
             get_events.aggregated_results()

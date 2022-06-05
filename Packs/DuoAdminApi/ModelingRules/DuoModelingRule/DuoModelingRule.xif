@@ -8,13 +8,13 @@ XDM.Auth.Server.host.os = json_extract_scalar(access_device, "$.os_version"),
 XDM.Auth.Target.application.name = json_extract_scalar(application, "$.name"),
 XDM.Auth.original_event_type = eventtype,
 XDM.Auth.auth_method = factor,
-XDM.Auth.event_timestamp = isotimestamp;
+XDM.Auth.event_timestamp = to_timestamp(to_integer(timestamp), "SECONDS");
 
 [MODEL: dataset=duo_duo_raw, model=Audit]
 alter XDM.Audit.operation = action,
 XDM.Audit.original_event_description = description,
 XDM.Audit.audited_resource.name = object,
-XDM.Audit.event_timestamp = timestamp,
+XDM.Audit.event_timestamp = to_timestamp(to_integer(timestamp), "SECONDS"),
 XDM.Audit.TriggeredBy.identity.name = username,
 XDM.Audit.TriggeredBy.identity.type = context,
 XDM.Audit.identity.uuid = phone,
