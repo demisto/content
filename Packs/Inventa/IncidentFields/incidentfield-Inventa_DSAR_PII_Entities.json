@@ -3,6 +3,7 @@
     "associatedTypes": [
         "iDSAR"
     ],
+    "breachScript": "",
     "caseInsensitive": true,
     "cliName": "inventadsarpiientities",
     "closeForm": false,
@@ -20,27 +21,41 @@
             "width": 150
         }
     ],
-    "content": true,
+    "content": false,
     "defaultRows": [
         {}
     ],
+    "description": "",
     "editForm": true,
+    "fieldCalcScript": "",
+    "fromServerVersion": "",
     "group": 0,
     "hidden": false,
     "id": "incident_inventadsarpiientities",
     "isReadOnly": false,
+    "itemVersion": "",
     "locked": false,
+    "mergeStrategy": "",
     "name": "Inventa DSAR PII Entities",
     "neverSetAsRequired": false,
     "ownerOnly": false,
+    "packID": "",
+    "placeholder": "",
     "required": false,
+    "runScriptAfterUpdate": false,
+    "script": "",
+    "selectValues": null,
     "sla": 0,
     "system": false,
+    "systemAssociatedTypes": null,
     "threshold": 72,
+    "toServerVersion": "",
     "type": "grid",
     "unmapped": false,
     "unsearchable": true,
     "useAsKpi": false,
+    "validatedError": "",
+    "validationRegex": "",
     "version": -1,
     "fromVersion": "6.0.0"
 }

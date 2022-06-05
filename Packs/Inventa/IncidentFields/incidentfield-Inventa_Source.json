@@ -1,11 +1,9 @@
 {
-    "associatedToAll": false,
-    "associatedTypes": [
-        "iDSAR"
-    ],
+    "associatedToAll": true,
+    "associatedTypes": null,
     "breachScript": "",
     "caseInsensitive": true,
-    "cliName": "inventadsarfiles",
+    "cliName": "inventasource",
     "closeForm": false,
     "columns": [
         {
@@ -17,15 +15,27 @@
             "required": false,
             "script": "",
             "selectValues": null,
-            "type": "number",
+            "type": "shortText",
             "width": 150
         },
         {
-            "displayName": "name",
+            "displayName": "timestamp",
             "fieldCalcScript": "",
             "isDefault": true,
             "isReadOnly": false,
-            "key": "name",
+            "key": "timestamp",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150
+        },
+        {
+            "displayName": "keyType",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "keytype",
             "required": false,
             "script": "",
             "selectValues": null,
@@ -53,27 +63,51 @@
             "required": false,
             "script": "",
             "selectValues": null,
+            "type": "url",
+            "width": 150
+        },
+        {
+            "displayName": "hostName",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "hostname",
+            "required": false,
+            "script": "",
+            "selectValues": null,
             "type": "shortText",
             "width": 150
         },
         {
-            "displayName": "size",
+            "displayName": "dbName",
             "fieldCalcScript": "",
             "isDefault": true,
             "isReadOnly": false,
-            "key": "size",
+            "key": "dbname",
             "required": false,
             "script": "",
             "selectValues": null,
-            "type": "number",
+            "type": "shortText",
             "width": 150
         },
         {
-            "displayName": "timestamp",
+            "displayName": "vendor",
             "fieldCalcScript": "",
             "isDefault": true,
             "isReadOnly": false,
-            "key": "timestamp",
+            "key": "vendor",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150
+        },
+        {
+            "displayName": "type",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "type",
             "required": false,
             "script": "",
             "selectValues": null,
@@ -89,7 +123,19 @@
             "required": false,
             "script": "",
             "selectValues": null,
-            "type": "shortText",
+            "type": "longText",
+            "width": 150
+        },
+        {
+            "displayName": "content",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "content",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "longText",
             "width": 150
         }
     ],
@@ -97,18 +143,18 @@
     "defaultRows": [
         {}
     ],
-    "description": "",
+    "description": "PII data source details",
     "editForm": true,
     "fieldCalcScript": "",
     "fromServerVersion": "",
     "group": 0,
     "hidden": false,
-    "id": "incident_inventadsarfiles",
+    "id": "incident_inventasource",
     "isReadOnly": false,
     "itemVersion": "",
     "locked": false,
     "mergeStrategy": "",
-    "name": "Inventa DSAR Files",
+    "name": "Inventa Source",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "packID": "",
@@ -124,10 +170,9 @@
     "toServerVersion": "",
     "type": "grid",
     "unmapped": false,
-    "unsearchable": true,
+    "unsearchable": false,
     "useAsKpi": false,
     "validatedError": "",
     "validationRegex": "",
-    "version": -1,
-    "fromVersion": "6.0.0"
+    "version": -1
 }

@@ -13,15 +13,18 @@ you are implementing with your integration
 import json
 import io
 from pytest import raises
-# from __future__ import print_function
 from Inventa import main, Client, format_pii_entities, generate_datasubject_payload, validate_incident_inputs_command
-# import pytest
 import demistomock as demisto
-# from CommonServerPython import entryTypes
+
 
 constraints_cmds = [
     "inventa-get-datasubjects",
     "inventa-get-datasubject-id"
+]
+
+datasubjectid_cmds = [
+    "inventa-get-sources",
+    "inventa-get-sources-piis"
 ]
 
 ticket_cmds = [
@@ -41,6 +44,10 @@ reason_cmds = [
 noarg_cmds = [
     "inventa-get-entities"
 ]
+
+mock_arguments_datasubjectid = {
+    "datasubject_id": "TEST_DATASUBJECT_ID"
+}
 
 mock_arguments_constraints = {
     "national_id": "TEST_NATIONAL_ID",
@@ -84,6 +91,8 @@ def mock_params():
 def mock_args(command_name):
     if command_name in constraints_cmds:
         return mock_arguments_constraints
+    if command_name in datasubjectid_cmds:
+        return mock_arguments_datasubjectid
     if command_name in reason_cmds:
         return mock_arguments_reason_dsid
     if command_name in ticket_cmds:
@@ -134,6 +143,8 @@ def mocker_automate(mocker, command_name, method_names):
     mocker.patch.object(demisto, "args", return_value=mock_args(command_name))
     mocker.patch.object(demisto, "command", return_value=command_name)
     mocker.patch.object(demisto, 'results')
+    # mocker.patch("demistomock.callingContext", return_value={}, new_callable=mocker.PropertyMock)
+    # mocker.patch.object(demisto, "callingContext", return_value={})
     for method_name in method_names:
         mocker.patch.object(Client, method_name, return_value=executeClient(method_name))
 
@@ -211,7 +222,16 @@ def test_get_datasubjects_cmd(mocker):
     main()
     assert demisto.results.call_count == 1
     results = demisto.results.call_args[0]
-    assert results[0]["Contents"] == mock_data.get(command_name, "")
+    # assert results[0]["Contents"] == mock_data.get(command_name, "")
+    
+    A = results[0]["Contents"]
+    B = mock_data.get(command_name, "")[0]
+
+    assert A["id"] == B["id"]
+    assert "|".join(A["personalInfo"]) == "|".join(B["personalInfo"])
+    assert A["sourceIds"] == B["sourceIds"]
+    assert A["rdaSourceIds"] == B["rdaSourceIds"]
+    assert A["timestamp"] == B["timestamp"]
 
 
 def test_get_datasubject_id_cmd(mocker):
@@ -277,185 +297,230 @@ def test_get_datasubject_id_cmd(mocker):
     results = demisto.results.call_args[0]
     assert results[0]["Contents"] == mock_data.get(command_name, "")
 
-
-def test_create_ticket_cmd(mocker):
-    command_name = 'inventa-create-ticket'
-    method_name_1 = "prepare_ticket"
-    method_name_2 = "create_ticket"
-
-    mocker_automate(mocker, command_name, [method_name_1, method_name_2])
-
-    assert demisto.args()["datasubject_id"] == "TEST_DATASUBJECT_ID"
-    assert demisto.args()["reason"] == "TEST_REASON"
-
-    main()
-    assert demisto.results.call_count == 1
-    results = demisto.results.call_args[0]
-    assert results[0]["Contents"] == mock_data.get(command_name, "")
-
-
-def test_get_datasubject_details_cmd(mocker):
-    command_name = 'inventa-get-datasubject-details'
-    method_name = "get_ticket"
+def test_get_sources_cmd(mocker):
+    command_name = 'inventa-get-sources'
+    method_name = 'get_sources'
 
     mocker_automate(mocker, command_name, [method_name])
-
-    assert demisto.args()["ticket_id"] == "TEST_TICKET_ID"
+    
+    DATASUBJECT_ID = demisto.args().get("datasubject_id", "")
+    
+    assert DATASUBJECT_ID == "TEST_DATASUBJECT_ID"
+    
     main()
     assert demisto.results.call_count == 1
     results = demisto.results.call_args[0]
-    assert results[0]["Contents"] == mock_data.get(command_name, "")
+    A = results[0]["Contents"]["sources"][0]
+    B = mock_data.get(command_name, "")["sources"][0]
+    assert A["id"] == B["id"]
+    assert A["applianceName"] == B["applianceName"]
+    assert A["timestamp"] == B["timestamp"]
+    assert A["keyType"] == B["keyType"]
+    assert A["path"] == B["path"]
+    assert A["url"] == B["url"]
+    assert A["hostName"] == B["hostName"]
+    assert A["dbName"] == B["dbName"]
+    assert A["vendor"] == B["vendor"]
+    assert A["type"] == B["type"]
+    assert A["content"] == json.dumps(B["content"])
+    assert A["entityTypes"] == ", ".join(B["entityTypes"])
 
-
-def test_get_datasubjectid_from_ticket_cmd(mocker):
-    command_name = 'inventa-get-datasubject-id-from-ticket'
-    method_name = 'get_ticket'
+def test_get_sources_piis_cmd(mocker):
+    command_name = 'inventa-get-sources-piis'
+    method_name = 'get_sources'
 
     mocker_automate(mocker, command_name, [method_name])
-
-    assert demisto.args()["ticket_id"] == "TEST_TICKET_ID"
+    
+    DATASUBJECT_ID = demisto.args().get("datasubject_id", "")
+    
+    assert DATASUBJECT_ID == "TEST_DATASUBJECT_ID"
+    
     main()
     assert demisto.results.call_count == 1
     results = demisto.results.call_args[0]
-    assert results[0]["Contents"] == mock_data.get(command_name, "")
+    A = results[0]["Contents"]
+    B = mock_data.get(command_name, "")
+    assert A == B
 
 
-def test_get_dsar_piis_cmd(mocker):
-    command_name = 'inventa-get-dsar-piis'
-    method_name = "get_dsar"
+# def test_create_ticket_cmd(mocker):
+#     command_name = 'inventa-create-ticket'
+#     method_name_1 = "prepare_ticket"
+#     method_name_2 = "create_ticket"
 
-    mocker_automate(mocker, command_name, [method_name])
+#     mocker_automate(mocker, command_name, [method_name_1, method_name_2])
 
-    assert demisto.args()["ticket_id"] == "TEST_TICKET_ID"
-    main()
-    assert demisto.results.call_count == 1
-    results = demisto.results.call_args[0]
-    piis_1 = []
-    piis_2 = []
-    piis_1.extend(results[0]["Contents"]["piis"])
-    piis_2.extend(mock_data.get(command_name, "")["piis"])
-    piis_1.sort()
-    piis_2.sort()
-    assert piis_1 == piis_2
+#     assert demisto.args()["datasubject_id"] == "TEST_DATASUBJECT_ID"
+#     assert demisto.args()["reason"] == "TEST_REASON"
+
+#     main()
+#     assert demisto.results.call_count == 1
+#     results = demisto.results.call_args[0]
+#     assert results[0]["Contents"] == mock_data.get(command_name, "")
 
 
-def test_get_dsar_files_cmd(mocker):
-    command_name = 'inventa-get-dsar-files'
-    method_name = "get_dsar"
+# def test_get_datasubject_details_cmd(mocker):
+#     command_name = 'inventa-get-datasubject-details'
+#     method_name = "get_datasubject"
 
-    mocker_automate(mocker, command_name, [method_name])
+#     mocker_automate(mocker, command_name, [method_name])
 
-    assert demisto.args()["ticket_id"] == "TEST_TICKET_ID"
-    main()
-    assert demisto.results.call_count == 1
-    results = demisto.results.call_args[0]
-
-    files_1 = results[0]["Contents"]["files"]
-    files_2 = mock_data.get(command_name, "")["files"]
-
-    files_1.sort(key=lambda x: x["id"])
-    files_2.sort(key=lambda x: x["id"])
-
-    assert len(files_1) == len(files_2)
-
-    for index in range(0, len(files_1)):
-        file_1 = files_1[index]
-        file_2 = files_2[index]
-        entity_types_1 = file_1["entityTypes"]
-        entity_types_2 = file_2["entityTypes"]
-        entity_types_1 = set(entity_types_1.split(", "))
-        entity_types_2 = set(entity_types_2.split(", "))
-
-        assert entity_types_1 == entity_types_2
-        assert file_1["id"] == file_2["id"]
-        assert file_1["name"] == file_2["name"]
-        assert file_1["path"] == file_2["path"]
-        assert file_1["size"] == file_2["size"]
-        assert file_1["timestamp"] == file_2["timestamp"]
-        assert file_1["url"] == file_2["url"]
+#     assert demisto.args()["ticket_id"] == "TEST_TICKET_ID"
+#     main()
+#     assert demisto.results.call_count == 1
+#     results = demisto.results.call_args[0]
+#     assert results[0]["Contents"] == mock_data.get(command_name, "")
 
 
-def test_get_dsar_transactions_cmd(mocker):
-    command_name = 'inventa-get-dsar-transactions'
-    method_name = "get_dsar"
+# def test_get_datasubjectid_from_ticket_cmd(mocker):
+#     command_name = 'inventa-get-datasubject-id-from-ticket'
+#     method_name = 'get_ticket'
 
-    mocker_automate(mocker, command_name, [method_name])
+#     mocker_automate(mocker, command_name, [method_name])
 
-    assert demisto.args()["ticket_id"] == "TEST_TICKET_ID"
-    main()
-    assert demisto.results.call_count == 1
-    results = demisto.results.call_args[0]
-    assert results[0]["Contents"] == mock_data.get(command_name, "")
-
-
-def test_get_dsar_databases_cmd(mocker):
-    command_name = 'inventa-get-dsar-databases'
-    method_name = "get_dsar"
-
-    mocker_automate(mocker, command_name, [method_name])
-
-    assert demisto.args()["ticket_id"] == "TEST_TICKET_ID"
-    main()
-    assert demisto.results.call_count == 1
-    results = demisto.results.call_args[0]
-
-    databases_1 = results[0]["Contents"]["databases"]
-    databases_2 = mock_data.get(command_name, "")["databases"]
-
-    databases_1.sort(key=lambda x: f"{x['database']}.{x['name']}")
-    databases_2.sort(key=lambda x: f"{x['database']}.{x['name']}")
-
-    assert len(databases_1) == len(databases_2)
-
-    for index in range(0, len(databases_1)):
-        db_1 = databases_1[index]
-        db_2 = databases_2[index]
-        assert db_1["id"] == db_2["id"]
-        assert db_1["name"] == db_2["name"]
-        assert db_1["database"] == db_2["database"]
-        entity_types_1 = db_1["entityTypes"]
-        entity_types_2 = db_2["entityTypes"]
-        entity_types_1 = set(entity_types_1.split(", "))
-        entity_types_2 = set(entity_types_2.split(", "))
-        assert entity_types_1 == entity_types_2
+#     assert demisto.args()["ticket_id"] == "TEST_TICKET_ID"
+#     main()
+#     assert demisto.results.call_count == 1
+#     results = demisto.results.call_args[0]
+#     assert results[0]["Contents"] == mock_data.get(command_name, "")
 
 
-def test_get_dsar_dataassets_cmd(mocker):
-    command_name = 'inventa-get-dsar-dataassets'
-    method_name = "get_dsar"
+# def test_get_dsar_piis_cmd(mocker):
+#     command_name = 'inventa-get-dsar-piis'
+#     method_name = "get_dsar"
 
-    mocker_automate(mocker, command_name, [method_name])
+#     mocker_automate(mocker, command_name, [method_name])
 
-    assert demisto.args()["ticket_id"] == "TEST_TICKET_ID"
-    main()
-    assert demisto.results.call_count == 1
-    results = demisto.results.call_args[0]
+#     assert demisto.args()["ticket_id"] == "TEST_TICKET_ID"
+#     main()
+#     assert demisto.results.call_count == 1
+#     results = demisto.results.call_args[0]
+#     piis_1 = []
+#     piis_2 = []
+#     piis_1.extend(results[0]["Contents"]["piis"])
+#     piis_2.extend(mock_data.get(command_name, "")["piis"])
+#     piis_1.sort()
+#     piis_2.sort()
+#     assert piis_1 == piis_2
 
-    dataassets_1 = results[0]["Contents"]["dataAssets"]
-    dataassets_2 = mock_data.get(command_name, "")["dataAssets"]
 
-    dataassets_1.sort(key=lambda x: x["id"])
-    dataassets_2.sort(key=lambda x: x["id"])
+# def test_get_dsar_files_cmd(mocker):
+#     command_name = 'inventa-get-dsar-files'
+#     method_name = "get_dsar"
 
-    assert len(dataassets_1) == len(dataassets_2)
+#     mocker_automate(mocker, command_name, [method_name])
 
-    for index in range(0, len(dataassets_1)):
-        dataasset_1 = dataassets_1[index]
-        dataasset_2 = dataassets_2[index]
-        piis_1 = dataasset_1["piis"]
-        piis_2 = dataasset_2["piis"]
-        piis_1 = set(piis_1.split(", "))
-        piis_2 = set(piis_2.split(", "))
-        reasons_1 = dataasset_1["reasonsOfProcessing"]
-        reasons_2 = dataasset_2["reasonsOfProcessing"]
-        reasons_1 = set(reasons_1.split(", "))
-        reasons_2 = set(reasons_2.split(", "))
+#     assert demisto.args()["ticket_id"] == "TEST_TICKET_ID"
+#     main()
+#     assert demisto.results.call_count == 1
+#     results = demisto.results.call_args[0]
 
-        assert piis_1 == piis_2
-        assert dataasset_1["id"] == dataasset_2["id"]
-        assert dataasset_1["name"] == dataasset_2["name"]
-        assert dataasset_1["description"] == dataasset_2["description"]
-        assert reasons_1 == reasons_2
+#     files_1 = results[0]["Contents"]["files"]
+#     files_2 = mock_data.get(command_name, "")["files"]
+
+#     files_1.sort(key=lambda x: x["id"])
+#     files_2.sort(key=lambda x: x["id"])
+
+#     assert len(files_1) == len(files_2)
+
+#     for index in range(0, len(files_1)):
+#         file_1 = files_1[index]
+#         file_2 = files_2[index]
+#         entity_types_1 = file_1["entityTypes"]
+#         entity_types_2 = file_2["entityTypes"]
+#         entity_types_1 = set(entity_types_1.split(", "))
+#         entity_types_2 = set(entity_types_2.split(", "))
+
+#         assert entity_types_1 == entity_types_2
+#         assert file_1["id"] == file_2["id"]
+#         assert file_1["name"] == file_2["name"]
+#         assert file_1["path"] == file_2["path"]
+#         assert file_1["size"] == file_2["size"]
+#         assert file_1["timestamp"] == file_2["timestamp"]
+#         assert file_1["url"] == file_2["url"]
+
+
+# def test_get_dsar_transactions_cmd(mocker):
+#     command_name = 'inventa-get-dsar-transactions'
+#     method_name = "get_dsar"
+
+#     mocker_automate(mocker, command_name, [method_name])
+
+#     assert demisto.args()["ticket_id"] == "TEST_TICKET_ID"
+#     main()
+#     assert demisto.results.call_count == 1
+#     results = demisto.results.call_args[0]
+#     assert results[0]["Contents"] == mock_data.get(command_name, "")
+
+
+# def test_get_dsar_databases_cmd(mocker):
+#     command_name = 'inventa-get-dsar-databases'
+#     method_name = "get_dsar"
+
+#     mocker_automate(mocker, command_name, [method_name])
+
+#     assert demisto.args()["ticket_id"] == "TEST_TICKET_ID"
+#     main()
+#     assert demisto.results.call_count == 1
+#     results = demisto.results.call_args[0]
+
+#     databases_1 = results[0]["Contents"]["databases"]
+#     databases_2 = mock_data.get(command_name, "")["databases"]
+
+#     databases_1.sort(key=lambda x: f"{x['database']}.{x['name']}")
+#     databases_2.sort(key=lambda x: f"{x['database']}.{x['name']}")
+
+#     assert len(databases_1) == len(databases_2)
+
+#     for index in range(0, len(databases_1)):
+#         db_1 = databases_1[index]
+#         db_2 = databases_2[index]
+#         assert db_1["id"] == db_2["id"]
+#         assert db_1["name"] == db_2["name"]
+#         assert db_1["database"] == db_2["database"]
+#         entity_types_1 = db_1["entityTypes"]
+#         entity_types_2 = db_2["entityTypes"]
+#         entity_types_1 = set(entity_types_1.split(", "))
+#         entity_types_2 = set(entity_types_2.split(", "))
+#         assert entity_types_1 == entity_types_2
+
+
+# def test_get_dsar_dataassets_cmd(mocker):
+#     command_name = 'inventa-get-dsar-dataassets'
+#     method_name = "get_dsar"
+
+#     mocker_automate(mocker, command_name, [method_name])
+
+#     assert demisto.args()["ticket_id"] == "TEST_TICKET_ID"
+#     main()
+#     assert demisto.results.call_count == 1
+#     results = demisto.results.call_args[0]
+
+#     dataassets_1 = results[0]["Contents"]["dataAssets"]
+#     dataassets_2 = mock_data.get(command_name, "")["dataAssets"]
+
+#     dataassets_1.sort(key=lambda x: x["id"])
+#     dataassets_2.sort(key=lambda x: x["id"])
+
+#     assert len(dataassets_1) == len(dataassets_2)
+
+#     for index in range(0, len(dataassets_1)):
+#         dataasset_1 = dataassets_1[index]
+#         dataasset_2 = dataassets_2[index]
+#         piis_1 = dataasset_1["piis"]
+#         piis_2 = dataasset_2["piis"]
+#         piis_1 = set(piis_1.split(", "))
+#         piis_2 = set(piis_2.split(", "))
+#         reasons_1 = dataasset_1["reasonsOfProcessing"]
+#         reasons_2 = dataasset_2["reasonsOfProcessing"]
+#         reasons_1 = set(reasons_1.split(", "))
+#         reasons_2 = set(reasons_2.split(", "))
+
+#         assert piis_1 == piis_2
+#         assert dataasset_1["id"] == dataasset_2["id"]
+#         assert dataasset_1["name"] == dataasset_2["name"]
+#         assert dataasset_1["description"] == dataasset_2["description"]
+#         assert reasons_1 == reasons_2
 
 
 def test_validate_incident_inputs_cmd(mocker):
