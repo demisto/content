@@ -1,0 +1,18 @@
+{
+    "defaultIncidentType": "TOPdesk Incident",
+    "description": "",
+    "feed": false,
+    "id": "1097be01-8cc7-4594-8c63-ba92eca5dc8e",
+    "keyTypeMap": {},
+    "name": "TOPdesk Incident Classifier",
+    "propagationLabels": [
+        "all"
+    ],
+    "transformer": {
+        "complex": null,
+        "simple": ""
+    },
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.2.0"
+}

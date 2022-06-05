@@ -205,12 +205,10 @@ class Client(BaseClient):
         else:
             endpoint = f"/incidents/number/{args['number']}"
 
-        request_params = prepare_touch_request_params(args)
-        demisto.debug(f"SZU args=[{args}] json=[{request_params}]")
         return self._http_request(
             method='PUT',
             url_suffix=endpoint,
-            json_data=request_params
+            json_data=prepare_touch_request_params(args)
         )
 
     def incident_do(self, action: str, incident_id: Optional[str], incident_number: Optional[str],
@@ -1433,65 +1431,69 @@ def update_remote_system_command(client: Client, args: Dict[str, Any], params: D
     if parsed_args.delta:
         demisto.debug(f'Got the following delta keys {str(list(parsed_args.delta.keys()))}')
 
-    # ticket_type = client.ticket_type
-    ticket_id = parsed_args.remote_incident_id
-    if parsed_args.incident_changed:
-        demisto.debug(f'Incident changed: {parsed_args.incident_changed}')
-        # Close ticket if needed
-        update_args = {
-            'id': ticket_id
-        }
-        for key in parsed_args.delta:
-            if key in TOPDESK_ARGS:
-                update_args[key] = parsed_args.delta[key]
-        if parsed_args.inc_status == IncidentStatus.DONE and params.get('close_ticket'):
-            # Set status TOPdesk ticket to Closed
-            demisto.debug('Close TOPdesk ticket')
-            update_args['processingStatus'] = 'Closed'
+    try:
+        # ticket_type = client.ticket_type
+        ticket_id = parsed_args.remote_incident_id
+        if parsed_args.incident_changed:
+            demisto.debug(f'Incident changed: {parsed_args.incident_changed}')
+            # Close ticket if needed
+            update_args = {
+                'id': ticket_id
+            }
+            for key in parsed_args.delta:
+                if key in TOPDESK_ARGS:
+                    update_args[key] = parsed_args.delta[key]
+            if parsed_args.inc_status == IncidentStatus.DONE and params.get('close_ticket'):
+                # Set status TOPdesk ticket to Closed
+                demisto.debug('Close TOPdesk ticket')
+                update_args['processingStatus'] = 'Closed'
 
-        client.update_incident(update_args)
+            client.update_incident(update_args)
 
-    entries = parsed_args.entries
-    if entries:
-        demisto.debug(f'New entries {entries}')
+        entries = parsed_args.entries
+        if entries:
+            demisto.debug(f'New entries {entries}')
 
-        for entry in entries:
-            demisto.debug(f'Sending entry {entry.get("id")}, type: {entry.get("type")}')
-            # Mirroring files as entries
-            if entry.get('type') == EntryType.FILE:
-                path_res = demisto.getFilePath(entry.get('id'))
-                full_file_name = path_res.get('name')
-                file_name, file_extension = os.path.splitext(full_file_name)
-                if not file_extension:
-                    file_extension = ''
-                client.attachment_upload(incident_id=ticket_id, incident_number=None, file_entry=entry.get('id'),
-                                         file_name=file_name + '_mirrored_from_xsoar' + file_extension,
-                                         invisible_for_caller=False,
-                                         file_description=f"Upload from xsoar: {file_name}.{file_extension}")
-            else:
-                # Mirroring comment and work notes as entries
-                xargs = {
-                    'id': ticket_id,
-                    'action': '',
-                    'action_invisible_for_caller': False,
-                }
-                tags = entry.get('tags', [])
-                if params.get('work_notes_tag') in tags:
-                    xargs['action_invisible_for_caller'] = True
-                # Sometimes user is an empty str, not None, therefore nothing is displayed
-                user = entry.get('user', 'dbot')
-                if user:
-                    duser = demisto.findUser(username=user)
-                    name = duser['name']
+            for entry in entries:
+                demisto.debug(f'Sending entry {entry.get("id")}, type: {entry.get("type")}')
+                # Mirroring files as entries
+                if entry.get('type') == EntryType.FILE:
+                    path_res = demisto.getFilePath(entry.get('id'))
+                    full_file_name = path_res.get('name')
+                    file_name, file_extension = os.path.splitext(full_file_name)
+                    if not file_extension:
+                        file_extension = ''
+                    client.attachment_upload(incident_id=ticket_id, incident_number=None, file_entry=entry.get('id'),
+                                             file_name=file_name + '_mirrored_from_xsoar' + file_extension,
+                                             invisible_for_caller=False,
+                                             file_description=f"Upload from xsoar: {file_name}.{file_extension}")
                 else:
-                    name = 'Xsoar dbot'
+                    # Mirroring comment and work notes as entries
+                    xargs = {
+                        'id': ticket_id,
+                        'action': '',
+                        'action_invisible_for_caller': False,
+                    }
+                    tags = entry.get('tags', [])
+                    if params.get('work_notes_tag') in tags:
+                        xargs['action_invisible_for_caller'] = True
+                    # Sometimes user is an empty str, not None, therefore nothing is displayed
+                    user = entry.get('user', 'dbot')
+                    if user:
+                        duser = demisto.findUser(username=user)
+                        name = duser['name']
+                    else:
+                        name = 'Xsoar dbot'
 
-                text = f"<i><u>Update from {name}:</u></i><br><br>{str(entry.get('contents', ''))}" \
-                    + "<br><br><i>Mirrored from Cortex XSOAR</i>"
+                    text = f"<i><u>Update from {name}:</u></i><br><br>{str(entry.get('contents', ''))}" \
+                        + "<br><br><i>Mirrored from Cortex XSOAR</i>"
 
-                xargs['action'] = text
-                client.update_incident(xargs)
+                    xargs['action'] = text
+                    client.update_incident(xargs)
 
+    except Exception as e:
+        demisto.error(f'Error in TOPdesk outgoing mirror for incident or detection {ticket_id}. '
+                      f'Error message: {str(e)}')
     return ticket_id
 
 
