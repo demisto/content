@@ -83,15 +83,17 @@ def read_log_json():
     limit = int(demisto.args().get('limit'))
     # Point to all the documents
     cursor = COLLECTION.find({}, {'_id': False}).limit(limit)
+    cursor_count = COLLECTION.find({}, {'_id': False}).count()
     # Create an empty log list
     entries = []
     # Iterate through those documents
-    if cursor is not None:
+    if cursor_count > 0:
         for i in cursor:
             # Append log entry to list
             entries.append(i)
         return_json = {COLLECTION_NAME: entries}
-        human_readable = tableToMarkdown(f'The log documents/records for collection "{COLLECTION_NAME}"', return_json)
+        human_readable = tableToMarkdown(f'The log documents/records for collection "{COLLECTION_NAME}"',
+                                         return_json.get(COLLECTION_NAME))
         return human_readable, {}, {}
     return 'MongoDB - no documents/records - Log collection is empty', {}, {}
 
