@@ -3,6 +3,11 @@ commonfields:
   id: Slack Event Collector
   version: -1
 configuration:
+- defaultvalue: https://api.slack.com/audit/v1/
+  display: Server URL
+  name: url
+  type: 0
+  required: true
 - display: ''
   displaypassword: User Token
   name: user_token
