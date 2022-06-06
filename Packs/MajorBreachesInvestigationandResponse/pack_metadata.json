@@ -76,6 +76,10 @@
             "mandatory": false,
             "display_name": "CVE-2022-30190 - MSDT RCE"
         },
+        "CVE_2021_26134": {
+            "mandatory": false,
+            "display_name": "CVE-2022-26134 - Confluence RCE"
+        },
         "ServiceNow": {
             "mandatory": false,
             "display_name": "ServiceNow"
