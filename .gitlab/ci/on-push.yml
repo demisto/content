@@ -125,6 +125,7 @@ create-instances:
     - section_end "Prepare Content Packs for Testing"
 
     - section_start "Create Instances"
+    - python3 -m pip install google-cloud-compute
     - python3 ./gcp/create_instance.py --env-type "$IFRA_ENV_TYPE" --outfile "$ARTIFACTS_FOLDER/env_results.json" --creds $CONTENET_BUILD_GCP
     - section_end "Create Instances"
 
