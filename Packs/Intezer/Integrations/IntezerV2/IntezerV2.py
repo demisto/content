@@ -303,6 +303,7 @@ def get_analysis_code_reuse_command(intezer_api: IntezerApi, args: dict) -> Comm
                                                 composed_analysis_id=analysis_id,
                                                 sha256='',
                                                 source='',
+                                                extraction_info=None,
                                                 api=intezer_api)
 
         sub_analysis_code_reuse = sub_analysis.code_reuse
@@ -311,6 +312,7 @@ def get_analysis_code_reuse_command(intezer_api: IntezerApi, args: dict) -> Comm
             return _get_missing_analysis_result(analysis_id=str(analysis_id))
         elif error.response.status_code == HTTPStatus.CONFLICT:
             return _get_analysis_running_result(analysis_id=str(analysis_id))
+        raise
 
     if not sub_analysis_code_reuse:
         return CommandResults(
@@ -361,6 +363,7 @@ def get_analysis_metadata_command(intezer_api: IntezerApi, args: dict) -> Comman
                                                 composed_analysis_id=analysis_id,
                                                 sha256='',
                                                 source='',
+                                                extraction_info=None,
                                                 api=intezer_api)
 
         sub_analysis_metadata = sub_analysis.metadata
@@ -369,7 +372,7 @@ def get_analysis_metadata_command(intezer_api: IntezerApi, args: dict) -> Comman
             return _get_missing_analysis_result(analysis_id=str(analysis_id))
         elif error.response.status_code == HTTPStatus.CONFLICT:
             return _get_analysis_running_result(analysis_id=str(analysis_id))
-
+        raise
     metadata_table = tableToMarkdown('Analysis Metadata', sub_analysis_metadata)
 
     is_root = sub_analysis_id == 'root'
