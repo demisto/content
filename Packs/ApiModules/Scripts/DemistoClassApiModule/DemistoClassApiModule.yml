@@ -14,6 +14,6 @@ scripttarget: 0
 dependson: {}
 timeout: 0s
 dockerimage: demisto/python3:3.10.1.25933
-fromversion: 7.0.0
+fromversion: 6.8.0
 tests:
 - No test

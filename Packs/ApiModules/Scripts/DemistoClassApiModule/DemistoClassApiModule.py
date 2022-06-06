@@ -14,7 +14,7 @@ class DemistoGeneral:
         self.callingContext = context
         self.is_debug = False
         self._args = dict(self.callingContext.get(u'args', {}))
-        if 'demisto_machine_learning_magic_key' in  self._args:
+        if 'demisto_machine_learning_magic_key' in self._args:
             import os
             os.environ['DEMISTO_MACHINE_LEARNING_MAGIC_KEY'] = self._args['demisto_machine_learning_magic_key']
         is_debug = self.callingContext.get('context', {}).get('IsDebug', False)
@@ -56,13 +56,18 @@ class DemistoGeneral:
     def getFilePath(self, id):
         return self.__do({'type': 'getFileByEntryID', 'command': 'getFilePath', 'args': {'id': id}})
 
-    def internalHttpRequest(self, method, uri, body = None):
-        return self.__do({'type': 'executeCommand', 'command': 'internalHttpRequest', 'args': {'method': method, 'uri': uri, 'body': body}})
+    def internalHttpRequest(self, method, uri, body=None):
+        return self.__do({'type': 'executeCommand', 'command': 'internalHttpRequest',
+                          'args': {'method': method, 'uri': uri, 'body': body}})
 
-    def searchIndicators(self, value = None, query = None, size = None, page=None, sort=None, fromDate = None, toDate = None, searchAfter = None, populateFields = None):
-        return self.__do({'type': 'executeCommand', 'command': 'searchIndicators', 'args': {'value': value, 'query': query, 'size': size, 'page': page, 'sort': sort, 'fromDate': fromDate, 'searchAfter': searchAfter, 'toDate': toDate, 'populateFields': populateFields}})
+    def searchIndicators(self, value=None, query=None, size=None, page=None, sort=None, fromDate=None, toDate=None,
+                         searchAfter=None, populateFields=None):
+        return self.__do({'type': 'executeCommand', 'command': 'searchIndicators',
+                          'args': {'value': value, 'query': query, 'size': size, 'page': page, 'sort': sort,
+                                   'fromDate': fromDate, 'searchAfter': searchAfter, 'toDate': toDate,
+                                   'populateFields': populateFields}})
 
-    def searchRelationships(self, filter = None):
+    def searchRelationships(self, filter=None):
         return self.__do({'type': 'executeCommand', 'command': 'searchRelationships', 'args': {'filter': filter}})
 
     def getLicenseID(self):
@@ -197,17 +202,18 @@ class DemistoScript(DemistoGeneral):
         return self.__do({'type': 'setContext', 'name': name, 'value': value})
 
     def mapObject(self, sourceObject, mapper, mapperType=""):
-        return self.__do({'type': 'executeCommand', 'command': 'mapObject', 'args': {'source': sourceObject, 'mapper': mapper, 'mapperType': mapperType}})
+        return self.__do({'type': 'executeCommand', 'command': 'mapObject',
+                          'args': {'source': sourceObject, 'mapper': mapper, 'mapperType': mapperType}})
 
     def getAutoFocusApiKey(self):
-       resObj = self.__do({'type': 'executeCommand', 'command': 'getLicenseCustomField', 'args': {'key': 'autofocus'}})
-       if resObj != None:
-           return resObj['value']
+        resObj = self.__do({'type': 'executeCommand', 'command': 'getLicenseCustomField', 'args': {'key': 'autofocus'}})
+        if resObj != None:
+            return resObj['value']
 
     def getLicenseCustomField(self, key):
-       resObj = self.__do({'type': 'executeCommand', 'command': 'getLicenseCustomField', 'args': {'key': key}})
-       if resObj != None:
-           return resObj['value']
+        resObj = self.__do({'type': 'executeCommand', 'command': 'getLicenseCustomField', 'args': {'key': key}})
+        if resObj != None:
+            return resObj['value']
 
     def convert(self, results):
         """ Convert whatever result into entry """
@@ -224,7 +230,6 @@ class DemistoScript(DemistoGeneral):
         if sys.version_info.major >= 3 and type(results) is bytes:
             return {'Type': 1, 'Contents': results.decode('utf-8'), 'ContentsFormat': 'text'}
         return {'Type': 1, 'Contents': str(results), 'ContentsFormat': 'text'}
-
 
     def results(self, results):
         res = []
@@ -245,7 +250,6 @@ class DemistoIntegration(DemistoGeneral):
         self._heartbeat_enabled = False
         if context.get('command') == 'long-running-execution' and context.get('is_running_heartbeat'):
             self.long_running_heartbeat_thread()
-
 
     def long_running_heartbeat_thread(self, enable=True):
         if self._heartbeat_enabled == enable:
@@ -304,66 +308,81 @@ class DemistoIntegration(DemistoGeneral):
         return resObj['context']
 
     def setIntegrationContext(self, value):
-        return self.__do({'type': 'executeCommand', 'command': 'setIntegrationContext', 'args': {'value': value, 'version': {"version":-1,"sequenceNumber":-1,"primaryTerm":-1}, 'sync': False}})
+        return self.__do({'type': 'executeCommand', 'command': 'setIntegrationContext',
+                          'args': {'value': value, 'version': {"version": -1, "sequenceNumber": -1, "primaryTerm": -1},
+                                   'sync': False}})
 
-    def getIntegrationContextVersioned(self, refresh = False):
+    def getIntegrationContextVersioned(self, refresh=False):
         return self.__do({'type': 'executeCommand', 'command': 'getIntegrationContext', 'args': {'refresh': refresh}})
 
-    def setIntegrationContextVersioned(self, value, version, sync = False):
-        return self.__do({'type': 'executeCommand', 'command': 'setIntegrationContext', 'args': {'value': value, 'version': version, 'sync': sync}})
+    def setIntegrationContextVersioned(self, value, version, sync=False):
+        return self.__do({'type': 'executeCommand', 'command': 'setIntegrationContext',
+                          'args': {'value': value, 'version': version, 'sync': sync}})
 
-    def createIncidents(self, incidents, lastRun = None, userID = None):
-        return self.__do({'type': 'executeCommand', 'command': 'createIncidents', 'args': {'incidents': incidents, 'lastRun': lastRun, 'userID': userID}})
+    def createIncidents(self, incidents, lastRun=None, userID=None):
+        return self.__do({'type': 'executeCommand', 'command': 'createIncidents',
+                          'args': {'incidents': incidents, 'lastRun': lastRun, 'userID': userID}})
 
-    def createAlerts(self, alerts, lastRun = None, userID = None):
-        return self.__do({'type': 'executeCommand', 'command': 'createAlerts', 'args': {'alerts': alerts, 'lastRun': lastRun, 'userID': userID}})
+    def createAlerts(self, alerts, lastRun=None, userID=None):
+        return self.__do({'type': 'executeCommand', 'command': 'createAlerts',
+                          'args': {'alerts': alerts, 'lastRun': lastRun, 'userID': userID}})
 
-    def createIndicators(self, indicators, lastRun = None, noUpdate = False):
-        return self.__do({'type': 'executeCommand', 'command': 'createIndicators', 'args': {'indicators': indicators, 'lastRun': lastRun, 'noUpdate': noUpdate}})
+    def createIndicators(self, indicators, lastRun=None, noUpdate=False):
+        return self.__do({'type': 'executeCommand', 'command': 'createIndicators',
+                          'args': {'indicators': indicators, 'lastRun': lastRun, 'noUpdate': noUpdate}})
 
     def getIndexHash(self):
-            return self.__do({'type': 'executeCommand', 'command': 'getIndexHash'})
+        return self.__do({'type': 'executeCommand', 'command': 'getIndexHash'})
 
     def updateModuleHealth(self, err, is_error=False):
-        return self.__do({'type': 'executeCommand', 'command': 'updateModuleHealth', 'args': {'err': err, 'isError': is_error}})
+        return self.__do(
+            {'type': 'executeCommand', 'command': 'updateModuleHealth', 'args': {'err': err, 'isError': is_error}})
 
-    def addEntry(self, id, entry, username = None, email = None, footer = None):
+    def addEntry(self, id, entry, username=None, email=None, footer=None):
         return self.__do({'type': 'executeCommand', 'command': 'addEntry', 'args': {'id': id, 'username': username,
-                        'email': email, 'entry': entry, 'footer': footer}})
+                                                                                    'email': email, 'entry': entry,
+                                                                                    'footer': footer}})
 
-    def directMessage(self, message, username = None, email = None, anyoneCanOpenIncidents = None):
+    def directMessage(self, message, username=None, email=None, anyoneCanOpenIncidents=None):
         tmp = self.__do({'type': 'executeCommand', 'command': 'directMessage', 'args': {'message': message,
-                        'username': username, 'email': email, 'anyoneCanOpenIncidents': anyoneCanOpenIncidents,
-                        'anyoneCanOpenAlerts': anyoneCanOpenIncidents}})
+                                                                                        'username': username,
+                                                                                        'email': email,
+                                                                                        'anyoneCanOpenIncidents': anyoneCanOpenIncidents,
+                                                                                        'anyoneCanOpenAlerts': anyoneCanOpenIncidents}})
         if tmp != None:
             return tmp["res"]
 
-    def mirrorInvestigation(self, id, mirrorType, autoClose = False):
+    def mirrorInvestigation(self, id, mirrorType, autoClose=False):
         return self.__do({'type': 'executeCommand', 'command': 'mirrorInvestigation', 'args': {'id': id,
-                        'mirrorType': mirrorType, 'autoClose': autoClose}})
+                                                                                               'mirrorType': mirrorType,
+                                                                                               'autoClose': autoClose}})
 
     def findUser(self, username="", email=""):
-            return self.__do({'type': 'executeCommand', 'command': 'findUser', 'args': {'username': username, 'email': email}})
+        return self.__do(
+            {'type': 'executeCommand', 'command': 'findUser', 'args': {'username': username, 'email': email}})
 
     def handleEntitlementForUser(self, incidentID, guid, email, content, taskID=""):
-        return self.__do({'type': 'executeCommand', 'command': 'handleEntitlementForUser', 'args': {'incidentID': incidentID, 'alertID': incidentID,
-        'guid': guid, 'taskID': taskID, 'email': email, 'content': content}})
+        return self.__do({'type': 'executeCommand', 'command': 'handleEntitlementForUser',
+                          'args': {'incidentID': incidentID, 'alertID': incidentID,
+                                   'guid': guid, 'taskID': taskID, 'email': email, 'content': content}})
 
     def mapObject(self, sourceObject, mapper, mapperType=""):
-        return self.__do({'type': 'executeCommand', 'command': 'mapObject', 'args': {'source': sourceObject, 'mapper': mapper, 'mapperType': mapperType}})
+        return self.__do({'type': 'executeCommand', 'command': 'mapObject',
+                          'args': {'source': sourceObject, 'mapper': mapper, 'mapperType': mapperType}})
 
     def getAutoFocusApiKey(self):
-       resObj = self.__do({'type': 'executeCommand', 'command': 'getLicenseCustomField', 'args': {'key': 'autofocus'}})
-       if resObj != None:
-           return resObj['value']
+        resObj = self.__do({'type': 'executeCommand', 'command': 'getLicenseCustomField', 'args': {'key': 'autofocus'}})
+        if resObj != None:
+            return resObj['value']
 
     def getLicenseCustomField(self, key):
-       resObj = self.__do({'type': 'executeCommand', 'command': 'getLicenseCustomField', 'args': {'key': key}})
-       if resObj != None:
-           return resObj['value']
+        resObj = self.__do({'type': 'executeCommand', 'command': 'getLicenseCustomField', 'args': {'key': key}})
+        if resObj != None:
+            return resObj['value']
 
     def _apiCall(self, name, params=None, data=None):
-        return self.__do({'type': 'executeCommand', 'command': '_apiCall', 'args': {'name': name, 'params': params, 'data': data}})
+        return self.__do(
+            {'type': 'executeCommand', 'command': '_apiCall', 'args': {'name': name, 'params': params, 'data': data}})
 
     def params(self):
         return self.callingContext.get(u'params', {})
@@ -419,8 +438,12 @@ class DemistoIntegration(DemistoGeneral):
     def credentials(self, credentials):
         self.results({'Type': 1, 'Contents': json.dumps(credentials), 'ContentsFormat': 'json'})
 
+
 is_integ_script = context['integration']
 if is_integ_script:
+    if "demisto" in locals():
+        # stopping `_heartbeat_thread` if was created for demisto class in server
+        demisto._heartbeat_enabled = False
     demisto = DemistoIntegration(context)
 else:
     demisto = DemistoScript(context)
@@ -433,6 +456,7 @@ except ImportError:
     import builtins as __builtin__
     from io import StringIO
 
+
 def demisto_print(*args):
     global demisto
     output = StringIO()
@@ -440,6 +464,5 @@ def demisto_print(*args):
     result = output.getvalue().strip()
     demisto.log(result)
 
-print = demisto_print
 
-###CODE_HERE###
+print = demisto_print
