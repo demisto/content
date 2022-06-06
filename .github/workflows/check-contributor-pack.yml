@@ -16,7 +16,7 @@ jobs:
         uses: actions/checkout@v3
       - name: Is Up To date
         run: |
-            ./Tests/scripts/is_file_up_to_date.sh Utils/request_contributor_review.py ${GITHUB_REF##*/}
+            sh -x Tests/scripts/is_file_up_to_date.sh Utils/request_contributor_review.py ${GITHUB_REF##*/}
 
       - name: Setup Python
         uses: actions/setup-python@v3
