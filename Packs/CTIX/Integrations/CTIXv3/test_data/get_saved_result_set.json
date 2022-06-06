@@ -1,0 +1,30 @@
+{
+	"next": null,
+	"page_size": 10,
+	"previous": null,
+	"results": [
+	  {
+		"created_by": {
+		  "email": "system.default@cyware.com",
+		  "first_name": "System",
+		  "id": "e99b5f93-4ae8-4560-a848-a4fbae3f4f26",
+		  "last_name": "Default"
+		},
+		"description": null,
+		"editable": false,
+		"id": "d5b54bc7-3b3f-424b-b08d-5e8cf746e998",
+		"is_threat_data_search": true,
+		"meta_data": null,
+		"name": "Indicator",
+		"order": 0,
+		"pinned": false,
+		"query": "type =indicator",
+		"shared_type": "global",
+		"shared_users": [
+		  
+		],
+		"type": "cql"
+	  }
+	],
+	"total": 1
+}
