@@ -296,7 +296,6 @@ def get_analysis_sub_analyses_command(intezer_api: IntezerApi, args: dict) -> Co
 def get_analysis_code_reuse_command(intezer_api: IntezerApi, args: dict) -> CommandResults:
     analysis_id = args.get('analysis_id')
     sub_analysis_id = args.get('sub_analysis_id', 'root')
-    sub_analysis_code_reuse = None
 
     try:
         sub_analysis: SubAnalysis = SubAnalysis(analysis_id=sub_analysis_id,
@@ -397,6 +396,45 @@ def get_analysis_metadata_command(intezer_api: IntezerApi, args: dict) -> Comman
         readable_output=metadata_table,
         outputs=context_json,
         raw_response=sub_analysis_metadata
+    )
+
+
+def get_analysis_iocs_command(intezer_api: IntezerApi, args: dict) -> CommandResults:
+    analysis_id = args.get('analysis_id')
+
+    try:
+        analysis = FileAnalysis.from_analysis_id(analysis_id, api=intezer_api)
+    except HTTPError as error:
+        if error.response.status_code == HTTPStatus.CONFLICT:
+            return _get_analysis_running_result(analysis_id=str(analysis_id))
+        raise
+
+    if not analysis:
+        return _get_missing_analysis_result(analysis_id=str(analysis_id))
+
+    iocs = analysis.iocs
+    readable_output = ''
+    if iocs:
+        network_iocs = iocs.get('network')
+        if network_iocs:
+            readable_output += tableToMarkdown('Network IOCs', network_iocs)
+        files_iocs = iocs.get('files')
+        if files_iocs:
+            readable_output += tableToMarkdown('Files IOCs', files_iocs)
+    else:
+        readable_output = 'No IOCs found'
+
+    context_json = {
+        'Intezer.Analysis(obj.ID == val.ID)': {
+            'ID': analysis_id,
+            'IOCs': iocs
+        }
+    }
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs=context_json,
+        raw_response=iocs
     )
 
 
@@ -615,6 +653,7 @@ def main():
             'intezer-get-sub-analyses': get_analysis_sub_analyses_command,
             'intezer-get-analysis-code-reuse': get_analysis_code_reuse_command,
             'intezer-get-analysis-metadata': get_analysis_metadata_command,
+            'intezer-get-analysis-iocs': get_analysis_iocs_command,
             'intezer-get-family-info': get_family_info_command
         }
 
