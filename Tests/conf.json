@@ -5152,6 +5152,11 @@
             "fromversion": "6.8.0"
         },
         {
+            "integrations": "Salesforce Event Collector",
+            "playbookID": "Salesforce Event Collector-test",
+            "fromversion": "6.8.0"
+        },
+        {
             "integrations": [
                 "Github Event Collector"
             ],
@@ -5411,6 +5416,7 @@
         "SentinelOne V2": "License expired issue #24933",
         "LogRhythm": "The integration is deprecated",
         "Alibaba Action Trail Event Collector": "XSIAM integration",
+        "Salesforce Event Collector": "XSIAM integration",
         "Github Event Collector" : "XSIAM integration"
     },
     "nightly_integrations": [
