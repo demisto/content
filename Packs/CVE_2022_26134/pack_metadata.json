@@ -1,5 +1,5 @@
 {
-    "name": "CVE-2022-26134 - Confluence Pre-Auth RCE",
+    "name": "CVE-2022-26134 - Confluence RCE",
     "description": "This pack handles Confluence RCE CVE-2022-26134 vulnerability, a 0-day exploit via OGNL injection in Confluence Server & Data Center. ",
     "support": "xsoar",
     "currentVersion": "1.0.2",
