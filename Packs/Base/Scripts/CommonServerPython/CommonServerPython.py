@@ -137,7 +137,10 @@ def fix_traceback_line_numbers(trace_str):
     return trace_str
 
 
-from DemistoClassApiModule import *
+try:
+    from DemistoClassApiModule import *
+except Exception:
+    pass
 
 
 OS_LINUX = False
@@ -10476,6 +10479,7 @@ def send_events_to_xsiam(events, vendor, product, data_format=None):
         raise DemistoException(header_msg + res.get('error'))
 
     demisto.updateModuleHealth({'eventsPulled': amount_of_events})
+
 
 ###########################################
 #     DO NOT ADD LINES AFTER THIS ONE     #

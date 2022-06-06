@@ -7,7 +7,7 @@ import sys
 SERVER_ERROR_MARKER = '[ERROR-fd5a7750-7182-4b38-90ba-091824478903]'
 
 
-class DemistoScript:
+class DemistoGeneral:
     """Wrapper class to interface with the Demisto server via stdin, stdout"""
 
     def __init__(self, context):
@@ -30,19 +30,13 @@ class DemistoScript:
             self.__stdout_lock = Lock()
 
     def log(self, msg):
-        self.__do_no_res({'type': 'entryLog', 'args': {'message': msg}})
+        pass
 
     def investigation(self):
         return self.callingContext[u'context'][u'Inv']
 
-    def incidents(self):
-        return self.callingContext[u'context'][u'Incidents']
-
     def incident(self):
-        return self.incidents()[0]
-
-    def alerts(self):
-        return self.incidents()
+        pass
 
     def alert(self):
         return self.incident()
@@ -65,7 +59,7 @@ class DemistoScript:
     def internalHttpRequest(self, method, uri, body = None):
         return self.__do({'type': 'executeCommand', 'command': 'internalHttpRequest', 'args': {'method': method, 'uri': uri, 'body': body}})
 
-    def searchIndicators(self, value = None, query = None, size = None, page=None, sort = None, fromDate = None, toDate = None, searchAfter = None, populateFields = None):
+    def searchIndicators(self, value = None, query = None, size = None, page=None, sort=None, fromDate = None, toDate = None, searchAfter = None, populateFields = None):
         return self.__do({'type': 'executeCommand', 'command': 'searchIndicators', 'args': {'value': value, 'query': query, 'size': size, 'page': page, 'sort': sort, 'fromDate': fromDate, 'searchAfter': searchAfter, 'toDate': toDate, 'populateFields': populateFields}})
 
     def searchRelationships(self, filter = None):
@@ -83,18 +77,6 @@ class DemistoScript:
             else:
                 return defaultParam
         return obj
-
-    def gets(self, obj, field):
-        return str(self.get(obj, field))
-
-    def getArg(self, arg, defaultParam=None):
-        return self.get(self.callingContext, 'args.' + arg, defaultParam)
-
-    def execute(self, module, command, args):
-        return self.__do({'type': 'execute', 'module': module, 'command': command.strip(), 'args': args})
-
-    def executeCommand(self, command, args):
-        return self.__do({'type': 'executeCommand', 'command': command.strip(), 'args': args})
 
     def demistoUrls(self):
         return self.__do({'type': 'demistoUrls'})
@@ -120,30 +102,11 @@ class DemistoScript:
         argsObj["args"] = list(args)
         self.__do({'type': 'log', 'command': 'debug', 'args': argsObj})
 
-    def getAllSupportedCommands(self):
-        return self.__do({'type': 'getAllModulesSupportedCmds'})
-
-    def getModules(self):
-        return self.__do({'type': 'getAllModules'})
-
-    def setContext(self, name, value):
-        return self.__do({'type': 'setContext', 'name': name, 'value': value})
+    def gets(self, obj, field):
+        return str(self.get(obj, field))
 
     def dt(self, data, q):
         return self.__do({'type': 'dt', 'name': q, 'value': data})['result']
-
-    def mapObject(self, sourceObject, mapper, mapperType=""):
-        return self.__do({'type': 'executeCommand', 'command': 'mapObject', 'args': {'source': sourceObject, 'mapper': mapper, 'mapperType': mapperType}})
-
-    def getAutoFocusApiKey(self):
-       resObj = self.__do({'type': 'executeCommand', 'command': 'getLicenseCustomField', 'args': {'key': 'autofocus'}})
-       if resObj != None:
-           return resObj['value']
-
-    def getLicenseCustomField(self, key):
-       resObj = self.__do({'type': 'executeCommand', 'command': 'getLicenseCustomField', 'args': {'key': key}})
-       if resObj != None:
-           return resObj['value']
 
     def __do_lock(self, lock, timeout):
         if sys.version_info.major >= 3:
@@ -194,6 +157,58 @@ class DemistoScript:
                 lock.release()
 
 
+class DemistoScript(DemistoGeneral):
+    """Wrapper class to interface with the Demisto server via stdin, stdout"""
+
+    def __init__(self, context):
+        super().__init__(context)
+
+    def log(self, msg):
+        self.__do_no_res({'type': 'entryLog', 'args': {'message': msg}})
+
+    def incidents(self):
+        return self.callingContext[u'context'][u'Incidents']
+
+    def incident(self):
+        return self.incidents()[0]
+
+    def alerts(self):
+        return self.incidents()
+
+    def getArg(self, arg, defaultParam=None):
+        return self.get(self.callingContext, 'args.' + arg, defaultParam)
+
+    def execute(self, module, command, args):
+        return self.__do({'type': 'execute', 'module': module, 'command': command.strip(), 'args': args})
+
+    def executeCommand(self, command, args):
+        return self.__do({'type': 'executeCommand', 'command': command.strip(), 'args': args})
+
+    def exception(self, ex):
+        return self.__do({'type': 'exception', 'command': 'exception', 'args': ex})
+
+    def getAllSupportedCommands(self):
+        return self.__do({'type': 'getAllModulesSupportedCmds'})
+
+    def getModules(self):
+        return self.__do({'type': 'getAllModules'})
+
+    def setContext(self, name, value):
+        return self.__do({'type': 'setContext', 'name': name, 'value': value})
+
+    def mapObject(self, sourceObject, mapper, mapperType=""):
+        return self.__do({'type': 'executeCommand', 'command': 'mapObject', 'args': {'source': sourceObject, 'mapper': mapper, 'mapperType': mapperType}})
+
+    def getAutoFocusApiKey(self):
+       resObj = self.__do({'type': 'executeCommand', 'command': 'getLicenseCustomField', 'args': {'key': 'autofocus'}})
+       if resObj != None:
+           return resObj['value']
+
+    def getLicenseCustomField(self, key):
+       resObj = self.__do({'type': 'executeCommand', 'command': 'getLicenseCustomField', 'args': {'key': key}})
+       if resObj != None:
+           return resObj['value']
+
     def convert(self, results):
         """ Convert whatever result into entry """
         if type(results) is dict:
@@ -222,30 +237,15 @@ class DemistoScript:
         self.__do_no_res({'type': 'result', 'results': res})
 
 
-class DemistoIntegration:
+class DemistoIntegration(DemistoGeneral):
     """Wrapper class to interface with the Demisto server via stdin, stdout"""
 
     def __init__(self, context):
-        self.callingContext = context
-        self.is_debug = False
-        self._args = dict(self.callingContext.get(u'args', {}))
-        if 'demisto_machine_learning_magic_key' in  self._args:
-            import os
-            os.environ['DEMISTO_MACHINE_LEARNING_MAGIC_KEY'] = self._args['demisto_machine_learning_magic_key']
-        is_debug = self.callingContext.get('context', {}).get('IsDebug', False)
-        if is_debug:
-            self.is_debug = True
-            self._args.pop('debug-mode', '')
-        self.__stdout_lock = None
-        self._stdout_lock_timeout = 60
+        super().__init__(context)
         self._heartbeat_enabled = False
         if context.get('command') == 'long-running-execution' and context.get('is_running_heartbeat'):
             self.long_running_heartbeat_thread()
 
-    def enable_multithreading(self):
-        from threading import Lock
-        if self.__stdout_lock is None:
-            self.__stdout_lock = Lock()
 
     def long_running_heartbeat_thread(self, enable=True):
         if self._heartbeat_enabled == enable:
@@ -275,9 +275,6 @@ class DemistoIntegration:
     def log(self, msg):
         self.__do_no_res({'type': 'entryLog', 'args': {'message': 'Integration log: ' + msg}})
 
-    def investigation(self):
-        return self.callingContext[u'context'][u'Inv']
-
     def get_incidents(self):
         return self.callingContext[u'context'][u'Incidents']
 
@@ -287,26 +284,8 @@ class DemistoIntegration:
     def get_alerts(self):
         return self.get_incidents()
 
-    def alert(self):
-        return self.incident()
-
-    def parentEntry(self):
-        return self.callingContext[u'context'][u'ParentEntry']
-
-    def context(self):
-        return self.callingContext[u'context'][u'ExecutionContext']
-
     def integrationInstance(self):
         return self.callingContext[u'context'][u'IntegrationInstance']
-
-    def args(self):
-        return self._args
-
-    def uniqueFile(self):
-        return str(uuid.uuid4())
-
-    def getFilePath(self, id):
-        return self.__do({'type': 'getFileByEntryID', 'command': 'getFilePath', 'args': {'id': id}})
 
     def getLastRun(self):
         return self.__do({'type': 'executeCommand', 'command': 'getLastRun', 'args': {}})
@@ -319,9 +298,6 @@ class DemistoIntegration:
 
     def setLastMirrorRun(self, value):
         return self.__do({'type': 'executeCommand', 'command': 'setLastMirrorRun', 'args': {'value': value}})
-
-    def internalHttpRequest(self, method, uri, body = None):
-        return self.__do({'type': 'executeCommand', 'command': 'internalHttpRequest', 'args': {'method': method, 'uri': uri, 'body': body}})
 
     def getIntegrationContext(self):
         resObj = self.__do({'type': 'executeCommand', 'command': 'getIntegrationContext', 'args': {'refresh': False}})
@@ -336,9 +312,6 @@ class DemistoIntegration:
     def setIntegrationContextVersioned(self, value, version, sync = False):
         return self.__do({'type': 'executeCommand', 'command': 'setIntegrationContext', 'args': {'value': value, 'version': version, 'sync': sync}})
 
-    def getLicenseID(self):
-            return self.__do({'type': 'executeCommand', 'command': 'getLicenseID', 'args': {}})['id']
-
     def createIncidents(self, incidents, lastRun = None, userID = None):
         return self.__do({'type': 'executeCommand', 'command': 'createIncidents', 'args': {'incidents': incidents, 'lastRun': lastRun, 'userID': userID}})
 
@@ -347,12 +320,6 @@ class DemistoIntegration:
 
     def createIndicators(self, indicators, lastRun = None, noUpdate = False):
         return self.__do({'type': 'executeCommand', 'command': 'createIndicators', 'args': {'indicators': indicators, 'lastRun': lastRun, 'noUpdate': noUpdate}})
-
-    def searchIndicators(self, value = None, query = None, size = None, page=None, sort=None, fromDate = None, toDate = None, searchAfter = None, populateFields = None):
-        return self.__do({'type': 'executeCommand', 'command': 'searchIndicators', 'args': {'value': value, 'query': query, 'size': size, 'page': page, 'sort': sort, 'fromDate': fromDate, 'searchAfter': searchAfter, 'toDate': toDate, 'populateFields': populateFields}})
-
-    def searchRelationships(self, filter = None):
-        return self.__do({'type': 'executeCommand', 'command': 'searchRelationships', 'args': {'filter': filter}})
 
     def getIndexHash(self):
             return self.__do({'type': 'executeCommand', 'command': 'getIndexHash'})
@@ -408,99 +375,14 @@ class DemistoIntegration:
         """ used to encapsulate/hide 'fetch-incident' command from the code """
         return self.command() == 'fetch-incidents'
 
-    def get(self, obj, field, defaultParam=None):
-        """ Get the field from the given dict using dot notation """
-        parts = field.split('.')
-        for part in parts:
-            if obj and part in obj:
-                obj = obj[part]
-            else:
-                return defaultParam
-        return obj
-
-    def demistoUrls(self):
-        return self.__do({'type': 'demistoUrls'})
-
-    def demistoVersion(self):
-        return self.__do({'type': 'demistoVersion'})
-
     def heartbeat(self, msg):
         return self.__do_no_res({'type': 'executeCommand', 'command': 'heartbeat', 'args': {'message': msg}})
-
-    def info(self, *args):
-        argsObj = {}
-        argsObj["args"] = list(args)
-        self.__do({'type': 'log', 'command': 'info', 'args': argsObj})
-
-    def error(self, *args):
-        argsObj = {}
-        argsObj["args"] = list(args)
-        self.__do({'type': 'log', 'command': 'error', 'args': argsObj})
-
-    def debug(self, *args):
-        argsObj = {}
-        argsObj["args"] = list(args)
-        self.__do({'type': 'log', 'command': 'debug', 'args': argsObj})
-
-    def gets(self, obj, field):
-        return str(self.get(obj, field))
 
     def getArg(self, arg, defaultParam=None):
         return self.get(self.callingContext, 'args.' + arg, defaultParam)
 
     def getParam(self, p):
         return self.get(self.callingContext, 'params.' + p)
-
-    def dt(self, data, q):
-        return self.__do({'type': 'dt', 'name': q, 'value': data})['result']
-
-    def __do_lock(self, lock, timeout):
-        if sys.version_info.major >= 3:
-            return lock.acquire(timeout=timeout)
-        else:
-            # python 2 doesn't have timeout we use polling
-            if timeout < 0:
-                return lock.acquire()
-            start = time.time()
-            while (time.time() - start) < timeout:
-                if lock.acquire(False):
-                    return True
-                time.sleep(0.1)
-            # didn't get the lock
-            return False
-
-    def __do_no_res(self, cmd):
-        lock = self.__stdout_lock
-        if lock is not None:
-            if not self.__do_lock(lock, self._stdout_lock_timeout):
-                raise RuntimeError('Timeout acquiring stdout lock')
-        try:
-            json.dump(cmd, sys.stdout)
-            sys.stdout.write('\n')
-            sys.stdout.flush()
-        finally:
-            if lock is not None:
-                lock.release()
-
-    def __do(self, cmd):
-        lock = self.__stdout_lock
-        if lock is not None:
-            if not self.__do_lock(lock, self._stdout_lock_timeout):
-                raise RuntimeError('Timeout acquiring stdout lock')
-        try:
-            # Watch out, there is a duplicate copy of this method
-            json.dump(cmd, sys.stdout)
-            sys.stdout.write('\n')
-            sys.stdout.flush()
-            data = globals()['__readWhileAvailable']()
-            error_index = data.find(SERVER_ERROR_MARKER)
-            if error_index > -1:
-                offset = error_index + len(SERVER_ERROR_MARKER)
-                raise ValueError(data[offset:])
-            return json.loads(data)
-        finally:
-            if lock is not None:
-                lock.release()
 
     def __convert(self, results):
         """ Convert whatever result into entry """
