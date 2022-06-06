@@ -11,6 +11,7 @@ configuration:
 - display: User name
   additionalinfo: The user name (admin@example.com) and password
   name: credentials
+  displaypassword: API token
   required: true
   type: 9
 - defaultvalue: 3 days
@@ -31,6 +32,18 @@ configuration:
   name: proxy
   required: false
   type: 8
+- defaultvalue: jira
+  additionalinfo: "For the dataset name for example: jira"
+  display: Vendor name
+  name: vendor
+  required: false
+  type: 0
+- defaultvalue: jira
+  additionalinfo: "For the dataset name for example: jira"
+  display: Product name
+  name: product
+  required: false
+  type: 0
 description: 'Jira logs event collector integration for XSIAM.'
 display: Jira Event Collector
 name: Jira Event Collector
@@ -56,7 +69,7 @@ script:
   isfetchevents: true
   type: python
   subtype: python3
-  dockerimage: demisto/fastapi:1.0.0.29406
+  dockerimage: demisto/fastapi:1.0.0.29740
 marketplaces:
 - marketplacev2
 fromversion: 6.5.0
