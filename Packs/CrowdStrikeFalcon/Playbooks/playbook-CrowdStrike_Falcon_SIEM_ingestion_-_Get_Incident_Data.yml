@@ -1,10 +1,20 @@
 id: CrowdStrike Falcon - SIEM ingestion Get Incident Data
-version: -1
-fromversion: 6.5.0
+version: 4
+contentitemexportablefields:
+  contentitemfields:
+    packID: CrowdStrikeFalcon
+    packName: CrowdStrike Falcon
+    itemVersion: 1.8.4
+    fromServerVersion: 6.5.0
+    toServerVersion: ""
+    definitionid: ""
+vcShouldKeepItemLegacyProdMachine: false
 name: CrowdStrike Falcon - SIEM ingestion Get Incident Data
-description: This playbook handles incident ingestion from the SIEM.
-  The user provides the field for the incident ID or detection ID as well as the field indicating whether the ingested item is an incident or detection. 
-  This playbook enables changing the severity scale in Cortex XSOAR as well as fetching CrowdStrike detections based on the CrowdStrike incident type.
+description: This playbook handles incident ingestion from the SIEM. The user provides
+  the field for the incident ID or detection ID as well as the field indicating whether
+  the ingested item is an incident or detection. This playbook enables changing the
+  severity scale in Cortex XSOAR as well as fetching CrowdStrike detections based
+  on the CrowdStrike incident type.
 starttaskid: "0"
 tasks:
   "0":
@@ -17,16 +27,16 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "1"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 480,
-          "y": 80
+          "y": -80
         }
       }
     note: false
@@ -47,7 +57,6 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       detection:
       - "2"
@@ -77,11 +86,12 @@ tasks:
             value:
               simple: detection
           ignorecase: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 480,
-          "y": 210
+          "y": 50
         }
       }
     note: false
@@ -107,18 +117,19 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "20"
+      - "21"
     scriptarguments:
       extended_data:
         simple: "Yes"
       ids:
         simple: ${inputs.SIEMincidentFieldForID}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 280,
-          "y": 530
+          "y": 370
         }
       }
     note: false
@@ -218,11 +229,12 @@ tasks:
       ids:
         simple: ${inputs.SIEMincidentFieldForID}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 690,
-          "y": 380
+          "y": 220
         }
       }
     note: false
@@ -289,8 +301,8 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -339,6 +351,7 @@ tasks:
                 iscontext: true
               sep: {}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -373,11 +386,12 @@ tasks:
       incident_id:
         simple: ${CrowdStrike.Incidents.incident_id}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 690,
-          "y": 530
+          "y": 370
         }
       }
     note: false
@@ -403,18 +417,19 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "20"
+      - "21"
     scriptarguments:
       extended_data:
         simple: "Yes"
       ids:
         simple: ${CrowdStrike.IncidentDetection.detection_ids}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 690,
-          "y": 700
+          "y": 540
         }
       }
     note: false
@@ -486,6 +501,7 @@ tasks:
                 iscontext: true
               sep: {}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -519,8 +535,9 @@ tasks:
     scriptarguments:
       id:
         simple: ${incident.agentsid}
-    continueonerror: true
     separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -572,8 +589,9 @@ tasks:
         simple: ${Endpoint.[0].Status}
       isolated:
         simple: ${Endpoint.[0].IsIsolated}
-    continueonerror: true
     separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -599,11 +617,11 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "10"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -629,11 +647,11 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "9"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -659,11 +677,11 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "5"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -689,7 +707,6 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#default#':
       - "12"
@@ -736,6 +753,7 @@ tasks:
           right:
             value:
               simple: incident
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -761,11 +779,11 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "19"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -780,15 +798,51 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: b4cf67c0-cf5c-4607-8ee5-5a99e3e00bdd
+    type: regular
+    task:
+      id: b4cf67c0-cf5c-4607-8ee5-5a99e3e00bdd
+      version: -1
+      name: Extract Indicators
+      description: commands.local.cmd.extract.indicators
+      script: Builtin|||extractIndicators
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      text:
+        simple: ${CrowdStrike.Detection}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1945,
+        "height": 2105,
         "width": 830,
         "x": 260,
-        "y": 80
+        "y": -80
       }
     }
   }
@@ -797,43 +851,37 @@ inputs:
   value:
     simple: ${incident.externalcategoryname}
   required: false
-  description: The incident field that determines if this is a detection or an incident.    
-  playbookInputQuery:
+  description: The incident field that determines if this is a detection or an incident.
+  playbookInputQuery: null
 - key: SIEMincidentFieldForID
   value:
     simple: ${incident.externalsystemid}
   required: false
   description: The incident field that contains the detection ID or incident ID.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: ScaleToSetSeverity
   value:
     simple: 0-20,21-40,41-60,61-80,81-100
   required: false
-  description: |-
-    The severity scale in the EDR.
-    For example, CrowdStrike uses values from 0 to 100 
-    so the scale can be divided into ranges such as
-    0-20,21-40,41-60,61-80,81-100
-  playbookInputQuery:
+  description: "The severity scale in the EDR.\nFor example, CrowdStrike uses values
+    from 0 to 100 \nso the scale can be divided into ranges such as\n0-20,21-40,41-60,61-80,81-100"
+  playbookInputQuery: null
 - key: SeverityValuesMapping
   value:
     simple: 0.5, 1, 2, 3,4
   required: false
-  description: |-
-    The mapping from the EDR severity scale to the Cortex XSOAR severity scale.
-    For example: 
-    0.5, 1, 2, 3,4
-    Possible values to use are 0,0.5, 1, 2, 3,4
-    which represent Unknown, Informational, Low, Medium, High, Critical.
-  playbookInputQuery:
+  description: "The mapping from the EDR severity scale to the Cortex XSOAR severity
+    scale.\nFor example: \n0.5, 1, 2, 3,4\nPossible values to use are 0,0.5, 1, 2,
+    3,4\nwhich represent Unknown, Informational, Low, Medium, High, Critical."
+  playbookInputQuery: null
 - key: OverrideSIEMSeverity
   value:
     simple: "False"
   required: false
-  description: "Whether to set the severity according to the EDR severity scale\
-    \ and its mapping to Cortex XSOAR (True) or keep the original severity scale as mapped\
-    \ by the SIEM (False)."
-  playbookInputQuery:
+  description: Whether to set the severity according to the EDR severity scale and
+    its mapping to Cortex XSOAR (True) or keep the original severity scale as mapped
+    by the SIEM (False).
+  playbookInputQuery: null
 outputs:
 - contextPath: CrowdStrike.Detection.Behavior.FileName
   description: The file name of the behavior.
@@ -889,5 +937,3 @@ outputs:
 - contextPath: Endpoint
   description: The details of the endpoint.
   type: string
-tests:
- -  No tests
