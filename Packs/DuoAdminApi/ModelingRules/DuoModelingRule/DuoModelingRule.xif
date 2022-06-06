@@ -5,7 +5,6 @@ XDM.Auth.Client.location.city = json_extract_scalar(access_device, "$.location.c
 XDM.Auth.Client.location.country = json_extract_scalar(access_device, "$.location.country"),
 XDM.Auth.Server.host.os_family = json_extract_scalar(access_device, "$.os"),
 XDM.Auth.Server.host.os = json_extract_scalar(access_device, "$.os_version"),
-XDM.Auth.Target.application.name = json_extract_scalar(application, "$.name"),
 XDM.Auth.original_event_type = eventtype,
 XDM.Auth.auth_method = factor,
 XDM.Auth.event_timestamp = to_timestamp(to_integer(timestamp), "SECONDS");
