@@ -23,7 +23,7 @@ def from_bytes_to_text(mode: str, binary: bytes) -> str:
     :return: A text converted from the binary.
     """
     if mode == 'text-based-protocol':
-        # Keep all the charactors used in text based protocols
+        # Keep all the characters used in text based protocols
         # * The unicodedata category names of control code start with C
         return ''.join(' '
                        if c == u'\ufffd'
