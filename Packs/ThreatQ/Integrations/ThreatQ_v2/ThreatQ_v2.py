@@ -160,9 +160,9 @@ def get_tlp_from_indicator(sources):
     tlp = -1
     for source in sources:
         tlp = int(source.get('TLP')) if int(source.get('TLP')) > tlp else tlp
-    
+
     return TABLE_TLP.get(tlp)
-    
+
 
 def get_generic_context(indicator, generic_context=None):
     tlp = get_tlp_from_indicator(indicator.get('Source'))
