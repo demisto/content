@@ -1,6 +1,6 @@
 {
     "name": "Red Hat",
-    "description": "Red Hat Linux content pack",
+    "description": "Red Hat Linux content pack.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
