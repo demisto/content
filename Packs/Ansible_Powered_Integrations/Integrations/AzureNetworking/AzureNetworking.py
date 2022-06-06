@@ -1,4 +1,5 @@
 import json
+import traceback
 from typing import Dict, cast
 
 import ansible_runner
@@ -231,6 +232,7 @@ def main() -> None:
             return_results(generic_ansible('azurenetworking', 'azure_rm_dnszone_info', demisto.args()))
     # Log exceptions and return errors
     except Exception as e:
+        demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
 
 
