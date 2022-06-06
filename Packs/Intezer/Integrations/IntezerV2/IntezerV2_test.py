@@ -2,18 +2,19 @@ import tempfile
 import uuid
 from http import HTTPStatus
 
+from intezer_sdk import consts
+from intezer_sdk.api import IntezerApi
+
 from CommonServerPython import outputPaths
 from IntezerV2 import analyze_by_hash_command
-from IntezerV2 import analyze_url_command
 from IntezerV2 import analyze_by_uploaded_file_command
+from IntezerV2 import analyze_url_command
 from IntezerV2 import check_analysis_status_and_get_results_command
 from IntezerV2 import get_analysis_code_reuse_command
 from IntezerV2 import get_analysis_metadata_command
 from IntezerV2 import get_analysis_sub_analyses_command
 from IntezerV2 import get_family_info_command
 from IntezerV2 import get_latest_result_command
-from intezer_sdk import consts
-from intezer_sdk.api import IntezerApi
 
 fake_api_key = str(uuid.uuid4())
 intezer_api = IntezerApi(consts.API_VERSION, fake_api_key, consts.BASE_URL)
@@ -229,7 +230,8 @@ def test_check_analysis_status_and_get_results_url_command_single_success(reques
                 'analysis_id': analysis_id,
                 'summary': {
                     'title': 'malicious',
-                    'verdict_name': 'malicious'
+                    'verdict_name': 'malicious',
+                    'verdict_type': 'malicious'
                 },
                 'indicators': [
                     {
@@ -719,7 +721,6 @@ def test_get_family_info_command_analysis_doesnt_exist(requests_mock):
 
 
 # endregion
-
 
 # region analyze_url_command
 def test_analyze_url_command_success(requests_mock):

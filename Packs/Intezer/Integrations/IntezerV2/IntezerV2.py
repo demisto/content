@@ -1,14 +1,7 @@
-from http import HTTPStatus
 from collections import defaultdict
+from http import HTTPStatus
 from typing import Callable
-from typing import Dict
-from typing import List
-from typing import Union
 
-import demistomock as demisto
-import requests
-from CommonServerPython import *
-from CommonServerUserPython import *
 from intezer_sdk import consts
 from intezer_sdk.analysis import FileAnalysis
 from intezer_sdk.analysis import UrlAnalysis
@@ -22,6 +15,8 @@ from intezer_sdk.errors import ServerError
 from intezer_sdk.family import Family
 from intezer_sdk.sub_analysis import SubAnalysis
 from requests import HTTPError
+
+from CommonServerPython import *
 
 ''' CONSTS '''
 # Disable insecure warnings
@@ -301,6 +296,7 @@ def get_analysis_sub_analyses_command(intezer_api: IntezerApi, args: dict) -> Co
 def get_analysis_code_reuse_command(intezer_api: IntezerApi, args: dict) -> CommandResults:
     analysis_id = args.get('analysis_id')
     sub_analysis_id = args.get('sub_analysis_id', 'root')
+    sub_analysis_code_reuse = None
 
     try:
         sub_analysis: SubAnalysis = SubAnalysis(analysis_id=sub_analysis_id,
@@ -485,7 +481,7 @@ def enrich_dbot_and_display_url_analysis_results(intezer_result, intezer_api):
     _refine_gene_counts(summary)
 
     intezer_result.update(summary)
-    verdict = summary['title']
+    verdict = summary['verdict_type']
     submitted_url = intezer_result['submitted_url']
     analysis_id = intezer_result['analysis_id']
 
