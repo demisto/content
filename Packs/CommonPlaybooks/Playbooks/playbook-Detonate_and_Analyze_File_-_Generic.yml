@@ -415,5 +415,11 @@ outputs:
 - contextPath: WildFire.Report
   description: The Wildfire findings.
   type: string
+- contextPath: AttackPattern
+  description: The MITRE Attack pattern information.
+  type: unknown
+- contextPath: MITREATTACK
+  description: Full MITRE data for the attack pattern.
+  type: unknown
 tests:
  -  No tests
