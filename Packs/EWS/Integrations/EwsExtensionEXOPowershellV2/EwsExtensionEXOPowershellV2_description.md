@@ -6,7 +6,3 @@ To use this integration, you need to connect an application with a certificate.
 2. Run the **CreateCertificate** command in Cortex XSOAR to acquire the certificate.
 3. Attach the .cer file to your Azure App.
 4. Copy the contents of the .txt file and paste it in the Certificate parameter of the integration's instance.
-
-
----
-[View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/ews-extension-online-powershell-v2)

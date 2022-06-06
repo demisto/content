@@ -284,7 +284,7 @@ script:
     arguments:
     - name: entries
       required: true
-      description: Entries to add to the list.  Separate multiple entries with a comma (e.g. "Item1,Item2").
+      description: A comma-separated list of entries to add to the list (e.g. "Item1,Item2").
       isArray: true
     - name: list_type
       required: true
@@ -299,7 +299,7 @@ script:
       predefined:
       - Tenant
       - AdvancedDelivery
-      description: 'List subtype to add items to. '
+      description: List subtype to add items to.
       defaultValue: Tenant
     - name: action
       required: true
@@ -311,7 +311,7 @@ script:
     - name: notes
       description: Notes to include on new list entries
     - name: expiration_date
-      description: Enter a specific date and time for the new entries to expire using format "YYYY-MM-DD HH:MM:SSz" for UTC time.  Alternately, a PowerShell **GetDate** statement can be used.
+      description: Enter a specific date and time for the new entries to expire using ISO format "YYYY-MM-DDTHH:MM:SSZ" for UTC time.  Alternately, a PowerShell **GetDate** statement can be used.
     - name: no_expiration
       auto: PREDEFINED
       predefined:
@@ -401,7 +401,7 @@ script:
       - Allow
       description: Action to filter entries by.
     - name: expiration_date
-      description: Enter a specific date and time to filter entries by using format "YYYY-MM-DD HH:MM:SSz" for UTC time.  Alternately, a PowerShell **GetDate** statement can be used.
+      description: Enter a specific date and time to filter entries by using ISO format "YYYY-MM-DDTHH:MM:SSZ" for UTC time.  Alternately, a PowerShell **GetDate** statement can be used.
     - name: no_expiration
       auto: PREDEFINED
       predefined:
