@@ -1,0 +1,25 @@
+args:
+- description: Epoch/unix timestamp value
+  name: value
+- defaultValue: '%m/%d/%Y %H:%M:%S'
+  description: Provide the required date time format. E.g.  %m/%d/%Y %H:%M:%S
+  name: format
+comment: Convert Epoch time to your desired time format. As supported by the directive https://docs.python.org/3/library/datetime.html#strftime-and-strptime-behavior
+commonfields:
+  id: EpochtoAnyTimeFormat
+  version: -1
+dockerimage: demisto/python3:3.10.4.29342
+enabled: true
+name: EpochtoAnyTimeFormat
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- transformer
+- date
+type: python
+fromversion: 6.2.0
+tests:
+- No tests (auto formatted)

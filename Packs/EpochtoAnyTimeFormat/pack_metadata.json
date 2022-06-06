@@ -1,0 +1,22 @@
+{
+    "name": "EpochtoAnyTimeFormat",
+    "description": "Transformer to convert epoch to your desired time format. The supported directives can be found at https://docs.python.org/3/library/datetime.html#strftime-and-strptime-behavior",
+    "support": "developer",
+    "currentVersion": "1.0.0",
+    "author": "Anil Agrawal",
+    "url": "https://live.paloaltonetworks.com/t5/cortex-xsoar-discussions/bd-p/Cortex_XSOAR_Discussions",
+    "email": "",
+    "categories": [
+        "Utilities"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "anilagr"
+    ]
+}
