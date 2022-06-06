@@ -3,8 +3,8 @@ commonfields:
   id: 'Dragos Worldview'
   version: -1
 configuration:
-- defaultvalue: https://portal.dragos.com/api/v1/
-  display: Server URL (e.g. https://portal.dragos.com/api/v1/)
+- defaultvalue: https://portal.dragos.com
+  display: Server URL (e.g. https://portal.dragos.com)
   name: url
   required: true
   type: 0
