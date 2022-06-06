@@ -1709,7 +1709,7 @@ class Pack(object):
             # Filters the RN entries by the entity display name
             display_names = [entity['display_name'] for entity in entities_data]
             filtered_entries = {display_name: rn_desc for display_name, rn_desc in new_release_notes_dict[rn_header].items()
-                                if display_name in display_names}
+                                if display_name.replace("New: ", "") in display_names}
 
             if filtered_entries:
                 logging.info(f"Found relevant entries after filtering by display_name - {filtered_entries}")

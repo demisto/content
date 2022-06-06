@@ -1149,6 +1149,30 @@ This is visible
 ##### Script Name
 - Fixed script''', 'xsoar',
             "#### Integrations\n##### Integration Display Name\n- Fixed an issue\n\n#### Scripts\n##### Script Name\n\
+- Fixed script"),
+        ('''
+#### Integrations
+<~XSOAR>
+##### New: Integration Display Name
+- Fixed an issue
+</~XSOAR>
+
+#### Scripts
+##### New: Script Name
+- Fixed script''', 'marketplacev2',
+            "#### Scripts\n##### New: Script Name\n\
+- Fixed script"),
+        ('''
+#### Integrations
+<~XSOAR>
+##### New: Integration Display Name
+- Fixed an issue
+</~XSOAR>
+
+#### Scripts
+##### New: Script Name
+- Fixed script''', 'xsoar',
+            "#### Integrations\n##### New: Integration Display Name\n- Fixed an issue\n\n#### Scripts\n##### New: Script Name\n\
 - Fixed script")
     ])
     def test_create_filtered_changelog_entry_by_mp_tags(self, dummy_pack: Pack, release_notes, upload_marketplace,
@@ -1163,6 +1187,8 @@ This is visible
                  Case 5: All entities in RN have wrapping tags in their entries.
                  Case 6: XSIAM tags are wrapping the entry but for marketplacev2 (only the tags should be removed).
                  Case 7: Same as case 6 but for XSOAR tags and xsoar marketplace.
+                 Case 8: Test for new entities with the 'New' in display name for the same marketplace.
+                 Case 9: Same as case 8 but for the other marketplace.
            When:
                - Creating changelog entry and filtering the entries by the tags.
            Then:
