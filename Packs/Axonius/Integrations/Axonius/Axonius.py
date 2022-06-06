@@ -295,7 +295,6 @@ def main():
         return_results(run_command(client, args, command))  # noqa: F821, F405
 
     except Exception as exc:
-        demisto.error(traceback.format_exc())
         msg: List[str] = [f"Failed to execute {command} command", "Error:", str(exc)]
         return_error("\n".join(msg))  # noqa: F821, F405
 

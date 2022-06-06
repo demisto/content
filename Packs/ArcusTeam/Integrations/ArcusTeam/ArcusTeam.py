@@ -1,5 +1,4 @@
 import urllib3
-import traceback
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from typing import Any, Dict
@@ -194,7 +193,6 @@ def main() -> None:
 
     # Log exceptions and return errors
     except Exception as e:
-        demisto.error(traceback.format_exc())  # print the traceback
         return_error(
             f"Failed to execute {demisto.command()} command.\nError:\n{str(e)}"
         )

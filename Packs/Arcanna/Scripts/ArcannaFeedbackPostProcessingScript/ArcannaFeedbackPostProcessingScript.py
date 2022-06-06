@@ -108,7 +108,6 @@ def run_arcanna_send_feedback():
             ret = send_arcanna_feedback(close_notes, close_reason, closing_user, event_id, job_id)
             return_results(ret)
     except Exception as ex:
-        demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute ArcannaFeedbackPostProcessingScript. Error: {str(ex)}')
 
 

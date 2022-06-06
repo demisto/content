@@ -9,7 +9,6 @@ For API reference, visit: https://developer.automox.com/
 """
 
 import time
-import traceback
 from typing import Any, Dict, List
 
 import demistomock as demisto
@@ -957,7 +956,6 @@ def main() -> None:
 
         return_results(results)
     except Exception as err:
-        demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(err)}')
 
 

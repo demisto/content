@@ -1654,7 +1654,6 @@ def main() -> None:
             raise NotImplementedError(f'{command} command is not implemented.')
 
     except Exception as e:
-        demisto.error(traceback.format_exc())
         return_error(str(e))
 
 

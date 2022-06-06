@@ -3,7 +3,6 @@ from CommonServerPython import *  # noqa: F401
 from CommonServerUserPython import *  # noqa: F401
 import json
 import urllib3
-import traceback
 import requests
 from typing import Any, Dict
 
@@ -344,7 +343,6 @@ def main() -> None:
             return_results(result_feedback_field)
     # Log exceptions and return errors
     except Exception as e:
-        demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
 
 
