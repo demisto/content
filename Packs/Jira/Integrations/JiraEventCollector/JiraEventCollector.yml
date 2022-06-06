@@ -19,8 +19,8 @@ configuration:
   name: first_fetch
   required: true
   type: 0
-- defaultvalue: 100
-  display: The maximum number of events per fetch. Default is 100.
+- defaultvalue: 1000
+  display: The maximum number of events per fetch. Default is 1000.
   name: max_fetch
   required: true
   type: 0
@@ -54,7 +54,7 @@ script:
     execution: false
     name: jira-get-events
     arguments:
-    - description: The maximum number of incidents per fetch. Default is 100.
+    - description: The maximum number of incidents per fetch. Default is 1000.
       isArray: true
       name: max_fetch
       required: false

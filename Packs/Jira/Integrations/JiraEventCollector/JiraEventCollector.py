@@ -117,7 +117,7 @@ class GetEvents:
             self.client.prepare_next_run(self.client.request.params.limit)
             events = self.call()
 
-    def run(self, max_fetch: int = 100) -> List[dict]:
+    def run(self, max_fetch: int = 1000) -> List[dict]:
         stored = []
         last_run = demisto.getLastRun()
 
@@ -184,7 +184,7 @@ def main():
         demisto.results('ok')
 
     elif command in ('fetch-events', 'jira-get-events'):
-        events = get_events.run(int(demisto_params.get('max_fetch', 100)))
+        events = get_events.run(int(demisto_params.get('max_fetch', 1000)))
         send_events_to_xsiam(events, demisto_params.get('vendor', 'jira'), demisto_params.get('product', 'jira'))
 
         if events:
