@@ -51,7 +51,32 @@ Make sure you use the right account for your needs and that the account used has
 #### Troubleshooting
 Make sure the application password is not expired by logging in TOPdesk and viewing it as described in step 3 of the **Setup TOPdesk's application password** procedure. 
 
-### FIQL query
+### Incident Mirroring
+
+You can enable incident mirroring between Cortex XSOAR incidents and TOPdesk incidents.
+
+To setup the mirroring follow these instructions:
+1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
+2. Search for **TOPdesk** and select your integration instance.
+3. Enable **Fetches incidents**.
+4. Optional: You can go to the *Incidents fetch query* or *Detections fetch query* parameter and select the query to fetch the incidents from TOPdesk.
+5. In the *Mirroring Direction* integration parameter, select in which direction the incidents should be mirrored:
+    - Incoming - Any changes in TOPdesk incidents (`state`, `status`, `tactics`, `techniques`, `objectives`, `tags`, `hosts.hostname`) will be reflected in XSOAR incidents.
+    - Outgoing - Any changes in XSOAR incidents will be reflected in TOPdesk incidents (`tags`, `status`).
+    - Incoming And Outgoing - Changes in XSOAR incidents and TOPdesk incidents will be reflected in both directions.
+    - None - Turns off incident mirroring.
+6. In the *Comment Entry Tag* integration parameter, you can set the tag which can be added to comments to mirror from XSOAR to TOPdesk. The comment in TOPdesk will be visible for the person and the operator. 
+7. In the *Work Note Entry Tag* integration parameter, you can set the tag which can be added to comments to mirror from XSOAR to TOPdesk. The work note in TOPdesk will only be visible for the operator and not the person. 
+8. In the *File Entry Tag* integration parameter, you can set the tag which can be added to a file to mirror the file from XSOAR to TOPdesk. The file in TOPdesk will only be visible for the operator and not the person. 
+9. Optional: Check the *Close Mirrored XSOAR Incident* integration parameter to close the Cortex XSOAR incident when the corresponding incident is closed in TOPdesk.
+10. Optional: Check the *Close Mirrored TOPdesk Incident* integration parameter to close the TOPdesk incident when the corresponding Cortex XSOAR incident is closed.
+
+Newly fetched incidents will be mirrored in the chosen direction.  However, this selection does not affect existing incidents.
+
+**Important Notes**
+ - To ensure the mirroring works as expected, mappers are required, both for incoming and outgoing, to map the expected fields in XSOAR and TOPdesk.
+ 
+ ### FIQL query
 A few implemented commands can get a query as a parameter. A partial list of these commands: 
 - `topdesk-incidents-list`
 - `topdesk-branches-list` 
@@ -63,7 +88,7 @@ Specifically there are 2 versions being used:
 #### [TOPdeskRestAPI](https://developers.topdesk.com/documentation/index.html) 
 Implements: `topdesk-incidents-list`
 
-Supports FIQL query version `3.4.0` and higher.
+Supports FIQL query version `3.3.0` and higher.
 
 Conveniently, TOPdeskRestAPI also provides an endpoint revealing the API version. 
 Therefore, once the integration is configured, it automatically translates FIQL query to 
