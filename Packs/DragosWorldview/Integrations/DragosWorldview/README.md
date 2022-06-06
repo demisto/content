@@ -9,7 +9,7 @@ This integration was integrated and tested with version 1.0 of Dragos Worldview
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Server URL (e.g. https://portal.dragos.com/api/v1/) |  | True |
+    | Server URL (e.g. https://portal.dragos.com) |  | True |
     | API Token |  | True |
     | API Key |  | True |
     | First fetch time |  | False |
