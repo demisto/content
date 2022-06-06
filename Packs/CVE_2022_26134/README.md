@@ -25,4 +25,4 @@ This playbook includes the following tasks:
 **Note:** This is a beta playbook, which lets you implement and test pre-release software. Since the playbook is beta, it might contain bugs. Updates to the pack during the beta phase might include non-backward compatible features. We appreciate your feedback on the quality and usability of the pack to help us identify issues, fix them, and continually improve.
 
 
-![CVE-2022-26134 - Confluence RCE](https://raw.githubusercontent.com/demisto/content/0c5d91ca80c545332e912f296fb035bcaa49488b/Packs/CVE_2022_26134/doc_files/CVE-2022-26134_-_Confluence_Pre-Auth_RCE.png)
+![CVE-2022-26134 - Confluence RCE](https://raw.githubusercontent.com/demisto/content/b54140de6197b05654ac5c5f30e3e4bd1a088942/Packs/CVE_2022_26134/doc_files/CVE-2022-26134_-_Confluence_RCE.png)
