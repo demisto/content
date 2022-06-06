@@ -61,7 +61,7 @@ def main():
 
     loop_start_time = time.time()
     last_update_time = loop_start_time
-    instance_ips_to_poll = [ami_instance_ip for ami_instance_name, ami_instance_ip, _ in instance_ips if
+    instance_ips_to_poll = [ami_instance_ip for ami_instance_name, ami_instance_ip in instance_ips if
                             ami_instance_name == instance_name_to_wait_on]
 
     logging.info('Starting wait loop')
@@ -102,7 +102,7 @@ def main():
             if len(instance_ips) > len(ready_ami_list):
                 sleep(1)
     finally:
-        instance_ips_to_download_log_files = [ami_instance_ip for ami_instance_name, ami_instance_ip, _ in instance_ips if
+        instance_ips_to_download_log_files = [ami_instance_ip for ami_instance_name, ami_instance_ip in instance_ips if
                                               ami_instance_name == instance_name_to_wait_on]
         for ip in instance_ips_to_download_log_files:
             docker_login(ip)
