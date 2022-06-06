@@ -245,7 +245,7 @@ script:
       secret: false
     - default: false
       defaultValue: '3'
-      description: The maximum number of pages to render. Default is "3", to render all pages enter *.
+      description: The maximum number of pages to render. Default is "3". Use "*" to render all pages.
       isArray: false
       name: maxPages
       required: false
