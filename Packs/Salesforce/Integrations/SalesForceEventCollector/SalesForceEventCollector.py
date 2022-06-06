@@ -12,8 +12,7 @@ urllib3.disable_warnings()
 
 class SalesforceClient(IntegrationEventsClient):
     def set_request_filter(self, after: str):
-        if self.request.params:
-            self.request.params.after = get_github_timestamp_format(after)
+        return
 
 
 class SalesforceGetEvents(IntegrationGetEvents):
@@ -140,7 +139,7 @@ class SalesforceGetEvents(IntegrationGetEvents):
 
             yield events_list
 
-    def get_last_run(self) -> dict:
+    def get_last_run_details(self) -> dict:
         """
         Get the log time and the file id to prevent duplications in the next run
         """
@@ -154,6 +153,10 @@ class SalesforceGetEvents(IntegrationGetEvents):
             return {'after': timestamp.strftime("%Y-%m-%dT%H:%M:%SZ"),
                     'last_id': last_file['Id']}
 
+        return {}
+
+    @staticmethod
+    def get_last_run(events: list) -> dict:
         return {}
 
 
@@ -210,19 +213,16 @@ def main():
 
             if command == 'fetch-events':
                 send_events_to_xsiam(events, 'salesforce', demisto_params.get('product'))
-                demisto.setLastRun(get_events.get_last_run())
+                demisto.setLastRun(get_events.get_last_run_details())
 
             elif command == 'salesforce-get-events':
                 command_results = CommandResults(
                     readable_output=tableToMarkdown('salesforce audit Logs', events, headerTransform=pascalToSpace),
-                    outputs_prefix='salesforce.Logs',
-                    outputs_key_field='timestamp',
-                    outputs=events,
                     raw_response=events,
                 )
                 return_results(command_results)
                 if should_push_events:
-                    send_events_to_xsiam(events, 'github', demisto_params.get('product'))
+                    send_events_to_xsiam(events, 'salesforce', demisto_params.get('product'))
 
     except Exception as e:
         return_error(str(e))

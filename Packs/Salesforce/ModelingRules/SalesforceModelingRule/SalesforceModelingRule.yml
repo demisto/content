@@ -27,7 +27,7 @@ schema: |-
               "is_array": false
           },
           "run_time": {
-              "type": "int",
+              "type": "string",
               "is_array": false
           },
           "session_key": {
@@ -35,7 +35,7 @@ schema: |-
               "is_array": false
           },
           "timestamp": {
-              "type": "float",
+              "type": "string",
               "is_array": false
           },
           "uri": {
