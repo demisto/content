@@ -254,7 +254,9 @@ class EntryType(object):
     IMAGE = 7
     PLAYGROUND_ERROR = 8
     ENTRY_INFO_FILE = 9
+    VIDEO_FILE = 10
     WARNING = 11
+    STATIC_VIDEO_FILE = 12
     MAP_ENTRY_TYPE = 15
     WIDGET = 17
 
@@ -4831,6 +4833,9 @@ class Common(object):
         :type external_references: ``ExternalReference``
         :param external_references:  A list of id's and description of the AP via external refs.
 
+        :type value: ``str``
+        :param value: The Attack Pattern value (name) - example: "Plist File Modification"
+
         :return: None
         :rtype: ``None``
         """
@@ -4838,7 +4843,7 @@ class Common(object):
 
         def __init__(self, stix_id, kill_chain_phases=None, first_seen_by_source=None, description=None,
                      operating_system_refs=None, publications=None, mitre_id=None, tags=None,
-                     traffic_light_protocol=None, dbot_score=None, community_notes=None, external_references=None):
+                     traffic_light_protocol=None, dbot_score=None, community_notes=None, external_references=None, value=None):
 
             self.community_notes = community_notes
             self.description = description
@@ -4851,7 +4856,7 @@ class Common(object):
             self.stix_id = stix_id
             self.tags = tags
             self.traffic_light_protocol = traffic_light_protocol
-
+            self.value = value
             self.dbot_score = dbot_score
 
         def to_context(self):
@@ -4862,6 +4867,7 @@ class Common(object):
                 'OperatingSystemRefs': self.operating_system_refs,
                 "Publications": self.publications,
                 "MITREID": self.mitre_id,
+                "Value": self.value,
                 "Tags": self.tags,
                 "Description": self.description
             }
@@ -7051,12 +7057,15 @@ class CommandRunner:
         results, errors = [], []
         for command, args in zip(command.commands, command.args_lst):
             try:
+                demisto.debug(' '.join(('calling', command, 'with args=', ','.join(args))))
                 execute_command_results = demisto.executeCommand(command, args)
                 for res in execute_command_results:
                     brand_name = res.get('Brand', 'Unknown') if isinstance(res, dict) else 'Unknown'
                     module_name = res.get('ModuleName', 'Unknown') if isinstance(res, dict) else 'Unknown'
                     if is_error(res):
-                        errors.append(CommandRunner.Result(command, args, brand_name, module_name, get_error(res)))
+                        error = get_error(res)
+                        demisto.debug('error: ' + error)
+                        errors.append(CommandRunner.Result(command, args, brand_name, module_name, error))
                     else:
                         if extract_contents:
                             res = res.get('Contents', {})
@@ -7268,10 +7277,10 @@ regexFlags = re.M  # Multi line matching
 # else, use re.match({regex_format},str)
 
 ipv4Regex = r'\b((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b([^\/]|$)'
-ipv4cidrRegex = r'\b(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(?:\[\.\]|\.)){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(\/([0-9]|[1-2][0-9]|3[0-2]))\b'  # noqa: E501
+ipv4cidrRegex = r'^([0-9]{1,3}\.){3}[0-9]{1,3}(\/([0-9]|[1-2][0-9]|3[0-2]))$'
 ipv6Regex = r'\b(?:(?:[0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,7}:|(?:[0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|(?:[0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|(?:[0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|(?:[0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:(?:(:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))\b'  # noqa: E501
-ipv6cidrRegex = r'\b(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))(\/(12[0-8]|1[0-1][0-9]|[1-9][0-9]|[0-9]))\b'  # noqa: E501
-emailRegex = r'\b[^@\s]{1,64}@[^@\s]{1,253}\.[^@\s]+\b'
+ipv6cidrRegex = r'^s*((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3})|:))|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3})|:))|(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:)))(%.+)?s*(\/([0-9]|[1-9][0-9]|1[0-1][0-9]|12[0-8]))$'  # noqa: E501
+emailRegex = r'''(?:[a-z0-9!#$%&'*+/=?^_\x60{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_\x60{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])'''  # noqa: E501
 hashRegex = r'\b[0-9a-fA-F]+\b'
 urlRegex = r'(?i)((?:(?:https?|ftps?|hxxps?|sftp|meows):\/\/|www\[?\.\]?|ftp\[?\.\]?|(?:(?:https?|ftps?|hxxps?|sftp|meows):\/\/www\[?\.\]?))(((25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)(\[?\.\]?[A-Za-z]{2,6})?)|(([A-Za-z0-9\S]\.|[A-Za-z0-9][A-Za-z0-9-]{0,61}[A-Za-z0-9]\[?\.\]?){1,3}[A-Za-z]{2,6})|(0\[?x\]?[0-9a-fA-F]{8})|([0-7]{4}\.[0-7]{4}\.[0-7]{4}\.[0-7]{4})|([0-9]{1,10}))($|\/\S+|\/$|:[0-9]{1,5}($|\/\S*))|^(((25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?))(\/([0-9]|[12][0-9]|3[0-2])\/\S+|\/[A-Za-z]\S*|\/([3-9]{2}|[0-9]{3,})\S*|(:[0-9]{1,5}\/\S+))$)|(([A-Za-z0-9\S]\.|[A-Za-z0-9][A-Za-z0-9-]{0,61}[A-Za-z0-9]\[?\.\]?){1,3}[A-Za-z]{2,6}(((\/\S+))|(:[0-9]{1,5}\/\S+))$)|\b(?:(?:[0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,7}:|(?:[0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|(?:[0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|(?:[0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|(?:[0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:(?:(:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))\b((\/([0-9]|[1-5][0-9]|6[0-4])\/\S+|\/[A-Za-z]\S*|\/((6[5-9]|[7-9][0-9])|[0-9]{3,}|65)\S*|(:[0-9]{1,5}\/\S+))$))'  # noqa: E501
 cveRegex = r'(?i)^cve-\d{4}-([1-9]\d{4,}|\d{4})$'
@@ -9958,13 +9967,14 @@ def create_indicator_result_with_dbotscore_unknown(indicator, indicator_type, re
 
 def get_fetch_run_time_range(last_run, first_fetch, look_back=0, timezone=0, date_format='%Y-%m-%dT%H:%M:%S'):
     """
-    Gets the time range for fetch
+    Calculates the time range for fetch depending the look_back argument and the previous fetch start time
+    given from the last_run object.
 
     :type last_run: ``dict``
     :param last_run: The LastRun object
 
     :type first_fetch: ``str``
-    :param first_fetch: The first time to fetch, used in the first fetch
+    :param first_fetch: The first time to fetch, used in the first fetch of an instance
 
     :type look_back: ``int``
     :param look_back: The time to look back in fetch in minutes
@@ -9975,7 +9985,7 @@ def get_fetch_run_time_range(last_run, first_fetch, look_back=0, timezone=0, dat
     :type date_format: ``str``
     :param date_format: The date format
 
-    :return: The time range of the creation date for the incidents to fetch in the current run.
+    :return: The time range (start_time, end_time) of the creation date for the incidents to fetch in the current run.
     :rtype: ``Tuple``
     """
     last_run_time = last_run and 'time' in last_run and last_run['time']
@@ -10007,10 +10017,13 @@ def get_current_time(time_zone=0):
 
 def filter_incidents_by_duplicates_and_limit(incidents_res, last_run, fetch_limit, id_field):
     """
-    Remove duplicate incidents from response and returns the incidents till limit
+    Removes duplicate incidents from response and returns the incidents till limit.
+    The function should be called after getting the get-incidents API response,
+    and by passing the id_field it will filter out the incidents that were already fetched
+    by checking the incident IDs that are saved from the previous fetch in the last run object
 
     :type incidents_res: ``list``
-    :param incidents_res: The incidents from response
+    :param incidents_res: The incidents from the API response
 
     :type last_run: ``dict``
     :param last_run: The LastRun object
@@ -10021,7 +10034,7 @@ def filter_incidents_by_duplicates_and_limit(incidents_res, last_run, fetch_limi
     :type id_field: ``str``
     :param id_field: The incident id field
 
-    :return: The incidents till limit after filtering duplicates
+    :return: List of incidents after filtering duplicates when len(incidents) <= limit
     :rtype: ``list``
     """
     found_incidents = last_run.get('found_incident_ids', {})
@@ -10069,13 +10082,13 @@ def get_latest_incident_created_time(incidents, created_time_field, date_format=
 
 def remove_old_incidents_ids(found_incidents_ids, current_time, look_back):
     """
-    Removes old incident ids
+    Removes old incident ids from the last run object to avoid overloading.
 
     :type found_incidents_ids: ``dict``
     :param found_incidents_ids: Dict of incidents ids
 
     :type current_time: ``int``
-    :param current_time: The current epoch time
+    :param current_time: The current epoch time to compare with the existing IDs added time
 
     :type look_back: ``int``
     :param look_back: The look back time in minutes
@@ -10097,13 +10110,13 @@ def remove_old_incidents_ids(found_incidents_ids, current_time, look_back):
 
 def get_found_incident_ids(last_run, incidents, look_back, id_field):
     """
-    Gets the found incident ids
+    Gets the found incident ids from the last run object and adds the new fetched incident IDs.
 
     :type last_run: ``dict``
     :param last_run: The LastRun object
 
     :type incidents: ``list``
-    :param incidents: List of incidents
+    :param incidents: List of incidents to add
 
     :type look_back: ``int``
     :param look_back: The look back time in minutes
@@ -10111,7 +10124,7 @@ def get_found_incident_ids(last_run, incidents, look_back, id_field):
     :type id_field: ``str``
     :param id_field: The incident id field
 
-    :return: The new incidents ids
+    :return: The new incident ids.
     :rtype: ``dict``
     """
 
@@ -10129,13 +10142,14 @@ def get_found_incident_ids(last_run, incidents, look_back, id_field):
 def create_updated_last_run_object(last_run, incidents, fetch_limit, look_back, start_fetch_time, end_fetch_time,
                                    created_time_field, date_format='%Y-%m-%dT%H:%M:%S', increase_last_run_time=False):
     """
-    Creates an updated LastRun object
+    Calculates the next fetch time and limit depending the incidents result and creates an updated LastRun object
+    with the new time and limit.
 
     :type last_run: ``dict``
     :param last_run: The LastRun object
 
     :type incidents: ``list``
-    :param incidents: List of incidents
+    :param incidents: List of the incidents result
 
     :type fetch_limit: ``int``
     :param fetch_limit: The fetch limit
@@ -10144,10 +10158,10 @@ def create_updated_last_run_object(last_run, incidents, fetch_limit, look_back, 
     :param look_back: The time to look back in fetch in minutes
 
     :type start_fetch_time: ``str``
-    :param start_fetch_time: The start time to fetch
+    :param start_fetch_time: The time the fetch started to fetch from
 
     :type end_fetch_time: ``str``
-    :param end_fetch_time: The end time to fetch
+    :param end_fetch_time: The end time in which the fetch incidents ended
 
     :type created_time_field: ``str``
     :param created_time_field: The incident created time field
@@ -10158,7 +10172,7 @@ def create_updated_last_run_object(last_run, incidents, fetch_limit, look_back, 
     :type increase_last_run_time: ``bool``
     :param increase_last_run_time: Whether to increase the last run time with one millisecond
 
-    :return: The updated LastRun object
+    :return: The new LastRun object
     :rtype: ``Dict``
     """
 
@@ -10186,22 +10200,22 @@ def create_updated_last_run_object(last_run, incidents, fetch_limit, look_back, 
 def update_last_run_object(last_run, incidents, fetch_limit, start_fetch_time, end_fetch_time, look_back,
                            created_time_field, id_field, date_format='%Y-%m-%dT%H:%M:%S', increase_last_run_time=False):
     """
-    Updates the LastRun object
+    Updates the LastRun object with the next fetch time and limit and with the new fetched incident IDs.
 
     :type last_run: ``dict``
     :param last_run: The LastRun object
 
     :type incidents: ``list``
-    :param incidents: List of incidents
+    :param incidents: List of the incidents result
 
     :type fetch_limit: ``int``
     :param fetch_limit: The fetch limit
 
     :type start_fetch_time: ``str``
-    :param start_fetch_time: The start time to fetch
+    :param start_fetch_time: The time the fetch started to fetch from
 
     :type end_fetch_time: ``str``
-    :param end_fetch_time: The end time to fetch
+    :param end_fetch_time: The end time in which the fetch incidents ended
 
     :type look_back: ``int``
     :param look_back: The time to look back in fetch in minutes
@@ -10218,7 +10232,7 @@ def update_last_run_object(last_run, incidents, fetch_limit, start_fetch_time, e
     :type increase_last_run_time: ``bool``
     :param increase_last_run_time: Whether to increase the last run time with one millisecond
 
-    :return: The new last run object and list of incidents
+    :return: The updated LastRun object
     :rtype: ``Dict``
     """
 
@@ -10387,6 +10401,13 @@ def send_events_to_xsiam(events, vendor, product, data_format=None):
     """
     data = events
     amount_of_events = 0
+
+    if not events:
+        demisto.debug('send_events_to_xsiam function received no events, skipping the API call to send events to XSIAM')
+        demisto.updateModuleHealth({'eventsPulled': amount_of_events})
+        return
+
+    # only in case we have events data to send to XSIAM we continue with this flow.
     # Correspond to case 1: List of strings or dicts where each string or dict represents an event.
     if isinstance(events, list):
         amount_of_events = len(events)
@@ -10402,8 +10423,7 @@ def send_events_to_xsiam(events, vendor, product, data_format=None):
 
     else:
         raise DemistoException(('Unsupported type: {type_events} for the "events" parameter. Should be a string or '
-                                'dict.').format(type_events=type(events)))
-
+                                'list.').format(type_events=type(events)))
     if not data_format:
         data_format = 'text'
 

@@ -681,26 +681,35 @@ class MsGraphClient:
         :return: Fetched emails and exclude ids list that contains the new ids of fetched emails
         :rtype: ``list`` and ``list``
         """
-        target_modified_time = add_second_to_str_date(last_fetch)  # workaround to Graph API bug
         suffix_endpoint = f"/users/{self._mailbox_to_fetch}/mailFolders/{folder_id}/messages"
         # If you add to the select filter the $ sign, The 'internetMessageHeaders' field not contained within the
         # API response, (looks like a bug in graph API).
         params = {
-            "$filter": f"receivedDateTime gt {target_modified_time}",
+            "$filter": f"receivedDateTime ge {last_fetch}",
             "$orderby": "receivedDateTime asc",
             "select": "*",
-            "$top": self._emails_fetch_limit
+            "$top": len(exclude_ids) + self._emails_fetch_limit  # fetch extra incidents
         }
 
         fetched_emails = self.ms_client.http_request(
             'GET', suffix_endpoint, params=params
-        ).get('value', [])[:self._emails_fetch_limit]
+        ).get('value', [])
 
-        if exclude_ids:  # removing emails in order to prevent duplicate incidents
-            fetched_emails = [email for email in fetched_emails if email.get('id') not in exclude_ids]
+        exclude_ids_size = len(exclude_ids)
+        if not fetched_emails or exclude_ids_size >= len(fetched_emails):
+            # no new emails
+            return [], exclude_ids, last_fetch
+        new_emails = fetched_emails[exclude_ids_size:exclude_ids_size + self._emails_fetch_limit]
+        last_email_time = new_emails[-1].get('receivedDateTime')
+        if last_email_time == last_fetch:
+            # next fetch will need to skip existing exclude_ids
+            excluded_ids_for_nextrun = exclude_ids + [email.get('id') for email in new_emails]
+        else:
+            # next fetch will need to skip messages the same time as last_email
+            excluded_ids_for_nextrun = [email.get('id') for email in new_emails if
+                                        email.get('receivedDateTime') == last_email_time]
 
-        fetched_emails_ids = [email.get('id') for email in fetched_emails]
-        return fetched_emails, fetched_emails_ids
+        return new_emails, excluded_ids_for_nextrun, last_email_time
 
     @staticmethod
     def _parse_item_as_dict(email):
@@ -838,27 +847,6 @@ class MsGraphClient:
 
         return incident
 
-    @staticmethod
-    def _get_next_run_time(fetched_emails, start_time):
-        """
-        Returns received time of last email if exist, else utc time that was passed as start_time.
-
-        The elements in fetched emails are ordered by modified time in ascending order,
-        meaning the last element has the latest received time.
-
-        :type fetched_emails: ``list``
-        :param fetched_emails: List of fetched emails
-
-        :type start_time: ``str``
-        :param start_time: utc string of format Y-m-dTH:M:SZ
-
-        :return: Returns str date of format Y-m-dTH:M:SZ
-        :rtype: `str`
-        """
-        next_run_time = fetched_emails[-1].get('receivedDateTime') if fetched_emails else start_time
-
-        return next_run_time
-
     @logger
     def fetch_incidents(self, last_run):
         """
@@ -872,9 +860,8 @@ class MsGraphClient:
         :return: Next run data and parsed fetched incidents
         :rtype: ``dict`` and ``list``
         """
-        start_time = get_now_utc()
         last_fetch = last_run.get('LAST_RUN_TIME')
-        exclude_ids = last_run.get('LAST_RUN_IDS', [])
+        exclude_ids = list(set(last_run.get('LAST_RUN_IDS', [])))  # remove any possible duplicates
         last_run_folder_path = last_run.get('LAST_RUN_FOLDER_PATH')
         folder_path_changed = (last_run_folder_path != self._folder_to_fetch)
         last_run_account = last_run.get('LAST_RUN_ACCOUNT')
@@ -892,13 +879,12 @@ class MsGraphClient:
             last_fetch, _ = parse_date_range(self._first_fetch_interval, date_format=DATE_FORMAT, utc=True)
             demisto.info(f"MS-Graph-Listener: initialize fetch and pull emails from date :{last_fetch}")
 
-        fetched_emails, fetched_emails_ids = self._fetch_last_emails(folder_id=folder_id, last_fetch=last_fetch,
-                                                                     exclude_ids=exclude_ids)
+        fetched_emails, exclude_ids, next_run_time = self._fetch_last_emails(
+            folder_id=folder_id, last_fetch=last_fetch, exclude_ids=exclude_ids)
         incidents = list(map(self._parse_email_as_incident, fetched_emails))
-        next_run_time = MsGraphClient._get_next_run_time(fetched_emails, start_time)
         next_run = {
             'LAST_RUN_TIME': next_run_time,
-            'LAST_RUN_IDS': fetched_emails_ids,
+            'LAST_RUN_IDS': exclude_ids,
             'LAST_RUN_FOLDER_ID': folder_id,
             'LAST_RUN_FOLDER_PATH': self._folder_to_fetch,
             'LAST_RUN_ACCOUNT': self._mailbox_to_fetch,
@@ -934,26 +920,6 @@ def upload_file(filename, content, attachments_list):
         'path': file_result['FileID'],
         'name': file_result['File']
     })
-
-
-def add_second_to_str_date(date_string, seconds=1):
-    """
-    Add seconds to date string.
-
-    Is used as workaround to Graph API bug, for more information go to:
-    https://stackoverflow.com/questions/35729273/office-365-graph-api-greater-than-filter-on-received-date
-
-    :type date_string: ``str``
-    :param date_string: Date string to add seconds
-
-    :type seconds: int
-    :param seconds: Seconds to add to date, by default is set to 1
-
-    :return: Date time string appended seconds
-    :rtype: ``str``
-    """
-    added_result = datetime.strptime(date_string, DATE_FORMAT) + timedelta(seconds=seconds)
-    return datetime.strftime(added_result, DATE_FORMAT)
 
 
 def get_now_utc():

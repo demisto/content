@@ -123,7 +123,6 @@ For information about classification and mapping see [Classification and Mapping
 **Note:**  
 - For Cortex XSOAR version 6.1 only, the final source of truth for an incident are the values in Cortex XSOAR.  For example, if you change the severity in Cortex XSOAR and then change it back in ServiceNow, the final value that will be presented is the one in Cortex XSOAR. For versions 6.2 and later, if mirroring is in both directions then the latest update is the source of truth. 
 - The mirroring settings apply only for incidents that are fetched after applying the settings. Pre-existing comments or work notes are not fetched/mirrored at the time of incident creation.
--  Confirm whether you will use ServiceNow out of the box or the Security Incident Response (SIR) module, since mirroring is not supported out of the box for SIR. 
 - To use a custom mapper, you must first duplicate the mapper and edit the field in the copy of the mapper. If you detach the out of the box mapper and make changes to it, the pack does not automatically get updates.
 
 To set up incident mirroring you need to:  
@@ -158,7 +157,7 @@ When the trigger incident is ServiceNow, you use the **ServiceNow Classifier** a
 6. Under **Mapper (outgoing)**, for default mapping select ServiceNow - Outgoing Mapper. For
 custom mapping, follow the instructions in STEP 3 and then select the custom mapper name.
 
-    ![image](https://raw.githubusercontent.com/demisto/content-docs/5781a9024dc9f7e6418c82d7b7318f07d49fc863/docs/doc_imgs/integrations/snowv2-configuration-settings.png)
+ ![image](https://raw.githubusercontent.com/demisto/content-docs/5781a9024dc9f7e6418c82d7b7318f07d49fc863/docs/doc_imgs/integrations/snowv2-configuration-settings.png)
 
 7. Enter the connection parameters.  
     - Confirm whether your organization uses basic authorization or OAuth authorization (most use basic) and enter the relevant authorization details.  
@@ -175,7 +174,7 @@ These values are mapped to the **dbotMirrorTags** incident field in Cortex XSOAR
 **Note:**  
 These tags work only for mirroring comments, work notes, and files from Cortex XSOAR to ServiceNow.
 
-    ![image](https://raw.githubusercontent.com/demisto/content-docs/954dfad984230fde68dc45bd3dd50bde8338413a/docs/doc_imgs/integrations/mirror-tags.png)
+![image](https://raw.githubusercontent.com/demisto/content-docs/954dfad984230fde68dc45bd3dd50bde8338413a/docs/doc_imgs/integrations/mirror-tags.png)
 
 13. Configure any **Custom Fields to Mirror**. These must start with "u_". This is available for ServiceNow v2 version 2.2.10 and later.  
   **Note:**  
@@ -273,7 +272,7 @@ These values are mapped to the **dbotMirrorTags** incident field in Cortex XSOAR
 **Note:**  
 These tags work only for mirroring comments from Cortex XSOAR to ServiceNow.
 
-    ![image](https://raw.githubusercontent.com/demisto/content-docs/954dfad984230fde68dc45bd3dd50bde8338413a/docs/doc_imgs/integrations/mirror-tags.png)
+![image](https://raw.githubusercontent.com/demisto/content-docs/954dfad984230fde68dc45bd3dd50bde8338413a/docs/doc_imgs/integrations/mirror-tags.png)
 
 15. Configure any **Custom Fields to Mirror**. These must start with "u_". This is available for ServiceNow v2 version 2.2.10 and later.  
   **Note:**  
@@ -2485,4 +2484,4 @@ The following are tips for handling issues with mirroring incidents between Serv
 | Ticket is not closing. | Verify the integration instance is configured correctly for the **Close Mirrored XSOAR Incident** or **Close Mirrored ServiceNow Ticket** fields.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | Required fields are not getting sent. | This may be a mapping issue, specifically if close reason and close notes are required.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
 | Auto-Extract extracts sys_id as a file. | This is by design. To resolve this:  <br></br> - Turn off Auto-Extract for all fields and only used on specific fields.  <br></br> - Turn off Auto-Extract at the incident level and use the task level for extraction.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
-| Date displayed in the Cortex XSOAR layout is not aligned with ServiceNow. | 1. Navigate to the `incoming-mapper` you are using. <br></br> 2. For every field that uses the ``DateStringToISOFormat`` script, change the ``dayfirst`` argument  to ``true``.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| Date displayed in the Cortex XSOAR layout is not aligned with ServiceNow. | 1. Navigate to the `incoming-mapper` you are using. <br></br> 2. For every field that uses the ``DateStringToISOFormat`` script, change the ``dayfirst`` argument  to ``true``.
