@@ -11,7 +11,8 @@ from CommonServerPython import *  # noqa: F401
 requests.packages.urllib3.disable_warnings()
 
 ''' GLOBAL VARS '''
-TIME_FORMAT = '%Y-%m-%dT%H:%M:%S%z'
+TIME_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
+TIME_FORMAT_UTC = '%Y-%m-%dT%H:%M:%S%z'
 BASE_URL = demisto.params().get('url')
 if BASE_URL and BASE_URL[-1] != '/':
     BASE_URL += '/'
@@ -791,7 +792,7 @@ def search_quarantine():
     lstAlert = []
     mid = demisto.args().get('message_id')
     recipient = demisto.args().get('recipient')
-    emailTAPtime = int(datetime.strptime(demisto.args().get('time'), TIME_FORMAT).timestamp())
+    emailTAPtime = int(datetime.strptime(demisto.args().get('time'), TIME_FORMAT_UTC).timestamp())
     incidents_list = get_incidents_request({})
     found = {'email': False, 'mid': False, 'quarantine': False}
     resQ = []
