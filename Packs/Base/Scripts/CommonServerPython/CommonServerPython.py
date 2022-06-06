@@ -10440,13 +10440,13 @@ def send_events_to_xsiam(events, vendor, product, data_format=None):
 
     header_msg = 'Error sending new events into XSIAM. \n'
 
-    def events_error_handler(response):
+    def events_error_handler(res):
         """
         Internal function to parse the XSIAM API errors
         """
         try:
-            response = response.json()
-            error = response.reason
+            response = res.json()
+            error = res.reason
             if response.get('error').lower() == 'false':
                 xsiam_server_err_msg = response.get('error')
                 error += ": " + xsiam_server_err_msg
