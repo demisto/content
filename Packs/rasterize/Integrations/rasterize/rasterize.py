@@ -89,7 +89,7 @@ def merge_options(default_options, user_options):
     """
     user_options = re.split(r'(?<!\\),', user_options) if user_options else list()
     if not user_options:  # nothing to do
-        return default_options
+        return default_options.copy()
     demisto.debug(f'user chrome options: {user_options}')
     options = []
     remove_opts = []
@@ -174,7 +174,7 @@ def quit_driver_and_reap_children(driver):
 
 def rasterize(path: str, width: int, height: int, r_type: RasterizeType = RasterizeType.PNG, wait_time: int = 0,
               offline_mode: bool = False, max_page_load_time: int = 180,
-              r_mode: RasterizeMode = RasterizeMode.WEBDRIVER_ONLY):
+              r_mode: RasterizeMode = RasterizeMode.WEBDRIVER_PREFERED):
     """
     Capturing a snapshot of a path (url/file), using Chrome Driver
     :param offline_mode: when set to True, will block any outgoing communication
@@ -207,7 +207,7 @@ def rasterize(path: str, width: int, height: int, r_type: RasterizeType = Raster
                 if i < (len(rasterize_funcs) - 1):
                     demisto.info(f'Failed rasterize preferred option trying second option. Exception: {ex}')
                 else:
-                    demisto.error(f'Failed rasterizing using all avialable options. Raising last excpetion: {ex}')
+                    demisto.info(f'Failed rasterizing using all avialable options. Raising last exception: {ex}')
                     raise
     except (InvalidArgumentException, NoSuchElementException) as ex:
         if 'invalid argument' in str(ex):
@@ -269,6 +269,7 @@ def rasterize_headless_cmd(path: str, width: int, height: int, r_type: Rasterize
     cmd_options.insert(0, CHROME_EXE)
     if width > 0 and height > 0:
         cmd_options.append(f'--window-size={width},{height}')
+    # not using --timeout as it would return a screenshot even though it is not complete in some cases  
     # if max_page_load_time > 0:
     #     cmd_options.append(f'--timeout={max_page_load_time * 1000}')
     output_file = None
@@ -282,11 +283,13 @@ def rasterize_headless_cmd(path: str, width: int, height: int, r_type: Rasterize
         output_file = Path(tempfile.gettempdir()) / 'screenshot.png'
     # run chrome
     try:
+        cmd_options.append(path)
+        demisto.debug(f'CMD command: {" ".join(cmd_options)}')
         cmd_timeout = 0 if max_page_load_time <= 0 else max_page_load_time
         res = subprocess.run(cmd_options, cwd=tempfile.gettempdir(), capture_output=True, timeout=cmd_timeout,
                              check=True, text=True)
     except subprocess.TimeoutExpired as te:
-        demisto.error(f'chrome headless timeout exception: {te}. Stderr: {te.stderr}')
+        demisto.info(f'chrome headless timeout exception: {te}. Stderr: {te.stderr}')
         raise
     except subprocess.CalledProcessError as ce:
         demisto.error(f'chrome headless called process exception: {ce}. Return code: {ce.returncode}. Stderr: {ce.stderr}')
