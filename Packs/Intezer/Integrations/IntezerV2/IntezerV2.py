@@ -528,6 +528,7 @@ def enrich_dbot_and_display_url_analysis_results(intezer_result, intezer_api):
         presentable_result += f'Downloaded file SHA256: {downloaded_file["sha256"]}\n'
         presentable_result += f'Downloaded file Verdict: **{downloaded_file["analysis_summary"]["verdict_type"]}**\n'
         downloaded_file_analysis = FileAnalysis.from_analysis_id(downloaded_file['analysis_id'], intezer_api)
+        intezer_result['downloaded_file'] = downloaded_file_analysis.result()
         downloaded_file_presentable_result = _file_analysis_presentable_code(downloaded_file_analysis.result())
 
     md = tableToMarkdown('Analysis Report', intezer_result, url_keys=['analysis_url'])
