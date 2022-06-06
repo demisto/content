@@ -24,7 +24,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 725,
+          "x": 745,
           "y": 50
         }
       }
@@ -58,7 +58,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1277.5,
+          "x": 1635,
           "y": 1945
         }
       }
@@ -116,7 +116,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 725,
+          "x": 745,
           "y": 195
         }
       }
@@ -143,8 +143,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 4780
+          "x": 652.5,
+          "y": 4580
         }
       }
     note: false
@@ -156,10 +156,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: 5711d3b0-043d-4431-8cc2-ec6a31160b4b
+    taskid: b5083259-867c-4562-88ae-0f871954e19a
     type: regular
     task:
-      id: 5711d3b0-043d-4431-8cc2-ec6a31160b4b
+      id: b5083259-867c-4562-88ae-0f871954e19a
       version: -1
       name: Set feedback to "False Positive"
       description: Set feedback to "False Positive"
@@ -173,12 +173,11 @@ tasks:
     scriptarguments:
       pandlpincidentfeedback:
         simple: CONFIRMED_FALSE_POSITIVE
-    continueonerror: true
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 837.5,
+          "x": 1082.5,
           "y": 1945
         }
       }
@@ -218,7 +217,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 950,
+          "x": 1552.5,
           "y": 1770
         }
       }
@@ -248,7 +247,7 @@ tasks:
       '#default#':
       - "52"
       "yes":
-      - "22"
+      - "63"
     scriptarguments:
       entryId:
         simple: ${lastCompletedTaskEntries}
@@ -256,7 +255,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 950,
+          "x": 1552.5,
           "y": 2295
         }
       }
@@ -269,17 +268,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: d085d949-faad-4841-8d84-76483f2e8a9d
+    taskid: 0e972fd9-b27d-4ecc-8516-9fab9dae109e
     type: regular
     task:
-      id: d085d949-faad-4841-8d84-76483f2e8a9d
+      id: 0e972fd9-b27d-4ecc-8516-9fab9dae109e
       version: -1
       name: 'send-mail '
-      description: Sends an email.
-      script: Mail Sender (New)|||send-mail
+      description: Send an email
+      script: '|||send-mail'
       type: regular
       iscommand: true
-      brand: Mail Sender (New)
+      brand: ""
     nexttasks:
       '#none#':
       - "11"
@@ -296,8 +295,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 725,
-          "y": 4045
+          "x": 1757.5,
+          "y": 4220
         }
       }
     note: false
@@ -331,7 +330,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1187.5,
+          "x": 1102.5,
           "y": 545
         }
       }
@@ -358,7 +357,6 @@ tasks:
       '#default#':
       - "55"
       "yes":
-      - "42"
       - "54"
     separatecontext: false
     conditions:
@@ -372,8 +370,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1200,
-          "y": 885
+          "x": 1102.5,
+          "y": 895
         }
       }
     note: false
@@ -413,7 +411,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 950,
+          "x": 1552.5,
           "y": 1595
         }
       }
@@ -454,7 +452,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 950,
+          "x": 1552.5,
           "y": 2120
         }
       }
@@ -507,7 +505,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 950,
+          "x": 1552.5,
           "y": 1420
         }
       }
@@ -552,7 +550,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 725,
+          "x": 1142.5,
           "y": 3695
         }
       }
@@ -580,7 +578,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "22"
+      - "63"
       "no":
       - "46"
     scriptarguments:
@@ -590,7 +588,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 725,
+          "x": 1142.5,
           "y": 3870
         }
       }
@@ -625,7 +623,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 510,
+          "x": 1142.5,
           "y": 2645
         }
       }
@@ -665,7 +663,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 510,
+          "x": 1142.5,
           "y": 2820
         }
       }
@@ -697,7 +695,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 725,
+          "x": 1142.5,
           "y": 3345
         }
       }
@@ -737,8 +735,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1410,
-          "y": 4510
+          "x": 1430,
+          "y": 4395
         }
       }
     note: false
@@ -772,7 +770,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1155,
+          "x": 1450,
           "y": 3520
         }
       }
@@ -820,8 +818,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 510,
-          "y": 1245
+          "x": 1102.5,
+          "y": 1325
         }
       }
     note: false
@@ -879,7 +877,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 275,
+          "x": 652.5,
           "y": 2295
         }
       }
@@ -920,7 +918,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 725,
+          "x": 1142.5,
           "y": 3170
         }
       }
@@ -955,7 +953,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 622.5,
+          "x": 877.5,
           "y": 3520
         }
       }
@@ -998,7 +996,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1155,
+          "x": 1122.5,
           "y": 4045
         }
       }
@@ -1052,7 +1050,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 725,
+          "x": 1142.5,
           "y": 2995
         }
       }
@@ -1092,7 +1090,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 950,
+          "x": 1215,
           "y": 2470
         }
       }
@@ -1132,7 +1130,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 500,
+          "x": 755,
           "y": 2470
         }
       }
@@ -1175,8 +1173,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 330,
-          "y": 980
+          "x": 562.5,
+          "y": 1090
         }
       }
     note: false
@@ -1193,7 +1191,7 @@ tasks:
     task:
       id: 60ecaf0e-e904-4cbb-86a8-a3f488b77559
       version: -1
-      name: 'Set feedback status to "SEND_NOTIFICATION_FAILURE"'
+      name: Set feedback status to "SEND_NOTIFICATION_FAILURE"
       description: Set feedback status to "SEND_NOTIFICATION_FAILURE"
       script: '|||pan-dlp-update-incident'
       type: regular
@@ -1203,6 +1201,8 @@ tasks:
       '#none#':
       - "11"
     scriptarguments:
+      error_details:
+        simple: User ${incident.sourceusername} not found on Slack
       feedback:
         simple: SEND_NOTIFICATION_FAILURE
       incident_id:
@@ -1211,15 +1211,13 @@ tasks:
         simple: ${incident.pandlpincidentregion}
       user_id:
         simple: ${incident.sourceusername}
-      error_details:
-        simple: User ${incident.sourceusername} not found on Slack
     continueonerror: true
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 4220
+          "x": 182.5,
+          "y": 4395
         }
       }
     note: false
@@ -1256,8 +1254,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 320,
-          "y": 580
+          "x": 292.5,
+          "y": 720
         }
       }
     note: false
@@ -1314,8 +1312,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 580,
-          "y": 380
+          "x": 50,
+          "y": 545
         }
       }
     note: false
@@ -1340,7 +1338,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-        - "25"
+      - "25"
     scriptarguments:
       append:
         simple: "false"
@@ -1352,8 +1350,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1187.5,
-          "y": 380
+          "x": 1102.5,
+          "y": 370
         }
       }
     note: false
@@ -1390,8 +1388,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1200,
-          "y": 710
+          "x": 1102.5,
+          "y": 720
         }
       }
     note: false
@@ -1428,8 +1426,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -10,
-          "y": 760
+          "x": 292.5,
+          "y": 895
         }
       }
     note: false
@@ -1470,8 +1468,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1510,
-          "y": 4260
+          "x": 1215,
+          "y": 4220
         }
       }
     note: false
@@ -1502,20 +1500,20 @@ tasks:
     scriptarguments:
       adaptive_card:
         simple: "{\n\t\"contentType\": \"application/vnd.microsoft.card.adaptive\",\n\t\"content\":
-                {\n\t\t\"$schema\": \"http://adaptivecards.io/schemas/adaptive-card.json\",\n\t\t\"version\":
-                \"1.0\",\n\t\t\"type\": \"AdaptiveCard\",\n\t\t\"msteams\": {\n\t\t\t\"width\":
-                \"Full\"\n\t\t},\n\t\t\"body\": [{\n\t\t\t\"type\": \"TextBlock\",\n\t\t\t\"text\":
-                \"Thank you for the request. Your temporary exemption for ${incident.filename}
-                is enabled now for ${Exemption.duration}. Please try again.\",\n\t\t\t\"wrap\":
-                true\n\t\t}]\n\t}\n}"
+          {\n\t\t\"$schema\": \"http://adaptivecards.io/schemas/adaptive-card.json\",\n\t\t\"version\":
+          \"1.0\",\n\t\t\"type\": \"AdaptiveCard\",\n\t\t\"msteams\": {\n\t\t\t\"width\":
+          \"Full\"\n\t\t},\n\t\t\"body\": [{\n\t\t\t\"type\": \"TextBlock\",\n\t\t\t\"text\":
+          \"Thank you for the request. Your temporary exemption for ${incident.filename}
+          is enabled now for ${Exemption.duration}. Please try again.\",\n\t\t\t\"wrap\":
+          true\n\t\t}]\n\t}\n}"
       team_member:
         simple: ${incident.sourceusername}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 1850,
-          "y": 4510
+          "x": 1000,
+          "y": 4395
         }
       }
     note: false
@@ -1525,6 +1523,111 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "63":
+    id: "63"
+    taskid: 6584493a-45ab-46a3-833c-8107870a2ed6
+    type: condition
+    task:
+      id: 6584493a-45ab-46a3-833c-8107870a2ed6
+      version: -1
+      name: Any email module enabled?
+      description: Check if any email module is enabled
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "11"
+      "yes":
+      - "22"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Mail Sender (New)
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
+        - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Gmail
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
+        - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: EWS Mail Sender
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1757.5,
+          "y": 4045
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {
@@ -1533,9 +1636,9 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 4795,
-        "width": 2240,
-        "x": -10,
+        "height": 4595,
+        "width": 2087.5,
+        "x": 50,
         "y": 50
       }
     }
