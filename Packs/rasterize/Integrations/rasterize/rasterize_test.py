@@ -151,7 +151,7 @@ def http_wait_server():
 # curl -v -H 'user-agent: HeadlessChrome' --max-time 10  "http://www.grainger.com/"  # disable-secrets-detection
 # This tests access a server which waits for 10 seconds and makes sure we timeout
 @pytest.mark.filterwarnings('ignore::ResourceWarning')
-def test_rasterize_url_long_load(mocker, http_wait_server):
+def test_rasterize_url_long_load(mocker, http_wait_server, caplog):
     return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
     time.sleep(1)  # give time to the servrer to start
     rasterize('http://localhost:10888', width=250, height=250, r_type='png', max_page_load_time=5)
@@ -163,6 +163,7 @@ def test_rasterize_url_long_load(mocker, http_wait_server):
     # test that with a higher value we get a response
     assert rasterize('http://localhost:10888', width=250, height=250, r_type='png', max_page_load_time=0)
     assert not return_error_mock.called
+    caplog.clear()
 
 
 @pytest.mark.filterwarnings('ignore::ResourceWarning')

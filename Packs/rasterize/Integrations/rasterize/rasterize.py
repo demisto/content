@@ -201,7 +201,7 @@ def rasterize(path: str, width: int, height: int, r_type: RasterizeType = Raster
     try:
         for i, r_func in enumerate(rasterize_funcs):  # type: ignore[var-annotated]
             try:
-                return r_func(path=path, width=width, height=height, r_type=r_type, wait_time=wait_time,
+                return r_func(path=path, width=width, height=height, r_type=r_type, wait_time=wait_time,  # type: ignore[misc]
                               offline_mode=offline_mode, max_page_load_time=page_load_time)
             except Exception as ex:
                 if i < (len(rasterize_funcs) - 1):
@@ -269,8 +269,8 @@ def rasterize_headless_cmd(path: str, width: int, height: int, r_type: Rasterize
     cmd_options.insert(0, CHROME_EXE)
     if width > 0 and height > 0:
         cmd_options.append(f'--window-size={width},{height}')
-    if max_page_load_time > 0:
-        cmd_options.append(f'--timeout={max_page_load_time}')
+    # if max_page_load_time > 0:
+    #     cmd_options.append(f'--timeout={max_page_load_time * 1000}')
     output_file = None
     if r_type == RasterizeType.PDF:
         cmd_options.append('--print-to-pdf')
@@ -282,7 +282,7 @@ def rasterize_headless_cmd(path: str, width: int, height: int, r_type: Rasterize
         output_file = Path(tempfile.gettempdir()) / 'output.pdf'
     # run chrome
     try:
-        cmd_timeout = 0 if max_page_load_time <= 0 else max_page_load_time + 5
+        cmd_timeout = 0 if max_page_load_time <= 0 else max_page_load_time + 1
         res = subprocess.run(cmd_options, cwd=tempfile.gettempdir(), capture_output=True, timeout=cmd_timeout,
                              check=True, text=True)
     except subprocess.TimeoutExpired as te:
