@@ -218,14 +218,11 @@ def main():
             elif command == 'salesforce-get-events':
                 command_results = CommandResults(
                     readable_output=tableToMarkdown('salesforce audit Logs', events, headerTransform=pascalToSpace),
-                    outputs_prefix='salesforce.Logs',
-                    outputs_key_field='timestamp',
-                    outputs=events,
                     raw_response=events,
                 )
                 return_results(command_results)
                 if should_push_events:
-                    send_events_to_xsiam(events, 'github', demisto_params.get('product'))
+                    send_events_to_xsiam(events, 'salesforce', demisto_params.get('product'))
 
     except Exception as e:
         return_error(str(e))
