@@ -1385,7 +1385,7 @@ tasks:
       key:
         simple: user_display_name
       value:
-        simple: ${Slack.User.DisplayName}
+        simple: ${Slack.User.Name}
     separatecontext: false
     view: |-
       {
