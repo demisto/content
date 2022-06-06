@@ -1,6 +1,5 @@
 from typing import Union, Optional
 
-from requests_oauthlib import OAuth1
 from dateparser import parse
 from datetime import timedelta
 from CommonServerPython import *
@@ -8,15 +7,15 @@ from CommonServerPython import *
 requests.packages.urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
-BASE_URL = demisto.getParam('url').rstrip('/') + '/'
-API_TOKEN = demisto.getParam('APItoken') or (demisto.getParam('credentials') or {}).get('password')
-USERNAME = demisto.getParam('username')
-PASSWORD = demisto.getParam('password')
+# BASE_URL = demisto.getParam('url').rstrip('/') + '/'
+# API_TOKEN = demisto.getParam('APItoken') or (demisto.getParam('credentials') or {}).get('password')
+# USERNAME = demisto.getParam('username')
+# PASSWORD = demisto.getParam('password')
 COMMAND_NOT_IMPELEMENTED_MSG = 'Command not implemented'
-
-HEADERS = {
-    'Content-Type': 'application/json',
-}
+#
+# HEADERS = {
+#     'Content-Type': 'application/json',
+# }
 JIRA_INCIDENT_TYPE_NAME = 'Jira Incident'
 ISSUE_INCIDENT_FIELDS = {'issueId': 'The ID of the issue to edit',
                          'summary': 'The summary of the issue.',
@@ -32,118 +31,186 @@ ISSUE_INCIDENT_FIELDS = {'issueId': 'The ID of the issue to edit',
 BASIC_AUTH_ERROR_MSG = "For cloud users: As of June 2019, Basic authentication with passwords for Jira is no" \
                        " longer supported, please use an API Token or OAuth 1.0"
 JIRA_RESOLVE_REASON = 'Issue was marked as "Done"'
-USE_SSL = not demisto.params().get('insecure', False)
+# USE_SSL = not demisto.params().get('insecure', False)
 
 
-def jira_req(
-        method: str,
-        resource_url: str,
-        body: str = '',
-        link: bool = False,
-        resp_type: str = 'text',
-        headers: Optional[dict] = None,
-        files: Optional[dict] = None
-):
-    url = resource_url if link else (BASE_URL + resource_url)
-    AUTH = get_auth()
-    if headers and HEADERS.get('Authorization'):
-        headers['Authorization'] = HEADERS.get('Authorization')
-    try:
-        result = requests.request(
-            method=method,
-            url=url,
-            data=body,
-            auth=AUTH,
-            headers=headers if headers else HEADERS,
-            verify=USE_SSL,
-            files=files
-        )
-    except ValueError:
-        raise ValueError("Could not deserialize privateKey")
+class Client(BaseClient):
 
-    if not result.ok:
-        demisto.debug(result.text)
+    def __init__(self, base_url, api_token: str, access_token: str, username: str, password: str,
+                 consumer_key: str, private_key: str, headers: dict, use_ssl: bool):
         try:
-            rj = result.json()
-            if rj.get('errorMessages'):
-                return_error(f'Status code: {result.status_code}\nMessage: {",".join(rj["errorMessages"])}')
-            elif rj.get('errors'):
-                return_error(f'Status code: {result.status_code}\nMessage: {",".join(rj["errors"].values())}')
-            else:
-                return_error(f'Status code: {result.status_code}\nError text: {result.text}')
-        except ValueError as ve:
-            demisto.debug(str(ve))
-            if result.status_code == 401:
-                return_error('Unauthorized request, please check authentication related parameters.'
-                             f'{BASIC_AUTH_ERROR_MSG}')
-            elif result.status_code == 404:
-                return_error("Could not connect to the Jira server. Verify that the server URL is correct.")
-            elif result.status_code == 500 and files:
-                return_error(f"Failed to execute request, status code: 500\nBody: {result.text}"
-                             f"\nMake sure file name doesn't contain any special characters")
-            else:
-                return_error(
-                    f"Failed reaching the server. status code: {result.status_code}")
+            self.base_url = base_url
+            self.use_ssl = use_ssl
 
-    if resp_type == 'json':
-        return result.json()
-    return result
+            self.atlassian_client = AtlassianClient(
+                access_token=access_token,
+                api_token=api_token,
+                username=username,
+                password=password,
+                consumer_key=consumer_key,
+                private_key=private_key,
+                headers=headers
+            )
+            headers.update(self.atlassian_client.get_headers())
+            self.headers = headers
+        except Exception as e:
+            return_error(f"failed to build client: {e}")
 
+    def send_request(self,
+                     method: str,
+                     resource_url: str,
+                     body: str = '',
+                     link: bool = False,
+                     resp_type: str = 'text',
+                     headers: Optional[dict] = None,
+                     files: Optional[dict] = None):
+        result = self.atlassian_client.http_request(method=method,
+                                                    full_url=resource_url if link else urljoin(self.base_url, resource_url),
+                                                    data=body,
+                                                    headers=headers,
+                                                    verify=self.use_ssl,
+                                                    files=files)
+        if not result.ok:
+            demisto.debug(result.text)
+            try:
+                rj = result.json()
+                if rj.get('errorMessages'):
+                    return_error(f'Status code: {result.status_code}\nMessage: {",".join(rj["errorMessages"])}')
+                elif rj.get('errors'):
+                    return_error(f'Status code: {result.status_code}\nMessage: {",".join(rj["errors"].values())}')
+                else:
+                    return_error(f'Status code: {result.status_code}\nError text: {result.text}')
+            except ValueError as ve:
+                demisto.debug(str(ve))
+                if result.status_code == 401:
+                    return_error('Unauthorized request, please check authentication related parameters.'
+                                 f'{BASIC_AUTH_ERROR_MSG}')
+                elif result.status_code == 404:
+                    return_error("Could not connect to the Jira server. Verify that the server URL is correct.")
+                elif result.status_code == 500 and files:
+                    return_error(f"Failed to execute request, status code: 500\nBody: {result.text}"
+                                 f"\nMake sure file name doesn't contain any special characters")
+                else:
+                    return_error(
+                        f"Failed reaching the server. status code: {result.status_code}")
 
-def generate_oauth1():
-    oauth = OAuth1(
-        client_key=demisto.getParam('consumerKey'),
-        rsa_key=demisto.getParam('privateKey'),
-        signature_method='RSA-SHA1',
-        resource_owner_key=demisto.getParam('accessToken'),
-    )
-    return oauth
-
-
-def generate_basic_oauth():
-    return USERNAME, (API_TOKEN or PASSWORD)
-
-
-def get_auth():
-    access_token = demisto.getParam('accessToken')
-    is_basic = USERNAME and (PASSWORD or API_TOKEN)
-    is_oauth1 = demisto.getParam('consumerKey') and access_token and demisto.getParam('privateKey')
-    is_bearer = access_token and not is_oauth1
-
-    if is_basic:
-        return generate_basic_oauth()
-
-    elif is_oauth1:
-        HEADERS.update({'X-Atlassian-Token': 'nocheck'})
-        return generate_oauth1()
-
-    elif is_bearer:
-        # Personal Access Token Authentication
-        HEADERS.update({'Authorization': f'Bearer {access_token}'})
-        return
-
-    return_error(
-        'Please provide the required Authorization information:'
-        '- Basic Authentication requires user name and password or API token'
-        '- OAuth 1.0 requires ConsumerKey, AccessToken and PrivateKey'
-        '- Personal Access Tokens requires AccessToken'
-    )
+        if resp_type == 'json':
+            return result.json()
+        return result
 
 
-def get_custom_field_names():
+# def jira_req(method: str, resource_url: str, body: str = '', link: bool = False, resp_type: str = 'text', headers: Optional[dict] = None, files: Optional[dict] = None):
+#
+#     # call class init in api module then get its auth
+#     params = demisto.params()
+#     atlassian_client = AtlassianClient(
+#         access_token=params.get('accessToken'),
+#         api_token=params.get('APItoken') or (params.get('credentials') or {}).get('password'),
+#         username=params.get('username'),
+#         password=params.get('password'),
+#         consumer_key=params.get('consumerKey'),
+#         private_key=params.get('privateKey')
+#     )
+#     auth = atlassian_client.get_auth()
+#
+#     url = resource_url if link else (BASE_URL + resource_url)
+#     if headers and HEADERS.get('Authorization'):
+#         headers['Authorization'] = HEADERS.get('Authorization')
+#     try:
+#         result = requests.request(
+#             method=method,
+#             url=url,
+#             data=body,
+#             auth=auth,
+#             headers=headers if headers else HEADERS,
+#             verify=USE_SSL,
+#             files=files
+#         )
+#     except ValueError:
+#         raise ValueError("Could not deserialize privateKey")
+#
+#     if not result.ok:
+#         demisto.debug(result.text)
+#         try:
+#             rj = result.json()
+#             if rj.get('errorMessages'):
+#                 return_error(f'Status code: {result.status_code}\nMessage: {",".join(rj["errorMessages"])}')
+#             elif rj.get('errors'):
+#                 return_error(f'Status code: {result.status_code}\nMessage: {",".join(rj["errors"].values())}')
+#             else:
+#                 return_error(f'Status code: {result.status_code}\nError text: {result.text}')
+#         except ValueError as ve:
+#             demisto.debug(str(ve))
+#             if result.status_code == 401:
+#                 return_error('Unauthorized request, please check authentication related parameters.'
+#                              f'{BASIC_AUTH_ERROR_MSG}')
+#             elif result.status_code == 404:
+#                 return_error("Could not connect to the Jira server. Verify that the server URL is correct.")
+#             elif result.status_code == 500 and files:
+#                 return_error(f"Failed to execute request, status code: 500\nBody: {result.text}"
+#                              f"\nMake sure file name doesn't contain any special characters")
+#             else:
+#                 return_error(
+#                     f"Failed reaching the server. status code: {result.status_code}")
+#
+#     if resp_type == 'json':
+#         return result.json()
+#     return result
+
+
+# def generate_oauth1():
+#     oauth = OAuth1(
+#         client_key=demisto.getParam('consumerKey'),
+#         rsa_key=demisto.getParam('privateKey'),
+#         signature_method='RSA-SHA1',
+#         resource_owner_key=demisto.getParam('accessToken'),
+#     )
+#     return oauth
+#
+#
+# def generate_basic_oauth():
+#     return USERNAME, (API_TOKEN or PASSWORD)
+#
+#
+# def get_auth():
+#     access_token = demisto.getParam('accessToken')
+#     is_basic = USERNAME and (PASSWORD or API_TOKEN)
+#     is_oauth1 = demisto.getParam('consumerKey') and access_token and demisto.getParam('privateKey')
+#     is_bearer = access_token and not is_oauth1
+#
+#     if is_basic:
+#         return generate_basic_oauth()
+#
+#     elif is_oauth1:
+#         HEADERS.update({'X-Atlassian-Token': 'nocheck'})
+#         return generate_oauth1()
+#
+#     elif is_bearer:
+#         # Personal Access Token Authentication
+#         HEADERS.update({'Authorization': f'Bearer {access_token}'})
+#         return
+#
+#     return_error(
+#         'Please provide the required Authorization information:'
+#         '- Basic Authentication requires user name and password or API token'
+#         '- OAuth 1.0 requires ConsumerKey, AccessToken and PrivateKey'
+#         '- Personal Access Tokens requires AccessToken'
+#     )
+
+
+def get_custom_field_names(client: Client):
     """
     This function returns all custom fields.
     :return: dict of custom fields: id as key and name as value.
     """
     custom_id_name_mapping = {}
-    HEADERS['Accept'] = "application/json"
     try:
         res = requests.request(
             method='GET',
-            url=BASE_URL + 'rest/api/latest/field',
-            headers=HEADERS,
-            verify=USE_SSL,
-            auth=get_auth(),
+            url=urljoin(client.base_url, 'rest/api/latest/field'),
+            headers=client.headers.update({'accept': "application/json"}),
+            verify=client.use_ssl,
+            auth=client.atlassian_client.get_auth(),
         )
     except Exception as e:
         demisto.error(f'Could not get custom fields because got the next exception: {e}')
@@ -157,7 +224,7 @@ def get_custom_field_names():
         return custom_id_name_mapping
 
 
-def run_query(query, start_at='', max_results=None, extra_fields=None, nofields=None):
+def run_query(client: Client, query, start_at='', max_results=None, extra_fields=None, nofields=None):
     # EXAMPLE
     """
     request = {
@@ -172,7 +239,7 @@ def run_query(query, start_at='', max_results=None, extra_fields=None, nofields=
     }
     """
     demisto.debug(f'querying with: {query}')
-    url = BASE_URL + 'rest/api/latest/search/'
+    url = urljoin(client.base_url, 'rest/api/latest/search/')
     query_params = {
         'jql': query,
         "startAt": start_at,
@@ -180,7 +247,7 @@ def run_query(query, start_at='', max_results=None, extra_fields=None, nofields=
     }
     if extra_fields:
         fields = extra_fields.split(",")
-        fields_mapping_name_id = {k.lower(): v.lower() for k, v in get_custom_field_names().items()}
+        fields_mapping_name_id = {k.lower(): v.lower() for k, v in get_custom_field_names(client).items()}
         query_params['fields'] = [k for y in fields for k, v in fields_mapping_name_id.items() if v == y.lower()]
         nofields.update({fieldextra for fieldextra in fields if fieldextra.lower() not in fields_mapping_name_id.values()})
     if nofields:
@@ -191,10 +258,10 @@ def run_query(query, start_at='', max_results=None, extra_fields=None, nofields=
     try:
         result = requests.get(
             url=url,
-            headers=HEADERS,
-            verify=USE_SSL,
+            headers=client.headers,
+            verify=client.use_ssl,
             params=query_params,
-            auth=get_auth(),
+            auth=client.atlassian_client.get_auth(),
         )
     except ValueError:
         raise ValueError("Could not deserialize privateKey")
@@ -214,12 +281,12 @@ def run_query(query, start_at='', max_results=None, extra_fields=None, nofields=
         raise Exception(f'Failed to send request, reason: {result.reason}')
 
 
-def get_id_offset():
+def get_id_offset(client):
     """
     gets the ID Offset, i.e., the first issue id. used to fetch correctly all issues
     """
     query = "ORDER BY created ASC"
-    j_res = run_query(query=query, max_results=1)
+    j_res = run_query(client, query=query, max_results=1)
     first_issue_id = j_res.get('issues')[0].get('id')
     return_outputs(
         readable_output=f"ID Offset: {first_issue_id}",
@@ -227,20 +294,19 @@ def get_id_offset():
     )
 
 
-def get_custom_fields():
+def get_custom_fields(client: Client):
     """
     This function returns all custom fields.
     :return: dict of custom fields: id as key and description as value.
     """
     custom_id_description_mapping = {}
-    HEADERS['Accept'] = "application/json"
     try:
         res = requests.request(
             method='GET',
-            url=BASE_URL + 'rest/api/latest/field',
-            headers=HEADERS,
-            verify=USE_SSL,
-            auth=get_auth(),
+            url=urljoin(client.base_url, 'rest/api/latest/field'),
+            headers=client.headers.update({'accept': "application/json"}),
+            verify=client.use_ssl,
+            auth=client.atlassian_client.get_auth(),
         )
     except Exception as e:
         demisto.error(f'Could not get custom fields because got the next exception: {e}')
@@ -254,7 +320,7 @@ def get_custom_fields():
         return custom_id_description_mapping
 
 
-def expand_urls(data, depth=0):
+def expand_urls(client: Client, data, depth=0):
     if isinstance(data, dict) and depth < 10:
         for key, value in data.items():
             if key in ['_links', 'watchers', 'sla', 'request participants']:
@@ -262,21 +328,22 @@ def expand_urls(data, depth=0):
                 if isinstance(value, dict):
                     for link_key, link_url in value.items():
                         value[link_key + '_expended'] = json.dumps(
-                            jira_req(method='GET', resource_url=link_url, link=True, resp_type='json'))
+                            client.send_request(method='GET', resource_url=link_url, link=True, resp_type='json'))
                 # link
                 else:
-                    data[key + '_expended'] = json.dumps(jira_req(method='GET', resource_url=value,
-                                                                  link=True, resp_type='json'))
+                    data[key + '_expended'] = json.dumps(client.send_request(method='GET', resource_url=value,
+                                                                             link=True, resp_type='json'))
             # search deeper
             else:
                 if isinstance(value, dict):
                     return expand_urls(value, depth + 1)
 
 
-def search_user(query: str, max_results: str = '50', is_jirav2api: bool = False):
+def search_user(client: Client, query: str, max_results: str = '50', is_jirav2api: bool = False):
     """
         Search for user by name or email address.
     Args:
+        client: the client
         query: A query string that is matched against user attributes ( displayName, and emailAddress) to find relevant users.
         max_results (str): The maximum number of items to return. default by the server: 50
         is_jirav2api (bool): if the instance is connecting to a Jira Server that supports only the v2 REST API. default as False
@@ -295,11 +362,12 @@ def search_user(query: str, max_results: str = '50', is_jirav2api: bool = False)
     else:
         url = f"rest/api/latest/user/search?query={query}&maxResults={max_results}"
 
-    res = jira_req('GET', url, resp_type='json')
+    res = client.send_request('GET', url, resp_type='json')
     return res
 
 
 def get_account_id_from_attribute(
+        client: Client,
         attribute: str,
         max_results: str = '50',
         is_jirav2api: str = 'false') -> Union[CommandResults, str]:
@@ -317,12 +385,12 @@ def get_account_id_from_attribute(
         override user identifier for Jira v2 API
         https://docs.atlassian.com/software/jira/docs/api/REST/8.13.15/#user-findUsers
         """
-        users = list(search_user(attribute, max_results, is_jirav2api=True))
+        users = list(search_user(client, attribute, max_results, is_jirav2api=True))
         account_ids = {
             user.get('name') for user in users if (attribute.lower() in [user.get('displayName', '').lower(),
                                                                          user.get('emailAddress', '').lower()])}
     else:
-        users = list(search_user(attribute, max_results))
+        users = list(search_user(client, attribute, max_results))
         account_ids = {
             user.get('accountId') for user in users if (attribute.lower() in [user.get('displayName', '').lower(),
                                                                               user.get('emailAddress', '').lower()])}
@@ -477,7 +545,7 @@ def get_mirror_type(should_mirror_in, should_mirror_out):
     return mirror_type
 
 
-def create_incident_from_ticket(issue, should_get_attachments, should_get_comments, should_mirror_in, should_mirror_out,
+def create_incident_from_ticket(client, issue, should_get_attachments, should_get_comments, should_mirror_in, should_mirror_out,
                                 comment_tag, attachment_tag):
     labels = [
         {'type': 'issue', 'value': json.dumps(issue)}, {'type': 'id', 'value': str(issue.get('id'))},
@@ -511,7 +579,7 @@ def create_incident_from_ticket(issue, should_get_attachments, should_get_commen
 
     file_names = []
     if should_get_attachments:
-        for file_result in get_entries_for_fetched_incident(issue.get('id'), False, True)['attachments']:
+        for file_result in get_entries_for_fetched_incident(client, issue.get('id'), False, True)['attachments']:
             if file_result['Type'] != entryTypes['error']:
                 file_names.append({
                     'path': file_result.get('FileID', ''),
@@ -519,7 +587,7 @@ def create_incident_from_ticket(issue, should_get_attachments, should_get_commen
                 })
 
     if should_get_comments:
-        labels.append({'type': 'comments', 'value': str(get_entries_for_fetched_incident(issue.get('id'), True, False)
+        labels.append({'type': 'comments', 'value': str(get_entries_for_fetched_incident(client, issue.get('id'), True, False)
                                                         ['comments'])})
     else:
         labels.append({'type': 'comments', 'value': '[]'})
@@ -542,11 +610,11 @@ def create_incident_from_ticket(issue, should_get_attachments, should_get_commen
     }
 
 
-def get_project_id(project_key='', project_name=''):
+def get_project_id(client: Client, project_key='', project_name=''):
     if not project_key and not project_name:
         return_error('You must provide at least one of the following: project_key or project_name')
 
-    result = jira_req('GET', 'rest/api/latest/issue/createmeta', resp_type='json')
+    result = client.send_request('GET', 'rest/api/latest/issue/createmeta', resp_type='json')
 
     for project in result.get('projects'):
         if project_key.lower() == project.get('key').lower() or project_name.lower() == project.get('name').lower():
@@ -554,9 +622,10 @@ def get_project_id(project_key='', project_name=''):
     return_error('Project not found')
 
 
-def get_issue_fields(issue_creating=False, mirroring=False, **issue_args):
+def get_issue_fields(client, issue_creating=False, mirroring=False, **issue_args):
     """
     refactor issues's argument as received from demisto into jira acceptable format, and back.
+    :param client: the client
     :param issue_creating: flag that indicates this function is called when creating an issue
     :param issue_args: issue argument
     """
@@ -598,7 +667,7 @@ def get_issue_fields(issue_creating=False, mirroring=False, **issue_args):
 
     if issue_creating:
         # make sure the key & name are right, and get the corresponding project id & key
-        project_id = get_project_id(issue['fields'].get('project', {}).get('key', ''),
+        project_id = get_project_id(client, issue['fields'].get('project', {}).get('key', ''),
                                     issue['fields'].get('project', {}).get('name', ''))
         issue['fields']['project']['id'] = project_id
 
@@ -669,21 +738,18 @@ def get_issue_fields(issue_creating=False, mirroring=False, **issue_args):
     return issue
 
 
-def get_issue(issue_id, headers=None, expand_links=False, is_update=False, get_attachments=False):
-    j_res = jira_req('GET', f'rest/api/latest/issue/{issue_id}', resp_type='json')
+def get_issue(client: Client, issue_id, headers=None, expand_links=False, is_update=False, get_attachments=False):
+    j_res = client.send_request('GET', f'rest/api/latest/issue/{issue_id}', resp_type='json')
     if expand_links == "true":
-        expand_urls(j_res)
+        expand_urls(client, j_res)
 
     attachments = demisto.get(j_res, 'fields.attachment')  # list of all attachments
     # handle issues were we allowed incorrect values of true
-    if get_attachments == "true" or get_attachments == "\"true\"":
-        get_attachments = True
-    else:
-        get_attachments = False
+    get_attachments = True if get_attachments == "true" or get_attachments == "\"true\"" else False
 
     if get_attachments and attachments:
         for attachment in attachments:
-            filename, attachments_zip = get_attachment_data(attachment)
+            filename, attachments_zip = get_attachment_data(client, attachment)
             demisto.results(fileResult(filename=filename, data=attachments_zip))
 
     md_and_context = generate_md_context_get_issue(j_res)
@@ -697,10 +763,10 @@ def get_issue(issue_id, headers=None, expand_links=False, is_update=False, get_a
     return human_readable, outputs, contents
 
 
-def issue_query_command(query, start_at='', max_results=None, headers='', extra_fields=None):
+def issue_query_command(client, query, start_at='', max_results=None, headers='', extra_fields=None):
     nofields: set = set()
 
-    j_res = run_query(query, start_at, max_results, extra_fields, nofields)
+    j_res = run_query(client, query, start_at, max_results, extra_fields, nofields)
     if not j_res:
         outputs = contents = {}
         human_readable = 'No issues matched the query.'
@@ -714,10 +780,9 @@ def issue_query_command(query, start_at='', max_results=None, headers='', extra_
     return human_readable, outputs, contents
 
 
-def create_issue_command():
-    url = 'rest/api/latest/issue'
-    issue = get_issue_fields(issue_creating=True, **demisto.args())
-    j_res = jira_req('POST', url, json.dumps(issue), resp_type='json')
+def create_issue_command(client: Client):
+    issue = get_issue_fields(client, issue_creating=True, **demisto.args())
+    j_res = client.send_request('POST', 'rest/api/latest/issue', json.dumps(issue), resp_type='json')
 
     md_and_context = generate_md_context_create_issue(j_res, project_key=demisto.getArg('projectKey'),
                                                       project_name=demisto.getArg('projectName'))
@@ -727,70 +792,72 @@ def create_issue_command():
     return_outputs(readable_output=human_readable, outputs=outputs, raw_response=contents)
 
 
-def edit_issue_command(issue_id, mirroring=False, headers=None, status=None, transition=None, **kwargs):
+def edit_issue_command(client: Client, issue_id, mirroring=False, headers=None, status=None, transition=None, **kwargs):
     url = f'rest/api/latest/issue/{issue_id}/'
-    issue = get_issue_fields(mirroring=mirroring, **kwargs)
-    jira_req('PUT', url, json.dumps(issue))
+    issue = get_issue_fields(client, mirroring=mirroring, **kwargs)
+    client.send_request('PUT', url, json.dumps(issue))
     if status and transition:
         return_error("Please provide only status or transition, but not both.")
     elif status:
-        edit_status(issue_id, status)
+        edit_status(client, issue_id, status)
     elif transition:
-        edit_transition(issue_id, transition)
+        edit_transition(client, issue_id, transition)
 
     return get_issue(issue_id, headers, is_update=True)
 
 
-def edit_status(issue_id, status):
+def edit_status(client: Client, issue_id, status):
     # check for all authorized transitions available for this user
     # if the requested transition is available, execute it.
-    j_res = list_transitions_data_for_issue(issue_id)
+    j_res = list_transitions_data_for_issue(client, issue_id)
     transitions = [transition.get('name') for transition in j_res.get('transitions')]
     for i, transition in enumerate(transitions):
         if transition.lower() == status.lower():
             url = f'rest/api/latest/issue/{issue_id}/transitions?expand=transitions.fields'
             json_body = {"transition": {"id": str(j_res.get('transitions')[i].get('id'))}}
-            return jira_req('POST', url, json.dumps(json_body))
+            return client.send_request('POST', url, json.dumps(json_body))
 
     return_error(f'Status "{status}" not found. \nValid transitions are: {transitions} \n')
 
 
-def list_transitions_data_for_issue(issue_id):
+def list_transitions_data_for_issue(client: Client, issue_id):
     """
     This function performs the API call for getting a list of all possible transitions for a given issue.
+    :param client: the client
     :param issue_id: The ID of the issue.
     :return: API raw response.
     """
-    url = f'rest/api/2/issue/{issue_id}/transitions'
-    return jira_req('GET', url, resp_type='json')
+    return client.send_request('GET', f'rest/api/2/issue/{issue_id}/transitions', resp_type='json')
 
 
-def edit_transition(issue_id, transition_name):
+def edit_transition(client: Client, issue_id, transition_name):
     """
     This function changes a transition for a given issue.
+    :param client: the client
     :param issue_id: The ID of the issue.
     :param transition_name: The name of the new transition.
     :return: None
     """
-    j_res = list_transitions_data_for_issue(issue_id)
+    j_res = list_transitions_data_for_issue(client, issue_id)
     transitions_data = j_res.get('transitions')
     for transition in transitions_data:
         if transition.get('name') == transition_name:
             url = f'rest/api/latest/issue/{issue_id}/transitions?expand=transitions.fields'
             json_body = {"transition": {"id": transition.get("id")}}
-            return jira_req('POST', url, json.dumps(json_body))
+            return client.send_request('POST', url, json.dumps(json_body))
 
     return_error(f'Transitions "{transition_name}" not found. \nValid transitions are: {transitions_data} \n')
 
 
-def list_transitions_command(args):
+def list_transitions_command(client: Client, args):
     """
     This command list all possible transitions for a given issue.
+    :param client: the client
     :param args: args['issueId']: The ID of the issue.
     :return: CommandResults object with the list of transitions
     """
     issue_id = args.get('issueId')
-    transitions_data_list = list_transitions_data_for_issue(issue_id)
+    transitions_data_list = list_transitions_data_for_issue(client, issue_id)
     transitions_names = [transition.get('name') for transition in transitions_data_list.get('transitions')]
     readable_output = tableToMarkdown(
         'List Transitions:', transitions_names, headers=['Transition Name']
@@ -802,9 +869,8 @@ def list_transitions_command(args):
                           outputs_prefix="Ticket.Transitions", outputs_key_field="ticketId", outputs=outputs)
 
 
-def get_comments_command(issue_id):
-    url = f'rest/api/latest/issue/{issue_id}/comment'
-    body = jira_req('GET', url, resp_type='json')
+def get_comments_command(client: Client, issue_id):
+    body = client.send_request('GET', f'rest/api/latest/issue/{issue_id}/comment', resp_type='json')
     comments = []
     if body.get("comments"):
         for comment in body.get("comments"):
@@ -823,8 +889,7 @@ def get_comments_command(issue_id):
         return 'No comments were found in the ticket', None, None
 
 
-def add_comment(issue_id, comment, visibility=''):
-    url = f'rest/api/latest/issue/{issue_id}/comment'
+def add_comment(client: Client, issue_id, comment, visibility=''):
     comment = {
         "body": comment
     }
@@ -833,11 +898,11 @@ def add_comment(issue_id, comment, visibility=''):
             "type": "role",
             "value": visibility
         }
-    return jira_req('POST', url, json.dumps(comment), resp_type='json')
+    return client.send_request('POST', f'rest/api/latest/issue/{issue_id}/comment', json.dumps(comment), resp_type='json')
 
 
-def add_comment_command(issue_id, comment, visibility=''):
-    data = add_comment(issue_id, comment, visibility)
+def add_comment_command(client: Client, issue_id, comment, visibility=''):
+    data = add_comment(client, issue_id, comment, visibility)
     md_list = []
     if not isinstance(data, list):
         data = [data]
@@ -855,17 +920,17 @@ def add_comment_command(issue_id, comment, visibility=''):
     return_outputs(readable_output=human_readable, outputs={}, raw_response=contents)
 
 
-def issue_upload_command(issue_id, upload, attachment_name=None):
-    j_res = upload_file(upload, issue_id, attachment_name)
+def issue_upload_command(client: Client, issue_id, upload, attachment_name=None):
+    j_res = upload_file(client, upload, issue_id, attachment_name)
     md = generate_md_upload_issue(j_res, issue_id)
     human_readable = tableToMarkdown(demisto.command(), md, "")
     contents = j_res
     return_outputs(readable_output=human_readable, outputs={}, raw_response=contents)
 
 
-def upload_file(entry_id, issue_id, attachment_name=None):
+def upload_file(client: Client, entry_id, issue_id, attachment_name=None):
     file_name, file_bytes = get_file(entry_id)
-    return jira_req(
+    return client.send_request(
         method='POST',
         resource_url=f'rest/api/latest/issue/{issue_id}/attachments',
         headers={
@@ -885,7 +950,7 @@ def get_file(entry_id):
     return file_name, file_bytes
 
 
-def add_link_command(issue_id, title, url, summary=None, global_id=None, relationship=None,
+def add_link_command(client: Client, issue_id, title, url, summary=None, global_id=None, relationship=None,
                      application_type=None, application_name=None):
     req_url = f'rest/api/latest/issue/{issue_id}/remotelink'
     link = {
@@ -908,7 +973,7 @@ def add_link_command(issue_id, title, url, summary=None, global_id=None, relatio
     if application_type:
         link['application']['name'] = application_name
 
-    data = jira_req('POST', req_url, json.dumps(link), resp_type='json')
+    data = client.send_request('POST', req_url, json.dumps(link), resp_type='json')
     md_list = []
     if not isinstance(data, list):
         data = [data]
@@ -925,31 +990,32 @@ def add_link_command(issue_id, title, url, summary=None, global_id=None, relatio
     return_outputs(readable_output=human_readable, outputs={}, raw_response=data)
 
 
-def delete_issue_command(issue_id_or_key):
+def delete_issue_command(client: Client, issue_id_or_key):
     url = f'rest/api/latest/issue/{issue_id_or_key}'
-    issue = get_issue_fields(**demisto.args())
-    result = jira_req('DELETE', url, json.dumps(issue))
+    issue = get_issue_fields(client, **demisto.args())
+    result = client.send_request('DELETE', url, json.dumps(issue))
     if result.status_code == 204:
         demisto.results('Issue deleted successfully.')
     else:
         demisto.results('Failed to delete issue.')
 
 
-def test_module() -> str:
+def test_module(client: Client) -> str:
     """
     Performs basic get request to get item samples
     """
-    user_data = jira_req('GET', 'rest/api/latest/myself', resp_type='json')
-    if demisto.params().get('isFetch'):
-        run_query(demisto.getParam('query'), '', max_results=1)
+    params = demisto.params()
+    user_data = client.send_request('GET', 'rest/api/latest/myself', resp_type='json')
+    if params.get('isFetch'):
+        run_query(client, demisto.getParam('query'), '', max_results=1)
 
     if not user_data.get('active'):
         raise Exception(f'Test module for Jira failed for the configured parameters.'
                         f'please Validate that the user is active. Response: {str(user_data)}')
-    outgoing_mirror = demisto.params().get('outgoing_mirror')
+    outgoing_mirror = params.get('outgoing_mirror')
     if outgoing_mirror:
         try:
-            custom_fields = get_custom_fields()
+            custom_fields = get_custom_fields(client)
             if custom_fields is None:
                 return_warning("Test module has finished successfully!."
                                "Please Note: There was a problem getting the list of custom fields for mirror "
@@ -962,9 +1028,10 @@ def test_module() -> str:
     return 'ok'
 
 
-def get_entries_for_fetched_incident(ticket_id, should_get_comments, should_get_attachments):
+def get_entries_for_fetched_incident(client: Client, ticket_id, should_get_comments, should_get_attachments):
     """
     Get entries for incident
+    :param client: the client
     :param ticket_id: the remote system id of the ticket
     :param should_get_comments: if 'True', return ticket's comments
     :param should_get_attachments: if 'True', return ticket's attachments
@@ -972,16 +1039,16 @@ def get_entries_for_fetched_incident(ticket_id, should_get_comments, should_get_
     """
     entries: dict = {'comments': [], 'attachments': []}
     try:
-        _, _, raw_response = get_issue(issue_id=ticket_id)
-        entries = get_incident_entries(raw_response, '', False, should_get_comments, should_get_attachments)
+        _, _, raw_response = get_issue(client, issue_id=ticket_id)
+        entries = get_incident_entries(client, raw_response, '', False, should_get_comments, should_get_attachments)
     except Exception as e:
         demisto.debug(f'could not get attachments for {ticket_id} while fetch this incident because: {str(e)}')
     finally:
         return entries
 
 
-def fetch_incidents(query, id_offset, should_get_attachments, should_get_comments, should_mirror_in, should_mirror_out,
-                    comment_tag, attachment_tag, fetch_by_created=None):
+def fetch_incidents(client: Client, query, id_offset, should_get_attachments, should_get_comments, should_mirror_in,
+                    should_mirror_out, comment_tag, attachment_tag, fetch_by_created=None):
     last_run = demisto.getLastRun()
     demisto.debug(f'last_run: {last_run}' if last_run else 'last_run is empty')
     last_created_time = ''
@@ -1004,7 +1071,7 @@ def fetch_incidents(query, id_offset, should_get_attachments, should_get_comment
         if fetch_by_created:
             query = f'{query} AND created>-1m'
 
-    res = run_query(query, '', max_results)
+    res = run_query(client, query, '', max_results)
     if res:
         curr_id = int(id_offset)
         for ticket in res.get('issues'):
@@ -1015,7 +1082,7 @@ def fetch_incidents(query, id_offset, should_get_attachments, should_get_comment
             if ticket_id > int(id_offset):
                 id_offset = ticket_id
                 last_created_time = ticket_created
-            incidents.append(create_incident_from_ticket(ticket, should_get_attachments, should_get_comments,
+            incidents.append(create_incident_from_ticket(client, ticket, should_get_attachments, should_get_comments,
                                                          should_mirror_in, should_mirror_out, comment_tag,
                                                          attachment_tag))
 
@@ -1023,15 +1090,16 @@ def fetch_incidents(query, id_offset, should_get_attachments, should_get_comment
     return incidents
 
 
-def get_attachment_data(attachment):
+def get_attachment_data(client: Client, attachment):
     """
     Get attachments content
+    :param client: the client
     :param attachment: attachment metadata
     :return: attachment name and content
     """
     attachment_url = attachment.get('content')
     filename = attachment.get('filename')
-    attachments_zip = jira_req(method='GET', resource_url=attachment_url, link=True).content
+    attachments_zip = client.send_request(method='GET', resource_url=attachment_url, link=True).content
 
     return filename, attachments_zip
 
@@ -1080,10 +1148,11 @@ def get_comments(comments, incident_modified_date, only_new=True):
         return returned_comments
 
 
-def get_incident_entries(issue, incident_modified_date, only_new=True, should_get_comments=True,
+def get_incident_entries(client: Client, issue, incident_modified_date, only_new=True, should_get_comments=True,
                          should_get_attachments=True):
     """
     This function get comments and attachments from Jira Ticket, if specified, for a Jira incident.
+    :param client: the client
     :param issue: the incident to get its entries
     :param incident_modified_date: when the incident was last modified
     :param only_new: if 'True' it gets only entries that were added after the incident was last modified
@@ -1093,7 +1162,7 @@ def get_incident_entries(issue, incident_modified_date, only_new=True, should_ge
     """
     entries: dict = {'comments': [], 'attachments': []}
     if should_get_comments:
-        _, _, comments_content = get_comments_command(issue['id'])
+        _, _, comments_content = get_comments_command(client, issue['id'])
         if comments_content:
             raw_comments_content = comments_content
             commands = get_comments(raw_comments_content.get('comments', []), incident_modified_date, only_new)
@@ -1107,14 +1176,14 @@ def get_incident_entries(issue, incident_modified_date, only_new=True, should_ge
     return entries
 
 
-def get_mapping_fields_command() -> GetMappingFieldsResponse:
+def get_mapping_fields_command(client: Client) -> GetMappingFieldsResponse:
     """
      this command pulls the remote schema for the different incident types, and their associated incident fields,
      from the remote system.
     :return: A list of keys you want to map
     """
     jira_incident_type_scheme = SchemeTypeMapping(type_name=JIRA_INCIDENT_TYPE_NAME)
-    custom_fields = get_custom_fields()
+    custom_fields = get_custom_fields(client)
     ISSUE_INCIDENT_FIELDS.update(custom_fields)
     for argument, description in ISSUE_INCIDENT_FIELDS.items():
         jira_incident_type_scheme.add_field(name=argument, description=description)
@@ -1146,13 +1215,14 @@ def handle_incoming_closing_incident(incident_data):
     return closing_entry
 
 
-def update_remote_system_command(args):
+def update_remote_system_command(client, args):
     """ Mirror-out data that is in Demito into Jira issue
 
     Notes:
         1. Documentation on mirroring - https://xsoar.pan.dev/docs/integrations/mirroring_integration
 
     Args:
+        client: the client
         args: A dictionary contains the next data regarding a modified incident: data, entries, incident_changed,
          remote_incident_id, inc_status, delta
 
@@ -1169,7 +1239,7 @@ def update_remote_system_command(args):
         if remote_args.delta and remote_args.incident_changed:
             demisto.debug(f'Got the following delta keys {str(list(remote_args.delta.keys()))} to update Jira '
                           f'incident {remote_id}')
-            edit_issue_command(remote_id, mirroring=True, **remote_args.delta)
+            edit_issue_command(client, remote_id, mirroring=True, **remote_args.delta)
 
         else:
             demisto.debug(f'Skipping updating remote incident fields [{remote_id}] '
@@ -1182,10 +1252,10 @@ def update_remote_system_command(args):
                     demisto.debug('Add new file\n')
                     path_res = demisto.getFilePath(entry.get('id'))
                     file_name = path_res.get('name')
-                    upload_file(entry.get('id'), remote_id, file_name)
+                    upload_file(client, entry.get('id'), remote_id, file_name)
                 else:  # handle comments
                     demisto.debug('Add new comment\n')
-                    add_comment(remote_id, str(entry.get('contents', '')))
+                    add_comment(client, remote_id, str(entry.get('contents', '')))
     except Exception as e:
         demisto.error(f"Error in Jira outgoing mirror for incident {remote_args.remote_incident_id} \n"
                       f"Error message: {str(e)}")
@@ -1193,21 +1263,24 @@ def update_remote_system_command(args):
         return remote_id
 
 
-def get_user_info_data():
+def get_user_info_data(client: Client):
     """
     This function returns details for a current user in order to get timezone.
     :return: API response
     """
-    HEADERS['Accept'] = "application/json"
-    return requests.request(method='GET', url=BASE_URL + 'rest/api/latest/myself', headers=HEADERS, verify=USE_SSL,
-                            auth=get_auth())
+    return requests.request(method='GET',
+                            url=urljoin(client.base_url, 'rest/api/latest/myself'),
+                            headers=client.headers.update({'accept': "application/json"}),
+                            verify=client.use_ssl,
+                            auth=client.atlassian_client.get_auth())
 
 
-def get_modified_remote_data_command(args):
+def get_modified_remote_data_command(client: Client, args):
     """
     available from Cortex XSOAR version 6.1.0. This command queries for incidents that were modified since the last
     update. If the command is implemented in the integration, the get-remote-data command will only be performed on
     incidents returned from this command, rather than on all existing incidents.
+    :param client: the client
     :param args: args['last_update']: Date string represents the last time we retrieved modified incidents for this
      integration.
     :return: GetModifiedRemoteDataResponse: this is the object that maintains a list of incident ids to run
@@ -1231,7 +1304,7 @@ def get_modified_remote_data_command(args):
             last_update: str = last_update_date \
                 .strftime('%Y-%m-%d %H:%M')
             demisto.debug(f'Performing get-modified-remote-data command. Last update is: {last_update}')
-            _, _, context = issue_query_command(f'updated > "{last_update}"', max_results=100)
+            _, _, context = issue_query_command(client, f'updated > "{last_update}"', max_results=100)
             modified_issues = context.get('issues', [])
             modified_issues_ids = [issue.get('id') for issue in modified_issues if issue.get('id')]
             demisto.debug(f'Performing get-modified-remote-data command. Issue IDs to update in XSOAR:'
@@ -1244,7 +1317,7 @@ def get_modified_remote_data_command(args):
         return GetModifiedRemoteDataResponse(modified_issues_ids)
 
 
-def get_remote_data_command(args) -> GetRemoteDataResponse:
+def get_remote_data_command(client: Client, args) -> GetRemoteDataResponse:
     """ Mirror-in data to incident from Jira into XSOAR 'jira issue' incident.
 
     Notes:
@@ -1252,6 +1325,7 @@ def get_remote_data_command(args) -> GetRemoteDataResponse:
 
     Args:
         args:
+        client: the client
             id: Remote incident id.
             lastUpdate: Server last sync time with remote server.
 
@@ -1289,7 +1363,7 @@ def get_remote_data_command(args) -> GetRemoteDataResponse:
                 incident_update['in_mirror_error'] = ''
                 return GetRemoteDataResponse(incident_update, [closed_issue])
 
-            entries = get_incident_entries(issue_raw_response, incident_modified_date)
+            entries = get_incident_entries(client, issue_raw_response, incident_modified_date)
 
             for comment in entries['comments']:
                 parsed_entries.append({
@@ -1328,79 +1402,84 @@ def get_remote_data_command(args) -> GetRemoteDataResponse:
 
 
 def main():
+    params = demisto.params()
+    args = demisto.args()
+    client = Client(base_url=params.get('url').rstrip('/') + '/',
+                    api_token=params.get('APItoken') or (params.get('credentials') or {}).get('password'),
+                    access_token=params.get('accessToken'),
+                    username=params.get('username'),
+                    password=params.get('password'),
+                    consumer_key=params.get('consumerKey'),
+                    private_key=params.get('privateKey'),
+                    headers={'Content-Type': 'application/json'},
+                    use_ssl=not params.get('insecure', False))
+
     demisto.debug(f'Command being called is {demisto.command()}')
-    fetch_query = demisto.params().get('query')
-    id_offset = demisto.params().get('idOffset')
-    fetch_attachments = demisto.params().get('fetch_attachments')
-    fetch_comments = demisto.params().get('fetch_comments')
-    incoming_mirror = demisto.params().get("incoming_mirror")
-    outgoing_mirror = demisto.params().get('outgoing_mirror')
-    comment_tag = demisto.params().get('comment_tag')
-    attachment_tag = demisto.params().get('file_tag')
-    fetch_by_created = demisto.params().get('fetchByCreated')
     try:
         # Remove proxy if not set to true in params
         handle_proxy()
 
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration test button.
-            demisto.results(test_module())
+            demisto.results(test_module(client))
 
         elif demisto.command() == 'fetch-incidents':
             # Set and define the fetch incidents command to run after activated via integration settings.
-            incidents = fetch_incidents(fetch_query, id_offset, fetch_attachments, fetch_comments, incoming_mirror,
-                                        outgoing_mirror, comment_tag, attachment_tag, fetch_by_created)
+            incidents = fetch_incidents(client, params.get('query'), params.get('idOffset'), params.get('fetch_attachments'),
+                                        params.get('fetch_comments'), params.get("incoming_mirror"),
+                                        params.get('outgoing_mirror'), params.get('comment_tag'),
+                                        params.get('file_tag'), params.get('fetchByCreated'))
             demisto.incidents(incidents)
         elif demisto.command() == 'jira-get-issue':
-            human_readable, outputs, raw_response = get_issue(**snakify(demisto.args()))
+            human_readable, outputs, raw_response = get_issue(client, **snakify(args))
             return_outputs(human_readable, outputs, raw_response)
 
         elif demisto.command() == 'jira-issue-query':
-            human_readable, outputs, raw_response = issue_query_command(**snakify(demisto.args()))
+            human_readable, outputs, raw_response = issue_query_command(client, **snakify(args))
             return_outputs(human_readable, outputs, raw_response)
 
         elif demisto.command() == 'jira-create-issue':
-            create_issue_command()
+            create_issue_command(client)
 
         elif demisto.command() == 'jira-edit-issue':
-            human_readable, outputs, raw_response = edit_issue_command(**snakify(demisto.args()))
+            human_readable, outputs, raw_response = edit_issue_command(client, **snakify(args))
             return_outputs(human_readable, outputs, raw_response)
 
         elif demisto.command() == 'jira-get-comments':
-            human_readable, outputs, raw_response = get_comments_command(**snakify(demisto.args()))
+            human_readable, outputs, raw_response = get_comments_command(client, **snakify(args))
             return_outputs(readable_output=human_readable, outputs=outputs, raw_response=raw_response)
 
         elif demisto.command() == 'jira-issue-add-comment':
-            add_comment_command(**snakify(demisto.args()))
+            add_comment_command(client, **snakify(args))
 
         elif demisto.command() == 'jira-issue-upload-file':
-            issue_upload_command(**snakify(demisto.args()))
+            issue_upload_command(client, **snakify(args))
 
         elif demisto.command() == 'jira-issue-add-link':
-            add_link_command(**snakify(demisto.args()))
+            add_link_command(client, **snakify(args))
 
         elif demisto.command() == 'jira-delete-issue':
-            delete_issue_command(**snakify(demisto.args()))
+            delete_issue_command(client, **snakify(args))
 
         elif demisto.command() == 'jira-get-id-offset':
-            get_id_offset()
+            get_id_offset(client)
 
         elif demisto.command() == 'get-mapping-fields':
-            return_results(get_mapping_fields_command())
+            return_results(get_mapping_fields_command(client))
 
         elif demisto.command() == 'update-remote-system':
-            return_results(update_remote_system_command(demisto.args()))
+            return_results(update_remote_system_command(client, args))
 
         elif demisto.command() == 'get-remote-data':
-            return_results(get_remote_data_command(demisto.args()))
+            return_results(get_remote_data_command(client, args))
 
         elif demisto.command() == 'jira-get-id-by-attribute':
-            return_results(get_account_id_from_attribute(**demisto.args()))
+            return_results(get_account_id_from_attribute(client, **args))
 
         elif demisto.command() == 'jira-list-transitions':
-            return_results(list_transitions_command(demisto.args()))
+            return_results(list_transitions_command(client, args))
         elif demisto.command() == 'get-modified-remote-data':
-            return_results(get_modified_remote_data_command(demisto.args()))
+            return_results(get_modified_remote_data_command(client, args))
         else:
             raise NotImplementedError(f'{COMMAND_NOT_IMPELEMENTED_MSG}: {demisto.command()}')
 
@@ -1412,6 +1491,8 @@ def main():
     finally:
         LOG.print_log()
 
+
+from AtlassianApiModule import *  # noqa: E402
 
 if __name__ in ["__builtin__", "builtins", '__main__']:
     main()
