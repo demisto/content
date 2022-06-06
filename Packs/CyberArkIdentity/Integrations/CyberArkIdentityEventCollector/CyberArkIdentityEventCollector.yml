@@ -32,8 +32,8 @@ configuration:
   name: from
   required: true
   type: 0
-- defaultvalue: 100
-  display: The maximum number of events per fetch. Default is 100.
+- defaultvalue: 1000
+  display: The maximum number of events per fetch. Default is 1000.
   name: limit
   required: true
   type: 0
