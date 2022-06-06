@@ -1374,7 +1374,7 @@ script:
       required: true
     - auto: PREDEFINED
       description: Ticket type. Can be "incident", "problem", "change_request", "sc_request",
-        "sc_task", or "sc_req_item".
+        "sc_task", "sc_req_item", or "sn_si_incident".
       name: ticket_type
       predefined:
       - incident
@@ -1383,6 +1383,7 @@ script:
       - sc_request
       - sc_task
       - sc_req_item
+      - sn_si_incident
     description: Deletes a ticket from ServiceNow.
     name: servicenow-delete-ticket
   - arguments:
@@ -1392,7 +1393,7 @@ script:
     - auto: PREDEFINED
       defaultValue: incident
       description: Ticket type. Can be "incident", "problem", "change_request", "sc_request",
-        "sc_task", or "sc_req_item". Default is "incident".
+        "sc_task", "sc_req_item" or "sn_si_incident". Default is "incident".
       name: ticket_type
       predefined:
       - incident
@@ -1401,6 +1402,7 @@ script:
       - sc_request
       - sc_task
       - sc_req_item
+      - sn_si_incident
     - description: The query to run. To learn about querying in ServiceNow, see https://docs.servicenow.com/bundle/istanbul-servicenow-platform/page/use/common-ui-elements/reference/r_OpAvailableFiltersQueries.html
       name: query
     - defaultValue: '0'
@@ -1462,7 +1464,7 @@ script:
     - auto: PREDEFINED
       defaultValue: incident
       description: Ticket type. Can be "incident", "problem", "change_request", "sc_request",
-        "sc_task", or "sc_req_item". Default is "incident".
+        "sc_task", "sc_req_item" or "sn_si_incident". Default is "incident".
       name: ticket_type
       predefined:
       - incident
@@ -1470,6 +1472,7 @@ script:
       - change_request
       - sc_request
       - sc_task
+      - sn_si_incident
     - description: The actual link to publish in ServiceNow ticket, in a valid URL
         format, for example, http://www.demisto.com.
       name: link
@@ -1488,7 +1491,7 @@ script:
     - auto: PREDEFINED
       defaultValue: incident
       description: Ticket type. Can be "incident", "problem", "change_request", "sc_request",
-        "sc_task", or "sc_req_item". Default is "incident".
+        "sc_task", "sc_req_item" or "sn_si_incident". Default is "incident".
       name: ticket_type
       predefined:
       - incident
@@ -1496,6 +1499,7 @@ script:
       - change_request
       - sc_request
       - sc_task
+      - sn_si_incident
     - description: Comment to add.
       name: comment
       required: true
@@ -1516,7 +1520,7 @@ script:
     - auto: PREDEFINED
       defaultValue: incident
       description: Ticket type. Can be "incident", "problem", "change_request", "sc_request",
-        "sc_task", or "sc_req_item". Default is "incident".
+        "sc_task", "sc_req_item" or "sn_si_incident". Default is "incident".
       name: ticket_type
       predefined:
       - incident
@@ -1524,6 +1528,7 @@ script:
       - change_request
       - sc_request
       - sc_task
+      - sn_si_incident
     - description: War Room entry ID that includes the file.
       name: file_id
       required: true
@@ -1907,7 +1912,7 @@ script:
     - auto: PREDEFINED
       defaultValue: incident
       description: Ticket type. Can be "incident", "problem", "change_request", "sc_request",
-        "sc_task", or "sc_req_item". Default is "incident".
+        "sc_task", "sc_req_item" or "sn_si_incident". Default is "incident".
       name: ticket_type
       predefined:
       - incident
@@ -1916,6 +1921,7 @@ script:
       - sc_request
       - sc_task
       - sc_req_item
+      - sn_si_incident
     description: Adds a tag to a ticket. The added tag entry will be visible in the
       label_entry table and can be retrieved using the "!servicenow-query-table table_name=label_entry
       fields=title,table,sys_id,id_display,id_type" command.
