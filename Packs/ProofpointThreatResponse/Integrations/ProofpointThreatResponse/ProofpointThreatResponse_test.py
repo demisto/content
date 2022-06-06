@@ -73,10 +73,10 @@ MOCK_INCIDENT = {
                         "email": "test"
                     },
                     "recipient": {
-                        "email": "test@test.com"
+                        "email": "test"
                     },
                     "subject": "test",
-                    "messageId": "<XYZ_EAbcd-@test.test.com>",
+                    "messageId": "test",
                     "messageDeliveryTime": {
                         "chronology": {
                             "zone": {
