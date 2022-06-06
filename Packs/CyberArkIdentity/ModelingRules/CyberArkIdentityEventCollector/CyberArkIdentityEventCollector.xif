@@ -34,5 +34,5 @@ filter EventType IN ("Cloud.ADUserProfileUpdate", "Cloud.Core.Access.CheckRights
         XDM.Audit.identity.name=NormalizedUser,
         XDM.Audit.audited_resource_before.value=OldEntity,
         XDM.Audit.TriggeredBy.identity.uuid=UserGuid,
-        XDM.Audit.observation_timestamp=WhenLogged,
-        XDM.Audit.event_timestamp=WhenOccurred;
+        XDM.Audit.observation_timestamp=to_timestamp(to_integer(arraystring(regextract(WhenLogged, "[0-9]"), "")), "MILLIS"),
+        XDM.Audit.event_timestamp=to_timestamp(to_integer(arraystring(regextract(WhenOccurred, "[0-9]"), "")), "MILLIS");
