@@ -739,7 +739,8 @@ class Pack(object):
         return changelog_entry
 
     def _create_changelog_entry(self, release_notes, version_display_name, build_number, modified_files_data={},
-                                new_version=True, initial_release=False, pull_request_numbers=None):
+                                new_version=True, initial_release=False, pull_request_numbers=None,
+                                marketplace='xsoar'):
         """ Creates dictionary entry for changelog.
 
         Args:
@@ -775,7 +776,12 @@ class Pack(object):
 
         if entry_result:
             logging.info(f"Starting filtering entry for pack {self._pack_name} with version {version_display_name}")
-            return self.filter_changelog_entries_based_marketplace(entry_result, version_display_name, modified_files_data)
+            return self.filter_changelog_entries_based_marketplace(
+                entry_result,
+                version_display_name,
+                modified_files_data,
+                marketplace
+            )
 
         return entry_result, False
 
@@ -1091,6 +1097,7 @@ class Pack(object):
         if not self._modified_files or (self._modified_files and modified_files_data):
             task_status = True
 
+        logging.info(f"Found modified entities in id-set of types \"{', '.join(modified_files_data.keys())}\".")
         return task_status, modified_files_data
 
     def upload_to_storage(self, zip_pack_path, latest_version, storage_bucket, override_pack, storage_base_path,
@@ -1482,8 +1489,8 @@ class Pack(object):
                 modified_rn_files.append(modified_file_path_parts[-1])
         return modified_rn_files
 
-    def prepare_release_notes(self, index_folder_path, build_number,
-                              modified_rn_files_paths=None, modified_files_data={}):
+    def prepare_release_notes(self, index_folder_path, build_number, modified_rn_files_paths=None,
+                              modified_files_data={}, marketplace='xsoar'):
         """
         Handles the creation and update of the changelog.json files.
 
@@ -1544,7 +1551,8 @@ class Pack(object):
                                 build_number=build_number,
                                 modified_files_data=modified_files_data,
                                 new_version=False,
-                                pull_request_numbers=prs_for_version
+                                pull_request_numbers=prs_for_version,
+                                marketplace=marketplace,
                             )
 
                         else:
@@ -1555,7 +1563,8 @@ class Pack(object):
                                 build_number=build_number,
                                 modified_files_data=modified_files_data,
                                 new_version=True,
-                                pull_request_numbers=prs_for_version
+                                pull_request_numbers=prs_for_version,
+                                marketplace=marketplace,
                             )
 
                         if version_changelog:
@@ -1591,7 +1600,8 @@ class Pack(object):
                             build_number=build_number,
                             modified_files_data=modified_files_data,
                             initial_release=True,
-                            new_version=False)
+                            new_version=False,
+                            marketplace=marketplace)
 
                         if version_changelog:
                             changelog[first_key_in_changelog] = version_changelog
@@ -1615,7 +1625,8 @@ class Pack(object):
                     build_number=build_number,
                     modified_files_data=modified_files_data,
                     new_version=True,
-                    initial_release=True
+                    initial_release=True,
+                    marketplace=marketplace
                 )
 
                 if version_changelog:
@@ -1641,7 +1652,8 @@ class Pack(object):
         finally:
             return task_status, not_updated_build
 
-    def filter_changelog_entries_based_marketplace(self, changelog_entry: dict, version: str, modified_files_data: dict):
+    def filter_changelog_entries_based_marketplace(self, changelog_entry: dict, version: str, modified_files_data: dict,
+                                                   marketplace: str):
         """
         Filters the changelog entries by the entities that are given from id-set.
         This is to avoid RN entries/changes/messages that are not relevant to the current marketplace.
@@ -1663,7 +1675,7 @@ class Pack(object):
         """
 
         # Filters the RN entries by marketplace tags if exist
-        release_notes = self.cat_rn_by_tags(changelog_entry.get(Changelog.RELEASE_NOTES))
+        release_notes = self.cat_rn_by_tags(changelog_entry.get(Changelog.RELEASE_NOTES), marketplace)
         # Convert the RN entries to a Dict
         release_notes_dict, _ = merge_version_blocks(pack_versions_dict={version: release_notes},
                                                      return_str=False)
@@ -1711,7 +1723,7 @@ class Pack(object):
         changelog_entry[Changelog.RELEASE_NOTES] = construct_entities_block(filtered_release_notes_dict).strip()
         return changelog_entry, False
 
-    def cat_rn_by_tags(self, release_notes):
+    def cat_rn_by_tags(self, release_notes, marketplace):
         """
         Filters out RN the sub-entries that are wrapped by tags.
 
@@ -1722,22 +1734,26 @@ class Pack(object):
             (str) The RN entry after filtering.
         """
 
-        def remove_tags_section_from_rn(release_notes, marketplace, mp_tags_regex):
+        def remove_tags_section_from_rn(release_notes, marketplace, mp_tags_regex, upload_marketplace):
+
             start_tag, end_tag = TAGS_BY_MP[marketplace]
-            logging.info(f"Filtering release notes by tags {start_tag}-{end_tag} for pack "
-                         f"{self._pack_name} in marketplace {marketplace}")
-            if start_tag in release_notes and end_tag in release_notes and marketplace not in self.marketplaces:
+            if start_tag in release_notes and end_tag in release_notes and marketplace != upload_marketplace:
+                logging.info(f"Filtering irrelevant release notes by tags {start_tag}-{end_tag} of marketplace {marketplace} "
+                             f"for pack {self._pack_name} when uploading to marketplace {upload_marketplace}.")
                 return re.sub(mp_tags_regex, '', release_notes)
             else:
+                logging.info(f"Removing only the tags {start_tag}-{end_tag} since the RN entry is relevant to "
+                             f"marketplace {upload_marketplace}")
                 return release_notes.replace(f"{start_tag}\n", '').replace(f"{end_tag}\n", '')
 
         # Filters out by XSIAM tags
-        release_notes = remove_tags_section_from_rn(release_notes, XSIAM_MP, XSIAM_TAGS_SECTION_REGEX)
+        release_notes = remove_tags_section_from_rn(release_notes, XSIAM_MP, XSIAM_TAGS_SECTION_REGEX, marketplace)
 
         # Filters out by XSOAR tags
-        release_notes = remove_tags_section_from_rn(release_notes, XSOAR_MP, XSOAR_TAGS_SECTION_REGEX)
-        logging.info(f"RN result after filteing for pack {self._pack_name} in marketplace {self.marketplaces}\n"
+        release_notes = remove_tags_section_from_rn(release_notes, XSOAR_MP, XSOAR_TAGS_SECTION_REGEX, marketplace)
+        logging.info(f"RN result after filteing for pack {self._pack_name} in marketplace {marketplace}\n"
                      f"- {release_notes}")
+
         return release_notes
 
     def create_local_changelog(self, build_index_folder_path):

@@ -1185,12 +1185,12 @@ This is visible
                 }
             ]
         }
-        dummy_pack._marketplaces = [upload_marketplace]
+        # dummy_pack._marketplaces = [upload_marketplace]
         dummy_pack._is_modified = True
         version_changelog, _ = dummy_pack._create_changelog_entry(release_notes=release_notes,
                                                                   version_display_name=version_display_name,
                                                                   build_number=build_number, modified_files_data=modified_data,
-                                                                  new_version=False)
+                                                                  new_version=False, marketplace=upload_marketplace)
 
         if not expected_result:
             assert not version_changelog

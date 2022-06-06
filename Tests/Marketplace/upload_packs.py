@@ -1159,7 +1159,7 @@ def main():
 
         task_status, not_updated_build = pack.prepare_release_notes(index_folder_path, build_number,
                                                                     modified_rn_files_paths,
-                                                                    modified_files_data)
+                                                                    modified_files_data, marketplace)
         if not task_status:
             pack.status = PackStatus.FAILED_RELEASE_NOTES.name
             pack.cleanup()
