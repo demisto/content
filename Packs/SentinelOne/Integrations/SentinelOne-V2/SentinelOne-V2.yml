@@ -1571,6 +1571,7 @@ script:
       auto: PREDEFINED
       predefined:
       - events
+      - processes
       description: Type of the query. For now it's "events"
     - name: query
       required: true
@@ -1742,6 +1743,7 @@ script:
       auto: PREDEFINED
       predefined:
       - events
+      - processes
       description: Type of the query. For now it's "events"
     - name: query
       required: true
