@@ -29,7 +29,6 @@ filebeat.inputs:
           product: nps
 ```
 
-
 ## What does this pack do?
 - Run remote commands on a computer or mobile device, such as erase, lock/lost_mode.
 - Get various details about devices and users, such as names, IDs, services, applications, hardware, etc.
