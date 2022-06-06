@@ -276,22 +276,22 @@
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_manualedlchangeaction",
+                        "fieldId": "incident_genericexportindicatorsserviceaction",
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_manualedlchangetag",
+                        "fieldId": "incident_genericexportindicatorsservicetag",
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_manualedlchangeindicatortype",
+                        "fieldId": "incident_genericexportindicatorsserviceindicatortype",
                         "filters": [
                             [
                                 {
                                     "left": {
                                         "isContext": true,
                                         "value": {
-                                            "simple": "manualedlchangeaction"
+                                            "simple": "genericexportindicatorsserviceaction"
                                         }
                                     },
                                     "operator": "isEqualString",
@@ -307,7 +307,7 @@
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_manualedlchangeindicatorslist",
+                        "fieldId": "incident_genericexportindicatorsserviceindicatorslist",
                         "isVisible": true
                     }
                 ],
