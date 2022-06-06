@@ -5147,6 +5147,11 @@
             "fromversion": "6.1.0"
         },
         {
+            "integrations": "Alibaba Action Trail Event Collector",
+            "playbookID": "Alibaba Event Collector-test",
+            "fromversion": "6.8.0"
+        },
+        {
             "integrations": [
                 "Github Event Collector"
             ],
@@ -5351,6 +5356,7 @@
         "Remedy On-Demand": "Issue 19835",
         "Check Point": "Issue 18643",
         "CheckPointFirewall_v2": "Issue 18643",
+        "CTIX v3": "No instance - developed by partner",
         "Preempt": "Issue 20268",
         "Jask": "Issue 18879",
         "vmray": "Issue 18752",
@@ -5405,6 +5411,7 @@
         "AttackIQFireDrill": "License issues #29774",
         "SentinelOne V2": "License expired issue #24933",
         "LogRhythm": "The integration is deprecated",
+        "Alibaba Action Trail Event Collector": "XSIAM integration",
         "Github Event Collector" : "XSIAM integration"
     },
     "nightly_integrations": [
