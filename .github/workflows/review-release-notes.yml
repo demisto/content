@@ -29,5 +29,5 @@ jobs:
           changed_files="${{ steps.changed-files.outputs.all_changed_files }}"
           delim=';'
           echo "Starting docs review"
-          peotry run ./Utils/github_workflow_scripts/run_docs_review.py --changed_files "$changed_files" --delimiter $delim
+          poetry run python Utils/github_workflow_scripts/run_docs_review.py --changed_files "$changed_files" --delimiter $delim
           echo "Finished docs review successfully"
