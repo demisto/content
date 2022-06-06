@@ -1,5 +1,5 @@
 from rasterize import (rasterize, find_zombie_processes, merge_options, DEFAULT_CHROME_OPTIONS, rasterize_image_command,
-                       RasterizeMode)
+                       RasterizeMode, RasterizeType)
 import demistomock as demisto
 from CommonServerPython import entryTypes
 from tempfile import NamedTemporaryFile
@@ -17,14 +17,14 @@ logging.getLogger("urllib3").setLevel(logging.ERROR)
 RETURN_ERROR_TARGET = 'rasterize.return_error'
 
 
-@pytest.mark.parametrize("r_mode", [RasterizeMode.WEBDRIVER_ONLY])
+@pytest.mark.parametrize("r_mode", [RasterizeMode.WEBDRIVER_ONLY, RasterizeMode.HEADLESS_CMD_ONLY])
 def test_rasterize_email_image(r_mode, caplog):
     with NamedTemporaryFile('w+') as f:
         f.write('<html><head><meta http-equiv=\"Content-Type\" content=\"text/html;charset=utf-8\">'
                 '</head><body><br>---------- TEST FILE ----------<br></body></html>')
         path = os.path.realpath(f.name)
         f.flush()
-        rasterize(path=f'file://{path}', width=250, height=250, r_type='png')
+        rasterize(path=f'file://{path}', width=250, height=250, r_type=RasterizeType.PNG, r_mode=r_mode)
         caplog.clear()
 
 
@@ -34,7 +34,7 @@ def test_rasterize_email_pdf(caplog):
                 '</head><body><br>---------- TEST FILE ----------<br></body></html>')
         path = os.path.realpath(f.name)
         f.flush()
-        rasterize(path=f'file://{path}', width=250, height=250, r_type='pdf', offline_mode=False)
+        rasterize(path=f'file://{path}', width=250, height=250, r_type=RasterizeType.PDF, offline_mode=False)
         caplog.clear()
 
 
@@ -44,7 +44,7 @@ def test_rasterize_email_pdf_offline(caplog):
                 '</head><body><br>---------- TEST FILE ----------<br></body></html>')
         path = os.path.realpath(f.name)
         f.flush()
-        rasterize(path=f'file://{path}', width=250, height=250, r_type='pdf', offline_mode=True)
+        rasterize(path=f'file://{path}', width=250, height=250, r_type=RasterizeType.PDF, offline_mode=True)
         caplog.clear()
 
 
@@ -54,7 +54,7 @@ def test_rasterize_no_defunct_processes(caplog):
                 '</head><body><br>---------- TEST FILE ----------<br></body></html>')
         path = os.path.realpath(f.name)
         f.flush()
-        rasterize(path=f'file://{path}', width=250, height=250, r_type='pdf', offline_mode=False)
+        rasterize(path=f'file://{path}', width=250, height=250, r_type=RasterizeType.PDF, offline_mode=False)
         process = subprocess.Popen(['ps', '-aux'], stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                                    universal_newlines=True)
         processes_str, _ = process.communicate()
@@ -107,7 +107,7 @@ def test_merge_options():
 
 def test_rasterize_large_html():
     path = os.path.realpath('test_data/large.html')
-    res = rasterize(path=f'file://{path}', width=250, height=250, r_type='png')
+    res = rasterize(path=f'file://{path}', width=250, height=250, r_type=RasterizeType.PNG)
     assert res
 
 
@@ -151,17 +151,19 @@ def http_wait_server():
 # curl -v -H 'user-agent: HeadlessChrome' --max-time 10  "http://www.grainger.com/"  # disable-secrets-detection
 # This tests access a server which waits for 10 seconds and makes sure we timeout
 @pytest.mark.filterwarnings('ignore::ResourceWarning')
-def test_rasterize_url_long_load(mocker, http_wait_server, caplog):
+@pytest.mark.parametrize("r_mode", [RasterizeMode.WEBDRIVER_ONLY, RasterizeMode.HEADLESS_CMD_ONLY])
+def test_rasterize_url_long_load(r_mode, mocker, http_wait_server, caplog):
     return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
     time.sleep(1)  # give time to the servrer to start
-    rasterize('http://localhost:10888', width=250, height=250, r_type='png', max_page_load_time=5)
+    rasterize('http://localhost:10888', width=250, height=250, r_type=RasterizeType.PNG, max_page_load_time=5, r_mode=r_mode)
     assert return_error_mock.call_count == 1
     # call_args last call with a tuple of args list and kwargs
     err_msg = return_error_mock.call_args[0][0]
     assert 'Timeout exception' in err_msg
     return_error_mock.reset_mock()
     # test that with a higher value we get a response
-    assert rasterize('http://localhost:10888', width=250, height=250, r_type='png', max_page_load_time=0)
+    assert rasterize('http://localhost:10888', width=250, height=250, r_type=RasterizeType.PNG,
+                     max_page_load_time=0, r_mode=r_mode)
     assert not return_error_mock.called
     caplog.clear()
 

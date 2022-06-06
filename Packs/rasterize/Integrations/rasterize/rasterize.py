@@ -174,7 +174,7 @@ def quit_driver_and_reap_children(driver):
 
 def rasterize(path: str, width: int, height: int, r_type: RasterizeType = RasterizeType.PNG, wait_time: int = 0,
               offline_mode: bool = False, max_page_load_time: int = 180,
-              r_mode: RasterizeMode = RasterizeMode.WEBDRIVER_PREFERED):
+              r_mode: RasterizeMode = RasterizeMode.WEBDRIVER_ONLY):
     """
     Capturing a snapshot of a path (url/file), using Chrome Driver
     :param offline_mode: when set to True, will block any outgoing communication
@@ -274,15 +274,15 @@ def rasterize_headless_cmd(path: str, width: int, height: int, r_type: Rasterize
     output_file = None
     if r_type == RasterizeType.PDF:
         cmd_options.append('--print-to-pdf')
-        output_file = Path(tempfile.gettempdir()) / 'screenshot.png'
+        output_file = Path(tempfile.gettempdir()) / 'output.pdf'
     elif r_type == RasterizeType.JSON:
         cmd_options.append('--dump-dom')
     else:  # screeshot
         cmd_options.append('--screenshot')
-        output_file = Path(tempfile.gettempdir()) / 'output.pdf'
+        output_file = Path(tempfile.gettempdir()) / 'screenshot.png'
     # run chrome
     try:
-        cmd_timeout = 0 if max_page_load_time <= 0 else max_page_load_time + 1
+        cmd_timeout = 0 if max_page_load_time <= 0 else max_page_load_time
         res = subprocess.run(cmd_options, cwd=tempfile.gettempdir(), capture_output=True, timeout=cmd_timeout,
                              check=True, text=True)
     except subprocess.TimeoutExpired as te:
