@@ -1577,7 +1577,9 @@ def ip_command(client: Client, score_calculator: ScoreCalculator, args: dict, re
         result = CommandResults(readable_output='No IPs were found.').to_context()
         results.append(result)
     if execution_metrics.is_supported():
-        results.append(execution_metrics.metrics.to_context())
+        final_metrics = execution_metrics.metrics
+        metric_results = CommandResults(execution_metrics=final_metrics)
+        results.append(metric_results)
     return results
 
 
@@ -1610,7 +1612,9 @@ def file_command(client: Client, score_calculator: ScoreCalculator, args: dict, 
         result = CommandResults(readable_output='No files were found.').to_context()
         results.append(result)
     if execution_metrics.is_supported():
-        results.append(execution_metrics.metrics.to_context())
+        final_metrics = execution_metrics.metrics
+        metric_results = CommandResults(execution_metrics=final_metrics)
+        results.append(metric_results)
     return results
 
 
@@ -1645,7 +1649,9 @@ def url_command(client: Client, score_calculator: ScoreCalculator, args: dict, r
         result = CommandResults(readable_output='No domains were found.').to_context()
         results.append(result)
     if execution_metrics.is_supported():
-        results.append(execution_metrics.metrics.to_context())
+        final_metrics = execution_metrics.metrics
+        metric_results = CommandResults(execution_metrics=final_metrics)
+        results.append(metric_results)
     return results
 
 
@@ -1671,13 +1677,16 @@ def domain_command(client: Client, score_calculator: ScoreCalculator, args: dict
             execution_metrics.general_error += 1
             continue
         execution_metrics.success += 1
-        result = build_domain_output(client, score_calculator, domain, raw_response, argToBoolean(args.get('extended_data'))).to_context()
+        result = build_domain_output(client, score_calculator, domain, raw_response,
+                                     argToBoolean(args.get('extended_data'))).to_context()
         results.append(result)
     if len(results) == 0:
         result = CommandResults(readable_output='No domains were found.').to_context()
         results.append(result)
     if execution_metrics.is_supported():
-        results.append(execution_metrics.metrics.to_context())
+        final_metrics = execution_metrics.metrics
+        metric_results = CommandResults(execution_metrics=final_metrics)
+        results.append(metric_results)
     return results
 
 
