@@ -259,7 +259,7 @@ def convert_pdf_to_jpeg(path: str, max_pages: str, password: str, horizontal: bo
     """
     demisto.debug(f'Loading file at Path: {path}')
     input_pdf = PdfFileReader(open(path, "rb"), strict=False)
-    pages = input_pdf.numPages if max_pages == "*" else min(int(max_pages), input_pdf.numPages)
+    pages = len(input_pdf.pages) if max_pages == "*" else min(int(max_pages), len(input_pdf.pages))
     with tempfile.TemporaryDirectory() as output_folder:
         demisto.debug('Converting PDF')
         convert_from_path(
