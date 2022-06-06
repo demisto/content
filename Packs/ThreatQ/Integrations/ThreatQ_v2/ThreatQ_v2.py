@@ -159,7 +159,10 @@ def get_tlp_from_indicator(sources):
         return None
     tlp = -1
     for source in sources:
-        tlp = int(source.get('TLP')) if int(source.get('TLP')) > tlp else tlp
+        try:
+            tlp = int(source.get('TLP')) if int(source.get('TLP')) > tlp else tlp
+        except:
+            continue
 
     return TABLE_TLP.get(tlp)
 
