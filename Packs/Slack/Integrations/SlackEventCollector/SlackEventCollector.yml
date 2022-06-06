@@ -12,7 +12,7 @@ configuration:
   displaypassword: User Token
   name: user_token
   type: 9
-  required: false
+  required: true
   hiddenusername: true
 - defaultvalue: slack
   display: The product name corresponding to the integration that originated the events
