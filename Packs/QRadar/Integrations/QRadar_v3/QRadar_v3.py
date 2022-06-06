@@ -681,52 +681,43 @@ def insert_to_updated_context(context_data: dict, updated_context_data: dict, id
     return new_context_data
 
 
-def safely_update_context_data(func: Callable):
+def safely_update_context_data(context_data):
     """Decorator for updating context data using versions.
-    In case of a race condition, preform func with the new context_data and try updating again.
+    In case of a race condition, it will 
 
     Args:
-        func: The function to preform with the new context data before updating.
+        context_data: The context data to save.
 
     raise ValueError if context_data or version are not in the kwargs for the function.
     raise DemistoException if reached maximum of retries.
     """
-    def wrapper(*args, **kwargs):
-        context_was_set = False
-        retries = 0
-        max_retries = 5
-        while not context_was_set and retries < max_retries:
-            context_data = func(*args, **kwargs)
-            version = kwargs['version']
-            print_debug_msg(f'Attempting to update context data after version {version} with retry {retries}')
-            new_context_data, new_version = get_integration_context_with_version()
-            if new_version == version:
-                try:
-                    set_to_integration_context_with_retries(context_data, max_retry_times=1)
-                    context_was_set = True
-                    print_debug_msg(f'Updated integration context after version {version} in retry {retries}.')
-                except Exception as e:
-                    if 'Max retry attempts exceeded' in str(e):
-                        continue
-                    else:
-                        raise e
-            else:
-                if 'context_data' not in kwargs or 'version' not in kwargs:
-                    raise ValueError('context_data and version must be in the func kwargs if '
-                                     'safely_update_context_data decorator is used but were not found.')
+    context_was_set = False
+    retries = 0
+    max_retries = 5
+    while not context_was_set and retries < max_retries:
+        print_debug_msg(f'Attempting to update context data after version {version} with retry {retries}')
+        new_context_data, new_version = get_integration_context_with_version()
+        if new_version == version:
+            try:
+                set_to_integration_context_with_retries(context_data, max_retry_times=1)
+                context_was_set = True
+                print_debug_msg(f'Updated integration context after version {version} in retry {retries}.')
+            except Exception as e:
+                if 'Max retry attempts exceeded' in str(e):
+                    continue
                 else:
-                    kwargs['context_data'] = insert_to_updated_context(context_data,
-                                                                       new_context_data,
-                                                                       kwargs['ids'],
-                                                                       kwargs['should_update_last_fetch'])
-                    kwargs['version'] = new_version
-                    print_debug_msg(f'Could not update context data after version {version} due to new '
-                                    f'version {new_version} in retry {retries}')
-                    retries = retries + 1
-        if retries == max_retries:
-            raise DemistoException(f'Reached maximum retries, could not update context data for function {func}.')
-        return context_data
-    return wrapper
+                    raise e
+        else:
+            context_data = insert_to_updated_context(context_data,
+                                                     new_context_data,
+                                                     ids,
+                                                     should_update_last_fetch)
+            print_debug_msg(f'Could not update context data after version {version} due to new '
+                                f'version {new_version} in retry {retries}')
+                retries = retries + 1
+            if retries == max_retries:
+                raise DemistoException(f'Reached maximum retries, could not update context data for function {func}.')
+            return context_data
 
 
 def add_iso_entries_to_dict(dicts: List[Dict]) -> List[Dict]:
