@@ -16,6 +16,25 @@ configuration:
   defaultvalue: ""
   type: 9
   required: true
+- display: API token (Recommended)
+  name: api_token
+  required: false
+  type: 4
+- defaultvalue: OauthKey
+  additionalinfo: This field is ignored if other required fields are not provided (for example both the access token and the private key).
+  display: Consumer key (OAuth 1.0)
+  name: consumer_key
+  required: false
+  type: 0
+- display: Access Token
+  additionalinfo: This token is used for both OAuth 1.0 and personal access token authentication methods.
+  name: access_token
+  required: false
+  type: 0
+- display: Private key (PKCS8 format)
+  name: private_key
+  required: false
+  type: 14
 - display: Use system proxy settings
   name: proxy
   defaultvalue: "false"
