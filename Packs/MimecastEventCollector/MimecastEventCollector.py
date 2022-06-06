@@ -1,6 +1,5 @@
 from CommonServerPython import *
 import demistomock as demisto
-import dateparser
 from collections.abc import Generator
 from SiemApiModule import *  # noqa: E402
 import urllib3
@@ -35,15 +34,19 @@ class MimecastOptions(IntegrationOptions):
     secret_key: str
     app_id: str
     access_key: str
+    base_url: str
     verify: Optional[bool] = False
 
 
 class MimecastClient(IntegrationEventsClient):
 
-    def __init__(self, request: IntegrationHTTPRequest, options: IntegrationOptions):  # pragma: no cover
+    def __init__(self, request: IntegrationHTTPRequest, options: MimecastOptions):  # pragma: no cover
         super().__init__(request=request, options=options)
 
     def prepare_headers(self, uri):
+        """
+        Args -
+        """
         # Create variables required for request headers
         request_id = str(uuid.uuid4())
         request_date = self.get_hdr_date()
@@ -100,6 +103,7 @@ class MimecastGetSiemEvents(IntegrationGetEvents):
             yield events
 
         while True:
+            demisto.debug(f'\n {len(events)} Siem logs were fetched from mimecast \n')
             yield events
 
             # self.client.set_request_filter('after')    # set here the last run between runs
@@ -146,7 +150,7 @@ class MimecastGetSiemEvents(IntegrationGetEvents):
             'headers': self.client.prepare_headers(self.uri),
             'data': self.prepare_siem_log_data(),
             'method': Method.POST,
-            'url': 'https://us-api.mimecast.com' + self.uri,
+            'url': self.options.base_url + self.uri,
             'verify': self.options.verify,
         }
         return req_obj
@@ -190,6 +194,7 @@ class MimecastGetSiemEvents(IntegrationGetEvents):
         event = [json.loads(my_json)]
         return event
 
+
 class MimecastGetAuditEvents(IntegrationGetEvents):
 
     def __init__(self, client: MimecastClient, options: IntegrationOptions):  # pragma: no cover
@@ -215,6 +220,7 @@ class MimecastGetAuditEvents(IntegrationGetEvents):
             yield events
 
         while True:
+            demisto.debug(f'\n {len(events)} Audit logs were fetched from mimecast \n')
             yield events
 
             # self.client.set_request_filter('after')    # set here the last run between runs
@@ -224,12 +230,12 @@ class MimecastGetAuditEvents(IntegrationGetEvents):
             if not events:
                 break
 
-    def process_audit_response(self, response):
+    def process_audit_response(self, response: requests.Response):
         """
         Args:
-            response - This method gets the response from the get Audit events.
+            response (requests.Response) - This method gets the response from the get Audit events.
         Returns:
-
+            event_list (list) - The processed audit events
         """
         res = json.loads(response.text)
         if res.get('fail', []):
@@ -254,17 +260,13 @@ class MimecastGetAuditEvents(IntegrationGetEvents):
             'headers': self.client.prepare_headers(self.uri),
             'data': self.prepare_audit_events_data(),
             'method': Method.POST,
-            'url': 'https://us-api.mimecast.com' + self.uri,
+            'url': self.options.base_url + self.uri,
             'verify': self.options.verify,
         }
 
     def prepare_audit_events_data(self):
         """
-        TODO:   # 'query': 'String',
-                    # 'categories': [
-                    #     'String'
-                    # ]
-                    This can also be in the data section need to check about it.
+        prepares the data section of the audit events api call.
         """
         # no pagination we move the time
         payload = {
@@ -287,6 +289,10 @@ class MimecastGetAuditEvents(IntegrationGetEvents):
 
     @staticmethod
     def to_audit_time_format(time_to_convert):
+        """
+        converts the iso8601 format (e.g. 2011-12-03T10:15:30+00:00),
+        to be mimecast compatible (e.g. 2011-12-03T10:15:30+0000)
+        """
         regex = r'(?!.*:)'
         find_last_colon = re.search(regex, time_to_convert)
         index = find_last_colon.start()
@@ -368,7 +374,7 @@ def handle_last_run_exit(siem_event_handler: MimecastGetSiemEvents, audit_events
                     AUDIT_EVENT_DEDUP_LIST: audit_dedup_next_run}
     demisto.setLastRun(next_run_obj)
     demisto.debug(f'\naudit events next run: {audit_next_run} \n siem next run: {siem_next_run} \n'
-                  'audit potential dups: {audit_dedup_next_run}')
+                  f'audit potential dups: {audit_dedup_next_run}')
 
 
 def prepare_potential_duplicates_for_next_run(audit_events: list, next_run_time: str) -> list:
@@ -412,8 +418,7 @@ def gather_events(siem_events: list, audit_events: list) -> list:
 
 def main():
     # Args is always stronger. Get last run even stronger
-    demisto_params = demisto.params()
-
+    demisto_params = demisto.params() | demisto.args()
     should_push_events = argToBoolean(demisto_params.get('should_push_events', 'false'))
     options = MimecastOptions(**demisto_params)
     empty_first_request = IntegrationHTTPRequest(method=Method.GET, url='http://bla.com', headers={})
@@ -421,10 +426,12 @@ def main():
     siem_event_handler = MimecastGetSiemEvents(client, options)
     audit_event_handler = MimecastGetAuditEvents(client, options)
     command = demisto.command()
-    handle_last_run_entrance(demisto.params().get('Last_run'), audit_event_handler, siem_event_handler)
+    handle_last_run_entrance(demisto.params().get('after'), audit_event_handler, siem_event_handler)
     try:
-        events_siem = siem_event_handler.run()
         events_audit = audit_event_handler.run()
+        demisto.debug(f'\n Total of {len(events_audit)} Audit Logs were fetched in this run')
+        events_siem = siem_event_handler.run()
+        demisto.debug(f'\n Total of {len(events_siem)} Siem Logs were fetched in this run')
 
         if command == 'test-module':
             return_results('ok')
@@ -433,7 +440,8 @@ def main():
             if command == 'fetch-events':
                 handle_last_run_exit(siem_event_handler, events_audit)
                 events = gather_events(events_siem, events_audit)
-                send_events_to_xsiam(events, 'mimecast', demisto_params.get('product', 'mimecast'))
+                send_events_to_xsiam(events, demisto_params.get('vendor', 'mimecast'),
+                                     demisto_params.get('product', 'mimecast'))
 
             else:
                 command_results_siem = CommandResults(
@@ -452,7 +460,7 @@ def main():
                 return_results([command_results_siem, command_results_audit])
                 if should_push_events:
                     events = gather_events(events_siem, events_audit)
-                    send_events_to_xsiam(events, 'mimecast', demisto_params.get('product'),
+                    send_events_to_xsiam(events, demisto_params.get('vendor', 'mimecast'),
                                          demisto_params.get('product', 'mimecast'))
 
     except Exception as exc:
