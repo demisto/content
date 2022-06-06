@@ -396,11 +396,12 @@ def rasterize_pdf_command():
 
 
 def rasterize_html_command():
-    entry_id = demisto.args().get('EntryID')
-    w = demisto.args().get('width', DEFAULT_W).rstrip('px')
-    h = demisto.args().get('height', DEFAULT_H).rstrip('px')
-    r_type = demisto.args().get('type', 'png')
-    file_name = demisto.args().get('file_name', 'email')
+    args = demisto.args()
+    entry_id = args.get('EntryID')
+    w = args.get('width', DEFAULT_W).rstrip('px')
+    h = args.get('height', DEFAULT_H).rstrip('px')
+    r_type = args.get('type', 'png')
+    file_name = args.get('file_name', 'email')
 
     file_name = f'{file_name}.{"pdf" if r_type.lower() == "pdf" else "png"}'  # type: ignore
 
