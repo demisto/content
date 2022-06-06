@@ -1,5 +1,5 @@
 import json
-from datetime import date
+from datetime import date, timedelta
 
 import requests
 
@@ -11,7 +11,7 @@ from CommonServerPython import *  # noqa: F401
 requests.packages.urllib3.disable_warnings()
 
 ''' GLOBAL VARS '''
-TIME_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
+TIME_FORMAT = '%Y-%m-%dT%H:%M:%S%z'
 BASE_URL = demisto.params().get('url')
 if BASE_URL and BASE_URL[-1] != '/':
     BASE_URL += '/'
@@ -787,6 +787,77 @@ def close_incident_command():
     return_outputs('The incident {} was successfully closed'.format(incident_id), {}, {})
 
 
+def search_quarantine():
+    lstAlert = []
+    mid = demisto.args().get('message_id')
+    recipient = demisto.args().get('recipient')
+    emailTAPtime = int(datetime.strptime(demisto.args().get('time'), TIME_FORMAT).timestamp())
+    incidents_list = get_incidents_request({})
+    found = {'email': False, 'mid': False, 'quarantine': False}
+    resQ = []
+    for incident in incidents_list:
+        for alert in incident.get('events'):
+            for email in alert.get('emails'):
+                if email.get('messageId') == mid and email.get('recipient').get('email') == recipient:
+                    found['mid'] = True
+                    if email.get('messageDeliveryTime', {}).get('millis'):
+                        emailTRAPtimestamp = int(email.get('messageDeliveryTime', {}).get('millis') / 1000)
+                        if emailTAPtime == emailTRAPtimestamp:
+                            found['email'] = True
+                            lstAlert.append({
+                                'incidentid': incident.get('id'),
+                                'alertid': alert.get('id'),
+                                'alerttime': alert.get('received'),
+                                'incidenttime': incident.get('created_at'),
+                                'messageId': mid,
+                                'quarantine_results': incident.get('quarantine_results')
+                            })
+                    else:
+                        demisto.results(f'Message ID found but no messageDeliveryTime found in :{json.dumps(email, indent=2)}')
+    quarantineFoundcpt = 0
+    for alert in lstAlert:
+        for quarantine in alert.get('quarantine_results'):
+            if quarantine.get('messageId') == mid and quarantine.get('recipient') == recipient:
+                found['quarantine'] = True
+                tsquarantine = datetime.strptime(quarantine.get("startTime"), "%Y-%m-%dT%H:%M:%S.%f%z")
+                tsalert = datetime.strptime(alert.get("alerttime"), TIME_FORMAT)
+                diff = (tsquarantine - tsalert).total_seconds()
+                if 0 < diff < 120:
+                    resQ.append({
+                        'quarantine': quarantine,
+                        'alert': {
+                            'id': alert.get('alertid'),
+                            'time': alert.get('alerttime')
+                        },
+                        'incident': {
+                            'id': alert.get('incidentid'),
+                            'time': alert.get('incidenttime')
+                        }
+                    })
+                else:
+                    quarantineFoundcpt += 1
+
+    if quarantineFoundcpt > 0:
+        demisto.results(f"{mid} Message ID matches to {quarantineFoundcpt} emails quarantined but time alert does not match")
+    if found['mid']:
+        midtxt = f'{mid} Message ID found in TRAP alerts, '
+        if not found['email']:
+            demisto.results(f"{midtxt}but timestamp between email delivery time and time given as argument doesn't match")
+        elif not found['quarantine']:
+            demisto.results(f"{midtxt}but not in the quarantine list meaning that email has not be quarantined.")
+            for alt in lstAlert:
+                demisto.results(json.dumps(alt, indent=4))
+    else:
+        demisto.results(f"Message ID {mid} not found in TRAP incidents")
+    command_results = CommandResults(
+        outputs_prefix='ProofPointTRAP.Quarantine',
+        outputs=resQ,
+        readable_output=tableToMarkdown("Quarantine Result", resQ),
+        raw_response=resQ
+    )
+    return command_results
+
+
 ''' EXECUTION CODE '''
 
 
@@ -839,8 +910,12 @@ def main():
 
     elif command == 'proofpoint-tr-ingest-alert':
         ingest_alert_command()
+
     elif command == 'proofpoint-tr-close-incident':
         close_incident_command()
+
+    elif command == 'proofpoint-tr-verify-quarantine':
+        return_results(search_quarantine())
 
 
 if __name__ == '__builtin__' or __name__ == 'builtins':

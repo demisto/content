@@ -522,8 +522,6 @@ There is no context output for this command.
 #### Human Readable Output
 
 
-
-
 ### proofpoint-tr-close-incident
 ***
 Close an incident
@@ -549,5 +547,32 @@ There is no context output for this command.
 
 #### Human Readable Output 
 
+
+
+### proofpoint-tr-verify-quarantine
+***
+Verify if an email has been quarantined
+
+#### Base Command
+
+`proofpoint-tr-verify-quarantine`
+#### Input
+
+| **Argument Name** | **Description**                           | **Required** |
+|-------------------|-------------------------------------------| --- |
+| message_id        | The ID value of an email                  | Required | 
+| time              | Delivery email time (ISO8601 format)      | Required | 
+| recipient         | The email recipient | Required | 
+
+
+#### Context Output
+
+| **Path**                     | **Type** | **Description**          |
+|------------------------------|----------|--------------------------|
+| ProofPointTRAP.Quarantine | String   | Result of the quarantine | 
+#### Command Example
+``` ```
+
+#### Human Readable Output 
 
 

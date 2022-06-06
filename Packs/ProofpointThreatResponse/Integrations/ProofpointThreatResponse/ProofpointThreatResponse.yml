@@ -866,6 +866,28 @@ script:
     description: Ingest an alert into Threat Response.
     execution: false
     name: proofpoint-tr-ingest-alert
+  - arguments:
+      - description: The message ID of the email
+        name: message_id
+        isArray: false
+        required: true
+        secret: false
+      - description: The recipient of the email
+        name: recipient
+        isArray: false
+        required: false
+        secret: false
+      - description: The reception time of the email
+        name: time
+        isArray: false
+        required: false
+        secret: false
+    outputs:
+      - contextPath: ProofPointTRAP.Quarantine
+        description: Results of the email quarantine operation
+        type: String
+    description: Verify if an email has been quarantined
+    name: proofpoint-tr-verify-quarantine
   feed: false
   isfetch: true
   longRunning: false
@@ -874,7 +896,7 @@ script:
   script: '-'
   subtype: python3
   type: python
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.4.29342
 tests:
 - No test - beta_integration
 beta: true
