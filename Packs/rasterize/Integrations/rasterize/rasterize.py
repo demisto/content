@@ -411,7 +411,7 @@ def rasterize_html_command():
         res = fileResult(filename=file_name, data=output)
         if r_type == 'png':
             res['Type'] = entryTypes['image']
-        demisto.results(res)
+        return_results(res)
 
 
 def module_test():
