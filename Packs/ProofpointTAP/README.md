@@ -24,8 +24,6 @@ filebeat.inputs:
           product: nps
 ```
 
-
-
 ## What does this pack do?
 - Fetches events for all clicks and messages relating to known threats within a specified time period.
 - Returns forensics evidence.
