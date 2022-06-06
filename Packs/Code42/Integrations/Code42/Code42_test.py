@@ -33,6 +33,10 @@ from Code42 import (
     user_reactivate_command,
     legal_hold_add_user_command,
     legal_hold_remove_user_command,
+    list_watchlists_command,
+    list_watchlists_included_users,
+    add_user_to_watchlist_command,
+    remove_user_from_watchlist_command,
     download_file_command,
     fetch_incidents,
     highriskemployee_get_command,
@@ -1129,6 +1133,104 @@ MOCK_GET_ALL_HIGH_RISK_EMPLOYEES_RESPONSE = """
 }
 """
 
+MOCK_WATCHLISTS_RESPONSE = """
+{
+    "watchlists": [
+        {
+            "listType": "DEPARTING_EMPLOYEE",
+            "watchlistId": "b55978d5-2d50-494d-bec9-678867f3830c",
+            "tenantId": "1d71796f-af5b-4231-9d8e-df6434da4663",
+            "stats": {
+                "includedUsersCount": 3
+            }
+        },
+        {
+            "listType": "SUSPICIOUS_SYSTEM_ACTIVITY",
+            "watchlistId": "2870bd73-ce1f-4704-a7f7-a8d11b19908e",
+            "tenantId": "1d71796f-af5b-4231-9d8e-df6434da4663",
+            "stats": {
+                "includedUsersCount": 11
+            }
+        },
+        {
+            "listType": "FLIGHT_RISK",
+            "watchlistId": "d2abb9f2-8c27-4f95-b7e2-252f191a4a1d",
+            "tenantId": "1d71796f-af5b-4231-9d8e-df6434da4663",
+            "stats": {
+                "includedUsersCount": 4
+            }
+        },
+        {
+            "listType": "PERFORMANCE_CONCERNS",
+            "watchlistId": "a21b2bbb-ed16-42eb-9983-32076ba417c0",
+            "tenantId": "1d71796f-af5b-4231-9d8e-df6434da4663",
+            "stats": {
+                "includedUsersCount": 3
+            }
+        },
+        {
+            "listType": "CONTRACT_EMPLOYEE",
+            "watchlistId": "c9557acf-4141-4162-b767-c129d3e668d4",
+            "tenantId": "1d71796f-af5b-4231-9d8e-df6434da4663",
+            "stats": {
+                "includedUsersCount": 2
+            }
+        },
+        {
+            "listType": "HIGH_IMPACT_EMPLOYEE",
+            "watchlistId": "313c388e-4c63-4071-a6fc-d6270e04c350",
+            "tenantId": "1d71796f-af5b-4231-9d8e-df6434da4663",
+            "stats": {
+                "includedUsersCount": 4
+            }
+        },
+        {
+            "listType": "ELEVATED_ACCESS_PRIVILEGES",
+            "watchlistId": "b49c938f-8f13-45e4-be17-fa88eca616ec",
+            "tenantId": "1d71796f-af5b-4231-9d8e-df6434da4663",
+            "stats": {
+                "includedUsersCount": 3
+            }
+        },
+        {
+            "listType": "POOR_SECURITY_PRACTICES",
+            "watchlistId": "534fa6a4-4b4c-4712-9b37-2f81c652c140",
+            "tenantId": "1d71796f-af5b-4231-9d8e-df6434da4663",
+            "stats": {
+                "includedUsersCount": 2
+            }
+        },
+        {
+            "listType": "NEW_EMPLOYEE",
+            "watchlistId": "5a39abda-c672-418a-82a0-54485bd59b7b",
+            "tenantId": "1d71796f-af5b-4231-9d8e-df6434da4663",
+            "stats": {}
+        }
+    ],
+    "totalCount": 9
+}"""
+
+MOCK_WATCHLISTS_INCLUDED_USERS_RESPONSE = """
+{
+    "includedUsers": [
+        {
+            "userId": "921286907298179098",
+            "username": "user_a@example.com",
+            "addedTime": "2022-02-26T18:41:45.766005"
+        },
+        {
+            "userId": "990572034162882387",
+            "username": "user_b@example.com",
+            "addedTime": "2022-03-31T20:41:47.2985"
+        },
+        {
+            "userId": "987210998131391466",
+            "username": "user_c@example.com",
+            "addedTime": "2022-03-31T14:43:48.059325"
+        }
+    ],
+    "totalCount": 3
+}"""
 
 MOCK_CREATE_USER_RESPONSE = """
 {
@@ -1318,6 +1420,29 @@ def code42_high_risk_employee_mock(code42_sdk_mock, mocker):
 
 
 @pytest.fixture
+def code42_watchlists_mock(code42_sdk_mock, mocker):
+    all_watchlists_response = create_mock_code42_sdk_response_generator(
+        mocker, [MOCK_WATCHLISTS_RESPONSE]
+    )
+    code42_sdk_mock.watchlists.get_all.return_value = (
+        all_watchlists_response
+    )
+    return code42_sdk_mock
+
+
+@pytest.fixture
+def code42_watchlists_included_users_mock(code42_sdk_mock, mocker):
+    included_users_response = create_mock_code42_sdk_response_generator(
+        mocker, [MOCK_WATCHLISTS_INCLUDED_USERS_RESPONSE]
+    )
+    code42_sdk_mock.watchlists.get_all_included_users.return_value = (
+        included_users_response
+    )
+    return code42_sdk_mock
+
+
+
+@pytest.fixture
 def code42_departing_employee_get_mock(code42_sdk_mock, mocker):
     single_departing_employee = json.loads(MOCK_GET_ALL_DEPARTING_EMPLOYEES_RESPONSE)["items"][0]
     response = create_mock_code42_sdk_response(mocker, json.dumps(single_departing_employee))
@@ -1350,6 +1475,7 @@ def code42_legal_hold_mock(code42_sdk_mock, mocker):
 def create_mock_code42_sdk_response(mocker, response_text):
     response_mock = mocker.MagicMock(spec=Response)
     response_mock.text = response_text
+    response_mock.status_code = 200
     return Py42Response(response_mock)
 
 
@@ -2035,6 +2161,58 @@ def test_download_file_when_given_other_hash_raises_unsupported_hash(code42_sdk_
     client = create_client(code42_sdk_mock)
     with pytest.raises(Code42UnsupportedHashError):
         _ = download_file_command(client, {"hash": _hash})
+
+
+def test_list_watchlists_command(code42_watchlists_mock):
+    client = create_client(code42_watchlists_mock)
+    cmd_res = list_watchlists_command(client, {})
+    expected_response = json.loads(MOCK_WATCHLISTS_RESPONSE)["watchlists"]
+    actual_response = cmd_res.raw_response
+    assert cmd_res.outputs_key_field == "WatchlistID"
+    assert cmd_res.outputs_prefix == "Code42.Watchlists"
+    assert code42_watchlists_mock.watchlists.get_all.call_count == 1
+    assert len(expected_response) == len(actual_response)
+    for i in range(0, len(actual_response)):
+        assert actual_response[i]["WatchlistID"] == expected_response[i]["watchlistId"]
+        assert actual_response[i]["IncludedUsersCount"] == expected_response[i]["stats"].get("includedUsersCount", 0)
+
+
+def test_list_watchlists_included_users_calls_by_id_when_watchlist_type_arg_provided_looks_up_watchlist_id(code42_watchlists_included_users_mock):
+    watchlist_id = "b55978d5-2d50-494d-bec9-678867f3830c"
+    code42_watchlists_included_users_mock.watchlists._watchlists_service.watchlist_type_id_map.get.return_value = watchlist_id
+    client = create_client(code42_watchlists_included_users_mock)
+    cmd_res = list_watchlists_included_users(client, {"watchlist": "DEPARTING_EMPLOYEE"})
+    actual_response = cmd_res.raw_response
+    expected_response = json.loads(MOCK_WATCHLISTS_INCLUDED_USERS_RESPONSE)["includedUsers"]
+    assert code42_watchlists_included_users_mock.watchlists.get_all_included_users.called_once_with(watchlist_id)
+    assert cmd_res.outputs_prefix == "Code42.WatchlistUsers"
+    assert len(expected_response) == len(actual_response)
+    for i in range(0, len(actual_response)):
+        assert actual_response[i]["Username"] == expected_response[i]["username"]
+        assert actual_response[i]["AddedTime"] == expected_response[i]["addedTime"]
+        assert actual_response[i]["WatchlistID"] == watchlist_id
+
+
+def test_add_user_to_watchlist_command_with_UUID_calls_add_by_id_method(code42_sdk_mock, mocker):
+    watchlist_id = "b55978d5-2d50-494d-bec9-678867f3830c"
+    user_id = "1234"
+    code42_sdk_mock.users.get_by_username.return_value = create_mock_code42_sdk_response(mocker, f'{{"users": [{{"userUid": "{user_id}"}}]}}')
+    code42_sdk_mock.watchlists.add_included_users_by_watchlist_id.return_value = create_mock_code42_sdk_response(mocker, "")
+    client = create_client(code42_sdk_mock)
+    cmd_res = add_user_to_watchlist_command(client, {"watchlist": watchlist_id, "username": "user_a@example.com"})
+    assert code42_sdk_mock.watchlists.add_included_users_by_watchlist_id.called_once_with(user_id, watchlist_id)
+    assert cmd_res.raw_response == {'Watchlist': 'b55978d5-2d50-494d-bec9-678867f3830c', 'Username': 'user_a@example.com', 'Success': True}
+
+
+def test_add_user_to_watchlist_command_with_watchlist_type_calls_add_by_type_method(code42_sdk_mock, mocker):
+    watchlist_type = "DEPARTING_EMPLOYEE"
+    user_id = "1234"
+    code42_sdk_mock.users.get_by_username.return_value = create_mock_code42_sdk_response(mocker, f'{{"users": [{{"userUid": "{user_id}"}}]}}')
+    code42_sdk_mock.watchlists.add_included_users_by_watchlist_type.return_value = create_mock_code42_sdk_response(mocker, "")
+    client = create_client(code42_sdk_mock)
+    cmd_res = add_user_to_watchlist_command(client, {"watchlist": watchlist_type, "username": "user_a@example.com"})
+    assert code42_sdk_mock.watchlists.add_included_users_by_watchlist_type.called_once_with(user_id, watchlist_type)
+    assert cmd_res.raw_response == {'Watchlist': 'DEPARTING_EMPLOYEE', 'Username': 'user_a@example.com', 'Success': True}
 
 
 def test_fetch_when_no_significant_file_categories_ignores_filter(

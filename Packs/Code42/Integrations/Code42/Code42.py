@@ -1162,7 +1162,7 @@ def list_watchlists_command(client, args):
                 {
                     "WatchlistID": watchlist["watchlistId"],
                     "WatchlistType": watchlist["listType"],
-                    "IncludedUserCount": watchlist["stats"].get("includedUsersCount", 0)
+                    "IncludedUsersCount": watchlist["stats"].get("includedUsersCount", 0)
                 }
             )
 
@@ -1320,6 +1320,7 @@ class Code42SecurityIncidentFetcher(object):
 
     def _create_incident_from_alert(self, alert):
         details = self._client.get_alert_details(alert.get("id"))
+        details["alertId"] = alert.get("id")
         incident = {"name": "Code42 - {}".format(details.get("name")), "occurred": details.get("createdAt")}
         if self._include_files:
             details = self._relate_files_to_alert(details)
