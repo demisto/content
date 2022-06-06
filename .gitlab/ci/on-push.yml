@@ -201,7 +201,7 @@ prepare-testing-bucket-mpv2:
         echo "Instance with role $INSTANCE_ROLE was not created"
         exit 0
       fi
-    - !reference [.open-ssh-tunnel]
+    - !reference [.ssh-config-setup]
     - python3 ./Tests/scripts/wait_until_server_ready.py "$INSTANCE_ROLE"
     - |
       # workaround for the hard-coded value in the sdk
