@@ -92,6 +92,13 @@ CONTEXT_PATH = {
     'attachment': 'ThreatQ.File(val.ID === obj.ID)'
 }
 
+TABLE_TLP = {
+    0: "WHITE",
+    1: "GREEN",
+    2: "AMBER",
+    3: "RED"
+}
+
 ''' HELPER FUNCTIONS '''
 
 
@@ -145,6 +152,29 @@ def get_errors_string_from_bad_request(bad_request_results, status_code):
         return errors_string
 
     return str()  # Service did not provide any errors.
+
+
+def get_tlp_from_indicator(sources):
+    if not sources:
+        return None
+    tlp = -1
+    for source in sources:
+        tlp = int(source.get('TLP')) if int(source.get('TLP')) > tlp else tlp
+    
+    return TABLE_TLP.get(tlp)
+    
+
+def get_generic_context(indicator, generic_context=None):
+    tlp = get_tlp_from_indicator(indicator.get('Source'))
+    if tlp:
+        if generic_context:
+            generic_context['TrafficLightProtocol'] = tlp
+        else:
+            generic_context = {'Data': indicator.get('Value'), 'TrafficLightProtocol': tlp}
+    else:
+        generic_context = generic_context or {'Data': indicator.get('Value')}
+
+    return generic_context
 
 
 def tq_request(method, url_suffix, params=None, files=None, retrieve_entire_response=False, allow_redirects=True):
@@ -680,15 +710,11 @@ def get_indicator_type_id(indicator_name: str) -> str:
 def aggregate_search_results(indicators, default_indicator_type, generic_context=None):
     entry_context = []
     for i in indicators:
-        if TLP:
-            if generic_context:
-                generic_context['TrafficLightProtocol'] = TLP
-            else:
-                generic_context = {'Data': i.get('Value'), 'TrafficLightProtocol': TLP}
+        generic_context = get_generic_context(i, generic_context)
         entry_context.append(set_indicator_entry_context(
             indicator_type=i.get('Type') or default_indicator_type,
             indicator=i,
-            generic_context=generic_context or {'Data': i.get('Value')}
+            generic_context=generic_context
         ))
 
     aggregated: Dict = {}
