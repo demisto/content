@@ -821,7 +821,7 @@ def search_quarantine():
             if quarantine.get('messageId') == mid and quarantine.get('recipient') == recipient:
                 found['quarantine'] = True
                 tsquarantine = datetime.strptime(quarantine.get("startTime"), "%Y-%m-%dT%H:%M:%S.%f%z")
-                tsalert = datetime.strptime(alert.get("alerttime"), TIME_FORMAT)
+                tsalert = datetime.strptime(alert.get("alerttime"), TIME_FORMAT_UTC)
                 diff = (tsquarantine - tsalert).total_seconds()
                 if 0 < diff < 120:
                     resQ.append({
