@@ -1,3 +1,4 @@
+from typing import Callable, Tuple
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -16,6 +17,9 @@ import subprocess
 import traceback
 import re
 import os
+from enum import Enum
+from pathlib import Path
+
 
 # Chrome respects proxy env params
 handle_proxy()
@@ -32,7 +36,7 @@ EMPTY_RESPONSE_ERROR_MSG = "There is nothing to render. This can occur when ther
                            " Please check your URL."
 DEFAULT_W, DEFAULT_H = '600', '800'
 DEFAULT_W_WIDE = '1024'
-CHROME_USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.164 Safari/537.36'  # noqa
+CHROME_USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.64 Safari/537.36'  # noqa
 DRIVER_LOG = f'{tempfile.gettempdir()}/chromedriver.log'
 DEFAULT_CHROME_OPTIONS = [
     '--no-sandbox',
@@ -49,6 +53,20 @@ DEFAULT_CHROME_OPTIONS = [
 
 USER_CHROME_OPTIONS = demisto.params().get('chrome_options', "")
 PAGES_LIMITATION = 20
+CHROME_EXE = os.getenv('CHROME_EXE', '/opt/google/chrome/google-chrome')
+
+
+class RasterizeMode(Enum):
+    WEBDRIVER_PREFERED = 'WebDriver - Prefered'
+    WEBDRIVER_ONLY = 'WebDriver - Only'
+    HEADLESS_CMD_PREFERED = 'Headless CMD - Prefered'
+    HEADLESS_CMD_ONLY = 'Headless CMD - Only'
+
+
+class RasterizeType(Enum):
+    PNG = 'png'
+    PDF = 'pdf'
+    JSON = 'json'
 
 
 def return_err_or_warn(msg):
@@ -154,8 +172,59 @@ def quit_driver_and_reap_children(driver):
         demisto.error(f'Failed checking for zombie processes: {e}. Trace: {traceback.format_exc()}')
 
 
-def rasterize(path: str, width: int, height: int, r_type: str = 'png', wait_time: int = 0,
-              offline_mode: bool = False, max_page_load_time: int = 180):
+def rasterize(path: str, width: int, height: int, r_type: RasterizeType = RasterizeType.PNG, wait_time: int = 0,
+              offline_mode: bool = False, max_page_load_time: int = 180,
+              r_mode: RasterizeMode = RasterizeMode.WEBDRIVER_PREFERED):
+    """
+    Capturing a snapshot of a path (url/file), using Chrome Driver
+    :param offline_mode: when set to True, will block any outgoing communication
+    :param path: file path, or website url
+    :param width: desired snapshot width in pixels
+    :param height: desired snapshot height in pixels
+    :param r_type: result type: .png/.pdf
+    :param wait_time: time in seconds to wait before taking a screenshot
+    """
+    demisto.debug(f'Rasterizing using mode: {r_mode}')
+    page_load_time = max_page_load_time if max_page_load_time > 0 else DEFAULT_PAGE_LOAD_TIME
+    rasterize_funcs: Tuple[Callable, ...] = ()
+    if r_mode == RasterizeMode.WEBDRIVER_PREFERED:
+        rasterize_funcs = (rasterize_webdriver, rasterize_headless_cmd)
+    elif r_mode == RasterizeMode.WEBDRIVER_ONLY:
+        rasterize_funcs = (rasterize_webdriver,)
+    elif r_mode == RasterizeMode.HEADLESS_CMD_PREFERED:
+        rasterize_funcs = (rasterize_headless_cmd, rasterize_webdriver)
+    elif r_mode == RasterizeMode.HEADLESS_CMD_ONLY:
+        rasterize_funcs = (rasterize_headless_cmd,)
+    else:  # should never happen as we use an enum
+        demisto.error(f'Unknown rasterize mode: {r_mode}')
+        raise ValueError(f'Unknown rasterize mode: {r_mode}')
+    try:
+        for i, r_func in enumerate(rasterize_funcs):  # type: ignore[var-annotated]
+            try:
+                return r_func(path=path, width=width, height=height, r_type=r_type, wait_time=wait_time,
+                              offline_mode=offline_mode, max_page_load_time=page_load_time)
+            except Exception as ex:
+                if i < (len(rasterize_funcs) - 1):
+                    demisto.info(f'Failed rasterize preferred option trying second option. Exception: {ex}')
+                else:
+                    demisto.error(f'Failed rasterizing using all avialable options. Raising last excpetion: {ex}')
+                    raise
+    except (InvalidArgumentException, NoSuchElementException) as ex:
+        if 'invalid argument' in str(ex):
+            err_msg = URL_ERROR_MSG + str(ex)
+            return_err_or_warn(err_msg)
+        else:
+            return_err_or_warn(f'Invalid exception: {ex}\nTrace:{traceback.format_exc()}')
+    except (TimeoutException, subprocess.TimeoutExpired) as ex:
+        return_err_or_warn(f'Timeout exception with max load time of: {page_load_time} seconds. {ex}')
+    except Exception as ex:
+        err_str = f'General error: {ex}\nTrace:{traceback.format_exc()}'
+        demisto.error(err_str)
+        return_err_or_warn(err_str)
+
+
+def rasterize_webdriver(path: str, width: int, height: int, r_type: RasterizeType = RasterizeType.PNG, wait_time: int = 0,
+                        offline_mode: bool = False, max_page_load_time: int = 180):
     """
     Capturing a snapshot of a path (url/file), using Chrome Driver
     :param offline_mode: when set to True, will block any outgoing communication
@@ -166,10 +235,10 @@ def rasterize(path: str, width: int, height: int, r_type: str = 'png', wait_time
     :param wait_time: time in seconds to wait before taking a screenshot
     """
     driver = init_driver(offline_mode)
-    page_load_time = max_page_load_time if max_page_load_time > 0 else DEFAULT_PAGE_LOAD_TIME
     try:
-        demisto.debug(f'Navigating to path: {path}. Mode: {"OFFLINE" if offline_mode else "ONLINE"}. page load: {page_load_time}')
-        driver.set_page_load_timeout(page_load_time)
+        demisto.debug(f'Navigating to path: {path}. Mode: {"OFFLINE" if offline_mode else "ONLINE"}.'
+                      f' page load: {max_page_load_time}')
+        driver.set_page_load_timeout(max_page_load_time)
         driver.get(path)
         driver.implicitly_wait(5)
         if wait_time > 0 or DEFAULT_WAIT_TIME > 0:
@@ -177,32 +246,61 @@ def rasterize(path: str, width: int, height: int, r_type: str = 'png', wait_time
         check_response(driver)
         demisto.debug('Navigating to path - COMPLETED')
 
-        if r_type.lower() == 'pdf':
+        if r_type == RasterizeType.PDF:
             output = get_pdf(driver, width, height)
-        elif r_type.lower() == 'json':
+        elif r_type == RasterizeType.JSON:
             html = driver.page_source
             url = driver.current_url
             output = {'image_b64': base64.b64encode(get_image(driver, width, height)).decode('utf8'),
                       'html': html, 'current_url': url}
         else:
             output = get_image(driver, width, height)
-
         return output
-
-    except (InvalidArgumentException, NoSuchElementException) as ex:
-        if 'invalid argument' in str(ex):
-            err_msg = URL_ERROR_MSG + str(ex)
-            return_err_or_warn(err_msg)
-        else:
-            return_err_or_warn(f'Invalid exception: {ex}\nTrace:{traceback.format_exc()}')
-    except TimeoutException as ex:
-        return_err_or_warn(f'Timeout exception with max load time of: {page_load_time} seconds. {ex}')
-    except Exception as ex:
-        err_str = f'General error: {ex}\nTrace:{traceback.format_exc()}'
-        demisto.error(err_str)
-        return_err_or_warn(err_str)
     finally:
         quit_driver_and_reap_children(driver)
+
+
+def rasterize_headless_cmd(path: str, width: int, height: int, r_type: RasterizeType = RasterizeType.PNG, wait_time: int = 0,
+                           offline_mode: bool = False, max_page_load_time: int = 180):
+    demisto.debug(f'rasterizing headless cmd mode for path: [{path}]')
+    if offline_mode:
+        raise NotImplementedError(f'offile_mode: {offline_mode} is not support in headless CMD mode')
+    cmd_options = merge_options(DEFAULT_CHROME_OPTIONS, USER_CHROME_OPTIONS)
+    cmd_options.insert(0, CHROME_EXE)
+    if width > 0 and height > 0:
+        cmd_options.append(f'--window-size={width},{height}')
+    if max_page_load_time > 0:
+        cmd_options.append(f'--timeout={max_page_load_time}')
+    output_file = None
+    if r_type == RasterizeType.PDF:
+        cmd_options.append('--print-to-pdf')
+        output_file = Path(tempfile.gettempdir()) / 'screenshot.png'
+    elif r_type == RasterizeType.JSON:
+        cmd_options.append('--dump-dom')
+    else:  # screeshot
+        cmd_options.append('--screenshot')
+        output_file = Path(tempfile.gettempdir()) / 'output.pdf'
+    # run chrome
+    try:
+        cmd_timeout = 0 if max_page_load_time <= 0 else max_page_load_time + 5
+        res = subprocess.run(cmd_options, cwd=tempfile.gettempdir(), capture_output=True, timeout=cmd_timeout,
+                             check=True, text=True)
+    except subprocess.TimeoutExpired as te:
+        demisto.error(f'chrome headless timeout exception: {te}. Stderr: {te.stderr}')
+        raise
+    except subprocess.CalledProcessError as ce:
+        demisto.error(f'chrome headless called process exception: {ce}. Return code: {ce.returncode}. Stderr: {ce.stderr}')
+        raise
+    demisto.debug(f'Done rasterizing: [{path}]')
+    if is_debug_mode():
+        demisto.debug(f'chrome stderr output:{res.stderr}')
+    if not output_file:  # json mode
+        return {'html': res.stdout, 'current_url': path}
+    try:
+        with open(output_file, 'rb') as f:
+            return f.read()
+    finally:
+        output_file.unlink(missing_ok=True)
 
 
 def get_image(driver, width: int, height: int):
@@ -335,7 +433,7 @@ def rasterize_image_command():
     file_name = f'{file_name}.pdf'
 
     with open(file_path, 'rb') as f:
-        output = rasterize(path=f'file://{os.path.realpath(f.name)}', width=w, height=h, r_type='pdf')
+        output = rasterize(path=f'file://{os.path.realpath(f.name)}', width=w, height=h, r_type=RasterizeType.PDF)
         res = fileResult(filename=file_name, data=output, file_type=entryTypes['entryInfoFile'])
         demisto.results(res)
 
@@ -345,18 +443,18 @@ def rasterize_email_command():
     w = demisto.args().get('width', DEFAULT_W).rstrip('px')
     h = demisto.args().get('height', DEFAULT_H).rstrip('px')
     offline = demisto.args().get('offline', 'false') == 'true'
-    r_type = demisto.args().get('type', 'png')
+    r_type = RasterizeType(demisto.args().get('type', 'png').lower())
     file_name = demisto.args().get('file_name', 'email')
     html_load = int(demisto.args().get('max_page_load_time', DEFAULT_PAGE_LOAD_TIME))
 
-    file_name = f'{file_name}.{"pdf" if r_type.lower() == "pdf" else "png"}'  # type: ignore
+    file_name = f'{file_name}.{"pdf" if r_type == RasterizeType.PDF else "png"}'  # type: ignore
     with open('htmlBody.html', 'w') as f:
         f.write(f'<html style="background:white";>{html_body}</html>')
     path = f'file://{os.path.realpath(f.name)}'
 
     output = rasterize(path=path, r_type=r_type, width=w, height=h, offline_mode=offline, max_page_load_time=html_load)
     res = fileResult(filename=file_name, data=output)
-    if r_type == 'png':
+    if r_type == RasterizeType.PNG:
         res['Type'] = entryTypes['image']
 
     demisto.results(res)

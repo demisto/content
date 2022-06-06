@@ -1,4 +1,5 @@
-from rasterize import rasterize, find_zombie_processes, merge_options, DEFAULT_CHROME_OPTIONS, rasterize_image_command
+from rasterize import (rasterize, find_zombie_processes, merge_options, DEFAULT_CHROME_OPTIONS, rasterize_image_command,
+                       RasterizeMode)
 import demistomock as demisto
 from CommonServerPython import entryTypes
 from tempfile import NamedTemporaryFile
@@ -16,7 +17,8 @@ logging.getLogger("urllib3").setLevel(logging.ERROR)
 RETURN_ERROR_TARGET = 'rasterize.return_error'
 
 
-def test_rasterize_email_image(caplog):
+@pytest.mark.parametrize("r_mode", [RasterizeMode.WEBDRIVER_ONLY])
+def test_rasterize_email_image(r_mode, caplog):
     with NamedTemporaryFile('w+') as f:
         f.write('<html><head><meta http-equiv=\"Content-Type\" content=\"text/html;charset=utf-8\">'
                 '</head><body><br>---------- TEST FILE ----------<br></body></html>')
