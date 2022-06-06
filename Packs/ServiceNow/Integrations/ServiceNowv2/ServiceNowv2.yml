@@ -170,7 +170,7 @@ script:
     - auto: PREDEFINED
       defaultValue: incident
       description: Ticket type. Can be "incident", "problem", "change_request", "sc_request",
-        "sc_task", or "sc_req_item". Default is "incident".
+        "sc_task", "sc_req_item" or "sn_si_incident". Default is "incident".
       name: ticket_type
       predefined:
       - incident
@@ -179,6 +179,7 @@ script:
       - sc_request
       - sc_task
       - sc_req_item
+      - sn_si_incident
     - description: Ticket number to retrieve.
       name: number
     - auto: PREDEFINED
