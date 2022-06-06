@@ -1,15 +1,32 @@
 {
-    "name": "## FILL MANDATORY FIELD ##",
-    "description": "## FILL MANDATORY FIELD ##",
+    "name": "CVE-2022-26134 - Confluence Pre-Auth RCE",
+    "description": "This pack handles Confluence RCE CVE-2022-26134 vulnerability, a 0-day exploit via OGNL injection in Confluence Server & Data Center. ",
     "support": "xsoar",
-    "currentVersion": "1.0.0",
+    "currentVersion": "1.0.2",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "categories": [],
-    "tags": [],
-    "useCases": [],
-    "keywords": [],
+    "tags": [
+        "Incident Response"
+    ],
+    "useCases": [
+        "Hunting",
+        "Incident Response",
+        "Rapid Breach Response"
+    ],
+    "keywords": [
+        "zero-day",
+        "0-day",
+        "zero day",
+        "Confluence",
+        "Atlassian",
+        "CVE",
+        "CVE-2022-26134",
+        "26134",
+        "RCE",
+        "OGNL"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2"
