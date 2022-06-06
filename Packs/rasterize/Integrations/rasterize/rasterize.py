@@ -63,6 +63,8 @@ class RasterizeMode(Enum):
     HEADLESS_CMD_ONLY = 'Headless CMD - Only'
 
 
+DEFAULT_MODE = RasterizeMode(demisto.params().get('rasterize_mode', RasterizeMode.WEBDRIVER_PREFERED))
+
 class RasterizeType(Enum):
     PNG = 'png'
     PDF = 'pdf'
@@ -404,14 +406,14 @@ def rasterize_command():
     url = demisto.getArg('url')
     w = demisto.args().get('width', DEFAULT_W_WIDE).rstrip('px')
     h = demisto.args().get('height', DEFAULT_H).rstrip('px')
-    r_type = demisto.args().get('type', 'png')
+    r_type = RasterizeType(demisto.args().get('type', 'png'))
     wait_time = int(demisto.args().get('wait_time', 0))
     page_load = int(demisto.args().get('max_page_load_time', DEFAULT_PAGE_LOAD_TIME))
     file_name = demisto.args().get('file_name', 'url')
 
     if not (url.startswith('http')):
         url = f'http://{url}'
-    file_name = f'{file_name}.{"pdf" if r_type == "pdf" else "png"}'  # type: ignore
+    file_name = f'{file_name}.{"pdf" if r_type == RasterizeType.PDF else "png"}'  # type: ignore
 
     output = rasterize(path=url, r_type=r_type, width=w, height=h, wait_time=wait_time, max_page_load_time=page_load)
     if r_type == 'json':
