@@ -14,10 +14,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      - name: Is Up To date
-        run: |
-            sh -x Tests/scripts/is_file_up_to_date.sh Utils/request_contributor_review.py ${GITHUB_REF##*/}
-
       - name: Setup Python
         uses: actions/setup-python@v3
         with:
