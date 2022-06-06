@@ -4,16 +4,11 @@ import json
 
 import urllib3
 from pydantic import parse_obj_as
-import dateparser
 
 from SiemApiModule import *  # noqa: E402
 
 urllib3.disable_warnings()
 DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
-
-
-# class DropboxEventsData(BaseModel):
-#     start_time: str
 
 
 class DropboxEventsRequestConfig(IntegrationHTTPRequest):
@@ -87,6 +82,8 @@ class DropboxEventsGetter(IntegrationGetEvents):
                 break
 
 
+# ----------------------------------------- Authentication Functions -----------------------------------------
+
 def start_auth_command(app_key: str) -> CommandResults:
     url = f'https://www.dropbox.com/oauth2/authorize?client_id={app_key}&token_access_type=offline&response_type=code'
     message = f"""### Authorization instructions
@@ -130,6 +127,8 @@ def test_connection(refresh_token: str, credentials: Credentials) -> CommandResu
         return CommandResults(readable_output='✅ Success.')
 
 
+# ----------------------------------------- Main Functions -----------------------------------------
+
 def main(command: str, demisto_params: dict):
     first_fetch = datetime.strftime(dateparser.parse(demisto_params.get('fetch_from', '7 days')), DATETIME_FORMAT)
     start_time = demisto_params.get('start_time', first_fetch)
@@ -140,8 +139,11 @@ def main(command: str, demisto_params: dict):
     get_events = DropboxEventsGetter(client, options)
 
     try:
+        if command == 'test-module':
+            raise DemistoException("Please run the !dropbox-auth-test command in order to test the connection")
+
         # ----- Authentication Commands ----- #
-        if command == 'dropbox-auth-start':
+        elif command == 'dropbox-auth-start':
             return_results(start_auth_command(credentials.identifier))
 
         elif command == 'dropbox-auth-complete':
@@ -156,11 +158,7 @@ def main(command: str, demisto_params: dict):
         elif command == 'dropbox-auth-test':
             return_results(test_connection(demisto.getIntegrationContext().get('refresh_token'), credentials))
 
-        # ----- Fetch Commands ----- #
-        # elif command == 'test-module':
-        #     test_connection(demisto.getIntegrationContext().get('refresh_token'), credentials)
-        #     return_results('ok')
-
+        # ----- Fetch/Get events command ----- #
         elif command in ('fetch-events', 'dropbox-get-events'):
             events = get_events.run()
             send_events_to_xsiam(events, vendor='Dropbox', product='Dropbox')
