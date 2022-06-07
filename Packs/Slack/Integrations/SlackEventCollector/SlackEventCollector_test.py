@@ -20,6 +20,7 @@ MOCK_ENTRY = util_load_json('test_data/mock_event.json')
 
 class MockResponse:
     def __init__(self, data: list):
+        self.ok = True
         self.data = {'entries': [self.create_mock_entry(**e) for e in data]}
 
     def create_mock_entry(self, **kwargs) -> dict:
