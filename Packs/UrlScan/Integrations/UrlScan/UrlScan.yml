@@ -526,3 +526,5 @@ script:
   dockerimage: demisto/python3:3.10.4.29342
 defaultEnabled: false
 fromversion: 5.0.0
+tests:
+- urlscan_malicious_Test
