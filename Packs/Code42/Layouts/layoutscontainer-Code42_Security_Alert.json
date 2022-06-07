@@ -279,7 +279,16 @@
                                 "id": "a3608bb0-5984-11ea-b904-997d555669cb",
                                 "index": 4,
                                 "startCol": 0
-                            }
+                            },
+                            {
+								"endCol": 2,
+								"fieldId": "code42alertid",
+								"height": 53,
+								"id": "2e307610-e69b-11ec-8b31-cfd274a8c016",
+								"index": 4,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
                         ],
                         "moved": false,
                         "name": "Investigation Data",

@@ -3,9 +3,7 @@
     "description": "Classifies fetched Code42 alerts as XSOAR Incidents.",
 	"defaultIncidentType": "Code42 Security Alert",
 	"id": "Code42 - Classifier",
-	"keyTypeMap": {
-		"ALERT_DETAILS": "Code42 Security Alert"
-	},
+	"keyTypeMap": {},
     "transformer": {
         "complex": null
     },

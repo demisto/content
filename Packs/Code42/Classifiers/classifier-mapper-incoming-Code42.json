@@ -32,7 +32,7 @@
                         "transformers": []
                     }
                 },
-                "Code42 SecurityAlert ID": {
+                "Code42 Alert ID": {
                     "complex": {
                         "filters": [],
                         "root": "id",

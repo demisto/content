@@ -8,7 +8,7 @@ Use the Code42 integration to identify potential data exfiltration from insider 
     | **Parameter** | **Required** |
     | --- | --- |
     | Code42 Console URL for your Code42 environment | True |
-    | Username | True |
+    | API Client ID | True |
     | Password | True |
     | Fetch incidents | False |
     | Incident type | False |

@@ -13,7 +13,7 @@
     "id": "incident_code42alertid",
     "isReadOnly": false,
     "locked": false,
-    "name": "Code42 SecurityAlert ID",
+    "name": "Code42 Alert ID",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "required": false,
