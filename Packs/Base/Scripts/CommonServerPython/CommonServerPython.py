@@ -137,10 +137,7 @@ def fix_traceback_line_numbers(trace_str):
     return trace_str
 
 
-try:
-    from DemistoClassApiModule import *     # type: ignore[no-redef]
-except Exception:
-    pass
+from DemistoClassApiModule import *
 
 
 OS_LINUX = False
