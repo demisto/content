@@ -145,6 +145,16 @@ class MimecastGetSiemEvents(IntegrationGetEvents):
                 return_error(f'headers of failed request for siem errors: {headers_list}')
             return False
 
+    @staticmethod
+    def process_siem_events(siem_json_resp: list) -> list:
+        events = []
+        siem_log_type = siem_json_resp.get('type')
+        data = siem_json_resp.get('data')
+        for event in data:
+            event['type'] = siem_log_type
+            events.append(event)
+        return events
+
     def get_req_object_siem(self):
         req_obj = {
             'headers': self.client.prepare_headers(self.uri),
@@ -178,6 +188,7 @@ class MimecastGetSiemEvents(IntegrationGetEvents):
                     for file in os.listdir(tmpdir):
                         with open(os.path.join(tmpdir, file)) as json_res:
                             extracted_logs_list.append(json.load(json_res))
+                            # @TODO instead of append needs to be extend
                     return extracted_logs_list
             except Exception as e:
                 return_error('Error writing file ' + file_name + '. Cannot continue. Exception: ' + str(e))
@@ -470,5 +481,5 @@ def main():
         return_error(f'Failed to execute {command} command.\nError:\n{str(exc)}', error=exc)
 
 
-if __name__ == "__main__":
+if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()

@@ -1,0 +1,61 @@
+[
+  {
+    "type": "MTA",
+    "acc": "CUSA102A236",
+    "SpamLimit": 28,
+    "IP": "54.243.138.179",
+    "Dir": "Outbound",
+    "Subject": "Re",
+    "MsgId": "<4bf108530de00f37-111331@nodered-mimecast-55569955-kthgt.hamilton321.net>",
+    "headerFrom": "mark.guzman@paloaltonetworks.mime.integration.com",
+    "Sender": "mark.guzman@paloaltonetworks.mime.integration.com",
+    "datetime": "2022-05-23T12:20:44-0400",
+    "Rcpt": "chartman@pilot-meadow.b41.one",
+    "SpamInfo": "[]",
+    "Act": "Acc",
+    "TlsVer": "TLSv1.2",
+    "Cphr": "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384",
+    "aCode": "l1b4x0uvOs2sRFzGsHoYzQ",
+    "SpamScore": 0
+  },
+  {
+    "type": "MTA",
+    "acc": "CUSA102A236",
+    "SpamLimit": 28,
+    "IP": "54.243.138.179",
+    "Dir": "Outbound",
+    "Subject": "Re",
+    "MsgId": "<c096a6439eae1c9c-57128@nodered-mimecast-55569955-kthgt.hamilton321.net>",
+    "headerFrom": "jeff.dasovich@paloaltonetworks.mime.integration.com",
+    "Sender": "jeff.dasovich@paloaltonetworks.mime.integration.com",
+    "datetime": "2022-05-23T12:20:48-0400",
+    "Rcpt": "jito@demo-visionary.b41.one",
+    "SpamInfo": "[]",
+    "Act": "Acc",
+    "TlsVer": "TLSv1.2",
+    "Cphr": "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384",
+    "aCode": "-dogI8BBMquuevdHEC83Lw",
+    "SpamScore": 0
+  },
+  {
+    "type": "MTA",
+    "acc": "CUSA102A236",
+    "SpamLimit": 28,
+    "IP": "54.243.138.179",
+    "Dir": "Outbound",
+    "Subject": "Re",
+    "MsgId": "<c096a6439eae1c9c-57128@nodered-mimecast-55569955-kthgt.hamilton321.net>",
+    "headerFrom": "jeff.dasovich@paloaltonetworks.mime.integration.com",
+    "Sender": "jeff.dasovich@paloaltonetworks.mime.integration.com",
+    "datetime": "2022-05-23T12:20:48-0400",
+    "Rcpt": "dimeff@demo-visionary.b41.one",
+    "SpamInfo": "[]",
+    "Act": "Acc",
+    "TlsVer": "TLSv1.2",
+    "Cphr": "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384",
+    "aCode": "-dogI8BBMquuevdHEC83Lw",
+    "SpamScore": 0
+  }
+]
+
+

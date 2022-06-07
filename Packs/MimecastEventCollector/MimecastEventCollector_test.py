@@ -105,3 +105,14 @@ def test_handle_last_run_entrance():
                                                   ('2011-12-03T10:15:30+03:00', '2011-12-03T10:15:30+0300')])
 def test_to_audit_time_format(time_to_convert, res):
     assert audit_event_handler.to_audit_time_format(time_to_convert) == res
+
+
+def test_process_siem_data():
+    with open('test_data/siem_response_multiple_events.json') as f:
+        siem_response = json.load(f)
+    with open('test_data/siem_result_multiple_events_process.json') as f:
+        res = json.load(f)
+
+    after_process = siem_event_handler.process_siem_events(siem_response)
+    assert after_process == res
+
