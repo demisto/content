@@ -1,6 +1,6 @@
 {
-    "name": "Red Hat",
-    "description": "Red Hat Linux distribution.",
+    "name": "Microsoft Exchange Server",
+    "description": "Modeling rules for Microsoft Exchange Server",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
