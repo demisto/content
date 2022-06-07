@@ -9,11 +9,11 @@ configuration:
   required: false
   type: 8
 - display: Feed Source
-  hidden: false
+  hidden: true
   name: feed_source
   options:
-  - Last 30 Days
   - Currently Active
+  defaultvalue: 'Currently Active'
   required: true
   type: 16
 - additionalinfo: Indicators from this integration instance will be marked with this

@@ -1,42 +1,37 @@
-import demistomock as demisto
 from CommonServerPython import *
 from CSVFeedApiModule import *
 
 
-def main():
-    params = {k: v for k, v in demisto.params().items() if v is not None}
-    args = demisto.args()
-    params = params | args
-    sources_enum = {'Last 30 Days': 'csv_recent', 'Currently Active': 'csv_online'}
-    base_url = 'https://urlhaus.abuse.ch/downloads/'
-    chosen_urls = []
-    params['feed_url_to_config'] = {}
-    if 'feed_source' in params.keys():
-        sources = params['feed_source']
-        for source in sources:
-            if source not in sources_enum:
-                continue
-            suffix = sources_enum[source]
-            params['feed_url_to_config'][base_url + suffix] = {
-                "indicator_type": FeedIndicatorType.URL,
-                "ignore_regex": '#*',
-                'fieldnames': ['id', 'dateadded', 'url', 'url_status', 'last_online', 'threat',
-                               'tags', 'urlhaus_link', 'reporter'],
-                'mapping': {
-                    'URLhaus ID': 'id',
-                    'Creation Date': 'dateadded',
-                    'Value': 'url',
-                    'State': 'url_status',
-                    'Tags': 'tags',
-                    'Download URL': 'urlhaus_link',
-                    'Reported By': 'reporter'
-                }
+def main():  # pragma: no cover
+    try:
+        params = {k: v for k, v in demisto.params().items() if v is not None}
+        args = demisto.args()
+        params = params | args
+        base_url = 'https://urlhaus.abuse.ch/downloads/'
+        chosen_urls = []
+        params['feed_url_to_config'] = {}
+        url = urljoin(base_url + 'csv_online')
+        params['feed_url_to_config'][url] = {
+            "indicator_type": FeedIndicatorType.URL,
+            "ignore_regex": '#*',
+            'fieldnames': ['id', 'dateadded', 'url', 'url_status', 'last_online', 'threat',
+                           'tags', 'urlhaus_link', 'reporter'],
+            'mapping': {
+                'Creation Date': 'dateadded',
+                'Value': 'url',
+                'State': 'url_status',
+                'Tags': 'tags',
+                'Download URL': 'urlhaus_link',
+                'Reported By': 'reporter'
             }
-            chosen_urls.append(base_url + suffix)
-    params["indicator_type"] = FeedIndicatorType.URL
-    params['ignore_regex'] = '#'
-    params['url'] = chosen_urls
-    feed_main('URLhaus Feed', params, 'urlhaus-')
+        }
+        chosen_urls.append(url)
+        params["indicator_type"] = FeedIndicatorType.URL
+        params['ignore_regex'] = '#'
+        params['url'] = chosen_urls
+        feed_main('URLhaus Feed', params, 'urlhaus-')
+    except Exception as e:
+        return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
 
 
 if __name__ in ('__builtin__', 'builtins', '__main__'):

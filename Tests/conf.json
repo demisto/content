@@ -3,6 +3,11 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "URLhaus Feed",
+            "playbookID": "<playbook-urlhaus-feed_Test>"
+        },
+
+        {
             "integrations": "RSANetWitnessv115",
             "playbookID": "RSANetWitnessv115-Test"
         },
