@@ -233,7 +233,7 @@ def main():
 
     except Exception:
         # For any other integration command exception, return an error
-        return_error(f'Failed to execute {command} command. Traceback: {traceback.format_exc()}')
+        return_error(f'Failed to execute {command} command.')
 
 
 from IAMApiModule import *  # noqa: E402

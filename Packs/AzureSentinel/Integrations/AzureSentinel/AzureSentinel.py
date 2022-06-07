@@ -1425,7 +1425,6 @@ def main():
             return_results(commands[demisto.command()](client, demisto.args()))  # type: ignore
 
     except Exception as e:
-        demisto.error(traceback.format_exc())
         return_error(
             f'Failed to execute {demisto.command()} command. Error: {str(e)}'
         )

@@ -1,5 +1,4 @@
 import os
-import traceback
 
 import stomp
 
@@ -218,7 +217,6 @@ def main():
             fetch_incidents(client, conn, subscription_id, queue_name, topic_name)
 
     except Exception as e:
-        demisto.error(traceback.format_exc())
         if demisto.command() == 'fetch-incidents':
             raise
 
