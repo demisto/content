@@ -8845,15 +8845,6 @@ class DemistoException(Exception):
         self.error_type = error_type
         super(DemistoException, self).__init__(message, exception, error_type, *args)
 
-        if self.error_type:
-            # If an error is passed to DemistoException, then check if metrics reporting is supported. If so,
-            # instantiate an ExecutionMetrics instance and report the metrics
-            execution_metrics = ExecutionMetrics()
-            if execution_metrics.is_supported():
-                execution_metrics.update_metrics(metric_type=error_type, metric_value=1)
-                exc_metrics = execution_metrics.metrics
-                return_results(CommandResults(execution_metrics=exc_metrics))
-
     def __str__(self):
         return str(self.message)
 
