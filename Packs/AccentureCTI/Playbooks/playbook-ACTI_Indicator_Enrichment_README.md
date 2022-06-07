@@ -1,3 +1,4 @@
+- NOTE: This playbook is deprecated.
 - This playbook automatically queries ACTI Threat Indicator, Report, and Fundamental API to pull context for IOC and associated intelligence reports into XSOAR incidents.
 - This sub-playbook can be integrated into generic XSOAR playbooks and playbooks from other vendors by itself.
 

@@ -551,24 +551,6 @@ inputs:
   required: false
   description: ""
   playbookInputQuery: null
-- key: Domain
-  value:
-    simple: ${Domain}
-  required: false
-  description: ""
-  playbookInputQuery: null
-- key: IP
-  value:
-    simple: ${IP}
-  required: false
-  description: ""
-  playbookInputQuery: null
-- key: URL
-  value:
-    simple: ${URL}
-  required: false
-  description: ""
-  playbookInputQuery: null
 - key: MalwareFamily_uuid
   value:
     complex:
@@ -605,22 +587,6 @@ inputs:
   required: false
   description: ""
   playbookInputQuery: null
-outputs:
-- contextPath: IAIR
-  type: unknown
-  description: ''
-- contextPath: DBotScore
-  type: unknown
-  description: ''
-- contextPath: Domain
-  type: unknown
-  description: ''
-- contextPath: IP
-  type: unknown
-  description: ''
-- contextPath: URL
-  type: unknown
-  description: ''
 tests:
 - No tests (auto formatted)
 fromversion: 6.0.0
