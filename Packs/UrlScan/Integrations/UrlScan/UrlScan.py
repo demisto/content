@@ -8,7 +8,7 @@ import time
 
 import requests
 from requests.utils import quote  # type: ignore
-from urllib.parse import urlparse
+from urlparse import urlparse
 
 """ POLLING FUNCTIONS"""
 try:
@@ -68,30 +68,6 @@ def detect_ip_type(indicator):
     return indicator_type
 
 
-def schedule_polling(items_to_schedule):
-    """
-    Schedules a polling command for the items in the list.
-    Args:
-        items_to_schedule: List of items to schedule.
-    """
-    # Prepare scheduled url entries
-    args = demisto.args()
-    polling_args = {}
-    for arg in args:
-        if arg != 'url':
-            polling_args[arg] = args[arg]
-    polling_args['url'] = items_to_schedule
-    polling_args['polling'] = True
-    next_polling_interval = int(demisto.params().get('interval'))
-    scheduled_items = ScheduledCommand(
-        command=demisto.command(),
-        args=polling_args,
-        items_remaining=len(items_to_schedule),
-        next_run_in_seconds=next_polling_interval
-    )
-    return CommandResults(scheduled_command=scheduled_items)
-
-
 def http_request(client, method, url_suffix, json=None, wait=0, retries=0):
     headers = {'API-Key': client.api_key,
                'Accept': 'application/json'}
@@ -117,8 +93,6 @@ def http_request(client, method, url_suffix, json=None, wait=0, retries=0):
                                                                 r.headers.get("X-Rate-Limit-Reset")))
     if r.status_code != 200:
         if r.status_code == 429:
-            if ScheduledCommand.supports_polling():
-                return {}, ErrorTypes.QUOTA_ERROR
             if retries <= 0:
                 # Error in API call to URLScan.io [429] - Too Many Requests
                 return_error('API rate limit reached [%d] - %s.\nUse the retries and wait arguments when submitting '
@@ -135,32 +109,16 @@ def http_request(client, method, url_suffix, json=None, wait=0, retries=0):
             requested_url = JSON.loads(json)['url']
             blacklisted_message = 'The URL {} is blacklisted, no results will be returned for it.'.format(requested_url)
             demisto.results(blacklisted_message)
-            return response_json, ErrorTypes.GENERAL_ERROR
+            return response_json
 
-        response_json['is_error'] = True
-        response_json['error_string'] = 'Error in API call to URLScan.io [%d] - %s: %s' % (r.status_code, r.reason,
-                                                                                           error_description)
-        return response_json, ErrorTypes.GENERAL_ERROR
-    return r.json(), None
+        return_error('Error in API call to URLScan.io [%d] - %s: %s' % (r.status_code, r.reason, error_description))
+
+    return r.json()
 
 
-# Allows nested keys to be accessible
+# Allows nested keys to be accesible
 def makehash():
     return collections.defaultdict(makehash)
-
-
-def schedule_and_report(command_results, items_to_schedule, execution_metrics):
-    """
-    Before the command is done running, or going to raise an error, we need to dump all the currently collected data
-    Args:
-        command_results: List of CommandResults objects
-        items_to_schedule: List of urls to schedule
-        execution_metrics: ExecutionMetrics object
-    """
-    if ScheduledCommand.supports_polling() and len(items_to_schedule) > 0:
-        command_results.append(schedule_polling(items_to_schedule))
-    if execution_metrics.metrics is not None and execution_metrics.is_supported():
-        command_results.append(execution_metrics.metrics)
 
 
 def get_result_page(client):
@@ -233,7 +191,7 @@ def poll(target, step, args=(), kwargs=None, timeout=60,
 '''MAIN FUNCTIONS'''
 
 
-def urlscan_submit_url(client, url):
+def urlscan_submit_url(client):
     submission_dict = {}
     if demisto.args().get('scan_visibility'):
         submission_dict['visibility'] = demisto.args().get('scan_visibility')
@@ -245,7 +203,7 @@ def urlscan_submit_url(client, url):
     elif demisto.params().get('is_public') is True:
         submission_dict['visibility'] = 'public'
 
-    submission_dict['url'] = url
+    submission_dict['url'] = demisto.args().get('url')
 
     if demisto.args().get('useragent'):
         submission_dict['customagent'] = demisto.args().get('useragent')
@@ -255,8 +213,8 @@ def urlscan_submit_url(client, url):
     sub_json = json.dumps(submission_dict)
     wait = int(demisto.args().get('wait', 5))
     retries = int(demisto.args().get('retries', 0))
-    r, metric = http_request(client, 'POST', 'scan/', sub_json, wait, retries)
-    return r, metric
+    r = http_request(client, 'POST', 'scan/', sub_json, wait, retries)
+    return r
 
 
 def create_relationship(scan_type, field, entity_a, entity_a_type, entity_b, entity_b_type, reliability):
@@ -303,7 +261,7 @@ def format_results(client, uuid):
     # Scan Lists sometimes returns empty
     num_of_attempts = 0
     relationships = []
-    response, metric_results = urlscan_submit_request(client, uuid)
+    response = urlscan_submit_request(client, uuid)
     scan_lists = response.get('lists')
     while scan_lists is None:
         try:
@@ -543,34 +501,14 @@ def get_urlscan_submit_results_polling(client, uuid):
 
 
 def urlscan_submit_command(client):
-    execution_metrics = ExecutionMetrics()
-    command_results: list = []
-    items_to_schedule: list = []
-
     urls = argToList(demisto.args().get('url'))
     for url in urls:
         demisto.args()['url'] = url
-        response, metrics = urlscan_submit_url(client, url)
-        if response.get('url_is_blacklisted') or response.get('is_error'):
-            execution_metrics.general_error += 1
-            if response.get('is_error'):
-                schedule_and_report(command_results=command_results, items_to_schedule=items_to_schedule,
-                                    execution_metrics=execution_metrics)
-                return_results(results=command_results)
-                return_error(response.get('error_string'))
-            continue
-        if metrics == ErrorTypes.QUOTA_ERROR:
-            if not is_scheduled_command_retry():
-                execution_metrics.quota_error += 1
-                continue
-            items_to_schedule.append(url)
-            continue
+        response = urlscan_submit_url(client)
+        if response.get('url_is_blacklisted'):
+            pass
         uuid = response.get('uuid')
         get_urlscan_submit_results_polling(client, uuid)
-        execution_metrics.success += 1
-    schedule_and_report(command_results=command_results, items_to_schedule=items_to_schedule,
-                        execution_metrics=execution_metrics)
-    return command_results
 
 
 def urlscan_search(client, search_type, query):
@@ -797,14 +735,11 @@ def main():
             urlscan_search(client, search_type, query)
             demisto.results('ok')
         if demisto.command() in {'urlscan-submit', 'url'}:
-            results = urlscan_submit_command(client)
-            return_results(results=results)
+            urlscan_submit_command(client)
         if demisto.command() == 'urlscan-search':
             urlscan_search_command(client)
         if demisto.command() == 'urlscan-submit-url-command':
-            url = demisto.args().get('url')
-            result, _ = urlscan_submit_url(client, url)
-            demisto.results(result.get('uuid'))
+            demisto.results(urlscan_submit_url(client).get('uuid'))
         if demisto.command() == 'urlscan-get-http-transaction-list':
             format_http_transaction_list(client)
         if demisto.command() == 'urlscan-get-result-page':

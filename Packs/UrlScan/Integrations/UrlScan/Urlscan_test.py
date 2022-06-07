@@ -1,10 +1,9 @@
-import json
 import time
 from threading import Thread
-
 import pytest
-
 import demistomock as demisto
+import json
+
 
 RETURN_ERROR_TARGET = 'UrlScan.return_error'
 SCAN_URL = 'https://urlscan.io/api/v1/scan/'
@@ -30,14 +29,11 @@ def test_continue_on_blacklisted_error_arg(mocker, requests_mock, continue_on_bl
     mocker.patch.object(demisto, 'args', return_value=args)
     client = Client()
 
-    response = http_request(client, 'POST', 'scan/', json=json.dumps(data))
+    http_request(client, 'POST', 'scan/', json=json.dumps(data))
     if continue_on_blacklisted_urls:
         assert return_error_mock.call_count == 0
     else:
-        assert response[0].get('is_error') is True
-        assert response[0].get('error_string') == 'Error in API call to URLScan.io [400] - None: The submitted domain' \
-                                                  ' is on our blacklist. For your own safety we did not perform this' \
-                                                  ' scan...'
+        assert return_error_mock.call_count == 1
 
 
 def test_endless_loop_on_failed_response(requests_mock, mocker):
