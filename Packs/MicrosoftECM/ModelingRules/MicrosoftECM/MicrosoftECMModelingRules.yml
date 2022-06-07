@@ -5,7 +5,7 @@ tags: Microsoft System Center Configuration Manager sccm
 rules: ""
 schema: |-
   {
-    "filestream_filestream_raw": {
+    "msft_ecm_raw": {
       "_raw_log": {
           "type": "string", 
           "is_array": false
