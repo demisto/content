@@ -30,8 +30,11 @@ def main():
         args = demisto.args()
         # the entry_id argument can be a list of entry ids or a single entry id
         entry_ids = args.get('entry_id', demisto.get(demisto.context(), 'lastCompletedTaskEntries'))
+        entry_ids = argToList(entry_ids)
+
         entries = [demisto.executeCommand('getEntry', {'id': entry_id}) for entry_id in entry_ids]
         error_messages = get_errors(entries)
+
         return_results(CommandResults(
             readable_output='\n'.join(error_messages),
             outputs_prefix='ErrorEntries',
