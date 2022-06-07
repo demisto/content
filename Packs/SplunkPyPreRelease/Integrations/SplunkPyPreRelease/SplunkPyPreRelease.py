@@ -2224,6 +2224,9 @@ def splunk_edit_notable_event_command(service, auth_token):
 
 
 def set_base_url(demisto_params):
+    """
+     Ignores "https://" that exist in the given host and changes "//" in the middle of it to "/".
+    """
     host_parts = demisto_params['host'].split('//')
     host = '/'.join(h_part for h_part in host_parts if h_part != 'https:')
     return 'https://' + host + ':' + demisto_params['port'] + '/'
