@@ -1,8 +1,8 @@
 Use the Generic Export Indicators Service integration to provide an endpoint with a list of indicators as a service for the system indicators.
 
 ## PAN-OS EDL Management to Export Indicators Service (PAN-OS EDL Service) migration steps
-Unlike `PAN-OS EDL Management`, this integration hosts the EDL on the Cortex XSOAR server. Follow these steps to migrate your EDLs.
-1. Convert existing EDL lists to indicators in Cortex XSOAR. This can be done automatically:
+Unlike `PAN-OS EDL Management`, this integration hosts the EDL on the server. Follow these steps to migrate your EDLs.
+1. Convert existing EDL lists to indicators. This can be done automatically:
    1. Extract your EDL as a text file from the web server it's currently hosted on.
    2. Upload it as a file to the Playground and use the `ExtractIndicatorsFromTextFile` automation. e.g., `!ExtractIndicatorsFromTextFile entryID=<entry_id>` 
 2. Go to the `Indicators` page and [filter](https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-6/cortex-xsoar-admin/manage-indicators/understand-indicators/indicators-page.html) to find all of the indicators you extracted from the text file.
@@ -24,12 +24,18 @@ When running without --network=host the python port is not exposed to the machin
 4. Create External Dynamic Lists (EDLs) of the IP addresses, URLs, and domains used by ransomware, known APT groups, and active malware campaigns for tracking in AutoFocus.
 5. Create External Dynamic Lists to track IPs and URLs commonly used by Microsoft Office365 or CDNs and cloud services, or used as tor exit nodes.
 
-## Configure Generic Export Indicators Service on Cortex XSOAR
+## Configure Generic Export Indicators Service
 ---
-
+<~XSIAM>
+1. Navigate to **Settings** > **Configurations** > **Integrations** > **External Dynamic List Integration**.
+2. Set up **username** and **password**.
+3. Navigate to **Settings** >  **Data Collection** > **Automation & Feed Integrations**.
+</~XSIAM>
+<~XSOAR>
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Generic Export Indicators Service.
-3. Click **Add instance** to create and configure a new integration instance.
+</~XSOAR>
+3. Search for Generic Export Indicators Service.
+4. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter**                      | **Description**                                                                                                                                                                                                                                      | **Required** |
 |------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
@@ -130,14 +136,42 @@ Optional system fields are:
 In addition to the system fields, you can also search for custom fields.
 In order to get the list of all available fields to search by, you can configure the `Exported Fields` parameter with the `all` option and check the list returned.
 
+## How to Access the Export Indicators Service
+<~XSOAR>
+There are two ways that you can access the Export Indicators Service.
+Use these to make sure your indicators are exported properly.
+</~XSOAR>
+
+In case of several Export Indicators Service integration instances - make sure to use **different listening ports** to separate the outbound feeds.
+<~XSOAR>
+
+### Access the Export Indicators Service by URL and Port (HTTP)
+In a web browser, go to **http://*cortex-xsoar-server-address*:*listen_port***.
+
+**Note**: For security purposes, Cortex XSOAR recommends that you use HTTPS when accessing the indicator service through the URL and port. To do so, you must provide a certificate and private key, in the respective fields. In addition, make sure to provide credentials that must be used to connect to the integration instance.
+</~XSOAR>
+
 ### Access the Export Indicators Service by Instance Name (HTTPS)
-**Note**: By default, the route is open without security hardening and might expose you to network risks. Cortex XSOAR recommends that you use credentials to connect to the integration.
+
+<~XSIAM>
+**Note**: It is best to not set `username` and `password` in the integration instance - these values can only be filled if they match the **External Dynamic List Integration** username and password values. 
+**Note**: The list will not be accessible via web browsers, but will be accessible by other means such as firewalls and cURL.
+
+1. To access the **Export Indicators service** by instance name, make sure to set up **username** and **password** in the **External Dynamic List Integration** page (**Settings** > **Configurations** > **Integrations** > **External Dynamic List Integration**).
+2. The list will be available in `https://edl-<cortex-xsiam-address>/xsoar/instance/execute/<instance-name>`.
+
+</~XSIAM>
+<~XSOAR>
+**Note**: By default, the route will be open without security hardening and might expose you to network risks. Cortex XSOAR recommends that you use the service with a username and password. Click **Switch to username and password** and provide the credentials that must be used to access the service.
 
 To access the Export Indicators service by instance name, make sure ***Instance execute external*** is enabled. 
 
 1. In Cortex XSOAR, go to **Settings > About > Troubleshooting**.
-2. In the **Server Configuration** section, verify that the ***instance.execute.external*** key is set to *true*. If this key does not exist, click **+ Add Server Configuration** and add the *instance.execute.external* and set the value to *true*. See [this documentation](https://xsoar.pan.dev/docs/reference/articles/long-running-invoke) for further information.
-3. In a web browser, go to `https://*<demisto_address>*/instance/execute/*<instance_name>*` .
+2. In the **Server Configuration** section, verify that the `instance.execute.external.<instance_name>` key is set to `true`. If this key does not exist, click **+ Add Server Configuration** and add the `instance.execute.external.<instance_name>` and set the value to `true`. See [this documentation](https://xsoar.pan.dev/docs/reference/articles/long-running-invoke) for further information.
+3. In a web browser, go to `https://<cortex-xsoar-address>/instance/execute/<instance_name>/`.
+  * In Multi Tenant environments, go to `https://<cortex-xsoar-address>/acc-<account name>/instance/execute/<instance_name>/`
+
+</~XSOAR>
 
 ### URL Inline Arguments
 Use the following arguments in the URL to change the request:

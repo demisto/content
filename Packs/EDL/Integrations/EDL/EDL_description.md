@@ -1,25 +1,39 @@
 ## How to Access the Export Indicators Service
+<~XSOAR>
 There are two ways that you can access the Export Indicators Service.
 Use these to make sure your indicators are exported properly.
+</~XSOAR>
 
 In case of several Export Indicators Service integration instances - make sure to use **different listening ports** to separate the outbound feeds.
+<~XSOAR>
 
 ### Access the Export Indicators Service by URL and Port (HTTP)
 In a web browser, go to **http://*cortex-xsoar-server-address*:*listen_port***.
 
 **Note**: For security purposes, Cortex XSOAR recommends that you use HTTPS when accessing the indicator service through the URL and port. To do so, you must provide a certificate and private key, in the respective fields. In addition, make sure to provide credentials that must be used to connect to the integration instance.
+</~XSOAR>
 
 ### Access the Export Indicators Service by Instance Name (HTTPS)
 
+<~XSIAM>
+**Note**: It is best to not set `username` and `password` in the integration instance - these values can only be filled if they match the **External Dynamic List Integration** username and password values. 
+**Note**: The list will not be accessible via web browsers, but will be accessible by other means such as firewalls and cURL.
+
+1. To access the **Export Indicators service** by instance name, make sure to set up **username** and **password** in the **External Dynamic List Integration** page (**Settings** > **Configurations** > **Integrations** > **External Dynamic List Integration**).
+2. The list will be available in `https://edl-<cortex-xsiam-address>/xsoar/instance/execute/<instance-name>`.
+
+</~XSIAM>
+<~XSOAR>
 **Note**: By default, the route will be open without security hardening and might expose you to network risks. Cortex XSOAR recommends that you use the service with a username and password. Click **Switch to username and password** and provide the credentials that must be used to access the service.
 
 To access the Export Indicators service by instance name, make sure ***Instance execute external*** is enabled. 
 
 1. In Cortex XSOAR, go to **Settings > About > Troubleshooting**.
 2. In the **Server Configuration** section, verify that the `instance.execute.external.<instance_name>` key is set to `true`. If this key does not exist, click **+ Add Server Configuration** and add the `instance.execute.external.<instance_name>` and set the value to `true`. See [this documentation](https://xsoar.pan.dev/docs/reference/articles/long-running-invoke) for further information.
-3. In a web browser, go to `https://<cortex-xsoar_address>/instance/execute/<instance_name>/`.
-  * In Multi Tenant environments, go to `https://<cortex-xsoar_address>/acc-<account name>/instance/execute/<instance_name>/`
+3. In a web browser, go to `https://<cortex-xsoar-address>/instance/execute/<instance_name>/`.
+  * In Multi Tenant environments, go to `https://<cortex-xsoar-address>/acc-<account name>/instance/execute/<instance_name>/`
 
+</~XSOAR>
 
 ### Modify Request Parameters Through the URL
 Use the following arguments in the URL to change the request:
