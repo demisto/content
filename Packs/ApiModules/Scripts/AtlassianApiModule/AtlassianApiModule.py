@@ -3,10 +3,6 @@ from CommonServerUserPython import *
 
 from requests_oauthlib import OAuth1
 
-# HEADERS = {
-#     'Content-Type': 'application/json',
-# }
-
 
 class AtlassianClient(BaseClient):
 
