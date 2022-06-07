@@ -24,5 +24,5 @@ filter _raw_log ~= "httpd"
         XDM.Auth.Client.ipv4 = arrayindex(regextract(_raw_log, "ip=(.*?)\s"), 0),
         XDM.Auth.auth_method = arrayindex(regextract(_raw_log, "auth=(.*?)\s"), 0),
         XDM.Auth.Client.user.groups = arrayindex(regextract(_raw_log, "group=(.*?)\s"), 0),
-        XDM.Auth.application_protocol = arrayindex(regextract(_raw_log, "apparently_via=(.*?)$"), 0)
+        XDM.Auth.application_protocol = arrayindex(regextract(_raw_log, "apparently_via=(.*?)$"), 0);
 
