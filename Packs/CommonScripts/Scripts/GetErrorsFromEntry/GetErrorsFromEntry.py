@@ -28,7 +28,7 @@ def get_errors(entries: List) -> List[str]:
 def main():
     try:
         args = demisto.args()
-        entry_ids = args.get('entry_id')
+        # the entry_id argument can be a list of entry ids or a single entry id
         entries = [demisto.executeCommand('getEntry', {'id': entry_id}) for entry_id in entry_ids]
         error_messages = get_errors(entries)
         return_results(CommandResults(
