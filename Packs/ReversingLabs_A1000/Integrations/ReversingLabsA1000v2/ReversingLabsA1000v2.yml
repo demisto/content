@@ -263,6 +263,14 @@ script:
       name: hash
       required: true
       secret: false
+    - default: false
+      defaultValue: 'False'
+      description: Return only local classification data for the sample, without falling
+        back to querying TitaniumCloud.
+      isArray: false
+      name: localOnly
+      required: true
+      secret: false
     deprecated: false
     description: Retrieve classification report for a sample
     execution: false
