@@ -11,7 +11,7 @@ def get_errors(entries: List) -> List[str]:
         entries (List[List[Dict]]): multiples entries of results of demisto.executeCommand()
 
     Returns:
-        (string): Error message extracted from the demisto.executeCommand() result
+        (List[str]): Error messages extracted from error entries
     """
     error_messages = []
     for entry in entries:
