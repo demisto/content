@@ -65,6 +65,7 @@ class RasterizeMode(Enum):
 
 DEFAULT_MODE = RasterizeMode(demisto.params().get('rasterize_mode', RasterizeMode.WEBDRIVER_PREFERED))
 
+
 class RasterizeType(Enum):
     PNG = 'png'
     PDF = 'pdf'
@@ -271,7 +272,7 @@ def rasterize_headless_cmd(path: str, width: int, height: int, r_type: Rasterize
     cmd_options.insert(0, CHROME_EXE)
     if width > 0 and height > 0:
         cmd_options.append(f'--window-size={width},{height}')
-    # not using --timeout as it would return a screenshot even though it is not complete in some cases  
+    # not using --timeout as it would return a screenshot even though it is not complete in some cases
     # if max_page_load_time > 0:
     #     cmd_options.append(f'--timeout={max_page_load_time * 1000}')
     output_file = None
