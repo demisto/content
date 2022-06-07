@@ -2,11 +2,11 @@
     "name": "CTIX",
     "description": "Cyware Threat Intelligence eXchange",
     "support": "partner",
-    "currentVersion": "1.1.1",
+    "currentVersion": "2.0.0",
     "author": "Cyware Labs",
     "url": "https://cyware.com/",
     "email": "connector-dev@cyware.com",
-    "created": "2020-08-02T18:27:23Z",
+    "created": "2022-05-09T00:00:00Z",
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
