@@ -7,12 +7,6 @@ configuration:
   name: base_url
   required: true
   type: 0
-- displaypassword: API Key
-  additionalinfo: The API Key to use for connection.
-  name: api_key
-  required: true
-  hiddenusername: true
-  type: 9
 - display: App Id
   name: app_id
   required: true
@@ -77,7 +71,7 @@ script:
     deprecated: false
     description: Manual command to fetch events and display them.
     execution: false
-    name: gitlab-get-events
+    name: mimecast-get-events
   dockerimage: demisto/fastapi:1.0.0.29740
   runonce: false
   isfetchevents: true

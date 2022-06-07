@@ -7,7 +7,27 @@ import json
 import pytest
 import re
 
+import demistomock
+from SiemApiModule import *
+from MimecastEventCollector import MimecastGetSiemEvents, MimecastGetAuditEvents, MimecastOptions, MimecastClient, \
+    handle_last_run_exit, handle_last_run_entrance
 from test_data.test_data import WITH_OUT_DUP_TEST, WITH_DUP_TEST, EMPTY_EVENTS_LIST, FILTER_SAME_TIME_EVEMTS
+
+mimecast_options = MimecastOptions(**{
+        'app_id': "XXX",
+        'app_key': "XXX",
+        'uri': "/api/audit/get-siem-logs",
+        'email_address': 'XXX.mime.integration.com',
+        'access_key': 'XXX',
+        'secret_key': 'XXX',
+        'after': '7 days',
+        'base_url': 'https://us-api.mimecast.com'
+    })
+
+empty_first_request = IntegrationHTTPRequest(method=Method.GET, url='http://bla.com', headers={})
+client = MimecastClient(empty_first_request, mimecast_options)
+siem_event_handler = MimecastGetSiemEvents(client, mimecast_options)
+audit_event_handler = MimecastGetAuditEvents(client, mimecast_options)
 
 
 def test_unpacking_virtual_dir():
@@ -73,3 +93,15 @@ def test_dedup_audit_events(audit_events, last_run_potential_dup, res):
 def test_gather_events(lst1, lst2, res):
     from MimecastEventCollector import gather_events
     assert gather_events(lst1, lst2) == res
+
+
+def test_handle_last_run_entrance():
+    test = demistomock.getLastRun()
+    assert audit_event_handler.start_time == ''
+    handle_last_run_entrance('7 days', audit_event_handler, siem_event_handler)
+    assert audit_event_handler.start_time != ''
+
+@pytest.mark.parametrize('time_to_convert, res', [('2011-12-03T10:15:30+00:00', '2011-12-03T10:15:30+0000'),
+                                                  ('2011-12-03T10:15:30+03:00', '2011-12-03T10:15:30+0300')])
+def test_to_audit_time_format(time_to_convert, res):
+    assert audit_event_handler.to_audit_time_format(time_to_convert) == res

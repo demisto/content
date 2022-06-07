@@ -418,6 +418,7 @@ def gather_events(siem_events: list, audit_events: list) -> list:
 
 def main():
     # Args is always stronger. Get last run even stronger
+    demisto.debug('\n started running main\n')
     demisto_params = demisto.params() | demisto.args()
     should_push_events = argToBoolean(demisto_params.get('should_push_events', 'false'))
     options = MimecastOptions(**demisto_params)
@@ -436,7 +437,7 @@ def main():
         if command == 'test-module':
             return_results('ok')
 
-        elif command in ('github-get-events', 'fetch-events'):
+        elif command in ('mimecast-get-events', 'fetch-events'):
             if command == 'fetch-events':
                 handle_last_run_exit(siem_event_handler, events_audit)
                 events = gather_events(events_siem, events_audit)
@@ -462,6 +463,7 @@ def main():
                     events = gather_events(events_siem, events_audit)
                     send_events_to_xsiam(events, demisto_params.get('vendor', 'mimecast'),
                                          demisto_params.get('product', 'mimecast'))
+                    handle_last_run_exit(siem_event_handler, events_audit)
 
     except Exception as exc:
         raise exc
