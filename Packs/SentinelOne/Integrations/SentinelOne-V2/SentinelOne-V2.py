@@ -392,7 +392,123 @@ class Client(BaseClient):
         if 'data' in response:
             return response.get('data')[0]
         return {}
+    
+    def update_threat_analyst_verdict_request(self, threat_ids, action):
+        endpoint_url = 'threats/analyst-verdict'
 
+        payload = {
+            "data": {
+                        "analystVerdict": action
+                    },
+            "filter": {
+                        "ids": threat_ids,
+                        "tenant": "true"
+                    }
+        }
+        response = self._http_request(method='POST', url_suffix=endpoint_url, json_data=payload)
+        return response.get('data', {})
+
+    def update_alert_analyst_verdict_request(self, alert_ids, action):
+        endpoint_url = 'cloud-detection/alerts/analyst-verdict'
+
+        payload = {
+            "data": {
+                        "analystVerdict": action
+                    },
+            "filter": {
+                        "ids": alert_ids,
+                        "tenant": "true"
+                    }
+        }
+        response = self._http_request(method='POST', url_suffix=endpoint_url, json_data=payload)
+        return response.get('data', {})
+    
+    def create_star_rule_request(self,name,description,query,query_type,rule_severity,account_ids,group_ids,
+                                site_ids,expiration_mode,expiration_date,network_quarantine,treatAsThreat):
+        endpoint_url = 'cloud-detection/rules'
+        payload = {
+                "data": {
+                    "expiration": expiration_date,
+                    "networkQuarantine": network_quarantine,
+                    "status": "Draft",
+                    "queryType": query_type,
+                    "expirationMode": expiration_mode,
+                    "severity": rule_severity,
+                    "treatAsThreat": treatAsThreat,
+                    "s1ql": query,
+                    "name": name,
+                    "description": description
+                },
+                "filter": {
+                    "siteIds": site_ids,
+                    "tenant": "true",
+                    "groupIds": group_ids,
+                    "accountIds": account_ids
+                }
+        }
+        response = self._http_request(method='POST', url_suffix=endpoint_url, json_data=payload)
+        return response.get('data', {})
+    
+    def get_star_rule_request(self, params):
+        endpoint_url = 'cloud-detection/rules'
+        response = self._http_request(method='GET', url_suffix=endpoint_url, params=params)
+        return response.get('data', [])
+    
+    def update_star_rule_request(self,rule_id,name,description,query,query_type,rule_severity,account_ids,group_ids,
+                                site_ids,expiration_mode,expiration_date,network_quarantine,treatAsThreat):
+        endpoint_url = f'cloud-detection/rules/{rule_id}'
+        payload = {
+                "data": {
+                    "expiration": expiration_date,
+                    "networkQuarantine": network_quarantine,
+                    "status": "Draft",
+                    "queryType": query_type,
+                    "expirationMode": expiration_mode,
+                    "severity": rule_severity,
+                    "treatAsThreat": treatAsThreat,
+                    "s1ql": query,
+                    "name": name,
+                    "description": description
+                },
+                "filter": {
+                    "siteIds": site_ids,
+                    "tenant": "true",
+                    "groupIds": group_ids,
+                    "accountIds": account_ids
+                }
+        }
+        response = self._http_request(method='PUT', url_suffix=endpoint_url, json_data=payload)
+        return response.get('data', {})
+    
+    def enable_star_rule_request(self, rule_ids):
+        endpoint_url = 'cloud-detection/rules/enable'
+        payload = {
+                "filter": {
+                        "ids": rule_ids
+                    }
+        }
+        response = self._http_request(method='PUT', url_suffix=endpoint_url, json_data=payload)
+        return response.get('data', {})
+
+    def disable_star_rule_request(self, rule_ids):
+        endpoint_url = 'cloud-detection/rules/disable'
+        payload = {
+                "filter": {
+                        "ids": rule_ids
+                    }
+        }
+        response = self._http_request(method='PUT', url_suffix=endpoint_url, json_data=payload)
+        return response.get('data', {})
+    
+    def delete_star_rule_request(self, rule_ids):
+        endpoint_url = 'cloud-detection/rules'
+        payload = {
+                "filter": {
+                        "ids": rule_ids
+                    }
+        }
+        response = self._http_request(method='DELETE', url_suffix=endpoint_url, json_data=payload)
+        return response.get('data', {})
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
 
@@ -675,6 +791,331 @@ def mitigate_threat_command(client: Client, args: dict) -> CommandResults:
         outputs=context_entries,
         raw_response=mitigated_threats)
 
+
+def update_threat_analyst_verdict(client: Client, args: dict) -> CommandResults:
+    """
+    Apply a update analyst verdict action to a group of threats. Relevant for API version 2.1
+    """
+    contents = []
+    context_entries = []
+
+    # Get arguments
+    threat_ids = argToList(args.get('threat_ids'))
+    action = args.get('action')
+    
+    # Make request and get raw response
+    updated_threats = client.update_threat_analyst_verdict_request(threat_ids, action)
+    
+    # Parse response into context & content entries
+    if updated_threats.get('affected') and int(updated_threats.get('affected')) > 0:
+        updated = True
+        meta = f'Total of {updated_threats.get("affected")} provided threats analyst verdict were updated successfully'
+    else:
+        updated = False
+        meta = 'No threats were updated'
+    for threat_id in threat_ids:
+        contents.append({
+            'Updated': updated,
+            'ID': threat_id,
+            'Analyst Verdict Action': action,
+        })
+        context_entries.append({
+            'Updated': updated,
+            'ID': threat_id,
+            'Updation': {
+                'Action': action
+            },
+        })
+    
+    return CommandResults(
+        readable_output=tableToMarkdown('Sentinel One - Update threats analyst verdict', contents, metadata=meta, removeNull=True),
+        outputs_prefix='SentinelOne.Threat',
+        outputs_key_field='ID',
+        outputs=context_entries,
+        raw_response=updated_threats)
+   
+
+def update_alert_analyst_verdict(client: Client, args: dict) -> CommandResults:
+    """
+    Apply a update analyst verdict action to a group of aleerts. Relevant for API version 2.1
+    """
+    contents = []
+    context_entries = []
+
+    # Get arguments
+    alert_ids = argToList(args.get('alert_ids'))
+    action = args.get('action')
+    
+    # Make request and get raw response
+    updated_alerts = client.update_alert_analyst_verdict_request(alert_ids, action)
+    
+    # Parse response into context & content entries
+    if updated_alerts.get('affected') and int(updated_alerts.get('affected')) > 0:
+        updated = True
+        meta = f'Total of {updated_alerts.get("affected")} provided alerts analyst verdict were updated successfully'
+    else:
+        updated = False
+        meta = 'No alerts were updated'
+    for alert_id in alert_ids:
+        contents.append({
+            'Updated': updated,
+            'ID': alert_id,
+            'Analyst Verdict Action': action,
+        })
+        context_entries.append({
+            'Updated': updated,
+            'ID': alert_id,
+            'Updation': {
+                'Action': action
+            },
+        })
+    
+    return CommandResults(
+        readable_output=tableToMarkdown('Sentinel One - Update alerts analyst verdict', contents, metadata=meta, removeNull=True),
+        outputs_prefix='SentinelOne.Alert',
+        outputs_key_field='ID',
+        outputs=context_entries,
+        raw_response=updated_alerts)
+
+def create_star_rule(client: Client, args: dict) -> CommandResults:
+    """
+    Creates the custom STAR rule (cloud detection rule). Relavent for API version 2.1
+    """
+    context = {}
+
+    # Get arguments
+    name = args.get('name')
+    description = args.get('description')
+    query = args.get('query')
+    query_type = args.get('query_type')
+    rule_severity = args.get('rule_severity')
+    account_ids = argToList(args.get('account_ids'))
+    group_ids = argToList(args.get('group_ids'))
+    site_ids  = argToList(args.get('site_ids'))
+    expiration_mode = args.get('expiration_mode')
+    expiration_date = args.get('expiration_date')
+    network_quarantine = argToBoolean(args.get('network_quarantine'))
+    treatAsThreat = args.get('treatAsThreat')
+    # if the expiration_mode is Temporary then expiration_date is required
+    if expiration_mode == "Temporary" and expiration_date is None:
+        raise DemistoException("You must provide expiration_date argument when you selected the Temporary as expiration_mode")
+        
+    # Make request and get raw response
+    rule = client.create_star_rule_request(name,description,query,query_type,rule_severity,account_ids,group_ids,site_ids,
+                                            expiration_mode,expiration_date,network_quarantine,treatAsThreat)
+    if rule:
+        context = {
+            'ID': rule.get('id'),
+            'Name': rule.get('name'),
+            'Status': rule.get('status'),
+            'Severity': rule.get('severity'),
+            'Description': rule.get('description'),
+            'Network Quarantine': rule.get('networkQuarantine'),
+            'Treat As Threat': rule.get('treatAsThreat'),
+            'Expiration Mode': rule.get('expirationMode'),
+            'Expiration Date': rule.get('expiration'),
+            'Scope Hierarchy': rule.get('scope'),
+            'Created At': rule.get('createdAt'),
+            'Updated At': rule.get('updatedAt')
+        }
+    return CommandResults(
+        readable_output=tableToMarkdown('Sentinel One - Create star rule', context, removeNull=True),
+        outputs_prefix='SentinelOne.StarRule',
+        outputs_key_field='ID',
+        outputs=context,
+        raw_response=rule)
+
+def get_star_rule(client: Client, args: dict) -> CommandResults:
+    """
+    Get the custom STAR rule(s) (cloud detection rule). Relavent for API version 2.1
+    """
+    context_entries = []
+    query_params = assign_params(
+        status=args.get('status'),
+        creator__contains=args.get('creator_contains'),
+        queryType=args.get('queryType'),
+        query=args.get('query'),
+        description__contains=args.get('description_contains'),
+        ids=args.get('ruleIds'),
+        name__contains=args.get('name_contains'),
+        accountIds=args.get('accountIds'),
+        expirationMode=args.get('expirationMode'),
+        siteIds=args.get('siteIds'),
+        limit=int(args.get('limit',1000)),
+    )
+
+    # Make request and get raw response
+    rules = client.get_star_rule_request(query_params)
+
+    if rules:
+        # Parse response into context & content entries
+        for rule in rules:
+            context_entries.append({
+                'ID': rule.get('id'),
+                'Creator': rule.get('creator'),
+                'Name': rule.get('name'),
+                'Status': rule.get('status'),
+                'Severity': rule.get('severity'),
+                'Generated Alerts': rule.get('generatedAlerts'),
+                'Description': rule.get('description'),
+                'Status Reason': rule.get('statusReason'),
+                'Expiration Mode': rule.get('expirationMode'),
+                'Expiration Date': rule.get('expiration'),
+                'Expired': rule.get('expired'),
+            })
+
+    return CommandResults(
+        readable_output=tableToMarkdown('Sentinel One - Getting List of Star Rules', context_entries, removeNull=True,
+                                        metadata='Provides summary information and details for all star rules that matched '
+                                                 'your search criteria.', headerTransform=pascalToSpace),
+        outputs_prefix='SentinelOne.StarRule',
+        outputs_key_field='ID',
+        outputs=context_entries,
+        raw_response=rules)
+
+def update_star_rule(client: Client, args: dict) -> CommandResults:
+    """
+    Get the custom STAR rule(s) (cloud detection rule). Relavent for API version 2.1
+    """
+    context = {}
+    # Get arguments
+    rule_id = args.get('rule_id')
+    name = args.get('name')
+    description = args.get('description')
+    query = args.get('query')
+    query_type = args.get('query_type')
+    rule_severity = args.get('rule_severity')
+    account_ids = argToList(args.get('account_ids'))
+    group_ids = argToList(args.get('group_ids'))
+    site_ids  = argToList(args.get('site_ids'))
+    expiration_mode = args.get('expiration_mode')
+    expiration_date = args.get('expiration_date')
+    network_quarantine = argToBoolean(args.get('network_quarantine'))
+    treatAsThreat = args.get('treatAsThreat')
+    # if the expiration_mode is Temporary then expiration_date is required
+    if expiration_mode == "Temporary" and expiration_date is None:
+        raise DemistoException("You must provide expiration_date argument when you selected the Temporary as expiration_mode")
+    
+    # Make request and get raw response
+    rule = client.update_star_rule_request(rule_id,name,description,query,query_type,rule_severity,account_ids,group_ids,site_ids,
+                                            expiration_mode,expiration_date,network_quarantine,treatAsThreat)
+    if rule:
+        context = {
+            'ID': rule.get('id'),
+            'Name': rule.get('name'),
+            'Status': rule.get('status'),
+            'Severity': rule.get('severity'),
+            'Description': rule.get('description'),
+            'Network Quarantine': rule.get('networkQuarantine'),
+            'Treat As Threat': rule.get('treatAsThreat'),
+            'Expiration Mode': rule.get('expirationMode'),
+            'Expiration Date': rule.get('expiration'),
+            'Scope Hierarchy': rule.get('scope'),
+            'Created At': rule.get('createdAt'),
+            'Updated At': rule.get('updatedAt')
+        }
+    return CommandResults(
+        readable_output=tableToMarkdown('Sentinel One - Updated star rule', context, removeNull=True),
+        outputs_prefix='SentinelOne.StarRule',
+        outputs_key_field='ID',
+        outputs=context,
+        raw_response=rule)   
+
+def enable_star_rules(client: Client, args: dict) -> CommandResults:
+    """
+    Enables the custom STAR rule (cloud detection rule). Relavent for API version 2.1
+    """
+    context_entries = []
+
+    # Get arguments
+    rule_ids = argToList(args.get('rule_ids'))
+    
+    # Make request and get raw response
+    enabled_rules = client.enable_star_rule_request(rule_ids)
+
+    # Parse response into context & content entries
+    if enabled_rules.get('affected') and int(enabled_rules.get('affected')) > 0:
+        enabled = True
+        meta = f'Total of {enabled_rules.get("affected")} provided star rules were enabled successfully'
+    else:
+        enabled = False
+        meta = 'No star rules were enabled'
+    for rule_id in rule_ids:
+        context_entries.append({
+            'ID': rule_id,
+            'Enabled': enabled
+        })
+    return CommandResults(
+        readable_output=tableToMarkdown('Sentinel One - Enable List of Star Rules', context_entries, removeNull=True,
+                                        metadata=meta, headerTransform=pascalToSpace),
+        outputs_prefix='SentinelOne.StarRule',
+        outputs_key_field='ID',
+        outputs=context_entries,
+        raw_response=enabled_rules)
+
+def disable_star_rules(client: Client, args: dict) -> CommandResults:
+    """
+    Disables the custom STAR rule (cloud detection rule). Relavent for API version 2.1
+    """
+    context_entries = []
+
+    # Get arguments
+    rule_ids = argToList(args.get('rule_ids'))
+    
+    # Make request and get raw response
+    disabled_rules = client.disable_star_rule_request(rule_ids)
+
+    # Parse response into context & content entries
+    if disabled_rules.get('affected') and int(disabled_rules.get('affected')) > 0:
+        disabled = True
+        meta = f'Total of {disabled_rules.get("affected")} provided star rules were disabled successfully'
+    else:
+        disabled = False
+        meta = 'No star rules were disabled'
+    for rule_id in rule_ids:
+        context_entries.append({
+            'ID': rule_id,
+            'Disabled': disabled
+        })
+    return CommandResults(
+        readable_output=tableToMarkdown('Sentinel One - Disable List of Star Rules', context_entries, removeNull=True,
+                                        metadata=meta, headerTransform=pascalToSpace),
+        outputs_prefix='SentinelOne.StarRule',
+        outputs_key_field='ID',
+        outputs=context_entries,
+        raw_response=disabled_rules) 
+
+def delete_star_rule(client: Client, args: dict) -> CommandResults:
+    """
+    Deletes the custom STAR rule (cloud detection rule). Relavent for API version 2.1
+    """
+    context_entries = []
+
+    # Get arguments
+    rule_ids = argToList(args.get('rule_ids'))
+    
+    # Make request and get raw response
+    deleted_rules = client.delete_star_rule_request(rule_ids)
+
+    # Parse response into context & content entries
+    if deleted_rules.get('affected') and int(deleted_rules.get('affected')) > 0:
+        deleted = True
+        meta = f'Total of {deleted_rules.get("affected")} provided star rules were deleted successfully'
+    else:
+        deleted = False
+        meta = 'No star rules were deleted'
+    for rule_id in rule_ids:
+        context_entries.append({
+            'ID': rule_id,
+            'Deleted': deleted
+        })
+    return CommandResults(
+        readable_output=tableToMarkdown('Sentinel One - Deleted List of Star Rules', context_entries, removeNull=True,
+                                        metadata=meta, headerTransform=pascalToSpace),
+        outputs_prefix='SentinelOne.StarRule',
+        outputs_key_field='ID',
+        outputs=context_entries,
+        raw_response=deleted_rules) 
 
 def resolve_threat_command(client: Client, args: dict) -> CommandResults:
     """
@@ -1343,6 +1784,14 @@ def main():
         },
         '2.1': {
             'sentinelone-threat-summary': get_threat_summary_command,
+            'sentinelone-update-threats-verdict': update_threat_analyst_verdict,
+            'sentinelone-update-alerts-verdict': update_alert_analyst_verdict,
+            'sentinelone-create-star-rule': create_star_rule,
+            'sentinelone-get-star-rules': get_star_rule,
+            'sentinelone-update-star-rule': update_star_rule,
+            'sentinelone-enable-star-rules': enable_star_rules,
+            'sentinelone-disable-star-rules': disable_star_rules,
+            'sentinelone-delete-star-rule': delete_star_rule
         },
     }
 
@@ -1378,3 +1827,4 @@ def main():
 
 if __name__ in ['__main__', 'builtin', 'builtins']:
     main()
+   

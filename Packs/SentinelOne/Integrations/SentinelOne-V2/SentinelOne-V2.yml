@@ -1490,7 +1490,378 @@ script:
     description: Sends an uninstall command to all agents that match the input filter.
     execution: false
     name: sentinelone-uninstall-agent
-  dockerimage: demisto/python3:3.10.1.26972
+  - arguments:
+    - name: action
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - undefined
+      - true_positive
+      - false_positive
+      - suspicious
+      description: Analyst verdict action. Can be "undefined", "true_positive", "false_positive",
+        "suspicious"
+    - name: threat_ids
+      required: true
+      description: A comma-separated list of threat IDs.
+      isArray: true
+    description: Updates the analyst verdict to a group of threats that match
+      the specified input filter.
+    name: sentinelone-update-threats-verdict
+    outputs:
+    - contextPath: SentinelOne.Threat.ID
+      description: The threat ID.
+      type: String
+    - contextPath: SentinelOne.Threat.Updated
+      description: Whether the threat was successfully updated the analyst verdict.
+      type: Boolean
+    - contextPath: SentinelOne.Threat.Updation.Action
+      description: Name of the analyst verdict action performed on the threats.
+      type: String
+  - arguments:
+    - name: action
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - undefined
+      - true_positive
+      - false_positive
+      - suspicious
+      description: Analyst verdict action. Can be "undefined", "true_positive", "false_positive",
+        "suspicious"
+    - name: alert_ids
+      required: true
+      description: A comma-separated list of alert IDs.
+      isArray: true
+    description: Updates the analyst verdict to a group of alerts that match
+      the specified input filter.
+    name: sentinelone-update-alerts-verdict
+    outputs:
+    - contextPath: SentinelOne.Alert.ID
+      description: The alert ID.
+      type: String
+    - contextPath: SentinelOne.Alert.Updated
+      description: Whether the alert was successfully updated the analyst verdict.
+      type: Boolean
+    - contextPath: SentinelOne.Alert.Updation.Action
+      description: Name of the analyst verdict action performed on the alerts.
+      type: String
+  - arguments:
+    - name: name
+      required: true
+      description: The name of the star rule
+    - name: rule_severity
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - Low
+      - Medium
+      - High
+      - Critical
+      description: The rule severity. Can be "Low", "Medium", "High" and "Critical"
+    - name: expiration_mode
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - Permanent
+      - Temporary
+      description: Type of Expiration Mode. Can be "Permanent" or "Temporary"
+    - name: query_type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - events
+      - processes
+      description: Type of the query. For now it's "events"
+    - name: query
+      required: true
+      description: The query string for which to return events.
+    - name: description
+      description: The description of the star rule
+    - name: expiration_date
+      description: 'If expiration mode is "Temporary" then it should be supplied,
+        for example, "2019-08-03T04:49:26.257525Z" '
+    - name: site_ids
+      description: 'A comma separated list of site IDs'
+      isArray: true
+    - name: group_ids
+      description: 'A comma separated list of site IDs'
+      isArray: true
+    - name: account_ids
+      description: 'A comma separated list of site IDs'
+      isArray: true
+    - name: network_quarantine
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      description: To enable the network quarantine of the star rule. Can
+        be true or false
+    - name: treatAsThreat
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - Malicious
+      - Suspicious
+      - UNDEFINED
+      description: The treatAsThreat. Can be "Malicious", "Suspicious" and "UNDEFINED"
+    description: 'Creates a custom STAR rule.'
+    name: sentinelone-create-star-rule
+    outputs:
+    - contextPath: SentinelOne.StarRule.ID
+      description: The star rule ID.
+      type: String
+    - contextPath: SentinelOne.StarRule.Name
+      description: The star rule name.
+      type: String
+    - contextPath: SentinelOne.StarRule.Status
+      description: The status of the star rule
+      type: String
+    - contextPath: SentinelOne.StarRule.Severity
+      description: The severity of the star rule
+      type: String
+    - contextPath: SentinelOne.StarRule.Description
+      description: The description of the star rule
+      type: String
+    - contextPath: SentinelOne.StarRule.Network Quarantine
+      description: The Network Quarantine of the star rule
+      type: Boolean
+    - contextPath: SentinelOne.StarRule.Treat As Threat
+      description: The Treat As Threat of the star rule
+      type: String
+    - contextPath: SentinelOne.StarRule.Expiration Mode
+      description: The expiration mode of the star rule
+      type: String
+    - contextPath: SentinelOne.StarRule.Expiration Date
+      description: The expiration date of the star rule
+      type: String
+    - contextPath: SentinelOne.StarRule.Scope Hierarchy
+      description: The scope hierarchy of the star rule
+      type: String
+    - contextPath: SentinelOne.StarRule.Created At
+      description: The created time for the star rule
+      type: String
+    - contextPath: SentinelOne.StarRule.Updated At
+      description: The updated time for the star rule
+      type: String
+  - arguments:
+    - name: status
+      description: 'The status of the star rule. You can provide one or more values with comma seperated. Available options are: "Activating, Active, Deleted, Deleting, Disabled, Disabling and Draft".Example: "Draft,Active".'
+    - name: creator_contains
+      description: 'Free-text filter by rule creator (supports multiple values). Example:
+        "Service Pack 1".'
+    - name: queryType
+      auto: PREDEFINED
+      predefined:
+      - events
+      - processes
+      description: 'Return rules with the filtered type. Example: "events".'
+    - name: query
+      description: 'Free-text filter by S1 query (supports multiple values). Example:
+        "Service Pack 1".'
+    - name: description_contains
+      description: 'Free-text filter by rule description (supports multiple values).
+        Example: "Service Pack 1".'
+    - name: ruleIds
+      description: 'A list of Rules IDs. Example: "225494730938493804,225494730938493915".'
+    - name: name_contains
+      description: 'Free-text filter by rule name (supports multiple values). Example: "Service Pack 1".'
+    - name: accountIds
+      description: 'List of Account IDs to filter by. Example: "225494730938493804,225494730938493915".'
+    - name: expirationMode
+      auto: PREDEFINED
+      predefined:
+      - Temporary
+      - Permanent
+      description: 'Return rules with the filtered expiration mode. Example: "Permanent".'
+    - name: limit
+      description: 'Limit number of returned items (1-1000). Example: "10".'
+    - name: siteIds
+      description: 'List of Site IDs to filter by. Example: "225494730938493804,225494730938493915".'
+    name: sentinelone-get-star-rules
+    description: Get a list of Custom Detection Rules for a given scope.
+    outputs:
+    - contextPath: SentinelOne.StarRule.ID
+      description: The Star Rule ID
+      type: Number
+    - contextPath: SentinelOne.StarRule.Creator
+      description: The Star Rule Creator
+      type: string
+    - contextPath: SentinelOne.StarRule.Name
+      description: The Star Rule Name
+      type: string
+    - contextPath: SentinelOne.StarRule.Status
+      description: The Star Rule Status
+      type: string
+    - contextPath: SentinelOne.StarRule.Severity
+      description: The Star Rule Severity
+      type: string
+    - contextPath: SentinelOne.StarRule.Generated Alerts
+      description: The Star Rule Generated Alerts
+      type: Number
+    - contextPath: SentinelOne.StarRule.Description
+      description: The Star Rule Description
+      type: string
+    - contextPath: SentinelOne.StarRule.Status Reason
+      description: The Star Rule Status Reason
+      type: string
+    - contextPath: SentinelOne.StarRule.Expiration Mode
+      description: The Star Rule Expiration Mode
+      type: string
+    - contextPath: SentinelOne.StarRule.Expiration Date
+      description: The Star Rule Expiration Date
+      type: Date
+    - contextPath: SentinelOne.StarRule.Expired
+      description: The Star Rule Expired or Not
+      type: Boolean
+  - arguments:
+    - name: rule_id
+      required: true 
+      description: 'Rule ID  Example: "225494730938493804".'
+    - name: name
+      required: true
+      description: The name of the star rule
+    - name: rule_severity
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - Low
+      - Medium
+      - High
+      - Critical
+      description: The rule severity. Can be "Low", "Medium", "High" and "Critical"
+    - name: expiration_mode
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - Permanent
+      - Temporary
+      description: Type of Expiration Mode. Can be "Permanent" or "Temporary"
+    - name: query_type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - events
+      - processes
+      description: Type of the query. For now it's "events"
+    - name: query
+      required: true
+      description: The query string for which to return events.
+    - name: description
+      description: The description of the star rule
+    - name: expiration_date
+      description: 'If expiration mode is "Temporary" then it should be supplied,
+        for example, "2019-08-03T04:49:26.257525Z" '
+    - name: site_ids
+      description: 'A comma separated list of site IDs'
+      isArray: true
+    - name: group_ids
+      description: 'A comma separated list of site IDs'
+      isArray: true
+    - name: account_ids
+      description: 'A comma separated list of site IDs'
+      isArray: true
+    - name: network_quarantine
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      description: To enable the network quarantine of the star rule. Can
+        be true or false
+    - name: treatAsThreat
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - Malicious
+      - Suspicious
+      - UNDEFINED
+      description: The treatAsThreat. Can be "Malicious", "Suspicious" and "UNDEFINED"
+    description: 'Updates a custom STAR rule.'
+    name: sentinelone-update-star-rule
+    outputs:
+    - contextPath: SentinelOne.StarRule.ID
+      description: The star rule ID.
+      type: String
+    - contextPath: SentinelOne.StarRule.Name
+      description: The star rule name.
+      type: String
+    - contextPath: SentinelOne.StarRule.Status
+      description: The status of the star rule
+      type: String
+    - contextPath: SentinelOne.StarRule.Severity
+      description: The severity of the star rule
+      type: String
+    - contextPath: SentinelOne.StarRule.Description
+      description: The description of the star rule
+      type: String
+    - contextPath: SentinelOne.StarRule.Network Quarantine
+      description: The Network Quarantine of the star rule
+      type: Boolean
+    - contextPath: SentinelOne.StarRule.Treat As Threat
+      description: The Treat As Threat of the star rule
+      type: String
+    - contextPath: SentinelOne.StarRule.Treat As Threat
+      description: The Treat As Threat of the star rule
+      type: String
+    - contextPath: SentinelOne.StarRule.Expiration Mode
+      description: The expiration mode of the star rule
+      type: String
+    - contextPath: SentinelOne.StarRule.Expiration Date
+      description: The expiration date of the star rule
+      type: String
+    - contextPath: SentinelOne.StarRule.Scope Hierarchy
+      description: The scope hierarchy of the star rule
+      type: String
+    - contextPath: SentinelOne.StarRule.Created At
+      description: The created time for the star rule
+      type: String
+    - contextPath: SentinelOne.StarRule.Updated At
+      description: The updated
+  - arguments:
+    - name: rule_ids
+      required: true
+      description: A comma-separated list of star rule IDs.
+      isArray: true
+    description: Activate Custom Detection Rules that match the specified input filter.
+    name: sentinelone-enable-star-rules
+    outputs:
+    - contextPath: SentinelOne.StarRule.ID
+      description: The Rule ID.
+      type: String
+    - contextPath: SentinelOne.StarRule.Enabled
+      description: Whether the star rule was successfully eabled or not.
+      type: Boolean
+  - arguments:
+    - name: rule_ids
+      required: true
+      description: A comma-separated list of star rule IDs.
+      isArray: true
+    description: Disable Custom Detection Rules that match the specified input filter.
+    name: sentinelone-disable-star-rules
+    outputs:
+    - contextPath: SentinelOne.StarRule.ID
+      description: The Rule ID.
+      type: String
+    - contextPath: SentinelOne.StarRule.Disabled
+      description: Whether the star rule was successfully disabled or not.
+      type: Boolean
+  - arguments:
+    - name: rule_ids
+      required: true
+      description: A comma-separated list of star rule IDs.
+      isArray: true
+    description: Deletes Custom Detection Rules that match the specified input filter.
+    name: sentinelone-delete-star-rule
+    outputs:
+    - contextPath: SentinelOne.StarRule.ID
+      description: The Rule ID.
+      type: String
+    - contextPath: SentinelOne.StarRule.Deleted
+      description: Whether the star rule was successfully deleted or not.
+      type: Boolean
+  dockerimage: demisto/python3:3.10.4.29342
   isfetch: true
   longRunning: false
   longRunningPort: false
