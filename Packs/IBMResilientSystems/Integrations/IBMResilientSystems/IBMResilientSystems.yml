@@ -3,7 +3,7 @@ commonfields:
   id: IBM Resilient Systems
   version: -1
 configuration:
-- display: Server URL (e.g., https://192.168.0.1:443. Need to specify the port number.)
+- display: Server URL (e.g. 192.168.0.1)
   name: server
   required: true
   type: 0
