@@ -1,0 +1,16 @@
+commonfields:
+  id: AtlassianApiModule
+  version: -1
+name: AtlassianApiModule
+script: ''
+type: python
+subtype: python3
+tags:
+  - infra
+  - server
+comment: Common Atlassain code that will be appended to each Atlassian integration when it is deployed to automatically enable OAuth1 authentication.
+scripttarget: 0
+dependson: {}
+timeout: 0
+dockerimage: demisto/oauthlib:1.0.0.23674
+fromversion: 6.0.0
