@@ -2,9 +2,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 
-def get_errors(entries):
-    """
-        entries should be a list of demisto entries
+def get_errors(entries: List) -> List[str]:
 
         :type entries: ``list``
         :param entries: multiples entries of results of demisto.executeCommand()
