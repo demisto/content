@@ -523,9 +523,9 @@ def main():
         elif demisto.command() == 'cyble-vision-fetch-iocs':
             # This is the call made when cyble-fetch-iocs command.
             if not args.get('start_date'):
-                args['start_date'] = datetime.today().strftime('%Y/%m/%d')
+                args['start_date'] = datetime.today().strftime('%Y-%m-%d')
             if not args.get('end_date'):
-                args['end_date'] = datetime.today().strftime('%Y/%m/%d')
+                args['end_date'] = datetime.today().strftime('%Y-%m-%d')
             # check for validation errors
             validate_input(args, True)
             return_results(cyble_fetch_iocs(client, 'POST', args))
@@ -534,9 +534,9 @@ def main():
             # This is the call made when cyble-vision-fetch-alerts command.
             args['order_by'] = (args.get('order_by') or '').title()
             if not args.get('start_date'):
-                args['start_date'] = datetime.today().strftime('%Y-%m-%d')
+                args['start_date'] = datetime.today().strftime('%Y/%m/%d')
             if not args.get('end_date'):
-                args['end_date'] = datetime.today().strftime('%Y-%m-%d')
+                args['end_date'] = datetime.today().strftime('%Y/%m/%d')
             # check for validation errors
             validate_input(args, False)
             return_results(cyble_fetch_alerts(client, 'POST', args))

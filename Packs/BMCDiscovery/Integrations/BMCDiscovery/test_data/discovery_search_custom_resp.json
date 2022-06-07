@@ -1,0 +1,122 @@
+[
+    {
+      "count": 326,
+      "kind": "DeviceInfo",
+      "next": "https://10.61.6.16/api/v1.3/data/search?results_id=RGV2aWNlSW5mbwBu9awXYgIABkMAADRx2w%3D%3D&offset=100&format=object",
+      "next_offset": 100,
+      "offset": 0,
+      "results": [
+        {
+          "#InferredElement:Inference:Associate:DiscoveryAccess.endpoint": "10.201.8.166",
+          "Function kind": "Host",
+          "name": "mcr-sptiispr-04"
+        },
+        {
+          "#InferredElement:Inference:Associate:DiscoveryAccess.endpoint": "10.212.233.234",
+          "Function kind": "Host",
+          "name": "clm-ais-007441"
+        },
+        {
+          "#InferredElement:Inference:Associate:DiscoveryAccess.endpoint": "10.202.1.87",
+          "Function kind": "Host",
+          "name": "ldn-exchpr-03"
+        },
+        {
+          "#InferredElement:Inference:Associate:DiscoveryAccess.endpoint": "10.212.239.47",
+          "Function kind": "Host",
+          "name": "clm-ais-007716"
+        },
+        {
+          "#InferredElement:Inference:Associate:DiscoveryAccess.endpoint": "10.201.8.172",
+          "Function kind": "Host",
+          "name": "mcr-sptquepr-03"
+        },
+        {
+          "#InferredElement:Inference:Associate:DiscoveryAccess.endpoint": "10.212.230.114",
+          "Function kind": "Host",
+          "name": "clm-ais-007439"
+        },
+        {
+          "#InferredElement:Inference:Associate:DiscoveryAccess.endpoint": "10.201.36.145",
+          "Function kind": "Host",
+          "name": "mcr-ex13mqa-01"
+        },
+        {
+          "#InferredElement:Inference:Associate:DiscoveryAccess.endpoint": "10.201.8.193",
+          "Function kind": "Host",
+          "name": "mcr-exchclpr-02"
+        },
+        {
+          "#InferredElement:Inference:Associate:DiscoveryAccess.endpoint": "10.212.161.32",
+          "Function kind": "Host",
+          "name": "vw-ais-bpm-qa08"
+        },
+        {
+          "#InferredElement:Inference:Associate:DiscoveryAccess.endpoint": "10.201.24.115",
+          "Function kind": "Host",
+          "name": "mcr-ctsamb10b-1"
+        },
+        {
+          "#InferredElement:Inference:Associate:DiscoveryAccess.endpoint": "10.201.13.220",
+          "Function kind": "Host",
+          "name": "mcr-sqldb-98"
+        },
+        {
+          "#InferredElement:Inference:Associate:DiscoveryAccess.endpoint": "10.212.233.230",
+          "Function kind": "Host",
+          "name": "clm-ais-007437"
+        },
+        {
+          "#InferredElement:Inference:Associate:DiscoveryAccess.endpoint": "10.201.8.192",
+          "Function kind": "Host",
+          "name": "mcr-exchclpr-01"
+        },
+        {
+          "#InferredElement:Inference:Associate:DiscoveryAccess.endpoint": "10.201.8.63",
+          "Function kind": "Host",
+          "name": "mcr-sptidxpr-02"
+        },
+        {
+          "#InferredElement:Inference:Associate:DiscoveryAccess.endpoint": "10.204.249.75",
+          "Function kind": "Host",
+          "name": "ldn-exchclpr-01"
+        },
+        {
+          "#InferredElement:Inference:Associate:DiscoveryAccess.endpoint": "10.201.24.79",
+          "Function kind": "Host",
+          "name": "mcr-ex13cqa-02"
+        },
+        {
+          "#InferredElement:Inference:Associate:DiscoveryAccess.endpoint": "10.201.24.70",
+          "Function kind": "Host",
+          "name": "mcr-ex13cqa-01"
+        },
+        {
+          "#InferredElement:Inference:Associate:DiscoveryAccess.endpoint": "10.204.253.114",
+          "Function kind": "Host",
+          "name": "ldn-ctsamb10a-1"
+        },
+        {
+          "#InferredElement:Inference:Associate:DiscoveryAccess.endpoint": "10.202.1.84",
+          "Function kind": "Host",
+          "name": "ldn-exchpr-01"
+        },
+        {
+          "#InferredElement:Inference:Associate:DiscoveryAccess.endpoint": "10.201.35.196",
+          "Function kind": "Host",
+          "name": "mcr-exchpr-01"
+        },
+        {
+          "#InferredElement:Inference:Associate:DiscoveryAccess.endpoint": "10.204.253.115",
+          "Function kind": "Host",
+          "name": "ldn-ctsamb10b-1"
+        },
+        {
+          "#InferredElement:Inference:Associate:DiscoveryAccess.endpoint": "34.232.132.194",
+          "Function kind": "Host",
+          "name": "oracluster-1.calbro.local"
+        }
+       ],
+      "results_id": "RGV2aWNlSW5mbwBu9awXYgIABkMAADRx2w=="
+    }
+  ]

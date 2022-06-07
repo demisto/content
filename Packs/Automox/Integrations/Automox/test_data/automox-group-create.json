@@ -1,0 +1,22 @@
+{
+    "id": 2,
+    "organization_id": 1,
+    "name": "Test Group",
+    "refresh_interval": 360,
+    "parent_server_group_id": 1,
+    "ui_color": "#FFFFFF",
+    "notes": "My notes",
+    "enable_os_auto_update": true,
+    "server_count": 0,
+    "wsus_config": {
+        "id": 0,
+        "server_group_id": 0,
+        "is_managed": true,
+        "server_url": "string",
+        "created_at": "string",
+        "updated_at": "string"
+    },
+    "policies": [
+        0
+    ]
+}

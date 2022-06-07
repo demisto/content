@@ -2,10 +2,10 @@ commonfields:
   id: Netskope
   version: -1
 name: Netskope
-display: Netskope
+display: Netskope (Deprecated)
 category: Network Security
 description: Cloud access security broker that enables to find, understand, and secure
-  cloud apps.
+  cloud apps. Deprecated. Use Netskope (API v1) instead.
 configuration:
 - display: URL of Netskope Tenant (e.g. https://tenant.goskope.com)
   name: url
@@ -19,12 +19,10 @@ configuration:
   required: true
 - display: Trust any certificate (not secure)
   name: insecure
-  defaultvalue: ""
   type: 8
   required: false
 - display: Use system proxy settings
   name: proxy
-  defaultvalue: ""
   type: 8
   required: false
 - display: Fetch incidents
@@ -188,5 +186,6 @@ script:
   isfetch: true
   runonce: false
 tests:
-- Netskope Test
+- No Test - deprecated
 fromversion: 5.0.0
+deprecated: true

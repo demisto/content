@@ -1,3 +1,4 @@
+report_pytest.json
 node_modules
 .DS_Store
 .idea
@@ -48,3 +49,6 @@ Packs/**/report_pytest.json
 # coverage related
 /coverage_report
 .coverage
+
+# devcontainer folders
+.devcontainer

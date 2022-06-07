@@ -870,7 +870,8 @@ def get_request_args(request_args: dict, params: dict) -> RequestArguments:
     add_comment_if_empty = request_args.get('ce', params.get('add_comment_if_empty', True))
     fields_to_present = request_args.get('fi', params.get('fields_filter', ''))
     url_truncate = request_args.get('ut', params.get('url_truncate', ''))
-    maximum_cidr_size = try_parse_integer(request_args.get('mc', params.get('maximum_cidr_size')), EDL_CIDR_SIZR_MSG)
+    maximum_cidr_size = try_parse_integer(request_args.get('mc', params.get(
+        'maximum_cidr_size', MAXIMUM_CIDR_SIZE_DEFAULT)), EDL_CIDR_SIZR_MSG)
     no_wildcard_tld = argToBoolean(request_args.get('nt', params.get('no_wildcard_tld')))
 
     # handle flags
@@ -986,7 +987,7 @@ def update_edl_command(args: Dict, params: Dict):
     out_format = args.get('format', FORMAT_TEXT)
     csv_text = get_bool_arg_or_param(args, params, 'csv_text') == 'True'
     url_truncate = get_bool_arg_or_param(args, params, 'url_truncate')
-    maximum_cidr_size = try_parse_integer(params.get('maximum_cidr_size'), EDL_CIDR_SIZR_MSG)
+    maximum_cidr_size = try_parse_integer(params.get('maximum_cidr_size', MAXIMUM_CIDR_SIZE_DEFAULT), EDL_CIDR_SIZR_MSG)
     no_wildcard_tld = argToBoolean(params.get('no_wildcard_tld', False))
 
     if params.get('use_legacy_query'):
@@ -1034,7 +1035,7 @@ def initialize_edl_context(params: dict):
     out_format = params.get('format', FORMAT_TEXT)
     csv_text = argToBoolean(params.get('csv_text', False))
     url_truncate = params.get('url_truncate', False)
-    maximum_cidr_size = try_parse_integer(params.get('maximum_cidr_size'), 'Please provide an integer')
+    maximum_cidr_size = try_parse_integer(params.get('maximum_cidr_size', MAXIMUM_CIDR_SIZE_DEFAULT), EDL_CIDR_SIZR_MSG)
     no_wildcard_tld = argToBoolean(params.get('no_wildcard_tld', False))
 
     if params.get('use_legacy_query'):

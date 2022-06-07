@@ -1,6 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
+
 import json
 
 
@@ -52,14 +53,20 @@ def submit_sample(client: Client, **args) -> CommandResults:
             profiles_data.append({"profile": i, "pick": "sample"})
         data["profiles"] = profiles_data
 
-    if data["kind"] == "url":
+    if data["kind"] in ("url", "fetch"):
         data.update({"url": args.get("data")})
         r = client._http_request("POST", "samples", json_data=data)
     elif data["kind"] == "file":
-        file_path = demisto.getFilePath(demisto.args().get("data")).get("path")
-        with open(file_path, "rb") as f:
-            files = {"file": f}
-            r = client._http_request("POST", "samples", json_data=data, files=files)
+        file_id = args.get("data")
+        demisto_file = demisto.getFilePath(file_id)
+        # Use original filename if available. File id is a fallback.
+        filename = demisto_file.get("name") or file_id
+        with open(demisto_file.get("path"), "rb") as f:
+            files = {"file": (filename, f)}
+            r = client._http_request(
+                "POST", "samples",
+                data={"_json": json.dumps(data)}, files=files
+            )
     else:
         return_error(
             f'Type of sample needs to be selected, either "file" or "url", the selected type was: {data["kind"]}'
