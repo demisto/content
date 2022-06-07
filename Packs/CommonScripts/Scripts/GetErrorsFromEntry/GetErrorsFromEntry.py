@@ -3,12 +3,15 @@ from CommonServerPython import *  # noqa: F401
 
 
 def get_errors(entries: List) -> List[str]:
+    """Extracts error entry contents
 
-        :type entries: ``list``
-        :param entries: multiples entries of results of demisto.executeCommand()
+    The entries argument should be a list of demisto entries
 
-        :return: Error message extracted from the demisto.executeCommand() result
-        :rtype: ``string``
+    Args:
+        entries (List[List[Dict]]): multiples entries of results of demisto.executeCommand()
+
+    Returns:
+        (string): Error message extracted from the demisto.executeCommand() result
     """
     error_messages = []
     for entry in entries:
