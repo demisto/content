@@ -3656,6 +3656,10 @@ script:
     - description: The name of the virtual system to be configured. If no vsys is
         mentioned, this command will not use the vsys parameter.
       name: vsys
+    - description: The device group to target
+      name: device-group
+    - description: Return raw XML
+      name: is_xml
     description: Runs any command supported in the API.
     name: pan-os
   - arguments:
@@ -4856,6 +4860,16 @@ script:
     - contextPath: Panorama.EDL.DeviceGroup
       description: The device group for the EDL (Panorama instances).
       type: string
+  - name: pan-os-get-running-config
+    arguments:
+    - name: target
+      description: The target device
+    description: Pull the running config file
+  - name: pan-os-get-merged-config
+    arguments:
+    - name: target
+      description: The serial number of the device
+    description: Pull the merged config file
   - arguments:
     - description: The name of the EDL.
       name: name
@@ -8280,7 +8294,7 @@ script:
     - contextPath: InfoFile.Info
       description: Basic information of the file.
       type: String
-  dockerimage: demisto/pan-os-python:1.0.0.29756
+  dockerimage: demisto/pan-os-python:1.0.0.30307
   feed: false
   isfetch: false
   longRunning: false
