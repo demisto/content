@@ -1,7 +1,7 @@
 [MODEL: dataset=msft_radius_raw, model=Auth]
 alter packet_type = regextract(_raw_log ,"\<Packet\-Type\sdata_type\=\"\d+\"\>([^\<]+)\<" )
 | alter event_timestamp = arrayindex( regextract(_raw_log ,"\<Timestamp\sdata_type\=\"\d+\"\>([^\<]+)\<") ,0)
-| alter XDM.Auth.event_timestamp = parse_timestamp("%m/%d/%Y %H:%M:%E3S", event_timestamp )
+| alter XDM.Auth.event_timestamp = format_timestamp("%F %H:%M:%E3S" ,parse_timestamp("%m/%d/%Y %H:%M:%E3S", event_timestamp ) )
     ,XDM.Auth.Server.host.hostname  = arrayindex( regextract(_raw_log ,"\<Computer\-Name\sdata_type\=\"\d+\"\>([^\<]+)\<" ),0)
     ,XDM.Auth.original_event_type = if(packet_type ="1","Access-Request",packet_type ="2","Access-Accept",packet_type ="3","Access-Reject",packet_type ="4","Accounting-Request",null)
     ,XDM.Auth.Client.user.username = arrayindex( regextract(_raw_log ,"\<User\\-Name\sdata_type\=\"\d+\"\>([^\<]+)\<") ,0)
