@@ -308,6 +308,7 @@ def test_check_analysis_status_and_get_results_url_command_single_success(reques
 
     first_result = command_results_list[0]
     assert first_result.outputs[outputPaths['dbotscore']]['Indicator'] == url
+    assert first_result.outputs[outputPaths['dbotscore']]['Score'] == 3
 
 
 def test_check_analysis_status_and_get_results_command_single_success_endpoint(requests_mock):
@@ -781,8 +782,9 @@ def test_get_analysis_iocs_command_no_iocs(requests_mock):
 
     # Assert
     outputs = command_results.outputs['Intezer.Analysis(obj.ID == val.ID)']
-    assert outputs['ID'] == analysis_id
+    assert outputs.get('ID') == analysis_id
     assert command_results.readable_output == 'No IOCs found'
+    assert 'IOCs' in outputs
     assert outputs['IOCs'] is None
 
 
