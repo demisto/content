@@ -128,6 +128,7 @@ class XSOARServer(Server):
         self.__client = None
         self.internal_ip = internal_ip
         self.ssh_tunnel_port = port
+
         self.user_name = user_name
         self.password = password
 

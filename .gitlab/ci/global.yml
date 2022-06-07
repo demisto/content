@@ -194,6 +194,7 @@
     - .default-job-settings
   script:
     - section_start "Test Infrastructure"
+    - python3 -c "import os; print(os.cpu_count())"
     - python3 -m pytest ./Tests/scripts/infrastructure_tests/ -v
     - python3 -m pytest ./Tests/Marketplace/Tests/ -v
     - python3 -m pytest ./Tests/scripts/utils/tests -v
