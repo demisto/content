@@ -223,7 +223,6 @@ def main():
                 return_results(command_results)
                 if should_push_events:
                     send_events_to_xsiam(events, 'salesforce', demisto_params.get('product'))
-                    demisto.setLastRun(get_events.get_last_run_details())
 
     except Exception as e:
         return_error(str(e))
