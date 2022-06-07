@@ -735,9 +735,8 @@ def main():
 
         # Remove proxy if not set to true in params
         handle_proxy()
-        if True:
-            print(123)
-            
+        demisto.debug("Test")
+
         if command == 'test-module':
             # This is the call made when pressing the integration test button.
             test_module(**params)
