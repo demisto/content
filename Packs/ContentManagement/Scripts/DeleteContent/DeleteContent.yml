@@ -1,26 +1,53 @@
 args:
 - default: false
-  description: '[Enter a description of the argument, including any important information users need to know, for example, default values.]'
+  description: The ids to deleting. If set, delete only these ids.
   isArray: false
-  name: dummy
+  name: include_ids
+  required: false
+  secret: false
+- default: false
+  description: The ids to exclude from deleting. If set, will delete everything else.
+  isArray: false
+  name: exclude_ids
+  required: false
+  secret: false
+- auto: PREDEFINED
+  description: When set to false, will delete content.
+  isArray: false
+  name: dry_run
   required: true
   secret: false
-comment: '[Enter a description of the script, including what function it performs and any important information users need to know, for example required permissions.]'
+  defaultValue: 'true'
+  predefined:
+    - 'true'
+    - 'false'
 commonfields:
   id: DeleteContent
   version: -1
 enabled: false
 name: DeleteContent
+comment: Delete content to keep XSOAR tidy.
 outputs:
-- contextPath: BaseScript.Output
-  description: '[Enter a description of the data returned in this output.]'
+- contextPath: ConfigurationSetup.Deletion.successfully_deleted
+  description: Deleted ids
+  type: String
+- contextPath: ConfigurationSetup.Deletion.not_deleted
+  description: Not deleted ids
+  type: String
+- contextPath: ConfigurationSetup.Deletion.status
+  description: Deletion status
   type: String
 script: '-'
 system: false
 tags:
-- basescript
+- configuration
+- Content Management
 timeout: '0'
 type: python
 subtype: python3
-dockerimage: demisto/python3:3.9.7.24076
-fromversion: 5.5.0
+dockerimage: demisto/python3:3.10.4.29342
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0
+marketplaces:
+  - xsoar
