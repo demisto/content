@@ -1398,7 +1398,7 @@ def create_search_with_retry(client: Client, fetch_mode: str, offense: Dict, eve
                 break
             time.sleep(FAILURE_SLEEP)
     context_data[MIRRORED_OFFENSES_QUERIED_CTX_KEY][offense_id] = -1
-    save_to_ctx(context_data, ctx_version, ids=[offense_id])
+    safely_update_context_data(context_data, ctx_version, ids=[offense_id])
     print_mirror_events_stats(context_data, 'long-running')
     print_debug_msg(f'Could not create search query for {offense_id}. '
                     f'Adding to mirroring queue.')
@@ -1468,7 +1468,7 @@ def poll_offense_events_with_retry(client: Client, search_id: str, offense_id: i
                 failure_message = f'{repr(e)} \nSee logs for further details.'
     # if we didn't succeed to poll events for some reason, add it to the mirroring queue
     context_data[MIRRORED_OFFENSES_QUERIED_CTX_KEY][offense_id] = search_id
-    save_to_ctx(context_data, ctx_version, should_include_last_fetch=False, ids=[offense_id])
+    safely_update_context_data(context_data, ctx_version, should_include_last_fetch=False, ids=[offense_id])
     print_mirror_events_stats(context_data, 'long-running')
     print_debug_msg(f'Could not fetch events for offense ID: {offense_id}, returning empty events array. '
                     f'Adding to mirroring queue')
@@ -1716,7 +1716,7 @@ def perform_long_running_loop(client: Client, offenses_per_fetch: int, fetch_mod
         # if incident creation fails, it'll drop the data and try again in the next iteration
         demisto.createIncidents(incidents)
 
-    save_to_ctx(context_data=context_data, version=ctx_version)
+    safely_update_context_data(context_data=context_data, version=ctx_version, should_update_last_fetch=True)
 
 
 def long_running_execution_command(client: Client, params: Dict):
@@ -3137,7 +3137,6 @@ def get_remote_data_command(client: Client, params: Dict[str, Any], args: Dict) 
     # if this call fails, raise an error and stop command execution
     offense = client.offenses_list(offense_id=offense_id)
     offense_last_update = get_time_parameter(offense.get('last_persisted_time'))
-    offense_start_time = offense['start_time'] - 60 * 1000
     mirror_options = params.get('mirror_options')
     raw_context, context_version = get_integration_context_with_version()
     context_data = extract_context_data(raw_context.copy())
@@ -3195,12 +3194,13 @@ def get_remote_data_command(client: Client, params: Dict[str, Any], args: Dict) 
                 search_results = client.search_results_get(search_id)
                 offense['events'] = search_results.get('events', [])
                 del offenses_finished[offense_id]
+                changed_ids_ctx.append(offense_id)
             except Exception as e:
                 print_debug_msg(f'No results for {offense_id}. Error: {e}')
 
         context_data.update({MIRRORED_OFFENSES_QUERIED_CTX_KEY: offenses_queried})
         context_data.update({MIRRORED_OFFENSES_FINISHED_CTX_KEY: offenses_finished})
-        save_to_ctx(context_data, context_version, should_include_last_fetch=False, ids=changed_ids_ctx)
+        safely_update_context_data(context_data, context_version, should_include_last_fetch=False, ids=changed_ids_ctx)
 
         print_mirror_events_stats(context_data, f"Get Remote Data End for id {offense_id}")
 
