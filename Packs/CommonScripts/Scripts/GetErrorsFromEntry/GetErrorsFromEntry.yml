@@ -10,7 +10,7 @@ comment: Get the error(s) associated with a given entry/entries. Use ${lastCompl
 enabled: true
 args:
 - name: entry_id
-  required: true
+  required: false
   default: true
   description: Entry to check
   isArray: true
