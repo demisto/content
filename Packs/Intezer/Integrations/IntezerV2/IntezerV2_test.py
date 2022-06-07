@@ -748,7 +748,7 @@ def test_get_analysis_iocs_command_success(requests_mock):
 
     # Assert
     outputs = command_results.outputs['Intezer.Analysis(obj.ID == val.ID)']
-    assert outputs['ID'] == analysis_id
+    assert outputs.get('ID') == analysis_id
     assert 'IOCs' in outputs
 
 

@@ -415,11 +415,9 @@ def get_analysis_iocs_command(intezer_api: IntezerApi, args: dict) -> CommandRes
     iocs = analysis.iocs
     readable_output = ''
     if iocs:
-        network_iocs = iocs.get('network')
-        if network_iocs:
+        if network_iocs := iocs.get('network'):
             readable_output += tableToMarkdown('Network IOCs', network_iocs)
-        files_iocs = iocs.get('files')
-        if files_iocs:
+        if files_iocs := iocs.get('files'):
             readable_output += tableToMarkdown('Files IOCs', files_iocs)
     else:
         readable_output = 'No IOCs found'
