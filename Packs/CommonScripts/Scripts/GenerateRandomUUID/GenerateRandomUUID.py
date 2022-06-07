@@ -33,7 +33,6 @@ def main():
     try:
         return_results(generate_random_uuid_command())
     except Exception as ex:
-        demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute GenerateRandomUUID. Error: {str(ex)}')
 
 

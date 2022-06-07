@@ -2,7 +2,6 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
-import traceback
 from typing import List, Dict
 from operator import itemgetter
 from dateutil.parser import parse

@@ -1,6 +1,5 @@
 import demistomock as demisto
 from CommonServerPython import *
-import traceback
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -233,7 +232,7 @@ def main():
 
     except Exception:
         # For any other integration command exception, return an error
-        return_error(f'Failed to execute {command} command. Traceback: {traceback.format_exc()}')
+        return_error(f'Failed to execute {command} command.')
 
 
 from IAMApiModule import *  # noqa: E402

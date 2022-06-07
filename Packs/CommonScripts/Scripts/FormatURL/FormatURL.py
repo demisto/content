@@ -224,7 +224,6 @@ def main():
         for formatted_urls_group in formatted_urls_groups:
             demisto.results(formatted_urls_group)
     except Exception as e:  # pragma: no cover
-        demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute FormatURL. Error: {str(e)}')
 
 

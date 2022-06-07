@@ -93,7 +93,6 @@ def main() -> None:
 
     # Log exceptions and return errors
     except Exception as e:
-        demisto.error(traceback.format_exc())  # print the traceback
         return_error("\n".join(("Failed to execute {command} command.",
                                 "Error:",
                                 str(e))))

@@ -58,7 +58,6 @@ def main():
     try:
         return_results(edit_server_config(demisto.args()))
     except Exception as ex:
-        demisto.error(traceback.format_exc())
         return_error(f'Failed to execute EditServerConfig. Error: {str(ex)}')
 
 
