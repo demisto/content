@@ -471,6 +471,7 @@ tasks:
       id: a1fc8002-3427-4ef5-8e14-10a1f88e10a6
       version: -1
       name: Ask user if file contains sensitive info
+      description: ""
       scriptName: DlpAskFeedback
       type: regular
       iscommand: false
@@ -1445,6 +1446,7 @@ tasks:
       id: f4a01fea-3077-48e7-858f-04bb8623d25b
       version: -1
       name: Is Slack the messenger?
+      description: ""
       type: condition
       iscommand: false
       brand: ""

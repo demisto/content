@@ -3,7 +3,7 @@ import pytest
 import json
 
 from Palo_Alto_Networks_Enterprise_DLP import Client, fetch_incidents, \
-    exemption_eligible_command, slack_bot_message_command, reset_last_run_command, parse_incident_details, \
+    exemption_eligible_command, slack_bot_message_command, parse_incident_details, \
     parse_dlp_report, update_incident_command, main, PAN_AUTH_URL, fetch_notifications
 
 DLP_URL = 'https://api.dlp.paloaltonetworks.com/v1'
@@ -236,7 +236,7 @@ def test_refresh_token(requests_mock, mocker):
         assert client.access_token == 'abc'
 
 
-def test_refresh_token(requests_mock, mocker):
+def test_refresh_token_with_access_token(requests_mock, mocker):
     requests_mock.post(f'{DLP_URL}/public/oauth/refreshToken', json={'access_token': 'abc'})
     client = Client(DLP_URL, CREDENTIALS, False, None)
     client._refresh_token()
