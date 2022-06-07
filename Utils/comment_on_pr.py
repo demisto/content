@@ -16,7 +16,7 @@ def main():
 
     pr_number = args.pr_number
     comment = args.comment
-    token = os.environ['XSOAR_BOT_TEST_CONTENT']
+    token = os.environ['CONTENT_GITHUB_TOKEN']
 
     comments_url = get_pr_comments_url(pr_number)
 
