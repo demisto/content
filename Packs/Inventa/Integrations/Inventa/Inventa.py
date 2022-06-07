@@ -165,7 +165,7 @@ class Client(BaseClient):
             url_suffix=f"/pii/api/piis/{datasubject_id}/sources/details",
             return_empty_response=True,
             retries=5
-            )
+        )
 
 
 ''' HELPER FUNCTIONS '''
@@ -241,7 +241,7 @@ def get_sources_command(client: Client, datasubject_id: str) -> CommandResults:
     result = []
     sources = client.get_sources(datasubject_id)
     sources = copy.deepcopy(sources)
-    
+
     for source in sources:
         source_id = source["id"]
         source_appliance_name = source["applianceName"]
@@ -321,6 +321,7 @@ def get_dsar_piis_command(client: Client, ticket_id: int) -> CommandResults:
 
     return CommandResults(outputs={"piis": list(set(pii_list))},
                           outputs_prefix="Inventa.Dsar.Piis")
+
 
 def get_dsar_transactions_command(client: Client, ticket_id: int) -> CommandResults:
     dsar = client.get_dsar(ticket_id)
@@ -443,7 +444,6 @@ def get_dsar_dataassets_command(client: Client, ticket_id: int) -> CommandResult
         return CommandResults(outputs={"dataAssets": [empty_dataasset]},
                               outputs_prefix="Inventa.Dsar.DataAssets",
                               outputs_key_field="id")
-
 
 
 def validate_incident_inputs_command(**kwargs):
@@ -591,7 +591,7 @@ def main() -> None:
 
         elif demisto.command() == 'inventa-get-datasubject-details':
             return_results(get_datasubject_details_command(client, demisto.args().get("ticket_id", "")))
-            
+
         elif demisto.command() == 'inventa-get-dsar-piis':
             return_results(get_dsar_piis_command(client, demisto.args().get("ticket_id", "")))
 

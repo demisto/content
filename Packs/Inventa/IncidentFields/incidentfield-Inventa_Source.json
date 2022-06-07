@@ -1,7 +1,5 @@
 {
     "associatedToAll": true,
-    "associatedTypes": null,
-    "breachScript": "",
     "caseInsensitive": true,
     "cliName": "inventasource",
     "closeForm": false,
@@ -139,40 +137,28 @@
             "width": 150
         }
     ],
-    "content": false,
+    "content": true,
     "defaultRows": [
         {}
     ],
     "description": "PII data source details",
     "editForm": true,
-    "fieldCalcScript": "",
-    "fromServerVersion": "",
     "group": 0,
     "hidden": false,
     "id": "incident_inventasource",
     "isReadOnly": false,
-    "itemVersion": "",
     "locked": false,
-    "mergeStrategy": "",
     "name": "Inventa Source",
     "neverSetAsRequired": false,
     "ownerOnly": false,
-    "packID": "",
-    "placeholder": "",
     "required": false,
-    "runScriptAfterUpdate": false,
-    "script": "",
-    "selectValues": null,
     "sla": 0,
     "system": false,
-    "systemAssociatedTypes": null,
     "threshold": 72,
-    "toServerVersion": "",
     "type": "grid",
     "unmapped": false,
-    "unsearchable": false,
+    "unsearchable": true,
     "useAsKpi": false,
-    "validatedError": "",
-    "validationRegex": "",
-    "version": -1
+    "version": -1,
+    "fromVersion": "6.2.0"
 }
