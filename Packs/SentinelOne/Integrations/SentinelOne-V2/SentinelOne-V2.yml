@@ -980,13 +980,13 @@ script:
       - activityType
       - createdAt
       - id
-      description: Field to sort results by
+      description: Field to sort results by.
     - name: sort_order
       auto: PREDEFINED
       predefined:
       - asc
       - desc
-      description: Order to sort by
+      description: Order to sort by.
     deprecated: false
     description: Returns a list of activities.
     execution: false
@@ -1008,7 +1008,7 @@ script:
       description: Secondary description.
       type: String
     - contextPath: SentinelOne.Activity.OsFamily
-      description: Agent's OS type (if applicable). Can be "linux", "macos", "windows", or "windows_legacy".
+      description: Agent's operating system type (if applicable). Can be "linux", "macos", "windows", or "windows_legacy".
       type: String
     - contextPath: SentinelOne.Activity.ActivityType
       description: Activity type.
@@ -1506,64 +1506,64 @@ script:
   - arguments:
     - auto: PREDEFINED
       defaultValue: 'true'
-      description: Access global list (Same as `tenant` flag in API docs)
+      description: Access global list. (Same as `tenant` flag in API docs.)
       name: global
       predefined:
       - 'true'
       - 'false'
-    - description: Comma separated list of group IDs to filter by
+    - description: Comma-separated list of group IDs to filter by.
       name: group_ids
-    - description: Comma separated list of siteIDs to filter by
+    - description: Comma-separated list of site IDs to filter by.
       name: site_ids
-    - description: Comma separated list of account IDs to filter by
+    - description: Comma-separated list of account IDs to filter by.
       name: account_ids
     - defaultValue: '0'
-      description: How many records to skip (for paging)
+      description: The number of records to skip (for paging).
       name: offset
     - defaultValue: '1000'
-      description: Max number of records to return
+      description: The maximum number of records to return.
       name: limit
     description: Add a hash to the blocklist ("blacklist" in SentinelOne documentation). If the `global` flag is `true`, then group_ids, site_ids, and account_ids are ignored.
     name: sentinelone-get-blocklist
     outputs:
     - contextPath: SentinelOne.Blocklist.UserId
-      description: User ID
+      description: User ID.
       type: String
     - contextPath: SentinelOne.Blocklist.UpdatedAt
-      description: When entry was most recently updated
+      description: When entry was most recently updated.
       type: String
     - contextPath: SentinelOne.Blocklist.Value
-      description: File Hash
+      description: File Hash.
       type: String
     - contextPath: SentinelOne.Blocklist.ScopePath
-      description: Sentinel One list scope
+      description: SentinelOne list scope.
       type: String
     - contextPath: SentinelOne.Blocklist.Type
-      description: Block list type
+      description: Block list type.
       type: String
     - contextPath: SentinelOne.Blocklist.Source
-      description: Source of entry
+      description: Source of entry.
       type: String
     - contextPath: SentinelOne.Blocklist.ID
-      description: Entry ID
+      description: Entry ID.
       type: String
     - contextPath: SentinelOne.Blocklist.CreatedAt
-      description: Date entry was created
+      description: Date entry was created.
       type: String
     - contextPath: SentinelOne.Blocklist.Description
-      description: Description
+      description: Description of the blocklist.
       type: String
     - contextPath: SentinelOne.Blocklist.OSType
-      description: OS Type block is enforced on
+      description: Operating system type block is enforced on.
       type: String
     - contextPath: SentinelOne.Blocklist.ScopeName
-      description: Name of block list scope
+      description: Name of the block list scope.
       type: String    
   - arguments:
-    - description: SHA1 Hash to Add to Global Blocklist
+    - description: SHA1 hash to add to the Global blocklist.
       name: sha1
     - defaultValue: XSOAR
-      description: String describing the source of the block
+      description: String describing the source of the block.
       name: source
     - auto: PREDEFINED
       name: os_type
@@ -1572,22 +1572,22 @@ script:
       - linux
       - macos
       required: true
-      description: "Type of OS"
+      description: Type of operating system.
     - defaultValue: Blocked from XSOAR
-      description: Note stored in SentinelOne about the block
+      description: Note stored in SentinelOne about the block.
       name: description
-    description: Add a hash to the Global blocklist in SentinelOne
+    description: Add a hash to the Global blocklist in SentinelOne.
     name: sentinelone-add-hash-to-blocklist
     outputs:
     - contextPath: SentinelOne.AddHashToBlocklist.hash
-      description: Hash of file
+      description: Hash of the file.
     - contextPath: SentinelOne.AddHashToBlocklist.status
-      description: Status of addition action
+      description: Status of the action to add a hash to the blocklist.
   - arguments:
-    - description: SHA1 hash to remove from the Global blocklist
+    - description: SHA1 hash to remove from the Global blocklist.
       name: sha1
     - auto: PREDEFINED
-      description: Optional OS Type. If not supplied, will remove across all platforms
+      description: Optional operating system type. If not supplied, will remove the SHA1 hash across all platforms.
       name: os_type
       predefined:
       - windows
@@ -1597,33 +1597,33 @@ script:
     name: sentinelone-remove-hash-from-blocklist
     outputs:
     - contextPath: SentinelOne.RemoveHashFromBlocklist.hash
-      description: Hash of file
+      description: Hash of the file.
     - contextPath: SentinelOne.RemoveHashFromBlocklist.status
-      description: Status of removal action
+      description: Status of the action to remove a hash from the blocklist.
   - arguments:
-    - description: Agent ID to retrieve file from
+    - description: Agent ID to retrieve the file from.
       name: agent_id
       required: true
-    - description: Filepath to download file from
+    - description: File path to download the file from.
       name: file_path
       required: true
-    - description: Password to protect zip file with
+    - description: Password to protect the zip file with.
       name: password
       required: true
-    description: Invokes a fetch files command against an agent endpoint
+    description: Invokes a fetch files command against an agent endpoint.
     name: sentinelone-fetch-file
   - arguments:
     - defaultValue: Agent ID
-      description: SentinelOne Agent ID
+      description: SentinelOne agent ID.
       name: agent_id
       required: true
-    - description: ID from Activity in get-activities
+    - description: Activity ID in the get-activities command.
       name: activity_id
       required: true
-    - description: Password used in sentinelone-fetch-file command
+    - description: Password used in the sentinelone-fetch-file command.
       name: password
       required: true
-    description: Download a file fetched using sentinelone-fetch-file to submit the request and sentinelone-get-activities to get the download path
+    description: Download a file fetched using th sentinelone-fetch-file command to submit the request and the sentinelone-get-activities command to get the download path.
     name: sentinelone-download-fetched-file
   dockerimage: demisto/python3:3.10.4.29342
   isfetch: true
