@@ -1,10 +1,9 @@
 import io
 import json
-import pydantic
 import pytest
 
 from copy import deepcopy
-from SlackEventCollector import SlackEventsParams, SlackEventClient, SlackGetEvents
+from SlackEventCollector import *
 from requests import Session
 
 
@@ -47,12 +46,11 @@ def test_slack_events_params_good(params, expected_params):
     Given:
         - Various dictionary values.
     When:
-        - Parsing them as a SlackEventsParams object.
+        - preparing the parameters.
     Then:
         - Make sure they are parsed correctly.
     """
-    actual_params = SlackEventsParams.parse_obj(params)
-    assert actual_params.dict(exclude_none=True) == expected_params
+    assert expected_params.items() <= prepare_query_params(params).items()
 
 
 @pytest.mark.parametrize('params', [
@@ -67,55 +65,73 @@ def test_slack_events_params_bad(params):
     When:
         - Parsing them as a SlackEventsParams object.
     Then:
-        - Make sure a ValidationError exception is raised.
+        - Make sure a ValueError exception is raised.
     """
-    with pytest.raises(pydantic.error_wrappers.ValidationError):
-        SlackEventsParams.parse_obj(params)
+    with pytest.raises(ValueError):
+        prepare_query_params(params)
 
 
-def test_fetch_events_exceeds_limit(mocker):
-    """
-    Given:
-        - Fetch Events with limit = 1
-    When:
-        - Calling SlackGetEvents.run()
-        - Two results are retrieved from the API.
-    Then:
-        - Make sure only 1 event is actually returned.
-    """
-    params = {'limit': '1', 'user_token': {'password': 'mock_token'}}
-    mock_response = MockResponse([{'id': '2'}, {'id': '1'}])
-    mocker.patch.object(Session, 'request', return_value=mock_response)
-    assert len(mock_response.json().get('entries')) == 2
-
-    client = SlackEventClient(params)
-    events = SlackGetEvents(client).run()
-    assert len(events) == 1
-
-
-def test_remove_duplicates(mocker):
+def test_fetch_events_with_duplicates(mocker):
     """
     Given:
-        - Fetch Events where oldest = 1521214343, last_id = 1
+        - fetch-events call, where oldest = 1521214343, last_id = 1
     When:
-        - Calling SlackGetEvents.run()
         - Three following results are retrieved from the API:
             1. id = 1, date_create = 1521214343
             2. id = 2, date_create = 1521214343
             3. id = 3, date_create = 1521214345
     Then:
-        - Make sure only events 2 and 3 are returned.
+        - Make sure only events 2 and 3 are returned (1 should not).
+        - Verify the new lastRun is calculated correctly.
     """
-    params = {'oldest': 1521214343, 'last_id': '1', 'user_token': {'password': 'mock_token'}}
+    last_run = {'oldest': 1521214343, 'last_id': '1'}
+
     mock_response = MockResponse([
         {'id': '3', 'date_create': 1521214345},
         {'id': '2', 'date_create': 1521214343},
         {'id': '1', 'date_create': 1521214343},
     ])
     mocker.patch.object(Session, 'request', return_value=mock_response)
+    events, new_last_run = fetch_events_command(Client(), query_params={}, last_run=last_run)
 
-    client = SlackEventClient(params)
-    events = SlackGetEvents(client).run()
     assert len(events) == 2
     assert events[0].get('id') == '2'
     assert events[1].get('id') == '3'
+    assert new_last_run['last_id'] == '3' and new_last_run['oldest'] == 1521214345
+
+
+def test_get_events(mocker):
+    """
+    Given:
+        - slack-get-events call
+    When:
+        - Three following results are retrieved from the API:
+            1. id = 1, date_create = 1521214343
+            2. id = 2, date_create = 1521214343
+            3. id = 3, date_create = 1521214345
+    Then:
+        - Make sure all of the events are returned as part of the CommandResult.
+    """
+    mock_response = MockResponse([
+        {'id': '3', 'date_create': 1521214345},
+        {'id': '2', 'date_create': 1521214343},
+        {'id': '1', 'date_create': 1521214343},
+    ])
+    mocker.patch.object(Session, 'request', return_value=mock_response)
+    _, results = get_events_command(Client(), query_params={})
+
+    assert len(results.outputs) == 3
+    assert results.outputs_prefix == 'SlackEvents'
+
+
+def test_test_module(mocker):
+    """
+    Given:
+        - test-module call
+    When:
+        - A response with an OK status_code is retrieved from the API call.
+    Then:
+        - Make sure 'ok' is returned.
+    """
+    mocker.patch.object(Session, 'request', return_value=MockResponse([]))
+    assert test_module_command(Client()) == 'ok'

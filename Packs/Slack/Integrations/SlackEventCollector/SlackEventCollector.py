@@ -1,13 +1,12 @@
 import demistomock as demisto
 from CommonServerPython import *
 
-import traceback
 from typing import Tuple
 
 requests.packages.urllib3.disable_warnings()
 
 
-def date_to_timestamp(value: Any) -> int:
+def arg_to_timestamp(value: Any) -> Optional[int]:
     if value is None or isinstance(value, int):
         return value
     if datetime_obj := dateparser.parse(value):
@@ -19,12 +18,13 @@ def date_to_timestamp(value: Any) -> int:
 def prepare_query_params(params: dict) -> dict:
     query_params = {
         'limit': int(params.get('limit', 1000)),
-        'oldest': date_to_timestamp(params.get('oldest')),
-        'latest': date_to_timestamp(params.get('latest')),
+        'oldest': arg_to_timestamp(params.get('oldest')),
+        'latest': arg_to_timestamp(params.get('latest')),
         'action': params.get('action'),
         'actor': params.get('actor'),
         'entity': params.get('entity'),
     }
+    assert isinstance(query_params['limit'], int)
     if not 0 < query_params['limit'] < 10000:
         raise ValueError('limit argument must be an integer between 1 to 9999.')
     return query_params
@@ -38,10 +38,10 @@ class Client(BaseClient):
         res = self._http_request(method='GET', url_suffix='logs', params=query_params)
         events = res.get('entries', [])
         events.reverse()  # results from API are descending (most to least recent)
-        
+
         return self.remove_duplicates(events, last_run)
 
-    def remove_duplicates(self, events: list, last_run: dict) -> list:
+    def remove_duplicates(self, events: list, last_run: Optional[dict]) -> list:
         if last_run and events:
             if events[0].get('date_create') == last_run.get('oldest'):
                 for idx, event in enumerate(events):
@@ -118,7 +118,7 @@ def main() -> None:  # pragma: no cover
                 )
 
     except Exception as e:
-        return_error(f'Failed to execute {command} command.\nError:\n{traceback.format_exc()}')
+        return_error(f'Failed to execute {command} command.\nError:\n{e}')
 
 
 ''' ENTRY POINT '''

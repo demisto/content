@@ -2,6 +2,7 @@
 filter action not in ("user_login","user_logout")
 | alter
     XDM.Audit.original_event_id = id,
+    XDM.Audit.event_timestamp = to_timestamp(date_create),
     XDM.Audit.original_event_type = action,
     XDM.Audit.TriggeredBy.identity.type = json_extract_scalar(actor, "$.type"),
     XDM.Audit.TriggeredBy.identity.uuid = json_extract_scalar(actor, "$.user.id"),
@@ -17,6 +18,7 @@ filter action not in ("user_login","user_logout")
 filter action in ("user_login","user_logout")
 | alter
     XDM.Auth.original_event_id = id,
+    XDM.Auth.event_timestamp = to_timestamp(date_create),
     XDM.Auth.original_event_type = action,
     XDM.Auth.Client.user.user_type = json_extract_scalar(actor, "$.type"),
     XDM.Auth.Client.user.identifier = json_extract_scalar(actor, "$.user.id"),
