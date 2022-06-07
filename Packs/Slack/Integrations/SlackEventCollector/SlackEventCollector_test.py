@@ -3,7 +3,7 @@ import json
 import pytest
 
 from copy import deepcopy
-from SlackEventCollector import *
+from SlackEventCollector import Client, prepare_query_params
 from requests import Session
 
 
@@ -84,6 +84,8 @@ def test_fetch_events_with_duplicates(mocker):
         - Make sure only events 2 and 3 are returned (1 should not).
         - Verify the new lastRun is calculated correctly.
     """
+    from SlackEventCollector import fetch_events_command
+
     last_run = {'oldest': 1521214343, 'last_id': '1'}
 
     mock_response = MockResponse([
@@ -92,7 +94,7 @@ def test_fetch_events_with_duplicates(mocker):
         {'id': '1', 'date_create': 1521214343},
     ])
     mocker.patch.object(Session, 'request', return_value=mock_response)
-    events, new_last_run = fetch_events_command(Client(), query_params={}, last_run=last_run)
+    events, new_last_run = fetch_events_command(Client(base_url=''), query_params={}, last_run=last_run)
 
     assert len(events) == 2
     assert events[0].get('id') == '2'
@@ -112,13 +114,15 @@ def test_get_events(mocker):
     Then:
         - Make sure all of the events are returned as part of the CommandResult.
     """
+    from SlackEventCollector import get_events_command
+
     mock_response = MockResponse([
         {'id': '3', 'date_create': 1521214345},
         {'id': '2', 'date_create': 1521214343},
         {'id': '1', 'date_create': 1521214343},
     ])
     mocker.patch.object(Session, 'request', return_value=mock_response)
-    _, results = get_events_command(Client(), query_params={})
+    _, results = get_events_command(Client(base_url=''), query_params={})
 
     assert len(results.outputs) == 3
     assert results.outputs_prefix == 'SlackEvents'
@@ -133,5 +137,7 @@ def test_test_module(mocker):
     Then:
         - Make sure 'ok' is returned.
     """
+    from SlackEventCollector import test_module_command
+
     mocker.patch.object(Session, 'request', return_value=MockResponse([]))
-    assert test_module_command(Client()) == 'ok'
+    assert test_module_command(Client(base_url='')) == 'ok'
