@@ -147,7 +147,9 @@ def create_py_documentation(path, origin, language):
     with open(path, 'r') as file:
         py_script = YmlUnifier.clean_python_code(file.read(), remove_print_future=False)
 
-    py_script.replace('from DemistoClassApiModule import *', '')
+    logging.info("replacing DemistoClassApiModule: ")
+    # py_script.replace('from DemistoClassApiModule import *', '')
+    py_script = re.sub(r'from DemistoClassApiModule import \*[ \t]*(#.*)?', "", py_script)
 
     code = compile(py_script, '<string>', 'exec')
     ns = {'demisto': demistomock}
