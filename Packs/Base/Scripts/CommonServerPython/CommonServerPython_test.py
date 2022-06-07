@@ -8050,3 +8050,38 @@ class TestSendEventsToXSIAMTest:
 
         demisto.updateModuleHealth.assert_called_with({'eventsPulled': number_of_events})
 
+    @pytest.mark.parametrize('error_msg', [None, {'error': 'error'}, ''])
+    def test_send_events_to_xsiam_error_handling(self, mocker, requests_mock, error_msg):
+        """
+        Given:
+            case a: response type containing None
+            case b: response type containing json
+            case c: response type containing empty string
+
+        When:
+            calling the send_events_to_xsiam function
+
+        Then:
+            DemistoException is raised with the correct error message on each case.
+        """
+        if not IS_PY3:
+            return
+
+        if isinstance(error_msg, dict):
+            requests_mock.post(
+                'https://api-url/logs/v1/xsiam', json=error_msg, status_code=401, reason='Unauthorized[401]'
+            )
+            error_msg = 'Unauthorized[401]'
+        else:
+            requests_mock.post('https://api-url/logs/v1/xsiam', text=None, status_code=401)
+            error_msg = '\n'
+        mocker.patch.object(demisto, 'getLicenseCustomField', side_effect=self.get_license_custom_field_mock)
+        mocker.patch.object(demisto, 'updateModuleHealth')
+        mocker.patch.object(demisto, 'error')
+
+        events = self.test_data['json_events']['events']
+        with pytest.raises(
+                DemistoException,
+                match=re.escape('Error sending new events into XSIAM. \n' + error_msg),
+        ):
+            send_events_to_xsiam(events=events, vendor='some vendor', product='some product')
