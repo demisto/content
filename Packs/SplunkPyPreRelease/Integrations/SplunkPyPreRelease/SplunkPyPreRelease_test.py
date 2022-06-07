@@ -849,6 +849,27 @@ def test_get_modified_remote_data_command(mocker):
     assert results == [updated_incidet_review['rule_id']]
 
 
+@pytest.mark.parametrize('params, expected_url', [
+    ({'host': 'https://ec.com//en-US/account/login?loginType=splunk', 'port': '8089'},
+     'https://ec.com/en-US/account/login?loginType=splunk:8089/'),
+    ({'host': 'https://ec.com//en-US//account//login?loginType=splunk', 'port': '8089'},
+     'https://ec.com/en-US/account/login?loginType=splunk:8089/'),
+    ({'host': 'https://ec.com', 'port': '8089'}, 'https://ec.com:8089/'),
+    ({'host': 'ec.com', 'port': '8089'}, 'https://ec.com:8089/')])
+def test_set_base_url(params, expected_url):
+    """
+    Given:
+        - Host and port, when the host structure can vary.
+
+    When:
+        - Building a url for the request.
+
+    Then:
+        - Returns the expected url, with not duplicates for prefix and for slashes.
+    """
+    assert splunk.set_base_url(params) == expected_url
+
+
 @pytest.mark.parametrize('args, params, call_count, success', [
     ({'delta': {'status': '2'}, 'remoteId': '12345', 'status': 2, 'incidentChanged': True},
      {'host': 'ec.com', 'port': '8089', 'authentication': {'identifier': 'i', 'password': 'p'}}, 3, True),
@@ -856,7 +877,10 @@ def test_get_modified_remote_data_command(mocker):
      {'host': 'ec.com', 'port': '8089', 'authentication': {'identifier': 'i', 'password': 'p'}}, 2, False),
     ({'delta': {'status': '2'}, 'remoteId': '12345', 'status': 2, 'incidentChanged': True},
      {'host': 'ec.com', 'port': '8089', 'authentication': {'identifier': 'i', 'password': 'p'}, 'close_notable': True},
-     4, True)
+     4, True),
+    ({'delta': {'status': '2'}, 'remoteId': '12345', 'status': 2, 'incidentChanged': True},
+     {'host': 'https://ec.com//en-US/account/login?loginType=splunk', 'port': '8089',
+      'authentication': {'identifier': 'i', 'password': 'p'}}, 2, False)
 ])
 def test_update_remote_system(args, params, call_count, success, mocker, requests_mock):
     class Service:
@@ -865,7 +889,7 @@ def test_update_remote_system(args, params, call_count, success, mocker, request
 
     mocker.patch.object(demisto, 'info')
     mocker.patch.object(demisto, 'debug')
-    base_url = 'https://' + params['host'] + ':' + params['port'] + '/'
+    base_url = splunk.set_base_url(params)
     requests_mock.post(base_url + 'services/auth/login', json={'sessionKey': 'session_key'})
     requests_mock.post(base_url + 'services/notable_update', json={'success': success, 'message': 'wow'})
     if not success:

@@ -1258,7 +1258,7 @@ def update_remote_system_command(args, params, service, auth_token):
 
         if any(changed_data.values()):
             demisto.debug('Sending update request to Splunk for notable {}, data: {}'.format(notable_id, changed_data))
-            base_url = 'https://' + params['host'] + ':' + params['port'] + '/'
+            base_url = set_base_url(params)
             try:
                 session_key = service.token if not auth_token else None
                 response_info = updateNotableEvents(
@@ -2199,7 +2199,7 @@ def splunk_submit_event_hec_command():
 def splunk_edit_notable_event_command(service, auth_token):
     params = demisto.params()
 
-    base_url = 'https://' + params['host'] + ':' + params['port'] + '/'
+    base_url = set_base_url(params)
     sessionKey = service.token if not auth_token else None
 
     eventIDs = None
@@ -2221,6 +2221,12 @@ def splunk_edit_notable_event_command(service, auth_token):
                                      "events: " + demisto.args()['eventIDs'] + ' : ' + str(response_info)})
 
     demisto.results('Splunk ES Notable events: ' + response_info.get('message'))
+
+
+def set_base_url(demisto_params):
+    host_parts = demisto_params['host'].split('//')
+    host = '/'.join(h_part for h_part in host_parts if h_part != 'https:')
+    return 'https://' + host + ':' + demisto_params['port'] + '/'
 
 
 def splunk_job_status(service, args):
