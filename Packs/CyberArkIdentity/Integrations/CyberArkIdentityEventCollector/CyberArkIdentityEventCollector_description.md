@@ -1,7 +1,8 @@
 Integration with CyberArk Identity using REST API to get the Audit and Auth log for an application.
 
-## To get the configuration parameters please follow this guide
-[CyberArk Identity Documentation](https://docs.cyberark.com/Product-Doc/OnlineHelp/Idaptive/Latest/en/Content/Integrations/SIEM-PlatformEvents/Identity%20Platform%20API%20Usage%20Guide%20for%20ArcSight.pdf).
+
+To obtain the tenant id app id username and password follow the instructions at [CyberArk Identity Documentation](https://docs.cyberark.com/Product-Doc/OnlineHelp/Idaptive/Latest/en/Content/Integrations/SIEM-PlatformEvents/Identity%20Platform%20API%20Usage%20Guide%20for%20ArcSight.pdf). under the `Prerequisite for Accessing INGA Events` section (pages 4-10)
+
 
 ## Configuration Parameters
 
@@ -15,7 +16,7 @@ The application ID from where to fetch the logs.
 The siem user name and password.
 
 **The vendor corresponding to the integration that originated the events**
-The vendor name who created these events, Affects the name of the dataset where these events will insert {`vendor`_product_raw}
+The vendor name who created these events, Affects the name of the dataset where these events will insert {vendor_product_raw}.
 
 **The product corresponding to the integration that originated the events**
-The product name who created the events, Affects the name of the dataset where the events will insert {vendor_`product`_raw}
+The product name who created the events, Affects the name of the dataset where the events will insert {vendor_product_raw}.
