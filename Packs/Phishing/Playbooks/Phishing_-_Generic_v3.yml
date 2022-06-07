@@ -3013,8 +3013,7 @@ inputs:
   description: Optional - the name of a pre-trained phishing model to predict phishing type using machine learning.
   playbookInputQuery:
 - key: GetOriginalEmail
-  value:
-    simple: 'True'
+  value: {}
   required: false
   description: |-
     For forwarded emails. When "True", retrieves the original email in the thread.
