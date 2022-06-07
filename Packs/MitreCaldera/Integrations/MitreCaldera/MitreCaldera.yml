@@ -1102,7 +1102,7 @@ script:
     - type: Number
       contextPath: MitreCaldera.Relationship.score
       description: ''
-  
+  - name: caldera-create-adversary
     description: Create or update an adversary
     arguments:
     - name: adversary_id
@@ -6190,3 +6190,6 @@ script:
     - type: String
       contextPath: MitreCaldera.Link.output
       description: ''
+fromversion: 6.2.0
+tests:
+- No tests (auto formatted)

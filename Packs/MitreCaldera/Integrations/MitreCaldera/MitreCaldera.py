@@ -8,7 +8,8 @@ class Client(BaseClient):
         super().__init__(base_url=server_url, verify=verify, proxy=proxy, headers=headers, auth=auth)
 
     def create_fact_request(self, fact_unique, fact_name, fact_links, fact_relationships, fact_origin_type, fact_created, fact_limit_count, fact_technique_id, fact_trait, fact_source, fact_score, fact_value, fact_collected_by):
-        data = assign_params(unique=fact_unique, name=fact_name, links=fact_links, relationships=fact_relationships, origin_type=fact_origin_type, created=fact_created, limit_count=fact_limit_count, technique_id=fact_technique_id, trait=fact_trait, source=fact_source, score=fact_score, value=fact_value, collected_by=fact_collected_by)
+        data = assign_params(unique=fact_unique, name=fact_name, links=fact_links, relationships=fact_relationships, origin_type=fact_origin_type, created=fact_created,
+                             limit_count=fact_limit_count, technique_id=fact_technique_id, trait=fact_trait, source=fact_source, score=fact_score, value=fact_value, collected_by=fact_collected_by)
         headers = self._headers
 
         response = self._http_request('post', 'api/v2/facts', json_data=data, headers=headers)
@@ -16,7 +17,8 @@ class Client(BaseClient):
         return response
 
     def create_fact_source_request(self, source_name, source_adjustments, source_relationships, source_id, source_rules, source_facts, source_plugin):
-        data = assign_params(name=source_name, adjustments=source_adjustments, relationships=source_relationships, id=source_id, rules=source_rules, facts=source_facts, plugin=source_plugin)
+        data = assign_params(name=source_name, adjustments=source_adjustments, relationships=source_relationships,
+                             id=source_id, rules=source_rules, facts=source_facts, plugin=source_plugin)
         headers = self._headers
 
         response = self._http_request('post', 'api/v2/sources', json_data=data, headers=headers)
@@ -24,7 +26,8 @@ class Client(BaseClient):
         return response
 
     def createanewadversary_request(self, adversary_name, adversary_tags, adversary_objective, adversary_adversary_id, adversary_has_repeatable_abilities, adversary_atomic_ordering, adversary_plugin, adversary_description):
-        data = assign_params(name=adversary_name, tags=adversary_tags, objective=adversary_objective, adversary_id=adversary_adversary_id, has_repeatable_abilities=adversary_has_repeatable_abilities, atomic_ordering=adversary_atomic_ordering, plugin=adversary_plugin, description=adversary_description)
+        data = assign_params(name=adversary_name, tags=adversary_tags, objective=adversary_objective, adversary_id=adversary_adversary_id,
+                             has_repeatable_abilities=adversary_has_repeatable_abilities, atomic_ordering=adversary_atomic_ordering, plugin=adversary_plugin, description=adversary_description)
         headers = self._headers
 
         response = self._http_request('post', 'api/v2/adversaries', json_data=data, headers=headers)
@@ -32,7 +35,8 @@ class Client(BaseClient):
         return response
 
     def createanewagent_request(self, agent_watchdog, agent_links, agent_deadman_enabled, agent_ppid, agent_pid, agent_created, agent_proxy_receivers, agent_origin_link_id, agent_available_contacts, agent_last_seen, agent_platform, agent_pending_contact, agent_host, agent_group, agent_location, agent_display_name, agent_upstream_dest, agent_host_ip_addrs, agent_sleep_max, agent_architecture, agent_sleep_min, agent_server, agent_contact, agent_executors, agent_privilege, agent_username, agent_trusted, agent_proxy_chain, agent_paw, agent_exe_name):
-        data = assign_params(watchdog=agent_watchdog, links=agent_links, deadman_enabled=agent_deadman_enabled, ppid=agent_ppid, pid=agent_pid, created=agent_created, proxy_receivers=agent_proxy_receivers, origin_link_id=agent_origin_link_id, available_contacts=agent_available_contacts, last_seen=agent_last_seen, platform=agent_platform, pending_contact=agent_pending_contact, host=agent_host, group=agent_group, location=agent_location, display_name=agent_display_name, upstream_dest=agent_upstream_dest, host_ip_addrs=agent_host_ip_addrs, sleep_max=agent_sleep_max, architecture=agent_architecture, sleep_min=agent_sleep_min, server=agent_server, contact=agent_contact, executors=agent_executors, privilege=agent_privilege, username=agent_username, trusted=agent_trusted, proxy_chain=agent_proxy_chain, paw=agent_paw, exe_name=agent_exe_name)
+        data = assign_params(watchdog=agent_watchdog, links=agent_links, deadman_enabled=agent_deadman_enabled, ppid=agent_ppid, pid=agent_pid, created=agent_created, proxy_receivers=agent_proxy_receivers, origin_link_id=agent_origin_link_id, available_contacts=agent_available_contacts, last_seen=agent_last_seen, platform=agent_platform, pending_contact=agent_pending_contact, host=agent_host, group=agent_group, location=agent_location,
+                             display_name=agent_display_name, upstream_dest=agent_upstream_dest, host_ip_addrs=agent_host_ip_addrs, sleep_max=agent_sleep_max, architecture=agent_architecture, sleep_min=agent_sleep_min, server=agent_server, contact=agent_contact, executors=agent_executors, privilege=agent_privilege, username=agent_username, trusted=agent_trusted, proxy_chain=agent_proxy_chain, paw=agent_paw, exe_name=agent_exe_name)
         headers = self._headers
 
         response = self._http_request('post', 'api/v2/agents', json_data=data, headers=headers)
@@ -40,7 +44,8 @@ class Client(BaseClient):
         return response
 
     def createanewcalderaoperationrecord_request(self, operation_name, operation_autonomous, operation_id, operation_objective, operation_visibility, operation_state, operation_group, operation_host_group, operation_planner, operation_obfuscator, operation_chain, operation_use_learning_parsers, operation_source, operation_jitter, operation_start, operation_adversary, operation_auto_close):
-        data = assign_params(name=operation_name, autonomous=operation_autonomous, id=operation_id, objective=operation_objective, visibility=operation_visibility, state=operation_state, group=operation_group, host_group=operation_host_group, planner=operation_planner, obfuscator=operation_obfuscator, chain=operation_chain, use_learning_parsers=operation_use_learning_parsers, source=operation_source, jitter=operation_jitter, start=operation_start, adversary=operation_adversary, auto_close=operation_auto_close)
+        data = assign_params(name=operation_name, autonomous=operation_autonomous, id=operation_id, objective=operation_objective, visibility=operation_visibility, state=operation_state, group=operation_group, host_group=operation_host_group, planner=operation_planner,
+                             obfuscator=operation_obfuscator, chain=operation_chain, use_learning_parsers=operation_use_learning_parsers, source=operation_source, jitter=operation_jitter, start=operation_start, adversary=operation_adversary, auto_close=operation_auto_close)
         headers = self._headers
 
         response = self._http_request('post', 'api/v2/operations', json_data=data, headers=headers)
@@ -48,7 +53,8 @@ class Client(BaseClient):
         return response
 
     def createanewobjective_request(self, objective_name, objective_id, objective_percentage, objective_goals, objective_description):
-        data = assign_params(name=objective_name, id=objective_id, percentage=objective_percentage, goals=objective_goals, description=objective_description)
+        data = assign_params(name=objective_name, id=objective_id, percentage=objective_percentage,
+                             goals=objective_goals, description=objective_description)
         headers = self._headers
 
         response = self._http_request('post', 'api/v2/objectives', json_data=data, headers=headers)
@@ -56,7 +62,8 @@ class Client(BaseClient):
         return response
 
     def createarelationship_request(self, relationship_unique, relationship_origin, relationship_edge, relationship_source, relationship_score, relationship_target):
-        data = assign_params(unique=relationship_unique, origin=relationship_origin, edge=relationship_edge, source=relationship_source, score=relationship_score, target=relationship_target)
+        data = assign_params(unique=relationship_unique, origin=relationship_origin, edge=relationship_edge,
+                             source=relationship_source, score=relationship_score, target=relationship_target)
         headers = self._headers
 
         response = self._http_request('post', 'api/v2/relationships', json_data=data, headers=headers)
@@ -64,7 +71,8 @@ class Client(BaseClient):
         return response
 
     def createorupdateanadversary_request(self, adversary_id, partial_adversary_name, partial_adversary_tags, partial_adversary_objective, partial_adversary_adversary_id, partial_adversary_has_repeatable_abilities, partial_adversary_atomic_ordering, partial_adversary_plugin, partial_adversary_description):
-        data = assign_params(name=partial_adversary_name, tags=partial_adversary_tags, objective=partial_adversary_objective, adversary_id=partial_adversary_adversary_id, has_repeatable_abilities=partial_adversary_has_repeatable_abilities, atomic_ordering=partial_adversary_atomic_ordering, plugin=partial_adversary_plugin, description=partial_adversary_description)
+        data = assign_params(name=partial_adversary_name, tags=partial_adversary_tags, objective=partial_adversary_objective, adversary_id=partial_adversary_adversary_id,
+                             has_repeatable_abilities=partial_adversary_has_repeatable_abilities, atomic_ordering=partial_adversary_atomic_ordering, plugin=partial_adversary_plugin, description=partial_adversary_description)
         headers = self._headers
 
         response = self._http_request('put', f'api/v2/adversaries/{adversary_id}', json_data=data, headers=headers)
@@ -72,7 +80,8 @@ class Client(BaseClient):
         return response
 
     def createorupdateanagent_request(self, paw, partial_agent_watchdog, partial_agent_links, partial_agent_deadman_enabled, partial_agent_ppid, partial_agent_pid, partial_agent_created, partial_agent_proxy_receivers, partial_agent_origin_link_id, partial_agent_available_contacts, partial_agent_last_seen, partial_agent_platform, partial_agent_pending_contact, partial_agent_host, partial_agent_group, partial_agent_location, partial_agent_display_name, partial_agent_upstream_dest, partial_agent_host_ip_addrs, partial_agent_sleep_max, partial_agent_architecture, partial_agent_sleep_min, partial_agent_server, partial_agent_contact, partial_agent_executors, partial_agent_privilege, partial_agent_username, partial_agent_trusted, partial_agent_proxy_chain, partial_agent_paw, partial_agent_exe_name):
-        data = assign_params(watchdog=partial_agent_watchdog, links=partial_agent_links, deadman_enabled=partial_agent_deadman_enabled, ppid=partial_agent_ppid, pid=partial_agent_pid, created=partial_agent_created, proxy_receivers=partial_agent_proxy_receivers, origin_link_id=partial_agent_origin_link_id, available_contacts=partial_agent_available_contacts, last_seen=partial_agent_last_seen, platform=partial_agent_platform, pending_contact=partial_agent_pending_contact, host=partial_agent_host, group=partial_agent_group, location=partial_agent_location, display_name=partial_agent_display_name, upstream_dest=partial_agent_upstream_dest, host_ip_addrs=partial_agent_host_ip_addrs, sleep_max=partial_agent_sleep_max, architecture=partial_agent_architecture, sleep_min=partial_agent_sleep_min, server=partial_agent_server, contact=partial_agent_contact, executors=partial_agent_executors, privilege=partial_agent_privilege, username=partial_agent_username, trusted=partial_agent_trusted, proxy_chain=partial_agent_proxy_chain, paw=partial_agent_paw, exe_name=partial_agent_exe_name)
+        data = assign_params(watchdog=partial_agent_watchdog, links=partial_agent_links, deadman_enabled=partial_agent_deadman_enabled, ppid=partial_agent_ppid, pid=partial_agent_pid, created=partial_agent_created, proxy_receivers=partial_agent_proxy_receivers, origin_link_id=partial_agent_origin_link_id, available_contacts=partial_agent_available_contacts, last_seen=partial_agent_last_seen, platform=partial_agent_platform, pending_contact=partial_agent_pending_contact, host=partial_agent_host, group=partial_agent_group, location=partial_agent_location,
+                             display_name=partial_agent_display_name, upstream_dest=partial_agent_upstream_dest, host_ip_addrs=partial_agent_host_ip_addrs, sleep_max=partial_agent_sleep_max, architecture=partial_agent_architecture, sleep_min=partial_agent_sleep_min, server=partial_agent_server, contact=partial_agent_contact, executors=partial_agent_executors, privilege=partial_agent_privilege, username=partial_agent_username, trusted=partial_agent_trusted, proxy_chain=partial_agent_proxy_chain, paw=partial_agent_paw, exe_name=partial_agent_exe_name)
         headers = self._headers
 
         response = self._http_request('put', f'api/v2/agents/{paw}', json_data=data, headers=headers)
@@ -80,7 +89,8 @@ class Client(BaseClient):
         return response
 
     def createorupdateanobjective_request(self, id_, partial_objective_name, partial_objective_id, partial_objective_percentage, partial_objective_goals, partial_objective_description):
-        data = assign_params(name=partial_objective_name, id=partial_objective_id, percentage=partial_objective_percentage, goals=partial_objective_goals, description=partial_objective_description)
+        data = assign_params(name=partial_objective_name, id=partial_objective_id, percentage=partial_objective_percentage,
+                             goals=partial_objective_goals, description=partial_objective_description)
         headers = self._headers
 
         response = self._http_request('put', f'api/v2/objectives/{id_}', json_data=data, headers=headers)
@@ -88,7 +98,8 @@ class Client(BaseClient):
         return response
 
     def createsanewability_request(self, ability_ability_id, ability_name, ability_buckets, ability_technique_id, ability_delete_payload, ability_executors, ability_privilege, ability_requirements, ability_plugin, ability_access, ability_tactic, ability_additional_info, ability_singleton, ability_technique_name, ability_repeatable, ability_description):
-        data = assign_params(ability_id=ability_ability_id, name=ability_name, buckets=ability_buckets, technique_id=ability_technique_id, delete_payload=ability_delete_payload, executors=ability_executors, privilege=ability_privilege, requirements=ability_requirements, plugin=ability_plugin, access=ability_access, tactic=ability_tactic, additional_info=ability_additional_info, singleton=ability_singleton, technique_name=ability_technique_name, repeatable=ability_repeatable, description=ability_description)
+        data = assign_params(ability_id=ability_ability_id, name=ability_name, buckets=ability_buckets, technique_id=ability_technique_id, delete_payload=ability_delete_payload, executors=ability_executors, privilege=ability_privilege, requirements=ability_requirements,
+                             plugin=ability_plugin, access=ability_access, tactic=ability_tactic, additional_info=ability_additional_info, singleton=ability_singleton, technique_name=ability_technique_name, repeatable=ability_repeatable, description=ability_description)
         headers = self._headers
 
         response = self._http_request('post', 'api/v2/abilities', json_data=data, headers=headers)
@@ -96,7 +107,8 @@ class Client(BaseClient):
         return response
 
     def createsapotentiallink_request(self, id_, link_relationships, link_id, link_collect, link_pid, link_visibility, link_finish, link_pin, link_jitter, link_agent_reported_time, link_deadman, link_used, link_host, link_ability, link_status, link_score, link_command, link_unique, link_cleanup, link_decide, link_facts, link_executor, link_paw, link_output):
-        data = assign_params(relationships=link_relationships, id=link_id, collect=link_collect, pid=link_pid, visibility=link_visibility, finish=link_finish, pin=link_pin, jitter=link_jitter, agent_reported_time=link_agent_reported_time, deadman=link_deadman, used=link_used, host=link_host, ability=link_ability, status=link_status, score=link_score, command=link_command, unique=link_unique, cleanup=link_cleanup, decide=link_decide, facts=link_facts, executor=link_executor, paw=link_paw, output=link_output)
+        data = assign_params(relationships=link_relationships, id=link_id, collect=link_collect, pid=link_pid, visibility=link_visibility, finish=link_finish, pin=link_pin, jitter=link_jitter, agent_reported_time=link_agent_reported_time, deadman=link_deadman,
+                             used=link_used, host=link_host, ability=link_ability, status=link_status, score=link_score, command=link_command, unique=link_unique, cleanup=link_cleanup, decide=link_decide, facts=link_facts, executor=link_executor, paw=link_paw, output=link_output)
         headers = self._headers
 
         response = self._http_request('post', f'api/v2/operations/{id_}/potential-links', json_data=data, headers=headers)
@@ -133,7 +145,8 @@ class Client(BaseClient):
         return response
 
     def deleteoneormorefacts_request(self, partial_fact_unique, partial_fact_name, partial_fact_links, partial_fact_relationships, partial_fact_origin_type, partial_fact_created, partial_fact_limit_count, partial_fact_technique_id, partial_fact_trait, partial_fact_source, partial_fact_score, partial_fact_value, partial_fact_collected_by):
-        data = assign_params(unique=partial_fact_unique, name=partial_fact_name, links=partial_fact_links, relationships=partial_fact_relationships, origin_type=partial_fact_origin_type, created=partial_fact_created, limit_count=partial_fact_limit_count, technique_id=partial_fact_technique_id, trait=partial_fact_trait, source=partial_fact_source, score=partial_fact_score, value=partial_fact_value, collected_by=partial_fact_collected_by)
+        data = assign_params(unique=partial_fact_unique, name=partial_fact_name, links=partial_fact_links, relationships=partial_fact_relationships, origin_type=partial_fact_origin_type, created=partial_fact_created,
+                             limit_count=partial_fact_limit_count, technique_id=partial_fact_technique_id, trait=partial_fact_trait, source=partial_fact_source, score=partial_fact_score, value=partial_fact_value, collected_by=partial_fact_collected_by)
         headers = self._headers
 
         response = self._http_request('delete', 'api/v2/facts', json_data=data, headers=headers)
@@ -141,7 +154,8 @@ class Client(BaseClient):
         return response
 
     def deleteoneormorerelationships_request(self, partial_relationship_unique, partial_relationship_origin, partial_relationship_edge, partial_relationship_source, partial_relationship_score, partial_relationship_target):
-        data = assign_params(unique=partial_relationship_unique, origin=partial_relationship_origin, edge=partial_relationship_edge, source=partial_relationship_source, score=partial_relationship_score, target=partial_relationship_target)
+        data = assign_params(unique=partial_relationship_unique, origin=partial_relationship_origin, edge=partial_relationship_edge,
+                             source=partial_relationship_source, score=partial_relationship_score, target=partial_relationship_target)
         headers = self._headers
 
         response = self._http_request('delete', 'api/v2/relationships', json_data=data, headers=headers)
@@ -448,7 +462,8 @@ class Client(BaseClient):
         data = assign_params(enable_agent_output=operationoutputrequest_enable_agent_output)
         headers = self._headers
 
-        response = self._http_request('post', f'api/v2/operations/{id_}/event-logs', params=params, json_data=data, headers=headers)
+        response = self._http_request(
+            'post', f'api/v2/operations/{id_}/event-logs', params=params, json_data=data, headers=headers)
 
         return response
 
@@ -462,7 +477,8 @@ class Client(BaseClient):
         return response
 
     def replacesanexistingability_request(self, ability_id, partial_ability_ability_id, partial_ability_name, partial_ability_buckets, partial_ability_technique_id, partial_ability_delete_payload, partial_ability_executors, partial_ability_privilege, partial_ability_requirements, partial_ability_plugin, partial_ability_access, partial_ability_tactic, partial_ability_additional_info, partial_ability_singleton, partial_ability_technique_name, partial_ability_repeatable, partial_ability_description):
-        data = assign_params(ability_id=partial_ability_ability_id, name=partial_ability_name, buckets=partial_ability_buckets, technique_id=partial_ability_technique_id, delete_payload=partial_ability_delete_payload, executors=partial_ability_executors, privilege=partial_ability_privilege, requirements=partial_ability_requirements, plugin=partial_ability_plugin, access=partial_ability_access, tactic=partial_ability_tactic, additional_info=partial_ability_additional_info, singleton=partial_ability_singleton, technique_name=partial_ability_technique_name, repeatable=partial_ability_repeatable, description=partial_ability_description)
+        data = assign_params(ability_id=partial_ability_ability_id, name=partial_ability_name, buckets=partial_ability_buckets, technique_id=partial_ability_technique_id, delete_payload=partial_ability_delete_payload, executors=partial_ability_executors, privilege=partial_ability_privilege, requirements=partial_ability_requirements,
+                             plugin=partial_ability_plugin, access=partial_ability_access, tactic=partial_ability_tactic, additional_info=partial_ability_additional_info, singleton=partial_ability_singleton, technique_name=partial_ability_technique_name, repeatable=partial_ability_repeatable, description=partial_ability_description)
         headers = self._headers
 
         response = self._http_request('put', f'api/v2/abilities/{ability_id}', json_data=data, headers=headers)
@@ -478,7 +494,8 @@ class Client(BaseClient):
         return response
 
     def updateagentconfig_request(self, agentconfigupdate_watchdog, agentconfigupdate_sleep_min, agentconfigupdate_deployments, agentconfigupdate_deadman_abilities, agentconfigupdate_untrusted_timer, agentconfigupdate_bootstrap_abilities, agentconfigupdate_sleep_max, agentconfigupdate_implant_name):
-        data = assign_params(watchdog=agentconfigupdate_watchdog, sleep_min=agentconfigupdate_sleep_min, deployments=agentconfigupdate_deployments, deadman_abilities=agentconfigupdate_deadman_abilities, untrusted_timer=agentconfigupdate_untrusted_timer, bootstrap_abilities=agentconfigupdate_bootstrap_abilities, sleep_max=agentconfigupdate_sleep_max, implant_name=agentconfigupdate_implant_name)
+        data = assign_params(watchdog=agentconfigupdate_watchdog, sleep_min=agentconfigupdate_sleep_min, deployments=agentconfigupdate_deployments, deadman_abilities=agentconfigupdate_deadman_abilities,
+                             untrusted_timer=agentconfigupdate_untrusted_timer, bootstrap_abilities=agentconfigupdate_bootstrap_abilities, sleep_max=agentconfigupdate_sleep_max, implant_name=agentconfigupdate_implant_name)
         headers = self._headers
 
         response = self._http_request('patch', 'api/v2/config/agents', json_data=data, headers=headers)
@@ -486,7 +503,8 @@ class Client(BaseClient):
         return response
 
     def updateanadversary_request(self, adversary_id, partial_adversary1_name, partial_adversary1_tags, partial_adversary1_objective, partial_adversary1_has_repeatable_abilities, partial_adversary1_atomic_ordering, partial_adversary1_plugin, partial_adversary1_description):
-        data = assign_params(name=partial_adversary1_name, tags=partial_adversary1_tags, objective=partial_adversary1_objective, has_repeatable_abilities=partial_adversary1_has_repeatable_abilities, atomic_ordering=partial_adversary1_atomic_ordering, plugin=partial_adversary1_plugin, description=partial_adversary1_description)
+        data = assign_params(name=partial_adversary1_name, tags=partial_adversary1_tags, objective=partial_adversary1_objective, has_repeatable_abilities=partial_adversary1_has_repeatable_abilities,
+                             atomic_ordering=partial_adversary1_atomic_ordering, plugin=partial_adversary1_plugin, description=partial_adversary1_description)
         headers = self._headers
 
         response = self._http_request('patch', f'api/v2/adversaries/{adversary_id}', json_data=data, headers=headers)
@@ -494,7 +512,8 @@ class Client(BaseClient):
         return response
 
     def updateanagent_request(self, paw, partial_agent1_watchdog, partial_agent1_sleep_min, partial_agent1_trusted, partial_agent1_sleep_max, partial_agent1_pending_contact, partial_agent1_group):
-        data = assign_params(watchdog=partial_agent1_watchdog, sleep_min=partial_agent1_sleep_min, trusted=partial_agent1_trusted, sleep_max=partial_agent1_sleep_max, pending_contact=partial_agent1_pending_contact, group=partial_agent1_group)
+        data = assign_params(watchdog=partial_agent1_watchdog, sleep_min=partial_agent1_sleep_min, trusted=partial_agent1_trusted,
+                             sleep_max=partial_agent1_sleep_max, pending_contact=partial_agent1_pending_contact, group=partial_agent1_group)
         headers = self._headers
 
         response = self._http_request('patch', f'api/v2/agents/{paw}', json_data=data, headers=headers)
@@ -502,7 +521,8 @@ class Client(BaseClient):
         return response
 
     def updateanexistingfactsource_request(self, id_, partial_source_name, partial_source_adjustments, partial_source_relationships, partial_source_id, partial_source_rules, partial_source_facts, partial_source_plugin):
-        data = assign_params(name=partial_source_name, adjustments=partial_source_adjustments, relationships=partial_source_relationships, id=partial_source_id, rules=partial_source_rules, facts=partial_source_facts, plugin=partial_source_plugin)
+        data = assign_params(name=partial_source_name, adjustments=partial_source_adjustments, relationships=partial_source_relationships,
+                             id=partial_source_id, rules=partial_source_rules, facts=partial_source_facts, plugin=partial_source_plugin)
         headers = self._headers
 
         response = self._http_request('patch', f'api/v2/sources/{id_}', json_data=data, headers=headers)
@@ -510,7 +530,8 @@ class Client(BaseClient):
         return response
 
     def updateanexistingorcreateanewfactsource_request(self, id_, partial_source_name, partial_source_adjustments, partial_source_relationships, partial_source_id, partial_source_rules, partial_source_facts, partial_source_plugin):
-        data = assign_params(name=partial_source_name, adjustments=partial_source_adjustments, relationships=partial_source_relationships, id=partial_source_id, rules=partial_source_rules, facts=partial_source_facts, plugin=partial_source_plugin)
+        data = assign_params(name=partial_source_name, adjustments=partial_source_adjustments, relationships=partial_source_relationships,
+                             id=partial_source_id, rules=partial_source_rules, facts=partial_source_facts, plugin=partial_source_plugin)
         headers = self._headers
 
         response = self._http_request('put', f'api/v2/sources/{id_}', json_data=data, headers=headers)
@@ -518,7 +539,8 @@ class Client(BaseClient):
         return response
 
     def updateanobjective_request(self, id_, partial_objective1_name, partial_objective1_goals, partial_objective1_description):
-        data = assign_params(name=partial_objective1_name, goals=partial_objective1_goals, description=partial_objective1_description)
+        data = assign_params(name=partial_objective1_name, goals=partial_objective1_goals,
+                             description=partial_objective1_description)
         headers = self._headers
 
         response = self._http_request('patch', f'api/v2/objectives/{id_}', json_data=data, headers=headers)
@@ -526,7 +548,8 @@ class Client(BaseClient):
         return response
 
     def updatefieldswithinanoperation_request(self, id_, partial_operation1_obfuscator, partial_operation1_autonomous, partial_operation1_state):
-        data = assign_params(obfuscator=partial_operation1_obfuscator, autonomous=partial_operation1_autonomous, state=partial_operation1_state)
+        data = assign_params(obfuscator=partial_operation1_obfuscator,
+                             autonomous=partial_operation1_autonomous, state=partial_operation1_state)
         headers = self._headers
 
         response = self._http_request('patch', f'api/v2/operations/{id_}', json_data=data, headers=headers)
@@ -558,7 +581,8 @@ class Client(BaseClient):
         return response
 
     def updatesanexistingability_request(self, ability_id, partial_ability1_name, partial_ability1_buckets, partial_ability1_technique_id, partial_ability1_delete_payload, partial_ability1_executors, partial_ability1_privilege, partial_ability1_technique_name, partial_ability1_tactic, partial_ability1_singleton, partial_ability1_plugin, partial_ability1_repeatable, partial_ability1_description):
-        data = assign_params(name=partial_ability1_name, buckets=partial_ability1_buckets, technique_id=partial_ability1_technique_id, delete_payload=partial_ability1_delete_payload, executors=partial_ability1_executors, privilege=partial_ability1_privilege, technique_name=partial_ability1_technique_name, tactic=partial_ability1_tactic, singleton=partial_ability1_singleton, plugin=partial_ability1_plugin, repeatable=partial_ability1_repeatable, description=partial_ability1_description)
+        data = assign_params(name=partial_ability1_name, buckets=partial_ability1_buckets, technique_id=partial_ability1_technique_id, delete_payload=partial_ability1_delete_payload, executors=partial_ability1_executors, privilege=partial_ability1_privilege,
+                             technique_name=partial_ability1_technique_name, tactic=partial_ability1_tactic, singleton=partial_ability1_singleton, plugin=partial_ability1_plugin, repeatable=partial_ability1_repeatable, description=partial_ability1_description)
         headers = self._headers
 
         response = self._http_request('patch', f'api/v2/abilities/{ability_id}', json_data=data, headers=headers)
@@ -597,7 +621,8 @@ def create_fact_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     fact_value = str(args.get('fact_value', ''))
     fact_collected_by = argToList(args.get('fact_collected_by', []))
 
-    response = client.create_fact_request(fact_unique, fact_name, fact_links, fact_relationships, fact_origin_type, fact_created, fact_limit_count, fact_technique_id, fact_trait, fact_source, fact_score, fact_value, fact_collected_by)
+    response = client.create_fact_request(fact_unique, fact_name, fact_links, fact_relationships, fact_origin_type,
+                                          fact_created, fact_limit_count, fact_technique_id, fact_trait, fact_source, fact_score, fact_value, fact_collected_by)
     command_results = CommandResults(
         outputs_prefix='MitreCaldera.Fact',
         outputs_key_field='',
@@ -617,7 +642,8 @@ def create_fact_source_command(client: Client, args: Dict[str, Any]) -> CommandR
     source_facts = argToList(args.get('source_facts', []))
     source_plugin = args.get('source_plugin', 'None')
 
-    response = client.create_fact_source_request(source_name, source_adjustments, source_relationships, source_id, source_rules, source_facts, source_plugin)
+    response = client.create_fact_source_request(source_name, source_adjustments,
+                                                 source_relationships, source_id, source_rules, source_facts, source_plugin)
     command_results = CommandResults(
         outputs_prefix='MitreCaldera.Source',
         outputs_key_field='',
@@ -638,7 +664,8 @@ def createanewadversary_command(client: Client, args: Dict[str, Any]) -> Command
     adversary_plugin = args.get('adversary_plugin', 'None')
     adversary_description = str(args.get('adversary_description', ''))
 
-    response = client.createanewadversary_request(adversary_name, adversary_tags, adversary_objective, adversary_adversary_id, adversary_has_repeatable_abilities, adversary_atomic_ordering, adversary_plugin, adversary_description)
+    response = client.createanewadversary_request(adversary_name, adversary_tags, adversary_objective, adversary_adversary_id,
+                                                  adversary_has_repeatable_abilities, adversary_atomic_ordering, adversary_plugin, adversary_description)
     command_results = CommandResults(
         outputs_prefix='MitreCaldera.Adversary',
         outputs_key_field='',
@@ -681,7 +708,8 @@ def createanewagent_command(client: Client, args: Dict[str, Any]) -> CommandResu
     agent_paw = str(args.get('agent_paw', ''))
     agent_exe_name = str(args.get('agent_exe_name', ''))
 
-    response = client.createanewagent_request(agent_watchdog, agent_links, agent_deadman_enabled, agent_ppid, agent_pid, agent_created, agent_proxy_receivers, agent_origin_link_id, agent_available_contacts, agent_last_seen, agent_platform, agent_pending_contact, agent_host, agent_group, agent_location, agent_display_name, agent_upstream_dest, agent_host_ip_addrs, agent_sleep_max, agent_architecture, agent_sleep_min, agent_server, agent_contact, agent_executors, agent_privilege, agent_username, agent_trusted, agent_proxy_chain, agent_paw, agent_exe_name)
+    response = client.createanewagent_request(agent_watchdog, agent_links, agent_deadman_enabled, agent_ppid, agent_pid, agent_created, agent_proxy_receivers, agent_origin_link_id, agent_available_contacts, agent_last_seen, agent_platform, agent_pending_contact, agent_host, agent_group,
+                                              agent_location, agent_display_name, agent_upstream_dest, agent_host_ip_addrs, agent_sleep_max, agent_architecture, agent_sleep_min, agent_server, agent_contact, agent_executors, agent_privilege, agent_username, agent_trusted, agent_proxy_chain, agent_paw, agent_exe_name)
     command_results = CommandResults(
         outputs_prefix='MitreCaldera.Agent',
         outputs_key_field='',
@@ -701,7 +729,8 @@ def createanewcalderaoperationrecord_command(client: Client, args: Dict[str, Any
     operation_objective_percentage = str(args.get('operation_objective_percentage', ''))
     operation_objective_goals = str(args.get('operation_objective_goals', ''))
     operation_objective_description = str(args.get('operation_objective_description', ''))
-    operation_objective = assign_params(name=operation_objective_name, id=operation_objective_id, percentage=operation_objective_percentage, goals=operation_objective_goals, description=operation_objective_description)
+    operation_objective = assign_params(name=operation_objective_name, id=operation_objective_id,
+                                        percentage=operation_objective_percentage, goals=operation_objective_goals, description=operation_objective_description)
     operation_visibility = args.get('operation_visibility', None)
     operation_state = str(args.get('operation_state', ''))
     operation_group = str(args.get('operation_group', ''))
@@ -715,7 +744,8 @@ def createanewcalderaoperationrecord_command(client: Client, args: Dict[str, Any
     operation_planner_module = str(args.get('operation_planner_module', ''))
     operation_planner_description = str(args.get('operation_planner_description', ''))
     operation_planner_params = str(args.get('operation_planner_params', ''))
-    operation_planner = assign_params(name=operation_planner_name, allow_repeatable_abilities=operation_planner_allow_repeatable_abilities, ignore_enforcement_modules=operation_planner_ignore_enforcement_modules, stopping_conditions=operation_planner_stopping_conditions, id=operation_planner_id, plugin=operation_planner_plugin, module=operation_planner_module, description=operation_planner_description, params=operation_planner_params)
+    operation_planner = assign_params(name=operation_planner_name, allow_repeatable_abilities=operation_planner_allow_repeatable_abilities, ignore_enforcement_modules=operation_planner_ignore_enforcement_modules,
+                                      stopping_conditions=operation_planner_stopping_conditions, id=operation_planner_id, plugin=operation_planner_plugin, module=operation_planner_module, description=operation_planner_description, params=operation_planner_params)
     operation_obfuscator = str(args.get('operation_obfuscator', ''))
     operation_chain = str(args.get('operation_chain', ''))
     operation_use_learning_parsers = argToBoolean(args.get('operation_use_learning_parsers', False))
@@ -726,7 +756,8 @@ def createanewcalderaoperationrecord_command(client: Client, args: Dict[str, Any
     operation_source_rules = str(args.get('operation_source_rules', ''))
     operation_source_facts = str(args.get('operation_source_facts', ''))
     operation_source_plugin = str(args.get('operation_source_plugin', ''))
-    operation_source = assign_params(name=operation_source_name, adjustments=operation_source_adjustments, relationships=operation_source_relationships, id=operation_source_id, rules=operation_source_rules, facts=operation_source_facts, plugin=operation_source_plugin)
+    operation_source = assign_params(name=operation_source_name, adjustments=operation_source_adjustments, relationships=operation_source_relationships,
+                                     id=operation_source_id, rules=operation_source_rules, facts=operation_source_facts, plugin=operation_source_plugin)
     operation_jitter = str(args.get('operation_jitter', ''))
     operation_start = str(args.get('operation_start', ''))
     operation_adversary_name = str(args.get('operation_adversary_name', ''))
@@ -737,10 +768,12 @@ def createanewcalderaoperationrecord_command(client: Client, args: Dict[str, Any
     operation_adversary_atomic_ordering = str(args.get('operation_adversary_atomic_ordering', ''))
     operation_adversary_plugin = str(args.get('operation_adversary_plugin', ''))
     operation_adversary_description = str(args.get('operation_adversary_description', ''))
-    operation_adversary = assign_params(name=operation_adversary_name, tags=operation_adversary_tags, objective=operation_adversary_objective, adversary_id=operation_adversary_adversary_id, has_repeatable_abilities=operation_adversary_has_repeatable_abilities, atomic_ordering=operation_adversary_atomic_ordering, plugin=operation_adversary_plugin, description=operation_adversary_description)
+    operation_adversary = assign_params(name=operation_adversary_name, tags=operation_adversary_tags, objective=operation_adversary_objective, adversary_id=operation_adversary_adversary_id,
+                                        has_repeatable_abilities=operation_adversary_has_repeatable_abilities, atomic_ordering=operation_adversary_atomic_ordering, plugin=operation_adversary_plugin, description=operation_adversary_description)
     operation_auto_close = argToBoolean(args.get('operation_auto_close', False))
 
-    response = client.createanewcalderaoperationrecord_request(operation_name, operation_autonomous, operation_id, operation_objective, operation_visibility, operation_state, operation_group, operation_host_group, operation_planner, operation_obfuscator, operation_chain, operation_use_learning_parsers, operation_source, operation_jitter, operation_start, operation_adversary, operation_auto_close)
+    response = client.createanewcalderaoperationrecord_request(operation_name, operation_autonomous, operation_id, operation_objective, operation_visibility, operation_state, operation_group, operation_host_group,
+                                                               operation_planner, operation_obfuscator, operation_chain, operation_use_learning_parsers, operation_source, operation_jitter, operation_start, operation_adversary, operation_auto_close)
     command_results = CommandResults(
         outputs_prefix='MitreCaldera.Operation',
         outputs_key_field='',
@@ -758,7 +791,8 @@ def createanewobjective_command(client: Client, args: Dict[str, Any]) -> Command
     objective_goals = argToList(args.get('objective_goals', []))
     objective_description = str(args.get('objective_description', ''))
 
-    response = client.createanewobjective_request(objective_name, objective_id, objective_percentage, objective_goals, objective_description)
+    response = client.createanewobjective_request(
+        objective_name, objective_id, objective_percentage, objective_goals, objective_description)
     command_results = CommandResults(
         outputs_prefix='MitreCaldera.Objective',
         outputs_key_field='',
@@ -786,11 +820,13 @@ def createarelationship_command(client: Client, args: Dict[str, Any]) -> Command
     relationship_source_score = args.get('relationship_source_score', None)
     relationship_source_value = str(args.get('relationship_source_value', ''))
     relationship_source_collected_by = str(args.get('relationship_source_collected_by', ''))
-    relationship_source = assign_params(unique=relationship_source_unique, name=relationship_source_name, links=relationship_source_links, relationships=relationship_source_relationships, origin_type=relationship_source_origin_type, created=relationship_source_created, limit_count=relationship_source_limit_count, technique_id=relationship_source_technique_id, trait=relationship_source_trait, source=relationship_source_source, score=relationship_source_score, value=relationship_source_value, collected_by=relationship_source_collected_by)
+    relationship_source = assign_params(unique=relationship_source_unique, name=relationship_source_name, links=relationship_source_links, relationships=relationship_source_relationships, origin_type=relationship_source_origin_type, created=relationship_source_created,
+                                        limit_count=relationship_source_limit_count, technique_id=relationship_source_technique_id, trait=relationship_source_trait, source=relationship_source_source, score=relationship_source_score, value=relationship_source_value, collected_by=relationship_source_collected_by)
     relationship_score = args.get('relationship_score', None)
     relationship_target = str(args.get('relationship_target', ''))
 
-    response = client.createarelationship_request(relationship_unique, relationship_origin, relationship_edge, relationship_source, relationship_score, relationship_target)
+    response = client.createarelationship_request(
+        relationship_unique, relationship_origin, relationship_edge, relationship_source, relationship_score, relationship_target)
     command_results = CommandResults(
         outputs_prefix='MitreCaldera.Relationship',
         outputs_key_field='',
@@ -812,7 +848,8 @@ def createorupdateanadversary_command(client: Client, args: Dict[str, Any]) -> C
     partial_adversary_plugin = args.get('partial_adversary_plugin', 'None')
     partial_adversary_description = str(args.get('partial_adversary_description', ''))
 
-    response = client.createorupdateanadversary_request(adversary_id, partial_adversary_name, partial_adversary_tags, partial_adversary_objective, partial_adversary_adversary_id, partial_adversary_has_repeatable_abilities, partial_adversary_atomic_ordering, partial_adversary_plugin, partial_adversary_description)
+    response = client.createorupdateanadversary_request(adversary_id, partial_adversary_name, partial_adversary_tags, partial_adversary_objective, partial_adversary_adversary_id,
+                                                        partial_adversary_has_repeatable_abilities, partial_adversary_atomic_ordering, partial_adversary_plugin, partial_adversary_description)
     command_results = CommandResults(
         outputs_prefix='MitreCaldera.Adversary',
         outputs_key_field='',
@@ -856,7 +893,8 @@ def createorupdateanagent_command(client: Client, args: Dict[str, Any]) -> Comma
     partial_agent_paw = str(args.get('partial_agent_paw', ''))
     partial_agent_exe_name = str(args.get('partial_agent_exe_name', ''))
 
-    response = client.createorupdateanagent_request(paw, partial_agent_watchdog, partial_agent_links, partial_agent_deadman_enabled, partial_agent_ppid, partial_agent_pid, partial_agent_created, partial_agent_proxy_receivers, partial_agent_origin_link_id, partial_agent_available_contacts, partial_agent_last_seen, partial_agent_platform, partial_agent_pending_contact, partial_agent_host, partial_agent_group, partial_agent_location, partial_agent_display_name, partial_agent_upstream_dest, partial_agent_host_ip_addrs, partial_agent_sleep_max, partial_agent_architecture, partial_agent_sleep_min, partial_agent_server, partial_agent_contact, partial_agent_executors, partial_agent_privilege, partial_agent_username, partial_agent_trusted, partial_agent_proxy_chain, partial_agent_paw, partial_agent_exe_name)
+    response = client.createorupdateanagent_request(paw, partial_agent_watchdog, partial_agent_links, partial_agent_deadman_enabled, partial_agent_ppid, partial_agent_pid, partial_agent_created, partial_agent_proxy_receivers, partial_agent_origin_link_id, partial_agent_available_contacts, partial_agent_last_seen, partial_agent_platform, partial_agent_pending_contact, partial_agent_host, partial_agent_group,
+                                                    partial_agent_location, partial_agent_display_name, partial_agent_upstream_dest, partial_agent_host_ip_addrs, partial_agent_sleep_max, partial_agent_architecture, partial_agent_sleep_min, partial_agent_server, partial_agent_contact, partial_agent_executors, partial_agent_privilege, partial_agent_username, partial_agent_trusted, partial_agent_proxy_chain, partial_agent_paw, partial_agent_exe_name)
     command_results = CommandResults(
         outputs_prefix='MitreCaldera.Agent',
         outputs_key_field='',
@@ -875,7 +913,8 @@ def createorupdateanobjective_command(client: Client, args: Dict[str, Any]) -> C
     partial_objective_goals = argToList(args.get('partial_objective_goals', []))
     partial_objective_description = str(args.get('partial_objective_description', ''))
 
-    response = client.createorupdateanobjective_request(id_, partial_objective_name, partial_objective_id, partial_objective_percentage, partial_objective_goals, partial_objective_description)
+    response = client.createorupdateanobjective_request(
+        id_, partial_objective_name, partial_objective_id, partial_objective_percentage, partial_objective_goals, partial_objective_description)
     command_results = CommandResults(
         outputs_prefix='MitreCaldera.Objective',
         outputs_key_field='',
@@ -904,7 +943,8 @@ def createsanewability_command(client: Client, args: Dict[str, Any]) -> CommandR
     ability_repeatable = argToBoolean(args.get('ability_repeatable', False))
     ability_description = args.get('ability_description', 'None')
 
-    response = client.createsanewability_request(ability_ability_id, ability_name, ability_buckets, ability_technique_id, ability_delete_payload, ability_executors, ability_privilege, ability_requirements, ability_plugin, ability_access, ability_tactic, ability_additional_info, ability_singleton, ability_technique_name, ability_repeatable, ability_description)
+    response = client.createsanewability_request(ability_ability_id, ability_name, ability_buckets, ability_technique_id, ability_delete_payload, ability_executors, ability_privilege,
+                                                 ability_requirements, ability_plugin, ability_access, ability_tactic, ability_additional_info, ability_singleton, ability_technique_name, ability_repeatable, ability_description)
     command_results = CommandResults(
         outputs_prefix='MitreCaldera.Ability',
         outputs_key_field='',
@@ -947,7 +987,8 @@ def createsapotentiallink_command(client: Client, args: Dict[str, Any]) -> Comma
     link_ability_technique_name = str(args.get('link_ability_technique_name', ''))
     link_ability_repeatable = argToBoolean(args.get('link_ability_repeatable', False))
     link_ability_description = str(args.get('link_ability_description', ''))
-    link_ability = assign_params(ability_id=link_ability_ability_id, name=link_ability_name, buckets=link_ability_buckets, technique_id=link_ability_technique_id, delete_payload=link_ability_delete_payload, executors=link_ability_executors, privilege=link_ability_privilege, requirements=link_ability_requirements, plugin=link_ability_plugin, access=link_ability_access, tactic=link_ability_tactic, additional_info=link_ability_additional_info, singleton=link_ability_singleton, technique_name=link_ability_technique_name, repeatable=link_ability_repeatable, description=link_ability_description)
+    link_ability = assign_params(ability_id=link_ability_ability_id, name=link_ability_name, buckets=link_ability_buckets, technique_id=link_ability_technique_id, delete_payload=link_ability_delete_payload, executors=link_ability_executors, privilege=link_ability_privilege, requirements=link_ability_requirements,
+                                 plugin=link_ability_plugin, access=link_ability_access, tactic=link_ability_tactic, additional_info=link_ability_additional_info, singleton=link_ability_singleton, technique_name=link_ability_technique_name, repeatable=link_ability_repeatable, description=link_ability_description)
     link_status = int(args.get('link_status', -3))
     link_score = int(args.get('link_score', 0))
     link_command = str(args.get('link_command', ''))
@@ -968,11 +1009,13 @@ def createsapotentiallink_command(client: Client, args: Dict[str, Any]) -> Comma
     link_executor_command = str(args.get('link_executor_command', ''))
     link_executor_additional_info = str(args.get('link_executor_additional_info', ''))
     link_executor_code = str(args.get('link_executor_code', ''))
-    link_executor = assign_params(name=link_executor_name, cleanup=link_executor_cleanup, platform=link_executor_platform, language=link_executor_language, uploads=link_executor_uploads, variations=link_executor_variations, build_target=link_executor_build_target, payloads=link_executor_payloads, timeout=link_executor_timeout, parsers=link_executor_parsers, command=link_executor_command, additional_info=link_executor_additional_info, code=link_executor_code)
+    link_executor = assign_params(name=link_executor_name, cleanup=link_executor_cleanup, platform=link_executor_platform, language=link_executor_language, uploads=link_executor_uploads, variations=link_executor_variations,
+                                  build_target=link_executor_build_target, payloads=link_executor_payloads, timeout=link_executor_timeout, parsers=link_executor_parsers, command=link_executor_command, additional_info=link_executor_additional_info, code=link_executor_code)
     link_paw = str(args.get('link_paw', ''))
     link_output = str(args.get('link_output', ''))
 
-    response = client.createsapotentiallink_request(id_, link_relationships, link_id, link_collect, link_pid, link_visibility, link_finish, link_pin, link_jitter, link_agent_reported_time, link_deadman, link_used, link_host, link_ability, link_status, link_score, link_command, link_unique, link_cleanup, link_decide, link_facts, link_executor, link_paw, link_output)
+    response = client.createsapotentiallink_request(id_, link_relationships, link_id, link_collect, link_pid, link_visibility, link_finish, link_pin, link_jitter, link_agent_reported_time,
+                                                    link_deadman, link_used, link_host, link_ability, link_status, link_score, link_command, link_unique, link_cleanup, link_decide, link_facts, link_executor, link_paw, link_output)
     command_results = CommandResults(
         outputs_prefix='MitreCaldera.Link',
         outputs_key_field='',
@@ -1002,7 +1045,8 @@ def createschedule_command(client: Client, args: Dict[str, Any]) -> CommandResul
     schedule_task_start = str(args.get('schedule_task_start', ''))
     schedule_task_adversary = str(args.get('schedule_task_adversary', ''))
     schedule_task_auto_close = argToBoolean(args.get('schedule_task_auto_close', False))
-    schedule_task = assign_params(name=schedule_task_name, autonomous=schedule_task_autonomous, id=schedule_task_id, objective=schedule_task_objective, visibility=schedule_task_visibility, state=schedule_task_state, group=schedule_task_group, host_group=schedule_task_host_group, planner=schedule_task_planner, obfuscator=schedule_task_obfuscator, chain=schedule_task_chain, use_learning_parsers=schedule_task_use_learning_parsers, source=schedule_task_source, jitter=schedule_task_jitter, start=schedule_task_start, adversary=schedule_task_adversary, auto_close=schedule_task_auto_close)
+    schedule_task = assign_params(name=schedule_task_name, autonomous=schedule_task_autonomous, id=schedule_task_id, objective=schedule_task_objective, visibility=schedule_task_visibility, state=schedule_task_state, group=schedule_task_group, host_group=schedule_task_host_group, planner=schedule_task_planner,
+                                  obfuscator=schedule_task_obfuscator, chain=schedule_task_chain, use_learning_parsers=schedule_task_use_learning_parsers, source=schedule_task_source, jitter=schedule_task_jitter, start=schedule_task_start, adversary=schedule_task_adversary, auto_close=schedule_task_auto_close)
     schedule_id = str(args.get('schedule_id', ''))
 
     response = client.createschedule_request(schedule_schedule, schedule_task, schedule_id)
@@ -1073,7 +1117,8 @@ def deleteoneormorefacts_command(client: Client, args: Dict[str, Any]) -> Comman
     partial_fact_value = str(args.get('partial_fact_value', ''))
     partial_fact_collected_by = argToList(args.get('partial_fact_collected_by', []))
 
-    response = client.deleteoneormorefacts_request(partial_fact_unique, partial_fact_name, partial_fact_links, partial_fact_relationships, partial_fact_origin_type, partial_fact_created, partial_fact_limit_count, partial_fact_technique_id, partial_fact_trait, partial_fact_source, partial_fact_score, partial_fact_value, partial_fact_collected_by)
+    response = client.deleteoneormorefacts_request(partial_fact_unique, partial_fact_name, partial_fact_links, partial_fact_relationships, partial_fact_origin_type, partial_fact_created,
+                                                   partial_fact_limit_count, partial_fact_technique_id, partial_fact_trait, partial_fact_source, partial_fact_score, partial_fact_value, partial_fact_collected_by)
     command_results = CommandResults(
         outputs_prefix='MitreCaldera.Fact',
         outputs_key_field='',
@@ -1101,11 +1146,13 @@ def deleteoneormorerelationships_command(client: Client, args: Dict[str, Any]) -
     partial_relationship_source_score = args.get('partial_relationship_source_score', None)
     partial_relationship_source_value = str(args.get('partial_relationship_source_value', ''))
     partial_relationship_source_collected_by = str(args.get('partial_relationship_source_collected_by', ''))
-    partial_relationship_source = assign_params(unique=partial_relationship_source_unique, name=partial_relationship_source_name, links=partial_relationship_source_links, relationships=partial_relationship_source_relationships, origin_type=partial_relationship_source_origin_type, created=partial_relationship_source_created, limit_count=partial_relationship_source_limit_count, technique_id=partial_relationship_source_technique_id, trait=partial_relationship_source_trait, source=partial_relationship_source_source, score=partial_relationship_source_score, value=partial_relationship_source_value, collected_by=partial_relationship_source_collected_by)
+    partial_relationship_source = assign_params(unique=partial_relationship_source_unique, name=partial_relationship_source_name, links=partial_relationship_source_links, relationships=partial_relationship_source_relationships, origin_type=partial_relationship_source_origin_type, created=partial_relationship_source_created,
+                                                limit_count=partial_relationship_source_limit_count, technique_id=partial_relationship_source_technique_id, trait=partial_relationship_source_trait, source=partial_relationship_source_source, score=partial_relationship_source_score, value=partial_relationship_source_value, collected_by=partial_relationship_source_collected_by)
     partial_relationship_score = args.get('partial_relationship_score', None)
     partial_relationship_target = str(args.get('partial_relationship_target', ''))
 
-    response = client.deleteoneormorerelationships_request(partial_relationship_unique, partial_relationship_origin, partial_relationship_edge, partial_relationship_source, partial_relationship_score, partial_relationship_target)
+    response = client.deleteoneormorerelationships_request(partial_relationship_unique, partial_relationship_origin,
+                                                           partial_relationship_edge, partial_relationship_source, partial_relationship_score, partial_relationship_target)
     command_results = CommandResults(
         outputs_prefix='MitreCaldera.Relationship',
         outputs_key_field='',
@@ -1762,7 +1809,8 @@ def replacesanexistingability_command(client: Client, args: Dict[str, Any]) -> C
     partial_ability_repeatable = argToBoolean(args.get('partial_ability_repeatable', False))
     partial_ability_description = args.get('partial_ability_description', 'None')
 
-    response = client.replacesanexistingability_request(ability_id, partial_ability_ability_id, partial_ability_name, partial_ability_buckets, partial_ability_technique_id, partial_ability_delete_payload, partial_ability_executors, partial_ability_privilege, partial_ability_requirements, partial_ability_plugin, partial_ability_access, partial_ability_tactic, partial_ability_additional_info, partial_ability_singleton, partial_ability_technique_name, partial_ability_repeatable, partial_ability_description)
+    response = client.replacesanexistingability_request(ability_id, partial_ability_ability_id, partial_ability_name, partial_ability_buckets, partial_ability_technique_id, partial_ability_delete_payload, partial_ability_executors, partial_ability_privilege,
+                                                        partial_ability_requirements, partial_ability_plugin, partial_ability_access, partial_ability_tactic, partial_ability_additional_info, partial_ability_singleton, partial_ability_technique_name, partial_ability_repeatable, partial_ability_description)
     command_results = CommandResults(
         outputs_prefix='MitreCaldera.Ability',
         outputs_key_field='',
@@ -1793,7 +1841,8 @@ def replaceschedule_command(client: Client, args: Dict[str, Any]) -> CommandResu
     partial_schedule2_task_start = str(args.get('partial_schedule2_task_start', ''))
     partial_schedule2_task_adversary = str(args.get('partial_schedule2_task_adversary', ''))
     partial_schedule2_task_auto_close = argToBoolean(args.get('partial_schedule2_task_auto_close', False))
-    partial_schedule2_task = assign_params(name=partial_schedule2_task_name, autonomous=partial_schedule2_task_autonomous, id=partial_schedule2_task_id, objective=partial_schedule2_task_objective, visibility=partial_schedule2_task_visibility, state=partial_schedule2_task_state, group=partial_schedule2_task_group, host_group=partial_schedule2_task_host_group, planner=partial_schedule2_task_planner, obfuscator=partial_schedule2_task_obfuscator, chain=partial_schedule2_task_chain, use_learning_parsers=partial_schedule2_task_use_learning_parsers, source=partial_schedule2_task_source, jitter=partial_schedule2_task_jitter, start=partial_schedule2_task_start, adversary=partial_schedule2_task_adversary, auto_close=partial_schedule2_task_auto_close)
+    partial_schedule2_task = assign_params(name=partial_schedule2_task_name, autonomous=partial_schedule2_task_autonomous, id=partial_schedule2_task_id, objective=partial_schedule2_task_objective, visibility=partial_schedule2_task_visibility, state=partial_schedule2_task_state, group=partial_schedule2_task_group, host_group=partial_schedule2_task_host_group, planner=partial_schedule2_task_planner,
+                                           obfuscator=partial_schedule2_task_obfuscator, chain=partial_schedule2_task_chain, use_learning_parsers=partial_schedule2_task_use_learning_parsers, source=partial_schedule2_task_source, jitter=partial_schedule2_task_jitter, start=partial_schedule2_task_start, adversary=partial_schedule2_task_adversary, auto_close=partial_schedule2_task_auto_close)
 
     response = client.replaceschedule_request(id_, partial_schedule2_schedule, partial_schedule2_task)
     command_results = CommandResults(
@@ -1816,7 +1865,8 @@ def updateagentconfig_command(client: Client, args: Dict[str, Any]) -> CommandRe
     agentconfigupdate_sleep_max = args.get('agentconfigupdate_sleep_max', None)
     agentconfigupdate_implant_name = str(args.get('agentconfigupdate_implant_name', ''))
 
-    response = client.updateagentconfig_request(agentconfigupdate_watchdog, agentconfigupdate_sleep_min, agentconfigupdate_deployments, agentconfigupdate_deadman_abilities, agentconfigupdate_untrusted_timer, agentconfigupdate_bootstrap_abilities, agentconfigupdate_sleep_max, agentconfigupdate_implant_name)
+    response = client.updateagentconfig_request(agentconfigupdate_watchdog, agentconfigupdate_sleep_min, agentconfigupdate_deployments, agentconfigupdate_deadman_abilities,
+                                                agentconfigupdate_untrusted_timer, agentconfigupdate_bootstrap_abilities, agentconfigupdate_sleep_max, agentconfigupdate_implant_name)
     command_results = CommandResults(
         outputs_prefix='MitreCaldera.AgentConfigUpdate',
         outputs_key_field='',
@@ -1837,7 +1887,8 @@ def updateanadversary_command(client: Client, args: Dict[str, Any]) -> CommandRe
     partial_adversary1_plugin = args.get('partial_adversary1_plugin', 'None')
     partial_adversary1_description = str(args.get('partial_adversary1_description', ''))
 
-    response = client.updateanadversary_request(adversary_id, partial_adversary1_name, partial_adversary1_tags, partial_adversary1_objective, partial_adversary1_has_repeatable_abilities, partial_adversary1_atomic_ordering, partial_adversary1_plugin, partial_adversary1_description)
+    response = client.updateanadversary_request(adversary_id, partial_adversary1_name, partial_adversary1_tags, partial_adversary1_objective,
+                                                partial_adversary1_has_repeatable_abilities, partial_adversary1_atomic_ordering, partial_adversary1_plugin, partial_adversary1_description)
     command_results = CommandResults(
         outputs_prefix='MitreCaldera.Adversary',
         outputs_key_field='',
@@ -1857,7 +1908,8 @@ def updateanagent_command(client: Client, args: Dict[str, Any]) -> CommandResult
     partial_agent1_pending_contact = str(args.get('partial_agent1_pending_contact', ''))
     partial_agent1_group = str(args.get('partial_agent1_group', ''))
 
-    response = client.updateanagent_request(paw, partial_agent1_watchdog, partial_agent1_sleep_min, partial_agent1_trusted, partial_agent1_sleep_max, partial_agent1_pending_contact, partial_agent1_group)
+    response = client.updateanagent_request(paw, partial_agent1_watchdog, partial_agent1_sleep_min,
+                                            partial_agent1_trusted, partial_agent1_sleep_max, partial_agent1_pending_contact, partial_agent1_group)
     command_results = CommandResults(
         outputs_prefix='MitreCaldera.Agent',
         outputs_key_field='',
@@ -1878,7 +1930,8 @@ def updateanexistingfactsource_command(client: Client, args: Dict[str, Any]) -> 
     partial_source_facts = argToList(args.get('partial_source_facts', []))
     partial_source_plugin = args.get('partial_source_plugin', 'None')
 
-    response = client.updateanexistingfactsource_request(id_, partial_source_name, partial_source_adjustments, partial_source_relationships, partial_source_id, partial_source_rules, partial_source_facts, partial_source_plugin)
+    response = client.updateanexistingfactsource_request(id_, partial_source_name, partial_source_adjustments,
+                                                         partial_source_relationships, partial_source_id, partial_source_rules, partial_source_facts, partial_source_plugin)
     command_results = CommandResults(
         outputs_prefix='MitreCaldera.Source',
         outputs_key_field='',
@@ -1899,7 +1952,8 @@ def updateanexistingorcreateanewfactsource_command(client: Client, args: Dict[st
     partial_source_facts = argToList(args.get('partial_source_facts', []))
     partial_source_plugin = args.get('partial_source_plugin', 'None')
 
-    response = client.updateanexistingorcreateanewfactsource_request(id_, partial_source_name, partial_source_adjustments, partial_source_relationships, partial_source_id, partial_source_rules, partial_source_facts, partial_source_plugin)
+    response = client.updateanexistingorcreateanewfactsource_request(
+        id_, partial_source_name, partial_source_adjustments, partial_source_relationships, partial_source_id, partial_source_rules, partial_source_facts, partial_source_plugin)
     command_results = CommandResults(
         outputs_prefix='MitreCaldera.Source',
         outputs_key_field='',
@@ -1916,7 +1970,8 @@ def updateanobjective_command(client: Client, args: Dict[str, Any]) -> CommandRe
     partial_objective1_goals = argToList(args.get('partial_objective1_goals', []))
     partial_objective1_description = str(args.get('partial_objective1_description', ''))
 
-    response = client.updateanobjective_request(id_, partial_objective1_name, partial_objective1_goals, partial_objective1_description)
+    response = client.updateanobjective_request(
+        id_, partial_objective1_name, partial_objective1_goals, partial_objective1_description)
     command_results = CommandResults(
         outputs_prefix='MitreCaldera.Objective',
         outputs_key_field='',
@@ -1933,7 +1988,8 @@ def updatefieldswithinanoperation_command(client: Client, args: Dict[str, Any]) 
     partial_operation1_autonomous = args.get('partial_operation1_autonomous', None)
     partial_operation1_state = str(args.get('partial_operation1_state', ''))
 
-    response = client.updatefieldswithinanoperation_request(id_, partial_operation1_obfuscator, partial_operation1_autonomous, partial_operation1_state)
+    response = client.updatefieldswithinanoperation_request(
+        id_, partial_operation1_obfuscator, partial_operation1_autonomous, partial_operation1_state)
     command_results = CommandResults(
         outputs_prefix='MitreCaldera.PartialOperation',
         outputs_key_field='',
@@ -1973,7 +2029,8 @@ def updateoneormorefacts_command(client: Client, args: Dict[str, Any]) -> Comman
     partial_factupdaterequest_updates_score = args.get('partial_factupdaterequest_updates_score', None)
     partial_factupdaterequest_updates_value = str(args.get('partial_factupdaterequest_updates_value', ''))
     partial_factupdaterequest_updates_collected_by = str(args.get('partial_factupdaterequest_updates_collected_by', ''))
-    partial_factupdaterequest_updates = assign_params(unique=partial_factupdaterequest_updates_unique, name=partial_factupdaterequest_updates_name, links=partial_factupdaterequest_updates_links, relationships=partial_factupdaterequest_updates_relationships, origin_type=partial_factupdaterequest_updates_origin_type, created=partial_factupdaterequest_updates_created, limit_count=partial_factupdaterequest_updates_limit_count, technique_id=partial_factupdaterequest_updates_technique_id, trait=partial_factupdaterequest_updates_trait, source=partial_factupdaterequest_updates_source, score=partial_factupdaterequest_updates_score, value=partial_factupdaterequest_updates_value, collected_by=partial_factupdaterequest_updates_collected_by)
+    partial_factupdaterequest_updates = assign_params(unique=partial_factupdaterequest_updates_unique, name=partial_factupdaterequest_updates_name, links=partial_factupdaterequest_updates_links, relationships=partial_factupdaterequest_updates_relationships, origin_type=partial_factupdaterequest_updates_origin_type, created=partial_factupdaterequest_updates_created,
+                                                      limit_count=partial_factupdaterequest_updates_limit_count, technique_id=partial_factupdaterequest_updates_technique_id, trait=partial_factupdaterequest_updates_trait, source=partial_factupdaterequest_updates_source, score=partial_factupdaterequest_updates_score, value=partial_factupdaterequest_updates_value, collected_by=partial_factupdaterequest_updates_collected_by)
     partial_factupdaterequest_criteria_unique = str(args.get('partial_factupdaterequest_criteria_unique', ''))
     partial_factupdaterequest_criteria_name = str(args.get('partial_factupdaterequest_criteria_name', ''))
     partial_factupdaterequest_criteria_links = str(args.get('partial_factupdaterequest_criteria_links', ''))
@@ -1987,7 +2044,8 @@ def updateoneormorefacts_command(client: Client, args: Dict[str, Any]) -> Comman
     partial_factupdaterequest_criteria_score = args.get('partial_factupdaterequest_criteria_score', None)
     partial_factupdaterequest_criteria_value = str(args.get('partial_factupdaterequest_criteria_value', ''))
     partial_factupdaterequest_criteria_collected_by = str(args.get('partial_factupdaterequest_criteria_collected_by', ''))
-    partial_factupdaterequest_criteria = assign_params(unique=partial_factupdaterequest_criteria_unique, name=partial_factupdaterequest_criteria_name, links=partial_factupdaterequest_criteria_links, relationships=partial_factupdaterequest_criteria_relationships, origin_type=partial_factupdaterequest_criteria_origin_type, created=partial_factupdaterequest_criteria_created, limit_count=partial_factupdaterequest_criteria_limit_count, technique_id=partial_factupdaterequest_criteria_technique_id, trait=partial_factupdaterequest_criteria_trait, source=partial_factupdaterequest_criteria_source, score=partial_factupdaterequest_criteria_score, value=partial_factupdaterequest_criteria_value, collected_by=partial_factupdaterequest_criteria_collected_by)
+    partial_factupdaterequest_criteria = assign_params(unique=partial_factupdaterequest_criteria_unique, name=partial_factupdaterequest_criteria_name, links=partial_factupdaterequest_criteria_links, relationships=partial_factupdaterequest_criteria_relationships, origin_type=partial_factupdaterequest_criteria_origin_type, created=partial_factupdaterequest_criteria_created,
+                                                       limit_count=partial_factupdaterequest_criteria_limit_count, technique_id=partial_factupdaterequest_criteria_technique_id, trait=partial_factupdaterequest_criteria_trait, source=partial_factupdaterequest_criteria_source, score=partial_factupdaterequest_criteria_score, value=partial_factupdaterequest_criteria_value, collected_by=partial_factupdaterequest_criteria_collected_by)
 
     response = client.updateoneormorefacts_request(partial_factupdaterequest_updates, partial_factupdaterequest_criteria)
     command_results = CommandResults(
@@ -2007,16 +2065,19 @@ def updateoneormorerelationships_command(client: Client, args: Dict[str, Any]) -
     partial_relationshipupdate_updates_source = str(args.get('partial_relationshipupdate_updates_source', ''))
     partial_relationshipupdate_updates_score = args.get('partial_relationshipupdate_updates_score', None)
     partial_relationshipupdate_updates_target = str(args.get('partial_relationshipupdate_updates_target', ''))
-    partial_relationshipupdate_updates = assign_params(unique=partial_relationshipupdate_updates_unique, origin=partial_relationshipupdate_updates_origin, edge=partial_relationshipupdate_updates_edge, source=partial_relationshipupdate_updates_source, score=partial_relationshipupdate_updates_score, target=partial_relationshipupdate_updates_target)
+    partial_relationshipupdate_updates = assign_params(unique=partial_relationshipupdate_updates_unique, origin=partial_relationshipupdate_updates_origin, edge=partial_relationshipupdate_updates_edge,
+                                                       source=partial_relationshipupdate_updates_source, score=partial_relationshipupdate_updates_score, target=partial_relationshipupdate_updates_target)
     partial_relationshipupdate_criteria_unique = str(args.get('partial_relationshipupdate_criteria_unique', ''))
     partial_relationshipupdate_criteria_origin = str(args.get('partial_relationshipupdate_criteria_origin', ''))
     partial_relationshipupdate_criteria_edge = str(args.get('partial_relationshipupdate_criteria_edge', ''))
     partial_relationshipupdate_criteria_source = str(args.get('partial_relationshipupdate_criteria_source', ''))
     partial_relationshipupdate_criteria_score = args.get('partial_relationshipupdate_criteria_score', None)
     partial_relationshipupdate_criteria_target = str(args.get('partial_relationshipupdate_criteria_target', ''))
-    partial_relationshipupdate_criteria = assign_params(unique=partial_relationshipupdate_criteria_unique, origin=partial_relationshipupdate_criteria_origin, edge=partial_relationshipupdate_criteria_edge, source=partial_relationshipupdate_criteria_source, score=partial_relationshipupdate_criteria_score, target=partial_relationshipupdate_criteria_target)
+    partial_relationshipupdate_criteria = assign_params(unique=partial_relationshipupdate_criteria_unique, origin=partial_relationshipupdate_criteria_origin, edge=partial_relationshipupdate_criteria_edge,
+                                                        source=partial_relationshipupdate_criteria_source, score=partial_relationshipupdate_criteria_score, target=partial_relationshipupdate_criteria_target)
 
-    response = client.updateoneormorerelationships_request(partial_relationshipupdate_updates, partial_relationshipupdate_criteria)
+    response = client.updateoneormorerelationships_request(
+        partial_relationshipupdate_updates, partial_relationshipupdate_criteria)
     command_results = CommandResults(
         outputs_prefix='MitreCaldera.Relationship',
         outputs_key_field='',
@@ -2042,7 +2103,8 @@ def updatesanexistingability_command(client: Client, args: Dict[str, Any]) -> Co
     partial_ability1_repeatable = argToBoolean(args.get('partial_ability1_repeatable', False))
     partial_ability1_description = args.get('partial_ability1_description', 'None')
 
-    response = client.updatesanexistingability_request(ability_id, partial_ability1_name, partial_ability1_buckets, partial_ability1_technique_id, partial_ability1_delete_payload, partial_ability1_executors, partial_ability1_privilege, partial_ability1_technique_name, partial_ability1_tactic, partial_ability1_singleton, partial_ability1_plugin, partial_ability1_repeatable, partial_ability1_description)
+    response = client.updatesanexistingability_request(ability_id, partial_ability1_name, partial_ability1_buckets, partial_ability1_technique_id, partial_ability1_delete_payload, partial_ability1_executors,
+                                                       partial_ability1_privilege, partial_ability1_technique_name, partial_ability1_tactic, partial_ability1_singleton, partial_ability1_plugin, partial_ability1_repeatable, partial_ability1_description)
     command_results = CommandResults(
         outputs_prefix='MitreCaldera.Ability',
         outputs_key_field='',
@@ -2059,7 +2121,8 @@ def updateschedule_command(client: Client, args: Dict[str, Any]) -> CommandResul
     partial_schedule1_task_obfuscator = str(args.get('partial_schedule1_task_obfuscator', ''))
     partial_schedule1_task_autonomous = args.get('partial_schedule1_task_autonomous', None)
     partial_schedule1_task_state = str(args.get('partial_schedule1_task_state', ''))
-    partial_schedule1_task = assign_params(obfuscator=partial_schedule1_task_obfuscator, autonomous=partial_schedule1_task_autonomous, state=partial_schedule1_task_state)
+    partial_schedule1_task = assign_params(obfuscator=partial_schedule1_task_obfuscator,
+                                           autonomous=partial_schedule1_task_autonomous, state=partial_schedule1_task_state)
 
     response = client.updateschedule_request(id_, partial_schedule1_schedule, partial_schedule1_task)
     command_results = CommandResults(
@@ -2111,77 +2174,77 @@ def main() -> None:
     try:
         requests.packages.urllib3.disable_warnings()
         client: Client = Client(urljoin(url, ''), verify_certificate, proxy, headers=headers, auth=None)
-        
+
         commands = {
-    		'caldera-create-fact': create_fact_command,
-			'caldera-create-fact-source': create_fact_source_command,
-			'caldera-create-adversary': createanewadversary_command,
-			'caldera-create-agent': createanewagent_command,
-			'caldera-create-operation-record': createanewcalderaoperationrecord_command,
-			'caldera-create-objective': createanewobjective_command,
-			'caldera-create-relationship': createarelationship_command,
-			'caldera-create-ability': createsanewability_command,
-			'caldera-create-potential-link': createsapotentiallink_command,
-			'caldera-create-schedule': createschedule_command,
-			'caldera-delete-agent': deleteanagent_command,
-			'caldera-delete-fact-source': deleteanexistingfactsource_command,
-			'caldera-delete-operation-by-id': deleteanoperationbyoperationid_command,
-			'caldera-delete-facts': deleteoneormorefacts_command,
-			'caldera-delete-relationships': deleteoneormorerelationships_command,
-			'caldera-delete-ability': deletesanability_command,
-			'caldera-delete-adversary': deletesanadversary_command,
-			'caldera-delete-schedule': deleteschedule_command,
-			'caldera-get-abilities': get_api_v2_abilities_command,
-			'caldera-get-abilities-by-ability-id': get_api_v2_abilities_by_ability_id_command,
-			'caldera-get-adversaries': get_api_v2_adversaries_command,
-			'caldera-get-adversaries-by-adversary-id': get_api_v2_adversaries_by_adversary_id_command,
-			'caldera-get-agents': get_api_v2_agents_command,
-			'caldera-get-agents-by-paw': get_api_v2_agents_by_paw_command,
-			'caldera-get-config-by-name': get_api_v2_config_by_name_command,
-			'caldera-get-contacts': get_api_v2_contacts_command,
-			'caldera-get-contacts-by-name': get_api_v2_contacts_by_name_command,
-			'caldera-get-deploy-commands': get_api_v2_deploy_commands_command,
-			'caldera-get-deploy-commands-by-ability-id': get_api_v2_deploy_commands_by_ability_id_command,
-			'caldera-get-facts': get_api_v2_facts_command,
-			'caldera-get-facts-by-operation-id': get_api_v2_facts_by_operation_id_command,
-			'caldera-get-health': get_api_v2_health_command,
-			'caldera-get-obfuscators': get_api_v2_obfuscators_command,
-			'caldera-get-obfuscators-by-name': get_api_v2_obfuscators_by_name_command,
-			'caldera-get-objectives': get_api_v2_objectives_command,
-			'caldera-get-objectives-by-id': get_api_v2_objectives_by_id_command,
-			'caldera-get-operations': get_api_v2_operations_command,
-			'caldera-get-operations-by-id': get_api_v2_operations_by_id_command,
-			'caldera-get-operations-links': get_api_v2_operations_links_command,
-			'caldera-get-operations-links-by-link-id': get_api_v2_operations_links_by_link_id_command,
-			'caldera-get-operations-links-result': get_api_v2_operations_links_result_command,
-			'caldera-get-operations-potential-links': get_api_v2_operations_potentiallinks_command,
-			'caldera-get-operations-potential-links-by-paw': get_api_v2_operations_potentiallinks_by_paw_command,
-			'caldera-get-planners': get_api_v2_planners_command,
-			'caldera-get-planners-by-planner-id': get_api_v2_planners_by_planner_id_command,
-			'caldera-get-plugins': get_api_v2_plugins_command,
-			'caldera-get-plugins-by-name': get_api_v2_plugins_by_name_command,
-			'caldera-get-relationships': get_api_v2_relationships_command,
-			'caldera-get-relationships-by-operation-id': get_api_v2_relationships_by_operation_id_command,
-			'caldera-get-schedules': get_api_v2_schedules_command,
-			'caldera-get-schedules-by-id': get_api_v2_schedules_by_id_command,
-			'caldera-get-sources': get_api_v2_sources_command,
-			'caldera-get-sources-by-id': get_api_v2_sources_by_id_command,
-			'caldera-get-operation-event-logs': getoperationeventlogs_command,
-			'caldera-get-operation-report': getoperationreport_command,
-			'caldera-replace-ability': replacesanexistingability_command,
-			'caldera-replace-schedule': replaceschedule_command,
-			'caldera-update-agent-config': updateagentconfig_command,
-			'caldera-update-adversary': updateanadversary_command,
-			'caldera-update-agent': updateanagent_command,
-			'caldera-update-fact-source': updateanexistingfactsource_command,
-			'caldera-update-objective': updateanobjective_command,
-			'caldera-update-fields-in-operation': updatefieldswithinanoperation_command,
-			'caldera-update-main-config': updatemainconfig_command,
-			'caldera-update-facts': updateoneormorefacts_command,
-			'caldera-update-rerelationships': updateoneormorerelationships_command,
-			'caldera-update-ability': updatesanexistingability_command,
-			'caldera-update-schedule': updateschedule_command,
-			'caldera-update-link-in-operation': updatethespecifiedlinkwithinanoperation_command,
+            'caldera-create-fact': create_fact_command,
+            'caldera-create-fact-source': create_fact_source_command,
+            'caldera-create-adversary': createanewadversary_command,
+            'caldera-create-agent': createanewagent_command,
+            'caldera-create-operation-record': createanewcalderaoperationrecord_command,
+            'caldera-create-objective': createanewobjective_command,
+            'caldera-create-relationship': createarelationship_command,
+            'caldera-create-ability': createsanewability_command,
+            'caldera-create-potential-link': createsapotentiallink_command,
+            'caldera-create-schedule': createschedule_command,
+            'caldera-delete-agent': deleteanagent_command,
+            'caldera-delete-fact-source': deleteanexistingfactsource_command,
+            'caldera-delete-operation-by-id': deleteanoperationbyoperationid_command,
+            'caldera-delete-facts': deleteoneormorefacts_command,
+            'caldera-delete-relationships': deleteoneormorerelationships_command,
+            'caldera-delete-ability': deletesanability_command,
+            'caldera-delete-adversary': deletesanadversary_command,
+            'caldera-delete-schedule': deleteschedule_command,
+            'caldera-get-abilities': get_api_v2_abilities_command,
+            'caldera-get-abilities-by-ability-id': get_api_v2_abilities_by_ability_id_command,
+            'caldera-get-adversaries': get_api_v2_adversaries_command,
+            'caldera-get-adversaries-by-adversary-id': get_api_v2_adversaries_by_adversary_id_command,
+            'caldera-get-agents': get_api_v2_agents_command,
+            'caldera-get-agents-by-paw': get_api_v2_agents_by_paw_command,
+            'caldera-get-config-by-name': get_api_v2_config_by_name_command,
+            'caldera-get-contacts': get_api_v2_contacts_command,
+            'caldera-get-contacts-by-name': get_api_v2_contacts_by_name_command,
+            'caldera-get-deploy-commands': get_api_v2_deploy_commands_command,
+            'caldera-get-deploy-commands-by-ability-id': get_api_v2_deploy_commands_by_ability_id_command,
+            'caldera-get-facts': get_api_v2_facts_command,
+            'caldera-get-facts-by-operation-id': get_api_v2_facts_by_operation_id_command,
+            'caldera-get-health': get_api_v2_health_command,
+            'caldera-get-obfuscators': get_api_v2_obfuscators_command,
+            'caldera-get-obfuscators-by-name': get_api_v2_obfuscators_by_name_command,
+            'caldera-get-objectives': get_api_v2_objectives_command,
+            'caldera-get-objectives-by-id': get_api_v2_objectives_by_id_command,
+            'caldera-get-operations': get_api_v2_operations_command,
+            'caldera-get-operations-by-id': get_api_v2_operations_by_id_command,
+            'caldera-get-operations-links': get_api_v2_operations_links_command,
+            'caldera-get-operations-links-by-link-id': get_api_v2_operations_links_by_link_id_command,
+            'caldera-get-operations-links-result': get_api_v2_operations_links_result_command,
+            'caldera-get-operations-potential-links': get_api_v2_operations_potentiallinks_command,
+            'caldera-get-operations-potential-links-by-paw': get_api_v2_operations_potentiallinks_by_paw_command,
+            'caldera-get-planners': get_api_v2_planners_command,
+            'caldera-get-planners-by-planner-id': get_api_v2_planners_by_planner_id_command,
+            'caldera-get-plugins': get_api_v2_plugins_command,
+            'caldera-get-plugins-by-name': get_api_v2_plugins_by_name_command,
+            'caldera-get-relationships': get_api_v2_relationships_command,
+            'caldera-get-relationships-by-operation-id': get_api_v2_relationships_by_operation_id_command,
+            'caldera-get-schedules': get_api_v2_schedules_command,
+            'caldera-get-schedules-by-id': get_api_v2_schedules_by_id_command,
+            'caldera-get-sources': get_api_v2_sources_command,
+            'caldera-get-sources-by-id': get_api_v2_sources_by_id_command,
+            'caldera-get-operation-event-logs': getoperationeventlogs_command,
+            'caldera-get-operation-report': getoperationreport_command,
+            'caldera-replace-ability': replacesanexistingability_command,
+            'caldera-replace-schedule': replaceschedule_command,
+            'caldera-update-agent-config': updateagentconfig_command,
+            'caldera-update-adversary': updateanadversary_command,
+            'caldera-update-agent': updateanagent_command,
+            'caldera-update-fact-source': updateanexistingfactsource_command,
+            'caldera-update-objective': updateanobjective_command,
+            'caldera-update-fields-in-operation': updatefieldswithinanoperation_command,
+            'caldera-update-main-config': updatemainconfig_command,
+            'caldera-update-facts': updateoneormorefacts_command,
+            'caldera-update-rerelationships': updateoneormorerelationships_command,
+            'caldera-update-ability': updatesanexistingability_command,
+            'caldera-update-schedule': updateschedule_command,
+            'caldera-update-link-in-operation': updatethespecifiedlinkwithinanoperation_command,
         }
 
         if command == 'test-module':
