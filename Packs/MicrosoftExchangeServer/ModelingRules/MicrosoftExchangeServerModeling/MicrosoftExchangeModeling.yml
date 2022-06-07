@@ -5,7 +5,7 @@ tags: microsoft
 rules: ''
 schema: |-
     {
-        "filestream_filestream_raw": {
+        "msft_exchange_raw": {
             "date_time": {
                 "type": "string",
                 "is_array": false

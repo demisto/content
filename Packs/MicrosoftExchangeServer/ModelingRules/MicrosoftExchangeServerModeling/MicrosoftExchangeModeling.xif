@@ -1,4 +1,4 @@
-[MODEL: dataset="filestream_filestream_raw", model="Email"]
+[MODEL: dataset="msft_exchange_raw", model="Email"]
 alter XDM_Email_event_timestamp = date_time,
     XDM_Email_Client_host_ipv4_addresses = client_ip,
     XDM_Email_Client_host_hostname = client_hostname,
