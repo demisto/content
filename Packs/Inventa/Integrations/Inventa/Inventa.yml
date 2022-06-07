@@ -22,19 +22,10 @@ configuration:
   required: false
   type: 8
 description: Use the Inventa integration to generate DSAR reports within Inventa instance and retrieve DSAR data for the XSOAR
-display: 1Touch.io's Inventa Connector (Partner Contribution)
+display: 1Touch.io's Inventa Connector
 name: Inventa
 script:
   commands:
-  - arguments:
-    - description: ID of a datasubject
-      name: datasubject_id
-    description: Get files details from Sources
-    name: inventa-get-sources-files
-    outputs:
-    - contextPath: Inventa.Sources.Files.files
-      description: List of files containing info about data subject
-      type: String
   - arguments:
     - description: ID of a datasubject
       name: datasubject_id
@@ -50,8 +41,41 @@ script:
     description: Get sources details
     name: inventa-get-sources
     outputs:
-    - contextPath: Inventa.Sources.sources
-      description: List of sources containing info about data subject
+    - contextPath: Inventa.Sources.sources.id
+      description: Id of a source containing info about data subject
+      type: String
+    - contextPath: Inventa.Sources.sources.applianceName
+      description: Appliance name of a source containing info about data subject
+      type: String
+    - contextPath: Inventa.Sources.sources.timestamp
+      description: Timestamp of a source containing info about data subject
+      type: String
+    - contextPath: Inventa.Sources.sources.keyType
+      description: KeyType of a source containing info about data subject
+      type: String
+    - contextPath: Inventa.Sources.sources.path
+      description: Path of a source containing info about data subject
+      type: String
+    - contextPath: Inventa.Sources.sources.url
+      description: URL of a source containing info about data subject
+      type: String
+    - contextPath: Inventa.Sources.sources.hostname
+      description: Hostname of a source containing info about data subject
+      type: String
+    - contextPath: Inventa.Sources.sources.dbName
+      description: DB name of a source containing info about data subject
+      type: String
+    - contextPath: Inventa.Sources.sources.vendor
+      description: Vendor of a source containing info about data subject
+      type: String
+    - contextPath: Inventa.Sources.sources.type
+      description: Type of a source containing info about data subject
+      type: String
+    - contextPath: Inventa.Sources.sources.context
+      description: Additional info on a source containing info about data subject
+      type: String
+    - contextPath: Inventa.Sources.sources.entityTypes
+      description: Types of sensitive data stored in a source containing info about data subject
       type: String
   - arguments:
     - description: National ID of a PII
@@ -217,7 +241,8 @@ script:
     - contextPath: Inventa.DataSubjects.datasubject_id
       description: ID of a data subject within Inventa
       type: String
-  - arguments:
+  - name: inventa-validate-incident-inputs
+    arguments:
     - description: National ID of a PII
       name: national_id
     - description: Passport Number of a PII
@@ -251,25 +276,24 @@ script:
     - description: Report reason
       name: reason
     description: Validates incident's inputs
-    name: inventa-validate-incident-inputs
     outputs:
     - contextPath: Inventa.Incident.validated
       description: Whether incident inputs are validated
       type: Boolean
-  - arguments:
-    - description: Reason for DSAR report
+  - name: inventa-create-ticket
+    arguments:
+    - description: Reason for DSAR reporty
       name: reason
       required: true
     - description: ID of a data subject within Inventa
       name: datasubject_id
       required: true
     description: Creates Inventa ticket
-    name: inventa-create-ticket
     outputs:
     - contextPath: Inventa.DataSubjects.Ticket.ticket_id
       description: ID of a DSAR ticket, created within Inventa
       type: String
-  dockerimage: demisto/python3:3.9.9.25564
+  dockerimage: demisto/python3:3.10.4.29342
   runonce: false
   script: ''
   subtype: python3

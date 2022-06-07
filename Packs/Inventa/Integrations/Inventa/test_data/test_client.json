@@ -212,7 +212,7 @@
                     "ez6046"
                 ],
                 "EMAIL_ADDRESS": [
-                    "nicolelemann@fleckens.hu"
+                    "********@******.hu"
                 ],
                 "NATIONAL_ID": [
                     "602083415"
@@ -287,8 +287,8 @@
                 "repository": {
                     "repositoryId": "627d4b20e369677dde7d20da",
                     "applianceId": "1e4082f2-bc76-5534-a8bb-c449f9854ffe",
-                    "url": "smb://10.192.192.26/demo10k",
-                    "hostName": "10.192.192.26",
+                    "url": "smb://X.X.X.X/demo10k",
+                    "hostName": "X.X.X.X",
                     "dbName": "demo10k",
                     "vendor": "CIFS",
                     "type": "CentralStorage",

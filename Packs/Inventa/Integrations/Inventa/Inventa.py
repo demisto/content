@@ -68,13 +68,13 @@ class Client(BaseClient):
     def get_datasubject(self, **kwargs):
         pii_entities = format_pii_entities(self.get_entities())["entities"]
 
-        payload = generate_datasubject_payload(pii_entities, **kwargs)
+        # payload = generate_datasubject_payload(pii_entities, **kwargs)
 
         query = "?"
         for entity in pii_entities:
             if kwargs.get(entity.lower(), None):
                 query = f"{query}{entity}={kwargs[entity.lower()]}&"
-        query = query[0:len(query)-1]
+        query = query[0:len(query) - 1]
 
         found_piis = self._http_request(
             method="GET",
@@ -82,88 +82,82 @@ class Client(BaseClient):
             return_empty_response=True,
             retries=5)
 
-        # found_piis = self._http_request(
-        #     method="POST",
-        #     url_suffix="/dsr/api/pii/find",
-        #     return_empty_response=True,
-        #     json_data=payload,
-        #     retries=5)
         return found_piis
 
-    # def prepare_ticket(self, datasubject_id: Any, reason: str) -> Any:
-    #     payload = {
-    #         "askToErasure": None,
-    #         "changeConsent": None,
-    #         "dataPortability": None,
-    #         "disputeRequest": None,
-    #         "dataSubjectId": datasubject_id,
-    #         "id": None,
-    #         "reason": reason,
-    #         "updateDataSubjectDetails": None
-    #     }
-    #     demisto.debug(f"{payload}")
-    #     if datasubject_id:
-    #         # create ticket id
-    #         ticket_id = self._http_request(
-    #             method="POST",
-    #             json_data={"dataSubjectId": datasubject_id},
-    #             url_suffix="/dsr/api/dsar-management/tickets",
-    #             return_empty_response=True,
-    #             retries=5
-    #         )
-    #         return ticket_id
-    #     else:
-    #         return None
+    def prepare_ticket(self, datasubject_id: Any, reason: str) -> Any:
+        payload = {
+            "askToErasure": None,
+            "changeConsent": None,
+            "dataPortability": None,
+            "disputeRequest": None,
+            "dataSubjectId": datasubject_id,
+            "id": None,
+            "reason": reason,
+            "updateDataSubjectDetails": None
+        }
+        demisto.debug(f"{payload}")
+        if datasubject_id:
+            # create ticket id
+            ticket_id = self._http_request(
+                method="POST",
+                json_data={"dataSubjectId": datasubject_id},
+                url_suffix="/dsr/api/dsar-management/tickets",
+                return_empty_response=True,
+                retries=5
+            )
+            return ticket_id
+        else:
+            return None
 
-    # def create_ticket(self, datasubject_id: Any, reason: str) -> Dict[str, Any]:
-    #     # new payload for ticket creation
-    #     payload = {
-    #         "askToErasure": None,
-    #         "changeConsent": None,
-    #         "dataPortability": None,
-    #         "disputeRequest": None,
-    #         "dataSubjectId": datasubject_id,
-    #         "id": None,
-    #         "reason": reason,
-    #         "updateDataSubjectDetails": None
-    #     }
-    #     ticket_id = self.prepare_ticket(datasubject_id, reason)
-    #     if ticket_id:
-    #         demisto.debug(f"{ticket_id}")
-    #         payload["id"] = str(ticket_id)
-    #         demisto.debug(f"{payload}")
-    #         # create actual ticket
-    #         ticket_id = self._http_request(
-    #             method="POST",
-    #             json_data=payload,
-    #             url_suffix="/dsr/api/dsar-management/tickets",
-    #             return_empty_response=True,
-    #             retries=5
-    #         )
-    #     return ticket_id
+    def create_ticket(self, datasubject_id: Any, reason: str) -> Dict[str, Any]:
+        # new payload for ticket creation
+        payload = {
+            "askToErasure": None,
+            "changeConsent": None,
+            "dataPortability": None,
+            "disputeRequest": None,
+            "dataSubjectId": datasubject_id,
+            "id": None,
+            "reason": reason,
+            "updateDataSubjectDetails": None
+        }
+        ticket_id = self.prepare_ticket(datasubject_id, reason)
+        if ticket_id:
+            demisto.debug(f"{ticket_id}")
+            payload["id"] = str(ticket_id)
+            demisto.debug(f"{payload}")
+            # create actual ticket
+            ticket_id = self._http_request(
+                method="POST",
+                json_data=payload,
+                url_suffix="/dsr/api/dsar-management/tickets",
+                return_empty_response=True,
+                retries=5
+            )
+        return ticket_id
 
-    # def get_ticket(self, ticket_id: Any) -> Dict:
-    #     result = self._http_request(
-    #         method="GET",
-    #         url_suffix=f"/dsr/api/dsar-management/tickets/{ticket_id}",
-    #         return_empty_response=True,
-    #         retries=5
-    #     )
-    #     return result
+    def get_ticket(self, ticket_id: Any) -> Dict:
+        result = self._http_request(
+            method="GET",
+            url_suffix=f"/dsr/api/dsar-management/tickets/{ticket_id}",
+            return_empty_response=True,
+            retries=5
+        )
+        return result
 
-    # def get_dsar(self, ticket_id: Any) -> Dict:
-    #     ticket_details = self.get_ticket(ticket_id)
-    #     demisto.debug(f"{ticket_details}")
-    #     datasubject_id = ticket_details.get("piiId", "")
-    #     demisto.debug(f"{datasubject_id}")
+    def get_dsar(self, ticket_id: Any) -> Dict:
+        ticket_details = self.get_ticket(ticket_id)
+        demisto.debug(f"{ticket_details}")
+        datasubject_id = ticket_details.get("piiId", "")
+        demisto.debug(f"{datasubject_id}")
 
-    #     return self._http_request(
-    #         method="GET",
-    #         url_suffix=f"/dsr/api/dsar-management/personal-data-usage/ticket/{ticket_id}",
-    #         # url_suffix=f"/pii/api/piis/{datasubject_id}/sources",
-    #         return_empty_response=True,
-    #         retries=5
-    #     )
+        return self._http_request(
+            method="GET",
+            url_suffix=f"/dsr/api/dsar-management/personal-data-usage/ticket/{ticket_id}",
+            # url_suffix=f"/pii/api/piis/{datasubject_id}/sources",
+            return_empty_response=True,
+            retries=5
+        )
 
     def get_sources(self, datasubject_id: Any) -> Dict:
         return self._http_request(
@@ -171,7 +165,7 @@ class Client(BaseClient):
             url_suffix=f"/pii/api/piis/{datasubject_id}/sources/details",
             return_empty_response=True,
             retries=5
-        )
+            )
 
 
 ''' HELPER FUNCTIONS '''
@@ -239,30 +233,6 @@ def get_datasubject_id_command(client: Client, **kwargs) -> CommandResults:
                               outputs_key_field="datasubject_id")
 
 
-# def create_ticket_command(client: Client, reason: str, datasubject_id: int) -> CommandResults:
-#     ticket_id = client.create_ticket(datasubject_id, reason)
-#     return CommandResults(outputs={"ticket_id": f"{ticket_id}"},
-#                           outputs_prefix="Inventa.DataSubjects.Ticket",
-#                           outputs_key_field="ticket_id")
-
-
-# def get_datasubjectid_from_ticket_command(client: Client, ticket_id: int) -> CommandResults:
-#     ticket_details = client.get_ticket(ticket_id)
-#     datasubject_id = ticket_details.get("piiId", "")
-#     return CommandResults(outputs={"datasubject_id": datasubject_id},
-#                           outputs_prefix="Inventa.DataSubjects",
-#                           outputs_key_field="datasubject_id")
-
-
-# def get_datasubject_details_command(client: Client, ticket_id: int) -> CommandResults:
-#     ticket_details = client.get_ticket(ticket_id)
-#     datasubject_name = ticket_details.get("name", "")
-#     datasubject_email = ticket_details.get("email", "")
-#     return CommandResults(outputs={"name": datasubject_name, "email": datasubject_email},
-#                           outputs_prefix="Inventa.DataSubject",
-#                           outputs_key_field="name")
-
-
 def get_sources_command(client: Client, datasubject_id: str) -> CommandResults:
     if not datasubject_id:
         raise ValueError("No such datasubject_id found")
@@ -302,8 +272,7 @@ def get_sources_command(client: Client, datasubject_id: str) -> CommandResults:
             "content": source_content,
             "entityTypes": ", ".join(source_entity_types),
         })
-    return CommandResults(outputs={"sources": result}, outputs_prefix="Inventa.Sources", outputs_key_field="sources")
-    # return CommandResults(outputs=result, outputs_prefix="Inventa.Sources", outputs_key_field="sources")
+    return CommandResults(outputs=result, outputs_prefix="Inventa.Sources.sources", outputs_key_field="id")
 
 
 def get_sources_piis_command(client: Client, datasubject_id: str) -> CommandResults:
@@ -316,184 +285,165 @@ def get_sources_piis_command(client: Client, datasubject_id: str) -> CommandResu
     return CommandResults(outputs={"piis": piis}, outputs_prefix="Inventa.Sources", outputs_key_field="piis")
 
 
-# def get_sources_files_command(client: Client, datasubject_id: str) -> CommandResults:
-#     sources = client.get_sources(datasubject_id)
-#     result = []
-#     for item in sources:
-#         if item["key"]["keyType"].upper() == "FS":
-#             id = item["id"]
-#             timestamp = item["timestamp"]
-#             name = f"{item['content']['fileName']}.{item['content']['fileType']}"
-#             size = item['content']['contentSize']
-#             path = item['key']['path']
-#             url = path
-#             entity_types = item["content"]["entityTypes"]
-#             payload = {
-#                 "id": id,
-#                 "timestamp": timestamp,
-#                 "name": name,
-#                 "size": size,
-#                 "path": path,
-#                 "url": url,
-#                 "entityTypes": entity_types
-#             }
-#             result.append(payload)
-#     return CommandResults(outputs=result, outputs_prefix="Inventa.Sources.Files", outputs_key_field="files")
+def create_ticket_command(client: Client, reason: str, datasubject_id: int) -> CommandResults:
+    ticket_id = client.create_ticket(datasubject_id, reason)
+    return CommandResults(outputs={"ticket_id": f"{ticket_id}"},
+                          outputs_prefix="Inventa.DataSubjects.Ticket",
+                          outputs_key_field="ticket_id")
 
 
-# def get_sources_transactions_command(client: Client, datasubject_id: str, sources: Any) -> CommandResults:
-#     if not sources:
-#         sources = client.get_sources(datasubject_id)
-#     pass
+def get_datasubjectid_from_ticket_command(client: Client, ticket_id: int) -> CommandResults:
+    ticket_details = client.get_ticket(ticket_id)
+    datasubject_id = ticket_details.get("piiId", "")
+    return CommandResults(outputs={"datasubject_id": datasubject_id},
+                          outputs_prefix="Inventa.DataSubjects",
+                          outputs_key_field="datasubject_id")
 
 
-# def get_sources_databases_command(client: Client, datasubject_id: str, sources: Any) -> CommandResults:
-#     if not sources:
-#         sources = client.get_sources(datasubject_id)
-#     pass
+def get_datasubject_details_command(client: Client, ticket_id: int) -> CommandResults:
+    ticket_details = client.get_ticket(ticket_id)
+    datasubject_name = ticket_details.get("name", "")
+    datasubject_email = ticket_details.get("email", "")
+    return CommandResults(outputs={"name": datasubject_name, "email": datasubject_email},
+                          outputs_prefix="Inventa.DataSubject",
+                          outputs_key_field="name")
 
 
-# def get_sources_dataassets_command(client: Client, datasubject_id: str, sources: Any) -> CommandResults:
-#     if not sources:
-#         sources = client.get_sources(datasubject_id)
-#     pass
+def get_dsar_piis_command(client: Client, ticket_id: int) -> CommandResults:
+    dsar = client.get_dsar(ticket_id)
+    piis = dsar.get("piis", [])
+    pii_list = list()
+    for pii in piis:
+        pii_list.append(pii.get("piiEntityType", ""))
+
+    demisto.debug(f"{piis}")
+    demisto.debug(f"{pii_list}")
+
+    return CommandResults(outputs={"piis": list(set(pii_list))},
+                          outputs_prefix="Inventa.Dsar.Piis")
+
+def get_dsar_transactions_command(client: Client, ticket_id: int) -> CommandResults:
+    dsar = client.get_dsar(ticket_id)
+    transactions = dsar.get("copiesUsageData", {}).get("transactions", [])
+    if "entityTypes" in transactions:
+        transactions["entityTypes"] = [transactions["entityTypes"]["type"]
+                                       for item in transactions["entityTypes"] if item == "type"]
+
+    for transaction in transactions:
+        demisto.debug(f"file: {transaction}")
+        if "entityTypes" in transaction:
+            entityTypes = transaction["entityTypes"]
+            demisto.debug(f"types: {entityTypes}")
+            stripped = [item["type"] for item in entityTypes]
+            demisto.debug(f"stripped: {stripped}")
+            transaction["entityTypes"] = stripped
+    if transactions:
+        return CommandResults(outputs={"transactions": transactions},
+                              outputs_prefix="Inventa.Dsar.Transactions",
+                              outputs_key_field="id")
+    else:
+        return CommandResults(outputs={"transactions": [empty_transaction]},
+                              outputs_prefix="Inventa.Dsar.Transactions",
+                              outputs_key_field="id")
 
 
-# def get_dsar_piis_command(client: Client, ticket_id: int) -> CommandResults:
-#     dsar = client.get_dsar(ticket_id)
-#     piis = dsar.get("piis", [])
-#     pii_list = list()
-#     for pii in piis:
-#         pii_list.append(pii.get("piiEntityType", ""))
+def get_dsar_files_command(client: Client, ticket_id: int) -> CommandResults:
+    dsar = client.get_dsar(ticket_id)
+    demisto.debug(f"{dsar}")
+    files = dsar.get("copiesUsageData", {}).get("files", [])
+    demisto.debug(f"{files}")
+    for file in files:
+        # file.pop("path")
+        # file.pop("url")
+        demisto.debug(f"file: {file}")
+        if "entityTypes" in file:
+            entityTypes = file["entityTypes"]
+            demisto.debug(f"types: {entityTypes}")
+            stripped = [item["type"] for item in entityTypes]
+            stripped = list(set(stripped))
+            demisto.debug(f"types: {stripped}")
+            file["entityTypes"] = ", ".join(stripped)
+        if "timestamp" in file:
+            ts = file.get("timestamp", 0)
+            if type(ts) is int:
+                file["timestamp"] = datetime.utcfromtimestamp(
+                    float(f"{str(ts)[:10]}.{str(ts)[10:]}")).strftime("%d %b %Y %H:%M:%S")
+            # file["entityTypes"] = stripped
+    if files:
+        return CommandResults(outputs={"files": files},
+                              outputs_prefix="Inventa.Dsar.Files",
+                              outputs_key_field="id")
 
-#     demisto.debug(f"{piis}")
-#     demisto.debug(f"{pii_list}")
-
-#     return CommandResults(outputs={"piis": list(set(pii_list))},
-#                           outputs_prefix="Inventa.Dsar.Piis")
-
-
-# def get_dsar_transactions_command(client: Client, ticket_id: int) -> CommandResults:
-#     dsar = client.get_dsar(ticket_id)
-#     transactions = dsar.get("copiesUsageData", {}).get("transactions", [])
-#     if "entityTypes" in transactions:
-#         transactions["entityTypes"] = [transactions["entityTypes"]["type"]
-#                                        for item in transactions["entityTypes"] if item == "type"]
-
-#     for transaction in transactions:
-#         demisto.debug(f"file: {transaction}")
-#         if "entityTypes" in transaction:
-#             entityTypes = transaction["entityTypes"]
-#             demisto.debug(f"types: {entityTypes}")
-#             stripped = [item["type"] for item in entityTypes]
-#             demisto.debug(f"stripped: {stripped}")
-#             transaction["entityTypes"] = stripped
-#     if transactions:
-#         return CommandResults(outputs={"transactions": transactions},
-#                               outputs_prefix="Inventa.Dsar.Transactions",
-#                               outputs_key_field="id")
-#     else:
-#         return CommandResults(outputs={"transactions": [empty_transaction]},
-#                               outputs_prefix="Inventa.Dsar.Transactions",
-#                               outputs_key_field="id")
+    else:
+        return CommandResults(outputs={"files": [empty_file]},
+                              outputs_prefix="Inventa.Dsar.Files",
+                              outputs_key_field="id")
 
 
-# def get_dsar_files_command(client: Client, ticket_id: int) -> CommandResults:
-#     dsar = client.get_dsar(ticket_id)
-#     demisto.debug(f"{dsar}")
-#     files = dsar.get("copiesUsageData", {}).get("files", [])
-#     demisto.debug(f"{files}")
-#     for file in files:
-#         # file.pop("path")
-#         # file.pop("url")
-#         demisto.debug(f"file: {file}")
-#         if "entityTypes" in file:
-#             entityTypes = file["entityTypes"]
-#             demisto.debug(f"types: {entityTypes}")
-#             stripped = [item["type"] for item in entityTypes]
-#             stripped = list(set(stripped))
-#             demisto.debug(f"types: {stripped}")
-#             file["entityTypes"] = ", ".join(stripped)
-#         if "timestamp" in file:
-#             ts = file.get("timestamp", 0)
-#             if type(ts) is int:
-#                 file["timestamp"] = datetime.utcfromtimestamp(
-#                     float(f"{str(ts)[:10]}.{str(ts)[10:]}")).strftime("%d %b %Y %H:%M:%S")
-#             # file["entityTypes"] = stripped
-#     if files:
-#         return CommandResults(outputs={"files": files},
-#                               outputs_prefix="Inventa.Dsar.Files",
-#                               outputs_key_field="id")
+def get_dsar_databases_command(client: Client, ticket_id: int) -> CommandResults:
+    dsar = client.get_dsar(ticket_id)
+    databases = dsar.get("copiesUsageData", {}).get("databases", [])
+    tables = []
+    for db in databases:
+        demisto.debug(f"db: {db}")
+        database_name = db.get("name", "")
+        if "tables" in db:
+            for table in db["tables"]:
+                table["database"] = database_name
 
-#     else:
-#         return CommandResults(outputs={"files": [empty_file]},
-#                               outputs_prefix="Inventa.Dsar.Files",
-#                               outputs_key_field="id")
+                if "entityTypes" in table:
+                    entityTypes = table["entityTypes"]
+                    stripped = [item["type"] for item in entityTypes]
+                    stripped = list(set(stripped))
+                    demisto.debug(f"types: {stripped}")
+                    table["entityTypes"] = ", ".join(stripped)
+                    # table["entityTypes"] = stripped
+
+                tables.append(table)
+
+    if databases:
+        return CommandResults(outputs={"databases": tables},
+                              outputs_prefix="Inventa.Dsar.Databases",
+                              outputs_key_field="id")
+    else:
+        return CommandResults(outputs={"databases": [empty_database]},
+                              outputs_prefix="Inventa.Dsar.Databases",
+                              outputs_key_field="id")
 
 
-# def get_dsar_databases_command(client: Client, ticket_id: int) -> CommandResults:
-#     dsar = client.get_dsar(ticket_id)
-#     databases = dsar.get("copiesUsageData", {}).get("databases", [])
-#     tables = []
-#     for db in databases:
-#         demisto.debug(f"db: {db}")
-#         database_name = db.get("name", "")
-#         if "tables" in db:
-#             for table in db["tables"]:
-#                 table["database"] = database_name
+def get_dsar_dataassets_command(client: Client, ticket_id: int) -> CommandResults:
+    dsar = client.get_dsar(ticket_id)
+    dataAssets = dsar.get("copiesUsageData", {}).get("dataAssets", [])
+    for da in dataAssets:
+        demisto.debug(f"file: {da}")
+        if "piis" in da:
+            entityTypes = da["piis"]
+            if entityTypes:
+                demisto.debug(f"types: {entityTypes}")
+                stripped = [item["type"] for item in entityTypes]
+                stripped = list(set(stripped))
+                demisto.debug(f"types: {stripped}")
+                da["piis"] = ", ".join(stripped)
+            else:
+                da["piis"] = "None"
 
-#                 if "entityTypes" in table:
-#                     entityTypes = table["entityTypes"]
-#                     stripped = [item["type"] for item in entityTypes]
-#                     stripped = list(set(stripped))
-#                     demisto.debug(f"types: {stripped}")
-#                     table["entityTypes"] = ", ".join(stripped)
-#                     # table["entityTypes"] = stripped
+        if "reasonsOfProcessing" in da:
+            reasons = da["reasonsOfProcessing"]
+            if reasons:
+                da["reasonsOfProcessing"] = ', '.join(reasons)
+            else:
+                da["reasonsOfProcessing"] = "None"
 
-#                 tables.append(table)
+    if dataAssets:
+        demisto.debug(f"{dataAssets}")
+        return CommandResults(outputs={"dataAssets": dataAssets},
+                              outputs_prefix="Inventa.Dsar.DataAssets",
+                              outputs_key_field="id")
+    else:
+        return CommandResults(outputs={"dataAssets": [empty_dataasset]},
+                              outputs_prefix="Inventa.Dsar.DataAssets",
+                              outputs_key_field="id")
 
-#     if databases:
-#         return CommandResults(outputs={"databases": tables},
-#                               outputs_prefix="Inventa.Dsar.Databases",
-#                               outputs_key_field="id")
-#     else:
-#         return CommandResults(outputs={"databases": [empty_database]},
-#                               outputs_prefix="Inventa.Dsar.Databases",
-#                               outputs_key_field="id")
-
-
-# def get_dsar_dataassets_command(client: Client, ticket_id: int) -> CommandResults:
-#     dsar = client.get_dsar(ticket_id)
-#     dataAssets = dsar.get("copiesUsageData", {}).get("dataAssets", [])
-#     for da in dataAssets:
-#         demisto.debug(f"file: {da}")
-#         if "piis" in da:
-#             entityTypes = da["piis"]
-#             if entityTypes:
-#                 demisto.debug(f"types: {entityTypes}")
-#                 stripped = [item["type"] for item in entityTypes]
-#                 stripped = list(set(stripped))
-#                 demisto.debug(f"types: {stripped}")
-#                 da["piis"] = ", ".join(stripped)
-#             else:
-#                 da["piis"] = "None"
-
-#         if "reasonsOfProcessing" in da:
-#             reasons = da["reasonsOfProcessing"]
-#             if reasons:
-#                 da["reasonsOfProcessing"] = ', '.join(reasons)
-#             else:
-#                 da["reasonsOfProcessing"] = "None"
-
-#     if dataAssets:
-#         demisto.debug(f"{dataAssets}")
-#         return CommandResults(outputs={"dataAssets": dataAssets},
-#                               outputs_prefix="Inventa.Dsar.DataAssets",
-#                               outputs_key_field="id")
-#     else:
-#         return CommandResults(outputs={"dataAssets": [empty_dataasset]},
-#                               outputs_prefix="Inventa.Dsar.DataAssets",
-#                               outputs_key_field="id")
 
 
 def validate_incident_inputs_command(**kwargs):
@@ -512,9 +462,7 @@ def validate_incident_inputs_command(**kwargs):
     birthday = kwargs.get("birthday", "")
     city = kwargs.get("city", "")
     street_address = kwargs.get("street_address", "")
-    # reason = kwargs.get("reason", "")
 
-    # demisto.debug(f"{ticket_id}")
     demisto.debug(f"{datasubject_id}")
 
     constraints = [
@@ -538,9 +486,6 @@ def validate_incident_inputs_command(**kwargs):
             constraints_validated = True
             break
 
-    # ticket_validated = False
-    # if ticket_id:
-    #     ticket_validated = True
     datasubject_id_validated = False
     if datasubject_id:
         datasubject_id_validated = True
@@ -554,10 +499,6 @@ def validate_incident_inputs_command(**kwargs):
         return CommandResults(outputs={"validated": True},
                               outputs_prefix="Inventa.Incident",
                               outputs_key_field="validated")
-    # elif ticket_validated:
-    #     return CommandResults(outputs={"validated": True},
-    #                           outputs_prefix="Inventa.Incident",
-    #                           outputs_key_field="validated")
     else:
         raise Exception("Validation failed: constraints missing. Check incident's inputs.")
 
@@ -640,38 +581,34 @@ def main() -> None:
             return_results(result)
 
         elif demisto.command() == 'inventa-get-datasubjects':
-            # return_results(demisto.args())
             return_results(get_datasubjects_command(client, **demisto.args()))
 
         elif demisto.command() == 'inventa-get-datasubject-id':
             return_results(get_datasubject_id_command(client, **demisto.args()))
 
-        # elif demisto.command() == 'inventa-create-ticket':
-        #     return_results(create_ticket_command(client, **demisto.args()))
+        elif demisto.command() == 'inventa-create-ticket':
+            return_results(create_ticket_command(client, **demisto.args()))
 
         elif demisto.command() == 'inventa-get-datasubject-details':
             return_results(get_datasubject_details_command(client, demisto.args().get("ticket_id", "")))
+            
+        elif demisto.command() == 'inventa-get-dsar-piis':
+            return_results(get_dsar_piis_command(client, demisto.args().get("ticket_id", "")))
 
-        # elif demisto.command() == 'inventa-get-dsar-piis':
-        #     return_results(get_dsar_piis_command(client, demisto.args().get("ticket_id", "")))
+        elif demisto.command() == 'inventa-get-dsar-transactions':
+            return_results(get_dsar_transactions_command(client, demisto.args().get("ticket_id", "")))
 
-        # elif demisto.command() == 'inventa-get-dsar-transactions':
-        #     return_results(get_dsar_transactions_command(client, demisto.args().get("ticket_id", "")))
+        elif demisto.command() == 'inventa-get-dsar-files':
+            return_results(get_dsar_files_command(client, demisto.args().get("ticket_id", "")))
 
-        # elif demisto.command() == 'inventa-get-dsar-files':
-        #     return_results(get_dsar_files_command(client, demisto.args().get("ticket_id", "")))
+        elif demisto.command() == 'inventa-get-dsar-databases':
+            return_results(get_dsar_databases_command(client, demisto.args().get("ticket_id", "")))
 
-        # elif demisto.command() == 'inventa-get-dsar-databases':
-        #     return_results(get_dsar_databases_command(client, demisto.args().get("ticket_id", "")))
+        elif demisto.command() == 'inventa-get-dsar-dataassets':
+            return_results(get_dsar_dataassets_command(client, demisto.args().get("ticket_id", "")))
 
-        # elif demisto.command() == 'inventa-get-dsar-dataassets':
-        #     return_results(get_dsar_dataassets_command(client, demisto.args().get("ticket_id", "")))
-
-        # elif demisto.command() == 'inventa-get-datasubject-id-from-ticket':
-        #     return_results(get_datasubjectid_from_ticket_command(client, demisto.args().get("ticket_id", 0)))
-
-        # elif demisto.command() == "inventa-get-sources-files":
-        #     return_results(get_sources_files_command(client, demisto.args().get("datasubject_id", "")))
+        elif demisto.command() == 'inventa-get-datasubject-id-from-ticket':
+            return_results(get_datasubjectid_from_ticket_command(client, demisto.args().get("ticket_id", 0)))
 
         elif demisto.command() == "inventa-get-sources":
             return_results(get_sources_command(client, demisto.args().get("datasubject_id", "")))
