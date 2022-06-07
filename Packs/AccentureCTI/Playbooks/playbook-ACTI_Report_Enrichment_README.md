@@ -1,4 +1,5 @@
-- This playbook enriches Intelligence Alerts, Intelligence Reports, Malware Families, Threat Actors, Threat Groups & Threat Campaigns
+- This sub-playbook can be plugged into playbooks from other vendors in order to pull ACTI Intelligence Alerts & Intelligence Reports into an XSOAR incident.
+- This sub-playbook can be integrated into generic XSOAR playbooks and playbooks from other vendors by itself.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -13,7 +14,6 @@ This playbook does not use any sub-playbooks.
 This playbook does not use any scripts.
 
 ### Commands
-* acti-get-fundamentals-by-uuid
 * acti-getThreatIntelReport
 
 ## Playbook Inputs
@@ -21,15 +21,11 @@ This playbook does not use any scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| ia_uuid | Intelligence Alert unique ID. | ${intelligence_alerts}.None | Optional |
-| ir_uuid | Intelligence Report unique ID. | ${intelligence_reports}.None | Optional |
-| Domain | The extracted domain. | ${Domain} | Optional |
+| ia_uuid | The Intelligence Alert uuid. | ${intelligence_alerts}.None | Optional |
+| ir_uuid | The Intelligence Report uuid. | ${intelligence_reports}.None | Optional |
+| Domain | The extarcted Domain. | ${Domain} | Optional |
 | IP | The extracted IP. | ${IP} | Optional |
 | URL | The extracted URL. | ${URL} | Optional |
-| MalwareFamily_uuid | Malware Family unique ID. | ${acti_malware_family_uuid}.None | Optional |
-| ThreatGroup_uuid | Threat Group unique ID. | ${acti_threat_groups_uuid}.None | Optional |
-| ThreatCampaign_uuid | Threat Campaign unique ID. | ${acti_threat_campaigns_uuid}.None | Optional |
-| ThreatActor_uuid | Threat Actor unique ID. | ${acti_threat_actors_uuid}.None | Optional |
 
 ## Playbook Outputs
 ---
@@ -44,4 +40,4 @@ This playbook does not use any scripts.
 
 ## Playbook Image
 ---
-![ACTI Report Enrichment](https://user-images.githubusercontent.com/40510780/171863775-19f86d1d-e691-4d2d-bd20-f259f0747d52.png)
+![ACTI Report Enrichment](https://user-images.githubusercontent.com/40510780/161069052-feb0b049-e189-42ea-bd3b-db96fdab09d8.png)

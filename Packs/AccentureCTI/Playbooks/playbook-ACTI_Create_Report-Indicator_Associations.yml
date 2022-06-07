@@ -1,25 +1,25 @@
 id: ACTI Create Report-Indicator Associations
 version: -1
 name: ACTI Create Report-Indicator Associations
-description: This sub-playbook makes the connections between ACTI indicators (from ACTI Indicator API) and ACTI intelligence reports (from ACTI Report API) that have pulled into an XSOAR incident via the Enrich Incidents with Indicators and Enrich Incidents with Intelligence Reports sub-playbooks.
-starttaskid: "0"
+description: Deprecated. No available replacement.
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     taskid: 23e9bd83-6fae-445a-8295-be86a302f41a
     type: start
     task:
       id: 23e9bd83-6fae-445a-8295-be86a302f41a
       version: -1
-      name: ""
+      name: ''
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "9"
-      - "11"
-      - "10"
+      - '9'
+      - '11'
+      - '10'
     separatecontext: false
     view: |-
       {
@@ -35,8 +35,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "1":
-    id: "1"
+  '1':
+    id: '1'
     taskid: ddb30ddd-7fd1-4c62-8ee0-c49d8989bafd
     type: regular
     task:
@@ -47,13 +47,13 @@ tasks:
       scriptName: CreateIndicatorRelationship
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "4"
+      - '4'
     scriptarguments:
       create_indicator:
-        simple: "true"
+        simple: 'true'
       entity_a:
         simple: ${inputs.IP}
       entity_a_type:
@@ -81,8 +81,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "2":
-    id: "2"
+  '2':
+    id: '2'
     taskid: 44648829-d0db-4427-8cab-dc11d85e7b9a
     type: regular
     task:
@@ -93,13 +93,13 @@ tasks:
       scriptName: CreateIndicatorRelationship
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "4"
+      - '4'
     scriptarguments:
       create_indicator:
-        simple: "true"
+        simple: 'true'
       entity_a:
         simple: ${inputs.Domain}
       entity_a_type:
@@ -127,8 +127,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "3":
-    id: "3"
+  '3':
+    id: '3'
     taskid: e12cebab-36fa-4a91-8cae-200c3bab4233
     type: regular
     task:
@@ -139,13 +139,13 @@ tasks:
       scriptName: CreateIndicatorRelationship
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "4"
+      - '4'
     scriptarguments:
       create_indicator:
-        simple: "true"
+        simple: 'true'
       entity_a:
         simple: ${inputs.URL}
       entity_a_type:
@@ -173,18 +173,18 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "4":
-    id: "4"
+  '4':
+    id: '4'
     taskid: 1b803980-e920-45e9-8d4f-b7af0c754d1a
     type: title
     task:
       id: 1b803980-e920-45e9-8d4f-b7af0c754d1a
       version: -1
       name: END
-      description: ""
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -200,28 +200,28 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "5":
-    id: "5"
+  '5':
+    id: '5'
     taskid: 6d6f8f32-2d35-4ffd-8fb0-7958e1768e84
     type: condition
     task:
       id: 6d6f8f32-2d35-4ffd-8fb0-7958e1768e84
       version: -1
       name: Is ACTI URL Indicator?
-      description: ""
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#default#':
-      - "4"
+      - '4'
       URL:
-      - "21"
-      - "22"
-      - "33"
-      - "34"
-      - "35"
-      - "36"
+      - '21'
+      - '22'
+      - '33'
+      - '34'
+      - '35'
+      - '36'
     separatecontext: false
     conditions:
     - label: URL
@@ -265,23 +265,22 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "6":
-    id: "6"
+  '6':
+    id: '6'
     taskid: 342bf397-02a3-46c4-855a-8d22e16343cf
     type: regular
     task:
       id: 342bf397-02a3-46c4-855a-8d22e16343cf
       version: -1
       name: GetIPDBotScore
-      description: Add into the incident's context the system internal DBot score
-        for the input indicator.
+      description: Add into the incident's context the system internal DBot score for the input indicator.
       scriptName: GetIndicatorDBotScore
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "12"
+      - '12'
     scriptarguments:
       indicator:
         simple: ${inputs.IP}
@@ -300,23 +299,22 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "7":
-    id: "7"
+  '7':
+    id: '7'
     taskid: 60e1dae0-f5cb-42f1-89f1-e0465f768ef8
     type: regular
     task:
       id: 60e1dae0-f5cb-42f1-89f1-e0465f768ef8
       version: -1
       name: GetDomainDBotScore
-      description: Add into the incident's context the system internal DBot score
-        for the input indicator.
+      description: Add into the incident's context the system internal DBot score for the input indicator.
       scriptName: GetIndicatorDBotScore
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "13"
+      - '13'
     scriptarguments:
       indicator:
         simple: ${inputs.Domain}
@@ -335,23 +333,22 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "8":
-    id: "8"
+  '8':
+    id: '8'
     taskid: fcc3dce8-eb3c-4f8a-8982-e696594acfb2
     type: regular
     task:
       id: fcc3dce8-eb3c-4f8a-8982-e696594acfb2
       version: -1
       name: GetURLDBotScore
-      description: Add into the incident's context the system internal DBot score
-        for the input indicator.
+      description: Add into the incident's context the system internal DBot score for the input indicator.
       scriptName: GetIndicatorDBotScore
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "5"
+      - '5'
     scriptarguments:
       indicator:
         simple: ${inputs.URL}
@@ -370,25 +367,24 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "9":
-    id: "9"
+  '9':
+    id: '9'
     taskid: 34c936c5-e0c3-453f-8d59-c5e73b77ccea
     type: condition
     task:
       id: 34c936c5-e0c3-453f-8d59-c5e73b77ccea
       version: -1
       name: IP Exists
-      description: Check if a given value exists in the context. Will return 'no'
-        for empty empty arrays. To be used mostly with DQ and selectors.
+      description: Check if a given value exists in the context. Will return 'no' for empty empty arrays. To be used mostly with DQ and selectors.
       scriptName: Exists
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
-      "no":
-      - "4"
-      "yes":
-      - "6"
+      no:
+      - '4'
+      yes:
+      - '6'
     scriptarguments:
       value:
         simple: ${inputs.IP}
@@ -407,25 +403,24 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "10":
-    id: "10"
+  '10':
+    id: '10'
     taskid: ad707a83-13fe-4c2f-85bb-5d56575a03bb
     type: condition
     task:
       id: ad707a83-13fe-4c2f-85bb-5d56575a03bb
       version: -1
       name: Domain Exists
-      description: Check if a given value exists in the context. Will return 'no'
-        for empty empty arrays. To be used mostly with DQ and selectors.
+      description: Check if a given value exists in the context. Will return 'no' for empty empty arrays. To be used mostly with DQ and selectors.
       scriptName: Exists
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
-      "no":
-      - "4"
-      "yes":
-      - "7"
+      no:
+      - '4'
+      yes:
+      - '7'
     scriptarguments:
       value:
         simple: ${inputs.Domain}
@@ -444,25 +439,24 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "11":
-    id: "11"
+  '11':
+    id: '11'
     taskid: d701dbf8-bf4d-40fe-8a02-ee2ca2ede04a
     type: condition
     task:
       id: d701dbf8-bf4d-40fe-8a02-ee2ca2ede04a
       version: -1
       name: URL Exists
-      description: Check if a given value exists in the context. Will return 'no'
-        for empty empty arrays. To be used mostly with DQ and selectors.
+      description: Check if a given value exists in the context. Will return 'no' for empty empty arrays. To be used mostly with DQ and selectors.
       scriptName: Exists
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
-      "no":
-      - "4"
-      "yes":
-      - "8"
+      no:
+      - '4'
+      yes:
+      - '8'
     scriptarguments:
       value:
         simple: ${inputs.URL}
@@ -481,28 +475,28 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "12":
-    id: "12"
+  '12':
+    id: '12'
     taskid: b74ebcea-8e59-4adf-869b-a54c926afe32
     type: condition
     task:
       id: b74ebcea-8e59-4adf-869b-a54c926afe32
       version: -1
       name: Is ACTI IP Indicator?
-      description: Checks whether it is an IP Indicator enriched using ACTI Indicator Query integration.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
+      description: Checks whether it is an IP Indicator enriched using ACTI Indicator Query integration.
     nexttasks:
       '#default#':
-      - "4"
+      - '4'
       IP:
-      - "23"
-      - "24"
-      - "25"
-      - "26"
-      - "27"
-      - "28"
+      - '23'
+      - '24'
+      - '25'
+      - '26'
+      - '27'
+      - '28'
     separatecontext: false
     conditions:
     - label: IP
@@ -515,6 +509,13 @@ tasks:
             value:
               complex:
                 root: DBotScore
+                accessor: Type
+                transformers:
+                - operator: join
+                  args:
+                    separator:
+                      value:
+                        simple: ','
                 filters:
                 - - operator: isEqualString
                     left:
@@ -524,13 +525,6 @@ tasks:
                     right:
                       value:
                         simple: ACTI Indicator Query
-                accessor: Type
-                transformers:
-                - operator: join
-                  args:
-                    separator:
-                      value:
-                        simple: ','
             iscontext: true
     view: |-
       {
@@ -546,28 +540,28 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "13":
-    id: "13"
+  '13':
+    id: '13'
     taskid: a2ba3fbe-5868-4419-8cb0-7852886c24c6
     type: condition
     task:
       id: a2ba3fbe-5868-4419-8cb0-7852886c24c6
       version: -1
       name: Is ACTI domain Indicator?
-      description: Checks whether it is a Domain Indicator enriched using ACTI Indicator Query integration.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
+      description: Checks whether it is a Domain Indicator enriched using ACTI Indicator Query integration.
     nexttasks:
       '#default#':
-      - "4"
+      - '4'
       Domain:
-      - "19"
-      - "20"
-      - "41"
-      - "42"
-      - "43"
-      - "44"
+      - '19'
+      - '20'
+      - '41'
+      - '42'
+      - '43'
+      - '44'
     separatecontext: false
     conditions:
     - label: Domain
@@ -611,8 +605,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "16":
-    id: "16"
+  '16':
+    id: '16'
     taskid: 3b97422c-4bab-40f6-814f-b016e7b04dd1
     type: regular
     task:
@@ -623,13 +617,13 @@ tasks:
       scriptName: CreateIndicatorRelationship
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "4"
+      - '4'
     scriptarguments:
       create_indicator:
-        simple: "true"
+        simple: 'true'
       entity_a:
         simple: ${inputs.IP}
       entity_a_type:
@@ -657,8 +651,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "17":
-    id: "17"
+  '17':
+    id: '17'
     taskid: f1f311d9-fb3b-4f86-808f-7ebf55b1135b
     type: regular
     task:
@@ -669,13 +663,13 @@ tasks:
       scriptName: CreateIndicatorRelationship
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "4"
+      - '4'
     scriptarguments:
       create_indicator:
-        simple: "true"
+        simple: 'true'
       entity_a:
         simple: ${inputs.URL}
       entity_a_type:
@@ -703,8 +697,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "18":
-    id: "18"
+  '18':
+    id: '18'
     taskid: a68886b4-2d15-4e16-8266-cef93a0e9582
     type: regular
     task:
@@ -715,13 +709,13 @@ tasks:
       scriptName: CreateIndicatorRelationship
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "4"
+      - '4'
     scriptarguments:
       create_indicator:
-        simple: "true"
+        simple: 'true'
       entity_a:
         simple: ${inputs.Domain}
       entity_a_type:
@@ -749,26 +743,26 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "19":
-    id: "19"
+  '19':
+    id: '19'
     taskid: e10af4f7-e0d5-4cb2-8a0a-8821d19f30ef
     type: condition
     task:
       id: e10af4f7-e0d5-4cb2-8a0a-8821d19f30ef
       version: -1
       name: IA present?
-      description: Checks whether there is an IA present for the given indicator.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
+      description: Checks whether there is an IA present for the given indicator.
     nexttasks:
       '#default#':
-      - "4"
-      "yes":
-      - "2"
+      - '4'
+      yes:
+      - '2'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isNotEmpty
           left:
@@ -789,26 +783,26 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "20":
-    id: "20"
+  '20':
+    id: '20'
     taskid: a240faf0-2ad4-4f6c-8938-b3619854fd49
     type: condition
     task:
       id: a240faf0-2ad4-4f6c-8938-b3619854fd49
       version: -1
       name: IR present?
-      description: Checks whether there is an IR present for the given indicator.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
+      description: Checks whether there is an IR present for the given indicator.
     nexttasks:
       '#default#':
-      - "4"
-      "yes":
-      - "18"
+      - '4'
+      yes:
+      - '18'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isNotEmpty
           left:
@@ -829,26 +823,26 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "21":
-    id: "21"
+  '21':
+    id: '21'
     taskid: 79377267-6448-4c59-860b-85fce47fd859
     type: condition
     task:
       id: 79377267-6448-4c59-860b-85fce47fd859
       version: -1
       name: IR present?
-      description: Checks whether there is an IR present for the given indicator.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
+      description: Checks whether there is an IR present for the given indicator.
     nexttasks:
       '#default#':
-      - "4"
-      "yes":
-      - "17"
+      - '4'
+      yes:
+      - '17'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isNotEmpty
           left:
@@ -869,26 +863,26 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "22":
-    id: "22"
+  '22':
+    id: '22'
     taskid: ab5a9c14-8bf3-4338-8f85-e969a10ea350
     type: condition
     task:
       id: ab5a9c14-8bf3-4338-8f85-e969a10ea350
       version: -1
       name: IA present?
-      description: Checks whether there is an IA present for the given indicator.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
+      description: Checks whether there is an IA present for the given indicator.
     nexttasks:
       '#default#':
-      - "4"
-      "yes":
-      - "3"
+      - '4'
+      yes:
+      - '3'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isNotEmpty
           left:
@@ -909,26 +903,26 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "23":
-    id: "23"
+  '23':
+    id: '23'
     taskid: b833fca2-61a8-4a79-8ed3-6d2030bcd258
     type: condition
     task:
       id: b833fca2-61a8-4a79-8ed3-6d2030bcd258
       version: -1
       name: IA present?
-      description: Checks whether there is an IA present for the given indicator.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
+      description: Checks whether there is an IA present for the given indicator.
     nexttasks:
       '#default#':
-      - "4"
-      "yes":
-      - "1"
+      - '4'
+      yes:
+      - '1'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isNotEmpty
           left:
@@ -949,26 +943,26 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "24":
-    id: "24"
+  '24':
+    id: '24'
     taskid: 27b9c747-b883-4878-8b60-7f352098a63c
     type: condition
     task:
       id: 27b9c747-b883-4878-8b60-7f352098a63c
       version: -1
       name: IR present?
-      description: Checks whether there is an IR present for the given indicator.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
+      description: Checks whether there is an IR present for the given indicator.
     nexttasks:
       '#default#':
-      - "4"
-      "yes":
-      - "16"
+      - '4'
+      yes:
+      - '16'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isNotEmpty
           left:
@@ -989,8 +983,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "25":
-    id: "25"
+  '25':
+    id: '25'
     taskid: bb5a5fb8-1e32-4c41-849d-d6fbee7bf6a1
     type: condition
     task:
@@ -1000,15 +994,15 @@ tasks:
       description: Checks whether there is a Malware Family present for the given indicator.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "4"
-      "yes":
-      - "29"
+      - '4'
+      yes:
+      - '29'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isNotEmpty
           left:
@@ -1029,8 +1023,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "26":
-    id: "26"
+  '26':
+    id: '26'
     taskid: 331b14f8-6720-4a88-8b07-3696e5b239cd
     type: condition
     task:
@@ -1040,15 +1034,15 @@ tasks:
       description: Checks whether there is a Threat Group present for the given indicator.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "4"
-      "yes":
-      - "30"
+      - '4'
+      yes:
+      - '30'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isNotEmpty
           left:
@@ -1069,8 +1063,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "27":
-    id: "27"
+  '27':
+    id: '27'
     taskid: 424aa4ca-6158-41a2-85e9-65341d662c26
     type: condition
     task:
@@ -1080,15 +1074,15 @@ tasks:
       description: Checks whether there is a Threat Actor present for the given indicator.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "4"
-      "yes":
-      - "31"
+      - '4'
+      yes:
+      - '31'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isNotEmpty
           left:
@@ -1109,8 +1103,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "28":
-    id: "28"
+  '28':
+    id: '28'
     taskid: 20767cee-6854-430a-82ae-c5252951f1fd
     type: condition
     task:
@@ -1120,15 +1114,15 @@ tasks:
       description: Checks whether there is a Threat Campaign present for the given indicator.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "4"
-      "yes":
-      - "32"
+      - '4'
+      yes:
+      - '32'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isNotEmpty
           left:
@@ -1149,8 +1143,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "29":
-    id: "29"
+  '29':
+    id: '29'
     taskid: ccff0502-c928-4d57-805f-7b862d8d3d19
     type: regular
     task:
@@ -1161,13 +1155,13 @@ tasks:
       scriptName: CreateIndicatorRelationship
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "4"
+      - '4'
     scriptarguments:
       create_indicator:
-        simple: "true"
+        simple: 'true'
       entity_a:
         simple: ${inputs.IP}
       entity_a_type:
@@ -1195,8 +1189,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "30":
-    id: "30"
+  '30':
+    id: '30'
     taskid: 2be59370-2625-4b3b-8867-cf5684bdd52d
     type: regular
     task:
@@ -1207,13 +1201,13 @@ tasks:
       scriptName: CreateIndicatorRelationship
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "4"
+      - '4'
     scriptarguments:
       create_indicator:
-        simple: "true"
+        simple: 'true'
       entity_a:
         simple: ${inputs.IP}
       entity_a_type:
@@ -1241,8 +1235,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "31":
-    id: "31"
+  '31':
+    id: '31'
     taskid: 15fa609c-6c6f-4a81-847b-7670a7a04d77
     type: regular
     task:
@@ -1253,13 +1247,13 @@ tasks:
       scriptName: CreateIndicatorRelationship
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "4"
+      - '4'
     scriptarguments:
       create_indicator:
-        simple: "true"
+        simple: 'true'
       entity_a:
         simple: ${inputs.IP}
       entity_a_type:
@@ -1287,8 +1281,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "32":
-    id: "32"
+  '32':
+    id: '32'
     taskid: e6d78809-4328-478a-8651-a3d815491927
     type: regular
     task:
@@ -1299,13 +1293,13 @@ tasks:
       scriptName: CreateIndicatorRelationship
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "4"
+      - '4'
     scriptarguments:
       create_indicator:
-        simple: "true"
+        simple: 'true'
       entity_a:
         simple: ${inputs.IP}
       entity_a_type:
@@ -1333,8 +1327,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "33":
-    id: "33"
+  '33':
+    id: '33'
     taskid: 072c8b4f-0e84-4bea-8461-08354f88e087
     type: condition
     task:
@@ -1344,15 +1338,15 @@ tasks:
       description: Checks whether there is a Malware Family present for the given indicator.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "4"
-      "yes":
-      - "37"
+      - '4'
+      yes:
+      - '37'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isNotEmpty
           left:
@@ -1373,8 +1367,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "34":
-    id: "34"
+  '34':
+    id: '34'
     taskid: 55a4799c-13c6-4704-89c0-7a82e863c50c
     type: condition
     task:
@@ -1384,15 +1378,15 @@ tasks:
       description: Checks whether there is a Threat Group present for the given indicator.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "4"
-      "yes":
-      - "38"
+      - '4'
+      yes:
+      - '38'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isNotEmpty
           left:
@@ -1413,8 +1407,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "35":
-    id: "35"
+  '35':
+    id: '35'
     taskid: b3a85a20-10bb-48e5-8d8d-5b6add8a7790
     type: condition
     task:
@@ -1424,15 +1418,15 @@ tasks:
       description: Checks whether there is a Threat Actor present for the given indicator.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "4"
-      "yes":
-      - "39"
+      - '4'
+      yes:
+      - '39'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isNotEmpty
           left:
@@ -1453,8 +1447,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "36":
-    id: "36"
+  '36':
+    id: '36'
     taskid: 1474f6f8-7b74-4c89-8ec1-fd38846f5506
     type: condition
     task:
@@ -1464,15 +1458,15 @@ tasks:
       description: Checks whether there is a Threat Campaign present for the given indicator.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "4"
-      "yes":
-      - "40"
+      - '4'
+      yes:
+      - '40'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isNotEmpty
           left:
@@ -1493,8 +1487,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "37":
-    id: "37"
+  '37':
+    id: '37'
     taskid: c70ab55c-bf08-45c9-8eac-77c6c9d35be8
     type: regular
     task:
@@ -1505,13 +1499,13 @@ tasks:
       scriptName: CreateIndicatorRelationship
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "4"
+      - '4'
     scriptarguments:
       create_indicator:
-        simple: "true"
+        simple: 'true'
       entity_a:
         simple: ${inputs.URL}
       entity_a_type:
@@ -1539,8 +1533,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "38":
-    id: "38"
+  '38':
+    id: '38'
     taskid: b1288aa1-c82e-437d-8265-51d0674f8c6d
     type: regular
     task:
@@ -1551,13 +1545,13 @@ tasks:
       scriptName: CreateIndicatorRelationship
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "4"
+      - '4'
     scriptarguments:
       create_indicator:
-        simple: "true"
+        simple: 'true'
       entity_a:
         simple: ${inputs.URL}
       entity_a_type:
@@ -1585,8 +1579,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "39":
-    id: "39"
+  '39':
+    id: '39'
     taskid: aefef170-60f4-4786-88fa-d7bc76f45482
     type: regular
     task:
@@ -1597,13 +1591,13 @@ tasks:
       scriptName: CreateIndicatorRelationship
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "4"
+      - '4'
     scriptarguments:
       create_indicator:
-        simple: "true"
+        simple: 'true'
       entity_a:
         simple: ${inputs.URL}
       entity_a_type:
@@ -1631,8 +1625,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "40":
-    id: "40"
+  '40':
+    id: '40'
     taskid: e51d8e48-e67d-440c-82d5-3f6e69f44d38
     type: regular
     task:
@@ -1643,13 +1637,13 @@ tasks:
       scriptName: CreateIndicatorRelationship
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "4"
+      - '4'
     scriptarguments:
       create_indicator:
-        simple: "true"
+        simple: 'true'
       entity_a:
         simple: ${inputs.URL}
       entity_a_type:
@@ -1677,8 +1671,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "41":
-    id: "41"
+  '41':
+    id: '41'
     taskid: 69f5aa46-eeef-4df2-82c2-9727ef877abc
     type: condition
     task:
@@ -1688,15 +1682,15 @@ tasks:
       description: Checks whether there is a Malware Family present for the given indicator.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "4"
-      "yes":
-      - "45"
+      - '4'
+      yes:
+      - '45'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isNotEmpty
           left:
@@ -1717,8 +1711,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "42":
-    id: "42"
+  '42':
+    id: '42'
     taskid: 71af77c0-0dc8-487b-8a4a-018373ad9f5c
     type: condition
     task:
@@ -1728,15 +1722,15 @@ tasks:
       description: Checks whether there is a Threat Group present for the given indicator.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "4"
-      "yes":
-      - "46"
+      - '4'
+      yes:
+      - '46'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isNotEmpty
           left:
@@ -1757,8 +1751,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "43":
-    id: "43"
+  '43':
+    id: '43'
     taskid: bfba471a-ef6b-42a1-8d8c-d848eb3a61e0
     type: condition
     task:
@@ -1768,15 +1762,15 @@ tasks:
       description: Checks whether there is a Threat Actor present for the given indicator.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "4"
-      "yes":
-      - "47"
+      - '4'
+      yes:
+      - '47'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isNotEmpty
           left:
@@ -1797,8 +1791,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "44":
-    id: "44"
+  '44':
+    id: '44'
     taskid: 3e2ba028-4586-4178-8d2b-e29b26e8924f
     type: condition
     task:
@@ -1808,15 +1802,15 @@ tasks:
       description: Checks whether there is a Threat Campaign present for the given indicator.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "4"
-      "yes":
-      - "48"
+      - '4'
+      yes:
+      - '48'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isNotEmpty
           left:
@@ -1837,8 +1831,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "45":
-    id: "45"
+  '45':
+    id: '45'
     taskid: 8aeca143-9191-47d6-87e5-24ee9df83384
     type: regular
     task:
@@ -1849,13 +1843,13 @@ tasks:
       scriptName: CreateIndicatorRelationship
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "4"
+      - '4'
     scriptarguments:
       create_indicator:
-        simple: "true"
+        simple: 'true'
       entity_a:
         simple: ${inputs.Domain}
       entity_a_type:
@@ -1883,8 +1877,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "46":
-    id: "46"
+  '46':
+    id: '46'
     taskid: b3f96f83-6feb-4c14-8d6a-2bedccea136d
     type: regular
     task:
@@ -1895,13 +1889,13 @@ tasks:
       scriptName: CreateIndicatorRelationship
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "4"
+      - '4'
     scriptarguments:
       create_indicator:
-        simple: "true"
+        simple: 'true'
       entity_a:
         simple: ${inputs.Domain}
       entity_a_type:
@@ -1929,8 +1923,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "47":
-    id: "47"
+  '47':
+    id: '47'
     taskid: 8dbd19c2-799a-4ece-8fbe-475dbb29e725
     type: regular
     task:
@@ -1941,13 +1935,13 @@ tasks:
       scriptName: CreateIndicatorRelationship
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "4"
+      - '4'
     scriptarguments:
       create_indicator:
-        simple: "true"
+        simple: 'true'
       entity_a:
         simple: ${inputs.Domain}
       entity_a_type:
@@ -1975,8 +1969,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "48":
-    id: "48"
+  '48':
+    id: '48'
     taskid: 669db080-6f15-4dd5-873e-ae5c538c180b
     type: regular
     task:
@@ -1987,13 +1981,13 @@ tasks:
       scriptName: CreateIndicatorRelationship
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "4"
+      - '4'
     scriptarguments:
       create_indicator:
-        simple: "true"
+        simple: 'true'
       entity_a:
         simple: ${inputs.Domain}
       entity_a_type:
@@ -2069,8 +2063,8 @@ inputs:
       transformers:
       - operator: uniq
   required: false
-  description: ""
-  playbookInputQuery: null
+  description: ''
+  playbookInputQuery:
 - key: IA
   value:
     complex:
@@ -2078,8 +2072,8 @@ inputs:
       transformers:
       - operator: uniq
   required: false
-  description: ""
-  playbookInputQuery: null
+  description: ''
+  playbookInputQuery:
 - key: IR
   value:
     complex:
@@ -2087,8 +2081,8 @@ inputs:
       transformers:
       - operator: uniq
   required: false
-  description: ""
-  playbookInputQuery: null
+  description: ''
+  playbookInputQuery:
 - key: URL
   value:
     complex:
@@ -2097,8 +2091,8 @@ inputs:
       transformers:
       - operator: uniq
   required: false
-  description: ""
-  playbookInputQuery: null
+  description: ''
+  playbookInputQuery:
 - key: Domain
   value:
     complex:
@@ -2107,8 +2101,8 @@ inputs:
       transformers:
       - operator: uniq
   required: false
-  description: ""
-  playbookInputQuery: null
+  description: ''
+  playbookInputQuery:
 - key: MFam
   value:
     complex:
@@ -2116,8 +2110,8 @@ inputs:
       transformers:
       - operator: uniq
   required: false
-  description: ""
-  playbookInputQuery: null
+  description: ''
+  playbookInputQuery:
 - key: TA
   value:
     complex:
@@ -2125,8 +2119,8 @@ inputs:
       transformers:
       - operator: uniq
   required: false
-  description: ""
-  playbookInputQuery: null
+  description: ''
+  playbookInputQuery:
 - key: TG
   value:
     complex:
@@ -2134,8 +2128,8 @@ inputs:
       transformers:
       - operator: uniq
   required: false
-  description: ""
-  playbookInputQuery: null
+  description: ''
+  playbookInputQuery:
 - key: TC
   value:
     complex:
@@ -2143,9 +2137,10 @@ inputs:
       transformers:
       - operator: uniq
   required: false
-  description: ""
-  playbookInputQuery: null
+  description: ''
+  playbookInputQuery:
 outputs: []
 tests:
-- No tests (auto formatted)
+- No tests (deprecated)
 fromversion: 6.0.0
+deprecated: true
