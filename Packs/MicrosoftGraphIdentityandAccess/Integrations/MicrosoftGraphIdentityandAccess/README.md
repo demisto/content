@@ -263,14 +263,14 @@ Creates an ip named location.
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| -- | --- | --- |
-| MSGraph.conditionalAccess.namedIpLocations.time_created | Date | The time of the ip named location creation. |
-| MSGraph.conditionalAccess.namedIpLocations.time_modified | Date | The time the ip named location was last modified. |
-| MSGraph.conditionalAccess.namedIpLocations.display_name | String | The ip named location display name. |
-| MSGraph.conditionalAccess.namedIpLocations.id | String | The unique identifier of the ip named location. |
-| MSGraph.conditionalAccess.namedIpLocations.is_trusted | String | The ip named location trust status. |
-| MSGraph.conditionalAccess.namedIpLocations.ip_ranges | Array | The ip named location ip ranges. |
+| **Path**                                                    | **Type** | **Description** |  
+|-------------------------------------------------------------| --- | --- |
+| MSGraph.conditionalAccess.namedIpLocations.time_created     | Date | The time of the ip named location creation. |
+| MSGraph.conditionalAccess.namedIpLocations.time_modified    | Date | The time the ip named location was last modified. |
+| MSGraph.conditionalAccess.namedIpLocations.display_name     | String | The ip named location display name. |
+| MSGraph.conditionalAccess.namedIpLocations.id               | String | The unique identifier of the ip named location. |
+| MSGraph.conditionalAccess.namedIpLocations.is_trusted       | String | The ip named location trust status. |
+| MSGraph.conditionalAccess.namedIpLocations.ip_ranges        | Array | The ip named location ip ranges. |
 
 
 #### Command Example
@@ -288,6 +288,8 @@ Gets an ip named location.
 #### Base Command
 
 `msgraph-identity-ip-named-locations-get`
+
+
 #### Input
 
 | **Argument Name** | **Description**                         | **Required** |
@@ -297,14 +299,14 @@ Gets an ip named location.
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| -- | --- | --- |
-| MSGraph.conditionalAccess.namedIpLocations.time_created | Date | The time of the ip named location creation. |
+| **Path**                                                 | **Type** | **Description** |
+|----------------------------------------------------------| --- | --- |
+| MSGraph.conditionalAccess.namedIpLocations.time_created  | Date | The time of the ip named location creation. |
 | MSGraph.conditionalAccess.namedIpLocations.time_modified | Date | The time the ip named location was last modified. |
-| MSGraph.conditionalAccess.namedIpLocations.display_name | String | The ip named location display name. |
-| MSGraph.conditionalAccess.namedIpLocations.id | String | The unique identifier of the ip named location. |
-| MSGraph.conditionalAccess.namedIpLocations.is_trusted | String | The ip named location trust status. |
-| MSGraph.conditionalAccess.namedIpLocations.ip_ranges | Array | The ip named location ip ranges. |
+| MSGraph.conditionalAccess.namedIpLocations.display_name  | String | The ip named location display name. |
+| MSGraph.conditionalAccess.namedIpLocations.id            | String | The unique identifier of the ip named location. |
+| MSGraph.conditionalAccess.namedIpLocations.is_trusted    | String | The ip named location trust status. |
+| MSGraph.conditionalAccess.namedIpLocations.ip_ranges     | Array | The ip named location ip ranges. |
 
 
 #### Command Example
@@ -340,7 +342,7 @@ No context output
 
 #### Human Readable Output
 
->Trying to delete ip named location 'ID': :success:
+>Successfully deleted IP named location 'X-X-X-X'
 
 
 ### msgraph-identity-ip-named-locations-update
@@ -371,7 +373,7 @@ No context output
 
 #### Human Readable Output
 
->Trying to update ip named location 'ID': :success:
+>Successfully updated IP named location '006cc9bf-8391-4ff3-8cff-ee87f06b7b02'
 
 
 ## msgraph-identity-ip-named-locations-list
@@ -397,8 +399,4 @@ Lists an ip named locations.
 
 
 #### Command Example
-```!msgraph-identity-ip-named-locations-update ips=12.34.221.11/22,2001:0:9d38:90d6:0:0:0:0/63 display_name=test is_trusted=True ip_id=098699fc-10ad-420e-9XXXXXXXXXX```
-
-#### Human Readable Output
-
->Trying to update ip named location 'ID': :success:
+```!msgraph-identity-ip-named-locations-list```
