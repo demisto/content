@@ -366,7 +366,7 @@ def split_context_path(path: str) -> Tuple[List[str], str]:
     Split a context path separated by a dot with a replacement name
     following a comma into the key tree the replacement name.
 
-    :param path: The context path (with a optional replacement name)
+    :param path: The context path (with an optional replacement name)
     :return: The key tree and the replacement name.
     """
     key_tree = []
