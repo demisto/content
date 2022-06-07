@@ -736,18 +736,11 @@ Gets the list of network and files IOCs of a specific analysis id.
           "verdict": "malicious",
           "family": "Turla",
           "type": "Main file"
-        },
-        {
-          "path": "TMP/example_file",
-          "sha256": "5712d70b05e8dc39bc1b60e264a262f57b4aae42f0ce3cc6c80be6198155baba",
-          "verdict": "unknown",
-          "family": null,
-          "type": "Extracted file"
         }
       ],
       "network": [
         {
-          "ioc": "185.555.111.133",
+          "ioc": "1.1.1.1",
           "source": [
             "Network communication"
           ],
@@ -759,13 +752,6 @@ Gets the list of network and files IOCs of a specific analysis id.
             "Network communication"
           ],
           "type": "domain"
-        },
-        {
-          "ioc": "185.199.444.133",
-          "source": [
-            "Network communication"
-          ],
-          "type": "ip"
         }
       ]
     }
@@ -777,6 +763,7 @@ Gets the list of network and files IOCs of a specific analysis id.
 
 ```markdown
 ### Network IOCs
+
 | ioc                   | source                | type   |
 |-----------------------|-----------------------|--------|
 | 185.555.111.133       | Network communication | ip     |
@@ -784,6 +771,7 @@ Gets the list of network and files IOCs of a specific analysis id.
 | 185.199.444.133       | Network communication | ip     |
 
 ### Files IOCs
+
 | family  | path             | sha256                                                           | type           | verdict   |
 |---------|------------------|------------------------------------------------------------------|----------------|-----------|
 | Turla   | test_file_1.csv  | eeb1199f7db006e4d20086171cc312cf5bdf53682cc37997223ad0c15a27dc88 | Main file      | malicious |

@@ -300,7 +300,7 @@ script:
           required: true
           secret: false
       deprecated: false
-      description: Get analysis IOCs.
+      description: Gets the list of network and files IOCs of a specific analysis id.
       execution: false
       outputs:
         - contextPath: Intezer.Analysis.ID
