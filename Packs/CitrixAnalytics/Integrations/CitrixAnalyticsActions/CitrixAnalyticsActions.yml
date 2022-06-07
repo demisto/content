@@ -24,7 +24,7 @@ configuration:
   name: cc_customer_id
   required: true
   type: 0
-description: '[This integration is used to execute Actions like LogOff User, Start Session Recording, Disable User, etc in Citrix Virtual Apps & Desktop.]'
+description: '[This integration is used to execute Actions like LogOff User, Start Session Recording, Disable User, etc in Citrix products like Content Collaboration, Gateway and Virtual Apps & Desktop.]'
 display: Citrix Analytics Actions
 name: CitrixAnalyticsActions
 script:
