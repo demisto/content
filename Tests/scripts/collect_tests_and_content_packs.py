@@ -1428,8 +1428,8 @@ def create_filter_envs_file(from_version: str, to_version: str, documentation_ch
     """
     envs_to_test = {
         'Server Master': True,
-        'Server 6.0': is_runnable_in_server_version(from_version, '6.0', to_version),
-        'Server 6.1': is_runnable_in_server_version(from_version, '6.1', to_version),
+        'Server 6.6': is_runnable_in_server_version(from_version, '6.6', to_version),
+        'Server 6.5': is_runnable_in_server_version(from_version, '6.5', to_version),
         'Server 6.2': is_runnable_in_server_version(from_version, '6.2', to_version),
 
     }
@@ -1438,8 +1438,8 @@ def create_filter_envs_file(from_version: str, to_version: str, documentation_ch
         # No need to create the instances.
         envs_to_test = {
             'Server Master': False,
-            'Server 6.0': False,
-            'Server 6.1': False,
+            'Server 6.6': False,
+            'Server 6.5': False,
             'Server 6.2': False,
         }
 
@@ -1506,7 +1506,7 @@ def create_test_file(is_nightly, skip_save=False, path_to_pack='', marketplace_v
         elif os.environ.get("IFRA_ENV_TYPE") == 'Bucket-Upload':
             last_upload_commit = get_last_commit_from_index(service_account)
             current_commit = branch_name if branch_name != 'master' else 'origin/master'
-            files_string = tools.run_command(f'git diff --name-status {current_commit}..{last_upload_commit}')
+            files_string = tools.run_command(f'git diff --name-status {last_upload_commit}..{current_commit}')
             logging.debug(f'Current commit: {current_commit}, Last upload commit: {last_upload_commit}')
         elif branch_name != 'master':
             files_string = tools.run_command("git diff --name-status origin/master...{0}".format(branch_name))
