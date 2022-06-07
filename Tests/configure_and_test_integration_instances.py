@@ -142,7 +142,7 @@ class XSOARServer(Server):
         return self.__client
 
     def reconnect_client(self):
-        self.__client = demisto_client.configure(f'https://localhost:{self.ssh_tunnel_port}',
+        self.__client = demisto_client.configure(f'https://{self.internal_ip}',
                                                  verify_ssl=False,
                                                  username=self.user_name,
                                                  password=self.password)
