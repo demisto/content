@@ -482,7 +482,7 @@ class Pack(object):
         if yaml_type == 'Integration':
             if yaml_content.get('script', {}).get('feed', False) is True:
                 self._is_feed = True
-            if yaml_content.get('isfetchevents', False) is True:
+            if yaml_content.get('script', {}).get('isfetchevents', False) is True:
                 self._is_siem = True
         if yaml_type == 'Playbook':
             if yaml_content.get('name').startswith('TIM '):
@@ -2636,7 +2636,7 @@ class Pack(object):
             logging.info(f"No added/modified author image was detected in {self._pack_name} pack.")
             return True
 
-    def upload_images(self, index_folder_path, storage_bucket, storage_base_path, diff_files_list):
+    def upload_images(self, index_folder_path, storage_bucket, storage_base_path, diff_files_list, override_all_packs):
         """
         Upload the images related to the pack.
         The image is uploaded in the case it was modified, OR if this is the first time the current pack is being
@@ -2646,13 +2646,18 @@ class Pack(object):
             storage_bucket (google.cloud.storage.bucket.Bucket): gcs bucket where author image will be uploaded.
             storage_base_path (str): the path under the bucket to upload to.
             diff_files_list (list): The list of all modified/added files found in the diff
+            override_all_packs (bool): Whether to override all packs without checking for changes
         Returns:
             True if the images were successfully uploaded, false otherwise.
 
         """
-        detect_changes = os.path.exists(os.path.join(index_folder_path, self.name, Pack.METADATA)) or self.hidden
+
+        detect_changes = False if override_all_packs else os.path.exists(os.path.join(index_folder_path, self.name,
+                                                                                      Pack.METADATA)) or self.hidden
+
         # Don't check if the image was modified if this is the first time it is uploaded to this marketplace, meaning it
-        # doesn't exist in the index (and it isn't deprecated)
+        # doesn't exist in the index (and it isn't deprecated), or if we want to override it (upload without
+        # detecting changes)
 
         if not detect_changes:
             logging.info(f'Uploading images of pack {self.name} which did not exist in this marketplace before')
