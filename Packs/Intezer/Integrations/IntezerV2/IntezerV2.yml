@@ -308,7 +308,7 @@ script:
           type: string
         - contextPath: Intezer.Analysis.IOCs
           description: The Analysis IOCs
-          type: Unknown
+          type: Dict
   dockerimage: demisto/py3-tools:0.0.1.30291
   isfetch: false
   runonce: false

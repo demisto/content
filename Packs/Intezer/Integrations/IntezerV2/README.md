@@ -715,10 +715,10 @@ Gets the list of network and files IOCs of a specific analysis id.
 
 #### Context Output
 
-| **Path**                              | **Type**  | **Description**          |
-|---------------------------------------|-----------|--------------------------|
-| Intezer.Analysis.ID                   | string    | The composed analysis ID | 
-| Intezer.Analysis.IOCs                 | Unknown   | The Analysis IOCs        | 
+| **Path**                              | **Type** | **Description**          |
+|---------------------------------------|----------|--------------------------|
+| Intezer.Analysis.ID                   | string   | The composed analysis ID | 
+| Intezer.Analysis.IOCs                 | Dict     | The Analysis IOCs        | 
 
 #### Context Example
 
