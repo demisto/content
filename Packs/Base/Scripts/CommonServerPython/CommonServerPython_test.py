@@ -8081,7 +8081,7 @@ class TestSendEventsToXSIAMTest:
 
         events = self.test_data['json_events']['events']
         with pytest.raises(
-                DemistoException,
-                match=re.escape('Error sending new events into XSIAM. \n' + error_msg),
+            DemistoException,
+            match=re.escape('Error sending new events into XSIAM. \n' + error_msg),
         ):
             send_events_to_xsiam(events=events, vendor='some vendor', product='some product')
