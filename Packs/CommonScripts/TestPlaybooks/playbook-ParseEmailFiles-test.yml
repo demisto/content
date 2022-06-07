@@ -1,23 +1,22 @@
 id: ParseEmailFiles-test
-version: 1
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
 name: ParseEmailFiles-test
-fromversion: 5.0.0
-starttaskid: "0"
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     taskid: dccbe542-ee37-4cbf-8f2f-a493a7e9bc02
     type: start
     task:
       id: dccbe542-ee37-4cbf-8f2f-a493a7e9bc02
       version: -1
-      name: ""
+      name: ''
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "1"
+      - '1'
     separatecontext: false
     view: |-
       {
@@ -33,8 +32,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "1":
-    id: "1"
+  '1':
+    id: '1'
     taskid: f2978fe0-3cf2-48d4-840e-36710a9748c9
     type: regular
     task:
@@ -45,13 +44,13 @@ tasks:
       scriptName: DeleteContext
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "19"
+      - '19'
     scriptarguments:
       all:
-        simple: "yes"
+        simple: yes
     separatecontext: false
     view: |-
       {
@@ -67,8 +66,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "2":
-    id: "2"
+  '2':
+    id: '2'
     taskid: 942641eb-3629-4fb4-8d42-a646f8c2a0de
     type: regular
     task:
@@ -79,17 +78,17 @@ tasks:
       scriptName: http
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "3"
+      - '3'
     scriptarguments:
       filename:
         simple: ParseEmailFiles_test_email.eml
       method:
         simple: GET
       saveAsFile:
-        simple: "yes"
+        simple: yes
       url:
         simple: https://raw.githubusercontent.com/demisto/content/master/TestData/ParseEmailFiles_test_email.eml
     separatecontext: false
@@ -107,32 +106,26 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "3":
-    id: "3"
+  '3':
+    id: '3'
     taskid: ce78f9bf-039b-40ec-8103-b53bf9f804ba
     type: regular
     task:
       id: ce78f9bf-039b-40ec-8103-b53bf9f804ba
       version: -1
       name: ParseEmailFiles
-      description: Parse an email from an eml or msg file and populate all relevant
-        context data to investigate the email. Also extracts inner attachments and
-        returns them to the war room. The incident labels themselves are preserved
-        and not modified - only the "Label/x" context items that originated from the
-        labels, and the best practice is to rely on these for the remainder of the
-        playbook. Requires pip and access to python repository to install "olefile"
-        package.
+      description: Parse an email from an eml or msg file and populate all relevant context data to investigate the email. Also extracts inner attachments and returns them to the war room. The incident labels themselves are preserved and not modified - only the "Label/x" context items that originated from the labels, and the best practice is to rely on these for the remainder of the playbook. Requires pip and access to python repository to install "olefile" package.
       scriptName: ParseEmailFiles
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "4"
-      - "8"
-      - "11"
-      - "13"
-      - "14"
+      - '4'
+      - '8'
+      - '11'
+      - '13'
+      - '14'
     scriptarguments:
       entryid:
         complex:
@@ -169,8 +162,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "4":
-    id: "4"
+  '4':
+    id: '4'
     taskid: ca638548-ddfa-4752-8a92-66c7fa999386
     type: condition
     task:
@@ -185,13 +178,13 @@ tasks:
         - if 'expectedValue' is given: ensure that the given value is equal to the context path
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
-      "yes":
-      - "12"
+      yes:
+      - '12'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: containsGeneral
           left:
@@ -215,8 +208,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "8":
-    id: "8"
+  '8':
+    id: '8'
     taskid: 186c4430-d133-4448-87a1-976657212fef
     type: condition
     task:
@@ -231,13 +224,13 @@ tasks:
         - if 'expectedValue' is given: ensure that the given value is equal to the context path
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
-      "yes":
-      - "12"
+      yes:
+      - '12'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: containsGeneral
           left:
@@ -261,23 +254,22 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "11":
-    id: "11"
+  '11':
+    id: '11'
     taskid: 2da41eb2-33ac-46f1-83b0-03cac1ef1178
     type: condition
     task:
       id: 2da41eb2-33ac-46f1-83b0-03cac1ef1178
       version: -1
       name: AreValuesEqual - verify pdf attachment
-      description: Check whether the values provided in arguments are equal. If either
-        of the arguments are missing, no is returned.
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
       scriptName: AreValuesEqual
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
-      "yes":
-      - "12"
+      yes:
+      - '12'
     scriptarguments:
       left:
         complex:
@@ -311,8 +303,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "12":
-    id: "12"
+  '12':
+    id: '12'
     taskid: 78aae24f-67c9-42f9-89f6-9812a130643a
     type: title
     task:
@@ -321,11 +313,12 @@ tasks:
       name: Validate Non-Unicode parsing
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "15"
-      - "16"
+      - '15'
+      - '16'
     separatecontext: false
     view: |-
       {
@@ -341,23 +334,22 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "13":
-    id: "13"
+  '13':
+    id: '13'
     taskid: 2e2a96fc-e555-4bb7-87ae-2b92f0b9c99b
     type: condition
     task:
       id: 2e2a96fc-e555-4bb7-87ae-2b92f0b9c99b
       version: -1
       name: AreValuesEqual - verify docx attachment
-      description: Check whether the values provided in arguments are equal. If either
-        of the arguments are missing, no is returned.
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
       scriptName: AreValuesEqual
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
-      "yes":
-      - "12"
+      yes:
+      - '12'
     scriptarguments:
       left:
         complex:
@@ -391,8 +383,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "14":
-    id: "14"
+  '14':
+    id: '14'
     taskid: 5edd2f14-6a9e-4fe2-8220-dbe6417c1e3c
     type: condition
     task:
@@ -407,13 +399,13 @@ tasks:
         - if 'expectedValue' is given: ensure that the given value is equal to the context path
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
-      "yes":
-      - "12"
+      yes:
+      - '12'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: containsGeneral
           left:
@@ -437,8 +429,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "15":
-    id: "15"
+  '15':
+    id: '15'
     taskid: ffbb472b-bde2-4949-82d6-35fae8dbe609
     type: regular
     task:
@@ -448,17 +440,17 @@ tasks:
       scriptName: http
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "18"
+      - '18'
     scriptarguments:
       filename:
         simple: EmailWithNonAsciiSubject.eml
       method:
         simple: GET
       saveAsFile:
-        simple: "yes"
+        simple: yes
       url:
         simple: https://github.com/demisto/content/raw/master/TestData/EmailWithNonAsciiSubject.eml
     separatecontext: false
@@ -476,8 +468,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "16":
-    id: "16"
+  '16':
+    id: '16'
     taskid: 5c884e25-7a4d-4e7d-8f1a-556f3d21bd0a
     type: regular
     task:
@@ -487,17 +479,17 @@ tasks:
       scriptName: http
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "17"
+      - '17'
     scriptarguments:
       filename:
         simple: EmailWithNonAsciiAttachmentName.eml
       method:
         simple: GET
       saveAsFile:
-        simple: "yes"
+        simple: yes
       url:
         simple: https://github.com/demisto/content/raw/master/TestData/EmailWithNonAsciiAttachmentName.eml
     separatecontext: false
@@ -515,28 +507,22 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "17":
-    id: "17"
+  '17':
+    id: '17'
     taskid: 071d0192-09e3-4d82-8aae-e12f8cdd1cbd
     type: regular
     task:
       id: 071d0192-09e3-4d82-8aae-e12f8cdd1cbd
       version: -1
       name: ParseEmailFiles
-      description: Parse an email from an eml or msg file and populate all relevant
-        context data to investigate the email. Also extracts inner attachments and
-        returns them to the war room. The incident labels themselves are preserved
-        and not modified - only the "Label/x" context items that originated from the
-        labels, and the best practice is to rely on these for the remainder of the
-        playbook. Requires pip and access to python repository to install "olefile"
-        package.
+      description: Parse an email from an eml or msg file and populate all relevant context data to investigate the email. Also extracts inner attachments and returns them to the war room. The incident labels themselves are preserved and not modified - only the "Label/x" context items that originated from the labels, and the best practice is to rely on these for the remainder of the playbook. Requires pip and access to python repository to install "olefile" package.
       scriptName: ParseEmailFiles
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "24"
+      - '24'
     scriptarguments:
       entryid:
         complex:
@@ -573,28 +559,22 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "18":
-    id: "18"
+  '18':
+    id: '18'
     taskid: f3b2570a-a447-42bf-8fa6-8c4332c9a965
     type: regular
     task:
       id: f3b2570a-a447-42bf-8fa6-8c4332c9a965
       version: -1
       name: ParseEmailFiles
-      description: Parse an email from an eml or msg file and populate all relevant
-        context data to investigate the email. Also extracts inner attachments and
-        returns them to the war room. The incident labels themselves are preserved
-        and not modified - only the "Label/x" context items that originated from the
-        labels, and the best practice is to rely on these for the remainder of the
-        playbook. Requires pip and access to python repository to install "olefile"
-        package.
+      description: Parse an email from an eml or msg file and populate all relevant context data to investigate the email. Also extracts inner attachments and returns them to the war room. The incident labels themselves are preserved and not modified - only the "Label/x" context items that originated from the labels, and the best practice is to rely on these for the remainder of the playbook. Requires pip and access to python repository to install "olefile" package.
       scriptName: ParseEmailFiles
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "24"
+      - '24'
     scriptarguments:
       entryid:
         complex:
@@ -631,8 +611,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "19":
-    id: "19"
+  '19':
+    id: '19'
     taskid: 08ba85be-9f8e-4491-8446-1a25af48e4ad
     type: regular
     task:
@@ -643,17 +623,17 @@ tasks:
       scriptName: http
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "20"
+      - '20'
     scriptarguments:
       filename:
         simple: ParseEmailFiles_test_email.eml
       method:
         simple: GET
       saveAsFile:
-        simple: "yes"
+        simple: yes
       url:
         simple: https://raw.githubusercontent.com/demisto/content/master/TestData/no_content_type.eml
     separatecontext: false
@@ -671,28 +651,22 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "20":
-    id: "20"
+  '20':
+    id: '20'
     taskid: 8d8955d3-c383-4837-8d01-bcbc800639e4
     type: regular
     task:
       id: 8d8955d3-c383-4837-8d01-bcbc800639e4
       version: -1
       name: ParseEmailFiles With No Content Type
-      description: Parse an email from an eml or msg file and populate all relevant
-        context data to investigate the email. Also extracts inner attachments and
-        returns them to the war room. The incident labels themselves are preserved
-        and not modified - only the "Label/x" context items that originated from the
-        labels, and the best practice is to rely on these for the remainder of the
-        playbook. Requires pip and access to python repository to install "olefile"
-        package.
+      description: Parse an email from an eml or msg file and populate all relevant context data to investigate the email. Also extracts inner attachments and returns them to the war room. The incident labels themselves are preserved and not modified - only the "Label/x" context items that originated from the labels, and the best practice is to rely on these for the remainder of the playbook. Requires pip and access to python repository to install "olefile" package.
       scriptName: ParseEmailFiles
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "22"
+      - '22'
     scriptarguments:
       entryid:
         complex:
@@ -729,8 +703,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "21":
-    id: "21"
+  '21':
+    id: '21'
     taskid: 356d6938-e013-4aa0-8c5b-15afee7067cf
     type: regular
     task:
@@ -741,13 +715,13 @@ tasks:
       scriptName: DeleteContext
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
     scriptarguments:
       all:
-        simple: "yes"
+        simple: yes
     separatecontext: false
     view: |-
       {
@@ -763,8 +737,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "22":
-    id: "22"
+  '22':
+    id: '22'
     taskid: ad2e3433-01e0-4dd4-8383-f8ae29f4e338
     type: condition
     task:
@@ -773,13 +747,13 @@ tasks:
       name: Verify Headers
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
-      "yes":
-      - "21"
+      yes:
+      - '21'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isEqualString
           left:
@@ -819,8 +793,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "24":
-    id: "24"
+  '24':
+    id: '24'
     taskid: 35ccc5dc-7b90-4827-852b-2614d9b32fef
     type: title
     task:
@@ -829,10 +803,11 @@ tasks:
       name: Validate Error is not raised with special chars
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "25"
+      - '25'
     separatecontext: false
     view: |-
       {
@@ -848,8 +823,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "25":
-    id: "25"
+  '25':
+    id: '25'
     taskid: ed99483a-6037-4b94-8da6-4796518f1fa2
     type: regular
     task:
@@ -859,17 +834,17 @@ tasks:
       scriptName: http
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "26"
+      - '26'
     scriptarguments:
       filename:
         simple: EmailWithSpecialChars.eml
       method:
         simple: GET
       saveAsFile:
-        simple: "yes"
+        simple: yes
       url:
         simple: https://github.com/demisto/content/raw/7fc44134eea661749600f14a26d9722a8fbe3ab8/Packs/CommonScripts/Scripts/ParseEmailFiles/test_data/test-subject-raised-error-on-log.eml
     separatecontext: false
@@ -887,24 +862,19 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "26":
-    id: "26"
+  '26':
+    id: '26'
     taskid: 825b53dc-a2c1-44ff-86fd-ac014da8418d
     type: regular
     task:
       id: 825b53dc-a2c1-44ff-86fd-ac014da8418d
       version: -1
       name: ParseEmailFiles
-      description: Parse an email from an eml or msg file and populate all relevant
-        context data to investigate the email. Also extracts inner attachments and
-        returns them to the war room. The incident labels themselves are preserved
-        and not modified - only the "Label/x" context items that originated from the
-        labels, and the best practice is to rely on these for the remainder of the
-        playbook.
+      description: Parse an email from an eml or msg file and populate all relevant context data to investigate the email. Also extracts inner attachments and returns them to the war room. The incident labels themselves are preserved and not modified - only the "Label/x" context items that originated from the labels, and the best practice is to rely on these for the remainder of the playbook.
       scriptName: ParseEmailFiles
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     scriptarguments:
       entryid:
         complex:
@@ -955,3 +925,5 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0
+description: ''
