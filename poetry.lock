@@ -534,8 +534,8 @@ build = ["gsutil (==5.8)"]
 [package.source]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
-reference = "9752e98df07ec70bc64e1a190dfa1e45b55a8ce4"
-resolved_reference = "9752e98df07ec70bc64e1a190dfa1e45b55a8ce4"
+reference = "9cffe2a8e63c789817bfa2a910753e8338d5ddd8"
+resolved_reference = "9cffe2a8e63c789817bfa2a910753e8338d5ddd8"
 
 [[package]]
 name = "deprecated"
@@ -2378,7 +2378,7 @@ testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8,<3.11"
-content-hash = "17db4de5b49f6aa56cc7995e3ee2488afb06be74d827a2e548d18580852284a4"
+content-hash = "cb7b227add4d883d38e5fce307cad93dc334c31d19344459cbf3fe00aab5ad85"
 
 [metadata.files]
 aiohttp = [
