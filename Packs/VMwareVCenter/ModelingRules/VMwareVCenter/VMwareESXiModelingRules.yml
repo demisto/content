@@ -1,4 +1,4 @@
-name: VMware vCenter
+name: VMwareVCenter
 id: VMwarevCenter
 fromversion: 6.8.0
 tags: VMwarevCenter
