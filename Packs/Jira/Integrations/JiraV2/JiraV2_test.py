@@ -2,7 +2,7 @@ from optparse import OptionParser
 from unittest.mock import Mock
 import demistomock as demisto
 import pytest
-
+from JiraV2 import Client
 integration_params = {
     "url": "https://localhost",
     "APItoken": "token",
@@ -32,6 +32,21 @@ integration_args = {
 }
 
 
+def mock_client():
+    client = Client(
+        base_url='https://localhost',
+        api_token='token',
+        access_token='test_access_token',
+        username='test',
+        password='1234!',
+        consumer_key='test_consumer_key',
+        private_key='test_private_key',
+        headers={'header_key': 'header_value'},
+        use_ssl=False
+    )
+    return client
+
+
 @pytest.fixture(autouse=True)
 def set_params(mocker):
     mocker.patch.object(demisto, "params", return_value=integration_params)
@@ -48,6 +63,7 @@ def set_params(mocker):
 def test_create_issue_command_after_fix_mandatory_args_issue(mocker, args):
     from JiraV2 import create_issue_command
 
+    client = mock_client()
     mocker.patch.object(demisto, "args", return_value=args)
     user_data = {
         "self": "https://demistodev.atlassian.net/rest/api/2/user?accountId=1234",
@@ -62,9 +78,9 @@ def test_create_issue_command_after_fix_mandatory_args_issue(mocker, args):
         "expand": "groups,applicationRoles",
         "projects": [{"id": "1234", "key": "testKey", "name": "testName"}],
     }
-    mocker.patch("JiraV2.jira_req", return_value=user_data)
+    mocker.patch.object(client, 'send_request', return_value=user_data)
     mocker.patch.object(demisto, "results")
-    create_issue_command()
+    create_issue_command(client)
     assert demisto.results.call_count == 1
 
 
