@@ -146,7 +146,7 @@
     "hours": 0,
     "hoursR": 0,
     "id": "iDSAR",
-    "itemVersion": "",
+    "itemVersion": "1.1.0",
     "layout": "Inventa DSAR Layout",
     "locked": false,
     "name": "iDSAR",
