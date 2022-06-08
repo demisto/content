@@ -706,18 +706,11 @@ def test_get_analysis_iocs_command_success(requests_mock):
                         'verdict': 'malicious',
                         'family': 'Turla',
                         'type': 'Main file',
-                    },
-                    {
-                        'path': 'TMP/example_file',
-                        'sha256': '5712d70b05e8dc39bc1b60e264a262f57b4aae42f0ce3cc6c80be6198155baba',
-                        'verdict': 'unknown',
-                        'family': None,
-                        'type': 'Extracted file',
                     }
                 ],
                 'network': [
                     {
-                        'ioc': '185.555.111.133',
+                        'ioc': '1.1.1.1',
                         'source': [
                             'Network communication'
                         ],
@@ -729,13 +722,6 @@ def test_get_analysis_iocs_command_success(requests_mock):
                             'Network communication'
                         ],
                         'type': 'domain'
-                    },
-                    {
-                        'ioc': '185.199.444.133',
-                        'source': [
-                            'Network communication'
-                        ],
-                        'type': 'ip'
                     }
                 ]
             }

@@ -766,9 +766,8 @@ Gets the list of network and files IOCs of a specific analysis id.
 
 | ioc                   | source                | type   |
 |-----------------------|-----------------------|--------|
-| 185.555.111.133       | Network communication | ip     |
+| 1.1.1.1.1             | Network communication | ip     |
 | raw.exampledomain.com | Network communication | domain |
-| 185.199.444.133       | Network communication | ip     |
 
 ### Files IOCs
 
