@@ -49,7 +49,7 @@ Converts the contents of a URL to an image file or a PDF file.
 | height | The page height, for example, 800px. Specify with or without the px suffix. | Optional | 
 | type | The file type to which to convert the contents of the URL. Can be "pdf" or "png". Default is "png". | Optional | 
 | file_name | The name the file will be saved as. Default is "url". | Optional |
-| full_screen | Get the full page using scrollbar max value, you can in some case specify a width value to display more information. | Optional | 
+| full_screen | Get the full page. The maximal width and height values are 8000px. (Marking full_screen as true means that the values for width and height arguments might not be respected). | Optional | 
 
 
 #### Context Output
@@ -95,7 +95,7 @@ Converts the body of an email to an image file or a PDF file.
 | type | The file type to which to convert the email body. Can be "pdf" or "png". Default is "png". | Optional | 
 | offline | If "true", will block all outgoing communication. | Optional | 
 | file_name | The name the file will be saved as. Default is "email". | Optional |
-| full_screen | Get the full page using scrollbar max value, you can in some case specify a width value to display more information. | Optional |
+| full_screen | Get the full page. The maximal width and height values are 8000px. (Marking full_screen as true means that the values for width and height arguments might not be respected). | Optional | 
 
 
 #### Context Output
@@ -140,7 +140,7 @@ Converts an image file to a PDF file.
 | width | The image width, for example, 600px. Specify with or without the px suffix. | Optional | 
 | height | The image height, for example, 800px. Specify with or without the px suffix. If empty, the height is the entire image. | Optional | 
 | file_name | The name the file will be saved as. Default is the EntryID. | Optional |
-| full_screen | Get the full page using scrollbar max value, you can in some case specify a width value to display more information. | Optional | 
+| full_screen | Get the full page. The maximal width and height values are 8000px. (Marking full_screen as true means that the values for width and height arguments might not be respected). | Optional | 
 
 
 #### Context Output

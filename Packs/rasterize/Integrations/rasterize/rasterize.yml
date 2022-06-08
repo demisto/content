@@ -37,33 +37,28 @@ script:
     - description: Maximum time to wait for a page to load (in seconds)
       name: max_page_load_time
     - default: true
-      description: The URL to rasterize. Must be the full URL, including the http
-        prefix.
+      description: The URL to rasterize. Must be the full URL, including the http prefix.
       name: url
       required: true
     - defaultValue: 1024px
-      description: The page width, for example, 1024px. Specify with or without the
-        px suffix.
+      description: The page width, for example, 1024px. Specify with or without the px suffix.
       name: width
     - defaultValue: 800px
-      description: The page height, for example, 800px. Specify with or without the
-        px suffix.
+      description: The page height, for example, 800px. Specify with or without the px suffix.
       name: height
-    - auto: PREDEFINED
-      description: The file type to which to convert the contents of the URL. Can
-        be "pdf" or "png". Default is "png".
+    - description: The file type to which to convert the contents of the URL. Can be "pdf" or "png". Default is "png".
       name: type
       predefined:
       - pdf
       - png
       - json
+      auto: PREDEFINED
     - defaultValue: url
       description: The name the file will be saved as.
       name: file_name
     - auto: PREDEFINED
       defaultValue: 'False'
-      description: Get the full page using scrollbar max value, you can in some case
-        specify a width value to display more information.
+      description: Get the full page. The maximal width and height values are 8000px. (Marking full_screen as true means that the values for width and height arguments might not be respected).
       name: full_screen
       predefined:
       - 'True'
@@ -78,15 +73,12 @@ script:
     - description: Maximum time to wait for a page to load (in seconds).
       name: max_page_load_time
     - defaultValue: 600px
-      description: The html page width, for example, 600px. Specify with or without
-        the px suffix.
+      description: The html page width, for example, 600px. Specify with or without the px suffix.
       name: width
     - defaultValue: 800px
-      description: The html page height, for example, 800px. Specify with or without
-        the px suffix.
+      description: The html page height, for example, 800px. Specify with or without the px suffix.
       name: height
-    - description: The file type to which to convert the email body. Can be "pdf"
-        or "png". Default is "png".
+    - description: The file type to which to convert the email body. Can be "pdf" or "png". Default is "png".
       name: type
     - auto: PREDEFINED
       description: If "true", will block all outgoing communication.
@@ -99,8 +91,7 @@ script:
       name: file_name
     - auto: PREDEFINED
       defaultValue: 'False'
-      description: Get the full page using scrollbar max value, you can in some case
-        specify a width value to display more information.
+      description: Get the full page. The maximal width and height values are 8000px. (Marking full_screen as true means that the values for width and height arguments might not be respected).
       name: full_screen
       predefined:
       - 'True'
@@ -113,19 +104,16 @@ script:
       name: EntryID
       required: true
     - defaultValue: 600px
-      description: The image width, for example, 600px. Specify with or without the
-        px suffix.
+      description: The image width, for example, 600px. Specify with or without the px suffix.
       name: width
     - defaultValue: 800px
-      description: The image height, for example, 800px. If empty, the height is the
-        entire image.
+      description: The image height, for example, 800px. If empty, the height is the entire image.
       name: height
     - description: The name the file will be saved as.
       name: file_name
     - auto: PREDEFINED
       defaultValue: 'False'
-      description: Get the full page using scrollbar max value, you can in some case
-        specify a width value to display more information.
+      description: Get the full page. The maximal width and height values are 8000px. (Marking full_screen as true means that the values for width and height arguments might not be respected).
       name: full_screen
       predefined:
       - 'True'
@@ -144,9 +132,7 @@ script:
       name: pdfPassword
     - auto: PREDEFINED
       defaultValue: 'false'
-      description: Whether to stack the pages horizontally. If "true", will stack
-        the pages horizontally. If "false", will stack the pages vertically. Default
-        is "false".
+      description: Whether to stack the pages horizontally. If "true", will stack the pages horizontally. If "false", will stack the pages vertically. Default is "false".
       name: horizontal
       predefined:
       - 'true'
@@ -161,6 +147,6 @@ script:
   script: ''
   subtype: python3
   type: python
-fromversion: 5.0.0
 tests:
 - Rasterize Test
+fromversion: 5.0.0

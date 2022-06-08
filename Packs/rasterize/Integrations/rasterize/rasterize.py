@@ -223,22 +223,14 @@ def get_image(driver, width: int, height: int, full_screen: bool):
     """
     demisto.debug('Capturing screenshot')
 
+    # Set windows size to the given width and height:
+    driver.set_window_size(width, height)
+
     if full_screen:
-        # Calculates the width and height using the scrollbar of the window (considering the safeguard limits)
+        # Calculates the width and height using the scrollbar of the window (the calculated values will be always
+        # larger then the given width and height and smaller than the safeguard limits).
         calc_width = min(driver.execute_script('return document.body.parentNode.scrollWidth'), MAX_FULLSCREEN_W)
         calc_height = min(driver.execute_script('return document.body.parentNode.scrollHeight'), MAX_FULLSCREEN_H)
-
-        # Verify that the calculated width is bigger than the given width:
-        if calc_width <= width:
-            demisto.debug(f'The calculated width {calc_width} is smaller than the desired width.'
-                          f' Uses the desired width {width}')
-            calc_width = width
-
-        # Verify that the calculated height is bigger than the given height:
-        if calc_height <= height:
-            demisto.debug(f'The calculated height {calc_height} is smaller than the desired height.'
-                          f' Uses the desired height {height}')
-            calc_height = height
 
         # Reset window size
         driver.set_window_size(calc_width, calc_height)
@@ -250,11 +242,11 @@ def get_image(driver, width: int, height: int, full_screen: bool):
 
         except WebDriverException as ex:
             demisto.error(f'Unexpected WebDriverException in driver - Error: {ex}')
+            demisto.debug('The error Might be related to a non HTML website.')
             image = driver.get_screenshot_as_png()
 
     else:
-        # Snapshot size is determined according to width and height
-        driver.set_window_size(width, height)
+        # Snapshot size is determined according to the given width and height
         image = driver.get_screenshot_as_png()
 
     driver.quit()
@@ -344,8 +336,8 @@ def convert_pdf_to_jpeg(path: str, max_pages: int, password: str, horizontal: bo
 
 def rasterize_command():
     url = demisto.getArg('url')
-    w = arg_to_number(demisto.args().get('width', DEFAULT_W_WIDE).rstrip('px'))
-    h = arg_to_number(demisto.args().get('height', DEFAULT_H).rstrip('px'))
+    w = arg_to_number(demisto.args().get('width', DEFAULT_W_WIDE).rstrip('px')) or int(DEFAULT_W)
+    h = arg_to_number(demisto.args().get('height', DEFAULT_H).rstrip('px')) or int(DEFAULT_H)
     r_type = demisto.args().get('type', 'png')
     wait_time = int(demisto.args().get('wait_time', 0))
     page_load = int(demisto.args().get('max_page_load_time', DEFAULT_PAGE_LOAD_TIME))
@@ -376,8 +368,8 @@ def rasterize_command():
 def rasterize_image_command():
     args = demisto.args()
     entry_id = args.get('EntryID')
-    w = arg_to_number(args.get('width', DEFAULT_W).rstrip('px'))
-    h = arg_to_number(args.get('height', DEFAULT_H).rstrip('px'))
+    w = arg_to_number(args.get('width', DEFAULT_W).rstrip('px')) or int(DEFAULT_W)
+    h = arg_to_number(args.get('height', DEFAULT_H).rstrip('px')) or int(DEFAULT_H)
     file_name = args.get('file_name', entry_id)
     full_screen = argToBoolean(demisto.args().get('full_screen', False))
 
@@ -397,8 +389,8 @@ def rasterize_image_command():
 
 def rasterize_email_command():
     html_body = demisto.args().get('htmlBody')
-    w = arg_to_number(demisto.args().get('width', DEFAULT_W).rstrip('px'))
-    h = arg_to_number(demisto.args().get('height', DEFAULT_H).rstrip('px'))
+    w = arg_to_number(demisto.args().get('width', DEFAULT_W).rstrip('px')) or int(DEFAULT_W)
+    h = arg_to_number(demisto.args().get('height', DEFAULT_H).rstrip('px')) or int(DEFAULT_H)
     offline = demisto.args().get('offline', 'false') == 'true'
     r_type = demisto.args().get('type', 'png')
     file_name = demisto.args().get('file_name', 'email')
