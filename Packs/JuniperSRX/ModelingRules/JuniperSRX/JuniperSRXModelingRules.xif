@@ -1,6 +1,6 @@
 [MODEL: dataset="Juniper_SRX_raw", model="Audit"] 
 
-| alter event_type = arrayindex(regextract(_raw_log, "(\w+\[\d+\]\:\s)"),0)
+ alter event_type = arrayindex(regextract(_raw_log, "(\w+\[\d+\]\:\s)"),0)
 | filter event_type contains "["
 
 | alter timestamp = arrayindex(regextract(_raw_log , "(\d+\:\d+:\d+\.\d+)"), 0)
@@ -18,13 +18,13 @@
 | alter XDM.Audit.identity.uuid= processID
 | alter XDM.Audit.TriggeredBy.identity.name= username
 | alter XDM.Audit.threat.description= message
-| alter XDM.Audit.operation_type= tag_name
+| alter XDM.Audit.operation_type= tag_name;
 
 
 
 [MODEL: dataset="Juniper_SRX_raw", model="Network"] 
 
-| filter raw_log contains "source-address="
+ filter raw_log contains "source-address="
 
 | alter Timestamp = arrayindex(regextract(raw_log , "(\d{4}\-\d{2}\-\d{2}T\d+\:\d+\:\d+.\d+)"), 0)
 | alter destination_address = arrayindex(regextract(raw_log ,"destination\-address\=\"(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})") ,0)
@@ -65,8 +65,8 @@
 | alter XDM.Network.Source.ipv4= SourceIP
 | alter XDM.Network.event_timestamp = TimeStamp 
 | alter XDM.Network.Destination.ipv4 = Destination_address 
-| alter  XDM.Network.Destination.port= Destination_Port
-| alter  XDM.Network.Destination.interface= Service_Name
+| alter XDM.Network.Destination.port= Destination_Port
+| alter XDM.Network.Destination.interface= Service_Name
 | alter XDM.Network.Source.ipv4= Nat_Source_Address
 | alter XDM.Network.Destination.ipv4= Destination_Address 
 | alter XDM.Network.Destination.port= Nat_Destination_Port 
@@ -74,10 +74,7 @@
 | alter XDM.Network.ip_protocol= Protocol_ID 
 | alter XDM.Network.rule= Policy_Name 
 | alter XDM.Network.Source.zone= Source_Zone
-| alter  XDM.Network.Destination.zone= Destination_Zone_Name
+| alter XDM.Network.Destination.zone= Destination_Zone_Name
 | alter XDM.Network.Destination.user.username= Username 
 | alter XDM.Network.Source.user.employee_id= Roles 
-| alter XDM.Network.Destination.packets= Packet_Incoming_Interface 
-
-
-
+| alter XDM.Network.Destination.packets= Packet_Incoming_Interface;
