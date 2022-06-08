@@ -18,7 +18,7 @@ In order to configure the webhooks on jamf's side, please read [this documentati
 You will need to use the information described [here](https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-pro-admin/external-data-ingestion/additional-log-ingestion-methods-for-cortex-xdr/set-up-an-http-log-collector-to-receive-logs).\
 You can configure the specific vendor and product for this instance.
 
-On the XSIAM side:
+**On XSIAM:**
 1. Navigate to **Settings** -> **Custom collectors** -> **HTTP**. Click on **Add Instance**, set the Name and Compression as you choose and then please set:
    - Log Format as `JSON`
    - Vendor as `jamf`
@@ -26,7 +26,7 @@ On the XSIAM side:
 2. Creating a new HTTP Log Collector will allow you to generate a unique token, please save it since it will be used later.
 3. Click the 3 dots sign next to the newly created instance and copy the API Url, it will also be used later.
    
-On the jamf side:\
+**On jamf pro:**\
 While creating (or editing) a webhook, please set:
 1. `Webhook URL` as the API Url which was copied in section 3 (on the XSIAM side).
 2. Under `Authentication Type` choose `Header Authentication` and paste this in the textbox:
