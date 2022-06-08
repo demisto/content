@@ -11,9 +11,9 @@ import requests
 import urllib3.util
 
 from Tests.scripts.utils.log_util import install_logging
-# Disable insecure warnings
+from demisto_sdk.commands.test_content.constants import SSH_USER
 
-SSH_USER = "gcp-user"
+# Disable insecure warnings
 urllib3.disable_warnings()
 
 ARTIFACTS_FOLDER = os.getenv('ARTIFACTS_FOLDER', './artifacts')
