@@ -107,6 +107,7 @@
                                 "startCol": 0
                             }
                         ],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -119,6 +120,7 @@
                     {
                         "h": 4,
                         "i": "caseinfoid-yh3gwnhgwz-caseinfoid-field-changed-caseinfoid-kkq7tnozrg-caseinfoid-61263cc0-98b1-11e9-97d7-ed26ef9e46c8",
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -133,6 +135,7 @@
                         "displayType": "ROW",
                         "h": 4,
                         "i": "caseinfoid-yh3gwnhgwz-caseinfoid-field-changed-caseinfoid-kkq7tnozrg-caseinfoid-6aabad20-98b1-11e9-97d7-ed26ef9e46c8",
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -148,6 +151,7 @@
                         "h": 2,
                         "hideName": false,
                         "i": "caseinfoid-yh3gwnhgwz-caseinfoid-field-changed-caseinfoid-kkq7tnozrg-caseinfoid-7717e580-9bed-11e9-9a3f-8b4b2158e260",
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -196,6 +200,7 @@
                                 "startCol": 0
                             }
                         ],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -245,6 +250,7 @@
                                 "startCol": 0
                             }
                         ],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -330,6 +336,7 @@
                                 "startCol": 0
                             }
                         ],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -343,6 +350,7 @@
                         "h": 2,
                         "i": "caseinfoid-yh3gwnhgwz-caseinfoid-field-changed-caseinfoid-kkq7tnozrg-caseinfoid-a8bee870-9980-11ec-8b5e-f56233532251",
                         "items": [],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -354,7 +362,7 @@
                         "y": 6
                     },
                     {
-                        "displayType": "ROW",
+                        "displayType": "CARD",
                         "h": 2,
                         "hideName": false,
                         "i": "caseinfoid-yh3gwnhgwz-caseinfoid-4f572850-9b25-11ec-a77a-f7e2032aa20a",
@@ -405,14 +413,33 @@
                             },
                             {
                                 "endCol": 2,
+                                "fieldId": "timetoassignment",
+                                "height": 22,
+                                "id": "f1425d00-e6da-11ec-8f29-819461d1bf87",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "remediationsla",
+                                "height": 22,
+                                "id": "ecccda70-e6da-11ec-8f29-819461d1bf87",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
                                 "fieldId": "dbotclosed",
                                 "height": 22,
                                 "id": "dc7b5c10-9b25-11ec-a77a-f7e2032aa20a",
-                                "index": 4,
+                                "index": 5,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }
                         ],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
