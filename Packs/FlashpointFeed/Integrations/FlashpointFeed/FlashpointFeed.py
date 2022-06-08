@@ -35,7 +35,7 @@ HTTP_ERRORS = {
     500: "Internal server error: Please try again after some time."
 }
 
-INTEGRATION_VERSION = "v1.0.0"
+INTEGRATION_VERSION = "v1.0.3"
 INTEGRATION_PLATFORM = "XSOAR Cortex"
 
 FILE_TYPES = ['sha1', 'sha256', 'sha512', 'md5']
