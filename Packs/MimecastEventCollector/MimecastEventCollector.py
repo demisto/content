@@ -118,7 +118,7 @@ class MimecastGetSiemEvents(IntegrationGetEvents):
                     f'{self.options.limit=} reached. \
                     slicing from {len(logs)=}.'
                 )
-                self.events_from_prev_run = stored[self.options.limit:]
+                self.events_from_prev_run = stored[self.options.limit :]
                 demisto.debug(f'storing {len(self.events_from_prev_run)} siem events for next run')
                 return stored[: self.options.limit]
 
@@ -241,7 +241,8 @@ class MimecastGetAuditEvents(IntegrationGetEvents):
         super().__init__(client=client, options=options)
         self.page_token = ''
         self.start_time = ''
-        self.end_time = self.to_audit_time_format(datetime.datetime.now().astimezone().replace(microsecond=0).isoformat())
+        self.end_time = self.to_audit_time_format(
+            datetime.datetime.now().astimezone().replace(microsecond=0).isoformat())
         self.uri = '/api/audit/get-audit-events'
 
     @staticmethod
@@ -412,12 +413,12 @@ def handle_last_run_exit(siem_event_handler: MimecastGetSiemEvents, audit_events
         AUDIT_EVENT_DEDUP_LIST)
     siem_fetched_events_for_next_run = siem_event_handler.events_from_prev_run
     next_run_obj = {SIEM_LAST_RUN: siem_next_run,
-                    SIEM_EVENTS_FROM_LAST_RUN: siem_fetched_events_for_next_run, #setting for next run
+                    SIEM_EVENTS_FROM_LAST_RUN: siem_fetched_events_for_next_run,  # setting for next run
                     AUDIT_LAST_RUN: audit_next_run,
                     AUDIT_EVENT_DEDUP_LIST: audit_dedup_next_run}
     demisto.setLastRun(next_run_obj)
     demisto.debug(f'\naudit events next run: {audit_next_run} \n siem next run: {siem_next_run} \n'
-                  f'audit potential dups: {audit_dedup_next_run} , siem_events_for_next_run: {len()}')
+                  f'audit potential dups: {audit_dedup_next_run} , siem_events_for_next_run: {len(siem_fetched_events_for_next_run)}')
 
 
 def prepare_potential_audit_duplicates_for_next_run(audit_events: list, next_run_time: str) -> list:
