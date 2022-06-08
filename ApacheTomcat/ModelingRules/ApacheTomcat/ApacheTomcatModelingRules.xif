@@ -23,4 +23,4 @@
 | alter  XDM.Network.http.user_agent= User_agent
 | alter XDM.Network.http.referrer =Referrer
 | alter  XDM.Network.Destination.bytes=bytes_size
-| alter XDM.Network.Source.ipv4 =sourceip
+| alter XDM.Network.Source.ipv4 =sourceip;
