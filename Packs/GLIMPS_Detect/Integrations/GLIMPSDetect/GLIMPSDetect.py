@@ -2,7 +2,7 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-from gdetect import Client as gClient
+from gdetect.api import status_msg, Client as gClient
 from gdetect.exceptions import *
 ''' IMPORTS '''
 
@@ -259,8 +259,11 @@ def main():
         client = Client(params.get('url'), params.get('api_token'), params.get('insecure'), params.get('proxy'))
         if command == 'test-module':
             # This is the call made when pressing the integration Test button.
-            result = test_module(client)
-            return_results(result)
+            res = test_module(client)
+            code = client.gclient.response.response.status_code 
+            if code != 200:
+                return_error(f'GDetect server error: {code} {status_msg(code)}')
+            return_results(res)
         elif command == 'gdetect-send':
             return_results(gdetect_send_command(client, demisto.args()))
         elif command == 'gdetect-get-all':
@@ -269,7 +272,7 @@ def main():
             return_results(gdetect_get_threats_command(client, demisto.args()))
 
     # Log exceptions
-    except GDetectError:
+    except GDetectError as e:
         resp = client.gclient.response
         if isinstance(resp.error, BadAuthenticationToken):
             return_error(f'Given token has bad format: {resp.message}')
@@ -282,7 +285,7 @@ def main():
         elif isinstance(resp.error, BadUUID):
             return_error(f'Given UUID is wrong: {resp.message}')
         else:
-            return_error(resp.message)
+            return_error(f'GDetectError: {str(e)}')
     except Exception as e:
         return_error(f'Failed to execute {command} command. Error: {str(e)}')
 
