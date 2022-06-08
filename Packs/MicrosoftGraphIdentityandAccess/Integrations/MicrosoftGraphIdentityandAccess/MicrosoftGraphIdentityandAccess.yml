@@ -312,6 +312,105 @@ script:
       isArray: false
       required: false
       secret: false
+  - deprecated: false
+    description: Retrieve all the detected risks.
+    execution: false
+    name: msgraph-identity-protection-risks-list
+    arguments:
+    - name: limit
+      description: The limit for results we get from the api.
+      isArray: false
+      required: false
+      secret: false
+    - name: page
+      description: The page to get the data from.
+      isArray: false
+      required: false
+      secret: false
+    - name: odata_query
+      description: An odata query to send to the api.
+      isArray: false
+      required: false
+      secret: false
+    outputs:
+    - contextPath: MSGraph.identityProtection.risks
+      description: List of risk detections.
+      type: Array
+  - deprecated: false
+    description: Retrieve the risky users in active directory.
+    execution: false
+    name: msgraph-identity-protection-risky-user-list
+    arguments:
+    - name: limit
+      description: The limit for results we get from the api.
+      isArray: false
+      required: false
+      secret: false
+    - name: page
+      description: The page to get the data from.
+      isArray: false
+      required: false
+      secret: false
+    - name: odata_query
+      description: An odata query to send to the api.
+      isArray: false
+      required: false
+      secret: false
+    outputs:
+    - contextPath: MSGraph.identityProtection.riskyUsers
+      description: List of risy users.
+      type: Array
+  - deprecated: false
+    description: Retrieve the risky users history in active directory.
+    execution: false
+    name: msgraph-identity-protection-risky-user-history-list
+    arguments:
+    - name: limit
+      description: The limit for results we get from the api.
+      isArray: false
+      required: false
+      secret: false
+    - name: page
+      description: The page to get the data from.
+      isArray: false
+      required: false
+      secret: false
+    - name: odata_query
+      description: An odata query to send to the api.
+      isArray: false
+      required: false
+      secret: false
+    - name: user_id
+      description: The id of the user to get the history for.
+      isArray: false
+      required: true
+      secret: false
+    outputs:
+    - contextPath: MSGraph.identityProtection.riskyUsersHistory
+      description: List of risy users history.
+      type: Array
+  - deprecated: false
+    description: Delete an ip named location by id.
+    execution: false
+    name: msgraph-identity-protection-risky-user-confirm-compromised
+    arguments:
+    - name: user_ids
+      default: false
+      description: The ids of the users to compromise seperated be commas.
+      isArray: false
+      required: true
+      secret: false
+  - deprecated: false
+    description: Delete an ip named location by id.
+    execution: false
+    name: msgraph-identity-protection-risky-user-dismiss
+    arguments:
+    - name: user_ids
+      default: false
+      description: The ids of the users to dismiss seperated be commas.
+      isArray: false
+      required: true
+      secret: false
   isfetch: false
   runonce: false
   script: '-'

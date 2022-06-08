@@ -98,7 +98,8 @@ class Client:
             https://docs.microsoft.com/en-us/graph/api/ipnamedlocation-update?view=graph-rest-1.0&tabs=http
         """
         return self.ms_client.http_request(
-            'PUT', f'v1.0/identity/conditionalAccess/namedLocations/{ip_id}', return_empty_response=True, json_data=data)
+            'PUT', f'v1.0/identity/conditionalAccess/namedLocations/{ip_id}', return_empty_response=True,
+            json_data=data)
 
     def delete_ip_named_location(self, ip_id: str) -> dict:
         """Delete an IP named location by id
@@ -130,6 +131,36 @@ class Client:
         return self.ms_client.http_request(
             'POST', 'v1.0/identity/conditionalAccess/namedLocations', json_data=data)
 
+    def compromise_users(self, data: dict) -> dict:
+        """Compromise users in active directory
+
+        Args:
+            data: the request necessary to compromise the users, json body.
+
+        Returns:
+
+
+        Docs:
+            https://docs.microsoft.com/en-us/graph/api/riskyuser-confirmcompromised?view=graph-rest-1.0&tabs=http # noqa
+        """
+        return self.ms_client.http_request(
+            'POST', 'v1.0/identityProtection/riskyUsers/confirmCompromised', json_data=data, return_empty_response=True)
+
+    def dismiss_users(self, data: dict) -> dict:
+        """dismiss users in active directory
+
+        Args:
+            data: the request necessary to dismiss the users, json body.
+
+        Returns:
+
+
+        Docs:
+            https://docs.microsoft.com/en-us/graph/api/riskyuser-dismiss?view=graph-rest-1.0&tabs=http # noqa
+        """
+        return self.ms_client.http_request(
+            'POST', 'v1.0/identityProtection/riskyUsers/dismiss', json_data=data, return_empty_response=True)
+
     def list_ip_named_location(self, limit: str, page: str, odata: str) -> list:
         """Get a list of all IP named locations
 
@@ -153,6 +184,79 @@ class Client:
             odata_query += odata
         return self.ms_client.http_request(
             'GET', f'v1.0/identity/conditionalAccess/namedLocations{odata_query}')['value']
+
+    def list_risk_detections(self, limit: str, page: str, odata: str) -> list:
+        """Get a list of all risk detections
+
+        Args:
+            limit: Maximum IP named locations to get.
+            page: The page to take the data from.
+            odata: An odata query to use in the api call.
+
+        Returns:
+            a list of dictionaries with the object from the api
+
+        Docs:
+            https://docs.microsoft.com/en-us/graph/api/riskdetection-list?view=graph-rest-1.0&tabs=http # noqa
+        """
+        odata_query = '?'
+        if limit:
+            odata_query += f'$top={limit}&'
+        if page:
+            odata_query += f'$skip={page}&'
+        if odata:
+            odata_query += odata
+        return self.ms_client.http_request(
+            'GET', f'v1.0/identityProtection/riskDetections{odata_query}')['value']
+
+    def list_risky_users(self, limit: str, page: str, odata: str) -> list:
+        """Get a list of all risky users
+
+        Args:
+            limit: Maximum IP named locations to get.
+            page: The page to take the data from.
+            odata: An odata query to use in the api call.
+
+        Returns:
+            a list of dictionaries with the object from the api
+
+        Docs:
+            https://docs.microsoft.com/en-us/graph/api/riskyuser-list?view=graph-rest-1.0&tabs=http
+        """
+        odata_query = '?'
+        if limit:
+            odata_query += f'$top={limit}&'
+        if page:
+            odata_query += f'$skip={page}&'
+        if odata:
+            odata_query += odata
+        return self.ms_client.http_request(
+            'GET', f'v1.0/identityProtection/riskyUsers{odata_query}')['value']
+
+    def list_risky_users_history(self, limit: str, page: str, odata: str, user_id) -> list:
+        """Get a list of all risky user history
+
+        Args:
+            limit: Maximum IP named locations to get.
+            page: The page to take the data from.
+            odata: An odata query to use in the api call.
+            user_id: The user id to get the history for.
+
+        Returns:
+            a list of dictionaries with the object from the api
+
+        Docs:
+            https://docs.microsoft.com/en-us/graph/api/riskyuser-list-history?view=graph-rest-1.0&tabs=http
+        """
+        odata_query = '?'
+        if limit:
+            odata_query += f'$top={limit}&'
+        if page:
+            odata_query += f'$skip={page}&'
+        if odata:
+            odata_query += odata
+        return self.ms_client.http_request(
+            'GET', f'v1.0/identityProtection/riskyUsers/{user_id}/history{odata_query}')['value']
 
     def activate_directory_role(self, template_id: str) -> dict:
         """Activating a role in the directory.
@@ -433,6 +537,45 @@ def ip_named_location_create(ms_client: Client, args: dict) -> CommandResults:
     return CommandResults(readable_output="Could not create IP named location")
 
 
+def azure_ad_identity_protection_confirm_compromised_command(ms_client: Client, args: dict) -> CommandResults:
+    user_ids = str(args.get('user_ids')).split(',')
+    print(f'ids: {user_ids}')
+    data = {
+        'userIds': user_ids
+    }
+    try:
+        ms_client.compromise_users(data)
+        return CommandResults(
+            'MSGraph.identityProtection.compromiseUsers',
+            'compromiseUsers',
+            outputs={},
+            raw_response={},
+            ignore_auto_extract=True,
+            readable_output=f'Successfully compromised {str(user_ids)}'
+        )
+    except Exception as e:
+        return CommandResults(readable_output=f"Could not compromised {str(user_ids)}:\n{e}")
+
+def azure_ad_identity_protection_risky_users_dismiss_command(ms_client: Client, args: dict) -> CommandResults:
+    user_ids = str(args.get('user_ids')).split(',')
+    print(f'ids: {user_ids}')
+    data = {
+        'userIds': user_ids
+    }
+    try:
+        ms_client.dismiss_users(data)
+        return CommandResults(
+            'MSGraph.identityProtection.compromiseUsers',
+            'compromiseUsers',
+            outputs={},
+            raw_response={},
+            ignore_auto_extract=True,
+            readable_output=f'Successfully dismissed {str(user_ids)}'
+        )
+    except Exception as e:
+        return CommandResults(readable_output=f"Could not dismiss {str(user_ids)}:\n{e}")
+
+
 def ip_named_location_delete(ms_client: Client, args: dict) -> CommandResults:
     ip_id = args.get('ip_id')
     if results := ms_client.delete_ip_named_location(ip_id):  # type: ignore
@@ -475,6 +618,131 @@ def ip_named_location_list(ms_client: Client, args: dict) -> CommandResults:
             readable_output=tableToMarkdown(
                 'IP named locations:',
                 ip_named_locations,
+            )
+        )
+    else:
+        return CommandResults(readable_output="could not list IP named locations")
+
+
+def azure_ad_identity_protection_risky_users_list(ms_client: Client, args: dict) -> CommandResults:
+    limit = args.get('limit')
+    page = args.get('page')
+    odata = args.get('odata_query')
+    if results := ms_client.list_risky_users(limit, page, odata):
+        risky_users = []
+        for result in results:
+            risky_user = {
+                'id': result['id'],
+                'isDeleted': result['isDeleted'],
+                'isProcessing': result['isProcessing'],
+                'riskLevel': result['riskLevel'],
+                'riskState': result['riskState'],
+                'riskDetail': result['riskDetail'],
+                'riskLastUpdatedDateTime': result['riskLastUpdatedDateTime'],
+                'userDisplayName': result['userDisplayName'],
+                'userPrincipalName': result['userPrincipalName'],
+            }
+            risky_users.append(risky_user)
+        context = {
+            'riskyUsers': risky_users
+        }
+        return CommandResults(
+            'MSGraph.identityProtection.riskyUsers',
+            'riskyUsers',
+            outputs=context,
+            raw_response=results,
+            ignore_auto_extract=True,
+            readable_output=tableToMarkdown(
+                'Risky users:',
+                risky_users,
+            )
+        )
+    else:
+        return CommandResults(readable_output="could not list IP named locations")
+
+
+def azure_ad_identity_protection_risky_users_history_list(ms_client: Client, args: dict) -> CommandResults:
+    limit = args.get('limit')
+    page = args.get('page')
+    odata = args.get('odata_query')
+    user_id = args.get('user_id')
+    if results := ms_client.list_risky_users_history(limit, page, odata, user_id):
+        risky_users = []
+        for result in results:
+            risky_user = {
+                'id': result['id'],
+                'isDeleted': result['isDeleted'],
+                'isProcessing': result['isProcessing'],
+                'riskLevel': result['riskLevel'],
+                'riskState': result['riskState'],
+                'riskDetail': result['riskDetail'],
+                'riskLastUpdatedDateTime': result['riskLastUpdatedDateTime'],
+                'userDisplayName': result['userDisplayName'],
+                'userPrincipalName': result['userPrincipalName'],
+                'userId': result['userId'],
+                'initiatedBy': result['initiatedBy'],
+                'activity': result['activity'],
+            }
+            risky_users.append(risky_user)
+        context = {
+            'riskyUsers': risky_users
+        }
+        return CommandResults(
+            'MSGraph.identityProtection.riskyUsers',
+            'riskyUsers',
+            outputs=context,
+            raw_response=results,
+            ignore_auto_extract=True,
+            readable_output=tableToMarkdown(
+                'Risky users history:',
+                risky_users,
+            )
+        )
+    else:
+        return CommandResults(readable_output="could not list IP named locations")
+
+
+def azure_ad_identity_protection_risk_detection_list(ms_client: Client, args: dict) -> CommandResults:
+    limit = args.get('limit')
+    page = args.get('page')
+    odata = args.get('odata_query')
+    if results := ms_client.list_risk_detections(limit, page, odata):
+        risks = []
+        for result in results:
+            risk = {
+                'id': result['id'],
+                'requestId': result['requestId'],
+                'correlationId': result['correlationId'],
+                'riskEventType': result['riskEventType'],
+                'riskState': result['riskState'],
+                'riskLevel': result['riskLevel'],
+                'riskDetail': result['riskDetail'],
+                'source': result['source'],
+                'detectionTimingType': result['detectionTimingType'],
+                'activity': result['activity'],
+                'ipAddress': result['ipAddress'],
+                'activityDateTime': result['activityDateTime'],
+                'detectedDateTime': result['detectedDateTime'],
+                'lastUpdatedDateTime': result['lastUpdatedDateTime'],
+                'userId': result['userId'],
+                'userDisplayName': result['userDisplayName'],
+                'userPrincipalName': result['userPrincipalName'],
+                'additionalInfo': result['additionalInfo'],
+                'location': result['location']
+            }
+            risks.append(risk)
+        context = {
+            'riskDetections': risks
+        }
+        return CommandResults(
+            'MSGraph.identityProtection.risks',
+            'riskDetections',
+            outputs=context,
+            raw_response=results,
+            ignore_auto_extract=True,
+            readable_output=tableToMarkdown(
+                'Risks detected:',
+                risks,
             )
         )
     else:
@@ -542,6 +810,20 @@ def main():
             return_results(ip_named_location_delete(client, args))
         elif command == 'msgraph-identity-ip-named-locations-list':
             return_results(ip_named_location_list(client, args))
+        elif command == 'msgraph-identity-protection-risks-list':
+            return_results(azure_ad_identity_protection_risk_detection_list(client, args))
+        elif command == 'msgraph-identity-protection-risky-user-list':
+            return_results(azure_ad_identity_protection_risky_users_list(client, args))
+        elif command == 'msgraph-identity-protection-risky-user-history-list':
+            return_results(azure_ad_identity_protection_risky_users_history_list(client, args))
+        elif command == 'msgraph-identity-protection-risky-user-confirm-compromised':
+            return_results(azure_ad_identity_protection_confirm_compromised_command(client, args))
+        elif command == 'msgraph-identity-protection-risky-user-dismiss':
+            return_results(azure_ad_identity_protection_risky_users_dismiss_command(client, args))
+        # elif command == 'fetch-incidents':
+        #     incidents, last_run = fetch_incidents(client, params)
+        #     demisto.incidents(incidents)
+        #     demisto.setLastRun(last_run)
         else:
             raise NotImplementedError(f"Command '{command}' not found.")
 
