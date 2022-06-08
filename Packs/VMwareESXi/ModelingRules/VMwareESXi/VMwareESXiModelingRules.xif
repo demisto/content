@@ -1,4 +1,4 @@
-[MODEL: dataset="VMware_ ESXi_raw", model=Endpoint"]
+[MODEL: dataset="VMware_ESXi_raw", model=Endpoint"]
 
 | filter _raw_log contains "hostd" or _raw_log contains "vcpu" or _raw_log contains "svga"  or _raw_log contains "mks" or _raw_log contains "vmx" 
 | filter  _raw_log not contains "verbose" 
