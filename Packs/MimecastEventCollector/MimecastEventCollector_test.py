@@ -11,7 +11,8 @@ import demistomock
 from SiemApiModule import *
 from MimecastEventCollector import MimecastGetSiemEvents, MimecastGetAuditEvents, MimecastOptions, MimecastClient, \
     handle_last_run_exit, handle_last_run_entrance
-from test_data.test_data import WITH_OUT_DUP_TEST, WITH_DUP_TEST, EMPTY_EVENTS_LIST, FILTER_SAME_TIME_EVEMTS
+from test_data.test_data import WITH_OUT_DUP_TEST, WITH_DUP_TEST, EMPTY_EVENTS_LIST, FILTER_SAME_TIME_EVEMTS, \
+    AUDIT_LOG_RESPONSE, AUDIT_LOG_AFTER_PROCESS
 
 mimecast_options = MimecastOptions(**{
         'app_id': "XXX",
@@ -51,12 +52,16 @@ def test_tmpdir():
 
 
 def test_process_audit_data():
-    with open('test_data/audit_logs.json') as f:
-        data = json.load(f).get('data', [])
-        event_list = []
-        for event in data:
-            event_list.append(event)
-        print(event_list)
+    """
+    Given:
+        - a dict representing the Resopnse.text of the audit event
+    When:
+        - processing the audit log
+    Then:
+        - collect all the events in the data section, add a xsiem_classifier, and set page_token for next run if exists
+    """
+    assert AUDIT_LOG_AFTER_PROCESS == audit_event_handler.process_audit_response(AUDIT_LOG_RESPONSE)
+    assert audit_event_handler.page_token == '1234'
 
 
 @pytest.mark.parametrize('audit_response, res',
@@ -100,6 +105,7 @@ def test_handle_last_run_entrance():
     assert audit_event_handler.start_time == ''
     handle_last_run_entrance('7 days', audit_event_handler, siem_event_handler)
     assert audit_event_handler.start_time != ''
+
 
 @pytest.mark.parametrize('time_to_convert, res', [('2011-12-03T10:15:30+00:00', '2011-12-03T10:15:30+0000'),
                                                   ('2011-12-03T10:15:30+03:00', '2011-12-03T10:15:30+0300')])

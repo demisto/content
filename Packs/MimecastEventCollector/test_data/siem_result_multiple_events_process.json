@@ -16,7 +16,8 @@
     "TlsVer": "TLSv1.2",
     "Cphr": "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384",
     "aCode": "l1b4x0uvOs2sRFzGsHoYzQ",
-    "SpamScore": 0
+    "SpamScore": 0,
+    "xsiem_classifier" : "siem_log"
   },
   {
     "type": "MTA",
@@ -35,7 +36,8 @@
     "TlsVer": "TLSv1.2",
     "Cphr": "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384",
     "aCode": "-dogI8BBMquuevdHEC83Lw",
-    "SpamScore": 0
+    "SpamScore": 0,
+    "xsiem_classifier" : "siem_log"
   },
   {
     "type": "MTA",
@@ -54,7 +56,8 @@
     "TlsVer": "TLSv1.2",
     "Cphr": "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384",
     "aCode": "-dogI8BBMquuevdHEC83Lw",
-    "SpamScore": 0
+    "SpamScore": 0,
+    "xsiem_classifier" : "siem_log"
   }
 ]
 

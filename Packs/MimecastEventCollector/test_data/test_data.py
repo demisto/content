@@ -134,3 +134,70 @@ FILTER_SAME_TIME_EVEMTS = {
             }
         ]
 }
+
+AUDIT_LOG_RESPONSE = {
+    "meta": {
+        "status": 200,
+        "pagination": {
+            "pageSize": 10,
+            "next": "1234"
+        }
+    },
+    "data": [
+        {
+            "id": "eNoVzkkOgjAAQNG7dAsLKEOLiQsmDSGBqqCyFChThBLKFIx3Fw_w8v8HcJpNA61zcAAW7rF-5bGUPoOKNE6Itmix23NX-pqD-9UuvapCJ-ILmps0hRc_inSafSMMzIBA2NxjmY95RuEsWd0iJIbjL5GDtBa6bGyxovbbZVXILBHzCETwmvJ6fLPy35aRimVFxUgE2cRH1tIhYzndp-z4ZsoSNKGi72amA69Zt4PvDzAYOw0",
+            "auditType": "User Logged On",
+            "user": "outbound-auth@journal.paloaltonetworks.mime.integration.com",
+            "eventTime": "2022-05-29T10:43:25+0000",
+            "eventInfo": "Successful authentication for outbound-auth@journal.paloaltonetworks.mime.integration.com <SMTP Outbound Auth>, Date: 2022-05-29, Time: 06:43:25 GMT-04:00, IP: 54.243.138.179, Application: SMTP-MTA2, Method: Cloud",
+            "category": "authentication_logs"
+        },
+        {
+            "id": "eNoVzkkOgjAAQNG7dIsLKCBg4oJJgiRQo4AstZQplhKghWi8u3iAl_8_YCKYj6QtwQHEPM9ogh0hMofeZZai4Oy0NOjrSPfMYXXrsGmME4ok3S-6Kkzz6slFZCWxHSMIuyxVprnEBArZ6RepsLxouXmGTqHPZmqq2vC-rCoSMrKPYAcevGznF6v_bcXQTEXVoLUDmE8zo2TErCTblJtebUWGNlT3mxFknFrWb-D7A4RpO4U",
+            "auditType": "User Logged On",
+            "user": "outbound-auth@journal.paloaltonetworks.mime.integration.com",
+            "eventTime": "2022-05-29T08:43:25+0000",
+            "eventInfo": "Successful authentication for outbound-auth@journal.paloaltonetworks.mime.integration.com <SMTP Outbound Auth>, Date: 2022-05-29, Time: 04:43:25 GMT-04:00, IP: 54.243.138.179, Application: SMTP-MTA2, Method: Cloud",
+            "category": "authentication_logs"
+        },
+        {
+            "id": "eNoVzt0KgjAAQOF32a2COrVZ0IVphQ3UfiwKb0yXTZoT58yK3j17gI9zPkCQXLaEFmAG9s3aoaddqqUa2ujyElXiZWWCsnVdYtt3msErg_sdrWKs2MtzdQuS0-0qezyNQjeMIayOiSG6Iiew1xf1UzlPffw8-MhmcMk75phW894OZtzrsTsHKshkQbsHL_91A1mOYUKEVJBL0XFG2pwXZNzykr1r6NCF5mQ0PWkF5fUIvj_Pojvs",
+            "auditType": "User Logged On",
+            "user": "outbound-auth@journal.paloaltonetworks.mime.integration.com",
+            "eventTime": "2022-05-29T05:03:24+0000",
+            "eventInfo": "Successful authentication for outbound-auth@journal.paloaltonetworks.mime.integration.com <SMTP Outbound Auth>, Date: 2022-05-29, Time: 01:03:24 GMT-04:00, IP: 54.243.138.179, Application: SMTP-MTA2, Method: Cloud",
+            "category": "authentication_logs"
+        }
+    ],
+    "fail": []
+}
+
+AUDIT_LOG_AFTER_PROCESS = [
+    {
+        "id": "eNoVzkkOgjAAQNG7dAsLKEOLiQsmDSGBqqCyFChThBLKFIx3Fw_w8v8HcJpNA61zcAAW7rF-5bGUPoOKNE6Itmix23NX-pqD-9UuvapCJ-ILmps0hRc_inSafSMMzIBA2NxjmY95RuEsWd0iJIbjL5GDtBa6bGyxovbbZVXILBHzCETwmvJ6fLPy35aRimVFxUgE2cRH1tIhYzndp-z4ZsoSNKGi72amA69Zt4PvDzAYOw0",
+        "auditType": "User Logged On",
+        "user": "outbound-auth@journal.paloaltonetworks.mime.integration.com",
+        "eventTime": "2022-05-29T10:43:25+0000",
+        "eventInfo": "Successful authentication for outbound-auth@journal.paloaltonetworks.mime.integration.com <SMTP Outbound Auth>, Date: 2022-05-29, Time: 06:43:25 GMT-04:00, IP: 54.243.138.179, Application: SMTP-MTA2, Method: Cloud",
+        "category": "authentication_logs",
+        "xsiem_classifier": "audit_event"
+    },
+    {
+        "id": "eNoVzkkOgjAAQNG7dIsLKCBg4oJJgiRQo4AstZQplhKghWi8u3iAl_8_YCKYj6QtwQHEPM9ogh0hMofeZZai4Oy0NOjrSPfMYXXrsGmME4ok3S-6Kkzz6slFZCWxHSMIuyxVprnEBArZ6RepsLxouXmGTqHPZmqq2vC-rCoSMrKPYAcevGznF6v_bcXQTEXVoLUDmE8zo2TErCTblJtebUWGNlT3mxFknFrWb-D7A4RpO4U",
+        "auditType": "User Logged On",
+        "user": "outbound-auth@journal.paloaltonetworks.mime.integration.com",
+        "eventTime": "2022-05-29T08:43:25+0000",
+        "eventInfo": "Successful authentication for outbound-auth@journal.paloaltonetworks.mime.integration.com <SMTP Outbound Auth>, Date: 2022-05-29, Time: 04:43:25 GMT-04:00, IP: 54.243.138.179, Application: SMTP-MTA2, Method: Cloud",
+        "category": "authentication_logs",
+        "xsiem_classifier": "audit_event"
+    },
+    {
+        "id": "eNoVzt0KgjAAQOF32a2COrVZ0IVphQ3UfiwKb0yXTZoT58yK3j17gI9zPkCQXLaEFmAG9s3aoaddqqUa2ujyElXiZWWCsnVdYtt3msErg_sdrWKs2MtzdQuS0-0qezyNQjeMIayOiSG6Iiew1xf1UzlPffw8-MhmcMk75phW894OZtzrsTsHKshkQbsHL_91A1mOYUKEVJBL0XFG2pwXZNzykr1r6NCF5mQ0PWkF5fUIvj_Pojvs",
+        "auditType": "User Logged On",
+        "user": "outbound-auth@journal.paloaltonetworks.mime.integration.com",
+        "eventTime": "2022-05-29T05:03:24+0000",
+        "eventInfo": "Successful authentication for outbound-auth@journal.paloaltonetworks.mime.integration.com <SMTP Outbound Auth>, Date: 2022-05-29, Time: 01:03:24 GMT-04:00, IP: 54.243.138.179, Application: SMTP-MTA2, Method: Cloud",
+        "category": "authentication_logs",
+        "xsiem_classifier": "audit_event"
+    }
+]
