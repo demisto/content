@@ -102,7 +102,7 @@ class MimecastGetSiemEvents(IntegrationGetEvents):
                     f'{self.options.limit=} reached. \
                     slicing from {len(self.events_from_prev_run)=}.'
                 )
-                stored = self.events_from_prev_run[:self.options.limit:]
+                stored = self.events_from_prev_run[:self.options.limit]
                 self.events_from_prev_run = stored[self.options.limit:]
                 return stored
 
