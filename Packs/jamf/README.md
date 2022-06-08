@@ -28,12 +28,12 @@ You can configure the specific vendor and product for this instance.
    
 **On jamf pro:**\
 While creating (or editing) a webhook, please set:
-1. `Webhook URL` as the API Url which was copied in section 3 (on the XSIAM side).
-2. Under `Authentication Type` choose `Header Authentication` and paste this in the textbox:
+1. **Webhook URL** as the API Url which was copied in section 3 (on the XSIAM side).
+2. Under **Authentication Type** choose **Header Authentication** and paste this in the textbox:
 `{"Authorization": "UNIQUE_TOKEN_GOES_HERE"}`\
 (Please replace the "UNIQUE_TOKEN_GOES_HERE" text with the newly created token mentioned in section 2 on the XSIAM side)
-3. `Content Type` as `JSON`
-4. `Webhook Event` as the webhook event you wish to collect.
+3. **Content Type** as `JSON`
+4. **Webhook Event** as the webhook event you wish to collect.
 
 
 
