@@ -1,141 +1,139 @@
-commonfields:
-  id: Microsoft Graph Mail Single User_implement_search
-  version: -1
-vcShouldKeepItemLegacyProdMachine: false
-name: Microsoft Graph Mail Single User_implement_search
-display: Microsoft Graph Mail Single User_implement_search
 category: Email Gateway
-description: Microsoft Graph grants Cortex XSOAR authorized access to a user's Microsoft Outlook mail data in a personal account or organization account.
+commonfields:
+  id: Microsoft Graph Mail Single User
+  version: -1
 configuration:
 - display: ID or Client ID - see Detailed Instructions (?)
   name: auth_id
-  type: 4
   required: true
+  type: 4
 - display: Token or Tenant ID - see Detailed Instructions (?)
   name: refresh_token
-  type: 4
   required: true
+  type: 4
 - display: Key or Client Secret - see Detailed Instructions (?)
   name: enc_key
-  type: 4
   required: false
-- display: Certificate Thumbprint (optional for self-deployed Azure app)
+  type: 4
+- additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
+  display: Certificate Thumbprint (optional for self-deployed Azure app)
   name: certificate_thumbprint
+  required: false
   type: 4
-  required: false
-  additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
-- display: Private Key
+- additionalinfo: Used for certificate authentication. The private key of the registered certificate.
+  display: Private Key
   name: private_key
-  type: 14
   required: false
-  additionalinfo: Used for certificate authentication. The private key of the registered certificate.
+  type: 14
 - display: Authorization code (required for self-deployed Azure app)
   name: auth_code
-  type: 4
   required: false
+  type: 4
 - display: Application redirect URI (required for self-deployed Azure app)
   name: redirect_uri
-  type: 0
   required: false
+  type: 0
 - display: Fetch incidents
   name: isFetch
-  type: 8
   required: false
+  type: 8
 - display: Email address from which to fetch incidents (e.g. "example@demisto.com")
   name: mailbox_to_fetch
-  type: 0
   required: true
-- display: Name of the folder from which to fetch incidents (supports Folder ID and sub-folders e.g. Inbox/Phishing)
+  type: 0
+- defaultvalue: Inbox
+  display: Name of the folder from which to fetch incidents (supports Folder ID and sub-folders e.g. Inbox/Phishing)
   name: folder_to_fetch
-  defaultvalue: Inbox
-  type: 0
   required: true
-- display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  type: 0
+- defaultvalue: 15 minutes
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch
-  defaultvalue: 15 minutes
-  type: 0
   required: false
-- display: Maximum number of emails to pull per fetch
+  type: 0
+- defaultvalue: '50'
+  display: Maximum number of emails to pull per fetch
   name: fetch_limit
-  defaultvalue: '50'
-  type: 0
   required: false
+  type: 0
 - display: Trust any certificate (not secure)
   name: insecure
-  type: 8
   required: false
+  type: 8
 - display: Use system proxy settings
   name: proxy
-  type: 8
   required: false
+  type: 8
 - display: Use a self-deployed Azure application
   name: self_deployed
-  type: 8
   required: false
+  type: 8
 - display: Incident type
   name: incidentType
-  type: 13
   required: false
+  type: 13
 - display: Incidents Fetch Interval
   name: incidentFetchInterval
   defaultvalue: '1'
   type: 19
   required: false
+description: Microsoft Graph grants Cortex XSOAR authorized access to a user's Microsoft Outlook mail data in a personal account or organization account.
+display: Microsoft Graph Mail Single User
+name: Microsoft Graph Mail Single User
 script:
-  script: ''
-  type: python
   commands:
-  - name: msgraph-mail-create-draft
-    arguments:
-    - name: to
-      description: A comma-separated list of email addresses for the 'to' field.
+  - arguments:
+    - description: A comma-separated list of email addresses for the 'to' field.
       isArray: true
-    - name: cc
-      description: A comma-separated list of email addresses for the 'cc' field.
+      name: to
+    - description: A comma-separated list of email addresses for the 'cc' field.
       isArray: true
-    - name: bcc
-      description: A comma-separated list of email addresses for the 'bcc' field.
+      name: cc
+    - description: A comma-separated list of email addresses for the 'bcc' field.
       isArray: true
-    - name: subject
+      name: bcc
+    - description: The subject for the draft.
+      name: subject
       required: true
-      description: The subject for the draft.
-    - name: body
-      description: The contents (body) of the draft.
-    - name: body_type
-      auto: PREDEFINED
+    - description: The contents (body) of the draft.
+      name: body
+    - auto: PREDEFINED
+      defaultValue: text
+      description: 'The body type of the email. Can be: "text", or "HTML".'
+      name: body_type
       predefined:
       - text
       - HTML
-      description: 'The body type of the email. Can be: "text", or "HTML".'
-      defaultValue: text
-    - name: flag
-      auto: PREDEFINED
+    - auto: PREDEFINED
+      defaultValue: notFlagged
+      description: 'The flag value that indicates the status of the draft. Can be: "notFlagged", "complete", or "flagged".'
+      name: flag
       predefined:
       - notFlagged
       - complete
       - flagged
-      description: 'The flag value that indicates the status of the draft. Can be: "notFlagged", "complete", or "flagged".'
-      defaultValue: notFlagged
-    - name: importance
-      auto: PREDEFINED
+    - auto: PREDEFINED
+      defaultValue: Low
+      description: 'The importance of the draft. Can be: "Low", "Normal", or "High".'
+      name: importance
       predefined:
       - Low
       - Normal
       - High
-      description: 'The importance of the draft. Can be: "Low", "Normal", or "High".'
-      defaultValue: Low
-    - name: headers
-      description: A comma-separated list of additional headers in the format, headerName:headerValue. For example, "headerName1:headerValue1,headerName2:headerValue2".
+    - description: A comma-separated list of additional headers in the format, headerName:headerValue. For example, "headerName1:headerValue1,headerName2:headerValue2".
       isArray: true
-    - name: attach_ids
-      description: A comma-separated list of War Room entry IDs that contain files, which are used to attach files to the draft. For example, attachIDs=15@8,19@8.
+      name: headers
+    - description: A comma-separated list of War Room entry IDs that contain files, which are used to attach files to the draft. For example, attachIDs=15@8,19@8.
       isArray: true
-    - name: attach_names
-      description: A comma-separated list of names of attachments to be displayed in the draft. Must be the same number of elements as attachIDs.
+      name: attach_ids
+    - description: A comma-separated list of names of attachments to be displayed in the draft. Must be the same number of elements as attachIDs.
       isArray: true
-    - name: attach_cids
-      description: A comma-separated list of CIDs to embed attachments within the actual email.
+      name: attach_names
+    - description: A comma-separated list of CIDs to embed attachments within the actual email.
       isArray: true
+      name: attach_cids
+    description: Creates a draft message in the specified user's mailbox.
+    name: msgraph-mail-create-draft
     outputs:
     - contextPath: MicrosoftGraph.Draft.Cc
       description: The CC recipients of the draft email.
@@ -194,40 +192,40 @@ script:
     - contextPath: MicrosoftGraph.Draft.ConversationID
       description: The conversation ID of the draft email.
       type: String
-    description: Creates a draft message in the specified user's mailbox.
-  - name: reply-mail
-    arguments:
-    - name: to
-      required: true
-      description: A CSV list of email addresses for the 'to' field.
+  - arguments:
+    - description: A CSV list of email addresses for the 'to' field.
       isArray: true
-    - name: body
-      description: The contents (body) of the email to be sent.
-    - name: subject
+      name: to
       required: true
-      description: Subject for the email to be sent.
+    - description: The contents (body) of the email to be sent.
+      name: body
+    - description: Subject for the email to be sent.
+      name: subject
+      required: true
     - name: inReplyTo
       required: true
       description: ID of the item to reply to.
-    - name: attachIDs
-      description: 'A CSV list of War Room entry IDs that contain files, and are used to attach files to the outgoing email. For example: attachIDs=15@8,19@8.'
+    - description: 'A CSV list of War Room entry IDs that contain files, and are used to attach files to the outgoing email. For example: attachIDs=15@8,19@8.'
       isArray: true
-    - name: cc
-      description: A CSV list of email addresses for the 'cc' field.
+      name: attachIDs
+    - description: A CSV list of email addresses for the 'cc' field.
       isArray: true
-    - name: bcc
-      description: A CSV list of email addresses for the 'bcc' field.
+      name: cc
+    - description: A CSV list of email addresses for the 'bcc' field.
       isArray: true
-    - name: htmlBody
-      description: HTML formatted content (body) of the email to be sent. This argument overrides the "body" argument.
-    - name: attachNames
-      description: A CSV list of names of attachments to send. Should be the same number of elements as attachIDs.
+      name: bcc
+    - description: HTML formatted content (body) of the email to be sent. This argument overrides the "body" argument.
+      name: htmlBody
+    - description: A CSV list of names of attachments to send. Should be the same number of elements as attachIDs.
       isArray: true
-    - name: attachCIDs
-      description: A CSV list of CIDs to embed attachments within the email itself.
+      name: attachNames
+    - description: A CSV list of CIDs to embed attachments within the email itself.
       isArray: true
-    - name: from
-      description: Email address of the sender.
+      name: attachCIDs
+    - description: Email address of the sender.
+      name: from
+    description: Replies to an email using Graph Mail Single User.
+    name: reply-mail
     outputs:
     - contextPath: MicrosoftGraph.SentMail.body
       description: The body of the email.
@@ -250,62 +248,62 @@ script:
     - contextPath: MicrosoftGraph.SentMail.ID
       description: The immutable ID of the message.
       type: String
-    description: Replies to an email using Graph Mail Single User.
-  - name: send-mail
-    arguments:
-    - name: to
-      description: A comma-separated list of email addresses for the 'to' field.
+  - arguments:
+    - description: A comma-separated list of email addresses for the 'to' field.
       isArray: true
-    - name: cc
-      description: A comma-separated list of email addresses for the 'cc' field.
+      name: to
+    - description: A comma-separated list of email addresses for the 'cc' field.
       isArray: true
-    - name: bcc
-      description: A comma-separated list of email addresses for the 'bcc' field.
+      name: cc
+    - description: A comma-separated list of email addresses for the 'bcc' field.
       isArray: true
-    - name: subject
+      name: bcc
+    - description: The subject of the email.
+      name: subject
       required: true
-      description: The subject of the email.
-    - name: body
-      description: The contents (body) of the email.
-    - name: body_type
-      auto: PREDEFINED
+    - description: The contents (body) of the email.
+      name: body
+    - auto: PREDEFINED
+      description: 'The body type of the email. Can be: "text", or "HTML".'
+      name: body_type
       predefined:
       - text
       - HTML
-      description: 'The body type of the email. Can be: "text", or "HTML".'
-    - name: flag
-      auto: PREDEFINED
+    - auto: PREDEFINED
+      defaultValue: notFlagged
+      description: 'The flag value that indicates the status for the email. Can be: "notFlagged", "complete", or "flagged".'
+      name: flag
       predefined:
       - notFlagged
       - complete
       - flagged
-      description: 'The flag value that indicates the status for the email. Can be: "notFlagged", "complete", or "flagged".'
-      defaultValue: notFlagged
-    - name: importance
-      auto: PREDEFINED
+    - auto: PREDEFINED
+      defaultValue: Low
+      description: 'The importance of the email. Can be: "Low", "Normal", or "High".'
+      name: importance
       predefined:
       - Low
       - Normal
       - High
-      description: 'The importance of the email. Can be: "Low", "Normal", or "High".'
-      defaultValue: Low
-    - name: headers
-      description: 'A comma-separated list of additional headers in the format: headerName:headerValue. For example: "headerName1:headerValue1,headerName2:headerValue2".'
+    - description: 'A comma-separated list of additional headers in the format: headerName:headerValue. For example: "headerName1:headerValue1,headerName2:headerValue2".'
       isArray: true
-    - name: attach_ids
-      description: A comma-separated list of War Room entry IDs that contain files, which are used to attach files for the email to send. For example, attachIDs=15@8,19@8.
+      name: headers
+    - description: A comma-separated list of War Room entry IDs that contain files, which are used to attach files for the email to send. For example, attachIDs=15@8,19@8.
       isArray: true
-    - name: attach_names
-      description: A comma-separated list of names of attachments to display in the email to send. Must be the same number of elements as attachIDs.
+      name: attach_ids
+    - description: A comma-separated list of names of attachments to display in the email to send. Must be the same number of elements as attachIDs.
       isArray: true
-    - name: attach_cids
-      description: A comma-separated list of CIDs to embed attachments within the actual email.
+      name: attach_names
+    - description: A comma-separated list of CIDs to embed attachments within the actual email.
       isArray: true
-    - name: from
-      description: The email address from which to reply.
-    - name: replyTo
-      description: Email addresses that need to be used to reply to the message. Supports comma-separated values.
+      name: attach_cids
+    - description: The email address from which to reply.
+      name: from
+    - description: Email addresses that need to be used to reply to the message. Supports comma-separated values.
       isArray: true
+      name: replyTo
+    description: Sends an email using Microsoft Graph.
+    name: send-mail
     outputs:
     - contextPath: MicrosoftGraph.Email.internetMessageHeaders
       description: The email headers.
@@ -337,38 +335,37 @@ script:
     - contextPath: MicrosoftGraph.Email.replyTo
       description: The replyTo recipients of the email.
       type: String
-    description: Sends an email using Microsoft Graph.
-  - name: msgraph-mail-reply-to
-    arguments:
-    - name: message_id
+  - arguments:
+    - description: The ID of the message.
+      name: message_id
       required: true
-      description: The ID of the message.
-    - name: comment
+    - description: The comment of the replied message.
+      name: comment
       required: true
-      description: The comment of the replied message.
-    - name: to
+    - description: A comma-separated list of email addresses for the 'to' field.
+      isArray: true
+      name: to
       required: true
-      description: A comma-separated list of email addresses for the 'to' field.
+    - description: A comma-separated list of War Room entry IDs that contain files, which are used to attach files for the email to send. For example, attachIDs=15@8,19@8.
       isArray: true
-    - name: attach_ids
-      description: A comma-separated list of War Room entry IDs that contain files, which are used to attach files for the email to send. For example, attachIDs=15@8,19@8.
+      name: attach_ids
+    - description: A comma-separated list of names of attachments to display in the email to send. Must be the same number of elements as attach_ids.
       isArray: true
-    - name: attach_names
-      description: A comma-separated list of names of attachments to display in the email to send. Must be the same number of elements as attach_ids.
+      name: attach_names
+    - description: A comma-separated list of CIDs to embed attachments within the actual email.
       isArray: true
-    - name: attach_cids
-      description: A comma-separated list of CIDs to embed attachments within the actual email.
-      isArray: true
+      name: attach_cids
     description: The replies to the recipients of a message.
-  - name: msgraph-mail-send-draft
-    arguments:
-    - name: draft_id
+    name: msgraph-mail-reply-to
+  - arguments:
+    - description: The ID of the draft email.
+      name: draft_id
       required: true
-      description: The ID of the draft email.
     description: Sends a draft email using Microsoft Graph.
-  - name: msgraph-mail-test
+    name: msgraph-mail-send-draft
+  - description: Tests connectivity of the email.
+    name: msgraph-mail-test
     arguments: []
-    description: Tests connectivity of the email.
   - name: msgraph-mail-list-emails
     arguments:
     - name: odata
@@ -455,21 +452,22 @@ script:
       description: The name of the user in the 'toRecipients' field of the email.
       type: String
     - contextPath: MSGraphMail.Recipients.Address
-      description: The email address of the user in the 'toRecipients' field of the
-        email.
+      description: The email address of the user in the 'toRecipients' field of the email.
       type: String
     - contextPath: MSGraphMail.NextPage
-      description: A token to pass to the next list command to retrieve additional
-        results.
+      description: A token to pass to the next list command to retrieve additional results.
       type: String
     description: Gets the properties of returned emails. Typically shows partial results, use the "page_size" and "pages_to_pull" arguments to get all results.
   - name: msgraph-mail-get-attachment
     arguments:
     - name: message_id
+      description: The email message id
       required: true
     - name: attachment_id
+      description: The id of the attachment
       required: true
     - name: folder_id
+      description: The id of the folder
     outputs:
     - contextPath: File.Size
       description: The size of the file.
@@ -505,8 +503,10 @@ script:
   - name: msgraph-mail-list-attachments
     arguments:
     - name: message_id
+      description: The email message id
       required: true
     - name: folder_id
+      description: The id of the folder
     outputs:
     - contextPath: MSGraphMailAttachment.ID
       description: The email ID.
@@ -564,10 +564,14 @@ script:
       description: The extension of the file.
       type: String
     description: Retrieves an email message by message ID and uploads the content as an EML file.
-  dockerimage: demisto/crypto:1.0.0.27590
+  dockerimage: demisto/crypto:1.0.0.30286
   isfetch: true
   runonce: false
+  script: ''
+  type: python
   subtype: python3
-sourcemoduleid: Microsoft Graph Mail Single User
+tests:
+- No test - manual test playbook-Microsoft_Graph_Mail_Sender_test is available in NonCircleTests folder
 defaultclassifier: Microsoft Graph Mail Single User
 defaultmapperin: Microsoft Graph Mail Single User-mapper
+fromversion: 5.0.0

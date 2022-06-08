@@ -674,7 +674,7 @@ class MsGraphClient:
         :return: List of uploaded to War Room data, uploaded file path and name
         :rtype: ``list``
         """
-        if user_id == None:
+        if not user_id:
             user_id = self._mailbox_to_fetch
         attachment_results = []  # type: ignore
         suffix_endpoint = f'users/{user_id}/messages/{message_id}/attachments'
@@ -932,7 +932,7 @@ class MsGraphClient:
         with_folder = f'/users/{self._mailbox_to_fetch}/{build_folders_path(folder_id)}/messages/{message_id}/attachments/'
         suffix = with_folder if folder_id else no_folder
         return self.ms_client.http_request('GET', suffix)
-    
+
     def get_mailbox_to_fetch(self):
         return self._mailbox_to_fetch
 
@@ -1100,6 +1100,7 @@ def list_attachments_command(client: MsGraphClient, args):
         )
         return_results(command_results)
 
+
 def get_attachment_command(client: MsGraphClient, args):
     message_id = args.get('message_id')
     user_id = client.get_mailbox_to_fetch()
@@ -1151,6 +1152,7 @@ def list_mails_command(client: MsGraphClient, args):
     )
     return_results(command_results)
 
+
 def get_email_as_eml_command(client: MsGraphClient, args):
     user_id = args.get('user_id')
     message_id = args.get('message_id')
@@ -1162,6 +1164,7 @@ def get_email_as_eml_command(client: MsGraphClient, args):
         raise Exception(file_result['Contents'])
 
     demisto.results(file_result)
+
 
 def build_folders_path(folder_string: str) -> Optional[str]:
     """
