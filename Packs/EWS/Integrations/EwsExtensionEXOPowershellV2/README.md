@@ -405,7 +405,6 @@ Official PowerShell cmdlet documentation [here](https://docs.microsoft.com/en-us
 | notes | Notes to include on new list entries | Optional |
 | expiration_date | Enter a specific date and time for the new entries to expire using format "YYYY-MM-DD HH:MM:SSz" for UTC time.  Alternately, a PowerShell **GetDate** statement can be used. | Optional |
 | no_expiration | Specify whether to create list entries with no expiration date.  Cannot be used with "expiration_date".  If left false and no expiration date is set, default of 30 days will be used. | Optional |
-| set_context | Specify whether or not to output results to context. | Optional |
 
 
 #### Context Output
@@ -431,7 +430,7 @@ Official PowerShell cmdlet documentation [here](https://docs.microsoft.com/en-us
 
 
 #### Command Example
-```!ews-new-tenant-allow-block-list-items action=Block list_type=sender entries="attacker@phishingsite.com" notes="Email observed in a phishing campaign." set_context=yes```
+```!ews-new-tenant-allow-block-list-items action=Block list_type=sender entries="attacker@phishingsite.com" notes="Email observed in a phishing campaign."```
 
 #### Context Example
 ```json
@@ -484,7 +483,6 @@ Official PowerShell cmdlet documentation [here](https://docs.microsoft.com/en-us
 | expiration_date | Enter a specific date and time to filter entries by using format "YYYY-MM-DD HH:MM:SSz" for UTC time.  Alternately, a PowerShell **GetDate** statement can be used. | Optional |
 | no_expiration | Filter list items that are set to never expire. | Optional |
 | entry | Specif8ic entry value to retrieve. | Optional |
-| set_context | Specify whether or not to output results to context. | Optional |
 
 
 #### Context Output
@@ -510,7 +508,7 @@ Official PowerShell cmdlet documentation [here](https://docs.microsoft.com/en-us
 
 
 #### Command Example
-```!ews-get-tenant-allow-block-list-items action=Block list_type=sender set_context=yes```
+```!ews-get-tenant-allow-block-list-items action=Block list_type=sender```
 
 #### Context Example
 ```json
@@ -559,7 +557,6 @@ Official PowerShell cmdlet documentation [here](https://docs.microsoft.com/en-us
 | --- | --- | --- |
 | list_type | List type to retrieve items from. | Optional |
 | list_subtype | List subtype to retrieve items from. | Optional |
-| set_context | Specify whether or not to output results to context. | Optional |
 
 
 #### Context Output
@@ -572,7 +569,7 @@ Official PowerShell cmdlet documentation [here](https://docs.microsoft.com/en-us
 
 
 #### Command Example
-```!ews-get-tenant-allow-block-list-count list_type=sender set_context=yes```
+```!ews-get-tenant-allow-block-list-count list_type=sender```
 
 #### Context Example
 ```json
@@ -608,7 +605,6 @@ Official PowerShell cmdlet documentation [here](https://docs.microsoft.com/en-us
 | ids | Entry IDs to remove from the list.  Either use this OR 'entries' to specify items to remove.  Separate multiple entries with a comma (e.g. "Item1,Item2"). | Optional |
 | list_type | List type to remove items from. | Required |
 | list_subtype | List subtype to remove items from. | Optional |
-| set_context | Specify whether or not to output results to context. | Optioanl |
 
 
 #### Context Output
@@ -633,7 +629,7 @@ Official PowerShell cmdlet documentation [here](https://docs.microsoft.com/en-us
 | EWS.RemovedTenantBlocks.Value | String | The value of the entry that was removed |
 
 #### Command Example
-```!ews-remove-tenant-allow-block-list-items list_type=sender entries="attacker2@phishingsite.com" set_context=yes```
+```!ews-remove-tenant-allow-block-list-items list_type=sender entries="attacker2@phishingsite.com"```
 
 #### Context Example
 ```json
