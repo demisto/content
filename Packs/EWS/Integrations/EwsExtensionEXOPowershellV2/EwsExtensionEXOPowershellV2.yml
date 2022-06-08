@@ -319,13 +319,6 @@ script:
       - 'true'
       description: Specify whether to create list entries with no expiration date.  Cannot be used with "expiration_date".  If left false and no expiration date is set, default of 30 days will be used.
       defaultValue: 'false'
-    - name: set_context
-      auto: PREDEFINED
-      predefined:
-      - yes
-      - no
-      description: Specify whether or not to output results to context.
-      defaultValue: no
     outputs:
     - contextPath: EWS.NewTenantBlocks.Action
       description: List type ('Block' or 'Allow')
@@ -411,13 +404,6 @@ script:
       defaultValue: 'false'
     - name: entry
       description: Specific entry value to retrieve.
-    - name: set_context
-      auto: PREDEFINED
-      predefined:
-      - yes
-      - no
-      description: Specify whether or not to output results to context.
-      defaultValue: no
     outputs:
     - contextPath: EWS.CurrentTenantBlocks.Action
       description: List type ('Block' or 'Allow')
@@ -483,13 +469,6 @@ script:
       - AdvancedDelivery
       description: List subtype to retrieve items from.
       defaultValue: Tenant
-    - name: set_context
-      auto: PREDEFINED
-      predefined:
-      - yes
-      - no
-      description: Specify whether or not to output results to context.
-      defaultValue: no
     outputs:
     - contextPath: EWS.CurrentListCount.Count
       description: Number of entries presently in the specified list
@@ -523,13 +502,6 @@ script:
       - AdvancedDelivery
       description: List subtype to remove items from.
       defaultValue: Tenant
-    - name: set_context
-      auto: PREDEFINED
-      predefined:
-      - yes
-      - no
-      description: Specify whether or not to output results to context.
-      defaultValue: no
     outputs:
     - contextPath: EWS.RemovedTenantBlocks.Action
       description: Action
