@@ -1,10 +1,10 @@
 CIRCL hash lookup is a public API to lookup hash values against known database of files. NSRL RDS database is included and many others are also included. The API is accessible via HTTP ReST API and the API is also described as an OpenAPI. The service is free and served as a best-effort basis.
-This integration was integrated and tested with version xx of CIRCL hashlookup (hashlookup.circl.lu)
+This integration was integrated and tested with version xx of CIRCLEHashlookup
 
-## Configure CIRCL hashlookup (hashlookup.circl.lu) on Cortex XSOAR
+## Configure CIRCLEHashlookup on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for CIRCL hashlookup (hashlookup.circl.lu).
+2. Search for CIRCLEHashlookup.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Description** | **Required** |
@@ -107,7 +107,7 @@ Bulk search of SHA1 hashes
 
 ### file
 ***
-Perform MD5, SHA-1 or SHA-256 hash lookup
+Checks the file reputation of the specified hash.
 
 
 #### Base Command
@@ -131,6 +131,11 @@ Perform MD5, SHA-1 or SHA-256 hash lookup
 | File.SHA256 | string | SHA256 hash of the file | 
 | File.SHA512 | string | SHA512 hash of the file | 
 | File.SSDeep | string | SSDeep of the file | 
+| DbotScore.Indicator | string | The indicator value. | 
+| DbotScore.Reliability | string | The reliability of the source providing the intelligence data | 
+| DbotScore.Score | number | An integer regarding the status of the indicator | 
+| DbotScore.Type | string | The indicator type | 
+| DbotScore.Vendor | string | The vendor used to calculate the score | 
 
 
 #### Command Example

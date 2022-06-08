@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: CIRCL hashlookup (hashlookup.circl.lu)
+  id: CIRCLEHashlookup
   version: -1
 configuration:
 - defaultvalue: https://hashlookup.circl.lu
@@ -42,14 +42,16 @@ contentitemexportablefields:
     fromServerVersion: ""
     itemVersion: ""
     packID: 73f9961b-e930-45c5-86ef-a48e90e62242
-    propagationLabels: []
+    packName: CIRCL hashlookup (hashlookup.circl.lu) Contribution Pack
+    propagationLabels:
+    - all
     toServerVersion: ""
 description: CIRCL hash lookup is a public API to lookup hash values against known
   database of files. NSRL RDS database is included and many others are also included.
   The API is accessible via HTTP ReST API and the API is also described as an OpenAPI.
   The service is free and served as a best-effort basis.
-display: CIRCL hashlookup (hashlookup.circl.lu)
-name: CIRCL hashlookup (hashlookup.circl.lu)
+display: CIRCLEHashlookup
+name: CIRCLEHashlookup
 script:
   commands:
   - arguments: []
@@ -89,7 +91,7 @@ script:
       name: file
       required: true
       type: textArea
-    description: Perform MD5, SHA-1 or SHA-256 hash lookup
+    description: Checks the file reputation of the specified hash.
     name: file
     outputs:
     - contextPath: File.Name
@@ -112,6 +114,21 @@ script:
       type: string
     - contextPath: File.SSDeep
       description: SSDeep of the file
+      type: string
+    - contextPath: DbotScore.Indicator
+      description: The indicator value.
+      type: string
+    - contextPath: DbotScore.Reliability
+      description: The reliability of the source providing the intelligence data
+      type: string
+    - contextPath: DbotScore.Score
+      description: An integer regarding the status of the indicator
+      type: number
+    - contextPath: DbotScore.Type
+      description: The indicator type
+      type: string
+    - contextPath: DbotScore.Vendor
+      description: The vendor used to calculate the score
       type: string
   - arguments: []
     description: Return the top 100 of most queried values.

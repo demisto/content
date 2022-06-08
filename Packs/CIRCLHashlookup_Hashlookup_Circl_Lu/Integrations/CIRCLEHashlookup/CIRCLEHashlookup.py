@@ -122,7 +122,7 @@ def main():
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
             result = test_module(client)
-            demisto.results(result)
+            return_results(result)
         elif demisto.command() == 'circl-info':
             results = client._http_request('GET', '/info')
             return_results(create_output(results, 'Info'))
@@ -142,8 +142,9 @@ def main():
             results = client._http_request('POST', '/bulk/sha1', json_data=data)
             return_results(create_output(results, 'SHA1'))
         elif demisto.command() == 'file':
-            file = args.get('file')
-            file_list = argToList(file)
+            file_list = argToList(args.get('file'))
+            if len(file_list) == 0:
+                raise ValueError('Hash(es) not specified')
             for item in file_list:
                 if len(item) == 32:
                     results = client._http_request('GET', f'/lookup/md5/{item}')
