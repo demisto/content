@@ -5829,41 +5829,41 @@ script:
     outputs: []
   - arguments:
     - default: false
-      description: The remote incident or detection ID.
+      description: The remote incident  ID.
       isArray: false
       name: id
       required: true
       secret: false
     - default: false
       defaultValue: '0'
-      description: The UTC timestamp in seconds of the last update. The incident or detection is only updated if it was
+      description: The UTC timestamp in seconds of the last update. The incident is only updated if it was
         modified after the last update time.
       isArray: false
       name: lastUpdate
       required: false
       secret: false
     deprecated: false
-    description: Gets remote data from a remote incident or detection. This method does not update
-     the current incident or detection, and should be used for debugging purposes only.
+    description: Gets remote data from a remote incident. This method does not update
+     the current incident and should be used for debugging purposes only.
     execution: false
     name: get-remote-data
   - arguments:
     - default: false
-      description: Date string representing the local time. The incident or detection is only returned
+      description: Date string representing the local time. The incident is only returned
         if it was modified after the last update time.
       isArray: false
       name: lastUpdate
       required: false
       secret: false
     deprecated: false
-    description: Gets the list of incidents and detections that were modified since the last update time.
+    description: Gets the list of incidents that were modified since the last update time.
       This method is used for debugging purposes. The get-modified-remote-data command
       is used as part of the Mirroring feature that was introduced in Cortex XSOAR version 6.1.
     execution: false
     name: get-modified-remote-data
   - deprecated: false
-    description: Updates the remote incident or detection with local incident or detection changes. This method
-      is only used for debugging purposes and will not update the current incident or detection.
+    description: Updates the remote incident with local incident changes. This method
+      is only used for debugging purposes and will not update the current incident.
     execution: false
     name: update-remote-system
   dockerimage: demisto/python3:3.10.4.29342
