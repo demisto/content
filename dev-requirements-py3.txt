@@ -1,7 +1,7 @@
 flake8==4.0.1
 bandit~=1.7.0
 demisto-py>=3.1.4
-demisto-sdk==1.6.6
+demisto-sdk = {editable = true, ref = "380c497d492242fa82ba5e73b695f13a6a42cfc6", git = "ssh://git@github.com/demisto/demisto-sdk.git"}
 pytest==7.0.1
 pytest-mock==3.7.0
 requests-mock==1.9.3
