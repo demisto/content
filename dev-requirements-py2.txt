@@ -1,7 +1,7 @@
 flake8==3.9.2
 bandit==1.6.2
 demisto-py>=3.0.2
-PyYAML==5.3.1
+PyYAML==6.0
 pylint==1.9.5
 pykwalify==1.7.0
 pytest==4.6.5
