@@ -52,6 +52,8 @@ fi
 
 echo "Configure poetry to install virutal enviroment in the project repo (will be availible in (.venv)"
 poetry config virtualenvs.in-project true
+echo "Deleting poetry cache"
+rm -rf ~/.cache/pypoetry
 
 echo "Installing dependencies..."
 poetry install
