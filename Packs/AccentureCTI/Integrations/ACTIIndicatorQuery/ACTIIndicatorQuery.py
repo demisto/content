@@ -702,16 +702,15 @@ def getThreatReport_command(doc_search_client: Client, args: dict, reliability: 
         result = {}
         ia_ir_uuid: str = str(args.get('uuid'))
         result = doc_search_client.threat_indicator_search(url_suffix=f'/v0/{ia_ir_uuid}')
-        indicator_value = result.get('key', '')
         relationships = result.get('links', '')
         indicator_type = result.get('type', '')
         filtered_relationship = None
         custom_indicator, iair_link = _ia_ir_extract(result, reliability)
         if relationships and indicator_type == "intelligence_alert":
-            filtered_relationship = acti_create_relationship(indicator_value, 'intelligence_alert', relationships)
+            filtered_relationship = acti_create_relationship(ia_ir_uuid, 'intelligence_alert', relationships)
             custom_indicator.to_context()["relationships"] = filtered_relationship
         if relationships and indicator_type == "intelligence_report":
-            filtered_relationship = acti_create_relationship(indicator_value, 'intelligence_report', relationships)
+            filtered_relationship = acti_create_relationship(ia_ir_uuid, 'intelligence_report', relationships)
             custom_indicator.to_context()["relationships"] = filtered_relationship
         return CommandResults(indicator=custom_indicator, raw_response=result,
                               readable_output=f"Report has been fetched!\nUUID: {result['uuid']}\nLink to view report: {iair_link}",  # noqa: E501
@@ -808,7 +807,7 @@ def acti_create_relationship(indicator_value: str, indicator_type_a: str, relati
             entity_b_value = relationship.get('display_text', '')
         elif indicator_type_b == 'vulnerability':
             entity_b_value = relationship.get('key', '')
-        elif indicator_type_b in ['malware_family', 'threat_actor', 'threat_campaign', 'file', 'threat_group']:
+        elif indicator_type_b in ['malware_family', 'threat_actor', 'threat_campaign', 'file', 'threat_group', 'intelligence_alert', 'intelligence_report']:  # noqa: E501
             entity_b_value = relationship.get('uuid', '')
         else:
             continue
