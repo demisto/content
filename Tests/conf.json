@@ -4,7 +4,7 @@
     "tests": [
         {
             "integrations": "URLhaus Feed",
-            "playbookID": "<playbook-urlhaus-feed_Test>"
+            "playbookID": "playbook-urlhaus-feed_Test"
         },
 
         {
