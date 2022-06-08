@@ -16,11 +16,11 @@ def run_with_proxy_configured(function: Callable) -> Callable:
     def decorated(build, *args, **kwargs):
         build.proxy.configure_proxy_in_demisto(proxy=build.servers[0].internal_ip + ':' + MITMProxy.PROXY_PORT,
                                                username=build.username, password=build.password,
-                                               server=f'https://localhost:{build.servers[0].ssh_tunnel_port}')
+                                               server=f'https://{build.servers[0].internal_ip}')
         result = function(build, *args, **kwargs)
         build.proxy.configure_proxy_in_demisto(proxy='',
                                                username=build.username, password=build.password,
-                                               server=f'https://localhost:{build.servers[0].ssh_tunnel_port}')
+                                               server=f'https://{build.servers[0].internal_ip}')
         return result
 
     return decorated
