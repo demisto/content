@@ -40,11 +40,12 @@ class Client(BaseClient):
         """Returns a summary of top identities, destinations, URLs, categories, threats, threat types, events
         and IPs being observed in your environment within a specific timeframe.
         """
-        if start == '' and end == '':
-            uri = f'{self._base_url}/organizations/{self.org_id}/summary'
-        else:
-            uri = f'{self._base_url}/organizations/{self.org_id}/summary?from={start}&to={end}'
-        response = self._http_request('GET', uri)
+        suffix = f'/organizations/{self.org_id}/summary?from={start}&to={end}'
+        response = self._http_request(
+            method='GET',
+            url_suffix=suffix,
+            resp_type='json',
+            ok_codes=(200,))
         response_data = response.get('data', {})
         return response_data
 
@@ -52,11 +53,8 @@ class Client(BaseClient):
         """Returns a List of top threats within timeframe based on both DNS and
         Proxy data.
         """
-        if start == '' and end == '':
-            uri = f'{self._base_url}/organizations/{self.org_id}/top-threats'
-        else:
-            uri = f'{self._base_url}/organizations/{self.org_id}/top-threats?from={start}&to={end}'
-        response = self._http_request('GET', uri)
+        suffix = f'/organizations/{self.org_id}/top-threats?from={start}&to={end}'
+        response = self._http_request(method='GET', url_suffix=suffix, resp_type='json', ok_codes=(200,))
         response_data = response.get('data', {})
         return response_data
 
@@ -76,7 +74,7 @@ def test_module(client: Client) -> str:
     """
 
     try:
-        client.get_summary()
+        client.get_summary(start='-2days', end='now')
         message = 'ok'
     except DemistoException as e:
         if 'Forbidden' in str(e) or 'Authorization' in str(e):
@@ -91,12 +89,10 @@ def get_summary_command(client: Client, args: dict) -> CommandResults:
     :param client: Cisco Umbrella Client for the api request.
     :param args: args from the user for the command.
     """
-    start = args.get('start', '')
-    end = args.get('end', '')
+    start = args.get('from', '')
+    end = args.get('to', '')
     response = client.get_summary(start=start, end=end)
-    readable_output = tableToMarkdown(t=response, name='Summary', headers=['object', 'count'])
     return CommandResults(
-        readable_output=readable_output,
         outputs_prefix='UmbrellaReporting.Summary',
         outputs_key_field='object',
         outputs=response
@@ -108,14 +104,14 @@ def list_top_threats_command(client: Client, args: dict) -> CommandResults:
     :param client: Cisco Umbrella Client for the api request.
     :param args: args from the user for the command.
     """
-    start = args.get('start', '')
-    end = args.get('end', '')
+    start = args.get('from', '')
+    end = args.get('to', '')
     response = client.list_top_threats(start=start, end=end)
-    readable_output = tableToMarkdown(t=response, name='Top Threats', headers=['threat', 'threat_type', 'count'])
+    markdown = tableToMarkdown('Top Threats', response, headers=['threat', 'threattype', 'count'])
     return CommandResults(
-        readable_output=readable_output,
+        readable_output=markdown,
         outputs_prefix='UmbrellaReporting.TopThreats',
-        outputs_key_field='threat',
+        outputs_key_field=['threat', 'threattype'],
         outputs=response
     )
 
@@ -129,8 +125,8 @@ class UmbrellaAuthAPI:
 
     def get_access_token(self):
         auth = HTTPBasicAuth(self.ident, self.secret)
-        client = BackendApplicationClient(client_id=self.ident)
-        oauth = OAuth2Session(client=client)
+        oauth_client = BackendApplicationClient(client_id=self.ident)
+        oauth = OAuth2Session(client=oauth_client)
         self.token = oauth.fetch_token(token_url=self.url, auth=auth)
         return self.token
 

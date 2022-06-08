@@ -1,5 +1,5 @@
 Fetch reports from Cisco Umbrella that provides visibility into your core network and security activities and Umbrella logs.
-This integration was integrated and tested with version 2 of Cisco Umbrella Reporting
+This integration was integrated and tested with version xx of Cisco Umbrella Reporting
 
 ## Configure Cisco Umbrella Reporting on Cortex XSOAR
 
@@ -63,4 +63,6 @@ List top threats within timeframe. Returns both DNS and Proxy data.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| UmbrellaReporting.TopThreats | List[Dict] | Threats observed from dns/proxy data | 
+| UmbrellaReporting.TopThreats.threat | String | Threat name | 
+| UmbrellaReporting.TopThreats.threattype | String | Threat Type | 
+| UmbrellaReporting.TopThreats.count | Number | Threat Count | 

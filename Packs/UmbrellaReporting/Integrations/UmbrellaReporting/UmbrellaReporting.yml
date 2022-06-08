@@ -12,7 +12,7 @@ configuration:
   name: orgId
   required: true
   type: 0
-- defaultvalue: https://reports.api.umbrella.com/v2
+- defaultvalue: https://api.us.reports.umbrella.com
   display: Cisco Reporting v2 URL
   name: url
   required: true
@@ -34,6 +34,15 @@ configuration:
   required: false
   type: 8
 description: Fetch reports from Cisco Umbrella that provides visibility into your core network and security activities and Umbrella logs.
+detaileddescription: "Cisco Reporting is part of the Cisco Umbrella package. When
+  you log into the Cisco Umbrella portal you will need to \nobtain the API key for
+  the Cisco Reporting Feature.\nOpenDNS enterprise security products have been rebranded
+  to Cisco Umbrella.\n\n### Generate an API Key\n\n1. In Umbrella, navigate to Admin
+  > API Keys and click Create; or \n   in a management console (Multi-org, MSP, or
+  MSSP), navigate to Settings > API Keys and click Add.\n2. Select Umbrella Reporting
+  and click Generate Token.\n3. Expand Umbrella Reporting and copy Your Key and Your
+  Secret.\n4. Click Close.\n\nFor more information, see Cisco Umbrella:  [Umbrella
+  Reporting v2 Support](https://developer.cisco.com/docs/cloud-security/#reporting-v2-introduction-authentication/generate-an-api-key).\n"
 display: Cisco Umbrella Reporting
 name: Cisco Umbrella Reporting
 script:
@@ -77,9 +86,15 @@ script:
     execution: false
     name: umbrella-list-top-threats
     outputs:
-    - contextPath: UmbrellaReporting.TopThreats
-      description: Threats observed from dns/proxy data
-      type: List[Dict]
+    - contextPath: UmbrellaReporting.TopThreats.threat
+      description: 'Threat name'
+      type: String
+    - contextPath: UmbrellaReporting.TopThreats.threattype
+      description: 'Threat Type'
+      type: String
+    - contextPath: UmbrellaReporting.TopThreats.count
+      description: 'Threat Count'
+      type: Number
   isfetch: false
   runonce: false
   script: '-'
