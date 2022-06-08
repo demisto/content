@@ -12,8 +12,8 @@ DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
 
 class DropboxEventsRequestConfig(IntegrationHTTPRequest):
-    # Endpoint: https://api.dropboxapi.com/2/team_log/get_events
-    url = parse_obj_as(AnyUrl, 'https://api.dropboxapi.com/2/team_log/get_events')
+    # Endpoint: https://api.dropbox.com/2/team_log/get_events
+    url = parse_obj_as(AnyUrl, 'https://api.dropbox.com/2/team_log/get_events')
     method = Method.POST
     headers = {'Content-Type': 'application/json'}
     data: str
@@ -46,7 +46,7 @@ class DropboxEventsClient(IntegrationEventsClient):
     def get_access_token(self):
         request = IntegrationHTTPRequest(
             method=Method.POST,
-            url=parse_obj_as(AnyUrl, 'https://api.dropboxapi.com/oauth2/token'),
+            url=parse_obj_as(AnyUrl, 'https://api.dropbox.com/oauth2/token'),
             data={'grant_type': 'refresh_token', 'refresh_token': f'{self.refresh_token}'},
             auth=HTTPBasicAuth(self.credentials.identifier, self.credentials.password),
             verify=self.request.verify,
@@ -92,14 +92,14 @@ def start_auth_command(app_key: str) -> CommandResults:
     return CommandResults(readable_output=message)
 
 
-def complete_auth_command(code: str, credentials: Credentials) -> CommandResults:
+def complete_auth_command(code: str, credentials: Credentials, insecure: bool) -> CommandResults:
     data = {
         'grant_type': 'authorization_code',
         'code': code,
     }
     auth = (credentials.identifier, credentials.password)
 
-    response = requests.post('https://api.dropbox.com/oauth2/token', data=data, auth=auth, verify=False)
+    response = requests.post('https://api.dropbox.com/oauth2/token', data=data, auth=auth, verify=insecure)
     if response.ok:
         demisto.setIntegrationContext({'refresh_token': response.json()['refresh_token']})
     else:
@@ -114,14 +114,14 @@ def reset_auth_command() -> CommandResults:
     return CommandResults(readable_output=message)
 
 
-def test_connection(refresh_token: str, credentials: Credentials) -> CommandResults:
+def test_connection(refresh_token: str, credentials: Credentials, insecure: bool) -> CommandResults:
     data = {
         'grant_type': 'refresh_token',
         'refresh_token': f'{refresh_token}',
     }
     auth = (credentials.identifier, credentials.password)
 
-    response = requests.post('https://api.dropbox.com/oauth2/token', data=data, auth=auth, verify=False)
+    response = requests.post('https://api.dropbox.com/oauth2/token', data=data, auth=auth, verify=insecure)
 
     if response.ok and response.json().get('access_token'):
         return CommandResults(readable_output='✅ Success.')
@@ -139,6 +139,8 @@ def main(command: str, demisto_params: dict):
     get_events = DropboxEventsGetter(client, options)
 
     try:
+        insecure = demisto_params.get('insecure')
+
         if command == 'test-module':
             raise DemistoException("Please run the !dropbox-auth-test command in order to test the connection")
 
@@ -147,7 +149,7 @@ def main(command: str, demisto_params: dict):
             return_results(start_auth_command(credentials.identifier))
 
         elif command == 'dropbox-auth-complete':
-            return_results(complete_auth_command(demisto_params.get('code'), credentials))
+            return_results(complete_auth_command(demisto_params.get('code'), credentials, insecure))
 
         elif not demisto.getIntegrationContext().get('refresh_token'):
             return_results(CommandResults(readable_output='Please run the **dropbox-auth-start** command first'))
@@ -156,17 +158,20 @@ def main(command: str, demisto_params: dict):
             return_results(reset_auth_command())
 
         elif command == 'dropbox-auth-test':
-            return_results(test_connection(demisto.getIntegrationContext().get('refresh_token'), credentials))
+            return_results(test_connection(demisto.getIntegrationContext().get('refresh_token'), credentials, insecure))
 
         # ----- Fetch/Get events command ----- #
         elif command in ('fetch-events', 'dropbox-get-events'):
             events = get_events.run()
-            send_events_to_xsiam(events, vendor='Dropbox', product='Dropbox')
 
-            if events:
-                last_run = get_events.get_last_run(events)
-                demisto.debug(f'Set last run to {last_run}')
-                demisto.setLastRun(last_run)
+            if command == 'fetch-events' or demisto_params.get('should_push_events'):
+                send_events_to_xsiam(events, vendor=demisto_params.get('vendor', 'dropbox'),
+                                     product=demisto_params.get('product', 'dropbox'))
+
+                if events:
+                    last_run = get_events.get_last_run(events)
+                    demisto.debug(f'Set last run to {last_run}')
+                    demisto.setLastRun(last_run)
 
             if command == 'dropbox-get-events':
                 command_results = CommandResults(

@@ -15,7 +15,7 @@ configuration:
   type: 0
 - defaultvalue: 500
   display: |
-    If you're encountering timeouts, consider decreasing this value. The maximum is 500.
+    If you're encountering timeouts, consider decreasing this value. The default is 500.
   name: limit
   required: false
   type: 0
@@ -27,6 +27,18 @@ configuration:
   name: proxy
   required: false
   type: 8
+- defaultvalue: dropbox
+  additionalinfo: "For the dataset name for example: dropbox"
+  display: Vendor name
+  name: vendor
+  required: false
+  type: 0
+- defaultvalue: dropbox
+  additionalinfo: "For the dataset name for example: dropbox"
+  display: Product name
+  name: product
+  required: false
+  type: 0
 description: Collect events from Dropbox's logs.
 display: Dropbox Event Collector
 name: DropboxEventsCollector
@@ -60,7 +72,7 @@ script:
       description: The maximum events to fetch.
       isArray: false
       name: limit
-      defaultValue: 10
+      defaultValue: 500
       required: false
       secret: false
     - default: false
