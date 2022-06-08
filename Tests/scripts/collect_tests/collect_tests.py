@@ -1,3 +1,5 @@
+import re
+
 import os
 
 import git
@@ -11,13 +13,13 @@ from pathlib import Path
 from typing import Iterable, Optional
 
 from demisto_sdk.commands.common.constants import FileType, MarketplaceVersions
-from demisto_sdk.commands.common.tools import find_type_by_path, str2bool
+from demisto_sdk.commands.common.tools import find_type_by_path, str2bool, run_command
 from git import Repo
 
 from Tests.Marketplace.marketplace_services import get_last_commit_from_index
 from Tests.scripts.collect_tests.constants import (
     CONTENT_PATH, DEFAULT_MARKETPLACE_WHEN_MISSING, DEFAULT_REPUTATION_TESTS,
-    EXCLUDED_FILES, SKIPPED_CONTENT_ITEMS, XSOAR_SANITY_TEST_NAMES)
+    EXCLUDED_FILES, SKIPPED_CONTENT_ITEMS, XSOAR_SANITY_TEST_NAMES, ARTIFACTS_PATH, ONLY_INSTALL_PACK)
 from Tests.scripts.collect_tests.exceptions import (DeprecatedPackException,
                                                     EmptyMachineListException,
                                                     InexistentPackException,
@@ -237,16 +239,19 @@ class ChangeBranch:
 
 
 class BranchTestCollector(TestCollector):
-    def __init__(self, branch_name: str, marketplace: MarketplaceVersions):
+    def __init__(self, branch_name: str,
+                 marketplace: MarketplaceVersions,
+                 service_account: str):
         super().__init__(marketplace)
         self.branch_name = branch_name
         self.repo = Repo(CONTENT_PATH)
+        self.service_account = service_account
 
     def _collect(self) -> Optional[CollectedTests]:
         collected = []
         for path in self._get_changed_files():
             try:
-                collected.append(self._collect_single(CONTENT_PATH / Path(path)))
+                collected.append(self._collect_single(CONTENT_PATH / path))
             except NothingToCollectException as e:
                 logger.warning(e.message)
 
@@ -310,41 +315,12 @@ class BranchTestCollector(TestCollector):
         except NotUnderPackException:
             if path.parent == CONTENT_PATH and path.name in EXCLUDED_FILES:
                 raise NothingToCollectException(path, 'not under a pack')  # infrastructure files that are ignored
-            raise  # files that are either supposed to be under a pack OR should not be ignored. # todo wat
+            raise  # todo is this the expected behavior?
 
         if file_type in {FileType.PACK_IGNORE, FileType.SECRET_IGNORE, FileType.DOC_FILE, FileType.README}:
-            raise NothingToCollectException(path, f'ignored type ({file_type}')
+            raise NothingToCollectException(path, f'ignored type {file_type}')
 
-        elif file_type in {
-            FileType.RELEASE_NOTES_CONFIG,
-            FileType.RELEASE_NOTES,
-            FileType.IMAGE,
-            FileType.DESCRIPTION,
-            FileType.METADATA,
-            FileType.RELEASE_NOTES_CONFIG,
-            FileType.INCIDENT_TYPE,
-            FileType.INCIDENT_FIELD,
-            FileType.INDICATOR_FIELD,
-            FileType.LAYOUT,
-            FileType.WIDGET,
-            FileType.DASHBOARD,
-            FileType.REPORT,
-            FileType.PARSING_RULE,
-            FileType.MODELING_RULE,
-            FileType.CORRELATION_RULE,
-            FileType.XSIAM_DASHBOARD,
-            FileType.XSIAM_REPORT,
-            FileType.REPORT,
-            FileType.GENERIC_TYPE,
-            FileType.GENERIC_FIELD,
-            FileType.GENERIC_MODULE,
-            FileType.GENERIC_DEFINITION,
-            FileType.PRE_PROCESS_RULES,
-            FileType.JOB,
-            FileType.CONNECTION,
-            FileType.RELEASE_NOTES_CONFIG,
-            FileType.XSOAR_CONFIG,
-        }:
+        elif file_type in ONLY_INSTALL_PACK:
             # install pack without collecting tests.
             return self._collect_pack(
                 name=PACK_MANAGER.get_pack_by_path(find_pack_folder(path)).name,
@@ -392,43 +368,34 @@ class BranchTestCollector(TestCollector):
         )
 
     def _get_changed_files(self) -> tuple[str]:
-        current_commit = str(self.repo.head.commit)
+        contrib_diff = None  # overridden on contribution branches, added to the git diff.
+
+        current_commit = self.branch_name
         previous_commit = 'origin/master'
 
-        if os.getenv("IFRA_ENV_TYPE") == 'Bucket-Upload':
-            service_account = None  # todo
-            current_commit = get_last_commit_from_index(service_account)
-            previous_commit = self.branch_name if self.branch_name != 'master' else 'origin/master'
+        logger.info(f'Getting changed files for {self.branch_name=}')
 
-        elif self.branch_name != 'master':
-            # Checks if the build is for contributor PR and if so add its pack.
-            if os.getenv('CONTRIB_BRANCH'):
+        if os.getenv('IFRA_ENV_TYPE') == 'Bucket-Upload':
+            logger.info('bucket upload: getting last commit from index')
+            previous_commit = get_last_commit_from_index(self.service_account)
+            current_commit = 'origin/master' if self.branch_name == 'master' else self.branch_name
 
-                pass  # todo
-                # packs_diff = tools.run_command('git status -uall --porcelain -- Packs').replace('??', 'A')
-                # files_string = '\n'.join([files_string, packs_diff])
-        else:
-            pass  # todo remove
-            # commit_string = tools.run_command("git log -n 2 --pretty='%H'")
-            # logging.debug(f'commit string: {commit_string}')
-            # commit_string = commit_string.replace("'", "")
-            # last_commit, second_last_commit = commit_string.split()
-            # files_string = tools.run_command(f'git diff --name-status {second_last_commit}...{last_commit}')
+        elif self.branch_name == 'master':
+            previous_commit, current_commit = run_command("git log -n 2 --pretty='%H'").replace("'", "").split()
 
-        with ChangeBranch(self.branch_name, self.repo):
-            # rev = f'{full_branch_name}~1...{full_branch_name}~3' if IS_GITLAB \
-            #     else f'{full_branch_name}...{full_branch_name}~2'
-            rev = f'{previous_commit}...{current_commit}'
-            logger.info(f'comparing commits {rev}')
-            latest, previous = tuple(self.repo.iter_commits(rev))
-            results = tuple(str(file.b_path) for file in latest.diff(previous))
+        elif os.getenv('CONTRIB_BRANCH'):
+            contrib_diff = run_command('git status -uall --porcelain -- Packs').replace('??', 'A')
+            logger.info(f'contribution branch, {contrib_diff=}')
 
-            logger.info(f'found {len(results)} changed files between the compared commits')
-            logger.debug(f'changed files:')
-            for file in results:
-                logger.debug(file)
+        diff = run_command(f'git diff --name-status {current_commit}...{previous_commit}')
+        logger.debug(f'Changed files: {diff}')
 
-            return results
+        if contrib_diff:
+            logger.debug('adding contrib_diff to diff')
+            diff = f'{diff}\n{contrib_diff}'
+
+        # diff is formatted as `M  foo.json\n A  bar.py`, turning it into ('foo.json', 'bar.py').
+        return tuple((value.split()[1] for value in diff))
 
 
 class NightlyTestCollector(TestCollector, ABC):
@@ -562,42 +529,38 @@ class UploadCollector(BranchTestCollector):
         return collected
 
 
-def ui():
-    if __name__ == "__main__":
-        parser = ArgumentParser(description='Utility CircleCI usage')  # todo (?)
-        parser.add_argument('-n', '--nightly', type=str2bool, help='Is nightly')
-        parser.add_argument('-p', '--changed_pack_path', type=str, help='A string representing the changed files')
-        parser.add_argument('-mp', '--marketplace', help='marketplace version.', default='xsoar')
-        parser.add_argument('--service_account', help="Path to gcloud service account")
-        options = parser.parse_args()
+def ui():  # todo put as real main
+    parser = ArgumentParser(description='Utility CircleCI usage')  # todo (?)
+    parser.add_argument('-n', '--nightly', type=str2bool, help='Is nightly')
+    parser.add_argument('-p', '--changed_pack_path', type=str, help='A string representing the changed files')
+    parser.add_argument('-mp', '--marketplace', help='marketplace version.', default='xsoar')
+    parser.add_argument('--service_account', help="Path to gcloud service account")
+    options = parser.parse_args()
 
-        match (options.nightly, marketplace := MarketplaceVersions(options.marketplace)):
-            case False, _:  # not nightly
-                collector = BranchTestCollector(marketplace=MarketplaceVersions.XSOAR, branch_name='master')
-            case True, MarketplaceVersions.XSOAR:
-                collector = XSOARNightlyTestCollector()
-            case True, MarketplaceVersions.MarketplaceV2:
-                collector = XSIAMNightlyTestCollector()
-            case _, _:  # todo _ or _, _?
-                raise ValueError(f"unexpected marketplace value {marketplace}")
+    match (options.nightly, marketplace := MarketplaceVersions(options.marketplace)):
+        case False, _:  # not nightly
+            collector = BranchTestCollector(marketplace=MarketplaceVersions.XSOAR, branch_name='master')
+        case True, MarketplaceVersions.XSOAR:
+            collector = XSOARNightlyTestCollector()
+        case True, MarketplaceVersions.MarketplaceV2:
+            collector = XSIAMNightlyTestCollector()
+        case _:
+            raise ValueError(f"unexpected values of {marketplace=}, {options.nightly=}")
 
-        # Create test file based only on committed files
-        create_test_file(options.nightly, options.skip_save, options.changed_pack_path, options.marketplace,
-                         options.service_account)
-        if not _FAILED:
-            logging.info("Finished test configuration")
-            sys.exit(0)
-        else:
-            logging.error("Failed test configuration. See previous errors.")
-            sys.exit(1)
+    collected = collector.collect(run_nightly=options.nightly, run_master=True)  # todo what to put in master?
+    (ARTIFACTS_PATH / 'filter_file.txt').write_text('\n'.join(collected.tests))
+    (ARTIFACTS_PATH / 'content_packs_to_install.txt').write_text('\n'.join(collected.packs))
+
+
+def debug():  # todo remove
+    # collector = XSIAMNightlyTestCollector()
+    collector = BranchTestCollector(marketplace=MarketplaceVersions.XSOAR, branch_name='master')
+    print(collector.collect(True, True))
 
 
 if __name__ == '__main__':
     try:
         sys.path.append(str(CONTENT_PATH))
-        # collector = XSIAMNightlyTestCollector()
-        collector = BranchTestCollector(marketplace=MarketplaceVersions.XSOAR, branch_name='master')
-        print(collector.collect(True, True))
 
     except:  # todo remove
         Repo(CONTENT_PATH).git.checkout('ds-test-collection')  # todo remove

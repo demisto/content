@@ -2,7 +2,7 @@ import os
 from pathlib import Path
 from typing import Iterable
 
-from demisto_sdk.commands.common.constants import MarketplaceVersions
+from demisto_sdk.commands.common.constants import MarketplaceVersions, FileType
 
 MASTER = 'master'  # todo use
 CONTENT_PATH = Path(__file__).absolute().parents[3]
@@ -67,3 +67,35 @@ def _calculate_excluded_files() -> set[Path]:
 
 
 EXCLUDED_FILES = _calculate_excluded_files()
+
+ONLY_INSTALL_PACK = {
+    # upon collection, no tests are collected, but the pack is installed.
+    FileType.RELEASE_NOTES_CONFIG,
+    FileType.RELEASE_NOTES,
+    FileType.IMAGE,
+    FileType.DESCRIPTION,
+    FileType.METADATA,
+    FileType.RELEASE_NOTES_CONFIG,
+    FileType.INCIDENT_TYPE,
+    FileType.INCIDENT_FIELD,
+    FileType.INDICATOR_FIELD,
+    FileType.LAYOUT,
+    FileType.WIDGET,
+    FileType.DASHBOARD,
+    FileType.REPORT,
+    FileType.PARSING_RULE,
+    FileType.MODELING_RULE,
+    FileType.CORRELATION_RULE,
+    FileType.XSIAM_DASHBOARD,
+    FileType.XSIAM_REPORT,
+    FileType.REPORT,
+    FileType.GENERIC_TYPE,
+    FileType.GENERIC_FIELD,
+    FileType.GENERIC_MODULE,
+    FileType.GENERIC_DEFINITION,
+    FileType.PRE_PROCESS_RULES,
+    FileType.JOB,
+    FileType.CONNECTION,
+    FileType.RELEASE_NOTES_CONFIG,
+    FileType.XSOAR_CONFIG,
+}
