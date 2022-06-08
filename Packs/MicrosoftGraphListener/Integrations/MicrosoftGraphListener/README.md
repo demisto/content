@@ -1,6 +1,31 @@
 Microsoft Graph grants Cortex XSOAR authorized access to a user's Microsoft Outlook mail data in a personal account or organization account.
 This integration was integrated and tested with version 1.0 of Microsoft Graph Mail Single User
 
+
+## Fetch Incidents
+The integration imports email messages from the destination folder in the target mailbox as incidents. If the message contains any attachments, they are uploaded to the War Room as files. If the attachment is an email (item attachment), Cortex XSOAR fetches information about the attached email and downloads all of its attachments (if there are any) as files. To use Fetch incidents, configure a new instance and select the Fetches incidents option in the instance settings.
+
+## OData Usage
+The OData parameter can be used to create different queries for the `msgraph-mail-list-emails` and `msgraph-mail-get-email` commands. Please see [OData Docs](https://docs.microsoft.com/en-us/graph/query-parameters) for detailed information.
+Examples:
+!msgraph-mail-list-emails odata=&quot;$select=from&quot;
+!msgraph-mail-list-emails odata=&quot;$filter=from/emailAddress/address eq &#39;azure-noreply@microsoft.com&#39;&quot;
+!msgraph-mail-list-emails odata=&quot;$filter=sentDateTime gt 2020-03-25T09:35:23Z and sentDateTime lt 2020-03-25T12:04:47Z&quot;
+
+NOTE:
+The query parameter `$filter` is not supported when using the `search` parameter.
+
+## Authentication
+For more details about the authentication used in this integration, see [Microsoft Integrations - Authentication](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication).
+
+Note: For this integration, you cannot use a "Shared mailbox" regardless of the authentication method used.
+
+### Required Permissions
+The following permissions are required for all commands:
+1. Mail.ReadWrite - Delegated
+2. Mail.Send - Delegated
+3. User.Read - Delegated
+
 ## Configure Microsoft Graph Mail Single User on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
