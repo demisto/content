@@ -19,14 +19,13 @@
 
 
 | alter XDM.Network.event_timestamp= request_time
-| alter XDM.Network.Source.user.username =username
 | alter XDM.Network.http.url = requested_line
 | alter XDM.Network.http.response_code = response_code  
-| alter  XDM.Network.http.user_agent= User_agent
+| alter XDM.Network.http.user_agent= User_agent
 | alter XDM.Network.http.referrer =Referrer
-| alter  XDM.Network.Destination.bytes=bytes_size
+| alter XDM.Network.Destination.bytes=bytes_size
 | alter XDM.Network.Source.ipv4 =source_ip
-| alter XDM.Network.Source.user.username =username
+| alter XDM.Network.Source.user.username =Username;
 
 //[MODEL: dataset=" nginx_raw", model="Audit"] 
 
@@ -58,4 +57,4 @@
 | alter XDM.Network.Observer.unique_identifier =host
 | alter XDM.Network.http.referrer= referrer 
 | alter XDM.Audit.TriggeredBy.identity.uuid =  uri
-| alter XDM.Network.Destination.port = destination_port
+| alter XDM.Network.Destination.port = destination_port;
