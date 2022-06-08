@@ -142,7 +142,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2015
+          "y": 1595
         }
       }
     note: false
@@ -165,7 +165,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "12"
+      - "3"
     scriptarguments:
       add_to_context: {}
       brand_name:
@@ -277,10 +277,10 @@ tasks:
     quietmode: 0
   "9":
     id: "9"
-    taskid: 66a1d2e2-04e1-45b6-840e-bd700f30a0ec
+    taskid: fe21513e-e64e-4b35-8c4c-c4121cfa7784
     type: regular
     task:
-      id: 66a1d2e2-04e1-45b6-840e-bd700f30a0ec
+      id: fe21513e-e64e-4b35-8c4c-c4121cfa7784
       version: -1
       name: cdl-query-traffic-logs
       description: Searches the Cortex firewall.traffic table. Traffic logs contain entries for the end of each network session
@@ -295,11 +295,12 @@ tasks:
       action: {}
       dest_ip: {}
       dest_port: {}
-      end_time:
-        simple: "2020-03-25 10:01:13"
+      end_time: {}
       fields: {}
       from_zone: {}
+      ip: {}
       limit: {}
+      port: {}
       query: {}
       rule: {}
       source_ip: {}
@@ -375,10 +376,10 @@ tasks:
     quietmode: 0
   "11":
     id: "11"
-    taskid: dd4cfff2-a9c3-49d4-8fba-0a484e792353
+    taskid: 681a31eb-6b60-4006-8866-9c3af9b898fe
     type: regular
     task:
-      id: dd4cfff2-a9c3-49d4-8fba-0a484e792353
+      id: 681a31eb-6b60-4006-8866-9c3af9b898fe
       version: -1
       name: cdl-query-threat-logs
       description: Searches the Cortex panw.threat table, which is the threat logs table for PAN-OS/Panorama.
@@ -393,13 +394,14 @@ tasks:
       action: {}
       dest_ip: {}
       dest_port: {}
-      end_time:
-        simple: "2020-03-25 10:01:13"
+      end_time: {}
       fields: {}
       file_name: {}
       file_sha_256: {}
       from_zone: {}
+      ip: {}
       limit: {}
+      port: {}
       query: {}
       rule_matched: {}
       source_ip: {}
@@ -421,125 +423,13 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "12":
-    id: "12"
-    taskid: 1ee0cb39-9fe3-48fc-84da-1d0521ad06fb
-    type: regular
-    task:
-      id: 1ee0cb39-9fe3-48fc-84da-1d0521ad06fb
-      version: -1
-      name: cdl-query-file-data
-      description: Searches the Cortex firewall.file_data table.
-      script: '|||cdl-query-file-data'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "13"
-    scriptarguments:
-      action: {}
-      app:
-        simple: web-browsing
-      app_category: {}
-      dest_device_host: {}
-      dest_dynamic_address_group: {}
-      dest_edl: {}
-      dest_ip: {}
-      dest_location: {}
-      dest_port: {}
-      dest_user: {}
-      end_time: {}
-      file_name: {}
-      file_sha_256: {}
-      file_type: {}
-      from_zone: {}
-      is_server_to_client: {}
-      is_url_denied: {}
-      limit:
-        simple: "1"
-      log_type: {}
-      nat_dest: {}
-      nat_dest_port: {}
-      nat_source: {}
-      nat_source_port: {}
-      rule_matched: {}
-      rule_matched_uuid: {}
-      severity: {}
-      source_device_host: {}
-      source_dynamic_address_group: {}
-      source_edl: {}
-      source_ip: {}
-      source_location: {}
-      source_port: {}
-      source_user: {}
-      start_time: {}
-      sub_type: {}
-      time_range: {}
-      url_category: {}
-      url_domain: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1620
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "13":
-    id: "13"
-    taskid: 4881978e-2bd7-4058-87cc-9ac964e173eb
-    type: condition
-    task:
-      id: 4881978e-2bd7-4058-87cc-9ac964e173eb
-      version: -1
-      name: Verify outputs
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "3"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: CDL.Logging.File.App
-            iscontext: true
-          right:
-            value:
-              simple: web-browsing
-      - - operator: isExists
-          left:
-            value:
-              simple: CDL.Logging.File.SourceIP
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1810
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
+system: true
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2030,
+        "height": 1610,
         "width": 380,
         "x": 50,
         "y": 50

@@ -31,7 +31,6 @@ configuration:
   required: true
 - display: Trust any certificate (not secure)
   name: insecure
-  defaultvalue: ""
   type: 8
   required: false
 - display: Use system proxy settings
@@ -125,7 +124,7 @@ script:
       description: A CSV list of CIDs to embed attachments within the email itself.
       isArray: true
     description: Replies to an email using EWS.
-  dockerimage: demisto/py2-exchangelib:1.0.0.24033
+  dockerimage: demisto/py3ews:1.0.0.29461
 tests:
 - "EWS Mail Sender Test"
 - "EWS Mail Sender Test 2"

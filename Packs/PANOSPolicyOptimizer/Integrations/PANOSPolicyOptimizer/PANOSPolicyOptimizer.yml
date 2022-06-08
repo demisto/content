@@ -27,8 +27,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Automate your AppID Adoption by using this integration together with
-  your Palo Alto Networks Next-Generation Firewall or Panorama.
+description: Automate your AppID Adoption by using this integration together with your Palo Alto Networks Next-Generation Firewall or Panorama.
 display: PAN-OS Policy Optimizer
 name: PAN-OS Policy Optimizer
 script:
@@ -59,8 +58,7 @@ script:
     name: pan-os-po-no-apps
     outputs:
     - contextPath: PanOS.PolicyOptimizer.NoApps
-      description: Contains information about the rules that have no apps specified.
-        For example, Source and Destination.
+      description: Contains information about the rules that have no apps specified. For example, Source and Destination.
       type: Unknown
   - deprecated: false
     description: Gets the unused apps.
@@ -92,9 +90,7 @@ script:
       secret: false
     - default: false
       defaultValue: 'false'
-      description: Whether to exclude rules reset during the last x days, where x
-        is the value defined in the timeframe argument. It will not exclude rules
-        by default.
+      description: Whether to exclude rules reset during the last x days, where x is the value defined in the timeframe argument. It will not exclude rules by default.
       isArray: false
       name: exclude
       predefined:
@@ -107,26 +103,26 @@ script:
       isArray: false
       name: position
       predefined:
-      - 'pre'
-      - 'post'
+      - pre
+      - post
       required: false
       secret: false
     - default: false
-      defaultValue: 'security'
+      defaultValue: security
       description: Which type of rules to query.
       isArray: false
       name: rule_type
       predefined:
-      - 'security'
-      - 'nat'
-      - 'qos'
-      - 'pbf'
-      - 'decryption'
-      - 'tunnel-inspect'
-      - 'application-override'
-      - 'authentication'
-      - 'dos'
-      - 'sdwan'
+      - security
+      - nat
+      - qos
+      - pbf
+      - decryption
+      - tunnel-inspect
+      - application-override
+      - authentication
+      - dos
+      - sdwan
       required: false
       secret: false
     deprecated: false
@@ -169,7 +165,7 @@ script:
     description: Gets a specific dynamic address group.
     execution: false
     name: pan-os-get-dag
-  dockerimage: demisto/python3:3.10.1.25933
+  dockerimage: demisto/python3:3.10.4.27798
   feed: false
   isfetch: false
   longRunning: false

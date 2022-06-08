@@ -1,0 +1,1149 @@
+id: Impossible Traveler Response
+version: -1
+contentitemexportablefields:
+  contentitemfields: {}
+name: Impossible Traveler Response
+description: "This playbook handles impossible traveler alerts.\n\nAn Impossible Traveler event occurs when multiple login attempts seen for a user from multiple remote countries in a short period of time, which shouldn't be possible. This may indicate the account is compromised.\n\n**Attacker's Goals:**\n\nGain user-account credentials.\n\n**Investigative Actions:**\n\nInvestigate the IP addresses and identities involved in the detected activity using:\n\n* Impossible Traveler - Enrichment playbook\n* CalculateGeoDistance automation\n\n**Response Actions**\n\nThe playbook's first response actions are based on the data available within the alert. In that phase, the playbook will execute:\n\n* Manual block indicators if the IP address found malicious\n* Manual disable user\n* Manual clear of the user’s sessions (Okta)\n\nWhen the playbook continues, after validating the activity with the user’s manager, another phase of response actions is being executed, which includes:\n\n* Auto block indicators \n\n\n**External Resources:**\n\n[Impossible traveler alert](https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-analytics-alert-reference/cortex-xdr-analytics-alert-reference/impossible-traveler---sso.html)"
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 43458e58-6d49-4273-89a9-113c506dd3bb
+    type: start
+    task:
+      id: 43458e58-6d49-4273-89a9-113c506dd3bb
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "50"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -30,
+          "y": 190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 6361db3c-08f5-466b-8f46-16bb67a9e88d
+    type: title
+    task:
+      id: 6361db3c-08f5-466b-8f46-16bb67a9e88d
+      version: -1
+      name: Containment
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "118"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 2955
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "50":
+    id: "50"
+    taskid: b7269401-e59c-4ff0-8e6d-9c7b2df79bef
+    type: title
+    task:
+      id: b7269401-e59c-4ff0-8e6d-9c7b2df79bef
+      version: -1
+      name: Travel Information Enrichment
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "111"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -30,
+          "y": 320
+        }
+      }
+    note: false
+    timertriggers:
+    - fieldname: detectionsla
+      action: start
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "51":
+    id: "51"
+    taskid: 34a572ff-d7e5-493a-81a0-8a4e0573d853
+    type: title
+    task:
+      id: 34a572ff-d7e5-493a-81a0-8a4e0573d853
+      version: -1
+      name: 'Containment '
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "104"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -30,
+          "y": 755
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "63":
+    id: "63"
+    taskid: d14bb855-3fd8-49fa-86e7-b938ec629ab8
+    type: condition
+    task:
+      id: d14bb855-3fd8-49fa-86e7-b938ec629ab8
+      version: -1
+      name: Did the user travel more than the allowed MPH?
+      description: Checks whether the user traveled faster than the allowed speed in MPH.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "106"
+      "yes":
+      - "84"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: greaterThan
+          left:
+            value:
+              complex:
+                root: GeoEvents
+                accessor: distance
+            iscontext: true
+          right:
+            value:
+              simple: inputs.MaxMilesPerHourAllowed
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -30,
+          "y": 1850
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "67":
+    id: "67"
+    taskid: c57d6b8b-9e75-4e4c-8fde-647015300e2b
+    type: condition
+    task:
+      id: c57d6b8b-9e75-4e4c-8fde-647015300e2b
+      version: -1
+      name: Did the user login from IP addresses on allow list?
+      description: Checks whether both user login events originated from IP addresses on the allow list.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "32"
+      "yes":
+      - "70"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: in
+          left:
+            value:
+              complex:
+                root: ImpossibleTraveler.Events
+                filters:
+                - - operator: in
+                    left:
+                      value:
+                        simple: ImpossibleTraveler.Events.Country
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Impossible Traveler Alert Validation.Answers.0
+                      iscontext: true
+                accessor: ip
+                transformers:
+                - operator: uniq
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: inputs.WhitelistedIPs
+                transformers:
+                - operator: splitAndTrim
+                  args:
+                    delimiter:
+                      value:
+                        simple: ','
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 20,
+          "y": 2780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "68":
+    id: "68"
+    taskid: d912768b-29a7-4497-8d4b-6592fa102827
+    type: condition
+    task:
+      id: d912768b-29a7-4497-8d4b-6592fa102827
+      version: -1
+      name: Are there IPs configured on allow list?
+      description: Checks whether the allow list IPs were configured.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "32"
+      "yes":
+      - "67"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.WhitelistedIPs
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 2610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "70":
+    id: "70"
+    taskid: 94fb6bd2-f332-41e6-864a-c27747ff9476
+    type: regular
+    task:
+      id: 94fb6bd2-f332-41e6-864a-c27747ff9476
+      version: -1
+      name: Close alert
+      description: Closes the alert.
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "102"
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 3305
+        }
+      }
+    note: false
+    timertriggers:
+    - fieldname: remediationsla
+      action: stop
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "73":
+    id: "73"
+    taskid: 4caf8449-6b23-431d-8d23-a2bc76176498
+    type: title
+    task:
+      id: 4caf8449-6b23-431d-8d23-a2bc76176498
+      version: -1
+      name: Process Travel Data
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "112"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -30,
+          "y": 1540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "84":
+    id: "84"
+    taskid: ce76b9a6-a4a4-4149-8d2c-94fa50e1bbd7
+    type: condition
+    task:
+      id: ce76b9a6-a4a4-4149-8d2c-94fa50e1bbd7
+      version: -1
+      name: Can the manager be contacted for travel approval?
+      description: Checks whether an email address was retrieved for the manger of the offending user.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "68"
+      "yes":
+      - "113"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.UserManagerEmail
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.ContactUserManager
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 2040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "97":
+    id: "97"
+    taskid: b0112fcc-3a0d-4729-8a2a-6e63262565a3
+    type: title
+    task:
+      id: b0112fcc-3a0d-4729-8a2a-6e63262565a3
+      version: -1
+      name: Investigation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "73"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -30,
+          "y": 1400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "102":
+    id: "102"
+    taskid: 8b9120b4-5687-4f02-8f1f-37f739b8de96
+    type: title
+    task:
+      id: 8b9120b4-5687-4f02-8f1f-37f739b8de96
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 3480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "104":
+    id: "104"
+    taskid: 08cf69f1-48a0-4c20-86f5-524f59529bbb
+    type: condition
+    task:
+      id: 08cf69f1-48a0-4c20-86f5-524f59529bbb
+      version: -1
+      name: Check if the IP is blacklisted
+      description: Checks if the IP address is blacklisted.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "110"
+      "yes":
+      - "117"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: greaterThan
+          left:
+            value:
+              complex:
+                root: IP
+                accessor: PositiveDetections
+            iscontext: true
+          right:
+            value:
+              simple: "5"
+        - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: AbuseIPDB.IP.AbuseConfidenceScore
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: inputs.AbuseIPDBThreshold
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -30,
+          "y": 890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "106":
+    id: "106"
+    taskid: ddb83845-ed7a-4120-83f6-beb1877424e1
+    type: regular
+    task:
+      id: ddb83845-ed7a-4120-83f6-beb1877424e1
+      version: -1
+      name: 'Close alert '
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "102"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -210,
+          "y": 2325
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "107":
+    id: "107"
+    taskid: 851e8bf2-5306-4b63-8dd8-b4ac2e0346bb
+    type: playbook
+    task:
+      id: 851e8bf2-5306-4b63-8dd8-b4ac2e0346bb
+      version: -1
+      name: Impossible Traveler - Enrichment
+      description: |-
+        This playbook get as an input all of the involved IP addresses and identities from the Impossible Traveler playbook alert and enriches them based on the following:
+        * Geo location
+        * AD
+      playbookName: Impossible Traveler - Enrichment
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "51"
+    scriptarguments:
+      sourceip:
+        simple: ${ImpossibleTravelerIPs}
+    separatecontext: false
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 3
+      max: 100
+      forEach: true
+    view: |-
+      {
+        "position": {
+          "x": -30,
+          "y": 600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "110":
+    id: "110"
+    taskid: 954a463e-36fd-4351-8d28-1948c2dde3eb
+    type: regular
+    task:
+      id: 954a463e-36fd-4351-8d28-1948c2dde3eb
+      version: -1
+      name: Set containment actions
+      description: Sets a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "117"
+    scriptarguments:
+      key:
+        simple: BlockIndicators
+      value:
+        simple: "False"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -410,
+          "y": 1060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "111":
+    id: "111"
+    taskid: f7228f6e-5f4f-470e-83f6-5c6d60d54074
+    type: regular
+    task:
+      id: f7228f6e-5f4f-470e-83f6-5c6d60d54074
+      version: -1
+      name: Get all Impossible Traveler IP Addresses
+      description: 'Creates an array object in context from any given string input. '
+      scriptName: CreateArray
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "107"
+    scriptarguments:
+      arrayData:
+        complex:
+          root: alert
+          accessor: localip
+          transformers:
+          - operator: uniq
+      contextKey:
+        simple: ImpossibleTravelerIPs
+      ignore-outputs:
+        simple: "false"
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -30,
+          "y": 440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "112":
+    id: "112"
+    taskid: 39d974a3-1258-4d12-8e37-9b52df92bb95
+    type: regular
+    task:
+      id: 39d974a3-1258-4d12-8e37-9b52df92bb95
+      version: -1
+      name: Calculate geographical distance between logins
+      description: Computes the distance between two sets of coordinates, in miles.
+      tags:
+      - geodistance
+      scriptName: impossibleTravelerGetDistance
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "63"
+    scriptarguments:
+      dest_coords:
+        complex:
+          root: ImpossibleTraveler.Events
+          accessor: location
+      extend-context:
+        simple: GeoDistance
+      ignore-outputs:
+        simple: "false"
+      src_coords:
+        complex:
+          root: ImpossibleTraveler.Events
+          accessor: location
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -30,
+          "y": 1680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "113":
+    id: "113"
+    taskid: a4b0b9e4-608e-4a4f-8d58-8b801425db2d
+    type: collection
+    task:
+      id: a4b0b9e4-608e-4a4f-8d58-8b801425db2d
+      version: -1
+      name: Ask manager if travel was expected
+      description: Asks the manager to confirm the abnormal activity.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "114"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 2210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        complex:
+          root: inputs.UserManagerEmail
+      subject:
+        simple: Impossible Traveler Alert Validation
+      body:
+      methods:
+      - email
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: false
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Select the suspicious locations
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - {}
+        - complex:
+            root: GeoEvents
+            accessor: source_country
+            transformers:
+            - operator: append
+              args:
+                item:
+                  value:
+                    simple: GeoEvents.dest_country
+                  iscontext: true
+            - operator: uniq
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Impossible Traveler Alert Validation
+      description: |-
+        The user ${alert.username} signed in from several countries in a one-hour timeframe, which is considered an impossible traveler activity.
+        Select the unapproved countries for the employee to sign in from.
+      sender: Your SOC team
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "114":
+    id: "114"
+    taskid: beb82392-b25d-46f9-800c-cc0b1c08aeda
+    type: condition
+    task:
+      id: beb82392-b25d-46f9-800c-cc0b1c08aeda
+      version: -1
+      name: Check Manager Response
+      description: Checks the manager response.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "68"
+      Approved:
+      - "70"
+    separatecontext: false
+    conditions:
+    - label: Approved
+      condition:
+      - - operator: isEmpty
+          left:
+            value:
+              complex:
+                root: Impossible Traveler Alert Validation.Answers.0
+            iscontext: true
+          right:
+            value: {}
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 2410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "117":
+    id: "117"
+    taskid: 7b33e5cb-8d2b-4405-84ad-d6e2180ed78a
+    type: playbook
+    task:
+      id: 7b33e5cb-8d2b-4405-84ad-d6e2180ed78a
+      version: -1
+      name: Containment Plan
+      description: |-
+        This playbook handles all the containment actions available with Cortex XSIAM.
+        The playbook enables you to contain the incident by using one of the following tasks:
+        * Isolate endpoint
+        * Disable account
+        * Quarantine file
+        * Block indicators
+        * Clear user session (currently, the playbook supports only Okta)
+
+        The playbook inputs allow you to manipulate the execution flow. Review the inputs description.
+      playbookName: Containment Plan
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "97"
+    scriptarguments:
+      AutoContainment:
+        complex:
+          root: inputs.AutoContainment
+      BlockIndicators:
+        complex:
+          root: BlockIndicators
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: "True"
+      ClearUserSessions:
+        simple: "True"
+      FileContainment:
+        simple: "False"
+      FileRemediation:
+        simple: Quarantine
+      HostAutoContainment:
+        simple: "False"
+      IAMUserDomain:
+        simple: '@demisto.com'
+      IP:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: ip
+              ignorecase: true
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+      UserContainment:
+        simple: "False"
+      Username:
+        complex:
+          root: alert
+          accessor: username
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": -30,
+          "y": 1230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "118":
+    id: "118"
+    taskid: 53ca72da-b295-4a8f-8f97-23454bab59b6
+    type: playbook
+    task:
+      id: 53ca72da-b295-4a8f-8f97-23454bab59b6
+      version: -1
+      name: Containment Plan
+      description: |-
+        This playbook handles all the containment actions available with Cortex XSIAM.
+        The playbook enables you to contain the incident by using one of the following tasks:
+        * Isolate endpoint
+        * Disable account
+        * Quarantine file
+        * Block indicators
+        * Clear user session (currently, the playbook supports only Okta)
+
+        The playbook inputs allow you to manipulate the execution flow. Review the inputs description.
+      playbookName: Containment Plan
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "70"
+    scriptarguments:
+      AutoContainment:
+        simple: "true"
+      BlockIndicators:
+        simple: "True"
+      ClearUserSessions:
+        simple: "False"
+      FileContainment:
+        simple: "False"
+      FileRemediation:
+        simple: Quarantine
+      HostAutoContainment:
+        simple: "False"
+      IAMUserDomain:
+        simple: '@demisto.com'
+      IP:
+        complex:
+          root: ImpossibleTraveler.Events
+          filters:
+          - - operator: notIn
+              left:
+                value:
+                  simple: ImpossibleTraveler.Events.ip
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.WhitelistedIPs
+                iscontext: true
+              ignorecase: true
+          - - operator: in
+              left:
+                value:
+                  simple: ImpossibleTraveler.Events.Country
+                iscontext: true
+              right:
+                value:
+                  simple: Impossible Traveler Alert Validation.Answers.0
+                iscontext: true
+              ignorecase: true
+          accessor: ip
+          transformers:
+          - operator: uniq
+      UserContainment:
+        simple: "False"
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 3090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "104_110_#default#": 0.56,
+      "104_117_yes": 0.51,
+      "114_68_#default#": 0.47,
+      "114_70_Approved": 0.18,
+      "63_106_#default#": 0.68,
+      "63_84_yes": 0.4,
+      "67_32_#default#": 0.45,
+      "67_70_yes": 0.1,
+      "68_32_#default#": 0.47,
+      "68_67_yes": 0.55,
+      "84_68_#default#": 0.46
+    },
+    "paper": {
+      "dimensions": {
+        "height": 3355,
+        "width": 1700,
+        "x": -410,
+        "y": 190
+      }
+    }
+  }
+inputs:
+- key: MaxMilesPerHourAllowed
+  value:
+    simple: "400"
+  required: false
+  description: The maximum miles per hour that is considered reasonable. If the geographical distance and difference in time between logins is greater than this value, the user will be considered an impossible traveler.
+  playbookInputQuery:
+- key: WhitelistedIPs
+  value: {}
+  required: false
+  description: A comma separated list of IP addresses that are allowed to be used across long distances.
+  playbookInputQuery:
+- key: ContactUserManager
+  value:
+    simple: "True"
+  required: false
+  description: Whether to ask the user manager for the legitimacy of the login events, in case of an alleged impossible traveler.
+  playbookInputQuery:
+- key: UserManagerEmail
+  value:
+    simple: poc@demistodev.com
+  required: false
+  description: The user's manager email address.
+  playbookInputQuery:
+- key: AutoContainment
+  value:
+    simple: "False"
+  required: false
+  description: Whether to execute auto containment.
+  playbookInputQuery:
+- key: AbuseIPDBThreshold
+  value:
+    simple: "80"
+  required: false
+  description: The score needed from AbuseIPDB to consider IP address as malicious.
+  playbookInputQuery:
+outputs:
+- contextPath: Account.Email.Address
+  description: The email address object associated with the Account.
+  type: string
+- contextPath: DBotScore
+  description: Indicator, Score, Type, Vendor.
+  type: unknown
+- contextPath: Account.ID
+  description: The unique Account DN (Distinguished Name).
+  type: string
+- contextPath: Account.Username
+  description: The username of the Account.
+  type: string
+- contextPath: Account.Email
+  description: The email address associated with the Account.
+- contextPath: Account.Type
+  description: The type of the Account entity.
+  type: string
+- contextPath: Account.Groups
+  description: The groups that the Account is a part of.
+- contextPath: Account
+  description: Account object
+  type: unknown
+- contextPath: Account.DisplayName
+  description: The display name of the Account.
+  type: string
+- contextPath: Account.Manager
+  description: The manager of the Account.
+  type: string
+- contextPath: DBotScore.Indicator
+  description: The indicator value.
+  type: string
+- contextPath: DBotScore.Type
+  description: The indicator's type.
+  type: string
+- contextPath: DBotScore.Vendor
+  description: The indicator's vendor.
+  type: string
+- contextPath: DBotScore.Score
+  description: The indicator's score.
+  type: number
+- contextPath: IP
+  description: The IP objects.
+  type: unknown
+- contextPath: Endpoint
+  description: The Endpoint's object.
+  type: unknown
+- contextPath: Endpoint.Hostname
+  description: The hostname to enrich.
+  type: string
+- contextPath: Endpoint.OS
+  description: The Endpoint OS.
+  type: string
+- contextPath: Endpoint.IP
+  description: The list of Endpoint IP addresses.
+- contextPath: Endpoint.MAC
+  description: The list of Endpoint MAC addresses.
+- contextPath: Endpoint.Domain
+  description: The domain name of the Endpoint.
+  type: string
+tests:
+- No tests (auto formatted)
+marketplaces: ["marketplacev2"]
+fromversion: 6.6.0

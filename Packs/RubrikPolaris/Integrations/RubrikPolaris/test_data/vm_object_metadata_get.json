@@ -1,0 +1,325 @@
+{
+  "empty_response": {
+    "data": {}
+  },
+  "raw_response": {
+    "data": {
+      "vSphereDetailData": {
+        "id": "e060116b-f9dc-56a1-82a6-1b968d2f6cef",
+        "authorizedOperations": [
+          "ExportFiles",
+          "ManageProtection",
+          "CancelRunningActivity",
+          "CategoryProtection",
+          "CategoryRecovery",
+          "ConfigureDataClassGlobal",
+          "DeleteReport",
+          "ExportDataClassGlobal",
+          "RefreshDataSource",
+          "RestoreToOrigin",
+          "ViewAuditLog",
+          "TakeOnDemandSnapshot",
+          "ViewNonSystemEvent",
+          "ViewSystemEvent",
+          "CategoryViewDataSource",
+          "DeleteSnapshot",
+          "DownloadFromArchivalLocation",
+          "ModifyReport",
+          "ViewDataClassGlobal",
+          "ViewInventory",
+          "CreateReport",
+          "Download",
+          "ExportSnapshots",
+          "Mount",
+          "ProvisionOnInfrastructure",
+          "ViewReport"
+        ],
+        "name": "Kali-VM",
+        "isRelic": true,
+        "effectiveSlaDomain": {
+          "id": "DO_NOT_PROTECT",
+          "name": "DO_NOT_PROTECT"
+        },
+        "effectiveSlaSourceObject": {
+          "fid": "e060116b-f9dc-56a1-82a6-1b968d2f6cef",
+          "name": "Kali-VM",
+          "objectType": "VmwareVirtualMachine"
+        },
+        "pendingSla": null,
+        "protectionDate": "2020-02-12T20:25:33.000Z",
+        "reportSnappable": {
+          "id": "VirtualMachine:::ae4484c6-b4c0-4ce8-b2ba-206a4184540b-vm-521",
+          "logicalBytes": 721554505728,
+          "physicalBytes": 4937227591,
+          "archiveStorage": 0
+        },
+        "cluster": {
+          "id": "4d4a41d5-8910-4e4d-9dca-0798f5fc6d61",
+          "name": "sand2-rbk01",
+          "status": "Disconnected",
+          "version": "6.0.0-p1-12566",
+          "lastConnectionTime": null,
+          "defaultAddress": null,
+          "clusterNodeConnection": {
+            "nodes": []
+          },
+          "state": {
+            "connectedState": "Disconnected",
+            "clusterRemovalState": "REGISTERED"
+          },
+          "passesConnectivityCheck": null,
+          "globalManagerConnectivityStatus": null,
+          "connectivityLastUpdated": null
+        },
+        "primaryClusterLocation": {
+          "id": "4d4a41d5-8910-4e4d-9dca-0798f5fc6d61",
+          "name": "sand2-rbk01"
+        },
+        "arrayIntegrationEnabled": false,
+        "snapshotConsistencyMandate": "Unknown",
+        "agentStatus": {
+          "agentStatus": "Unregistered"
+        },
+        "preBackupScript": null,
+        "postBackupScript": null,
+        "postSnapScript": null,
+        "logicalPath": [
+          {
+            "fid": "68e197e7-b3c8-58ce-bf16-2fe9a8349fa6",
+            "objectType": "VSphereDatacenter",
+            "name": "Sandbox-2 Datacenter"
+          },
+          {
+            "fid": "02e13127-9811-593a-9abb-d937d9aad3bc",
+            "objectType": "VSphereVCenter",
+            "name": "sand2-vcsa.rubrikdemo.com"
+          }
+        ],
+        "physicalPath": [
+          {
+            "fid": "cc03bc07-be88-5cde-9c92-5ffab30b4baf",
+            "objectType": "VSphereHost",
+            "name": "sand2-esx02.rubrikdemo.com"
+          },
+          {
+            "fid": "6540fba8-9014-5a03-b7ba-8f25dac1f72c",
+            "objectType": "VSphereComputeCluster",
+            "name": "Sandbox-2 Cluster"
+          },
+          {
+            "fid": "68e197e7-b3c8-58ce-bf16-2fe9a8349fa6",
+            "objectType": "VSphereDatacenter",
+            "name": "Sandbox-2 Datacenter"
+          },
+          {
+            "fid": "02e13127-9811-593a-9abb-d937d9aad3bc",
+            "objectType": "VSphereVCenter",
+            "name": "sand2-vcsa.rubrikdemo.com"
+          }
+        ],
+        "vsphereTagPath": [
+          {
+            "fid": "02e13127-9811-593a-9abb-d937d9aad3bc",
+            "objectType": "VSphereVCenter",
+            "name": "sand2-vcsa.rubrikdemo.com"
+          }
+        ],
+        "oldestSnapshot": {
+          "id": "43a7562f-d1fa-5889-9c50-b3e9b626ce6f",
+          "date": "2019-04-24T16:21:12.000Z",
+          "isIndexed": true
+        },
+        "totalSnapshots": {
+          "count": 42
+        },
+        "replicatedObjects": [
+          {
+            "id": "e060116b-f9dc-56a1-82a6-1b968d2f6cef",
+            "primaryClusterLocation": {
+              "id": "4d4a41d5-8910-4e4d-9dca-0798f5fc6d61",
+              "name": "sand2-rbk01"
+            },
+            "cluster": {
+              "name": "sand2-rbk01",
+              "id": "4d4a41d5-8910-4e4d-9dca-0798f5fc6d61"
+            }
+          }
+        ],
+        "newestArchivedSnapshot": null,
+        "newestReplicatedSnapshot": {
+          "id": "0a5f9db0-57af-5753-a67a-03b55a779cf4",
+          "date": "2020-02-12T14:00:36.000Z",
+          "isIndexed": true,
+          "replicationLocations": []
+        },
+        "newestSnapshot": {
+          "id": "0a5f9db0-57af-5753-a67a-03b55a779cf4",
+          "date": "2020-02-12T14:00:36.000Z",
+          "isIndexed": true
+        },
+        "onDemandSnapshotCount": 0,
+        "vmwareToolsInstalled": false,
+        "cdmLink": "https:///web/bin/index.html#/object_details/vmware/VirtualMachine:::ae4484c6-b4c0-4ce8-b2ba-206a4184540b-vm-521"
+      }
+    }
+  },
+  "outputs": {
+    "id": "e060116b-f9dc-56a1-82a6-1b968d2f6cef",
+    "metadata": {
+      "authorizedOperations": [
+        "ExportFiles",
+        "ManageProtection",
+        "CancelRunningActivity",
+        "CategoryProtection",
+        "CategoryRecovery",
+        "ConfigureDataClassGlobal",
+        "DeleteReport",
+        "ExportDataClassGlobal",
+        "RefreshDataSource",
+        "RestoreToOrigin",
+        "ViewAuditLog",
+        "TakeOnDemandSnapshot",
+        "ViewNonSystemEvent",
+        "ViewSystemEvent",
+        "CategoryViewDataSource",
+        "DeleteSnapshot",
+        "DownloadFromArchivalLocation",
+        "ModifyReport",
+        "ViewDataClassGlobal",
+        "ViewInventory",
+        "CreateReport",
+        "Download",
+        "ExportSnapshots",
+        "Mount",
+        "ProvisionOnInfrastructure",
+        "ViewReport"
+      ],
+      "name": "Kali-VM",
+      "isRelic": true,
+      "effectiveSlaDomain": {
+        "id": "DO_NOT_PROTECT",
+        "name": "DO_NOT_PROTECT"
+      },
+      "effectiveSlaSourceObject": {
+        "fid": "e060116b-f9dc-56a1-82a6-1b968d2f6cef",
+        "name": "Kali-VM",
+        "objectType": "VmwareVirtualMachine"
+      },
+      "pendingSla": null,
+      "protectionDate": "2020-02-12T20:25:33.000Z",
+      "reportSnappable": {
+        "id": "VirtualMachine:::ae4484c6-b4c0-4ce8-b2ba-206a4184540b-vm-521",
+        "logicalBytes": 721554505728,
+        "physicalBytes": 4937227591,
+        "archiveStorage": 0
+      },
+      "cluster": {
+        "id": "4d4a41d5-8910-4e4d-9dca-0798f5fc6d61",
+        "name": "sand2-rbk01",
+        "status": "Disconnected",
+        "version": "6.0.0-p1-12566",
+        "lastConnectionTime": null,
+        "defaultAddress": null,
+        "clusterNodeConnection": {
+          "nodes": []
+        },
+        "state": {
+          "connectedState": "Disconnected",
+          "clusterRemovalState": "REGISTERED"
+        },
+        "passesConnectivityCheck": null,
+        "globalManagerConnectivityStatus": null,
+        "connectivityLastUpdated": null
+      },
+      "primaryClusterLocation": {
+        "id": "4d4a41d5-8910-4e4d-9dca-0798f5fc6d61",
+        "name": "sand2-rbk01"
+      },
+      "arrayIntegrationEnabled": false,
+      "snapshotConsistencyMandate": "Unknown",
+      "agentStatus": {
+        "agentStatus": "Unregistered"
+      },
+      "preBackupScript": null,
+      "postBackupScript": null,
+      "postSnapScript": null,
+      "logicalPath": [
+        {
+          "fid": "68e197e7-b3c8-58ce-bf16-2fe9a8349fa6",
+          "objectType": "VSphereDatacenter",
+          "name": "Sandbox-2 Datacenter"
+        },
+        {
+          "fid": "02e13127-9811-593a-9abb-d937d9aad3bc",
+          "objectType": "VSphereVCenter",
+          "name": "sand2-vcsa.rubrikdemo.com"
+        }
+      ],
+      "physicalPath": [
+        {
+          "fid": "cc03bc07-be88-5cde-9c92-5ffab30b4baf",
+          "objectType": "VSphereHost",
+          "name": "sand2-esx02.rubrikdemo.com"
+        },
+        {
+          "fid": "6540fba8-9014-5a03-b7ba-8f25dac1f72c",
+          "objectType": "VSphereComputeCluster",
+          "name": "Sandbox-2 Cluster"
+        },
+        {
+          "fid": "68e197e7-b3c8-58ce-bf16-2fe9a8349fa6",
+          "objectType": "VSphereDatacenter",
+          "name": "Sandbox-2 Datacenter"
+        },
+        {
+          "fid": "02e13127-9811-593a-9abb-d937d9aad3bc",
+          "objectType": "VSphereVCenter",
+          "name": "sand2-vcsa.rubrikdemo.com"
+        }
+      ],
+      "vsphereTagPath": [
+        {
+          "fid": "02e13127-9811-593a-9abb-d937d9aad3bc",
+          "objectType": "VSphereVCenter",
+          "name": "sand2-vcsa.rubrikdemo.com"
+        }
+      ],
+      "oldestSnapshot": {
+        "id": "43a7562f-d1fa-5889-9c50-b3e9b626ce6f",
+        "date": "2019-04-24T16:21:12.000Z",
+        "isIndexed": true
+      },
+      "totalSnapshots": {
+        "count": 42
+      },
+      "replicatedObjects": [
+        {
+          "id": "e060116b-f9dc-56a1-82a6-1b968d2f6cef",
+          "primaryClusterLocation": {
+            "id": "4d4a41d5-8910-4e4d-9dca-0798f5fc6d61",
+            "name": "sand2-rbk01"
+          },
+          "cluster": {
+            "name": "sand2-rbk01",
+            "id": "4d4a41d5-8910-4e4d-9dca-0798f5fc6d61"
+          }
+        }
+      ],
+      "newestArchivedSnapshot": null,
+      "newestReplicatedSnapshot": {
+        "id": "0a5f9db0-57af-5753-a67a-03b55a779cf4",
+        "date": "2020-02-12T14:00:36.000Z",
+        "isIndexed": true,
+        "replicationLocations": []
+      },
+      "newestSnapshot": {
+        "id": "0a5f9db0-57af-5753-a67a-03b55a779cf4",
+        "date": "2020-02-12T14:00:36.000Z",
+        "isIndexed": true
+      },
+      "onDemandSnapshotCount": 0,
+      "vmwareToolsInstalled": false,
+      "cdmLink": "https:///web/bin/index.html#/object_details/vmware/VirtualMachine:::ae4484c6-b4c0-4ce8-b2ba-206a4184540b-vm-521"
+    }
+  }
+}
