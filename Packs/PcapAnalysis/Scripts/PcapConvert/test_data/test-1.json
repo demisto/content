@@ -12,9 +12,9 @@
             "_tag": [],
             "_time": "2022-03-21T04:32:52.000Z",
             "_vendor": "PANW",
-            "dest_ip": "8.8.8.8",
+            "dest_ip": "x.x.x.x",
             "pcap": "AQAAUwAAAIAQxGQh8AGxEGI3//QAAAAAAA4AIgApAFMACAUAOPheywbPAAwpprhVCABFAABFP80AAIARIBvAqAoICAgICP/8ADUAMWD/wagBAAABAAAAAAAACWtlZXBhbGl2ZQlzb2Z0ZXRoZXIDb3JnAAABAAEwXHxkXH0YyAk=",
-            "source_ip": "192.168.10.8"
+            "source_ip": "x.x.x.x"
         },
         "path": "pcap",
         "pcap_type": "auto",
@@ -26,9 +26,9 @@
             "_tag": [],
             "_time": "2022-03-21T04:32:52.000Z",
             "_vendor": "PANW",
-            "dest_ip": "8.8.8.8",
+            "dest_ip": "x.x.x.x",
             "pcap": "obLD1AACAAQAAAAAAAAAAAAA//8AAAABYjf/9AAAAAAAAABTAAAAUzj4XssGzwAMKaa4VQgARQAART/NAACAESAbwKgKCAgICAj//AA1ADFg/8GoAQAAAQAAAAAAAAlrZWVwYWxpdmUJc29mdGV0aGVyA29yZwAAAQAB",
-            "source_ip": "192.168.10.8"
+            "source_ip": "x.x.x.x"
         }
     }, {
         "value": {
@@ -38,9 +38,9 @@
             "_tag": [],
             "_time": "2022-03-21T04:32:52.000Z",
             "_vendor": "PANW",
-            "dest_ip": "8.8.8.8",
+            "dest_ip": "x.x.x.x",
             "pcap": "AQAAUwAAAIAQxGQh8AGxEGI3//QAAAAAAA4AIgApAFMACAUAOPheywbPAAwpprhVCABFAABFP80AAIARIBvAqAoICAgICP/8ADUAMWD/wagBAAABAAAAAAAACWtlZXBhbGl2ZQlzb2Z0ZXRoZXIDb3JnAAABAAEwXHxkXH0YyAk=",
-            "source_ip": "192.168.10.8"
+            "source_ip": "x.x.x.x"
         },
         "path": "pcap,pcap-new",
         "pcap_type": "auto",
@@ -52,9 +52,9 @@
             "_tag": [],
             "_time": "2022-03-21T04:32:52.000Z",
             "_vendor": "PANW",
-            "dest_ip": "8.8.8.8",
+            "dest_ip": "x.x.x.x",
             "pcap": "AQAAUwAAAIAQxGQh8AGxEGI3//QAAAAAAA4AIgApAFMACAUAOPheywbPAAwpprhVCABFAABFP80AAIARIBvAqAoICAgICP/8ADUAMWD/wagBAAABAAAAAAAACWtlZXBhbGl2ZQlzb2Z0ZXRoZXIDb3JnAAABAAEwXHxkXH0YyAk=",
-            "source_ip": "192.168.10.8",
+            "source_ip": "x.x.x.x",
             "pcap-new": "obLD1AACAAQAAAAAAAAAAAAA//8AAAABYjf/9AAAAAAAAABTAAAAUzj4XssGzwAMKaa4VQgARQAART/NAACAESAbwKgKCAgICAj//AA1ADFg/8GoAQAAAQAAAAAAAAlrZWVwYWxpdmUJc29mdGV0aGVyA29yZwAAAQAB"
         }
     }, {

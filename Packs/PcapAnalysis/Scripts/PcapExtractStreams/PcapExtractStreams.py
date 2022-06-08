@@ -506,32 +506,35 @@ def main():
     filter_keys = argToList(args.get('filter_keys'))
 
     server_ports: List[Tuple[int, int]] = []
-    for range_str in argToList(args.get('server_ports') or '1-49151'):
-        port_range = range_str.split('-')
-        if len(port_range) == 1:
-            server_ports.append(((int(port_range[0].strip())), (int(port_range[0].strip()))))
-        elif len(port_range) == 2:
-            server_ports.append(((int(port_range[0].strip())), (int(port_range[1].strip()))))
+    try:
+        for range_str in argToList(args.get('server_ports') or '1-49151'):
+            port_range = range_str.split('-')
+            if len(port_range) == 1:
+                server_ports.append(((int(port_range[0].strip())), (int(port_range[0].strip()))))
+            elif len(port_range) == 2:
+                server_ports.append(((int(port_range[0].strip())), (int(port_range[1].strip()))))
+            else:
+                raise ValueError(f'Invalid port range: {range_str}')
+
+        proc = MainProcess(pcap_type=pcap_type,
+                        rsa_decrypt_key=base64.b64decode(rsa_decrypt_key_base64.encode()),
+                        wpa_password=wpa_password,
+                        pcap_filter=pcap_filter,
+                        bin2txt_mode=bin2txt_mode,
+                        filter_keys=filter_keys,
+                        error_action=error_action,
+                        server_ports=server_ports)
+
+        if path:
+            key_tree, repl_name = split_context_path(path)
+            proc.extract_and_replace(value, key_tree, repl_name)
         else:
-            raise ValueError(f'Invalid port range: {range_str}')
+            value = proc.make_streams(value)
 
-    proc = MainProcess(pcap_type=pcap_type,
-                       rsa_decrypt_key=base64.b64decode(rsa_decrypt_key_base64.encode()),
-                       wpa_password=wpa_password,
-                       pcap_filter=pcap_filter,
-                       bin2txt_mode=bin2txt_mode,
-                       filter_keys=filter_keys,
-                       error_action=error_action,
-                       server_ports=server_ports)
-
-    if path:
-        key_tree, repl_name = split_context_path(path)
-        proc.extract_and_replace(value, key_tree, repl_name)
-    else:
-        value = proc.make_streams(value)
-
-    return_results(value)
-
+        return_results(value)
+    
+    except Exception as e:
+        return_error(f'Failed to extract streams. Error: {str(e)}')
 
 if __name__ in ('__main__', 'builtin', 'builtins'):
     main()
