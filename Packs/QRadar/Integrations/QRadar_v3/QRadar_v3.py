@@ -70,6 +70,7 @@ MIRROR_DIRECTION: Dict[str, Optional[str]] = {
 }
 MIRRORED_OFFENSES_QUERIED_CTX_KEY = 'mirrored_offenses_queried'
 MIRRORED_OFFENSES_FINISHED_CTX_KEY = 'mirrored_offenses_finished'
+LAST_MIRROR_KEY = 'last_mirror_update'
 UTC_TIMEZONE = pytz.timezone('utc')
 ID_QUERY_REGEX = re.compile(r'(?:\s+|^)id((\s)*)>(=?)((\s)*)((\d)+)(?:\s+|$)')
 ASCENDING_ID_ORDER = '+id'
@@ -662,7 +663,11 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-def insert_to_updated_context(context_data: dict, updated_context_data: dict, ids: list = None, should_update_last_fetch: bool = False):
+def insert_to_updated_context(context_data: dict,
+                              updated_context_data: dict,
+                              ids: list = None,
+                              should_update_last_fetch: bool = False,
+                              should_update_last_mirror: bool = False,):
     if not ids:
         return updated_context_data
     new_context_data = updated_context_data.copy()
@@ -676,10 +681,16 @@ def insert_to_updated_context(context_data: dict, updated_context_data: dict, id
     if should_update_last_fetch and LAST_FETCH_KEY in context_data:
         new_context_data.update({LAST_FETCH_KEY: int(context_data.get(LAST_FETCH_KEY, '0'))})
 
+    if should_update_last_mirror and LAST_MIRROR_KEY in context_data:
+        new_context_data.update({LAST_MIRROR_KEY: int(context_data.get(LAST_MIRROR_KEY, '0'))})
     return new_context_data
 
 
-def safely_update_context_data(context_data: dict, version: Any, ids: list = None, should_update_last_fetch: bool = False):
+def safely_update_context_data(context_data: dict,
+                               version: Any,
+                               ids: list = None,
+                               should_update_last_fetch: bool = False,
+                               should_update_last_mirror: bool = False):
     """Safely updates context
 
     Args:
@@ -693,8 +704,8 @@ def safely_update_context_data(context_data: dict, version: Any, ids: list = Non
 
     Returns:
     """
-    print_debug_msg(f'Attempting to update context data after version {version}, '
-                    f'context data is {context_data}')
+    print_debug_msg(f'Attempting to update context data after version {version}')
+    print_context_data_stats(context_data, 'Safely update context')
     new_context_data, new_version = get_integration_context_with_version()
     if new_version == version:
         try:
@@ -709,7 +720,8 @@ def safely_update_context_data(context_data: dict, version: Any, ids: list = Non
         context_data = insert_to_updated_context(context_data,
                                                  new_context_data,
                                                  ids,
-                                                 should_update_last_fetch)
+                                                 should_update_last_fetch,
+                                                 should_update_last_mirror)
         try:
             set_integration_context(context_data, version=version)
             print_debug_msg(f'Updated integration context after version {new_version=} of data with {version=}.')
@@ -1291,7 +1303,7 @@ def test_module_command(client: Client, params: Dict) -> str:
     DEFAULT_EVENTS_TIMEOUT = 1
     try:
         ctx = get_integration_context()
-        print_mirror_events_stats(ctx, "Test Module")
+        print_context_data_stats(ctx, "Test Module")
         is_long_running = params.get('longRunning')
         mirror_options = params.get('mirror_options', DEFAULT_MIRRORING_DIRECTION)
         mirror_direction = MIRROR_DIRECTION.get(mirror_options)
@@ -1397,7 +1409,7 @@ def create_search_with_retry(client: Client, fetch_mode: str, offense: Dict, eve
             time.sleep(FAILURE_SLEEP)
     context_data[MIRRORED_OFFENSES_QUERIED_CTX_KEY][offense_id] = -1
     safely_update_context_data(context_data, ctx_version, ids=[offense_id])
-    print_mirror_events_stats(context_data, 'long-running')
+    print_context_data_stats(context_data, 'long-running')
     print_debug_msg(f'Could not create search query for {offense_id}. '
                     f'Adding to mirroring queue.')
     return None
@@ -1466,7 +1478,7 @@ def poll_offense_events_with_retry(client: Client, search_id: str, offense_id: i
     # if we didn't succeed to poll events for some reason, add it to the mirroring queue
     context_data[MIRRORED_OFFENSES_QUERIED_CTX_KEY][offense_id] = search_id
     safely_update_context_data(context_data, ctx_version, should_update_last_fetch=False, ids=[offense_id])
-    print_mirror_events_stats(context_data, 'long-running')
+    print_context_data_stats(context_data, 'long-running')
     print_debug_msg(f'Could not fetch events for offense ID: {offense_id}, returning empty events array. '
                     f'Adding to mirroring queue')
     return [], failure_message
@@ -1650,7 +1662,7 @@ def create_incidents_from_offenses(offenses: List[Dict], incident_type: Optional
     } for offense in offenses]
 
 
-def print_mirror_events_stats(context_data: dict, stage: str) -> Set[str]:
+def print_context_data_stats(context_data: dict, stage: str) -> Set[str]:
     """Print debug message with information about mirroring events.
 
     Args:
@@ -1668,14 +1680,14 @@ def print_mirror_events_stats(context_data: dict, stage: str) -> Set[str]:
     print_debug_msg(f'{finished_queries=}')
     print_debug_msg(f'{waiting_for_update=}')
     last_fetch_key = context_data.get(LAST_FETCH_KEY, 'Missing')
-    last_mirror_update = context_data.get('last_mirror_update', 0)
+    last_mirror_update = context_data.get(LAST_MIRROR_KEY, '0')
     samples = context_data.get('samples', [])
     sample_length = 0
     if samples:
         sample_length = len(samples[0])
     not_updated_ids = list(waiting_for_update.keys())
     finished_queries_ids = list(finished_queries.keys())
-    print_debug_msg(f"Mirror Events Stats: {stage}\n Finished Offenses (id): {finished_queries_ids}"
+    print_debug_msg(f"Context Data Stats: {stage}\n Finished Offenses (id): {finished_queries_ids}"
                     f"\n Offenses ids waiting for update: {not_updated_ids}"
                     f"\n Last Fetch Key {last_fetch_key}, Last mirror update {last_mirror_update}, "
                     f"sample length {sample_length}")
@@ -3090,7 +3102,7 @@ def get_remote_data_command(client: Client, params: Dict[str, Any], args: Dict) 
     context_data, context_version = get_integration_context_with_version()
     events_columns = params.get('events_columns', '')
     events_limit = int(params.get('events_limit') or DEFAULT_EVENTS_LIMIT)
-    print_mirror_events_stats(context_data, f"Starting Get Remote Data For "
+    print_context_data_stats(context_data, f"Starting Get Remote Data For "
                                             f"Offense {str(offense.get('id'))}")
 
     demisto.debug(f'Updating offense. Offense last update was {offense_last_update}')
@@ -3150,7 +3162,7 @@ def get_remote_data_command(client: Client, params: Dict[str, Any], args: Dict) 
         context_data.update({MIRRORED_OFFENSES_FINISHED_CTX_KEY: offenses_finished})
         safely_update_context_data(context_data, context_version, should_update_last_fetch=False, ids=changed_ids_ctx)
 
-        print_mirror_events_stats(context_data, f"Get Remote Data End for id {offense_id}")
+        print_context_data_stats(context_data, f"Get Remote Data End for id {offense_id}")
 
     enriched_offense = enrich_offenses_result(client, offense, ip_enrich, asset_enrich)
 
@@ -3191,10 +3203,9 @@ def add_modified_remote_offenses(client: Client,
     """
     new_context_data = context_data.copy()
     print_debug_msg(f'Saving New Highest ID: {context_data.get(LAST_FETCH_KEY, 0)}')
-    new_context_data.update({'last_mirror_update': current_last_update})
     changed_ids_ctx = []
     if mirror_options == MIRROR_OFFENSE_AND_EVENTS:
-        print_mirror_events_stats(new_context_data, "Get Modified Remote Data - Before update")
+        print_context_data_stats(new_context_data, "Get Modified Remote Data - Before update")
         mirrored_offenses_queries = context_data.get(MIRRORED_OFFENSES_QUERIED_CTX_KEY, {})
         finished_offenses_queue = context_data.get(MIRRORED_OFFENSES_FINISHED_CTX_KEY, {})
         for offense_id, search_id in mirrored_offenses_queries.copy().items():
@@ -3219,10 +3230,10 @@ def add_modified_remote_offenses(client: Client,
 
         new_context_data.update({MIRRORED_OFFENSES_QUERIED_CTX_KEY: mirrored_offenses_queries})
         new_context_data.update({MIRRORED_OFFENSES_FINISHED_CTX_KEY: finished_offenses_queue})
-        new_context_data.update({'last_mirror_update': current_last_update})
+        new_context_data.update({LAST_MIRROR_KEY: current_last_update})
 
-    print_mirror_events_stats(new_context_data, "Get Modified Remote Data - After update")
-    safely_update_context_data(context_data, version, ids=changed_ids_ctx)
+    print_context_data_stats(new_context_data, "Get Modified Remote Data - After update")
+    safely_update_context_data(new_context_data, version, ids=changed_ids_ctx, should_update_last_mirror=True)
     return new_modified_records_ids
 
 
@@ -3266,7 +3277,7 @@ def get_modified_remote_data_command(client: Client, params: Dict[str, str],
     limit: int = int(params.get('mirror_limit', MAXIMUM_MIRROR_LIMIT))
     user_query = params.get('query', '')
     range_ = f'items=0-{limit - 1}'
-    last_update_time = ctx.get('last_mirror_update', 0)
+    last_update_time = ctx.get(LAST_MIRROR_KEY, 0)
     if not last_update_time:
         last_update_time = remote_args.last_update
     last_update = get_time_parameter(last_update_time, epoch_format=True)
@@ -3277,7 +3288,7 @@ def get_modified_remote_data_command(client: Client, params: Dict[str, str],
                                     fields='id,start_time,event_count,last_persisted_time')
     new_modified_records_ids = [str(offense.get('id')) for offense in offenses if 'id' in offense]
     current_last_update = last_update if not offenses else offenses[-1].get('last_persisted_time')
-
+    print_debug_msg(f'Last update: {last_update}, current last update: {current_last_update}')
     events_columns = params.get('events_columns', '')
     events_limit = int(params.get('events_limit') or DEFAULT_EVENTS_LIMIT)
 
@@ -3312,7 +3323,7 @@ def clear_integration_ctx(ctx: dict) -> dict:
             print_debug_msg(f"Could not retrive LAST_FETCH_KEY from {fetch_id_ctx} Setting to 0")
             fetch_id = 0
 
-    last_update_ctx: str = ctx.get('last_mirror_update') or '0'
+    last_update_ctx: str = ctx.get(LAST_MIRROR_KEY) or '0'
     try:
         last_update = str(int(last_update_ctx))
     except ValueError:
@@ -3323,7 +3334,7 @@ def clear_integration_ctx(ctx: dict) -> dict:
             last_update = '0'
 
     return {LAST_FETCH_KEY: fetch_id,
-            'last_mirror_update': last_update,
+            LAST_MIRROR_KEY: last_update,
             MIRRORED_OFFENSES_QUERIED_CTX_KEY: {},
             MIRRORED_OFFENSES_FINISHED_CTX_KEY: {},
             'samples': []}
@@ -3343,7 +3354,7 @@ def change_ctx_to_be_compatible_with_retry() -> None:
     context_data, context_version = get_integration_context_with_version()
     new_ctx = context_data.copy()
     try:
-        print_mirror_events_stats(context_data, "Checking ctx")
+        print_context_data_stats(context_data, "Checking ctx")
         print_debug_msg("Context is with the new mirroring standard")
         extract_works = True
     except Exception as e:
