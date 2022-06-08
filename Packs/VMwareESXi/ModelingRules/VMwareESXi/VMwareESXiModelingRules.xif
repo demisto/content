@@ -32,7 +32,7 @@
 
 [MODEL: dataset="VMware_ ESXi_raw", model=Audit]
 
-| filter _raw_log contains "verbose" or _raw_log contains "vpax" or _raw_log contains "scsiCorrelator" or _raw_log contains "cpu" or _raw_log contains "mark" or _raw_log contains "vmkeventd" or _raw_log contains "vmkdevmgr" or _raw_log contains "lwsmd" or _raw_log contains "smrtd" or _raw_log contains "sysboot" or _raw_log contains "ESXShell" or _raw_log contains "SSH" or _raw_log contains "mark" or _raw_log contains "esxupdate" or _raw_log contains "dhclient-um" 
+ filter _raw_log contains "verbose" or _raw_log contains "vpax" or _raw_log contains "scsiCorrelator" or _raw_log contains "cpu" or _raw_log contains "mark" or _raw_log contains "vmkeventd" or _raw_log contains "vmkdevmgr" or _raw_log contains "lwsmd" or _raw_log contains "smrtd" or _raw_log contains "sysboot" or _raw_log contains "ESXShell" or _raw_log contains "SSH" or _raw_log contains "mark" or _raw_log contains "esxupdate" or _raw_log contains "dhclient-um" 
 // extract message
 | alter message1= arrayindex(regextract(_raw_log ,"opID\=[^\s]+\s([^\"]+)") ,0)
 | alter message2 = arrayindex(regextract(_raw_log ,"\:\s([^\&]+)"),0)
