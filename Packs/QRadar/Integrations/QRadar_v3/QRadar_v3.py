@@ -3219,6 +3219,7 @@ def add_modified_remote_offenses(client: Client,
 
         new_context_data.update({MIRRORED_OFFENSES_QUERIED_CTX_KEY: mirrored_offenses_queries})
         new_context_data.update({MIRRORED_OFFENSES_FINISHED_CTX_KEY: finished_offenses_queue})
+        new_context_data.update({'last_mirror_update': current_last_update})
 
     print_mirror_events_stats(new_context_data, "Get Modified Remote Data - After update")
     safely_update_context_data(context_data, version, ids=changed_ids_ctx)
