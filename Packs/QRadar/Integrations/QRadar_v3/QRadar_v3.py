@@ -678,10 +678,10 @@ def insert_to_updated_context(context_data: dict,
             else:
                 del new_context_data[key][id_]
 
-    if should_update_last_fetch and LAST_FETCH_KEY in context_data:
+    if should_update_last_fetch:
         new_context_data.update({LAST_FETCH_KEY: int(context_data.get(LAST_FETCH_KEY, '0'))})
 
-    if should_update_last_mirror and LAST_MIRROR_KEY in context_data:
+    if should_update_last_mirror:
         new_context_data.update({LAST_MIRROR_KEY: int(context_data.get(LAST_MIRROR_KEY, '0'))})
     return new_context_data
 
@@ -704,6 +704,9 @@ def safely_update_context_data(context_data: dict,
 
     Returns:
     """
+    if not ids and not should_update_last_fetch and not should_update_last_mirror:
+        print_debug_msg('No need to update context, no ids and no last fetch/mirror')
+        return
     print_debug_msg(f'Attempting to update context data after version {version}')
     print_context_data_stats(context_data, 'Safely update context')
     new_context_data, new_version = get_integration_context_with_version()
