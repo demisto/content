@@ -118,7 +118,7 @@ class MimecastGetSiemEvents(IntegrationGetEvents):
                     f'{self.options.limit=} reached. \
                     slicing from {len(logs)=}.'
                 )
-                self.events_from_prev_run = stored[self.options.limit :]
+                self.events_from_prev_run = stored[self.options.limit:]
                 demisto.debug(f'storing {len(self.events_from_prev_run)} siem events for next run')
                 return stored[: self.options.limit]
 
