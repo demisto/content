@@ -2,20 +2,21 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 """Dragos Worldview Integration for XSOAR."""
-import json
+from typing import Dict, Any, Tuple, Callable
 from datetime import datetime, timedelta
-from typing import Any, Dict, Tuple
-
-import dateparser
 import requests
+import json
+import dateparser
 
 # flake8: noqa: F402,F405 lgtm
+
 
 
 STATUS_TO_RETRY = [500, 501, 502, 503, 504]
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # pylint:disable=no-member
+
 
 
 class Client(BaseClient):
@@ -27,7 +28,8 @@ class Client(BaseClient):
             timeout=60,
         )
 
-    def api_request(self, suffix: str, response_type: str = 'json'):
+
+    def api_request(self, suffix: str, response_type: str='json'):
         return self._http_request(
             method="get",
             url_suffix=suffix,
@@ -38,7 +40,8 @@ class Client(BaseClient):
         )
 
 
-def get_report(client: Client, args: Dict[str, any]) -> fileResult:
+
+def get_report(client: Client, args: Dict[str, Any]) -> Dict[str, Any]:
     serial = args.get('serial')
     api_query = 'products' + '/' + serial + '/' + 'report'
 
@@ -46,8 +49,7 @@ def get_report(client: Client, args: Dict[str, any]) -> fileResult:
     file_entry = fileResult(filename='report.pdf', data=file)
     return file_entry
 
-
-def get_csv(client: Client, args: Dict[str, any]) -> fileResult:
+def get_csv(client: Client, args: Dict[str, Any]) -> Dict[str, Any]:
     serial = args.get('serial')
     api_query = 'products' + '/' + serial + '/' + 'csv'
 
@@ -56,8 +58,7 @@ def get_csv(client: Client, args: Dict[str, any]) -> fileResult:
 
     return file_entry
 
-
-def get_stix(client: Client, args: Dict[str, Any]) -> fileResult:
+def get_stix(client: Client, args: Dict[str, Any]) -> Dict[str, Any]:
     serial = args.get('serial')
     api_query = 'products' + '/' + serial + '/' + 'stix2'
 
@@ -66,21 +67,21 @@ def get_stix(client: Client, args: Dict[str, Any]) -> fileResult:
 
     return file_entry
 
-
-def get_indicators(client: Client, args: Dict[str, Any]) -> list:
+def get_indicators(client: Client, args: Dict[str, Any]) -> CommandResults:
     serial = args.get('serial')
     if serial:
         api_query = "indicators?serial%5B%5D=" + serial
     else:
-        max_time = datetime.now() - timedelta(hours=48)
+        time = datetime.now() - timedelta(hours = 48)
         api_query = "indicators?updated_after="
-        api_query = api_query + str(max_time)
+        api_query = api_query + str(time)
         api_query = api_query.replace(":", "%3A")
 
     raw_response = client.api_request(api_query)
     data = raw_response['indicators']
     page_number = 2
     full_response = raw_response
+
 
     while raw_response['total_pages'] != raw_response['page']:
         if serial:
@@ -109,18 +110,12 @@ def get_indicators(client: Client, args: Dict[str, Any]) -> list:
 
 def fetch_incidents(client: Client, last_run: dict, first_fetch: str) -> Tuple[list, dict]:
     if last_run == {}:
-        last_fetch = None
+        last_fetch = dateparser.parse(first_fetch)    
     else:
         last_fetch = last_run.get('time')
-
-    if last_fetch is None:
-        last_fetch = dateparser.parse(first_fetch)
-    else:
         last_fetch = dateparser.parse(last_fetch)
 
     max_time = last_fetch
-    #current_time = datetime.strptime(time, '%Y-%m-%dT%H:%M:%S')
-    #triggered_time = '[{},)'.format(datetime.strftime(time, '%Y-%m-%d %H:%M:%S'))
 
     api_query = "products?updated_after="
     api_query = api_query + str(max_time)
@@ -149,6 +144,8 @@ def fetch_incidents(client: Client, last_run: dict, first_fetch: str) -> Tuple[l
     incidents.reverse()
 
     return incidents, next_run
+
+
 
 
 def main() -> None:
@@ -188,7 +185,7 @@ def main() -> None:
                         "Unknown error. Please verify that the API"
                         f" URL, Token and Key are correctly configured. RAW Error: {err}"
                     )
-                raise DemistoException(f"Failed due to - {message}")
+               raise DemistoException(f"Failed due to - {message}")
         elif command == 'fetch-incidents':
             first_fetch = demisto_params.get('first_fetch', '24 hours').strip()
             incidents, next_run = fetch_incidents(
