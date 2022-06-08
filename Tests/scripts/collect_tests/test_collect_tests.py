@@ -23,12 +23,14 @@ class ChangeCWD:
         chdir(self.current)
 
 
+@pytest.mark.parametrize('run_master', (True, False))
+@pytest.mark.parametrize('run_nightly', (True, False))
 @pytest.mark.parametrize('collector,expected_tests', (
-        (BranchTestCollector('master', MarketplaceVersions.XSOAR), ()),
-        (BranchTestCollector('master', MarketplaceVersions.MarketplaceV2), ()),
+        (BranchTestCollector('master', MarketplaceVersions.XSOAR, service_account=None), ()),
+        (BranchTestCollector('master', MarketplaceVersions.MarketplaceV2, service_account=None), ()),
         (XSOARNightlyTestCollector(), ()),
         (XSIAMNightlyTestCollector(), ())
 ))
-def test_sanity(collector: TestCollector, expected_tests: tuple):
+def test_sanity(collector: TestCollector, expected_tests: tuple, run_master: bool, run_nightly: bool):
     with ChangeCWD(CASE_1):
-        assert not collector.collect()
+        assert not collector.collect(run_nightly, run_master)

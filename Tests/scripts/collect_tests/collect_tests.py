@@ -16,10 +16,10 @@ from demisto_sdk.commands.common.constants import FileType, MarketplaceVersions
 from demisto_sdk.commands.common.tools import find_type_by_path, str2bool, run_command
 from git import Repo
 
-from Tests.Marketplace.marketplace_services import get_last_commit_from_index
 from Tests.scripts.collect_tests.constants import (
     CONTENT_PATH, DEFAULT_MARKETPLACE_WHEN_MISSING, DEFAULT_REPUTATION_TESTS,
-    EXCLUDED_FILES, SKIPPED_CONTENT_ITEMS, XSOAR_SANITY_TEST_NAMES, ARTIFACTS_PATH, ONLY_INSTALL_PACK, OUTPUT_TESTS_FILE,
+    EXCLUDED_FILES, SKIPPED_CONTENT_ITEMS, XSOAR_SANITY_TEST_NAMES, ARTIFACTS_PATH, ONLY_INSTALL_PACK,
+    OUTPUT_TESTS_FILE,
     OUTPUT_PACKS_FILE)
 from Tests.scripts.collect_tests.exceptions import (DeprecatedPackException,
                                                     EmptyMachineListException,
@@ -37,6 +37,12 @@ from Tests.scripts.collect_tests.utils import (ContentItem, Machine,
                                                find_pack_folder)
 
 from logger import logger
+
+
+# from Tests.Marketplace.marketplace_services import get_last_commit_from_index # todo uncomment
+def get_last_commit_from_index(*args, **kwargs):  # todo remove
+    pass
+
 
 IS_GITLAB = False  # todo replace
 PACK_MANAGER = PackManager()
@@ -242,7 +248,7 @@ class ChangeBranch:
 class BranchTestCollector(TestCollector):
     def __init__(self, branch_name: str,
                  marketplace: MarketplaceVersions,
-                 service_account: str):
+                 service_account: Optional[str]):
         super().__init__(marketplace)
         self.branch_name = branch_name
         self.repo = Repo(CONTENT_PATH)
@@ -396,7 +402,7 @@ class BranchTestCollector(TestCollector):
             diff = f'{diff}\n{contrib_diff}'
 
         # diff is formatted as `M  foo.json\n A  bar.py`, turning it into ('foo.json', 'bar.py').
-        return tuple((value.split()[1] for value in diff))
+        return tuple((value.split()[1] for value in filter(None, diff.split('\n'))))
 
 
 class NightlyTestCollector(TestCollector, ABC):
