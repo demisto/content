@@ -261,7 +261,7 @@ def main():
             # This is the call made when pressing the integration Test button.
             res = test_module(client)
             code = client.gclient.response.response.status_code 
-            if code != 200:
+            if code != 200 and code != 404:
                 return_error(f'GDetect server error: {code} {status_msg(code)}')
             return_results(res)
         elif command == 'gdetect-send':
