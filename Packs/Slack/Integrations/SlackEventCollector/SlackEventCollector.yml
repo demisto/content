@@ -29,6 +29,7 @@ configuration:
   type: 0
   defaultvalue: 1000
   required: false
+  additionalinfo: Maximum is 9999.
 - display: First fetch time interval
   name: oldest
   type: 0
