@@ -1,7 +1,7 @@
 Slack logs event collector integration for XSIAM.
 This integration was integrated and tested with version v1 of Slack API.
 
-## Configure Slack Event Collector on Cortex XSOAR
+## Configure Slack Event Collector on Cortex XSIAM
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for Slack Event Collector.
@@ -19,7 +19,7 @@ This integration was integrated and tested with version v1 of Slack API.
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSIAM CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### slack-get-events
 ***
