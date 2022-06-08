@@ -7,15 +7,7 @@ from CommonServerPython import *
 requests.packages.urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
-# BASE_URL = demisto.getParam('url').rstrip('/') + '/'
-# API_TOKEN = demisto.getParam('APItoken') or (demisto.getParam('credentials') or {}).get('password')
-# USERNAME = demisto.getParam('username')
-# PASSWORD = demisto.getParam('password')
 COMMAND_NOT_IMPELEMENTED_MSG = 'Command not implemented'
-#
-# HEADERS = {
-#     'Content-Type': 'application/json',
-# }
 JIRA_INCIDENT_TYPE_NAME = 'Jira Incident'
 ISSUE_INCIDENT_FIELDS = {'issueId': 'The ID of the issue to edit',
                          'summary': 'The summary of the issue.',
@@ -31,7 +23,6 @@ ISSUE_INCIDENT_FIELDS = {'issueId': 'The ID of the issue to edit',
 BASIC_AUTH_ERROR_MSG = "For cloud users: As of June 2019, Basic authentication with passwords for Jira is no" \
                        " longer supported, please use an API Token or OAuth 1.0"
 JIRA_RESOLVE_REASON = 'Issue was marked as "Done"'
-# USE_SSL = not demisto.params().get('insecure', False)
 
 
 class Client(BaseClient):
