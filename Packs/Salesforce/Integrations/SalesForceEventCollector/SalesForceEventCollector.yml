@@ -1,0 +1,89 @@
+commonfields:
+  id: Salesforce Event Collector
+  version: -1
+name: Salesforce Event Collector
+display: Salesforce Event Collector
+category: Analytics & SIEM
+description: Salesforce logs event collector integration for XSIAM.
+configuration:
+- display: Server URL
+  name: url
+  defaultvalue: 'https://um6.salesforce.com'
+  type: 0
+  required: true
+- display: ""
+  displaypassword: Client ID
+  name: client_id
+  type: 9
+  required: true
+  hiddenusername: true
+- display: ""
+  displaypassword: Client Secret
+  name: client_secret
+  type: 9
+  required: true
+  hiddenusername: true
+- display: Username
+  displaypassword: Password
+  name: credentials
+  type: 9
+  required: true
+- display: Query to get Hourly Event Log Files
+  additionalinfo: For more information, visit the Query Hourly Event Log Files documentation https://developer.salesforce.com/docs/atlas.en-us.234.0.api_rest.meta/api_rest/event_log_file_hourly_query.htm
+  name: query
+  defaultvalue: "SELECT+Id+,+EventType+,+Interval+,+LogDate+,+LogFile+,+LogFileLength+FROM+EventLogFile+WHERE+Interval+=+'Hourly'"
+  type: 12
+  required: true
+- display: How many log files to fetch
+  name: files_limit
+  type: 0
+  defaultvalue: 1000
+  required: true
+- display: First fetch time interval
+  name: after
+  type: 0
+  defaultvalue: 3 days
+  required: false
+- display: The product corresponding to the integration that originated the events
+  name: product
+  type: 0
+  defaultvalue: 'event-audit'
+  required: true
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+- display: Trust any certificate (not secure)
+  name: verify
+  type: 8
+  required: false
+script:
+  script: ""
+  type: python
+  commands:
+  - description: Manual command to fetch events.
+    name: salesforce-get-events
+    arguments:
+      - name: files_limit
+        defaultValue: 1
+        description: 'The maximum number of log files to fetch.'
+        required: false
+        isArray: false
+      - auto: PREDEFINED
+        defaultValue: 'False'
+        description: Set this argument to True in order to create events, otherwise the command will only display them.
+        isArray: false
+        name: should_push_events
+        predefined:
+          - 'True'
+          - 'False'
+        required: true
+  dockerimage: demisto/fastapi:1.0.0.29740
+  runonce: false
+  isfetchevents: true
+  subtype: python3
+fromversion: 6.8.0
+marketplaces:
+- marketplacev2
+tests:
+- No tests
