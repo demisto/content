@@ -185,7 +185,7 @@ def main() -> None:
                         "Unknown error. Please verify that the API"
                         f" URL, Token and Key are correctly configured. RAW Error: {err}"
                     )
-               raise DemistoException(f"Failed due to - {message}")
+                raise DemistoException(f"Failed due to - {message}")
         elif command == 'fetch-incidents':
             first_fetch = demisto_params.get('first_fetch', '24 hours').strip()
             incidents, next_run = fetch_incidents(
