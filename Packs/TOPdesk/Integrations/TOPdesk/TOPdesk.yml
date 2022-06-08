@@ -5876,5 +5876,8 @@ script:
   isremotesyncin: true
   isremotesyncout: true
 fromversion: 5.0.0
+defaultclassifier: TOPdesk incident
+defaultmapperin: TOPdesk-incoming-mapper
+defaultmapperout: TOPdesk Outgoing Mapper
 tests:
 - No tests (auto formatted)
