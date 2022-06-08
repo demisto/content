@@ -1,0 +1,30 @@
+comment: List of valid phases from configuration file.
+commonfields:
+  id: 34b9a3de-0fc5-4738-8164-6a0d3a466d0f
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ""
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 5b6d811b-9e3c-4ee0-8927-0b0e1456da26
+    propagationLabels:
+    - all
+    toServerVersion: ""
+dockerimage: demisto/python3:3.10.4.29342
+enabled: true
+engineinfo: {}
+mainengineinfo: {}
+name: UseCasePhaseDisplay
+outputs:
+- contextPath: MyList
+pswd: ""
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- field-display
+- use case
+type: python

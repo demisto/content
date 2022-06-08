@@ -1,0 +1,1418 @@
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ""
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 5b6d811b-9e3c-4ee0-8927-0b0e1456da26
+    propagationLabels:
+    - all
+    toServerVersion: ""
+description: Collection of playbooks to assist with development of use cases
+id: 0a034a0c-9df2-4e7f-8c80-f676e523f8f8
+inputs:
+- description: If this value is blank, this part of the playbook will be skipped.
+    Logic will need to be defined according to your system configuration.
+  key: ExternalTicketId
+  playbookInputQuery: null
+  required: false
+  value: {}
+name: Use Case - Process Development
+outputs: []
+sourceplaybookid: ae122a0c-b633-4ac5-8f85-060e76a5c526
+starttaskid: "0"
+tags:
+- Use Case Development
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "103"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 8dc72879-9891-4fa2-887d-655178fc6d37
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 8dc72879-9891-4fa2-887d-655178fc6d37
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 50
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "92"
+      - "100"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: f1a5e4b4-16ec-40b5-810b-15a8ebe8d50e
+      iscommand: false
+      name: Build Base
+      type: title
+      version: -1
+    taskid: f1a5e4b4-16ec-40b5-810b-15a8ebe8d50e
+    timertriggers:
+    - action: start
+      fieldname: usecasedevelopmenttimer
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 1710
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "98"
+      - "105"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: f89cec8c-f18a-442f-89d2-21cfd1b17c05
+      iscommand: false
+      name: Design Playbooks
+      type: title
+      version: -1
+    taskid: f89cec8c-f18a-442f-89d2-21cfd1b17c05
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 2700
+        }
+      }
+  "9":
+    evidencedata:
+      customfields: {}
+      description:
+        simple: Main Playbook
+    form:
+      description: Provide title for main playbook
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: usecasemainplaybook
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: Enter main playbook title
+        options: []
+        optionsarg: []
+        placeholder: Company - M - Name
+        readonly: false
+        required: false
+        tooltip: ""
+        type: shortText
+      sender: ""
+      title: Build Main Playbook
+      totalanswers: 0
+    id: "9"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc: null
+      body: null
+      cc: null
+      format: ""
+      methods: []
+      subject: null
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: true
+        retriescount: 2
+        retriesinterval: 360
+      to: null
+    nexttasks:
+      '#none#':
+      - "11"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      title:
+        simple: Playbooks - Build Main Playbook
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Add a new To-Do task to the specified incident.
+      id: 7509049f-62c6-4623-807f-cbb93be0f852
+      iscommand: false
+      name: Playbooks - Build Main Playbook
+      type: collection
+      version: -1
+    taskid: 7509049f-62c6-4623-807f-cbb93be0f852
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3020
+        }
+      }
+  "11":
+    id: "11"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "96"
+      - "106"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 1dcef9b8-7912-4686-815d-e73a6135cfcb
+      iscommand: false
+      name: Internal Testing
+      type: title
+      version: -1
+    taskid: 1dcef9b8-7912-4686-815d-e73a6135cfcb
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 3195
+        }
+      }
+  "16":
+    evidencedata:
+      customfields: {}
+      description:
+        simple: Sub Playbooks
+    form:
+      description: Provide title(s) for sub playbook(s)
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: usecasesubplaybooks
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: Enter sub playbook title(s)
+        options: []
+        optionsarg: []
+        placeholder: Company - S - Name
+        readonly: false
+        required: false
+        tooltip: ""
+        type: shortText
+      sender: ""
+      title: Build Sub Playbook(s)
+      totalanswers: 0
+    id: "16"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc: null
+      body: null
+      cc: null
+      format: ""
+      methods: []
+      subject: null
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: true
+        retriescount: 2
+        retriesinterval: 360
+      to: null
+    nexttasks:
+      '#none#':
+      - "11"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      title:
+        simple: Playbooks - Build Main Playbook
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Add a new To-Do task to the specified incident.
+      id: 87e8d7f9-1767-4967-8b17-0352adb52fb7
+      iscommand: false
+      name: Playbooks - Build Sub Playbook(s)
+      type: collection
+      version: -1
+    taskid: 87e8d7f9-1767-4967-8b17-0352adb52fb7
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3020
+        }
+      }
+  "17":
+    id: "17"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "94"
+      - "104"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: ab902cb2-af51-4665-864e-f944d29befe2
+      iscommand: false
+      name: Integrations
+      type: title
+      version: -1
+    taskid: ab902cb2-af51-4665-864e-f944d29befe2
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 2205
+        }
+      }
+  "42":
+    id: "42"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: f5eaa774-489f-4e38-8826-b0310bda801a
+      iscommand: false
+      name: End
+      type: title
+      version: -1
+    taskid: f5eaa774-489f-4e38-8826-b0310bda801a
+    timertriggers:
+    - action: pause
+      fieldname: usecasedevelopmenttimer
+    - action: pause
+      fieldname: usecasecurrentphasetimer
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 3865
+        }
+      }
+  "50":
+    id: "50"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "51"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |
+        Retrieves the current date and time.
+      id: 777a8ec2-d17f-4a1e-8b45-900af28e912a
+      iscommand: false
+      name: Current date and time
+      scriptName: GetTime
+      type: regular
+      version: -1
+    taskid: 777a8ec2-d17f-4a1e-8b45-900af28e912a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 515
+        }
+      }
+  "51":
+    id: "51"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "53"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      complexity:
+        simple: ${incident.usecasecomplexity}
+      filter:
+        simple: development
+      start_date:
+        complex:
+          root: TimeNowUnix
+          transformers:
+          - operator: LastArrayElement
+          - operator: TimeStampToDate
+          - args:
+              format:
+                value:
+                  simple: 01/02/2006
+            operator: toString
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Calculates the projected dates for phase completion of a use case
+      id: ebbe3c3d-68ca-4dec-81b6-a4abd268f8bc
+      iscommand: false
+      name: Set remaining dates starting today
+      scriptName: CalculateUseCaseDates
+      type: regular
+      version: -1
+    taskid: ebbe3c3d-68ca-4dec-81b6-a4abd268f8bc
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 690
+        }
+      }
+  "52":
+    id: "52"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "50"
+      - "89"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: de73cf11-1a72-4e50-8c1c-5b72f44dd62e
+      iscommand: false
+      name: Set Development Timer
+      type: title
+      version: -1
+    taskid: de73cf11-1a72-4e50-8c1c-5b72f44dd62e
+    timertriggers:
+    - action: pause
+      fieldname: usecasecustomerdesigntimer
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 370
+        }
+      }
+  "53":
+    id: "53"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "55"
+      - "57"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      sla:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: incident.processdevelopmentdates.developmentend
+              operator: isNotEmpty
+          root: incident.processdevelopmentdates
+          transformers:
+          - args:
+              field:
+                value:
+                  simple: developmentend
+            operator: getField
+          - operator: LastArrayElement
+          - args:
+              add_utc_timezone: {}
+              dayfirst:
+                value:
+                  simple: "false"
+              fuzzy: {}
+              yearfirst:
+                value:
+                  simple: "true"
+            operator: DateStringToISOFormat
+      slaField:
+        simple: usecasedevelopmenttimer
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: 37165fd6-dcf6-45dd-857a-6ab34ad52c1c
+      iscommand: true
+      name: Update phase SLA
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 37165fd6-dcf6-45dd-857a-6ab34ad52c1c
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 865
+        }
+      }
+  "54":
+    id: "54"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      sla:
+        simple: ${incident.usecasedevelopmenttimer.dueDate}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: 8fd3ccec-70ae-43b6-8494-8318b16f7c88
+      iscommand: true
+      name: Update incident SLA to reflect new phase SLA
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 8fd3ccec-70ae-43b6-8494-8318b16f7c88
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 1535
+        }
+      }
+  "55":
+    id: "55"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "54"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 7a830d47-c344-45af-85a2-8da819d148c9
+      iscommand: false
+      name: Start Development Timer
+      type: title
+      version: -1
+    taskid: 7a830d47-c344-45af-85a2-8da819d148c9
+    timertriggers:
+    - action: start
+      fieldname: usecasedevelopmenttimer
+    - action: start
+      fieldname: usecasecurrentphasetimer
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 1390
+        }
+      }
+  "56":
+    id: "56"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "55"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      sla:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: incident.processdevelopmentdates.developmentend
+              operator: isNotEmpty
+          root: incident.processdevelopmentdates
+          transformers:
+          - args:
+              field:
+                value:
+                  simple: developmentend
+            operator: getField
+          - operator: LastArrayElement
+          - args:
+              add_utc_timezone: {}
+              dayfirst:
+                value:
+                  simple: "false"
+              fuzzy: {}
+              yearfirst:
+                value:
+                  simple: "true"
+            operator: DateStringToISOFormat
+      slaField:
+        simple: usecasecurrentphasetimer
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: 1f797c5c-4ce7-44f0-807c-a7ccd39b6bd0
+      iscommand: true
+      name: Update current phase timer
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 1f797c5c-4ce7-44f0-807c-a7ccd39b6bd0
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 705,
+          "y": 1215
+        }
+      }
+  "57":
+    id: "57"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "56"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      all:
+        simple: "false"
+      timerField:
+        simple: usecasecurrentphasetimer
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.reset.timer
+      id: 635dc8ef-4b43-4a7c-8319-86d1f8ef84bd
+      iscommand: true
+      name: Reset current phase timer
+      script: Builtin|||resetTimer
+      type: regular
+      version: -1
+    taskid: 635dc8ef-4b43-4a7c-8319-86d1f8ef84bd
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 705,
+          "y": 1040
+        }
+      }
+  "89":
+    id: "89"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "53"
+      "yes":
+      - "90"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      value:
+        simple: ${inputs.ExternalTicketId}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      id: aa0ef616-94e4-4d43-8750-4389e2da15c4
+      iscommand: false
+      name: Is there an external ticket number?
+      scriptName: Exists
+      type: condition
+      version: -1
+    taskid: aa0ef616-94e4-4d43-8750-4389e2da15c4
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 705,
+          "y": 515
+        }
+      }
+  "90":
+    id: "90"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "53"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Updates the status of the Cherwell ticket
+      id: dc194d6c-6f17-43b3-8482-ed3f07e9fcca
+      iscommand: false
+      name: External ticket logic
+      type: title
+      version: -1
+    taskid: dc194d6c-6f17-43b3-8482-ed3f07e9fcca
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 817.5,
+          "y": 705
+        }
+      }
+  "92":
+    id: "92"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "17"
+      "yes":
+      - "93"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      value:
+        simple: ${inputs.ExternalTicketId}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      id: 6cb3d0bb-9544-4abd-87dc-5d68a210d92d
+      iscommand: false
+      name: Is there an external ticket number?
+      scriptName: Exists
+      type: condition
+      version: -1
+    taskid: 6cb3d0bb-9544-4abd-87dc-5d68a210d92d
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 1855
+        }
+      }
+  "93":
+    id: "93"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "17"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Updates the status of the Cherwell ticket
+      id: ee3a70c6-08b8-480a-812d-b30eb1a8b98c
+      iscommand: false
+      name: External ticket logic
+      type: title
+      version: -1
+    taskid: ee3a70c6-08b8-480a-812d-b30eb1a8b98c
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": 2045
+        }
+      }
+  "94":
+    id: "94"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "95"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      value:
+        simple: ${inputs.ExternalTicketId}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      id: 2cd250e7-7ded-46f0-8464-e88174aaa60d
+      iscommand: false
+      name: Is there an external ticket number?
+      scriptName: Exists
+      type: condition
+      version: -1
+    taskid: 2cd250e7-7ded-46f0-8464-e88174aaa60d
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 2350
+        }
+      }
+  "95":
+    id: "95"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Updates the status of the Cherwell ticket
+      id: 606648a4-5a31-4317-81a3-341a25d429cc
+      iscommand: false
+      name: External ticket logic
+      type: title
+      version: -1
+    taskid: 606648a4-5a31-4317-81a3-341a25d429cc
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": 2540
+        }
+      }
+  "96":
+    id: "96"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "42"
+      "yes":
+      - "97"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      value:
+        simple: ${inputs.ExternalTicketId}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      id: ba628b9a-20ef-446a-80fc-761e37e81d05
+      iscommand: false
+      name: Is there an external ticket number?
+      scriptName: Exists
+      type: condition
+      version: -1
+    taskid: ba628b9a-20ef-446a-80fc-761e37e81d05
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 3515
+        }
+      }
+  "97":
+    id: "97"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "42"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Updates the status of the Cherwell ticket
+      id: eab0aa96-255c-4be7-8079-cfba25dd5357
+      iscommand: false
+      name: External ticket logic
+      type: title
+      version: -1
+    taskid: eab0aa96-255c-4be7-8079-cfba25dd5357
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": 3705
+        }
+      }
+  "98":
+    id: "98"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "11"
+      "yes":
+      - "99"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      value:
+        simple: ${inputs.ExternalTicketId}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      id: 6128ea94-7017-48fa-8a41-e90931e7c42c
+      iscommand: false
+      name: Is there an external ticket number?
+      scriptName: Exists
+      type: condition
+      version: -1
+    taskid: 6128ea94-7017-48fa-8a41-e90931e7c42c
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 817.5,
+          "y": 2845
+        }
+      }
+  "99":
+    id: "99"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "11"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Updates the status of the Cherwell ticket
+      id: 2527b483-19a3-4fc3-8cbe-bb0e0bb10d86
+      iscommand: false
+      name: External ticket logic
+      type: title
+      version: -1
+    taskid: 2527b483-19a3-4fc3-8cbe-bb0e0bb10d86
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 3035
+        }
+      }
+  "100":
+    id: "100"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "17"
+    note: false
+    quietmode: 0
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Create tasks for the basic building blocks of use case creation.
+      id: 97b68632-502a-40dc-884b-e6ffe14423ca
+      iscommand: false
+      name: Use Case - S - Build Base
+      playbookId: 0f493167-5c32-47e0-8bf9-2631b7fe8f69
+      type: playbook
+      version: -1
+    taskid: 97b68632-502a-40dc-884b-e6ffe14423ca
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 817.5,
+          "y": 2030
+        }
+      }
+  "101":
+    id: "101"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Create development/creation tasks for all required integrations.
+      id: 92a10f4d-ad68-4310-81ed-ca3ff2516e6f
+      iscommand: false
+      name: Use Case - S - Develop Integrations
+      playbookId: 410ed77e-4437-4751-8a7a-ccb4856afd9f
+      type: playbook
+      version: -1
+    taskid: 92a10f4d-ad68-4310-81ed-ca3ff2516e6f
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 817.5,
+          "y": 2525
+        }
+      }
+  "102":
+    id: "102"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "107"
+    note: false
+    quietmode: 0
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Provides basic time for testing
+      id: feaa56bd-157a-4b45-8883-b872a27b3489
+      iscommand: false
+      name: Use Case - S - Internal Testing
+      playbookId: d26db49f-84bc-48ea-8376-3068b3f8d5b0
+      type: playbook
+      version: -1
+    taskid: feaa56bd-157a-4b45-8883-b872a27b3489
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 817.5,
+          "y": 3515
+        }
+      }
+  "103":
+    id: "103"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "52"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      kanban:
+        simple: In Progress
+      phasestatus:
+        simple: Initial
+      phasestep:
+        simple: Build Base
+      usecasecompletion:
+        complex:
+          accessor: UseCaseConfig
+          root: lists
+          transformers:
+          - args:
+              field:
+                iscontext: true
+                value:
+                  simple: incident.usecasephase
+            operator: getField
+          - args:
+              field:
+                value:
+                  simple: steps
+            operator: getField
+          - args:
+              field:
+                iscontext: true
+                value:
+                  simple: incident.phasestep
+            operator: getField
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Change the properties of an incident
+      id: 934b4c74-4c01-4ac8-8a97-4a162f328735
+      iscommand: true
+      name: Set build base step
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 934b4c74-4c01-4ac8-8a97-4a162f328735
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 195
+        }
+      }
+  "104":
+    id: "104"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "101"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      phasestatus:
+        simple: Initial
+      phasestep:
+        simple: Connect Integrations
+      usecasecompletion:
+        complex:
+          accessor: UseCaseConfig
+          root: lists
+          transformers:
+          - args:
+              field:
+                iscontext: true
+                value:
+                  simple: incident.usecasephase
+            operator: getField
+          - args:
+              field:
+                value:
+                  simple: steps
+            operator: getField
+          - args:
+              field:
+                iscontext: true
+                value:
+                  simple: incident.phasestep
+            operator: getField
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Change the properties of an incident
+      id: aa57d3fe-3941-4da6-86c6-63ab76de0523
+      iscommand: true
+      name: Set connect integrations
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: aa57d3fe-3941-4da6-86c6-63ab76de0523
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 817.5,
+          "y": 2350
+        }
+      }
+  "105":
+    id: "105"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "9"
+      - "16"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      phasestatus:
+        simple: In progress
+      phasestep:
+        simple: Design Playbooks/Automations
+      usecasecompletion:
+        complex:
+          accessor: UseCaseConfig
+          root: lists
+          transformers:
+          - args:
+              field:
+                iscontext: true
+                value:
+                  simple: incident.usecasephase
+            operator: getField
+          - args:
+              field:
+                value:
+                  simple: steps
+            operator: getField
+          - args:
+              field:
+                iscontext: true
+                value:
+                  simple: incident.phasestep
+            operator: getField
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Change the properties of an incident
+      id: 5c9b7e6a-d83e-454e-8578-3164a0cd4fbf
+      iscommand: true
+      name: Set connect integrations
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 5c9b7e6a-d83e-454e-8578-3164a0cd4fbf
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2845
+        }
+      }
+  "106":
+    id: "106"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "102"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      phasestatus:
+        simple: In progress
+      phasestep:
+        simple: Internal Testing
+      usecasecompletion:
+        complex:
+          accessor: UseCaseConfig
+          root: lists
+          transformers:
+          - args:
+              field:
+                iscontext: true
+                value:
+                  simple: incident.usecasephase
+            operator: getField
+          - args:
+              field:
+                value:
+                  simple: steps
+            operator: getField
+          - args:
+              field:
+                iscontext: true
+                value:
+                  simple: incident.phasestep
+            operator: getField
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Change the properties of an incident
+      id: 90a9d389-be2d-4471-8ae2-9f1995285973
+      iscommand: true
+      name: Set internal testing
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 90a9d389-be2d-4471-8ae2-9f1995285973
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 817.5,
+          "y": 3340
+        }
+      }
+  "107":
+    id: "107"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "42"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      phasestatus:
+        simple: Complete
+      phasestep:
+        simple: Internal Testing
+      usecasecompletion:
+        complex:
+          accessor: UseCaseConfig
+          root: lists
+          transformers:
+          - args:
+              field:
+                iscontext: true
+                value:
+                  simple: incident.usecasephase
+            operator: getField
+          - args:
+              field:
+                value:
+                  simple: steps
+            operator: getField
+          - args:
+              field:
+                iscontext: true
+                value:
+                  simple: incident.phasestep
+            operator: getField
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Change the properties of an incident
+      id: ada1d2f9-44e9-43ac-87a9-0975f4ada808
+      iscommand: true
+      name: Set internal testing complete
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: ada1d2f9-44e9-43ac-87a9-0975f4ada808
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 817.5,
+          "y": 3690
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 3880,
+        "width": 1260,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }

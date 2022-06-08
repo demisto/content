@@ -1,0 +1,30 @@
+comment: Populates the valid steps for the use case phase.
+commonfields:
+  id: 1f2f4091-939d-4aa6-82a0-fbb93d36f09f
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ""
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 5b6d811b-9e3c-4ee0-8927-0b0e1456da26
+    propagationLabels:
+    - all
+    toServerVersion: ""
+dockerimage: demisto/python3:3.10.4.29342
+enabled: true
+engineinfo: {}
+mainengineinfo: {}
+name: UseCaseStepDisplay
+outputs:
+- contextPath: MyList
+pswd: ""
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- field-display
+- use case
+type: python

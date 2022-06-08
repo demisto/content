@@ -1,0 +1,1338 @@
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ""
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 5b6d811b-9e3c-4ee0-8927-0b0e1456da26
+    propagationLabels:
+    - all
+    toServerVersion: ""
+description: External testing phase. In this phase, the customer should be testing
+  all functionality to ensure the use case meets their requirements.
+id: b49eabed-7795-487b-8ef9-5692b2adca41
+inputs:
+- description: If this value is blank, this part of the playbook will be skipped.
+    Logic will need to be defined according to your system configuration.
+  key: ExternalTicketId
+  playbookInputQuery: null
+  required: false
+  value: {}
+name: Use Case - User Acceptance Testing
+outputs: []
+sourceplaybookid: ae122a0c-b633-4ac5-8f85-060e76a5c526
+starttaskid: "0"
+tags:
+- Use Case Development
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "78"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 39780cb6-f6d1-48c3-8ecd-dea416e314b3
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 39780cb6-f6d1-48c3-8ecd-dea416e314b3
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 50
+        }
+      }
+  "12":
+    form:
+      description: ""
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: Has a user acceptance testing plan been created  (including outage/DR
+            plans)?
+        options: []
+        optionsarg:
+        - simple: "Yes"
+        - simple: "No"
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: ""
+        type: singleSelect
+      sender: ""
+      title: User acceptance test plan
+      totalanswers: 0
+    id: "12"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc: null
+      body: null
+      cc: null
+      format: ""
+      methods: []
+      subject: null
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: false
+        retriescount: 2
+        retriesinterval: 360
+      to: null
+    nexttasks:
+      '#none#':
+      - "43"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      title:
+        simple: 'Testing - Test all functionality '
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Add a new To-Do task to the specified incident.
+      id: c49ddc2e-9940-439e-8f8b-3619c2ae8e54
+      iscommand: false
+      name: UAT Testing Plan
+      type: collection
+      version: -1
+    taskid: c49ddc2e-9940-439e-8f8b-3619c2ae8e54
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 1535
+        }
+      }
+  "42":
+    id: "42"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 510ecd33-ee33-4077-83af-c70da9b0eadc
+      iscommand: false
+      name: End
+      type: title
+      version: -1
+    taskid: 510ecd33-ee33-4077-83af-c70da9b0eadc
+    timertriggers:
+    - action: pause
+      fieldname: usecasetestingtimer
+    - action: pause
+      fieldname: usecasecurrentphasetimer
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 4040
+        }
+      }
+  "43":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: User acceptance test plan.Answers.0
+          operator: isEqualString
+          right:
+            value:
+              simple: "Yes"
+      label: "yes"
+    id: "43"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "45"
+      "yes":
+      - "44"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: f3825fd3-ed3d-464f-8c9d-45971dc9b870
+      iscommand: false
+      name: Has UAT plan been created?
+      type: condition
+      version: -1
+    taskid: f3825fd3-ed3d-464f-8c9d-45971dc9b870
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 1710
+        }
+      }
+  "44":
+    form:
+      description: ""
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: Attach UAT plan (including outage/DR plans)
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: ""
+        type: attachments
+      sender: ""
+      title: User Acceptance Testing Plan (including outage/DR plans)
+      totalanswers: 0
+    id: "44"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc: null
+      body: null
+      cc: null
+      format: ""
+      methods: []
+      subject: null
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: false
+        retriescount: 2
+        retriesinterval: 360
+      to: null
+    nexttasks:
+      '#none#':
+      - "79"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 6dde58f3-a5be-4239-86cf-788bdbd2ba38
+      iscommand: false
+      name: Attach plan to use case
+      type: collection
+      version: -1
+    taskid: 6dde58f3-a5be-4239-86cf-788bdbd2ba38
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 2060
+        }
+      }
+  "45":
+    form:
+      description: Use the **[Template document linked here](https://highmarkhealth.sharepoint.com/:w:/r/sites/Cyber-Analytics-Automation-Team/automation/Shared%20Documents/XSOAR%20Policies%20%26%20Procedures/XSOAR%20UserAcceptanceTesting%20(UAT)%20Template.docx?d=w92e9cba834994e0798e93199085743d9&csf=1&web=1&e=e1mSym)**
+        to create a testing plan.
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: Date created
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: ""
+        type: date
+      sender: Information Security & Risk Management
+      title: Create User Acceptance Testing Plan  (including outage/DR plans)
+      totalanswers: 0
+    id: "45"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc: null
+      body: null
+      cc: null
+      format: ""
+      methods: []
+      subject: null
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: false
+        retriescount: 2
+        retriesinterval: 360
+      to: null
+    nexttasks:
+      '#none#':
+      - "44"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: b81b4ba0-32aa-4253-8495-4f69cca1e9e8
+      iscommand: false
+      name: Create UAT plan
+      type: collection
+      version: -1
+    taskid: b81b4ba0-32aa-4253-8495-4f69cca1e9e8
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 807.5,
+          "y": 1885
+        }
+      }
+  "46":
+    form:
+      description: This is to log the first testing date. If more dates are needed,
+        please create additional tasks.
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: First scheduled testing date
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: ""
+        type: date
+      sender: ""
+      title: Testing Sessions (including outage/DR plans)
+      totalanswers: 0
+    id: "46"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc: null
+      body: null
+      cc: null
+      format: ""
+      methods: []
+      subject: null
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: false
+        retriescount: 2
+        retriesinterval: 360
+      to: null
+    nexttasks:
+      '#none#':
+      - "80"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 02043bee-1ec5-48cd-85d5-5858a28a4211
+      iscommand: false
+      name: Create series of testing sessions (including outage/DR plans)
+      type: collection
+      version: -1
+    taskid: 02043bee-1ec5-48cd-85d5-5858a28a4211
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 2410
+        }
+      }
+  "47":
+    form:
+      description: ""
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: Date you completed testing (including outage/DR plans)
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: ""
+        type: date
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "1"
+        label: ""
+        labelarg:
+          simple: Provide any additional comments or concerns you may have about your
+            use case at this time
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: ""
+        type: shortText
+      sender: Information Security & Risk Management
+      title: User Acceptance for ${incident.name}
+      totalanswers: 0
+    formDisplay:
+      bodybackgroundcolor: ""
+      bodyfontcolor: ""
+      headerbackgroundcolor: ""
+      headerfontcolor: ""
+      isexternalrtl: false
+      sender: Automation Team
+      submitbuttonbackgroundcolor: ""
+      submitbuttonfontcolor: ""
+      submittext: ""
+    id: "47"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc: null
+      body:
+        simple: |
+          ${incident.contactname},
+
+          Please fill out the acceptance survey using the link below.
+      cc: null
+      format: html
+      methods:
+      - email
+      subject:
+        simple: User Acceptance Testing signoff for ${incident.name}
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: true
+        retriescount: 4
+        retriesinterval: 1440
+      to:
+        simple: ${incident.contactemailaddress}
+    nexttasks:
+      '#none#':
+      - "77"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 7f069618-81df-4537-801f-ccd4e377aba3
+      iscommand: false
+      name: User Acceptance Acknowledgement
+      type: collection
+      version: -1
+    taskid: 7f069618-81df-4537-801f-ccd4e377aba3
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 3225
+        }
+      }
+  "52":
+    id: "52"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "54"
+      - "64"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 7ec9fb62-3496-424b-8e4f-67e823a1fb85
+      iscommand: false
+      name: Set UAT Timer
+      type: title
+      version: -1
+    taskid: 7ec9fb62-3496-424b-8e4f-67e823a1fb85
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 370
+        }
+      }
+  "53":
+    id: "53"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "57"
+      - "63"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      complexity:
+        simple: ${incident.usecasecomplexity}
+      filter:
+        simple: useracceptance
+      start_date:
+        complex:
+          root: TimeNowUnix
+          transformers:
+          - operator: LastArrayElement
+          - operator: TimeStampToDate
+          - args:
+              format:
+                value:
+                  simple: 01/02/2006
+            operator: toString
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Calculates the projected dates for phase completion of a use case
+      id: 8c19deb8-c6bd-4b15-825f-bc3b028ed79f
+      iscommand: false
+      name: Populate projected dates
+      scriptName: CalculateUseCaseDates
+      type: regular
+      version: -1
+    taskid: 8c19deb8-c6bd-4b15-825f-bc3b028ed79f
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 690
+        }
+      }
+  "54":
+    id: "54"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "53"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |
+        Retrieves the current date and time.
+      id: 280f4f0f-eac4-4144-819e-ec47578bf267
+      iscommand: false
+      name: Get Time
+      scriptName: GetTime
+      type: regular
+      version: -1
+    taskid: 280f4f0f-eac4-4144-819e-ec47578bf267
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 515
+        }
+      }
+  "57":
+    id: "57"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "59"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      sla:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: incident.processdevelopmentdates.useracceptancetestingend
+              operator: isNotEmpty
+          root: incident.processdevelopmentdates
+          transformers:
+          - args:
+              field:
+                value:
+                  simple: useracceptancetestingend
+            operator: getField
+          - operator: LastArrayElement
+          - args:
+              add_utc_timezone:
+                value:
+                  simple: "false"
+              dayfirst:
+                value:
+                  simple: "false"
+              fuzzy:
+                value:
+                  simple: "true"
+              yearfirst:
+                value:
+                  simple: "true"
+            operator: DateStringToISOFormat
+      slaField:
+        simple: usecasetestingtimer
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: c7c891d5-15d3-4f74-89e9-a58864ec0756
+      iscommand: true
+      name: Set phase SLA
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: c7c891d5-15d3-4f74-89e9-a58864ec0756
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1040
+        }
+      }
+  "58":
+    id: "58"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "12"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      sla:
+        simple: ${incident.usecasetestingtimer.dueDate}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: b56ff777-cb47-4b68-8202-96ca371fc66f
+      iscommand: true
+      name: Update incident SLA to reflect new phase SLA
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: b56ff777-cb47-4b68-8202-96ca371fc66f
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 1360
+        }
+      }
+  "59":
+    id: "59"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "58"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 5c8b2e0c-bb7b-4c47-8855-d846542856f2
+      iscommand: false
+      name: Start UAT Timer
+      type: title
+      version: -1
+    taskid: 5c8b2e0c-bb7b-4c47-8855-d846542856f2
+    timertriggers:
+    - action: start
+      fieldname: usecasetestingtimer
+    - action: start
+      fieldname: usecasecurrentphasetimer
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 1215
+        }
+      }
+  "60":
+    id: "60"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "76"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 2e398d9b-0245-40b4-8e9f-ad3d6d550c38
+      iscommand: false
+      name: Start Customer Wait Timer
+      type: title
+      version: -1
+    taskid: 2e398d9b-0245-40b4-8e9f-ad3d6d550c38
+    timertriggers:
+    - action: start
+      fieldname: usecasecustomerwaittimer
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 2760
+        }
+      }
+  "61":
+    id: "61"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "81"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 9f013825-d3b3-4f1d-89c1-6d7779cf6ab9
+      iscommand: false
+      name: Stop Customer Wait Timer
+      type: title
+      version: -1
+    taskid: 9f013825-d3b3-4f1d-89c1-6d7779cf6ab9
+    timertriggers:
+    - action: pause
+      fieldname: usecasecustomerwaittimer
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 3720
+        }
+      }
+  "62":
+    id: "62"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "59"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      sla:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: incident.processdevelopmentdates.useracceptancetestingend
+              operator: isNotEmpty
+          root: incident.processdevelopmentdates
+          transformers:
+          - args:
+              field:
+                value:
+                  simple: useracceptancetestingend
+            operator: getField
+          - operator: LastArrayElement
+          - args:
+              add_utc_timezone:
+                value:
+                  simple: "false"
+              dayfirst:
+                value:
+                  simple: "false"
+              fuzzy:
+                value:
+                  simple: "true"
+              yearfirst:
+                value:
+                  simple: "true"
+            operator: DateStringToISOFormat
+      slaField:
+        simple: usecasecurrentphasetimer
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: dd9ebb83-1535-45b8-8582-57d44e762c4a
+      iscommand: true
+      name: Set current phase timer
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: dd9ebb83-1535-45b8-8582-57d44e762c4a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1040
+        }
+      }
+  "63":
+    id: "63"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "62"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      all:
+        simple: "false"
+      timerField:
+        simple: usecasecurrentphasetimer
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.reset.timer
+      id: 7fbb5416-2fa5-4bed-8295-7f42ed76386a
+      iscommand: true
+      name: Reset current phase timer
+      script: Builtin|||resetTimer
+      type: regular
+      version: -1
+    taskid: 7fbb5416-2fa5-4bed-8295-7f42ed76386a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 865
+        }
+      }
+  "64":
+    id: "64"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "59"
+      "yes":
+      - "65"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      value:
+        simple: ${inputs.ExternalTicketId}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      id: 4a3a9025-36e0-4673-8f66-02e8896ee92c
+      iscommand: false
+      name: Is there an external ticket number?
+      scriptName: Exists
+      type: condition
+      version: -1
+    taskid: 4a3a9025-36e0-4673-8f66-02e8896ee92c
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1022.5,
+          "y": 865
+        }
+      }
+  "65":
+    id: "65"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "59"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Updates the status of the Cherwell ticket
+      id: 95d0e958-108b-4bf1-8bbf-f23e92fe9a57
+      iscommand: false
+      name: External ticket flow
+      type: title
+      version: -1
+    taskid: 95d0e958-108b-4bf1-8bbf-f23e92fe9a57
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1055
+        }
+      }
+  "67":
+    id: "67"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "47"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: true
+    task:
+      brand: ""
+      description: Updates the status of the Cherwell ticket
+      id: 97cd5607-9895-4e4a-884f-f773ee8f51fb
+      iscommand: false
+      name: External ticket flow
+      type: title
+      version: -1
+    taskid: 97cd5607-9895-4e4a-884f-f773ee8f51fb
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 807.5,
+          "y": 3080
+        }
+      }
+  "74":
+    id: "74"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "61"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Updates the status of the Cherwell ticket
+      id: 548377ca-0aaf-457c-8700-456262e21633
+      iscommand: false
+      name: External ticket flow
+      type: title
+      version: -1
+    taskid: 548377ca-0aaf-457c-8700-456262e21633
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 582.5,
+          "y": 3575
+        }
+      }
+  "76":
+    id: "76"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "47"
+      "yes":
+      - "67"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      value:
+        simple: ${inputs.ExternalTicketId}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      id: 2baa6647-6cb8-4428-8202-c63666598d26
+      iscommand: false
+      name: Is there an external ticket number?
+      scriptName: Exists
+      type: condition
+      version: -1
+    taskid: 2baa6647-6cb8-4428-8202-c63666598d26
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 2905
+        }
+      }
+  "77":
+    id: "77"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "61"
+      "yes":
+      - "74"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      value:
+        simple: ${inputs.ExternalTicketId}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      id: b39f9803-f4b5-4e48-8bee-1cefdfe2190a
+      iscommand: false
+      name: Is there an external ticket number?
+      scriptName: Exists
+      type: condition
+      version: -1
+    taskid: b39f9803-f4b5-4e48-8bee-1cefdfe2190a
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 3400
+        }
+      }
+  "78":
+    id: "78"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "52"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      kanban:
+        simple: In Progress
+      phasestatus:
+        simple: Initial
+      phasestep:
+        simple: Develop Test Plan
+      usecasecompletion:
+        complex:
+          accessor: UseCaseConfig
+          root: lists
+          transformers:
+          - args:
+              field:
+                iscontext: true
+                value:
+                  simple: incident.usecasephase
+            operator: getField
+          - args:
+              field:
+                value:
+                  simple: steps
+            operator: getField
+          - args:
+              field:
+                iscontext: true
+                value:
+                  simple: incident.phasestep
+            operator: getField
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Change the properties of an incident
+      id: 9af97fe7-dab3-46a1-830c-09f7855a3605
+      iscommand: true
+      name: Set user acceptance testing
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 9af97fe7-dab3-46a1-830c-09f7855a3605
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 195
+        }
+      }
+  "79":
+    id: "79"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "46"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      phasestatus:
+        simple: In progress
+      phasestep:
+        simple: Execute Test Plan
+      usecasecompletion:
+        complex:
+          accessor: UseCaseConfig
+          root: lists
+          transformers:
+          - args:
+              field:
+                iscontext: true
+                value:
+                  simple: incident.usecasephase
+            operator: getField
+          - args:
+              field:
+                value:
+                  simple: steps
+            operator: getField
+          - args:
+              field:
+                iscontext: true
+                value:
+                  simple: incident.phasestep
+            operator: getField
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Change the properties of an incident
+      id: 87ec68a7-76cd-467d-833f-6e39a4f50b78
+      iscommand: true
+      name: Set execute test plan
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 87ec68a7-76cd-467d-833f-6e39a4f50b78
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 2235
+        }
+      }
+  "80":
+    id: "80"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "60"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      phasestatus:
+        simple: In progress
+      phasestep:
+        simple: User Signoff
+      usecasecompletion:
+        complex:
+          accessor: UseCaseConfig
+          root: lists
+          transformers:
+          - args:
+              field:
+                iscontext: true
+                value:
+                  simple: incident.usecasephase
+            operator: getField
+          - args:
+              field:
+                value:
+                  simple: steps
+            operator: getField
+          - args:
+              field:
+                iscontext: true
+                value:
+                  simple: incident.phasestep
+            operator: getField
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Change the properties of an incident
+      id: a2d7634c-b365-4ec1-8904-0e69193b1fb3
+      iscommand: true
+      name: Set user signoff
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: a2d7634c-b365-4ec1-8904-0e69193b1fb3
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 2585
+        }
+      }
+  "81":
+    id: "81"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "42"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      phasestatus:
+        simple: Complete
+      phasestep:
+        simple: User Signoff
+      usecasecompletion:
+        complex:
+          accessor: UseCaseConfig
+          root: lists
+          transformers:
+          - args:
+              field:
+                iscontext: true
+                value:
+                  simple: incident.usecasephase
+            operator: getField
+          - args:
+              field:
+                value:
+                  simple: steps
+            operator: getField
+          - args:
+              field:
+                iscontext: true
+                value:
+                  simple: incident.phasestep
+            operator: getField
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Change the properties of an incident
+      id: dea5fdc5-f763-4687-87c4-033abb99801d
+      iscommand: true
+      name: Set testing complete
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: dea5fdc5-f763-4687-87c4-033abb99801d
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 3865
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 4055,
+        "width": 1352.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }

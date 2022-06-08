@@ -1,0 +1,1449 @@
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ""
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 5b6d811b-9e3c-4ee0-8927-0b0e1456da26
+    propagationLabels:
+    - all
+    toServerVersion: ""
+description: Initial workflow for evaluating automation requests. This is a basic
+  evaluation using the submitted data from the customer.
+id: 92636583-d319-452b-8d0d-86dbc217db5e
+inputs:
+- description: If this value is blank, this part of the playbook will be skipped.
+    Logic will need to be defined according to your system configuration.
+  key: ExternalTicketId
+  playbookInputQuery: null
+  required: false
+  value: {}
+name: Use Case - Evaluation
+outputs: []
+sourceplaybookid: 70995182-a705-423b-8827-cc4b32a3eb12
+starttaskid: "0"
+tags:
+- Use Case Development
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "19"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: c82a1c6c-7366-41e6-87bc-822879458189
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: c82a1c6c-7366-41e6-87bc-822879458189
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 837.5,
+          "y": 50
+        }
+      }
+  "5":
+    evidencedata:
+      customfields: {}
+      description:
+        simple: Initial Review of Request
+    form:
+      description: Engineers should look at the submitted request to evaluate whether
+        or not it is feasible
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: Is the request feasible?
+        options: []
+        optionsarg:
+        - {}
+        - simple: "Yes"
+        - simple: "No"
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: ""
+        type: singleSelect
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "1"
+        label: ""
+        labelarg:
+          simple: If not feasible, provide a detailed explanation
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: ""
+        type: longText
+      sender: ""
+      title: Initial Request Review
+      totalanswers: 0
+    id: "5"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc: null
+      body: null
+      cc: null
+      format: ""
+      methods: []
+      subject: null
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: false
+        retriescount: 2
+        retriesinterval: 360
+      to: null
+    nexttasks:
+      '#none#':
+      - "39"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      incidentId:
+        simple: ${incident.id}
+      title:
+        simple: Evaluate feasibility
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Evaluate the request to see if this is a feasible request.
+      id: 30d262e1-672d-436c-8723-2f975bdbcad7
+      iscommand: false
+      name: Add Initial Review of Request
+      type: collection
+      version: -1
+    taskid: 30d262e1-672d-436c-8723-2f975bdbcad7
+    timertriggers:
+    - action: start
+      fieldname: initialusecaseevaluation
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 3660
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "16"
+      - "52"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 845f2626-306a-48b1-8332-a8f074798f54
+      iscommand: false
+      name: Set Initial Evaluation Timer
+      type: title
+      version: -1
+    taskid: 845f2626-306a-48b1-8332-a8f074798f54
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 950,
+          "y": 1680
+        }
+      }
+  "12":
+    id: "12"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "44"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Change the properties of an incident
+      id: 297d8395-dc4a-4f42-8269-4d5a6ebf6d16
+      iscommand: false
+      name: Assign complete
+      type: title
+      version: -1
+    taskid: 297d8395-dc4a-4f42-8269-4d5a6ebf6d16
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 1175,
+          "y": 3355
+        }
+      }
+  "13":
+    continueonerror: true
+    id: "13"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "12"
+      - "48"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      roles:
+        simple: engineer
+      username:
+        simple: ${Initial Request Review.Answers.name}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Assign analyst to incident.
+        By default,  the analyst is picked randomly from the available users, according to the provided roles (if no roles provided, will fetch all users).
+        Otherwise, the analyst will be picked according to the 'assignBy' arguments.
+        machine-learning: DBot will calculated and decide who is the best analyst for the job.
+        top-user: The user that is most commonly owns this type of incident
+        less-busy-user: The less busy analyst will be picked to be the incident owner.
+        online: The analyst is picked randomly from all online analysts, according to the provided roles (if no roles provided, will fetch all users).
+        current: The user that executed the command
+      id: 1197471a-2cda-474d-8d1f-3bc4d0e06834
+      iscommand: false
+      name: AssignAnalystToIncident
+      scriptName: AssignAnalystToIncident
+      type: regular
+      version: -1
+    taskid: 1197471a-2cda-474d-8d1f-3bc4d0e06834
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1257.5,
+          "y": 2145
+        }
+      }
+  "14":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: incident.owner
+          operator: isNotEmpty
+      label: "yes"
+    id: "14"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "13"
+      "yes":
+      - "57"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 8eb28a47-99dd-4f31-809f-400a2e9a129b
+      iscommand: false
+      name: Check if owner is assigned
+      type: condition
+      version: -1
+    taskid: 8eb28a47-99dd-4f31-809f-400a2e9a129b
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1380,
+          "y": 1970
+        }
+      }
+  "16":
+    id: "16"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "18"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      phasestatus:
+        simple: Initial
+      phasestep:
+        simple: Determine Feasibility
+      usecasecompletion:
+        simple: "2"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Change the properties of an incident
+      id: 30e62320-5bd9-4ef8-8bf2-93c7427aa139
+      iscommand: true
+      name: Set evaluation start
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 30e62320-5bd9-4ef8-8bf2-93c7427aa139
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 2990
+        }
+      }
+  "17":
+    id: "17"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 60da46c1-f69e-44e0-80e3-b7a933dfb7c7
+      iscommand: false
+      name: End
+      type: title
+      version: -1
+    taskid: 60da46c1-f69e-44e0-80e3-b7a933dfb7c7
+    timertriggers:
+    - action: pause
+      fieldname: usecaseevaluationtimer
+    - action: pause
+      fieldname: usecasecurrentphasetimer
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 4825
+        }
+      }
+  "18":
+    id: "18"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "43"
+      - "47"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      filter:
+        simple: evaluation
+      start_date:
+        simple: ${incident.created}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Calculates the projected dates for phase completion of a use case
+      id: 26f8028b-8e33-473a-82ed-29a1d5efae9a
+      iscommand: false
+      name: Populate projected dates
+      scriptName: CalculateUseCaseDates
+      type: regular
+      version: -1
+    taskid: 26f8028b-8e33-473a-82ed-29a1d5efae9a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 3165
+        }
+      }
+  "19":
+    id: "19"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "41"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 01999dff-256b-4b54-896c-225db682d6d2
+      iscommand: false
+      name: Check input values
+      type: title
+      version: -1
+    taskid: 01999dff-256b-4b54-896c-225db682d6d2
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 837.5,
+          "y": 195
+        }
+      }
+  "21":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: incident.numberofusersaffected
+          operator: greaterThan
+          right:
+            value:
+              simple: "0"
+      - - left:
+            iscontext: true
+            value:
+              simple: incident.frequencyoftask
+          operator: greaterThan
+          right:
+            value:
+              simple: "0"
+      - - left:
+            iscontext: true
+            value:
+              simple: incident.lengthoftask
+          operator: greaterThan
+          right:
+            value:
+              simple: "0"
+      label: valid
+    id: "21"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "45"
+      valid:
+      - "6"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: ca1b33d3-4535-44bb-88dd-a3883896c3d6
+      iscommand: false
+      name: Check task values
+      type: condition
+      version: -1
+    taskid: ca1b33d3-4535-44bb-88dd-a3883896c3d6
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 837.5,
+          "y": 690
+        }
+      }
+  "22":
+    form:
+      description: Use the form below to provide accurate numbers for automation evaluation.
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: lengthoftask
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: How long does this task take to perform (in minutes)?
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: Entering zero will result in this request being closed.
+        type: number
+      - defaultrows: []
+        fieldassociated: frequencyoftask
+        gridcolumns: []
+        id: "1"
+        label: ""
+        labelarg:
+          simple: How many times per week is this task performed?
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: Entering zero will result in this request being closed.
+        type: number
+      - defaultrows: []
+        fieldassociated: numberofusersaffected
+        gridcolumns: []
+        id: "2"
+        label: ""
+        labelarg:
+          simple: How many users are affected by this task?
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: Entering zero will result in this request being closed.
+        type: number
+      sender: Information Security & Risk Management
+      title: Submission Value Adjustments
+      totalanswers: 0
+    id: "22"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc: null
+      body:
+        simple: |-
+          <html>
+          <body>
+          <br>Hello,
+          <br>
+          <br>
+          <p>One or more values submitted through the Automation Intake form were zero. In order to accurately prioritize your request, these values must be correct. Please take a moment to correct them using the survey link below.</p>
+          <br>
+          <br>Thank You,
+          <br>Cyber Analytics & Automation Team
+          </body>
+          </html>
+      cc: null
+      format: html
+      methods:
+      - email
+      subject:
+        simple: Invalid data submitted for ${incident.name}
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: true
+        retriescount: 2
+        retriesinterval: 1440
+      to:
+        simple: ${incident.contactemailaddress}
+    nexttasks:
+      '#none#':
+      - "46"
+    note: true
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 2184a903-86af-435a-8d32-9f4bcba93c48
+      iscommand: false
+      name: Second chance form
+      type: collection
+      version: -1
+    taskid: 2184a903-86af-435a-8d32-9f4bcba93c48
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1010
+        }
+      }
+  "23":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: incident.numberofusersaffected
+          operator: greaterThan
+          right:
+            value:
+              simple: "0"
+      - - left:
+            iscontext: true
+            value:
+              simple: incident.frequencyoftask
+          operator: greaterThan
+          right:
+            value:
+              simple: "0"
+      - - left:
+            iscontext: true
+            value:
+              simple: incident.lengthoftask
+          operator: greaterThan
+          right:
+            value:
+              simple: "0"
+      label: valid
+    id: "23"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "24"
+      valid:
+      - "6"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 984fccd2-cd52-430c-83d0-f51565d655ee
+      iscommand: false
+      name: Check task values
+      type: condition
+      version: -1
+    taskid: 984fccd2-cd52-430c-83d0-f51565d655ee
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1505
+        }
+      }
+  "24":
+    id: "24"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "17"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      closeNotes:
+        simple: User provided invalid input for the request
+      closeReason:
+        simple: Other
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.close.inv
+      id: c7da5f96-267f-4778-801e-74c748ca76de
+      iscommand: true
+      name: Close request
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: c7da5f96-267f-4778-801e-74c748ca76de
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4650
+        }
+      }
+  "26":
+    id: "26"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "21"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      kanban:
+        simple: Request
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: cf64baf9-186b-4ad3-8551-7f19c8c56bd4
+      iscommand: true
+      name: Set Kanban phase
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: cf64baf9-186b-4ad3-8551-7f19c8c56bd4
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 837.5,
+          "y": 515
+        }
+      }
+  "38":
+    id: "38"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "23"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      frequencyoftask:
+        simple: ${Submission Value Adjustments.Answers.1}
+      lengthoftask:
+        simple: ${Submission Value Adjustments.Answers.0}
+      numberofusersaffected:
+        simple: ${Submission Value Adjustments.Answers.2}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: e3321baa-38fd-4c8a-81fb-df2c27f59201
+      iscommand: true
+      name: Set new values
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: e3321baa-38fd-4c8a-81fb-df2c27f59201
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1330
+        }
+      }
+  "39":
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              simple: Initial Request Review.Answers.0
+          operator: isEqualString
+          right:
+            value:
+              simple: "yes"
+      label: "yes"
+    id: "39"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "40"
+      "yes":
+      - "53"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 5f7d643e-8812-4f3b-8d65-35c99426c597
+      iscommand: false
+      name: Is request feasible?
+      type: condition
+      version: -1
+    taskid: 5f7d643e-8812-4f3b-8d65-35c99426c597
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 3835
+        }
+      }
+  "40":
+    id: "40"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "61"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: a5ab4381-72ed-41be-821d-5bc4b93fb101
+      iscommand: false
+      name: Notify user of decision
+      type: regular
+      version: -1
+    taskid: a5ab4381-72ed-41be-821d-5bc4b93fb101
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 4010
+        }
+      }
+  "41":
+    id: "41"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "26"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      phasestatus:
+        simple: Initial
+      phasestep:
+        simple: Review Customer Submission
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: e8297769-af11-4b34-87fa-1a47f9279b49
+      iscommand: true
+      name: Set use case step and status
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: e8297769-af11-4b34-87fa-1a47f9279b49
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 837.5,
+          "y": 340
+        }
+      }
+  "43":
+    id: "43"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "44"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      sla:
+        simple: ${incident.usecaseevaluationtimer.dueDate}
+      slaField:
+        simple: usecaseevaluationtimer
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: 8f8fcd52-5c8f-48c4-82f7-faa8164ca03d
+      iscommand: true
+      name: Update SLA
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 8f8fcd52-5c8f-48c4-82f7-faa8164ca03d
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 3340
+        }
+      }
+  "44":
+    id: "44"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: cfbd79a5-ebfc-4faf-88e5-5f767c77a2f6
+      iscommand: false
+      name: Start Evaluation Timer
+      type: title
+      version: -1
+    taskid: cfbd79a5-ebfc-4faf-88e5-5f767c77a2f6
+    timertriggers:
+    - action: start
+      fieldname: usecaseevaluationtimer
+    - action: start
+      fieldname: usecasecurrentphasetimer
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 3515
+        }
+      }
+  "45":
+    id: "45"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "22"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 212a5948-69fb-48bc-8336-c67124f4e799
+      iscommand: false
+      name: Start Customer Wait Timer
+      type: title
+      version: -1
+    taskid: 212a5948-69fb-48bc-8336-c67124f4e799
+    timertriggers:
+    - action: start
+      fieldname: usecasecustomerwaittimer
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 865
+        }
+      }
+  "46":
+    id: "46"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "38"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 86f04bc4-a47a-4a55-87f2-0da50a753e63
+      iscommand: false
+      name: Pause Customer Wait Timer
+      type: title
+      version: -1
+    taskid: 86f04bc4-a47a-4a55-87f2-0da50a753e63
+    timertriggers:
+    - action: pause
+      fieldname: usecasecustomerwaittimer
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1185
+        }
+      }
+  "47":
+    id: "47"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "44"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      sla:
+        simple: ${incident.usecaseevaluationtimer.dueDate}
+      slaField:
+        simple: usecasecurrentphasetimer
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: ad82f6e7-d33e-4fad-89d9-40aeab84d5d3
+      iscommand: true
+      name: Update current phase timer
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: ad82f6e7-d33e-4fad-89d9-40aeab84d5d3
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 705,
+          "y": 3340
+        }
+      }
+  "48":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: incident.owner
+          operator: isNotEmpty
+      label: "yes"
+    id: "48"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "55"
+      - "12"
+      "yes":
+      - "57"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: cbd0448e-e1dc-4044-8546-f93f752a2cfe
+      iscommand: false
+      name: Was owner successfully assigned?
+      type: condition
+      version: -1
+    taskid: cbd0448e-e1dc-4044-8546-f93f752a2cfe
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1390,
+          "y": 2320
+        }
+      }
+  "51":
+    id: "51"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "58"
+    note: false
+    quietmode: 0
+    results:
+    - IncidentOwner
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Expose the incident owner into IncidentOwner context key
+      id: 0a0863b3-5eef-40e4-883f-2cae9d91c15c
+      iscommand: false
+      name: Get incident owner data
+      scriptName: ExposeIncidentOwner
+      type: regular
+      version: -1
+    taskid: 0a0863b3-5eef-40e4-883f-2cae9d91c15c
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1625,
+          "y": 2990
+        }
+      }
+  "52":
+    id: "52"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "14"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 849d69ff-36bf-492c-89e3-13e6f4bfd970
+      iscommand: false
+      name: Assign owner to ticket
+      type: title
+      version: -1
+    taskid: 849d69ff-36bf-492c-89e3-13e6f4bfd970
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 1380,
+          "y": 1825
+        }
+      }
+  "53":
+    id: "53"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "17"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      phasestatus:
+        simple: Complete
+      phasestep:
+        simple: Determine Feasibility
+      usecasecompletion:
+        simple: "4"
+      usecasehourscompleted:
+        simple: "2"
+      usecasehoursreported:
+        simple: ${Initial Request Review.Answers.2}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Change the properties of an incident
+      id: 305fa873-2029-4c00-8f58-e8321989f3e7
+      iscommand: true
+      name: Set Phase Complete
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 305fa873-2029-4c00-8f58-e8321989f3e7
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 715,
+          "y": 4650
+        }
+      }
+  "54":
+    id: "54"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "12"
+      "yes":
+      - "51"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      value:
+        simple: ${inputs.ExternalTicketId}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      id: 11f4292f-325e-4cb3-82ee-d8684280eddf
+      iscommand: false
+      name: Is there an external ticket number?
+      scriptName: Exists
+      type: condition
+      version: -1
+    taskid: 11f4292f-325e-4cb3-82ee-d8684280eddf
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1512.5,
+          "y": 2815
+        }
+      }
+  "55":
+    form:
+      description: ""
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: owner
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: Who is the incident owner?
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: ""
+        type: singleSelect
+      sender: ""
+      title: Incident owner must be set before moving forward
+      totalanswers: 0
+    id: "55"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc: null
+      body: null
+      cc: null
+      format: ""
+      methods: []
+      subject: null
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: true
+        retriescount: 2
+        retriesinterval: 360
+      to: null
+    nexttasks:
+      '#none#':
+      - "57"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: commands.local.cmd.todo.add
+      id: 196c6d3f-b562-4660-8ab7-8bee519d71ff
+      iscommand: false
+      name: Set owner
+      type: collection
+      version: -1
+    taskid: 196c6d3f-b562-4660-8ab7-8bee519d71ff
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 1052.5,
+          "y": 2495
+        }
+      }
+  "57":
+    id: "57"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "54"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 26b29210-fdbb-46cb-86a7-929ebafaab6a
+      iscommand: false
+      name: External Ticketing
+      type: title
+      version: -1
+    taskid: 26b29210-fdbb-46cb-86a7-929ebafaab6a
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 1512.5,
+          "y": 2670
+        }
+      }
+  "58":
+    id: "58"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "12"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 5d658349-ecae-4ed7-82c5-eb7ec48682ad
+      iscommand: false
+      name: Add external ticketing flow here
+      type: title
+      version: -1
+    taskid: 5d658349-ecae-4ed7-82c5-eb7ec48682ad
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 1625,
+          "y": 3180
+        }
+      }
+  "60":
+    id: "60"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "24"
+      "yes":
+      - "62"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      value:
+        simple: ${inputs.ExternalTicketId}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      id: 973366c8-3426-4a0a-82f8-789402d38f00
+      iscommand: false
+      name: Is there an external ticket number?
+      scriptName: Exists
+      type: condition
+      version: -1
+    taskid: 973366c8-3426-4a0a-82f8-789402d38f00
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 4330
+        }
+      }
+  "61":
+    id: "61"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "60"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 3438d33e-7957-45c7-8607-cabab6b9f3f5
+      iscommand: false
+      name: External Ticketing
+      type: title
+      version: -1
+    taskid: 3438d33e-7957-45c7-8607-cabab6b9f3f5
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 4185
+        }
+      }
+  "62":
+    id: "62"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "24"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: d51a8461-2f73-4777-81ca-55a5f67f9c24
+      iscommand: false
+      name: Add external ticketing flow here
+      type: title
+      version: -1
+    taskid: d51a8461-2f73-4777-81ca-55a5f67f9c24
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 4505
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "21_45_#default#": 0.54,
+      "48_57_yes": 0.88,
+      "60_62_yes": 0.9
+    },
+    "paper": {
+      "dimensions": {
+        "height": 4840,
+        "width": 1955,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }

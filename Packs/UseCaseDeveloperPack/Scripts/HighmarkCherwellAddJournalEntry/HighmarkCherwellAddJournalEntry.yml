@@ -1,0 +1,40 @@
+args:
+- description: This should be the public of the Cherwell incident
+  name: incident_id
+  required: true
+- description: Text to place in the journal entry
+  name: details
+  required: true
+- description: Text to place in the private note section of the journal entry
+  name: private_details
+comment: Used to add a new journal entry to the Cherwell ticket
+commonfields:
+  id: 260f9f26-4fb4-456b-8210-dddba04f2655
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ""
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 5b6d811b-9e3c-4ee0-8927-0b0e1456da26
+    propagationLabels:
+    - all
+    toServerVersion: ""
+dependson:
+  must:
+  - '|||cherwell-create-related-business-object'
+  should: []
+dockerimage: demisto/python3:3.10.4.29342
+enabled: true
+engineinfo: {}
+mainengineinfo: {}
+name: HighmarkCherwellAddJournalEntry
+pswd: ""
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- Cherwell
+type: python

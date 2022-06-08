@@ -1,0 +1,40 @@
+{
+	"autorun": true,
+	"cacheVersn": 0,
+	"closureScript": "",
+	"color": "#fea743",
+	"days": 5,
+	"daysR": 0,
+	"default": false,
+	"definitionId": "",
+	"detached": false,
+	"disabled": false,
+	"extractSettings": {
+		"fieldCliNameToExtractSettings": {},
+		"mode": "All"
+	},
+	"fromServerVersion": "",
+	"hours": 0,
+	"hoursR": 0,
+	"id": "Use Case",
+	"itemVersion": "",
+	"layout": "4e91a676-00b7-4879-85a7-e0438766509a",
+	"locked": false,
+	"name": "Use Case",
+	"onChangeRepAlg": 1,
+	"packID": "5b6d811b-9e3c-4ee0-8927-0b0e1456da26",
+	"playbookId": "e295c008-ddbe-4a41-85b3-17b11af60a05",
+	"preProcessingScript": "",
+	"propagationLabels": [
+		"all"
+	],
+	"readonly": false,
+	"reputationCalc": 1,
+	"sla": 1632,
+	"slaReminder": 1512,
+	"system": false,
+	"toServerVersion": "",
+	"version": -1,
+	"weeks": 9,
+	"weeksR": 9
+}

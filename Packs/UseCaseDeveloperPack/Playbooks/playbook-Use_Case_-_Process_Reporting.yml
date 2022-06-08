@@ -1,0 +1,1333 @@
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ""
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 5b6d811b-9e3c-4ee0-8927-0b0e1456da26
+    propagationLabels:
+    - all
+    toServerVersion: ""
+description: 'Workflow to guide meeting with customer to develop any reporting requirements. '
+id: 1af045e3-298a-4fac-85aa-bae4411aaa41
+inputs:
+- description: If this value is blank, this part of the playbook will be skipped.
+    Logic will need to be defined according to your system configuration.
+  key: ExternalTicketId
+  playbookInputQuery: null
+  required: false
+  value: {}
+name: Use Case - Process Reporting
+outputs: []
+sourceplaybookid: a56826ef-c678-4132-8908-dafdef608f4c
+starttaskid: "0"
+tags:
+- Use Case Development
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "27"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: f1c5d20e-375c-464e-833a-204fe60e5d6d
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: f1c5d20e-375c-464e-833a-204fe60e5d6d
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 50
+        }
+      }
+  "1":
+    form:
+      description: ""
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: Does customer need reporting?
+        options: []
+        optionsarg:
+        - {}
+        - simple: "Yes"
+        - simple: "No"
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: ""
+        type: singleSelect
+      sender: ""
+      title: Customer Reporting
+      totalanswers: 0
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc: null
+      body: null
+      cc: null
+      format: ""
+      methods: []
+      subject: null
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: false
+        retriescount: 2
+        retriesinterval: 360
+      to: null
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 7868362b-8525-4eb3-8083-e4f4840e03cb
+      iscommand: false
+      name: Customer Reporting
+      type: collection
+      version: -1
+    taskid: 7868362b-8525-4eb3-8083-e4f4840e03cb
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 1535
+        }
+      }
+  "2":
+    form:
+      description: ""
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: Provide date for customer reporting completion
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: ""
+        type: date
+      sender: ""
+      title: Customer Reporting Complete
+      totalanswers: 0
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc: null
+      body: null
+      cc: null
+      format: ""
+      methods: []
+      subject: null
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: false
+        retriescount: 2
+        retriesinterval: 360
+      to: null
+    nexttasks:
+      '#none#':
+      - "28"
+      - "35"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: b25636d3-57b8-47bb-8759-3096823d225b
+      iscommand: false
+      name: Customer Reporting Complete
+      type: collection
+      version: -1
+    taskid: b25636d3-57b8-47bb-8759-3096823d225b
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 3410
+        }
+      }
+  "3":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: "0"
+                root: Customer Reporting.Answers
+                transformers:
+                - operator: toUpperCase
+          operator: isEqualString
+          right:
+            value:
+              simple: "YES"
+      label: "yes"
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "4"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: d093a12f-3beb-4649-83e1-38461bf6faff
+      iscommand: false
+      name: Is reporting needed?
+      type: condition
+      version: -1
+    taskid: d093a12f-3beb-4649-83e1-38461bf6faff
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 1710
+        }
+      }
+  "4":
+    form:
+      description: ""
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: Initial Customer Reporting meeting
+        options: []
+        optionsarg:
+        - {}
+        - simple: "Yes"
+        - simple: "No"
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: ""
+        type: date
+      sender: ""
+      title: Customer Reporting - Schedule Meeting
+      totalanswers: 0
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc: null
+      body: null
+      cc: null
+      format: ""
+      methods: []
+      subject: null
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: false
+        retriescount: 2
+        retriesinterval: 360
+      to: null
+    nexttasks:
+      '#none#':
+      - "5"
+      - "31"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 1dace7b7-7d89-4606-8175-7797e5b1d920
+      iscommand: false
+      name: Customer Reporting - Schedule Meeting
+      type: collection
+      version: -1
+    taskid: 1dace7b7-7d89-4606-8175-7797e5b1d920
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 807.5,
+          "y": 1885
+        }
+      }
+  "5":
+    form:
+      description: This should be a list of reports or notifications the customer
+        would like to receive
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: List customer reporting requirements
+        options: []
+        optionsarg:
+        - {}
+        - simple: "Yes"
+        - simple: "No"
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: ""
+        type: shortText
+      sender: ""
+      title: Customer Reporting - Requirements
+      totalanswers: 0
+    id: "5"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc: null
+      body: null
+      cc: null
+      format: ""
+      methods: []
+      subject: null
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: false
+        retriescount: 2
+        retriesinterval: 360
+      to: null
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: d56434d0-3188-4eca-823b-e797cfa0485f
+      iscommand: false
+      name: Customer Reporting - Requirements
+      type: collection
+      version: -1
+    taskid: d56434d0-3188-4eca-823b-e797cfa0485f
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 807.5,
+          "y": 2380
+        }
+      }
+  "6":
+    form:
+      description: Build and test reports
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: Reporting build completed
+        options: []
+        optionsarg:
+        - {}
+        - simple: "Yes"
+        - simple: "No"
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: ""
+        type: date
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "1"
+        label: ""
+        labelarg:
+          simple: Additional details
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: ""
+        type: shortText
+      sender: ""
+      title: Customer Reporting - Design
+      totalanswers: 0
+    id: "6"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc: null
+      body: null
+      cc: null
+      format: ""
+      methods: []
+      subject: null
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: false
+        retriescount: 2
+        retriesinterval: 360
+      to: null
+    nexttasks:
+      '#none#':
+      - "14"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: c51777f9-9d0b-4121-86ae-4434455b867e
+      iscommand: false
+      name: Customer Reporting - Design
+      type: collection
+      version: -1
+    taskid: c51777f9-9d0b-4121-86ae-4434455b867e
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 807.5,
+          "y": 2555
+        }
+      }
+  "7":
+    form:
+      description: ""
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: User Acceptance completed
+        options: []
+        optionsarg:
+        - {}
+        - simple: "Yes"
+        - simple: "No"
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: ""
+        type: date
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "1"
+        label: ""
+        labelarg:
+          simple: Additional details
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: ""
+        type: shortText
+      sender: ""
+      title: Customer Reporting - User Acceptance
+      totalanswers: 0
+    id: "7"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc: null
+      body:
+        simple: "${incident.contactname}, \n\nPlease fill out the acceptance survey
+          using the link below."
+      cc: null
+      format: html
+      methods:
+      - email
+      subject:
+        simple: User Acceptance Testing Reporting signoff for ${incident.name}
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: false
+        retriescount: 2
+        retriesinterval: 360
+      to:
+        simple: ${incident.contactemailaddress}
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 327c6992-fcfc-44ab-8ea1-902ad9eab202
+      iscommand: false
+      name: Customer Reporting - User Acceptance
+      type: collection
+      version: -1
+    taskid: 327c6992-fcfc-44ab-8ea1-902ad9eab202
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 797.5,
+          "y": 3235
+        }
+      }
+  "12":
+    id: "12"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "24"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 45f20feb-a826-4fc7-87dd-803bc5114c52
+      iscommand: false
+      name: Start Reporting Phase Timer
+      type: title
+      version: -1
+    taskid: 45f20feb-a826-4fc7-87dd-803bc5114c52
+    timertriggers:
+    - action: start
+      fieldname: usecasereportingtimer
+    - action: start
+      fieldname: usecasecurrentphasetimer
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 1070
+        }
+      }
+  "13":
+    id: "13"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 8ea1fad5-48e2-4c2a-82d0-6c8751119f48
+      iscommand: false
+      name: End
+      type: title
+      version: -1
+    taskid: 8ea1fad5-48e2-4c2a-82d0-6c8751119f48
+    timertriggers:
+    - action: pause
+      fieldname: usecasereportingtimer
+    - action: pause
+      fieldname: usecasecurrentphasetimer
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 3925
+        }
+      }
+  "14":
+    id: "14"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "7"
+      - "33"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      phasestatus:
+        simple: In progress
+      phasestep:
+        simple: User Signoff
+      usecasecompletion:
+        simple: "78"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: a7c8d3c8-a3de-4e34-8cab-33df5029228f
+      iscommand: true
+      name: Set reporting signoff
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: a7c8d3c8-a3de-4e34-8cab-33df5029228f
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 807.5,
+          "y": 2730
+        }
+      }
+  "18":
+    id: "18"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "22"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |
+        Retrieves the current date and time.
+      id: bf653823-27e7-48cb-8048-4d6da94b8fc8
+      iscommand: false
+      name: Get Time
+      scriptName: GetTime
+      type: regular
+      version: -1
+    taskid: bf653823-27e7-48cb-8048-4d6da94b8fc8
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+  "20":
+    id: "20"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: c6562d93-a480-45fd-896c-98794686607b
+      iscommand: false
+      name: Reporting Tasks
+      type: title
+      version: -1
+    taskid: c6562d93-a480-45fd-896c-98794686607b
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 1390
+        }
+      }
+  "21":
+    id: "21"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "12"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      sla:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: incident.processdevelopmentdates.reportingend
+              operator: isNotEmpty
+          root: incident.processdevelopmentdates
+          transformers:
+          - args:
+              field:
+                value:
+                  simple: reportingend
+            operator: getField
+          - operator: LastArrayElement
+          - args:
+              add_utc_timezone: {}
+              dayfirst:
+                value:
+                  simple: "false"
+              fuzzy: {}
+              yearfirst:
+                value:
+                  simple: "true"
+            operator: DateStringToISOFormat
+      slaField:
+        simple: usecasereportingtimer
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: c41782d2-ca6b-4d1a-8387-ebfbb2c56b9f
+      iscommand: true
+      name: Update phase SLA
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: c41782d2-ca6b-4d1a-8387-ebfbb2c56b9f
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+  "22":
+    id: "22"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "21"
+      - "26"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      complexity:
+        simple: ${incident.usecasecomplexity}
+      filter:
+        simple: reporting
+      start_date:
+        complex:
+          root: TimeNowUnix
+          transformers:
+          - operator: LastArrayElement
+          - operator: TimeStampToDate
+          - args:
+              format:
+                value:
+                  simple: 01/02/2006
+            operator: toString
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Calculates the projected dates for phase completion of a use case
+      id: eea91d78-89d5-4d87-8322-edf572ce3586
+      iscommand: false
+      name: Set remaining dates starting today
+      scriptName: CalculateUseCaseDates
+      type: regular
+      version: -1
+    taskid: eea91d78-89d5-4d87-8322-edf572ce3586
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 545
+        }
+      }
+  "24":
+    id: "24"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "20"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      sla:
+        simple: ${incident.usecasereportingtimer.dueDate}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: d8e2225e-e659-48ea-8778-40bb0fa41a1e
+      iscommand: true
+      name: Update incident SLA to reflect new phase SLA
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: d8e2225e-e659-48ea-8778-40bb0fa41a1e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 1215
+        }
+      }
+  "25":
+    id: "25"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "12"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      sla:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: incident.processdevelopmentdates.reportingend
+              operator: isNotEmpty
+          root: incident.processdevelopmentdates
+          transformers:
+          - args:
+              field:
+                value:
+                  simple: reportingend
+            operator: getField
+          - operator: LastArrayElement
+          - args:
+              add_utc_timezone: {}
+              dayfirst:
+                value:
+                  simple: "false"
+              fuzzy: {}
+              yearfirst:
+                value:
+                  simple: "true"
+            operator: DateStringToISOFormat
+      slaField:
+        simple: usecasecurrentphasetimer
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: c3515d75-77e3-4418-8108-9ab9edfc5bc3
+      iscommand: true
+      name: Update currrent phase timer
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: c3515d75-77e3-4418-8108-9ab9edfc5bc3
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 895
+        }
+      }
+  "26":
+    id: "26"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "25"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      all:
+        simple: "false"
+      timerField:
+        simple: usecasecurrentphasetimer
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.reset.timer
+      id: 11971260-5e7e-4b52-8474-a91dc744439f
+      iscommand: true
+      name: Reset current phase timer
+      script: Builtin|||resetTimer
+      type: regular
+      version: -1
+    taskid: 11971260-5e7e-4b52-8474-a91dc744439f
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 720
+        }
+      }
+  "27":
+    id: "27"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "18"
+      - "29"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      phasestatus:
+        simple: Initial
+      phasestep:
+        simple: Develop Reports
+      usecasecompletion:
+        complex:
+          accessor: UseCaseConfig
+          root: lists
+          transformers:
+          - args:
+              field:
+                iscontext: true
+                value:
+                  simple: incident.usecasephase
+            operator: getField
+          - args:
+              field:
+                value:
+                  simple: steps
+            operator: getField
+          - args:
+              field:
+                iscontext: true
+                value:
+                  simple: incident.phasestep
+            operator: getField
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Change the properties of an incident
+      id: ad0caa8e-c7ec-40d7-82d6-b51209d4e5b0
+      iscommand: true
+      name: Set status
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: ad0caa8e-c7ec-40d7-82d6-b51209d4e5b0
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 195
+        }
+      }
+  "28":
+    id: "28"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "13"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      phasestatus:
+        simple: Complete
+      phasestep:
+        simple: User Signoff
+      usecasecompletion:
+        complex:
+          accessor: UseCaseConfig
+          root: lists
+          transformers:
+          - args:
+              field:
+                iscontext: true
+                value:
+                  simple: incident.usecasephase
+            operator: getField
+          - args:
+              field:
+                value:
+                  simple: steps
+            operator: getField
+          - args:
+              field:
+                iscontext: true
+                value:
+                  simple: incident.phasestep
+            operator: getField
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Change the properties of an incident
+      id: 310dac1f-980a-4823-819b-92f37029be44
+      iscommand: true
+      name: Set reporting complete
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 310dac1f-980a-4823-819b-92f37029be44
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 3750
+        }
+      }
+  "29":
+    id: "29"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "12"
+      "yes":
+      - "30"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      value:
+        simple: ${inputs.ExternalTicketId}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      id: d54e50d5-14bd-46d2-8a5b-9a7325cde673
+      iscommand: false
+      name: Is there an external ticket number?
+      scriptName: Exists
+      type: condition
+      version: -1
+    taskid: d54e50d5-14bd-46d2-8a5b-9a7325cde673
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1022.5,
+          "y": 720
+        }
+      }
+  "30":
+    id: "30"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "12"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Updates the status of the Cherwell ticket
+      id: fcaa7172-d811-4d4c-8972-fe83679e5c58
+      iscommand: false
+      name: External ticket logic
+      type: title
+      version: -1
+    taskid: fcaa7172-d811-4d4c-8972-fe83679e5c58
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 910
+        }
+      }
+  "31":
+    id: "31"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "32"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      value:
+        simple: ${inputs.ExternalTicketId}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      id: c2bb0d25-da1a-42a1-8b3b-b8d7ad5afdf0
+      iscommand: false
+      name: Is there an external ticket number?
+      scriptName: Exists
+      type: condition
+      version: -1
+    taskid: c2bb0d25-da1a-42a1-8b3b-b8d7ad5afdf0
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": 2060
+        }
+      }
+  "32":
+    id: "32"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Updates the status of the Cherwell ticket
+      id: b8c011e4-d31c-439e-80fd-6d45b2e8ebb3
+      iscommand: false
+      name: External ticket logic
+      type: title
+      version: -1
+    taskid: b8c011e4-d31c-439e-80fd-6d45b2e8ebb3
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 797.5,
+          "y": 2235
+        }
+      }
+  "33":
+    id: "33"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "34"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      value:
+        simple: ${inputs.ExternalTicketId}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      id: e5c46504-dd80-4f88-8a8d-c5815dc6b73c
+      iscommand: false
+      name: Is there an external ticket number?
+      scriptName: Exists
+      type: condition
+      version: -1
+    taskid: e5c46504-dd80-4f88-8a8d-c5815dc6b73c
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1177.5,
+          "y": 2915
+        }
+      }
+  "34":
+    id: "34"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Updates the status of the Cherwell ticket
+      id: fdfdb019-895c-418a-8210-4a7fd14b5563
+      iscommand: false
+      name: External ticket logic
+      type: title
+      version: -1
+    taskid: fdfdb019-895c-418a-8210-4a7fd14b5563
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 1187.5,
+          "y": 3090
+        }
+      }
+  "35":
+    id: "35"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "13"
+      "yes":
+      - "36"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      value:
+        simple: ${inputs.ExternalTicketId}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      id: e46edbf3-d4ee-47cf-874c-b589a8c89d0e
+      iscommand: false
+      name: Is there an external ticket number?
+      scriptName: Exists
+      type: condition
+      version: -1
+    taskid: e46edbf3-d4ee-47cf-874c-b589a8c89d0e
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 582.5,
+          "y": 3575
+        }
+      }
+  "36":
+    id: "36"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "13"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Updates the status of the Cherwell ticket
+      id: 54c665d1-4604-4143-8e98-4367137f0133
+      iscommand: false
+      name: External ticket logic
+      type: title
+      version: -1
+    taskid: 54c665d1-4604-4143-8e98-4367137f0133
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 715,
+          "y": 3765
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 3940,
+        "width": 1517.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }

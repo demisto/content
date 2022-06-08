@@ -1,0 +1,33 @@
+args:
+- description: Incident object
+  name: incident
+- description: Field definition object
+  name: field
+comment: Updates the selection range for Cost Per Year
+commonfields:
+  id: 5add15ed-30dc-4814-8212-2ca1c048773e
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ""
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 5b6d811b-9e3c-4ee0-8927-0b0e1456da26
+    propagationLabels:
+    - all
+    toServerVersion: ""
+dockerimage: demisto/python3:3.10.4.29342
+enabled: true
+engineinfo: {}
+mainengineinfo: {}
+name: WSJFOptionScript
+pswd: ""
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- field-display
+- use case
+type: python

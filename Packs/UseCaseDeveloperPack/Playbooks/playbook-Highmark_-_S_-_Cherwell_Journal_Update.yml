@@ -1,0 +1,213 @@
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ""
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 5b6d811b-9e3c-4ee0-8927-0b0e1456da26
+    propagationLabels:
+    - all
+    toServerVersion: ""
+id: d5e8cbf2-9c16-4d0b-8f32-9515af1af1b5
+inputs:
+- description: ""
+  key: CherwellTicketID
+  playbookInputQuery: null
+  required: true
+  value: {}
+- description: ""
+  key: JournalEntry
+  playbookInputQuery: null
+  required: true
+  value: {}
+name: Highmark - S - Cherwell Journal Update
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 8fe16c06-737a-48dc-8ba4-deb92451ca35
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 8fe16c06-737a-48dc-8ba4-deb92451ca35
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      value:
+        complex:
+          filters:
+          - - ignorecase: true
+              left:
+                iscontext: true
+                value:
+                  simple: modules.name
+              operator: containsGeneral
+              right:
+                value:
+                  simple: cherwell
+          root: modules.name
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      id: 8a3ff726-f2ee-4c6a-83d6-b614edefadf2
+      iscommand: false
+      name: Is Cherwell integration available?
+      scriptName: Exists
+      type: condition
+      version: -1
+    taskid: 8a3ff726-f2ee-4c6a-83d6-b614edefadf2
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "5"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      value:
+        simple: ${inputs.CherwellTicketID}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      id: 0b03635a-fe96-4f04-8a70-2e5856081736
+      iscommand: false
+      name: Is there a Cherwell ticket number?
+      scriptName: Exists
+      type: condition
+      version: -1
+    taskid: 0b03635a-fe96-4f04-8a70-2e5856081736
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 370
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: f4ae30cc-77a9-426c-863a-d96d6ffd9c5d
+      iscommand: false
+      name: End External Ticketing
+      type: title
+      version: -1
+    taskid: f4ae30cc-77a9-426c-863a-d96d6ffd9c5d
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      details:
+        simple: ${inputs.JournalEntry}
+      incident_id:
+        simple: ${inputs.CherwellTicketID}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Used to add a new journal entry to the Cherwell ticket
+      id: 9c4dc626-83a4-4719-8bdb-65b3528000b1
+      iscommand: false
+      name: Set Cherwell status to in progress
+      scriptName: HighmarkCherwellAddJournalEntry
+      type: regular
+      version: -1
+    taskid: 9c4dc626-83a4-4719-8bdb-65b3528000b1
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 545
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 735,
+        "width": 605,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }

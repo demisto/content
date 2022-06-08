@@ -1,0 +1,415 @@
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ""
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 5b6d811b-9e3c-4ee0-8927-0b0e1456da26
+    propagationLabels:
+    - all
+    toServerVersion: ""
+description: Create tasks for the basic building blocks of use case creation.
+id: 0f493167-5c32-47e0-8bf9-2631b7fe8f69
+inputs: []
+name: Use Case - S - Build Base
+outputs: []
+sourceplaybookid: ae122a0c-b633-4ac5-8f85-060e76a5c526
+starttaskid: "0"
+tags:
+- Use Case Development
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: ee2cdfe7-caf5-40b0-8be3-bb4dc8fbe3ef
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: ee2cdfe7-caf5-40b0-8be3-bb4dc8fbe3ef
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 50
+        }
+      }
+  "1":
+    evidencedata:
+      customfields: {}
+      description:
+        simple: Define Incident Type
+    form:
+      description: This is the primary classification for the use case.
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: usecaseincidenttype
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: Enter Incident Type for this Use Case
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: ""
+        type: shortText
+      sender: ""
+      title: Incident Type
+      totalanswers: 0
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc: null
+      body: null
+      cc: null
+      format: ""
+      methods: []
+      subject: null
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: true
+        retriescount: 2
+        retriesinterval: 360
+      to: null
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      description:
+        simple: Define the type of incident this use case will generate.
+      title:
+        simple: Development - Define Incident Type
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Add a new To-Do task to the specified incident.
+      id: 1428475b-cad8-4df8-8bde-027ea453f6ad
+      iscommand: false
+      name: Development - Define Incident Type
+      type: collection
+      version: -1
+    taskid: 1428475b-cad8-4df8-8bde-027ea453f6ad
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 340
+        }
+      }
+  "2":
+    evidencedata:
+      customfields: {}
+      description:
+        simple: Define Indicator Types
+    form:
+      description: This is the initial list of indicators.
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: usecaseindicators
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: Enter Indicators created for this Use Case
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: ""
+        type: shortText
+      sender: ""
+      title: Define Indicators
+      totalanswers: 0
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc: null
+      body: null
+      cc: null
+      format: ""
+      methods: []
+      subject: null
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: true
+        retriescount: 2
+        retriesinterval: 360
+      to: null
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      description:
+        simple: If there are unique indicators for this use case, define them now.
+      title:
+        simple: Development - Define Indicator Type
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Add a new To-Do task to the specified incident.
+      id: bcf0144a-c1e1-4c2b-89c1-1cf021644aa2
+      iscommand: false
+      name: Development - Define Indicators
+      type: collection
+      version: -1
+    taskid: bcf0144a-c1e1-4c2b-89c1-1cf021644aa2
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 340
+        }
+      }
+  "3":
+    evidencedata:
+      customfields: {}
+      description:
+        simple: Define Incident Layouts
+    form:
+      description: Layouts used by this use case
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: usecaselayout
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: List layouts used in the use case
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: ""
+        type: shortText
+      sender: ""
+      title: Define Layouts
+      totalanswers: 0
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc: null
+      body: null
+      cc: null
+      format: ""
+      methods: []
+      subject: null
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: true
+        retriescount: 2
+        retriesinterval: 360
+      to: null
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      description:
+        simple: Build the layouts
+      title:
+        simple: Development - Define Layouts
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Add a new To-Do task to the specified incident.
+      id: ba456925-59b6-41a7-88a9-0e2fadfd09e0
+      iscommand: false
+      name: Development - Define Layouts
+      type: collection
+      version: -1
+    taskid: ba456925-59b6-41a7-88a9-0e2fadfd09e0
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 340
+        }
+      }
+  "4":
+    evidencedata:
+      customfields: {}
+      description:
+        simple: Define Customer Fields
+    form:
+      description: List all fields used by this Use Case
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: usecasefields
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: Enter fields used
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: ""
+        type: shortText
+      sender: ""
+      title: Define Fields
+      totalanswers: 0
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc: null
+      body: null
+      cc: null
+      format: ""
+      methods: []
+      subject: null
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: true
+        retriescount: 2
+        retriesinterval: 360
+      to: null
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      description:
+        simple: Search for all needed fields. Create any that are specific to this
+          use case.
+      title:
+        simple: Development - Define Fields
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Add a new To-Do task to the specified incident.
+      id: ccb6ce5f-b52e-459b-8553-c106cbc3b675
+      iscommand: false
+      name: Development - Define Fields
+      type: collection
+      version: -1
+    taskid: ccb6ce5f-b52e-459b-8553-c106cbc3b675
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 340
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+      - "2"
+      - "4"
+      - "3"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: f595ddf6-8f9b-4826-8316-c0f03e91548b
+      iscommand: false
+      name: Build Base
+      type: title
+      version: -1
+    taskid: f595ddf6-8f9b-4826-8316-c0f03e91548b
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 195
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 003f2a5b-519f-4006-89f0-d3513fd38f06
+      iscommand: false
+      name: End
+      type: title
+      version: -1
+    taskid: 003f2a5b-519f-4006-89f0-d3513fd38f06
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 515
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 530,
+        "width": 1670,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }

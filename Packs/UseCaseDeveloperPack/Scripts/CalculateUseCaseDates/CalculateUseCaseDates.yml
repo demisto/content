@@ -1,0 +1,63 @@
+args:
+- description: This is the first day of evaluation.
+  name: start_date
+  required: true
+- description: If blank, current incident will be used.
+  name: incident_id
+- auto: PREDEFINED
+  defaultValue: Standard
+  description: Amount of work needed to build the process
+  name: complexity
+  predefined:
+  - Simple
+  - Standard
+  - Complex
+  - HighlyComplex
+- auto: PREDEFINED
+  default: true
+  defaultValue: evaluation,consult,development,useracceptance,reporting,deployment,verify
+  description: return only this subset of dates
+  isArray: true
+  name: filter
+  predefined:
+  - evaluation
+  - consult
+  - development
+  - useracceptance
+  - reporting
+  - deployment
+  - verify
+- auto: PREDEFINED
+  defaultValue: "true"
+  description: Whether to append the results to the array or overwrite
+  name: append
+  predefined:
+  - "true"
+  - "false"
+comment: Calculates the projected dates for phase completion of a use case
+commonfields:
+  id: 0c914adc-2ab5-488f-8706-4007b2e25fbd
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ""
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 5b6d811b-9e3c-4ee0-8927-0b0e1456da26
+    propagationLabels:
+    - all
+    toServerVersion: ""
+dockerimage: demisto/python3:3.10.4.29342
+enabled: true
+engineinfo: {}
+mainengineinfo: {}
+name: CalculateUseCaseDates
+pswd: ""
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- use case
+type: python

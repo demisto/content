@@ -1,0 +1,1370 @@
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ""
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 5b6d811b-9e3c-4ee0-8927-0b0e1456da26
+    propagationLabels:
+    - all
+    toServerVersion: ""
+description: Workflow to check and ensure all components have been migrated to production.
+id: 331cef19-31f1-4b13-8e1c-e67b692dec2e
+inputs: []
+name: Use Case - Deployment
+outputs: []
+sourceplaybookid: ae122a0c-b633-4ac5-8f85-060e76a5c526
+starttaskid: "0"
+tags:
+- Use Case Development
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "17"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 155dacab-72da-4d4b-89c8-7e5aa3c2dda9
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 155dacab-72da-4d4b-89c8-7e5aa3c2dda9
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 50
+        }
+      }
+  "1":
+    evidencedata:
+      customfields: {}
+      description:
+        simple: Incident Type Migration Check
+    form:
+      description: Incident Type listed during development
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: "${incident.usecaseincidenttype}\n\nCheck completed "
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: ""
+        type: date
+      sender: ""
+      title: Migration Check - Incident Type
+      totalanswers: 0
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc: null
+      body: null
+      cc: null
+      format: ""
+      methods: []
+      subject: null
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: true
+        retriescount: 2
+        retriesinterval: 360
+      to: null
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 2
+    scriptarguments:
+      description:
+        simple: Incident Type listed during development - ${incident.usecaseincidenttype}
+      title:
+        simple: Migration Check - Incident Type
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Add a new To-Do task to the specified incident.
+      id: f2f3f889-69f6-4694-8820-1c1da5f7a910
+      iscommand: false
+      name: Check incident type migration
+      type: collection
+      version: -1
+    taskid: f2f3f889-69f6-4694-8820-1c1da5f7a910
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1680
+        }
+      }
+  "2":
+    evidencedata:
+      customfields: {}
+      description:
+        simple: Indicator Migration Check
+    form:
+      description: Indicator Type listed during development
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: |-
+            ${incident.usecaseindicators}
+
+            Check completed
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: ""
+        type: date
+      sender: ""
+      title: Migration Check - Indicator Type
+      totalanswers: 0
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc: null
+      body: null
+      cc: null
+      format: ""
+      methods: []
+      subject: null
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: true
+        retriescount: 2
+        retriesinterval: 360
+      to: null
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 2
+    scriptarguments:
+      description:
+        simple: Indicator Type listed during development - ${incident.usecaseindicators}
+      title:
+        simple: Migration Check - Indicator Type
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Add a new To-Do task to the specified incident.
+      id: 3a73167b-c3d3-411e-8320-4c3426523440
+      iscommand: false
+      name: Check indicator migration
+      type: collection
+      version: -1
+    taskid: 3a73167b-c3d3-411e-8320-4c3426523440
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1680
+        }
+      }
+  "3":
+    evidencedata:
+      customfields: {}
+      description:
+        simple: Layout Migration Check
+    form:
+      description: Layouts listed during development
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: |-
+            ${incident.usecaselayout}
+
+            Check completed
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: ""
+        type: date
+      sender: ""
+      title: Migration Check - Layouts
+      totalanswers: 0
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc: null
+      body: null
+      cc: null
+      format: ""
+      methods: []
+      subject: null
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: true
+        retriescount: 2
+        retriesinterval: 360
+      to: null
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 2
+    scriptarguments:
+      description:
+        simple: Layouts listed during development - ${incident.usecaselayout}
+      title:
+        simple: Migration Check - Layouts
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Add a new To-Do task to the specified incident.
+      id: 10fe514a-6dd1-463c-8b8b-9b9813365d77
+      iscommand: false
+      name: Check layout migration
+      type: collection
+      version: -1
+    taskid: 10fe514a-6dd1-463c-8b8b-9b9813365d77
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1680
+        }
+      }
+  "4":
+    evidencedata:
+      customfields: {}
+      description:
+        simple: Field Migration Check
+    form:
+      description: Fields list during development
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: |-
+            ${incident.usecasefields}
+
+            Check completed
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: ""
+        type: date
+      sender: ""
+      title: Migration Check - Fields
+      totalanswers: 0
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc: null
+      body: null
+      cc: null
+      format: ""
+      methods: []
+      subject: null
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: true
+        retriescount: 2
+        retriesinterval: 360
+      to: null
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 2
+    scriptarguments:
+      description:
+        simple: Fields list during development - ${incident.usecasefields}
+      title:
+        simple: Migration Check - Fields
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Add a new To-Do task to the specified incident.
+      id: a1c00092-0931-410b-8fe1-5d5b989271a2
+      iscommand: false
+      name: Check field migration
+      type: collection
+      version: -1
+    taskid: a1c00092-0931-410b-8fe1-5d5b989271a2
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 1680
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+      - "2"
+      - "4"
+      - "3"
+      - "14"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 91d9d459-1d07-4f5d-80d9-c73ac06dc8f5
+      iscommand: false
+      name: Migration Taskings
+      type: title
+      version: -1
+    taskid: 91d9d459-1d07-4f5d-80d9-c73ac06dc8f5
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1535
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 5075f969-29d4-4fdb-862f-38b0f2d0f2b6
+      iscommand: false
+      name: Integrations
+      type: title
+      version: -1
+    taskid: 5075f969-29d4-4fdb-862f-38b0f2d0f2b6
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1855
+        }
+      }
+  "7":
+    evidencedata:
+      customfields: {}
+      description:
+        simple: Integration Migration Check
+    form:
+      description: Integrations designed during development
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: |-
+            ${incident.usecaseintegrations}
+
+            Check completed
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: ""
+        type: date
+      sender: ""
+      title: Migration Check - Check for needed integrations
+      totalanswers: 0
+    id: "7"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc: null
+      body: null
+      cc: null
+      format: ""
+      methods: []
+      subject: null
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: true
+        retriescount: 2
+        retriesinterval: 360
+      to: null
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 2
+    scriptarguments:
+      description:
+        simple: Integrations designed during development - ${incident.usecaseintegrations}
+      title:
+        simple: Migration Check - Check for needed integrations
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Add a new To-Do task to the specified incident.
+      id: e2261be5-1ed3-4df4-820a-f49e24ee9828
+      iscommand: false
+      name: Check integration migration
+      type: collection
+      version: -1
+    taskid: e2261be5-1ed3-4df4-820a-f49e24ee9828
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 2000
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "9"
+      - "10"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 61e8a812-3c88-4c10-870c-13b38c115df8
+      iscommand: false
+      name: Design Playbooks
+      type: title
+      version: -1
+    taskid: 61e8a812-3c88-4c10-870c-13b38c115df8
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 2175
+        }
+      }
+  "9":
+    evidencedata:
+      customfields: {}
+      description:
+        simple: Main Playbook Migration Check
+    form:
+      description: Check main playbook
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: Check completed
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: ""
+        type: date
+      sender: ""
+      title: Migration Check - Main Playbook
+      totalanswers: 0
+    id: "9"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc: null
+      body: null
+      cc: null
+      format: ""
+      methods: []
+      subject: null
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: true
+        retriescount: 2
+        retriesinterval: 360
+      to: null
+    nexttasks:
+      '#none#':
+      - "11"
+    note: false
+    quietmode: 2
+    scriptarguments:
+      description:
+        simple: Playbooks developed - ${incident.usecaseplaybooks}
+      title:
+        simple: Migration Check - Main Playbook
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Add a new To-Do task to the specified incident.
+      id: 7fe91dc7-07c4-42ae-8925-d93dd71adcd6
+      iscommand: false
+      name: Check main playbook migration
+      type: collection
+      version: -1
+    taskid: 7fe91dc7-07c4-42ae-8925-d93dd71adcd6
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 2320
+        }
+      }
+  "10":
+    evidencedata:
+      customfields: {}
+      description:
+        simple: Sub-playbook Migration Check
+    form:
+      description: Check all sub playbooks
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: Check completed
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: ""
+        type: date
+      sender: ""
+      title: Migration Check - Sub Playbooks
+      totalanswers: 0
+    id: "10"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc: null
+      body: null
+      cc: null
+      format: ""
+      methods: []
+      subject: null
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: true
+        retriescount: 2
+        retriesinterval: 360
+      to: null
+    nexttasks:
+      '#none#':
+      - "11"
+    note: false
+    quietmode: 2
+    scriptarguments:
+      title:
+        simple: Migration Check - Sub Playbooks
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Add a new To-Do task to the specified incident.
+      id: ce32e644-7098-48b8-86c9-e47aa6602d16
+      iscommand: false
+      name: Check sub-playbook migration
+      type: collection
+      version: -1
+    taskid: ce32e644-7098-48b8-86c9-e47aa6602d16
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 2320
+        }
+      }
+  "11":
+    id: "11"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "12"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: e6ffc31c-2f72-4c65-89e6-6a75197e4975
+      iscommand: false
+      name: Testing and Acceptance
+      type: title
+      version: -1
+    taskid: e6ffc31c-2f72-4c65-89e6-6a75197e4975
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 2495
+        }
+      }
+  "12":
+    evidencedata:
+      customfields: {}
+      description:
+        simple: Migration Functionality Check
+    form:
+      description: ""
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: Check completed
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: ""
+        type: date
+      sender: ""
+      title: Migration Check - Test all functionality
+      totalanswers: 0
+    id: "12"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc: null
+      body: null
+      cc: null
+      format: ""
+      methods: []
+      subject: null
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: false
+        retriescount: 2
+        retriesinterval: 360
+      to: null
+    nexttasks:
+      '#none#':
+      - "15"
+    note: false
+    quietmode: 2
+    scriptarguments:
+      title:
+        simple: 'Testing - Test all functionality '
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Add a new To-Do task to the specified incident.
+      id: dd046853-67f2-4bbd-8cae-74a11864f08e
+      iscommand: false
+      name: Test all functionality
+      type: collection
+      version: -1
+    taskid: dd046853-67f2-4bbd-8cae-74a11864f08e
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 2640
+        }
+      }
+  "14":
+    evidencedata:
+      customfields: {}
+      description:
+        simple: List Migration Check
+    form:
+      description: Lists listed during development
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: |-
+            ${incident.usecaselists}
+
+            Check completed
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: ""
+        type: date
+      sender: ""
+      title: Migration Check - Lists
+      totalanswers: 0
+    id: "14"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc: null
+      body: null
+      cc: null
+      format: ""
+      methods: []
+      subject: null
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: true
+        retriescount: 2
+        retriesinterval: 360
+      to: null
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 2
+    scriptarguments:
+      description:
+        simple: Lists listed during development - ${incident.usecaselists}
+      title:
+        simple: Migration Check - Lists
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Add a new To-Do task to the specified incident.
+      id: 48c6372c-9b78-4fa3-8a8e-5d7706d8c8be
+      iscommand: false
+      name: Check list migration
+      type: collection
+      version: -1
+    taskid: 48c6372c-9b78-4fa3-8a8e-5d7706d8c8be
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 1680
+        }
+      }
+  "15":
+    evidencedata:
+      customfields: {}
+      description:
+        simple: Migration Complete
+    form:
+      description: ""
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: Date all migration tasks were completed
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: ""
+        type: date
+      sender: ""
+      title: Migration Task Completion
+      totalanswers: 0
+    id: "15"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc: null
+      body: null
+      cc: null
+      format: ""
+      methods: []
+      subject: null
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: false
+        retriescount: 2
+        retriesinterval: 360
+      to: null
+    nexttasks:
+      '#none#':
+      - "18"
+    note: false
+    quietmode: 2
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 4ea840b5-a3af-45db-8317-afca0f8761df
+      iscommand: false
+      name: Mark migration complete
+      type: collection
+      version: -1
+    taskid: 4ea840b5-a3af-45db-8317-afca0f8761df
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 2815
+        }
+      }
+  "16":
+    id: "16"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 58abc26e-3456-4eaa-8061-e16efa04558f
+      iscommand: false
+      name: End
+      type: title
+      version: -1
+    taskid: 58abc26e-3456-4eaa-8061-e16efa04558f
+    timertriggers:
+    - action: pause
+      fieldname: usecasedeploymenttimer
+    - action: pause
+      fieldname: usecasecurrentphasetimer
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 3165
+        }
+      }
+  "17":
+    id: "17"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "19"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      phasestatus:
+        simple: Initial
+      phasestep:
+        simple: Create Migration Plan
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: 2fd8849d-09c9-4485-8773-e2ca5a46f1b0
+      iscommand: true
+      name: Set deployment start status and step
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 2fd8849d-09c9-4485-8773-e2ca5a46f1b0
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 195
+        }
+      }
+  "18":
+    id: "18"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "16"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      phasestatus:
+        simple: Complete
+      phasestep:
+        simple: Verify
+      usecasecompletion:
+        simple: "90"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: 2a659c5c-c682-48f1-8003-cc30b070cb0f
+      iscommand: true
+      name: Set deployment end
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 2a659c5c-c682-48f1-8003-cc30b070cb0f
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 2990
+        }
+      }
+  "19":
+    id: "19"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "22"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: c2ea858a-6182-41f2-80d3-b208a8f7315d
+      iscommand: false
+      name: Set Initial Deployment Timer
+      type: title
+      version: -1
+    taskid: c2ea858a-6182-41f2-80d3-b208a8f7315d
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 370
+        }
+      }
+  "22":
+    id: "22"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "27"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |
+        Retrieves the current date and time.
+      id: 5fd62d64-3ee3-498d-8dd9-a021d3b24a17
+      iscommand: false
+      name: Get Time
+      scriptName: GetTime
+      type: regular
+      version: -1
+    taskid: 5fd62d64-3ee3-498d-8dd9-a021d3b24a17
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 515
+        }
+      }
+  "24":
+    id: "24"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "28"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 3189ce84-9269-416e-800f-9b36a8dce78a
+      iscommand: false
+      name: Start Deployment Timer
+      type: title
+      version: -1
+    taskid: 3189ce84-9269-416e-800f-9b36a8dce78a
+    timertriggers:
+    - action: start
+      fieldname: usecasedeploymenttimer
+    - action: start
+      fieldname: usecasecurrentphasetimer
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1215
+        }
+      }
+  "25":
+    id: "25"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "24"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      sla:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: incident.processdevelopmentdates.deploymentend
+              operator: isNotEmpty
+          root: incident.processdevelopmentdates
+          transformers:
+          - args:
+              field:
+                value:
+                  simple: deploymentend
+            operator: getField
+          - operator: LastArrayElement
+          - args:
+              add_utc_timezone:
+                value:
+                  simple: "false"
+              dayfirst:
+                value:
+                  simple: "false"
+              fuzzy:
+                value:
+                  simple: "true"
+              yearfirst:
+                value:
+                  simple: "true"
+            operator: DateStringToISOFormat
+      slaField:
+        simple: usecasedeploymenttimer
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: d08f7243-4a86-446f-8f5c-c059ddc37b54
+      iscommand: true
+      name: Set phase SLA
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: d08f7243-4a86-446f-8f5c-c059ddc37b54
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 1040
+        }
+      }
+  "27":
+    id: "27"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "25"
+      - "30"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      complexity:
+        simple: ${incident.usecasecomplexity}
+      filter:
+        simple: deployment
+      start_date:
+        complex:
+          root: TimeNowUnix
+          transformers:
+          - operator: LastArrayElement
+          - operator: TimeStampToDate
+          - args:
+              format:
+                value:
+                  simple: 01/02/2006
+            operator: toString
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Calculates the projected dates for phase completion of a use case
+      id: de655351-7f53-45a3-8d91-52a686f68ef6
+      iscommand: false
+      name: Set remaining dates starting today
+      scriptName: CalculateUseCaseDates
+      type: regular
+      version: -1
+    taskid: de655351-7f53-45a3-8d91-52a686f68ef6
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 690
+        }
+      }
+  "28":
+    id: "28"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      sla:
+        simple: ${incident.usecasedeploymenttimer.dueDate}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: 0f20ec79-e581-492b-8944-2319335eaac0
+      iscommand: true
+      name: Update incident SLA to reflect new phase SLA
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 0f20ec79-e581-492b-8944-2319335eaac0
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1360
+        }
+      }
+  "29":
+    id: "29"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "24"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      sla:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: incident.processdevelopmentdates.deploymentend
+              operator: isNotEmpty
+          root: incident.processdevelopmentdates
+          transformers:
+          - args:
+              field:
+                value:
+                  simple: deploymentend
+            operator: getField
+          - operator: LastArrayElement
+          - args:
+              add_utc_timezone:
+                value:
+                  simple: "false"
+              dayfirst:
+                value:
+                  simple: "false"
+              fuzzy:
+                value:
+                  simple: "true"
+              yearfirst:
+                value:
+                  simple: "true"
+            operator: DateStringToISOFormat
+      slaField:
+        simple: usecasecurrentphasetimer
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: 43fa03f6-4464-4f72-8a19-b92db411ebb5
+      iscommand: true
+      name: Set phase SLA
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 43fa03f6-4464-4f72-8a19-b92db411ebb5
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 1040
+        }
+      }
+  "30":
+    id: "30"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "29"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      all:
+        simple: "false"
+      timerField:
+        simple: usecasecurrentphasetimer
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.reset.timer
+      id: 55fc30a4-9de0-45f1-8cfc-3319cb45208c
+      iscommand: true
+      name: Reset current phase timer
+      script: Builtin|||resetTimer
+      type: regular
+      version: -1
+    taskid: 55fc30a4-9de0-45f1-8cfc-3319cb45208c
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 865
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 3180,
+        "width": 2100,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }

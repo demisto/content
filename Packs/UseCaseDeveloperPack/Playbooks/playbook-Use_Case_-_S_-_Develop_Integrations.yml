@@ -1,0 +1,688 @@
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ""
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 5b6d811b-9e3c-4ee0-8927-0b0e1456da26
+    propagationLabels:
+    - all
+    toServerVersion: ""
+description: Create development/creation tasks for all required integrations.
+id: 410ed77e-4437-4751-8a7a-ccb4856afd9f
+inputs: []
+name: Use Case - S - Develop Integrations
+outputs: []
+sourceplaybookid: ae122a0c-b633-4ac5-8f85-060e76a5c526
+starttaskid: "0"
+tags:
+- Use Case Development
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: f52a4109-d33d-4f9d-8c07-3b6dc07ed94f
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: f52a4109-d33d-4f9d-8c07-3b6dc07ed94f
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 50
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: de2bf652-1186-45c0-8595-c90a7b5e20f6
+      iscommand: false
+      name: Integrations
+      type: title
+      version: -1
+    taskid: de2bf652-1186-45c0-8595-c90a7b5e20f6
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 195
+        }
+      }
+  "7":
+    evidencedata:
+      customfields: {}
+      description:
+        simple: Integration Check
+    form:
+      description: ""
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: Does this use case require use of shared integrations?
+        options: []
+        optionsarg:
+        - {}
+        - simple: "Yes"
+        - simple: "No"
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: ""
+        type: singleSelect
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "1"
+        label: ""
+        labelarg:
+          simple: Does this use case require use of private integrations?
+        options: []
+        optionsarg:
+        - {}
+        - simple: "Yes"
+        - simple: "No"
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: ""
+        type: singleSelect
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "2"
+        label: ""
+        labelarg:
+          simple: Does this use case require any integrations to be developed?
+        options: []
+        optionsarg:
+        - {}
+        - simple: "Yes"
+        - simple: "No"
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: ""
+        type: singleSelect
+      sender: ""
+      title: Integrations
+      totalanswers: 0
+    id: "7"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc: null
+      body: null
+      cc: null
+      format: ""
+      methods: []
+      subject: null
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: true
+        retriescount: 2
+        retriesinterval: 360
+      to: null
+    nexttasks:
+      '#none#':
+      - "44"
+      - "45"
+      - "46"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      title:
+        simple: Integrations - Check for needed integrations
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Add a new To-Do task to the specified incident.
+      id: 329ea6e2-b326-4eaa-8b79-a418768252a7
+      iscommand: false
+      name: Integrations - Check for needed integrations
+      type: collection
+      version: -1
+    taskid: 329ea6e2-b326-4eaa-8b79-a418768252a7
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 340
+        }
+      }
+  "42":
+    id: "42"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "51"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: d2f57dde-5222-4582-8d17-7fbaab49f882
+      iscommand: false
+      name: Integration testing
+      type: title
+      version: -1
+    taskid: d2f57dde-5222-4582-8d17-7fbaab49f882
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 865
+        }
+      }
+  "43":
+    evidencedata:
+      customfields: {}
+      description:
+        simple: Shared Integrations
+    form:
+      description: These are integrations that other use cases or users may be using.
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: List all shared integrations
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: ""
+        type: shortText
+      sender: ""
+      title: Shared Integrations
+      totalanswers: 0
+    id: "43"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc: null
+      body: null
+      cc: null
+      format: ""
+      methods: []
+      subject: null
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: false
+        retriescount: 2
+        retriesinterval: 360
+      to: null
+    nexttasks:
+      '#none#':
+      - "42"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: f9721f8f-e566-45ab-850c-784a6e53d33e
+      iscommand: false
+      name: List shared integrations
+      type: collection
+      version: -1
+    taskid: f9721f8f-e566-45ab-850c-784a6e53d33e
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 690
+        }
+      }
+  "44":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Integrations.Answers.0
+          operator: isEqualString
+          right:
+            value:
+              simple: "Yes"
+      label: "yes"
+    id: "44"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "42"
+      "yes":
+      - "43"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 8db86041-925b-4138-85f4-55598b97ed9b
+      iscommand: false
+      name: Are shared integrations used?
+      type: condition
+      version: -1
+    taskid: 8db86041-925b-4138-85f4-55598b97ed9b
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 515
+        }
+      }
+  "45":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Integrations.Answers.1
+          operator: isEqualString
+          right:
+            value:
+              simple: "Yes"
+      label: "yes"
+    id: "45"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "42"
+      "yes":
+      - "47"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 771e1b65-862d-4440-8cb7-19b1ff3cb0e1
+      iscommand: false
+      name: Are shared private used?
+      type: condition
+      version: -1
+    taskid: 771e1b65-862d-4440-8cb7-19b1ff3cb0e1
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 515
+        }
+      }
+  "46":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Integrations.Answers.2
+          operator: isEqualString
+          right:
+            value:
+              simple: "Yes"
+      label: "yes"
+    id: "46"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "42"
+      "yes":
+      - "48"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: ec5657a4-8c74-485e-81c0-682036d9fddd
+      iscommand: false
+      name: Are custom integrations used?
+      type: condition
+      version: -1
+    taskid: ec5657a4-8c74-485e-81c0-682036d9fddd
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 950,
+          "y": 515
+        }
+      }
+  "47":
+    evidencedata:
+      customfields: {}
+      description:
+        simple: Private Integrations
+    form:
+      description: These are integrations that are exclusive to this use case
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: List all private integrations
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: ""
+        type: shortText
+      sender: ""
+      title: Private Integrations
+      totalanswers: 0
+    id: "47"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc: null
+      body: null
+      cc: null
+      format: ""
+      methods: []
+      subject: null
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: false
+        retriescount: 2
+        retriesinterval: 360
+      to: null
+    nexttasks:
+      '#none#':
+      - "42"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 462e4976-87b3-4df5-8787-6fbdabce7263
+      iscommand: false
+      name: List private integrations
+      type: collection
+      version: -1
+    taskid: 462e4976-87b3-4df5-8787-6fbdabce7263
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 612.5,
+          "y": 690
+        }
+      }
+  "48":
+    evidencedata:
+      customfields: {}
+      description:
+        simple: Custom Integrations
+    form:
+      description: These are integrations created internally
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: List all custom integrations
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: ""
+        type: shortText
+      sender: ""
+      title: Custom Integrations
+      totalanswers: 0
+    id: "48"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc: null
+      body: null
+      cc: null
+      format: ""
+      methods: []
+      subject: null
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: false
+        retriescount: 2
+        retriesinterval: 360
+      to: null
+    nexttasks:
+      '#none#':
+      - "42"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: ddfed8e2-91e0-4577-86f8-bf85f321b6a6
+      iscommand: false
+      name: List custom integrations
+      type: collection
+      version: -1
+    taskid: ddfed8e2-91e0-4577-86f8-bf85f321b6a6
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 1062.5,
+          "y": 690
+        }
+      }
+  "49":
+    evidencedata:
+      customfields: {}
+      description:
+        simple: Integration Validation
+    form:
+      description: ""
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: Confirmation date of all integrations working
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: ""
+        type: date
+      sender: ""
+      title: Integration validation
+      totalanswers: 0
+    id: "49"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc: null
+      body: null
+      cc: null
+      format: ""
+      methods: []
+      subject: null
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: true
+        retriescount: 2
+        retriesinterval: 360
+      to: null
+    nexttasks:
+      '#none#':
+      - "50"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: dcd01d07-5274-46d8-89f4-668b87b49eae
+      iscommand: false
+      name: Integration validation
+      type: collection
+      version: -1
+    taskid: dcd01d07-5274-46d8-89f4-668b87b49eae
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 1185
+        }
+      }
+  "50":
+    id: "50"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 2f53105a-94d8-475b-8a99-f7e92360855b
+      iscommand: false
+      name: End
+      type: title
+      version: -1
+    taskid: 2f53105a-94d8-475b-8a99-f7e92360855b
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 1360
+        }
+      }
+  "51":
+    id: "51"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "49"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      usecaseintegrations:
+        simple: '{"Custom": ${Custom Integrations.Answers.0}, "Private": ${Private
+          Integrations.Answers.0}, "Shared": ${Shared Integrations.Answers.0}}'
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: bb51adf6-c974-41fc-89ea-9b9084893f1b
+      iscommand: true
+      name: Consolidate integrations
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: bb51adf6-c974-41fc-89ea-9b9084893f1b
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 1010
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1375,
+        "width": 1392.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }

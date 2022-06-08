@@ -1,0 +1,47 @@
+args:
+- auto: PREDEFINED
+  description: The old value of the field that was changed.
+  name: old
+  predefined:
+  - Low
+  - Medium
+  - High
+  - Critical
+- auto: PREDEFINED
+  description: The new value of the field that was changed.
+  name: new
+  predefined:
+  - Low
+  - Medium
+  - High
+  - Critical
+comment: |-
+  Changes the remediation SLA once a change in incident severity occurs.
+  This is done automatically and the changes can be configured to your needs.
+commonfields:
+  id: da41f1df-9395-4e9a-86bb-3f69bd2391d4
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ""
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 5b6d811b-9e3c-4ee0-8927-0b0e1456da26
+    propagationLabels:
+    - all
+    toServerVersion: ""
+dockerimage: demisto/python3:3.10.4.29342
+enabled: true
+engineinfo: {}
+mainengineinfo: {}
+name: UseCaseStepChangeTrigger
+pswd: ""
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- field-change-triggered
+- use case
+type: python

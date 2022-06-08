@@ -1,0 +1,20 @@
+List of valid phases from configuration file.
+
+## Script Data
+---
+
+| **Name** | **Description** |
+| --- | --- |
+| Script Type | python3 |
+| Tags | field-display, use case |
+
+## Inputs
+---
+There are no inputs for this script.
+
+## Outputs
+---
+
+| **Path** | **Description** | **Type** |
+| --- | --- | --- |
+| MyList |  | Unknown |

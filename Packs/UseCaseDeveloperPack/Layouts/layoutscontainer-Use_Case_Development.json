@@ -1,0 +1,1698 @@
+{
+	"cacheVersn": 0,
+	"close": {
+		"sections": [
+			{
+				"description": "",
+				"fields": [
+					{
+						"fieldId": "incident_closereason",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_kanban",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_closenotes",
+						"isVisible": true
+					}
+				],
+				"isVisible": true,
+				"name": "Basic Information",
+				"query": null,
+				"queryType": "",
+				"readOnly": false,
+				"type": ""
+			}
+		]
+	},
+	"definitionId": "",
+	"description": "This is the base process for evaluating and implementing Use Cases in to XSOAR by the Automation Team.",
+	"detached": false,
+	"details": null,
+	"detailsV2": {
+		"TypeName": "",
+		"tabs": [
+			{
+				"id": "summary",
+				"name": "Legacy Summary",
+				"type": "summary"
+			},
+			{
+				"id": "caseinfoid",
+				"mobileHidden": true,
+				"name": "Overview",
+				"readOnly": true,
+				"roles": [],
+				"sections": [
+					{
+						"displayType": "CARD",
+						"h": 5,
+						"i": "caseinfoid-dx0oolsnue-caseinfoid-field-changed-caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+						"isVisible": true,
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "owner",
+								"height": 53,
+								"id": "incident-owner-field",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "usecaseowner",
+								"height": 53,
+								"id": "ffe793b0-98a3-11eb-81e5-8b1b384c2dab",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "contactemailaddress",
+								"height": 53,
+								"id": "77c1cfd0-a12e-11eb-83b6-9f94ce97eb8d",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "contactname",
+								"height": 53,
+								"id": "729691d0-a12e-11eb-83b6-9f94ce97eb8d",
+								"index": 3,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "teamname",
+								"height": 53,
+								"id": "8c82c720-8c08-11eb-ba83-01c7cdda3411",
+								"index": 4,
+								"listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "usecaseclassification",
+								"height": 53,
+								"id": "c9e083e0-b1c5-11eb-933f-ed01fe3ab08b",
+								"index": 5,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "overview",
+								"height": 53,
+								"id": "349c60b0-8c09-11eb-ba83-01c7cdda3411",
+								"index": 6,
+								"listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "dbotcreatedby",
+								"height": 53,
+								"id": "0c1e8560-e8ba-11eb-9f42-55947b067a03",
+								"index": 7,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Use Case Details",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 0
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"i": "caseinfoid-dx0oolsnue-caseinfoid-field-changed-caseinfoid-770ec200-98b1-11e9-97d7-ed26ef9e46c8",
+						"isVisible": true,
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Linked Use Cases",
+						"static": false,
+						"type": "linkedIncidents",
+						"w": 1,
+						"x": 1,
+						"y": 7
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"hideName": false,
+						"i": "caseinfoid-dx0oolsnue-caseinfoid-field-changed-caseinfoid-7717e580-9bed-11e9-9a3f-8b4b2158e260",
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Team Members",
+						"static": false,
+						"type": "team",
+						"w": 1,
+						"x": 0,
+						"y": 7
+					},
+					{
+						"displayType": "CARD",
+						"h": 5,
+						"i": "caseinfoid-dx0oolsnue-caseinfoid-field-changed-caseinfoid-ac32f620-a0b0-11e9-b27f-13ae1773d289",
+						"items": [
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "dbotcreated",
+								"height": 53,
+								"id": "incident-created-field",
+								"index": 0,
+								"listId": "caseinfoid-ac32f620-a0b0-11e9-b27f-13ae1773d289",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "dbotmodified",
+								"height": 53,
+								"id": "incident-modified-field",
+								"index": 1,
+								"listId": "caseinfoid-ac32f620-a0b0-11e9-b27f-13ae1773d289",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "usecaseprojectedgolivedate",
+								"height": 53,
+								"id": "1db39bc0-b7f6-11eb-a5f7-fd96c5599115",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "usecasetechnicalwaittimer",
+								"height": 53,
+								"id": "6908add0-befa-11eb-816c-bbfdeb5f739b",
+								"index": 3,
+								"listId": "caseinfoid-ac32f620-a0b0-11e9-b27f-13ae1773d289",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "usecasedelaytimer",
+								"height": 53,
+								"id": "3affe140-b8a3-11eb-aa5c-81d2ed425f6c",
+								"index": 4,
+								"listId": "caseinfoid-ac32f620-a0b0-11e9-b27f-13ae1773d289",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "usecasecustomerwaittimer",
+								"height": 53,
+								"id": "765d4ea0-befa-11eb-816c-bbfdeb5f739b",
+								"index": 5,
+								"listId": "caseinfoid-ac32f620-a0b0-11e9-b27f-13ae1773d289",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "usecaseevaluationtimer",
+								"height": 53,
+								"id": "1b98a440-31b6-11ec-9aa2-abe6259acfcc",
+								"index": 6,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "usecasecustomerdesigntimer",
+								"height": 53,
+								"id": "7d4f4170-986f-11eb-9acb-a795fa13865e",
+								"index": 7,
+								"listId": "caseinfoid-ac32f620-a0b0-11e9-b27f-13ae1773d289",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "usecasegolivetimer",
+								"height": 53,
+								"id": "f6ee8770-b7f5-11eb-a5f7-fd96c5599115",
+								"index": 8,
+								"listId": "caseinfoid-ac32f620-a0b0-11e9-b27f-13ae1773d289",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "initialusecaseevaluation",
+								"height": 53,
+								"id": "bdf7cbd0-986e-11eb-9acb-a795fa13865e",
+								"index": 9,
+								"listId": "caseinfoid-ac32f620-a0b0-11e9-b27f-13ae1773d289",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "usecasedevelopmenttimer",
+								"height": 53,
+								"id": "98d3e0d0-d047-11eb-9df5-b9c1f860280d",
+								"index": 9,
+								"listId": "caseinfoid-ac32f620-a0b0-11e9-b27f-13ae1773d289",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "usecasereportingtimer",
+								"height": 53,
+								"id": "dcb92a40-a120-11eb-bff0-bde29c29b558",
+								"index": 10,
+								"listId": "caseinfoid-ac32f620-a0b0-11e9-b27f-13ae1773d289",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "usecasetestingtimer",
+								"height": 53,
+								"id": "b6508dc0-d047-11eb-9df5-b9c1f860280d",
+								"index": 11,
+								"listId": "caseinfoid-ac32f620-a0b0-11e9-b27f-13ae1773d289",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "usecasedeploymenttimer",
+								"height": 53,
+								"id": "e3db5640-a120-11eb-bff0-bde29c29b558",
+								"index": 12,
+								"listId": "caseinfoid-ac32f620-a0b0-11e9-b27f-13ae1773d289",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "usecaseverificationtimer",
+								"height": 53,
+								"id": "b9094520-d047-11eb-9df5-b9c1f860280d",
+								"index": 13,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Timeline Information",
+						"static": false,
+						"w": 1,
+						"x": 2,
+						"y": 0
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"i": "caseinfoid-dx0oolsnue-caseinfoid-field-changed-caseinfoid-88e6bf70-a0b1-11e9-b27f-13ae1773d289",
+						"isVisible": true,
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "closereason",
+								"height": 22,
+								"id": "incident-closeReason-field",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "closenotes",
+								"height": 44,
+								"id": "incident-closeNotes-field",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "dbotclosed",
+								"height": 22,
+								"id": "incident-dbotClosed-field",
+								"index": 3,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Closing Information",
+						"static": false,
+						"w": 1,
+						"x": 1,
+						"y": 3
+					},
+					{
+						"displayType": "ROW",
+						"h": 3,
+						"hideName": false,
+						"i": "caseinfoid-dx0oolsnue-caseinfoid-field-changed-caseinfoid-cdaa61e0-a116-11eb-bd01-a522ecb338a1",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "kanban",
+								"height": 22,
+								"id": "edbe2570-d28f-11eb-9c18-234c34c71c03",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "automationplatform",
+								"height": 22,
+								"id": "0f25c8b0-c576-11ec-846f-09ee30ef198a",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "usecasephase",
+								"height": 22,
+								"id": "65bfcda0-9959-11eb-b708-d51906ca5dc0",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "phasestep",
+								"height": 22,
+								"id": "a9afda00-d04f-11eb-9df5-b9c1f860280d",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "statusnotes",
+								"height": 22,
+								"id": "1fbbbf80-b25e-11eb-a1db-75f39101a63d",
+								"index": 3,
+								"listId": "caseinfoid-cdaa61e0-a116-11eb-bd01-a522ecb338a1",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "businessoutcomes",
+								"height": 22,
+								"id": "be313360-a116-11eb-bd01-a522ecb338a1",
+								"index": 5,
+								"listId": "caseinfoid-cdaa61e0-a116-11eb-bd01-a522ecb338a1",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "phasestatus",
+								"height": 22,
+								"id": "8c43c660-a111-11eb-bd01-a522ecb338a1",
+								"index": 6,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "usecasecompletion",
+								"height": 22,
+								"id": "f4d25b50-9bb3-11eb-942b-d73f2e647798",
+								"index": 7,
+								"listId": "caseinfoid-cdaa61e0-a116-11eb-bd01-a522ecb338a1",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "wsjfscore",
+								"height": 22,
+								"id": "99daa340-d4f9-11eb-95dc-07ac8aeaf71d",
+								"index": 8,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Status Details",
+						"static": false,
+						"w": 1,
+						"x": 1,
+						"y": 0
+					},
+					{
+						"displayType": "CARD",
+						"h": 2,
+						"hideName": true,
+						"i": "caseinfoid-dx0oolsnue-caseinfoid-field-changed-caseinfoid-8b213f20-d4f5-11eb-95dc-07ac8aeaf71d",
+						"items": [
+							{
+								"dropEffect": "move",
+								"endCol": 6,
+								"fieldId": "processdevelopmentdates",
+								"height": 106,
+								"id": "f2647d00-d4f5-11eb-95dc-07ac8aeaf71d",
+								"index": 0,
+								"listId": "caseinfoid-8b213f20-d4f5-11eb-95dc-07ac8aeaf71d",
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Target Dates",
+						"static": false,
+						"w": 3,
+						"x": 0,
+						"y": 5
+					},
+					{
+						"h": 2,
+						"i": "caseinfoid-d8e035a0-e33f-11ec-83c0-290fbfa74c9c",
+						"items": [],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Child Incidents",
+						"static": false,
+						"type": "childInv",
+						"w": 1,
+						"x": 2,
+						"y": 7
+					}
+				],
+				"type": "custom",
+				"webHidden": false
+			},
+			{
+				"hidden": false,
+				"id": "dx0oolsnue",
+				"mobileHidden": true,
+				"name": "Use Case Details",
+				"readOnly": true,
+				"roles": [],
+				"sections": [
+					{
+						"description": "",
+						"displayType": "ROW",
+						"h": 4,
+						"hideItemTitleOnlyOne": true,
+						"hideName": false,
+						"i": "dx0oolsnue-caseinfoid-dx0oolsnue-d2b76160-9932-11eb-b24b-5bedd9ce7926",
+						"items": [
+							{
+								"endCol": 4,
+								"fieldId": "overview",
+								"height": 22,
+								"id": "fa4379b0-c85a-11eb-8dd5-c1148850e629",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 4,
+								"fieldId": "additionaldetails",
+								"height": 22,
+								"id": "110ec3a0-001b-11ec-adbe-c9a9c41d7a79",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 4,
+								"fieldId": "processsources",
+								"height": 22,
+								"id": "72a50ed0-0bec-11ec-83f2-f7517a4e3069",
+								"index": 2,
+								"listId": "caseinfoid-dx0oolsnue-d2b76160-9932-11eb-b24b-5bedd9ce7926",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "purpose",
+								"height": 22,
+								"id": "321e8720-c85c-11eb-8dd5-c1148850e629",
+								"index": 3,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "scope",
+								"height": 22,
+								"id": "38c393e0-c85c-11eb-8dd5-c1148850e629",
+								"index": 4,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxH": null,
+						"maxW": 2,
+						"minH": 1,
+						"minW": 2,
+						"moved": false,
+						"name": "Overview",
+						"static": false,
+						"w": 2,
+						"x": 0,
+						"y": 0
+					},
+					{
+						"description": "Below is the current Business process as discussed in the engagement with the primary point of contact.",
+						"displayType": "CARD",
+						"h": 3,
+						"hideItemTitleOnlyOne": true,
+						"hideName": false,
+						"i": "dx0oolsnue-caseinfoid-d537dfc0-c85b-11eb-8dd5-c1148850e629",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "businessprocessdocuments",
+								"height": 22,
+								"id": "1facc730-c85e-11eb-8dd5-c1148850e629",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxH": null,
+						"maxW": 1,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Business Process",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 4
+					},
+					{
+						"description": "",
+						"displayType": "ROW",
+						"h": 3,
+						"hideItemTitleOnlyOne": false,
+						"hideName": false,
+						"i": "dx0oolsnue-caseinfoid-488738e0-c85c-11eb-8dd5-c1148850e629",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "teamname",
+								"height": 22,
+								"id": "4272af80-c860-11eb-8c84-c9f53a5053d3",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "usecaseowner",
+								"height": 22,
+								"id": "617475d0-c860-11eb-8c84-c9f53a5053d3",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "contactname",
+								"height": 22,
+								"id": "89c644a0-c860-11eb-8c84-c9f53a5053d3",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "contactemailaddress",
+								"height": 22,
+								"id": "86af8ec0-c860-11eb-8c84-c9f53a5053d3",
+								"index": 3,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "affectedteams",
+								"height": 22,
+								"id": "0f5bf600-c861-11eb-8c84-c9f53a5053d3",
+								"index": 4,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxH": null,
+						"maxW": 1,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Audience",
+						"static": false,
+						"w": 1,
+						"x": 2,
+						"y": 4
+					},
+					{
+						"description": "Below you'll identify the transformed version of the Business process. As you may observe we may use a number of sub-process (playbooks) to automate the existing process.",
+						"displayType": "ROW",
+						"h": 3,
+						"hideItemTitleOnlyOne": true,
+						"hideName": false,
+						"i": "dx0oolsnue-caseinfoid-9d2c1370-c85c-11eb-8dd5-c1148850e629",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "automationprocessdocuments",
+								"height": 53,
+								"id": "9e041200-c85e-11eb-8dd5-c1148850e629",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxH": null,
+						"maxW": 1,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Automation Transformed Process",
+						"static": false,
+						"w": 1,
+						"x": 1,
+						"y": 4
+					},
+					{
+						"description": "Images of the playbooks used in this Use Case",
+						"displayType": "CARD",
+						"h": 3,
+						"hideItemTitleOnlyOne": true,
+						"hideName": false,
+						"i": "dx0oolsnue-caseinfoid-649fb000-c85e-11eb-8dd5-c1148850e629",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "automationplaybooks",
+								"height": 53,
+								"id": "74833910-c85e-11eb-8dd5-c1148850e629",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxH": null,
+						"maxW": 1,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Playbooks",
+						"static": false,
+						"w": 1,
+						"x": 1,
+						"y": 7
+					},
+					{
+						"description": "Other related requests or use cases",
+						"h": 3,
+						"i": "dx0oolsnue-caseinfoid-32b54180-c85f-11eb-8c84-c9f53a5053d3",
+						"items": [],
+						"maxH": null,
+						"maxW": 2,
+						"minH": 1,
+						"minW": 2,
+						"moved": false,
+						"name": "Linked Requests",
+						"static": false,
+						"type": "linkedIncidents",
+						"w": 2,
+						"x": 0,
+						"y": 10
+					},
+					{
+						"description": "This section contains all test plans from the customer as related to approval.",
+						"displayType": "CARD",
+						"h": 3,
+						"hideName": false,
+						"i": "dx0oolsnue-caseinfoid-00985b40-d4eb-11eb-8439-3bd49f8aa8ea",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "usecasetestplans",
+								"height": 53,
+								"id": "7e37eed0-d4eb-11eb-8439-3bd49f8aa8ea",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "usecasetestplannotes",
+								"height": 22,
+								"id": "7d3dddc0-d4f3-11eb-95dc-07ac8aeaf71d",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxH": null,
+						"maxW": 1,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Test Plans",
+						"static": false,
+						"w": 1,
+						"x": 2,
+						"y": 7
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"hideName": true,
+						"i": "dx0oolsnue-caseinfoid-7781d4a0-d4f7-11eb-95dc-07ac8aeaf71d",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "frequencyoftask",
+								"height": 22,
+								"id": "520e2a10-d4f8-11eb-95dc-07ac8aeaf71d",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "numberofusersaffected",
+								"height": 22,
+								"id": "5af7f6b0-d4f8-11eb-95dc-07ac8aeaf71d",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "lengthoftask",
+								"height": 22,
+								"id": "fea245b0-31b2-11ec-8140-3d970b82025c",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "estyearlycost",
+								"height": 22,
+								"id": "d1fa93d0-d4f8-11eb-95dc-07ac8aeaf71d",
+								"index": 3,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxH": null,
+						"maxW": 1,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Stats",
+						"static": false,
+						"w": 1,
+						"x": 2,
+						"y": 0
+					},
+					{
+						"displayType": "CARD",
+						"h": 3,
+						"hideItemTitleOnlyOne": true,
+						"i": "dx0oolsnue-caseinfoid-57e0fd40-d4f9-11eb-95dc-07ac8aeaf71d",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "incident_attachment",
+								"height": 53,
+								"id": "57c8ba51-d4f9-11eb-95dc-07ac8aeaf71d",
+								"index": 0,
+								"isVisible": true,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxH": null,
+						"maxW": 1,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "All Attachments",
+						"static": false,
+						"type": "",
+						"w": 1,
+						"x": 2,
+						"y": 10
+					},
+					{
+						"description": "",
+						"displayType": "ROW",
+						"h": 2,
+						"hideName": true,
+						"i": "dx0oolsnue-caseinfoid-1db0bd40-3cd7-11ec-adee-217560ee27a7",
+						"items": [
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "usecasecomplexity",
+								"height": 22,
+								"id": "bbe64960-e3fb-11eb-a766-75f75b4fa635",
+								"index": 0,
+								"listId": "caseinfoid-7781d4a0-d4f7-11eb-95dc-07ac8aeaf71d",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "howlong",
+								"height": 22,
+								"id": "fa732c90-3cd7-11ec-adee-217560ee27a7",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "viability",
+								"height": 22,
+								"id": "56f7e360-9012-11ec-9ce6-f34c4db9f1cc",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "processautomationpercent",
+								"height": 22,
+								"id": "f2ccfb70-d4f8-11eb-95dc-07ac8aeaf71d",
+								"index": 3,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "impact",
+								"height": 22,
+								"id": "e533b080-d4f8-11eb-95dc-07ac8aeaf71d",
+								"index": 4,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "costperyear",
+								"height": 22,
+								"id": "d461f6e0-d4f8-11eb-95dc-07ac8aeaf71d",
+								"index": 5,
+								"listId": "caseinfoid-1db0bd40-3cd7-11ec-adee-217560ee27a7",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "totaltimespent",
+								"height": 22,
+								"id": "fa1f3e60-9014-11ec-9ce6-f34c4db9f1cc",
+								"index": 6,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxH": null,
+						"maxW": 1,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Use Case Stats",
+						"static": false,
+						"w": 1,
+						"x": 2,
+						"y": 2
+					},
+					{
+						"displayType": "ROW",
+						"h": 3,
+						"hideItemTitleOnlyOne": true,
+						"hideName": false,
+						"i": "dx0oolsnue-caseinfoid-8d3e8810-9bee-11ec-8e8a-d957f3237cdc",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "usecaseoutagedrcontactinfo",
+								"height": 22,
+								"id": "bc2eace0-9bee-11ec-8e8a-d957f3237cdc",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxH": null,
+						"maxW": 1,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Outage/Disaster Recovery",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 7
+					}
+				],
+				"type": "custom",
+				"webHidden": false
+			},
+			{
+				"hidden": false,
+				"id": "mq27dvjqrl",
+				"mobileHidden": true,
+				"name": "Process Development",
+				"readOnly": false,
+				"roles": [],
+				"sections": [
+					{
+						"h": 4,
+						"i": "caseinfoid-f7696610-b8a0-11eb-aa5c-81d2ed425f6c",
+						"items": [],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Work Plan",
+						"static": false,
+						"type": "workplan",
+						"w": 1,
+						"x": 0,
+						"y": 0
+					},
+					{
+						"h": 4,
+						"i": "caseinfoid-fb06d820-b8a0-11eb-aa5c-81d2ed425f6c",
+						"items": [],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "To-Do Tasks",
+						"query": null,
+						"static": false,
+						"type": "todoTasks",
+						"w": 1,
+						"x": 0,
+						"y": 4
+					},
+					{
+						"h": 8,
+						"i": "caseinfoid-0d262060-b8a1-11eb-aa5c-81d2ed425f6c",
+						"items": [],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Notes",
+						"static": false,
+						"type": "notes",
+						"w": 2,
+						"x": 1,
+						"y": 0
+					}
+				],
+				"type": "custom",
+				"webHidden": false
+			},
+			{
+				"hidden": false,
+				"id": "evidenceBoard",
+				"name": "Evidence Board",
+				"type": "evidenceBoard"
+			},
+			{
+				"hidden": false,
+				"id": "ioghngyquw",
+				"name": "External Ticket",
+				"sections": [
+					{
+						"displayType": "ROW",
+						"h": 5,
+						"hideName": false,
+						"i": "caseinfoid-ebc520c0-5395-11ec-99ab-fbec4be70906",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "cherwellincidentid",
+								"height": 22,
+								"id": "f3f36590-5395-11ec-99ab-fbec4be70906",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "cherwellpublicid",
+								"height": 22,
+								"id": "fac3a100-5395-11ec-99ab-fbec4be70906",
+								"index": 1,
+								"listId": "caseinfoid-ebc520c0-5395-11ec-99ab-fbec4be70906",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cherwellincidenttype",
+								"height": 22,
+								"id": "f6281fe0-5395-11ec-99ab-fbec4be70906",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cherwellrecordid",
+								"height": 22,
+								"id": "f9660cd0-5395-11ec-99ab-fbec4be70906",
+								"index": 3,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "contactname",
+								"height": 22,
+								"id": "ae90de20-53ad-11ec-8638-63b20577b460",
+								"index": 4,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "description",
+								"height": 22,
+								"id": "bb0e0ab0-53ad-11ec-8638-63b20577b460",
+								"index": 5,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "remediationsla",
+								"height": 22,
+								"id": "c8ebffc0-53ad-11ec-8638-63b20577b460",
+								"index": 6,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "state",
+								"height": 22,
+								"id": "cf168550-53ad-11ec-8638-63b20577b460",
+								"index": 7,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "subcategory",
+								"height": 22,
+								"id": "d55a3830-53ad-11ec-8638-63b20577b460",
+								"index": 8,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "ticketopeneddate",
+								"height": 22,
+								"id": "dc70cb70-53ad-11ec-8638-63b20577b460",
+								"index": 9,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Overview",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 0
+					},
+					{
+						"h": 5,
+						"i": "caseinfoid-21908e60-7de4-11ec-876a-f9fa58267492",
+						"items": [],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Tasks",
+						"query": "e8dc3003-fbb9-45e8-8a4d-174d458e9c0a",
+						"queryType": "script",
+						"static": false,
+						"type": "dynamic",
+						"w": 2,
+						"x": 1,
+						"y": 0
+					},
+					{
+						"h": 5,
+						"i": "caseinfoid-22a9eda0-7de4-11ec-876a-f9fa58267492",
+						"items": [],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Activities",
+						"query": "77c9387b-d3cd-4771-8871-da59c279fada",
+						"queryType": "script",
+						"static": false,
+						"type": "dynamic",
+						"w": 3,
+						"x": 0,
+						"y": 5
+					}
+				],
+				"type": "custom"
+			},
+			{
+				"hidden": false,
+				"id": "uoycqky5iv",
+				"name": "Timer Control",
+				"sections": [
+					{
+						"displayType": "CARD",
+						"h": 2,
+						"hideName": false,
+						"i": "caseinfoid-58f63a90-327f-11ec-ad3f-fd83a55a1053",
+						"items": [
+							{
+								"args": {
+									"timerField": {
+										"simple": "usecasecustomerwaittimer"
+									}
+								},
+								"endCol": 1,
+								"fieldId": "",
+								"height": 53,
+								"id": "5a800ee0-327f-11ec-ad3f-fd83a55a1053",
+								"index": 0,
+								"name": "Pause Customer Timer",
+								"scriptId": "Builtin|||pauseTimer",
+								"sectionItemType": "button",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "usecasecustomerwaittimer",
+								"height": 53,
+								"id": "c5caa430-327f-11ec-ad3f-fd83a55a1053",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"args": {
+									"timerField": {
+										"simple": "usecasecustomerwaittimer"
+									}
+								},
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "",
+								"height": 53,
+								"id": "852850d0-327f-11ec-ad3f-fd83a55a1053",
+								"index": 0,
+								"listId": "caseinfoid-58f63a90-327f-11ec-ad3f-fd83a55a1053",
+								"name": "Start Customer Timer",
+								"scriptId": "Builtin|||startTimer",
+								"sectionItemType": "button",
+								"startCol": 1
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Customer Wait Timer Control",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 0
+					},
+					{
+						"displayType": "CARD",
+						"h": 2,
+						"hideName": false,
+						"i": "caseinfoid-74a13f50-3280-11ec-ad3f-fd83a55a1053",
+						"items": [
+							{
+								"args": {
+									"timerField": {
+										"simple": "usecasetechnicalwaittimer"
+									}
+								},
+								"endCol": 1,
+								"fieldId": "",
+								"height": 53,
+								"id": "74a11840-3280-11ec-ad3f-fd83a55a1053",
+								"index": 0,
+								"name": "Pause Technical Timer",
+								"scriptId": "Builtin|||pauseTimer",
+								"sectionItemType": "button",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "usecasetechnicalwaittimer",
+								"height": 53,
+								"id": "a0169540-3280-11ec-ad3f-fd83a55a1053",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"args": {
+									"timerField": {
+										"simple": "usecasetechnicalwaittimer"
+									}
+								},
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "",
+								"height": 53,
+								"id": "74a11842-3280-11ec-ad3f-fd83a55a1053",
+								"index": 0,
+								"listId": "caseinfoid-58f63a90-327f-11ec-ad3f-fd83a55a1053",
+								"name": "Start Technical Timer",
+								"scriptId": "Builtin|||startTimer",
+								"sectionItemType": "button",
+								"startCol": 1
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Infrastructure Wait Timer Control",
+						"static": false,
+						"w": 1,
+						"x": 1,
+						"y": 0
+					},
+					{
+						"displayType": "CARD",
+						"h": 2,
+						"hideName": false,
+						"i": "caseinfoid-77a72c53-3280-11ec-ad3f-fd83a55a1053",
+						"items": [
+							{
+								"args": {
+									"timerField": {
+										"simple": "usecasedelaytimer"
+									}
+								},
+								"endCol": 1,
+								"fieldId": "",
+								"height": 53,
+								"id": "77a72c50-3280-11ec-ad3f-fd83a55a1053",
+								"index": 0,
+								"name": "Pause Other Timer",
+								"scriptId": "Builtin|||pauseTimer",
+								"sectionItemType": "button",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "usecasedelaytimer",
+								"height": 22,
+								"id": "df0433c0-3280-11ec-ad3f-fd83a55a1053",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"args": {
+									"timerField": {
+										"simple": "usecasedelaytimer"
+									}
+								},
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "",
+								"height": 53,
+								"id": "77a72c52-3280-11ec-ad3f-fd83a55a1053",
+								"index": 0,
+								"listId": "caseinfoid-58f63a90-327f-11ec-ad3f-fd83a55a1053",
+								"name": "Start Other Timer",
+								"scriptId": "Builtin|||startTimer",
+								"sectionItemType": "button",
+								"startCol": 1
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Other Wait Timer Control",
+						"static": false,
+						"w": 1,
+						"x": 2,
+						"y": 0
+					}
+				],
+				"type": "custom"
+			},
+			{
+				"id": "warRoom",
+				"name": "War Room",
+				"type": "warRoom"
+			},
+			{
+				"id": "workPlan",
+				"name": "Work Plan",
+				"type": "workPlan"
+			},
+			{
+				"hidden": true,
+				"id": "canvas",
+				"name": "Canvas",
+				"type": "canvas"
+			},
+			{
+				"hidden": false,
+				"id": "relatedIncidents",
+				"name": "Related Incidents",
+				"type": "relatedIncidents"
+			}
+		]
+	},
+	"edit": {
+		"sections": [
+			{
+				"description": "",
+				"fields": [
+					{
+						"fieldId": "incident_name",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_contactname",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_contactemailaddress",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_usecaseowner",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_kanban",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_type",
+						"isVisible": true
+					}
+				],
+				"isVisible": true,
+				"name": "Basic Information",
+				"query": null,
+				"queryType": "",
+				"readOnly": false,
+				"type": ""
+			},
+			{
+				"description": "This form is used to create a new automation request.",
+				"fields": [
+					{
+						"fieldId": "incident_processdescription",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_processsources",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_attachment",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_automationprocessdocuments",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_businessprocessdocuments",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_businessoutcomes",
+						"isVisible": true
+					}
+				],
+				"isVisible": true,
+				"name": "Use Case Submission",
+				"query": null,
+				"queryType": "",
+				"readOnly": false,
+				"type": ""
+			},
+			{
+				"description": "",
+				"fields": [
+					{
+						"fieldId": "incident_numberofusersaffected",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_frequencyoftask",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_lengthoftask",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_processautomationpercent",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_costperyear",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_impact",
+						"isVisible": true
+					}
+				],
+				"isVisible": true,
+				"name": "Process Impact",
+				"query": null,
+				"queryType": "",
+				"readOnly": false,
+				"type": ""
+			}
+		]
+	},
+	"fromServerVersion": "",
+	"group": "incident",
+	"id": "4e91a676-00b7-4879-85a7-e0438766509a",
+	"indicatorsDetails": null,
+	"indicatorsQuickView": null,
+	"itemVersion": "",
+	"locked": false,
+	"mobile": null,
+	"name": "Use Case Development",
+	"packID": "5b6d811b-9e3c-4ee0-8927-0b0e1456da26",
+	"propagationLabels": [
+		"all"
+	],
+	"quickView": {
+		"sections": [
+			{
+				"description": "",
+				"fields": [
+					{
+						"fieldId": "incident_type",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_severity",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_owner",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_dbotstatus",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_sourcebrand",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_sourceinstance",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_playbookid",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_phase",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_roles",
+						"isVisible": true
+					}
+				],
+				"isVisible": true,
+				"name": "Basic Information",
+				"query": null,
+				"queryType": "",
+				"readOnly": false,
+				"type": ""
+			},
+			{
+				"description": "",
+				"fields": [
+					{
+						"fieldId": "incident_occurred",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_dbotcreated",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_dbotduedate",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_dbotmodified",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_dbottotaltime",
+						"isVisible": true
+					}
+				],
+				"isVisible": true,
+				"name": "Timeline Information",
+				"query": null,
+				"queryType": "",
+				"readOnly": false,
+				"type": ""
+			},
+			{
+				"description": "",
+				"fields": [
+					{
+						"fieldId": "incident_playbookroi",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_ticketcloseddate",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_ticketnumber",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_ticketopeneddate",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_timetoassignment",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_useraccountcontrol",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_userresponse",
+						"isVisible": true
+					}
+				],
+				"isVisible": true,
+				"name": "Custom Fields",
+				"query": null,
+				"queryType": "",
+				"readOnly": false,
+				"type": ""
+			},
+			{
+				"description": "",
+				"fields": [
+					{
+						"fieldId": "incident_labels",
+						"isVisible": true
+					}
+				],
+				"isVisible": true,
+				"name": "Labels",
+				"query": null,
+				"queryType": "",
+				"readOnly": true,
+				"type": "labels"
+			}
+		]
+	},
+	"quickViewV2": null,
+	"system": false,
+	"toServerVersion": "",
+	"version": -1
+}

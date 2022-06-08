@@ -1,0 +1,1247 @@
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ""
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 5b6d811b-9e3c-4ee0-8927-0b0e1456da26
+    propagationLabels:
+    - all
+    toServerVersion: ""
+description: Workflow to track verification and sign off  of use case in production
+id: 5a7cabcb-ecb5-40c5-8d73-8cda7e3afaf4
+inputs: []
+name: Use Case - Verification
+outputs: []
+sourceplaybookid: ae122a0c-b633-4ac5-8f85-060e76a5c526
+starttaskid: "0"
+tags:
+- Use Case Development
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "22"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: a5f6dea7-1182-441d-8ee1-6c62914805f4
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: a5f6dea7-1182-441d-8ee1-6c62914805f4
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 50
+        }
+      }
+  "3":
+    evidencedata:
+      customfields: {}
+      description:
+        simple: Customer Notified of Deployment
+    form:
+      description: 'Customer notification of live in production '
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: Sent email to customer notifying them of production status
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: ""
+        type: date
+      sender: ""
+      title: Customer notifcation
+      totalanswers: 0
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc: null
+      body: null
+      cc: null
+      format: ""
+      methods: []
+      subject: null
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: false
+        retriescount: 2
+        retriesinterval: 360
+      to: null
+    nexttasks:
+      '#none#':
+      - "12"
+    note: false
+    quietmode: 2
+    scriptarguments:
+      description:
+        simple: Layouts listed during development - ${incident.usecaselayout}
+      title:
+        simple: Migration Check - Layouts
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Add a new To-Do task to the specified incident.
+      id: 00b2c6e2-8427-47cf-8025-55cc717ed41e
+      iscommand: false
+      name: Inform customer of move to production
+      type: collection
+      version: -1
+    taskid: 00b2c6e2-8427-47cf-8025-55cc717ed41e
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 1535
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "30"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 46baed1e-c60f-4dc5-8ffd-6fc04b21c044
+      iscommand: false
+      name: Verification Tasks(Timer Start)
+      type: title
+      version: -1
+    taskid: 46baed1e-c60f-4dc5-8ffd-6fc04b21c044
+    timertriggers:
+    - action: start
+      fieldname: usecaseverificationtimer
+    - action: start
+      fieldname: usecasecurrentphasetimer
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 1215
+        }
+      }
+  "7":
+    evidencedata:
+      customfields: {}
+      description:
+        simple: User Verification Sign Off
+    form:
+      description: This is to verify your acceptance of the following use case in
+        production
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: |-
+            I have verified and accepted the use case listed meets all requirements as defined in the original request.
+
+            Use Case -  ${incident.name}
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: ""
+        type: date
+      sender: ""
+      title: Verification
+      totalanswers: 0
+    id: "7"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc: null
+      body:
+        simple: |-
+          <p>Your use case (${incident.name}) is now active in production. You have two weeks to monitor it to ensure it meets the established requirements.</p>
+          <br>
+          <p>Please complete this survey once you have determined the use case has met your needs.  If you need any assistance or have questions, please contact your automation engineer.</p>
+          <br>
+          <p>Cyber Analytics and Automation Team</p>
+      cc:
+        simple: ${incident.owner}
+      format: html
+      methods:
+      - email
+      subject:
+        simple: Verification for use case ${incident.name}
+      timings:
+        completeafterreplies: 1
+        completeaftersla: true
+        completeafterv2: true
+        retriescount: 1
+        retriesinterval: 18720
+      to:
+        simple: ${incident.contactemailaddress}
+    nexttasks:
+      '#none#':
+      - "35"
+    note: false
+    quietmode: 2
+    scriptarguments:
+      description:
+        simple: Integrations designed during development - ${incident.usecaseintegrations}
+      title:
+        simple: Migration Check - Check for needed integrations
+    separatecontext: false
+    skipunavailable: false
+    sla:
+      days: 0
+      hours: 0
+      minutes: 0
+      weeks: 2
+    slareminder:
+      days: 5
+      hours: 0
+      minutes: 0
+      weeks: 1
+    task:
+      brand: Builtin
+      description: Add a new To-Do task to the specified incident.
+      id: ba613e3b-0d08-4ee9-8f09-390739b7b9c6
+      iscommand: false
+      name: User verification sign off
+      type: collection
+      version: -1
+    taskid: ba613e3b-0d08-4ee9-8f09-390739b7b9c6
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2905
+        }
+      }
+  "12":
+    evidencedata:
+      customfields: {}
+      description:
+        simple: Functionality Testing Completed
+    form:
+      description: ""
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: Check completed
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: ""
+        type: date
+      sender: ""
+      title: Migration Check - Test all functionality
+      totalanswers: 0
+    id: "12"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc: null
+      body: null
+      cc: null
+      format: ""
+      methods: []
+      subject: null
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: false
+        retriescount: 2
+        retriesinterval: 360
+      to: null
+    nexttasks:
+      '#none#':
+      - "15"
+    note: false
+    quietmode: 2
+    scriptarguments:
+      title:
+        simple: 'Testing - Test all functionality '
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Add a new To-Do task to the specified incident.
+      id: 5143ab47-06ad-4b73-8c5b-7e7b63f97a54
+      iscommand: false
+      name: Test all functionality
+      type: collection
+      version: -1
+    taskid: 5143ab47-06ad-4b73-8c5b-7e7b63f97a54
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 1710
+        }
+      }
+  "15":
+    evidencedata:
+      customfields: {}
+      description:
+        simple: Migration to Production Completed
+    form:
+      description: ""
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: Date all migration tasks were completed
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: ""
+        type: date
+      sender: ""
+      title: Migration Task Completion
+      totalanswers: 0
+    id: "15"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc: null
+      body: null
+      cc: null
+      format: ""
+      methods: []
+      subject: null
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: false
+        retriescount: 2
+        retriesinterval: 360
+      to: null
+    nexttasks:
+      '#none#':
+      - "19"
+      - "40"
+    note: false
+    quietmode: 2
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 4a1923a7-cd86-4d26-86d8-dc7380906edc
+      iscommand: false
+      name: Mark migration complete
+      type: collection
+      version: -1
+    taskid: 4a1923a7-cd86-4d26-86d8-dc7380906edc
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 1885
+        }
+      }
+  "16":
+    id: "16"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: cb8e1b9a-a47a-4386-8562-9abe5f9c94a5
+      iscommand: false
+      name: End
+      type: title
+      version: -1
+    taskid: cb8e1b9a-a47a-4386-8562-9abe5f9c94a5
+    timertriggers:
+    - action: pause
+      fieldname: usecaseverificationtimer
+    - action: pause
+      fieldname: usecasecurrentphasetimer
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3925
+        }
+      }
+  "17":
+    id: "17"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "31"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      list:
+        simple: UseCaseReview
+      review_date:
+        complex:
+          accessor: "0"
+          root: Verification.Answers
+          transformers:
+          - args:
+              variation:
+                value:
+                  simple: '''in 1 year'''
+            operator: ModifyDateTime
+      title:
+        simple: ${incident.name}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 51f73ab1-29c7-49af-8c41-b7a682c3da0b
+      iscommand: false
+      name: Add to annual review list
+      scriptName: UseCaseReviewUpdate
+      type: regular
+      version: -1
+    taskid: 51f73ab1-29c7-49af-8c41-b7a682c3da0b
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 3225
+        }
+      }
+  "19":
+    id: "19"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "34"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      phasestatus:
+        simple: Waiting - Customer
+      phasestep:
+        simple: User Signoff
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: 7c8084ba-573a-40f3-8b75-bc865bdf655f
+      iscommand: true
+      name: Set phase step
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 7c8084ba-573a-40f3-8b75-bc865bdf655f
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2235
+        }
+      }
+  "20":
+    id: "20"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "21"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      phasestatus:
+        simple: Complete
+      phasestep:
+        simple: Configure Periodic Review
+      usecasecompletion:
+        simple: "100"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: 3da675ef-d227-451e-8a9d-c10b7a87654a
+      iscommand: true
+      name: Set to complete
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 3da675ef-d227-451e-8a9d-c10b7a87654a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 3575
+        }
+      }
+  "21":
+    id: "21"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "16"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      closeReason:
+        simple: Resolved
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.close.inv
+      id: c35b4d80-49e0-4680-8a20-9e2bf3f1c42e
+      iscommand: true
+      name: Close incident
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: c35b4d80-49e0-4680-8a20-9e2bf3f1c42e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3750
+        }
+      }
+  "22":
+    id: "22"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "23"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      phasestatus:
+        simple: Initial
+      phasestep:
+        simple: Inform Customer of Prod Migration
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: e9491a0f-7bfa-41c1-8b34-db4eb85de821
+      iscommand: true
+      name: Set verification start
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: e9491a0f-7bfa-41c1-8b34-db4eb85de821
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 195
+        }
+      }
+  "23":
+    id: "23"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "25"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: f586108a-8392-4d00-80a9-4fa792cec711
+      iscommand: false
+      name: Set Verification Timer
+      type: title
+      version: -1
+    taskid: f586108a-8392-4d00-80a9-4fa792cec711
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 370
+        }
+      }
+  "25":
+    id: "25"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "29"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |
+        Retrieves the current date and time.
+      id: e9e5bf51-4b67-4fc2-82aa-2a01262e4749
+      iscommand: false
+      name: Get Time
+      scriptName: GetTime
+      type: regular
+      version: -1
+    taskid: e9e5bf51-4b67-4fc2-82aa-2a01262e4749
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 515
+        }
+      }
+  "27":
+    id: "27"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      sla:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: incident.processdevelopmentdates.verifyend
+              operator: isNotEmpty
+          root: incident.processdevelopmentdates
+          transformers:
+          - args:
+              field:
+                value:
+                  simple: verifyend
+            operator: getField
+          - operator: LastArrayElement
+          - args:
+              add_utc_timezone: {}
+              dayfirst:
+                value:
+                  simple: "false"
+              fuzzy: {}
+              yearfirst:
+                value:
+                  simple: "true"
+            operator: DateStringToISOFormat
+      slaField:
+        simple: usecasecurrentphasetimer
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: cd74939b-20e6-4250-87ae-e434e3b11503
+      iscommand: true
+      name: Update current phase timer
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: cd74939b-20e6-4250-87ae-e434e3b11503
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1040
+        }
+      }
+  "29":
+    id: "29"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "27"
+      - "33"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      complexity:
+        simple: ${incident.usecasecomplexity}
+      filter:
+        simple: verify
+      start_date:
+        complex:
+          root: TimeNowUnix
+          transformers:
+          - operator: LastArrayElement
+          - operator: TimeStampToDate
+          - args:
+              format:
+                value:
+                  simple: 01/02/2006
+            operator: toString
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Calculates the projected dates for phase completion of a use case
+      id: 32d2fcee-d9a4-4620-86c3-c213b73e3286
+      iscommand: false
+      name: Set remaining dates starting today
+      scriptName: CalculateUseCaseDates
+      type: regular
+      version: -1
+    taskid: 32d2fcee-d9a4-4620-86c3-c213b73e3286
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 690
+        }
+      }
+  "30":
+    id: "30"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      sla:
+        simple: ${incident.usecaseverificationtimer.dueDate}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: b8814668-68e2-4bd0-82d5-0a4d581a5fa6
+      iscommand: true
+      name: Update incident SLA to reflect new phase SLA
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: b8814668-68e2-4bd0-82d5-0a4d581a5fa6
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 1360
+        }
+      }
+  "31":
+    id: "31"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "20"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      kanban:
+        simple: Monitoring
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: 4f80591b-bb6e-40c9-8bd7-9f367048a4fd
+      iscommand: true
+      name: Set Kanban to Monitoring
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 4f80591b-bb6e-40c9-8bd7-9f367048a4fd
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 3400
+        }
+      }
+  "32":
+    id: "32"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      sla:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: incident.processdevelopmentdates.verifyend
+              operator: isNotEmpty
+          root: incident.processdevelopmentdates
+          transformers:
+          - args:
+              field:
+                value:
+                  simple: verifyend
+            operator: getField
+          - operator: LastArrayElement
+          - args:
+              add_utc_timezone: {}
+              dayfirst:
+                value:
+                  simple: "false"
+              fuzzy: {}
+              yearfirst:
+                value:
+                  simple: "true"
+            operator: DateStringToISOFormat
+      slaField:
+        simple: usecaseverificationtimer
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: deff23b8-77cc-466c-88f4-d65d2bf1d280
+      iscommand: true
+      name: Update phase SLA
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: deff23b8-77cc-466c-88f4-d65d2bf1d280
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 1040
+        }
+      }
+  "33":
+    id: "33"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "32"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      all:
+        simple: "false"
+      timerField:
+        simple: usecasecurrentphasetimer
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.reset.timer
+      id: 8ebfff0e-b1d9-48d4-85bf-c88feadeb71c
+      iscommand: true
+      name: Reset current phase timer
+      script: Builtin|||resetTimer
+      type: regular
+      version: -1
+    taskid: 8ebfff0e-b1d9-48d4-85bf-c88feadeb71c
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 865
+        }
+      }
+  "34":
+    id: "34"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "37"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: f8bc17e1-16c0-4575-8237-6e186741a6b8
+      iscommand: false
+      name: Start Customer Wait Timer
+      type: title
+      version: -1
+    taskid: f8bc17e1-16c0-4575-8237-6e186741a6b8
+    timertriggers:
+    - action: start
+      fieldname: usecasecustomerwaittimer
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2410
+        }
+      }
+  "35":
+    id: "35"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "17"
+      - "36"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: f9baef02-7f95-4fb1-84e6-7d2484c19ca5
+      iscommand: false
+      name: Stop Customer Wait Timer
+      type: title
+      version: -1
+    taskid: f9baef02-7f95-4fb1-84e6-7d2484c19ca5
+    timertriggers:
+    - action: pause
+      fieldname: usecasecustomerwaittimer
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3080
+        }
+      }
+  "36":
+    id: "36"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "21"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      incident_id:
+        simple: ${incident.cherwellpublicid}
+      reason:
+        simple: Use case has been completed.
+      retry-count:
+        simple: "5"
+      retry-interval:
+        simple: "60"
+      status:
+        simple: Closed
+    separatecontext: false
+    skipunavailable: true
+    task:
+      brand: ""
+      description: Updates the status of the Cherwell ticket
+      id: 6f6be168-e966-45b3-8b2b-4be8e02ead48
+      iscommand: false
+      name: Set status to Closed
+      scriptName: HighmarkCherwellUpdateStatus
+      type: regular
+      version: -1
+    taskid: 6f6be168-e966-45b3-8b2b-4be8e02ead48
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 3575
+        }
+      }
+  "37":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: ${ExternalUpdate}
+          operator: isEqualString
+          right:
+            value:
+              simple: "yes"
+      label: "yes"
+    id: "37"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "39"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 276d3e0f-9171-427a-85d6-bfaad133b312
+      iscommand: false
+      name: Update external ticketing system?
+      type: condition
+      version: -1
+    taskid: 276d3e0f-9171-427a-85d6-bfaad133b312
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2555
+        }
+      }
+  "39":
+    id: "39"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      incident_id:
+        simple: ${incident.cherwellpublicid}
+      pending_reason:
+        simple: Data needed from Customer
+      reason:
+        simple: Pending user signoff
+      retry-count:
+        simple: "5"
+      retry-interval:
+        simple: "60"
+      review_deadline:
+        complex:
+          accessor: processdevelopmentdate
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: incident.processdevelopmentdates.verifyend
+              operator: isNotEmpty
+          root: incident
+          transformers:
+          - args:
+              field:
+                value:
+                  simple: verifyend
+            operator: getField
+          - operator: LastArrayElement
+      status:
+        simple: Pending
+    separatecontext: false
+    skipunavailable: true
+    task:
+      brand: ""
+      description: Updates the status of the Cherwell ticket
+      id: b96b71ee-9749-4c12-8a6d-92d05a422912
+      iscommand: false
+      name: Set status to Pending
+      scriptName: HighmarkCherwellUpdateStatus
+      type: regular
+      version: -1
+    taskid: b96b71ee-9749-4c12-8a6d-92d05a422912
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 2730
+        }
+      }
+  "40":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: incident.cherwellpublicid
+          operator: isNotEmpty
+      label: "yes"
+    id: "40"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "34"
+      "yes":
+      - "41"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 9ad4e404-2c5e-4869-81c5-d13531d5aa4f
+      iscommand: false
+      name: Update external ticketing system?
+      type: condition
+      version: -1
+    taskid: 9ad4e404-2c5e-4869-81c5-d13531d5aa4f
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 2060
+        }
+      }
+  "41":
+    id: "41"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 0
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "34"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      CherwellTicketID:
+        simple: ${incident.cherwellpublicid}
+      JournalEntry:
+        simple: Use case successfully deployed to production.
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: a927a00a-f585-422b-81a4-79847817f82f
+      iscommand: false
+      name: Highmark - S - Cherwell Journal Update
+      playbookId: d5e8cbf2-9c16-4d0b-8f32-9515af1af1b5
+      type: playbook
+      version: -1
+    taskid: a927a00a-f585-422b-81a4-79847817f82f
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2235
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "37_39_yes": 0.9
+    },
+    "paper": {
+      "dimensions": {
+        "height": 3940,
+        "width": 922.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }

@@ -1,0 +1,2217 @@
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ""
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 5b6d811b-9e3c-4ee0-8927-0b0e1456da26
+    propagationLabels:
+    - all
+    toServerVersion: ""
+description: Engage with customer to map out process and create a list deliverables.
+id: 2f2f3201-491f-4e4a-8c7e-e5293cca68a2
+inputs:
+- description: If this value is blank, this part of the playbook will be skipped.
+    Logic will need to be defined according to your system configuration.
+  key: ExternalTicketId
+  playbookInputQuery: null
+  required: false
+  value: {}
+name: Use Case - Customer Consult
+outputs: []
+sourceplaybookid: 0c0eca64-e571-402b-8007-ecf45d1b6962
+starttaskid: "0"
+tags:
+- Use Case Development
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "55"
+      - "71"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: c89cffd6-1083-4539-8b33-eb2e26837cf1
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: c89cffd6-1083-4539-8b33-eb2e26837cf1
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 602.5,
+          "y": 50
+        }
+      }
+  "2":
+    form:
+      description: Determine if the process is a good candidate for automation
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: Is this process viable for automation?
+        options: []
+        optionsarg:
+        - simple: "Yes"
+        - simple: "No"
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: ""
+        type: singleSelect
+      sender: ""
+      title: Process Analysis with Customer
+      totalanswers: 0
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc: null
+      body: null
+      cc: null
+      format: ""
+      methods: []
+      subject: null
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: true
+        retriescount: 2
+        retriesinterval: 360
+      to: null
+    nexttasks:
+      '#none#':
+      - "26"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      dueDate:
+        complex:
+          accessor: "0"
+          root: Schedule Process Analysis Meeting.Answers
+          transformers:
+          - args:
+              variation:
+                value:
+                  simple: '''tomorrow'''
+            operator: ModifyDateTime
+      title:
+        simple: Customer Design - Complete Process Analysis Flow with Requester
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Add a new To-Do task to the specified incident.
+      id: 4ab6ea2d-0774-4845-8e0f-12d77ddc87fc
+      iscommand: false
+      name: Evaluate process with customer
+      type: collection
+      version: -1
+    taskid: 4ab6ea2d-0774-4845-8e0f-12d77ddc87fc
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 602.5,
+          "y": 1885
+        }
+      }
+  "3":
+    evidencedata:
+      customfields: {}
+      description:
+        simple: Integrations Identified
+    form:
+      description: All integrations and connections needed to complete the use case
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: List all identified connections or integration used by this process
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: ""
+        type: shortText
+      sender: ""
+      title: Identify needed connections or integration
+      totalanswers: 0
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc: null
+      body: null
+      cc: null
+      format: ""
+      methods: []
+      subject: null
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: false
+        retriescount: 2
+        retriesinterval: 360
+      to: null
+    nexttasks:
+      '#none#':
+      - "73"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      dueDate:
+        complex:
+          accessor: "0"
+          root: Schedule Process Analysis Meeting.Answers
+          transformers:
+          - args:
+              variation:
+                value:
+                  simple: '''tomorrow'''
+            operator: ModifyDateTime
+      title:
+        simple: Customer Design - Identify needed connections or integrations
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Add a new To-Do task to the specified incident.
+      id: dc71baa0-bb1e-49be-8d73-860bfa5526a1
+      iscommand: false
+      name: Identify needed connections or integration
+      type: collection
+      version: -1
+    taskid: dc71baa0-bb1e-49be-8d73-860bfa5526a1
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 4100
+        }
+      }
+  "4":
+    evidencedata:
+      customfields: {}
+      description:
+        simple: Identified Customer Deliverables
+    form:
+      description: Deliverables identified during the process design with the customer.
+        This section will be emailed to the customer.
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: Enter identified customer deliverables including testing accounts
+            or other needs to ensure this use case can be fully tested. This data
+            will be converted from markdown to HTML. Please format correctly.
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: ""
+        type: longText
+      sender: ""
+      title: Identify Customer Deliverables
+      totalanswers: 0
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc: null
+      body: null
+      cc: null
+      format: ""
+      methods: []
+      subject: null
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: false
+        retriescount: 2
+        retriesinterval: 360
+      to: null
+    nexttasks:
+      '#none#':
+      - "15"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      dueDate:
+        complex:
+          accessor: "0"
+          root: Schedule Process Analysis Meeting.Answers
+          transformers:
+          - args:
+              variation:
+                value:
+                  simple: '''tomorrow'''
+            operator: ModifyDateTime
+      title:
+        simple: Customer Design - Identify Customer Deliverables
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Add a new To-Do task to the specified incident.
+      id: 3e07d5da-af14-46f1-87a8-6467dd0d638d
+      iscommand: false
+      name: Identify customer deliverables
+      type: collection
+      version: -1
+    taskid: 3e07d5da-af14-46f1-87a8-6467dd0d638d
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 4450
+        }
+      }
+  "5":
+    evidencedata:
+      customfields: {}
+      description:
+        simple: Process Design Documents Added
+    form:
+      description: All documents developed during the customer design phase (including
+        outage/DR plans)
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: businessprocessdocuments
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: Attach business process and detail documents here (including outage/DR
+            plans)
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: ""
+        type: attachments
+      - defaultrows: []
+        fieldassociated: automationprocessdocuments
+        gridcolumns: []
+        id: "1"
+        label: ""
+        labelarg:
+          simple: Attach automation flow diagrams here (including outage/DR plans)
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: ""
+        type: attachments
+      sender: ""
+      title: Upload all documents relevant to this use case (including outage/DR plans)
+      totalanswers: 0
+    id: "5"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc: null
+      body: null
+      cc: null
+      format: ""
+      methods: []
+      subject: null
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: true
+        retriescount: 2
+        retriesinterval: 360
+      to: null
+    nexttasks:
+      '#none#':
+      - "30"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      dueDate:
+        complex:
+          accessor: "0"
+          root: Schedule Process Analysis Meeting.Answers
+          transformers:
+          - args:
+              variation:
+                value:
+                  simple: '''tomorrow'''
+            operator: ModifyDateTime
+      title:
+        simple: Customer Design -Upload Design Documents
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Add a new To-Do task to the specified incident.
+      id: a4dc623b-27e5-4852-8d86-0030543140d7
+      iscommand: false
+      name: Upload design documents
+      type: collection
+      version: -1
+    taskid: a4dc623b-27e5-4852-8d86-0030543140d7
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 807.5,
+          "y": 3750
+        }
+      }
+  "6":
+    evidencedata:
+      customfields: {}
+      description:
+        simple: Process Analysis Meeting Scheduled
+    form:
+      description: If more than one meeting is required, it is advised you manually
+        create additional tasks for each of those meetings.
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: Enter date for first schedule analysis meeting
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: ""
+        type: date
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "1"
+        label: ""
+        labelarg:
+          simple: Who was invited to this meeting?
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: ""
+        type: shortText
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "2"
+        label: ""
+        labelarg:
+          simple: |-
+            Did you include the following topics in the meeting?
+
+            1. Business outcomes
+            2. Verify information provided in the ingestion form
+            3. Discuss complexity of build out
+            4. Set customer deliverables dates
+            5. Production outage/disaster recovery plan
+        options: []
+        optionsarg:
+        - simple: "Yes"
+        - simple: "No"
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: ""
+        type: singleSelect
+      sender: ""
+      title: Schedule Process Analysis Meeting
+      totalanswers: 0
+    id: "6"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc: null
+      body: null
+      cc: null
+      format: ""
+      methods: []
+      subject: null
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: true
+        retriescount: 2
+        retriesinterval: 360
+      to: null
+    nexttasks:
+      '#none#':
+      - "25"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: a6bfec9a-59c4-45dc-8bb8-5abbd7905bcd
+      iscommand: false
+      name: Schedule Process Analysis Meeting
+      type: collection
+      version: -1
+    taskid: a6bfec9a-59c4-45dc-8bb8-5abbd7905bcd
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 602.5,
+          "y": 1565
+        }
+      }
+  "7":
+    evidencedata:
+      customfields: {}
+      description:
+        simple: Customer Consult Completed
+    form:
+      description: ""
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: Enter date Customer Design completed
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: ""
+        type: date
+      sender: Your SOC team
+      title: Close Customer Design Phase
+      totalanswers: 0
+    id: "7"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc: null
+      body: null
+      cc: null
+      format: ""
+      methods: []
+      subject: null
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: false
+        retriescount: 2
+        retriesinterval: 360
+      to: null
+    nexttasks:
+      '#none#':
+      - "13"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 18668c10-2c85-4a06-8af8-768fff8c555e
+      iscommand: false
+      name: Close Customer Design Phase
+      type: collection
+      version: -1
+    taskid: 18668c10-2c85-4a06-8af8-768fff8c555e
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 4975
+        }
+      }
+  "8":
+    evidencedata:
+      customfields: {}
+      description:
+        simple: Customer Deliverables Notification
+    id: "8"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      body:
+        simple: |-
+          Hello ${incident.contactname}
+          <br>
+          <p>Here are the agreed upon requirements you will need to provide to the automation team before your use case development can begin:</p>
+          <br>
+          ${CustomerDeliverables}
+          <br>
+          If you have any concerns or questions, please contact your automation engineer.
+          <br>
+          <br>Thank You,
+          <br>${IncidentOwnerName}
+          <br>Automation Team
+      bodyType:
+        simple: HTML
+      cc:
+        complex:
+          accessor: owner
+          root: incident
+          transformers:
+          - operator: LastArrayElement
+      from:
+        simple: ${incidentowner.0.email}
+      importance:
+        simple: Normal
+      subject:
+        simple: Customer Required Deliverables for ${incident.title}
+      to:
+        simple: ${incident.contactemailaddress}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Sends an email using Microsoft Graph.
+      id: e7e45053-bb79-49ac-8f7b-13fcccd2b127
+      iscommand: true
+      name: Send Customer Deliverables Requirements
+      script: '|||send-mail'
+      type: regular
+      version: -1
+    taskid: e7e45053-bb79-49ac-8f7b-13fcccd2b127
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 4800
+        }
+      }
+  "13":
+    id: "13"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "74"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      phasestatus:
+        simple: ' Waiting - Customer'
+      phasestep:
+        simple: Identify Customer Deliverables
+      usecasecompletion:
+        simple: "12"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: 7d6135c4-bdc4-463e-8c02-3a4f190da4df
+      iscommand: true
+      name: Status update
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 7d6135c4-bdc4-463e-8c02-3a4f190da4df
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 5150
+        }
+      }
+  "15":
+    id: "15"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      contextKey:
+        simple: CustomerDeliverables
+      text:
+        simple: ${Identify Customer Deliverables.Answers.0}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Transform a markdown entry to an html entry, one of the following
+        parameters is mandatory id (entry ID), or text
+      id: 677f6714-200b-4370-8af8-e228e4b0a8a9
+      iscommand: true
+      name: Format Customer Deliverables
+      script: Builtin|||mdToHtml
+      type: regular
+      version: -1
+    taskid: 677f6714-200b-4370-8af8-e228e4b0a8a9
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 4625
+        }
+      }
+  "16":
+    evidencedata:
+      customfields: {}
+      description:
+        simple: Complexity and Outcomes Classified
+    form:
+      description: ""
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: usecasecomplexity
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: What is the projected complexity of this use case?
+        options: []
+        optionsarg:
+        - simple: Normal
+        - simple: Simple
+        - simple: Complex
+        - simple: HighlyComplex
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: ""
+        type: singleSelect
+      - defaultrows: []
+        fieldassociated: usecaseclassification
+        gridcolumns: []
+        id: "1"
+        label: ""
+        labelarg:
+          simple: What is the classification of this use case?
+        options: []
+        optionsarg:
+        - {}
+        - simple: Trigger
+        - simple: Enhancement
+        - simple: Remediation
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: ""
+        type: singleSelect
+      sender: ""
+      title: Determine Business Outcomes with Requester
+      totalanswers: 0
+    id: "16"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc: null
+      body: null
+      cc: null
+      format: ""
+      methods: []
+      subject: null
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: true
+        retriescount: 2
+        retriesinterval: 360
+      to: null
+    nexttasks:
+      '#none#':
+      - "30"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      dueDate:
+        complex:
+          accessor: "0"
+          root: Schedule Process Analysis Meeting.Answers
+          transformers:
+          - args:
+              variation:
+                value:
+                  simple: '''tomorrow'''
+            operator: ModifyDateTime
+      title:
+        simple: Customer Design - Complete Process Analysis Flow with Requester
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Add a new To-Do task to the specified incident.
+      id: d8d1c509-4a52-4dbf-8ed4-d1c6ac65f389
+      iscommand: false
+      name: Determine business outcomes and complexity
+      type: collection
+      version: -1
+    taskid: d8d1c509-4a52-4dbf-8ed4-d1c6ac65f389
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 3750
+        }
+      }
+  "20":
+    id: "20"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "38"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 0ec964b8-deab-4557-8fd7-06e201904836
+      iscommand: false
+      name: Start Customer Consult Timer
+      type: title
+      version: -1
+    taskid: 0ec964b8-deab-4557-8fd7-06e201904836
+    timertriggers:
+    - action: start
+      fieldname: usecasecustomerdesigntimer
+    - action: start
+      fieldname: usecasecurrentphasetimer
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 602.5,
+          "y": 1245
+        }
+      }
+  "21":
+    id: "21"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 46ea2df9-8b16-409d-8e7c-efd0d8920f98
+      iscommand: false
+      name: End
+      type: title
+      version: -1
+    taskid: 46ea2df9-8b16-409d-8e7c-efd0d8920f98
+    timertriggers:
+    - action: pause
+      fieldname: usecasecustomerdesigntimer
+    - action: pause
+      fieldname: usecasecurrentphasetimer
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": 5645
+        }
+      }
+  "25":
+    id: "25"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 6cff48f0-1cde-47f3-8c76-4684d2efcec0
+      iscommand: false
+      name: Meet with customer
+      type: title
+      version: -1
+    taskid: 6cff48f0-1cde-47f3-8c76-4684d2efcec0
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 602.5,
+          "y": 1740
+        }
+      }
+  "26":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Process Analysis with Customer.Answers.0
+          operator: isEqualString
+          right:
+            value:
+              simple: "Yes"
+      label: "yes"
+    id: "26"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "32"
+      "yes":
+      - "27"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: eacc4617-f753-4141-8074-8d3e756b3732
+      iscommand: false
+      name: Is process viable?
+      type: condition
+      version: -1
+    taskid: eacc4617-f753-4141-8074-8d3e756b3732
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 602.5,
+          "y": 2060
+        }
+      }
+  "27":
+    id: "27"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "28"
+      - "39"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: ec98f1f6-3769-420d-8dff-eae78075c5c2
+      iscommand: false
+      name: Customer design session
+      type: title
+      version: -1
+    taskid: ec98f1f6-3769-420d-8dff-eae78075c5c2
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 715,
+          "y": 2235
+        }
+      }
+  "28":
+    evidencedata:
+      customfields: {}
+      description:
+        simple: Design Session Scheduled
+    form:
+      description: Schedule additional sessions as need in order to complete the consult
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: Date of first session
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: ""
+        type: date
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "1"
+        label: ""
+        labelarg:
+          simple: Did you include time for production outages and disaster recovery
+            discussions?
+        options: []
+        optionsarg:
+        - simple: "Yes"
+        - simple: "No"
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: ""
+        type: singleSelect
+      sender: ""
+      title: Design Sessions
+      totalanswers: 0
+    id: "28"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc: null
+      body: null
+      cc: null
+      format: ""
+      methods: []
+      subject: null
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: true
+        retriescount: 2
+        retriesinterval: 360
+      to: null
+    nexttasks:
+      '#none#':
+      - "29"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: b304b7d3-daa5-4f8e-8ffd-3657c24b75a8
+      iscommand: false
+      name: Schedule design sessions with customer to complete tasks
+      type: collection
+      version: -1
+    taskid: b304b7d3-daa5-4f8e-8ffd-3657c24b75a8
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 2905
+        }
+      }
+  "29":
+    id: "29"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "49"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Change the properties of an incident
+      id: c8709445-f3ad-4045-803a-b36d30d00496
+      iscommand: false
+      name: Determine platform for automation
+      type: title
+      version: -1
+    taskid: c8709445-f3ad-4045-803a-b36d30d00496
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 612.5,
+          "y": 3080
+        }
+      }
+  "30":
+    id: "30"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      phasestatus:
+        simple: In progress
+      phasestep:
+        simple: Identify Integrations
+      usecasecompletion:
+        complex:
+          accessor: UseCaseConfig
+          root: lists
+          transformers:
+          - args:
+              field:
+                iscontext: true
+                value:
+                  simple: incident.usecasephase
+            operator: getField
+          - args:
+              field:
+                value:
+                  simple: steps
+            operator: getField
+          - args:
+              field:
+                iscontext: true
+                value:
+                  simple: incident.phasestep
+            operator: getField
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Change the properties of an incident
+      id: c0d2173e-1f54-43d7-899b-46c5d6f1ffac
+      iscommand: true
+      name: Change step to integrations
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: c0d2173e-1f54-43d7-899b-46c5d6f1ffac
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 3925
+        }
+      }
+  "32":
+    id: "32"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "21"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 46a50753-051c-44d5-8fba-d01a701fe482
+      iscommand: false
+      name: Process not viable
+      type: title
+      version: -1
+    taskid: 46a50753-051c-44d5-8fba-d01a701fe482
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 5490
+        }
+      }
+  "35":
+    id: "35"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "36"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |
+        Retrieves the current date and time.
+      id: a6b129be-ce9f-4976-863e-04a397e4de87
+      iscommand: false
+      name: Get Time
+      scriptName: GetTime
+      type: regular
+      version: -1
+    taskid: a6b129be-ce9f-4976-863e-04a397e4de87
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 827.5,
+          "y": 370
+        }
+      }
+  "36":
+    id: "36"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "37"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      complexity:
+        simple: ${incident.usecasecomplexity}
+      filter:
+        simple: consult
+      start_date:
+        complex:
+          root: TimeNowUnix
+          transformers:
+          - operator: LastArrayElement
+          - operator: TimeStampToDate
+          - args:
+              format:
+                value:
+                  simple: 01/02/2006
+            operator: toString
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Calculates the projected dates for phase completion of a use case
+      id: 712f3b05-b0bd-4071-878f-1515987a0b3d
+      iscommand: false
+      name: Set remaining dates starting today
+      scriptName: CalculateUseCaseDates
+      type: regular
+      version: -1
+    taskid: 712f3b05-b0bd-4071-878f-1515987a0b3d
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 827.5,
+          "y": 545
+        }
+      }
+  "37":
+    id: "37"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "20"
+      - "45"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      sla:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: incident.processdevelopmentdates.customerconsultend
+              operator: isNotEmpty
+          root: incident.processdevelopmentdates
+          transformers:
+          - args:
+              field:
+                value:
+                  simple: customerconsultend
+            operator: getField
+          - operator: LastArrayElement
+          - args:
+              add_utc_timezone: {}
+              dayfirst:
+                value:
+                  simple: "false"
+              fuzzy: {}
+              yearfirst:
+                value:
+                  simple: "true"
+            operator: DateStringToISOFormat
+      slaField:
+        simple: usecasecustomerdesigntimer
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: 1651d719-1d2c-4a02-8f80-303f6f241876
+      iscommand: true
+      name: Update phase SLA
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 1651d719-1d2c-4a02-8f80-303f6f241876
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 827.5,
+          "y": 720
+        }
+      }
+  "38":
+    id: "38"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      sla:
+        simple: ${incident.usecasecustomerdesigntimer.dueDate}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: 10a39664-b63b-4b0d-88ec-ea87b6789431
+      iscommand: true
+      name: Update incident SLA to reflect new phase SLA
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 10a39664-b63b-4b0d-88ec-ea87b6789431
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 602.5,
+          "y": 1390
+        }
+      }
+  "39":
+    form:
+      description: ""
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: Would you like to have folder created?
+        options: []
+        optionsarg:
+        - simple: "Yes"
+        - simple: "No"
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: ""
+        type: singleSelect
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "1"
+        label: ""
+        labelarg:
+          simple: If you would like the folder to be named something different than
+            the current use case title, enter it here
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: ""
+        type: shortText
+      sender: ""
+      title: Creation of SharePoint folder for this project
+      totalanswers: 0
+    id: "39"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc: null
+      body: null
+      cc: null
+      format: ""
+      methods: []
+      subject: null
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: true
+        retriescount: 2
+        retriesinterval: 360
+      to: null
+    nexttasks:
+      '#none#':
+      - "41"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 448dc4d1-3deb-45f0-820d-f01e02da3469
+      iscommand: false
+      name: Create SharePoint directory?
+      type: collection
+      version: -1
+    taskid: 448dc4d1-3deb-45f0-820d-f01e02da3469
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 827.5,
+          "y": 2380
+        }
+      }
+  "40":
+    id: "40"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "29"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      folder_name:
+        complex:
+          accessor: "1"
+          root: Creation of SharePoint folder for this project.Answers
+          transformers:
+          - operator: Stringify
+      object_type:
+        simple: drives
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Creates a new folder in a drive with the specified parent item
+        or path.
+      id: ed762c4b-8fcc-4c27-84b5-24ee98ec7179
+      iscommand: true
+      name: Create custom folder
+      script: '|||msgraph-create-new-folder'
+      type: regular
+      version: -1
+    taskid: ed762c4b-8fcc-4c27-84b5-24ee98ec7179
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1257.5,
+          "y": 2905
+        }
+      }
+  "41":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: "0"
+                root: Creation of SharePoint folder for this project.Answers
+                transformers:
+                - operator: LastArrayElement
+          operator: isEqualString
+          right:
+            value:
+              simple: "Yes"
+      label: "yes"
+    id: "41"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "29"
+      "yes":
+      - "42"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: f77fccda-38a1-4a20-8ce2-38cae662a2e7
+      iscommand: false
+      name: Create folder?
+      type: condition
+      version: -1
+    taskid: f77fccda-38a1-4a20-8ce2-38cae662a2e7
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 827.5,
+          "y": 2555
+        }
+      }
+  "42":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Creation of SharePoint folder for this project.Answers.1
+          operator: isNotEmpty
+          right:
+            value: {}
+      label: "yes"
+    id: "42"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "43"
+      "yes":
+      - "40"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 14248d86-7923-434d-8ade-cf5daeb0d9c5
+      iscommand: false
+      name: Customer folder name?
+      type: condition
+      version: -1
+    taskid: 14248d86-7923-434d-8ade-cf5daeb0d9c5
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 940,
+          "y": 2730
+        }
+      }
+  "43":
+    id: "43"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "29"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      folder_name:
+        simple: ${incident.name}
+      object_type:
+        simple: drives
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Creates a new folder in a drive with the specified parent item
+        or path.
+      id: 30c4a68c-fdc2-43b2-8837-a71cd2e8928e
+      iscommand: true
+      name: Create standard folder
+      script: '|||msgraph-create-new-folder'
+      type: regular
+      version: -1
+    taskid: 30c4a68c-fdc2-43b2-8837-a71cd2e8928e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 827.5,
+          "y": 2905
+        }
+      }
+  "44":
+    id: "44"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "20"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      sla:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: incident.processdevelopmentdates.customerconsultend
+              operator: isNotEmpty
+          root: incident.processdevelopmentdates
+          transformers:
+          - args:
+              field:
+                value:
+                  simple: customerconsultend
+            operator: getField
+          - operator: LastArrayElement
+          - args:
+              add_utc_timezone: {}
+              dayfirst:
+                value:
+                  simple: "false"
+              fuzzy: {}
+              yearfirst:
+                value:
+                  simple: "true"
+            operator: DateStringToISOFormat
+      slaField:
+        simple: usecasecurrentphasetimer
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: 08660eaa-2b85-4aed-8078-093ab9910bf1
+      iscommand: true
+      name: Update current phase timer
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 08660eaa-2b85-4aed-8078-093ab9910bf1
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 940,
+          "y": 1070
+        }
+      }
+  "45":
+    id: "45"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "44"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      timerField:
+        simple: usecasecurrentphasetimer
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.reset.timer
+      id: 3d0f383c-f7d3-4c91-816d-73423737b3ba
+      iscommand: true
+      name: Reset current phase timer
+      script: Builtin|||resetTimer
+      type: regular
+      version: -1
+    taskid: 3d0f383c-f7d3-4c91-816d-73423737b3ba
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 940,
+          "y": 895
+        }
+      }
+  "48":
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              simple: Automation Platform.Answers.0
+          operator: isEqualString
+          right:
+            value:
+              simple: Consult Only
+      label: Consult Only
+    id: "48"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "72"
+      Consult Only:
+      - "51"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 1b8d101f-6a50-4aaa-8870-7d8488974e01
+      iscommand: false
+      name: Automation Tool
+      type: condition
+      version: -1
+    taskid: 1b8d101f-6a50-4aaa-8870-7d8488974e01
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 612.5,
+          "y": 3400
+        }
+      }
+  "49":
+    form:
+      description: ""
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: automationplatform
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: What platform will this be developed in?
+        options: []
+        optionsarg:
+        - simple: XSOAR
+        - simple: PowerAutomate
+        - simple: Other
+        - simple: Consult Only
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: ""
+        type: singleSelect
+      sender: ""
+      title: Automation Platform
+      totalanswers: 0
+    id: "49"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc: null
+      body: null
+      cc: null
+      format: ""
+      methods: []
+      subject: null
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: true
+        retriescount: 2
+        retriesinterval: 360
+      to: null
+    nexttasks:
+      '#none#':
+      - "48"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 55983ee6-a0d8-47ad-817b-3e5cb17a0a97
+      iscommand: false
+      name: What is the automation platform?
+      type: collection
+      version: -1
+    taskid: 55983ee6-a0d8-47ad-817b-3e5cb17a0a97
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 612.5,
+          "y": 3225
+        }
+      }
+  "51":
+    id: "51"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "53"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 9117a436-d399-47e3-8459-7d6bb0a8c936
+      iscommand: false
+      name: Wrap up use case request
+      type: title
+      version: -1
+    taskid: 9117a436-d399-47e3-8459-7d6bb0a8c936
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 1145,
+          "y": 4815
+        }
+      }
+  "53":
+    id: "53"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "67"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: f2eb6bda-5a2e-4dcd-810b-e0ddafa1c09f
+      iscommand: false
+      name: XSOAR tasks to complete
+      type: title
+      version: -1
+    taskid: f2eb6bda-5a2e-4dcd-810b-e0ddafa1c09f
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 1145,
+          "y": 4990
+        }
+      }
+  "55":
+    id: "55"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "20"
+      "yes":
+      - "57"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      value:
+        simple: ${inputs.ExternalTicketId}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      id: c5b57849-c135-4efa-884b-83f5a5ee258a
+      iscommand: false
+      name: Is there an external ticket number?
+      scriptName: Exists
+      type: condition
+      version: -1
+    taskid: c5b57849-c135-4efa-884b-83f5a5ee258a
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 895
+        }
+      }
+  "57":
+    id: "57"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "20"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Updates the status of the Cherwell ticket
+      id: bafdb263-64aa-49e5-807e-3a3ae77b7faa
+      iscommand: false
+      name: Ticket logic here
+      type: title
+      version: -1
+    taskid: bafdb263-64aa-49e5-807e-3a3ae77b7faa
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 1085
+        }
+      }
+  "67":
+    id: "67"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "74"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: c60f6b5d-9787-4468-8b56-b13c118dbc3d
+      iscommand: false
+      name: End Consult
+      type: title
+      version: -1
+    taskid: c60f6b5d-9787-4468-8b56-b13c118dbc3d
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 1145,
+          "y": 5165
+        }
+      }
+  "71":
+    id: "71"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "35"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      kanban:
+        simple: Evaluation
+      phasestatus:
+        simple: Initial
+      phasestep:
+        simple: Meet with Customer
+      usecasecompletion:
+        complex:
+          accessor: UseCaseConfig
+          root: lists
+          transformers:
+          - args:
+              field:
+                iscontext: true
+                value:
+                  simple: incident.usecasephase
+            operator: getField
+          - args:
+              field:
+                value:
+                  simple: steps
+            operator: getField
+          - args:
+              field:
+                iscontext: true
+                value:
+                  simple: incident.phasestep
+            operator: getField
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Change the properties of an incident
+      id: 82282b20-2d42-42a0-889d-8e3681bc7ad9
+      iscommand: true
+      name: Change phase status to initial
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 82282b20-2d42-42a0-889d-8e3681bc7ad9
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 827.5,
+          "y": 195
+        }
+      }
+  "72":
+    id: "72"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "16"
+      - "5"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      phasestatus:
+        simple: In progress
+      phasestep:
+        simple: Develop Process Flow
+      usecasecompletion:
+        complex:
+          accessor: UseCaseConfig
+          root: lists
+          transformers:
+          - args:
+              field:
+                iscontext: true
+                value:
+                  simple: incident.usecasephase
+            operator: getField
+          - args:
+              field:
+                value:
+                  simple: steps
+            operator: getField
+          - args:
+              field:
+                iscontext: true
+                value:
+                  simple: incident.phasestep
+            operator: getField
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Change the properties of an incident
+      id: 7dc5371e-ef3f-4cd6-870a-c88996d73d72
+      iscommand: true
+      name: Change step to develop process flow
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 7dc5371e-ef3f-4cd6-870a-c88996d73d72
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 3575
+        }
+      }
+  "73":
+    id: "73"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      phasestatus:
+        simple: In progress
+      phasestep:
+        simple: Identify Customer Deliverables
+      usecasecompletion:
+        complex:
+          accessor: UseCaseConfig
+          root: lists
+          transformers:
+          - args:
+              field:
+                iscontext: true
+                value:
+                  simple: incident.usecasephase
+            operator: getField
+          - args:
+              field:
+                value:
+                  simple: steps
+            operator: getField
+          - args:
+              field:
+                iscontext: true
+                value:
+                  simple: incident.phasestep
+            operator: getField
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Change the properties of an incident
+      id: a6ed3897-4ead-4c7b-856b-339f40e48ff2
+      iscommand: true
+      name: Change step to deliverables
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: a6ed3897-4ead-4c7b-856b-339f40e48ff2
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 4275
+        }
+      }
+  "74":
+    id: "74"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      "yes":
+      - "75"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      value:
+        simple: ${inputs.ExternalTicketId}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      id: bb961152-f889-485c-83b5-9b61c13939ad
+      iscommand: false
+      name: Is there an external ticket number?
+      scriptName: Exists
+      type: condition
+      version: -1
+    taskid: bb961152-f889-485c-83b5-9b61c13939ad
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 612.5,
+          "y": 5325
+        }
+      }
+  "75":
+    id: "75"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "21"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Updates the status of the Cherwell ticket
+      id: ab199e0e-cbe7-47bf-89da-aa2375276c41
+      iscommand: false
+      name: Ticket logic here
+      type: title
+      version: -1
+    taskid: ab199e0e-cbe7-47bf-89da-aa2375276c41
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 612.5,
+          "y": 5500
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 5660,
+        "width": 1597.5,
+        "x": 40,
+        "y": 50
+      }
+    }
+  }

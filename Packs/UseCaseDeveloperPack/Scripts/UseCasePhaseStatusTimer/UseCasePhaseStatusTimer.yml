@@ -1,0 +1,40 @@
+args:
+- name: new
+- name: old
+comment: Starts/Stops wait timers on Use Cases
+commonfields:
+  id: e79cd5fd-1487-4d6b-8a56-016f3874263f
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ""
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 5b6d811b-9e3c-4ee0-8927-0b0e1456da26
+    propagationLabels:
+    - all
+    toServerVersion: ""
+dependson:
+  must:
+  - Builtin|||startTimer
+  - Builtin|||stopTimer
+  - Builtin|||pauseTimer
+  should:
+  - Builtin|||startTimer
+  - Builtin|||stopTimer
+  - Builtin|||pauseTimer
+dockerimage: demisto/python3:3.10.4.29342
+enabled: true
+engineinfo: {}
+mainengineinfo: {}
+name: UseCasePhaseStatusTimer
+pswd: ""
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- field-change-triggered
+- use case
+type: python

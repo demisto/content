@@ -1,0 +1,300 @@
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ""
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 5b6d811b-9e3c-4ee0-8927-0b0e1456da26
+    propagationLabels:
+    - all
+    toServerVersion: ""
+description: Provides basic time for testing
+id: d26db49f-84bc-48ea-8376-3068b3f8d5b0
+inputs: []
+name: Use Case - S - Internal Testing
+outputs: []
+sourceplaybookid: ae122a0c-b633-4ac5-8f85-060e76a5c526
+starttaskid: "0"
+tags:
+- Use Case Development
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "15"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 957abd25-702e-4913-8bb9-050e70fd727a
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 957abd25-702e-4913-8bb9-050e70fd727a
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "11":
+    id: "11"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "12"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: c38a5cc4-cd40-436a-8af8-90f2c86cc545
+      iscommand: false
+      name: Testing and Acceptance
+      type: title
+      version: -1
+    taskid: c38a5cc4-cd40-436a-8af8-90f2c86cc545
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "12":
+    evidencedata:
+      customfields: {}
+      description:
+        simple: Internal Functionality Testing
+    form:
+      description: ""
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: Enter date of testing completion
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: ""
+        type: date
+      - defaultrows: []
+        fieldassociated: usecasetestinghours
+        gridcolumns: []
+        id: "1"
+        label: ""
+        labelarg:
+          simple: Time spent on task
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: ""
+        type: number
+      sender: ""
+      title: Test all functionality
+      totalanswers: 0
+    id: "12"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc: null
+      body: null
+      cc: null
+      format: ""
+      methods: []
+      subject: null
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: false
+        retriescount: 2
+        retriesinterval: 360
+      to: null
+    nexttasks:
+      '#none#':
+      - "38"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      title:
+        simple: 'Testing - Test all functionality '
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Add a new To-Do task to the specified incident.
+      id: ba63ca50-33c0-4a7b-87df-82a27929e89a
+      iscommand: false
+      name: 'Testing - Test all functionality '
+      type: collection
+      version: -1
+    taskid: ba63ca50-33c0-4a7b-87df-82a27929e89a
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 515
+        }
+      }
+  "15":
+    id: "15"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "11"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      phasestatus:
+        simple: Initial
+      phasestep:
+        simple: Internal Testing
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Change the properties of an incident
+      id: aa6c3619-a342-4735-84ee-feb2db0ac7d2
+      iscommand: true
+      name: Set Use Case Phase
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: aa6c3619-a342-4735-84ee-feb2db0ac7d2
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "38":
+    id: "38"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "42"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      completed:
+        complex:
+          accessor: completed
+          root: incident
+          transformers:
+          - args:
+              by:
+                value:
+                  simple: "1"
+            operator: addition
+      usecasehourscompleted:
+        complex:
+          accessor: usecasehourscompleted
+          root: incident
+          transformers:
+          - args:
+              by:
+                value:
+                  simple: "8"
+            operator: addition
+      usecasehoursreported:
+        complex:
+          accessor: usecasehoursreported
+          root: incident
+          transformers:
+          - args:
+              by:
+                iscontext: true
+                value:
+                  simple: incident.usecasetestinghours
+            operator: addition
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Change the properties of an incident
+      id: f488755d-2781-4121-8dcd-a6595653f849
+      iscommand: true
+      name: Hours Completed
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: f488755d-2781-4121-8dcd-a6595653f849
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 690
+        }
+      }
+  "42":
+    id: "42"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 87cc0bd6-5150-40cb-8409-0329bb856b68
+      iscommand: false
+      name: End
+      type: title
+      version: -1
+    taskid: 87cc0bd6-5150-40cb-8409-0329bb856b68
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 865
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 880,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
