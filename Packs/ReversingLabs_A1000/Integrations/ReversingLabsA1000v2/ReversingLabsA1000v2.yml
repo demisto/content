@@ -269,7 +269,7 @@ script:
         back to querying TitaniumCloud.
       isArray: false
       name: localOnly
-      required: true
+      required: false
       secret: false
     deprecated: false
     description: Retrieve classification report for a sample
