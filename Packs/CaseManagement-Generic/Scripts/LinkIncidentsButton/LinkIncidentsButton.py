@@ -1,4 +1,6 @@
-import demistomock as demisto
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+
 
 action = demisto.getArg('action')
 if action not in ['link', 'unlink']:
