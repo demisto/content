@@ -1,22 +1,20 @@
-Integration with CyberArk Identity using REST API to get the Audit and Auth log for an application.
+Use the CyberArk Identity Event Collector integration to get Audit and Auth logs for an application using REST APIs.
 
-
-To obtain the tenant id app id username and password follow the instructions at [CyberArk Identity Documentation](https://docs.cyberark.com/Product-Doc/OnlineHelp/Idaptive/Latest/en/Content/Integrations/SIEM-PlatformEvents/Identity%20Platform%20API%20Usage%20Guide%20for%20ArcSight.pdf). under the `Prerequisite for Accessing INGA Events` section (pages 4-10)
-
+Before you start, you need to get the tenant ID, app ID, username, and password. For more information, see [CyberArk Identity Documentation](https://docs.cyberark.com/Product-Doc/OnlineHelp/Idaptive/Latest/en/Content/Integrations/SIEM-PlatformEvents/Identity%20Platform%20API%20Usage%20Guide%20for%20ArcSight.pdf), **Prerequisite for Accessing INGA Events** section (pages 4-10).
 
 ## Configuration Parameters
 
-**Server URL**
-Endpoint to get the logs, For example: ``https://{{tenant}}.my.idaptive.app/``.
+**Server URL**    
+The endpoint to get the logs. For example, ``https://{{tenant}}.my.idaptive.app/``.
 
-**App ID**
-The application ID from where to fetch the logs.
+**App ID**  
+The application ID to fetch the logs from.
 
-**User name and Password**  
-The siem user name and password.
+**User name and Password**    
+The SIEM user name and password.
 
-**The vendor corresponding to the integration that originated the events**
-The vendor name who created these events, Affects the name of the dataset where these events will insert {vendor_product_raw}.
+**Vendor name**
+The vendor corresponding to the integration that created the events. This affects the name of the dataset where these events will be inserted {vendor_product_raw}.
 
-**The product corresponding to the integration that originated the events**
-The product name who created the events, Affects the name of the dataset where the events will insert {vendor_product_raw}.
+**Product name**
+The product corresponding to the integration that created the events. This affects the name of the dataset where the events will be inserted {vendor_product_raw}.
