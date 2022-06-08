@@ -1,0 +1,18 @@
+commonfields:
+  id: CalderaReadOnlyFields
+  version: -1
+vcShouldKeepItemLegacyProdMachine: false
+name: CalderaReadOnlyFields
+script: ''
+type: python
+tags:
+- field-change-triggered
+enabled: true
+scripttarget: 0
+subtype: python3
+pswd: ''
+runonce: false
+dockerimage: demisto/python3:3.10.4.29342
+runas: DBotWeakRole
+engineinfo: {}
+mainengineinfo: {}

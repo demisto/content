@@ -1,0 +1,203 @@
+id: CalderaOperation
+version: 10
+vcShouldKeepItemLegacyProdMachine: false
+name: Caldera Operation
+description: This playbook is used to create a new Operation in Mitre Caldera.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 031d51ea-474d-4d92-878c-820cb230fe12
+    type: start
+    task:
+      id: 031d51ea-474d-4d92-878c-820cb230fe12
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: a9da1a97-cb5e-4a74-8606-88335883a5bd
+    type: regular
+    task:
+      id: a9da1a97-cb5e-4a74-8606-88335883a5bd
+      version: -1
+      name: Create New Operation
+      description: Create a new CALDERA operation record
+      script: MitreCaldera|||caldera-create-operation
+      type: regular
+      iscommand: true
+      brand: MitreCaldera
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      adversary_id:
+        complex:
+          root: incident
+          accessor: calderaoperationadversaryid
+          transformers:
+          - operator: substringFrom
+            args:
+              from:
+                value:
+                  simple: ' ('
+          - operator: substringTo
+            args:
+              to:
+                value:
+                  simple: )
+      name:
+        complex:
+          root: incident
+          accessor: calderaoperationname
+      planner_id:
+        complex:
+          root: incident
+          accessor: calderaoperationplannerid
+          transformers:
+          - operator: substringFrom
+            args:
+              from:
+                value:
+                  simple: ' ('
+          - operator: substringTo
+            args:
+              to:
+                value:
+                  simple: )
+      source_id:
+        complex:
+          root: incident
+          accessor: calderaoperationsourceid
+          transformers:
+          - operator: substringFrom
+            args:
+              from:
+                value:
+                  simple: ' ('
+          - operator: substringTo
+            args:
+              to:
+                value:
+                  simple: )
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: Caldera Operation ID
+      output:
+        simple: ${MitreCaldera.Operations.id}
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 81f1a669-8857-46fb-872d-54094ea99d8f
+    type: title
+    task:
+      id: 81f1a669-8857-46fb-872d-54094ea99d8f
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 4c99f441-d1d8-4272-8aba-26900b7114ac
+    type: regular
+    task:
+      id: 4c99f441-d1d8-4272-8aba-26900b7114ac
+      version: -1
+      name: Set Incident Name
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      name:
+        complex:
+          root: incident
+          accessor: calderaoperationname
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'Caldera Operation - '
+              suffix: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 560,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
