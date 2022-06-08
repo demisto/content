@@ -71,7 +71,7 @@
 | alter XDM.Audit.observer.timestamp=boot_timestamp
 | alter XDM.Audit.TriggeredBy.ipv4= source_ip
 
-[MODEL: dataset="VMware_ ESXi_raw", model=Authentication]
+[MODEL: dataset="VMware_ESXi_raw", model=Authentication]
 
 | filter _raw_log contains "vmauthd" or _raw_log contains "sshd"
 | alter Timestamp= arrayindex(regextract(_raw_log ,"(\d+\-\d+\-\d+T\d+\:\d+\:\d+Z?\.?\d+Z)") ,0)
