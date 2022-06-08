@@ -774,5 +774,4 @@ Gets the list of network and files IOCs of a specific analysis id.
 | family  | path             | sha256                                                           | type           | verdict   |
 |---------|------------------|------------------------------------------------------------------|----------------|-----------|
 | Turla   | test_file_1.csv  | eeb1199f7db006e4d20086171cc312cf5bdf53682cc37997223ad0c15a27dc88 | Main file      | malicious |
-|         | TMP/example_file | 5712d70b05e8dc39bc1b60e264a262f57b4aae42f0ce3cc6c80be6198155baba | Extracted file | unknown   |
 ```
