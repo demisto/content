@@ -43,8 +43,8 @@ In the self-deployed mode you can authenticate, by using one of the following fl
    
    ```REDIRECT_URI?code=AUTH_CODE&session_state=SESSION_STATE```
 1. Copy the `AUTH_CODE` (without the `“code=”` prefix, and the `session_state` parameter) and paste it in your instance configuration under the **Authorization code** parameter. 
-2. Enter your client ID in the **ID** parameter. 
-3. Enter your client secret in the **Key** parameter.
+2. Enter your client ID in the **ID\Client ID** parameter (credentials username). 
+3. Enter your client secret in the **password** parameter (credentials password).
 4. Enter your tenant ID in the **Token** parameter.
 5. Enter your redirect URI in the **Redirect URI** parameter.
 ### Authorize Cortex XSOAR for Azure Log Analytics (Client-Credentials Configuration)
@@ -53,8 +53,8 @@ In the self-deployed mode you can authenticate, by using one of the following fl
 Follow these steps for client-credentials configuration.
 
 1. In the instance configuration, select the **client-credentials** checkbox.
-2. Enter your Client ID in the **ID/Client ID** parameter. 
-3. Enter your Client Secret in the **password** parameter.
+2. Enter your Client ID in the **ID/Client ID** parameter (credentials username). 
+3. Enter your Client Secret in the **password** parameter (credentials password).
 4. Enter your Tenant ID in the **Tenant ID** parameter.
 5. Run the ***azure-log-analytics-test*** command to test the connection and the authorization process.
 9. Enter your redirect URI in the **Redirect URI** parameter.
