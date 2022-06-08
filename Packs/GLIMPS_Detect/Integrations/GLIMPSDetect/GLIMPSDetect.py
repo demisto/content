@@ -21,8 +21,8 @@ class Client(BaseClient):
 
     def __init__(self, base_url: str, api_token: str, verify: bool, proxy: bool):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
-        self.client = gClient(url=self._base_url, token=api_token)
-        self.client.verify = not self._verify
+        self.gclient = gClient(url=self._base_url, token=api_token)
+        self.gclient.verify = not self._verify
 
     def gdetect_send(self, filepath: str) -> str:
         """Sends file to GLIMPS Detect API.
@@ -34,7 +34,7 @@ class Client(BaseClient):
         :rtype: ``str``
         """
 
-        return self.client.push(filepath)
+        return self.gclient.push(filepath)
 
     def gdetect_get(self, uuid: str) -> Dict[str, Any]:
         """Gets GLIMPS Detect result for given uuid.
@@ -46,7 +46,7 @@ class Client(BaseClient):
         :rtype: ``Dict[str, Any]``
         """
 
-        return self.client.get(uuid)
+        return self.gclient.get(uuid)
 
 
 def test_module(client):
@@ -270,16 +270,16 @@ def main():
 
     # Log exceptions
     except GDetectError:
-        resp = client.client.response
-        if isinstance(resp, BadAuthenticationToken):
+        resp = client.gclient.response
+        if isinstance(resp.error, BadAuthenticationToken):
             return_error(f'Given token has bad format: {resp.message}')
-        elif isinstance(resp, NoAuthenticateToken):
+        elif isinstance(resp.error, NoAuthenticateToken):
             return_error(f'No token to authentication exists: {resp.message}')
-        elif isinstance(resp, NoURL):
+        elif isinstance(resp.error, NoURL):
             return_error(f'No URL to API found: {resp.message}')
-        elif isinstance(resp, UnauthorizedAccess):
+        elif isinstance(resp.error, UnauthorizedAccess):
             return_error(f'Access to API is unauthorized: {resp.message}')
-        elif isinstance(resp, BadUUID):
+        elif isinstance(resp.error, BadUUID):
             return_error(f'Given UUID is wrong: {resp.message}')
         else:
             return_error(resp.message)
