@@ -3064,51 +3064,6 @@ def json_dumps_inner(listed_objects: list) -> List[str]:
     return listed_json_dumps
 
 
-# def extract_context_data(context_data: dict) -> dict:
-#     """Transform the context data from partially json encoded to fully decoded.
-
-#     Args:
-#         context_data: The context data.
-#         include_id: Whether to include id in the encoding of the data.
-
-#     Returns: The extracted context data.
-#     """
-#     try:
-#         new_context_data = {
-#             MIRRORED_OFFENSES_QUERIED_CTX_KEY: json.loads(context_data.get(MIRRORED_OFFENSES_QUERIED_CTX_KEY, '{}')),
-#             MIRRORED_OFFENSES_FINISHED_CTX_KEY: json.loads(context_data.get(MIRRORED_OFFENSES_FINISHED_CTX_KEY, '{}')),
-#             'samples': json_loads_inner(json.loads(context_data.get('samples', '[]'))),
-#             'last_mirror_update': context_data.get('last_mirror_update', '0'),
-#             LAST_FETCH_KEY: int(json.loads(context_data.get(LAST_FETCH_KEY, '0'))),
-#             RESET_KEY: argToBoolean(context_data.get(RESET_KEY, 'false'))
-#         }
-#     except Exception as e:
-#         print_debug_msg(f'Exception {e} when trying to json parse {context_data}')
-#         raise e
-#     return new_context_data
-
-
-# def encode_context_data(context_data: dict) -> dict:
-#     """Transform the context data from a decoded python object form to a partially json encoded form.
-#     This is done in order to maintain compatibility with the set_to_integration_context_with_retries command.
-
-#     Args:
-#         context_data: The context data in its decoded python object form
-#         include_id: Whether to include id in the encoding of the data.
-
-#     Returns: The context data in its partially json encoded form.
-#     """
-#     new_context_data = {
-#         MIRRORED_OFFENSES_QUERIED_CTX_KEY: context_data.get(MIRRORED_OFFENSES_QUERIED_CTX_KEY, {}),
-#         MIRRORED_OFFENSES_FINISHED_CTX_KEY: context_data.get(MIRRORED_OFFENSES_FINISHED_CTX_KEY, {}),
-#         'samples': context_data.get('samples', []),
-#         'last_mirror_update': str(context_data.get('last_mirror_update', 0)),
-#         LAST_FETCH_KEY: int(context_data.get(LAST_FETCH_KEY, 0)),
-#         RESET_KEY: context_data.get(RESET_KEY, False)
-#     }
-#     return new_context_data
-
-
 def get_remote_data_command(client: Client, params: Dict[str, Any], args: Dict) -> GetRemoteDataResponse:
     """
     get-remote-data command: Returns an updated incident and entries
@@ -3242,7 +3197,7 @@ def add_modified_remote_offenses(client: Client,
         print_mirror_events_stats(new_context_data, "Get Modified Remote Data - Before update")
         mirrored_offenses_queries = context_data.get(MIRRORED_OFFENSES_QUERIED_CTX_KEY, {})
         finished_offenses_queue = context_data.get(MIRRORED_OFFENSES_FINISHED_CTX_KEY, {})
-        for offense_id, search_id in mirrored_offenses_queries.items():
+        for offense_id, search_id in mirrored_offenses_queries.copy().items():
             if search_id == -1:
                 search_id = create_events_search(client, events_columns, events_limit, offense_id)
                 mirrored_offenses_queries[offense_id] = search_id
