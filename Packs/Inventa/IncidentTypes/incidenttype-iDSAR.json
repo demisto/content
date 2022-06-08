@@ -149,7 +149,6 @@
     "locked": false,
     "name": "iDSAR",
     "onChangeRepAlg": 0,
-    "packID": "",
     "playbookId": "DSAR Inventa Handler",
     "preProcessingScript": "",
     "readonly": false,
