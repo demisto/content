@@ -64,7 +64,7 @@
 , XDM.Network.Source.host.hostname= dvchost 
 , XDM.Network.Destination.host.ipv4_addresses= dvc
 , XDM.Network.rule = policy_name
-, XDM.Network.observer_timestamp =policy_apply_date
+, XDM.Network.observation_timestamp =policy_apply_date
 , XDM.Network.http.response_code= response_code
 , XDM.Network.Source.port= spt
 , XDM.Network.Destination.ipv4= dst
@@ -81,4 +81,4 @@
 , XDM.Network.Destination.host.hostname= host
 , XDM.Network.ip_protocol= X_Forwarded_Proto
 , XDM.Network.http.user_agent= User_agent
-, XDM.Network.http.referrer= referre
+, XDM.Network.http.referrer= referrer;
