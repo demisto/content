@@ -50,9 +50,7 @@ if ! command -v poetry >/dev/null 2>&1; then
     exit 1
 fi
 
-echo "Upgrading pip and virtualenv libraries"
-python3 -m pip install --upgrade pip virtualenv
-echo "Configure poetry to install virutal enviroment in the project repo (will be availible in $(.venv)"
+echo "Configure poetry to install virutal enviroment in the project repo (will be availible in (.venv)"
 poetry config virtualenvs.in-project true
 
 echo "Installing dependencies..."
