@@ -19,8 +19,8 @@ from git import Repo
 from Tests.Marketplace.marketplace_services import get_last_commit_from_index
 from Tests.scripts.collect_tests.constants import (
     CONTENT_PATH, DEFAULT_MARKETPLACE_WHEN_MISSING, DEFAULT_REPUTATION_TESTS,
-    EXCLUDED_FILES, SKIPPED_CONTENT_ITEMS, XSOAR_SANITY_TEST_NAMES, ARTIFACTS_PATH, ONLY_INSTALL_PACK, OUTPUT_TESTS,
-    OUTPUT_PACKS)
+    EXCLUDED_FILES, SKIPPED_CONTENT_ITEMS, XSOAR_SANITY_TEST_NAMES, ARTIFACTS_PATH, ONLY_INSTALL_PACK, OUTPUT_TESTS_FILE,
+    OUTPUT_PACKS_FILE)
 from Tests.scripts.collect_tests.exceptions import (DeprecatedPackException,
                                                     EmptyMachineListException,
                                                     InexistentPackException,
@@ -552,9 +552,9 @@ def ui():  # todo put as real main
     collected = collector.collect(run_nightly=options.nightly, run_master=True)  # todo what to put in master?
     logger.info(f'done collecting, got ({len(collected.tests)} tests and {len(collected.packs)} packs')
 
-    logger.info(f'writing output to {str(OUTPUT_TESTS)}, {str(OUTPUT_PACKS)}')
-    OUTPUT_TESTS.write_text('\n'.join(collected.tests))
-    OUTPUT_PACKS.write_text('\n'.join(collected.packs))
+    logger.info(f'writing output to {str(OUTPUT_TESTS_FILE)}, {str(OUTPUT_PACKS_FILE)}')
+    OUTPUT_TESTS_FILE.write_text('\n'.join(collected.tests))
+    OUTPUT_PACKS_FILE.write_text('\n'.join(collected.packs))
 
 
 def debug():  # todo remove
