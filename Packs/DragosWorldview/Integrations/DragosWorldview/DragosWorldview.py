@@ -43,7 +43,7 @@ class Client(BaseClient):
 
 def get_report(client: Client, args: Dict[str, Any]) -> Dict[str, Any]:
     serial = args.get('serial')
-    if serial == None:
+    if serial is None:
         api_query = ''
     else:
         api_query = 'products/' + serial + '/report'
@@ -54,7 +54,7 @@ def get_report(client: Client, args: Dict[str, Any]) -> Dict[str, Any]:
 
 def get_csv(client: Client, args: Dict[str, Any]) -> Dict[str, Any]:
     serial = args.get('serial')
-    if serial == None:
+    if serial is None:
         api_query = ''
     else:
         api_query = 'products/' + serial + '/csv'
@@ -66,7 +66,7 @@ def get_csv(client: Client, args: Dict[str, Any]) -> Dict[str, Any]:
 
 def get_stix(client: Client, args: Dict[str, Any]) -> Dict[str, Any]:
     serial = args.get('serial')
-    if serial == None:
+    if serial is None:
         api_query = ''
     else:
         api_query = 'products/' + serial + '/stix2'
