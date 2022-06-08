@@ -19,7 +19,8 @@ from git import Repo
 from Tests.Marketplace.marketplace_services import get_last_commit_from_index
 from Tests.scripts.collect_tests.constants import (
     CONTENT_PATH, DEFAULT_MARKETPLACE_WHEN_MISSING, DEFAULT_REPUTATION_TESTS,
-    EXCLUDED_FILES, SKIPPED_CONTENT_ITEMS, XSOAR_SANITY_TEST_NAMES, ARTIFACTS_PATH, ONLY_INSTALL_PACK)
+    EXCLUDED_FILES, SKIPPED_CONTENT_ITEMS, XSOAR_SANITY_TEST_NAMES, ARTIFACTS_PATH, ONLY_INSTALL_PACK, OUTPUT_TESTS,
+    OUTPUT_PACKS)
 from Tests.scripts.collect_tests.exceptions import (DeprecatedPackException,
                                                     EmptyMachineListException,
                                                     InexistentPackException,
@@ -539,17 +540,21 @@ def ui():  # todo put as real main
 
     match (options.nightly, marketplace := MarketplaceVersions(options.marketplace)):
         case False, _:  # not nightly
-            collector = BranchTestCollector(marketplace=MarketplaceVersions.XSOAR, branch_name='master')
+            collector = BranchTestCollector(marketplace=MarketplaceVersions.XSOAR, branch_name='master',
+                                            service_account=options.service_account)
         case True, MarketplaceVersions.XSOAR:
             collector = XSOARNightlyTestCollector()
         case True, MarketplaceVersions.MarketplaceV2:
             collector = XSIAMNightlyTestCollector()
         case _:
-            raise ValueError(f"unexpected values of {marketplace=}, {options.nightly=}")
+            raise ValueError(f"unexpected values of (either) {marketplace=}, {options.nightly=}")
 
     collected = collector.collect(run_nightly=options.nightly, run_master=True)  # todo what to put in master?
-    (ARTIFACTS_PATH / 'filter_file.txt').write_text('\n'.join(collected.tests))
-    (ARTIFACTS_PATH / 'content_packs_to_install.txt').write_text('\n'.join(collected.packs))
+    logger.info(f'done collecting, got ({len(collected.tests)} tests and {len(collected.packs)} packs')
+
+    logger.info(f'writing output to {str(OUTPUT_TESTS)}, {str(OUTPUT_PACKS)}')
+    OUTPUT_TESTS.write_text('\n'.join(collected.tests))
+    OUTPUT_PACKS.write_text('\n'.join(collected.packs))
 
 
 def debug():  # todo remove

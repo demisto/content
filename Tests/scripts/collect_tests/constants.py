@@ -12,6 +12,8 @@ ARTIFACTS_ID_SET_PATH = ARTIFACTS_PATH / 'id_set.json'  # todo use
 ARTIFACTS_CONF_PATH = ARTIFACTS_PATH / 'conf.json'  # todo use
 DEBUG_ID_SET_PATH = CONTENT_PATH / 'Tests' / 'id_set.json'
 DEBUG_CONF_PATH = CONTENT_PATH / 'Tests' / 'conf.json'
+OUTPUT_TESTS = ARTIFACTS_PATH / 'filter_file.txt'
+OUTPUT_PACKS = ARTIFACTS_PATH / 'content_packs_to_install.txt'
 XSOAR_SANITY_TEST_NAMES = (
     'Sanity Test - Playbook with integration',
     'Sanity Test - Playbook with no integration',
