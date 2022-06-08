@@ -10,20 +10,13 @@ You must add at least a Unit Test function for every XSOAR command
 you are implementing with your integration
 """
 
-import demistomock as demisto
-import CommonServerPython
-from CommonServerPython import urljoin
-import pytest
-import json
-import requests_mock
+# import demistomock as demisto
+# import CommonServerPython
+# from CommonServerPython import urljoin
+# import pytest
+# import json
+# import requests_mock
 import datetime
-
-from Iboss import Client
-
-client = Client(username="michael.forgione@iboss.com", password="123Sally!!", account_settings_id="150819"
-                , verify=False, proxy=False)
-resp = client.remove_entity_from_block_list("notorange.com")
-print(resp)
 
 def get_mock_client(mocker):
     from Iboss import Client
