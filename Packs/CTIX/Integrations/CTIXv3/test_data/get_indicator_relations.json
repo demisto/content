@@ -1,0 +1,27 @@
+{
+    "next": null,
+    "page_size": 10,
+    "previous": null,
+    "results": [
+        {
+            "relationship_type": "related-to",
+            "sources": [
+                {
+                    "id": "48e5966e-5d1b-4cf9-8e79-306aa8702a28",
+                    "name": "Orion",
+                    "source_type": "RSS_FEED"
+                }
+            ],
+            "target_ref": {
+                "created": 1652081903,
+                "id": "cb728d0e-3e31-4c3d-8f7d-09726a8bf7a8",
+                "modified": 1652081903,
+                "name": "Feed 6",
+                "object_type": "report",
+                "sub_type": null,
+                "tlp": "AMBER"
+            }
+        }
+    ],
+    "total": 1
+}
