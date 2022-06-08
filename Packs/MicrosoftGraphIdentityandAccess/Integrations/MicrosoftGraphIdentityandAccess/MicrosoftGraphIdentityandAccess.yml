@@ -212,8 +212,17 @@ script:
     name: msgraph-identity-ip-named-locations-list
     arguments:
     - name: limit
-      default: false
       description: The limit for results we get from the api.
+      isArray: false
+      required: false
+      secret: false
+    - name: page
+      description: The page to get the data from.
+      isArray: false
+      required: false
+      secret: false
+    - name: odata_query
+      description: An odata query to send to the api.
       isArray: false
       required: false
       secret: false

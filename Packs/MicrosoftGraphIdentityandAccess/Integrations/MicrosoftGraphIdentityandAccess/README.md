@@ -389,6 +389,8 @@ Lists an ip named locations.
 | **Argument Name** | **Description**                | **Required** |
 |-------------------|--------------------------------|--------------|
 | limit             | The get request results limit. | Optional     |
+| page              | The page to get the data from. | Optional     |
+| odata_query       | An odata query to send to the api. | Optional     |
 
 
 #### Context Output

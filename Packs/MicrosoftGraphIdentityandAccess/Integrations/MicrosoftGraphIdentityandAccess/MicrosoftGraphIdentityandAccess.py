@@ -130,11 +130,13 @@ class Client:
         return self.ms_client.http_request(
             'POST', 'v1.0/identity/conditionalAccess/namedLocations', json_data=data)
 
-    def list_ip_named_location(self, limit: int) -> list:
+    def list_ip_named_location(self, limit: str, page: str, odata: str) -> list:
         """Get a list of all IP named locations
 
         Args:
-            limit: limit: Maximum IP named locations to get.
+            limit: Maximum IP named locations to get.
+            page: The page to take the data from.
+            odata: An odata query to use in the api call.
 
         Returns:
             a list of dictionaries with the object from the api
@@ -142,8 +144,15 @@ class Client:
         Docs:
             https://docs.microsoft.com/en-us/graph/api/conditionalaccessroot-list-namedlocations?view=graph-rest-1.0&tabs=http # noqa
         """
+        odata_query = '?'
+        if limit:
+            odata_query += f'$top={limit}&'
+        if page:
+            odata_query += f'$skip={page}&'
+        if odata:
+            odata_query += odata
         return self.ms_client.http_request(
-            'GET', f'v1.0/identity/conditionalAccess/namedLocations?$top={limit}')['value']
+            'GET', f'v1.0/identity/conditionalAccess/namedLocations{odata_query}')['value']
 
     def activate_directory_role(self, template_id: str) -> dict:
         """Activating a role in the directory.
@@ -347,6 +356,7 @@ def ip_named_location_get(ms_client: Client, args: dict) -> CommandResults:
             'namedIpLocations',
             outputs=context,
             raw_response=results,
+            ignore_auto_extract=True,
             readable_output=tableToMarkdown(
                 f'IP named location \'{ip_id}\':',
                 context
@@ -380,6 +390,7 @@ def ip_named_location_update(ms_client: Client, args: dict) -> CommandResults:
             'namedIpLocations',
             outputs={},
             raw_response={},
+            ignore_auto_extract=True,
             readable_output=f'Successfully  updated IP named location \'{ip_id}\''
         )
     return CommandResults(readable_output=f'Could not update IP named location \'{ip_id}\'')
@@ -390,7 +401,6 @@ def ip_named_location_create(ms_client: Client, args: dict) -> CommandResults:
     is_trusted = args.get('is_trusted')
     display_name = args.get('display_name')
     if ips and display_name and is_trusted:
-        ips_arr = []
         is_trusted = str(is_trusted).lower() == 'true'
         ips_arr = ms_ip_string_to_list(ips)
         data = {
@@ -414,6 +424,7 @@ def ip_named_location_create(ms_client: Client, args: dict) -> CommandResults:
                 'namedIpLocations',
                 outputs=context,
                 raw_response=results,
+                ignore_auto_extract=True,
                 readable_output=tableToMarkdown(
                     f'created IP named location \'{id}\':',
                     context
@@ -430,14 +441,17 @@ def ip_named_location_delete(ms_client: Client, args: dict) -> CommandResults:
             'namedIpLocations',
             outputs={},
             raw_response={},
+            ignore_auto_extract=True,
             readable_output=f'Successfully deleted IP named location \'{ip_id}\''
         )
     return CommandResults(readable_output=f'Could not delete IP named location \'{ip_id}\'')
 
 
 def ip_named_location_list(ms_client: Client, args: dict) -> CommandResults:
-    limit = args.get('limit', '100')
-    if results := ms_client.list_ip_named_location(limit):
+    limit = args.get('limit')
+    page = args.get('page')
+    odata = args.get('odata_query')
+    if results := ms_client.list_ip_named_location(limit, page, odata):
         ip_named_locations = []
         for result in results:
             ip_named_location = {
@@ -457,6 +471,7 @@ def ip_named_location_list(ms_client: Client, args: dict) -> CommandResults:
             'namedIpLocations',
             outputs=context,
             raw_response=results,
+            ignore_auto_extract=True,
             readable_output=tableToMarkdown(
                 'IP named locations:',
                 ip_named_locations,
