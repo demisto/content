@@ -1,6 +1,6 @@
 [MODEL: dataset="VMware_ESXi_raw", model=Endpoint"]
 
-| filter _raw_log contains "hostd" or _raw_log contains "vcpu" or _raw_log contains "svga"  or _raw_log contains "mks" or _raw_log contains "vmx" 
+ filter _raw_log contains "hostd" or _raw_log contains "vcpu" or _raw_log contains "svga"  or _raw_log contains "mks" or _raw_log contains "vmx" 
 | filter  _raw_log not contains "verbose" 
 
 |alter request_time = arrayindex(regextract(_raw_log ,"(\d+\-\d+\-\d+T\d+\:\d+\:\d+Z?\.?\d+Z)"),0)
@@ -73,7 +73,7 @@
 
 [MODEL: dataset="VMware_ESXi_raw", model=Authentication]
 
-| filter _raw_log contains "vmauthd" or _raw_log contains "sshd"
+ filter _raw_log contains "vmauthd" or _raw_log contains "sshd"
 | alter Timestamp= arrayindex(regextract(_raw_log ,"(\d+\-\d+\-\d+T\d+\:\d+\:\d+Z?\.?\d+Z)") ,0)
 | alter Service_name = arrayindex(regextract(_raw_log ,"\d+\-\d+\-\d+T\d+\:\d+\:\d+\S+\s(\w+)") ,0)
 | alter pid = arrayindex(regextract(_raw_log ,"Z\s\w+\[(\d+)"),0)
