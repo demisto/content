@@ -12,7 +12,7 @@ Examples:
 !msgraph-mail-list-emails odata=&quot;$filter=from/emailAddress/address eq &#39;azure-noreply@microsoft.com&#39;&quot;
 !msgraph-mail-list-emails odata=&quot;$filter=sentDateTime gt 2020-03-25T09:35:23Z and sentDateTime lt 2020-03-25T12:04:47Z&quot;
 
-NOTE:
+Note:
 The query parameter `$filter` is not supported when using the `search` parameter.
 
 ## Authentication
@@ -22,9 +22,9 @@ Note: For this integration, you cannot use a "Shared mailbox" regardless of the 
 
 ### Required Permissions
 The following permissions are required for all commands:
-1. Mail.ReadWrite - Delegated
-2. Mail.Send - Delegated
-3. User.Read - Delegated
+- Mail.ReadWrite - Delegated
+- Mail.Send - Delegated
+- User.Read - Delegated 
 
 ## Configure Microsoft Graph Mail Single User on Cortex XSOAR
 
@@ -37,13 +37,13 @@ The following permissions are required for all commands:
     | ID or Client ID - see Detailed Instructions (?) |  | True |
     | Token or Tenant ID - see Detailed Instructions (?) |  | True |
     | Key or Client Secret - see Detailed Instructions (?) |  | False |
-    | Certificate Thumbprint (optional for self-deployed Azure app) | Used for certificate authentication. As appears in the "Certificates &amp;amp; secrets" page of the app. | False |
+    | Certificate Thumbprint (optional for self-deployed Azure app) | Used for certificate authentication. As appears in the "Certificates &amp; secrets" page of the app. | False |
     | Private Key | Used for certificate authentication. The private key of the registered certificate. | False |
     | Authorization code (required for self-deployed Azure app) |  | False |
     | Application redirect URI (required for self-deployed Azure app) |  | False |
     | Fetch incidents |  | False |
-    | Email address from which to fetch incidents (e.g. "example@demisto.com") |  | True |
-    | Name of the folder from which to fetch incidents (supports Folder ID and sub-folders e.g. Inbox/Phishing) |  | True |
+    | Email address from which to fetch incidents (e.g., "example@demisto.com") |  | True |
+    | Name of the folder from which to fetch incidents (supports Folder ID and sub-folders e.g., Inbox/Phishing) |  | True |
     | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
     | Maximum number of emails to pull per fetch |  | False |
     | Trust any certificate (not secure) |  | False |
@@ -74,8 +74,8 @@ Creates a draft message in the specified user's mailbox.
 | subject | The subject for the draft. | Required | 
 | body | The contents (body) of the draft. | Optional | 
 | body_type | The body type of the email. Can be: "text", or "HTML". Possible values are: text, HTML. Default is text. | Optional | 
-| flag | The flag value that indicates the status of the draft. Can be: "notFlagged", "complete", or "flagged". Possible values are: notFlagged, complete, flagged. Default is notFlagged. | Optional | 
-| importance | The importance of the draft. Can be: "Low", "Normal", or "High". Possible values are: Low, Normal, High. Default is Low. | Optional | 
+| flag | The flag value that indicates the status of the draft. Possible values are: notFlagged, complete, flagged. Default is notFlagged. | Optional | 
+| importance | The importance of the draft. Possible values are: Low, Normal, High. Default is Low. | Optional | 
 | headers | A comma-separated list of additional headers in the format, headerName:headerValue. For example, "headerName1:headerValue1,headerName2:headerValue2". | Optional | 
 | attach_ids | A comma-separated list of War Room entry IDs that contain files, which are used to attach files to the draft. For example, attachIDs=15@8,19@8. | Optional | 
 | attach_names | A comma-separated list of names of attachments to be displayed in the draft. Must be the same number of elements as attachIDs. | Optional | 
@@ -91,7 +91,7 @@ Creates a draft message in the specified user's mailbox.
 | MicrosoftGraph.Draft.Bcc | String | The BCC recipients of the draft email. | 
 | MicrosoftGraph.Draft.Body | String | The body of the draft email. | 
 | MicrosoftGraph.Draft.MessageID | String | The message ID of the draft email. | 
-| MicrosoftGraph.Draft.SentTime | Date | The created time of the draft email. | 
+| MicrosoftGraph.Draft.SentTime | Date | The sent time of the draft email. | 
 | MicrosoftGraph.Draft.Headers | String | The headers of the draft email. | 
 | MicrosoftGraph.Draft.From | String | The user that sent the draft email. | 
 | MicrosoftGraph.Draft.Subject | String | The subject of the draft email. | 
@@ -121,16 +121,16 @@ Replies to an email using Graph Mail Single User.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| to | A CSV list of email addresses for the 'to' field. | Required | 
+| to | A comma-separated list of email addresses for the 'to' field. | Required | 
 | body | The contents (body) of the email to be sent. | Optional | 
 | subject | Subject for the email to be sent. | Required | 
 | inReplyTo | ID of the item to reply to. | Required | 
-| attachIDs | A CSV list of War Room entry IDs that contain files, and are used to attach files to the outgoing email. For example: attachIDs=15@8,19@8. | Optional | 
-| cc | A CSV list of email addresses for the 'cc' field. | Optional | 
-| bcc | A CSV list of email addresses for the 'bcc' field. | Optional | 
+| attachIDs | A comma-separated list of War Room entry IDs that contain files, and are used to attach files to the outgoing email. For example: attachIDs=15@8,19@8. | Optional | 
+| cc | A comma-separated list of email addresses for the 'cc' field. | Optional | 
+| bcc | A comma-separated list of email addresses for the 'bcc' field. | Optional | 
 | htmlBody | HTML formatted content (body) of the email to be sent. This argument overrides the "body" argument. | Optional | 
-| attachNames | A CSV list of names of attachments to send. Should be the same number of elements as attachIDs. | Optional | 
-| attachCIDs | A CSV list of CIDs to embed attachments within the email itself. | Optional | 
+| attachNames | A comma-separated list of names of attachments to send. Should be the same number of elements as attachIDs. | Optional | 
+| attachCIDs | A comma-separated list of CIDs to embed attachments within the email itself. | Optional | 
 | from | Email address of the sender. | Optional | 
 
 
@@ -167,8 +167,8 @@ Sends an email using Microsoft Graph.
 | subject | The subject of the email. | Required | 
 | body | The contents (body) of the email. | Optional | 
 | body_type | The body type of the email. Can be: "text", or "HTML". Possible values are: text, HTML. | Optional | 
-| flag | The flag value that indicates the status for the email. Can be: "notFlagged", "complete", or "flagged". Possible values are: notFlagged, complete, flagged. Default is notFlagged. | Optional | 
-| importance | The importance of the email. Can be: "Low", "Normal", or "High". Possible values are: Low, Normal, High. Default is Low. | Optional | 
+| flag | The flag value that indicates the status for the email. Possible values are: notFlagged, complete, flagged. Default is notFlagged. | Optional | 
+| importance | The importance of the email. Possible values are: Low, Normal, High. Default is Low. | Optional | 
 | headers | A comma-separated list of additional headers in the format: headerName:headerValue. For example: "headerName1:headerValue1,headerName2:headerValue2". | Optional | 
 | attach_ids | A comma-separated list of War Room entry IDs that contain files, which are used to attach files for the email to send. For example, attachIDs=15@8,19@8. | Optional | 
 | attach_names | A comma-separated list of names of attachments to display in the email to send. Must be the same number of elements as attachIDs. | Optional | 
@@ -257,7 +257,7 @@ Tests connectivity of the email.
 There is no context output for this command.
 ### msgraph-mail-list-emails
 ***
-Gets the properties of returned emails. Typically shows partial results, use the "page_size" and "pages_to_pull" arguments to get all results.
+Gets the properties of returned emails. Typically shows partial results. Use the "page_size" and "pages_to_pull" arguments to get all results.
 
 
 #### Base Command
@@ -267,9 +267,9 @@ Gets the properties of returned emails. Typically shows partial results, use the
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| odata | An OData query. See REDAME for OData usage examples. | Optional | 
+| odata | An OData query. See [OData Usage](#odata-usage) for OData usage examples. | Optional | 
 | search | The term for which to search. This argument cannot contain reserved characters such as !, $, #, @, etc. For further information, see https://tools.ietf.org/html/rfc3986#section-2.2. | Optional | 
-| page_size | Limit emails to fetch in one request. Default is 20. | Optional | 
+| page_size | The maximum number of emails to fetch in one request. Default is 20. | Optional | 
 | pages_to_pull | The number of pages of emails to return (maximum is 10 emails per page). Default is 1. | Optional | 
 
 
@@ -284,13 +284,13 @@ Gets the properties of returned emails. Typically shows partial results, use the
 | MSGraphMail.SendTime | Date | The time the email was sent. | 
 | MSGraphMail.Categories | String | Categories of the email. | 
 | MSGraphMail.HasAttachments | Boolean | Whether the email has attachments. | 
-| MSGraphMail.Subject | String | The subject of email. | 
+| MSGraphMail.Subject | String | The subject of the email. | 
 | MSGraphMail.IsDraft | Boolean | Whether the email is a draft. | 
 | MSGraphMail.Body | String | The content \(body\) of the email. | 
-| MSGraphMail.Sender.Name | String | The name of sender. | 
+| MSGraphMail.Sender.Name | String | The name of the sender. | 
 | MSGraphMail.Sender.Address | String | The email address of the sender. | 
 | MSGraphMail.From.Name | String | The name of the user in the 'from' field of the email. | 
-| MSGraphMail.From.Address | String | The email address of the user in the 'from' field of the email | 
+| MSGraphMail.From.Address | String | The email address of the user in the 'from' field of the email. | 
 | MSGraphMail.CCRecipients.Name | String | The names of the CC recipients. | 
 | MSGraphMail.CCRecipients.Address | String | The email address of the user in the 'cc' field of the email. | 
 | MSGraphMail.BCCRecipients.Name | String | The names of the users in the 'bcc' field of the email. | 
@@ -316,9 +316,9 @@ Get email attachment
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| message_id | The email message id. | Required | 
-| attachment_id | The id of the attachment. | Required | 
-| folder_id | The id of the folder. | Optional | 
+| message_id | The email message ID. | Required | 
+| attachment_id | The ID of the attachment. | Required | 
+| folder_id | The ID of the folder. | Optional | 
 
 
 #### Context Output
@@ -348,8 +348,8 @@ Lists all of the attachments of given email
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| message_id | The email message id. | Required | 
-| folder_id | The id of the folder. | Optional | 
+| message_id | The email message ID. | Required | 
+| folder_id | The ID of the folder. | Optional | 
 
 
 #### Context Output
@@ -374,7 +374,7 @@ Retrieves an email message by message ID and uploads the content as an EML file.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| message_id | The unique ID of the mail. You cannot use the the 'MessageID' key in the form '&lt;message-id&gt;'. | Required | 
+| message_id | The unique ID of the mail. You cannot use the 'MessageID' key in the form '&lt;message-id&gt;'. | Required | 
 
 
 #### Context Output
