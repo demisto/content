@@ -18,17 +18,17 @@ configuration:
   name: credentials
   required: true
   type: 9
-- display: The vendor corresponding to the integration that originated the events
+- display: The vendor corresponding to the integration that originated the events.
   name: vendor
   type: 0
   defaultvalue: cyberark
   required: false
-- display: The product corresponding to the integration that originated the events
+- display: The product corresponding to the integration that originated the events.
   name: product
   type: 0
   defaultvalue: identity
 - defaultvalue: 3 days
-  display: First fetch time (<number> <time unit>, e.g., 12 hours, 1 day, 3 months). default is 3 days.
+  display: First fetch time (<number> <time unit>, for example 12 hours, 1 day, 3 months). Default is 3 days.
   name: from
   required: true
   type: 0
@@ -37,11 +37,11 @@ configuration:
   name: limit
   required: true
   type: 0
-- display: Trust any certificate (not secure)
+- display: Trust any certificate (not secure).
   name: insecure
   required: false
   type: 8
-- display: Use system proxy settings
+- display: Use system proxy settings.
   name: proxy
   required: false
   type: 8
@@ -60,7 +60,7 @@ script:
       name: limit
       required: false
       secret: false
-    - description: Set this argument to True in order to create events, otherwise the command will only display them.
+    - description: Set this argument to True to create events, otherwise events will only be displayed.
       auto: PREDEFINED
       defaultValue: 'False'
       isArray: false
@@ -69,7 +69,7 @@ script:
         - 'True'
         - 'False'
       required: true
-    - description: First fetch time (<number> <time unit>, e.g., 12 hours, 1 day, 3 months). Default is 3 days.
+    - description: First fetch time (<number> <time unit>, for example 12 hours, 1 day, 3 months). Default is 3 days.
       isArray: true
       name: from
       required: false
