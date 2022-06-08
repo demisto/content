@@ -26,7 +26,7 @@ On the XSIAM side:
 2. Creating a new HTTP Log Collector will allow you to generate a unique token, please save it since it will be used later.
 3. Click the 3 dots sign next to the newly created instance and copy the API Url, it will also be used later.
    
-On the XSIAM side:\
+On the jamf side:\
 While creating (or editing) a webhook, please set:
 1. `Webhook URL` as the API Url which was copied in section 3 (on the XSIAM side).
 2. Under `Authentication Type` choose `Header Authentication` and paste this in the textbox:
