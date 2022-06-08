@@ -5829,7 +5829,7 @@ script:
     outputs: []
   - arguments:
     - default: false
-      description: The remote incident  ID.
+      description: The remote incident ID.
       isArray: false
       name: id
       required: true
