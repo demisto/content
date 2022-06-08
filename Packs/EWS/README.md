@@ -46,9 +46,4 @@ To perform actions on mailboxes of other users, and to execute searches on the E
 ---
  - Mike Rizzo
 
-Contributions are welcome and appreciated. For more info, visit our [Contribution Guide](https://xsoar.pan.dev/docs/contributing/contributing).### Pack Contributors:
-
----
- - Mike Rizzo
-
 Contributions are welcome and appreciated. For more info, visit our [Contribution Guide](https://xsoar.pan.dev/docs/contributing/contributing).
