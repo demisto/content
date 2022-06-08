@@ -9,9 +9,7 @@ filter _time != null
 /*---------------- END ----------------*/
 | filter _log_source_file_name in("auth*", "secure") or facility_val in(4,10,13)
 | alter current_year =  arrayindex(regextract(to_string(current_time()), "\d{4}"), 0)
-| alter timestamp_long = arrayindex(regextract(_raw_log , "\w{3}\s+\d{2}\s\d{2}:\d{2}:\d{2}"), 0)
-| alter timestamp_short= arrayindex(regextract(_raw_log , "\w{3}\s+\d{1}\s\d{2}:\d{2}:\d{2}"), 0)
-| alter timestamp = coalesce( timestamp_long )
+| alter timestamp = arrayindex(regextract(_raw_log , "\w{3}\s+\d{1,2}\s\d{2}:\d{2}:\d{2}"), 0)
 | alter timestamp = format_string("%s %s", current_year , timestamp )
 | alter hostname =  to_string(arrayindex(regextract(_raw_log , "\d{2}\S\d{2}\S\d{2}\s+(\w+)\s"), 0))
 | alter process_name =  to_string(arrayindex(regextract(_raw_log , "\w+\s{1,2}\d{1,2}\s\d{2}\S\d{2}\S\d{2}\s+\w+\s([\w|\-\/]+)\[*"), 0))
@@ -38,9 +36,7 @@ filter _time != null
 | filter _log_source_file_name in("syslog*", "message") or facility_val not in(4,10,13)
 
 | alter current_year =  arrayindex(regextract(to_string(current_time()), "\d{4}"), 0)
-| alter timestamp_long = arrayindex(regextract(_raw_log , "\w{3}\s+\d{2}\s\d{2}:\d{2}:\d{2}"), 0)
-| alter timestamp_short= arrayindex(regextract(_raw_log , "\w{3}\s+\d{1}\s\d{2}:\d{2}:\d{2}"), 0)
-| alter timestamp = coalesce( timestamp_long )
+| alter timestamp = arrayindex(regextract(_raw_log , "\w{3}\s+\d{1,2}\s\d{2}:\d{2}:\d{2}"), 0)
 | alter timestamp = format_string("%s %s", current_year , timestamp )
 | alter hostname =  to_string(arrayindex(regextract(_raw_log , "\d{2}\S\d{2}\S\d{2}\s+(\w+)\s"), 0))
 | alter process_name =  to_string(arrayindex(regextract(_raw_log , "\w+\s{1,2}\d{1,2}\s\d{2}\S\d{2}\S\d{2}\s+\w+\s([\w|\-\/]+)\[*"), 0))
