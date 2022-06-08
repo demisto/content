@@ -188,7 +188,6 @@ def main():
         message += 'Please confirm if this file contains sensitive information:'
 
     try:
-        # demisto.results(demisto.executeCommand('send-notification', send_notification_args))
         if messenger.upper() == 'SLACK':
             send_slack_message(entitlement, task, user_id, message)
         else:

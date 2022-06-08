@@ -6,11 +6,11 @@ script: ''
 type: python
 tags: []
 enabled: true
-comment: Sends a message via Slack to the user whose file upload violated DLP
+comment: Sends a message via Slack or MS Teams to the user whose file upload violated DLP
   policies and triggered the incident.
 args:
 - name: messenger
-  required: true
+  required: false
   auto: PREDEFINED
   predefined:
     - "Slack"

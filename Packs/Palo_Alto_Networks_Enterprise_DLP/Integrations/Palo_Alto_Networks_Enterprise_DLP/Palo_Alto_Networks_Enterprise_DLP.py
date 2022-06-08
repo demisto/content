@@ -236,6 +236,7 @@ class Client(BaseClient):
                     region: The DLP region
                     report_id: The report ID for the incident
                     dlp_channel: The DLP channel (service name)
+                    error_details: The error details if there is an error
 
                 Returns: DLP Incident json
                 """
