@@ -3,7 +3,7 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 from gdetect import Client as gClient
-from gdetect.exceptions import GDetectError, BadAuthenticationToken
+from gdetect.exceptions import *
 ''' IMPORTS '''
 
 from copy import copy
@@ -59,12 +59,8 @@ def test_module(client):
     Returns:
         'ok' if test passed, anything else will fail the test
     """
-    resp = client.gdetect_get('00000000-0000-0000-0000-000000000000')
-    error = resp.get('error')
-    if error == 'file not found':
-        return 'ok'
-    else:
-        return error
+    client.gdetect_get('00000000-0000-0000-0000-000000000000')
+    return 'ok'
 
 
 def gdetect_send_command(client, args):  # TO TEST
@@ -85,7 +81,11 @@ def gdetect_send_command(client, args):  # TO TEST
                       raw-response=true
     """
     entry_id = args.get('entryID')
-    filepath = demisto.getFilePath(entry_id).get('path')
+    res = demisto.getFilePath(entry_id)
+    demisto.log(f'File: {str(res)}')
+    if not res:
+        return_error(f'File entry: {entry_id} not found')
+    filepath = res.get('path')
     uuid = client.gdetect_send(filepath)
     readable_output = f'## The file was sent successfully, UUID: {uuid}'
     outputs = {
@@ -260,8 +260,6 @@ def main():
         if command == 'test-module':
             # This is the call made when pressing the integration Test button.
             result = test_module(client)
-            if result != 'ok':
-                return_error(result)
             return_results(result)
         elif command == 'gdetect-send':
             return_results(gdetect_send_command(client, demisto.args()))
@@ -274,7 +272,17 @@ def main():
     except GDetectError:
         resp = client.client.response
         if isinstance(resp, BadAuthenticationToken):
-            return_error(f'Bad authentification: {resp.message}')
+            return_error(f'Given token has bad format: {resp.message}')
+        elif isinstance(resp, NoAuthenticateToken):
+            return_error(f'No token to authentication exists: {resp.message}')
+        elif isinstance(resp, NoURL):
+            return_error(f'No URL to API found: {resp.message}')
+        elif isinstance(resp, UnauthorizedAccess):
+            return_error(f'Access to API is unauthorized: {resp.message}')
+        elif isinstance(resp, BadUUID):
+            return_error(f'Given UUID is wrong: {resp.message}')
+        else:
+            return_error(resp.message)
     except Exception as e:
         return_error(f'Failed to execute {command} command. Error: {str(e)}')
 
