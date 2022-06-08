@@ -55,7 +55,8 @@ script:
     execution: false
     name: cyberarkidentity-get-events
     arguments:
-    - description: The maximum number of incidents per fetch. Default is 1000.
+    - description: The maximum number of events per fetch. Default is 1000.
+      defaultValue: 1000
       isArray: true
       name: limit
       required: false

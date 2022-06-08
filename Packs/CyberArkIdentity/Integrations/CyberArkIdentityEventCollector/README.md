@@ -34,10 +34,10 @@ Returns a list of events
 `cyberarkidentity-get-events`
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| should_push_events | Set this argument to True to create events, otherwise events will only be displayed. Default is False. | Required |
-| limit | The maximum number of incidents per fetch. Default is 1000. | Optional | 
+| **Argument Name** | **Description**                                                                                                    | **Required** |
+| --- |--------------------------------------------------------------------------------------------------------------------| --- |
+| should_push_events | Set this argument to True to create events, otherwise events will only be displayed. Default is False.             | Required |
+| limit | The maximum number of events per fetch. Default is 1000.                                                           | Optional | 
 | from | The first fetch time (&lt;number&gt; &lt;time unit&gt;, for example 12 hours, 1 day, 3 months). Default is 3 days. | Optional | 
 
 
