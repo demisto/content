@@ -27,23 +27,23 @@
 | alter XDM.Network.Source.ipv4 =  c_ip  
 | alter XDM.Network.Source.user.username  = cs_username
 | alter XDM.Network.Destination.host.hostname = c_sitename
-| alter  XDM.Network.Destination.host.hostname = S_computername
-| alter  XDM.Network.http.url = cs_uri_stem
-| alter  XDM.Network.Destination.ipv4 =s_ip 
+| alter XDM.Network.Destination.host.hostname = S_computername
+| alter XDM.Network.http.url = cs_uri_stem
+| alter XDM.Network.Destination.ipv4 =s_ip 
 | alter XDM.Network.Source.port= s_port
 | alter XDM.Network.http.method = cs_method
 | alter XDM.Network.http.response_code= sc_status
-| alter  XDM.Network.duration =time_taken
+| alter XDM.Network.duration =time_taken
 | alter XDM.Network.Observer.unique_identifier =cs_Cookie 
-| alter  XDM.Network.http.referrer =CS_reffer
+| alter XDM.Network.http.referrer =CS_reffer
 | alter XDM.Network.http.user_agent= cs_User_Agent 
 | alter XDM.Network.Source.bytes= sc_bytes 
- | alter XDM.Network.Destination.bytes = cs_bytes
+| alter XDM.Network.Destination.bytes = cs_bytes
 | alter XDM.Network.Destination.host.hostname= cs_host
 | alter XDM.Network.Observer.version= cs_version  
 | alter XDM.Network.http.url= Cs_uri_query
-| alter  XDM.Network.Observer.unique_identifier = Sc_substatus
-| alter  XDM.Network.Observer.unique_identifier = Sc_win32_status
+| alter XDM.Network.Observer.unique_identifier = Sc_substatus
+| alter XDM.Network.Observer.unique_identifier = Sc_win32_status;
 
 
 [MODEL: dataset="microsoft_iis_raw", model="Audit"]
@@ -66,18 +66,17 @@
 | alter s_reason = arrayindex(regextract(_raw_log , " \s\d+\s[^\s]+\s\d+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[A-Z]\w+\s([^\s]+)"), 0)
 | alter transport = arrayindex(regextract(_raw_log , "\s\d+\s[^\s]+\s\d+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[A-Z]\w+\s[^\s]+\s(\w+)"), 0)
 
-| alter XDM.Network.event_timestamp =date
-| alter XDM.Network.event_timestamp = time  
-| alter XDM.Network.Source.ipv4 =  c_ip
-| alter XDM.Network.Destination.ipv4 =s_ip 
-| alter XDM.Network.Source.port= s_port
-| alter XDM.Network.Observer.version= cs_version  
-| alter XDM.Network.http.method = cs_method
-| alter XDM.Network.http.url =Cs_uri
-| alter XDM.Network.Observer.unique_identifier =streamid 
-| alter XDM.Network.Observer.unique_identifier= streamid_ex
-| alter XDM.Network.http.response_code= sc_status
-| alter XDM.Network.Observer.unique_identifier = s_siteid
-| alter XDM.Network.Source.process.name =s_queuename
-| alter XDM.Network.reason = s_reason
-| alter XDM.Network.ip_protocol = transport
+| alter XDM.Audit.event_timestamp = coalesce(date, time)
+| alter XDM.Audit.TriggeredBy.ipv4 =  c_ip
+| alter XDM.Audit.threat.name =s_ip 
+| alter XDM.Audit.audited_resource.sub_type= s_port
+| alter XDM.Audit.TriggeredBy.agent.version= cs_version  
+| alter XDM.Audit.threat.description = cs_method
+| alter XDM.Audit.identity.name =Cs_uri
+| alter XDM.Audit.audited_resource.id = streamid 
+| alter XDM.Audit.identity.uuid= streamid_ex
+| alter XDM.Audit.identity.type = sc_status
+| alter XDM.Audit.threat.original_threat_id = s_siteid
+| alter XDM.Audit.identity.sub_type =s_queuename
+| alter XDM.Audit.reason = s_reason
+| alter XDM.Audit.audited_resource.type = transport;
