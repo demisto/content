@@ -17,7 +17,7 @@ logging.getLogger("urllib3").setLevel(logging.ERROR)
 RETURN_ERROR_TARGET = 'rasterize.return_error'
 
 
-@pytest.mark.parametrize("r_mode", [RasterizeMode.WEBDRIVER_ONLY, RasterizeMode.HEADLESS_CMD_ONLY])
+@pytest.mark.parametrize("r_mode", [RasterizeMode.WEBDRIVER_ONLY, RasterizeMode.HEADLESS_CLI_ONLY])
 def test_rasterize_email_image(r_mode, caplog):
     with NamedTemporaryFile('w+') as f:
         f.write('<html><head><meta http-equiv=\"Content-Type\" content=\"text/html;charset=utf-8\">'
@@ -28,7 +28,7 @@ def test_rasterize_email_image(r_mode, caplog):
         caplog.clear()
 
 
-@pytest.mark.parametrize("r_mode", [RasterizeMode.WEBDRIVER_ONLY, RasterizeMode.HEADLESS_CMD_ONLY])
+@pytest.mark.parametrize("r_mode", [RasterizeMode.WEBDRIVER_ONLY, RasterizeMode.HEADLESS_CLI_ONLY])
 def test_rasterize_email_pdf(r_mode, caplog):
     with NamedTemporaryFile('w+') as f:
         f.write('<html><head><meta http-equiv=\"Content-Type\" content=\"text/html;charset=utf-8\">'
@@ -106,7 +106,7 @@ def test_merge_options():
     assert len([x for x in res if x.startswith('--user-agent')]) == 0
 
 
-@pytest.mark.parametrize("r_mode", [RasterizeMode.WEBDRIVER_ONLY, RasterizeMode.HEADLESS_CMD_ONLY])
+@pytest.mark.parametrize("r_mode", [RasterizeMode.WEBDRIVER_ONLY, RasterizeMode.HEADLESS_CLI_ONLY])
 def test_rasterize_large_html(r_mode):
     path = os.path.realpath('test_data/large.html')
     res = rasterize(path=f'file://{path}', width=250, height=250, r_type=RasterizeType.PNG, r_mode=r_mode)
@@ -153,8 +153,8 @@ def http_wait_server():
 # curl -v -H 'user-agent: HeadlessChrome' --max-time 10  "http://www.grainger.com/"  # disable-secrets-detection
 # This tests access a server which waits for 10 seconds and makes sure we timeout
 @pytest.mark.filterwarnings('ignore::ResourceWarning')
-@pytest.mark.parametrize("r_mode", [RasterizeMode.WEBDRIVER_ONLY, RasterizeMode.HEADLESS_CMD_ONLY,
-                                    RasterizeMode.WEBDRIVER_PREFERED, RasterizeMode.HEADLESS_CMD_PREFERED])
+@pytest.mark.parametrize("r_mode", [RasterizeMode.WEBDRIVER_ONLY, RasterizeMode.HEADLESS_CLI_ONLY,
+                                    RasterizeMode.WEBDRIVER_PREFERED, RasterizeMode.HEADLESS_CLI_PREFERED])
 def test_rasterize_url_long_load(r_mode, mocker, http_wait_server):
     return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
     time.sleep(1)  # give time to the servrer to start
