@@ -13,8 +13,8 @@ The application ID to fetch the logs from.
 **User name and Password**    
 The SIEM user name and password.
 
-**Vendor name**
+**Vendor name**  
 The vendor corresponding to the integration that created the events. This affects the name of the dataset where these events will be inserted {vendor_product_raw}.
 
-**Product name**
+**Product name**  
 The product corresponding to the integration that created the events. This affects the name of the dataset where the events will be inserted {vendor_product_raw}.
