@@ -43,7 +43,10 @@ class Client(BaseClient):
 
 def get_report(client: Client, args: Dict[str, Any]) -> Dict[str, Any]:
     serial = args.get('serial')
-    api_query = 'products' + '/' + serial + '/' + 'report'
+    if serial == None:
+        api_query = ''
+    else:
+        api_query = 'products/' + serial + '/report'
 
     file = client.api_request(api_query, 'content')
     file_entry = fileResult(filename='report.pdf', data=file)
@@ -51,7 +54,10 @@ def get_report(client: Client, args: Dict[str, Any]) -> Dict[str, Any]:
 
 def get_csv(client: Client, args: Dict[str, Any]) -> Dict[str, Any]:
     serial = args.get('serial')
-    api_query = 'products' + '/' + serial + '/' + 'csv'
+    if serial == None:
+        api_query = ''
+    else:
+        api_query = 'products/' + serial + '/csv'
 
     file = client.api_request(api_query, 'content')
     file_entry = fileResult(filename='indicators.csv', data=file)
@@ -60,7 +66,10 @@ def get_csv(client: Client, args: Dict[str, Any]) -> Dict[str, Any]:
 
 def get_stix(client: Client, args: Dict[str, Any]) -> Dict[str, Any]:
     serial = args.get('serial')
-    api_query = 'products' + '/' + serial + '/' + 'stix2'
+    if serial == None:
+        api_query = ''
+    else:
+        api_query = 'products/' + serial + '/stix2'
 
     file = client.api_request(api_query, 'content')
     file_entry = fileResult(filename='indicators.stix2.json', data=file)
@@ -87,7 +96,7 @@ def get_indicators(client: Client, args: Dict[str, Any]) -> CommandResults:
         if serial:
             api_query = "indicators?page=" + str(page_number) + "&serial%5B%5D=" + serial
         else:
-            api_query = "indicators?page=" + str(page_number) + "&updated_after=" + str(max_time)
+            api_query = "indicators?page=" + str(page_number) + "&updated_after=" + str(time)
             api_query = api_query.replace(":", "%3A")
         page_number += 1
         raw_response = client.api_request(api_query)
@@ -113,7 +122,7 @@ def fetch_incidents(client: Client, last_run: dict, first_fetch: str) -> Tuple[l
         last_fetch = dateparser.parse(first_fetch)    
     else:
         last_fetch = last_run.get('time')
-        last_fetch = dateparser.parse(last_fetch)
+        last_fetch = dateparser.parse(str(last_fetch))
 
     max_time = last_fetch
 
