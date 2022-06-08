@@ -8,7 +8,7 @@ import enum
 import requests
 import traceback
 import re
-from typing import Dict, Any, List
+from typing import Dict, Any
 from functools import wraps
 
 CLOUD_TOKEN_URL = 'https://accounts.iboss.com/ibossauth/web/tokens'
