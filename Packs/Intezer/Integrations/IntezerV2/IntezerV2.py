@@ -1,13 +1,7 @@
+from collections import defaultdict
 from http import HTTPStatus
 from typing import Callable
-from typing import Dict
-from typing import List
-from typing import Union
 
-import demistomock as demisto
-import requests
-from CommonServerPython import *
-from CommonServerUserPython import *
 from intezer_sdk import consts
 from intezer_sdk.analysis import FileAnalysis
 from intezer_sdk.analysis import UrlAnalysis
@@ -21,6 +15,8 @@ from intezer_sdk.errors import ServerError
 from intezer_sdk.family import Family
 from intezer_sdk.sub_analysis import SubAnalysis
 from requests import HTTPError
+
+from CommonServerPython import *
 
 ''' CONSTS '''
 # Disable insecure warnings
@@ -306,6 +302,7 @@ def get_analysis_code_reuse_command(intezer_api: IntezerApi, args: dict) -> Comm
                                                 composed_analysis_id=analysis_id,
                                                 sha256='',
                                                 source='',
+                                                extraction_info=None,
                                                 api=intezer_api)
 
         sub_analysis_code_reuse = sub_analysis.code_reuse
@@ -314,6 +311,7 @@ def get_analysis_code_reuse_command(intezer_api: IntezerApi, args: dict) -> Comm
             return _get_missing_analysis_result(analysis_id=str(analysis_id))
         elif error.response.status_code == HTTPStatus.CONFLICT:
             return _get_analysis_running_result(analysis_id=str(analysis_id))
+        raise
 
     if not sub_analysis_code_reuse:
         return CommandResults(
@@ -364,6 +362,7 @@ def get_analysis_metadata_command(intezer_api: IntezerApi, args: dict) -> Comman
                                                 composed_analysis_id=analysis_id,
                                                 sha256='',
                                                 source='',
+                                                extraction_info=None,
                                                 api=intezer_api)
 
         sub_analysis_metadata = sub_analysis.metadata
@@ -372,7 +371,7 @@ def get_analysis_metadata_command(intezer_api: IntezerApi, args: dict) -> Comman
             return _get_missing_analysis_result(analysis_id=str(analysis_id))
         elif error.response.status_code == HTTPStatus.CONFLICT:
             return _get_analysis_running_result(analysis_id=str(analysis_id))
-
+        raise
     metadata_table = tableToMarkdown('Analysis Metadata', sub_analysis_metadata)
 
     is_root = sub_analysis_id == 'root'
@@ -397,6 +396,43 @@ def get_analysis_metadata_command(intezer_api: IntezerApi, args: dict) -> Comman
         readable_output=metadata_table,
         outputs=context_json,
         raw_response=sub_analysis_metadata
+    )
+
+
+def get_analysis_iocs_command(intezer_api: IntezerApi, args: dict) -> CommandResults:
+    analysis_id = args.get('analysis_id')
+
+    try:
+        analysis = FileAnalysis.from_analysis_id(analysis_id, api=intezer_api)
+    except HTTPError as error:
+        if error.response.status_code == HTTPStatus.CONFLICT:
+            return _get_analysis_running_result(analysis_id=str(analysis_id))
+        raise
+
+    if not analysis:
+        return _get_missing_analysis_result(analysis_id=str(analysis_id))
+
+    iocs = analysis.iocs
+    readable_output = ''
+    if iocs:
+        if network_iocs := iocs.get('network'):
+            readable_output += tableToMarkdown('Network IOCs', network_iocs)
+        if files_iocs := iocs.get('files'):
+            readable_output += tableToMarkdown('Files IOCs', files_iocs)
+    else:
+        readable_output = 'No IOCs found'
+
+    context_json = {
+        'Intezer.Analysis(obj.ID == val.ID)': {
+            'ID': analysis_id,
+            'IOCs': iocs
+        }
+    }
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs=context_json,
+        raw_response=iocs
     )
 
 
@@ -484,7 +520,7 @@ def enrich_dbot_and_display_url_analysis_results(intezer_result, intezer_api):
     _refine_gene_counts(summary)
 
     intezer_result.update(summary)
-    verdict = summary['title']
+    verdict = summary['verdict_type']
     submitted_url = intezer_result['submitted_url']
     analysis_id = intezer_result['analysis_id']
 
@@ -506,10 +542,8 @@ def enrich_dbot_and_display_url_analysis_results(intezer_result, intezer_api):
         intezer_result['redirect_chain'] = redirect_chain
 
     if 'indicators' in intezer_result:
-        indicators: Dict[str, List[str]] = {}
+        indicators: Dict[str, List[str]] = defaultdict(list)
         for indicator in intezer_result['indicators']:
-            if indicator['classification'] not in indicators:
-                indicators['classification'] = []
             indicators[indicator['classification']].append(indicator['text'])
         indicators_text = [
             get_indicator_text('malicious', indicators),
@@ -530,6 +564,7 @@ def enrich_dbot_and_display_url_analysis_results(intezer_result, intezer_api):
         presentable_result += f'Downloaded file SHA256: {downloaded_file["sha256"]}\n'
         presentable_result += f'Downloaded file Verdict: **{downloaded_file["analysis_summary"]["verdict_type"]}**\n'
         downloaded_file_analysis = FileAnalysis.from_analysis_id(downloaded_file['analysis_id'], intezer_api)
+        intezer_result['downloaded_file'] = downloaded_file_analysis.result()
         downloaded_file_presentable_result = _file_analysis_presentable_code(downloaded_file_analysis.result())
 
     md = tableToMarkdown('Analysis Report', intezer_result, url_keys=['analysis_url'])
@@ -616,6 +651,7 @@ def main():
             'intezer-get-sub-analyses': get_analysis_sub_analyses_command,
             'intezer-get-analysis-code-reuse': get_analysis_code_reuse_command,
             'intezer-get-analysis-metadata': get_analysis_metadata_command,
+            'intezer-get-analysis-iocs': get_analysis_iocs_command,
             'intezer-get-family-info': get_family_info_command
         }
 

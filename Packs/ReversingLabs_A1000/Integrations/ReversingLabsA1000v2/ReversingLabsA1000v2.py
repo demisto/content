@@ -335,9 +335,10 @@ def get_classification(a1000):
     Download samples obtained through the unpacking process
     """
     hash_value = demisto.getArg('hash')
+    local_only = argToBoolean(demisto.getArg('localOnly'))
 
     try:
-        response_json = a1000.get_classification(hash_value).json()
+        response_json = a1000.get_classification(hash_value, local_only=local_only).json()
     except Exception as e:
         return_error(str(e))
 

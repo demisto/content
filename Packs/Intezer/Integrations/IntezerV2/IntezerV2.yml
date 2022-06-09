@@ -291,7 +291,25 @@ script:
         - contextPath: Intezer.Analysis.SubAnalyses.Metadata
           description: A Sub Analysis metadata
           type: Unknown
-  dockerimage: demisto/py3-tools:0.0.1.29101
+    - name: intezer-get-analysis-iocs
+      arguments:
+        - default: false
+          description: The analysis ID we want to get the metadata for
+          isArray: false
+          name: analysis_id
+          required: true
+          secret: false
+      deprecated: false
+      description: Gets the list of network and files IOCs of a specific analysis id.
+      execution: false
+      outputs:
+        - contextPath: Intezer.Analysis.ID
+          description: The composed analysis ID
+          type: string
+        - contextPath: Intezer.Analysis.IOCs
+          description: The Analysis IOCs
+          type: Dict
+  dockerimage: demisto/py3-tools:0.0.1.30291
   isfetch: false
   runonce: false
   script: '-'

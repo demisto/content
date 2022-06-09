@@ -1746,7 +1746,7 @@ def rawToDict(raw):
     try:
         result = json.loads(raw)
     except ValueError:
-        if 'message' in raw:
+        if '"message"' in raw:
             raw = raw.replace('"', '').strip('{').strip('}')
             key_val_arr = raw.split(",")
             for key_val in key_val_arr:
@@ -2577,7 +2577,7 @@ def get_store_data(service):
     for store in stores:
         store = service.kvstore[store]
         query = build_kv_store_query(store, args)
-        if 'limit' not in query:
+        if isinstance(query, (str, unicode)):
             query = {'query': query}
         yield store.data.query(**query)
 
