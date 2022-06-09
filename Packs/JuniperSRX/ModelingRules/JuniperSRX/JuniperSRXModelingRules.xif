@@ -26,7 +26,7 @@
 
  filter raw_log contains "source-address="
 
-| alter Timestamp = arrayindex(regextract(raw_log , "(\d{4}\-\d{2}\-\d{2}T\d+\:\d+\:\d+.\d+)"), 0)
+| alter Timestamp = arrayindex(regextract(raw_log ,"(\d{4}\-\d{2}\-\d{2}T\d+\:\d+\:\d+.\d+)"), 0)
 | alter destination_address = arrayindex(regextract(raw_log ,"destination\-address\=\"(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})") ,0)
 | alter file_name = arrayindex(regextract(raw_log ,"\sfilename\=\"([^\"]+)\"") ,0)
 // extract url 
@@ -55,8 +55,8 @@
 | alter Service_Name = arrayindex(regextract(raw_log ,"service\-name=\"([^\"]+)") ,0)
 | alter Nat_Destination_IP = arrayindex(regextract(raw_log ,"nat\-destination\-address\=\"(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})") ,0)
 // extract source_ip
-| alter source_address_ipv4 = arrayindex(regextract(raw_log , "source\-address\=\"(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"), 0)
-| alter source_adderss_ipv6 =  arrayindex(regextract(raw_log , "source\-address\=\"(\w+\:\w+\:\w+\:\w+\:\w+\:\w+\:\w+\:\w+)"), 0)
+| alter source_address_ipv4 = arrayindex(regextract(raw_log ,"source\-address\=\"(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"), 0)
+| alter source_adderss_ipv6 =  arrayindex(regextract(raw_log ,"source\-address\=\"(\w+\:\w+\:\w+\:\w+\:\w+\:\w+\:\w+\:\w+)"), 0)
 | alter sourceip = coalesce(source_address_ipv4 ,source_adderss_ipv6)
 | fields -source_address_ipv4, source_adderss_ipv6
 // end extract source_ip
