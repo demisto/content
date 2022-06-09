@@ -3449,6 +3449,7 @@ script:
       required: true
       isArray: false
     - name: enable_agent_output
+      description: 'Whether to enable the agent output.'
       auto: PREDEFINED
       predefined:
         - "false"
@@ -3507,6 +3508,7 @@ script:
       required: true
       isArray: false
     - name: enable_agent_output
+      description: 'Whether to enable the agent output.'
       auto: PREDEFINED
       predefined:
         - "false"
@@ -3560,10 +3562,6 @@ script:
     - name: ability_id
       description: UUID of the Ability to be retrieved
       required: true
-      isArray: false
-    - name: ability_id
-      description: ''
-      required: false
       isArray: false
     - name: ability_name
       description: ''

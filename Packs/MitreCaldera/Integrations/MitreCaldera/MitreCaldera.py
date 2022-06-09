@@ -1785,75 +1785,75 @@ def main() -> None:
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')
 
-    #try:
-    requests.packages.urllib3.disable_warnings()
-    client: Client = Client(urljoin(url), verify_certificate, proxy, headers=headers, auth=None)
+    try:
+        requests.packages.urllib3.disable_warnings()
+        client: Client = Client(urljoin(url), verify_certificate, proxy, headers=headers, auth=None)
 
-    commands = {
-        'caldera-create-fact': create_fact_command,
-        'caldera-create-fact-source': create_fact_source_command,
-        'caldera-create-adversary': create_adversary_command,
-        'caldera-create-agent': create_agent_command,
-        'caldera-create-operation': create_operation_command,
-        'caldera-create-objective': create_objective_command,
-        'caldera-create-relationship': create_relationship_command,
-        'caldera-create-ability': create_ability_command,
-        'caldera-create-potential-link': create_potentiallink_command,
-        'caldera-create-schedule': create_schedule_command,
-        'caldera-delete-agent': delete_agent_command,
-        'caldera-delete-fact-source': delete_fact_source_command,
-        'caldera-delete-operation': delete_operation_command,
-        'caldera-delete-facts': delete_facts_command,
-        'caldera-delete-relationships': delete_relationships_command,
-        'caldera-delete-ability': delete_ability_command,
-        'caldera-delete-adversary': delete_adversary_command,
-        'caldera-delete-schedule': delete_schedule_command,
-        'caldera-get-abilities': get_abilities_command,
-        'caldera-get-adversaries': get_adversaries_command,
-        'caldera-get-agents': get_agents_command,
-        'caldera-get-config': get_config_command,
-        'caldera-get-contacts': get_contacts_command,
-        'caldera-get-deploy-commands': get_deploy_commands_command,
-        'caldera-get-facts': get_facts_command,
-        'caldera-get-health': get_health_command,
-        'caldera-get-obfuscators': get_obfuscators_command,
-        'caldera-get-objectives': get_objectives_command,
-        'caldera-get-operations': get_operations_command,
-        'caldera-get-operation-links': get_operation_links_command,
-        'caldera-get-operation-links-result': get_operation_links_result_command,
-        'caldera-get-operations-potential-links': get_operation_potentiallinks_command,
-        'caldera-get-planners': get_planners_command,
-        'caldera-get-plugins': get_plugins_command,
-        'caldera-get-relationships': get_relationships_command,
-        'caldera-get-schedules': get_schedules_command,
-        'caldera-get-sources': get_sources_command,
-        'caldera-get-operation-event-logs': get_operation_eventlogs_command,
-        'caldera-get-operation-report': get_operation_report_command,
-        'caldera-replace-ability': replace_ability_command,
-        'caldera-replace-schedule': replace_schedule_command,
-        'caldera-update-agent-config': update_agent_config_command,
-        'caldera-update-adversary': update_adversary_command,
-        'caldera-update-agent': update_agent_command,
-        'caldera-update-fact-source': update_fact_source_command,
-        'caldera-update-objective': update_objective_command,
-        'caldera-update-operation-fields': update_operation_fields_command,
-        'caldera-update-main-config': update_main_config_command,
-        'caldera-update-facts': update_facts_command,
-        'caldera-update-relationships': update_relationships_command,
-        'caldera-update-ability': update_ability_command,
-        'caldera-update-schedule': update_schedule_command,
-        'caldera-update-operation-link': update_operation_link_command,
-    }
+        commands = {
+            'caldera-create-fact': create_fact_command,
+            'caldera-create-fact-source': create_fact_source_command,
+            'caldera-create-adversary': create_adversary_command,
+            'caldera-create-agent': create_agent_command,
+            'caldera-create-operation': create_operation_command,
+            'caldera-create-objective': create_objective_command,
+            'caldera-create-relationship': create_relationship_command,
+            'caldera-create-ability': create_ability_command,
+            'caldera-create-potential-link': create_potentiallink_command,
+            'caldera-create-schedule': create_schedule_command,
+            'caldera-delete-agent': delete_agent_command,
+            'caldera-delete-fact-source': delete_fact_source_command,
+            'caldera-delete-operation': delete_operation_command,
+            'caldera-delete-facts': delete_facts_command,
+            'caldera-delete-relationships': delete_relationships_command,
+            'caldera-delete-ability': delete_ability_command,
+            'caldera-delete-adversary': delete_adversary_command,
+            'caldera-delete-schedule': delete_schedule_command,
+            'caldera-get-abilities': get_abilities_command,
+            'caldera-get-adversaries': get_adversaries_command,
+            'caldera-get-agents': get_agents_command,
+            'caldera-get-config': get_config_command,
+            'caldera-get-contacts': get_contacts_command,
+            'caldera-get-deploy-commands': get_deploy_commands_command,
+            'caldera-get-facts': get_facts_command,
+            'caldera-get-health': get_health_command,
+            'caldera-get-obfuscators': get_obfuscators_command,
+            'caldera-get-objectives': get_objectives_command,
+            'caldera-get-operations': get_operations_command,
+            'caldera-get-operation-links': get_operation_links_command,
+            'caldera-get-operation-links-result': get_operation_links_result_command,
+            'caldera-get-operations-potential-links': get_operation_potentiallinks_command,
+            'caldera-get-planners': get_planners_command,
+            'caldera-get-plugins': get_plugins_command,
+            'caldera-get-relationships': get_relationships_command,
+            'caldera-get-schedules': get_schedules_command,
+            'caldera-get-sources': get_sources_command,
+            'caldera-get-operation-event-logs': get_operation_eventlogs_command,
+            'caldera-get-operation-report': get_operation_report_command,
+            'caldera-replace-ability': replace_ability_command,
+            'caldera-replace-schedule': replace_schedule_command,
+            'caldera-update-agent-config': update_agent_config_command,
+            'caldera-update-adversary': update_adversary_command,
+            'caldera-update-agent': update_agent_command,
+            'caldera-update-fact-source': update_fact_source_command,
+            'caldera-update-objective': update_objective_command,
+            'caldera-update-operation-fields': update_operation_fields_command,
+            'caldera-update-main-config': update_main_config_command,
+            'caldera-update-facts': update_facts_command,
+            'caldera-update-relationships': update_relationships_command,
+            'caldera-update-ability': update_ability_command,
+            'caldera-update-schedule': update_schedule_command,
+            'caldera-update-operation-link': update_operation_link_command,
+        }
 
-    if command == 'test-module':
-        test_module(client)
-    elif command in commands:
-        return_results(commands[command](client, args))
-    else:
-        raise NotImplementedError(f'{command} command is not implemented.')
+        if command == 'test-module':
+            test_module(client)
+        elif command in commands:
+            return_results(commands[command](client, args))
+        else:
+            raise NotImplementedError(f'{command} command is not implemented.')
 
-    #except Exception as e:
-    #    return_error(e)
+    except Exception as e:
+        return_error(e)
 
 
 if __name__ in ['__main__', 'builtin', 'builtins']:
