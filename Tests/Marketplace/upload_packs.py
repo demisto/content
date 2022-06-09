@@ -1133,7 +1133,7 @@ def main():
             pack.cleanup()
             continue
 
-        task_status, modified_files_data = pack.check_changes_relevance_for_marketplace(id_set)
+        task_status, modified_files_data = pack.filter_modified_files_by_id_set(id_set)
 
         if not task_status:
             pack.status = PackStatus.CHANGES_ARE_NOT_RELEVANT_FOR_MARKETPLACE.name

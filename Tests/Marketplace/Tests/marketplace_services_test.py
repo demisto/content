@@ -1078,27 +1078,27 @@ This is visible
 <~XSIAM>
 #### Integrations
 ##### Integration Display Name
-- Fixed an issue
+- Fixed an issue.
 </~XSIAM>
 
 #### Scripts
 ##### Script Name
-- Fixed script''', 'xsoar', "#### Scripts\n##### Script Name\n- Fixed script"),
+- Fixed script.''', 'xsoar', "#### Scripts\n##### Script Name\n- Fixed script."),
         ('''
 #### Integrations
 <~XSIAM>
 ##### Integration Display Name
-- Fixed an issue
+- Fixed an issue.
 </~XSIAM>
 
 #### Scripts
 ##### Script Name
-- Fixed script''', 'xsoar', "#### Scripts\n##### Script Name\n- Fixed script"),
+- Fixed script.''', 'xsoar', "#### Scripts\n##### Script Name\n- Fixed script."),
         ('''
 #### Integrations
 ##### Integration Display Name
 <~XSIAM>
-- Fixed an issue
+- Fixed an issue.
 </~XSIAM>
 
 #### Scripts
@@ -1108,12 +1108,20 @@ This is visible
 #### Integrations
 ##### Integration Display Name
 <~XSOAR>
-- Fixed an issue
+- Fixed an issue.
 </~XSOAR>
 
 #### Scripts
 ##### Script Name
-- Fixed script''', 'marketplacev2', "#### Scripts\n##### Script Name\n- Fixed script"),
+- Fixed script
+
+#### Incident Fields
+- **Field Name 1**
+<~XSOAR>
+- **Field Name 2**
+</~XSOAR>
+- **Field Name 3**
+''', 'marketplacev2', "#### Scripts\n##### Script Name\n- Fixed script\n\n#### Incident Fields\n- **Field Name 1**"),
         ('''
 #### Integrations
 ##### Integration Display Name
@@ -1183,7 +1191,7 @@ This is visible
                  Case 1: XSIAM tags are wrapping including the entity header.
                  Case 2: XSIAM tags are wrapping the entity display name and the entry.
                  Case 3: XSIAM tags are wrapping only the RN entry.
-                 Case 4: Same as case 3 but for XSOAR tags and marketplacev2.
+                 Case 4: Same as case 3 but for XSOAR tags and marketplacev2. Also checks entries for special entities.
                  Case 5: All entities in RN have wrapping tags in their entries.
                  Case 6: XSIAM tags are wrapping the entry but for marketplacev2 (only the tags should be removed).
                  Case 7: Same as case 6 but for XSOAR tags and xsoar marketplace.
@@ -1209,6 +1217,9 @@ This is visible
                     "file_path": "some/path",
                     "display_name": "Script Name"
                 }
+            ],
+            "IncidentFields": [
+                {"display_name": "Field Name 1"}
             ]
         }
         # dummy_pack._marketplaces = [upload_marketplace]
@@ -2850,7 +2861,7 @@ class TestCheckChangesRelevanceForMarketplace:
             ]
         }
 
-        status, modified_files_data = dummy_pack.check_changes_relevance_for_marketplace(id_set_copy)
+        status, modified_files_data = dummy_pack.filter_modified_files_by_id_set(id_set_copy)
 
         assert status is True
         assert modified_files_data == expected_modified_files_data
@@ -2872,7 +2883,7 @@ class TestCheckChangesRelevanceForMarketplace:
             ]
         }
 
-        status, modified_files_data = dummy_pack.check_changes_relevance_for_marketplace(id_set_copy)
+        status, modified_files_data = dummy_pack.filter_modified_files_by_id_set(id_set_copy)
 
         assert status is False
         assert modified_files_data == {}
@@ -2900,7 +2911,7 @@ class TestCheckChangesRelevanceForMarketplace:
             ]
         }
 
-        status, modified_files_data = dummy_pack.check_changes_relevance_for_marketplace(id_set_copy)
+        status, modified_files_data = dummy_pack.filter_modified_files_by_id_set(id_set_copy)
 
         assert status is True
         assert modified_files_data == expected_modified_files_data
