@@ -24,7 +24,7 @@ filter _raw_log contains "100" or  _raw_log contains "101" or  _raw_log contains
 | alter XDM.Network.event_timestamp = parse_timestamp("%F %X", timestamp)
 | alter XDM.Network.Source.ipv4 =  c_ip  
 | alter XDM.Network.Source.user.username  = cs_username
-| alter XDM.Network.Destination.host.hostname = c_sitename
+| alter XDM.Network.destination.process.name = c_sitename
 | alter XDM.Network.Destination.host.hostname = S_computername
 | alter XDM.Network.http.url = cs_uri_stem
 | alter XDM.Network.Destination.ipv4 =s_ip 
@@ -36,7 +36,7 @@ filter _raw_log contains "100" or  _raw_log contains "101" or  _raw_log contains
 | alter XDM.Network.http.referrer =CS_reffer
 | alter XDM.Network.Source.bytes= to_number(sc_bytes)
 | alter XDM.Network.Destination.bytes = to_number(cs_bytes)
-| alter XDM.Network.Destination.host.hostname= cs_host
+| alter XDM.Network.source.host.hostname= cs_host
 | alter XDM.Network.Observer.version= cs_version  
 | alter XDM.Network.http.url= Cs_uri_query
 | alter XDM.Network.Observer.unique_identifier = Sc_substatus
