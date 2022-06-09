@@ -40,7 +40,7 @@ schema: |-
         "senderIP": {
           "type": "string",
           "is_array": false
-        },
+      },
       "subject": {
         "type": "string",
         "is_array": false
