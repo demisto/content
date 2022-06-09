@@ -107,12 +107,8 @@ def add_url_to_tasks(tasks: List[Dict[str, str]], workplan_url: str):
 def get_tasks(incident_id: str):
     urls = demisto.demistoUrls()  # works in multi tenant env as well
     uri = f'/investigation/{incident_id}/workplan'
-    res = demisto.internalHTTPRequest('GET', uri=uri)
-    try:
-        res_json = json.loads(res)
-    except json.JSONDecodeError as e:
-        raise DemistoException(f'cannot parse response from {uri}', res=res, exception=e)
-    if not (workplan := demisto.get(res_json[0], 'Contents.response.invPlaybook')) \
+    res = demisto.internalHttpRequest('GET', uri=uri)
+    if not (workplan := demisto.get(res[0], 'Contents.response.invPlaybook')) \
             or not (tasks := workplan.get('tasks')):
         raise DemistoException(f'Workplan for incident {incident_id}, has no tasks.')
     start_task = find_start_task(tasks)
