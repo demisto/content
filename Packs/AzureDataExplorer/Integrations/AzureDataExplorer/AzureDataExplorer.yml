@@ -472,7 +472,7 @@ script:
     description: Run this command to test the connectivity to Azure Data Explorer.
     execution: false
     name: azure-data-explorer-auth-test
-  dockerimage: demisto/azure-kusto-data:1.0.0.24382
+  dockerimage: demisto/azure-kusto-data:1.0.0.30486
   feed: false
   isfetch: false
   longRunning: false
