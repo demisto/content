@@ -95,7 +95,7 @@ configuration:
   name: prevent_only
   required: false
   type: 8
-  additionalinfo: 'Select when the XDR tenant is prevent only'
+  additionalinfo: 'Whether the XDR tenant Mode is prevent only'
 - additionalinfo: 'The statuses of the incidents that will be fetched. If no status is provided then incidents of all the statuses will be fetched. Note: An incident whose status was changed to a filtered status after its creation time will not be fetched.'
   display: Incident Statuses to Fetch
   hidden: false
