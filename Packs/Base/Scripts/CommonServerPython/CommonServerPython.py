@@ -259,6 +259,7 @@ class EntryType(object):
     STATIC_VIDEO_FILE = 12
     MAP_ENTRY_TYPE = 15
     WIDGET = 17
+    EXECUTION_METRICS = 19
 
 
 class IncidentStatus(object):
@@ -467,6 +468,23 @@ INDICATOR_TYPE_TO_CONTEXT_KEY = {
     'ctph': 'file',
     'ssdeep': 'file'
 }
+
+
+class ErrorTypes(object):
+    """
+    Enum: contains all the available error types
+    :return: None
+    :rtype: ``None``
+    """
+    SUCCESS = 'Successful'
+    QUOTA_ERROR = 'QuotaError'
+    GENERAL_ERROR = 'GeneralError'
+    AUTH_ERROR = 'AuthError'
+    SERVICE_ERROR = 'ServiceError'
+    CONNECTION_ERROR = 'ConnectionError'
+    PROXY_ERROR = 'ProxyError'
+    SSL_ERROR = 'SSLError'
+    TIMEOUT_ERROR = 'TimeoutError'
 
 
 class FeedIndicatorType(object):
@@ -5961,6 +5979,9 @@ class ScheduledCommand:
     :type timeout_in_seconds: ``Optional[int]``
     :param timeout_in_seconds: Number of seconds until the polling sequence will timeout.
 
+    :type items_remaining: ``Optional[int]``
+    :param items_remaining: Number of items that are remaining to be polled.
+
     :return: None
     :rtype: ``None``
     """
@@ -5973,6 +5994,7 @@ class ScheduledCommand:
             next_run_in_seconds,  # type: int
             args=None,  # type: Optional[Dict[str, Any]]
             timeout_in_seconds=None,  # type: Optional[int]
+            items_remaining=0,  # type: Optional[int]
     ):
         self.raise_error_if_not_supported()
         self._command = command
@@ -5984,11 +6006,20 @@ class ScheduledCommand:
         self._next_run = str(next_run_in_seconds)
         self._args = args
         self._timeout = str(timeout_in_seconds) if timeout_in_seconds else None
+        self._items_remaining = items_remaining
 
     @staticmethod
     def raise_error_if_not_supported():
         if not is_demisto_version_ge('6.2.0'):
             raise DemistoException(ScheduledCommand.VERSION_MISMATCH_ERROR)
+
+    @staticmethod
+    def supports_polling():
+        """
+        Check if the integration supports polling.
+        Returns: Boolean
+        """
+        return True if is_demisto_version_ge('6.2.0') else False
 
     def to_results(self):
         """
@@ -5998,7 +6029,8 @@ class ScheduledCommand:
             PollingCommand=self._command,
             NextRun=self._next_run,
             PollingArgs=self._args,
-            Timeout=self._timeout
+            Timeout=self._timeout,
+            PollingItemsRemaining=self._items_remaining
         )
 
 
@@ -6636,6 +6668,9 @@ class CommandResults:
     :type scheduled_command: ``ScheduledCommand``
     :param scheduled_command: manages the way the command should be polled.
 
+    :type execution_metrics: ``ExecutionMetrics``
+    :param execution_metrics: contains metric data about a command's execution
+
     :return: None
     :rtype: ``None``
     """
@@ -6654,8 +6689,8 @@ class CommandResults:
                  relationships=None,
                  entry_type=None,
                  content_format=None,
-                 ):
-        # type: (str, object, object, list, str, object, IndicatorsTimeline, Common.Indicator, bool, bool, ScheduledCommand, list, int, str) -> None  # noqa: E501
+                 execution_metrics=None):
+        # type: (str, object, object, list, str, object, IndicatorsTimeline, Common.Indicator, bool, bool, ScheduledCommand, list, int, str, List[Any]) -> None  # noqa: E501
         if raw_response is None:
             raw_response = outputs
         if outputs is not None and not isinstance(outputs, dict) and not outputs_prefix:
@@ -6692,6 +6727,7 @@ class CommandResults:
         self.mark_as_note = mark_as_note
         self.scheduled_command = scheduled_command
         self.relationships = relationships
+        self.execution_metrics = execution_metrics
 
         if content_format is not None and not EntryFormat.is_valid_type(content_format):
             raise TypeError('content_format {} is invalid, see CommonServerPython.EntryFormat'.format(content_format))
@@ -6708,6 +6744,7 @@ class CommandResults:
         indicators_timeline = []  # type: ignore[assignment]
         ignore_auto_extract = False  # type: bool
         mark_as_note = False  # type: bool
+        exec_metrics = None  # type: ignore[assignment]
 
         indicators = [self.indicator] if self.indicator else self.indicators
 
@@ -6760,6 +6797,10 @@ class CommandResults:
             else:
                 content_format = EntryFormat.JSON
 
+        if self.execution_metrics:
+            exec_metrics = self.execution_metrics
+            self.entry_type = EntryType.EXECUTION_METRICS
+            raw_response = 'Metrics reported successfully.'
         return_entry = {
             'Type': self.entry_type,
             'ContentsFormat': content_format,
@@ -6769,10 +6810,14 @@ class CommandResults:
             'IndicatorTimeline': indicators_timeline,
             'IgnoreAutoExtract': bool(ignore_auto_extract),
             'Note': mark_as_note,
-            'Relationships': relationships,
+            'Relationships': relationships
         }
         if self.scheduled_command:
             return_entry.update(self.scheduled_command.to_results())
+
+        if exec_metrics:
+            return_entry.update({'APIExecutionMetrics': exec_metrics})
+
         return return_entry
 
 
@@ -6965,6 +7010,162 @@ def return_warning(message, exit=False, warning='', outputs=None, ignore_auto_ex
     })
     if exit:
         sys.exit(0)
+
+
+class ExecutionMetrics(object):
+    """
+        ExecutionMetrics is used to collect and format metric data to be reported to the XSOAR server.
+
+        :return: None
+        :rtype: ``None``
+    """
+    def __init__(self, success=0, quota_error=0, general_error=0, auth_error=0, service_error=0, connection_error=0,
+                 proxy_error=0, ssl_error=0, timeout_error=0):
+        self._metrics = []
+        self.metrics = None
+        self.success = success
+        self.quota_error = quota_error
+        self.general_error = general_error
+        self.auth_error = auth_error
+        self.service_error = service_error
+        self.connection_error = connection_error
+        self.proxy_error = proxy_error
+        self.ssl_error = ssl_error
+        self.timeout_error = timeout_error
+        """
+            Initializes an ExecutionMetrics object. Once initialized, you may increment each metric type according to the
+            metric you'd like to report. Afterwards, pass the `metrics` value to CommandResults.
+
+            :type success: ``int``
+            :param success: Quantity of Successful metrics
+
+            :type quota_error: ``int``
+            :param quota_error: Quantity of Quota Error (Rate Limited) metrics
+
+            :type general_error: ``int``
+            :param general_error: Quantity of General Error metrics
+
+            :type auth_error: ``int``
+            :param auth_error: Quantity of Authentication Error metrics
+
+            :type service_error: ``int``
+            :param service_error: Quantity of Service Error metrics
+
+            :type connection_error: ``int``
+            :param connection_error: Quantity of Connection Error metrics
+
+            :type proxy_error: ``int``
+            :param proxy_error: Quantity of Proxy Error metrics
+
+            :type ssl_error: ``int``
+            :param ssl_error: Quantity of SSL Error metrics
+
+            :type timeout_error: ``int``
+            :param timeout_error: Quantity of Timeout Error metrics
+
+            :type metrics: ``CommandResults``
+            :param metrics: Append this value to your CommandResults list to report the metrics to your server.
+        """
+
+    @staticmethod
+    def is_supported():
+        if is_demisto_version_ge('7.0.0'):
+            return True
+        return False
+
+    @property
+    def success(self):
+        return self._success
+
+    @success.setter
+    def success(self, value):
+        self._success = value
+        self.update_metrics('Successful', self._success)
+
+    @property
+    def quota_error(self):
+        return self._quota_error
+
+    @quota_error.setter
+    def quota_error(self, value):
+        self._quota_error = value
+        self.update_metrics(ErrorTypes.QUOTA_ERROR, self._quota_error)
+
+    @property
+    def general_error(self):
+        return self._general_error
+
+    @general_error.setter
+    def general_error(self, value):
+        self._general_error = value
+        self.update_metrics(ErrorTypes.GENERAL_ERROR, self._general_error)
+
+    @property
+    def auth_error(self):
+        return self._auth_error
+
+    @auth_error.setter
+    def auth_error(self, value):
+        self._auth_error = value
+        self.update_metrics(ErrorTypes.AUTH_ERROR, self._auth_error)
+
+    @property
+    def service_error(self):
+        return self._service_error
+
+    @service_error.setter
+    def service_error(self, value):
+        self._service_error = value
+        self.update_metrics(ErrorTypes.SERVICE_ERROR, self._service_error)
+
+    @property
+    def connection_error(self):
+        return self._connection_error
+
+    @connection_error.setter
+    def connection_error(self, value):
+        self._connection_error = value
+        self.update_metrics(ErrorTypes.CONNECTION_ERROR, self._connection_error)
+
+    @property
+    def proxy_error(self):
+        return self._proxy_error
+
+    @proxy_error.setter
+    def proxy_error(self, value):
+        self._proxy_error = value
+        self.update_metrics(ErrorTypes.PROXY_ERROR, self._proxy_error)
+
+    @property
+    def ssl_error(self):
+        return self._ssl_error
+
+    @ssl_error.setter
+    def ssl_error(self, value):
+        self._ssl_error = value
+        self.update_metrics(ErrorTypes.SSL_ERROR, self._ssl_error)
+
+    @property
+    def timeout_error(self):
+        return self._timeout_error
+
+    @timeout_error.setter
+    def timeout_error(self, value):
+        self._timeout_error = value
+        self.update_metrics(ErrorTypes.TIMEOUT_ERROR, self._timeout_error)
+
+    def update_metrics(self, metric_type, metric_value):
+        if metric_value > 0:
+            if len(self._metrics) == 0:
+                self._metrics.append({'Type': metric_type, 'APICallsCount': metric_value})
+            else:
+                for metric in self._metrics:
+                    if metric['Type'] == metric_type:
+                        metric['APICallsCount'] = metric_value
+                        break
+                else:
+                    self._metrics.append({'Type': metric_type, 'APICallsCount': metric_value})
+            self.metrics = CommandResults(execution_metrics=self._metrics)
 
 
 class CommandRunner:
@@ -8646,11 +8847,12 @@ def update_integration_context(context, object_keys=None, sync=True):
 
 
 class DemistoException(Exception):
-    def __init__(self, message, exception=None, res=None, *args):
+    def __init__(self, message, exception=None, res=None, error_type=None, *args):
         self.res = res
         self.message = message
         self.exception = exception
-        super(DemistoException, self).__init__(message, exception, *args)
+        self.error_type = error_type
+        super(DemistoException, self).__init__(message, exception, error_type, *args)
 
     def __str__(self):
         return str(self.message)
@@ -10487,6 +10689,20 @@ def send_events_to_xsiam(events, vendor, product, data_format=None):
         raise DemistoException(header_msg + res.get('error'))
 
     demisto.updateModuleHealth({'eventsPulled': amount_of_events})
+
+
+def is_scheduled_command_retry():
+    """
+    Determines if the current command is a polling retry command. This is useful if some actions should not be performed
+    when a command is polling for a response such as submitting data for processing.
+
+    :returns: True if the command is part of a polling retry, otherwise false
+    :rtype: ``Bool``
+
+    """
+    calling_context = demisto.callingContext.get('context', {})
+    sm = get_schedule_metadata(context=calling_context)
+    return True if sm.get('is_polling', False) else False
 
 
 ###########################################
