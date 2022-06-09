@@ -22,7 +22,11 @@ requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
 ''' CONSTANTS '''
 AUTH_ERROR_MSG = 'Authorization Error: make sure tenant id, client id and client secret is correctly set'
-TYPES_TO_RETRIEVE = ['alerts', 'activities']
+TYPES_TO_RETRIEVE = {'activities_login': {'type': 'activities', 'filters':
+                     {"activity.eventType": {"eq": ["EVENT_CATEGORY_LOGIN", "EVENT_CATEGORY_FAILED_LOGIN"]}}},
+                     'activities_admin': {'type': 'activities', 'filters':
+                        {"activity.type": {"eq": True}}},
+                     'alerts': {'type': 'alerts', 'filters': {}}}
 
 ''' HELPER CLASSES '''
 
@@ -248,7 +252,9 @@ class DefenderClient(IntegrationEventsClient):
         super().__init__(request, options)
 
     def set_request_filter(self, after: Any):
-        self.request.params['filters'] = json.dumps({"date": {"gte": after + 1}})
+        curr_filters = json.loads(self.request.params['filters'])
+        curr_filters['date'] = {"gte": after + 1}
+        self.request.params['filters'] = json.dumps(curr_filters)
 
     def authenticate(self):
         self.authenticator.set_authorization(self.request)
@@ -262,16 +268,31 @@ class DefenderGetEvents(IntegrationGetEvents):
         base_url = self.client.request.url
         self.client.authenticate()
 
-        for type_ in TYPES_TO_RETRIEVE:
+        # In this integration we need to do 3 API calls:
+        # - activities with filter to get the admin events
+        # - activities with different filter to get the login events
+        # - alerts with no filter
+        # TYPES_TO_RETRIEVE dictionary contains the filters and the endpoint according to the event type.
+        for event_type_name, endpoint_details in TYPES_TO_RETRIEVE.items():
             self.client.request.params.pop('filters', None)
-            self.client.request.url = f'{base_url}{type_}'
+            self.client.request.url = f'{base_url}{endpoint_details["type"]}'
 
-            after = demisto.getLastRun().get(type_) or self.client.after
+            # get the filter for this type
+            filters = endpoint_details['filters']
 
+            after = demisto.getLastRun().get(event_type_name) or self.client.after
+            # add the time filter
             if after:
-                self.client.request.params['filters'] = json.dumps({"date": {"gte": after}})
+                filters['date'] = {'gte': after}
+
+            self.client.request.params['filters'] = json.dumps(filters)
             response = self.client.call(self.client.request).json()
             events = response.get('data', [])
+
+            # add new field with the event type
+            for event in events:
+                event['event_type_name'] = event_type_name
+
             has_next = response.get('hasNext')
 
             yield events
@@ -281,6 +302,11 @@ class DefenderGetEvents(IntegrationGetEvents):
                 self.client.set_request_filter(last['timestamp'])
                 response = self.client.call(self.client.request).json()
                 events = response.get('data', [])
+
+                # add new field with the event type
+                for event in events:
+                    event['event_type_name'] = event_type_name
+
                 has_next = response.get('hasNext')
 
                 yield events
@@ -289,19 +315,25 @@ class DefenderGetEvents(IntegrationGetEvents):
     def get_last_run(events: list) -> dict:
         last_run = demisto.getLastRun()
         alerts_last_run = 0
-        activities_last_run = 0
+        activities_admin_last_run = 0
+        activities_login_last_run = 0
 
         for event in events:
+            event_type = event['event_type_name']
             timestamp = event['timestamp']
-            if event.get('isSystemAlert') is not None:
+            if event_type == 'alerts':
                 alerts_last_run = timestamp
-            else:
-                activities_last_run = timestamp
+            elif event_type == 'activities_login':
+                activities_login_last_run = timestamp
+            elif event_type == 'activities_admin':
+                activities_admin_last_run = timestamp
 
         if alerts_last_run:
             last_run['alerts'] = alerts_last_run + 1
-        if activities_last_run:
-            last_run['activities'] = activities_last_run + 1
+        if activities_login_last_run:
+            last_run['activities_login'] = activities_login_last_run + 1
+        if activities_admin_last_run:
+            last_run['activities_admin'] = activities_admin_last_run + 1
 
         return last_run
 
