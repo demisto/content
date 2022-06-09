@@ -3,6 +3,8 @@ import json
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
+MAX_EVENTS = 20
+
 
 def main():
     try:
@@ -16,9 +18,9 @@ def main():
             events_arr = []
             for event in events:
                 events_arr.append(json.loads(event))
-            markdown = tableToMarkdown("Offense Events", events_arr, headers=events_arr[0].keys())
+            markdown = tableToMarkdown("Offense Events", events_arr[:MAX_EVENTS], headers=events_arr[0].keys())
         else:
-            markdown = tableToMarkdown("Offense Events", json.loads(events))
+            markdown = tableToMarkdown("Offense Events", json.loads(events)[:MAX_EVENTS])
 
         return {'ContentsFormat': formats['markdown'], 'Type': entryTypes['note'], 'Contents': markdown}
     except Exception as exp:

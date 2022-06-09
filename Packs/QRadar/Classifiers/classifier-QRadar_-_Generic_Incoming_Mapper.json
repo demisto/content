@@ -1,7 +1,7 @@
 {
   "description": "Default Mapping for Qradar Offenses, Events, and Assets.",
   "feed": false,
-  "id": "QRadar - Generic Incoming Mapper",
+  "id": "QRadar - Generic Incoming Mapper v2",
   "mapping": {
     "Access": {
       "dontMapEventToLabels": false,
@@ -506,18 +506,8 @@
           "simple": "event_count"
         },
         "Number Of Fetched Events": {
-          "complex": {
-            "accessor": "",
-            "filters": [],
-            "root": "events",
-            "transformers": [
-              {
-                "args": {},
-                "operator": "count"
-              }
-            ]
-          },
-          "simple": ""
+          "complex": null,
+          "simple": "events_fetched"
         },
         "Number Of Flows": {
           "complex": null,
@@ -940,7 +930,7 @@
       }
     }
   },
-  "name": "QRadar - Generic Incoming Mapper",
+  "name": "QRadar - Generic Incoming Mapper v2",
   "type": "mapping-incoming",
   "version": -1,
   "fromVersion": "6.0.0"
