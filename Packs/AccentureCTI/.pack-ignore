@@ -5,5 +5,6 @@ ignore=PB110
 FormatACTIURL
 uuid
 CustomCVE
-acti-getThreatIntelReport
-acti-get-fundamentals-by-uuid
+acti
+getThreatIntelReport
+get-fundamentals-by-uuid
