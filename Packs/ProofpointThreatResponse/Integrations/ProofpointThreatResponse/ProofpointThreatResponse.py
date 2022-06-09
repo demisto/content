@@ -829,25 +829,23 @@ def search_quarantine():
                 tsquarantine = dateparser.parse(quarantine.get("startTime"))
                 tsalert = dateparser.parse(alert.get("alerttime"))
                 if isinstance(tsquarantine, datetime) and isinstance(tsalert, datetime):
-                    delt = tsquarantine - tsalert
+                    diff = (tsquarantine - tsalert).total_seconds()
+                    if 0 < diff < 120:
+                        resQ.append({
+                            'quarantine': quarantine,
+                            'alert': {
+                                'id': alert.get('alertid'),
+                                'time': alert.get('alerttime')
+                            },
+                            'incident': {
+                                'id': alert.get('incidentid'),
+                                'time': alert.get('incidenttime')
+                            }
+                        })
+                    else:
+                        quarantineFoundcpt += 1
                 else:
                     raise Exception("Timestamp was bad")
-                diff = delt.total_seconds()
-                if 0 < diff < 120:
-                    resQ.append({
-                        'quarantine': quarantine,
-                        'alert': {
-                            'id': alert.get('alertid'),
-                            'time': alert.get('alerttime')
-                        },
-                        'incident': {
-                            'id': alert.get('incidentid'),
-                            'time': alert.get('incidenttime')
-                        }
-                    })
-                else:
-                    quarantineFoundcpt += 1
-
     if quarantineFoundcpt > 0:
         return_results(f"{mid} Message ID matches to {quarantineFoundcpt} emails quarantined but time alert does not match")
     if found['mid']:
