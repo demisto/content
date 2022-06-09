@@ -383,17 +383,17 @@ def create_thread_context(email_code, email_cc, email_bcc, email_text, email_fro
 def main():
     incident = demisto.incident()
     custom_fields = incident.get('CustomFields')
-    email_from = custom_fields.get('emailfrom')
-    email_cc = custom_fields.get('emailcc')
-    email_bcc = custom_fields.get('emailbcc')
-    email_to = custom_fields.get('emailto')
-    email_subject = custom_fields.get('emailsubject')
-    email_text = custom_fields.get('emailbody')
-    email_html = custom_fields.get('emailhtml')
-    email_received = custom_fields.get('emailreceived')
-    email_replyto = custom_fields.get('emailreplyto')
+    email_from = custom_fields.get('emailfrom', '')
+    email_cc = custom_fields.get('emailcc', '')
+    email_bcc = custom_fields.get('emailbcc', '')
+    email_to = custom_fields.get('emailto', '')
+    email_subject = custom_fields.get('emailsubject', '')
+    email_text = custom_fields.get('emailbody', '')
+    email_html = custom_fields.get('emailhtml', '')
+    email_received = custom_fields.get('emailreceived', '')
+    email_replyto = custom_fields.get('emailreplyto', '')
     attachments = incident.get('attachment', [])
-    email_latest_message = custom_fields.get('emaillatestmessage')
+    email_latest_message = custom_fields.get('emaillatestmessage', '')
 
     try:
         email_related_incident_code = email_subject.split('<')[1].split('>')[0]

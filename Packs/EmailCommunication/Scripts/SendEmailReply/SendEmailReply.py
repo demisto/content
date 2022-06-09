@@ -747,26 +747,29 @@ def collect_thread_details(incident_email_threads, email_selected_thread):
                 outbound_only = False
             reply_code = thread_entry['EmailCommsThreadId']
             reply_subject = thread_entry['EmailSubject']
+            email_to = thread_entry['EmailTo']
+            email_from = thread_entry['EmailFrom']
+            email_received = thread_entry['EmailReceived']
 
             # Create recipient list based on all 'EmailTo' and 'EmailFrom' values
-            if thread_entry['EmailTo'] not in reply_recipients:
+            if email_to and email_to not in reply_recipients:
                 if len(reply_recipients) == 0:
-                    reply_recipients = thread_entry['EmailTo']
+                    reply_recipients = email_to
                 else:
-                    reply_recipients += f", {thread_entry['EmailTo']}"
+                    reply_recipients += f", {email_to}"
 
-            if thread_entry['EmailFrom'] not in reply_recipients:
+            if email_from and email_from not in reply_recipients:
                 if len(reply_recipients) == 0:
-                    reply_recipients = thread_entry['EmailFrom']
+                    reply_recipients = email_from
                 else:
-                    reply_recipients += f", {thread_entry['EmailFrom']}"
+                    reply_recipients += f", {email_from}"
 
             # Create list of mailboxes receiving messages in this thread in case there are multiple
-            if thread_entry['EmailReceived'] not in reply_mailbox:
+            if email_received and email_received not in reply_mailbox:
                 if len(reply_mailbox) == 0:
-                    reply_mailbox = thread_entry['EmailReceived']
+                    reply_mailbox = email_received
                 else:
-                    reply_mailbox += f", {thread_entry['EmailReceived']}"
+                    reply_mailbox += f", {email_received}"
 
             # Create list of CC addresses based on others CC'd on this thread
             if thread_entry['EmailCC']:
