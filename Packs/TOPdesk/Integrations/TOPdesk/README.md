@@ -65,8 +65,8 @@ To setup the mirroring follow these instructions:
     - Incoming And Outgoing - Changes in XSOAR incidents and TOPdesk incidents will be reflected in both directions.
     - None - Turns off incident mirroring.
 5. The *Comment Entry Tag*, *Work Note Entry Tag* and *File Entry Tag* integration parameters can be used to specify which comments and attachments should be mirrored to TOPdesk. When the tag *Comment Entry Tag* is used, the comment is visible to the operator and the person. If the tag *Work Note Entry Tag* is used, the comment is only visible to the operator and the tag *File Entry Tag* is used to mirror files from XSOAR to TOPdesk.
-6. Optional: Check the *Close Mirrored XSOAR Incident* integration parameter to close the Cortex XSOAR incident when the corresponding ticket is closed in TOPdesk.
-7. Optional: Check the *Close Mirrored TOPdesk Ticket* integration parameter to close the TOPdesk ticket when the corresponding Cortex XSOAR incident is closed.
+6. Optional: Check the *Close Mirrored XSOAR Incident* integration parameter to close the Cortex XSOAR incident when the corresponding incident is closed in TOPdesk.
+7. Optional: Check the *Close Mirrored TOPdesk Incident* integration parameter to close the TOPdesk incident when the corresponding Cortex XSOAR incident is closed.
 
 Newly fetched incidents will be mirrored in the chosen direction.  However, this selection does not affect existing incidents.
 
