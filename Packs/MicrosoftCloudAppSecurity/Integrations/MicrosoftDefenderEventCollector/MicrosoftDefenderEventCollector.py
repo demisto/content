@@ -22,10 +22,10 @@ requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
 ''' CONSTANTS '''
 AUTH_ERROR_MSG = 'Authorization Error: make sure tenant id, client id and client secret is correctly set'
-TYPES_TO_RETRIEVE = {'activities_login': {'type': 'activities', 'filters':
-                     {"activity.eventType": {"eq": ["EVENT_CATEGORY_LOGIN", "EVENT_CATEGORY_FAILED_LOGIN"]}}},
+TYPES_TO_RETRIEVE = {'activities_login': dict(type='activities', filters=
+                     {"activity.eventType": {"eq": ["EVENT_CATEGORY_LOGIN", "EVENT_CATEGORY_FAILED_LOGIN"]}}),
                      'activities_admin': dict(type='activities', filters={"activity.type": {"eq": True}}),
-                     'alerts': {'type': 'alerts', 'filters': {}}}
+                     'alerts': dict(type='alerts', filters={})}
 
 ''' HELPER CLASSES '''
 
