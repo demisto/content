@@ -2,6 +2,10 @@ commonfields:
   id: CalderaGetOperationReport
   version: -1
 name: CalderaGetOperationReport
+comment: ''
+dependson:
+  must:
+  - '|||caldera-get-operation-report'
 script: ''
 type: python
 tags: []

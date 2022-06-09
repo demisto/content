@@ -1,16 +1,16 @@
 commonfields:
-  id: CalderaPopulateEventLogs
+  id: CalderaPopulateObjectiveIDField
   version: -1
 vcShouldKeepItemLegacyProdMachine: false
-name: CalderaPopulateEventLogs
-comment: 'Populates the Event Logs with Event Logs from the MITRE Caldera'
+name: CalderaPopulateObjectiveIDField
+comment: 'Populates the Objective ID Field with Objectives from the MITRE Caldera'
 dependson:
   must:
-  - '|||caldera-get-operation-event-logs'
+  - '|||caldera-get-objectives'
 script: ''
 type: python
 tags:
-- dynamic-section
+- field-display
 enabled: true
 scripttarget: 0
 subtype: python3

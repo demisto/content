@@ -208,7 +208,7 @@ script:
       required: false
       isArray: false
     - name: atomic_ordering
-      description: 'Atomic ordering (CSV or ability IDs)'
+      description: 'Atomic ordering (CSV of ability IDs)'
       required: false
       isArray: true
     - name: plugin
@@ -242,7 +242,7 @@ script:
     description: Create a new agent
     arguments:
     - name: watchdog
-      description: 'Watchdog'
+      description: 'Watchdog timer'
       required: false
       isArray: false
     - name: deadman_enabled
@@ -550,35 +550,30 @@ script:
       required: true
       isArray: false
     - name: autonomous
-      description: 'Autonomous'
-      required: false
-      isArray: false
-    - name: objective_name
-      description: 'Objective name'
+      description: 'Autonomous (autonomous or manual)'
+      auto: PREDEFINED
+      predefined:
+      - "autonomous"
+      - "manual"
+      defaultValue: "autonomous"
       required: false
       isArray: false
     - name: objective_id
       description: 'Objective ID'
       required: false
       isArray: false
-    - name: objective_percentage
-      description: 'Objective percentage'
-      required: false
-      isArray: false
-    - name: objective_goals
-      description: 'Objective goals (array of objective objects)'
-      required: false
-      isArray: false
-    - name: objective_description
-      description: 'Objective description'
-      required: false
-      isArray: false
     - name: visibility
-      description: 'Visbility'
+      description: 'How visible should the operation be to the defense (1-100), default is 51'
       required: false
       isArray: false
     - name: state
       description: 'State'
+      auto: PREDEFINED
+      predefined:
+      - "running"
+      - "paused"
+      - "run_one_link"
+      defaultValue: "running"
       required: false
       isArray: false
     - name: group
@@ -589,32 +584,21 @@ script:
       description: 'Host group'
       required: false
       isArray: true
-    - name: planner_name
-      description: 'Planner name'
-      required: false
-      isArray: false
-    - name: planner_allow_repeatable_abilities
-      description: 'Allow repeatable abilities'
-      required: false
-      isArray: false
-    - name: planner_ignore_enforcement_modules
-      description: 'Ignore enforcement modules (CSV)'
-      required: false
-      isArray: false
-    - name: planner_stopping_conditions
-      description: 'Stopping conditions (array of stopping condition objects)'
-      required: false
-      isArray: false
     - name: planner_id
       description: 'Planner ID'
       required: true
       isArray: false
     - name: obfuscator
       description: 'Obfuscator'
-      required: false
-      isArray: false
-    - name: chain
-      description: ''
+      auto: PREDEFINED
+      predefined:
+      - "base64"
+      - "base64jumble"
+      - "base64noPadding"
+      - "caesar cipher"
+      - "plain-text"
+      - "steganography"
+      defaultValue: "plain-text"
       required: false
       isArray: false
     - name: use_learning_parsers
@@ -626,24 +610,12 @@ script:
       defaultValue: "false"
       required: false
       isArray: false
-    - name: source_name
-      description: 'Source name'
-      required: false
-      isArray: false
-    - name: source_adjustments
-      description: 'Source adjustments'
-      required: false
-      isArray: false
-    - name: source_relationships
-      description: 'Source relationships'
-      required: false
-      isArray: false
     - name: source_id
       description: 'Source ID'
       required: true
       isArray: false
     - name: jitter
-      description: 'Jitter'
+      description: 'Jitter is defined as a fraction (default is "2/8")'
       required: false
       isArray: false
     - name: adversary_id
@@ -882,24 +854,16 @@ script:
   - name: caldera-create-objective
     description: Create a new objective
     arguments:
-    - name: objective_name
-      description: ''
+    - name: name
+      description: 'Objective name'
       required: false
       isArray: false
-    - name: objective_id
-      description: ''
-      required: false
-      isArray: false
-    - name: objective_percentage
-      description: ''
-      required: false
-      isArray: false
-    - name: objective_goals
-      description: ''
+    - name: goals
+      description: 'Goals (array of objective objects)'
       required: false
       isArray: true
-    - name: objective_description
-      description: ''
+    - name: description
+      description: 'Description'
       required: false
       isArray: false
     outputs:
@@ -2835,7 +2799,7 @@ script:
     - type: Boolean
       contextPath: MitreCaldera.Operations.auto_close
       description: ''
-  - name: caldera-get-operations-links
+  - name: caldera-get-operation-links
     description: Get Links from Operation with optional Link ID
     arguments:
     - name: operation_id
@@ -2970,7 +2934,7 @@ script:
     - type: String
       contextPath: MitreCaldera.OperationLinks.output
       description: ''
-  - name: caldera-get-operations-links-result
+  - name: caldera-get-operation-links-result
     description: Retrieve the result of a link
     arguments:
     - name: operation_id
@@ -4292,7 +4256,7 @@ script:
     - type: String
       contextPath: MitreCaldera.Objectives.description
       description: ''
-  - name: caldera-update-fields-in-operation
+  - name: caldera-update-operation-fields
     description: Update fields within an operation
     arguments:
     - name: operation_id
@@ -4899,7 +4863,7 @@ script:
     - type: String
       contextPath: MitreCaldera.Schedules.id
       description: ''
-  - name: caldera-update-link-in-operation
+  - name: caldera-update-operation-link
     description: Update the specified link within an operation
     arguments:
     - name: operation_id

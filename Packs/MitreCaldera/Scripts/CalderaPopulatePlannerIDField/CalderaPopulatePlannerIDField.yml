@@ -6,7 +6,7 @@ name: CalderaPopulatePlannerIDField
 comment: 'Populates the Planner ID Field with Planners from the MITRE Caldera'
 dependson:
   must:
-  - '|||caldera-get-adversaries'
+  - '|||caldera-get-planners'
 script: ''
 type: python
 tags:

@@ -89,6 +89,108 @@
 								"index": 3,
 								"sectionItemType": "field",
 								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "calderaoperationobjectiveid",
+								"height": 53,
+								"id": "07847dd0-e7f5-11ec-96e7-c1d04e1b1292",
+								"index": 4,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 4,
+								"fieldId": "calderaoperationautoclose",
+								"height": 53,
+								"id": "56b8a360-e7e9-11ec-96e7-c1d04e1b1292",
+								"index": 0,
+								"listId": "hmul3lqfgx-qujidgmj0y-86399890-e70f-11ec-ae98-dd1c76a19ebd",
+								"sectionItemType": "field",
+								"startCol": 2
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 4,
+								"fieldId": "calderaoperationautonomy",
+								"height": 53,
+								"id": "3ace6830-e7e7-11ec-96e7-c1d04e1b1292",
+								"index": 1,
+								"listId": "hmul3lqfgx-qujidgmj0y-86399890-e70f-11ec-ae98-dd1c76a19ebd",
+								"sectionItemType": "field",
+								"startCol": 2
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 4,
+								"fieldId": "calderaoperationstate",
+								"height": 53,
+								"id": "25fc8310-e7e7-11ec-96e7-c1d04e1b1292",
+								"index": 2,
+								"listId": "hmul3lqfgx-qujidgmj0y-86399890-e70f-11ec-ae98-dd1c76a19ebd",
+								"sectionItemType": "field",
+								"startCol": 2
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 4,
+								"fieldId": "calderaoperationvisibility",
+								"height": 53,
+								"id": "6b647f60-e7e8-11ec-96e7-c1d04e1b1292",
+								"index": 3,
+								"listId": "hmul3lqfgx-qujidgmj0y-86399890-e70f-11ec-ae98-dd1c76a19ebd",
+								"sectionItemType": "field",
+								"startCol": 2
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 4,
+								"fieldId": "calderaoperationjitter",
+								"height": 53,
+								"id": "33e848e0-e7e9-11ec-96e7-c1d04e1b1292",
+								"index": 4,
+								"listId": "hmul3lqfgx-qujidgmj0y-86399890-e70f-11ec-ae98-dd1c76a19ebd",
+								"sectionItemType": "field",
+								"startCol": 2
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 6,
+								"fieldId": "calderaoperationobfuscator",
+								"height": 53,
+								"id": "0545d870-e7f5-11ec-96e7-c1d04e1b1292",
+								"index": 0,
+								"listId": "hmul3lqfgx-qujidgmj0y-86399890-e70f-11ec-ae98-dd1c76a19ebd",
+								"sectionItemType": "field",
+								"startCol": 4
+							},
+							{
+								"endCol": 6,
+								"fieldId": "calderaoperationuselearningparsers",
+								"height": 53,
+								"id": "f3ee7510-e7e9-11ec-96e7-c1d04e1b1292",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 4
+							},
+							{
+								"endCol": 6,
+								"fieldId": "calderaoperationgroup",
+								"height": 53,
+								"id": "fc0ade90-e7f4-11ec-96e7-c1d04e1b1292",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 4
+							},
+							{
+								"endCol": 6,
+								"fieldId": "calderaoperationhostgroup",
+								"height": 53,
+								"id": "fd6405f0-e7f4-11ec-96e7-c1d04e1b1292",
+								"index": 3,
+								"sectionItemType": "field",
+								"startCol": 4
 							}
 						],
 						"maxW": 3,
@@ -233,6 +335,57 @@
 				],
 				"isVisible": true,
 				"name": "Operation Details",
+				"query": null,
+				"queryType": "",
+				"readOnly": false,
+				"type": ""
+			},
+			{
+				"description": "",
+				"fields": [
+					{
+						"fieldId": "incident_calderaoperationobjectiveid",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_calderaoperationstate",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_calderaoperationobfuscator",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_calderaoperationautonomy",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_calderaoperationvisibility",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_calderaoperationjitter",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_calderaoperationautoclose",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_calderaoperationuselearningparsers",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_calderaoperationgroup",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_calderaoperationhostgroup",
+						"isVisible": true
+					}
+				],
+				"isVisible": true,
+				"name": "Optional Values",
 				"query": null,
 				"queryType": "",
 				"readOnly": false,
