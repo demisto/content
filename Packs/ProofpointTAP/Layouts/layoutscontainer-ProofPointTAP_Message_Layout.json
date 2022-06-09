@@ -83,7 +83,8 @@
                         "name": "Case Details",
                         "w": 1,
                         "x": 0,
-                        "y": 0
+                        "y": 0,
+                        "maxW": 3
                     },
                     {
                         "h": 2,
@@ -92,7 +93,8 @@
                         "type": "notes",
                         "w": 1,
                         "x": 2,
-                        "y": 0
+                        "y": 0,
+                        "maxW": 3
                     },
                     {
                         "displayType": "ROW",
@@ -102,7 +104,8 @@
                         "type": "workplan",
                         "w": 1,
                         "x": 1,
-                        "y": 0
+                        "y": 0,
+                        "maxW": 3
                     },
                     {
                         "displayType": "ROW",
@@ -113,7 +116,8 @@
                         "type": "linkedIncidents",
                         "w": 1,
                         "x": 1,
-                        "y": 6
+                        "y": 6,
+                        "maxW": 3
                     },
                     {
                         "displayType": "ROW",
@@ -123,7 +127,8 @@
                         "type": "childInv",
                         "w": 1,
                         "x": 2,
-                        "y": 4
+                        "y": 4,
+                        "maxW": 3
                     },
                     {
                         "displayType": "ROW",
@@ -133,7 +138,8 @@
                         "type": "evidence",
                         "w": 1,
                         "x": 2,
-                        "y": 2
+                        "y": 2,
+                        "maxW": 3
                     },
                     {
                         "displayType": "ROW",
@@ -144,7 +150,8 @@
                         "type": "team",
                         "w": 1,
                         "x": 2,
-                        "y": 6
+                        "y": 6,
+                        "maxW": 3
                     },
                     {
                         "displayType": "ROW",
@@ -156,7 +163,8 @@
                         "type": "indicators",
                         "w": 2,
                         "x": 0,
-                        "y": 4
+                        "y": 4,
+                        "maxW": 3
                     },
                     {
                         "displayType": "CARD",
@@ -212,7 +220,8 @@
                         "name": "Timeline Information",
                         "w": 1,
                         "x": 0,
-                        "y": 2
+                        "y": 2,
+                        "maxW": 3
                     },
                     {
                         "displayType": "ROW",
@@ -251,7 +260,8 @@
                         "name": "Closing Information",
                         "w": 1,
                         "x": 0,
-                        "y": 6
+                        "y": 6,
+                        "maxW": 3
                     },
                     {
                         "displayType": "CARD",
@@ -272,7 +282,8 @@
                         "name": "Investigation Data",
                         "w": 1,
                         "x": 1,
-                        "y": 2
+                        "y": 2,
+                        "maxW": 3
                     }
                 ],
                 "type": "custom"
@@ -286,7 +297,7 @@
                         "displayType": "CARD",
                         "h": 5,
                         "hideName": false,
-                        "i": "vewmjsl5lu-2c73af50-ab04-11eb-838e-0d868af172e9",
+                        "i": "caseinfoid-vewmjsl5lu-2c73af50-ab04-11eb-838e-0d868af172e9",
                         "items": [
                             {
                                 "endCol": 2,
@@ -332,10 +343,19 @@
                             },
                             {
                                 "endCol": 2,
+                                "fieldId": "proofpointtaplongsubject",
+                                "height": 106,
+                                "id": "5ea3f110-e64f-11ec-acc4-138e22b7c366",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
                                 "fieldId": "proofpointtappolicies",
                                 "height": 53,
                                 "id": "26fd9030-ab05-11eb-838e-0d868af172e9",
-                                "index": 4,
+                                "index": 5,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -344,7 +364,7 @@
                                 "fieldId": "proofpointtapquarantinefolder",
                                 "height": 53,
                                 "id": "284d41b0-ab05-11eb-838e-0d868af172e9",
-                                "index": 5,
+                                "index": 6,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -353,7 +373,7 @@
                                 "fieldId": "proofpointtapquarantinerule",
                                 "height": 53,
                                 "id": "29121850-ab05-11eb-838e-0d868af172e9",
-                                "index": 6,
+                                "index": 7,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -363,7 +383,7 @@
                                 "fieldId": "proofpointtapcluster",
                                 "height": 53,
                                 "id": "fe66a210-ab04-11eb-838e-0d868af172e9",
-                                "index": 7,
+                                "index": 8,
                                 "listId": "vewmjsl5lu-2c73af50-ab04-11eb-838e-0d868af172e9",
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -374,7 +394,7 @@
                                 "fieldId": "proofpointtapexaminedby",
                                 "height": 53,
                                 "id": "0028c470-ab05-11eb-838e-0d868af172e9",
-                                "index": 8,
+                                "index": 9,
                                 "listId": "vewmjsl5lu-2c73af50-ab04-11eb-838e-0d868af172e9",
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -402,8 +422,7 @@
                                 "startCol": 1
                             }
                         ],
-                        "maxH": null,
-                        "maxW": 1,
+                        "maxW": 3,
                         "minH": 1,
                         "minW": 1,
                         "moved": false,
@@ -418,7 +437,7 @@
                         "h": 2,
                         "hideItemTitleOnlyOne": true,
                         "hideName": false,
-                        "i": "vewmjsl5lu-33849d40-ab04-11eb-838e-0d868af172e9",
+                        "i": "caseinfoid-vewmjsl5lu-33849d40-ab04-11eb-838e-0d868af172e9",
                         "items": [
                             {
                                 "dropEffect": "move",
@@ -432,8 +451,7 @@
                                 "startCol": 0
                             }
                         ],
-                        "maxH": null,
-                        "maxW": 2,
+                        "maxW": 3,
                         "minH": 1,
                         "minW": 2,
                         "moved": false,
@@ -448,7 +466,7 @@
                         "h": 2,
                         "hideItemTitleOnlyOne": true,
                         "hideName": false,
-                        "i": "vewmjsl5lu-34c9ee80-ab04-11eb-838e-0d868af172e9",
+                        "i": "caseinfoid-vewmjsl5lu-34c9ee80-ab04-11eb-838e-0d868af172e9",
                         "items": [
                             {
                                 "endCol": 4,
@@ -469,8 +487,7 @@
                                 "startCol": 0
                             }
                         ],
-                        "maxH": null,
-                        "maxW": 2,
+                        "maxW": 3,
                         "minH": 1,
                         "minW": 2,
                         "moved": false,
@@ -484,7 +501,7 @@
                         "displayType": "CARD",
                         "h": 1,
                         "hideName": false,
-                        "i": "vewmjsl5lu-5a811540-ab04-11eb-838e-0d868af172e9",
+                        "i": "caseinfoid-vewmjsl5lu-5a811540-ab04-11eb-838e-0d868af172e9",
                         "items": [
                             {
                                 "dropEffect": "move",
@@ -531,8 +548,7 @@
                                 "startCol": 3
                             }
                         ],
-                        "maxH": null,
-                        "maxW": 2,
+                        "maxW": 3,
                         "minH": 1,
                         "minW": 2,
                         "moved": false,
@@ -546,7 +562,7 @@
                         "displayType": "CARD",
                         "h": 2,
                         "hideName": false,
-                        "i": "vewmjsl5lu-4945cef0-ab05-11eb-838e-0d868af172e9",
+                        "i": "caseinfoid-vewmjsl5lu-4945cef0-ab05-11eb-838e-0d868af172e9",
                         "items": [
                             {
                                 "endCol": 2,
@@ -640,8 +656,7 @@
                                 "startCol": 0
                             }
                         ],
-                        "maxH": null,
-                        "maxW": 1,
+                        "maxW": 3,
                         "minH": 1,
                         "minW": 1,
                         "moved": false,
@@ -653,7 +668,7 @@
                     },
                     {
                         "h": 2,
-                        "i": "vewmjsl5lu-8f9c7030-ab36-11eb-8d94-1dcb215b3004",
+                        "i": "caseinfoid-vewmjsl5lu-8f9c7030-ab36-11eb-8d94-1dcb215b3004",
                         "items": [],
                         "maxW": 3,
                         "minH": 1,
