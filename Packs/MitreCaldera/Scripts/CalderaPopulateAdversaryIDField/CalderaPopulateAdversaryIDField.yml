@@ -1,8 +1,11 @@
 commonfields:
   id: CalderaPopulateAdversaryIDField
   version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: CalderaPopulateAdversaryIDField
+comment: 'Populates the Adversary ID Field with Adversaries from the MITRE Caldera'
+dependson:
+  must:
+  - '|||caldera-get-adversaries'
 script: ''
 type: python
 tags:
@@ -10,9 +13,9 @@ tags:
 enabled: true
 scripttarget: 0
 subtype: python3
-pswd: ''
 runonce: false
 dockerimage: demisto/python3:3.10.4.29342
 runas: DBotWeakRole
-engineinfo: {}
-mainengineinfo: {}
+fromversion: 6.2.0
+tests:
+- No tests (auto formatted)

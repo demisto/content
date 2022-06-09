@@ -1,7 +1,6 @@
 commonfields:
   id: CalderaGetOperationReport
   version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: CalderaGetOperationReport
 script: ''
 type: python
@@ -12,9 +11,9 @@ args:
   required: true
 scripttarget: 0
 subtype: python3
-pswd: ''
 runonce: false
 dockerimage: demisto/python3:3.10.4.29342
 runas: DBotWeakRole
-engineinfo: {}
-mainengineinfo: {}
+fromversion: 6.2.0
+tests:
+- No tests (auto formatted)

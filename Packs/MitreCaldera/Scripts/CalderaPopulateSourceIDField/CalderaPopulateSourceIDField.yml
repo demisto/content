@@ -3,6 +3,10 @@ commonfields:
   version: -1
 vcShouldKeepItemLegacyProdMachine: false
 name: CalderaPopulateSourceIDField
+comment: 'Populates the Source ID Field with Sources from the MITRE Caldera'
+dependson:
+  must:
+  - '|||caldera-get-adversaries'
 script: ''
 type: python
 tags:

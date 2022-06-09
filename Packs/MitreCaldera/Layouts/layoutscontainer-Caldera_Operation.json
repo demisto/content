@@ -208,7 +208,7 @@
 	"edit": {
 		"sections": [
 			{
-				"description": "",
+				"description": "Please ensure you have an active instance of MITRE Caldera configured.",
 				"fields": [
 					{
 						"fieldId": "incident_calderaoperationname",

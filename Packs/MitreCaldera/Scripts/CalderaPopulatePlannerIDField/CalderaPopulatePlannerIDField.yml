@@ -3,6 +3,10 @@ commonfields:
   version: -1
 vcShouldKeepItemLegacyProdMachine: false
 name: CalderaPopulatePlannerIDField
+comment: 'Populates the Planner ID Field with Planners from the MITRE Caldera'
+dependson:
+  must:
+  - '|||caldera-get-adversaries'
 script: ''
 type: python
 tags:
