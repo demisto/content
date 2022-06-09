@@ -1,65 +1,76 @@
+import argparse
 import json
 import logging
 import os
+from pathlib import Path
 import subprocess
 import sys
+from typing import Dict, List
 
-import Tests.scripts.awsinstancetool.aws_functions as aws_functions  # pylint: disable=E0611,E0401
-
+from demisto_sdk.commands.test_content.constants import SSH_USER
 from Tests.scripts.utils.log_util import install_logging
 
 
+def options_handler():
+    parser = argparse.ArgumentParser(description='Utility for instantiating and testing integration instances')
+    parser.add_argument('--aritfacts-dir', help='Path to the artifacts directory', required=True)
+    parser.add_argument('--instance-role', help='The instance role', required=True)
+    parser.add_argument('--env-file', help='The env_results.json file')
+    return parser.parse_args()
+
+
+def chmod_logs(server_ip: str):
+    try:
+        logging.debug(f'Changing permissions of folder /var/log/demisto on server {server_ip}')
+        subprocess.check_output(f'ssh {SSH_USER}@{server_ip} "sudo chmod -R 755 /var/log/demisto"', shell=True)
+
+    except subprocess.CalledProcessError:
+        logging.exception(f'Failed changing permissions of folder /var/log/demisto on server {server_ip}')
+
+
+def download_logs(server_ip: str, aritfacts_dir: str, role: str):
+    scp_string = f"scp {SSH_USER}@{server_ip}:/var/log/demisto/server.log {aritfacts_dir}/server_{role}_{server_ip}.log || echo 'WARN: Failed downloading server.log'"
+    try:
+        logging.debug(f'Downloading server logs from server {server_ip}')
+        subprocess.check_output(scp_string, shell=True)
+
+    except subprocess.CalledProcessError:
+        logging.exception(f'Failed downloading server logs from server {server_ip}')
+
+
+def shutdown(server_ip: str):
+    try:
+        logging.info(f'Destroying instance with IP - {server_ip}')
+        subprocess.check_output(f'ssh {SSH_USER}@{server_ip} "sudo shutdown"', shell=True)
+
+    except subprocess.CalledProcessError:
+        logging.exception(f'Failed to shutdown server {server_ip}')
+
 def main():
     install_logging('Destroy_instances.log')
-    circle_aritfact = sys.argv[1]
-    env_file = sys.argv[2]
-    instance_role = sys.argv[3]
-    time_to_live = sys.argv[4]
-    with open(env_file, 'r') as json_file:
+    options = options_handler()
+    time_to_live = os.getenv('TIME_TO_LIVE')
+    with open(options.env_file, 'r') as json_file:
         env_results = json.load(json_file)
 
-    filtered_results = [env_result for env_result in env_results if env_result["Role"] == instance_role]
-    for env in filtered_results:
-        logging.info(f'Downloading server log from {env.get("Role", "Unknown role")}')
-        ssh_string = 'ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null {}@{} ' \
-                     '"sudo chmod -R 755 /var/log/demisto"'
-        scp_string = 'scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ' \
-                     '{}@{}:/var/log/demisto/server.log {} || echo "WARN: Failed downloading server.log"'
+    for env in filter(lambda x: x.get('Role') == options.instance_role, env_results):
+        readable_role = env["Role"]
+        role = readable_role.replace(' ', '')
+        server_ip = env["InstanceDNS"]
 
-        try:
-            logging.debug(f'Changing permissions of folder /var/log/demisto on server {env["InstanceDNS"]}')
-            subprocess.check_output(
-                ssh_string.format(env["SSHuser"], env["InstanceDNS"]), shell=True)
-
-        except subprocess.CalledProcessError:
-            logging.exception(f'Failed changing permissions of folder /var/log/demisto on server {env["InstanceDNS"]}')
-
-        try:
-            logging.debug(f'Downloading server logs from server {env["InstanceDNS"]}')
-            server_ip = env["InstanceDNS"].split('.')[0]
-            subprocess.check_output(
-                scp_string.format(
-                    env["SSHuser"],
-                    env["InstanceDNS"],
-                    "{}/server_{}_{}.log".format(circle_aritfact, env["Role"].replace(' ', ''), server_ip)),
-                shell=True)
-
-        except subprocess.CalledProcessError:
-            logging.exception(f'Failed downloading server logs from server {env["InstanceDNS"]}')
+        logging.info(f'Downloading server log from {readable_role}')
+        chmod_logs(server_ip)
+        download_logs(server_ip, options.aritfacts_dir, role)
 
         if time_to_live:
             logging.info(f'Skipping - Time to live was set to {time_to_live} minutes')
             continue
-        if os.path.isfile("./Tests/is_build_passed_{}.txt".format(env["Role"].replace(' ', ''))) and \
-                os.path.isfile("./Tests/is_post_update_passed_{}.txt".format(env["Role"].replace(' ', ''))):
-            logging.info(f'Destroying instance with role - {env.get("Role", "Unknown role")} and IP - '
-                         f'{env["InstanceDNS"]}')
-            rminstance = aws_functions.destroy_instance(env["Region"], env["InstanceID"])
-            if aws_functions.isError(rminstance):
-                logging.error(rminstance['Message'])
+
+        tests_path = Path('./Tests')
+        if (tests_path / f'is_build_passed_{role}.txt').exists() and (tests_path / f'is_post_update_passed_{role}.txt').exists():
+                shutdown(server_ip)
         else:
-            logging.warning(f'Tests for some integration failed on {env.get("Role", "Unknown role")}'
-                            f', keeping instance alive')
+            logging.warning(f'Tests for some integration failed on {readable_role}, keeping instance alive')
 
 
 if __name__ == "__main__":
