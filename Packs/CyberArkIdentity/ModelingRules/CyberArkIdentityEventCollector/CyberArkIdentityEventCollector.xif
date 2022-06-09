@@ -27,5 +27,5 @@ filter EventType IN ("Cloud.ADUserProfileUpdate", "Cloud.Core.Access.CheckRights
         XDM.Audit.audited_resource.sub_type=MobileAppType,
         XDM.Audit.session_context_id=coalesce(JobUniqueId, SessionId),
         XDM.Audit.operation_sub_type=SyncAction,
-        XDM.Audit.event_timestamp=to_timestamp(to_integer(arrayindex(regextract(WhenLogged, "[0-9]+"), 0)), "MILLIS"),
+        XDM.Audit.observation_timestamp=to_timestamp(to_integer(arrayindex(regextract(WhenLogged, "[0-9]+"), 0)), "MILLIS"),
         XDM.Audit.event_timestamp=to_timestamp(to_integer(arrayindex(regextract(WhenOccurred, "[0-9]+"), 0)), "MILLIS");
